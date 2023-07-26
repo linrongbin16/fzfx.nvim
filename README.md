@@ -43,7 +43,7 @@ Since fzf.vim rely on bash shell to run on Windows, so you need either:
    scoop install mingw
    ```
 
-2. Or manually install [Git for Windows](https://git-scm.com/download/win), and explicitly add `bash.exe` to `%PATH%` environment, it's under `C:\Program Files\Git\bin\bash.exe` by default. But a better way to expose the path is follow two steps when installing:
+2. Or manually install [Git for Windows](https://git-scm.com/download/win), and explicitly add `bash.exe` to `%PATH%` environment, it's under `C:\Program Files\Git\bin\bash.exe` by default. But a better way to expose the path is following below two steps when installing:
 
    1. In **Adjusting your PATH environment**, select **Use Git and optional Unix tools from the Command Prompt**.
 
