@@ -1,7 +1,5 @@
 local log = require("fzfx.log")
 
---- @alias Config table<string, any>
-
 --- @type Config
 local Defaults = {
     live_grep = {

@@ -17,7 +17,8 @@ local LogLevelHl = {
     ["DEBUG"] = "Comment",
 }
 
---- @type table<string, any>
+--- @alias Config table<string, any>
+--- @type Config
 local Defaults = {
     --- @type LogLevel
     level = "INFO",
@@ -35,41 +36,41 @@ local Defaults = {
     file_path = nil,
 }
 
---- @type table<string, any>
-local Config = {}
+--- @type Config
+local Configs = {}
 
 --- @type string
 local PathSeparator = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
         and "\\"
     or "/"
 
---- @param option table<string, any>
+--- @param option Config
 --- @return nil
 local function setup(option)
-    Config = vim.tbl_deep_extend("force", vim.deepcopy(Defaults), option or {})
-    if Config.file_name and string.len(Config.file_name) > 0 then
+    Configs = vim.tbl_deep_extend("force", vim.deepcopy(Defaults), option or {})
+    if Configs.file_name and string.len(Configs.file_name) > 0 then
         -- For Windows: $env:USERPROFILE\AppData\Local\nvim-data\fzfx.log
         -- For *NIX: ~/.local/share/nvim/fzfx.log
-        if Config.file_dir then
-            Config.file_path = string.format(
+        if Configs.file_dir then
+            Configs.file_path = string.format(
                 "%s%s%s",
-                Config.file_dir,
+                Configs.file_dir,
                 PathSeparator,
-                Config.file_name
+                Configs.file_name
             )
         else
-            Config.file_path = Config.file_name
+            Configs.file_path = Configs.file_name
         end
     end
-    assert(type(Config.name) == "string")
-    assert(string.len(Config.name) > 0)
-    assert(type(Config.level) == "string")
-    assert(LogLevelHl[Config.level] ~= nil)
-    if Config.file_log then
-        assert(type(Config.file_path) == "string")
-        assert(string.len(Config.file_path) > 0)
-        assert(type(Config.file_name) == "string")
-        assert(string.len(Config.file_name) > 0)
+    assert(type(Configs.name) == "string")
+    assert(string.len(Configs.name) > 0)
+    assert(type(Configs.level) == "string")
+    assert(LogLevelHl[Configs.level] ~= nil)
+    if Configs.file_log then
+        assert(type(Configs.file_path) == "string")
+        assert(string.len(Configs.file_path) > 0)
+        assert(type(Configs.file_name) == "string")
+        assert(string.len(Configs.file_name) > 0)
     end
 end
 
@@ -77,16 +78,16 @@ end
 --- @param msg string
 --- @return nil
 local function log(level, msg)
-    if vim.log.levels[level] < vim.log.levels[Config.level] then
+    if vim.log.levels[level] < vim.log.levels[Configs.level] then
         return
     end
 
     local name = ""
-    if type(Config.name) == "type" and string.len(Config.name) > 0 then
-        name = Config.name .. " "
+    if type(Configs.name) == "type" and string.len(Configs.name) > 0 then
+        name = Configs.name .. " "
     end
     local msg_lines = vim.split(msg, "\n")
-    if Config.console_log then
+    if Configs.console_log then
         vim.cmd("echohl " .. LogLevelHl[level])
         for _, line in ipairs(msg_lines) do
             vim.cmd(
@@ -98,8 +99,8 @@ local function log(level, msg)
         end
         vim.cmd("echohl None")
     end
-    if Config.file_log then
-        local fp = io.open(Config.file_path, "a")
+    if Configs.file_log then
+        local fp = io.open(Configs.file_path, "a")
         if fp then
             for _, line in ipairs(msg_lines) do
                 fp:write(
