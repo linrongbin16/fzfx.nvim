@@ -1,3 +1,6 @@
+--- @alias Config table<string, any>
+--- @alias Option table<string, any>
+
 local log = require("fzfx.log")
 
 local default_fd_command = string.format(
@@ -29,7 +32,7 @@ local Defaults = {
 --- @type Config
 local Configs = {}
 
---- @param options Config
+--- @param options Option
 --- @return nil
 local function setup(options)
     Configs = vim.tbl_deep_extend("force", Defaults, options or {})
