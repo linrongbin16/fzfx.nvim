@@ -46,12 +46,16 @@ Since fzf.vim relay on bash shell to run on Windows, so you need either:
 2. Or manually install [Git for Windows](https://git-scm.com/download/win), and explicitly add `bash.exe` to `%PATH%` environment, it's under `C:\Program Files\Git\bin\bash.exe` by default. But a better way to expose the path is follow two steps when installing:
 
    1. In **Adjusting your PATH environment**, select **Use Git and optional Unix tools from the Command Prompt**.
-  
-   ![install-git-for-windows-step1](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/32c20d74-be0b-438b-8de4-347a3c6e1066)
+
+   <p align="center">
+     <img alt="install-git-step1.png" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/32c20d74-be0b-438b-8de4-347a3c6e1066" width="60%" />
+   </p>
 
    2. In **Configuring the terminal emulator to use with Git Bash**, select **Use Windows's default console window**.
-   
-   ![install-git-for-windows-step2](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/22a51d91-5f48-42a2-8a31-71584a52efe4)
+
+   <p align="center">
+     <img alt="install-git-step2.png" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/22a51d91-5f48-42a2-8a31-71584a52efe4" width="60%" />
+   </p>
 
 ## Credit
 
