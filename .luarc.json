@@ -1,0 +1,6 @@
+{
+    "diagnostics": [
+        "vim"
+    ],
+    "workspace.checkThirdParty": false
+}
