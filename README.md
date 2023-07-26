@@ -30,7 +30,7 @@ E(x)tended commands missing in fzf.vim, focused on better usability and improvem
 
 ### For Windows
 
-Since fzf.vim relay on bash shell to run on Windows, so you need either:
+Since fzf.vim rely on bash shell to run on Windows, so you need either:
 
 1. Automatically install `git` and `bash` via [scoop](https://scoop.sh) and run powershell commands:
 
