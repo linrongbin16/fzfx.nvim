@@ -1,7 +1,7 @@
+local log = require("fzfx.log")
+
 local is_windows = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
-
 local is_macos = vim.fn.has("mac") > 0
-
 local plugin_home = vim.fn["fzfx#nvim#plugin_home_dir"]()
 local plugin_bin = is_windows and plugin_home .. "\\bin"
     or plugin_home .. "/bin"
@@ -16,5 +16,7 @@ local M = {
         plugin_bin = plugin_bin,
     },
 }
+
+log.debug("|fzfx.utils| %s", vim.inspect(M))
 
 return M

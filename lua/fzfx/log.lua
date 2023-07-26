@@ -9,6 +9,8 @@ local LogLevel = {
     DEBUG = "DEBUG",
 }
 
+local function except() end
+
 --- @type table<LogLevel, LogMessageHl>
 local LogLevelHl = {
     ["ERROR"] = "ErrorMsg",
@@ -129,14 +131,20 @@ local function warn(fmt, ...)
     log("WARN", string.format(fmt, ...))
 end
 
-local function error(fmt, ...)
+local function err(fmt, ...)
     log("ERROR", string.format(fmt, ...))
+end
+
+local function throw(fmt, ...)
+    err(fmt, ...)
+    error(string.format(fmt, ...))
 end
 
 local M = {
     LogLevel = LogLevel,
     setup = setup,
-    error = error,
+    throw = throw,
+    err = err,
     warn = warn,
     info = info,
     debug = debug,
