@@ -9,8 +9,6 @@ local LogLevel = {
     DEBUG = "DEBUG",
 }
 
-local function except() end
-
 --- @type table<LogLevel, LogMessageHl>
 local LogLevelHl = {
     ["ERROR"] = "ErrorMsg",
