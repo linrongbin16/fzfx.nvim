@@ -28,3 +28,9 @@ local function setup(options)
         file_log = Configs.file_log,
     })
 end
+
+local M = {
+    setup = setup,
+}
+
+return M
