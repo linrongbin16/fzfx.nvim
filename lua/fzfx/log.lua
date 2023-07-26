@@ -17,7 +17,6 @@ local LogLevelHl = {
     ["DEBUG"] = "Comment",
 }
 
---- @alias Config table<string, any>
 --- @type Config
 local Defaults = {
     --- @type LogLevel

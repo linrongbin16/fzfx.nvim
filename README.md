@@ -14,6 +14,7 @@ E(x)tended commands missing in fzf.vim, focused on better usability and improvem
 > - For people working on small repository and don't care performance issue, you can choose [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim).
 
 - [Requirements](#requirements)
+  - [For Windows](#for-windows)
 
 ## Requirements
 
@@ -26,6 +27,26 @@ E(x)tended commands missing in fzf.vim, focused on better usability and improvem
   cargo install fd-find
   cargo install --locked bat
   ```
+
+### For Windows
+
+Since fzf.vim relay on bash shell to run on Windows, so you need either:
+
+1. Automatically install `git` and `bash` via [scoop](https://scoop.sh) and run powershell commands:
+
+   ```powershell
+   # scoop
+   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+   irm get.scoop.sh | iex
+
+   scoop install git
+   scoop install mingw
+   ```
+
+2. Or manually install [Git for Windows](https://git-scm.com/download/win), and explicitly add `bash.exe` to `%PATH%` environment, it's under `C:\Program Files\Git\bin\bash.exe` by default. But a better way to expose the path is follow two steps when installing:
+
+   1. In **Adjusting your PATH environment**, select **Use Git and optional Unix tools from the Command Prompt**.
+   2. In **Configuring the terminal emulator to use with Git Bash**, select **Use Windows's default console window**.
 
 ## Credit
 

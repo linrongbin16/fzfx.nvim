@@ -1,0 +1,1 @@
+--- @alias Config table<string, any>
