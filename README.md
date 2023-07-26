@@ -18,7 +18,7 @@ E(x)tended commands missing in fzf.vim, focused on better usability and improvem
 
 ## Requirements
 
-- Neovim &ge; 0.5.
+- Neovim &ge; 0.8.
 - [fzf](https://github.com/junegunn/fzf) and [fzf.vim](https://github.com/junegunn/fzf.vim).
 - [rg](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), recommand to install them with [cargo](https://www.rust-lang.org/):
 
