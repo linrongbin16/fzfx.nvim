@@ -38,7 +38,11 @@ E(x)tended commands missing in fzf.vim, focused on better usability and tiny imp
 
 ### For Windows
 
-Since fzf.vim rely on bash shell to run on Windows, so you need either:
+<details>
+<summary>Click here to expand</summary>
+<br />
+
+Since fzf.vim rely on bash shell on Windows, so you need either:
 
 1. Automatically install `git` and `bash` via [scoop](https://scoop.sh) and run powershell commands:
 
@@ -47,11 +51,12 @@ Since fzf.vim rely on bash shell to run on Windows, so you need either:
    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
    irm get.scoop.sh | iex
 
+   scoop install 7zip
    scoop install git
-   scoop install mingw
+   scoop install coreutils
    ```
 
-2. Or manually install [Git for Windows](https://git-scm.com/download/win), and explicitly add unix builtin commands (`bash.exe`, `tail.exe`, `mv.exe`, etc) to `%PATH%` environment:
+2. Or manually install [Git for Windows](https://git-scm.com/download/win), and explicitly add unix builtin commands (`bash.exe`, `cat.exe`, `mv.exe`, etc) to `%PATH%` environment:
 
    1. In **Adjusting your PATH environment**, select **Use Git and optional Unix tools from the Command Prompt**.
 
@@ -64,6 +69,13 @@ Since fzf.vim rely on bash shell to run on Windows, so you need either:
    <p align="center">
      <img alt="install-git-step2.png" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/22a51d91-5f48-42a2-8a31-71584a52efe4" width="70%" />
    </p>
+
+> Warning: if you're using WSL2 (Windows Subsystem for Linux), the `bash.exe` will be overwrite by `%SystemRoot%\System32\bash.exe` so fzf preview cannot work correctly.
+>
+> To fix this, please put `$env:USERPROFILE\scoop\shims` (step-1) on top of Windows system32 path.
+> Or put `C:\Program Files\Git\cmd`, `C:\Program Files\Git\mingw64\bin` and `C:\Program Files\Git\usr\bin` (step-2) on top of Windows system32 path.
+
+</details>
 
 ## Credit
 

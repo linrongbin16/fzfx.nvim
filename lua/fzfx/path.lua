@@ -8,8 +8,14 @@ local function normalize(path)
     return vim.fn.trim(result)
 end
 
+--- @return string
+local function tempfilename()
+    return vim.fn.tempname()
+end
+
 local M = {
     normalize = normalize,
+    tempfilename = tempfilename,
 }
 
 return M

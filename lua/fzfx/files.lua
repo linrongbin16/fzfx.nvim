@@ -8,6 +8,15 @@ local utils = require("fzfx.utils")
 local function files(query, fullscreen, opts)
     local provider = opts.unrestricted and opts.provider.unrestricted
         or opts.provider.restricted
+    local unrestricted_switch = opts.action.unrestricted_switch
+    local unrestricted_header = string.format(
+        ":: Press %s to unrestricted mode",
+        string.upper(unrestricted_switch)
+    )
+    local restricted_header = string.format(
+        ":: Press %s to restricted mode",
+        string.upper(unrestricted_switch)
+    )
     local initial_command = provider .. " || true"
     local spec = {
         source = initial_command,
@@ -15,6 +24,12 @@ local function files(query, fullscreen, opts)
             "--ansi",
             "--query",
             query,
+            "--bind",
+            string.format(
+                "%s:unbind(change,%s)+change-header(%s)",
+                unrestricted_switch,
+                unrestricted_switch
+            ),
         },
     }
     spec = vim.fn["fzf#vim#with_preview"](spec)
