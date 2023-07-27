@@ -5,7 +5,7 @@ local is_windows = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
 --- @type boolean
 local is_macos = vim.fn.has("mac") > 0
 --- @type string
-local plugin_home = vim.fn["fzfx#nvim#plugin_home_dir"]()
+local plugin_home = vim.fn["fzfx#nvim#plugin_home"]()
 --- @type string
 local plugin_bin = is_windows and plugin_home .. "\\bin"
     or plugin_home .. "/bin"
