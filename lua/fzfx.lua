@@ -13,12 +13,50 @@ local default_rg_command = "rg --column -n --no-heading --color=always -S"
 local Defaults = {
     files = {
         command = {
+            normal = {
+                name = "FzfxFiles",
+                key = "<space>f",
+                mode = "n",
+                desc = "Find files",
+            },
+            unrestricted = {
+                name = "FzfxFilesU",
+                key = "<space>uf",
+                mode = "n",
+                desc = "Find files unrestricted",
+            },
+            visual = {
+                name = "FzfxFilesV",
+                key = "<space>f",
+                mode = "x",
+                desc = "Find files by visual select",
+            },
+            unrestricted_visual = {
+                name = "FzfxFilesUV",
+                key = "<space>uf",
+                mode = "x",
+                desc = "Find files unrestricted by visual select",
+            },
+            cword = {
+                name = "FzfxFilesW",
+                key = "<space>wf",
+                mode = "n",
+                desc = "Find files by cword",
+            },
+            unrestricted_cword = {
+                name = "FzfxFilesUW",
+                key = "<space>uwf",
+                mode = "n",
+                desc = "Find files unrestricted by cword",
+            },
+        },
+        provider = {
             restricted = default_fd_command,
             unrestricted = default_fd_command .. " -u",
         },
     },
     live_grep = {
-        command = {
+        provider = {
             restricted = default_rg_command,
             unrestricted = default_rg_command .. " -uu",
         },
