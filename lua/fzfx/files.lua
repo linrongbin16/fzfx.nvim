@@ -18,8 +18,8 @@ local function files(query, fullscreen, opts)
         string.upper(u_action),
         string.upper(r_action)
     )
-    -- local u_query = fs.tempfilename()
-    -- local r_query = fs.tempfilename()
+    local u_query = fs.tempfilename()
+    local r_query = fs.tempfilename()
 
     local spec = {
         source = initial_command,
@@ -35,20 +35,24 @@ local function files(query, fullscreen, opts)
             "--bind",
             -- restricted mode: press ctrl-u, rebind ctrl-r
             string.format(
-                "%s:unbind(%s)+rebind(%s)+reload(%s || true)",
+                "%s:unbind(%s)+rebind(%s)+reload(%s || true)+transform-query(echo {q}>%s && cat %s)",
                 u_action,
                 u_action,
                 r_action,
-                u_provider
+                u_provider,
+                r_query,
+                u_query
             ),
             "--bind",
             -- unrestricted mode: press ctrl-r, rebind ctrl-u
             string.format(
-                "%s:unbind(%s)+rebind(%s)+reload(%s || true)",
+                "%s:unbind(%s)+rebind(%s)+reload(%s || true)+transform-query(echo {q}>%s && cat %s)",
                 r_action,
                 r_action,
                 u_action,
-                r_provider
+                r_provider,
+                u_query,
+                r_query
             ),
             "--header",
             header,
