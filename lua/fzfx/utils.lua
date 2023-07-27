@@ -29,7 +29,8 @@ local function get_visual_lines(mode)
     column_start = math.min(column_start, column_end)
     column_end = math.max(column_start, column_end)
     log.debug(
-        "|fzfx.utils - get_visual_lines| start_pos:%s, end_pos:%s",
+        "|fzfx.utils - get_visual_lines| mode:%s, start_pos:%s, end_pos:%s",
+        vim.inspect(mode),
         vim.inspect(start_pos),
         vim.inspect(end_pos)
     )
@@ -41,8 +42,9 @@ local function get_visual_lines(mode)
         vim.inspect(column_end)
     )
 
-    local lines = vim.api.nvim_buf_get_lines(0, line_start, line_end, false)
+    local lines = vim.api.nvim_buf_get_lines(0, line_start - 1, line_end, false)
     if #lines == 0 then
+        log.debug("|fzfx.utils - get_visual_lines| empty lines")
         return ""
     end
 
@@ -59,17 +61,20 @@ local function get_visual_lines(mode)
         local offset = string.lower(vim.o.selection) == "inclusive" and 1 or 2
         local last_line = string.sub(lines[#lines], 1, column_end - offset + 1)
         local first_line = string.sub(lines[1], column_start)
-        log.debug(
-            "|fzfx.utils - get_visual_lines| last_line:[%s], first_line:[%s]",
-            last_line,
-            first_line
-        )
         lines[#lines] = last_line
         lines[1] = first_line
+        log.debug(
+            "|fzfx.utils - get_visual_lines| v or \\22, lines:%s",
+            vim.inspect(lines)
+        )
     elseif mode == "V" then
         if #lines == 1 then
             lines[1] = vim.fn.trim(lines[1])
         end
+        log.debug(
+            "|fzfx.utils - get_visual_lines| V, lines:%s",
+            vim.inspect(lines)
+        )
     end
 
     return table.concat(lines, "\n")
