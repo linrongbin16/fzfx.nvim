@@ -1,5 +1,3 @@
-local log = require("fzfx.log")
-
 --- @type boolean
 local is_windows = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
 --- @type boolean
@@ -28,7 +26,5 @@ local M = {
     rg = rg,
     fd = fd,
 }
-
-log.debug("|fzfx.infra| %s", vim.inspect(M))
 
 return M

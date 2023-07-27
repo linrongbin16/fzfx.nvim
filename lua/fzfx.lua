@@ -61,6 +61,7 @@ local Configs = {}
 --- @return nil
 local function setup(options)
     Configs = vim.tbl_deep_extend("force", Defaults, options or {})
+    print("1")
 
     log.setup({
         level = Configs.debug.enable and "DEBUG" or "INFO",
