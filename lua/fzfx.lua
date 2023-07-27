@@ -1,6 +1,3 @@
---- @alias Config table<string, any>
---- @alias Option table<string, any>
-
 local log = require("fzfx.log")
 
 local default_fd_command = string.format(
@@ -9,45 +6,27 @@ local default_fd_command = string.format(
 )
 local default_rg_command = "rg --column -n --no-heading --color=always -S"
 
+--- @alias Config table<string, any>
+
 --- @type Config
 local Defaults = {
     files = {
         command = {
             normal = {
                 name = "FzfxFiles",
-                key = "<space>f",
-                mode = "n",
                 desc = "Find files",
             },
             unrestricted = {
                 name = "FzfxFilesU",
-                key = "<space>uf",
-                mode = "n",
                 desc = "Find files unrestricted",
             },
             visual = {
                 name = "FzfxFilesV",
-                key = "<space>f",
-                mode = "x",
                 desc = "Find files by visual select",
             },
             unrestricted_visual = {
                 name = "FzfxFilesUV",
-                key = "<space>uf",
-                mode = "x",
                 desc = "Find files unrestricted by visual select",
-            },
-            cword = {
-                name = "FzfxFilesW",
-                key = "<space>wf",
-                mode = "n",
-                desc = "Find files by cword",
-            },
-            unrestricted_cword = {
-                name = "FzfxFilesUW",
-                key = "<space>uwf",
-                mode = "n",
-                desc = "Find files unrestricted by cword",
             },
         },
         provider = {
@@ -75,7 +54,7 @@ local Defaults = {
 --- @type Config
 local Configs = {}
 
---- @param options Option
+--- @param options Config
 --- @return nil
 local function setup(options)
     Configs = vim.tbl_deep_extend("force", Defaults, options or {})
