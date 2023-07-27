@@ -1,5 +1,6 @@
 local log = require("fzfx.log")
 local infra = require("fzfx.infra")
+local utils = require("fzfx.utils")
 
 --- @param query string
 --- @param fullscreen boolean|integer
@@ -38,47 +39,35 @@ local function setup(files_configs)
     )
 
     -- user commands opts
-    local user_command_opts = {
-        normal = {
-            bang = true,
-            nargs = "?",
-            complete = "dir",
-        },
-        visual = {
-            bang = true,
-            range = true,
-        },
-        cword = {
-            bang = true,
-        },
+    local normal_command_opts = {
+        bang = true,
+        nargs = "?",
+        complete = "dir",
+    }
+    local visual_command_opts = {
+        bang = true,
+        range = true,
+    }
+    local cword_command_opts = {
+        bang = true,
     }
 
     -- FzfxFiles
-    vim.api.nvim_create_user_command(
-        files_configs.command.normal.name,
-        --- @param opts Option
-        function(opts)
-            log.debug(
-                "|fzfx.files - setup| normal command opts:%s",
-                vim.inspect(opts)
-            )
-            return files(opts.args, opts.bang, restricted_opts)
-        end,
-        user_command_opts.normal
-    )
+    utils.define_command(files_configs.command.normal, function(opts)
+        log.debug(
+            "|fzfx.files - setup| normal command opts:%s",
+            vim.inspect(opts)
+        )
+        return files(opts.args, opts.bang, restricted_opts)
+    end, normal_command_opts)
     -- FzfxFilesU
-    vim.api.nvim_create_user_command(
-        files_configs.command.unrestricted.name,
-        --- @param opts Option
-        function(opts)
-            log.debug(
-                "|fzfx.files - setup| unrestricted command opts:%s",
-                vim.inspect(opts)
-            )
-            return files(opts.args, opts.bang, unrestricted_opts)
-        end,
-        user_command_opts.normal
-    )
+    utils.define_command(files_configs.command.unrestricted, function(opts)
+        log.debug(
+            "|fzfx.files - setup| unrestricted command opts:%s",
+            vim.inspect(opts)
+        )
+        return files(opts.args, opts.bang, unrestricted_opts)
+    end, normal_command_opts)
     -- FzfxFilesV
     vim.api.nvim_create_user_command(
         files_configs.command.visual.name,
