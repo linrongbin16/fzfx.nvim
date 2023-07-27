@@ -13,10 +13,18 @@ E(x)tended commands missing in fzf.vim, focused on better usability and tiny imp
 > - For people using Linux/macOS + neovim, you can choose [fzf-lua](https://github.com/ibhagwan/fzf-lua).
 > - For people working on small repository and don't care performance issue, you can choose [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim).
 
-- [Requirements](#requirements)
+- [Feature](#feature)
+- [Requirement](#requirement)
   - [For Windows](#for-windows)
 
-## Requirements
+## Feature
+
+- Windows support: now you can enjoy modern fzf on Windows.
+- Multiple ways to use one single command: search by visual select, cword, unrestricted (include both hidden and git ignored files).
+- Improvements for lua: preview user commands and key mappings defined with lua function.
+- ...
+
+## Requirement
 
 - Neovim &ge; 0.8.
 - [fzf](https://github.com/junegunn/fzf) and [fzf.vim](https://github.com/junegunn/fzf.vim).
