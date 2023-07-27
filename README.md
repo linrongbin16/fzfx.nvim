@@ -88,6 +88,7 @@ Or put `C:\Program Files\Git\cmd`, `C:\Program Files\Git\mingw64\bin` and `C:\Pr
 
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
+- [nvim-fzf](https://github.com/vijaymarupudi/nvim-fzf): A Lua API for using fzf in neovim.
 
 ## Contribute
 
