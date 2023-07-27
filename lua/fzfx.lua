@@ -33,6 +33,9 @@ local Defaults = {
             restricted = default_fd_command,
             unrestricted = default_fd_command .. " -u",
         },
+        action = {
+            unrestricted_switch = "ctrl-u",
+        },
     },
     live_grep = {
         provider = {

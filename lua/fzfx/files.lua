@@ -14,7 +14,7 @@ local function files(query, fullscreen, opts)
         options = {
             "--ansi",
             "--query",
-            query ~= nil and query or "",
+            query,
         },
     }
     spec = vim.fn["fzf#vim#with_preview"](spec)
@@ -47,9 +47,6 @@ local function setup(files_configs)
     local visual_command_opts = {
         bang = true,
         range = true,
-    }
-    local cword_command_opts = {
-        bang = true,
     }
 
     -- FzfxFiles
@@ -91,30 +88,6 @@ local function setup(files_configs)
             return files(visual_select, opts.bang, unrestricted_opts)
         end,
         visual_command_opts
-    )
-    -- FzfxFilesW
-    utils.define_command(files_configs.command.cword, function(opts)
-        local word = vim.fn.expand("<cword>")
-        log.debug(
-            "|fzfx.files - setup| cword command word:%s, opts:%s",
-            vim.inspect(word),
-            vim.inspect(opts)
-        )
-        return files(word, opts.bang, restricted_opts)
-    end, cword_command_opts)
-    -- FzfxFilesUW
-    utils.define_command(
-        files_configs.command.unrestricted_cword,
-        function(opts)
-            local word = vim.fn.expand("<cword>")
-            log.debug(
-                "|fzfx.files - setup| unrestricted cword command word:%s, opts:%s",
-                vim.inspect(word),
-                vim.inspect(opts)
-            )
-            return files(word, opts.bang, unrestricted_opts)
-        end,
-        cword_command_opts
     )
 end
 
