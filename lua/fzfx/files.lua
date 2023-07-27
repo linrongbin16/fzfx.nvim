@@ -16,15 +16,25 @@ local function files(query, fullscreen, opts)
         },
     }
     spec = vim.fn["fzf#vim#with_preview"](spec)
-    log.debug("|fzfx.files.files| spec:%s", vim.inspect(spec))
+    log.debug("|fzfx.files - files| spec:%s", vim.inspect(spec))
     return vim.fn["fzf#vim#files"]("", spec, fullscreen)
 end
 
 local function setup(files_configs)
-    local restricted_opts =
-        vim.tbl_deep_extend("force", files_configs, { unrestricted = false })
-    local unrestricted_opts =
-        vim.tbl_deep_extend("force", files_configs, { unrestricted = true })
+    log.debug(
+        "|fzfx.files - setup| files_configs:%s",
+        vim.inspect(files_configs)
+    )
+    local restricted_opts = vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(files_configs),
+        { unrestricted = false }
+    )
+    local unrestricted_opts = vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(files_configs),
+        { unrestricted = true }
+    )
 
     -- user commands opts
     local user_command_opts = {
@@ -54,17 +64,24 @@ local function setup(files_configs)
         },
     }
 
-    for key, val in pairs(files_configs) do
+    for key, val in pairs(files_configs.command) do
         local command_opts = user_command_opts[key]
         local files_opts = string.find(key, "unrestricted") ~= nil
                 and unrestricted_opts
             or restricted_opts
+        log.debug(
+            "|fzfx.files - setup| key:%s, val:%s, command_opts:%s, files_opts:%s",
+            vim.inspect(key),
+            vim.inspect(val),
+            vim.inspect(command_opts),
+            vim.inspect(files_opts)
+        )
         vim.api.nvim_create_user_command(
             val.name,
             --- @param opts Option
             function(opts)
                 log.debug(
-                    "|fzfx.files.setup| %s opts:%s",
+                    "|fzfx.files - setup| %s opts:%s",
                     key,
                     vim.inspect(opts)
                 )

@@ -29,6 +29,10 @@ end
 --- @return VimScriptIdInfo
 local function get_sinfo(script_name)
     local all_scripts = vim.fn.split(vim.fn.execute("scriptnames"), "\n")
+    log.debug(
+        "|fzfx.infra - get_sinfo| all_scripts:%s",
+        vim.inspect(all_scripts)
+    )
     local matched_line = nil
     for _, line in ipairs(all_scripts) do
         local normalized = normalize_path(line)
@@ -47,7 +51,7 @@ local function get_sinfo(script_name)
     local split_matched = vim.fn.split(matched_line)
     if #split_matched ~= 2 then
         log.err(
-            "|fzfx.infra| cannot parse matched script path: %s!",
+            "|fzfx.infra - get_sinfo| cannot parse matched script path: %s!",
             matched_line
         )
         return { script_id = nil, script_path = nil }
@@ -56,6 +60,11 @@ local function get_sinfo(script_name)
     local first_entry = split_matched[1]
     local script_id = string.gsub(first_entry, ":", "")
     local script_path = split_matched[2]
+    log.debug(
+        "|fzfx.infra - get_sinfo| script_id:%s, script_path:%s",
+        vim.inspect(script_id),
+        vim.inspect(script_path)
+    )
     return { script_id = script_id, script_path = script_path }
 end
 
@@ -66,15 +75,23 @@ local function get_fzf_autoload_sid()
 
     -- first try autoload
     local autoload_sinfo1 = get_sinfo(fzf_autoload_path)
+    log.debug(
+        "|fzfx.infra - get_fzf_autoload_sid| autoload_sinfo1:%s",
+        vim.inspect(autoload_sinfo1)
+    )
     if autoload_sinfo1.script_id ~= nil then
         return autoload_sinfo1.script_id
     end
 
     -- then try plugin
     local plugin_sinfo = get_sinfo(fzf_plugin_path)
+    log.debug(
+        "|fzfx.infra - get_fzf_autoload_sid| plugin_sinfo:%s",
+        vim.inspect(plugin_sinfo)
+    )
     if plugin_sinfo.script_id == nil then
         log.throw(
-            "|fzfx.infra| failed to find vimscript '%s'!",
+            "|fzfx.infra - get_fzf_autoload_sid| failed to find vimscript '%s'!",
             fzf_plugin_path
         )
         return nil
@@ -87,25 +104,30 @@ local function get_fzf_autoload_sid()
             .. "autoload/fzf/vim.vim"
     )
     log.debug(
-        "|fzfx.infra| fzf_plugin_path:%s, fzf_autoload_path:%s",
+        "|fzfx.infra - get_fzf_autoload_sid| fzf_plugin_path:%s, fzf_autoload_path:%s",
         plugin_path,
         my_autoload_path
     )
 
     if vim.fn.filereadable(my_autoload_path) > 0 then
-        vim.cmd('execute "source ' .. my_autoload_path .. '"')
+        vim.cmd("source " .. my_autoload_path)
     else
         log.throw(
-            "|fzfx.infra| failed to load vimscript '%s'!",
+            "|fzfx.infra - get_fzf_autoload_sid| failed to load vimscript '%s'!",
             my_autoload_path
         )
         return nil
     end
 
     local autoload_sinfo2 = get_sinfo(fzf_autoload_path)
+    log.debug(
+        "|fzfx.infra - get_fzf_autoload_sid| fzf_plugin_path:%s, fzf_autoload_path:%s",
+        plugin_path,
+        my_autoload_path
+    )
     if autoload_sinfo2.script_id == nil then
         log.throw(
-            "|fzfx.infra| failed to find vimscript '%s' again!",
+            "|fzfx.infra - get_fzf_autoload_sid| failed to find vimscript '%s' again!",
             fzf_autoload_path
         )
         return nil
@@ -122,6 +144,8 @@ local function get_func_snr(sid, func_name)
 end
 
 local fzf_autoload_sid = get_fzf_autoload_sid()
+log.debug("|fzfx.infra| fzf_autoload_sid:%s", fzf_autoload_sid)
+
 local action_for = get_func_snr(fzf_autoload_sid --[[@as string]], "action_for")
 local magenta = get_func_snr(fzf_autoload_sid --[[@as string]], "magenta")
 local red = get_func_snr(fzf_autoload_sid --[[@as string]], "red")
@@ -155,7 +179,7 @@ local function get_visual_lines(mode)
         local last_line = string.sub(lines[#lines], 1, column_end - offset + 1)
         local first_line = string.sub(lines[1], column_start)
         log.debug(
-            "|fzfx.infra.get_visual_lines| last_line:[%s], first_line:[%s]",
+            "|fzfx.infra - get_visual_lines| last_line:[%s], first_line:[%s]",
             last_line,
             first_line
         )

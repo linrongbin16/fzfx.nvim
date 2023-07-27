@@ -85,6 +85,9 @@ local function setup(options)
         console_log = Configs.debug.console_log,
         file_log = Configs.debug.file_log,
     })
+    log.debug("|fzfx - setup| Configs:%s", vim.inspect(Configs))
+
+    require("fzfx.files").setup(Configs.files)
 end
 
 local M = {
