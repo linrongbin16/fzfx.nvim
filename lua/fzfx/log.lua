@@ -47,7 +47,6 @@ local PathSeparator = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
 --- @return nil
 local function setup(option)
     Configs = vim.tbl_deep_extend("force", vim.deepcopy(Defaults), option or {})
-    print("2")
     if Configs.file_name and string.len(Configs.file_name) > 0 then
         -- For Windows: $env:USERPROFILE\AppData\Local\nvim-data\fzfx.log
         -- For *NIX: ~/.local/share/nvim/fzfx.log
@@ -62,20 +61,16 @@ local function setup(option)
             Configs.file_path = Configs.file_name
         end
     end
-    print("3")
     assert(type(Configs.name) == "string")
     assert(string.len(Configs.name) > 0)
     assert(type(Configs.level) == "string")
     assert(LogLevelHl[Configs.level] ~= nil)
-    print("4")
     if Configs.file_log then
         assert(type(Configs.file_path) == "string")
         assert(string.len(Configs.file_path) > 0)
         assert(type(Configs.file_name) == "string")
         assert(string.len(Configs.file_name) > 0)
-        print("5")
     end
-    print("6")
 end
 
 --- @param level LogLevel
