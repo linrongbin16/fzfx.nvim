@@ -1,10 +1,9 @@
 local log = require("fzfx.log")
+local infra = require("fzfx.infra")
 
-local default_fd_command = string.format(
-    "%s . -cnever -tf -tl -L -i",
-    vim.fn.executable("fd") > 0 and "fd" or "fdfind"
-)
-local default_rg_command = "rg --column -n --no-heading --color=always -S"
+local default_fd_command = string.format("%s . -cnever -tf -tl -L -i", infra.fd)
+local default_rg_command =
+    string.format("%s --column -n --no-heading --color=always -S", infra.rg)
 
 --- @alias Config table<string, any>
 
@@ -34,7 +33,8 @@ local Defaults = {
             unrestricted = default_fd_command .. " -u",
         },
         action = {
-            unrestricted_switch = "ctrl-u",
+            restricted = "ctrl-r",
+            unrestricted = "ctrl-u",
         },
     },
     live_grep = {

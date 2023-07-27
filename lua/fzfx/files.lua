@@ -1,23 +1,26 @@
 local log = require("fzfx.log")
 local infra = require("fzfx.infra")
 local utils = require("fzfx.utils")
+local fs = require("fzfx.fs")
 
 --- @param query string
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function files(query, fullscreen, opts)
-    local provider = opts.unrestricted and opts.provider.unrestricted
-        or opts.provider.restricted
-    local unrestricted_switch = opts.action.unrestricted_switch
-    local unrestricted_header = string.format(
-        ":: Press %s to unrestricted mode",
-        string.upper(unrestricted_switch)
-    )
-    local restricted_header = string.format(
-        ":: Press %s to restricted mode",
-        string.upper(unrestricted_switch)
-    )
+    local u_action = string.lower(opts.action.unrestricted)
+    local r_action = string.lower(opts.action.restricted)
+    local u_provider = opts.provider.unrestricted
+    local r_provider = opts.provider.restricted
+    local provider = opts.unrestricted and u_provider or r_provider
     local initial_command = provider .. " || true"
+    local header = string.format(
+        ":: Press %s to unrestricted mode, %s to restricted mode",
+        string.upper(u_action),
+        string.upper(r_action)
+    )
+    -- local u_query = fs.tempfilename()
+    -- local r_query = fs.tempfilename()
+
     local spec = {
         source = initial_command,
         options = {
@@ -26,10 +29,29 @@ local function files(query, fullscreen, opts)
             query,
             "--bind",
             string.format(
-                "%s:unbind(change,%s)+change-header(%s)",
-                unrestricted_switch,
-                unrestricted_switch
+                "start:unbind(%s)",
+                opts.unrestricted and u_action or r_action
             ),
+            "--bind",
+            -- restricted mode: press ctrl-u, rebind ctrl-r
+            string.format(
+                "%s:unbind(%s)+rebind(%s)+reload(%s || true)",
+                u_action,
+                u_action,
+                r_action,
+                u_provider
+            ),
+            "--bind",
+            -- unrestricted mode: press ctrl-r, rebind ctrl-u
+            string.format(
+                "%s:unbind(%s)+rebind(%s)+reload(%s || true)",
+                r_action,
+                r_action,
+                u_action,
+                r_provider
+            ),
+            "--header",
+            header,
         },
     }
     spec = vim.fn["fzf#vim#with_preview"](spec)
