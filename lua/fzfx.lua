@@ -5,7 +5,7 @@ local log = require("fzfx.log")
 
 local default_fd_command = string.format(
     "%s . -cnever -tf -tl -L -i",
-    (vim.fn.executable("fd") > 0 and "fd" or "fdfind")
+    vim.fn.executable("fd") > 0 and "fd" or "fdfind"
 )
 local default_rg_command = "rg --column -n --no-heading --color=always -S"
 
@@ -27,6 +27,11 @@ local Defaults = {
             rg_mode = "ctrl-r",
         },
     },
+    debug = {
+        enable = false,
+        console_log = true,
+        file_log = false,
+    },
 }
 
 --- @type Config
@@ -38,9 +43,9 @@ local function setup(options)
     Configs = vim.tbl_deep_extend("force", Defaults, options or {})
 
     log.setup({
-        level = Configs.debug and "DEBUG" or "INFO",
-        console_log = Configs.console_log,
-        file_log = Configs.file_log,
+        level = Configs.debug.enable and "DEBUG" or "INFO",
+        console_log = Configs.debug.console_log,
+        file_log = Configs.debug.file_log,
     })
 end
 
