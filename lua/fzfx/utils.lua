@@ -28,12 +28,33 @@ local function get_visual_lines(mode)
     line_end = math.max(line_start, line_end)
     column_start = math.min(column_start, column_end)
     column_end = math.max(column_start, column_end)
+    log.debug(
+        "|fzfx.utils - get_visual_lines| start_pos:%s, end_pos:%s",
+        vim.inspect(start_pos),
+        vim.inspect(end_pos)
+    )
+    log.debug(
+        "|fzfx.utils - get_visual_lines| line_start:%s, line_end:%s, column_start:%s, column_end:%s",
+        vim.inspect(line_start),
+        vim.inspect(line_end),
+        vim.inspect(column_start),
+        vim.inspect(column_end)
+    )
 
-    local lines = vim.fn.getlines(line_start, line_end)
+    local lines = vim.api.nvim_buf_get_lines(0, line_start, line_end, false)
     if #lines == 0 then
         return ""
     end
 
+    -- local cursor_pos = vim.fn.getpos(".")
+    -- local cursor_line = cursor_pos[2]
+    -- local cursor_column = cursor_pos[3]
+    -- log.debug(
+    --     "|fzfx.utils - get_visual_lines| cursor_pos:%s, cursor_line:%s, cursor_column:%s",
+    --     vim.inspect(cursor_pos),
+    --     vim.inspect(cursor_line),
+    --     vim.inspect(cursor_column)
+    -- )
     if mode == "v" or mode == "\22" then
         local offset = string.lower(vim.o.selection) == "inclusive" and 1 or 2
         local last_line = string.sub(lines[#lines], 1, column_end - offset + 1)

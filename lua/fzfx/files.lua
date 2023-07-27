@@ -108,10 +108,10 @@ local function setup(files_configs)
     end, normal_command_opts)
     -- FzfxFilesV
     utils.define_command(files_configs.command.visual, function(opts)
-        local visual_select = infra.visual_selected()
+        local visual_select = utils.visual_select()
         log.debug(
             "|fzfx.files - setup| visual command select:%s, opts:%s",
-            vim.insecpt(visual_select),
+            vim.inspect(visual_select),
             vim.inspect(opts)
         )
         return files(visual_select, opts.bang, restricted_opts)
@@ -120,10 +120,10 @@ local function setup(files_configs)
     utils.define_command(
         files_configs.command.unrestricted_visual,
         function(opts)
-            local visual_select = infra.visual_selected()
+            local visual_select = utils.visual_select()
             log.debug(
                 "|fzfx.files - setup| visual command select:%s, opts:%s",
-                vim.insecpt(visual_select),
+                vim.inspect(visual_select),
                 vim.inspect(opts)
             )
             return files(visual_select, opts.bang, unrestricted_opts)
