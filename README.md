@@ -70,12 +70,17 @@ Since fzf.vim rely on bash shell on Windows, so you need either:
      <img alt="install-git-step2.png" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/22a51d91-5f48-42a2-8a31-71584a52efe4" width="70%" />
    </p>
 
-> Warning: if you're using WSL2 (Windows Subsystem for Linux), the `bash.exe` will be overwrite by `%SystemRoot%\System32\bash.exe` so fzf preview cannot work correctly.
->
-> To fix this, please put `$env:USERPROFILE\scoop\shims` (step-1) on top of Windows system32 path.
-> ![scoop-path](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/77b156a9-57ce-4a75-a860-be813d51f909)
-> Or put `C:\Program Files\Git\cmd`, `C:\Program Files\Git\mingw64\bin` and `C:\Program Files\Git\usr\bin` (step-2) on top of Windows system32 path.
-> ![git-path](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/8e77e211-1993-4fbb-b845-37c4db883ac4)
+**WARNING**
+
+If you're using WSL2 (Windows Subsystem for Linux), the `bash.exe` will be overwrite by `%SystemRoot%\System32\bash.exe` so fzf preview cannot work properly.
+
+To fix this, please put `$env:USERPROFILE\scoop\shims` (step-1) on top of Windows system32 path.
+
+<p align="center"><img alt="scoop-path" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/77b156a9-57ce-4a75-a860-be813d51f909" width="70%" /></p>
+
+Or put `C:\Program Files\Git\cmd`, `C:\Program Files\Git\mingw64\bin` and `C:\Program Files\Git\usr\bin` (step-2) on top of Windows system32 path.
+
+<p align="center"><img alt="git-path" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/8e77e211-1993-4fbb-b845-37c4db883ac4" width="70%" /></p>
 
 </details>
 
