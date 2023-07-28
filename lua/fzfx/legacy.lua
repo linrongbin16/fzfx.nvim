@@ -121,7 +121,7 @@ end
 --- @param func_name string
 --- @return string
 local function get_func_snr(sid, func_name)
-    return string.format("<SNR>%s_%s", sid, func_name)
+    return string.format("<SNR>%s_%s", tostring(sid), tostring(func_name))
 end
 
 -- vim.fn["fzf#vim#_uniq"]()
@@ -142,7 +142,12 @@ for color, hl in pairs({
 }) do
     M[color] = function(text)
         local snr = get_func_snr(fzf_autoload_sid --[[@as string]], color)
-        return vim.fn.call(vim.fn.funcref(snr), { text, hl })
+        log.debug(
+            "|fzfx.legacy| color:%s, snr:%s",
+            vim.inspect(color),
+            vim.inspect(snr)
+        )
+        return vim.fn.call(vim.fn[snr], { text, hl })
     end
 end
 
