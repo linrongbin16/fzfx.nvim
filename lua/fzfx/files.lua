@@ -238,7 +238,6 @@ local function setup(files_configs)
 end
 
 local M = {
-    files = files,
     setup = setup,
 }
 

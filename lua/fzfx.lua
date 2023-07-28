@@ -42,18 +42,42 @@ local Defaults = {
         },
         action = {
             unrestricted_switch = "ctrl-u",
-            restricted = "ctrl-r",
-            unrestricted = "ctrl-u",
         },
     },
     live_grep = {
+        command = {
+            normal = {
+                name = "FzfxLiveGrep",
+                desc = "Live grep",
+            },
+            unrestricted = {
+                name = "FzfxLiveGrepU",
+                desc = "Live grep unrestrictly",
+            },
+            visual = {
+                name = "FzfxLiveGrepV",
+                desc = "Live grep by visual select",
+            },
+            unrestricted_visual = {
+                name = "FzfxLiveGrepUV",
+                desc = "Live grep unrestrictly by visual select",
+            },
+            cword = {
+                name = "FzfxLiveGrepW",
+                desc = "Live grep by cursor word",
+            },
+            unrestricted_cword = {
+                name = "FzfxLiveGrepUW",
+                desc = "Live grep unrestrictly by cursor word",
+            },
+        },
         provider = {
             restricted = default_rg_command,
             unrestricted = default_rg_command .. " -uu",
         },
         action = {
-            fzf_mode = "ctrl-f",
-            rg_mode = "ctrl-r",
+            fuzzy_switch = "ctrl-f",
+            unrestricted_switch = "ctrl-u",
         },
     },
     debug = {
