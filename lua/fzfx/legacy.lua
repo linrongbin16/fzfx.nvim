@@ -124,31 +124,27 @@ local function get_func_snr(sid, func_name)
     return string.format("<SNR>%s_%s", sid, func_name)
 end
 
-vim.fn["fzf#vim#_uniq"]()
+-- vim.fn["fzf#vim#_uniq"]()
 local fzf_autoload_sid = get_fzf_autoload_sid()
 log.debug("|fzfx.legacy| fzf_autoload_sid:%s", fzf_autoload_sid)
 
-local action_for = get_func_snr(fzf_autoload_sid --[[@as string]], "action_for")
-local magenta = get_func_snr(fzf_autoload_sid --[[@as string]], "magenta")
-local red = get_func_snr(fzf_autoload_sid --[[@as string]], "red")
-local green = get_func_snr(fzf_autoload_sid --[[@as string]], "green")
-local blue = get_func_snr(fzf_autoload_sid --[[@as string]], "blue")
-local yellow = get_func_snr(fzf_autoload_sid --[[@as string]], "yellow")
-local cyan = get_func_snr(fzf_autoload_sid --[[@as string]], "cyan")
-local bufopen = get_func_snr(fzf_autoload_sid --[[@as string]], "bufopen")
+--- @type table<string, any>
+local M = {}
 
-local M = {
-    func_snr = {
-        magenta,
-        red,
-        green,
-        blue,
-        yellow,
-        cyan,
-        action_for,
-        bufopen,
-    },
-}
+for color, hl in pairs({
+    black = "Comment",
+    red = "Exception",
+    green = "Constant",
+    yellow = "Number",
+    blue = "Operator",
+    magenta = "Special",
+    cyan = "String",
+}) do
+    M[color] = function(text)
+        local snr = get_func_snr(fzf_autoload_sid --[[@as string]], color)
+        return vim.fn.call(vim.fn.funcref(snr), { text, hl })
+    end
+end
 
 log.debug("|fzfx.legacy| %s", vim.inspect(M))
 

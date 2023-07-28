@@ -1,6 +1,7 @@
 local log = require("fzfx.log")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
+local legacy = require("fzfx.legacy")
 
 --- @type table<string, string|nil>
 local Runtime = {
@@ -27,14 +28,14 @@ local function files(query, fullscreen, opts)
     -- header
     vim.fn.writefile({
         string.format(
-            ":: Press %s to unrestricted mode",
-            string.upper(switch_action)
+            ":: Press %s to restricted mode",
+            legacy.magenta(string.upper(switch_action))
         ),
     }, opts.unrestricted and Runtime.current_header or Runtime.next_header)
     vim.fn.writefile({
         string.format(
-            ":: Press %s to restricted mode",
-            string.upper(switch_action)
+            ":: Press %s to unrestricted mode",
+            legacy.magenta(string.upper(switch_action))
         ),
     }, opts.unrestricted and Runtime.next_header or Runtime.current_header)
 
@@ -89,10 +90,10 @@ local function files(query, fullscreen, opts)
             "--header",
             opts.unrestricted and string.format(
                 ":: Press %s to restricted mode",
-                string.upper(switch_action)
+                legacy.magenta(string.upper(switch_action))
             ) or string.format(
                 ":: Press %s to unrestricted mode",
-                string.upper(switch_action)
+                legacy.magenta(string.upper(switch_action))
             ),
         },
     }
