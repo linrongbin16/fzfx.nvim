@@ -38,10 +38,6 @@ E(x)tended commands missing in fzf.vim, focused on better usability and tiny imp
 
 ### For Windows
 
-<details>
-<summary>Click here to expand</summary>
-<br />
-
 Since fzf.vim rely on bash shell on Windows, so you need either:
 
 1. Automatically install `git` and `bash` via [scoop](https://scoop.sh) and run powershell commands:
@@ -70,7 +66,9 @@ Since fzf.vim rely on bash shell on Windows, so you need either:
      <img alt="install-git-step2.png" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/22a51d91-5f48-42a2-8a31-71584a52efe4" width="70%" />
    </p>
 
-**WARNING**
+<details>
+<summary><b>WARNING: WSL2 can overwrite `bash.exe`</b></summary>
+<br />
 
 If you're using WSL2 (Windows Subsystem for Linux), the `bash.exe` will be overwrite by `%SystemRoot%\System32\bash.exe` so fzf preview cannot work properly.
 
