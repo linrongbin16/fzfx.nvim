@@ -7,18 +7,16 @@ local legacy = require("fzfx.legacy")
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function live_grep(query, fullscreen, opts)
-    local unrestricted_switch_action =
-        string.lower(opts.action.unrestricted_switch)
-    local fuzzy_switch_action = string.lower(opts.action.fuzzy_switch)
+    local switch_action = string.lower(opts.action.unrestricted_switch)
 
     -- header
     local unrestricted_header = string.format(
         ":: Press %s to unrestricted search",
-        legacy.magenta(string.upper(unrestricted_switch_action))
+        legacy.magenta(string.upper(switch_action))
     )
     local restricted_header = string.format(
         ":: Press %s to restricted search",
-        legacy.magenta(string.upper(unrestricted_switch_action))
+        legacy.magenta(string.upper(switch_action))
     )
 
     local runtime = {
@@ -79,11 +77,11 @@ local function live_grep(query, fullscreen, opts)
             -- unrestricted switch action: swap header, swap provider, then change header + reload
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+execute-silent(%s)+rebind(%s)+transform-header(cat %s)+reload(%s)",
-                unrestricted_switch_action,
-                unrestricted_switch_action,
+                switch_action,
+                switch_action,
                 runtime.header:swap_by_shell(),
                 runtime.provider:swap_by_shell(),
-                unrestricted_switch_action,
+                switch_action,
                 runtime.header.current,
                 reload_command
             ),
