@@ -57,6 +57,8 @@ local function files(query, fullscreen, opts)
             "--ansi",
             "--query",
             query,
+            "--header",
+            opts.unrestricted and restricted_header or unrestricted_header,
             "--bind",
             -- unrestricted switch action: swap header, swap provider, then change header + reload
             string.format(
@@ -69,8 +71,6 @@ local function files(query, fullscreen, opts)
                 runtime.header.current,
                 query_command
             ),
-            "--header",
-            opts.unrestricted and restricted_header or unrestricted_header,
         },
     }
     spec = vim.fn["fzf#vim#with_preview"](spec)

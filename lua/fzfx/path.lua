@@ -1,4 +1,6 @@
 local Cache = {
+    plugin_home = nil,
+    plugin_bin = nil,
     separator = nil,
 }
 
@@ -14,12 +16,18 @@ end
 
 --- @return string
 local function plugin_home()
-    return vim.env._FZFX_BASE_DIR
+    if Cache.plugin_home == nil then
+        Cache.plugin_home = vim.fn["fzfx#nvim#plugin_home"]()
+    end
+    return Cache.plugin_home
 end
 
 --- @return string
 local function plugin_bin()
-    return vim.env._FZFX_BIN_DIR
+    if Cache.plugin_bin == nil then
+        Cache.plugin_bin = vim.fn["fzfx#nvim#plugin_bin"]()
+    end
+    return Cache.plugin_bin
 end
 
 local function separator()
