@@ -8,7 +8,7 @@
 ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white)
 
-> This is the lua version of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), the next generation one which have more benefits of lua and Neovim.
+> This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), rewrite with lua and leverage new features from modern Neovim.
 
 E(x)tended commands missing in fzf.vim, focused on better usability and tiny improvements.
 
