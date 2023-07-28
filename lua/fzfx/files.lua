@@ -5,64 +5,89 @@ local path = require("fzfx.path")
 --- @type table<string, string|nil>
 local Runtime = {
     --- @type string|nil
-    header = nil,
+    current_header = nil,
     --- @type string|nil
-    provider = nil,
+    next_header = nil,
+    --- @type string|nil
+    swap_header = nil,
+    --- @type string|nil
+    current_provider = nil,
+    --- @type string|nil
+    next_provider = nil,
+    --- @type string|nil
+    swap_provider = nil,
 }
 
 --- @param query string
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function files(query, fullscreen, opts)
-    local u_action = string.lower(opts.action.unrestricted)
-    local r_action = string.lower(opts.action.restricted)
-    local u_provider = opts.provider.unrestricted
-    local r_provider = opts.provider.restricted
-    local provider = opts.unrestricted and u_provider or r_provider
-    local initial_command = provider .. " || true"
-    local header = string.format(
-        ":: Press %s to unrestricted mode, %s to restricted mode",
-        string.upper(u_action),
-        string.upper(r_action)
+    local switch_action = string.lower(opts.action.unrestricted_switch)
+
+    -- header
+    vim.fn.writefile({
+        string.format(
+            ":: Press %s to unrestricted mode",
+            string.upper(switch_action)
+        ),
+    }, opts.unrestricted and Runtime.current_header or Runtime.next_header)
+    vim.fn.writefile({
+        string.format(
+            ":: Press %s to restricted mode",
+            string.upper(switch_action)
+        ),
+    }, opts.unrestricted and Runtime.next_header or Runtime.current_header)
+
+    -- provider
+    vim.fn.writefile(
+        { opts.provider.unrestricted },
+        opts.unrestricted and Runtime.current_provider or Runtime.next_provider
     )
-    local u_query = path.tempname()
-    local r_query = path.tempname()
+    vim.fn.writefile(
+        { opts.provider.restricted },
+        opts.unrestricted and Runtime.next_provider or Runtime.current_provider
+    )
+
+    -- query command, both initial query + reload query
+    local query_command =
+        string.format("nvim --headless -l %s || true", Runtime.current_provider)
 
     local spec = {
-        source = initial_command,
+        source = query_command,
         options = {
             "--ansi",
             "--query",
             query,
             "--bind",
+            -- unrestricted switch action: swap header, swap provider, then change header + reload
             string.format(
-                "start:unbind(%s)",
-                opts.unrestricted and u_action or r_action
-            ),
-            "--bind",
-            -- restricted mode: press ctrl-u, rebind ctrl-r
-            string.format(
-                "%s:unbind(%s)+rebind(%s)+reload(%s || true)+transform-query(echo {q}>%s && cat %s)",
-                u_action,
-                u_action,
-                r_action,
-                u_provider,
-                r_query,
-                u_query
-            ),
-            "--bind",
-            -- unrestricted mode: press ctrl-r, rebind ctrl-u
-            string.format(
-                "%s:unbind(%s)+rebind(%s)+reload(%s || true)+transform-query(echo {q}>%s && cat %s)",
-                r_action,
-                r_action,
-                u_action,
-                r_provider,
-                u_query,
-                r_query
+                "%s:unbind(%s)+execute-silent(mv %s %s && mv %s %s && mv %s %s)+execute-silent(mv %s %s && mv %s %s && mv %s %s)+rebind(%s)+transform-header(cat %s)+reload(%s)",
+                switch_action,
+                switch_action,
+                Runtime.current_header,
+                Runtime.swap_header,
+                Runtime.next_header,
+                Runtime.current_header,
+                Runtime.swap_header,
+                Runtime.next_header,
+                Runtime.current_provider,
+                Runtime.swap_provider,
+                Runtime.next_provider,
+                Runtime.current_provider,
+                Runtime.swap_provider,
+                Runtime.next_provider,
+                switch_action,
+                Runtime.current_header,
+                query_command
             ),
             "--header",
-            header,
+            opts.unrestricted and string.format(
+                ":: Press %s to restricted mode",
+                string.upper(switch_action)
+            ) or string.format(
+                ":: Press %s to unrestricted mode",
+                string.upper(switch_action)
+            ),
         },
     }
     spec = vim.fn["fzf#vim#with_preview"](spec)
@@ -73,7 +98,8 @@ end
 --- @param files_configs Config
 local function setup(files_configs)
     log.debug(
-        "|fzfx.files - setup| files_configs:%s",
+        "|fzfx.files - setup| plugin_bin:%s, files_configs:%s",
+        vim.inspect(path.plugin_bin()),
         vim.inspect(files_configs)
     )
     local restricted_opts = vim.tbl_deep_extend(
@@ -165,6 +191,43 @@ local function setup(files_configs)
         end,
         cword_command_opts
     )
+
+    -- runtime
+    if files_configs.debug then
+        Runtime.current_header = string.format(
+            "%s/fzfx.nvim/files_current_header",
+            vim.fn.stdpath("data")
+        )
+        Runtime.next_header = string.format(
+            "%s/fzfx.nvim/files_next_header",
+            vim.fn.stdpath("data")
+        )
+        Runtime.swap_header = string.format(
+            "%s/fzfx.nvim/files_swap_header",
+            vim.fn.stdpath("data")
+        )
+        Runtime.current_provider = string.format(
+            "%s/fzfx.nvim/files_current_provider",
+            vim.fn.stdpath("data")
+        )
+        Runtime.next_provider = string.format(
+            "%s/fzfx.nvim/files_next_provider",
+            vim.fn.stdpath("data")
+        )
+        Runtime.swap_provider = string.format(
+            "%s/fzfx.nvim/files_swap_provider",
+            vim.fn.stdpath("data")
+        )
+    else
+        Runtime.current_header = path.tempname()
+        Runtime.next_header = path.tempname()
+        Runtime.swap_header = path.tempname()
+        Runtime.current_provider = path.tempname()
+        Runtime.next_provider = path.tempname()
+        Runtime.swap_provider = path.tempname()
+    end
+    vim.env._FZFX_FILES_PROVIDER = Runtime.current_provider
+    log.debug("|fzfx.files - setup| Runtime:%s", vim.inspect(Runtime))
 end
 
 local M = {

@@ -77,8 +77,18 @@ local function setup(options)
         file_log = Configs.debug.file_log,
     })
     log.debug("|fzfx - setup| Configs:%s", vim.inspect(Configs))
+    if Configs.debug.enable then
+        vim.fn.mkdir(string.format("%s/fzfx.nvim", vim.fn.stdpath("data")), "p")
+    end
+    vim.env._FZFX_DEBUG = Configs.debug.enable
 
-    require("fzfx.files").setup(Configs.files)
+    require("fzfx.files").setup(
+        vim.tbl_deep_extend(
+            "force",
+            vim.deepcopy(Configs.files),
+            { debug = Configs.debug.enable }
+        )
+    )
 end
 
 local M = {
