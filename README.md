@@ -8,10 +8,9 @@
 ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white)
 
-E(x)tended commands missing in fzf.vim, focused on better usability and tiny improvements.
+> This is the lua version of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), the next generation one which have more benefits of lua and Neovim.
 
-> - For people using Linux/macOS + neovim, you can choose [fzf-lua](https://github.com/ibhagwan/fzf-lua).
-> - For people working on small repository and don't care performance issue, you can choose [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim).
+E(x)tended commands missing in fzf.vim, focused on better usability and tiny improvements.
 
 - [Feature](#feature)
 - [Requirement](#requirement)
