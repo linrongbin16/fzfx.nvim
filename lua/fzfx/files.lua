@@ -1,7 +1,14 @@
 local log = require("fzfx.log")
-local infra = require("fzfx.infra")
 local utils = require("fzfx.utils")
-local fs = require("fzfx.fs")
+local path = require("fzfx.path")
+
+--- @type table<string, string|nil>
+local Runtime = {
+    --- @type string|nil
+    header = nil,
+    --- @type string|nil
+    provider = nil,
+}
 
 --- @param query string
 --- @param fullscreen boolean|integer
@@ -18,8 +25,8 @@ local function files(query, fullscreen, opts)
         string.upper(u_action),
         string.upper(r_action)
     )
-    local u_query = fs.tempfilename()
-    local r_query = fs.tempfilename()
+    local u_query = path.tempname()
+    local r_query = path.tempname()
 
     local spec = {
         source = initial_command,
@@ -63,6 +70,7 @@ local function files(query, fullscreen, opts)
     return vim.fn["fzf#vim#files"]("", spec, fullscreen)
 end
 
+--- @param files_configs Config
 local function setup(files_configs)
     log.debug(
         "|fzfx.files - setup| files_configs:%s",
@@ -88,6 +96,9 @@ local function setup(files_configs)
     local visual_command_opts = {
         bang = true,
         range = true,
+    }
+    local cword_command_opts = {
+        bang = true,
     }
 
     -- FzfxFiles
@@ -129,6 +140,30 @@ local function setup(files_configs)
             return files(visual_select, opts.bang, unrestricted_opts)
         end,
         visual_command_opts
+    )
+    -- FzfxFilesW
+    utils.define_command(files_configs.command.cword, function(opts)
+        local word = vim.fn.expand("<cword>")
+        log.debug(
+            "|fzfx.files - setup| cword command word:%s, opts:%s",
+            vim.inspect(word),
+            vim.inspect(opts)
+        )
+        return files(word, opts.bang, restricted_opts)
+    end, cword_command_opts)
+    -- FzfxFilesUW
+    utils.define_command(
+        files_configs.command.unrestricted_cword,
+        function(opts)
+            local word = vim.fn.expand("<cword>")
+            log.debug(
+                "|fzfx.files - setup| cword command word:%s, opts:%s",
+                vim.inspect(word),
+                vim.inspect(opts)
+            )
+            return files(word, opts.bang, unrestricted_opts)
+        end,
+        cword_command_opts
     )
 end
 

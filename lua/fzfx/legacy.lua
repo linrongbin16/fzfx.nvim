@@ -1,5 +1,5 @@
 local log = require("fzfx.log")
-local fs = require("fzfx.fs")
+local path = require("fzfx.path")
 
 --- @alias VimScriptId string
 --- @alias VimScriptPath string
@@ -16,7 +16,7 @@ local function get_sinfo(script_name)
     )
     local matched_line = nil
     for _, line in ipairs(all_scripts) do
-        local normalized = fs.normalize(line)
+        local normalized = path.normalize(line)
         if string.find(string.lower(normalized), string.lower(script_name)) then
             if matched_line == nil then
                 matched_line = normalized

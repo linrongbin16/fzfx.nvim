@@ -17,7 +17,7 @@ local Defaults = {
             },
             unrestricted = {
                 name = "FzfxFilesU",
-                desc = "Find files unrestricted",
+                desc = "Find files unrestrictly",
             },
             visual = {
                 name = "FzfxFilesV",
@@ -25,7 +25,15 @@ local Defaults = {
             },
             unrestricted_visual = {
                 name = "FzfxFilesUV",
-                desc = "Find files unrestricted by visual select",
+                desc = "Find files unrestrictly by visual select",
+            },
+            cword = {
+                name = "FzfxFilesW",
+                desc = "Find files by cursor word",
+            },
+            unrestricted_cword = {
+                name = "FzfxFilesUW",
+                desc = "Find files unrestrictly by cursor word",
             },
         },
         provider = {
@@ -33,6 +41,7 @@ local Defaults = {
             unrestricted = default_fd_command .. " -u",
         },
         action = {
+            unrestricted_switch = "ctrl-u",
             restricted = "ctrl-r",
             unrestricted = "ctrl-u",
         },
