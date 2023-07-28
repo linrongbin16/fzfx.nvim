@@ -1,21 +1,12 @@
+local args = _G.arg
+local provider = args[1]
 local _FZFX_DEBUG = os.getenv("_FZFX_DEBUG")
-local _FZFX_FILES_PROVIDER = os.getenv("_FZFX_FILES_PROVIDER")
 if _FZFX_DEBUG then
-    os.execute(
-        string.format(
-            'echo "DEBUG _FZFX_FILES_PROVIDER:[%s]"',
-            _FZFX_FILES_PROVIDER
-        )
-    )
+    os.execute(string.format('echo "DEBUG provider:[%s]"', provider))
 end
-local f = io.open(_FZFX_FILES_PROVIDER --[[@as string]], "r")
-assert(
-    f ~= nil,
-    string.format(
-        "error! failed to open _FZFX_FILES_PROVIDER:%s",
-        _FZFX_FILES_PROVIDER
-    )
-)
+
+local f = io.open(provider --[[@as string]], "r")
+assert(f ~= nil, string.format("error! failed to open provider:%s", provider))
 local cmd = vim.fn.trim(f:read("*a"))
 if _FZFX_DEBUG then
     os.execute(string.format('echo "DEBUG cmd:[%s]"', cmd))

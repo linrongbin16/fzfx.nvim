@@ -29,35 +29,43 @@ local Runtime = {
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function live_grep(query, fullscreen, opts)
-    local switch_action = string.lower(opts.action.unrestricted_switch)
+    local unrestricted_switch_action =
+        string.lower(opts.action.unrestricted_switch)
+    local fuzzy_switch_action = string.lower(opts.action.fuzzy_switch)
 
     -- header
+    local unrestricted_header = string.format(
+        ":: Press %s to unrestricted search",
+        legacy.magenta(string.upper(unrestricted_switch_action))
+    )
+    local restricted_header = string.format(
+        ":: Press %s to restricted search",
+        legacy.magenta(string.upper(unrestricted_switch_action))
+    )
+    local fuzzy_header = string.format(
+        ", %s to fuzzy search",
+        legacy.magenta(string.upper(fuzzy_switch_action))
+    )
+    local regex_header = string.format(
+        ", %s to regex search",
+        legacy.magenta(string.upper(fuzzy_switch_action))
+    )
+    vim.fn.writefile({
+        fuzzy_header,
+    }, Runtime.current_fuzzy_header)
+    vim.fn.writefile({
+        regex_header,
+    }, Runtime.next_fuzzy_header)
     vim.fn.writefile(
-        {
-            string.format(
-                ":: Press %s to restricted mode",
-                legacy.magenta(string.upper(switch_action))
-            ),
-        },
-        opts.unrestricted and Runtime.current_fuzzy_header
-            or Runtime.next_fuzzy_header
+        { restricted_header },
+        opts.unrestricted and Runtime.current_unrestricted_header
+            or Runtime.next_unrestricted_header
     )
     vim.fn.writefile(
-        {
-            string.format(
-                ":: Press %s to unrestricted mode",
-                legacy.magenta(string.upper(switch_action))
-            ),
-        },
+        { unrestricted_header },
         opts.unrestricted and Runtime.next_fuzzy_header
             or Runtime.current_fuzzy_header
     )
-    vim.fn.writefile({
-        string.format(
-            ":: Press %s to fzf mode",
-            legacy.magenta(string.upper(fuzzy_switch_action))
-        ),
-    })
 
     -- provider
     vim.fn.writefile(
@@ -71,7 +79,7 @@ local function live_grep(query, fullscreen, opts)
 
     -- query command, both initial query + reload query
     local query_command = string.format(
-        "nvim --headless -l %sfiles_provider.lua || true",
+        "nvim --headless -l %slive_grep_provider.lua {q} || true",
         path.plugin_bin()
     )
     log.debug(
@@ -89,8 +97,8 @@ local function live_grep(query, fullscreen, opts)
             -- unrestricted switch action: swap header, swap provider, then change header + reload
             string.format(
                 "%s:unbind(%s)+execute-silent(mv %s %s && mv %s %s && mv %s %s)+execute-silent(mv %s %s && mv %s %s && mv %s %s)+rebind(%s)+transform-header(cat %s)+reload(%s)",
-                switch_action,
-                switch_action,
+                unrestricted_switch_action,
+                unrestricted_switch_action,
                 Runtime.current_fuzzy_header,
                 Runtime.swap_fuzzy_header,
                 Runtime.next_fuzzy_header,
@@ -103,18 +111,20 @@ local function live_grep(query, fullscreen, opts)
                 Runtime.current_provider,
                 Runtime.swap_provider,
                 Runtime.next_provider,
-                switch_action,
+                unrestricted_switch_action,
                 Runtime.current_fuzzy_header,
                 query_command
             ),
             "--header",
-            opts.unrestricted and string.format(
-                ":: Press %s to restricted mode",
-                legacy.magenta(string.upper(switch_action))
-            ) or string.format(
-                ":: Press %s to unrestricted mode",
-                legacy.magenta(string.upper(switch_action))
-            ),
+            opts.unrestricted
+                    and string.format(
+                        ":: Press %s to restricted mode",
+                        legacy.magenta(string.upper(unrestricted_switch_action))
+                    )
+                or string.format(
+                    ":: Press %s to unrestricted mode",
+                    legacy.magenta(string.upper(unrestricted_switch_action))
+                ),
         },
     }
     spec = vim.fn["fzf#vim#with_preview"](spec)
@@ -222,19 +232,19 @@ local function setup(live_grep_configs)
     -- runtime
     if live_grep_configs.debug then
         Runtime.current_fuzzy_header = string.format(
-            "%s/fzfx.nvim/files_current_header",
+            "%s/fzfx.nvim/live_grep_current_header",
             vim.fn.stdpath("data")
         )
         Runtime.next_fuzzy_header = string.format(
-            "%s/fzfx.nvim/files_next_header",
+            "%s/fzfx.nvim/live_grep_next_header",
             vim.fn.stdpath("data")
         )
         Runtime.swap_fuzzy_header = string.format(
-            "%s/fzfx.nvim/files_swap_header",
+            "%s/fzfx.nvim/live_grep_swap_header",
             vim.fn.stdpath("data")
         )
         Runtime.current_provider = string.format(
-            "%s/fzfx.nvim/files_current_provider",
+            "%s/fzfx.nvim/live_grep_current_provider",
             vim.fn.stdpath("data")
         )
         Runtime.next_provider = string.format(
