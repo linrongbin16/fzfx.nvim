@@ -61,6 +61,9 @@ function SwapableFile:swap_by_shell()
     )
 end
 
+--- @param name string
+--- @param current_text string[]
+--- @param next_text string[]
 --- @param debug boolean
 --- @return SwapableFile
 local function new_swapable_file(name, current_text, next_text, debug)

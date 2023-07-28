@@ -3,28 +3,6 @@ local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local legacy = require("fzfx.legacy")
 
---- @type table<string, string|nil>
-local Runtime = {
-    --- @type string|nil
-    current_fuzzy_header = nil,
-    --- @type string|nil
-    next_fuzzy_header = nil,
-    --- @type string|nil
-    swap_fuzzy_header = nil,
-    --- @type string|nil
-    current_unrestricted_header = nil,
-    --- @type string|nil
-    next_unrestricted_header = nil,
-    --- @type string|nil
-    swap_unrestricted_header = nil,
-    --- @type string|nil
-    current_provider = nil,
-    --- @type string|nil
-    next_provider = nil,
-    --- @type string|nil
-    swap_provider = nil,
-}
-
 --- @param query string
 --- @param fullscreen boolean|integer
 --- @param opts Config
@@ -50,22 +28,6 @@ local function live_grep(query, fullscreen, opts)
         ", %s to regex search",
         legacy.magenta(string.upper(fuzzy_switch_action))
     )
-    vim.fn.writefile({
-        fuzzy_header,
-    }, Runtime.current_fuzzy_header)
-    vim.fn.writefile({
-        regex_header,
-    }, Runtime.next_fuzzy_header)
-    vim.fn.writefile(
-        { restricted_header },
-        opts.unrestricted and Runtime.current_unrestricted_header
-            or Runtime.next_unrestricted_header
-    )
-    vim.fn.writefile(
-        { unrestricted_header },
-        opts.unrestricted and Runtime.next_fuzzy_header
-            or Runtime.current_fuzzy_header
-    )
 
     -- provider
     vim.fn.writefile(
@@ -76,6 +38,31 @@ local function live_grep(query, fullscreen, opts)
         { opts.provider.restricted },
         opts.unrestricted and Runtime.next_provider or Runtime.current_provider
     )
+
+    local runtime = {
+        --- @type SwapableFile
+        unrestricted_header = path.new_swapable_file(
+            "live_grep_unrestricted_header",
+            {
+                opts.unrestricted and restricted_header or unrestricted_header,
+            },
+            { opts.unrestricted and unrestricted_header or restricted_header },
+            opts.debug
+        ),
+        fuzzy_header = path.new_swapable_file(
+            "live_grep_fuzzy_header",
+            { fuzzy_header },
+            { regex_header },
+            opts.debug
+        ),
+        provider = path.new_swapable_file("live_grep_provider", {
+            opts.unrestricted and opts.provider.unrestricted
+                or opts.provider.restricted,
+        }, {
+            opts.unrestricted and opts.provider.restricted
+                or opts.provider.unrestricted,
+        }, opts.debug),
+    }
 
     -- query command, both initial query + reload query
     local query_command = string.format(
