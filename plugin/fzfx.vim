@@ -7,10 +7,10 @@ let s:is_win = has('win32') || has('win64')
 
 if s:is_win && &shellslash
     set noshellslash
-    let s:base_dir = expand('<sfile>:p:h:h:h')
+    let s:base_dir = expand('<sfile>:p:h:h')
     set shellslash
 else
-    let s:base_dir = expand('<sfile>:p:h:h:h')
+    let s:base_dir = expand('<sfile>:p:h:h')
 endif
 
 if s:is_win
