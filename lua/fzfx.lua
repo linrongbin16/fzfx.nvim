@@ -76,7 +76,6 @@ local Defaults = {
             unrestricted = default_rg_command .. " -uu",
         },
         action = {
-            fuzzy_switch = "ctrl-f",
             unrestricted_switch = "ctrl-u",
         },
     },
@@ -110,6 +109,13 @@ local function setup(options)
         vim.tbl_deep_extend(
             "force",
             vim.deepcopy(Configs.files),
+            { debug = Configs.debug.enable }
+        )
+    )
+    require("fzfx.live_grep").setup(
+        vim.tbl_deep_extend(
+            "force",
+            vim.deepcopy(Configs.live_grep),
             { debug = Configs.debug.enable }
         )
     )
