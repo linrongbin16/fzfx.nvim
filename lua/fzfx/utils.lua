@@ -48,21 +48,19 @@ local function get_visual_lines(mode)
         return ""
     end
 
-    -- local cursor_pos = vim.fn.getpos(".")
-    -- local cursor_line = cursor_pos[2]
-    -- local cursor_column = cursor_pos[3]
-    -- log.debug(
-    --     "|fzfx.utils - get_visual_lines| cursor_pos:%s, cursor_line:%s, cursor_column:%s",
-    --     vim.inspect(cursor_pos),
-    --     vim.inspect(cursor_line),
-    --     vim.inspect(cursor_column)
-    -- )
+    local cursor_pos = vim.fn.getpos(".")
+    local cursor_line = cursor_pos[2]
+    local cursor_column = cursor_pos[3]
+    log.debug(
+        "|fzfx.utils - get_visual_lines| cursor_pos:%s, cursor_line:%s, cursor_column:%s",
+        vim.inspect(cursor_pos),
+        vim.inspect(cursor_line),
+        vim.inspect(cursor_column)
+    )
     if mode == "v" or mode == "\22" then
         local offset = string.lower(vim.o.selection) == "inclusive" and 1 or 2
-        local last_line = string.sub(lines[#lines], 1, column_end - offset + 1)
-        local first_line = string.sub(lines[1], column_start)
-        lines[#lines] = last_line
-        lines[1] = first_line
+        lines[#lines] = string.sub(lines[#lines], 1, column_end - offset + 1)
+        lines[1] = string.sub(lines[1], column_start)
         log.debug(
             "|fzfx.utils - get_visual_lines| v or \\22, lines:%s",
             vim.inspect(lines)
@@ -76,7 +74,6 @@ local function get_visual_lines(mode)
             vim.inspect(lines)
         )
     end
-
     return table.concat(lines, "\n")
 end
 
