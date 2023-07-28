@@ -120,7 +120,7 @@ end
 --- @param sid VimScriptId
 --- @param func_name string
 --- @return string
-local function get_func_snr(sid, func_name)
+local function get_func_ref(sid, func_name)
     return string.format("<SNR>%s_%s", tostring(sid), tostring(func_name))
 end
 
@@ -141,7 +141,7 @@ for color, hl in pairs({
     cyan = "String",
 }) do
     M[color] = function(text)
-        local snr = get_func_snr(fzf_autoload_sid --[[@as string]], color)
+        local snr = get_func_ref(fzf_autoload_sid --[[@as string]], color)
         log.debug(
             "|fzfx.legacy| color:%s, snr:%s",
             vim.inspect(color),
