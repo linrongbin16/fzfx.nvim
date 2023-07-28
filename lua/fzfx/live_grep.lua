@@ -29,16 +29,6 @@ local function live_grep(query, fullscreen, opts)
         legacy.magenta(string.upper(fuzzy_switch_action))
     )
 
-    -- provider
-    vim.fn.writefile(
-        { opts.provider.unrestricted },
-        opts.unrestricted and Runtime.current_provider or Runtime.next_provider
-    )
-    vim.fn.writefile(
-        { opts.provider.restricted },
-        opts.unrestricted and Runtime.next_provider or Runtime.current_provider
-    )
-
     local runtime = {
         --- @type SwapableFile
         unrestricted_header = path.new_swapable_file(
@@ -49,12 +39,14 @@ local function live_grep(query, fullscreen, opts)
             { opts.unrestricted and unrestricted_header or restricted_header },
             opts.debug
         ),
+        --- @type SwapableFile
         fuzzy_header = path.new_swapable_file(
             "live_grep_fuzzy_header",
             { fuzzy_header },
             { regex_header },
             opts.debug
         ),
+        --- @type SwapableFile
         provider = path.new_swapable_file("live_grep_provider", {
             opts.unrestricted and opts.provider.unrestricted
                 or opts.provider.restricted,
@@ -64,18 +56,29 @@ local function live_grep(query, fullscreen, opts)
         }, opts.debug),
     }
 
-    -- query command, both initial query + reload query
-    local query_command = string.format(
-        "nvim --headless -l %slive_grep_provider.lua {q} || true",
+    local command_fmt = string.format(
+        "nvim --headless -l %slive_grep_provider.lua",
         path.plugin_bin()
     )
+    local initial_command = string.format(
+        "%s %s %s || true",
+        command_fmt,
+        runtime.provider.current,
+        query
+    )
+    local reload_command = string.format(
+        "%s %s {q} || true",
+        command_fmt,
+        runtime.provider.current
+    )
     log.debug(
-        "|fzfx.live_grep - files| query_command:%s",
-        vim.inspect(query_command)
+        "|fzfx.live_grep - files| initial_command:%s, reload_command:%s",
+        vim.inspect(initial_command),
+        vim.inspect(reload_command)
     )
 
     local spec = {
-        source = query_command,
+        source = initial_command,
         options = {
             "--ansi",
             "--query",
@@ -100,18 +103,33 @@ local function live_grep(query, fullscreen, opts)
                 Runtime.next_provider,
                 unrestricted_switch_action,
                 Runtime.current_fuzzy_header,
-                query_command
+                reload_command
+            ),
+            "--bind",
+            -- fuzzy switch action: swap header, enable search, then change header + reload
+            string.format(
+                "%s:unbind(%s)+execute-silent(mv %s %s && mv %s %s && mv %s %s)+execute-silent(mv %s %s && mv %s %s && mv %s %s)+rebind(%s)+transform-header(cat %s)+reload(%s)",
+                unrestricted_switch_action,
+                unrestricted_switch_action,
+                Runtime.current_fuzzy_header,
+                Runtime.swap_fuzzy_header,
+                Runtime.next_fuzzy_header,
+                Runtime.current_fuzzy_header,
+                Runtime.swap_fuzzy_header,
+                Runtime.next_fuzzy_header,
+                Runtime.current_provider,
+                Runtime.swap_provider,
+                Runtime.next_provider,
+                Runtime.current_provider,
+                Runtime.swap_provider,
+                Runtime.next_provider,
+                unrestricted_switch_action,
+                Runtime.current_fuzzy_header,
+                reload_command
             ),
             "--header",
-            opts.unrestricted
-                    and string.format(
-                        ":: Press %s to restricted mode",
-                        legacy.magenta(string.upper(unrestricted_switch_action))
-                    )
-                or string.format(
-                    ":: Press %s to unrestricted mode",
-                    legacy.magenta(string.upper(unrestricted_switch_action))
-                ),
+            (opts.unrestricted and restricted_header or unrestricted_header)
+                .. fuzzy_header,
         },
     }
     spec = vim.fn["fzf#vim#with_preview"](spec)
