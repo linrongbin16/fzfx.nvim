@@ -49,8 +49,16 @@ local function files(query, fullscreen, opts)
     )
 
     -- query command, both initial query + reload query
-    local query_command =
-        string.format("nvim --headless -l %s || true", Runtime.current_provider)
+    local query_command = string.format(
+        "nvim %s --headless -l %s%sfiles_provider.lua || true",
+        opts.debug and "-V1" or "",
+        path.plugin_bin(),
+        path.separator()
+    )
+    log.debug(
+        "|fzfx.files - files| query_command:%s",
+        vim.inspect(query_command)
+    )
 
     local spec = {
         source = query_command,
