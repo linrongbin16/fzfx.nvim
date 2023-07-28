@@ -2,8 +2,6 @@ local infra = require("fzfx.infra")
 
 local Runtime = {
     separator = nil,
-    plugin_home = nil,
-    plugin_bin = nil,
 }
 
 --- @param path string
@@ -18,19 +16,12 @@ end
 
 --- @return string
 local function plugin_home()
-    if Runtime.plugin_home == nil then
-        Runtime.plugin_home = vim.fn["fzfx#nvim#plugin_home"]()
-    end
-    return Runtime.plugin_home
+    return vim.env._FZFX_BASE_DIR
 end
 
 --- @return string
 local function plugin_bin()
-    if Runtime.plugin_bin == nil then
-        Runtime.plugin_bin = infra.is_windows and plugin_home() .. "\\bin"
-            or plugin_home() .. "/bin"
-    end
-    return Runtime.plugin_bin
+    return vim.env._FZFX_BIN_DIR
 end
 
 local function separator()
