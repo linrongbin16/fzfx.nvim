@@ -18,9 +18,9 @@ E(x)tended commands missing in fzf.vim, focused on better usability and tiny imp
 
 ## Feature
 
-- Windows support: now you can enjoy modern fzf on Windows.
-- Multiple ways to use one single command: search by visual select, cword, unrestrictly.
-- Improvements for lua: preview user commands and key mappings defined with lua function.
+- Windows support: you can enjoy modern fzf on Windows now.
+- Multiple mode: search by visual select, cword and switch to unrestricted results (include hidden and git ignored files).
+- Lua support: preview lua defined commands and key mappings.
 - ...
 
 ## Requirement
