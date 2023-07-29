@@ -1,17 +1,12 @@
 local log = require("fzfx.log")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
-local legacy = require("fzfx.legacy")
 
 local Context = {
     --- @type string|nil
     unrestricted_mode_header = nil,
     --- @type string|nil
     restricted_mode_header = nil,
-    --- @type string|nil
-    fzf_mode_header = nil,
-    --- @type string|nil
-    rg_mode_header = nil,
     --- @type Config|nil
     live_grep_configs = nil,
 }
@@ -20,41 +15,20 @@ local Context = {
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function live_grep(query, fullscreen, opts)
-    local unrestricted_action =
+    local action =
         string.lower(Context.live_grep_configs.action.unrestricted_mode)
-    local fzf_action = string.lower(Context.live_grep_configs.action.fzf_mode)
-    local rg_action = string.lower(Context.live_grep_configs.action.rg_mode)
 
     local runtime = {
         --- @type FileSwitch
-        unrestricted_header = utils.new_file_switch(
-            "live_grep_unrestricted_header",
-            {
-                opts.unrestricted and Context.restricted_mode_header
-                    or Context.unrestricted_mode_header,
-            },
-            {
-                opts.unrestricted and Context.unrestricted_mode_header
-                    or Context.restricted_mode_header,
-            }
-        ),
-        --- @type FileSwitch
-        fzf_header = utils.new_file_switch(
-            "live_grep_fzf_header",
-            { Context.fzf_mode_header },
-            { Context.rg_mode_header }
-        ),
-        --- @type FileSwitch
-        rg_provider = utils.new_file_switch("live_grep_rg_provider", {
-            opts.unrestricted
-                    and Context.live_grep_configs.provider.unrestricted
-                or Context.live_grep_configs.provider.restricted,
+        header = utils.new_file_switch("live_grep_header", {
+            opts.unrestricted and Context.restricted_mode_header
+                or Context.unrestricted_mode_header,
         }, {
-            opts.unrestricted and Context.live_grep_configs.provider.restricted
-                or Context.live_grep_configs.provider.unrestricted,
+            opts.unrestricted and Context.unrestricted_mode_header
+                or Context.restricted_mode_header,
         }),
         --- @type FileSwitch
-        fzf_provider = utils.new_file_switch("live_grep_fzf_provider", {
+        provider = utils.new_file_switch("live_grep_provider", {
             opts.unrestricted
                     and Context.live_grep_configs.provider.unrestricted
                 or Context.live_grep_configs.provider.restricted,
@@ -68,24 +42,18 @@ local function live_grep(query, fullscreen, opts)
     local initial_command = string.format(
         "%s %s %s || true",
         utils.run_lua_script("live_grep_provider.lua"),
-        runtime.rg_provider.current,
+        runtime.provider.current,
         query
     )
     local reload_command = string.format(
         "%s %s {q} || true",
         utils.run_lua_script("live_grep_provider.lua"),
-        runtime.rg_provider.current
-    )
-    local fzf_command = string.format(
-        '%s %s "" || true',
-        utils.run_lua_script("live_grep_provider.lua"),
-        runtime.fzf_provider.current
+        runtime.provider.current
     )
     log.debug(
-        "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s, fzf_command:%s",
+        "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s",
         vim.inspect(initial_command),
-        vim.inspect(reload_command),
-        vim.inspect(fzf_command)
+        vim.inspect(reload_command)
     )
 
     local spec = {
@@ -95,51 +63,22 @@ local function live_grep(query, fullscreen, opts)
             "--query",
             query,
             "--header",
-            (
-                opts.unrestricted and Context.restricted_mode_header
-                or Context.unrestricted_mode_header
-            ) .. Context.fzf_mode_header,
+            opts.unrestricted and Context.restricted_mode_header
+                or Context.unrestricted_mode_header,
             "--prompt",
-            "*Rg> ",
-            "--bind",
-            string.format("start:unbind(%s)", rg_action),
+            "Live Grep> ",
             "--bind",
             string.format("change:reload:%s", reload_command),
             "--bind",
             -- unrestricted action: swap header, swap provider, then change header + reload
             string.format(
-                "%s:unbind(%s)+execute-silent(%s)+execute-silent(%s)+rebind(%s)+transform-header(cat %s && cat %s)+reload(%s)",
-                unrestricted_action,
-                unrestricted_action,
-                runtime.unrestricted_header:switch(),
-                runtime.rg_provider:switch(),
-                unrestricted_action,
-                runtime.unrestricted_header.current,
-                runtime.fzf_header.current,
-                reload_command
-            ),
-            "--bind",
-            -- fzf action: unbind change, swap header, disable search, then change header + reload
-            string.format(
-                "%s:unbind(change,%s)+execute-silent(%s)+change-prompt(Rg> )+enable-search+rebind(%s)+transform-header(cat %s && cat %s)+reload(%s)",
-                fzf_action,
-                fzf_action,
-                runtime.fzf_header:switch(),
-                rg_action,
-                runtime.unrestricted_header.current,
-                runtime.fzf_header.current,
-                fzf_command
-            ),
-            "--bind",
-            -- rg action: swap header, enable search, then change header + rebind change + reload
-            string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-prompt(*Rg> )+disable-search+rebind(change,%s)+transform-header(cat %s && cat %s)+reload(%s)",
-                rg_action,
-                rg_action,
-                runtime.fzf_header:switch(),
-                fzf_action,
-                runtime.unrestricted_header.current,
-                runtime.fzf_header.current,
+                "%s:unbind(%s)+execute-silent(%s)+execute-silent(%s)+rebind(%s)+transform-header(cat %s)+reload(%s)",
+                action,
+                action,
+                runtime.header:switch(),
+                runtime.provider:switch(),
+                action,
+                runtime.header.current,
                 reload_command
             ),
         },
@@ -157,24 +96,12 @@ local function setup(live_grep_configs)
         vim.inspect(live_grep_configs)
     )
 
-    local unrestricted_action = live_grep_configs.action.unrestricted_mode
-    local fzf_action = live_grep_configs.action.fzf_mode
-    local rg_action = live_grep_configs.action.rg_mode
+    local action = live_grep_configs.action.unrestricted_mode
 
     -- Context
     Context.live_grep_configs = vim.deepcopy(live_grep_configs)
-    Context.unrestricted_mode_header =
-        utils.unrestricted_mode_header(unrestricted_action)
-    Context.restricted_mode_header =
-        utils.restricted_mode_header(unrestricted_action)
-    Context.fzf_mode_header = string.format(
-        ", %s to fzf mode",
-        legacy.magenta(string.upper(fzf_action))
-    )
-    Context.rg_mode_header = string.format(
-        ", %s to rg mode",
-        legacy.magenta(string.upper(rg_action))
-    )
+    Context.unrestricted_mode_header = utils.unrestricted_mode_header(action)
+    Context.restricted_mode_header = utils.restricted_mode_header(action)
 
     local restricted_opts = { unrestricted = false }
     local unrestricted_opts = { unrestricted = true }

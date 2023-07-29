@@ -77,8 +77,6 @@ local Defaults = {
         },
         action = {
             unrestricted_mode = "ctrl-u",
-            fzf_mode = "ctrl-f",
-            rg_mode = "ctrl-r",
         },
     },
     env = {
