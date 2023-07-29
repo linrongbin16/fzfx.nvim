@@ -3,6 +3,11 @@ local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local legacy = require("fzfx.legacy")
 
+local Context = {
+    unrestricted_header = nil,
+    restricted_header = nil,
+}
+
 --- @param query string
 --- @param fullscreen boolean|integer
 --- @param opts Config

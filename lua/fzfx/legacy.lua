@@ -1,6 +1,11 @@
 local log = require("fzfx.log")
 local path = require("fzfx.path")
 
+local Context = {
+    --- @type string|nil
+    fzf_autoload_sid = nil,
+}
+
 --- @alias VimScriptId string
 --- @alias VimScriptPath string
 --- @alias VimScriptIdInfoKey "script_id"|"script_path"
@@ -124,33 +129,35 @@ local function get_func_ref(sid, func_name)
     return string.format("<SNR>%s_%s", tostring(sid), tostring(func_name))
 end
 
--- vim.fn["fzf#vim#_uniq"]()
-local fzf_autoload_sid = get_fzf_autoload_sid()
-log.debug("|fzfx.legacy| fzf_autoload_sid:%s", fzf_autoload_sid)
-
 --- @type table<string, any>
 local M = {}
 
-for color, hl in pairs({
-    black = "Comment",
-    red = "Exception",
-    green = "Constant",
-    yellow = "Number",
-    blue = "Operator",
-    magenta = "Special",
-    cyan = "String",
-}) do
-    M[color] = function(text)
-        local snr = get_func_ref(fzf_autoload_sid --[[@as string]], color)
-        log.debug(
-            "|fzfx.legacy| color:%s, snr:%s",
-            vim.inspect(color),
-            vim.inspect(snr)
-        )
-        return vim.fn.call(vim.fn[snr], { text, hl })
+local function setup()
+    Context.fzf_autoload_sid = get_fzf_autoload_sid()
+
+    for color, hl in pairs({
+        black = "Comment",
+        red = "Exception",
+        green = "Constant",
+        yellow = "Number",
+        blue = "Operator",
+        magenta = "Special",
+        cyan = "String",
+    }) do
+        M[color] = function(text)
+            local snr =
+                get_func_ref(Context.fzf_autoload_sid --[[@as string]], color)
+            log.debug(
+                "|fzfx.legacy| color:%s, snr:%s",
+                vim.inspect(color),
+                vim.inspect(snr)
+            )
+            return vim.fn.call(vim.fn[snr], { text, hl })
+        end
     end
+    log.debug("|fzfx.legacy| Context:%s", vim.inspect(Context))
 end
 
-log.debug("|fzfx.legacy| %s", vim.inspect(M))
+M.setup = setup
 
 return M

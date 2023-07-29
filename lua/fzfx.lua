@@ -94,6 +94,7 @@ local Configs = {}
 local function setup(options)
     Configs = vim.tbl_deep_extend("force", Defaults, options or {})
 
+    -- log
     log.setup({
         level = Configs.debug.enable and "DEBUG" or "INFO",
         console_log = Configs.debug.console_log,
@@ -105,6 +106,10 @@ local function setup(options)
     end
     vim.env._FZFX_DEBUG = Configs.debug.enable
 
+    -- legacy
+    require("fzfx.legacy").setup()
+
+    -- files
     require("fzfx.files").setup(
         vim.tbl_deep_extend(
             "force",
@@ -112,6 +117,8 @@ local function setup(options)
             { debug = Configs.debug.enable }
         )
     )
+
+    -- live_grep
     require("fzfx.live_grep").setup(
         vim.tbl_deep_extend(
             "force",
