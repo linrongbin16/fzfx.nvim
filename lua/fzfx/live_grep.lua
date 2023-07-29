@@ -157,7 +157,7 @@ local function setup(live_grep_configs)
     Context.unrestricted_mode_header =
         utils.unrestricted_mode_header(unrestricted_action)
     Context.restricted_mode_header =
-        utils.unrestricted_mode_header(unrestricted_action)
+        utils.restricted_mode_header(unrestricted_action)
     Context.fzf_mode_header = string.format(
         ", %s to fzf mode",
         legacy.magenta(string.upper(fzf_action))

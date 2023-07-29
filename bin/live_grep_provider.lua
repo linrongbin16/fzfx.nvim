@@ -16,7 +16,7 @@ if content == nil then
     content = ""
 end
 
-local cmd = string.format("%s -- %s", provider_cmd, content)
+local cmd = string.format('%s -- "%s"', provider_cmd, content)
 if _FZFX_DEBUG_ENABLE then
     print(string.format("DEBUG cmd:[%s]\n", cmd))
 end
