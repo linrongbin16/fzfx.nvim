@@ -4,8 +4,11 @@ local path = require("fzfx.path")
 local legacy = require("fzfx.legacy")
 
 local Context = {
+    --- @type string|nil
     restricted_mode_header = nil,
+    --- @type string|nil
     unrestricted_mode_header = nil,
+    --- @type Config|nil
     files_configs = nil,
 }
 
@@ -87,14 +90,10 @@ local function setup(files_configs)
 
     -- Context
     Context.files_configs = vim.deepcopy(files_configs)
-    Context.restricted_mode_header = string.format(
-        ":: Press %s to restricted mode",
-        legacy.magenta(string.upper(files_configs.action.unrestricted_switch))
-    )
-    Context.unrestricted_mode_header = string.format(
-        ":: Press %s to unrestricted mode",
-        legacy.magenta(string.upper(files_configs.action.unrestricted_switch))
-    )
+    Context.restricted_mode_header =
+        utils.unrestricted_mode_header(files_configs.action.unrestricted_switch)
+    Context.unrestricted_mode_header =
+        utils.restricted_mode_header(files_configs.unrestricted_switch)
 
     local restricted_opts = { unrestricted = false }
     local unrestricted_opts = { unrestricted = true }

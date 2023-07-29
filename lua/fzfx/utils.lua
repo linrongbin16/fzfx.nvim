@@ -1,6 +1,7 @@
 local log = require("fzfx.log")
 local path = require("fzfx.path")
 local env = require("fzfx.env")
+local legacy = require("fzfx.legacy")
 
 --- @param configs Config
 local function define_command(configs, fun, command_opts)
@@ -173,11 +174,31 @@ local function run_lua_script(script)
     )
 end
 
+--- @param action string
+--- @return string
+local function unrestricted_mode_header(action)
+    return string.format(
+        ":: Press %s to unrestricted mode",
+        legacy.magenta(string.upper(action))
+    )
+end
+
+--- @param action string
+--- @return string
+local function restricted_mode_header(action)
+    return string.format(
+        ":: Press %s to restricted mode",
+        legacy.magenta(string.upper(action))
+    )
+end
+
 local M = {
     define_command = define_command,
     visual_select = visual_select,
     new_file_switch = new_file_switch,
     run_lua_script = run_lua_script,
+    unrestricted_mode_header = unrestricted_mode_header,
+    restricted_mode_header = restricted_mode_header,
 }
 
 return M

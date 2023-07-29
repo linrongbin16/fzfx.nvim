@@ -77,6 +77,8 @@ local Defaults = {
         },
         action = {
             unrestricted_switch = "ctrl-u",
+            fzf_switch = "ctrl-f",
+            rg_switch = "ctrl-r",
         },
     },
     env = {
