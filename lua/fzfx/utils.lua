@@ -154,8 +154,8 @@ local function new_file_switch(name, current_text, next_text)
     end
     --- @type FileSwitch
     local sf = vim.tbl_deep_extend("force", vim.deepcopy(FileSwitch), init)
-    vim.fn.writefile(current_text, sf.current)
-    vim.fn.writefile(next_text, sf.next)
+    vim.fn.writefile(current_text, sf.current, "b")
+    vim.fn.writefile(next_text, sf.next, "b")
     return sf
 end
 
