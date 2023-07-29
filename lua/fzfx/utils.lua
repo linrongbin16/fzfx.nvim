@@ -1,4 +1,6 @@
 local log = require("fzfx.log")
+local path = require("fzfx.path")
+local env = require("fzfx.env")
 
 --- @param configs Config
 local function define_command(configs, fun, command_opts)
@@ -87,9 +89,96 @@ local function visual_select()
     return ""
 end
 
+--- @class FileSwitch
+--- @field current string|nil
+--- @field next string|nil
+--- @field swap string|nil
+
+--- @type FileSwitch
+local FileSwitch = {
+    current = nil,
+    next = nil,
+    swap = nil,
+}
+
+--- @return string
+function FileSwitch:switch()
+    return string.format(
+        "mv %s %s && mv %s %s && mv %s %s",
+        self.current,
+        self.swap,
+        self.next,
+        self.current,
+        self.swap,
+        self.next
+    )
+end
+
+--- @param name string
+--- @param current_text string[]
+--- @param next_text string[]
+--- @param debug boolean
+--- @return FileSwitch
+local function new_file_switch(name, current_text, next_text, debug)
+    local init = nil
+    if debug then
+        init = {
+            current = string.format(
+                "%s%sfzfx.nvim%s%s_current_swapable",
+                vim.fn.stdpath("data"),
+                path.separator(),
+                path.separator(),
+                name
+            ),
+            next = string.format(
+                "%s%sfzfx.nvim%s%s_next_swapable",
+                vim.fn.stdpath("data"),
+                path.separator(),
+                path.separator(),
+                name
+            ),
+            swap = string.format(
+                "%s%sfzfx.nvim%s%s_swap_swapable",
+                vim.fn.stdpath("data"),
+                path.separator(),
+                path.separator(),
+                name
+            ),
+        }
+    else
+        init({
+            current = path.tempname(),
+            next = path.tempname(),
+            swap = path.tempname(),
+        })
+    end
+    --- @type FileSwitch
+    local sf = vim.tbl_deep_extend("force", vim.deepcopy(FileSwitch), init)
+    vim.fn.writefile(current_text, sf.current)
+    vim.fn.writefile(next_text, sf.next)
+    return sf
+end
+
+--- @param script string
+--- @return string
+local function run_lua_script(script)
+    local nvim_path = env.nvim_path()
+    if type(nvim_path) ~= "string" then
+        nvim_path = "nvim"
+    end
+    return string.format(
+        "%s -n --clean --headless -l %s%s",
+        nvim_path,
+        path.plugin_bin(),
+        script
+    )
+end
+
 local M = {
     define_command = define_command,
     visual_select = visual_select,
+    new_file_switch = new_file_switch,
+    run_lua_script = run_lua_script,
 }
 
 return M

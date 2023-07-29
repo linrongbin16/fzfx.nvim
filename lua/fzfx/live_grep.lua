@@ -25,7 +25,7 @@ local function live_grep(query, fullscreen, opts)
     )
 
     local runtime = {
-        --- @type SwapableFile
+        --- @type HeaderSwitch
         header = path.new_swapable_file(
             "live_grep_unrestricted_header",
             {
@@ -34,7 +34,7 @@ local function live_grep(query, fullscreen, opts)
             { opts.unrestricted and unrestricted_header or restricted_header },
             opts.debug
         ),
-        --- @type SwapableFile
+        --- @type HeaderSwitch
         provider = path.new_swapable_file("live_grep_provider", {
             opts.unrestricted and opts.provider.unrestricted
                 or opts.provider.restricted,

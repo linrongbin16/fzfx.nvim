@@ -79,6 +79,9 @@ local Defaults = {
             unrestricted_switch = "ctrl-u",
         },
     },
+    env = {
+        nvim = "nvim",
+    },
     debug = {
         enable = false,
         console_log = true,
@@ -104,28 +107,19 @@ local function setup(options)
     if Configs.debug.enable then
         vim.fn.mkdir(string.format("%s/fzfx.nvim", vim.fn.stdpath("data")), "p")
     end
-    vim.env._FZFX_DEBUG = Configs.debug.enable
+
+    -- env
+    vim.env._FZFX_DEBUG_ENABLE = Configs.debug.enable
+    vim.env._FZFX_NVIM_PATH = Configs.env.nvim
 
     -- legacy
     require("fzfx.legacy").setup()
 
     -- files
-    require("fzfx.files").setup(
-        vim.tbl_deep_extend(
-            "force",
-            vim.deepcopy(Configs.files),
-            { debug = Configs.debug.enable }
-        )
-    )
+    require("fzfx.files").setup(Configs.files)
 
     -- live_grep
-    require("fzfx.live_grep").setup(
-        vim.tbl_deep_extend(
-            "force",
-            vim.deepcopy(Configs.live_grep),
-            { debug = Configs.debug.enable }
-        )
-    )
+    require("fzfx.live_grep").setup(Configs.live_grep)
 end
 
 local M = {

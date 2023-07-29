@@ -2,48 +2,45 @@ local log = require("fzfx.log")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local legacy = require("fzfx.legacy")
+local env = require("fzfx.env")
+
+local Context = {
+    restricted_header = nil,
+    unrestricted_header = nil,
+    files_configs = nil,
+}
 
 --- @param query string
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function files(query, fullscreen, opts)
     -- action
-    local switch_action = string.lower(opts.action.unrestricted_switch)
+    local action = string.lower(Context.files_configs.action.unrestricted_switch)
 
-    -- header
-    local restricted_header = string.format(
-        ":: Press %s to restricted search",
-        legacy.magenta(string.upper(switch_action))
-    )
-    local unrestricted_header = string.format(
-        ":: Press %s to unrestricted search",
-        legacy.magenta(string.upper(switch_action))
-    )
-
-    --- @type table<string, SwapableFile>
+    --- @type table<string, FileSwitch>
     local runtime = {
-        --- @type SwapableFile
-        header = path.new_swapable_file(
+        --- @type FileSwitch
+        header = utils.new_file_switch(
             "files_header",
-            { opts.unrestricted and restricted_header or unrestricted_header },
-            { opts.unrestricted and unrestricted_header or restricted_header },
-            opts.debug
+            { opts.unrestricted and Context.restricted_header or Context.unrestricted_header },
+            { opts.unrestricted and Context.unrestricted_header or Context.restricted_header },
+            env.debug_enable()
         ),
-        --- @type SwapableFile
-        provider = path.new_swapable_file("files_provider", {
-            opts.unrestricted and opts.provider.unrestricted
-                or opts.provider.restricted,
+        --- @type FileSwitch
+        provider = utils.new_file_switch("files_provider", {
+            opts.unrestricted and Context.files_configs.provider.unrestricted
+                or Context.files_configs.provider.restricted,
         }, {
-            opts.unrestricted and opts.provider.restricted
-                or opts.provider.unrestricted,
-        }, opts.debug),
+            opts.unrestricted and Context.files_configs.provider.restricted
+                or Context.files_configs.provider.unrestricted,
+        }, env.debug_enable(),
     }
     log.debug("|fzfx.files - files| runtime:%s", vim.inspect(runtime))
 
     -- query command, both initial query + reload query
     local query_command = string.format(
-        "nvim --headless -l %sfiles_provider.lua %s || true",
-        path.plugin_bin(),
+        "%s %s || true",
+        utils.run_lua_script("files_provider.lua")
         runtime.provider.current
     )
     log.debug(
@@ -58,16 +55,16 @@ local function files(query, fullscreen, opts)
             "--query",
             query,
             "--header",
-            opts.unrestricted and restricted_header or unrestricted_header,
+            opts.unrestricted and Context.restricted_header or Context.unrestricted_header,
             "--bind",
             -- unrestricted switch action: swap header, swap provider, then change header + reload
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+execute-silent(%s)+rebind(%s)+transform-header(cat %s)+reload(%s)",
-                switch_action,
-                switch_action,
-                runtime.header:swap_by_shell(),
-                runtime.provider:swap_by_shell(),
-                switch_action,
+                action,
+                action,
+                runtime.header:switch(),
+                runtime.provider:switch(),
+                action,
                 runtime.header.current,
                 query_command
             ),
@@ -85,31 +82,26 @@ local function setup(files_configs)
         vim.inspect(path.plugin_bin()),
         vim.inspect(files_configs)
     )
-    local restricted_opts = vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(files_configs),
-        { unrestricted = false }
+
+    -- Context
+    Context.files_configs = vim.deepcopy(files_configs)
+    Context.restricted_header = string.format(
+        ":: Press %s to restricted mode",
+        legacy.magenta(string.upper(files_configs.action.unrestricted_switch))
     )
-    local unrestricted_opts = vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(files_configs),
-        { unrestricted = true }
+    Context.unrestricted_header = string.format(
+        ":: Press %s to unrestricted mode",
+        legacy.magenta(string.upper(files_configs.action.unrestricted_switch))
     )
 
-    -- user commands opts
-    local normal_command_opts = {
+    local restricted_opts  = {unrestricted = false}
+    local unrestricted_opts  = {unrestricted = true}
+
+    local normal_opts = {
         bang = true,
         nargs = "?",
         complete = "dir",
     }
-    local visual_command_opts = {
-        bang = true,
-        range = true,
-    }
-    local cword_command_opts = {
-        bang = true,
-    }
-
     -- FzfxFiles
     utils.define_command(files_configs.command.normal, function(opts)
         log.debug(
@@ -117,7 +109,7 @@ local function setup(files_configs)
             vim.inspect(opts)
         )
         return files(opts.args, opts.bang, restricted_opts)
-    end, normal_command_opts)
+    end, normal_opts)
     -- FzfxFilesU
     utils.define_command(files_configs.command.unrestricted, function(opts)
         log.debug(
@@ -125,7 +117,12 @@ local function setup(files_configs)
             vim.inspect(opts)
         )
         return files(opts.args, opts.bang, unrestricted_opts)
-    end, normal_command_opts)
+    end, normal_opts)
+
+    local visual_opts = {
+        bang = true,
+        range = true,
+    }
     -- FzfxFilesV
     utils.define_command(files_configs.command.visual, function(opts)
         local visual_select = utils.visual_select()
@@ -135,7 +132,7 @@ local function setup(files_configs)
             vim.inspect(opts)
         )
         return files(visual_select, opts.bang, restricted_opts)
-    end, visual_command_opts)
+    end, visual_opts)
     -- FzfxFilesUV
     utils.define_command(
         files_configs.command.unrestricted_visual,
@@ -148,8 +145,12 @@ local function setup(files_configs)
             )
             return files(visual_select, opts.bang, unrestricted_opts)
         end,
-        visual_command_opts
+        visual_opts
     )
+
+    local cword_opts = {
+        bang = true,
+    }
     -- FzfxFilesW
     utils.define_command(files_configs.command.cword, function(opts)
         local word = vim.fn.expand("<cword>")
@@ -159,7 +160,7 @@ local function setup(files_configs)
             vim.inspect(opts)
         )
         return files(word, opts.bang, restricted_opts)
-    end, cword_command_opts)
+    end, cword_opts)
     -- FzfxFilesUW
     utils.define_command(
         files_configs.command.unrestricted_cword,
@@ -172,7 +173,7 @@ local function setup(files_configs)
             )
             return files(word, opts.bang, unrestricted_opts)
         end,
-        cword_command_opts
+        cword_opts
     )
 end
 
