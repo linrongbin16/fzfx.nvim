@@ -41,7 +41,7 @@ local Defaults = {
             unrestricted = default_fd_command .. " -u",
         },
         action = {
-            unrestricted_switch = "ctrl-u",
+            unrestricted_mode = "ctrl-u",
         },
     },
     live_grep = {
@@ -76,9 +76,9 @@ local Defaults = {
             unrestricted = default_rg_command .. " -uu",
         },
         action = {
-            unrestricted_switch = "ctrl-u",
-            fzf_switch = "ctrl-f",
-            rg_switch = "ctrl-r",
+            unrestricted_mode = "ctrl-u",
+            fzf_mode = "ctrl-f",
+            rg_mode = "ctrl-r",
         },
     },
     env = {

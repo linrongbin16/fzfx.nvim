@@ -21,9 +21,9 @@ local Context = {
 --- @param opts Config
 local function live_grep(query, fullscreen, opts)
     local unrestricted_action =
-        string.lower(Context.live_grep_configs.action.unrestricted_switch)
-    local fzf_action = string.lower(Context.live_grep_configs.action.fzf_switch)
-    local rg_action = string.lower(Context.live_grep_configs.action.rg_switch)
+        string.lower(Context.live_grep_configs.action.unrestricted_mode)
+    local fzf_action = string.lower(Context.live_grep_configs.action.fzf_mode)
+    local rg_action = string.lower(Context.live_grep_configs.action.rg_mode)
 
     local runtime = {
         --- @type FileSwitch
@@ -148,21 +148,23 @@ local function setup(live_grep_configs)
         vim.inspect(live_grep_configs)
     )
 
+    local unrestricted_action = live_grep_configs.action.unrestricted_mode
+    local fzf_action = live_grep_configs.action.fzf_mode
+    local rg_action = live_grep_configs.action.rg_mode
+
     -- Context
     Context.live_grep_configs = vim.deepcopy(live_grep_configs)
-    Context.unrestricted_mode_header = utils.unrestricted_mode_header(
-        live_grep_configs.action.unrestricted_switch
-    )
-    Context.restricted_mode_header = utils.unrestricted_mode_header(
-        live_grep_configs.action.unrestricted_switch
-    )
+    Context.unrestricted_mode_header =
+        utils.unrestricted_mode_header(unrestricted_action)
+    Context.restricted_mode_header =
+        utils.unrestricted_mode_header(unrestricted_action)
     Context.fzf_mode_header = string.format(
         ", %s to fzf mode",
-        legacy.magenta(string.upper(live_grep_configs.action.fzf_switch))
+        legacy.magenta(string.upper(fzf_action))
     )
     Context.rg_mode_header = string.format(
         ", %s to rg mode",
-        legacy.magenta(string.upper(live_grep_configs.action.rg_switch))
+        legacy.magenta(string.upper(rg_action))
     )
 
     local restricted_opts = { unrestricted = false }

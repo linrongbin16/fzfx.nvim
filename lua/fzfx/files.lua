@@ -17,8 +17,7 @@ local Context = {
 --- @param opts Config
 local function files(query, fullscreen, opts)
     -- action
-    local action =
-        string.lower(Context.files_configs.action.unrestricted_switch)
+    local action = string.lower(Context.files_configs.action.unrestricted_mode)
 
     --- @type table<string, FileSwitch>
     local runtime = {
@@ -88,12 +87,12 @@ local function setup(files_configs)
         vim.inspect(files_configs)
     )
 
+    local action = files_configs.action.unrestricted_mode
+
     -- Context
     Context.files_configs = vim.deepcopy(files_configs)
-    Context.restricted_mode_header =
-        utils.unrestricted_mode_header(files_configs.action.unrestricted_switch)
-    Context.unrestricted_mode_header =
-        utils.restricted_mode_header(files_configs.unrestricted_switch)
+    Context.restricted_mode_header = utils.unrestricted_mode_header(action)
+    Context.unrestricted_mode_header = utils.restricted_mode_header(action)
 
     local restricted_opts = { unrestricted = false }
     local unrestricted_opts = { unrestricted = true }
