@@ -167,7 +167,7 @@ local function run_lua_script(script)
         nvim_path = "nvim"
     end
     return string.format(
-        "%s -n --clean --headless -l %s%s",
+        "%s -n --clean --headless -V1 -l %s%s",
         nvim_path,
         path.plugin_bin(),
         script
