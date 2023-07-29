@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
-local legacy = require("fzfx.legacy")
 
 local Context = {
     --- @type string|nil
