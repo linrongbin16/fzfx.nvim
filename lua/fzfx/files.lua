@@ -2,7 +2,6 @@ local log = require("fzfx.log")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local legacy = require("fzfx.legacy")
-local env = require("fzfx.env")
 
 local Context = {
     restricted_mode_header = nil,

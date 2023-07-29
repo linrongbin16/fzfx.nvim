@@ -1,5 +1,5 @@
 local function debug_enable()
-    return vim.env._FZFX_DEBUG_ENABLE ~= nil and vim.env._FZFX_DEBUG_ENABLE
+    return vim.env._FZFX_DEBUG_ENABLE
 end
 
 local function nvim_path()
