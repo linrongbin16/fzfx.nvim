@@ -1,3 +1,5 @@
+local infra = require("fzfx.infra")
+
 local Context = {
     plugin_home = nil,
     plugin_bin = nil,
@@ -44,6 +46,15 @@ local function tempname()
     return vim.fn.tempname()
 end
 
+--- @return string
+local function windows_named_pipe()
+    assert(
+        infra.is_windows,
+        string.format("error! must be windows to get the windows named pipe")
+    )
+    return string.format("\\\\%.\\pipe\\nvim-%s", os.clock())
+end
+
 local M = {
     -- path
     normalize = normalize,
@@ -55,6 +66,9 @@ local M = {
 
     -- temp file
     tempname = tempname,
+
+    -- windows named pipe
+    windows_named_pipe = windows_named_pipe,
 }
 
 return M
