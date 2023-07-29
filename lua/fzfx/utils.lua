@@ -117,11 +117,10 @@ end
 --- @param name string
 --- @param current_text string[]
 --- @param next_text string[]
---- @param debug boolean
 --- @return FileSwitch
-local function new_file_switch(name, current_text, next_text, debug)
+local function new_file_switch(name, current_text, next_text)
     local init = nil
-    if debug then
+    if env.debug_enable() then
         init = {
             current = string.format(
                 "%s%sfzfx.nvim%s%s_current_swapable",

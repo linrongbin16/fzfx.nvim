@@ -5,8 +5,8 @@ local legacy = require("fzfx.legacy")
 local env = require("fzfx.env")
 
 local Context = {
-    restricted_header = nil,
-    unrestricted_header = nil,
+    restricted_mode_header = nil,
+    unrestricted_mode_header = nil,
     files_configs = nil,
 }
 
@@ -15,17 +15,19 @@ local Context = {
 --- @param opts Config
 local function files(query, fullscreen, opts)
     -- action
-    local action = string.lower(Context.files_configs.action.unrestricted_switch)
+    local action =
+        string.lower(Context.files_configs.action.unrestricted_switch)
 
     --- @type table<string, FileSwitch>
     local runtime = {
         --- @type FileSwitch
-        header = utils.new_file_switch(
-            "files_header",
-            { opts.unrestricted and Context.restricted_header or Context.unrestricted_header },
-            { opts.unrestricted and Context.unrestricted_header or Context.restricted_header },
-            env.debug_enable()
-        ),
+        header = utils.new_file_switch("files_header", {
+            opts.unrestricted and Context.restricted_mode_header
+                or Context.unrestricted_mode_header,
+        }, {
+            opts.unrestricted and Context.unrestricted_mode_header
+                or Context.restricted_mode_header,
+        }),
         --- @type FileSwitch
         provider = utils.new_file_switch("files_provider", {
             opts.unrestricted and Context.files_configs.provider.unrestricted
@@ -33,14 +35,14 @@ local function files(query, fullscreen, opts)
         }, {
             opts.unrestricted and Context.files_configs.provider.restricted
                 or Context.files_configs.provider.unrestricted,
-        }, env.debug_enable(),
+        }),
     }
     log.debug("|fzfx.files - files| runtime:%s", vim.inspect(runtime))
 
     -- query command, both initial query + reload query
     local query_command = string.format(
         "%s %s || true",
-        utils.run_lua_script("files_provider.lua")
+        utils.run_lua_script("files_provider.lua"),
         runtime.provider.current
     )
     log.debug(
@@ -55,7 +57,8 @@ local function files(query, fullscreen, opts)
             "--query",
             query,
             "--header",
-            opts.unrestricted and Context.restricted_header or Context.unrestricted_header,
+            opts.unrestricted and Context.restricted_mode_header
+                or Context.unrestricted_mode_header,
             "--bind",
             -- unrestricted switch action: swap header, swap provider, then change header + reload
             string.format(
@@ -85,17 +88,17 @@ local function setup(files_configs)
 
     -- Context
     Context.files_configs = vim.deepcopy(files_configs)
-    Context.restricted_header = string.format(
+    Context.restricted_mode_header = string.format(
         ":: Press %s to restricted mode",
         legacy.magenta(string.upper(files_configs.action.unrestricted_switch))
     )
-    Context.unrestricted_header = string.format(
+    Context.unrestricted_mode_header = string.format(
         ":: Press %s to unrestricted mode",
         legacy.magenta(string.upper(files_configs.action.unrestricted_switch))
     )
 
-    local restricted_opts  = {unrestricted = false}
-    local unrestricted_opts  = {unrestricted = true}
+    local restricted_opts = { unrestricted = false }
+    local unrestricted_opts = { unrestricted = true }
 
     local normal_opts = {
         bang = true,
