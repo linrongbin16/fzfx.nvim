@@ -99,7 +99,7 @@ local function live_grep(query, fullscreen, opts)
             "--bind",
             -- unrestricted action: swap header, swap provider, then change header + reload
             string.format(
-                "%s:unbind(%s)+execute-silent(%s)+execute-silent(%s)+rebind(%s)+transform-header(echo -n $(cat %s) && cat %s)+reload(%s)",
+                "%s:unbind(%s)+execute-silent(%s)+execute-silent(%s)+rebind(%s)+transform-header(cat %s && cat %s)+reload(%s)",
                 unrestricted_action,
                 unrestricted_action,
                 runtime.unrestricted_header:switch(),
@@ -112,7 +112,7 @@ local function live_grep(query, fullscreen, opts)
             "--bind",
             -- fzf action: unbind change, swap header, disable search, then change header + reload
             string.format(
-                "%s:unbind(change,%s)+execute-silent(%s)+change-prompt(Rg> )+enable-search+rebind(%s)+transform-header(echo -n $(cat %s) && cat %s)+reload(%s)",
+                "%s:unbind(change,%s)+execute-silent(%s)+change-prompt(Rg> )+enable-search+rebind(%s)+transform-header(cat %s && cat %s)+reload(%s)",
                 fzf_action,
                 fzf_action,
                 runtime.fzf_header:switch(),
@@ -124,7 +124,7 @@ local function live_grep(query, fullscreen, opts)
             "--bind",
             -- rg action: swap header, enable search, then change header + rebind change + reload
             string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-prompt(*Rg> )+disable-search+rebind(change,%s)+transform-header(echo -n $(cat %s) && cat %s)+reload(%s)",
+                "%s:unbind(%s)+execute-silent(%s)+change-prompt(*Rg> )+disable-search+rebind(change,%s)+transform-header(cat %s && cat %s)+reload(%s)",
                 rg_action,
                 rg_action,
                 runtime.fzf_header:switch(),
