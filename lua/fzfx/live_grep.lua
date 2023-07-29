@@ -45,7 +45,16 @@ local function live_grep(query, fullscreen, opts)
             { Context.rg_mode_header }
         ),
         --- @type FileSwitch
-        provider = utils.new_file_switch("live_grep_provider", {
+        rg_provider = utils.new_file_switch("live_grep_rg_provider", {
+            opts.unrestricted
+                    and Context.live_grep_configs.provider.unrestricted
+                or Context.live_grep_configs.provider.restricted,
+        }, {
+            opts.unrestricted and Context.live_grep_configs.provider.restricted
+                or Context.live_grep_configs.provider.unrestricted,
+        }),
+        --- @type FileSwitch
+        fzf_provider = utils.new_file_switch("live_grep_fzf_provider", {
             opts.unrestricted
                     and Context.live_grep_configs.provider.unrestricted
                 or Context.live_grep_configs.provider.restricted,
@@ -59,24 +68,24 @@ local function live_grep(query, fullscreen, opts)
     local initial_command = string.format(
         "%s %s %s || true",
         utils.run_lua_script("live_grep_provider.lua"),
-        runtime.provider.current,
+        runtime.rg_provider.current,
         query
     )
     local reload_command = string.format(
         "%s %s {q} || true",
         utils.run_lua_script("live_grep_provider.lua"),
-        runtime.provider.current
+        runtime.rg_provider.current
     )
-    local query_all_command = string.format(
+    local fzf_command = string.format(
         '%s %s "" || true',
         utils.run_lua_script("live_grep_provider.lua"),
-        runtime.provider.current
+        runtime.fzf_provider.current
     )
     log.debug(
-        "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s, query_all_command:%s",
+        "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s, fzf_command:%s",
         vim.inspect(initial_command),
         vim.inspect(reload_command),
-        vim.inspect(query_all_command)
+        vim.inspect(fzf_command)
     )
 
     local spec = {
@@ -103,7 +112,7 @@ local function live_grep(query, fullscreen, opts)
                 unrestricted_action,
                 unrestricted_action,
                 runtime.unrestricted_header:switch(),
-                runtime.provider:switch(),
+                runtime.rg_provider:switch(),
                 unrestricted_action,
                 runtime.unrestricted_header.current,
                 runtime.fzf_header.current,
@@ -119,7 +128,7 @@ local function live_grep(query, fullscreen, opts)
                 rg_action,
                 runtime.unrestricted_header.current,
                 runtime.fzf_header.current,
-                query_all_command
+                fzf_command
             ),
             "--bind",
             -- rg action: swap header, enable search, then change header + rebind change + reload
