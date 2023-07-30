@@ -124,7 +124,7 @@ local function new_file_switch(name, current_value, next_value)
     local init = nil
     if env.debug_enable() then
         init = {
-            current = string.format(
+            value = string.format(
                 "%s%sfzfx.nvim%s%s_current_swapable",
                 vim.fn.stdpath("data"),
                 path.separator(),
@@ -148,22 +148,22 @@ local function new_file_switch(name, current_value, next_value)
         }
     else
         init({
-            current = path.tempname(),
+            value = path.tempname(),
             next = path.tempname(),
             swap = path.tempname(),
         })
     end
     --- @type FileSwitch
-    local sf = vim.tbl_deep_extend("force", vim.deepcopy(FileSwitch), init)
-    vim.fn.writefile(current_value, sf.value, "b")
-    vim.fn.writefile(next_value, sf.next, "b")
-    return sf
+    local switch = vim.tbl_deep_extend("force", vim.deepcopy(FileSwitch), init)
+    vim.fn.writefile(current_value, switch.value, "b")
+    vim.fn.writefile(next_value, switch.next, "b")
+    return switch
 end
 
 --- @param script string
 --- @return string
 local function run_lua_script(script)
-    local nvim_path = env.nvim_path()
+    local nvim_path = env.nvim_exec()
     if type(nvim_path) ~= "string" then
         nvim_path = "nvim"
     end
