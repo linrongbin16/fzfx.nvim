@@ -19,10 +19,10 @@ else
     let s:fzfx_bin = s:fzfx_base.'/bin/'
 endif
 
-function! fzfx#nvim#plugin_home()
+function! fzfx#nvim#plugin_home() abort
     return s:fzfx_base
 endfunction
 
-function! fzfx#nvim#plugin_bin()
+function! fzfx#nvim#plugin_bin() abort
     return s:fzfx_bin
 endfunction
