@@ -4,9 +4,9 @@ local path = require("fzfx.path")
 
 local Context = {
     --- @type string|nil
-    unrestricted_mode_header = nil,
+    umode_header = nil,
     --- @type string|nil
-    restricted_mode_header = nil,
+    rmode_header = nil,
     --- @type Config|nil
     live_grep_configs = nil,
 }
@@ -15,18 +15,12 @@ local Context = {
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function live_grep(query, fullscreen, opts)
-    local action =
+    local umode_action =
         string.lower(Context.live_grep_configs.action.unrestricted_mode)
+    local rmode_action =
+        string.lower(Context.live_grep_configs.action.restricted_mode)
 
     local runtime = {
-        --- @type FileSwitch
-        header = utils.new_file_switch("live_grep_header", {
-            opts.unrestricted and Context.restricted_mode_header
-                or Context.unrestricted_mode_header,
-        }, {
-            opts.unrestricted and Context.unrestricted_mode_header
-                or Context.restricted_mode_header,
-        }),
         --- @type FileSwitch
         provider = utils.new_file_switch("live_grep_provider", {
             opts.unrestricted
@@ -63,22 +57,36 @@ local function live_grep(query, fullscreen, opts)
             "--query",
             query,
             "--header",
-            opts.unrestricted and Context.restricted_mode_header
-                or Context.unrestricted_mode_header,
+            opts.unrestricted and Context.rmode_header or Context.umode_header,
+            "--bind",
+            string.format(
+                "start:unbind(%s)",
+                opts.unrestricted and umode_action or rmode_action
+            ),
             "--prompt",
             "Live Grep> ",
             "--bind",
             string.format("change:reload:%s", reload_command),
             "--bind",
-            -- unrestricted action: swap header, swap provider, then change header + reload
+            -- umode action: swap provider, change rmode header, rebind rmode action, reload query
             string.format(
-                "%s:unbind(%s)+execute-silent(%s)+execute-silent(%s)+rebind(%s)+transform-header(cat %s)+reload(%s)",
-                action,
-                action,
-                runtime.header:switch(),
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                umode_action,
+                umode_action,
                 runtime.provider:switch(),
-                action,
-                runtime.header.value,
+                Context.rmode_header,
+                rmode_action,
+                reload_command
+            ),
+            "--bind",
+            -- rmode action: swap provider, change umode header, rebind umode action, reload query
+            string.format(
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                rmode_action,
+                rmode_action,
+                runtime.provider:switch(),
+                Context.umode_header,
+                umode_action,
                 reload_command
             ),
         },
@@ -96,12 +104,13 @@ local function setup(live_grep_configs)
         vim.inspect(live_grep_configs)
     )
 
-    local action = live_grep_configs.action.unrestricted_mode
+    local umode_action = live_grep_configs.action.unrestricted_mode
+    local rmode_action = live_grep_configs.action.restricted_mode
 
     -- Context
     Context.live_grep_configs = vim.deepcopy(live_grep_configs)
-    Context.unrestricted_mode_header = utils.unrestricted_mode_header(action)
-    Context.restricted_mode_header = utils.restricted_mode_header(action)
+    Context.umode_header = utils.unrestricted_mode_header(umode_action)
+    Context.rmode_header = utils.restricted_mode_header(rmode_action)
 
     local restricted_opts = { unrestricted = false }
     local unrestricted_opts = { unrestricted = true }
