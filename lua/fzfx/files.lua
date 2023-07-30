@@ -4,29 +4,27 @@ local path = require("fzfx.path")
 
 local Context = {
     --- @type string|nil
-    restricted_mode_header = nil,
+    rmode_header = nil,
     --- @type string|nil
-    unrestricted_mode_header = nil,
+    umode_header = nil,
     --- @type Config|nil
     files_configs = nil,
 }
 
 --- @param query string
---- @param fullscreen boolean|integer
 --- @param opts Config
-local function files(query, fullscreen, opts)
+local function files(query, opts)
     -- action
-    local action = string.lower(Context.files_configs.action.unrestricted_mode)
+    local uaction = string.lower(Context.files_configs.action.unrestricted_mode)
+    local raction = string.lower(Context.files_configs.action.restricted_mode)
 
     --- @type table<string, FileSwitch>
     local runtime = {
         --- @type FileSwitch
         header = utils.new_file_switch("files_header", {
-            opts.unrestricted and Context.restricted_mode_header
-                or Context.unrestricted_mode_header,
+            opts.unrestricted and Context.rmode_header or Context.umode_header,
         }, {
-            opts.unrestricted and Context.unrestricted_mode_header
-                or Context.restricted_mode_header,
+            opts.unrestricted and Context.umode_header or Context.rmode_header,
         }),
         --- @type FileSwitch
         provider = utils.new_file_switch("files_provider", {
@@ -57,17 +55,16 @@ local function files(query, fullscreen, opts)
             "--query",
             query,
             "--header",
-            opts.unrestricted and Context.restricted_mode_header
-                or Context.unrestricted_mode_header,
+            opts.unrestricted and Context.rmode_header or Context.umode_header,
             "--bind",
             -- unrestricted switch action: swap header, swap provider, then change header + reload
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+execute-silent(%s)+rebind(%s)+transform-header(cat %s)+reload(%s)",
-                action,
-                action,
+                uaction,
+                uaction,
                 runtime.header:switch(),
                 runtime.provider:switch(),
-                action,
+                uaction,
                 runtime.header.current,
                 query_command
             ),
@@ -75,7 +72,7 @@ local function files(query, fullscreen, opts)
     }
     spec = vim.fn["fzf#vim#with_preview"](spec)
     log.debug("|fzfx.files - files| spec:%s", vim.inspect(spec))
-    return vim.fn["fzf#vim#files"]("", spec, fullscreen)
+    return vim.fn["fzf#vim#files"]("", spec, 0)
 end
 
 --- @param files_configs Config
@@ -90,8 +87,8 @@ local function setup(files_configs)
 
     -- Context
     Context.files_configs = vim.deepcopy(files_configs)
-    Context.restricted_mode_header = utils.unrestricted_mode_header(action)
-    Context.unrestricted_mode_header = utils.restricted_mode_header(action)
+    Context.rmode_header = utils.unrestricted_mode_header(action)
+    Context.umode_header = utils.restricted_mode_header(action)
 
     local restricted_opts = { unrestricted = false }
     local unrestricted_opts = { unrestricted = true }

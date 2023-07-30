@@ -91,35 +91,36 @@ local function visual_select()
 end
 
 --- @class FileSwitch
---- @field current string|nil
+--- @field value string|nil
 --- @field next string|nil
 --- @field swap string|nil
 
 --- @type FileSwitch
 local FileSwitch = {
-    current = nil,
+    value = nil,
     next = nil,
     swap = nil,
 }
 
 --- @return string
 function FileSwitch:switch()
+    -- value => swap, next => value, swap => next
     return string.format(
         "mv %s %s && mv %s %s && mv %s %s",
-        self.current,
+        self.value,
         self.swap,
         self.next,
-        self.current,
+        self.value,
         self.swap,
         self.next
     )
 end
 
 --- @param name string
---- @param current_text string[]
---- @param next_text string[]
+--- @param current_value string[]
+--- @param next_value string[]
 --- @return FileSwitch
-local function new_file_switch(name, current_text, next_text)
+local function new_file_switch(name, current_value, next_value)
     local init = nil
     if env.debug_enable() then
         init = {
@@ -154,8 +155,8 @@ local function new_file_switch(name, current_text, next_text)
     end
     --- @type FileSwitch
     local sf = vim.tbl_deep_extend("force", vim.deepcopy(FileSwitch), init)
-    vim.fn.writefile(current_text, sf.current, "b")
-    vim.fn.writefile(next_text, sf.next, "b")
+    vim.fn.writefile(current_value, sf.value, "b")
+    vim.fn.writefile(next_value, sf.next, "b")
     return sf
 end
 

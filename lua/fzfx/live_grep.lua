@@ -42,13 +42,13 @@ local function live_grep(query, fullscreen, opts)
     local initial_command = string.format(
         "%s %s %s || true",
         utils.run_lua_script("live_grep_provider.lua"),
-        runtime.provider.current,
+        runtime.provider.value,
         query
     )
     local reload_command = string.format(
         "%s %s {q} || true",
         utils.run_lua_script("live_grep_provider.lua"),
-        runtime.provider.current
+        runtime.provider.value
     )
     log.debug(
         "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s",
@@ -78,7 +78,7 @@ local function live_grep(query, fullscreen, opts)
                 runtime.header:switch(),
                 runtime.provider:switch(),
                 action,
-                runtime.header.current,
+                runtime.header.value,
                 reload_command
             ),
         },

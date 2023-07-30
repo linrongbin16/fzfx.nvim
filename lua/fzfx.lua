@@ -42,6 +42,7 @@ local Defaults = {
         },
         action = {
             unrestricted_mode = "ctrl-u",
+            restricted_mode = "ctrl-r",
         },
     },
     live_grep = {
@@ -77,6 +78,7 @@ local Defaults = {
         },
         action = {
             unrestricted_mode = "ctrl-u",
+            restricted_mode = "ctrl-r",
         },
     },
     env = {
@@ -104,13 +106,19 @@ local function setup(options)
         file_log = Configs.debug.file_log,
     })
     log.debug("|fzfx - setup| Configs:%s", vim.inspect(Configs))
+
+    -- env
+    if vim.fn.executable(Configs.env.nvim) <= 0 then
+        log.throw(
+            "fatal! cannot found 'nvim' in '%s'",
+            tostring(Configs.env.nvim)
+        )
+    end
     if Configs.debug.enable then
         vim.fn.mkdir(string.format("%s/fzfx.nvim", vim.fn.stdpath("data")), "p")
     end
-
-    -- env
-    vim.env._FZFX_DEBUG_ENABLE = Configs.debug.enable
-    vim.env._FZFX_NVIM_PATH = Configs.env.nvim
+    vim.env._FZFX_NVIM_DEBUG_ENABLE = Configs.debug.enable
+    vim.env._FZFX_NVIM_NVIM_EXEC = Configs.env.nvim
 
     -- legacy
     require("fzfx.legacy").setup()

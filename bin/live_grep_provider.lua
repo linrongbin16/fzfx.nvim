@@ -2,8 +2,8 @@ local args = _G.arg
 local provider = args[1]
 local content = args[2]
 
-local _FZFX_DEBUG_ENABLE = os.getenv("_FZFX_DEBUG_ENABLE")
-if _FZFX_DEBUG_ENABLE then
+local _FZFX_NVIM_DEBUG_ENABLE = os.getenv("_FZFX_NVIM_DEBUG_ENABLE")
+if _FZFX_NVIM_DEBUG_ENABLE then
     os.execute(string.format("echo DEBUG provider:[%s]", provider))
     os.execute(string.format("echo DEBUG content:[%s]", content))
 end
@@ -38,7 +38,7 @@ else
     cmd = string.format("%s -- %s", provider_cmd, content)
 end
 
-if _FZFX_DEBUG_ENABLE then
+if _FZFX_NVIM_DEBUG_ENABLE then
     os.execute(string.format("echo DEBUG cmd:[%s]", cmd))
 end
 os.execute(cmd)
