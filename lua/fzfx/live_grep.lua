@@ -1,34 +1,32 @@
 local log = require("fzfx.log")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
+local conf = require("fzfx.conf")
 
 local Context = {
     --- @type string|nil
     umode_header = nil,
     --- @type string|nil
     rmode_header = nil,
-    --- @type Config|nil
-    live_grep_configs = nil,
 }
 
 --- @param query string
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function live_grep(query, fullscreen, opts)
+    local live_grep_configs = conf.get_config().live_grep
     local umode_action =
-        string.lower(Context.live_grep_configs.action.unrestricted_mode)
-    local rmode_action =
-        string.lower(Context.live_grep_configs.action.restricted_mode)
+        string.lower(live_grep_configs.action.unrestricted_mode)
+    local rmode_action = string.lower(live_grep_configs.action.restricted_mode)
 
     local runtime = {
         --- @type FileSwitch
         provider = utils.new_file_switch("live_grep_provider", {
-            opts.unrestricted
-                    and Context.live_grep_configs.provider.unrestricted
-                or Context.live_grep_configs.provider.restricted,
+            opts.unrestricted and live_grep_configs.provider.unrestricted
+                or live_grep_configs.provider.restricted,
         }, {
-            opts.unrestricted and Context.live_grep_configs.provider.restricted
-                or Context.live_grep_configs.provider.unrestricted,
+            opts.unrestricted and live_grep_configs.provider.restricted
+                or live_grep_configs.provider.unrestricted,
         }),
     }
     log.debug("|fzfx.live_grep - live_grep| runtime:%s", vim.inspect(runtime))
@@ -96,8 +94,8 @@ local function live_grep(query, fullscreen, opts)
     return vim.fn["fzf#vim#grep"](initial_command, spec, fullscreen)
 end
 
---- @param live_grep_configs Config
-local function setup(live_grep_configs)
+local function setup()
+    local live_grep_configs = conf.get_config().live_grep
     log.debug(
         "|fzfx.live_grep - setup| plugin_bin:%s, live_grep_configs:%s",
         vim.inspect(path.plugin_bin()),
@@ -108,7 +106,6 @@ local function setup(live_grep_configs)
     local rmode_action = live_grep_configs.action.restricted_mode
 
     -- Context
-    Context.live_grep_configs = vim.deepcopy(live_grep_configs)
     Context.umode_header = utils.unrestricted_mode_header(umode_action)
     Context.rmode_header = utils.restricted_mode_header(rmode_action)
 

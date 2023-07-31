@@ -1,35 +1,39 @@
 local log = require("fzfx.log")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
+local conf = require("fzfx.conf")
 
 local Context = {
     --- @type string|nil
     rmode_header = nil,
     --- @type string|nil
     umode_header = nil,
-    --- @type Config|nil
-    files_configs = nil,
 }
+
+--- @return string
+local function short_path()
+    local cwd_path = vim.fn.fnamemodify(vim.fn.getcwd(), ":~:.")
+    return path.normalize(cwd_path)
+end
 
 --- @param query string
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function files(query, fullscreen, opts)
+    local files_configs = conf.get_config().files_configs
     -- action
-    local umode_action =
-        string.lower(Context.files_configs.action.unrestricted_mode)
-    local rmode_action =
-        string.lower(Context.files_configs.action.restricted_mode)
+    local umode_action = string.lower(files_configs.action.unrestricted_mode)
+    local rmode_action = string.lower(files_configs.action.restricted_mode)
 
     --- @type table<string, FileSwitch>
     local runtime = {
         --- @type FileSwitch
         provider = utils.new_file_switch("files_provider", {
-            opts.unrestricted and Context.files_configs.provider.unrestricted
-                or Context.files_configs.provider.restricted,
+            opts.unrestricted and files_configs.provider.unrestricted
+                or files_configs.provider.restricted,
         }, {
-            opts.unrestricted and Context.files_configs.provider.restricted
-                or Context.files_configs.provider.unrestricted,
+            opts.unrestricted and files_configs.provider.restricted
+                or files_configs.provider.unrestricted,
         }),
     }
     log.debug("|fzfx.files - files| runtime:%s", vim.inspect(runtime))
@@ -48,11 +52,12 @@ local function files(query, fullscreen, opts)
     local spec = {
         source = query_command,
         options = {
-            "--ansi",
             "--query",
             query,
             "--header",
             opts.unrestricted and Context.rmode_header or Context.umode_header,
+            "--prompt",
+            short_path(),
             "--bind",
             string.format(
                 "start:unbind(%s)",
@@ -87,8 +92,9 @@ local function files(query, fullscreen, opts)
     return vim.fn["fzf#vim#files"]("", spec, fullscreen)
 end
 
---- @param files_configs Config
-local function setup(files_configs)
+local function setup()
+    local files_configs = conf.get_config().files
+
     log.debug(
         "|fzfx.files - setup| plugin_bin:%s, files_configs:%s",
         vim.inspect(path.plugin_bin()),
@@ -99,7 +105,6 @@ local function setup(files_configs)
     local rmode_action = files_configs.action.restricted_mode
 
     -- Context
-    Context.files_configs = vim.deepcopy(files_configs)
     Context.umode_header = utils.unrestricted_mode_header(umode_action)
     Context.rmode_header = utils.restricted_mode_header(rmode_action)
 
