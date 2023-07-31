@@ -83,12 +83,13 @@ local Defaults = {
     },
     fzf_opts = {
         "--ansi",
-        "--border=rounded",
+        "--border=none",
         "--no-height",
     },
     win_opts = {
         height = 0.9,
         width = 0.9,
+        border = "rounded",
     },
     debug = {
         enable = false,

@@ -163,13 +163,9 @@ end
 --- @param script string
 --- @return string
 local function run_lua_script(script)
-    local nvim_path = env.nvim_exec()
-    if type(nvim_path) ~= "string" then
-        nvim_path = "nvim"
-    end
     return string.format(
         "%s -n --clean --headless -V1 -l %s%s",
-        nvim_path,
+        vim.env.VIM,
         path.plugin_bin(),
         script
     )

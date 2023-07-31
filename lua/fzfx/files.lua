@@ -13,14 +13,15 @@ local Context = {
 --- @return string
 local function short_path()
     local cwd_path = vim.fn.fnamemodify(vim.fn.getcwd(), ":~:.")
-    return path.normalize(cwd_path)
+    local shorten_path = vim.fn.pathshorten(cwd_path)
+    return path.normalize(shorten_path)
 end
 
 --- @param query string
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function files(query, fullscreen, opts)
-    local files_configs = conf.get_config().files_configs
+    local files_configs = conf.get_config().files
     -- action
     local umode_action = string.lower(files_configs.action.unrestricted_mode)
     local rmode_action = string.lower(files_configs.action.restricted_mode)
