@@ -136,12 +136,8 @@ local function new_popup_fzf(popup_win, source)
         )
     end
 
-    local jobid =
-        vim.api.nvim_open_term(popup_win.bufnr, { on_exit = on_fzf_exit }) --[[@as integer ]]
-    -- startinsert
-    vim.api.nvim_buf_call(popup_win.bufnr, function()
-        vim.cmd([[ startinsert ]])
-    end)
+    local jobid = vim.fn.termopen(source, { on_exit = on_fzf_exit }) --[[@as integer ]]
+    vim.cmd([[ startinsert ]])
 
     --- @type PopupFzf
     local popup_fzf = vim.tbl_deep_extend(
