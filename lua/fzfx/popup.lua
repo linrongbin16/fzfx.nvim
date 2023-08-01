@@ -1,4 +1,6 @@
 local log = require("fzfx.log")
+local conf = require("fzfx.config")
+local path = require("fzfx.path")
 
 --- @alias BufId integer
 --- @alias WinId integer
@@ -140,15 +142,34 @@ end
 --- @param popup_win PopupWindow
 --- @param source string
 --- @return PopupFzf
-local function new_popup_fzf(popup_win, source)
+local function new_popup_fzf(popup_win, source, fzf_opts)
+    local result_temp = path.tempname()
+
     local function on_fzf_exit(jobid2, exitcode, event)
         log.debug(
-            "|fzfx.term - create_terminal| jobid2:%s, exitcode:%s, event:%s",
+            "|fzfx.popup - new_popup_fzf| jobid2:%s, exitcode:%s, event:%s",
             vim.inspect(jobid2),
             vim.inspect(exitcode),
             vim.inspect(event)
         )
     end
+
+    local merged_opts = vim.deepcopy(conf.get_config().fzf_opts)
+    for _, o in ipairs(fzf_opts) do
+        table.insert(merged_opts, o)
+    end
+    local fzf_exec = vim.fn["fzf#exec"]()
+    local fzf_command = string.format(
+        'sh -c "%s" | %s %s >%s',
+        source,
+        fzf_exec,
+        table.concat(merged_opts, " "),
+        result_temp
+    )
+    log.debug(
+        "|fzfx.popup - new_popup_fzf| fzf_command:%s",
+        vim.inspect(fzf_command)
+    )
 
     local jobid = vim.fn.termopen(source, { on_exit = on_fzf_exit }) --[[@as integer ]]
     vim.cmd([[ startinsert ]])

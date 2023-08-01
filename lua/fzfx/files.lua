@@ -2,6 +2,7 @@ local log = require("fzfx.log")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local conf = require("fzfx.config")
+local popup = require("fzfx.popup")
 
 local Context = {
     --- @type string|nil
@@ -20,8 +21,10 @@ end
 --- @param query string
 --- @param fullscreen boolean|integer
 --- @param opts Config
+--- @return PopupFzf
 local function files(query, fullscreen, opts)
     local nvim_path = conf.get_config().env.nvim
+    local win_opts = conf.get_config().win_opts
     local files_configs = conf.get_config().files
     -- action
     local umode_action = string.lower(files_configs.action.unrestricted_mode)
@@ -89,9 +92,51 @@ local function files(query, fullscreen, opts)
             ),
         },
     }
+
+    local fzf_opts = {
+        "--query",
+        query,
+        "--header",
+        opts.unrestricted and Context.rmode_header or Context.umode_header,
+        "--prompt",
+        short_path(),
+        "--bind",
+        string.format(
+            "start:unbind(%s)",
+            opts.unrestricted and umode_action or rmode_action
+        ),
+        "--bind",
+        -- umode action: swap provider, change rmode header, rebind rmode action, reload query
+        string.format(
+            "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+            umode_action,
+            umode_action,
+            runtime.provider:switch(),
+            Context.rmode_header,
+            rmode_action,
+            query_command
+        ),
+        "--bind",
+        -- rmode action: swap provider, change umode header, rebind umode action, reload query
+        string.format(
+            "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+            rmode_action,
+            rmode_action,
+            runtime.provider:switch(),
+            Context.umode_header,
+            umode_action,
+            query_command
+        ),
+    }
+
+    local popup_win = popup.new_popup_window(win_opts)
+    local popup_fzf = popup.new_popup_fzf(popup_win, query_command, fzf_opts)
+
     spec = vim.fn["fzf#vim#with_preview"](spec)
     log.debug("|fzfx.files - files| spec:%s", vim.inspect(spec))
-    return vim.fn["fzf#vim#files"]("", spec, fullscreen)
+    -- return vim.fn["fzf#vim#files"]("", spec, fullscreen)
+
+    return popup_fzf
 end
 
 local function setup()

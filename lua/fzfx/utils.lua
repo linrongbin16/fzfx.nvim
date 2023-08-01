@@ -161,11 +161,18 @@ local function new_file_switch(name, current_value, next_value)
     return switch
 end
 
+local ShellContext = {
+    nvim_path = nil,
+}
+
 --- @param script string
 --- @param nvim_exec string
 --- @return string
 local function run_lua_script(script, nvim_exec)
-    local nvim_path = vim.env.VIM
+    if ShellContext.nvim_path == nil then
+        ShellContext.nvim_path = vim.v.argv[1]
+    end
+    local nvim_path = ShellContext.nvim_path
     if nvim_exec ~= nil and string.len(nvim_exec) > 0 then
         nvim_path = nvim_exec
     end
