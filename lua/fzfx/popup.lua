@@ -148,22 +148,13 @@ end
 local function new_popup_fzf(popup_win, source, fzf_opts)
     local result_temp = path.tempname()
 
-    local function on_fzf_exit(jobid2, exitcode, event)
-        log.debug(
-            "|fzfx.popup - new_popup_fzf| jobid2:%s, exitcode:%s, event:%s",
-            vim.inspect(jobid2),
-            vim.inspect(exitcode),
-            vim.inspect(event)
-        )
-    end
-
     local merged_opts = vim.deepcopy(conf.get_config().fzf_opts)
     for _, o in ipairs(fzf_opts) do
         table.insert(merged_opts, o)
     end
     local fzf_exec = vim.fn["fzf#exec"]()
     local fzf_command = string.format(
-        "%s | %s %s >%s",
+        'sh -c "%s" | %s %s >%s',
         source,
         fzf_exec,
         table.concat(merged_opts, " "),
@@ -174,7 +165,46 @@ local function new_popup_fzf(popup_win, source, fzf_opts)
         vim.inspect(fzf_command)
     )
 
-    local jobid = vim.fn.termopen(source, { on_exit = on_fzf_exit }) --[[@as integer ]]
+    local function on_fzf_exit(jobid2, exitcode, event)
+        log.debug(
+            "|fzfx.popup - new_popup_fzf.on_fzf_exit| jobid2:%s, exitcode:%s, event:%s",
+            vim.inspect(jobid2),
+            vim.inspect(exitcode),
+            vim.inspect(event)
+        )
+        if exitcode == 130 then
+            return
+        elseif vim.fn.has("nvim") > 0 and exitcode == 129 then
+            return
+        elseif exitcode > 1 then
+            log.err(
+                "error! command %s running with exit code %d",
+                fzf_command,
+                exitcode
+            )
+        end
+    end
+    local function on_fzf_stdout(chanid, data, name)
+        log.debug(
+            "|fzfx.popup - new_popup_fzf.on_fzf_stdout| chanid:%s, data:%s, name:%s",
+            vim.inspect(chanid),
+            vim.inspect(data),
+            vim.inspect(name)
+        )
+    end
+    local function on_fzf_stderr(chanid, data, name)
+        log.debug(
+            "|fzfx.popup - new_popup_fzf.on_fzf_stderr| chanid:%s, data:%s, name:%s",
+            vim.inspect(chanid),
+            vim.inspect(data),
+            vim.inspect(name)
+        )
+    end
+    local jobid = vim.fn.termopen(fzf_command, {
+        on_exit = on_fzf_exit,
+        on_stdout = on_fzf_stdout,
+        on_stderr = on_fzf_stderr,
+    }) --[[@as integer ]]
     vim.cmd([[ startinsert ]])
 
     --- @type PopupFzf
