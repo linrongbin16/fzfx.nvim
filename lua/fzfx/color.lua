@@ -15,11 +15,11 @@ local AnsiCode = {
 --- @return string|nil
 local function get_color(attr, group)
     local gui = vim.fn.has("termguicolors") > 0 and vim.o.termguicolors
-    local fam = gui and "gui" or "cterm"
-    local pat = gui and "^#[%l%d]+" or "^[%d]+$"
+    local family = gui and "gui" or "cterm"
+    local pattern = gui and "^#[%l%d]+" or "^[%d]+$"
     local code =
-        vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(group)), attr, fam)
-    if string.find(code, pat) then
+        vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(group)), attr, family)
+    if string.find(code, pattern) then
         log.debug(
             "|fzfx.color - get_color| attr:%s, group:%s, code:%s",
             vim.inspect(attr),
@@ -37,10 +37,13 @@ local function get_color(attr, group)
     return nil
 end
 
---- @param color string
+--- @param color string|nil
 --- @param fg boolean
 --- @return string|nil
 local function csi(color, fg)
+    if type(color) ~= "string" then
+        return nil
+    end
     local code = fg and 38 or 48
     local r, g, b = color:match("#(..)(..)(..)")
     if not r or not g or not b then
@@ -69,32 +72,32 @@ end
 --- @param group string
 --- @return string
 local function ansi(text, name, group)
-    local fg = get_color("fg", group)
-    if type(fg) == "string" and string.len(fg) > 0 then
-        local fgfmt = csi(fg --[[@as string]], true)
-        if type(fgfmt) == "string" and string.len(fgfmt) > 0 then
-            local result = string.format("[%sm%s[0m", fgfmt, text)
-            log.debug(
-                "|fzfx.color - ansi| text:%s, name:%s, group:%s, fg:%s, fgfmt:%s, result:%s",
-                vim.inspect(text),
-                vim.inspect(name),
-                vim.inspect(group),
-                vim.inspect(fg),
-                vim.inspect(fgfmt),
-                vim.inspect(result)
-            )
-            return result
-        end
+    local color = get_color("fg", group)
+
+    local rgbcolor = csi(color, true)
+    if type(rgbcolor) == "string" and string.len(rgbcolor) > 0 then
+        local result = string.format("[%sm%s[0m", rgbcolor, text)
+        log.debug(
+            "|fzfx.color - ansi| text:%s, name:%s, group:%s, fg:%s, rgbcolor:%s, result:%s",
+            vim.inspect(text),
+            vim.inspect(name),
+            vim.inspect(group),
+            vim.inspect(color),
+            vim.inspect(rgbcolor),
+            vim.inspect(result)
+        )
+        return result
     end
-    local fgfmt = AnsiCode[name]
-    local result = string.format("[%sm%s[m", fgfmt, text)
+
+    local ansicolor = AnsiCode[name]
+    local result = string.format("[%sm%s[0m", ansicolor, text)
     log.debug(
-        "|fzfx.color - ansi| text:%s, name:%s, group:%s, fg:%s, fgfmt:%s, result:%s",
+        "|fzfx.color - ansi| text:%s, name:%s, group:%s, fg:%s, ansicolor:%s, result:%s",
         vim.inspect(text),
         vim.inspect(name),
         vim.inspect(group),
-        vim.inspect(fg),
-        vim.inspect(fgfmt),
+        vim.inspect(color),
+        vim.inspect(ansicolor),
         vim.inspect(result)
     )
     return result
@@ -109,23 +112,23 @@ local function red(text)
 end
 
 local function green(text)
-    return ansi(text, "green", "Identifier")
+    return ansi(text, "green", "Label")
 end
 
 local function yellow(text)
-    return ansi(text, "yellow", "String")
+    return ansi(text, "yellow", "LineNr")
 end
 
 local function blue(text)
-    return ansi(text, "blue", "Constant")
+    return ansi(text, "blue", "TabLine")
 end
 
 local function magenta(text)
-    return ansi(text, "magenta", "Operator")
+    return ansi(text, "magenta", "Special")
 end
 
 local function cyan(text)
-    return ansi(text, "cyan", "Number")
+    return ansi(text, "cyan", "String")
 end
 
 local M = {
