@@ -173,15 +173,25 @@ local function new_popup_fzf(popup_win, source, fzf_opts)
             vim.inspect(event)
         )
         if exitcode == 130 then
-            return
+            if vim.o.buftype == "terminal" then
+                vim.fn.feedkeys(vim.o.filetype == "fzf" and "i" or "n")
+            end
+            return 0
         elseif vim.fn.has("nvim") > 0 and exitcode == 129 then
-            return
+            if vim.o.buftype == "terminal" then
+                vim.fn.feedkeys(vim.o.filetype == "fzf" and "i" or "n")
+            end
+            return 0
         elseif exitcode > 1 then
             log.err(
                 "error! command %s running with exit code %d",
                 fzf_command,
                 exitcode
             )
+            return 1
+        end
+        if vim.o.buftype == "terminal" then
+            vim.fn.feedkeys(vim.o.filetype == "fzf" and "i" or "n")
         end
     end
     local function on_fzf_stdout(chanid, data, name)
