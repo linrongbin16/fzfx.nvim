@@ -23,9 +23,6 @@ local function setup(options)
     -- legacy
     require("fzfx.legacy").setup()
 
-    -- term
-    require("fzfx.term").setup()
-
     -- files
     require("fzfx.files").setup()
 
