@@ -24,6 +24,7 @@ local PopupWindow = {
 --- @field col integer
 --- @field style "minimal"
 --- @field border "none"|"single"|"double"|"rounded"|"solid"|"shadow"
+--- @field zindex integer
 local PopupWindowLayout = {}
 
 --- @param win_opts Config
@@ -70,6 +71,7 @@ local function new_popup_window_layout(win_opts)
             col = col,
             style = "minimal",
             border = win_opts.border,
+            zindex = win_opts.zindex,
         })
     log.debug(
         "|fzfx.popup - new_window_layout| win_layout:%s",
