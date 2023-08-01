@@ -1,3 +1,5 @@
+local log = require("fzfx.log")
+
 local AnsiCode = {
     black = 30,
     red = 31,
@@ -18,8 +20,20 @@ local function get_color(attr, group)
     local code =
         vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(group)), attr, fam)
     if string.find(code, pat) then
+        log.debug(
+            "|fzfx.color - get_color| attr:%s, group:%s, code:%s",
+            vim.inspect(attr),
+            vim.inspect(group),
+            vim.inspect(code)
+        )
         return code
     end
+    log.debug(
+        "|fzfx.color - get_color| return nil, attr:%s, group:%s, code:%s",
+        vim.inspect(attr),
+        vim.inspect(group),
+        vim.inspect(code)
+    )
     return nil
 end
 
@@ -34,9 +48,24 @@ local function csi(color, fg)
             vim.fn.str2nr(string.sub(color, 4, 2), 16),
             vim.fn.str2nr(string.sub(color, 6, 2), 16),
         }
-        return string.format("%s2;%s", prefix, table.concat(splits, ";"))
+        local result =
+            string.format("%s2;%s", prefix, table.concat(splits, ";"))
+        log.debug(
+            "|fzfx.color - csi| color:%s, fg:%s, result:%s",
+            vim.inspect(color),
+            vim.inspect(fg),
+            vim.inspect(result)
+        )
+        return result
     end
-    return string.format("%s5;%s", prefix, color)
+    local result = string.format("%s5;%s", prefix, color)
+    log.debug(
+        "|fzfx.color - csi| fallback, color:%s, fg:%s, result:%s",
+        vim.inspect(color),
+        vim.inspect(fg),
+        vim.inspect(result)
+    )
+    return result
 end
 
 --- @param text string
@@ -52,7 +81,20 @@ local function ansi(text, name, group)
         or string.format(";", csi(bg --[[@as string]], false))
     local color = fgcolor .. bgcolor
     -- NOTE: this is \x1b, not a whitespace
-    return string.format("[%sm%s[0m", color, text)
+    local result = string.format("[%sm%s[m", color, text)
+    log.debug(
+        "|fzfx.color - ansi| text:%s, name:%s, group:%s, fg:%s, bg:%s, fgcolor:%s, bgcolor:%s, color:%s, result:%s",
+        vim.inspect(text),
+        vim.inspect(name),
+        vim.inspect(group),
+        vim.inspect(fg),
+        vim.inspect(bg),
+        vim.inspect(fgcolor),
+        vim.inspect(bgcolor),
+        vim.inspect(color),
+        vim.inspect(result)
+    )
+    return result
 end
 
 local function black(text)
