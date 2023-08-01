@@ -21,6 +21,7 @@ end
 --- @param fullscreen boolean|integer
 --- @param opts Config
 local function files(query, fullscreen, opts)
+    local nvim_path = conf.get_config().env.nvim
     local files_configs = conf.get_config().files
     -- action
     local umode_action = string.lower(files_configs.action.unrestricted_mode)
@@ -42,7 +43,7 @@ local function files(query, fullscreen, opts)
     -- query command, both initial query + reload query
     local query_command = string.format(
         "%s %s || true",
-        utils.run_lua_script("files_provider.lua"),
+        utils.run_lua_script("files_provider.lua", nvim_path),
         runtime.provider.value
     )
     log.debug(

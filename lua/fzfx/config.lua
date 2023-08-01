@@ -91,6 +91,9 @@ local Defaults = {
         width = 0.9,
         border = "rounded",
     },
+    env = {
+        nvim = nil,
+    },
     debug = {
         enable = false,
         console_log = true,

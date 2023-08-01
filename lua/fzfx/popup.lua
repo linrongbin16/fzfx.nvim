@@ -1,5 +1,4 @@
 local log = require("fzfx.log")
-local conf = require("fzfx.config")
 
 --- @alias BufId integer
 --- @alias WinId integer
@@ -109,7 +108,13 @@ local function new_popup_window(win_opts)
     return popup_win
 end
 
-function PopupWindow:close() end
+function PopupWindow:close()
+    log.debug(
+        "|fzfx.popup - PopupWindow:close| bufnr:%s, winnr:%s",
+        vim.inspect(self.bufnr),
+        vim.inspect(self.winnr)
+    )
+end
 
 --- @class PopupFzf
 --- @field popup_win PopupWindow|nil
@@ -123,8 +128,17 @@ local PopupFzf = {
     jobid = nil,
 }
 
+function PopupFzf:close()
+    log.debug(
+        "|fzfx.popup - PopupFzf:close| popup_win:%s, source:%s, jobid:%s",
+        vim.inspect(self.popup_win),
+        vim.inspect(self.source),
+        vim.inspect(self.jobid)
+    )
+end
+
 --- @param popup_win PopupWindow
---- @param source string|string[]
+--- @param source string
 --- @return PopupFzf
 local function new_popup_fzf(popup_win, source)
     local function on_fzf_exit(jobid2, exitcode, event)
