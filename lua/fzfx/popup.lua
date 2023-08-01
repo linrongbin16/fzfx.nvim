@@ -23,11 +23,11 @@ local PopupWindow = {
 --- @field row integer
 --- @field col integer
 --- @field style "minimal"
+--- @field border "none"|"single"|"double"|"rounded"|"solid"|"shadow"
 local PopupWindowLayout = {}
 
---- @param win_height number
---- @param win_width number
-local function new_popup_window_layout(win_height, win_width)
+--- @param win_opts Config
+local function new_popup_window_layout(win_opts)
     --- @type integer
     local columns = vim.o.columns
     --- @type integer
@@ -36,7 +36,8 @@ local function new_popup_window_layout(win_height, win_width)
     local width = math.min(
         math.max(
             3,
-            win_width > 1 and win_width or math.floor(columns * win_width)
+            win_opts.width > 1 and win_opts.width
+                or math.floor(columns * win_opts.width)
         ),
         columns
     )
@@ -44,7 +45,8 @@ local function new_popup_window_layout(win_height, win_width)
     local height = math.min(
         math.max(
             3,
-            win_height > 1 and win_height or math.floor(lines * win_height)
+            win_opts.height > 1 and win_opts.height
+                or math.floor(lines * win_opts.height)
         ),
         lines
     )
@@ -67,6 +69,7 @@ local function new_popup_window_layout(win_height, win_width)
             row = row,
             col = col,
             style = "minimal",
+            border = win_opts.border,
         })
     log.debug(
         "|fzfx.popup - new_window_layout| win_layout:%s",
@@ -88,7 +91,7 @@ local function new_popup_window(win_opts)
     vim.api.nvim_set_option_value("number", false, { buf = bufnr })
     vim.api.nvim_set_option_value("filetype", "fzf", { buf = bufnr })
 
-    local win_layout = new_popup_window_layout(win_opts.height, win_opts.width)
+    local win_layout = new_popup_window_layout(win_opts)
     --- @type WinId
     local winnr = vim.api.nvim_open_win(bufnr, true, win_layout)
     --- set winhighlight='Pmenu:,Normal:Normal'
@@ -160,7 +163,7 @@ local function new_popup_fzf(popup_win, source, fzf_opts)
     end
     local fzf_exec = vim.fn["fzf#exec"]()
     local fzf_command = string.format(
-        'sh -c "%s" | %s %s >%s',
+        "%s | %s %s >%s",
         source,
         fzf_exec,
         table.concat(merged_opts, " "),
