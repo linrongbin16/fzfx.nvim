@@ -1,5 +1,4 @@
 local log = require("fzfx.log")
-local infra = require("fzfx.infra")
 
 --- @param options Config
 --- @return nil

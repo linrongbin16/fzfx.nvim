@@ -2,6 +2,7 @@ local log = require("fzfx.log")
 local path = require("fzfx.path")
 local env = require("fzfx.env")
 local legacy = require("fzfx.legacy")
+local color = require("fzfx.color")
 
 --- @param configs Config
 local function define_command(configs, fun, command_opts)
@@ -181,7 +182,7 @@ end
 local function unrestricted_mode_header(action)
     return string.format(
         ":: Press %s to unrestricted mode",
-        legacy.magenta(string.upper(action))
+        color.magenta(string.upper(action))
     )
 end
 
@@ -190,7 +191,7 @@ end
 local function restricted_mode_header(action)
     return string.format(
         ":: Press %s to restricted mode",
-        legacy.magenta(string.upper(action))
+        color.magenta(string.upper(action))
     )
 end
 
