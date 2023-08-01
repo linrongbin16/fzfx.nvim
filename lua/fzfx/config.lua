@@ -90,7 +90,7 @@ local Defaults = {
         height = 0.9,
         width = 0.9,
         border = "rounded",
-        zindex = 60,
+        zindex = 50,
     },
     env = {
         nvim = nil,
