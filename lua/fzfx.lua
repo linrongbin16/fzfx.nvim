@@ -5,7 +5,7 @@ local infra = require("fzfx.infra")
 --- @return nil
 local function setup(options)
     -- configs
-    local configs = require("fzfx.conf").setup(options)
+    local configs = require("fzfx.config").setup(options)
 
     -- log
     log.setup({

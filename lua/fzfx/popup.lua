@@ -1,12 +1,12 @@
 local log = require("fzfx.log")
-local conf = require("fzfx.conf")
+local conf = require("fzfx.config")
 
 --- @alias BufNr integer
 --- @alias WinNr integer
 --- @alias JobId integer
 
 --- @return table<"bufnr"|"winnr", BufNr|WinNr>
-local function create_popup_window()
+local function create_window()
     --- @type Config
     local win_configs = conf.get_config().win_opts
 
@@ -74,7 +74,7 @@ end
 --- @param command string[]|string
 --- @return JobId
 local function create_terminal(command)
-    local popup_win = create_popup_window()
+    local popup_win = create_window()
 
     local function on_fzf_exit(jobid, exitcode, event)
         log.debug(
@@ -85,7 +85,8 @@ local function create_terminal(command)
         )
     end
 
-    local job = vim.fn.termopen(command, { on_exit = on_fzf_exit }) --[[@as integer ]]
+    local job =
+        vim.api.nvim_open_term(popup_win.bufnr, { on_exit = on_fzf_exit }) --[[@as integer ]]
     vim.cmd([[ 
       setlocal nospell bufhidden=wipe nobuflisted nonumber
       setf fzf

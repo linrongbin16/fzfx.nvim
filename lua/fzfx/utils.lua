@@ -161,11 +161,16 @@ local function new_file_switch(name, current_value, next_value)
 end
 
 --- @param script string
+--- @param nvim_exec string
 --- @return string
-local function run_lua_script(script)
+local function run_lua_script(script, nvim_exec)
+    local nvim_path = vim.env.VIM
+    if nvim_exec ~= nil and string.len(nvim_exec) > 0 then
+        nvim_path = nvim_exec
+    end
     return string.format(
         "%s -n --clean --headless -V1 -l %s%s",
-        vim.env.VIM,
+        nvim_path,
         path.plugin_bin(),
         script
     )
