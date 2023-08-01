@@ -39,28 +39,24 @@ end
 
 --- @param color string
 --- @param fg boolean
---- @return string
+--- @return string|nil
 local function csi(color, fg)
-    local prefix = fg and "38;" or "48;"
-    if string.sub(color, 1, 1) == "#" then
-        local splits = {
-            vim.fn.str2nr(string.sub(color, 2, 2), 16),
-            vim.fn.str2nr(string.sub(color, 4, 2), 16),
-            vim.fn.str2nr(string.sub(color, 6, 2), 16),
-        }
-        local result =
-            string.format("%s2;%s", prefix, table.concat(splits, ";"))
+    local code = fg and 38 or 48
+    local r, g, b = color:match("#(..)(..)(..)")
+    if not r or not g or not b then
         log.debug(
-            "|fzfx.color - csi| color:%s, fg:%s, result:%s",
+            "|fzfx.color - csi| fallback, color:%s, fg:%s, result:nil",
             vim.inspect(color),
-            vim.inspect(fg),
-            vim.inspect(result)
+            vim.inspect(fg)
         )
-        return result
+        return nil
     end
-    local result = string.format("%s5;%s", prefix, color)
+    r = tonumber(r, 16)
+    g = tonumber(g, 16)
+    b = tonumber(b, 16)
+    local result = string.format("%d;2;%d;%d;%d", code, r, g, b)
     log.debug(
-        "|fzfx.color - csi| fallback, color:%s, fg:%s, result:%s",
+        "|fzfx.color - csi| color:%s, fg:%s, result:%s",
         vim.inspect(color),
         vim.inspect(fg),
         vim.inspect(result)
@@ -74,24 +70,31 @@ end
 --- @return string
 local function ansi(text, name, group)
     local fg = get_color("fg", group)
-    local bg = get_color("bg", group)
-    local fgcolor = (fg == nil or string.len(fg) <= 0) and AnsiCode[name]
-        or csi(fg --[[@as string]], true)
-    local bgcolor = (bg == nil or string.len(bg) <= 0) and ""
-        or string.format(";", csi(bg --[[@as string]], false))
-    local color = fgcolor .. bgcolor
-    -- NOTE: this is \x1b, not a whitespace
-    local result = string.format("[%sm%s[m", color, text)
+    if type(fg) == "string" and string.len(fg) > 0 then
+        local fgfmt = csi(fg --[[@as string]], true)
+        if type(fgfmt) == "string" and string.len(fgfmt) > 0 then
+            local result = string.format("[%sm%s[0m", fgfmt, text)
+            log.debug(
+                "|fzfx.color - ansi| text:%s, name:%s, group:%s, fg:%s, fgfmt:%s, result:%s",
+                vim.inspect(text),
+                vim.inspect(name),
+                vim.inspect(group),
+                vim.inspect(fg),
+                vim.inspect(fgfmt),
+                vim.inspect(result)
+            )
+            return result
+        end
+    end
+    local fgfmt = AnsiCode[name]
+    local result = string.format("[%sm%s[m", fgfmt, text)
     log.debug(
-        "|fzfx.color - ansi| text:%s, name:%s, group:%s, fg:%s, bg:%s, fgcolor:%s, bgcolor:%s, color:%s, result:%s",
+        "|fzfx.color - ansi| text:%s, name:%s, group:%s, fg:%s, fgfmt:%s, result:%s",
         vim.inspect(text),
         vim.inspect(name),
         vim.inspect(group),
         vim.inspect(fg),
-        vim.inspect(bg),
-        vim.inspect(fgcolor),
-        vim.inspect(bgcolor),
-        vim.inspect(color),
+        vim.inspect(fgfmt),
         vim.inspect(result)
     )
     return result
@@ -106,23 +109,23 @@ local function red(text)
 end
 
 local function green(text)
-    return ansi(text, "green", "Constant")
+    return ansi(text, "green", "Identifier")
 end
 
 local function yellow(text)
-    return ansi(text, "yellow", "Number")
+    return ansi(text, "yellow", "String")
 end
 
 local function blue(text)
-    return ansi(text, "blue", "Operator")
+    return ansi(text, "blue", "Constant")
 end
 
 local function magenta(text)
-    return ansi(text, "magenta", "Special")
+    return ansi(text, "magenta", "Operator")
 end
 
 local function cyan(text)
-    return ansi(text, "cyan", "String")
+    return ansi(text, "cyan", "Number")
 end
 
 local M = {
