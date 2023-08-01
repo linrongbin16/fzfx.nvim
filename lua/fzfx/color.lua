@@ -51,6 +51,7 @@ local function ansi(text, name, group)
     local bgcolor = (bg == nil or string.len(bg) <= 0) and ""
         or string.format(";", csi(bg --[[@as string]], false))
     local color = fgcolor .. bgcolor
+    -- NOTE: this is \x1b, not a whitespace
     return string.format("[%sm%s[0m", color, text)
 end
 
