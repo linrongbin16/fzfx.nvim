@@ -2,7 +2,7 @@ local args = _G.arg
 local provider = args[1]
 local _FZFX_NVIM_DEBUG_ENABLE = os.getenv("_FZFX_NVIM_DEBUG_ENABLE")
 if _FZFX_NVIM_DEBUG_ENABLE then
-    print(string.format("DEBUG provider:[%s]\n", provider))
+    -- print(string.format("DEBUG provider:[%s]\n", provider))
     os.execute(string.format("echo DEBUG provider:[%s]", provider))
 end
 
@@ -12,7 +12,7 @@ local cmd = vim.fn.trim(f:read("*a"))
 f:close()
 
 if _FZFX_NVIM_DEBUG_ENABLE then
-    print(string.format("DEBUG cmd:[%s]\n", cmd))
+    -- print(string.format("DEBUG cmd:[%s]\n", cmd))
     os.execute(string.format("echo DEBUG cmd:[%s]", cmd))
 end
 os.execute(cmd)
