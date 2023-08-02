@@ -125,7 +125,7 @@ local function files(query, bang, opts)
             "--header",
             opts.unrestricted and Context.rmode_header or Context.umode_header,
             "--prompt",
-            short_path(),
+            short_path() .. " ",
             "--bind",
             string.format(
                 "start:unbind(%s)",
@@ -166,8 +166,8 @@ local function setup()
     local files_configs = conf.get_config().files
 
     log.debug(
-        "|fzfx.files - setup| plugin_bin:%s, files_configs:%s",
-        vim.inspect(path.plugin_bin()),
+        "|fzfx.files - setup| base_dir:%s, files_configs:%s",
+        vim.inspect(path.base_dir()),
         vim.inspect(files_configs)
     )
 

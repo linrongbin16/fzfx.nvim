@@ -97,8 +97,8 @@ end
 local function setup()
     local live_grep_configs = conf.get_config().live_grep
     log.debug(
-        "|fzfx.live_grep - setup| plugin_bin:%s, live_grep_configs:%s",
-        vim.inspect(path.plugin_bin()),
+        "|fzfx.live_grep - setup| base_dir:%s, live_grep_configs:%s",
+        vim.inspect(path.base_dir()),
         vim.inspect(live_grep_configs)
     )
 
