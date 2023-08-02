@@ -156,7 +156,7 @@ local function new_popup_fzf(popup_win, source, fzf_opts)
     end
     local fzf_exec = vim.fn["fzf#exec"]()
     local fzf_command = string.format(
-        'sh -c "%s" | %s %s >%s',
+        "%s | %s %s >%s",
         source,
         fzf_exec,
         table.concat(merged_opts, " "),

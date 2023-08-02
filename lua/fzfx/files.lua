@@ -55,52 +55,48 @@ local function files(query, fullscreen, opts)
     )
 
     local fzf_opts = {
-        string.format("--query=%s", vim.fn.shellescape(query)),
-        string.format(
-            "--header=%s",
-            opts.unrestricted and vim.fn.shellescape(Context.rmode_header)
-                or vim.fn.shellescape(Context.umode_header)
-        ),
-        string.format("--prompt=%s", vim.fn.shellescape(short_path())),
-        string.format(
-            "--bind %s",
-            vim.fn.shellescape(
-                string.format(
-                    "start:unbind(%s)",
-                    opts.unrestricted and umode_action or rmode_action
-                )
-            )
-        ),
-        string.format(
-            "--bind %s",
+        { "--query", query },
+        {
+            "--header",
+            opts.unrestricted and Context.rmode_header or Context.umode_header,
+        },
+        {
+            "--prompt",
+            short_path(),
+        },
+        {
+            "--bind",
+            string.format(
+                "start:unbind(%s)",
+                opts.unrestricted and umode_action or rmode_action
+            ),
+        },
+        {
             -- umode action: swap provider, change rmode header, rebind rmode action, reload query
-            vim.fn.shellescape(
-                string.format(
-                    "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                    umode_action,
-                    umode_action,
-                    runtime.provider:switch(),
-                    Context.rmode_header,
-                    rmode_action,
-                    query_command
-                )
-            )
-        ),
-        string.format(
-            "--bind %s",
+            "--bind",
+            string.format(
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                umode_action,
+                umode_action,
+                runtime.provider:switch(),
+                Context.rmode_header,
+                rmode_action,
+                query_command
+            ),
+        },
+        {
             -- rmode action: swap provider, change umode header, rebind umode action, reload query
-            vim.fn.shellescape(
-                string.format(
-                    "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                    rmode_action,
-                    rmode_action,
-                    runtime.provider:switch(),
-                    Context.umode_header,
-                    umode_action,
-                    query_command
-                )
-            )
-        ),
+            "--bind",
+            string.format(
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                rmode_action,
+                rmode_action,
+                runtime.provider:switch(),
+                Context.umode_header,
+                umode_action,
+                query_command
+            ),
+        },
     }
 
     local popup_win = popup.new_popup_window(win_opts)
