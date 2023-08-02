@@ -136,22 +136,22 @@ local function new_file_switch(name, current_value, next_value)
             value = string.format(
                 "%s%sfzfx.nvim%s%s_current_swapable",
                 vim.fn.stdpath("data"),
-                path.separator(),
-                path.separator(),
+                path.sep(),
+                path.sep(),
                 name
             ),
             next = string.format(
                 "%s%sfzfx.nvim%s%s_next_swapable",
                 vim.fn.stdpath("data"),
-                path.separator(),
-                path.separator(),
+                path.sep(),
+                path.sep(),
                 name
             ),
             swap = string.format(
                 "%s%sfzfx.nvim%s%s_swap_swapable",
                 vim.fn.stdpath("data"),
-                path.separator(),
-                path.separator(),
+                path.sep(),
+                path.sep(),
                 name
             ),
         }
@@ -185,9 +185,10 @@ local function run_lua_script(script, nvim_exec)
         nvim_path = nvim_exec
     end
     return string.format(
-        "%s -n --clean --headless -l %s%s",
+        "%s -n --clean --headless -l %s%s%s",
         nvim_path,
-        path.plugin_bin(),
+        path.base_dir(),
+        path.sep(),
         script
     )
 end
