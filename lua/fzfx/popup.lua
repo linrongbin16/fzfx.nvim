@@ -193,27 +193,7 @@ local function new_popup_fzf(popup_win, source, fzf_opts)
         end
         feed_terminal_exit()
     end
-    local function on_fzf_stdout(chanid, data, name)
-        log.debug(
-            "|fzfx.popup - new_popup_fzf.on_fzf_stdout| chanid:%s, data:%s, name:%s",
-            vim.inspect(chanid),
-            vim.inspect(data),
-            vim.inspect(name)
-        )
-    end
-    local function on_fzf_stderr(chanid, data, name)
-        log.debug(
-            "|fzfx.popup - new_popup_fzf.on_fzf_stderr| chanid:%s, data:%s, name:%s",
-            vim.inspect(chanid),
-            vim.inspect(data),
-            vim.inspect(name)
-        )
-    end
-    local jobid = vim.fn.termopen(fzf_command, {
-        on_exit = on_fzf_exit,
-        on_stdout = on_fzf_stdout,
-        on_stderr = on_fzf_stderr,
-    }) --[[@as integer ]]
+    local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
     vim.cmd([[ startinsert ]])
 
     --- @type PopupFzf
