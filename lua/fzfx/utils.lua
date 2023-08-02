@@ -4,6 +4,8 @@ local env = require("fzfx.env")
 local legacy = require("fzfx.legacy")
 local color = require("fzfx.color")
 
+-- vim {
+
 --- @param configs Config
 local function define_command(configs, fun, command_opts)
     vim.api.nvim_create_user_command(
@@ -18,6 +20,10 @@ local function define_command(configs, fun, command_opts)
             or command_opts
     )
 end
+
+-- vim }
+
+-- visual select {
 
 --- @param mode string
 --- @return string
@@ -90,6 +96,8 @@ local function visual_select()
     end
     return ""
 end
+
+-- visual select }
 
 --- @class FileSwitch
 --- @field value string|nil

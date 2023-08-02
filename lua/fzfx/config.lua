@@ -1,9 +1,10 @@
 local log = require("fzfx.log")
-local infra = require("fzfx.infra")
+local constants = require("fzfx.constants")
 
-local default_fd_command = string.format("%s . -cnever -tf -tl -L -i", infra.fd)
+local default_fd_command =
+    string.format("%s . -cnever -tf -tl -L -i", constants.fd)
 local default_rg_command =
-    string.format("%s --column -n --no-heading --color=always -S", infra.rg)
+    string.format("%s --column -n --no-heading --color=always -S", constants.rg)
 
 --- @alias Config table<string, any>
 
@@ -81,16 +82,23 @@ local Defaults = {
             restricted_mode = "ctrl-r",
         },
     },
-    fzf_opts = {
-        "--ansi",
-        "--border=none",
-        "--no-height",
+    fzf = {
+        opts = {
+            "--ansi",
+            "--border=none",
+            "--no-height",
+            { "--bind", "alt-a:select-all" },
+            { "--bind", "alt-d:deselect-all" },
+        },
+        action = {},
     },
-    win_opts = {
-        height = 0.9,
-        width = 0.9,
-        border = "rounded",
-        zindex = 51,
+    popup = {
+        win_opts = {
+            height = 0.85,
+            width = 0.85,
+            border = "rounded",
+            zindex = 51,
+        },
     },
     env = {
         nvim = nil,

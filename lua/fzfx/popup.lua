@@ -144,6 +144,35 @@ function PopupFzf:close()
     )
 end
 
+local function make_fzf_command(fzf_opts, result_temp)
+    local fzf_exec = vim.fn["fzf#exec"]()
+    local builder = {}
+    for _, opt in ipairs(fzf_opts) do
+        if type(opt) == "table" then
+            local key = opt[1]
+            local value = opt[2]
+            table.insert(
+                builder,
+                string.format("%s %s", key, vim.fn.shellescape(value))
+            )
+        else
+            table.insert(builder, opt)
+        end
+    end
+    local command = string.format(
+        "%s %s >%s",
+        fzf_exec,
+        table.concat(builder, " "),
+        result_temp
+    )
+    log.debug(
+        "|fzfx.popup - make_fzf_command| builder:%s, command:%s",
+        vim.inspect(builder),
+        vim.inspect(command)
+    )
+    return command
+end
+
 --- @param popup_win PopupWindow
 --- @param source string
 --- @return PopupFzf
@@ -154,17 +183,12 @@ local function new_popup_fzf(popup_win, source, fzf_opts)
     for _, o in ipairs(fzf_opts) do
         table.insert(merged_opts, o)
     end
-    local fzf_exec = vim.fn["fzf#exec"]()
-    local fzf_command = string.format(
-        "%s | %s %s >%s",
-        source,
-        fzf_exec,
-        table.concat(merged_opts, " "),
-        result_temp
-    )
+    local fzf_command = make_fzf_command(fzf_opts, result_temp)
+    local term_command =
+        string.format("%s | %s", vim.fn.shellescape(source), fzf_command)
     log.debug(
-        "|fzfx.popup - new_popup_fzf| fzf_command:%s",
-        vim.inspect(fzf_command)
+        "|fzfx.popup - new_popup_fzf| term_command:%s",
+        vim.inspect(term_command)
     )
 
     local function feed_terminal_exit()
@@ -186,14 +210,14 @@ local function new_popup_fzf(popup_win, source, fzf_opts)
         elseif exitcode > 1 then
             log.err(
                 "error! command %s running with exit code %d",
-                fzf_command,
+                term_command,
                 exitcode
             )
             return 1
         end
         feed_terminal_exit()
     end
-    local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
+    local jobid = vim.fn.termopen(term_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
     vim.cmd([[ startinsert ]])
 
     --- @type PopupFzf

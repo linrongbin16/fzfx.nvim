@@ -1,4 +1,4 @@
-local infra = require("fzfx.infra")
+local constants = require("fzfx.constants")
 
 local Context = {
     plugin_home = nil,
@@ -49,7 +49,7 @@ end
 --- @return string
 local function windows_named_pipe()
     assert(
-        infra.is_windows,
+        constants.is_windows,
         string.format("error! must be windows to get the windows named pipe")
     )
     return string.format("\\\\%.\\pipe\\nvim-%s", os.clock())
