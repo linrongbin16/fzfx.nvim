@@ -10,7 +10,7 @@
 
 > E(x)tended commands missing in fzf.vim
 
-This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin built from scratch, rewrite with lua and leverage new features from Neovim, focused on better usability and tiny improvements.
+This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin built from scratch, rewrite with lua and leverage modern features from Neovim, focused on better usability and tiny improvements.
 
 - [Feature](#feature)
 - [Requirement](#requirement)
