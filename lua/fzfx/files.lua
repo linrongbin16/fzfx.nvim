@@ -25,8 +25,10 @@ end
 local function files(query, bang, opts)
     local files_configs = conf.get_config().files
     -- action
-    local umode_action = string.lower(files_configs.action.unrestricted_mode)
-    local rmode_action = string.lower(files_configs.action.restricted_mode)
+    local umode_action =
+        string.lower(files_configs.action.builtin.unrestricted_mode)
+    local rmode_action =
+        string.lower(files_configs.action.builtin.restricted_mode)
 
     --- @type table<string, FileSwitch>
     local runtime = {
@@ -180,8 +182,8 @@ local function setup()
         vim.inspect(files_configs)
     )
 
-    local umode_action = files_configs.action.unrestricted_mode
-    local rmode_action = files_configs.action.restricted_mode
+    local umode_action = files_configs.action.builtin.unrestricted_mode
+    local rmode_action = files_configs.action.builtin.restricted_mode
 
     -- Context
     Context.umode_header = utils.unrestricted_mode_header(umode_action)

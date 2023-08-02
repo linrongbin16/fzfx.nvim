@@ -42,8 +42,14 @@ local Defaults = {
             unrestricted = default_fd_command .. " -u",
         },
         action = {
-            unrestricted_mode = "ctrl-u",
-            restricted_mode = "ctrl-r",
+            builtin = {
+                unrestricted_mode = "ctrl-u",
+                restricted_mode = "ctrl-r",
+            },
+            callback = {
+                ["enter"] = function(name, lines) end,
+                ["double-click"] = function(name, lines) end,
+            },
         },
     },
     live_grep = {
@@ -78,8 +84,14 @@ local Defaults = {
             unrestricted = default_rg_command .. " -uu",
         },
         action = {
-            unrestricted_mode = "ctrl-u",
-            restricted_mode = "ctrl-r",
+            builtin = {
+                unrestricted_mode = "ctrl-u",
+                restricted_mode = "ctrl-r",
+            },
+            callback = {
+                ["enter"] = require("fzfx.actions").open_buffer,
+                ["double-click"] = require("fzfx.actions").open_buffer,
+            },
         },
     },
     fzf = {
@@ -90,7 +102,6 @@ local Defaults = {
             { "--bind", "alt-a:select-all" },
             { "--bind", "alt-d:deselect-all" },
         },
-        action = {},
     },
     popup = {
         win_opts = {

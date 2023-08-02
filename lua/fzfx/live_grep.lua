@@ -16,8 +16,9 @@ local Context = {
 local function live_grep(query, fullscreen, opts)
     local live_grep_configs = conf.get_config().live_grep
     local umode_action =
-        string.lower(live_grep_configs.action.unrestricted_mode)
-    local rmode_action = string.lower(live_grep_configs.action.restricted_mode)
+        string.lower(live_grep_configs.action.builtin.unrestricted_mode)
+    local rmode_action =
+        string.lower(live_grep_configs.action.builtin.restricted_mode)
 
     local runtime = {
         --- @type FileSwitch
@@ -102,8 +103,8 @@ local function setup()
         vim.inspect(live_grep_configs)
     )
 
-    local umode_action = live_grep_configs.action.unrestricted_mode
-    local rmode_action = live_grep_configs.action.restricted_mode
+    local umode_action = live_grep_configs.action.builtin.unrestricted_mode
+    local rmode_action = live_grep_configs.action.builtin.restricted_mode
 
     -- Context
     Context.umode_header = utils.unrestricted_mode_header(umode_action)
