@@ -46,7 +46,7 @@ local Defaults = {
                 unrestricted_mode = "ctrl-u",
                 restricted_mode = "ctrl-r",
             },
-            callback = {
+            expect = {
                 ["enter"] = function(name, lines) end,
                 ["double-click"] = function(name, lines) end,
             },
@@ -88,7 +88,7 @@ local Defaults = {
                 unrestricted_mode = "ctrl-u",
                 restricted_mode = "ctrl-r",
             },
-            callback = {
+            expect = {
                 ["enter"] = require("fzfx.actions").open_buffer,
                 ["double-click"] = require("fzfx.actions").open_buffer,
             },

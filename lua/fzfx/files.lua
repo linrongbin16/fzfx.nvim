@@ -69,64 +69,64 @@ local function files(query, bang, opts)
         vim.inspect(preview_command)
     )
 
-    local fzf_opts =
-        vim.tbl_deep_extend("force", vim.deepcopy(conf.get_config().fzf.opts), {
-            { "--query", query },
-            {
-                "--header",
-                opts.unrestricted and Context.rmode_header
-                    or Context.umode_header,
-            },
-            {
-                "--prompt",
-                short_path() .. " ",
-            },
-            {
-                "--bind",
-                string.format(
-                    "start:unbind(%s)",
-                    opts.unrestricted and umode_action or rmode_action
-                ),
-            },
-            {
-                -- umode action: swap provider, change rmode header, rebind rmode action, reload query
-                "--bind",
-                string.format(
-                    "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                    umode_action,
-                    umode_action,
-                    runtime.provider:switch(),
-                    Context.rmode_header,
-                    rmode_action,
-                    query_command
-                ),
-            },
-            {
-                -- rmode action: swap provider, change umode header, rebind umode action, reload query
-                "--bind",
-                string.format(
-                    "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                    rmode_action,
-                    rmode_action,
-                    runtime.provider:switch(),
-                    Context.umode_header,
-                    umode_action,
-                    query_command
-                ),
-            },
-            {
-                "--preview",
-                preview_command,
-            },
-            {
-                "--preview-window",
-                "right,50%",
-            },
-        })
+    local fzf_opts = {
+        { "--query", query },
+        {
+            "--header",
+            opts.unrestricted and Context.rmode_header or Context.umode_header,
+        },
+        {
+            "--prompt",
+            short_path() .. " ",
+        },
+        {
+            "--bind",
+            string.format(
+                "start:unbind(%s)",
+                opts.unrestricted and umode_action or rmode_action
+            ),
+        },
+        {
+            -- umode action: swap provider, change rmode header, rebind rmode action, reload query
+            "--bind",
+            string.format(
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                umode_action,
+                umode_action,
+                runtime.provider:switch(),
+                Context.rmode_header,
+                rmode_action,
+                query_command
+            ),
+        },
+        {
+            -- rmode action: swap provider, change umode header, rebind umode action, reload query
+            "--bind",
+            string.format(
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                rmode_action,
+                rmode_action,
+                runtime.provider:switch(),
+                Context.umode_header,
+                umode_action,
+                query_command
+            ),
+        },
+        {
+            "--preview",
+            preview_command,
+        },
+        {
+            "--preview-window",
+            "right,50%",
+        },
+    }
+    local actions = files_configs.action.expect
 
     local win_opts = conf.get_config().popup.win_opts
     local popup_win = popup.new_popup_window(win_opts)
-    local popup_fzf = popup.new_popup_fzf(popup_win, query_command, fzf_opts)
+    local popup_fzf =
+        popup.new_popup_fzf(popup_win, query_command, fzf_opts, actions)
 
     local spec = {
         source = query_command,

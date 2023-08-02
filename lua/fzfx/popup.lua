@@ -144,7 +144,26 @@ function PopupFzf:close()
     )
 end
 
-local function make_fzf_command(fzf_opts, result_temp)
+--- @param actions Config
+local function make_expect_keys(actions)
+    local expect_keys = {}
+    if type(actions) == "table" then
+        for name, _ in pairs(actions) do
+            table.insert(expect_keys, { "--expect", name })
+        end
+    end
+    return expect_keys
+end
+
+--- @param fzf_opts Config
+--- @param actions Config
+--- @param result_temp any
+local function make_fzf_command(fzf_opts, actions, result_temp)
+    local base_opts = vim.deepcopy(conf.get_config().fzf.opts)
+    local expect_keys = make_expect_keys(actions)
+    fzf_opts = vim.list_extend(base_opts, fzf_opts)
+    fzf_opts = vim.list_extend(fzf_opts, expect_keys)
+
     local fzf_exec = vim.fn["fzf#exec"]()
     local builder = {}
     for _, opt in ipairs(fzf_opts) do
@@ -160,7 +179,8 @@ local function make_fzf_command(fzf_opts, result_temp)
         end
     end
     log.debug(
-        "|fzfx.popup - make_fzf_command| builder:%s",
+        "|fzfx.popup - make_fzf_command| fzf_opts:%s, builder:%s",
+        vim.inspect(fzf_opts),
         vim.inspect(builder)
     )
     local command = string.format(
@@ -178,11 +198,13 @@ end
 
 --- @param popup_win PopupWindow
 --- @param source string
+--- @param fzf_opts Config
+--- @param actions Config
 --- @return PopupFzf
-local function new_popup_fzf(popup_win, source, fzf_opts)
+local function new_popup_fzf(popup_win, source, fzf_opts, actions)
     local result_temp = path.tempname()
 
-    local fzf_command = make_fzf_command(fzf_opts, result_temp)
+    local fzf_command = make_fzf_command(fzf_opts, actions, result_temp)
     local term_command = string.format("%s | %s", source, fzf_command)
     log.debug(
         "|fzfx.popup - new_popup_fzf| term_command:%s",
@@ -202,18 +224,24 @@ local function new_popup_fzf(popup_win, source, fzf_opts)
             vim.inspect(exitcode),
             vim.inspect(event)
         )
-        if exitcode == 130 or exitcode == 129 then
-            feed_terminal_exit()
-            return 0
-        elseif exitcode > 1 then
+        if exitcode > 1 and (exitcode ~= 130 and exitcode ~= 129) then
             log.err(
                 "error! command %s running with exit code %d",
                 term_command,
                 exitcode
             )
-            return 1
+        else
+            feed_terminal_exit()
         end
-        feed_terminal_exit()
+
+        if vim.fn.filereadable(result_temp) > 0 then
+            local result_lines = vim.fn.readfile(result_temp)
+            log.debug(
+                "|fzfx.popup - new_popup_fzf.on_fzf_exit| found result tempfile:%s, result_lines:%s",
+                vim.inspect(result_temp),
+                vim.inspect(result_lines)
+            )
+        end
     end
     local jobid = vim.fn.termopen(term_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
     vim.cmd([[ startinsert ]])
