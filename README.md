@@ -18,9 +18,12 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 ## Feature
 
-- Windows support: you can enjoy modern fzf on Windows now.
-- Multiple mode: search by visual select, cword and switch to unrestricted results (include hidden and git ignored files).
-- Lua support: preview lua defined commands and key mappings.
+- Windows support.
+- Multiple variants: you can use below methods to avoid manual input besides normal mode.
+  - Visual select.
+  - Cursor word.
+  - Unrestricted, easily switch to unrestricted mode (e.g. include hidden and git ignored files) and back.
+- Special support for Neovim and Lua: preview lua function defined commands and key mappings.
 - ...
 
 ## Requirement
