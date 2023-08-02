@@ -20,9 +20,10 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - Windows support.
 - Multiple variants: you can use below methods to avoid manual input besides normal mode.
-  - Visual select.
-  - Cursor word.
-  - Unrestricted, easily switch to unrestricted mode (e.g. include hidden and git ignored files) and back.
+  - Search by visual select.
+  - Search by cursor word.
+  - Search by yanked register.
+  - Unrestricted mode: include hidden and git ignored files, easily switch to and back.
 - Special support for Neovim and Lua: preview lua function defined commands and key mappings.
 - ...
 
