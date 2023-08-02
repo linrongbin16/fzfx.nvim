@@ -22,7 +22,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - Multiple variants: you can use below methods to avoid manual input besides normal mode.
   - Visual select.
   - Cursor word.
-  - Unrestricted, finders such as [rg](https://github.com/BurntSushi/ripgrep) and [fd](https://github.com/sharkdp/fd) exclude hidden and git ignored files by default, but now you can easily switch to unrestricted mode (e.g. include everything) and back.
+  - Unrestricted, easily switch to unrestricted mode (e.g. include hidden and git ignored files) and back.
 - Special support for Neovim and Lua: preview lua function defined commands and key mappings.
 - ...
 
