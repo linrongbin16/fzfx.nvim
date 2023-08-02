@@ -179,10 +179,6 @@ end
 local function new_popup_fzf(popup_win, source, fzf_opts)
     local result_temp = path.tempname()
 
-    local merged_opts = vim.deepcopy(conf.get_config().fzf_opts)
-    for _, o in ipairs(fzf_opts) do
-        table.insert(merged_opts, o)
-    end
     local fzf_command = make_fzf_command(fzf_opts, result_temp)
     local term_command =
         string.format("%s | %s", vim.fn.shellescape(source), fzf_command)
