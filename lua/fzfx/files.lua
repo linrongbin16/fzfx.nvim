@@ -49,12 +49,13 @@ local function files(query, bang, opts)
         runtime.provider.value
     )
     local preview_command = string.format(
-        "%s",
+        "%s {}",
         utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
     )
     log.debug(
-        "|fzfx.files - files| query_command:%s",
-        vim.inspect(query_command)
+        "|fzfx.files - files| query_command:%s, preview_command:%s",
+        vim.inspect(query_command),
+        vim.inspect(preview_command)
     )
 
     local fzf_opts =
