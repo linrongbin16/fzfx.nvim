@@ -68,7 +68,7 @@ local function files(query, bang, opts)
             },
             {
                 "--prompt",
-                short_path(),
+                short_path() .. " ",
             },
             {
                 "--bind",
