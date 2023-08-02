@@ -241,6 +241,8 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
                 vim.inspect(result_temp),
                 vim.inspect(result_lines)
             )
+            local action = result_lines[1]
+            local lines = result_lines[1]
         end
     end
     local jobid = vim.fn.termopen(term_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
