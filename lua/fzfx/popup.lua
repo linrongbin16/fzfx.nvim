@@ -159,6 +159,10 @@ local function make_fzf_command(fzf_opts, result_temp)
             table.insert(builder, opt)
         end
     end
+    log.debug(
+        "|fzfx.popup - make_fzf_command| builder:%s",
+        vim.inspect(builder)
+    )
     local command = string.format(
         "%s %s >%s",
         fzf_exec,
@@ -166,8 +170,7 @@ local function make_fzf_command(fzf_opts, result_temp)
         result_temp
     )
     log.debug(
-        "|fzfx.popup - make_fzf_command| builder:%s, command:%s",
-        vim.inspect(builder),
+        "|fzfx.popup - make_fzf_command| command:%s",
         vim.inspect(command)
     )
     return command
@@ -181,7 +184,7 @@ local function new_popup_fzf(popup_win, source, fzf_opts)
 
     local fzf_command = make_fzf_command(fzf_opts, result_temp)
     local term_command =
-        string.format("%s | %s", vim.fn.shellescape(source), fzf_command)
+        string.format("sh -c %s | %s", vim.fn.shellescape(source), fzf_command)
     log.debug(
         "|fzfx.popup - new_popup_fzf| term_command:%s",
         vim.inspect(term_command)

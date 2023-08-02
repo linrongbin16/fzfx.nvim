@@ -3,7 +3,7 @@ local provider = args[1]
 local _FZFX_NVIM_DEBUG_ENABLE = os.getenv("_FZFX_NVIM_DEBUG_ENABLE")
 if _FZFX_NVIM_DEBUG_ENABLE then
     -- print(string.format("DEBUG provider:[%s]\n", provider))
-    os.execute(string.format("echo DEBUG provider:[%s]", provider))
+    io.write(string.format("DEBUG provider:[%s]", provider))
 end
 
 local f = io.open(provider --[[@as string]], "r")
@@ -13,6 +13,6 @@ f:close()
 
 if _FZFX_NVIM_DEBUG_ENABLE then
     -- print(string.format("DEBUG cmd:[%s]\n", cmd))
-    os.execute(string.format("echo DEBUG cmd:[%s]", cmd))
+    io.write(string.format("DEBUG cmd:[%s]", cmd))
 end
 os.execute(cmd)
