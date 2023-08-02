@@ -183,8 +183,7 @@ local function new_popup_fzf(popup_win, source, fzf_opts)
     local result_temp = path.tempname()
 
     local fzf_command = make_fzf_command(fzf_opts, result_temp)
-    local term_command =
-        string.format("sh -c %s | %s", vim.fn.shellescape(source), fzf_command)
+    local term_command = string.format("%s | %s", source, fzf_command)
     log.debug(
         "|fzfx.popup - new_popup_fzf| term_command:%s",
         vim.inspect(term_command)

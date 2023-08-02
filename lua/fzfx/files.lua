@@ -46,7 +46,7 @@ local function files(query, bang, opts)
     local query_temp =
         utils.run_lua_script(path.join("files", "provider.lua"), nvim_path)
     local query_command = string.format(
-        "%s %s || true",
+        "%s %s",
         utils.run_lua_script(path.join("files", "provider.lua"), nvim_path),
         runtime.provider.value
     )
