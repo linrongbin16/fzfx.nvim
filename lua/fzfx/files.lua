@@ -43,14 +43,23 @@ local function files(query, bang, opts)
 
     -- query command, both initial query + reload query
     local nvim_path = conf.get_config().env.nvim
+    local query_temp =
+        utils.run_lua_script(path.join("files", "provider.lua"), nvim_path)
     local query_command = string.format(
         "%s %s || true",
         utils.run_lua_script(path.join("files", "provider.lua"), nvim_path),
         runtime.provider.value
     )
+    local preview_temp =
+        utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
     local preview_command = string.format(
         "%s {}",
         utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
+    )
+    log.debug(
+        "|fzfx.files - files| query_temp:%s, preview_temp:%s",
+        vim.inspect(query_temp),
+        vim.inspect(preview_temp)
     )
     log.debug(
         "|fzfx.files - files| query_command:%s, preview_command:%s",

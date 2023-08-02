@@ -184,6 +184,8 @@ local function run_lua_script(script, nvim_exec)
     if nvim_exec ~= nil and string.len(nvim_exec) > 0 then
         nvim_path = nvim_exec
     end
+    local temp = path.join(path.base_dir(), "bin", script)
+    log.debug("|fzfx.utils - run_lua_script| temp:%s", vim.inspect(temp))
     return string.format(
         "%s -n --clean --headless -l %s",
         nvim_path,

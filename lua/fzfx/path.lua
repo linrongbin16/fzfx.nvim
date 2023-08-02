@@ -1,3 +1,4 @@
+local log = require("fzfx.log")
 local constants = require("fzfx.constants")
 
 local Context = {
@@ -25,7 +26,7 @@ local function sep()
 end
 
 local function join(...)
-    return table.concat(arg, sep())
+    return table.concat({ ... }, sep())
 end
 
 --- @return string
