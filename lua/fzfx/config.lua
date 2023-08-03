@@ -59,8 +59,8 @@ local Defaults = {
                 restricted_mode = "ctrl-r",
             },
             expect = {
-                ["enter"] = function(name, lines) end,
-                ["double-click"] = function(name, lines) end,
+                ["enter"] = require("fzfx.actions").open_buffer,
+                ["double-click"] = require("fzfx.actions").open_buffer,
             },
         },
     },
@@ -119,7 +119,7 @@ local Defaults = {
     fzf = {
         opts = {
             "--ansi",
-            "--border=none",
+            "--border=rounded",
             "--no-height",
             { "--bind", "alt-a:select-all" },
             { "--bind", "alt-d:deselect-all" },
@@ -129,7 +129,7 @@ local Defaults = {
         win_opts = {
             height = 0.85,
             width = 0.85,
-            border = "rounded",
+            border = "none",
             zindex = 51,
         },
     },
