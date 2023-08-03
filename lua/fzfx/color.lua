@@ -103,32 +103,32 @@ local function ansi(text, name, group)
     return result
 end
 
-local function black(text)
-    return ansi(text, "black", "Comment")
+local function black(text, hl)
+    return ansi(text, "black", hl or "Comment")
 end
 
-local function red(text)
-    return ansi(text, "red", "Exception")
+local function red(text, hl)
+    return ansi(text, "red", hl or "Exception")
 end
 
-local function green(text)
-    return ansi(text, "green", "Label")
+local function green(text, hl)
+    return ansi(text, "green", hl or "Label")
 end
 
-local function yellow(text)
-    return ansi(text, "yellow", "LineNr")
+local function yellow(text, hl)
+    return ansi(text, "yellow", hl or "LineNr")
 end
 
-local function blue(text)
-    return ansi(text, "blue", "TabLine")
+local function blue(text, hl)
+    return ansi(text, "blue", hl or "TabLine")
 end
 
-local function magenta(text)
-    return ansi(text, "magenta", "Special")
+local function magenta(text, hl)
+    return ansi(text, "magenta", hl or "Special")
 end
 
-local function cyan(text)
-    return ansi(text, "cyan", "String")
+local function cyan(text, hl)
+    return ansi(text, "cyan", hl or "String")
 end
 
 local M = {
