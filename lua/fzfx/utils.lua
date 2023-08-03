@@ -6,19 +6,24 @@ local color = require("fzfx.color")
 
 -- vim {
 
---- @param configs Config
-local function define_command(configs, fun, command_opts)
-    vim.api.nvim_create_user_command(
-        configs.name,
-        fun,
-        configs.desc
-                and vim.tbl_deep_extend(
-                    "force",
-                    vim.deepcopy(command_opts),
-                    { desc = configs.desc }
-                )
-            or command_opts
-    )
+local function table_filter(f, t)
+    local result = {}
+    for k, v in pairs(t) do
+        if f(k, v) then
+            result[k] = v
+        end
+    end
+    return result
+end
+
+local function list_filter(f, l)
+    local result = {}
+    for i, v in ipairs(l) do
+        if f(i, v) then
+            table.insert(result, v)
+        end
+    end
+    return result
 end
 
 -- vim }
@@ -212,6 +217,8 @@ local function restricted_mode_header(action)
 end
 
 local M = {
+    table_filter = table_filter,
+    list_filter = list_filter,
     visual_select = visual_select,
     new_file_switch = new_file_switch,
     run_lua_script = run_lua_script,

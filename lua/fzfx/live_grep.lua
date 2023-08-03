@@ -113,83 +113,28 @@ local function setup()
     local restricted_opts = { unrestricted = false }
     local unrestricted_opts = { unrestricted = true }
 
-    local normal_opts = {
-        bang = true,
-        nargs = "*",
-    }
-    -- FzfxLiveGrep
-    utils.define_command(live_grep_configs.command.normal, function(opts)
-        log.debug(
-            "|fzfx.live_grep - setup| normal command opts:%s",
-            vim.inspect(opts)
+    -- User commands
+    for command_name, command_opts in pairs(live_grep_configs) do
+        vim.api.nvim_create_user_command(
+            command_name,
+            function(opts)
+                log.debug(
+                    "|fzfx.live_grep - setup| command:%s, opts:%s",
+                    vim.inspect(command_name),
+                    vim.inspect(opts)
+                )
+                return live_grep(
+                    opts.args,
+                    opts.bang,
+                    command_opts.unrestricted and unrestricted_opts
+                        or restricted_opts
+                )
+            end,
+            utils.table_filter(function(k, _)
+                return k ~= "unrestricted"
+            end, command_opts)
         )
-        return live_grep(opts.args, opts.bang, restricted_opts)
-    end, normal_opts)
-    -- FzfxLiveGrepU
-    utils.define_command(live_grep_configs.command.unrestricted, function(opts)
-        log.debug(
-            "|fzfx.live_grep - setup| unrestricted command opts:%s",
-            vim.inspect(opts)
-        )
-        return live_grep(opts.args, opts.bang, unrestricted_opts)
-    end, normal_opts)
-
-    local visual_opts = {
-        bang = true,
-        range = true,
-    }
-    -- FzfxLiveGrepV
-    utils.define_command(live_grep_configs.command.visual, function(opts)
-        local visual_select = utils.visual_select()
-        log.debug(
-            "|fzfx.live_grep - setup| visual command select:%s, opts:%s",
-            vim.inspect(visual_select),
-            vim.inspect(opts)
-        )
-        return live_grep(visual_select, opts.bang, restricted_opts)
-    end, visual_opts)
-    -- FzfxLiveGrepUV
-    utils.define_command(
-        live_grep_configs.command.unrestricted_visual,
-        function(opts)
-            local visual_select = utils.visual_select()
-            log.debug(
-                "|fzfx.live_grep - setup| visual command select:%s, opts:%s",
-                vim.inspect(visual_select),
-                vim.inspect(opts)
-            )
-            return live_grep(visual_select, opts.bang, unrestricted_opts)
-        end,
-        visual_opts
-    )
-
-    local cword_opts = {
-        bang = true,
-    }
-    -- FzfxLiveGrepW
-    utils.define_command(live_grep_configs.command.cword, function(opts)
-        local word = vim.fn.expand("<cword>")
-        log.debug(
-            "|fzfx.live_grep - setup| cword command word:%s, opts:%s",
-            vim.inspect(word),
-            vim.inspect(opts)
-        )
-        return live_grep(word, opts.bang, restricted_opts)
-    end, cword_opts)
-    -- FzfxLiveGrepUW
-    utils.define_command(
-        live_grep_configs.command.unrestricted_cword,
-        function(opts)
-            local word = vim.fn.expand("<cword>")
-            log.debug(
-                "|fzfx.live_grep - setup| cword command word:%s, opts:%s",
-                vim.inspect(word),
-                vim.inspect(opts)
-            )
-            return live_grep(word, opts.bang, unrestricted_opts)
-        end,
-        cword_opts
-    )
+    end
 end
 
 local M = {

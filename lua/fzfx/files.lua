@@ -192,21 +192,26 @@ local function setup()
     local unrestricted_opts = { unrestricted = true }
 
     -- User commands
-    for command_type, command_opts in pairs(files_configs.command) do
-        vim.api.nvim_create_user_command(command_opts.name, function(opts)
-            log.debug(
-                "|fzfx.files - setup| command:%s, opts:%s",
-                vim.inspect(command_type),
-                vim.inspect(opts)
-            )
-            return files(
-                opts.args,
-                opts.bang,
-                string.match(command_type, "^unrestricted")
-                        and unrestricted_opts
-                    or restricted_opts
-            )
-        end, vim.deepcopy(command_opts.opts))
+    for command_name, command_opts in pairs(files_configs.command) do
+        vim.api.nvim_create_user_command(
+            command_name,
+            function(opts)
+                log.debug(
+                    "|fzfx.files - setup| command:%s, opts:%s",
+                    vim.inspect(command_name),
+                    vim.inspect(opts)
+                )
+                return files(
+                    opts.args,
+                    opts.bang,
+                    command_opts.unrestricted and unrestricted_opts
+                        or restricted_opts
+                )
+            end,
+            utils.table_filter(function(k, _)
+                return k ~= "unrestricted"
+            end, command_opts)
+        )
     end
 end
 

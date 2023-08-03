@@ -12,53 +12,41 @@ local default_rg_command =
 local Defaults = {
     files = {
         command = {
-            normal = {
-                name = "FzfxFiles",
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "Find files",
-                },
+            FzfxFiles = {
+                bang = true,
+                nargs = "?",
+                complete = "dir",
+                desc = "Find files",
+                unrestricted = false,
             },
-            unrestricted = {
-                name = "FzfxFilesU",
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "Find files unrestricted",
-                },
+            FzfxFilesU = {
+                bang = true,
+                nargs = "?",
+                complete = "dir",
+                desc = "Find files unrestricted",
+                unrestricted = true,
             },
-            visual = {
-                name = "FzfxFilesV",
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find files by visual select",
-                },
+            FzfxFilesV = {
+                bang = true,
+                range = true,
+                desc = "Find files by visual select",
+                unrestricted = false,
             },
-            unrestricted_visual = {
-                name = "FzfxFilesUV",
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find files unrestricted by visual select",
-                },
+            FzfxFielsUV = {
+                bang = true,
+                range = true,
+                desc = "Find files unrestricted by visual select",
+                unrestricted = true,
             },
-            cword = {
-                name = "FzfxFilesW",
-                opts = {
-                    bang = true,
-                    desc = "Find files by cursor word",
-                },
+            FzfxFilesW = {
+                bang = true,
+                desc = "Find files by cursor word",
+                unrestricted = false,
             },
-            unrestricted_cword = {
-                name = "FzfxFilesUW",
-                opts = {
-                    bang = true,
-                    desc = "Find files unrestricted by cursor word",
-                },
+            FzfxFilesUW = {
+                bang = true,
+                desc = "Find files unrestricted by cursor word",
+                unrestricted = true,
             },
         },
         provider = {
@@ -78,29 +66,39 @@ local Defaults = {
     },
     live_grep = {
         command = {
-            normal = {
-                name = "FzfxLiveGrep",
+            FzfxLiveGrep = {
+                bang = true,
+                nargs = "*",
                 desc = "Live grep",
+                unrestricted = false,
             },
-            unrestricted = {
-                name = "FzfxLiveGrepU",
-                desc = "Live grep unrestrictly",
+            FzfxLiveGrepU = {
+                bang = true,
+                nargs = "*",
+                desc = "Live grep unrestricted",
+                unrestricted = true,
             },
-            visual = {
-                name = "FzfxLiveGrepV",
+            FzfxLiveGrepV = {
+                bang = true,
+                range = true,
                 desc = "Live grep by visual select",
+                unrestricted = false,
             },
-            unrestricted_visual = {
-                name = "FzfxLiveGrepUV",
-                desc = "Live grep unrestrictly by visual select",
+            FzfxLiveGrepUV = {
+                bang = true,
+                range = true,
+                desc = "Live grep unrestricted by visual select",
+                unrestricted = true,
             },
-            cword = {
-                name = "FzfxLiveGrepW",
+            FzfxLiveGrepW = {
+                bang = true,
                 desc = "Live grep by cursor word",
+                unrestricted = false,
             },
-            unrestricted_cword = {
-                name = "FzfxLiveGrepUW",
-                desc = "Live grep unrestrictly by cursor word",
+            FzfxLiveGrepUW = {
+                bang = true,
+                desc = "Live grep unrestricted by cursor word",
+                unrestricted = true,
             },
         },
         provider = {
