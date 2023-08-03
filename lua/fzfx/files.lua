@@ -68,7 +68,7 @@ local function files(query, bang, opts)
         },
         {
             "--prompt",
-            short_path() .. " ",
+            short_path() .. " > ",
         },
         {
             "--bind",
@@ -108,6 +108,7 @@ local function files(query, bang, opts)
             preview_command,
         },
     }
+    fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
     local actions = files_configs.actions.expect
     local popup_win = popup.new_popup_window()
     local popup_fzf =

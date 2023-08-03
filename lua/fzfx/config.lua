@@ -88,8 +88,7 @@ local Defaults = {
             },
         },
         fzf_opts = {
-            { "--preview-window", [[ right,50% ]] },
-            { "--bind", [[ ctrl-/:toggle-preview ]] },
+            { "--bind", "ctrl-l:toggle-preview" },
         },
     },
     live_grep = {
@@ -168,8 +167,7 @@ local Defaults = {
             },
         },
         fzf_opts = {
-            { "--preview-window", [[ right,50% ]] },
-            { "--bind", [[ ctrl-/:toggle-preview ]] },
+            { "--bind", "ctrl-l:toggle-preview" },
         },
     },
     fzf_opts = {
@@ -178,6 +176,7 @@ local Defaults = {
         "--layout=reverse",
         "--border=rounded",
         "--no-height",
+        { "--preview-window", "right,50%" },
     },
     win_opts = {
         height = 0.85,

@@ -275,15 +275,30 @@ local function make_fzf_command(fzf_opts, actions, result)
     local fzf_exec = vim.fn["fzf#exec"]()
     local builder = {}
     for _, opt in ipairs(fzf_opts) do
-        if type(opt) == "table" then
+        if type(opt) == "table" and #opt == 2 then
             local key = opt[1]
             local value = opt[2]
-            table.insert(
-                builder,
-                string.format("%s %s", key, vim.fn.shellescape(value))
-            )
+            if
+                type(key) == "string"
+                and string.len(key) > 0
+                and type(value) == "string"
+                and string.len(value) > 0
+            then
+                table.insert(
+                    builder,
+                    string.format(
+                        "%s %s",
+                        vim.fn.trim(key),
+                        vim.fn.shellescape(vim.fn.trim(value))
+                    )
+                )
+            else
+                log.err("error! invalid fzf opt '%s'!", vim.inspect(opt))
+            end
+        elseif type(opt) == "string" then
+            table.insert(builder, vim.fn.trim(opt))
         else
-            table.insert(builder, opt)
+            log.err("error! invalid fzf opt '%s'!", vim.inspect(opt))
         end
     end
     log.debug(
