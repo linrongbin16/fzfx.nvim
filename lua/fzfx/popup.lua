@@ -295,14 +295,8 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
     )
 
     local function feed_exit_term()
-        if vim.o.buftype == "terminal" then
-            local nop =
-                vim.api.nvim_replace_termcodes("<Nop>", true, false, true)
-            vim.api.nvim_feedkeys(
-                vim.o.filetype == "fzf" and "i" or nop,
-                "m",
-                false
-            )
+        if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
+            vim.api.nvim_feedkeys("i", "m", false)
         end
     end
 
