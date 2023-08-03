@@ -2,86 +2,86 @@ local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local path = require("fzfx.path")
 
---- @class WindowContext
---- @field bufnr integer|nil
---- @field winnr integer|nil
---- @field tabnr integer|nil
-
---- @type WindowContext
-local WindowContext = {
-    bufnr = nil,
-    winnr = nil,
-    tabnr = nil,
-}
-
---- @param bufnr integer
---- @param winnr integer
---- @param tabnr integer
---- @return WindowContext
-local function new_window_context(bufnr, winnr, tabnr)
-    local ctx = vim.tbl_deep_extend("force", vim.deepcopy(WindowContext), {
-        bufnr = bufnr,
-        winnr = winnr,
-        tabnr = tabnr,
-    })
-    return ctx
-end
-
--- First in, last out
--- Last in, first out
---- @class WindowContextStack
---- @field size integer
---- @field stack WindowContext[]
-local WindowContextStack = {
-    size = 0,
-    stack = {},
-}
-
-function WindowContextStack:push()
-    local current_bufnr = vim.api.nvim_get_current_buf()
-    local current_winnr = vim.api.nvim_get_current_win()
-    local current_tabnr = vim.api.nvim_get_current_tabpage()
-    local ctx = new_window_context(current_bufnr, current_winnr, current_tabnr)
-    table.insert(self.stack, ctx)
-    self.size = self.size + 1
-    log.debug(
-        "|fzfx.popup - WindowContextStack:push| self:%s",
-        vim.inspect(self)
-    )
-    return ctx
-end
-
-function WindowContextStack:top()
-    if self.size <= 0 then
-        return nil
-    end
-    return self.stack[self.size]
-end
-
-function WindowContextStack:pop()
-    if self.size <= 0 then
-        return nil
-    end
-    local top = self:top()
-    table.remove(self.stack)
-    self.size = self.size - 1
-    return top
-end
-
-local Context = {
-    window_context_stack = nil,
-}
-
-local function get_window_context_stack()
-    if Context.window_context_stack == nil then
-        Context.window_context_stack =
-            vim.tbl_deep_extend("force", vim.deepcopy(WindowContextStack), {
-                size = 0,
-                stack = {},
-            })
-    end
-    return Context.window_context_stack
-end
+-- --- @class WindowContext
+-- --- @field bufnr integer|nil
+-- --- @field winnr integer|nil
+-- --- @field tabnr integer|nil
+--
+-- --- @type WindowContext
+-- local WindowContext = {
+--     bufnr = nil,
+--     winnr = nil,
+--     tabnr = nil,
+-- }
+--
+-- --- @param bufnr integer
+-- --- @param winnr integer
+-- --- @param tabnr integer
+-- --- @return WindowContext
+-- local function new_window_context(bufnr, winnr, tabnr)
+--     local ctx = vim.tbl_deep_extend("force", vim.deepcopy(WindowContext), {
+--         bufnr = bufnr,
+--         winnr = winnr,
+--         tabnr = tabnr,
+--     })
+--     return ctx
+-- end
+--
+-- -- First in, last out
+-- -- Last in, first out
+-- --- @class WindowContextStack
+-- --- @field size integer
+-- --- @field stack WindowContext[]
+-- local WindowContextStack = {
+--     size = 0,
+--     stack = {},
+-- }
+--
+-- function WindowContextStack:push()
+--     local current_bufnr = vim.api.nvim_get_current_buf()
+--     local current_winnr = vim.api.nvim_get_current_win()
+--     local current_tabnr = vim.api.nvim_get_current_tabpage()
+--     local ctx = new_window_context(current_bufnr, current_winnr, current_tabnr)
+--     table.insert(self.stack, ctx)
+--     self.size = self.size + 1
+--     log.debug(
+--         "|fzfx.popup - WindowContextStack:push| self:%s",
+--         vim.inspect(self)
+--     )
+--     return ctx
+-- end
+--
+-- function WindowContextStack:top()
+--     if self.size <= 0 then
+--         return nil
+--     end
+--     return self.stack[self.size]
+-- end
+--
+-- function WindowContextStack:pop()
+--     if self.size <= 0 then
+--         return nil
+--     end
+--     local top = self:top()
+--     table.remove(self.stack)
+--     self.size = self.size - 1
+--     return top
+-- end
+--
+-- local Context = {
+--     window_context_stack = nil,
+-- }
+--
+-- local function get_window_context_stack()
+--     if Context.window_context_stack == nil then
+--         Context.window_context_stack =
+--             vim.tbl_deep_extend("force", vim.deepcopy(WindowContextStack), {
+--                 size = 0,
+--                 stack = {},
+--             })
+--     end
+--     return Context.window_context_stack
+-- end
 
 --- @class PopupWindow
 --- @field bufnr integer|nil
@@ -93,18 +93,30 @@ local PopupWindow = {
     winnr = nil,
 }
 
---- @class PopupWindowLayout
---- @field relative "editor"|"win"
---- @field width integer
---- @field height integer
---- @field row integer
---- @field col integer
---- @field style "minimal"
---- @field border "none"|"single"|"double"|"rounded"|"solid"|"shadow"
---- @field zindex integer
-local PopupWindowLayout = {}
+--- @class PopupWindowOpts
+--- @field relative "editor"|"win"|nil
+--- @field width integer|nil
+--- @field height integer|nil
+--- @field row integer|nil
+--- @field col integer|nil
+--- @field style "minimal"|nil
+--- @field border "none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil
+--- @field zindex integer|nil
+
+--- @type PopupWindowOpts
+local PopupWindowOpts = {
+    relative = nil,
+    width = nil,
+    height = nil,
+    row = nil,
+    col = nil,
+    style = nil,
+    border = nil,
+    zindex = nil,
+}
 
 --- @param win_opts Config
+--- @return PopupWindowOpts
 local function new_popup_window_layout(win_opts)
     --- @type integer
     local columns = vim.o.columns
@@ -137,9 +149,9 @@ local function new_popup_window_layout(win_opts)
         columns - width
     )
 
-    --- @type PopupWindowLayout
-    local win_layout =
-        vim.tbl_deep_extend("force", vim.deepcopy(PopupWindowLayout), {
+    --- @type PopupWindowOpts
+    local popup_win_opts =
+        vim.tbl_deep_extend("force", vim.deepcopy(PopupWindowOpts), {
             relative = "editor",
             width = width,
             height = height,
@@ -152,9 +164,9 @@ local function new_popup_window_layout(win_opts)
         })
     log.debug(
         "|fzfx.popup - new_window_layout| win_layout:%s",
-        vim.inspect(win_layout)
+        vim.inspect(popup_win_opts)
     )
-    return win_layout
+    return popup_win_opts
 end
 
 --- @param win_opts Config
@@ -177,9 +189,10 @@ local function new_popup_window(win_opts)
     vim.api.nvim_set_option_value("number", false, { buf = bufnr })
     vim.api.nvim_set_option_value("filetype", "fzf", { buf = bufnr })
 
-    local win_layout = new_popup_window_layout(win_opts)
+    --- @type PopupWindowOpts
+    local popup_win_opts = new_popup_window_layout(win_opts)
     --- @type integer
-    local winnr = vim.api.nvim_open_win(bufnr, true, win_layout)
+    local winnr = vim.api.nvim_open_win(bufnr, true, popup_win_opts)
     --- set winhighlight='Pmenu:,Normal:Normal'
     --- set colorcolumn=''
     vim.api.nvim_set_option_value(
@@ -200,35 +213,29 @@ local function new_popup_window(win_opts)
 end
 
 function PopupWindow:close()
-    log.debug(
-        "|fzfx.popup - PopupWindow:close| bufnr:%s, winnr:%s",
-        vim.inspect(self.bufnr),
-        vim.inspect(self.winnr)
-    )
+    log.debug("|fzfx.popup - PopupWindow:close| self:%s", vim.inspect(self))
 end
 
 --- @class PopupFzf
 --- @field popup_win PopupWindow|nil
 --- @field source string|string[]|nil
 --- @field jobid integer|nil
+--- @field result string|nil
 
 --- @type PopupFzf
 local PopupFzf = {
     popup_win = nil,
     source = nil,
     jobid = nil,
+    result = nil,
 }
 
 function PopupFzf:close()
-    log.debug(
-        "|fzfx.popup - PopupFzf:close| popup_win:%s, source:%s, jobid:%s",
-        vim.inspect(self.popup_win),
-        vim.inspect(self.source),
-        vim.inspect(self.jobid)
-    )
+    log.debug("|fzfx.popup - PopupFzf:close| self:%s", vim.inspect(self))
 end
 
 --- @param actions Config
+--- @return string[][]
 local function make_expect_keys(actions)
     local expect_keys = {}
     if type(actions) == "table" then
@@ -241,8 +248,9 @@ end
 
 --- @param fzf_opts Config
 --- @param actions Config
---- @param result_temp any
-local function make_fzf_command(fzf_opts, actions, result_temp)
+--- @param result string
+--- @return string
+local function make_fzf_command(fzf_opts, actions, result)
     local base_opts = vim.deepcopy(conf.get_config().fzf.opts)
     local expect_keys = make_expect_keys(actions)
     fzf_opts = vim.list_extend(base_opts, vim.deepcopy(fzf_opts))
@@ -267,12 +275,8 @@ local function make_fzf_command(fzf_opts, actions, result_temp)
         vim.inspect(fzf_opts),
         vim.inspect(builder)
     )
-    local command = string.format(
-        "%s %s >%s",
-        fzf_exec,
-        table.concat(builder, " "),
-        result_temp
-    )
+    local command =
+        string.format("%s %s >%s", fzf_exec, table.concat(builder, " "), result)
     log.debug(
         "|fzfx.popup - make_fzf_command| command:%s",
         vim.inspect(command)
@@ -295,12 +299,6 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
         vim.inspect(term_command)
     )
 
-    local function feed_exit_term()
-        if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
-            vim.api.nvim_feedkeys("i", "m", false)
-        end
-    end
-
     local function on_fzf_exit(jobid2, exitcode, event)
         log.debug(
             "|fzfx.popup - new_popup_fzf.on_fzf_exit| jobid2:%s, exitcode:%s, event:%s",
@@ -316,7 +314,9 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
             )
             return
         end
-        feed_exit_term()
+        if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
+            vim.api.nvim_feedkeys("i", "m", false)
+        end
         vim.api.nvim_win_close(popup_win.winnr, true)
         local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
         vim.api.nvim_feedkeys(esc, "x", false)
@@ -358,10 +358,6 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
             log.err("error! wrong action type: %s", action_key)
         else
             action_callback(action_lines)
-            -- vim.cmd([[ normal! \<ESC> ]])
-            -- local esc =
-            --     vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
-            -- vim.api.nvim_feedkeys(esc, "x", false)
         end
     end
     local jobid = vim.fn.termopen(term_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
