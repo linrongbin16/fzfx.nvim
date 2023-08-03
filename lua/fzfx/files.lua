@@ -122,7 +122,6 @@ local function files(query, bang, opts)
         },
     }
     local actions = files_configs.action.expect
-
     local win_opts = conf.get_config().popup.win_opts
     local popup_win = popup.new_popup_window(win_opts)
     local popup_fzf =
@@ -132,7 +131,7 @@ local function files(query, bang, opts)
         source = query_command,
         options = {
             "--query",
-            vim.fn.shellescape(query),
+            query,
             "--header",
             opts.unrestricted and Context.rmode_header or Context.umode_header,
             "--prompt",
@@ -192,84 +191,23 @@ local function setup()
     local restricted_opts = { unrestricted = false }
     local unrestricted_opts = { unrestricted = true }
 
-    local normal_opts = {
-        bang = true,
-        nargs = "?",
-        complete = "dir",
-    }
-    -- FzfxFiles
-    utils.define_command(files_configs.command.normal, function(opts)
-        log.debug(
-            "|fzfx.files - setup| normal command opts:%s",
-            vim.inspect(opts)
-        )
-        return files(opts.args, opts.bang, restricted_opts)
-    end, normal_opts)
-    -- FzfxFilesU
-    utils.define_command(files_configs.command.unrestricted, function(opts)
-        log.debug(
-            "|fzfx.files - setup| unrestricted command opts:%s",
-            vim.inspect(opts)
-        )
-        return files(opts.args, opts.bang, unrestricted_opts)
-    end, normal_opts)
-
-    local visual_opts = {
-        bang = true,
-        range = true,
-    }
-    -- FzfxFilesV
-    utils.define_command(files_configs.command.visual, function(opts)
-        local visual_select = utils.visual_select()
-        log.debug(
-            "|fzfx.files - setup| visual command select:%s, opts:%s",
-            vim.inspect(visual_select),
-            vim.inspect(opts)
-        )
-        return files(visual_select, opts.bang, restricted_opts)
-    end, visual_opts)
-    -- FzfxFilesUV
-    utils.define_command(
-        files_configs.command.unrestricted_visual,
-        function(opts)
-            local visual_select = utils.visual_select()
+    -- User commands
+    for command_type, command_opts in pairs(files_configs.command) do
+        vim.api.nvim_create_user_command(command_opts.name, function(opts)
             log.debug(
-                "|fzfx.files - setup| visual command select:%s, opts:%s",
-                vim.inspect(visual_select),
+                "|fzfx.files - setup| command:%s, opts:%s",
+                vim.inspect(command_type),
                 vim.inspect(opts)
             )
-            return files(visual_select, opts.bang, unrestricted_opts)
-        end,
-        visual_opts
-    )
-
-    local cword_opts = {
-        bang = true,
-    }
-    -- FzfxFilesW
-    utils.define_command(files_configs.command.cword, function(opts)
-        local word = vim.fn.expand("<cword>")
-        log.debug(
-            "|fzfx.files - setup| cword command word:%s, opts:%s",
-            vim.inspect(word),
-            vim.inspect(opts)
-        )
-        return files(word, opts.bang, restricted_opts)
-    end, cword_opts)
-    -- FzfxFilesUW
-    utils.define_command(
-        files_configs.command.unrestricted_cword,
-        function(opts)
-            local word = vim.fn.expand("<cword>")
-            log.debug(
-                "|fzfx.files - setup| cword command word:%s, opts:%s",
-                vim.inspect(word),
-                vim.inspect(opts)
+            return files(
+                opts.args,
+                opts.bang,
+                string.match(command_type, "^unrestricted")
+                        and unrestricted_opts
+                    or restricted_opts
             )
-            return files(word, opts.bang, unrestricted_opts)
-        end,
-        cword_opts
-    )
+        end, vim.deepcopy(command_opts.opts))
+    end
 end
 
 local M = {

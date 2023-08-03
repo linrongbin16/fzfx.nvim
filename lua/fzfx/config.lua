@@ -14,27 +14,51 @@ local Defaults = {
         command = {
             normal = {
                 name = "FzfxFiles",
-                desc = "Find files",
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find files",
+                },
             },
             unrestricted = {
                 name = "FzfxFilesU",
-                desc = "Find files unrestrictly",
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find files unrestricted",
+                },
             },
             visual = {
                 name = "FzfxFilesV",
-                desc = "Find files by visual select",
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find files by visual select",
+                },
             },
             unrestricted_visual = {
                 name = "FzfxFilesUV",
-                desc = "Find files unrestrictly by visual select",
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find files unrestricted by visual select",
+                },
             },
             cword = {
                 name = "FzfxFilesW",
-                desc = "Find files by cursor word",
+                opts = {
+                    bang = true,
+                    desc = "Find files by cursor word",
+                },
             },
             unrestricted_cword = {
                 name = "FzfxFilesUW",
-                desc = "Find files unrestrictly by cursor word",
+                opts = {
+                    bang = true,
+                    desc = "Find files unrestricted by cursor word",
+                },
             },
         },
         provider = {

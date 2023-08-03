@@ -212,7 +212,6 @@ local function restricted_mode_header(action)
 end
 
 local M = {
-    define_command = define_command,
     visual_select = visual_select,
     new_file_switch = new_file_switch,
     run_lua_script = run_lua_script,
