@@ -1,6 +1,7 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local path = require("fzfx.path")
+local constants = require("fzfx.constants")
 
 -- --- @class WindowContext
 -- --- @field bufnr integer|nil
@@ -306,12 +307,13 @@ local function make_fzf_command(fzf_opts, actions, result)
         vim.inspect(fzf_opts),
         vim.inspect(builder)
     )
+    if fzf_exec:match("%s+") and constants.is_windows then
+        fzf_exec = vim.fn.shellescape(fzf_exec)
+    end
+    -- fzf_exec = path.normalize(fzf_exec)
     local command =
         string.format("%s %s >%s", fzf_exec, table.concat(builder, " "), result)
-    log.debug(
-        "|fzfx.popup - make_fzf_command| command:%s",
-        vim.inspect(command)
-    )
+    log.debug( "|fzfx.popup - make_fzf_command| command:[%s]", command)
     return command
 end
 
@@ -325,10 +327,10 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
 
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
     local term_command = string.format("%s | %s", source, fzf_command)
-    log.debug(
-        "|fzfx.popup - new_popup_fzf| term_command:%s",
-        vim.inspect(term_command)
-    )
+    if constants.is_windows then
+        term_command = string.format('sh -c %s', vim.fn.shellescape(term_command))
+    end
+    log.debug( "|fzfx.popup - new_popup_fzf| term_command:[%s]", term_command)
 
     local function on_fzf_exit(jobid2, exitcode, event)
         log.debug(

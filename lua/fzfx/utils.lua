@@ -2,6 +2,7 @@ local log = require("fzfx.log")
 local path = require("fzfx.path")
 local env = require("fzfx.env")
 local color = require("fzfx.color")
+local constants = require("fzfx.constants")
 
 -- vim {
 
@@ -184,6 +185,10 @@ local function run_lua_script(script, nvim_exec)
     local nvim_path = ShellContext.nvim_path
     if nvim_exec ~= nil and string.len(nvim_exec) > 0 then
         nvim_path = nvim_exec
+    end
+    -- nvim_path = path.normalize(nvim_path)
+    if nvim_path:match("%s+") and constants.is_windows then
+        nvim_path = vim.fn.shellescape(nvim_path)
     end
     local temp = path.join(path.base_dir(), "bin", script)
     log.debug("|fzfx.utils - run_lua_script| temp:%s", vim.inspect(temp))

@@ -1,20 +1,11 @@
 local log = require("fzfx.log")
 local constants = require("fzfx.constants")
+local env = require('fzfx.env')
 
 local Context = {
     base_dir = nil,
     sep = nil,
 }
-
---- @param path string
---- @return string
-local function normalize(path)
-    local result = path
-    if string.match(path, "\\") then
-        result, _ = string.gsub(path, "\\", "/")
-    end
-    return vim.fn.trim(result)
-end
 
 local function sep()
     if Context.sep == nil then
@@ -40,6 +31,17 @@ end
 --- @return string
 local function tempname()
     return vim.fn.tempname()
+end
+
+
+--- @param path string
+--- @return string
+local function normalize(path)
+    local result = path
+    if string.match(path, "\\") then
+        result, _ = string.gsub(path, "\\", "/")
+    end
+    return vim.fn.trim(result)
 end
 
 --- @return string
