@@ -8,9 +8,9 @@
 ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white)
 
-> This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), rewrite with lua and leverage new features from modern Neovim.
+> E(x)tended commands missing in fzf.vim
 
-E(x)tended commands missing in fzf.vim, focused on better usability and tiny improvements.
+This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin built from scratch, rewrite with lua and leverage modern features from Neovim, focused on better usability and tiny improvements.
 
 - [Feature](#feature)
 - [Requirement](#requirement)
@@ -18,9 +18,13 @@ E(x)tended commands missing in fzf.vim, focused on better usability and tiny imp
 
 ## Feature
 
-- Windows support: you can enjoy modern fzf on Windows now.
-- Multiple mode: search by visual select, cword and switch to unrestricted results (include hidden and git ignored files).
-- Lua support: preview lua defined commands and key mappings.
+- Windows support.
+- Multiple variants: you can use below methods to avoid manual input besides normal mode.
+  - Search by visual select.
+  - Search by cursor word.
+  - Search by yanked register.
+  - Unrestricted mode: include hidden and git ignored files, easily switch to and back.
+- Special support for Neovim and Lua: preview lua function defined commands and key mappings.
 - ...
 
 ## Requirement
