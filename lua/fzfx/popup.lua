@@ -294,9 +294,15 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
         vim.inspect(term_command)
     )
 
-    local function feed_terminal_exit()
+    local function feed_exit_term()
         if vim.o.buftype == "terminal" then
-            vim.fn.feedkeys(vim.o.filetype == "fzf" and "i" or "<Nop>")
+            local nop =
+                vim.api.nvim_replace_termcodes("<Nop>", true, false, true)
+            vim.api.nvim_feedkeys(
+                vim.o.filetype == "fzf" and "i" or nop,
+                "m",
+                false
+            )
         end
     end
 
@@ -315,7 +321,7 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
             )
             return
         end
-        feed_terminal_exit()
+        feed_exit_term()
         vim.api.nvim_win_close(popup_win.winnr, true)
 
         local saved_win_context = get_window_context_stack():pop()
@@ -326,7 +332,6 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
         if saved_win_context then
             vim.api.nvim_set_current_win(saved_win_context.winnr)
         end
-        vim.cmd([[ normal! \<ESC> ]])
 
         assert(
             vim.fn.filereadable(result) > 0,
@@ -356,6 +361,10 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
             log.err("error! wrong action type: %s", action_key)
         else
             action_callback(action_lines)
+            -- vim.cmd([[ normal! \<ESC> ]])
+            local esc =
+                vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+            vim.api.nvim_feedkeys(esc, "x", false)
         end
     end
     local jobid = vim.fn.termopen(term_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
