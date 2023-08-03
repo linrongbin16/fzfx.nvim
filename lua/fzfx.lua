@@ -18,7 +18,7 @@ local function setup(options)
     if configs.debug.enable then
         vim.fn.mkdir(string.format("%s/fzfx.nvim", vim.fn.stdpath("data")), "p")
     end
-    vim.env._FZFX_NVIM_DEBUG_ENABLE = configs.debug.enable
+    vim.env._FZFX_NVIM_DEBUG_ENABLE = configs.debug.enable and 1 or 0
 
     -- legacy
     require("fzfx.legacy").setup()

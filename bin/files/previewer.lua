@@ -4,8 +4,9 @@ local lineno = nil
 if #args >= 2 then
     lineno = args[2]
 end
-local _FZFX_NVIM_DEBUG_ENABLE = os.getenv("_FZFX_NVIM_DEBUG_ENABLE")
-if _FZFX_NVIM_DEBUG_ENABLE then
+local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower()
+debug_enable = debug_enable:match("true$") or debug_enable == "1"
+if debug_enable then
     io.write(
         string.format(
             "DEBUG filename:[%s], lineno:[%s]",
@@ -32,13 +33,13 @@ if vim.fn.executable("batcat") > 0 or vim.fn.executable("bat") > 0 then
             or "",
         filename
     )
-    if _FZFX_NVIM_DEBUG_ENABLE then
+    if debug_enable then
         io.write(string.format("DEBUG cmd:[%s]", cmd))
     end
     os.execute(cmd)
 else
     local cmd = string.format("cat %s", filename)
-    if _FZFX_NVIM_DEBUG_ENABLE then
+    if debug_enable then
         io.write(string.format("DEBUG cmd:[%s]", cmd))
     end
     os.execute(cmd)

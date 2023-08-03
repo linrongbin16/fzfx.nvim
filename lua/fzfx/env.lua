@@ -1,5 +1,6 @@
 local function debug_enable()
-    return vim.env._FZFX_NVIM_DEBUG_ENABLE
+    local v = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower()
+    return v:match("true$") or v == "1"
 end
 
 local M = {
