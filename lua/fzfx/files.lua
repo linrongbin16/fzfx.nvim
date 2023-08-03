@@ -6,9 +6,9 @@ local popup = require("fzfx.popup")
 
 local Context = {
     --- @type string|nil
-    rmode_header = nil,
-    --- @type string|nil
     umode_header = nil,
+    --- @type string|nil
+    rmode_header = nil,
 }
 
 --- @return string
@@ -45,23 +45,14 @@ local function files(query, bang, opts)
 
     -- query command, both initial query + reload query
     local nvim_path = conf.get_config().env.nvim
-    local query_temp =
-        utils.run_lua_script(path.join("files", "provider.lua"), nvim_path)
     local query_command = string.format(
         "%s %s",
         utils.run_lua_script(path.join("files", "provider.lua"), nvim_path),
         runtime.provider.value
     )
-    local preview_temp =
-        utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
     local preview_command = string.format(
         "%s {}",
         utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
-    )
-    log.debug(
-        "|fzfx.files - files| query_temp:%s, preview_temp:%s",
-        vim.inspect(query_temp),
-        vim.inspect(preview_temp)
     )
     log.debug(
         "|fzfx.files - files| query_command:%s, preview_command:%s",
@@ -77,7 +68,7 @@ local function files(query, bang, opts)
         },
         {
             "--prompt",
-            short_path() .. " ",
+            short_path() .. " >",
         },
         {
             "--bind",
@@ -116,58 +107,12 @@ local function files(query, bang, opts)
             "--preview",
             preview_command,
         },
-        {
-            "--preview-window",
-            "right,50%",
-        },
     }
+    fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
     local actions = files_configs.actions.expect
-    local win_opts = conf.get_config().popup.win_opts
-    local popup_win = popup.new_popup_window(win_opts)
+    local popup_win = popup.new_popup_window()
     local popup_fzf =
         popup.new_popup_fzf(popup_win, query_command, fzf_opts, actions)
-
-    local spec = {
-        source = query_command,
-        options = {
-            "--query",
-            query,
-            "--header",
-            opts.unrestricted and Context.rmode_header or Context.umode_header,
-            "--prompt",
-            short_path() .. " ",
-            "--bind",
-            string.format(
-                "start:unbind(%s)",
-                opts.unrestricted and umode_action or rmode_action
-            ),
-            "--bind",
-            -- umode action: swap provider, change rmode header, rebind rmode action, reload query
-            string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                umode_action,
-                umode_action,
-                runtime.provider:switch(),
-                Context.rmode_header,
-                rmode_action,
-                query_command
-            ),
-            "--bind",
-            -- rmode action: swap provider, change umode header, rebind umode action, reload query
-            string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                rmode_action,
-                rmode_action,
-                runtime.provider:switch(),
-                Context.umode_header,
-                umode_action,
-                query_command
-            ),
-        },
-    }
-    spec = vim.fn["fzf#vim#with_preview"](spec)
-    log.debug("|fzfx.files - files| spec:%s", vim.inspect(spec))
-    -- return vim.fn["fzf#vim#files"]("", spec, fullscreen)
 
     return popup_fzf
 end

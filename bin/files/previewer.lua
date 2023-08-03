@@ -4,16 +4,10 @@ local lineno = nil
 if #args >= 2 then
     lineno = args[2]
 end
-local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower()
-debug_enable = debug_enable:match("true$") or debug_enable == "1"
+local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
-    io.write(
-        string.format(
-            "DEBUG filename:[%s], lineno:[%s]",
-            vim.inspect(filename),
-            vim.inspect(lineno)
-        )
-    )
+    io.write(string.format("DEBUG filename:[%s]\n", vim.inspect(filename)))
+    io.write(string.format("DEBUG lineno:[%s]\n", vim.inspect(lineno)))
 end
 
 if vim.fn.executable("batcat") > 0 or vim.fn.executable("bat") > 0 then

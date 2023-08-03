@@ -2,6 +2,7 @@ local log = require("fzfx.log")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local conf = require("fzfx.config")
+local popup = require("fzfx.popup")
 
 local Context = {
     --- @type string|nil
@@ -11,9 +12,10 @@ local Context = {
 }
 
 --- @param query string
---- @param fullscreen boolean|integer
+--- @param bang boolean|integer
 --- @param opts Config
-local function live_grep(query, fullscreen, opts)
+--- @return PopupFzf
+local function live_grep(query, bang, opts)
     local live_grep_configs = conf.get_config().live_grep
     local umode_action =
         string.lower(live_grep_configs.actions.builtin.unrestricted_mode)
@@ -32,42 +34,49 @@ local function live_grep(query, fullscreen, opts)
     }
     log.debug("|fzfx.live_grep - live_grep| runtime:%s", vim.inspect(runtime))
 
+    local nvim_path = conf.get_config().env.nvim
     local initial_command = string.format(
-        "%s %s %s || true",
-        utils.run_lua_script("live_grep_provider.lua"),
+        "%s %s %s",
+        utils.run_lua_script(path.join("live_grep", "provider.lua"), nvim_path),
         runtime.provider.value,
         query
     )
     local reload_command = string.format(
         "%s %s {q} || true",
-        utils.run_lua_script("live_grep_provider.lua"),
+        utils.run_lua_script(path.join("live_grep", "provider.lua"), nvim_path),
         runtime.provider.value
     )
+    local preview_command = string.format(
+        "%s {1} {2}",
+        utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
+    )
     log.debug(
-        "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s",
+        "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s, preview_command:%s",
         vim.inspect(initial_command),
-        vim.inspect(reload_command)
+        vim.inspect(reload_command),
+        vim.inspect(preview_command)
     )
 
-    local spec = {
-        options = {
-            "--ansi",
-            "--disabled",
-            "--query",
-            query,
+    local fzf_opts = {
+        "--disabled",
+        { "--query", query },
+        {
             "--header",
             opts.unrestricted and Context.rmode_header or Context.umode_header,
+        },
+        { "--prompt", "Live Grep >" },
+        { "--delimiter", ":" },
+        {
             "--bind",
             string.format(
                 "start:unbind(%s)",
                 opts.unrestricted and umode_action or rmode_action
             ),
-            "--prompt",
-            "Live Grep> ",
-            "--bind",
-            string.format("change:reload:%s", reload_command),
-            "--bind",
+        },
+        { "--bind", string.format("change:reload:%s", reload_command) },
+        {
             -- umode action: swap provider, change rmode header, rebind rmode action, reload query
+            "--bind",
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 umode_action,
@@ -77,8 +86,10 @@ local function live_grep(query, fullscreen, opts)
                 rmode_action,
                 reload_command
             ),
-            "--bind",
+        },
+        {
             -- rmode action: swap provider, change umode header, rebind umode action, reload query
+            "--bind",
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 rmode_action,
@@ -89,10 +100,20 @@ local function live_grep(query, fullscreen, opts)
                 reload_command
             ),
         },
+        {
+            "--preview",
+            preview_command,
+        },
+        { "--preview-window", [[ +{2}-/2 ]] },
     }
-    spec = vim.fn["fzf#vim#with_preview"](spec)
-    log.debug("|fzfx.live_grep - live_grep| spec:%s", vim.inspect(spec))
-    return vim.fn["fzf#vim#grep"](initial_command, spec, fullscreen)
+    fzf_opts =
+        vim.list_extend(fzf_opts, vim.deepcopy(live_grep_configs.fzf_opts))
+    local actions = live_grep_configs.actions.expect
+    local popup_win = popup.new_popup_window()
+    local popup_fzf =
+        popup.new_popup_fzf(popup_win, initial_command, fzf_opts, actions)
+
+    return popup_fzf
 end
 
 local function setup()
