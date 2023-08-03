@@ -43,6 +43,10 @@ function WindowContextStack:push()
     local ctx = new_window_context(current_bufnr, current_winnr, current_tabnr)
     table.insert(self.stack, ctx)
     self.size = self.size + 1
+    log.debug(
+        "|fzfx.popup - WindowContextStack:push| self:%s",
+        vim.inspect(self)
+    )
     return ctx
 end
 
@@ -309,10 +313,48 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
                 term_command,
                 exitcode
             )
-        else
-            feed_terminal_exit()
+            return
         end
+        feed_terminal_exit()
         vim.api.nvim_win_close(popup_win.winnr, true)
+        local saved_win_context = get_window_context_stack():pop()
+        log.debug(
+            "|fzfx.popup - new_popup_fzf.on_fzf_exit| saved_win_context:%s",
+            vim.inspect(saved_win_context)
+        )
+        -- if saved_win_context then
+        --     vim.api.nvim_set_current_win(saved_win_context.winnr)
+        -- end
+
+        assert(
+            vim.fn.filereadable(result) > 0,
+            string.format(
+                "|fzfx.popup - new_popup_fzf.on_fzf_exit| result %s must be readable",
+                vim.inspect(result)
+            )
+        )
+        local result_lines = vim.fn.readfile(result)
+        log.debug(
+            "|fzfx.popup - new_popup_fzf.on_fzf_exit| result:%s, result_lines:%s",
+            vim.inspect(result),
+            vim.inspect(result_lines)
+        )
+        local action_key = vim.fn.trim(result_lines[1])
+        local action_lines = vim.list_slice(result_lines, 2)
+        log.debug(
+            "|fzfx.popup - new_popup_fzf.on_fzf_exit| action_key:%s, action_lines:%s",
+            vim.inspect(action_key),
+            vim.inspect(action_lines)
+        )
+        if type(action_key) == "string" and string.len(action_key) == 0 then
+            action_key = "enter"
+        end
+        local action_callback = actions[action_key]
+        if type(action_callback) ~= "function" then
+            log.err("error! wrong action type: %s", action_key)
+        else
+            action_callback(action_lines)
+        end
     end
     local jobid = vim.fn.termopen(term_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
     vim.cmd([[ startinsert ]])
