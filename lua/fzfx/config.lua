@@ -87,6 +87,9 @@ local Defaults = {
                 ["double-click"] = require("fzfx.action").edit,
             },
         },
+        fzf_opts = {
+            { "--preview-window", "right,50%" },
+        },
     },
     live_grep = {
         commands = {
@@ -163,23 +166,21 @@ local Defaults = {
                 ["double-click"] = require("fzfx.action").edit,
             },
         },
-    },
-    fzf = {
-        opts = {
-            "--ansi",
-            "--border=rounded",
-            "--no-height",
-            { "--bind", "alt-a:select-all" },
-            { "--bind", "alt-d:deselect-all" },
+        fzf_opts = {
+            { "--preview-window", "right,50%" },
         },
     },
-    popup = {
-        win_opts = {
-            height = 0.85,
-            width = 0.85,
-            border = "none",
-            zindex = 51,
-        },
+    fzf_opts = {
+        "--ansi",
+        "--border=rounded",
+        "--no-height",
+        { "--bind", "ctrl-/:toggle-preview" },
+    },
+    win_opts = {
+        height = 0.85,
+        width = 0.85,
+        border = "none",
+        zindex = 51,
     },
     env = {
         nvim = nil,

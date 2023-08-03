@@ -169,9 +169,9 @@ local function new_popup_window_layout(win_opts)
     return popup_win_opts
 end
 
---- @param win_opts Config
 --- @return PopupWindow
-local function new_popup_window(win_opts)
+local function new_popup_window()
+    local win_opts = conf.get_config().win_opts
     -- local win_stack = get_window_context_stack() --[[@as WindowContextStack]]
     -- assert(
     --     win_stack ~= nil,
@@ -251,7 +251,7 @@ end
 --- @param result string
 --- @return string
 local function make_fzf_command(fzf_opts, actions, result)
-    local base_opts = vim.deepcopy(conf.get_config().fzf.opts)
+    local base_opts = vim.deepcopy(conf.get_config().fzf_opts)
     local expect_keys = make_expect_keys(actions)
     fzf_opts = vim.list_extend(base_opts, vim.deepcopy(fzf_opts))
     fzf_opts = vim.list_extend(fzf_opts, expect_keys)
