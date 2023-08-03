@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local path = require("fzfx.path")
 local env = require("fzfx.env")
-local legacy = require("fzfx.legacy")
 local color = require("fzfx.color")
 
 -- vim {
