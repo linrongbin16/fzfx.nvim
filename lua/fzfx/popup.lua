@@ -161,7 +161,7 @@ end
 local function make_fzf_command(fzf_opts, actions, result_temp)
     local base_opts = vim.deepcopy(conf.get_config().fzf.opts)
     local expect_keys = make_expect_keys(actions)
-    fzf_opts = vim.list_extend(base_opts, fzf_opts)
+    fzf_opts = vim.list_extend(base_opts, vim.deepcopy(fzf_opts))
     fzf_opts = vim.list_extend(fzf_opts, expect_keys)
 
     local fzf_exec = vim.fn["fzf#exec"]()
@@ -242,7 +242,19 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
                 vim.inspect(result_lines)
             )
             local action = result_lines[1]
-            local lines = result_lines[1]
+            local lines = vim.list_slice(result_lines, 2)
+            log.debug(
+                "|fzfx.popup - new_popup_fzf.on_fzf_exit| found result action:%s, lines:%s",
+                vim.inspect(action),
+                vim.inspect(lines)
+            )
+            if type(action) == "string" then
+                if string.len(action) == 0 then
+                    action = "enter"
+                end
+                local action_callback = actions[action]
+                action_callback(lines)
+            end
         end
     end
     local jobid = vim.fn.termopen(term_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
