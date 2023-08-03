@@ -26,9 +26,9 @@ local function files(query, bang, opts)
     local files_configs = conf.get_config().files
     -- action
     local umode_action =
-        string.lower(files_configs.action.builtin.unrestricted_mode)
+        string.lower(files_configs.actions.builtin.unrestricted_mode)
     local rmode_action =
-        string.lower(files_configs.action.builtin.restricted_mode)
+        string.lower(files_configs.actions.builtin.restricted_mode)
 
     --- @type table<string, FileSwitch>
     local runtime = {
@@ -121,7 +121,7 @@ local function files(query, bang, opts)
             "right,50%",
         },
     }
-    local actions = files_configs.action.expect
+    local actions = files_configs.actions.expect
     local win_opts = conf.get_config().popup.win_opts
     local popup_win = popup.new_popup_window(win_opts)
     local popup_fzf =
