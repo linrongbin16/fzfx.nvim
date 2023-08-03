@@ -188,9 +188,6 @@ local function setup()
     Context.umode_header = utils.unrestricted_mode_header(umode_action)
     Context.rmode_header = utils.restricted_mode_header(rmode_action)
 
-    local restricted_opts = { unrestricted = false }
-    local unrestricted_opts = { unrestricted = true }
-
     -- User commands
     for command_name, command_opts in pairs(files_configs.command) do
         vim.api.nvim_create_user_command(
@@ -204,8 +201,8 @@ local function setup()
                 return files(
                     opts.args,
                     opts.bang,
-                    command_opts.unrestricted and unrestricted_opts
-                        or restricted_opts
+                    command_opts.unrestricted and { unrestricted = true }
+                        or { unrestricted = false }
                 )
             end,
             utils.table_filter(function(k, _)
