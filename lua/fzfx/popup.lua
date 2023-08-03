@@ -159,12 +159,12 @@ end
 --- @param win_opts Config
 --- @return PopupWindow
 local function new_popup_window(win_opts)
-    local win_stack = get_window_context_stack() --[[@as WindowContextStack]]
-    assert(
-        win_stack ~= nil,
-        "|fzfx.popup - new_popup_window| win_stack cannot be nil"
-    )
-    win_stack:push()
+    -- local win_stack = get_window_context_stack() --[[@as WindowContextStack]]
+    -- assert(
+    --     win_stack ~= nil,
+    --     "|fzfx.popup - new_popup_window| win_stack cannot be nil"
+    -- )
+    -- win_stack:push()
 
     --- @type integer
     local bufnr = vim.api.nvim_create_buf(false, true)
@@ -316,12 +316,13 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
             return
         end
         feed_terminal_exit()
+        vim.cmd([[ stopinsert ]])
         vim.api.nvim_win_close(popup_win.winnr, true)
-        local saved_win_context = get_window_context_stack():pop()
-        log.debug(
-            "|fzfx.popup - new_popup_fzf.on_fzf_exit| saved_win_context:%s",
-            vim.inspect(saved_win_context)
-        )
+        -- local saved_win_context = get_window_context_stack():pop()
+        -- log.debug(
+        --     "|fzfx.popup - new_popup_fzf.on_fzf_exit| saved_win_context:%s",
+        --     vim.inspect(saved_win_context)
+        -- )
         -- if saved_win_context then
         --     vim.api.nvim_set_current_win(saved_win_context.winnr)
         -- end
