@@ -48,7 +48,7 @@ local function live_grep(query, bang, opts)
     )
     local preview_command = string.format(
         "%s {}",
-        utils.run_lua_script(path.join("live_grep", "previewer.lua"), nvim_path)
+        utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
     )
     log.debug(
         "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s, preview_command:%s",
@@ -65,6 +65,7 @@ local function live_grep(query, bang, opts)
             opts.unrestricted and Context.rmode_header or Context.umode_header,
         },
         { "--prompt", "Live Grep> " },
+        { "--delimiter", ":" },
         {
             "--bind",
             string.format(
@@ -103,14 +104,14 @@ local function live_grep(query, bang, opts)
             "--preview",
             preview_command,
         },
-        {
-            "--preview-window",
-            "right,50%",
-        },
+        { "--preview-window", [[ +{2}-/2 ]] },
     }
-    spec = vim.fn["fzf#vim#with_preview"](spec)
-    log.debug("|fzfx.live_grep - live_grep| spec:%s", vim.inspect(spec))
-    return vim.fn["fzf#vim#grep"](initial_command, spec, bang)
+    local actions = live_grep_configs.actions.expect
+    local popup_win = popup.new_popup_window()
+    local popup_fzf =
+        popup.new_popup_fzf(popup_win, initial_command, fzf_opts, actions)
+
+    return popup_fzf
 end
 
 local function setup()

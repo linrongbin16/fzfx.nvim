@@ -107,10 +107,6 @@ local function files(query, bang, opts)
             "--preview",
             preview_command,
         },
-        {
-            "--preview-window",
-            "right,50%",
-        },
     }
     local actions = files_configs.actions.expect
     local popup_win = popup.new_popup_window()
