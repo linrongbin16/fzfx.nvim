@@ -4,8 +4,7 @@ local lineno = nil
 if #args >= 2 then
     lineno = args[2]
 end
-local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower()
-debug_enable = debug_enable:match("true$") or debug_enable == "1"
+local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
     io.write(
         string.format(

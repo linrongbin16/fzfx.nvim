@@ -1,9 +1,7 @@
 local args = _G.arg
 local provider = args[1]
-local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower()
-debug_enable = debug_enable:match("true$") or debug_enable == "1"
+local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
-    -- print(string.format("DEBUG provider:[%s]\n", provider))
     io.write(string.format("DEBUG provider:[%s]", provider))
 end
 
