@@ -23,11 +23,11 @@ local function live_grep(query, fullscreen, opts)
     local runtime = {
         --- @type FileSwitch
         provider = utils.new_file_switch("live_grep_provider", {
-            opts.unrestricted and live_grep_configs.provider.unrestricted
-                or live_grep_configs.provider.restricted,
+            opts.unrestricted and live_grep_configs.providers.unrestricted
+                or live_grep_configs.providers.restricted,
         }, {
-            opts.unrestricted and live_grep_configs.provider.restricted
-                or live_grep_configs.provider.unrestricted,
+            opts.unrestricted and live_grep_configs.providers.restricted
+                or live_grep_configs.providers.unrestricted,
         }),
     }
     log.debug("|fzfx.live_grep - live_grep| runtime:%s", vim.inspect(runtime))

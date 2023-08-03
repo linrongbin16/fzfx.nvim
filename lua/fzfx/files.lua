@@ -34,11 +34,11 @@ local function files(query, bang, opts)
     local runtime = {
         --- @type FileSwitch
         provider = utils.new_file_switch("files_provider", {
-            opts.unrestricted and files_configs.provider.unrestricted
-                or files_configs.provider.restricted,
+            opts.unrestricted and files_configs.providers.unrestricted
+                or files_configs.providers.restricted,
         }, {
-            opts.unrestricted and files_configs.provider.restricted
-                or files_configs.provider.unrestricted,
+            opts.unrestricted and files_configs.providers.restricted
+                or files_configs.providers.unrestricted,
         }),
     }
     log.debug("|fzfx.files - files| runtime:%s", vim.inspect(runtime))
