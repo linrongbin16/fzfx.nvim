@@ -246,15 +246,31 @@ local function make_expect_keys(actions)
     return expect_keys
 end
 
+--- @param fzf_opts string[]|string[][]
+--- @param actions table<string, any>
+--- @return string[]
+local function merge_fzf_opts(fzf_opts, actions)
+    local base_fzf_opts = conf.get_config().fzf_opts
+    local expect_keys = make_expect_keys(actions)
+    local merged_opts =
+        vim.list_extend(vim.deepcopy(base_fzf_opts), vim.deepcopy(fzf_opts))
+    merged_opts = vim.list_extend(merged_opts, expect_keys)
+    log.debug(
+        "|fzfx.popup - merge_fzf_opts| base_fzf_opts:%s, fzf_opts:%s, actions:%s, merged_opts:%s",
+        vim.inspect(base_fzf_opts),
+        vim.inspect(fzf_opts),
+        vim.inspect(actions),
+        vim.inspect(merged_opts)
+    )
+    return merged_opts
+end
+
 --- @param fzf_opts Config
 --- @param actions Config
 --- @param result string
 --- @return string
 local function make_fzf_command(fzf_opts, actions, result)
-    local base_opts = vim.deepcopy(conf.get_config().fzf_opts)
-    local expect_keys = make_expect_keys(actions)
-    fzf_opts = vim.list_extend(base_opts, vim.deepcopy(fzf_opts))
-    fzf_opts = vim.list_extend(fzf_opts, expect_keys)
+    fzf_opts = merge_fzf_opts(fzf_opts, actions)
 
     local fzf_exec = vim.fn["fzf#exec"]()
     local builder = {}
