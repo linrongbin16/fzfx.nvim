@@ -30,7 +30,8 @@ end
 -- First in, last out
 -- Last in, first out
 --- @class WindowContextStack
---- @field window_contexts WindowContext[]
+--- @field size integer
+--- @field stack WindowContext[]
 local WindowContextStack = {
     size = 0,
     stack = {},
