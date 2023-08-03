@@ -13,16 +13,6 @@ else
     let s:fzfx_base = expand('<sfile>:p:h:h:h')
 endif
 
-if s:is_win
-    let s:fzfx_bin = s:fzfx_base.'\bin\'
-else
-    let s:fzfx_bin = s:fzfx_base.'/bin/'
-endif
-
-function! fzfx#nvim#plugin_home() abort
+function! fzfx#nvim#base_dir() abort
     return s:fzfx_base
-endfunction
-
-function! fzfx#nvim#plugin_bin() abort
-    return s:fzfx_bin
 endfunction

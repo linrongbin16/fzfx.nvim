@@ -2,21 +2,33 @@ local log = require("fzfx.log")
 local path = require("fzfx.path")
 local env = require("fzfx.env")
 local legacy = require("fzfx.legacy")
+local color = require("fzfx.color")
 
---- @param configs Config
-local function define_command(configs, fun, command_opts)
-    vim.api.nvim_create_user_command(
-        configs.name,
-        fun,
-        configs.desc
-                and vim.tbl_deep_extend(
-                    "force",
-                    vim.deepcopy(command_opts),
-                    { desc = configs.desc }
-                )
-            or command_opts
-    )
+-- vim {
+
+local function table_filter(f, t)
+    local result = {}
+    for k, v in pairs(t) do
+        if f(k, v) then
+            result[k] = v
+        end
+    end
+    return result
 end
+
+local function list_filter(f, l)
+    local result = {}
+    for i, v in ipairs(l) do
+        if f(i, v) then
+            table.insert(result, v)
+        end
+    end
+    return result
+end
+
+-- vim }
+
+-- visual select {
 
 --- @param mode string
 --- @return string
@@ -90,6 +102,8 @@ local function visual_select()
     return ""
 end
 
+-- visual select }
+
 --- @class FileSwitch
 --- @field value string|nil
 --- @field next string|nil
@@ -121,38 +135,35 @@ end
 --- @param next_value string[]
 --- @return FileSwitch
 local function new_file_switch(name, current_value, next_value)
-    local init = nil
-    if env.debug_enable() then
-        init = {
-            value = string.format(
-                "%s%sfzfx.nvim%s%s_current_swapable",
-                vim.fn.stdpath("data"),
-                path.separator(),
-                path.separator(),
-                name
-            ),
-            next = string.format(
-                "%s%sfzfx.nvim%s%s_next_swapable",
-                vim.fn.stdpath("data"),
-                path.separator(),
-                path.separator(),
-                name
-            ),
-            swap = string.format(
-                "%s%sfzfx.nvim%s%s_swap_swapable",
-                vim.fn.stdpath("data"),
-                path.separator(),
-                path.separator(),
-                name
-            ),
-        }
-    else
-        init({
+    local init = env.debug_enable()
+            and {
+                value = string.format(
+                    "%s%sfzfx.nvim%s%s_current_swapable",
+                    vim.fn.stdpath("data"),
+                    path.sep(),
+                    path.sep(),
+                    name
+                ),
+                next = string.format(
+                    "%s%sfzfx.nvim%s%s_next_swapable",
+                    vim.fn.stdpath("data"),
+                    path.sep(),
+                    path.sep(),
+                    name
+                ),
+                swap = string.format(
+                    "%s%sfzfx.nvim%s%s_swap_swapable",
+                    vim.fn.stdpath("data"),
+                    path.sep(),
+                    path.sep(),
+                    name
+                ),
+            }
+        or {
             value = path.tempname(),
             next = path.tempname(),
             swap = path.tempname(),
-        })
-    end
+        }
     --- @type FileSwitch
     local switch = vim.tbl_deep_extend("force", vim.deepcopy(FileSwitch), init)
     vim.fn.writefile(current_value, switch.value, "b")
@@ -160,18 +171,27 @@ local function new_file_switch(name, current_value, next_value)
     return switch
 end
 
+local ShellContext = {
+    nvim_path = nil,
+}
+
 --- @param script string
+--- @param nvim_exec string
 --- @return string
-local function run_lua_script(script)
-    local nvim_path = env.nvim_exec()
-    if type(nvim_path) ~= "string" then
-        nvim_path = "nvim"
+local function run_lua_script(script, nvim_exec)
+    if ShellContext.nvim_path == nil then
+        ShellContext.nvim_path = vim.v.argv[1]
     end
+    local nvim_path = ShellContext.nvim_path
+    if nvim_exec ~= nil and string.len(nvim_exec) > 0 then
+        nvim_path = nvim_exec
+    end
+    local temp = path.join(path.base_dir(), "bin", script)
+    log.debug("|fzfx.utils - run_lua_script| temp:%s", vim.inspect(temp))
     return string.format(
-        "%s -n --clean --headless -V1 -l %s%s",
+        "%s -n --clean --headless -l %s",
         nvim_path,
-        path.plugin_bin(),
-        script
+        path.join(path.base_dir(), "bin", script)
     )
 end
 
@@ -180,7 +200,7 @@ end
 local function unrestricted_mode_header(action)
     return string.format(
         ":: Press %s to unrestricted mode",
-        legacy.magenta(string.upper(action))
+        color.magenta(string.upper(action))
     )
 end
 
@@ -189,12 +209,13 @@ end
 local function restricted_mode_header(action)
     return string.format(
         ":: Press %s to restricted mode",
-        legacy.magenta(string.upper(action))
+        color.magenta(string.upper(action))
     )
 end
 
 local M = {
-    define_command = define_command,
+    table_filter = table_filter,
+    list_filter = list_filter,
     visual_select = visual_select,
     new_file_switch = new_file_switch,
     run_lua_script = run_lua_script,

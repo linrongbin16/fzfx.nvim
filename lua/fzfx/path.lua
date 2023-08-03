@@ -1,9 +1,9 @@
-local infra = require("fzfx.infra")
+local log = require("fzfx.log")
+local constants = require("fzfx.constants")
 
 local Context = {
-    plugin_home = nil,
-    plugin_bin = nil,
-    separator = nil,
+    base_dir = nil,
+    sep = nil,
 }
 
 --- @param path string
@@ -16,29 +16,25 @@ local function normalize(path)
     return vim.fn.trim(result)
 end
 
---- @return string
-local function plugin_home()
-    if Context.plugin_home == nil then
-        Context.plugin_home = vim.fn["fzfx#nvim#plugin_home"]()
-    end
-    return Context.plugin_home
-end
-
---- @return string
-local function plugin_bin()
-    if Context.plugin_bin == nil then
-        Context.plugin_bin = vim.fn["fzfx#nvim#plugin_bin"]()
-    end
-    return Context.plugin_bin
-end
-
-local function separator()
-    if Context.separator == nil then
-        Context.separator = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
+local function sep()
+    if Context.sep == nil then
+        Context.sep = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
                 and "\\"
             or "/"
     end
-    return Context.separator
+    return Context.sep
+end
+
+local function join(...)
+    return table.concat({ ... }, sep())
+end
+
+--- @return string
+local function base_dir()
+    if Context.base_dir == nil then
+        Context.base_dir = vim.fn["fzfx#nvim#base_dir"]()
+    end
+    return Context.base_dir
 end
 
 --- @return string
@@ -49,7 +45,7 @@ end
 --- @return string
 local function windows_named_pipe()
     assert(
-        infra.is_windows,
+        constants.is_windows,
         string.format("error! must be windows to get the windows named pipe")
     )
     return string.format("\\\\%.\\pipe\\nvim-%s", os.clock())
@@ -58,11 +54,11 @@ end
 local M = {
     -- path
     normalize = normalize,
-    separator = separator,
+    sep = sep,
+    join = join,
 
     -- plugin dir
-    plugin_home = plugin_home,
-    plugin_bin = plugin_bin,
+    base_dir = base_dir,
 
     -- temp file
     tempname = tempname,
