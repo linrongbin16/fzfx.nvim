@@ -8,9 +8,9 @@
 ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white)
 
-> E(x)tended commands missing in fzf.vim
+> E(x)tended commands missing in fzf.vim, focused on better usability and tiny improvements
 
-This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin built from scratch, rewrite with lua and leverage modern features from Neovim, focused on better usability and tiny improvements.
+This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin built from scratch, rewrite with lua and leverage modern features from Neovim.
 
 - [Feature](#feature)
 - [Requirement](#requirement)
