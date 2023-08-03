@@ -1,11 +1,16 @@
 local log = require("fzfx.log")
 
-local function open_buffer(lines)
-    log.debug("|fzfx.action - open_buffer| lines:%s", vim.inspect(lines))
+local function edit(lines)
+    log.debug("|fzfx.action - edit| lines:%s", vim.inspect(lines))
+    for i, line in ipairs(lines) do
+        local cmd = string.format("execute 'edit %s'", vim.fn.expand(line))
+        log.debug("|fzfx.action - edit| line[%d] cmd:%s", i, vim.inspect(cmd))
+        vim.cmd(cmd)
+    end
 end
 
 local M = {
-    open_buffer = open_buffer,
+    edit = edit,
 }
 
 return M

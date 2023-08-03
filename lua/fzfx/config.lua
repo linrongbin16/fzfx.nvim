@@ -83,8 +83,8 @@ local Defaults = {
                 restricted_mode = "ctrl-r",
             },
             expect = {
-                ["enter"] = require("fzfx.action").open_buffer,
-                ["double-click"] = require("fzfx.action").open_buffer,
+                ["enter"] = require("fzfx.action").edit,
+                ["double-click"] = require("fzfx.action").edit,
             },
         },
     },
@@ -159,8 +159,8 @@ local Defaults = {
                 restricted_mode = "ctrl-r",
             },
             expect = {
-                ["enter"] = require("fzfx.action").open_buffer,
-                ["double-click"] = require("fzfx.action").open_buffer,
+                ["enter"] = require("fzfx.action").edit,
+                ["double-click"] = require("fzfx.action").edit,
             },
         },
     },
