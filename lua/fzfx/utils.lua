@@ -135,38 +135,35 @@ end
 --- @param next_value string[]
 --- @return FileSwitch
 local function new_file_switch(name, current_value, next_value)
-    local init = nil
-    if env.debug_enable() then
-        init = {
-            value = string.format(
-                "%s%sfzfx.nvim%s%s_current_swapable",
-                vim.fn.stdpath("data"),
-                path.sep(),
-                path.sep(),
-                name
-            ),
-            next = string.format(
-                "%s%sfzfx.nvim%s%s_next_swapable",
-                vim.fn.stdpath("data"),
-                path.sep(),
-                path.sep(),
-                name
-            ),
-            swap = string.format(
-                "%s%sfzfx.nvim%s%s_swap_swapable",
-                vim.fn.stdpath("data"),
-                path.sep(),
-                path.sep(),
-                name
-            ),
-        }
-    else
-        init = {
+    local init = env.debug_enable()
+            and {
+                value = string.format(
+                    "%s%sfzfx.nvim%s%s_current_swapable",
+                    vim.fn.stdpath("data"),
+                    path.sep(),
+                    path.sep(),
+                    name
+                ),
+                next = string.format(
+                    "%s%sfzfx.nvim%s%s_next_swapable",
+                    vim.fn.stdpath("data"),
+                    path.sep(),
+                    path.sep(),
+                    name
+                ),
+                swap = string.format(
+                    "%s%sfzfx.nvim%s%s_swap_swapable",
+                    vim.fn.stdpath("data"),
+                    path.sep(),
+                    path.sep(),
+                    name
+                ),
+            }
+        or {
             value = path.tempname(),
             next = path.tempname(),
             swap = path.tempname(),
         }
-    end
     --- @type FileSwitch
     local switch = vim.tbl_deep_extend("force", vim.deepcopy(FileSwitch), init)
     vim.fn.writefile(current_value, switch.value, "b")
