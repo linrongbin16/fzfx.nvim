@@ -47,7 +47,7 @@ local function live_grep(query, bang, opts)
         runtime.provider.value
     )
     local preview_command = string.format(
-        "%s {}",
+        "%s {1} {2}",
         utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
     )
     log.debug(
@@ -64,7 +64,7 @@ local function live_grep(query, bang, opts)
             "--header",
             opts.unrestricted and Context.rmode_header or Context.umode_header,
         },
-        { "--prompt", "Live Grep > " },
+        { "--prompt", "Live Grep >" },
         { "--delimiter", ":" },
         {
             "--bind",

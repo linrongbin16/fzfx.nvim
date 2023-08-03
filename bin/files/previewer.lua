@@ -6,13 +6,8 @@ if #args >= 2 then
 end
 local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
-    io.write(
-        string.format(
-            "DEBUG filename:[%s], lineno:[%s]",
-            vim.inspect(filename),
-            vim.inspect(lineno)
-        )
-    )
+    io.write(string.format("DEBUG filename:[%s]\n", vim.inspect(filename)))
+    io.write(string.format("DEBUG lineno:[%s]\n", vim.inspect(lineno)))
 end
 
 if vim.fn.executable("batcat") > 0 or vim.fn.executable("bat") > 0 then
