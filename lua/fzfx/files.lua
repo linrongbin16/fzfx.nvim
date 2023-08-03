@@ -181,34 +181,62 @@ local function setup()
         vim.inspect(files_configs)
     )
 
-    local umode_action = files_configs.action.builtin.unrestricted_mode
-    local rmode_action = files_configs.action.builtin.restricted_mode
+    local umode_action = files_configs.actions.builtin.unrestricted_mode
+    local rmode_action = files_configs.actions.builtin.restricted_mode
 
     -- Context
     Context.umode_header = utils.unrestricted_mode_header(umode_action)
     Context.rmode_header = utils.restricted_mode_header(rmode_action)
 
     -- User commands
-    for command_name, command_opts in pairs(files_configs.command) do
-        vim.api.nvim_create_user_command(
-            command_name,
-            function(opts)
-                log.debug(
-                    "|fzfx.files - setup| command:%s, opts:%s",
-                    vim.inspect(command_name),
-                    vim.inspect(opts)
-                )
-                return files(
-                    opts.args,
-                    opts.bang,
-                    command_opts.unrestricted and { unrestricted = true }
-                        or { unrestricted = false }
-                )
-            end,
-            utils.table_filter(function(k, _)
-                return k ~= "unrestricted"
-            end, command_opts)
-        )
+    for _, command_configs in pairs(files_configs.commands.normal) do
+        vim.api.nvim_create_user_command(command_configs.name, function(opts)
+            log.debug(
+                "|fzfx.files - setup| command:%s, opts:%s",
+                vim.inspect(command_configs.name),
+                vim.inspect(opts)
+            )
+            return files(
+                opts.args,
+                opts.bang,
+                command_configs.unrestricted and { unrestricted = true }
+                    or { unrestricted = false }
+            )
+        end, command_configs.opts)
+    end
+    for _, command_configs in pairs(files_configs.commands.visual) do
+        vim.api.nvim_create_user_command(command_configs.name, function(opts)
+            local selected = utils.visual_select()
+            log.debug(
+                "|fzfx.files - setup| command:%s, selected:%s, opts:%s",
+                vim.inspect(command_configs.name),
+                vim.inspect(selected),
+                vim.inspect(opts)
+            )
+            return files(
+                selected,
+                opts.bang,
+                command_configs.unrestricted and { unrestricted = true }
+                    or { unrestricted = false }
+            )
+        end, command_configs.opts)
+    end
+    for _, command_configs in pairs(files_configs.commands.cword) do
+        vim.api.nvim_create_user_command(command_configs.name, function(opts)
+            local word = vim.fn.expand("<cword>")
+            log.debug(
+                "|fzfx.files - setup| command:%s, word:%s, opts:%s",
+                vim.inspect(command_configs.name),
+                vim.inspect(word),
+                vim.inspect(opts)
+            )
+            return files(
+                word,
+                opts.bang,
+                command_configs.unrestricted and { unrestricted = true }
+                    or { unrestricted = false }
+            )
+        end, command_configs.opts)
     end
 end
 
