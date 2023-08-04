@@ -135,29 +135,29 @@ end
 --- @return FileSwitch
 local function new_file_switch(name, current_value, next_value)
     local init = env.debug_enable()
-            and {
-                value = string.format(
-                    "%s%sfzfx.nvim%s%s_current_swapable",
-                    vim.fn.stdpath("data"),
-                    path.sep(),
-                    path.sep(),
-                    name
-                ),
-                next = string.format(
-                    "%s%sfzfx.nvim%s%s_next_swapable",
-                    vim.fn.stdpath("data"),
-                    path.sep(),
-                    path.sep(),
-                    name
-                ),
-                swap = string.format(
-                    "%s%sfzfx.nvim%s%s_swap_swapable",
-                    vim.fn.stdpath("data"),
-                    path.sep(),
-                    path.sep(),
-                    name
-                ),
-            }
+        and {
+            value = string.format(
+                "%s%sfzfx.nvim%s%s_value",
+                vim.fn.stdpath("data"),
+                path.sep(),
+                path.sep(),
+                name
+            ),
+            next = string.format(
+                "%s%sfzfx.nvim%s%s_next",
+                vim.fn.stdpath("data"),
+                path.sep(),
+                path.sep(),
+                name
+            ),
+            swap = string.format(
+                "%s%sfzfx.nvim%s%s_swap",
+                vim.fn.stdpath("data"),
+                path.sep(),
+                path.sep(),
+                name
+            ),
+        }
         or {
             value = path.tempname(),
             next = path.tempname(),

@@ -127,7 +127,7 @@ local function new_popup_window_opts(win_opts)
         math.max(
             3,
             win_opts.width > 1 and win_opts.width
-                or math.floor(columns * win_opts.width)
+            or math.floor(columns * win_opts.width)
         ),
         columns
     )
@@ -136,7 +136,7 @@ local function new_popup_window_opts(win_opts)
         math.max(
             3,
             win_opts.height > 1 and win_opts.height
-                or math.floor(lines * win_opts.height)
+            or math.floor(lines * win_opts.height)
         ),
         lines
     )
@@ -155,7 +155,7 @@ local function new_popup_window_opts(win_opts)
             math.max(
                 0,
                 win_opts.row > 1 and win_opts.row
-                    or math.floor((lines - height) * win_opts.row)
+                or math.floor((lines - height) * win_opts.row)
             ),
             lines - height
         )
@@ -175,7 +175,7 @@ local function new_popup_window_opts(win_opts)
             math.max(
                 0,
                 win_opts.col > 1 and win_opts.col
-                    or math.floor((columns - width) * win_opts.col)
+                or math.floor((columns - width) * win_opts.col)
             ),
             columns - width
         )
@@ -344,10 +344,6 @@ end
 local function new_popup_fzf(popup_win, source, fzf_opts, actions)
     local result = path.tempname()
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
-    log.debug(
-        "|fzfx.popup - new_popup_fzf| fzf_command:%s",
-        vim.inspect(fzf_command)
-    )
 
     local function on_fzf_exit(jobid2, exitcode, event)
         log.debug(
@@ -414,6 +410,14 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
     end
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
     vim.env.FZF_DEFAULT_COMMAND = source
+    log.debug(
+        "|fzfx.popup - new_popup_fzf| $FZF_DEFAULT_COMMAND:%s",
+        vim.inspect(vim.env.FZF_DEFAULT_COMMAND)
+    )
+    log.debug(
+        "|fzfx.popup - new_popup_fzf| fzf_command:%s",
+        vim.inspect(fzf_command)
+    )
     local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
     vim.env.FZF_DEFAULT_COMMAND = prev_fzf_default_command
     vim.cmd([[ startinsert ]])
