@@ -141,7 +141,10 @@ local function new_popup_window_opts(win_opts)
         lines
     )
     --- @type integer
-    local row = 0.5
+    local row = math.min(
+        math.max(0, math.floor((lines - height) * 0.5)),
+        lines - height
+    )
     if win_opts.row >= -1 and win_opts.row < 0 then
         log.err(
             "error! invalid win_opts.row '%s' option!",
@@ -158,7 +161,10 @@ local function new_popup_window_opts(win_opts)
         )
     end
     --- @type integer
-    local col = 0.5
+    local col = math.min(
+        math.max(0, math.floor((columns - width) * 0.5)),
+        columns - width
+    )
     if win_opts.col >= -1 and win_opts.col < 0 then
         log.err(
             "error! invalid win_opts.col '%s' option!",

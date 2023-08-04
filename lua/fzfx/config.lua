@@ -188,10 +188,10 @@ local Defaults = {
         height = 0.85,
         width = 0.85,
         -- popup window row/col position
-        -- if 0 <= r/c <= 1, evaluate as the ratio based on editor window's lines and columns
-        -- if r/c > 1 or r/c < -1, pass it directly to nvim_open_win api
+        -- if 0 < r/c < 1, evaluate as the ratio based on editor window's lines and columns
+        -- if r/c >= 1 or r/c <= -1, pass it directly to nvim_open_win api
         -- Note: r/c cannot be in range [-1, 0), it makes no sense.
-        row = 0.5,
+        row = -vim.o.cmdheight,
         col = 0.5,
         anchor = "NW",
         border = "none",
