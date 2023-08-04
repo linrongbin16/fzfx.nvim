@@ -64,7 +64,7 @@ local function live_grep(query, bang, opts)
             "--header",
             opts.unrestricted and Context.rmode_header or Context.umode_header,
         },
-        { "--prompt", "Live Grep >" },
+        { "--prompt", "Live Grep > " },
         { "--delimiter", ":" },
         {
             "--bind",
@@ -104,7 +104,7 @@ local function live_grep(query, bang, opts)
             "--preview",
             preview_command,
         },
-        { "--preview-window", [[ +{2}-/2 ]] },
+        { "--preview-window", "+{2}-/2" },
     }
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(live_grep_configs.fzf_opts))
