@@ -4,8 +4,8 @@ local content = args[2]
 
 local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
-    io.write(string.format("DEBUG provider:[%s]", provider))
-    io.write(string.format("DEBUG content:[%s]", content))
+    io.write(string.format("DEBUG provider:[%s]\n", provider))
+    io.write(string.format("DEBUG content:[%s]\n", content))
 end
 
 local f = io.open(provider --[[@as string]], "r")
@@ -37,17 +37,13 @@ if flag_pos ~= nil and flag_pos > 0 then
         "%s %s -- %s",
         provider_cmd,
         option,
-        string.len(query) > 0 and query or '""'
+        vim.fn.shellescape(query)
     )
 else
-    cmd = string.format(
-        "%s -- %s",
-        provider_cmd,
-        string.len(content) > 0 and content or '""'
-    )
+    cmd = string.format("%s -- %s", provider_cmd, vim.fn.shellescape(content))
 end
 
 if debug_enable then
-    io.write(string.format("DEBUG cmd:[%s]", cmd))
+    io.write(string.format("DEBUG cmd:[%s]\n", cmd))
 end
 os.execute(cmd)
