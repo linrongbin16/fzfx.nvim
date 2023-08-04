@@ -286,17 +286,13 @@ local function make_fzf_command(fzf_opts, actions, result)
             then
                 table.insert(
                     builder,
-                    string.format(
-                        "%s %s",
-                        vim.fn.trim(key),
-                        vim.fn.shellescape(vim.fn.trim(value))
-                    )
+                    string.format("%s %s", key, vim.fn.shellescape(value))
                 )
             else
                 log.err("error! invalid fzf opt '%s'!", vim.inspect(opt))
             end
         elseif type(opt) == "string" then
-            table.insert(builder, vim.fn.trim(opt))
+            table.insert(builder, opt)
         else
             log.err("error! invalid fzf opt '%s'!", vim.inspect(opt))
         end
