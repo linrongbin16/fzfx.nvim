@@ -19,7 +19,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 ## Feature
 
 - Windows support.
-- Multiple variants: you can use below methods to avoid manual input besides normal mode.
+- Multiple variants: you can use below methods to avoid manual input.
   - Search by visual select.
   - Search by cursor word.
   - Search by yanked register.
