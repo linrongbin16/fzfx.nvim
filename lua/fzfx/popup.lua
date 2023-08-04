@@ -127,7 +127,7 @@ local function new_popup_window_layout(win_opts)
         math.max(
             3,
             win_opts.width > 1 and win_opts.width
-            or math.floor(columns * win_opts.width)
+                or math.floor(columns * win_opts.width)
         ),
         columns
     )
@@ -136,7 +136,7 @@ local function new_popup_window_layout(win_opts)
         math.max(
             3,
             win_opts.height > 1 and win_opts.height
-            or math.floor(lines * win_opts.height)
+                or math.floor(lines * win_opts.height)
         ),
         lines
     )
@@ -278,19 +278,10 @@ local function make_fzf_command(fzf_opts, actions, result)
         if type(opt) == "table" and #opt == 2 then
             local key = opt[1]
             local value = opt[2]
-            if
-                type(key) == "string"
-                and string.len(key) > 0
-                and type(value) == "string"
-                and string.len(value) > 0
-            then
-                table.insert(
-                    builder,
-                    string.format("%s %s", key, vim.fn.shellescape(value))
-                )
-            else
-                log.err("error! invalid fzf opt '%s'!", vim.inspect(opt))
-            end
+            table.insert(
+                builder,
+                string.format("%s %s", key, vim.fn.shellescape(value))
+            )
         elseif type(opt) == "string" then
             table.insert(builder, opt)
         else

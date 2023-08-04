@@ -37,14 +37,10 @@ if flag_pos ~= nil and flag_pos > 0 then
         "%s %s -- %s",
         provider_cmd,
         option,
-        string.len(query) > 0 and query or '""'
+        vim.fn.shellescape(query)
     )
 else
-    cmd = string.format(
-        "%s -- %s",
-        provider_cmd,
-        string.len(content) > 0 and content or '""'
-    )
+    cmd = string.format("%s -- %s", provider_cmd, vim.fn.shellescape(content))
 end
 
 if debug_enable then
