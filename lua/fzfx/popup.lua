@@ -127,7 +127,7 @@ local function new_popup_window_layout(win_opts)
         math.max(
             3,
             win_opts.width > 1 and win_opts.width
-                or math.floor(columns * win_opts.width)
+            or math.floor(columns * win_opts.width)
         ),
         columns
     )
@@ -136,7 +136,7 @@ local function new_popup_window_layout(win_opts)
         math.max(
             3,
             win_opts.height > 1 and win_opts.height
-                or math.floor(lines * win_opts.height)
+            or math.floor(lines * win_opts.height)
         ),
         lines
     )
@@ -318,12 +318,10 @@ end
 --- @return PopupFzf
 local function new_popup_fzf(popup_win, source, fzf_opts, actions)
     local result = path.tempname()
-
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
-    local term_command = string.format("%s | %s", source, fzf_command)
     log.debug(
-        "|fzfx.popup - new_popup_fzf| term_command:%s",
-        vim.inspect(term_command)
+        "|fzfx.popup - new_popup_fzf| fzf_command:%s",
+        vim.inspect(fzf_command)
     )
 
     local function on_fzf_exit(jobid2, exitcode, event)
@@ -336,7 +334,7 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
         if exitcode > 1 and (exitcode ~= 130 and exitcode ~= 129) then
             log.err(
                 "error! command %s running with exit code %d",
-                term_command,
+                fzf_command,
                 exitcode
             )
             return
@@ -387,7 +385,10 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
             action_callback(action_lines)
         end
     end
-    local jobid = vim.fn.termopen(term_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
+    local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
+    vim.env.FZF_DEFAULT_COMMAND = source
+    local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
+    vim.env.FZF_DEFAULT_COMMAND = prev_fzf_default_command
     vim.cmd([[ startinsert ]])
 
     --- @type PopupFzf
