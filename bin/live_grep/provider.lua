@@ -4,8 +4,8 @@ local content = args[2]
 
 local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
-    io.write(string.format("DEBUG provider:[%s]", provider))
-    io.write(string.format("DEBUG content:[%s]", content))
+    io.write(string.format("DEBUG provider:[%s]\n", provider))
+    io.write(string.format("DEBUG content:[%s]\n", content))
 end
 
 local f = io.open(provider --[[@as string]], "r")
@@ -44,6 +44,6 @@ else
 end
 
 if debug_enable then
-    io.write(string.format("DEBUG cmd:[%s]", cmd))
+    io.write(string.format("DEBUG cmd:[%s]\n", cmd))
 end
 os.execute(cmd)
