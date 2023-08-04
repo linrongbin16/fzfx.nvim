@@ -19,18 +19,17 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 ## Feature
 
 - Windows support.
-- Multiple variants: you can use below methods to avoid manual input.
+- Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
   - Search by yanked register.
-  - Unrestricted mode: include hidden and git ignored files, easily switch to and back.
-- Special support for Neovim and Lua: preview lua function defined commands and key mappings.
+- (Un)restricted mode: easily switch whether to search hidden and ignored files.
+- Lua support: preview lua function defined commands and key mappings.
 - ...
 
 ## Requirement
 
 - Neovim &ge; 0.8.
-- [fzf](https://github.com/junegunn/fzf) and [fzf.vim](https://github.com/junegunn/fzf.vim).
 - [rg](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), recommand to install them with [cargo](https://www.rust-lang.org/):
 
   ```bash
@@ -41,9 +40,9 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 ### For Windows
 
-Since fzf.vim rely on bash shell on Windows, so you need either:
+Since fzf.vim rely on the `sh` shell on Windows, so you need either:
 
-1. Automatically install `git` and `bash` via [scoop](https://scoop.sh) and run powershell commands:
+1. Automatically install `git` and `sh` via [scoop](https://scoop.sh) and run powershell commands:
 
    ```powershell
    # scoop
@@ -55,7 +54,7 @@ Since fzf.vim rely on bash shell on Windows, so you need either:
    scoop install coreutils
    ```
 
-2. Or manually install [Git for Windows](https://git-scm.com/download/win), and explicitly add unix builtin commands (`bash.exe`, `cat.exe`, `mv.exe`, etc) to `%PATH%` environment:
+2. Or manually install [Git for Windows](https://git-scm.com/download/win), and explicitly add unix builtin commands (`sh.exe`, `cat.exe`, `mv.exe`, etc) to `%PATH%` environment:
 
    1. In **Adjusting your PATH environment**, select **Use Git and optional Unix tools from the Command Prompt**.
 
@@ -89,7 +88,6 @@ Or put `C:\Program Files\Git\cmd`, `C:\Program Files\Git\mingw64\bin` and `C:\Pr
 
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
-- [nvim-fzf](https://github.com/vijaymarupudi/nvim-fzf): A Lua API for using fzf in neovim.
 
 ## Contribute
 
