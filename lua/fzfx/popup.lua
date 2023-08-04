@@ -117,7 +117,7 @@ local PopupWindowOpts = {
 
 --- @param win_opts Config
 --- @return PopupWindowOpts
-local function new_popup_window_layout(win_opts)
+local function new_popup_window_opts(win_opts)
     --- @type integer
     local columns = vim.o.columns
     --- @type integer
@@ -127,7 +127,7 @@ local function new_popup_window_layout(win_opts)
         math.max(
             3,
             win_opts.width > 1 and win_opts.width
-                or math.floor(columns * win_opts.width)
+            or math.floor(columns * win_opts.width)
         ),
         columns
     )
@@ -136,22 +136,55 @@ local function new_popup_window_layout(win_opts)
         math.max(
             3,
             win_opts.height > 1 and win_opts.height
-                or math.floor(lines * win_opts.height)
+            or math.floor(lines * win_opts.height)
         ),
         lines
     )
     --- @type integer
-    local row =
-        math.min(math.max(math.floor((lines - height) / 2), 0), lines - height)
+    local row = math.min(
+        math.max(0, math.floor((lines - height) * 0.5)),
+        lines - height
+    )
+    if win_opts.row >= -1 and win_opts.row < 0 then
+        log.err(
+            "error! invalid win_opts.row '%s' option!",
+            vim.inspect(win_opts.row)
+        )
+    else
+        row = math.min(
+            math.max(
+                0,
+                win_opts.row > 1 and win_opts.row
+                or math.floor((lines - height) * win_opts.row)
+            ),
+            lines - height
+        )
+    end
     --- @type integer
     local col = math.min(
-        math.max(math.floor((columns - width) / 2), 0),
+        math.max(0, math.floor((columns - width) * 0.5)),
         columns - width
     )
+    if win_opts.col >= -1 and win_opts.col < 0 then
+        log.err(
+            "error! invalid win_opts.col '%s' option!",
+            vim.inspect(win_opts.col)
+        )
+    else
+        col = math.min(
+            math.max(
+                0,
+                win_opts.col > 1 and win_opts.col
+                or math.floor((columns - width) * win_opts.col)
+            ),
+            columns - width
+        )
+    end
 
     --- @type PopupWindowOpts
     local popup_win_opts =
         vim.tbl_deep_extend("force", vim.deepcopy(PopupWindowOpts), {
+            anchor = win_opts.anchor,
             relative = "editor",
             width = width,
             height = height,
@@ -163,7 +196,8 @@ local function new_popup_window_layout(win_opts)
             zindex = win_opts.zindex,
         })
     log.debug(
-        "|fzfx.popup - new_window_layout| win_layout:%s",
+        "|fzfx.popup - new_popup_window_opts| (origin) win_opts:%s, popup_win_opts:%s",
+        vim.inspect(win_opts),
         vim.inspect(popup_win_opts)
     )
     return popup_win_opts
@@ -190,7 +224,7 @@ local function new_popup_window()
     vim.api.nvim_set_option_value("filetype", "fzf", { buf = bufnr })
 
     --- @type PopupWindowOpts
-    local popup_win_opts = new_popup_window_layout(win_opts)
+    local popup_win_opts = new_popup_window_opts(win_opts)
     --- @type integer
     local winnr = vim.api.nvim_open_win(bufnr, true, popup_win_opts)
     --- set winhighlight='Pmenu:,Normal:Normal'
@@ -310,10 +344,6 @@ end
 local function new_popup_fzf(popup_win, source, fzf_opts, actions)
     local result = path.tempname()
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
-    log.debug(
-        "|fzfx.popup - new_popup_fzf| fzf_command:%s",
-        vim.inspect(fzf_command)
-    )
 
     local function on_fzf_exit(jobid2, exitcode, event)
         log.debug(
@@ -369,15 +399,25 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
         if type(action_key) == "string" and string.len(action_key) == 0 then
             action_key = "enter"
         end
-        local action_callback = actions[action_key]
-        if type(action_callback) ~= "function" then
-            log.err("error! wrong action type: %s", action_key)
-        else
-            action_callback(action_lines)
+        if not tostring(action_key):match("v:null") then
+            local action_callback = actions[action_key]
+            if type(action_callback) ~= "function" then
+                log.err("error! wrong action type: %s", action_key)
+            else
+                action_callback(action_lines)
+            end
         end
     end
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
     vim.env.FZF_DEFAULT_COMMAND = source
+    log.debug(
+        "|fzfx.popup - new_popup_fzf| $FZF_DEFAULT_COMMAND:%s",
+        vim.inspect(vim.env.FZF_DEFAULT_COMMAND)
+    )
+    log.debug(
+        "|fzfx.popup - new_popup_fzf| fzf_command:%s",
+        vim.inspect(fzf_command)
+    )
     local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
     vim.env.FZF_DEFAULT_COMMAND = prev_fzf_default_command
     vim.cmd([[ startinsert ]])
