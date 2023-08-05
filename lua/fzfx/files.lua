@@ -1,8 +1,11 @@
 local log = require("fzfx.log")
-local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local popup = require("fzfx.popup")
+local FileSwitch = require("fzfx.utils").FileSwitch
+local shell = require("fzfx.shell")
+local color = require("fzfx.color")
+local helpers = require("fzfx.helpers")
 
 local Context = {
     --- @type string|nil
@@ -33,7 +36,7 @@ local function files(query, bang, opts)
     --- @type table<string, FileSwitch>
     local runtime = {
         --- @type FileSwitch
-        provider = utils.new_file_switch("files_provider", {
+        provider = FileSwitch:new("files_provider", {
             opts.unrestricted and files_configs.providers.unrestricted
                 or files_configs.providers.restricted,
         }, {
@@ -44,16 +47,13 @@ local function files(query, bang, opts)
     log.debug("|fzfx.files - files| runtime:%s", vim.inspect(runtime))
 
     -- query command, both initial query + reload query
-    local nvim_path = conf.get_config().env.nvim
     local query_command = string.format(
         "%s %s",
-        utils.run_lua_script(path.join("files", "provider.lua"), nvim_path),
+        shell.make_lua_command("files", "provider.lua"),
         runtime.provider.value
     )
-    local preview_command = string.format(
-        "%s {}",
-        utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
-    )
+    local preview_command =
+        string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))
     log.debug(
         "|fzfx.files - files| query_command:%s, preview_command:%s",
         vim.inspect(query_command),
@@ -110,7 +110,8 @@ local function files(query, bang, opts)
     }
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
     local actions = files_configs.actions.expect
-    local popup_win = popup.new_popup_window()
+    local popup_win =
+        popup.new_popup_window(bang and { height = 1, width = 1 } or nil)
     local popup_fzf =
         popup.new_popup_fzf(popup_win, query_command, fzf_opts, actions)
 
@@ -130,8 +131,8 @@ local function setup()
     local rmode_action = files_configs.actions.builtin.restricted_mode
 
     -- Context
-    Context.umode_header = utils.unrestricted_mode_header(umode_action)
-    Context.rmode_header = utils.restricted_mode_header(rmode_action)
+    Context.umode_header = color.unrestricted_mode_header(umode_action)
+    Context.rmode_header = color.restricted_mode_header(rmode_action)
 
     -- User commands
     for _, command_configs in pairs(files_configs.commands.normal) do
@@ -151,7 +152,7 @@ local function setup()
     end
     for _, command_configs in pairs(files_configs.commands.visual) do
         vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local selected = utils.visual_select()
+            local selected = helpers.visual_select()
             log.debug(
                 "|fzfx.files - setup| command:%s, selected:%s, opts:%s",
                 vim.inspect(command_configs.name),

@@ -16,7 +16,10 @@ local function setup(options)
 
     -- env
     if configs.debug.enable then
-        vim.fn.mkdir(string.format("%s/fzfx.nvim", vim.fn.stdpath("data")), "p")
+        vim.fn.mkdir(
+            require("fzfx.path").join(vim.fn.stdpath("data"), "fzfx.nvim"),
+            "p"
+        )
     end
     vim.env._FZFX_NVIM_DEBUG_ENABLE = configs.debug.enable and 1 or 0
 
