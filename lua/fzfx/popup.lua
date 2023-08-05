@@ -1,6 +1,7 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local path = require("fzfx.path")
+local shell = require("fzfx.shell")
 
 -- --- @class WindowContext
 -- --- @field bufnr integer|nil
@@ -310,7 +311,7 @@ end
 local function make_fzf_command(fzf_opts, actions, result)
     fzf_opts = merge_fzf_opts(fzf_opts, actions)
 
-    local fzf_exec = vim.fn["fzf#exec"]()
+    local fzf_path = shell.fzf_exec()
     local builder = {}
     for _, opt in ipairs(fzf_opts) do
         if type(opt) == "table" and #opt == 2 then
@@ -332,7 +333,7 @@ local function make_fzf_command(fzf_opts, actions, result)
         vim.inspect(builder)
     )
     local command =
-        string.format("%s %s >%s", fzf_exec, table.concat(builder, " "), result)
+        string.format("%s %s >%s", fzf_path, table.concat(builder, " "), result)
     log.debug(
         "|fzfx.popup - make_fzf_command| command:%s",
         vim.inspect(command)

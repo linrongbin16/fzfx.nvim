@@ -1,4 +1,3 @@
-local log = require("fzfx.log")
 local constants = require("fzfx.constants")
 
 local Context = {
@@ -17,12 +16,7 @@ local function normalize(path)
 end
 
 local function sep()
-    if Context.sep == nil then
-        Context.sep = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
-                and "\\"
-            or "/"
-    end
-    return Context.sep
+    return (constants.is_windows and vim.o.shellslash > 0) and "\\" or "/"
 end
 
 local function join(...)
@@ -31,10 +25,7 @@ end
 
 --- @return string
 local function base_dir()
-    if Context.base_dir == nil then
-        Context.base_dir = vim.fn["fzfx#nvim#base_dir"]()
-    end
-    return Context.base_dir
+    return vim.fn["fzfx#nvim#base_dir"]()
 end
 
 --- @return string
