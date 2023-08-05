@@ -15,6 +15,10 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
 - [Feature](#feature)
 - [Requirement](#requirement)
   - [For Windows](#for-windows)
+- [Install](#install)
+  - [vim-plug](#vim-plug)
+  - [packer.nvim](#packernvim)
+  - [lazy.nvim](#lazynvim)
 
 ## Feature
 
@@ -83,6 +87,48 @@ Or put `C:\Program Files\Git\cmd`, `C:\Program Files\Git\mingw64\bin` and `C:\Pr
 <p align="center"><img alt="git-path" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/8e77e211-1993-4fbb-b845-37c4db883ac4" width="70%" /></p>
 
 </details>
+
+## Install
+
+### [vim-plug](https://github.com/junegunn/vim-plug)
+
+```vim
+call plug#begin()
+
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'linrongbin16/fzfx.nvim'
+
+call plug#end()
+```
+
+### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+return require('packer').startup(function(use)
+
+    use { "junegunn/fzf", run = ":call fzf#install()" }
+    use {
+        "linrongbin16/fzfx.vim",
+        requires = { "junegunn/fzf" },
+    }
+
+end)
+```
+
+### [lazy.nvim](https://github.com/folke/lazy.nvim)
+
+```lua
+require("lazy").setup({
+
+    { "junegunn/fzf", build = ":call fzf#install()" },
+    {
+        "linrongbin16/fzfx.vim",
+        dependencies = { "junegunn/fzf" },
+    },
+
+})
+```
+
 
 ## Credit
 
