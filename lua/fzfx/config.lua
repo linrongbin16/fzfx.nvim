@@ -200,6 +200,7 @@ local Defaults = {
 
     env = {
         nvim = nil,
+        fzf = nil,
     },
     debug = {
         enable = false,
