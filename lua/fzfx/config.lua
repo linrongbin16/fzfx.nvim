@@ -183,16 +183,17 @@ local Defaults = {
     -- please check: https://neovim.io/doc/user/api.html#nvim_open_win()
     win_opts = {
         -- popup window height/width
-        -- if 0 <= h/w <= 1, evaluate as the ratio based on editor window's lines and columns
+        -- if 0 <= h/w <= 1, evaluate as the ratio of editor's lines and columns
         -- if h/w > 1, pass it directly to nvim_open_win api
         height = 0.85,
         width = 0.85,
-        -- popup window row/col position
-        -- if 0 < r/c < 1, evaluate as the ratio based on editor window's lines and columns
-        -- if r/c >= 1 or r/c <= -1, pass it directly to nvim_open_win api
-        -- Note: r/c cannot be in range [-1, 0), it makes no sense.
-        row = -vim.o.cmdheight, -- 0.5
-        col = 0.5,
+        -- by default popup window position is on editor center,
+        -- with row/col, you can adjust the popup window position.
+        -- if -0.5 <= r/c <= 0.5, evaluate as the ratio of editor's lines and columns shift from center.
+        -- if r/c <= -1 or r/c >= 1, evaluate as the difference lines and columns shift from center.
+        -- Note: r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
+        row = 0, -- set `row = -vim.o.cmdheight` to move up 1~2 lines, to avoid conflict with command line and status line.
+        col = 0,
         anchor = "NW",
         border = "none",
         zindex = 51,

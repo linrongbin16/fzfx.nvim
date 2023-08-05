@@ -116,6 +116,10 @@ local PopupWindowOpts = {
     zindex = nil,
 }
 
+local function safe_range(left, value, right)
+    return math.min(math.max(left, value), right)
+end
+
 --- @param win_opts Config
 --- @return PopupWindowOpts
 local function new_popup_window_opts(win_opts)
@@ -124,62 +128,66 @@ local function new_popup_window_opts(win_opts)
     --- @type integer
     local lines = vim.o.lines
     --- @type integer
-    local width = math.min(
-        math.max(
-            3,
-            win_opts.width > 1 and win_opts.width
-                or math.floor(columns * win_opts.width)
-        ),
+    local width = safe_range(
+        3,
+        win_opts.width > 1 and win_opts.width
+            or math.floor(columns * win_opts.width),
         columns
     )
     --- @type integer
-    local height = math.min(
-        math.max(
-            3,
-            win_opts.height > 1 and win_opts.height
-                or math.floor(lines * win_opts.height)
-        ),
+    local height = safe_range(
+        3,
+        win_opts.height > 1 and win_opts.height
+            or math.floor(lines * win_opts.height),
         lines
     )
     --- @type integer
-    local row = math.min(
-        math.max(0, math.floor((lines - height) * 0.5)),
-        lines - height
-    )
-    if win_opts.row >= -1 and win_opts.row < 0 then
-        log.err(
-            "error! invalid win_opts.row '%s' option!",
+    local row = nil
+    if
+        (win_opts.row > -1 and win_opts.row < -0.5)
+        or (win_opts.row > 0.5 and win_opts.row < 1)
+    then
+        log.throw(
+            "error! invalid option win_opts.row '%s'!",
             vim.inspect(win_opts.row)
         )
     else
-        row = math.min(
-            math.max(
-                0,
-                win_opts.row > 1 and win_opts.row
-                    or math.floor((lines - height) * win_opts.row)
-            ),
-            lines - height
-        )
+        local base_row = math.floor((lines - height) * 0.5)
+        if win_opts.row >= 0 then
+            local shift_row = win_opts.row < 1
+                    and math.floor((lines - height) * win_opts.row)
+                or win_opts.row
+            row = safe_range(0, base_row + shift_row, lines - height)
+        else
+            local shift_row = win_opts.row > -1
+                    and math.ceil((lines - height) * win_opts.row)
+                or win_opts.row
+            row = safe_range(0, base_row + shift_row, lines - height)
+        end
     end
     --- @type integer
-    local col = math.min(
-        math.max(0, math.floor((columns - width) * 0.5)),
-        columns - width
-    )
-    if win_opts.col >= -1 and win_opts.col < 0 then
-        log.err(
-            "error! invalid win_opts.col '%s' option!",
+    local col = nil
+    if
+        (win_opts.col > -1 and win_opts.col < -0.5)
+        or (win_opts.col > 0.5 and win_opts.col < 1)
+    then
+        log.throw(
+            "error! invalid option win_opts.col '%s'!",
             vim.inspect(win_opts.col)
         )
     else
-        col = math.min(
-            math.max(
-                0,
-                win_opts.col > 1 and win_opts.col
-                    or math.floor((columns - width) * win_opts.col)
-            ),
-            columns - width
-        )
+        local base_col = math.floor((columns - width) * 0.5)
+        if win_opts.col >= 0 then
+            local shift_col = win_opts.col < 1
+                    and math.floor((columns - width) * win_opts.col)
+                or win_opts.col
+            col = safe_range(0, base_col + shift_col, columns - width)
+        else
+            local shift_col = win_opts.col > -1
+                    and math.ceil((columns - width) * win_opts.col)
+                or win_opts.col
+            col = safe_range(0, base_col + shift_col, columns - width)
+        end
     end
 
     --- @type PopupWindowOpts
