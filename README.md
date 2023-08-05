@@ -20,6 +20,8 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#commands)
+  - [FzfxFiles](#fzfxfiles)
+  - [FzfxLiveGrep](#fzfxlivegrep)
 
 ## Feature
 
@@ -140,6 +142,21 @@ require("lazy").setup({
 | Live Grep | FzfxLiveGrep(U)  | N    | Live grep (unrestricted)                   |
 |           | FzfxLiveGrep(U)V | X    | Live grep (unrestricted) by visual select  |
 |           | FzfxLiveGrep(U)W | N    | Live grep (unrestricted) by cursor word    |
+
+
+<details>
+<summary><b>DEMO</b></summary>
+<br />
+
+### FzfxFiles
+
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b14b03aa-ba38-441d-bbba-a6a1135c19aa
+
+### FzfxLiveGrep
+
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/f93abb17-a5ce-41d8-a3a4-ff0e64a81a91
+
+</details>
 
 ## Credit
 
