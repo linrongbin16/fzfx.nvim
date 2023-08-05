@@ -19,6 +19,7 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
   - [vim-plug](#vim-plug)
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
+- [Commands](#commands)
 
 ## Feature
 
@@ -129,6 +130,13 @@ require("lazy").setup({
 })
 ```
 
+## Commands
+
+| Group | Command       | Mode | Description                                |
+|-------|---------------|------|--------------------------------------------|
+| Files | FzfxFiles(U)  | N    | Find files (unrestricted)                  |
+|       | FzfxFiles(U)V | X    | Find files (unrestricted) by visual select |
+|       | FzfxFiles(U)W | N    | Find files (unrestricted) by cursor word   |
 
 ## Credit
 
