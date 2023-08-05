@@ -118,7 +118,7 @@ end)
 ### [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
-return {
+require("lazy").setup({
 
     { "junegunn/fzf", build = ":call fzf#install()" },
     {
@@ -126,7 +126,7 @@ return {
         dependencies = { "junegunn/fzf" },
     },
 
-}
+})
 ```
 
 
