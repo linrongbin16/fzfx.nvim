@@ -1,10 +1,11 @@
 local log = require("fzfx.log")
-local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local popup = require("fzfx.popup")
 local shell = require("fzfx.shell")
 local FileSwitch = require("fzfx.utils").FileSwitch
+local color = require("fzfx.color")
+local helpers = require("fzfx.helpers")
 
 local Context = {
     --- @type string|nil
@@ -110,7 +111,8 @@ local function live_grep(query, bang, opts)
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(live_grep_configs.fzf_opts))
     local actions = live_grep_configs.actions.expect
-    local popup_win = popup.new_popup_window()
+    local popup_win =
+        popup.new_popup_window(bang and { height = 1, width = 1 } or nil)
     local popup_fzf =
         popup.new_popup_fzf(popup_win, initial_command, fzf_opts, actions)
 
@@ -129,8 +131,8 @@ local function setup()
     local rmode_action = live_grep_configs.actions.builtin.restricted_mode
 
     -- Context
-    Context.umode_header = utils.unrestricted_mode_header(umode_action)
-    Context.rmode_header = utils.restricted_mode_header(rmode_action)
+    Context.umode_header = color.unrestricted_mode_header(umode_action)
+    Context.rmode_header = color.restricted_mode_header(rmode_action)
 
     -- User commands
     for _, command_configs in pairs(live_grep_configs.commands.normal) do
@@ -150,7 +152,7 @@ local function setup()
     end
     for _, command_configs in pairs(live_grep_configs.commands.visual) do
         vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local selected = utils.visual_select()
+            local selected = helpers.visual_select()
             log.debug(
                 "|fzfx.live_grep - setup| command:%s, selected:%s, opts:%s",
                 vim.inspect(command_configs.name),

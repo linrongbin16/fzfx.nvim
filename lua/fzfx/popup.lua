@@ -204,8 +204,12 @@ local function new_popup_window_opts(win_opts)
 end
 
 --- @return PopupWindow
-local function new_popup_window()
-    local win_opts = conf.get_config().win_opts
+local function new_popup_window(win_opts)
+    local wopts = vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(conf.get_config().win_opts),
+        vim.deepcopy(win_opts) or {}
+    )
     -- local win_stack = get_window_context_stack() --[[@as WindowContextStack]]
     -- assert(
     --     win_stack ~= nil,
@@ -224,7 +228,7 @@ local function new_popup_window()
     vim.api.nvim_set_option_value("filetype", "fzf", { buf = bufnr })
 
     --- @type PopupWindowOpts
-    local popup_win_opts = new_popup_window_opts(win_opts)
+    local popup_win_opts = new_popup_window_opts(wopts)
     --- @type integer
     local winnr = vim.api.nvim_open_win(bufnr, true, popup_win_opts)
     --- set winhighlight='Pmenu:,Normal:Normal'
