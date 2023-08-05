@@ -3,9 +3,9 @@ local is_windows = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
 --- @type boolean
 local is_macos = vim.fn.has("mac") > 0
 
-local bat = vim.fn.executable("bat") > 0 and "bat" or "batcat"
+local bat = vim.fn.executable("batcat") > 0 and "batcat" or "bat"
 local rg = "rg"
-local fd = vim.fn.executable("fd") > 0 and "fd" or "fdfind"
+local fd = vim.fn.executable("fdfind") > 0 and "fdfind" or "fd"
 
 local M = {
     -- os
