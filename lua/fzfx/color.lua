@@ -103,42 +103,50 @@ local function ansi(text, name, group)
     return result
 end
 
-local function black(text, hl)
-    return ansi(text, "black", hl or "Comment")
+local M = {}
+
+for color, default_hl in pairs({
+    black = "Comment",
+    red = "Exception",
+    green = "Label",
+    yellow = "LineNr",
+    blue = "TabLine",
+    magenta = "Special",
+    cyan = "String",
+}) do
+    --- @param text string
+    --- @param hl string|nil
+    --- @return string
+    M[color] = function(text, hl)
+        return ansi(text, color, hl or default_hl)
+    end
 end
 
-local function red(text, hl)
-    return ansi(text, "red", hl or "Exception")
+--- @param fmt string
+--- @param renderer fun(color:string,hl:string|nil):string
+--- @return string
+local function render(fmt, renderer, ...)
+    local args = {}
+    for _, a in ipairs({ ... }) do
+        table.insert(args, renderer(a))
+    end
+    return string.format(fmt, unpack(args))
 end
 
-local function green(text, hl)
-    return ansi(text, "green", hl or "Label")
+M.unrestricted_mode_header = function(action)
+    return render(
+        ":: Press %s to unrestricted mode",
+        M.magenta,
+        string.upper(action)
+    )
 end
 
-local function yellow(text, hl)
-    return ansi(text, "yellow", hl or "LineNr")
+M.restricted_mode_header = function(action)
+    return render(
+        ":: Press %s to restricted mode",
+        M.magenta,
+        string.upper(action)
+    )
 end
-
-local function blue(text, hl)
-    return ansi(text, "blue", hl or "TabLine")
-end
-
-local function magenta(text, hl)
-    return ansi(text, "magenta", hl or "Special")
-end
-
-local function cyan(text, hl)
-    return ansi(text, "cyan", hl or "String")
-end
-
-local M = {
-    black = black,
-    red = red,
-    green = green,
-    yellow = yellow,
-    blue = blue,
-    magenta = magenta,
-    cyan = cyan,
-}
 
 return M
