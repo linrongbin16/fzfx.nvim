@@ -2,13 +2,6 @@ local log = require("fzfx.log")
 local path = require("fzfx.path")
 local conf = require("fzfx.config")
 
-local Context = {
-    --- @type string|nil
-    nvim_path = nil,
-    --- @type string|nil
-    fzf_path = nil,
-}
-
 --- @return string|nil
 local function nvim_exec()
     local exe_list = {}
@@ -16,7 +9,7 @@ local function nvim_exec()
     table.insert(exe_list, vim.v.argv[1])
     table.insert(exe_list, vim.env.VIM)
     table.insert(exe_list, "nvim")
-    for _, e in exe_list do
+    for _, e in ipairs(exe_list) do
         if e ~= nil and vim.fn.executable(e) > 0 then
             return e
         end
@@ -29,14 +22,14 @@ end
 local function fzf_exec()
     local exe_list = {}
     table.insert(exe_list, conf.get_config().env.fzf)
-    table.insert(exe_list, vim.fn["fzf#fzf_exec"]())
+    table.insert(exe_list, vim.fn["fzf#exec"]())
     table.insert(exe_list, "fzf")
-    for _, e in exe_list do
+    for _, e in ipairs(exe_list) do
         if e ~= nil and vim.fn.executable(e) > 0 then
             return e
         end
     end
-    log.throw("error! failed to found executable 'nvim' on path!")
+    log.throw("error! failed to found executable 'fzf' on path!")
     return nil
 end
 
@@ -52,6 +45,8 @@ local function make_lua_command(...)
 end
 
 local M = {
+    nvim_exec = nvim_exec,
+    fzf_exec = fzf_exec,
     make_lua_command = make_lua_command,
 }
 

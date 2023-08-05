@@ -37,34 +37,34 @@ local function get_color(attr, group)
     return nil
 end
 
---- @param color string|nil
+--- @param color string
 --- @param fg boolean
 --- @return string|nil
 local function csi(color, fg)
-    if type(color) ~= "string" then
-        return nil
-    end
     local code = fg and 38 or 48
     local r, g, b = color:match("#(..)(..)(..)")
-    if not r or not g or not b then
+    if r and g and b then
+        r = tonumber(r, 16)
+        g = tonumber(g, 16)
+        b = tonumber(b, 16)
+        local result = string.format("%d;2;%d;%d;%d", code, r, g, b)
         log.debug(
-            "|fzfx.color - csi| fallback, color:%s, fg:%s, result:nil",
+            "|fzfx.color - csi| rgb, color:%s, fg:%s, result:%s",
             vim.inspect(color),
-            vim.inspect(fg)
+            vim.inspect(fg),
+            vim.inspect(result)
         )
-        return nil
+        return result
+    else
+        local result = string.format("%d;5;%s", code, color)
+        log.debug(
+            "|fzfx.color - csi| non-rgb, color:%s, fg:%s, result:%s",
+            vim.inspect(color),
+            vim.inspect(fg),
+            vim.inspect(result)
+        )
+        return result
     end
-    r = tonumber(r, 16)
-    g = tonumber(g, 16)
-    b = tonumber(b, 16)
-    local result = string.format("%d;2;%d;%d;%d", code, r, g, b)
-    log.debug(
-        "|fzfx.color - csi| color:%s, fg:%s, result:%s",
-        vim.inspect(color),
-        vim.inspect(fg),
-        vim.inspect(result)
-    )
-    return result
 end
 
 --- @param text string
@@ -72,35 +72,62 @@ end
 --- @param group string
 --- @return string
 local function ansi(text, name, group)
-    local color = get_color("fg", group)
-
-    local rgbcolor = csi(color, true)
-    if type(rgbcolor) == "string" and string.len(rgbcolor) > 0 then
-        local result = string.format("[%sm%s[0m", rgbcolor, text)
+    local fg = get_color("fg", group)
+    local fgcolor = nil
+    if type(fg) == "string" then
+        fgcolor = csi(fg, true)
         log.debug(
-            "|fzfx.color - ansi| text:%s, name:%s, group:%s, fg:%s, rgbcolor:%s, result:%s",
+            "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
             vim.inspect(text),
             vim.inspect(name),
             vim.inspect(group),
-            vim.inspect(color),
-            vim.inspect(rgbcolor),
-            vim.inspect(result)
+            vim.inspect(fg),
+            vim.inspect(fgcolor)
         )
-        return result
+    else
+        fgcolor = AnsiCode[name]
+        log.debug(
+            "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
+            vim.inspect(text),
+            vim.inspect(name),
+            vim.inspect(group),
+            vim.inspect(fg),
+            vim.inspect(fgcolor)
+        )
     end
 
-    local ansicolor = AnsiCode[name]
-    local result = string.format("[%sm%s[0m", ansicolor, text)
+    local bg = get_color("bg", group)
+    local finalcolor = nil
+    if type(bg) == "string" then
+        local bgcolor = csi(bg, false)
+        log.debug(
+            "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, bg:%s, bgcolor:%s",
+            vim.inspect(text),
+            vim.inspect(name),
+            vim.inspect(group),
+            vim.inspect(bg),
+            vim.inspect(bgcolor)
+        )
+        finalcolor = string.format("%s;%s", fgcolor, bgcolor)
+    else
+        log.debug(
+            "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, bg:%s",
+            vim.inspect(text),
+            vim.inspect(name),
+            vim.inspect(group),
+            vim.inspect(bg)
+        )
+        finalcolor = fgcolor
+    end
+
     log.debug(
-        "|fzfx.color - ansi| text:%s, name:%s, group:%s, fg:%s, ansicolor:%s, result:%s",
+        "|fzfx.color - ansi| ansi, finalcolor:%s",
         vim.inspect(text),
         vim.inspect(name),
         vim.inspect(group),
-        vim.inspect(color),
-        vim.inspect(ansicolor),
-        vim.inspect(result)
+        vim.inspect(bg)
     )
-    return result
+    return string.format("[%sm%s[0m", finalcolor, text)
 end
 
 local M = {}
