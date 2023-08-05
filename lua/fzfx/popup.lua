@@ -127,7 +127,7 @@ local function new_popup_window_opts(win_opts)
         math.max(
             3,
             win_opts.width > 1 and win_opts.width
-            or math.floor(columns * win_opts.width)
+                or math.floor(columns * win_opts.width)
         ),
         columns
     )
@@ -136,7 +136,7 @@ local function new_popup_window_opts(win_opts)
         math.max(
             3,
             win_opts.height > 1 and win_opts.height
-            or math.floor(lines * win_opts.height)
+                or math.floor(lines * win_opts.height)
         ),
         lines
     )
@@ -155,7 +155,7 @@ local function new_popup_window_opts(win_opts)
             math.max(
                 0,
                 win_opts.row > 1 and win_opts.row
-                or math.floor((lines - height) * win_opts.row)
+                    or math.floor((lines - height) * win_opts.row)
             ),
             lines - height
         )
@@ -175,7 +175,7 @@ local function new_popup_window_opts(win_opts)
             math.max(
                 0,
                 win_opts.col > 1 and win_opts.col
-                or math.floor((columns - width) * win_opts.col)
+                    or math.floor((columns - width) * win_opts.col)
             ),
             columns - width
         )

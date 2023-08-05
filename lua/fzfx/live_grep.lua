@@ -3,6 +3,7 @@ local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local popup = require("fzfx.popup")
+local FileSwitch = require("fzfx.utils").FileSwitch
 
 local Context = {
     --- @type string|nil
@@ -24,7 +25,7 @@ local function live_grep(query, bang, opts)
 
     local runtime = {
         --- @type FileSwitch
-        provider = utils.new_file_switch("live_grep_provider", {
+        provider = FileSwitch:new("live_grep_provider", {
             opts.unrestricted and live_grep_configs.providers.unrestricted
                 or live_grep_configs.providers.restricted,
         }, {

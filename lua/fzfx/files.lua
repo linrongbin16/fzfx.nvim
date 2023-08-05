@@ -3,6 +3,7 @@ local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local popup = require("fzfx.popup")
+local FileSwitch = require("fzfx.utils").FileSwitch
 
 local Context = {
     --- @type string|nil
@@ -33,7 +34,7 @@ local function files(query, bang, opts)
     --- @type table<string, FileSwitch>
     local runtime = {
         --- @type FileSwitch
-        provider = utils.new_file_switch("files_provider", {
+        provider = FileSwitch:new("files_provider", {
             opts.unrestricted and files_configs.providers.unrestricted
                 or files_configs.providers.restricted,
         }, {
