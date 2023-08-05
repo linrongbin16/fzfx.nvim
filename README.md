@@ -132,11 +132,14 @@ require("lazy").setup({
 
 ## Commands
 
-| Group | Command       | Mode | Description                                |
-|-------|---------------|------|--------------------------------------------|
-| Files | FzfxFiles(U)  | N    | Find files (unrestricted)                  |
-|       | FzfxFiles(U)V | X    | Find files (unrestricted) by visual select |
-|       | FzfxFiles(U)W | N    | Find files (unrestricted) by cursor word   |
+| Group     | Command          | Mode | Description                                |
+|-----------|------------------|------|--------------------------------------------|
+| Files     | FzfxFiles(U)     | N    | Find files (unrestricted)                  |
+|           | FzfxFiles(U)V    | X    | Find files (unrestricted) by visual select |
+|           | FzfxFiles(U)W    | N    | Find files (unrestricted) by cursor word   |
+| Live Grep | FzfxLiveGrep(U)  | N    | Live grep (unrestricted)                   |
+|           | FzfxLiveGrep(U)V | X    | Live grep (unrestricted) by visual select  |
+|           | FzfxLiveGrep(U)W | N    | Live grep (unrestricted) by cursor word    |
 
 ## Credit
 
