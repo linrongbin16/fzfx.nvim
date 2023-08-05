@@ -20,6 +20,9 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#commands)
+- [Configuration](#configuration)
+- [Credit](#credit)
+- [Contribute](#contribute)
 
 ## Feature
 
@@ -114,6 +117,8 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'linrongbin16/fzfx.nvim'
 
 call plug#end()
+
+require('fzfx').setup()
 ```
 
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
@@ -125,6 +130,9 @@ return require('packer').startup(function(use)
     use {
         "linrongbin16/fzfx.vim",
         requires = { "junegunn/fzf" },
+        config = function()
+            require("fzfx").setup()
+        end
     }
 
 end)
@@ -139,6 +147,9 @@ require("lazy").setup({
     {
         "linrongbin16/fzfx.vim",
         dependencies = { "junegunn/fzf" },
+        config = function()
+            require("fzfx").setup()
+        end
     },
 
 })
@@ -190,6 +201,10 @@ require("lazy").setup({
   </tr>
 </tbody>
 </table>
+
+## Configuration
+
+For complete options and default configurations, please check: [lua/fzfx/config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/80b5b806b5ef3aa9f2483579b1445675efb52634/lua/fzfx/config.lua#L12).
 
 ## Credit
 
