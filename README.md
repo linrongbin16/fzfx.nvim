@@ -20,8 +20,6 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#commands)
-  - [FzfxFiles](#fzfxfiles)
-  - [FzfxLiveGrep](#fzfxlivegrep)
 
 ## Feature
 
@@ -33,6 +31,21 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
 - (Un)restricted mode: easily switch whether to search hidden and ignored files.
 - Lua support: preview lua function defined commands and key mappings.
 - ...
+
+
+<details>
+<summary><b>Click here to see demo</b></summary>
+<br />
+
+1. FzfxFiles
+
+   https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b14b03aa-ba38-441d-bbba-a6a1135c19aa
+
+2. FzfxLiveGrep
+
+   https://github.com/linrongbin16/fzfx.nvim/assets/6496887/f93abb17-a5ce-41d8-a3a4-ff0e64a81a91
+
+</details>
 
 ## Requirement
 
@@ -134,29 +147,50 @@ require("lazy").setup({
 
 ## Commands
 
-| Group     | Command          | Mode | Description                                |
-|-----------|------------------|------|--------------------------------------------|
-| Files     | FzfxFiles(U)     | N    | Find files (unrestricted)                  |
-|           | FzfxFiles(U)V    | X    | Find files (unrestricted) by visual select |
-|           | FzfxFiles(U)W    | N    | Find files (unrestricted) by cursor word   |
-| Live Grep | FzfxLiveGrep(U)  | N    | Live grep (unrestricted)                   |
-|           | FzfxLiveGrep(U)V | X    | Live grep (unrestricted) by visual select  |
-|           | FzfxLiveGrep(U)W | N    | Live grep (unrestricted) by cursor word    |
-
-
-<details>
-<summary><b>DEMO</b></summary>
-<br />
-
-### FzfxFiles
-
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b14b03aa-ba38-441d-bbba-a6a1135c19aa
-
-### FzfxLiveGrep
-
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/f93abb17-a5ce-41d8-a3a4-ff0e64a81a91
-
-</details>
+<table>
+<thead>
+  <tr>
+    <th>Group</th>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td rowspan="3">Files</td>
+    <td>FzfxFiles(U)</td>
+    <td>Normal</td>
+    <td>Find files (unrestricted)</td>
+  </tr>
+  <tr>
+    <td>FzfxFiles(U)V</td>
+    <td>Visual</td>
+    <td>Find files (unrestricted) by visual select</td>
+  </tr>
+  <tr>
+    <td>FzfxFiles(U)W</td>
+    <td>Normal</td>
+    <td>Find files (unrestricted) by cursor word</td>
+  </tr>
+  <tr>
+    <td rowspan="3">Live Grep</td>
+    <td>FzfxLiveGrep(U)</td>
+    <td>Normal</td>
+    <td>Live grep (unrestricted)</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(U)V</td>
+    <td>Visual</td>
+    <td>Live grep (unrestricted) by visual select</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(U)W</td>
+    <td>Normal</td>
+    <td>Live grep (unrestricted) by cursor word</td>
+  </tr>
+</tbody>
+</table>
 
 ## Credit
 
