@@ -172,26 +172,6 @@ local ShellContext = {
     nvim_path = nil,
 }
 
---- @param script string
---- @param nvim_exec string
---- @return string
-local function run_lua_script(script, nvim_exec)
-    if ShellContext.nvim_path == nil then
-        ShellContext.nvim_path = vim.v.argv[1]
-    end
-    local nvim_path = ShellContext.nvim_path
-    if nvim_exec ~= nil and string.len(nvim_exec) > 0 then
-        nvim_path = nvim_exec
-    end
-    local temp = path.join(path.base_dir(), "bin", script)
-    log.debug("|fzfx.utils - run_lua_script| temp:%s", vim.inspect(temp))
-    return string.format(
-        "%s -n --clean --headless -l %s",
-        nvim_path,
-        path.join(path.base_dir(), "bin", script)
-    )
-end
-
 --- @param action string
 --- @return string
 local function unrestricted_mode_header(action)
@@ -215,7 +195,6 @@ local M = {
     list_filter = list_filter,
     visual_select = visual_select,
     FileSwitch = FileSwitch,
-    run_lua_script = run_lua_script,
     unrestricted_mode_header = unrestricted_mode_header,
     restricted_mode_header = restricted_mode_header,
 }

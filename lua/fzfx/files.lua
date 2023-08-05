@@ -4,6 +4,7 @@ local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local popup = require("fzfx.popup")
 local FileSwitch = require("fzfx.utils").FileSwitch
+local shell = require("fzfx.shell")
 
 local Context = {
     --- @type string|nil
@@ -45,16 +46,13 @@ local function files(query, bang, opts)
     log.debug("|fzfx.files - files| runtime:%s", vim.inspect(runtime))
 
     -- query command, both initial query + reload query
-    local nvim_path = conf.get_config().env.nvim
     local query_command = string.format(
         "%s %s",
-        utils.run_lua_script(path.join("files", "provider.lua"), nvim_path),
+        shell.make_lua_command("files", "provider.lua"),
         runtime.provider.value
     )
-    local preview_command = string.format(
-        "%s {}",
-        utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
-    )
+    local preview_command =
+        string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))
     log.debug(
         "|fzfx.files - files| query_command:%s, preview_command:%s",
         vim.inspect(query_command),

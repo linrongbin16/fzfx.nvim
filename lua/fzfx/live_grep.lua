@@ -3,6 +3,7 @@ local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local popup = require("fzfx.popup")
+local shell = require("fzfx.shell")
 local FileSwitch = require("fzfx.utils").FileSwitch
 
 local Context = {
@@ -35,21 +36,20 @@ local function live_grep(query, bang, opts)
     }
     log.debug("|fzfx.live_grep - live_grep| runtime:%s", vim.inspect(runtime))
 
-    local nvim_path = conf.get_config().env.nvim
     local initial_command = string.format(
         "%s %s %s",
-        utils.run_lua_script(path.join("live_grep", "provider.lua"), nvim_path),
+        shell.make_lua_command("live_grep", "provider.lua"),
         runtime.provider.value,
         query
     )
     local reload_command = string.format(
         "%s %s {q} || true",
-        utils.run_lua_script(path.join("live_grep", "provider.lua"), nvim_path),
+        shell.make_lua_command("live_grep", "provider.lua"),
         runtime.provider.value
     )
     local preview_command = string.format(
         "%s {1} {2}",
-        utils.run_lua_script(path.join("files", "previewer.lua"), nvim_path)
+        shell.make_lua_command("files", "previewer.lua")
     )
     log.debug(
         "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s, preview_command:%s",
