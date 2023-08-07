@@ -132,36 +132,18 @@ function StdoutBuffer:new()
     return vim.tbl_deep_extend("force", vim.deepcopy(StdoutBuffer), {})
 end
 
---- @param data string[]
+--- @param data string
 function StdoutBuffer:push(data)
-    if data == nil or #data == 0 then
-        return
-    end
     local last_line = self:peek()
-    local pos = 1
     if last_line ~= nil and not last_line:finished() then
-        while pos <= #data do
-            local d = data[pos]
-            if string.len(d) == 0 then
-                pos = pos + 1
-                break
-            end
-            last_line:push(d)
-            pos = pos + 1
+        if string.len(data) == 0 then
+            last_line:finish()
+        else
+            last_line:push(data)
         end
-    end
-    if pos <= #data then
+    else
         local line = StdoutLine:new()
-        while pos <= #data do
-            local d = data[pos]
-            if string.len(d) == 0 then
-                line:finish()
-                table.insert(self.lines, line)
-                line = StdoutLine:new()
-            end
-            line:push(d)
-            pos = pos + 1
-        end
+        line:push(data)
     end
 end
 
