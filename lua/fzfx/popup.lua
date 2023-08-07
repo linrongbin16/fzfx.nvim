@@ -187,25 +187,24 @@ local function make_popup_window_opts(win_opts)
     end
 
     --- @type PopupOpts
-    local popup_win_opts =
-        vim.tbl_deep_extend("force", vim.deepcopy(PopupOpts), {
-            anchor = "NW",
-            relative = "editor",
-            width = width,
-            height = height,
-            -- start point on NW
-            row = row,
-            col = col,
-            style = "minimal",
-            border = win_opts.border,
-            zindex = win_opts.zindex,
-        })
+    local popup_opts = vim.tbl_deep_extend("force", vim.deepcopy(PopupOpts), {
+        anchor = "NW",
+        relative = "editor",
+        width = width,
+        height = height,
+        -- start point on NW
+        row = row,
+        col = col,
+        style = "minimal",
+        border = win_opts.border,
+        zindex = win_opts.zindex,
+    })
     log.debug(
         "|fzfx.popup - make_popup_window_opts| (origin) win_opts:%s, popup_win_opts:%s",
         vim.inspect(win_opts),
-        vim.inspect(popup_win_opts)
+        vim.inspect(popup_opts)
     )
-    return popup_win_opts
+    return popup_opts
 end
 
 --- @param win_opts PopupOpts|nil
@@ -238,10 +237,10 @@ function Popup:new(win_opts)
         vim.deepcopy(conf.get_config().win_opts),
         vim.deepcopy(win_opts) or {}
     )
-    local popup_win_opts = make_popup_window_opts(merged_win_opts)
+    local popup_opts = make_popup_window_opts(merged_win_opts)
 
     --- @type integer
-    local winnr = vim.api.nvim_open_win(bufnr, true, popup_win_opts)
+    local winnr = vim.api.nvim_open_win(bufnr, true, popup_opts)
 
     --- set winhighlight='Pmenu:,Normal:Normal'
     --- set colorcolumn=''
