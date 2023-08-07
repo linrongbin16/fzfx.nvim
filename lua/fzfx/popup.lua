@@ -193,7 +193,7 @@ local function new_popup_window_opts(win_opts)
     --- @type PopupWindowOpts
     local popup_win_opts =
         vim.tbl_deep_extend("force", vim.deepcopy(PopupWindowOpts), {
-            anchor = win_opts.anchor,
+            anchor = "NW",
             relative = "editor",
             width = width,
             height = height,

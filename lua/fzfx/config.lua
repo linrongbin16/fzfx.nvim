@@ -1,4 +1,3 @@
-local log = require("fzfx.log")
 local constants = require("fzfx.constants")
 
 local default_fd_command =
@@ -10,6 +9,7 @@ local default_rg_command =
 
 --- @type Config
 local Defaults = {
+    -- the 'Files' commands
     files = {
         commands = {
             normal = {
@@ -91,6 +91,8 @@ local Defaults = {
             { "--bind", "ctrl-l:toggle-preview" },
         },
     },
+
+    -- the 'Live Grep' commands
     live_grep = {
         commands = {
             normal = {
@@ -170,6 +172,8 @@ local Defaults = {
             { "--bind", "ctrl-l:toggle-preview" },
         },
     },
+
+    -- basic fzf options
     fzf_opts = {
         "--ansi",
         "--info=inline",
@@ -179,30 +183,51 @@ local Defaults = {
         { "--preview-window", "right,50%" },
     },
 
-    -- popup window opts
-    -- please check: https://neovim.io/doc/user/api.html#nvim_open_win()
+    -- popup window options
+    -- implemented via float window, please check: https://neovim.io/doc/user/api.html#nvim_open_win()
     win_opts = {
-        -- popup window height/width
-        -- if 0 <= h/w <= 1, evaluate as the ratio of editor's lines and columns
-        -- if h/w > 1, pass it directly to nvim_open_win api
+
+        -- popup window height/width.
+        --
+        -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
+        --    e.g. popup height = h * lines, width = w * columns.
+        --
+        -- 2. if h/w > 1, evaluate as absolute height and width, directly pass to vim.api.nvim_open_win.
+
+        --- @type number
         height = 0.85,
+        --- @type number
         width = 0.85,
-        -- by default popup window position is on editor center,
-        -- with row/col, you can adjust the popup window position.
-        -- if -0.5 <= r/c <= 0.5, evaluate as the ratio of editor's lines and columns shift from center.
-        -- if r/c <= -1 or r/c >= 1, evaluate as the difference lines and columns shift from center.
-        -- Note: r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
-        row = 0, -- set `row = -vim.o.cmdheight` to move up 1~2 lines, to avoid conflict with command line and status line.
+
+        -- popup window position, by default popup window is right in the center of editor.
+        -- especially useful when popup window is too big and conflicts with command/status line at bottom.
+        --
+        -- 1. if -0.5 <= r/c <= 0.5, evaluate proportionally according to editor's lines and columns.
+        --    e.g. shift rows = r * lines, shift columns = c * columns.
+        --
+        -- 2. if r/c <= -1 or r/c >= 1, evaluate as absolute rows/columns to be shift.
+        --    e.g. you can easily set 'row = -vim.o.cmdheight' to move popup window to up 1~2 lines (based on your 'cmdheight' option).
+        --
+        -- 3. r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
+
+        --- @type number
+        row = 0,
+        --- @type number
         col = 0,
-        anchor = "NW",
+
         border = "none",
         zindex = 51,
     },
 
+    -- environment variables
     env = {
+        --- @type string|nil
         nvim = nil,
+        --- @type string|nil
         fzf = nil,
     },
+
+    -- debug
     debug = {
         enable = false,
         console_log = true,
