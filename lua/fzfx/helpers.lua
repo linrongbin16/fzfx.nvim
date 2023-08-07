@@ -100,14 +100,12 @@ function StdoutLine:push(raw_data)
             vim.inspect(raw_data)
         )
     )
-    assert(
-        string.len(raw_data) > 0,
-        string.format(
-            "|fzfx.helpers - StdoutLine:push| error! stdout line data must not be empty string! raw_data:%s",
-            vim.inspect(raw_data)
-        )
-    )
-    table.insert(self.data, raw_data)
+    if string.len(raw_data) > 0 then
+        table.insert(self.data, raw_data)
+    end
+    if string.len(raw_data) == 0 then
+        self.done = true
+    end
     log.debug(
         "|fzfx.helpers - StdoutLine:push| self.data:%s, raw_data:%s",
         vim.inspect(self.data),
@@ -115,18 +113,15 @@ function StdoutLine:push(raw_data)
     )
 end
 
-function StdoutLine:finish()
-    self.done = true
-end
-
 function StdoutLine:finished()
     return self.done
 end
 
 function StdoutLine:print()
-    return vim.fn.trim(table.concat(self.data, ""))
+    return table.concat(self.data, "")
 end
 
+-- FIFO buffer, push at tail, cut from head
 --- @class StdoutBuffer
 --- @field lines StdoutLine[]
 local StdoutBuffer = {
@@ -137,36 +132,57 @@ function StdoutBuffer:new()
     return vim.tbl_deep_extend("force", vim.deepcopy(StdoutBuffer), {})
 end
 
---- @param data string
-function StdoutBuffer:push(data)
-    local last_line = self:peek()
+-- push at tail
+--- @param raw_data string
+--- @return nil
+function StdoutBuffer:push(raw_data)
+    local last_line = self:last()
     if last_line ~= nil and not last_line:finished() then
-        if string.len(data) == 0 then
-            last_line:finish()
-        else
-            last_line:push(data)
-        end
+        last_line:push(raw_data)
+        log.debug(
+            "|fzfx.helpers - StdoutBuffer:push| last_line, self:%s, raw_data:%s",
+            vim.inspect(self),
+            vim.inspect(raw_data)
+        )
     else
-        local line = StdoutLine:new()
-        line:push(data)
+        local new_line = StdoutLine:new()
+        new_line:push(raw_data)
+        table.insert(self.lines, new_line)
+        log.debug(
+            "|fzfx.helpers - StdoutBuffer:push| new_line, self:%s, raw_data:%s",
+            vim.inspect(self),
+            vim.inspect(raw_data)
+        )
     end
-    log.debug(
-        "|fzfx.helpers - StdoutBuffer:push| self:%s, data:%s",
-        vim.inspect(self),
-        vim.inspect(data)
-    )
 end
 
---- @return StdoutLine|nil
-function StdoutBuffer:pop()
+-- cut from head
+--- @param pos integer
+--- @return nil
+function StdoutBuffer:cut(pos)
+    assert(
+        pos > 0,
+        "|fzfx.helpers - StdoutBuffer:cut| error! pos '%s' cannot be less or equal than 0",
+        vim.inspect(pos)
+    )
     if #self.lines == 0 then
         log.debug(
-            "|fzfx.helpers - StdoutBuffer:pop| self:%s, result:nil",
+            "|fzfx.helpers - StdoutBuffer:pop| error! nil, pos:%s, self:%s, result:nil",
+            vim.inspect(pos),
             vim.inspect(self)
         )
-        return nil
+        return
     end
-    local result = self.lines[#self.lines]
+    assert(
+        pos <= #self.lines,
+        "|fzfx.helpers - StdoutBuffer:cut| error! pos '%s' cannot be greater than #self.lines '%s'",
+        vim.inspect(pos),
+        vim.inspect(#self.lines)
+    )
+    if pos > #self.lines then
+        pos = #self.lines
+    end
+    local result = self.lines[1]
     table.remove(self.lines, #self.lines)
     log.debug(
         "|fzfx.helpers - StdoutBuffer:pop| self:%s, result:%s",
@@ -177,12 +193,41 @@ function StdoutBuffer:pop()
 end
 
 --- @return StdoutLine|nil
-function StdoutBuffer:peek()
-    log.debug("|fzfx.helpers - StdoutBuffer:peek| self:%s", vim.inspect(self))
+function StdoutBuffer:last()
+    log.debug("|fzfx.helpers - StdoutBuffer:last| self:%s", vim.inspect(self))
     if #self.lines == 0 then
         return nil
     end
     return self.lines[#self.lines]
+end
+
+--- @return StdoutLine|nil
+function StdoutBuffer:first()
+    log.debug("|fzfx.helpers - StdoutBuffer:first| self:%s", vim.inspect(self))
+    if #self.lines == 0 then
+        return nil
+    end
+    return self.lines[1]
+end
+
+--- @return integer
+function StdoutBuffer:size()
+    log.debug("|fzfx.helpers - StdoutBuffer:size| self:%s", vim.inspect(self))
+    return #self.lines
+end
+
+--- @param index integer
+--- @return StdoutLine|nil
+function StdoutBuffer:get(index)
+    log.debug(
+        "|fzfx.helpers - StdoutBuffer:get| self:%s, index:%s",
+        vim.inspect(self),
+        vim.inspect(index)
+    )
+    if #self.lines == 0 then
+        return nil
+    end
+    return self.lines[index]
 end
 
 -- job.stdout buffer }

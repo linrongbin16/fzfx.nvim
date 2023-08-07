@@ -30,9 +30,9 @@ assert(
 local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
     io.write(string.format("DEBUG provider:[%s]\n", provider))
-    io.write(
-        string.format("DEBUG devicon_path:[%s]\n", vim.inspect(devicon_path))
-    )
+    -- io.write(
+    --     string.format("DEBUG devicon_path:[%s]\n", vim.inspect(devicon_path))
+    -- )
     -- io.write(
     --     string.format(
     --         "DEBUG devicon_ok:[%s], devicon:[%s]\n",
@@ -40,6 +40,7 @@ if debug_enable then
     --         vim.inspect(devicon)
     --     )
     -- )
+    -- io.write(string.format("DEBUG self_path:[%s]\n", vim.inspect(self_path)))
     -- io.write(
     --     string.format(
     --         "DEBUG self_helpers_ok:[%s], self_helpers:[%s]\n",
@@ -65,25 +66,29 @@ local cmd_exitcode = 0
 -- here we use lua coroutine to while processing stdout data, and print to terminal at the same time,
 -- to achieve the purpose of running CPU and IO devices at the same time, thus improve our performance.
 
---- @type fun|nil
-local co = coroutine.create(function()
-    if debug_enable then
-        io.write(
-            string.format(
-                "DEBUG coroutine.create, cmd_buffer:%s\n",
-                vim.inspect(cmd_buffer)
-            )
-        )
-    end
-    local last_line = cmd_buffer:pop()
-    if last_line ~= nil then
-        local formatted_line = last_line:print()
-        local icon = devicon.get_icon(formatted_line)
-        io.write(string.format("%s %s\n", icon, formatted_line))
-    end
-    -- go back to the co_producer, e.g. on_stdout
-    coroutine.yield()
-end)
+-- --- @type fun|nil
+-- local co = coroutine.create(function()
+--     if debug_enable then
+--         io.write(
+--             string.format(
+--                 "DEBUG coroutine.create, cmd_buffer:%s\n",
+--                 vim.inspect(cmd_buffer)
+--             )
+--         )
+--     end
+--     local last_line = cmd_buffer:pop()
+--     if last_line ~= nil then
+--         local formatted_line = last_line:print()
+--         if devicon_ok and devicon then
+--             local icon = devicon.get_icon(formatted_line)
+--             io.write(string.format("%s %s\n", icon, formatted_line))
+--         else
+--             io.write(string.format("%s\n", formatted_line))
+--         end
+--     end
+--     -- go back to the co_producer, e.g. on_stdout
+--     coroutine.yield()
+-- end)
 
 --- @param chanid integer
 --- @param data string[]
@@ -93,21 +98,23 @@ local function on_stdout(chanid, data, name)
     for _, d in ipairs(data) do
         -- push 1 item of partial data
         cmd_buffer:push(d)
-        if debug_enable then
-            io.write(
-                string.format(
-                    "DEBUG on_stdout, data:%s, cmd_buffer:%s\n",
-                    vim.inspect(data),
-                    vim.inspect(cmd_buffer)
-                )
+    end
+    if debug_enable then
+        io.write(
+            string.format(
+                "DEBUG on_stdout, data:%s, cmd_buffer:%s\n",
+                vim.inspect(data),
+                vim.inspect(cmd_buffer)
             )
+        )
+    end
+    local i = 1
+    while cmd_buffer:size() > 0 do
+        local line = cmd_buffer:get(i)
+        if line == nil or not line:finished() then
+            break
         end
-
-        -- then try resume to co_consume, if last line is already finished
-        local last_line = cmd_buffer:peek()
-        if last_line ~= nil and last_line:finished() then
-            coroutine.resume(co)
-        end
+        io.write(string.format("%s\n", vim.fn.trim(line:print())))
     end
 end
 
@@ -115,8 +122,10 @@ local function on_stderr(chanid, data, name)
     if debug_enable then
         io.write(
             string.format(
-                "DEBUG on_stderr, data:%s, buffer:%s\n",
+                "DEBUG on_stderr, chanid:%s, data:%s, name:%s, buffer:%s\n",
+                vim.inspect(chanid),
                 vim.inspect(data),
+                vim.inspect(name),
                 vim.inspect(cmd_buffer)
             )
         )
