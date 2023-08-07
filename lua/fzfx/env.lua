@@ -12,8 +12,8 @@ end
 local function search_module_path(plugin, path)
     local plugin_ok, plugin_module = pcall(require, plugin)
     if not plugin_ok then
-        log.throw(
-            "error! failed to load lua module %s: %s",
+        log.debug(
+            "|fzfx.env - search_module_path| failed to load lua module %s: %s",
             vim.inspect(plugin),
             vim.inspect(plugin_module)
         )
@@ -28,8 +28,8 @@ local function search_module_path(plugin, path)
             return p
         end
     end
-    log.throw(
-        "error! failed to find lua module %s on runtimepath: %s",
+    log.debug(
+        "|fzfx.env - search_module_path| failed to find lua module %s on runtimepath: %s",
         vim.inspect(plugin),
         vim.inspect(rtp)
     )
@@ -43,8 +43,14 @@ local function setup(options)
         local devicon_path =
             search_module_path("nvim-web-devicons", "nvim%-web%-devicons")
         log.debug("|fzfx.env - setup_devicon| devicon path:%s", devicon_path)
-        vim.env._FZFX_NVIM_DEVICON_PATH = devicon_path
-        vim.env._FZFX_NVIM_ICON_ENABLE = 1
+        if type(devicon_path) ~= "string" or string.len(devicon_path) == 0 then
+            log.err(
+                "error! you have configured 'icon.enable=true' while cannot find 'nvim-web-devicons' plugin!"
+            )
+        else
+            vim.env._FZFX_NVIM_DEVICON_PATH = devicon_path
+            vim.env._FZFX_NVIM_ICON_ENABLE = 1
+        end
     end
 end
 
