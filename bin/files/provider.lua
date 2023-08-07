@@ -1,6 +1,6 @@
 local args = _G.arg
 local provider = args[1]
-local devicon_path = vim.env._FZFX_NVIM_ICON_PATH
+local devicon_path = vim.env._FZFX_NVIM_DEVICON_PATH
 local devicon_ok = nil
 local devicon = nil
 if type(devicon_path) == "string" and string.len(devicon_path) > 0 then

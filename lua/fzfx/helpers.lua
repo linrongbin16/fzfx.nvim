@@ -187,6 +187,8 @@ end
 
 local M = {
     visual_select,
+    StdoutLine = StdoutLine,
+    StdoutBuffer = StdoutBuffer,
 }
 
 return M

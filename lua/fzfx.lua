@@ -18,12 +18,7 @@ local function setup(options)
     vim.fn.mkdir(configs.cache.dir, "p")
 
     -- env
-    if configs.debug.enable then
-    end
-    vim.env._FZFX_NVIM_DEBUG_ENABLE = configs.debug.enable and 1 or 0
-
-    -- icons
-    require("fzfx.icon").setup()
+    require("fzfx.env").setup()
 
     -- files
     require("fzfx.files").setup()
