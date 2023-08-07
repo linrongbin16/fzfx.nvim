@@ -1,5 +1,4 @@
 local log = require("fzfx.log")
-local env = require("fzfx.env")
 
 -- visual select {
 
@@ -77,55 +76,8 @@ end
 
 -- visual select }
 
--- job.stdout buffer {
-
--- FIFO buffer, push at tail, cut from head
---- @class StdoutBuffer
---- @field lines string[]
-local StdoutBuffer = {
-    lines = {},
-}
-
-function StdoutBuffer:new()
-    return vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(StdoutBuffer),
-        { lines = { "" } }
-    )
-end
-
--- push at tail
---- @param data string[]
---- @return nil
-function StdoutBuffer:push(data)
-    self.lines[#self.lines] = self.lines[#self.lines] .. data[1]
-    vim.list_extend(self.lines, data, 2)
-end
-
--- cut from head
---- @return nil
-function StdoutBuffer:cut()
-    if #self.lines > 1 then
-        self.lines = vim.list_slice(self.lines, #self.lines - 1, #self.lines)
-    end
-end
-
-function StdoutBuffer:size()
-    return #self.lines
-end
-
---- @param pos integer
---- @return string|nil
-function StdoutBuffer:get(pos)
-    return #self.lines > 0 and self.lines[pos] or nil
-end
-
--- job.stdout buffer }
-
 local M = {
     visual_select,
-    -- StdoutLine = StdoutLine,
-    StdoutBuffer = StdoutBuffer,
 }
 
 return M

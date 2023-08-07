@@ -222,6 +222,7 @@ local Defaults = {
     -- icon
     icon = {
         enable = true,
+        -- default = "",
     },
 
     -- environment variables
