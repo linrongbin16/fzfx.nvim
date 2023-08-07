@@ -1,3 +1,4 @@
+local log = require("fzfx.log")
 local env = require("fzfx.env")
 
 -- visual select {
@@ -78,36 +79,109 @@ end
 
 -- job.stdout buffer {
 
---- @class StdoutBuffer
---- @field buf any[]
---- @field pos integer
-local StdoutBuffer = {
-    buf = {},
-    pos = 1,
-}
-
 --- @class StdoutLine
 --- @field data string[]
+--- @field done boolean
 local StdoutLine = {
     data = {},
+    done = false,
+}
+
+function StdoutLine:new()
+    return vim.tbl_deep_extend("force", vim.deepcopy(StdoutLine), {})
+end
+
+--- @param raw_data string
+function StdoutLine:push(raw_data)
+    assert(
+        type(raw_data) == "string",
+        string.format(
+            "|fzfx.helpers - StdoutLine:push| error! stdout line data must be a valid string! raw_data:%s",
+            vim.inspect(raw_data)
+        )
+    )
+    assert(
+        string.len(raw_data) > 0,
+        string.format(
+            "|fzfx.helpers - StdoutLine:push| error! stdout line data must not be empty string! raw_data:%s",
+            vim.inspect(raw_data)
+        )
+    )
+    table.insert(self.data, raw_data)
+end
+
+function StdoutLine:finish()
+    self.done = true
+end
+
+function StdoutLine:finished()
+    return self.done
+end
+
+function StdoutLine:print()
+    return vim.fn.trim(table.concat(self.data, ""))
+end
+
+--- @class StdoutBuffer
+--- @field lines StdoutLine[]
+local StdoutBuffer = {
+    lines = {},
 }
 
 function StdoutBuffer:new()
-    return vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(StdoutBuffer),
-        { buf = {}, pos = 1 }
-    )
+    return vim.tbl_deep_extend("force", vim.deepcopy(StdoutBuffer), {})
 end
 
 --- @param data string[]
-function StdoutBuffer:push(data) end
+function StdoutBuffer:push(data)
+    if data == nil or #data == 0 then
+        return
+    end
+    local last_line = self:peek()
+    local pos = 1
+    if last_line ~= nil and not last_line:finished() then
+        while pos <= #data do
+            local d = data[pos]
+            if string.len(d) == 0 then
+                pos = pos + 1
+                break
+            end
+            last_line:push(d)
+            pos = pos + 1
+        end
+    end
+    if pos <= #data then
+        local line = StdoutLine:new()
+        while pos <= #data do
+            local d = data[pos]
+            if string.len(d) == 0 then
+                line:finish()
+                table.insert(self.lines, line)
+                line = StdoutLine:new()
+            end
+            line:push(d)
+            pos = pos + 1
+        end
+    end
+end
 
 --- @return StdoutLine|nil
-function StdoutBuffer:pop() end
+function StdoutBuffer:pop()
+    if #self.lines == 0 then
+        return nil
+    end
+    local result = self.lines[#self.lines]
+    table.remove(self.lines, #self.lines)
+    return result
+end
 
 --- @return StdoutLine|nil
-function StdoutBuffer:peek() end
+function StdoutBuffer:peek()
+    if #self.lines == 0 then
+        return nil
+    end
+    return self.lines[#self.lines]
+end
 
 -- job.stdout buffer }
 

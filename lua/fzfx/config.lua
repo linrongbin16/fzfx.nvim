@@ -232,6 +232,11 @@ local Defaults = {
         fzf = nil,
     },
 
+    cache = {
+        --- @type string
+        dir = require("fzfx.path").join(vim.fn.stdpath("data"), "fzfx.nvim"),
+    },
+
     -- debug
     debug = {
         enable = false,
