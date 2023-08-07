@@ -34,6 +34,8 @@ local function search_module_path(plugin, path)
 end
 
 local function setup()
+    vim.env._FZFX_NVIM_DEBUG_ENABLE = conf.get_config().debug.enable and 1 or 0
+
     if conf.get_config().icon.enable then
         local devicon_path =
             search_module_path("nvim-web-devicons", "nvim%-web%-devicons")

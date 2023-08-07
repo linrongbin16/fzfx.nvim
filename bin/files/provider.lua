@@ -187,20 +187,23 @@ local function on_stdout(chanid, data, name)
     -- end
     cmd_buffer:push(data)
     if debug_enable then
+        io.write(string.format("DEBUG on_stdout, data:%s\n", vim.inspect(data)))
         io.write(
             string.format(
-                "DEBUG on_stdout, push, cmd_buffer:%s\n",
+                "DEBUG on_stdout, cmd_buffer:%s\n",
                 vim.inspect(cmd_buffer)
             )
         )
     end
     local i = 1
-    while i < cmd_buffer:size() do
+    while i < cmd_buffer:size() - 1 do
         local line = cmd_buffer:get(i)
-        local line_with_icon = render_line_with_icon(line, devicon)
-        -- local icon, icon_color = devicon.get_icon_color(line)
-        io.write(string.format("%s\n", line_with_icon))
-        -- io.write(string.format("%s\n", line_with_icon))
+        if icon_enable then
+            local line_with_icon = render_line_with_icon(line, devicon)
+            io.write(string.format("%s\n", line_with_icon))
+        else
+            io.write(string.format("%s\n", line))
+        end
         i = i + 1
     end
     cmd_buffer:cut()
@@ -235,9 +238,12 @@ local function on_exit(chanid, exitcode, event)
     while i <= cmd_buffer:size() do
         local line = cmd_buffer:get(i)
         if type(line) == "string" and string.len(line) > 0 then
-            -- local icon = devicon.get_icon_color(line)
-            local line_with_icon = render_line_with_icon(line, devicon)
-            io.write(string.format("%s\n", line_with_icon))
+            if icon_enable then
+                local line_with_icon = render_line_with_icon(line, devicon)
+                io.write(string.format("%s\n", line_with_icon))
+            else
+                io.write(string.format("%s\n", line))
+            end
         end
         i = i + 1
     end
