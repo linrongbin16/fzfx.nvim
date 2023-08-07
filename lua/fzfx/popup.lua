@@ -84,17 +84,15 @@ local shell = require("fzfx.shell")
 --     return Context.window_context_stack
 -- end
 
---- @class PopupWindow
+--- @class Popup
 --- @field bufnr integer|nil
 --- @field winnr integer|nil
-
---- @type PopupWindow
-local PopupWindow = {
+local Popup = {
     bufnr = nil,
     winnr = nil,
 }
 
---- @class PopupWindowOpts
+--- @class PopupOpts
 --- @field relative "editor"|"win"|nil
 --- @field width integer|nil
 --- @field height integer|nil
@@ -103,9 +101,7 @@ local PopupWindow = {
 --- @field style "minimal"|nil
 --- @field border "none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil
 --- @field zindex integer|nil
-
---- @type PopupWindowOpts
-local PopupWindowOpts = {
+local PopupOpts = {
     relative = nil,
     width = nil,
     height = nil,
@@ -121,8 +117,8 @@ local function safe_range(left, value, right)
 end
 
 --- @param win_opts Config
---- @return PopupWindowOpts
-local function new_popup_window_opts(win_opts)
+--- @return PopupOpts
+local function make_popup_window_opts(win_opts)
     --- @type integer
     local columns = vim.o.columns
     --- @type integer
@@ -190,9 +186,9 @@ local function new_popup_window_opts(win_opts)
         end
     end
 
-    --- @type PopupWindowOpts
+    --- @type PopupOpts
     local popup_win_opts =
-        vim.tbl_deep_extend("force", vim.deepcopy(PopupWindowOpts), {
+        vim.tbl_deep_extend("force", vim.deepcopy(PopupOpts), {
             anchor = "NW",
             relative = "editor",
             width = width,
@@ -205,24 +201,20 @@ local function new_popup_window_opts(win_opts)
             zindex = win_opts.zindex,
         })
     log.debug(
-        "|fzfx.popup - new_popup_window_opts| (origin) win_opts:%s, popup_win_opts:%s",
+        "|fzfx.popup - make_popup_window_opts| (origin) win_opts:%s, popup_win_opts:%s",
         vim.inspect(win_opts),
         vim.inspect(popup_win_opts)
     )
     return popup_win_opts
 end
 
---- @return PopupWindow
-local function new_popup_window(win_opts)
+--- @param win_opts PopupOpts|nil
+--- @return Popup
+function Popup:new(win_opts)
     -- check executable: nvim, fzf
     require("fzfx.shell").nvim_exec()
     require("fzfx.shell").fzf_exec()
 
-    local wopts = vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(conf.get_config().win_opts),
-        vim.deepcopy(win_opts) or {}
-    )
     -- local win_stack = get_window_context_stack() --[[@as WindowContextStack]]
     -- assert(
     --     win_stack ~= nil,
@@ -240,10 +232,17 @@ local function new_popup_window(win_opts)
     vim.api.nvim_set_option_value("number", false, { buf = bufnr })
     vim.api.nvim_set_option_value("filetype", "fzf", { buf = bufnr })
 
-    --- @type PopupWindowOpts
-    local popup_win_opts = new_popup_window_opts(wopts)
+    --- @type PopupOpts
+    local merged_win_opts = vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(conf.get_config().win_opts),
+        vim.deepcopy(win_opts) or {}
+    )
+    local popup_win_opts = make_popup_window_opts(merged_win_opts)
+
     --- @type integer
     local winnr = vim.api.nvim_open_win(bufnr, true, popup_win_opts)
+
     --- set winhighlight='Pmenu:,Normal:Normal'
     --- set colorcolumn=''
     vim.api.nvim_set_option_value(
@@ -253,39 +252,38 @@ local function new_popup_window(win_opts)
     )
     vim.api.nvim_set_option_value("colorcolumn", "", { win = winnr })
 
-    --- @type PopupWindow
-    local popup_win = vim.tbl_deep_extend(
+    --- @type Popup
+    local ppp = vim.tbl_deep_extend(
         "force",
-        vim.deepcopy(PopupWindow),
+        vim.deepcopy(Popup),
         { bufnr = bufnr, winnr = winnr }
     )
 
-    return popup_win
+    return ppp
 end
 
-function PopupWindow:close()
-    log.debug("|fzfx.popup - PopupWindow:close| self:%s", vim.inspect(self))
+function Popup:close()
+    log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
+    vim.api.nvim_win_close(self.winnr, true)
 end
 
---- @class PopupFzf
---- @field popup_win PopupWindow|nil
+--- @class Launch
+--- @field popup Popup|nil
 --- @field source string|string[]|nil
 --- @field jobid integer|nil
 --- @field result string|nil
-
---- @type PopupFzf
-local PopupFzf = {
-    popup_win = nil,
+local Launch = {
+    popup = nil,
     source = nil,
     jobid = nil,
     result = nil,
 }
 
-function PopupFzf:close()
-    log.debug("|fzfx.popup - PopupFzf:close| self:%s", vim.inspect(self))
+function Launch:close()
+    log.debug("|fzfx.popup - Launch:close| self:%s", vim.inspect(self))
 end
 
---- @param actions Config
+--- @param actions table<string, any>
 --- @return string[][]
 local function make_expect_keys(actions)
     local expect_keys = {}
@@ -353,11 +351,11 @@ local function make_fzf_command(fzf_opts, actions, result)
     return command
 end
 
---- @param popup_win PopupWindow
+--- @param popup_win Popup
 --- @param source string
 --- @param fzf_opts Config
 --- @param actions Config
---- @return PopupFzf
+--- @return Launch
 local function new_popup_fzf(popup_win, source, fzf_opts, actions)
     local result = path.tempname()
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
@@ -439,8 +437,8 @@ local function new_popup_fzf(popup_win, source, fzf_opts, actions)
     vim.env.FZF_DEFAULT_COMMAND = prev_fzf_default_command
     vim.cmd([[ startinsert ]])
 
-    --- @type PopupFzf
-    local popup_fzf = vim.tbl_deep_extend("force", vim.deepcopy(PopupFzf), {
+    --- @type Launch
+    local popup_fzf = vim.tbl_deep_extend("force", vim.deepcopy(Launch), {
         popup_win = popup_win,
         source = source,
         jobid = jobid,
@@ -453,7 +451,7 @@ end
 local function setup() end
 
 local M = {
-    new_popup_window = new_popup_window,
+    Popup = Popup,
     new_popup_fzf = new_popup_fzf,
     setup = setup,
 }

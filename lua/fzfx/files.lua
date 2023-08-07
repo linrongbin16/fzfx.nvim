@@ -24,7 +24,7 @@ end
 --- @param query string
 --- @param bang boolean|integer
 --- @param opts Config
---- @return PopupFzf
+--- @return Launch
 local function files(query, bang, opts)
     local files_configs = conf.get_config().files
     -- action
@@ -110,10 +110,8 @@ local function files(query, bang, opts)
     }
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
     local actions = files_configs.actions.expect
-    local popup_win =
-        popup.new_popup_window(bang and { height = 1, width = 1 } or nil)
-    local popup_fzf =
-        popup.new_popup_fzf(popup_win, query_command, fzf_opts, actions)
+    local ppp = popup.Popup:new(bang and { height = 1, width = 1 } or nil)
+    local popup_fzf = popup.new_popup_fzf(ppp, query_command, fzf_opts, actions)
 
     return popup_fzf
 end

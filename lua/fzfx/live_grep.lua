@@ -17,7 +17,7 @@ local Context = {
 --- @param query string
 --- @param bang boolean|integer
 --- @param opts Config
---- @return PopupFzf
+--- @return Launch
 local function live_grep(query, bang, opts)
     local live_grep_configs = conf.get_config().live_grep
     local umode_action =
@@ -111,10 +111,9 @@ local function live_grep(query, bang, opts)
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(live_grep_configs.fzf_opts))
     local actions = live_grep_configs.actions.expect
-    local popup_win =
-        popup.new_popup_window(bang and { height = 1, width = 1 } or nil)
+    local ppp = popup.Popup:new(bang and { height = 1, width = 1 } or nil)
     local popup_fzf =
-        popup.new_popup_fzf(popup_win, initial_command, fzf_opts, actions)
+        popup.new_popup_fzf(ppp, initial_command, fzf_opts, actions)
 
     return popup_fzf
 end
