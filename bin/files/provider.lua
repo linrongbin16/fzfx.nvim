@@ -1,5 +1,6 @@
 local args = _G.arg
 local provider = args[1]
+
 local icon_enable = tostring(vim.env._FZFX_NVIM_ICON_ENABLE):lower() == "1"
 local devicon_path = vim.env._FZFX_NVIM_DEVICON_PATH
 local devicon_ok = nil
@@ -16,33 +17,6 @@ end
 local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
     io.write(string.format("DEBUG provider:[%s]\n", provider))
-    -- io.write(
-    --     string.format("DEBUG devicon_path:[%s]\n", vim.inspect(devicon_path))
-    -- )
-    -- io.write(
-    --     string.format(
-    --         "DEBUG devicon_ok:[%s], devicon:[%s]\n",
-    --         vim.inspect(devicon_ok),
-    --         vim.inspect(devicon)
-    --     )
-    -- )
-    -- io.write(string.format("DEBUG self_path:[%s]\n", vim.inspect(self_path)))
-    -- io.write(
-    --     string.format(
-    --         "DEBUG self_helpers_ok:[%s], self_helpers:[%s]\n",
-    --         vim.inspect(self_helpers_ok),
-    --         vim.inspect(self_helpers)
-    --     )
-    -- )
-end
-
-local f = io.open(provider --[[@as string]], "r")
-assert(f ~= nil, string.format("error! failed to open provider:%s", provider))
-local cmd = vim.fn.trim(f:read("*a"))
-f:close()
-
-if debug_enable then
-    io.write(string.format("DEBUG cmd:[%s]\n", cmd))
 end
 
 --- shell helper
@@ -140,6 +114,15 @@ end
 
 --- shell helper
 
+local f = io.open(provider --[[@as string]], "r")
+assert(f ~= nil, string.format("error! failed to open provider:%s", provider))
+local cmd = vim.fn.trim(f:read("*a"))
+f:close()
+
+if debug_enable then
+    io.write(string.format("DEBUG cmd:[%s]\n", cmd))
+end
+
 --- @type StdoutBuffer
 local cmd_buffer = StdoutBuffer:new()
 local cmd_exitcode = 0
@@ -198,7 +181,7 @@ local function on_stdout(chanid, data, name)
     local i = 1
     while i < cmd_buffer:size() - 1 do
         local line = cmd_buffer:get(i)
-        if icon_enable then
+        if icon_enable and devicon_ok then
             local line_with_icon = render_line_with_icon(line, devicon)
             io.write(string.format("%s\n", line_with_icon))
         else
@@ -238,7 +221,7 @@ local function on_exit(chanid, exitcode, event)
     while i <= cmd_buffer:size() do
         local line = cmd_buffer:get(i)
         if type(line) == "string" and string.len(line) > 0 then
-            if icon_enable then
+            if icon_enable and devicon_ok then
                 local line_with_icon = render_line_with_icon(line, devicon)
                 io.write(string.format("%s\n", line_with_icon))
             else
