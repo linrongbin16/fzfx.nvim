@@ -108,6 +108,11 @@ function StdoutLine:push(raw_data)
         )
     )
     table.insert(self.data, raw_data)
+    log.debug(
+        "|fzfx.helpers - StdoutLine:push| self.data:%s, raw_data:%s",
+        vim.inspect(self.data),
+        vim.inspect(raw_data)
+    )
 end
 
 function StdoutLine:finish()
@@ -145,20 +150,35 @@ function StdoutBuffer:push(data)
         local line = StdoutLine:new()
         line:push(data)
     end
+    log.debug(
+        "|fzfx.helpers - StdoutBuffer:push| self:%s, data:%s",
+        vim.inspect(self),
+        vim.inspect(data)
+    )
 end
 
 --- @return StdoutLine|nil
 function StdoutBuffer:pop()
     if #self.lines == 0 then
+        log.debug(
+            "|fzfx.helpers - StdoutBuffer:pop| self:%s, result:nil",
+            vim.inspect(self)
+        )
         return nil
     end
     local result = self.lines[#self.lines]
     table.remove(self.lines, #self.lines)
+    log.debug(
+        "|fzfx.helpers - StdoutBuffer:pop| self:%s, result:%s",
+        vim.inspect(self),
+        vim.inspect(result)
+    )
     return result
 end
 
 --- @return StdoutLine|nil
 function StdoutBuffer:peek()
+    log.debug("|fzfx.helpers - StdoutBuffer:peek| self:%s", vim.inspect(self))
     if #self.lines == 0 then
         return nil
     end

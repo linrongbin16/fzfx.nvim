@@ -33,20 +33,20 @@ if debug_enable then
     io.write(
         string.format("DEBUG devicon_path:[%s]\n", vim.inspect(devicon_path))
     )
-    io.write(
-        string.format(
-            "DEBUG devicon_ok:[%s], devicon:[%s]\n",
-            vim.inspect(devicon_ok),
-            vim.inspect(devicon)
-        )
-    )
-    io.write(
-        string.format(
-            "DEBUG self_helpers_ok:[%s], self_helpers:[%s]\n",
-            vim.inspect(self_helpers_ok),
-            vim.inspect(self_helpers)
-        )
-    )
+    -- io.write(
+    --     string.format(
+    --         "DEBUG devicon_ok:[%s], devicon:[%s]\n",
+    --         vim.inspect(devicon_ok),
+    --         vim.inspect(devicon)
+    --     )
+    -- )
+    -- io.write(
+    --     string.format(
+    --         "DEBUG self_helpers_ok:[%s], self_helpers:[%s]\n",
+    --         vim.inspect(self_helpers_ok),
+    --         vim.inspect(self_helpers)
+    --     )
+    -- )
 end
 
 local f = io.open(provider --[[@as string]], "r")
@@ -67,6 +67,14 @@ local cmd_exitcode = 0
 
 --- @type fun|nil
 local co = coroutine.create(function()
+    if debug_enable then
+        io.write(
+            string.format(
+                "DEBUG coroutine.create, cmd_buffer:%s\n",
+                vim.inspect(cmd_buffer)
+            )
+        )
+    end
     local last_line = cmd_buffer:pop()
     if last_line ~= nil then
         local formatted_line = last_line:print()
@@ -82,19 +90,18 @@ end)
 --- @param name string
 --- @return nil
 local function on_stdout(chanid, data, name)
-    if debug_enable then
-        io.write(
-            string.format(
-                "DEBUG on_stdout, data:%s, cmd_buffer:%s",
-                vim.inspect(data),
-                vim.inspect(cmd_buffer)
-            )
-        )
-    end
-
     for _, d in ipairs(data) do
         -- push 1 item of partial data
         cmd_buffer:push(d)
+        if debug_enable then
+            io.write(
+                string.format(
+                    "DEBUG on_stdout, data:%s, cmd_buffer:%s\n",
+                    vim.inspect(data),
+                    vim.inspect(cmd_buffer)
+                )
+            )
+        end
 
         -- then try resume to co_consume, if last line is already finished
         local last_line = cmd_buffer:peek()
@@ -108,7 +115,7 @@ local function on_stderr(chanid, data, name)
     if debug_enable then
         io.write(
             string.format(
-                "DEBUG on_stderr, data:%s, buffer:%s",
+                "DEBUG on_stderr, data:%s, buffer:%s\n",
                 vim.inspect(data),
                 vim.inspect(cmd_buffer)
             )
@@ -120,7 +127,7 @@ local function on_exit(chanid, exitcode, event)
     if debug_enable then
         io.write(
             string.format(
-                "DEBUG on_exit, exitcode:%s, event:%s, buffer:%s",
+                "DEBUG on_exit, exitcode:%s, event:%s, buffer:%s\n",
                 vim.inspect(exitcode),
                 vim.inspect(event),
                 vim.inspect(cmd_buffer)
