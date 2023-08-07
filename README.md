@@ -27,6 +27,7 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
 ## Feature
 
 - Windows support.
+- Icons.
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
@@ -113,6 +114,10 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
 ```vim
 call plug#begin()
 
+" optional but recommended
+Plug 'nvim-tree/nvim-web-devicons'
+
+" mandatory
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'linrongbin16/fzfx.nvim'
 
@@ -125,7 +130,10 @@ lua require('fzfx').setup()
 
 ```lua
 return require('packer').startup(function(use)
+    -- optional but recommended
+    use { "nvim-tree/nvim-web-devicons" }
 
+    -- mandatory
     use { "junegunn/fzf", run = ":call fzf#install()" }
     use {
         "linrongbin16/fzfx.vim",
@@ -134,7 +142,6 @@ return require('packer').startup(function(use)
             require("fzfx").setup()
         end
     }
-
 end)
 ```
 
@@ -142,7 +149,10 @@ end)
 
 ```lua
 require("lazy").setup({
+    -- optional but recommended
+    { "nvim-tree/nvim-web-devicons" },
 
+    -- mandatory
     { "junegunn/fzf", build = ":call fzf#install()" },
     {
         "linrongbin16/fzfx.vim",
