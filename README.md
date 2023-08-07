@@ -217,7 +217,6 @@ For such case, please add both of them to `%PATH%` (`$env:PATH` in PowerShell), 
 
 ```lua
 require("fzfx").setup({
-    ...
     env = {
         nvim = 'nvim',
         fzf = 'fzf',

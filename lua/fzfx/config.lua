@@ -219,6 +219,11 @@ local Defaults = {
         zindex = 51,
     },
 
+    -- icon
+    icon = {
+        enable = true,
+    },
+
     -- environment variables
     env = {
         --- @type string|nil

@@ -23,6 +23,9 @@ local function setup(options)
     end
     vim.env._FZFX_NVIM_DEBUG_ENABLE = configs.debug.enable and 1 or 0
 
+    -- icons
+    require("fzfx.icon").setup()
+
     -- files
     require("fzfx.files").setup()
 

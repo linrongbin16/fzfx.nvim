@@ -1,3 +1,5 @@
+local env = require("fzfx.env")
+
 -- visual select {
 
 --- @param mode string
@@ -73,6 +75,41 @@ local function visual_select()
 end
 
 -- visual select }
+
+-- job.stdout buffer {
+
+--- @class StdoutBuffer
+--- @field buf any[]
+--- @field pos integer
+local StdoutBuffer = {
+    buf = {},
+    pos = 1,
+}
+
+--- @class StdoutLine
+--- @field data string[]
+local StdoutLine = {
+    data = {},
+}
+
+function StdoutBuffer:new()
+    return vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(StdoutBuffer),
+        { buf = {}, pos = 1 }
+    )
+end
+
+--- @param data string[]
+function StdoutBuffer:push(data) end
+
+--- @return StdoutLine|nil
+function StdoutBuffer:pop() end
+
+--- @return StdoutLine|nil
+function StdoutBuffer:peek() end
+
+-- job.stdout buffer }
 
 local M = {
     visual_select,
