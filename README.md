@@ -14,13 +14,13 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
 
 - [Feature](#feature)
 - [Requirement](#requirement)
-  - [Path containing whitespace issue](#path-containing-whitespace-issue)
 - [Install](#install)
   - [vim-plug](#vim-plug)
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#commands)
 - [Configuration](#configuration)
+  - [Path containing whitespace & Escaping issue](#path-containing-whitespace-escaping-issue)
 - [Credit](#credit)
 - [Contribute](#contribute)
 
@@ -59,27 +59,6 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
   cargo install fd-find
   cargo install --locked bat
   ```
-
-### Path containing whitespace issue
-
-fzfx.nvim internally use `nvim` and `fzf`, but when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected shell escape characters. Here're some typical cases:
-
-1. `C:\Program Files\Neovim\bin\nvim.exe`
-2. `C:\Users\Lin Rongbin\opt\fzf\fzf.exe`
-
-For such case, please add both of them to `%PATH%` (`$env:PATH` in PowerShell), and set the `env` configuration:
-
-```lua
-require("fzfx").setup({
-    ...
-    env = {
-        nvim = 'nvim',
-        fzf = 'fzf',
-    }
-})
-```
-
-This will help fzfx.nvim avoid the shell command issue. For complete options and default configurations, please see [Configuration](#configuration).
 
 <!-- ### For Windows -->
 <!---->
@@ -226,6 +205,27 @@ require("lazy").setup({
 ## Configuration
 
 For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/80b5b806b5ef3aa9f2483579b1445675efb52634/lua/fzfx/config.lua#L12).
+
+### Path containing whitespace & Escaping issue
+
+fzfx.nvim internally use `nvim` and `fzf`, but when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected shell escape characters. Here're some typical cases:
+
+1. `C:\Program Files\Neovim\bin\nvim.exe`
+2. `C:\Users\Lin Rongbin\opt\fzf\fzf.exe`
+
+For such case, please add both of them to `%PATH%` (`$env:PATH` in PowerShell), and set the `env` configuration:
+
+```lua
+require("fzfx").setup({
+    ...
+    env = {
+        nvim = 'nvim',
+        fzf = 'fzf',
+    }
+})
+```
+
+This will help fzfx.nvim avoid the shell command issue.
 
 ## Credit
 
