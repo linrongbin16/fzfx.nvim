@@ -7,25 +7,25 @@ if type(devicon_path) == "string" and string.len(devicon_path) > 0 then
     vim.opt.runtimepath:append(devicon_path)
     devicon_ok, devicon = pcall(require, "nvim-web-devicons")
 end
--- local self_path = vim.env._FZFX_NVIM_SELF_PATH
--- local self_helpers_ok = nil
--- local self_helpers = nil
--- assert(
---     type(self_path) == "string" and string.len(self_path) > 0,
---     string.format(
---         "error! cannot find 'fzfx.nvim' plugin on runtimepath! %s",
---         vim.inspect(vim.o.runtimepath)
---     )
--- )
--- vim.opt.runtimepath:append(self_path)
--- self_helpers_ok, self_helpers = pcall(require, "fzfx.helpers")
--- assert(
---     self_helpers_ok,
---     string.format(
---         "error! cannot load 'fzfx.helpers' module on runtimepath! %s",
---         vim.inspect(vim.o.runtimepath)
---     )
--- )
+local self_path = vim.env._FZFX_NVIM_SELF_PATH
+local self_helpers_ok = nil
+local self_helpers = nil
+assert(
+    type(self_path) == "string" and string.len(self_path) > 0,
+    string.format(
+        "error! cannot find 'fzfx.nvim' plugin on runtimepath! %s",
+        vim.inspect(vim.o.runtimepath)
+    )
+)
+vim.opt.runtimepath:append(self_path)
+self_helpers_ok, self_helpers = pcall(require, "fzfx.helpers")
+assert(
+    self_helpers_ok,
+    string.format(
+        "error! cannot load 'fzfx.helpers' module on runtimepath! %s",
+        vim.inspect(vim.o.runtimepath)
+    )
+)
 
 local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
@@ -59,51 +59,8 @@ if debug_enable then
     io.write(string.format("DEBUG cmd:[%s]\n", cmd))
 end
 
--- job.stdout buffer {
-
--- FIFO buffer, push at tail, cut from head
---- @class StdoutBuffer
---- @field lines string[]
-local StdoutBuffer = {
-    lines = {},
-}
-
-function StdoutBuffer:new()
-    return vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(StdoutBuffer),
-        { lines = { "" } }
-    )
-end
-
--- push at tail
---- @param data string[]
---- @return nil
-function StdoutBuffer:push(data)
-    self.lines[#self.lines] = self.lines[#self.lines] .. data[1]
-    vim.list_extend(self.lines, data, 2)
-end
-
--- cut from head
---- @return nil
-function StdoutBuffer:cut()
-    if #self.lines > 1 then
-        self.lines = vim.list_slice(self.lines, #self.lines - 1, #self.lines)
-    end
-end
-
-function StdoutBuffer:size()
-    return #self.lines
-end
-
---- @param pos integer
---- @return string|nil
-function StdoutBuffer:get(pos)
-    return #self.lines > 0 and self.lines[pos] or nil
-end
-
 --- @type StdoutBuffer
-local cmd_buffer = StdoutBuffer:new()
+local cmd_buffer = self_helpers.StdoutBuffer:new()
 local cmd_exitcode = 0
 
 -- here we use lua coroutine to while processing stdout data, and print to terminal at the same time,
@@ -166,17 +123,17 @@ local function on_stdout(chanid, data, name)
 end
 
 local function on_stderr(chanid, data, name)
-    if debug_enable then
-        io.write(
-            string.format(
-                "DEBUG on_stderr, chanid:%s, data:%s, name:%s, buffer:%s\n",
-                vim.inspect(chanid),
-                vim.inspect(data),
-                vim.inspect(name),
-                vim.inspect(cmd_buffer)
-            )
-        )
-    end
+    -- if debug_enable then
+    --     io.write(
+    --         string.format(
+    --             "DEBUG on_stderr, chanid:%s, data:%s, name:%s, buffer:%s\n",
+    --             vim.inspect(chanid),
+    --             vim.inspect(data),
+    --             vim.inspect(name),
+    --             vim.inspect(cmd_buffer)
+    --         )
+    --     )
+    -- end
 end
 
 local function on_exit(chanid, exitcode, event)
