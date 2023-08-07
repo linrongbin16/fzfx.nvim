@@ -21,34 +21,6 @@ end
 
 --- shell helper
 
--- job.stdout buffer {
-
-local function new_buffer()
-    local buf = { lines = { "" } }
-    return buf
-end
-
-local function buffer_push(buf, data)
-    buf.lines[#buf.lines] = buf.lines[#buf.lines] .. data[1]
-    vim.list_extend(buf.lines, data, 2)
-end
-
-local function buffer_cut(buf)
-    if #buf.lines > 1 then
-        buf.lines = vim.list_slice(buf.lines, #buf.lines, #buf.lines)
-    end
-end
-
-local function buffer_size(buf)
-    return #buf.lines
-end
-
-local function buffer_get(buf, pos)
-    return #buf.lines > 0 and buf.lines[pos] or nil
-end
-
--- job.stdout buffer }
-
 -- color render {
 
 --- @param rgb string
@@ -106,130 +78,17 @@ if debug_enable then
     io.write(string.format("DEBUG cmd:[%s]\n", cmd))
 end
 
-local cmd_buffer = new_buffer()
-local cmd_exitcode = 0
-
--- here we use lua coroutine to while processing stdout data, and print to terminal at the same time,
--- to achieve the purpose of running CPU and IO devices at the same time, thus improve our performance.
-
--- --- @type fun|nil
--- local co = coroutine.create(function()
---     if debug_enable then
---         io.write(
---             string.format(
---                 "DEBUG coroutine.create, cmd_buffer:%s\n",
---                 vim.inspect(cmd_buffer)
---             )
---         )
---     end
---     local last_line = cmd_buffer:pop()
---     if last_line ~= nil then
---         local formatted_line = last_line:print()
---         if devicon_ok and devicon then
---             local icon = devicon.get_icon(formatted_line)
---             io.write(string.format("%s %s\n", icon, formatted_line))
---         else
---             io.write(string.format("%s\n", formatted_line))
---         end
---     end
---     -- go back to the co_producer, e.g. on_stdout
---     coroutine.yield()
--- end)
-
---- @param chanid integer
---- @param data string[]
---- @param name string
---- @return nil
-local function on_stdout(chanid, data, name)
-    -- if debug_enable then
-    --     io.write(string.format("DEBUG on_stdout, data:%s\n", vim.inspect(data)))
-    --     io.write(
-    --         string.format(
-    --             "DEBUG on_stdout, cmd_buffer:%s\n",
-    --             vim.inspect(cmd_buffer)
-    --         )
-    --     )
-    -- end
-    buffer_push(cmd_buffer, data)
-    if debug_enable then
-        io.write(string.format("DEBUG on_stdout, data:%s\n", vim.inspect(data)))
-        io.write(
-            string.format(
-                "DEBUG on_stdout, cmd_buffer:%s\n",
-                vim.inspect(cmd_buffer)
-            )
-        )
+local p = io.popen(cmd)
+assert(
+    p ~= nil,
+    string.format("error! failed to open pipe on cmd! %s", vim.inspect(cmd))
+)
+for line in p:lines("*line") do
+    if icon_enable and devicon_ok then
+        local line_with_icon = render_line_with_icon(line, devicon)
+        io.write(string.format("%s\n", line_with_icon))
+    else
+        io.write(string.format("%s\n", line))
     end
-    local i = 1
-    while i < buffer_size(cmd_buffer) do
-        local line = buffer_get(cmd_buffer, i)
-        if icon_enable and devicon_ok then
-            local line_with_icon = render_line_with_icon(line, devicon)
-            io.write(string.format("%s\n", line_with_icon))
-        else
-            io.write(string.format("%s\n", line))
-        end
-        i = i + 1
-    end
-    buffer_cut(cmd_buffer)
 end
-
-local function on_stderr(chanid, data, name)
-    -- if debug_enable then
-    --     io.write(
-    --         string.format(
-    --             "DEBUG on_stderr, chanid:%s, data:%s, name:%s, buffer:%s\n",
-    --             vim.inspect(chanid),
-    --             vim.inspect(data),
-    --             vim.inspect(name),
-    --             vim.inspect(cmd_buffer)
-    --         )
-    --     )
-    -- end
-end
-
-local function on_exit(chanid, exitcode, event)
-    if debug_enable then
-        io.write(
-            string.format(
-                "DEBUG on_exit, exitcode:%s, event:%s, buffer:%s\n",
-                vim.inspect(exitcode),
-                vim.inspect(event),
-                vim.inspect(cmd_buffer)
-            )
-        )
-    end
-    local i = 1
-    while i <= buffer_size(cmd_buffer) do
-        local line = buffer_get(cmd_buffer, i)
-        if type(line) == "string" and string.len(line) > 0 then
-            if icon_enable and devicon_ok then
-                local line_with_icon = render_line_with_icon(line, devicon)
-                io.write(string.format("%s\n", line_with_icon))
-            else
-                io.write(string.format("%s\n", line))
-            end
-        end
-        i = i + 1
-    end
-    cmd_exitcode = exitcode
-end
-
-local jobid = vim.fn.jobstart(cmd, {
-    on_exit = on_exit,
-    on_stdout = on_stdout,
-    on_stderr = on_stderr,
-})
--- if debug_enable then
---     io.write(
---         string.format(
---             "DEBUG jobwait, jobid:%s, cmd_buffer:%s, cmd_exitcode:%s:\n",
---             vim.inspect(jobid),
---             vim.inspect(cmd_buffer),
---             vim.inspect(cmd_exitcode)
---         )
---     )
--- end
-
-vim.fn.jobwait({ jobid })
-os.exit(cmd_exitcode)
+p:close()

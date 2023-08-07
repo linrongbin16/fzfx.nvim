@@ -84,17 +84,6 @@ end
 
 -- color render }
 
-local function split(text)
-    local result = {}
-    local split_texts = vim.fn.split(text)
-    for _, s in ipairs(split_texts) do
-        if string.len(s) > 0 then
-            table.insert(result, s)
-        end
-    end
-    return result
-end
-
 --- shell helper
 
 local f = io.open(provider --[[@as string]], "r")
@@ -136,13 +125,12 @@ if debug_enable then
     io.write(string.format("DEBUG cmd:%s\n", vim.inspect(cmd)))
 end
 
-local f = io.popen(cmd)
+local p = io.popen(cmd)
 assert(
-    f ~= nil,
+    p ~= nil,
     string.format("error! failed to open pipe on cmd! %s", vim.inspect(cmd))
 )
-for line in f:lines("*line") do
-    -- io.write(string.format("%s\n", line))
+for line in p:lines("*line") do
     if icon_enable and devicon_ok then
         local line_with_icon = render_line_with_icon(line, devicon)
         io.write(string.format("%s\n", line_with_icon))
@@ -150,4 +138,4 @@ for line in f:lines("*line") do
         io.write(string.format("%s\n", line))
     end
 end
-f:close()
+p:close()
