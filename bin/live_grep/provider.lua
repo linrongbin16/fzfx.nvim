@@ -131,6 +131,17 @@ end
 
 -- color render }
 
+local function split(text)
+    local result = {}
+    local split_texts = vim.fn.split(text)
+    for _, s in ipairs(split_texts) do
+        if string.len(s) > 0 then
+            table.insert(result, s)
+        end
+    end
+    return result
+end
+
 --- shell helper
 
 local f = io.open(provider --[[@as string]], "r")
@@ -145,7 +156,6 @@ end
 local flag = "--"
 local flag_pos = nil
 local query = ""
-local option = nil
 
 for i = 1, #content do
     if i + 1 <= #content and string.sub(content, i, i + 1) == flag then
@@ -154,26 +164,43 @@ for i = 1, #content do
     end
 end
 
-local cmd = nil
+local cmd = split(provider_cmd)
 if flag_pos ~= nil and flag_pos > 0 then
-    query = string.sub(content, 1, flag_pos - 1)
-    option = string.sub(content, flag_pos + 2)
-    cmd = string.format(
-        "%s %s -- %s",
-        provider_cmd,
-        vim.fn.trim(option),
-        vim.fn.shellescape(vim.fn.trim(query))
-    )
+    query = vim.fn.trim(string.sub(content, 1, flag_pos - 1))
+    local options = split(vim.fn.trim(string.sub(content, flag_pos + 2)))
+    for _, o in ipairs(options) do
+        table.insert(cmd, o)
+    end
+    table.insert(cmd, "--")
+    if string.len(query) > 0 then
+        -- if string.len(query) == 0 then
+        --     query = vim.fn.shellescape(query)
+        -- end
+        table.insert(cmd, query)
+    else
+        table.insert(cmd, query)
+    end
+    -- end
 else
-    cmd = string.format(
-        "%s -- %s",
-        provider_cmd,
-        vim.fn.shellescape(vim.fn.trim(content))
-    )
+    -- if string.len(vim.fn.trim(content)) > 0 then
+    table.insert(cmd, "--")
+    query = vim.fn.trim(content)
+    -- if string.len(query) == 0 then
+    --     query = vim.fn.shellescape(query)
+    -- end
+    if string.len(query) > 0 then
+        -- if string.len(query) == 0 then
+        --     query = vim.fn.shellescape(query)
+        -- end
+        table.insert(cmd, query)
+    else
+        table.insert(cmd, query)
+    end
+    -- end
 end
 
 if debug_enable then
-    io.write(string.format("DEBUG cmd:[%s]\n", cmd))
+    io.write(string.format("DEBUG cmd:%s\n", vim.inspect(cmd)))
 end
 
 local cmd_buffer = new_buffer()
@@ -251,6 +278,7 @@ local function on_exit(chanid, exitcode, event)
 end
 
 local jobid = vim.fn.jobstart(cmd, {
+    -- local jobid = vim.fn.jobstart({ "which", "rg" }, {
     on_exit = on_exit,
     on_stdout = on_stdout,
     on_stderr = on_stderr,

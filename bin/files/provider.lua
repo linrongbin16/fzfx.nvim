@@ -35,7 +35,7 @@ end
 
 local function buffer_cut(buf)
     if #buf.lines > 1 then
-        buf.lines = vim.list_slice(buf.lines, #buf.lines - 1, #buf.lines)
+        buf.lines = vim.list_slice(buf.lines, #buf.lines, #buf.lines)
     end
 end
 
@@ -161,7 +161,7 @@ local function on_stdout(chanid, data, name)
         )
     end
     local i = 1
-    while i < buffer_size(cmd_buffer) - 1 do
+    while i < buffer_size(cmd_buffer) do
         local line = buffer_get(cmd_buffer, i)
         if icon_enable and devicon_ok then
             local line_with_icon = render_line_with_icon(line, devicon)
