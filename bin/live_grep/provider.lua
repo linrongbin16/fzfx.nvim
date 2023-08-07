@@ -18,6 +18,10 @@ local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
     io.write(string.format("DEBUG provider:[%s]\n", provider))
     io.write(string.format("DEBUG content:[%s]\n", content))
+    io.write(string.format("DEBUG icon_enable:%s\n", vim.inspect(icon_enable)))
+    io.write(
+        string.format("DEBUG devicon_path:%s\n", vim.inspect(devicon_path))
+    )
 end
 
 --- shell helper
@@ -155,7 +159,13 @@ local cmd_exitcode = 0
 
 local function on_stdout(chanid, data, name)
     if debug_enable then
-        io.write(string.format("DEBUG on_stdout, data:%s\n", vim.inspect(data)))
+        io.write(
+            string.format(
+                "DEBUG on_stdout, data:%s, name:%s\n",
+                vim.inspect(data),
+                vim.inspect(name)
+            )
+        )
         io.write(
             string.format(
                 "DEBUG on_stdout, cmd_buffer:%s\n",
@@ -182,8 +192,7 @@ local function on_stderr(chanid, data, name)
     if debug_enable then
         io.write(
             string.format(
-                "DEBUG on_stderr, chanid:%s, data:%s, name:%s, buffer:%s\n",
-                vim.inspect(chanid),
+                "DEBUG on_stderr, data:%s, name:%s, cmd_buffer:%s\n",
                 vim.inspect(data),
                 vim.inspect(name),
                 vim.inspect(cmd_buffer)
