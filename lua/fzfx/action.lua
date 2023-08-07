@@ -1,9 +1,11 @@
 local log = require("fzfx.log")
+local env = require("fzfx.env")
 
 local function edit(lines)
     log.debug("|fzfx.action - edit| lines:%s", vim.inspect(lines))
     for i, line in ipairs(lines) do
-        local cmd = string.format("edit %s", vim.fn.expand(line))
+        local filename = env.icon_enable() and vim.fn.split(line)[2] or line
+        local cmd = string.format("edit %s", vim.fn.expand(filename))
         log.debug("|fzfx.action - edit| line[%d] cmd:%s", i, vim.inspect(cmd))
         vim.cmd(cmd)
     end
@@ -12,8 +14,9 @@ end
 local function edit_rg(lines)
     log.debug("|fzfx.action - edit_rg| lines:%s", vim.inspect(lines))
     for i, line in ipairs(lines) do
-        local splits = vim.split(line, ":")
-        local filename = splits[1]
+        local splits = vim.fn.split(line, ":")
+        local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
+            or splits[1]
         local row = tonumber(splits[2])
         local col = tonumber(splits[3])
         local edit_cmd = string.format("edit %s", vim.fn.expand(filename))

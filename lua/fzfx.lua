@@ -18,7 +18,7 @@ local function setup(options)
     vim.fn.mkdir(configs.cache.dir, "p")
 
     -- env
-    require("fzfx.env").setup()
+    require("fzfx.env").setup(configs)
 
     -- files
     require("fzfx.files").setup()

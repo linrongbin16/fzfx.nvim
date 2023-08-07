@@ -93,30 +93,20 @@ end
 local function render_line_with_icon(line, nvim_devicons)
     local splits = vim.fn.split(line, ":")
     local filename = splits[1]
-    local ext = vim.fn.fnamemodify(filename, ":e")
-    local icon, color = nvim_devicons.get_icon_color(filename, ext)
+    if string.len(filename) > 0 then
+        filename = filename:gsub("\x1b%[%d+m", "")
+    end
     if debug_enable then
         io.write(
             string.format(
-                "DEBUG render_line_with_icon, line:%s\n",
-                vim.inspect(line)
-            )
-        )
-        io.write(
-            string.format(
-                "DEBUG render_line_with_icon, filename:%s, ext:%s\n",
-                vim.inspect(filename),
-                vim.inspect(ext)
-            )
-        )
-        io.write(
-            string.format(
-                "DEBUG render_line_with_icon, icon:%s, color:%s\n",
-                vim.inspect(icon),
-                vim.inspect(color)
+                "DEBUG render_line_with_icon, splits:%s, filename:%s\n",
+                vim.inspect(splits[1]),
+                vim.inspect(filename)
             )
         )
     end
+    local ext = vim.fn.fnamemodify(filename, ":e")
+    local icon, color = nvim_devicons.get_icon_color(filename, ext)
     if type(icon) == "string" and string.len(icon) > 0 then
         local colorfmt = rgbfmt(color, true)
         if colorfmt then
@@ -164,39 +154,19 @@ for i = 1, #content do
     end
 end
 
-local cmd = split(provider_cmd)
+local cmd = nil
 if flag_pos ~= nil and flag_pos > 0 then
     query = vim.fn.trim(string.sub(content, 1, flag_pos - 1))
-    local options = split(vim.fn.trim(string.sub(content, flag_pos + 2)))
-    for _, o in ipairs(options) do
-        table.insert(cmd, o)
-    end
-    table.insert(cmd, "--")
-    if string.len(query) > 0 then
-        -- if string.len(query) == 0 then
-        --     query = vim.fn.shellescape(query)
-        -- end
-        table.insert(cmd, query)
-    else
-        table.insert(cmd, query)
-    end
-    -- end
+    local option = vim.fn.trim(string.sub(content, flag_pos + 2))
+    cmd = string.format(
+        "%s %s -- %s",
+        provider_cmd,
+        option,
+        vim.fn.shellescape(query)
+    )
 else
-    -- if string.len(vim.fn.trim(content)) > 0 then
-    table.insert(cmd, "--")
     query = vim.fn.trim(content)
-    -- if string.len(query) == 0 then
-    --     query = vim.fn.shellescape(query)
-    -- end
-    if string.len(query) > 0 then
-        -- if string.len(query) == 0 then
-        --     query = vim.fn.shellescape(query)
-        -- end
-        table.insert(cmd, query)
-    else
-        table.insert(cmd, query)
-    end
-    -- end
+    cmd = string.format("%s -- %s", provider_cmd, vim.fn.shellescape(query))
 end
 
 if debug_enable then
@@ -206,94 +176,110 @@ end
 local cmd_buffer = new_buffer()
 local cmd_exitcode = 0
 
-local function on_stdout(chanid, data, name)
-    if debug_enable then
-        io.write(
-            string.format(
-                "DEBUG on_stdout, data:%s, name:%s\n",
-                vim.inspect(data),
-                vim.inspect(name)
-            )
-        )
-        io.write(
-            string.format(
-                "DEBUG on_stdout, cmd_buffer:%s\n",
-                vim.inspect(cmd_buffer)
-            )
-        )
-    end
-    buffer_push(cmd_buffer, data)
-    local i = 1
-    while i < buffer_size(cmd_buffer) - 1 do
-        local line = buffer_get(cmd_buffer, i)
-        -- if icon_enable and devicon_ok then
-        --     local line_with_icon = render_line_with_icon(line, devicon)
-        --     io.write(string.format("%s\n", line_with_icon))
-        -- else
-        io.write(string.format("%s\n", line))
-        -- end
-        i = i + 1
-    end
-    buffer_cut(cmd_buffer)
-end
+-- local function on_stdout(chanid, data, name)
+--     if debug_enable then
+--         io.write(
+--             string.format(
+--                 "DEBUG on_stdout, data:%s, name:%s\n",
+--                 vim.inspect(data),
+--                 vim.inspect(name)
+--             )
+--         )
+--         io.write(
+--             string.format(
+--                 "DEBUG on_stdout, cmd_buffer:%s\n",
+--                 vim.inspect(cmd_buffer)
+--             )
+--         )
+--     end
+--     buffer_push(cmd_buffer, data)
+--     local i = 1
+--     while i < buffer_size(cmd_buffer) - 1 do
+--         local line = buffer_get(cmd_buffer, i)
+--         -- if icon_enable and devicon_ok then
+--         --     local line_with_icon = render_line_with_icon(line, devicon)
+--         --     io.write(string.format("%s\n", line_with_icon))
+--         -- else
+--         io.write(string.format("%s\n", line))
+--         -- end
+--         i = i + 1
+--     end
+--     buffer_cut(cmd_buffer)
+-- end
+--
+-- local function on_stderr(chanid, data, name)
+--     if debug_enable then
+--         io.write(
+--             string.format(
+--                 "DEBUG on_stderr, data:%s, name:%s, cmd_buffer:%s\n",
+--                 vim.inspect(data),
+--                 vim.inspect(name),
+--                 vim.inspect(cmd_buffer)
+--             )
+--         )
+--     end
+-- end
+--
+-- local function on_exit(chanid, exitcode, event)
+--     if debug_enable then
+--         io.write(
+--             string.format(
+--                 "DEBUG on_exit, exitcode:%s, event:%s, buffer:%s\n",
+--                 vim.inspect(exitcode),
+--                 vim.inspect(event),
+--                 vim.inspect(cmd_buffer)
+--             )
+--         )
+--     end
+--     local i = 1
+--     while i <= buffer_size(cmd_buffer) do
+--         local line = buffer_get(cmd_buffer, i)
+--         if type(line) == "string" and string.len(line) > 0 then
+--             -- if icon_enable and devicon_ok then
+--             --     local line_with_icon = render_line_with_icon(line, devicon)
+--             --     io.write(string.format("%s\n", line_with_icon))
+--             -- else
+--             io.write(string.format("%s\n", line))
+--             -- end
+--         end
+--         i = i + 1
+--     end
+--     cmd_exitcode = exitcode
+-- end
 
-local function on_stderr(chanid, data, name)
-    if debug_enable then
-        io.write(
-            string.format(
-                "DEBUG on_stderr, data:%s, name:%s, cmd_buffer:%s\n",
-                vim.inspect(data),
-                vim.inspect(name),
-                vim.inspect(cmd_buffer)
-            )
-        )
-    end
-end
+-- local jobid = vim.fn.jobstart(cmd, {
+--     -- local jobid = vim.fn.jobstart({ "which", "rg" }, {
+--     on_exit = on_exit,
+--     on_stdout = on_stdout,
+--     on_stderr = on_stderr,
+-- })
+-- if debug_enable then
+--     io.write(
+--         string.format(
+--             "DEBUG jobwait, jobid:%s, cmd_buffer:%s, cmd_exitcode:%s:\n",
+--             vim.inspect(jobid),
+--             vim.inspect(cmd_buffer),
+--             vim.inspect(cmd_exitcode)
+--         )
+--     )
+-- end
 
-local function on_exit(chanid, exitcode, event)
-    if debug_enable then
-        io.write(
-            string.format(
-                "DEBUG on_exit, exitcode:%s, event:%s, buffer:%s\n",
-                vim.inspect(exitcode),
-                vim.inspect(event),
-                vim.inspect(cmd_buffer)
-            )
-        )
-    end
-    local i = 1
-    while i <= buffer_size(cmd_buffer) do
-        local line = buffer_get(cmd_buffer, i)
-        if type(line) == "string" and string.len(line) > 0 then
-            -- if icon_enable and devicon_ok then
-            --     local line_with_icon = render_line_with_icon(line, devicon)
-            --     io.write(string.format("%s\n", line_with_icon))
-            -- else
-            io.write(string.format("%s\n", line))
-            -- end
-        end
-        i = i + 1
-    end
-    cmd_exitcode = exitcode
-end
-
-local jobid = vim.fn.jobstart(cmd, {
-    -- local jobid = vim.fn.jobstart({ "which", "rg" }, {
-    on_exit = on_exit,
-    on_stdout = on_stdout,
-    on_stderr = on_stderr,
-})
-if debug_enable then
-    io.write(
-        string.format(
-            "DEBUG jobwait, jobid:%s, cmd_buffer:%s, cmd_exitcode:%s:\n",
-            vim.inspect(jobid),
-            vim.inspect(cmd_buffer),
-            vim.inspect(cmd_exitcode)
-        )
-    )
-end
-
-vim.fn.jobwait({ jobid })
+-- vim.fn.jobwait({ jobid })
 -- os.execute(cmd)
-os.exit(cmd_exitcode)
+-- os.exit(cmd_exitcode)
+
+local f = io.popen(cmd)
+assert(
+    f ~= nil,
+    string.format("error! failed to open pipe on cmd! %s", vim.inspect(cmd))
+)
+for line in f:lines("*line") do
+    -- io.write(string.format("%s\n", line))
+    if icon_enable and devicon_ok then
+        local line_with_icon = render_line_with_icon(line, devicon)
+        io.write(string.format("%s\n", line_with_icon))
+    else
+        io.write(string.format("%s\n", line))
+    end
+end
+f:close()
