@@ -214,6 +214,10 @@ end
 
 --- @return PopupWindow
 local function new_popup_window(win_opts)
+    -- check executable: nvim, fzf
+    require("fzfx.shell").nvim_exec()
+    require("fzfx.shell").fzf_exec()
+
     local wopts = vim.tbl_deep_extend(
         "force",
         vim.deepcopy(conf.get_config().win_opts),
