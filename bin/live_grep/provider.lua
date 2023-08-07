@@ -28,45 +28,37 @@ end
 
 -- job.stdout buffer {
 
--- FIFO buffer, push at tail, cut from head
---- @class StdoutBuffer
---- @field lines string[]
-local StdoutBuffer = {
-    lines = {},
-}
-
-function StdoutBuffer:new()
-    return vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(StdoutBuffer),
-        { lines = { "" } }
-    )
+local function new_buffer()
+    local buf = { lines = { "" } }
+    if debug_enable then
+        io.write(string.format("DEBUG new_buffer, buf:%s\n", vim.inspect(buf)))
+    end
+    return buf
 end
 
--- push at tail
---- @param data string[]
---- @return nil
-function StdoutBuffer:push(data)
-    self.lines[#self.lines] = self.lines[#self.lines] .. data[1]
-    vim.list_extend(self.lines, data, 2)
-end
-
--- cut from head
---- @return nil
-function StdoutBuffer:cut()
-    if #self.lines > 1 then
-        self.lines = vim.list_slice(self.lines, #self.lines - 1, #self.lines)
+local function buffer_push(buf, data)
+    buf.lines[#buf.lines] = buf.lines[#buf.lines] .. data[1]
+    vim.list_extend(buf.lines, data, 2)
+    if debug_enable then
+        io.write(string.format("DEBUG buffer_push, buf:%s\n", vim.inspect(buf)))
     end
 end
 
-function StdoutBuffer:size()
-    return #self.lines
+local function buffer_cut(buf)
+    if #buf.lines > 1 then
+        buf.lines = vim.list_slice(buf.lines, #buf.lines - 1, #buf.lines)
+    end
+    if debug_enable then
+        io.write(string.format("DEBUG buffer_cut, buf:%s\n", vim.inspect(buf)))
+    end
 end
 
---- @param pos integer
---- @return string|nil
-function StdoutBuffer:get(pos)
-    return #self.lines > 0 and self.lines[pos] or nil
+local function buffer_size(buf)
+    return #buf.lines
+end
+
+local function buffer_get(buf, pos)
+    return #buf.lines > 0 and buf.lines[pos] or nil
 end
 
 -- job.stdout buffer }
@@ -83,8 +75,17 @@ local function rgbfmt(rgb, fg)
         r = tonumber(r, 16)
         g = tonumber(g, 16)
         b = tonumber(b, 16)
-        return string.format("%d;2;%d;%d;%d", code, r, g, b)
+        local result = string.format("%d;2;%d;%d;%d", code, r, g, b)
+        if debug_enable then
+            io.write(
+                string.format("DEBUG rgbfmt, result:%s\n", vim.inspect(result))
+            )
+        end
+        return result
     else
+        if debug_enable then
+            io.write(string.format("DEBUG rgbfmt, result:nil\n"))
+        end
         return nil
     end
 end
@@ -94,6 +95,28 @@ local function render_line_with_icon(line, nvim_devicons)
     local filename = splits[1]
     local ext = vim.fn.fnamemodify(filename, ":e")
     local icon, color = nvim_devicons.get_icon_color(filename, ext)
+    if debug_enable then
+        io.write(
+            string.format(
+                "DEBUG render_line_with_icon, line:%s\n",
+                vim.inspect(line)
+            )
+        )
+        io.write(
+            string.format(
+                "DEBUG render_line_with_icon, filename:%s, ext:%s\n",
+                vim.inspect(filename),
+                vim.inspect(ext)
+            )
+        )
+        io.write(
+            string.format(
+                "DEBUG render_line_with_icon, icon:%s, color:%s\n",
+                vim.inspect(icon),
+                vim.inspect(color)
+            )
+        )
+    end
     if type(icon) == "string" and string.len(icon) > 0 then
         local colorfmt = rgbfmt(color, true)
         if colorfmt then
@@ -153,8 +176,7 @@ if debug_enable then
     io.write(string.format("DEBUG cmd:[%s]\n", cmd))
 end
 
---- @type StdoutBuffer
-local cmd_buffer = StdoutBuffer:new()
+local cmd_buffer = new_buffer()
 local cmd_exitcode = 0
 
 local function on_stdout(chanid, data, name)
@@ -173,19 +195,19 @@ local function on_stdout(chanid, data, name)
             )
         )
     end
-    cmd_buffer:push(data)
+    buffer_push(cmd_buffer, data)
     local i = 1
-    while i < cmd_buffer:size() - 1 do
-        local line = cmd_buffer:get(i)
-        if icon_enable and devicon_ok then
-            local line_with_icon = render_line_with_icon(line, devicon)
-            io.write(string.format("%s\n", line_with_icon))
-        else
-            io.write(string.format("%s\n", line))
-        end
+    while i < buffer_size(cmd_buffer) - 1 do
+        local line = buffer_get(cmd_buffer, i)
+        -- if icon_enable and devicon_ok then
+        --     local line_with_icon = render_line_with_icon(line, devicon)
+        --     io.write(string.format("%s\n", line_with_icon))
+        -- else
+        io.write(string.format("%s\n", line))
+        -- end
         i = i + 1
     end
-    cmd_buffer:cut()
+    buffer_cut(cmd_buffer)
 end
 
 local function on_stderr(chanid, data, name)
@@ -213,15 +235,15 @@ local function on_exit(chanid, exitcode, event)
         )
     end
     local i = 1
-    while i <= cmd_buffer:size() do
-        local line = cmd_buffer:get(i)
+    while i <= buffer_size(cmd_buffer) do
+        local line = buffer_get(cmd_buffer, i)
         if type(line) == "string" and string.len(line) > 0 then
-            if icon_enable and devicon_ok then
-                local line_with_icon = render_line_with_icon(line, devicon)
-                io.write(string.format("%s\n", line_with_icon))
-            else
-                io.write(string.format("%s\n", line))
-            end
+            -- if icon_enable and devicon_ok then
+            --     local line_with_icon = render_line_with_icon(line, devicon)
+            --     io.write(string.format("%s\n", line_with_icon))
+            -- else
+            io.write(string.format("%s\n", line))
+            -- end
         end
         i = i + 1
     end
@@ -245,4 +267,5 @@ if debug_enable then
 end
 
 vim.fn.jobwait({ jobid })
+-- os.execute(cmd)
 os.exit(cmd_exitcode)
