@@ -126,10 +126,9 @@ local function setup()
         vim.inspect(files_configs)
     )
 
+    -- Context
     local umode_action = files_configs.actions.builtin.unrestricted_mode
     local rmode_action = files_configs.actions.builtin.restricted_mode
-
-    -- Context
     Context.umode_header = color.unrestricted_mode_header(umode_action)
     Context.rmode_header = color.restricted_mode_header(rmode_action)
 
