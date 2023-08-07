@@ -1,7 +1,8 @@
 local log = require("fzfx.log")
 local path = require("fzfx.path")
 local conf = require("fzfx.config")
-local popup = require("fzfx.popup")
+local Popup = require("fzfx.popup").Popup
+local Launch = require("fzfx.launch").Launch
 local FileSwitch = require("fzfx.utils").FileSwitch
 local shell = require("fzfx.shell")
 local color = require("fzfx.color")
@@ -24,7 +25,7 @@ end
 --- @param query string
 --- @param bang boolean|integer
 --- @param opts Config
---- @return PopupFzf
+--- @return Launch
 local function files(query, bang, opts)
     local files_configs = conf.get_config().files
     -- action
@@ -110,12 +111,10 @@ local function files(query, bang, opts)
     }
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
     local actions = files_configs.actions.expect
-    local popup_win =
-        popup.new_popup_window(bang and { height = 1, width = 1 } or nil)
-    local popup_fzf =
-        popup.new_popup_fzf(popup_win, query_command, fzf_opts, actions)
+    local ppp = Popup:new(bang and { height = 1, width = 1 } or nil)
+    local launch = Launch:new(ppp, query_command, fzf_opts, actions)
 
-    return popup_fzf
+    return launch
 end
 
 local function setup()
@@ -127,10 +126,9 @@ local function setup()
         vim.inspect(files_configs)
     )
 
+    -- Context
     local umode_action = files_configs.actions.builtin.unrestricted_mode
     local rmode_action = files_configs.actions.builtin.restricted_mode
-
-    -- Context
     Context.umode_header = color.unrestricted_mode_header(umode_action)
     Context.rmode_header = color.restricted_mode_header(rmode_action)
 

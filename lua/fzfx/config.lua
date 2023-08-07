@@ -1,7 +1,7 @@
 local constants = require("fzfx.constants")
 
 local default_fd_command =
-    string.format("%s . -cnever -tf -tl -L -i", constants.fd)
+    string.format("%s -cnever -tf -tl -L -i", constants.fd)
 local default_rg_command =
     string.format("%s --column -n --no-heading --color=always -S", constants.rg)
 
