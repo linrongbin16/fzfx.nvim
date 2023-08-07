@@ -34,7 +34,9 @@ local function edit_rg(lines)
             vim.inspect(setpos_cmd)
         )
         vim.cmd(edit_cmd)
-        vim.cmd(setpos_cmd)
+        if i == #lines then
+            vim.cmd(setpos_cmd)
+        end
     end
 end
 
