@@ -167,6 +167,8 @@ Command Naming Rules:
 * The visual select variant is named with `V` suffix.
 * The cursor word variant is named with `W` suffix.
 
+> Command names can be configured, see [Configuration](#configuration).
+
 <table>
 <thead>
   <tr>
