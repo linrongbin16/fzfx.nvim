@@ -51,6 +51,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   cargo install --locked bat
   ```
 
+- (Optional) [nerdfonts](https://www.nerdfonts.com/).
+
 <!-- ### For Windows -->
 <!---->
 <!-- Since fzf.vim rely on the `sh` shell on Windows, so you need either: -->
