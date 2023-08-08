@@ -106,7 +106,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 ```vim
 call plug#begin()
 
-" optional but recommended
+" optional for icons
 Plug 'nvim-tree/nvim-web-devicons'
 
 " mandatory
@@ -122,7 +122,7 @@ lua require('fzfx').setup()
 
 ```lua
 return require('packer').startup(function(use)
-    -- optional but recommended
+    -- optional for icons
     use { "nvim-tree/nvim-web-devicons" }
 
     -- mandatory
@@ -141,7 +141,7 @@ end)
 
 ```lua
 require("lazy").setup({
-    -- optional but recommended
+    -- optional for icons
     { "nvim-tree/nvim-web-devicons" },
 
     -- mandatory
