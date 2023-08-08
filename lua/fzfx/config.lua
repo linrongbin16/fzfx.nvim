@@ -180,7 +180,6 @@ local Defaults = {
         "--layout=reverse",
         "--border=rounded",
         "--no-height",
-        { "--preview-window", "right,50%" },
     },
 
     -- popup window options

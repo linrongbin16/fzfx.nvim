@@ -1,4 +1,5 @@
 local log = require("fzfx.log")
+local helpers = require("fzfx.helpers")
 
 local function debug_enable()
     return tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
@@ -36,9 +37,28 @@ local function search_module_path(plugin, path)
     return nil
 end
 
+--- @param options Config
+local function export_fzf_default_opts(options)
+    local fzf_opts = helpers.make_fzf_opts(options)
+    if type(fzf_opts) == "string" and string.len(fzf_opts) > 0 then
+        vim.env.FZF_DEFAULT_OPTS = fzf_opts
+        log.debug(
+            "|fzfx.env - export_fzf_default_opts| FZF_DEFAULT_OPTS:%s",
+            fzf_opts
+        )
+    else
+        log.debug(
+            "|fzfx.env - export_fzf_default_opts| nil fzf_opts:%s",
+            vim.inspect(fzf_opts)
+        )
+    end
+end
+
 local function setup(options)
+    -- debug
     vim.env._FZFX_NVIM_DEBUG_ENABLE = options.debug.enable and 1 or 0
 
+    -- icon
     if options.icon.enable then
         local devicon_path =
             search_module_path("nvim-web-devicons", "nvim%-web%-devicons")
@@ -52,6 +72,9 @@ local function setup(options)
             vim.env._FZFX_NVIM_ICON_ENABLE = 1
         end
     end
+
+    -- FZF_DEFAULT_OPTS
+    export_fzf_default_opts(options)
 end
 
 local M = {

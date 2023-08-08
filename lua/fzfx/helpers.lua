@@ -76,8 +76,40 @@ end
 
 -- visual select }
 
+-- fzf opts {
+
+--- @param opts Config
+--- @return string|nil
+local function make_fzf_opts(opts)
+    if opts == nil or #opts == 0 then
+        return nil
+    end
+    local result = {}
+    for _, o in ipairs(opts) do
+        if type(o) == "string" and string.len(o) > 0 then
+            table.insert(result, o)
+        elseif type(o) == "table" and #o == 2 then
+            local k = o[1]
+            local v = o[2]
+            table.insert(
+                result,
+                string.format("%s %s", k, vim.fn.shellescape(v))
+            )
+        else
+            log.throw(
+                "|fzfx.helpers - make_fzf_opts| invalid fzf option: %s",
+                vim.inspect(o)
+            )
+        end
+    end
+    return table.concat(result, " ")
+end
+
+-- fzf opts }
+
 local M = {
-    visual_select,
+    visual_select = visual_select,
+    make_fzf_opts = make_fzf_opts,
 }
 
 return M

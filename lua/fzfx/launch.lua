@@ -31,14 +31,10 @@ end
 --- @param actions table<string, any>
 --- @return string[]
 local function merge_fzf_opts(fzf_opts, actions)
-    local base_fzf_opts = conf.get_config().fzf_opts
     local expect_keys = make_expect_keys(actions)
-    local merged_opts =
-        vim.list_extend(vim.deepcopy(base_fzf_opts), vim.deepcopy(fzf_opts))
-    merged_opts = vim.list_extend(merged_opts, expect_keys)
+    local merged_opts = vim.list_extend(vim.deepcopy(fzf_opts), expect_keys)
     log.debug(
-        "|fzfx.popup - merge_fzf_opts| base_fzf_opts:%s, fzf_opts:%s, actions:%s, merged_opts:%s",
-        vim.inspect(base_fzf_opts),
+        "|fzfx.popup - merge_fzf_opts| fzf_opts:%s, actions:%s, merged_opts:%s",
         vim.inspect(fzf_opts),
         vim.inspect(actions),
         vim.inspect(merged_opts)
@@ -94,7 +90,7 @@ function Launch:new(popup, source, fzf_opts, actions)
 
     local function on_fzf_exit(jobid2, exitcode, event)
         log.debug(
-            "|fzfx.popup - new_popup_fzf.on_fzf_exit| jobid2:%s, exitcode:%s, event:%s",
+            "|fzfx.popup - Launch:new.on_fzf_exit| jobid2:%s, exitcode:%s, event:%s",
             vim.inspect(jobid2),
             vim.inspect(exitcode),
             vim.inspect(event)
@@ -116,7 +112,7 @@ function Launch:new(popup, source, fzf_opts, actions)
 
         -- local saved_win_context = get_window_context_stack():pop()
         -- log.debug(
-        --     "|fzfx.popup - new_popup_fzf.on_fzf_exit| saved_win_context:%s",
+        --     "|fzfx.popup - Launch:new.on_fzf_exit| saved_win_context:%s",
         --     vim.inspect(saved_win_context)
         -- )
         -- if saved_win_context then
@@ -126,20 +122,20 @@ function Launch:new(popup, source, fzf_opts, actions)
         assert(
             vim.fn.filereadable(result) > 0,
             string.format(
-                "|fzfx.popup - new_popup_fzf.on_fzf_exit| error! result %s must be readable",
+                "|fzfx.popup - Launch:new.on_fzf_exit| error! result %s must be readable",
                 vim.inspect(result)
             )
         )
         local result_lines = vim.fn.readfile(result)
         log.debug(
-            "|fzfx.popup - new_popup_fzf.on_fzf_exit| result:%s, result_lines:%s",
+            "|fzfx.popup - Launch:new.on_fzf_exit| result:%s, result_lines:%s",
             vim.inspect(result),
             vim.inspect(result_lines)
         )
         local action_key = vim.fn.trim(result_lines[1])
         local action_lines = vim.list_slice(result_lines, 2)
         log.debug(
-            "|fzfx.popup - new_popup_fzf.on_fzf_exit| action_key:%s, action_lines:%s",
+            "|fzfx.popup - Launch:new.on_fzf_exit| action_key:%s, action_lines:%s",
             vim.inspect(action_key),
             vim.inspect(action_lines)
         )
@@ -158,11 +154,15 @@ function Launch:new(popup, source, fzf_opts, actions)
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
     vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(
-        "|fzfx.popup - new_popup_fzf| $FZF_DEFAULT_COMMAND:%s",
+        "|fzfx.popup - Launch:new| $FZF_DEFAULT_OPTS:%s",
+        vim.inspect(vim.env.FZF_DEFAULT_OPTS)
+    )
+    log.debug(
+        "|fzfx.popup - Launch:new| $FZF_DEFAULT_COMMAND:%s",
         vim.inspect(vim.env.FZF_DEFAULT_COMMAND)
     )
     log.debug(
-        "|fzfx.popup - new_popup_fzf| fzf_command:%s",
+        "|fzfx.popup - Launch:new| fzf_command:%s",
         vim.inspect(fzf_command)
     )
     local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
