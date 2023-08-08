@@ -36,19 +36,9 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
 - Lua support: preview lua function defined commands and key mappings.
 - ...
 
-<details>
-<summary><b>Click here to see demo</b></summary>
-<br />
+Here's a live grep demo that searching `fzfx` with rg's `-g` (`--glob`) option on `*ch.lua` files.
 
-1. FzfxFiles
-
-   https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b14b03aa-ba38-441d-bbba-a6a1135c19aa
-
-2. FzfxLiveGrep
-
-   https://github.com/linrongbin16/fzfx.nvim/assets/6496887/f93abb17-a5ce-41d8-a3a4-ff0e64a81a91
-
-</details>
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
 
 ## Requirement
 
