@@ -245,6 +245,7 @@ nnoremap <space>uwl :\<C-U>FzfxLiveGrepUW<CR>
 ### For Neovim
 
 ```lua
+
 -- ======== files ========
 
 -- find files
@@ -296,6 +297,7 @@ vim.keymap.set('n', '<space>wl',
 vim.keymap.set('n', '<space>uwl',
         '<cmd>FzfxLiveGrepUW<cr>',
         {silent=true, noremap=true, desc="Unrestricted live grep under cursor word"})
+
 ```
 
 ## Configuration
