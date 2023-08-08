@@ -1,3 +1,5 @@
+local log = require("fzfx.log")
+
 -- visual select {
 
 --- @param mode string

@@ -126,7 +126,7 @@ function Launch:new(popup, source, fzf_opts, actions)
         assert(
             vim.fn.filereadable(result) > 0,
             string.format(
-                "|fzfx.popup - new_popup_fzf.on_fzf_exit| result %s must be readable",
+                "|fzfx.popup - new_popup_fzf.on_fzf_exit| error! result %s must be readable",
                 vim.inspect(result)
             )
         )

@@ -219,12 +219,23 @@ local Defaults = {
         zindex = 51,
     },
 
+    -- icon
+    icon = {
+        enable = true,
+        -- default = "",
+    },
+
     -- environment variables
     env = {
         --- @type string|nil
         nvim = nil,
         --- @type string|nil
         fzf = nil,
+    },
+
+    cache = {
+        --- @type string
+        dir = require("fzfx.path").join(vim.fn.stdpath("data"), "fzfx.nvim"),
     },
 
     -- debug
