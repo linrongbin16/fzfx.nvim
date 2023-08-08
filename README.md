@@ -204,7 +204,7 @@ require("lazy").setup({
 
 ## Configuration
 
-For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/80b5b806b5ef3aa9f2483579b1445675efb52634/lua/fzfx/config.lua#L12).
+For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
 ### Path containing whitespace & Escaping issue
 
