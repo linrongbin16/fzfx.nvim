@@ -10,7 +10,7 @@
 
 > E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
 
-This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim). A brand new fzf plugin for Neovim, build from scratch, focused on usability, customization and performance.
+This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim). A brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
 
 - [Feature](#feature)
 - [Requirement](#requirement)
