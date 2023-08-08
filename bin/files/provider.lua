@@ -1,9 +1,11 @@
+local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
+local icon_enable = tostring(vim.env._FZFX_NVIM_ICON_ENABLE):lower() == "1"
+local devicon_path = vim.env._FZFX_NVIM_DEVICON_PATH
+
 local args = _G.arg
 local provider = args[1]
 
-local icon_enable = tostring(vim.env._FZFX_NVIM_ICON_ENABLE):lower() == "1"
-local devicon_path = vim.env._FZFX_NVIM_DEVICON_PATH
-local devicon_ok = nil
+local devicon_ok = false
 local devicon = nil
 if
     icon_enable
@@ -14,7 +16,6 @@ then
     devicon_ok, devicon = pcall(require, "nvim-web-devicons")
 end
 
-local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 if debug_enable then
     io.write(string.format("DEBUG provider:[%s]\n", provider))
 end

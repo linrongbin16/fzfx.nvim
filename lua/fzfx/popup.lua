@@ -1,7 +1,5 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
-local path = require("fzfx.path")
-local shell = require("fzfx.shell")
 
 -- --- @class WindowContext
 -- --- @field bufnr integer|nil

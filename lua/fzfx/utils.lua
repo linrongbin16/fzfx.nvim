@@ -94,7 +94,6 @@ end
 local M = {
     table_filter = table_filter,
     list_filter = list_filter,
-    visual_select = visual_select,
     FileSwitch = FileSwitch,
 }
 

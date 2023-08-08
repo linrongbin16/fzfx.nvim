@@ -171,6 +171,9 @@ local Defaults = {
         fzf_opts = {
             { "--bind", "ctrl-l:toggle-preview" },
         },
+        other_opts = {
+            onchange_reload_delay = "sleep 0.1 && ",
+        },
     },
 
     -- basic fzf options
@@ -178,9 +181,8 @@ local Defaults = {
         "--ansi",
         "--info=inline",
         "--layout=reverse",
-        "--border=rounded",
+        "--border=none",
         "--no-height",
-        { "--preview-window", "right,50%" },
     },
 
     -- popup window options
@@ -215,7 +217,7 @@ local Defaults = {
         --- @type number
         col = 0,
 
-        border = "none",
+        border = "rounded",
         zindex = 51,
     },
 
