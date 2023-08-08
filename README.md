@@ -31,12 +31,12 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
-  - Search by yanked register.
+  - Search by yanked register (todo).
 - (Un)restricted mode: easily switch whether to search hidden and ignored files.
-- Lua support: preview lua function defined commands and key mappings.
+- Lua support: preview lua function defined commands and key mappings (todo).
 - ...
 
-Here's a live grep demo that searching `fzfx` with rg's `-g` (`--glob`) option on `*ch.lua` files.
+Here's a live grep demo that searching `fzfx` with rg's `-g *ch.lua` (`--glob`) option on specific filetypes.
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
 
@@ -203,6 +203,50 @@ require("lazy").setup({
   </tr>
 </tbody>
 </table>
+
+## Recommended Key Mappings
+
+### For Vim
+
+```vim
+" ======== files ========
+
+" find files, filter hidden and ignored files
+nnoremap <space>f :\<C-U>FzfxFiles<CR>
+" visual select
+xnoremap <space>f :\<C-U>FzfxFilesV<CR>
+" unrestricted
+nnoremap <space>uf :\<C-U>FzfxFilesU<CR>
+" unrestricted visual select
+xnoremap <space>uf :\<C-U>FzfxFilesUV<CR>
+
+" cursor word
+nnoremap <space>wf :\<C-U>FzfxFilesW<CR>
+" unrestricted cursor word
+nnoremap <space>uwf :\<C-U>FzfxFilesUW<CR>
+
+" ======== live grep ========
+
+" live grep
+nnoremap <space>l :\<C-U>FzfxLiveGrep<CR>
+" visual select
+xnoremap <space>l :\<C-U>FzfxLiveGrepV<CR>
+" unrestricted
+nnoremap <space>ul :\<C-U>FzfxLiveGrepU<CR>
+" unrestricted by visual select
+xnoremap <space>ul :\<C-U>FzfxLiveGrepUV<CR>
+
+" by cursor word
+nnoremap <space>wl :\<C-U>FzfxLiveGrepW<CR>
+" unrestrictly by cursor word
+nnoremap <space>uwl :\<C-U>FzfxLiveGrepUW<CR>
+```
+
+### For Neovim
+
+
+
+
 
 ## Configuration
 
