@@ -209,9 +209,10 @@ require("lazy").setup({
 ### For Vim
 
 ```vim
+
 " ======== files ========
 
-" find files, filter hidden and ignored files
+" find files
 nnoremap <space>f :\<C-U>FzfxFiles<CR>
 " visual select
 xnoremap <space>f :\<C-U>FzfxFilesV<CR>
