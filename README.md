@@ -159,6 +159,14 @@ require("lazy").setup({
 
 ## Commands
 
+Command Naming Rules:
+
+* All commands are named with prefix `Fzfx`.
+* The main command name has no suffix.
+* The unrestricted variant is named with `U` suffix.
+* The visual select variant is named with `V` suffix.
+* The cursor word variant is named with `W` suffix.
+
 <table>
 <thead>
   <tr>
@@ -293,11 +301,11 @@ vim.keymap.set('x', '<space>ul',
 -- cursor word
 vim.keymap.set('n', '<space>wl',
         '<cmd>FzfxLiveGrepW<cr>',
-        {silent=true, noremap=true, desc="Live grep under cursor word"})
+        {silent=true, noremap=true, desc="Live grep by cursor word"})
 -- unrestricted cursor word
 vim.keymap.set('n', '<space>uwl',
         '<cmd>FzfxLiveGrepUW<cr>',
-        {silent=true, noremap=true, desc="Unrestricted live grep under cursor word"})
+        {silent=true, noremap=true, desc="Unrestricted live grep by cursor word"})
 
 ```
 
