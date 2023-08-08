@@ -20,7 +20,7 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
   - [lazy.nvim](#lazynvim)
 - [Commands](#commands)
 - [Configuration](#configuration)
-  - [Path containing whitespace & Escaping issue](#path-containing-whitespace-escaping-issue)
+  - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
 - [Credit](#credit)
 - [Contribute](#contribute)
 
