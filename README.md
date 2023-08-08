@@ -244,9 +244,59 @@ nnoremap <space>uwl :\<C-U>FzfxLiveGrepUW<CR>
 
 ### For Neovim
 
+```lua
+-- ======== files ========
 
+-- find files
+vim.keymap.set('n', '<space>f', '<cmd>FzfxFiles<cr>',
+        {silent=true, noremap=true, desc="Find files"})
+-- visual select
+vim.keymap.set('x', '<space>f', '<cmd>FzfxFilesV<CR>',
+        {silent=true, noremap=true, desc="Find files"})
+-- unrestricted
+vim.keymap.set('n', '<space>uf',
+        '<cmd>FzfxFilesU<cr>',
+        {silent=true, noremap=true, desc="Unrestricted find files"})
+-- unrestricted visual select
+vim.keymap.set('x', '<space>uf',
+        '<cmd>FzfxFilesUV<CR>',
+        {silent=true, noremap=true, desc="Unrestricted find files"})
 
+-- cursor word
+vim.keymap.set('n', '<space>wf', '<cmd>FzfxFilesW<cr>',
+        {silent=true, noremap=true, desc="Find files by cursor word"})
+-- unrestricted cursor word
+vim.keymap.set('n', '<space>uwf', '<cmd>FzfxFilesUW<cr>',
+        {silent=true, noremap=true, desc="Unrestricted find files by cursor word"})
 
+-- ======== live grep ========
+
+-- live grep
+vim.keymap.set('n', '<space>l',
+        '<cmd>FzfxLiveGrep<cr>',
+        {silent=true, noremap=true, desc="Live grep"})
+-- visual select
+vim.keymap.set('x', '<space>l',
+        "<cmd>FzfxLiveGrepV<cr>",
+        {silent=true, noremap=true, desc="Live grep"})
+-- unrestricted live grep
+vim.keymap.set('n', '<space>ul',
+        '<cmd>FzfxLiveGrepU<cr>',
+        {silent=true, noremap=true, desc="Unrestricted live grep"})
+-- unrestricted visual select
+vim.keymap.set('x', '<space>ul',
+        "<cmd>FzfxLiveGrepUV<cr>",
+        {silent=true, noremap=true, desc="Live grep"})
+
+-- cursor word
+vim.keymap.set('n', '<space>wl',
+        '<cmd>FzfxLiveGrepW<cr>',
+        {silent=true, noremap=true, desc="Live grep under cursor word"})
+-- unrestricted cursor word
+vim.keymap.set('n', '<space>uwl',
+        '<cmd>FzfxLiveGrepUW<cr>',
+        {silent=true, noremap=true, desc="Unrestricted live grep under cursor word"})
+```
 
 ## Configuration
 
