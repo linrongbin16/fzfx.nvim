@@ -8,9 +8,9 @@
 ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white)
 
-> This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim).
+> E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
 
-E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a brand new fzf plugin for Neovim, build from scratch, focused on usability, customization and performance.
+This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim). A brand new fzf plugin for Neovim, build from scratch, focused on usability, customization and performance.
 
 - [Feature](#feature)
 - [Requirement](#requirement)
@@ -20,7 +20,7 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
   - [lazy.nvim](#lazynvim)
 - [Commands](#commands)
 - [Configuration](#configuration)
-  - [Path containing whitespace & Escaping issue](#path-containing-whitespace-escaping-issue)
+  - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
 - [Credit](#credit)
 - [Contribute](#contribute)
 
@@ -36,19 +36,9 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim), a
 - Lua support: preview lua function defined commands and key mappings.
 - ...
 
-<details>
-<summary><b>Click here to see demo</b></summary>
-<br />
+Here's a live grep demo that searching `fzfx` with rg's `-g` (`--glob`) option on `*ch.lua` files.
 
-1. FzfxFiles
-
-   https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b14b03aa-ba38-441d-bbba-a6a1135c19aa
-
-2. FzfxLiveGrep
-
-   https://github.com/linrongbin16/fzfx.nvim/assets/6496887/f93abb17-a5ce-41d8-a3a4-ff0e64a81a91
-
-</details>
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
 
 ## Requirement
 
@@ -214,7 +204,7 @@ require("lazy").setup({
 
 ## Configuration
 
-For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/80b5b806b5ef3aa9f2483579b1445675efb52634/lua/fzfx/config.lua#L12).
+For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
 ### Path containing whitespace & Escaping issue
 
