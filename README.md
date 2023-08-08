@@ -128,7 +128,7 @@ return require('packer').startup(function(use)
     -- mandatory
     use { "junegunn/fzf", run = ":call fzf#install()" }
     use {
-        "linrongbin16/fzfx.vim",
+        "linrongbin16/fzfx.nvim",
         requires = { "junegunn/fzf" },
         config = function()
             require("fzfx").setup()
@@ -147,7 +147,7 @@ require("lazy").setup({
     -- mandatory
     { "junegunn/fzf", build = ":call fzf#install()" },
     {
-        "linrongbin16/fzfx.vim",
+        "linrongbin16/fzfx.nvim",
         dependencies = { "junegunn/fzf" },
         config = function()
             require("fzfx").setup()
