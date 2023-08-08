@@ -1,10 +1,5 @@
 local constants = require("fzfx.constants")
 
-local Context = {
-    base_dir = nil,
-    sep = nil,
-}
-
 --- @param path string
 --- @return string
 local function normalize(path)

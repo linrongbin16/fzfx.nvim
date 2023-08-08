@@ -44,10 +44,20 @@ local function live_grep(query, bang, opts)
         runtime.provider.value,
         query
     )
-    local reload_command = string.format(
-        "%s %s {q} || true",
-        shell.make_lua_command("live_grep", "provider.lua"),
-        runtime.provider.value
+    local onchange_reload_delay =
+        live_grep_configs.other_opts.onchange_reload_delay
+    local reload_command = vim.fn.trim(
+        string.format(
+            "%s %s %s {q}",
+            (
+                type(onchange_reload_delay) == "string"
+                and string.len(onchange_reload_delay) > 0
+            )
+                    and onchange_reload_delay
+                or "",
+            shell.make_lua_command("live_grep", "provider.lua"),
+            runtime.provider.value
+        )
     )
     local preview_command = string.format(
         "%s {1} {2}",

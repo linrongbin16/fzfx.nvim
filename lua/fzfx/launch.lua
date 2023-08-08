@@ -1,7 +1,7 @@
 local log = require("fzfx.log")
-local conf = require("fzfx.config")
 local path = require("fzfx.path")
 local shell = require("fzfx.shell")
+local helpers = require("fzfx.helpers")
 
 --- @class Launch
 --- @field popup Popup|nil
@@ -47,31 +47,15 @@ end
 --- @param result string
 --- @return string
 local function make_fzf_command(fzf_opts, actions, result)
-    fzf_opts = merge_fzf_opts(fzf_opts, actions)
-
-    local fzf_path = shell.fzf_exec()
-    local builder = {}
-    for _, opt in ipairs(fzf_opts) do
-        if type(opt) == "table" and #opt == 2 then
-            local key = opt[1]
-            local value = opt[2]
-            table.insert(
-                builder,
-                string.format("%s %s", key, vim.fn.shellescape(value))
-            )
-        elseif type(opt) == "string" then
-            table.insert(builder, opt)
-        else
-            log.err("error! invalid fzf opt '%s'!", vim.inspect(opt))
-        end
-    end
+    local final_opts = merge_fzf_opts(fzf_opts, actions)
+    local final_opts_string = helpers.make_fzf_opts(final_opts)
     log.debug(
-        "|fzfx.popup - make_fzf_command| fzf_opts:%s, builder:%s",
-        vim.inspect(fzf_opts),
-        vim.inspect(builder)
+        "|fzfx.popup - make_fzf_command| final_opts:%s, builder:%s",
+        vim.inspect(final_opts),
+        vim.inspect(final_opts_string)
     )
     local command =
-        string.format("%s %s >%s", fzf_path, table.concat(builder, " "), result)
+        string.format("%s %s >%s", shell.fzf_exec(), final_opts_string, result)
     log.debug(
         "|fzfx.popup - make_fzf_command| command:%s",
         vim.inspect(command)

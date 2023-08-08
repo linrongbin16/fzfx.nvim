@@ -1,15 +1,18 @@
+local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
+local icon_enable = tostring(vim.env._FZFX_NVIM_ICON_ENABLE):lower() == "1"
+
 local args = _G.arg
 local filename = args[1]
 local lineno = nil
 if #args >= 2 then
     lineno = args[2]
 end
-local debug_enable = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
+
 if debug_enable then
     io.write(string.format("DEBUG filename:[%s]\n", vim.inspect(filename)))
     io.write(string.format("DEBUG lineno:[%s]\n", vim.inspect(lineno)))
 end
-local icon_enable = tostring(vim.env._FZFX_NVIM_ICON_ENABLE):lower() == "1"
+
 if icon_enable then
     local splits = vim.fn.split(filename)
     filename = splits[2]
