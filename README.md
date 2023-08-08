@@ -19,7 +19,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#commands)
-- [Recommended Key Mapping](#recommended-key-mapping)
+- [Recommended Key Mappings](#recommended-key-mappings)
   - [For Vim](#for-vim)
   - [For Neovim](#for-neovim)
 - [Configuration](#configuration)
