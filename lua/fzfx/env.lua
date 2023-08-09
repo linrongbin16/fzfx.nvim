@@ -58,6 +58,7 @@ local function export_fzf_default_opts(options)
     end
 end
 
+--- @param options Config
 local function setup(options)
     -- debug
     vim.env._FZFX_NVIM_DEBUG_ENABLE = options.debug.enable and 1 or 0
@@ -78,7 +79,7 @@ local function setup(options)
     end
 
     -- FZF_DEFAULT_OPTS
-    export_fzf_default_opts(options)
+    export_fzf_default_opts(options.fzf_opts)
 end
 
 local M = {
