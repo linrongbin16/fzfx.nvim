@@ -103,12 +103,10 @@ function Launch:new(popup, source, fzf_opts, actions)
         --     vim.api.nvim_set_current_win(saved_win_context.winnr)
         -- end
 
-        assert(
+        log.ensure(
             vim.fn.filereadable(result) > 0,
-            string.format(
-                "|fzfx.popup - Launch:new.on_fzf_exit| error! result %s must be readable",
-                vim.inspect(result)
-            )
+            "|fzfx.popup - Launch:new.on_fzf_exit| error! result %s must be readable",
+            vim.inspect(result)
         )
         local result_lines = vim.fn.readfile(result)
         log.debug(

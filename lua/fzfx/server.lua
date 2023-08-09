@@ -5,12 +5,20 @@ local NextRegistryId = 0
 --- @type table<integer, function>
 local Registry = {}
 
---- @param f fun(data:string):nil
+-- IPC: inter-process communication
+--- @alias IpcCallback fun(chanid:integer,data:string):nil
+
+--- @param f IpcCallback
+--- @return integer
 local function register(f)
     NextRegistryId = NextRegistryId + 1
     Registry[NextRegistryId] = f
+    return NextRegistryId
 end
 
+--- @param chanid integer
+--- @param data string
+--- @param name string
 local function accept(chanid, data, name)
     log.debug(
         "|fzfx.server - accept| chanid:%s, data:%s, name:%s",
@@ -20,33 +28,66 @@ local function accept(chanid, data, name)
     )
     local registry_id = data[1]
     local input_data = data[2]
-    local callback = Registry[registry_id]
-    log.debug("|fzfx.server - accept| callback:%s", vim.inspect(callback))
-    assert(
-        type(callback) == "function",
-        "|fzfx.server - accept| error! cannot find registered callback function with id:%s",
+    --- @type IpcCallback
+    local rpc_callback = Registry[registry_id]
+    log.debug(
+        "|fzfx.server - accept| rpc_callback:%s",
+        vim.inspect(rpc_callback)
+    )
+    log.ensure(
+        type(rpc_callback) == "function",
+        "|fzfx.server - accept| error! cannot find registered rpc callback function with id:%s",
         vim.inspect(registry_id)
     )
-    callback(input_data)
+    rpc_callback(chanid, input_data)
 end
 
+--- @class IpcChannel
+--- @field sockaddr string|nil
+--- @field chanid integer|nil
+local IpcChannel = {
+    sockaddr = nil,
+    chanid = nil,
+}
+
+--- @param sockaddr string
+--- @param chanid integer
+function IpcChannel:new(sockaddr, chanid)
+    return vim.tbl_deep_extend("force", vim.deepcopy(IpcChannel), {
+        sockaddr = sockaddr,
+        chanid = chanid,
+    })
+end
+
+--- @return IpcChannel
 local function startserver()
     local sockaddr = vim.fn.serverstart("127.0.0.1:0")
-    vim.env._FZFX_NVIM_SOCKET_ADDRESS = sockaddr
     log.debug("|fzfx.server - startserver| sockaddr:%s", vim.inspect(sockaddr))
-    local result = vim.fn.sockconnect("tcp", sockaddr, { on_data = accept })
-    log.debug(
-        "|fzfx.server - startserver| listen result:%s",
-        vim.inspect(result)
+    log.ensure(
+        type(sockaddr) == "string" and string.len(sockaddr) > 0,
+        "error! failed to start tcp server on 127.0.0.1:0!"
     )
+    local chanid = vim.fn.sockconnect(
+        "tcp",
+        sockaddr,
+        { on_data = accept, data_buffered = true }
+    )
+    log.debug(
+        "|fzfx.server - startserver| listen on chanid:%s",
+        vim.inspect(chanid)
+    )
+    log.ensure(
+        type(chanid) == "number" and chanid > 0,
+        "error! failed to connect to tcp server on 127.0.0.1:0!"
+    )
+    return IpcChannel:new(sockaddr --[[@as string]], chanid)
 end
 
-local function setup()
-    startserver()
-end
+local function setup() end
 
 local M = {
     setup = setup,
+    startserver = startserver,
     register = register,
 }
 
