@@ -62,4 +62,63 @@ T["get_color"]["bg"] = function()
     end
 end
 
+T["ansi"] = new_set()
+
+local ansicolors = {
+    black = "Comment",
+    red = "Exception",
+    green = "Label",
+    yellow = "LineNr",
+    blue = "TabLine",
+    magenta = "Special",
+    cyan = "String",
+}
+
+-- see: https://stackoverflow.com/a/55324681/4438921
+local function test_ansi(msg, result)
+    print(
+        string.format(
+            "%s result(%s):%s",
+            msg,
+            type(result),
+            vim.inspect(result)
+        )
+    )
+    expect.equality(type(result), "string")
+    expect.equality(string.len(result) > 0, true)
+    local i1, j1 = result:find("\x1b%[%d+m")
+    expect.equality(i1 >= 1, true)
+    expect.equality(j1 >= 1, true)
+    local i2, j2 = result:find("\x1b%[%d+;%d+m")
+    if i2 ~= nil and j2 ~= nil then
+        expect.equality(i2 >= 1, true)
+        expect.equality(j2 >= 1, true)
+    end
+    local i3, j3 = result:find("\x1b%[%d+;%d+;%d+m")
+    if i3 ~= nil and j3 ~= nil then
+        expect.equality(i3 >= 1, true)
+        expect.equality(j3 >= 1, true)
+    end
+    local i4, j4 = result:find("\x1b%[0m")
+    expect.equality(i4 > 1, true)
+    expect.equality(j4 > 1, true)
+    if i2 ~= nil and j2 ~= nil then
+        expect.equality(i2 < i4, true)
+        expect.equality(j2 < j4, true)
+    end
+    if i3 ~= nil and j3 ~= nil then
+        expect.equality(i3 < i4, true)
+        expect.equality(j3 < j4, true)
+    end
+end
+
+T["ansi"]["default"] = function()
+    for c, g in pairs(ansicolors) do
+        local result = child.lua_get(
+            string.format([[ M.ansi("default", "%s", "%s") ]], c, g)
+        )
+        test_ansi("default " .. c .. " " .. g, result)
+    end
+end
+
 return T
