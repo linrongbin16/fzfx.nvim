@@ -261,7 +261,7 @@ end
 
 function Popup:close()
     log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
-    vim.api.nvim_win_close(self.winnr, true)
+    -- vim.api.nvim_win_close(self.winnr, true)
 end
 
 local M = {

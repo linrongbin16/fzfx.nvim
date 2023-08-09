@@ -63,12 +63,15 @@ local function make_fzf_command(fzf_opts, actions, result)
     return command
 end
 
+--- @alias OnLaunchExit fun(launch:Launch):nil
+
 --- @param popup Popup
 --- @param source string
 --- @param fzf_opts Config
 --- @param actions Config
+--- @param on_launch_exit OnLaunchExit|nil
 --- @return Launch
-function Launch:new(popup, source, fzf_opts, actions)
+function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
     local result = vim.fn.tempname()
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
 
@@ -132,7 +135,11 @@ function Launch:new(popup, source, fzf_opts, actions)
                 action_callback(action_lines)
             end
         end
+        if type(on_launch_exit) == "function" then
+            on_launch_exit(self)
+        end
     end
+
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
     vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(

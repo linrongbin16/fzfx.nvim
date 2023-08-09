@@ -7,6 +7,7 @@ local FileSwitch = require("fzfx.utils").FileSwitch
 local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
+local server = require("fzfx.server")
 
 local Context = {
     --- @type string|nil
@@ -23,16 +24,44 @@ local function short_path()
 end
 
 --- @param query string
---- @param bang boolean|integer
+--- @param fullscreen boolean
 --- @param opts Config
 --- @return Launch
-local function files(query, bang, opts)
+local function files(query, fullscreen, opts)
     local files_configs = conf.get_config().files
     -- action
     local umode_action =
         string.lower(files_configs.actions.builtin.unrestricted_mode)
     local rmode_action =
         string.lower(files_configs.actions.builtin.restricted_mode)
+
+    local provider_switch = helpers.Switch:new(
+        "files_provider",
+        opts.unrestricted and files_configs.providers.unrestricted
+            or files_configs.providers.restricted,
+        opts.unrestricted and files_configs.providers.restricted
+            or files_configs.providers.unrestricted
+    )
+
+    -- ipc
+    local ipc_channel = server.startserver()
+    local function switch_provider_ipc_callback(chanid, data)
+        log.debug(
+            "|fzfx.files - files.switch_provider_ipc_callback| chanid:%s, data:%s",
+            vim.inspect(chanid),
+            vim.inspect(data)
+        )
+        provider_switch:switch()
+        local bytes = vim.fn.chansend(chanid, "done")
+        if bytes == 0 then
+            log.err(
+                "|fzfx.files - files.switch_provider_ipc_callback| chansend failed to send any bytes on channel:%s",
+                vim.inspect(ipc_channel)
+            )
+        end
+    end
+    local switch_provider_callback_id =
+        server.register(switch_provider_ipc_callback)
 
     --- @type table<string, FileSwitch>
     local runtime = {
@@ -51,14 +80,21 @@ local function files(query, bang, opts)
     local query_command = string.format(
         "%s %s",
         shell.make_lua_command("files", "provider.lua"),
-        runtime.provider.value
+        provider_switch.current
     )
     local preview_command =
         string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))
+    local call_switch_provider_ipc_command = string.format(
+        "%s %s %d",
+        shell.make_lua_command("ipc_client.lua"),
+        ipc_channel.sockaddr,
+        switch_provider_callback_id
+    )
     log.debug(
-        "|fzfx.files - files| query_command:%s, preview_command:%s",
+        "|fzfx.files - files| query_command:%s, preview_command:%s, call_switch_provider_ipc_command:%s",
         vim.inspect(query_command),
-        vim.inspect(preview_command)
+        vim.inspect(preview_command),
+        vim.inspect(call_switch_provider_ipc_command)
     )
 
     local fzf_opts = {
@@ -85,7 +121,7 @@ local function files(query, bang, opts)
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 umode_action,
                 umode_action,
-                runtime.provider:switch(),
+                call_switch_provider_ipc_command,
                 Context.rmode_header,
                 rmode_action,
                 query_command
@@ -98,7 +134,7 @@ local function files(query, bang, opts)
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 rmode_action,
                 rmode_action,
-                runtime.provider:switch(),
+                call_switch_provider_ipc_command,
                 Context.umode_header,
                 umode_action,
                 query_command
@@ -111,8 +147,14 @@ local function files(query, bang, opts)
     }
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
     local actions = files_configs.actions.expect
-    local ppp = Popup:new(bang and { height = 1, width = 1 } or nil)
-    local launch = Launch:new(ppp, query_command, fzf_opts, actions)
+    local ppp = Popup:new(fullscreen and { height = 1, width = 1 } or nil)
+    local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
+        local result = vim.fn.serverstop(ipc_channel.sockaddr)
+        log.debug(
+            "|fzfx.files - on_launch_exit| serverstop:%s",
+            vim.inspect(result)
+        )
+    end)
 
     return launch
 end
