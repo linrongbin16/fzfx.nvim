@@ -11,6 +11,7 @@ local T = new_set({
         pre_case = function()
             -- Restart child process with custom 'init.lua' script
             child.restart({ "-u", "lua/tests/minimal_init.lua" })
+            child.lua([[ require('lazy').install() ]])
             -- Load tested plugin
             child.lua([[M = require('fzfx.color')]])
         end,

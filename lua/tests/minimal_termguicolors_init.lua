@@ -36,6 +36,11 @@ require("lazy").setup({
         dev = true,
         dir = "~/github/linrongbin16/fzfx.nvim",
         opts = {},
+        dependencies = {
+            "folke/tokyonight.nvim",
+            "nvim-tree/nvim-web-devicons",
+            "junegunn/fzf",
+        },
     },
 }, opts)
 
