@@ -39,7 +39,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - Lua support: preview lua function defined commands and key mappings (todo).
 - ...
 
-Here's a live grep demo that searching `fzfx` with rg's `-g *ch.lua` (`--glob`) option on specific filetypes.
+Here's a live grep demo that searching `fzfx` with rg's `-g *ch.lua` option on specific filetypes.
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
 
