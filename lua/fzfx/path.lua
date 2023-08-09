@@ -11,7 +11,7 @@ local function normalize(path)
 end
 
 local function sep()
-    return (constants.is_windows and vim.o.shellslash) and "\\" or "/"
+    return constants.is_windows and "\\" or "/"
 end
 
 local function join(...)

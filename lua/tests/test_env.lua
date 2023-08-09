@@ -10,7 +10,6 @@ local T = new_set({
     hooks = {
         pre_once = function()
             child.restart({ "-u", "lua/tests/minimal_termguicolors_init.lua" })
-            child.lua([[ require('lazy').install() ]])
             child.lua([[ M = require('fzfx.env') ]])
         end,
         -- This will be executed one after all tests from this set are finished

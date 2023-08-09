@@ -21,6 +21,7 @@ vim.opt.rtp:prepend(lazypath)
 
 local opts = {
     root = vim.fn.expand("<sfile>:p:h") .. "/lazy",
+    defaults = { lazy = false },
 }
 
 require("lazy").setup({
@@ -40,3 +41,5 @@ require("lazy").setup({
         },
     },
 }, opts)
+
+require("lazy").sync({ wait = true, show = false })
