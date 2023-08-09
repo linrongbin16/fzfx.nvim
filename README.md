@@ -20,8 +20,8 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - [lazy.nvim](#lazynvim)
 - [Commands](#commands)
 - [Recommended Key Mappings](#recommended-key-mappings)
-  - [For Vim](#for-vim)
-  - [For Neovim](#for-neovim)
+  - [Vimscript](#vimscript)
+  - [Lua](#lua)
 - [Configuration](#configuration)
   - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
 - [Credit](#credit)
@@ -54,7 +54,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   cargo install --locked bat
   ```
 
-- [nerdfonts](https://www.nerdfonts.com/) (optional for icons).
+- [Nerdfonts](https://www.nerdfonts.com/) (optional for icons).
 
 <!-- ### For Windows -->
 <!---->
@@ -219,7 +219,7 @@ Command Naming Rules:
 
 ## Recommended Key Mappings
 
-### For Vim
+### Vimscript
 
 ```vim
 
@@ -256,7 +256,7 @@ nnoremap <space>wl :\<C-U>FzfxLiveGrepW<CR>
 nnoremap <space>uwl :\<C-U>FzfxLiveGrepUW<CR>
 ```
 
-### For Neovim
+### Lua
 
 ```lua
 
