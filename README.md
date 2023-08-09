@@ -301,7 +301,7 @@ vim.keymap.set('n', '<space>ul',
 -- unrestricted visual select
 vim.keymap.set('x', '<space>ul',
         "<cmd>FzfxLiveGrepUV<cr>",
-        {silent=true, noremap=true, desc="Live grep"})
+        {silent=true, noremap=true, desc="Unrestricted live grep"})
 
 -- cursor word
 vim.keymap.set('n', '<space>wl',
