@@ -8,14 +8,14 @@ local T = new_set({
     -- Register hooks
     hooks = {
         -- This will be executed before every (even nested) case
-        pre_once = function()
+        pre_case = function()
             -- Restart child process with custom 'init.lua' script
             child.restart({ "-u", "lua/tests/minimal_init.lua" })
             -- Load tested plugin
             child.lua([[M = require('fzfx.color')]])
         end,
         -- This will be executed one after all tests from this set are finished
-        post_once = child.stop,
+        post_case = child.stop,
     },
 })
 

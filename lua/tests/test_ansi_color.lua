@@ -8,12 +8,12 @@ local child = MiniTest.new_child_neovim()
 local T = new_set({
     -- Register hooks
     hooks = {
-        pre_once = function()
+        pre_case = function()
             child.restart({ "-u", "lua/tests/minimal_init.lua" })
             child.lua([[ M = require('fzfx.color') ]])
         end,
         -- This will be executed one after all tests from this set are finished
-        post_once = child.stop,
+        post_case = child.stop,
     },
 })
 
