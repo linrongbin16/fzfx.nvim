@@ -40,6 +40,8 @@ require("lazy").setup({
     },
 }, opts)
 
+require("lazy").sync({ show = false, wait = true })
+
 vim.cmd([[
 colorscheme tokyonight
 ]])
