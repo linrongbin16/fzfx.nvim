@@ -20,6 +20,9 @@ local function setup(options)
     -- env
     require("fzfx.env").setup(configs)
 
+    -- helpers (FZF_DEFAULT_OPTS)
+    require("fzfx.helpers").export_fzf_default_opts(configs.fzf_opts)
+
     -- files
     require("fzfx.files").setup()
 

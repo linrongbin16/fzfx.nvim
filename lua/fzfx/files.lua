@@ -80,7 +80,7 @@ local function files(query, fullscreen, opts)
     local query_command = string.format(
         "%s %s",
         shell.make_lua_command("files", "provider.lua"),
-        provider_switch.current
+        provider_switch.tempfile
     )
     local preview_command =
         string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))
@@ -118,7 +118,7 @@ local function files(query, fullscreen, opts)
             -- umode action: swap provider, change rmode header, rebind rmode action, reload query
             "--bind",
             string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                "%s:unbind(%s)+execute(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 umode_action,
                 umode_action,
                 call_switch_provider_ipc_command,
@@ -131,7 +131,7 @@ local function files(query, fullscreen, opts)
             -- rmode action: swap provider, change umode header, rebind umode action, reload query
             "--bind",
             string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                "%s:unbind(%s)+execute(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 rmode_action,
                 rmode_action,
                 call_switch_provider_ipc_command,
