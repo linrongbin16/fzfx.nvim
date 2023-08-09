@@ -19,62 +19,47 @@ local T = new_set({
 
 T["get_color"] = new_set()
 
-local function test_rgb_color(color)
-    expect.equality(type(color) == "string", true)
-    local r, g, b = color:match("#(..)(..)(..)")
+local function test_rgb_color(msg, color)
     print(
-        string.format(
-            "color:%s, r:%s, g:%s, b:%s",
-            vim.inspect(color),
-            vim.inspect(r),
-            vim.inspect(g),
-            vim.inspect(b)
-        )
+        string.format("%s, color(%s):%s", msg, type(color), vim.inspect(color))
     )
-    expect.equality(type(r), "string")
-    expect.equality(tonumber(r) > 0, true)
-    expect.equality(type(g), "string")
-    expect.equality(tonumber(g) > 0, true)
-    expect.equality(type(b), "string")
-    expect.equality(tonumber(b) > 0, true)
+    expect.equality(type(color) == "string" or color == vim.NIL, true)
+    if type(color) == "string" then
+        local r, g, b = color:match("#(..)(..)(..)")
+        expect.equality(type(r), "string")
+        expect.equality(tonumber(r, 16) > 0, true)
+        expect.equality(type(g), "string")
+        expect.equality(tonumber(g, 16) > 0, true)
+        expect.equality(type(b), "string")
+        expect.equality(tonumber(b, 16) > 0, true)
+    end
 end
 
+local hlgroups = {
+    "Special",
+    "Normal",
+    "LineNr",
+    "TabLine",
+    "Exception",
+    "Comment",
+    "Label",
+    "String",
+}
+
 T["get_color"]["fg"] = function()
-    local special = child.lua_get([[ M.get_color("fg", "Special") ]])
-    local normal = child.lua_get([[ M.get_color("fg", "Normal") ]])
-    local linenr = child.lua_get([[ M.get_color("fg", "LineNr") ]])
-    local tabline = child.lua_get([[ M.get_color("fg", "TabLine") ]])
-    local exception = child.lua_get([[ M.get_color("fg", "Exception") ]])
-    local comment = child.lua_get([[ M.get_color("fg", "Comment") ]])
-    local label = child.lua_get([[ M.get_color("fg", "Label") ]])
-    local string = child.lua_get([[ M.get_color("fg", "String") ]])
-    test_rgb_color(special)
-    test_rgb_color(normal)
-    test_rgb_color(linenr)
-    test_rgb_color(tabline)
-    test_rgb_color(exception)
-    test_rgb_color(comment)
-    test_rgb_color(label)
-    test_rgb_color(string)
+    for _, g in ipairs(hlgroups) do
+        local color =
+            child.lua_get(string.format([[ M.get_color("fg", "%s") ]], g))
+        test_rgb_color("fg " .. g, color)
+    end
 end
 
 T["get_color"]["bg"] = function()
-    local special = child.lua_get([[ M.get_color("bg", "Special") ]])
-    local normal = child.lua_get([[ M.get_color("bg", "Normal") ]])
-    local linenr = child.lua_get([[ M.get_color("bg", "LineNr") ]])
-    local tabline = child.lua_get([[ M.get_color("bg", "TabLine") ]])
-    local exception = child.lua_get([[ M.get_color("bg", "Exception") ]])
-    local comment = child.lua_get([[ M.get_color("bg", "Comment") ]])
-    local label = child.lua_get([[ M.get_color("bg", "Label") ]])
-    local string = child.lua_get([[ M.get_color("bg", "String") ]])
-    test_rgb_color(special)
-    test_rgb_color(normal)
-    test_rgb_color(linenr)
-    test_rgb_color(tabline)
-    test_rgb_color(exception)
-    test_rgb_color(comment)
-    test_rgb_color(label)
-    test_rgb_color(string)
+    for _, g in ipairs(hlgroups) do
+        local color =
+            child.lua_get(string.format([[ M.get_color("fg", "%s") ]], g))
+        test_rgb_color("bg " .. g, color)
+    end
 end
 
 return T

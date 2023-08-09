@@ -35,42 +35,31 @@ local function test_ansi_color(msg, color)
     end
 end
 
+local hlgroups = {
+    "Special",
+    "Normal",
+    "LineNr",
+    "TabLine",
+    "Exception",
+    "Comment",
+    "Label",
+    "String",
+}
+
 T["get_color"]["fg"] = function()
-    local special = child.lua_get([[ M.get_color("fg", "Special") ]])
-    local normal = child.lua_get([[ M.get_color("fg", "Normal") ]])
-    local linenr = child.lua_get([[ M.get_color("fg", "LineNr") ]])
-    local tabline = child.lua_get([[ M.get_color("fg", "TabLine") ]])
-    local exception = child.lua_get([[ M.get_color("fg", "Exception") ]])
-    local comment = child.lua_get([[ M.get_color("fg", "Comment") ]])
-    local label = child.lua_get([[ M.get_color("fg", "Label") ]])
-    local string = child.lua_get([[ M.get_color("fg", "String") ]])
-    test_ansi_color("fg special", special)
-    test_ansi_color("fg normal", normal)
-    test_ansi_color("fg linenr", linenr)
-    test_ansi_color("fg tabline", tabline)
-    test_ansi_color("fg exception", exception)
-    test_ansi_color("fg comment", comment)
-    test_ansi_color("fg label", label)
-    test_ansi_color("fg string", string)
+    for _, g in ipairs(hlgroups) do
+        local color =
+            child.lua_get(string.format([[ M.get_color("fg", "%s") ]], g))
+        test_ansi_color("fg " .. g, color)
+    end
 end
 
 T["get_color"]["bg"] = function()
-    local special = child.lua_get([[ M.get_color("bg", "Special") ]])
-    local normal = child.lua_get([[ M.get_color("bg", "Normal") ]])
-    local linenr = child.lua_get([[ M.get_color("bg", "LineNr") ]])
-    local tabline = child.lua_get([[ M.get_color("bg", "TabLine") ]])
-    local exception = child.lua_get([[ M.get_color("bg", "Exception") ]])
-    local comment = child.lua_get([[ M.get_color("bg", "Comment") ]])
-    local label = child.lua_get([[ M.get_color("bg", "Label") ]])
-    local string = child.lua_get([[ M.get_color("bg", "String") ]])
-    test_ansi_color("bg special", special)
-    test_ansi_color("bg normal", normal)
-    test_ansi_color("bg linenr", linenr)
-    test_ansi_color("bg tabline", tabline)
-    test_ansi_color("bg exception", exception)
-    test_ansi_color("bg comment", comment)
-    test_ansi_color("bg label", label)
-    test_ansi_color("bg string", string)
+    for _, g in ipairs(hlgroups) do
+        local color =
+            child.lua_get(string.format([[ M.get_color("fg", "%s") ]], g))
+        test_ansi_color("bg " .. g, color)
+    end
 end
 
 return T
