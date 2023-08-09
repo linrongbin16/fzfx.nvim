@@ -1,6 +1,6 @@
 local log = require("fzfx.log")
 
---- @param options Config
+--- @param options Config|nil
 --- @return nil
 local function setup(options)
     -- configs
