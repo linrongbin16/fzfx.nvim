@@ -56,4 +56,37 @@ T["normalize"]["windows"] = function()
     expect.equality(file2, file1)
 end
 
+T["sep"] = new_set()
+
+T["sep"]["default"] = function()
+    local actual = child.lua_get([[ M.sep() ]])
+    if vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0 then
+        expect.equality(actual, "\\")
+    else
+        expect.equality(actual, "/")
+    end
+end
+
+T["join"] = new_set()
+
+T["join"]["default"] = function()
+    local expect1 = "bin/files/provider.lua"
+    local actual1 = child.lua_get([[ M.join("bin", "files", "provider.lua") ]])
+    add_note(string.format("%s == %s", expect1, actual1))
+    local expect2 = "files/provider.lua"
+    local actual2 = child.lua_get([[ M.join("files", "provider.lua") ]])
+    add_note(string.format("%s == %s", expect2, actual2))
+    local expect3 = "provider.lua"
+    local actual3 = child.lua_get([[ M.join("provider.lua") ]])
+    add_note(string.format("%s == %s", expect3, actual3))
+end
+
+T["base_dir"] = new_set()
+
+T["base_dir"]["base_dir"] = function()
+    local actual = child.lua_get([[ M.base_dir() ]])
+    add_note(string.format("base dir: %s", actual))
+    expect.equality(vim.fn.expand("~/github/linrongbin16/fzfx.nvim"), actual)
+end
+
 return T
