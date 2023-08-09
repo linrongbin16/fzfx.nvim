@@ -89,47 +89,16 @@ local function test_ansi(msg, result)
     -- local i1, j1 = result:find("\x1b%[%d+m")
     -- expect.equality(i1 >= 1, true)
     -- expect.equality(j1 >= 1, true)
-    local i2, j2 = result:find("\x1b%[%d+;%d+m")
-    local i3, j3 = result:find("\x1b%[%d+;%d+;%d+m")
-    local i4, j4 = result:find("\x1b%[%d+;%d+;%d+;%d+m")
-    local i5, j5 = result:find("\x1b%[%d+;%d+;%d+;%d+;%d+m")
-    expect.equality(i2 ~= nil or i3 ~= nil or i4 ~= nil or i5 ~= nil, true)
-    expect.equality(j2 ~= nil or j3 ~= nil or j4 ~= nil or j5 ~= nil, true)
-    if i2 ~= nil and j2 ~= nil then
-        expect.equality(i2 >= 1, true)
-        expect.equality(j2 >= 1, true)
-    end
-    if i3 ~= nil and j3 ~= nil then
-        expect.equality(i3 >= 1, true)
-        expect.equality(j3 >= 1, true)
-    end
-    if i4 ~= nil and j4 ~= nil then
-        expect.equality(i4 >= 1, true)
-        expect.equality(j4 >= 1, true)
-    end
-    if i5 ~= nil and j5 ~= nil then
-        expect.equality(i5 >= 1, true)
-        expect.equality(j5 >= 1, true)
-    end
+    local i1, j1 = result:find("\x1b%[[%d;]+%d+m")
+    expect.equality(i1 ~= nil, true)
+    expect.equality(j1 ~= nil, true)
+    expect.equality(i1 >= 1, true)
+    expect.equality(j1 >= 1, true)
     local i0, j0 = result:find("\x1b%[0m")
     expect.equality(i0 > 1, true)
     expect.equality(j0 > 1, true)
-    if i2 ~= nil and j2 ~= nil then
-        expect.equality(i2 < i0, true)
-        expect.equality(j2 < j0, true)
-    end
-    if i3 ~= nil and j3 ~= nil then
-        expect.equality(i3 < i0, true)
-        expect.equality(j3 < j0, true)
-    end
-    if i4 ~= nil and j4 ~= nil then
-        expect.equality(i4 < i0, true)
-        expect.equality(j4 < j0, true)
-    end
-    if i5 ~= nil and j5 ~= nil then
-        expect.equality(i5 < i0, true)
-        expect.equality(j5 < j0, true)
-    end
+    expect.equality(i1 < i0, true)
+    expect.equality(j1 < j0, true)
 end
 
 T["ansi"]["default"] = function()

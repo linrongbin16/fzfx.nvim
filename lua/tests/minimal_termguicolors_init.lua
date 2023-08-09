@@ -26,17 +26,16 @@ local opts = {
 
 require("lazy").setup({
     "folke/tokyonight.nvim",
+    "nvim-tree/nvim-web-devicons",
+    {
+        "junegunn/fzf",
+        build = ":call fzf#install()",
+    },
     {
         "linrongbin16/fzfx.nvim",
         dev = true,
         dir = "~/github/linrongbin16/fzfx.nvim",
         opts = {},
-        dependencies = {
-            {
-                "junegunn/fzf",
-                build = ":call fzf#install()",
-            },
-        },
     },
 }, opts)
 
