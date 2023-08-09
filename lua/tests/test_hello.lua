@@ -8,7 +8,7 @@ local T = new_set({
     -- Register hooks
     hooks = {
         -- This will be executed before every (even nested) case
-        pre_case = function()
+        pre_once = function()
             -- Restart child process with custom 'init.lua' script
             child.restart({ "-u", "lua/tests/minimal_init.lua" })
             -- Install plugin

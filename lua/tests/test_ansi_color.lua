@@ -2,12 +2,13 @@
 
 local new_set = MiniTest.new_set
 local expect = MiniTest.expect
+local add_note = MiniTest.add_note
 local child = MiniTest.new_child_neovim()
 
 local T = new_set({
     -- Register hooks
     hooks = {
-        pre_case = function()
+        pre_once = function()
             child.restart({ "-u", "lua/tests/minimal_init.lua" })
             child.lua([[ require("lazy").install() ]])
             child.lua([[ M = require('fzfx.color') ]])
@@ -20,7 +21,7 @@ local T = new_set({
 T["get_color"] = new_set()
 
 local function test_get_color(msg, color)
-    print(
+    add_note(
         string.format(
             "%s, color(%s):%s, is string:%s",
             msg,
@@ -76,7 +77,7 @@ local ansicolors = {
 
 -- see: https://stackoverflow.com/a/55324681/4438921
 local function test_ansi(msg, result)
-    print(
+    add_note(
         string.format(
             "%s result(%s):%s",
             msg,
