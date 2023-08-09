@@ -20,7 +20,7 @@ local T = new_set({
 
 T["get_color"] = new_set()
 
-local function test_rgb_color(msg, color)
+local function test_get_color(msg, color)
     add_note(
         string.format("%s, color(%s):%s", msg, type(color), vim.inspect(color))
     )
@@ -51,7 +51,7 @@ T["get_color"]["fg"] = function()
     for _, g in ipairs(hlgroups) do
         local color =
             child.lua_get(string.format([[ M.get_color("fg", "%s") ]], g))
-        test_rgb_color("fg " .. g, color)
+        test_get_color("fg " .. g, color)
     end
 end
 
@@ -59,7 +59,7 @@ T["get_color"]["bg"] = function()
     for _, g in ipairs(hlgroups) do
         local color =
             child.lua_get(string.format([[ M.get_color("fg", "%s") ]], g))
-        test_rgb_color("bg " .. g, color)
+        test_get_color("bg " .. g, color)
     end
 end
 
