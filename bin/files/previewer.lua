@@ -19,14 +19,17 @@ if icon_enable then
 end
 
 if vim.fn.executable("batcat") > 0 or vim.fn.executable("bat") > 0 then
-    local style = "numbers"
-    if type(vim.env["BAT_STYLE"]) == "string" then
+    local style = "numbers,changes"
+    if
+        type(vim.env["BAT_STYLE"]) == "string"
+        and string.len(vim.env["BAT_STYLE"]) > 0
+    then
         style = vim.env["BAT_STYLE"]
     end
     local cmd = string.format(
-        "%s %s --color=always --pager=never %s -- %s",
+        "%s --style=%s --color=always --pager=never %s -- %s",
         vim.fn.executable("batcat") > 0 and "batcat" or "bat",
-        string.len(style) > 0 and string.format("--style=%s", style) or "",
+        style,
         (lineno ~= nil and string.len(lineno) > 0)
                 and string.format("--highlight-line=%s", lineno)
             or "",

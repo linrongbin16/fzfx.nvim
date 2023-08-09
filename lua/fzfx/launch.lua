@@ -69,7 +69,7 @@ end
 --- @param actions Config
 --- @return Launch
 function Launch:new(popup, source, fzf_opts, actions)
-    local result = path.tempname()
+    local result = vim.fn.tempname()
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
 
     local function on_fzf_exit(jobid2, exitcode, event)

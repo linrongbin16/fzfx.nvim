@@ -251,7 +251,7 @@ local Defaults = {
 --- @type Config
 local Configs = {}
 
---- @param options Config
+--- @param options Config|nil
 --- @return Config
 local function setup(options)
     Configs = vim.tbl_deep_extend("force", Defaults, options or {})

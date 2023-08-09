@@ -2,7 +2,7 @@
 
 # fzfx.nvim
 
-[![Neovim-v0.8.0](https://img.shields.io/badge/Neovim-v0.8.0-blueviolet.svg?style=flat-square&logo=Neovim&logoColor=green)](https://github.com/neovim/neovim/releases/tag/v0.8.0)
+[![Neovim-v0.5](https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg?style=flat-square&logo=Neovim&logoColor=green)](https://github.com/neovim/neovim/releases/tag/v0.5.0)
 [![License](https://img.shields.io/github/license/linrongbin16/lin.nvim?style=flat-square&logo=GNU)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
 ![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black)
 ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white)
@@ -45,7 +45,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 
 ## Requirement
 
-- Neovim &ge; 0.8.
+- Neovim &ge; 0.5.
 - [rg](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), recommand to install them with [cargo](https://www.rust-lang.org/):
 
   ```bash
@@ -54,7 +54,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   cargo install --locked bat
   ```
 
-- [Nerdfonts](https://www.nerdfonts.com/) (optional for icons).
+- [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 
 <!-- ### For Windows -->
 <!---->
@@ -164,11 +164,11 @@ require("lazy").setup({
 
 Command Naming Rules:
 
-* All commands are named with prefix `Fzfx`.
-* The main command name has no suffix.
-* The unrestricted variant is named with `U` suffix.
-* The visual select variant is named with `V` suffix.
-* The cursor word variant is named with `W` suffix.
+- All commands are named with prefix `Fzfx`.
+- The main command name has no suffix.
+- The unrestricted variant is named with `U` suffix.
+- The visual select variant is named with `V` suffix.
+- The cursor word variant is named with `W` suffix.
 
 > Command names can be configured, see [Configuration](#configuration).
 
@@ -301,7 +301,7 @@ vim.keymap.set('n', '<space>ul',
 -- unrestricted visual select
 vim.keymap.set('x', '<space>ul',
         "<cmd>FzfxLiveGrepUV<cr>",
-        {silent=true, noremap=true, desc="Live grep"})
+        {silent=true, noremap=true, desc="Unrestricted live grep"})
 
 -- cursor word
 vim.keymap.set('n', '<space>wl',
@@ -337,6 +337,9 @@ require("fzfx").setup({
 ```
 
 This will help fzfx.nvim avoid the shell command issue.
+
+> Personally I recommend never use any whitespaces in any file path in any operating system (Windows, macOS, Linux).
+> It will affect many softwares including this plugin ;).
 
 ## Credit
 

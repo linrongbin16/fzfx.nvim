@@ -9,6 +9,10 @@ local function icon_enable()
     return tostring(vim.env._FZFX_NVIM_ICON_ENABLE):lower() == "1"
 end
 
+local function socket_address()
+    return tostring(vim.env._FZFX_NVIM_SOCKET_ADDRESS)
+end
+
 --- @return string|nil
 local function search_module_path(plugin, path)
     local plugin_ok, plugin_module = pcall(require, plugin)
@@ -54,6 +58,7 @@ local function export_fzf_default_opts(options)
     end
 end
 
+--- @param options Config
 local function setup(options)
     -- debug
     vim.env._FZFX_NVIM_DEBUG_ENABLE = options.debug.enable and 1 or 0
@@ -74,12 +79,13 @@ local function setup(options)
     end
 
     -- FZF_DEFAULT_OPTS
-    export_fzf_default_opts(options)
+    export_fzf_default_opts(options.fzf_opts)
 end
 
 local M = {
     debug_enable = debug_enable,
     icon_enable = icon_enable,
+    socket_address = socket_address,
     setup = setup,
 }
 

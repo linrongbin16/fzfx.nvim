@@ -66,9 +66,9 @@ function FileSwitch:new(name, value, next_value)
                 ),
             }
         or {
-            value = path.tempname(),
-            next = path.tempname(),
-            swap = path.tempname(),
+            value = vim.fn.tempname(),
+            next = vim.fn.tempname(),
+            swap = vim.fn.tempname(),
         }
     --- @type FileSwitch
     local switch = vim.tbl_deep_extend("force", vim.deepcopy(FileSwitch), init)
