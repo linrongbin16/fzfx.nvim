@@ -130,7 +130,11 @@ local function ansi(text, name, group)
     return string.format("[%sm%s[0m", finalcolor, text)
 end
 
-local M = {}
+local M = {
+    get_color = get_color,
+    csi = csi,
+    ansi = ansi,
+}
 
 for color, default_hl in pairs({
     black = "Comment",

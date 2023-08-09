@@ -9,7 +9,7 @@ local expect = MiniTest.expect
 
 T["hello"] = function()
     local h = hello()
-    expect(h, "hello")
+    expect.equality(h, "hello")
 end
 
 return T
