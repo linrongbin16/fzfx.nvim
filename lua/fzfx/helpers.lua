@@ -107,6 +107,20 @@ end
 
 -- fzf opts }
 
+-- restricted/unrestricted header {
+
+--- @class SearchCommandProviderSwitch
+--- @field restricted_value
+--- @field unrestricted_value
+--- @field temporary_file
+local SearchCommandProviderSwitch = {
+    restricted_value = nil,
+    unrestricted_value = nil,
+    temporary_file = nil,
+}
+
+-- restricted/unrestricted header }
+
 local M = {
     visual_select = visual_select,
     make_fzf_opts = make_fzf_opts,

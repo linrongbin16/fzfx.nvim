@@ -2,5 +2,8 @@
     "diagnostics": [
         "vim"
     ],
+    "diagnostics.globals": [
+        "MiniTest"
+    ],
     "workspace.checkThirdParty": false
 }
