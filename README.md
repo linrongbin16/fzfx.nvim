@@ -338,6 +338,9 @@ require("fzfx").setup({
 
 This will help fzfx.nvim avoid the shell command issue.
 
+> Personally I recommend never use any whitespaces in any file path in any operating system (Windows, macOS, Linux).
+> It will affect many softwares including this plugin ;).
+
 ## Credit
 
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
