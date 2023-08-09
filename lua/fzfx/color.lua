@@ -1,5 +1,7 @@
 local log = require("fzfx.log")
 
+--- @alias AnsiCodeType "black"|"red"|"green"|"yellow"|"blue"|"magenta"|"cyan"
+--- @type table<AnsiCodeType, integer>
 local AnsiCode = {
     black = 30,
     red = 31,
@@ -10,7 +12,8 @@ local AnsiCode = {
     cyan = 36,
 }
 
---- @param attr "fg"|"bg"
+--- @alias VimSyntaxHighlightAttribute "fg"|"bg"
+--- @param attr VimSyntaxHighlightAttribute
 --- @param group string
 --- @return string|nil
 local function get_color(attr, group)
@@ -69,10 +72,10 @@ end
 
 --- @param text string
 --- @param name string
---- @param group string
+--- @param hl string
 --- @return string
-local function ansi(text, name, group)
-    local fg = get_color("fg", group)
+local function ansi(text, name, hl)
+    local fg = get_color("fg", hl)
     local fgcolor = nil
     if type(fg) == "string" then
         fgcolor = csi(fg, true)
@@ -80,7 +83,7 @@ local function ansi(text, name, group)
             "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
             vim.inspect(text),
             vim.inspect(name),
-            vim.inspect(group),
+            vim.inspect(hl),
             vim.inspect(fg),
             vim.inspect(fgcolor)
         )
@@ -90,13 +93,13 @@ local function ansi(text, name, group)
             "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
             vim.inspect(text),
             vim.inspect(name),
-            vim.inspect(group),
+            vim.inspect(hl),
             vim.inspect(fg),
             vim.inspect(fgcolor)
         )
     end
 
-    local bg = get_color("bg", group)
+    local bg = get_color("bg", hl)
     local finalcolor = nil
     if type(bg) == "string" then
         local bgcolor = csi(bg, false)
@@ -104,7 +107,7 @@ local function ansi(text, name, group)
             "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, bg:%s, bgcolor:%s",
             vim.inspect(text),
             vim.inspect(name),
-            vim.inspect(group),
+            vim.inspect(hl),
             vim.inspect(bg),
             vim.inspect(bgcolor)
         )
@@ -114,7 +117,7 @@ local function ansi(text, name, group)
             "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, bg:%s",
             vim.inspect(text),
             vim.inspect(name),
-            vim.inspect(group),
+            vim.inspect(hl),
             vim.inspect(bg)
         )
         finalcolor = fgcolor
@@ -124,12 +127,13 @@ local function ansi(text, name, group)
         "|fzfx.color - ansi| ansi, finalcolor:%s",
         vim.inspect(text),
         vim.inspect(name),
-        vim.inspect(group),
+        vim.inspect(hl),
         vim.inspect(bg)
     )
     return string.format("[%sm%s[0m", finalcolor, text)
 end
 
+--- @type table<string, function>
 local M = {
     get_color = get_color,
     csi = csi,
@@ -154,7 +158,7 @@ for color, default_hl in pairs({
 end
 
 --- @param fmt string
---- @param renderer fun(color:string,hl:string|nil):string
+--- @param renderer fun(text:string,hl:string|nil):string
 --- @return string
 local function render(fmt, renderer, ...)
     local args = {}
@@ -164,6 +168,8 @@ local function render(fmt, renderer, ...)
     return string.format(fmt, unpack(args))
 end
 
+--- @param action string
+--- @return string
 M.unrestricted_mode_header = function(action)
     return render(
         ":: Press %s to unrestricted mode",
@@ -172,6 +178,8 @@ M.unrestricted_mode_header = function(action)
     )
 end
 
+--- @param action string
+--- @return string
 M.restricted_mode_header = function(action)
     return render(
         ":: Press %s to restricted mode",
