@@ -9,6 +9,10 @@ local function icon_enable()
     return tostring(vim.env._FZFX_NVIM_ICON_ENABLE):lower() == "1"
 end
 
+local function socket_address()
+    return tostring(vim.env._FZFX_NVIM_SOCKET_ADDRESS)
+end
+
 --- @return string|nil
 local function search_module_path(plugin, path)
     local plugin_ok, plugin_module = pcall(require, plugin)
@@ -80,6 +84,7 @@ end
 local M = {
     debug_enable = debug_enable,
     icon_enable = icon_enable,
+    socket_address = socket_address,
     setup = setup,
 }
 
