@@ -20,7 +20,15 @@ end
 
 --- @return string
 local function base_dir()
-    return vim.fn["fzfx#nvim#base_dir"]()
+    local result = nil
+    if constants.is_windows and vim.o.shellslash then
+        vim.o.shellslash = false
+        result = vim.fn.expand("<sfile>:p:h")
+        vim.o.shellslash = true
+    else
+        result = vim.fn.expand("<sfile>:p:h")
+    end
+    return result
 end
 
 local M = {
