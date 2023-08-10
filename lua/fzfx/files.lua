@@ -87,7 +87,7 @@ local function files(query, fullscreen, opts)
     local call_switch_provider_ipc_command = string.format(
         "%s %s %d",
         shell.make_lua_command("ipc_client.lua"),
-        ipc_channel.sockaddr,
+        ipc_channel.address,
         switch_provider_callback_id
     )
     log.debug(
@@ -149,7 +149,7 @@ local function files(query, fullscreen, opts)
     local actions = files_configs.actions.expect
     local ppp = Popup:new(fullscreen and { height = 1, width = 1 } or nil)
     local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
-        local result = vim.fn.serverstop(ipc_channel.sockaddr)
+        local result = vim.fn.serverstop(ipc_channel.address)
         log.debug(
             "|fzfx.files - on_launch_exit| serverstop:%s",
             vim.inspect(result)
