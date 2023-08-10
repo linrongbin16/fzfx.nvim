@@ -57,31 +57,114 @@ function IpcChannel:new(address, channel_id)
     })
 end
 
+--- @alias IpcHandler userdata
+
 --- @class IpcServer
 --- @field mode "tcp"|"pipe"|nil
 --- @field address string|nil
+--- @field port integer|nil
 --- @field registry IpcRegistry|nil
---- @field listen_channel IpcChannel|nil
+--- @field server_handler IpcHandler|nil
 local IpcServer = {
     mode = nil,
     address = nil,
+    port = nil,
     registry = nil,
-    listen_channel = nil,
+    server_handler = nil,
 }
 
 --- @param mode "tcp"|"pipe"|nil
---- @param addr string|nil
+--- @param address string|nil
 --- @return IpcServer
-function IpcServer:new(mode, addr)
+function IpcServer:new(mode, address)
     mode = mode or "tcp"
-    addr = addr or "127.0.0.1:0"
-    local address = vim.fn.serverstart(addr)
-    log.debug("|fzfx.server - IpcServer:new| address:%s", vim.inspect(address))
+    address = address or "127.0.0.1"
+
+    local server_handler = vim.loop.new_tcp()
     log.ensure(
-        type(address) == "string" and string.len(address) > 0,
-        "error! failed to start tcp server on %s!",
-        addr
+        server_handler ~= nil,
+        "|fzfx.server - IpcServer:new| error! failed to create new tcp server handler on address:%s!",
+        vim.inspect(address)
     )
+    local bind_result = server_handler:bind(address, 0)
+    log.ensure(
+        bind_result == 0,
+        "|fzfx.server - IpcServer:new| error! failed to bind server handler on address:%s, %s",
+        vim.inspect(address),
+        vim.inspect(bind_result)
+    )
+    local sockname = server_handler:getsockname()
+    log.debug(
+        "|fzfx.server - IpcServer:new| sockname:%s",
+        vim.inspect(sockname)
+    )
+
+    local function on_listen(err)
+        log.debug(
+            "|fzfx.server - IpcServer:new.on_listen| err:%s",
+            vim.inspect(err)
+        )
+        log.ensure(
+            not err,
+            "|fzfx.server - IpcServer:new.on_listen| error! failed to listen on sockname:%s, %s",
+            vim.inspect(sockname),
+            vim.inspect(err)
+        )
+        local client_handler = vim.loop.new_tcp() --[[@as uv_tcp_t]]
+        if client_handler == nil then
+            log.err(
+                "|fzfx.server - IpcServer:new| error! failed to create new tcp client handler on sockname:%s!",
+                vim.inspect(sockname)
+            )
+            return
+        end
+        local accept_result =
+            server_handler:accept(client_handler --[[@as uv_stream_t]])
+        if accept_result ~= 0 then
+            log.err(
+                "|fzfx.server - IpcServer:new.on_listen| error! failed to accept client handler on sockname:%s, %s",
+                vim.inspect(sockname),
+                vim.inspect(err)
+            )
+            client_handler:close()
+            return
+        end
+        local function on_read_start(read_err, read_data)
+            log.debug(
+                "|fzfx.server - IpcServer:new.on_listen.on_read_start| read_err:%s, read_data:%s",
+                vim.inspect(read_err),
+                vim.inspect(read_data)
+            )
+            if read_err then
+                log.err(
+                    "|fzfx.server - IpcServer:new.on_listen.on_read_start| error! read error:%s, data:%s",
+                    vim.inspect(read_err),
+                    vim.inspect(read_data)
+                )
+                client_handler:shutdown()
+                client_handler:close()
+                return
+            end
+        end
+        local read_start_result = client_handler:read_start(on_read_start)
+        if read_start_result ~= 0 then
+            log.err(
+                "|fzfx.server - IpcServer:new.on_listen| error! failed to read start on client handler on sockname:%s, %s",
+                vim.inspect(sockname),
+                vim.inspect(read_start_result)
+            )
+            client_handler:close()
+            return
+        end
+    end
+    local listen_result = server_handler:listen(128, on_listen)
+    log.ensure(
+        listen_result == 0,
+        "|fzfx.server - IpcServer:new| error! failed to listen on sockname:%s, %s",
+        vim.inspect(sockname),
+        vim.inspect(listen_result)
+    )
+
     --- @type integer
     local channel_id = vim.fn.sockconnect(mode, address, {
         on_data = function(chanid, data, name)
@@ -131,6 +214,12 @@ function IpcServer:accept(chanid, data, name)
         vim.inspect(registry_id)
     )
     callback(chanid, input_data)
+end
+
+--- @param f IpcCallback
+--- @return integer
+function IpcServer:register(f)
+    self.registry:register(f)
 end
 
 local M = {
