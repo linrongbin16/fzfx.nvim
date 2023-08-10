@@ -73,6 +73,14 @@ local IpcServer = {
     server_handler = nil,
 }
 
+--- @class IpcPack
+--- @field registry_id integer|nil
+--- @field tempfile string|nil
+local IpcPack = {
+    registry_id = nil,
+    tempfile = nil,
+}
+
 --- @param mode "tcp"|"pipe"|nil
 --- @param address string|nil
 --- @return IpcServer
@@ -86,6 +94,20 @@ function IpcServer:new(mode, address)
         "|fzfx.server - IpcServer:new| error! failed to create new tcp server handler on address:%s!",
         vim.inspect(address)
     )
+    local nodelay_result = server_handler:nodelay(true)
+    if nodelay_result ~= 0 then
+        log.warn(
+            "|fzfx.server - IpcServer:new| error! failed to set nodelay for tcp server handler on address:%s!",
+            vim.inspect(address)
+        )
+    end
+    local keepalive_result = server_handler:keepalive(true, 1)
+    if keepalive_result ~= 0 then
+        log.warn(
+            "|fzfx.server - IpcServer:new| error! failed to set keepalive=1 for tcp server handler on address:%s!",
+            vim.inspect(address)
+        )
+    end
     local bind_result = server_handler:bind(address, 0)
     log.ensure(
         bind_result == 0,
@@ -100,16 +122,13 @@ function IpcServer:new(mode, address)
     )
 
     local function on_listen(err)
-        log.debug(
-            "|fzfx.server - IpcServer:new.on_listen| err:%s",
-            vim.inspect(err)
-        )
-        log.ensure(
-            not err,
-            "|fzfx.server - IpcServer:new.on_listen| error! failed to listen on sockname:%s, %s",
-            vim.inspect(sockname),
-            vim.inspect(err)
-        )
+        if err then
+            log.err(
+                "|fzfx.server - IpcServer:new.on_listen| error! failed to listen on sockname:%s, %s",
+                vim.inspect(sockname),
+                vim.inspect(err)
+            )
+        end
         local client_handler = vim.loop.new_tcp() --[[@as uv_tcp_t]]
         if client_handler == nil then
             log.err(
@@ -129,6 +148,12 @@ function IpcServer:new(mode, address)
             client_handler:close()
             return
         end
+
+        --- @type string[]
+        local read_data_buffer = {}
+
+        --- @param read_err string|nil
+        --- @param read_data string|nil
         local function on_read_start(read_err, read_data)
             log.debug(
                 "|fzfx.server - IpcServer:new.on_listen.on_read_start| read_err:%s, read_data:%s",
@@ -137,15 +162,28 @@ function IpcServer:new(mode, address)
             )
             if read_err then
                 log.err(
-                    "|fzfx.server - IpcServer:new.on_listen.on_read_start| error! read error:%s, data:%s",
+                    "|fzfx.server - IpcServer:new.on_listen.on_read_start| error! read error:%s, read_data:%s",
                     vim.inspect(read_err),
                     vim.inspect(read_data)
                 )
                 client_handler:shutdown()
                 client_handler:close()
-                return
+            elseif read_data then
+                table.insert(read_data_buffer, read_data)
+            else
+                log.debug(
+                    "|fzfx.server - IpcServer:new.on_listen.on_read_start| read_data_buffer:%s",
+                    vim.inspect(read_data_buffer)
+                )
+                local pack =
+                    vim.fn.json_decode(table.concat(read_data_buffer, ""))
+                if pack == nil or string.len(pack) == 0 then
+                end
+                client_handler:shutdown()
+                client_handler:close()
             end
         end
+
         local read_start_result = client_handler:read_start(on_read_start)
         if read_start_result ~= 0 then
             log.err(
@@ -165,22 +203,22 @@ function IpcServer:new(mode, address)
         vim.inspect(listen_result)
     )
 
-    --- @type integer
-    local channel_id = vim.fn.sockconnect(mode, address, {
-        on_data = function(chanid, data, name)
-            self:accept(chanid, data, name)
-        end,
-        data_buffered = true,
-    })
-    log.debug(
-        "|fzfx.server - IpcServer:new| listen on channel id:%s",
-        vim.inspect(channel_id)
-    )
-    log.ensure(
-        type(channel_id) == "number" and channel_id > 0,
-        "error! failed to connect to tcp server on %s!",
-        address
-    )
+    -- --- @type integer
+    -- local channel_id = vim.fn.sockconnect(mode, address, {
+    --     on_data = function(chanid, data, name)
+    --         self:accept(chanid, data, name)
+    --     end,
+    --     data_buffered = true,
+    -- })
+    -- log.debug(
+    --     "|fzfx.server - IpcServer:new| listen on channel id:%s",
+    --     vim.inspect(channel_id)
+    -- )
+    -- log.ensure(
+    --     type(channel_id) == "number" and channel_id > 0,
+    --     "error! failed to connect to tcp server on %s!",
+    --     address
+    -- )
     --- @type IpcChannel
     local listen_channel = IpcChannel:new(address --[[@as string]], channel_id)
     --- @type IpcRegistry
