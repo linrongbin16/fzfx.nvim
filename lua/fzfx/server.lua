@@ -14,21 +14,21 @@ end
 --- @alias RpcCallback fun(user_context:any):string?
 
 --- @class RpcRegistry
---- @field user_context any?
 --- @field callback RpcCallback?
+--- @field user_context any?
 local RpcRegistry = {
-    user_context = nil,
     callback = nil,
+    user_context = nil,
 }
 
---- @param user_context any?
 --- @param callback RpcCallback?
+--- @param user_context any?
 --- @return RpcRegistry
-function RpcRegistry:new(user_context, callback)
+function RpcRegistry:new(callback, user_context)
     return vim.tbl_deep_extend(
         "force",
         vim.deepcopy(RpcRegistry),
-        { user_context = user_context, callback = callback }
+        { callback = callback, user_context = user_context }
     )
 end
 
@@ -86,10 +86,10 @@ function RpcServer:close()
     return address
 end
 
---- @param user_context any
 --- @param callback RpcCallback
+--- @param user_context any?
 --- @return RpcRegistryId
-function RpcServer:register(user_context, callback)
+function RpcServer:register(callback, user_context)
     log.ensure(
         type(callback) == "function",
         "|fzfx.server - RpcServer:register| error! callback f(%s) must be function! %s",

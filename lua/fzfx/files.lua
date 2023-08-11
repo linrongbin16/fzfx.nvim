@@ -44,17 +44,15 @@ local function files(query, fullscreen, opts)
     )
 
     -- rpc callback
-    local function switch_provider_rpc_callback(provider_switch_context, data)
+    local function switch_provider_rpc_callback(context)
         log.debug(
-            "|fzfx.files - files.switch_provider_rpc_callback| context:%s, data:%s",
-            vim.inspect(provider_switch_context),
-            vim.inspect(data)
+            "|fzfx.files - files.switch_provider_rpc_callback| context:%s",
+            vim.inspect(context)
         )
         provider_switch:switch()
     end
-    local switch_provider_rpc_callback_id = server
-        .get_global_rpc_server()
-        :register(provider_switch, switch_provider_rpc_callback)
+    local switch_provider_rpc_callback_id =
+        server.get_global_rpc_server():register(switch_provider_rpc_callback)
 
     --- @type table<string, FileSwitch>
     local runtime = {
