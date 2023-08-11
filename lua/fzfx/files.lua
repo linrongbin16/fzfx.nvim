@@ -3,7 +3,6 @@ local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
 local Launch = require("fzfx.launch").Launch
-local FileSwitch = require("fzfx.utils").FileSwitch
 local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
@@ -53,19 +52,6 @@ local function files(query, fullscreen, opts)
     end
     local switch_provider_rpc_callback_id =
         server.get_global_rpc_server():register(switch_provider_rpc_callback)
-
-    --- @type table<string, FileSwitch>
-    local runtime = {
-        --- @type FileSwitch
-        provider = FileSwitch:new("files_provider", {
-            opts.unrestricted and files_configs.providers.unrestricted
-                or files_configs.providers.restricted,
-        }, {
-            opts.unrestricted and files_configs.providers.restricted
-                or files_configs.providers.unrestricted,
-        }),
-    }
-    log.debug("|fzfx.files - files| runtime:%s", vim.inspect(runtime))
 
     -- query command, both initial query + reload query
     local query_command = string.format(
