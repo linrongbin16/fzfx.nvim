@@ -36,7 +36,7 @@ local function _log(level, msg)
     local msg_lines = vim.split(msg, "\n")
     if LoggerContext.console_log then
         for _, line in ipairs(msg_lines) do
-            io.write(string.format("%s %s\n", LoggerContext.name, line))
+            io.write(string.format("%s %s\n", level, line))
         end
     end
     if LoggerContext.file_log then
@@ -89,6 +89,24 @@ local function log_ensure(condition, fmt, ...)
 end
 
 -- infra utils }
+
+-- provider {
+
+--- @param provider string
+--- @return string|nil
+local function get_provider_command(provider)
+    local f = io.open(provider --[[@as string]], "r")
+    log_ensure(
+        f ~= nil,
+        "|fzfx.shell_helpers| error! failed to open provider:%s",
+        vim.inspect(provider)
+    )
+    local cmd = vim.fn.trim(f:read("*a"))
+    f:close()
+    return cmd
+end
+
+-- provider }
 
 -- icon render {
 
@@ -176,6 +194,7 @@ local M = {
     log_err = log_err,
     log_throw = log_throw,
     log_ensure = log_ensure,
+    get_provider_command = get_provider_command,
     render_line_with_icon = render_line_with_icon,
 }
 
