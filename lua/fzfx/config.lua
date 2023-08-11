@@ -182,7 +182,7 @@ local Defaults = {
         "--info=inline",
         "--layout=reverse",
         "--border=none",
-        "--no-height",
+        "--height=100%",
     },
 
     -- popup window options
