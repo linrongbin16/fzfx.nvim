@@ -44,7 +44,7 @@ local function files(query, fullscreen, opts)
     )
 
     -- ipc
-    local ipc_server = server.IpcServer:new()
+    local rpc_server = server.RpcServer:new()
     local function switch_provider_ipc_callback(chanid, data)
         log.debug(
             "|fzfx.files - files.switch_provider_ipc_callback| chanid:%s, data:%s",
@@ -56,12 +56,12 @@ local function files(query, fullscreen, opts)
         if bytes == 0 then
             log.err(
                 "|fzfx.files - files.switch_provider_ipc_callback| chansend failed to send any bytes on channel:%s",
-                vim.inspect(ipc_server)
+                vim.inspect(rpc_server)
             )
         end
     end
     local switch_provider_callback_id =
-        ipc_server:register(switch_provider_ipc_callback)
+        rpc_server:register(switch_provider_ipc_callback)
 
     --- @type table<string, FileSwitch>
     local runtime = {
@@ -87,7 +87,7 @@ local function files(query, fullscreen, opts)
     local call_switch_provider_ipc_command = string.format(
         "%s %s %d",
         shell.make_lua_command("ipc_client.lua"),
-        ipc_server.address,
+        rpc_server.address,
         switch_provider_callback_id
     )
     log.debug(
@@ -149,7 +149,7 @@ local function files(query, fullscreen, opts)
     local actions = files_configs.actions.expect
     local ppp = Popup:new(fullscreen and { height = 1, width = 1 } or nil)
     local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
-        local result = vim.fn.serverstop(ipc_server.address)
+        local result = vim.fn.serverstop(rpc_server.address)
         log.debug(
             "|fzfx.files - on_launch_exit| serverstop:%s",
             vim.inspect(result)

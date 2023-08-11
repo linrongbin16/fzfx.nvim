@@ -147,8 +147,19 @@ function RpcServer:unregister(registry_id)
     return self.registry:unregister(registry_id)
 end
 
+--- @type RpcServer|nil
+local GlobalRpcServer = nil
+
+--- @param mode "tcp"|"pipe"|nil
+--- @param address string|nil
+local function setup(mode, address)
+    GlobalRpcServer = RpcServer:new(mode, address)
+    return GlobalRpcServer
+end
+
 local M = {
-    RpcServer = RpcServer,
+    setup = setup,
+    GlobalRpcServer = GlobalRpcServer,
 }
 
 return M

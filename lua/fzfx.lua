@@ -20,6 +20,9 @@ local function setup(options)
     -- env
     require("fzfx.env").setup(configs)
 
+    -- rpc server
+    require("fzfx.server").setup()
+
     -- files
     require("fzfx.files").setup()
 
