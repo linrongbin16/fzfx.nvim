@@ -114,33 +114,20 @@ end
 
 local ICON_ENABLE = tostring(vim.env._FZFX_NVIM_ICON_ENABLE):lower() == "1"
 local DEVICONS_PATH = vim.env._FZFX_NVIM_DEVICON_PATH
-
-local DEVICONS_OK = false
 local DEVICONS = nil
-
 if
     ICON_ENABLE
     and type(DEVICONS_PATH) == "string"
     and string.len(DEVICONS_PATH) > 0
 then
     vim.opt.runtimepath:append(DEVICONS_PATH)
-    DEVICONS_OK, DEVICONS = pcall(require, "nvim-web-devicons")
+    DEVICONS = require("nvim-web-devicons")
 end
-log_debug(
-    "|fzfx.shell_helpers| ICON_ENABLE:%s, DEVICONS_PATH:%s",
-    vim.inspect(ICON_ENABLE),
-    vim.inspect(DEVICONS_PATH)
-)
-log_debug(
-    "|fzfx.shell_helpers| DEVICONS_OK:%s, DEVICONS:%s",
-    vim.inspect(DEVICONS_OK),
-    vim.inspect(DEVICONS)
-)
 
 --- @param color string
 --- @param fg boolean
 --- @return string|nil
-local function csi(color, fg)
+local function color_csi(color, fg)
     local code = fg and 38 or 48
     local r, g, b = color:match("#(..)(..)(..)")
     if r and g and b then
@@ -148,40 +135,40 @@ local function csi(color, fg)
         g = tonumber(g, 16)
         b = tonumber(b, 16)
         local result = string.format("%d;2;%d;%d;%d", code, r, g, b)
-        log_debug(
-            "|fzfx.shell_helpers - color_csi| rgb, color:%s, fg:%s, result:%s",
-            vim.inspect(color),
-            vim.inspect(fg),
-            vim.inspect(result)
-        )
+        -- log_debug(
+        --     "|fzfx.shell_helpers - color_csi| rgb, color:%s, fg:%s, result:%s",
+        --     vim.inspect(color),
+        --     vim.inspect(fg),
+        --     vim.inspect(result)
+        -- )
         return result
     else
         local result = string.format("%d;5;%s", code, color)
-        log_debug(
-            "|fzfx.shell_helpers - color_csi| non-rgb, color:%s, fg:%s, result:%s",
-            vim.inspect(color),
-            vim.inspect(fg),
-            vim.inspect(result)
-        )
+        -- log_debug(
+        --     "|fzfx.shell_helpers - color_csi| non-rgb, color:%s, fg:%s, result:%s",
+        --     vim.inspect(color),
+        --     vim.inspect(fg),
+        --     vim.inspect(result)
+        -- )
         return result
     end
 end
 
 local function render_line_with_icon(line)
-    if ICON_ENABLE and DEVICONS_OK and DEVICONS ~= nil then
+    if DEVICONS ~= nil then
         local ext = vim.fn.fnamemodify(line, ":e")
         local icon, color = DEVICONS.get_icon_color(line, ext)
-        if DEBUG_ENABLE then
-            log_debug(
-                "|fzfx.shell_helpers - render_line_with_icon| line:%s, ext:%s, icon:%s, color:%s\n",
-                vim.inspect(line),
-                vim.inspect(ext),
-                vim.inspect(icon),
-                vim.inspect(color)
-            )
-        end
+        -- if DEBUG_ENABLE then
+        --     log_debug(
+        --         "|fzfx.shell_helpers - render_line_with_icon| line:%s, ext:%s, icon:%s, color:%s\n",
+        --         vim.inspect(line),
+        --         vim.inspect(ext),
+        --         vim.inspect(icon),
+        --         vim.inspect(color)
+        --     )
+        -- end
         if type(icon) == "string" and string.len(icon) > 0 then
-            local colorfmt = csi(color, true)
+            local colorfmt = color_csi(color, true)
             if colorfmt then
                 return string.format("[%sm%s[0m %s", colorfmt, icon, line)
             else
@@ -205,6 +192,7 @@ local M = {
     log_throw = log_throw,
     log_ensure = log_ensure,
     get_provider_command = get_provider_command,
+    color_csi = color_csi,
     render_line_with_icon = render_line_with_icon,
 }
 
