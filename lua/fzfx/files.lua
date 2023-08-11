@@ -52,10 +52,9 @@ local function files(query, fullscreen, opts)
         )
         provider_switch:switch()
     end
-    local switch_provider_rpc_callback_id = server.GlobalRpcServer:register(
-        provider_switch,
-        switch_provider_rpc_callback
-    )
+    local switch_provider_rpc_callback_id = server
+        .get_global_rpc_server()
+        :register(provider_switch, switch_provider_rpc_callback)
 
     --- @type table<string, FileSwitch>
     local runtime = {

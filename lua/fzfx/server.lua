@@ -11,18 +11,18 @@ local function next_registry_id()
     return tostring(NextRegistryIntegerId)
 end
 
---- @alias RpcCallback fun(user_context:any,data:string):string|nil
+--- @alias RpcCallback fun(user_context:any,data:string):string?
 
 --- @class RpcRegistry
---- @field user_context any|nil
---- @field callback RpcCallback|nil
+--- @field user_context any?
+--- @field callback RpcCallback?
 local RpcRegistry = {
     user_context = nil,
     callback = nil,
 }
 
---- @param user_context any|nil
---- @param callback RpcCallback|nil
+--- @param user_context any?
+--- @param callback RpcCallback?
 --- @return RpcRegistry
 function RpcRegistry:new(user_context, callback)
     return vim.tbl_deep_extend(
@@ -103,8 +103,8 @@ end
 
 --- @class RpcServer
 --- @field mode "tcp"|"pipe"|nil
---- @field address string|nil
---- @field registry_manager RpcRegistryManager|nil
+--- @field address string?
+--- @field registry_manager RpcRegistryManager?
 local RpcServer = {
     mode = nil,
     address = nil,
@@ -112,7 +112,7 @@ local RpcServer = {
 }
 
 --- @param mode "tcp"|"pipe"|nil
---- @param expect_address string|nil
+--- @param expect_address string?
 --- @return RpcServer
 function RpcServer:new(mode, expect_address)
     mode = mode or "tcp"
@@ -143,7 +143,7 @@ function RpcServer:new(mode, expect_address)
     })
 end
 
---- @return string|nil
+--- @return string?
 function RpcServer:close()
     log.debug("|fzfx.server - RpcServer:close| self: %s!", vim.inspect(self))
     local address = self.address
@@ -171,19 +171,28 @@ function RpcServer:unregister(registry_id)
     return self.registry_manager:unregister(registry_id)
 end
 
---- @type RpcServer|nil
+--- @type RpcServer?
 local GlobalRpcServer = nil
 
 --- @param mode "tcp"|"pipe"|nil
---- @param address string|nil
+--- @param address string?
 local function setup(mode, address)
     GlobalRpcServer = RpcServer:new(mode, address)
+    log.debug(
+        "|fzfx.server - setup| GlobalRpcServer:%s",
+        vim.inspect(GlobalRpcServer)
+    )
     return GlobalRpcServer
+end
+
+--- @return RpcServer
+local function get_global_rpc_server()
+    return GlobalRpcServer --[[@as RpcServer]]
 end
 
 local M = {
     setup = setup,
-    GlobalRpcServer = GlobalRpcServer,
+    get_global_rpc_server = get_global_rpc_server,
 }
 
 return M
