@@ -5,6 +5,15 @@ local server = require("fzfx.server")
 --- @return any
 local function call(registry_id)
     local registry = server.get_global_rpc_server():get(registry_id)
+    log.debug(
+        "|fzfx.rpc_helpers - call| registry_id:%s, registry:%s",
+        vim.inspect(registry_id),
+        vim.inspect(registry)
+    )
+    log.debug(
+        "|fzfx.rpc_helpers - call| global_rpc_server:%s",
+        vim.inspect(server.get_global_rpc_server())
+    )
     log.ensure(
         type(registry) == "table",
         "|fzfx.rpc_helpers - call| error! failed to found registry on registry_id:%s, global_rpc_server:%s",

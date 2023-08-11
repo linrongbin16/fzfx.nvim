@@ -97,7 +97,7 @@ function RpcServer:register(callback, user_context)
         vim.inspect(callback)
     )
     local registry_id = next_registry_id()
-    local registry = RpcRegistry:new(user_context, callback)
+    local registry = RpcRegistry:new(callback, user_context)
     self.callback_registries[registry_id] = registry
     return registry_id
 end
