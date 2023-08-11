@@ -59,7 +59,12 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 
 ### Path containing whitespace & Escaping issue
 
-fzfx.nvim internally use `nvim` and `fzf`, but when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected shell escape characters. Here're some typical cases:
+fzfx.nvim internally extends both executables (`nvim`, `fzf`) and lua scripts to full path when launching command:
+
+* `/opt/homebrew/bin/nvim --headless -l /Users/linrongbin/.local/share/nvim/lazy/fzfx.nvim/bin/files/provider.lua` (macOS, nvim installed by brew, fzfx.nvim installed by lazy.nvim).
+*  
+
+, but when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected shell escape characters. Here're some typical cases:
 
 1. `C:\Program Files\Neovim\bin\nvim.exe` (Windows)
 2. `C:\Users\Lin Rongbin\opt\fzf\fzf.exe` (Windows)
