@@ -12,12 +12,16 @@ local provider = _G.arg[1]
 
 if DEBUG_ENABLE then
     io.write(string.format("DEBUG provider:[%s]\n", provider))
+    io.write(
+        string.format("DEBUG shell_helpers:%s\n", vim.inspect(shell_helpers))
+    )
 end
 
 local cmd = shell_helpers.get_provider_command(provider) --[[@as string]]
 shell_helpers.log_debug("cmd:[%s]", cmd)
 
 local p = io.popen(cmd)
+shell_helpers.log_debug("p:[%s]", vim.inspect(p))
 shell_helpers.ensure(
     p ~= nil,
     "error! failed to open pipe on cmd! %s",
@@ -25,6 +29,7 @@ shell_helpers.ensure(
 )
 --- @diagnostic disable-next-line: need-check-nil
 for line in p:lines("*line") do
+    shell_helpers.log_debug("line:%s", vim.inspect(line))
     local line_with_icon = shell_helpers.render_line_with_icon(line)
     io.write(string.format("%s\n", line_with_icon))
 end

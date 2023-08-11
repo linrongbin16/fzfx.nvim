@@ -101,7 +101,9 @@ local function get_provider_command(provider)
         "|fzfx.shell_helpers| error! failed to open provider:%s",
         vim.inspect(provider)
     )
+    ---@diagnostic disable-next-line: need-check-nil
     local cmd = vim.fn.trim(f:read("*a"))
+    ---@diagnostic disable-next-line: need-check-nil
     f:close()
     return cmd
 end
@@ -124,6 +126,16 @@ then
     vim.opt.runtimepath:append(DEVICONS_PATH)
     DEVICONS_OK, DEVICONS = pcall(require, "nvim-web-devicons")
 end
+log_debug(
+    "|fzfx.shell_helpers| ICON_ENABLE:%s, DEVICONS_PATH:%s",
+    vim.inspect(ICON_ENABLE),
+    vim.inspect(DEVICONS_PATH)
+)
+log_debug(
+    "|fzfx.shell_helpers| DEVICONS_OK:%s, DEVICONS:%s",
+    vim.inspect(DEVICONS_OK),
+    vim.inspect(DEVICONS)
+)
 
 --- @param color string
 --- @param fg boolean
@@ -159,17 +171,15 @@ local function render_line_with_icon(line)
     if ICON_ENABLE and DEVICONS_OK and DEVICONS ~= nil then
         local ext = vim.fn.fnamemodify(line, ":e")
         local icon, color = DEVICONS.get_icon_color(line, ext)
-        -- if debug_enable then
-        --     io.write(
-        --         string.format(
-        --             "DEBUG line:%s, ext:%s, icon:%s, color:%s\n",
-        --             vim.inspect(line),
-        --             vim.inspect(ext),
-        --             vim.inspect(icon),
-        --             vim.inspect(color)
-        --         )
-        --     )
-        -- end
+        if DEBUG_ENABLE then
+            log_debug(
+                "|fzfx.shell_helpers - render_line_with_icon| line:%s, ext:%s, icon:%s, color:%s\n",
+                vim.inspect(line),
+                vim.inspect(ext),
+                vim.inspect(icon),
+                vim.inspect(color)
+            )
+        end
         if type(icon) == "string" and string.len(icon) > 0 then
             local colorfmt = csi(color, true)
             if colorfmt then
