@@ -175,7 +175,7 @@ local function render_line_with_icon(line)
                 return string.format("%s %s", icon, line)
             end
         else
-            if vim.fn.isdirectory(line) then
+            if vim.fn.isdirectory(line) > 0 then
                 return string.format(" %s", line)
             else
                 return string.format(" %s", line)
@@ -212,7 +212,7 @@ local function render_delimiter_line_with_icon(line, delimiter, pos)
                 return string.format("%s %s", icon, line)
             end
         else
-            if vim.fn.isdirectory(filename) then
+            if vim.fn.isdirectory(filename) > 0 then
                 -- : nf-custom-folder, \ue5ff
                 -- : nf-custom-folder_open, \ue5fe
                 return string.format(" %s", line)
