@@ -1,4 +1,5 @@
 local log = require("fzfx.log")
+local constants = require("fzfx.constants")
 
 --- @type integer
 local NextRegistryIntegerId = 0
@@ -32,40 +33,54 @@ function RpcRegistry:new(callback, user_context)
     )
 end
 
+--- @return string
+local function make_windows_pipe_name()
+    log.ensure(
+        constants.is_windows,
+        "|fzfx.server - make_windows_pipe_name| this function must be running on Windows"
+    )
+    local result = vim.fn.trim(
+        string.format(
+            [[ \\.\pipe\nvim-pipe-%d-%s ]],
+            vim.fn.getpid(),
+            vim.fn.strftime("%Y%m%d%H%M%S")
+        )
+    )
+    log.debug(
+        "|fzfx.server - make_windows_pipe_name| result:%s",
+        vim.inspect(result)
+    )
+    return result
+end
+
 --- @class RpcServer
---- @field mode "tcp"|"pipe"|nil
 --- @field address string?
 --- @field callback_registries table<RpcRegistryId, RpcRegistry>
 local RpcServer = {
-    mode = nil,
     address = nil,
     callback_registries = {},
 }
 
---- @param mode "tcp"|"pipe"|nil
---- @param expect_address string?
 --- @return RpcServer
-function RpcServer:new(mode, expect_address)
-    mode = mode or "tcp"
-    expect_address = expect_address or "127.0.0.1:0"
-
+function RpcServer:new()
     --- @type string
-    local address = vim.fn.serverstart(expect_address) --[[@as string ]]
+    local address = constants.is_windows
+            and vim.fn.serverstart(make_windows_pipe_name()) --[[@as string]]
+        or vim.fn.serverstart() --[[@as string]]
     log.debug(
         "|fzfx.server - RpcServer:new| start server on socket address:%s",
         vim.inspect(address)
     )
     log.ensure(
         type(address) == "string" and string.len(address) > 0,
-        "error! failed to start socket server on address: %s!",
-        expect_address
+        "error! failed to start socket server!"
     )
 
     -- export socket address as environment variable
+    vim.env._FZFX_NVIM_SOCKET_MODE = "pipe"
     vim.env._FZFX_NVIM_SOCKET_ADDRESS = address
 
     return vim.tbl_deep_extend("force", vim.deepcopy(RpcServer), {
-        mode = mode,
         address = address,
         callback_registries = {},
     })
@@ -144,10 +159,8 @@ end
 --- @type RpcServer?
 local GlobalRpcServer = nil
 
---- @param mode "tcp"|"pipe"|nil
---- @param address string?
-local function setup(mode, address)
-    GlobalRpcServer = RpcServer:new(mode, address)
+local function setup()
+    GlobalRpcServer = RpcServer:new()
     log.debug(
         "|fzfx.server - setup| GlobalRpcServer:%s",
         vim.inspect(GlobalRpcServer)
