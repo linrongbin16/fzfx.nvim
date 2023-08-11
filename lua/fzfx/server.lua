@@ -1,268 +1,152 @@
 local log = require("fzfx.log")
 
--- IPC: inter-process communication
+--- @type integer
+local NextRegistryIntegerId = 0
 
-local NextRegistryId = 0
+--- @return string
+local function next_registry_id()
+    NextRegistryIntegerId = NextRegistryIntegerId + 1
+    return tostring(NextRegistryIntegerId)
+end
 
---- @alias IpcCallback fun(chanid:integer,data:string):nil
+--- @alias RpcCallback fun(channel_id:integer,user_context:any,data:string):string|nil
 
---- @class IpcRegistry
---- @field callbacks table<integer, IpcCallback>
-local IpcRegistry = {
+--- @class RpcRegistry
+--- @field callbacks table<integer, RpcCallback>
+local RpcRegistry = {
     callbacks = {},
 }
 
-function IpcRegistry:new()
+function RpcRegistry:new()
     return vim.tbl_deep_extend(
         "force",
-        vim.deepcopy(IpcRegistry),
+        vim.deepcopy(RpcRegistry),
         { callbacks = {} }
     )
 end
 
---- @param f IpcCallback
---- @return integer
-function IpcRegistry:register(f)
+--- @param f RpcCallback
+--- @return string
+function RpcRegistry:register(f)
     log.ensure(
         type(f) == "function",
-        "|fzfx.server - Registry:register| error! callback f(%s) must be function! %s",
+        "|fzfx.server - RpcRegistry:register| error! callback f(%s) must be function! %s",
         type(f),
         vim.inspect(f)
     )
-    NextRegistryId = NextRegistryId + 1
-    self.callbacks[NextRegistryId] = f
-    return NextRegistryId
+    local registry_id = next_registry_id()
+    self.callbacks[registry_id] = f
+    return registry_id
 end
 
---- @param registry_id integer
---- @return IpcCallback|nil
-function IpcRegistry:get(registry_id)
-    return self.callbacks[registry_id]
+--- @param registry_id string
+--- @return RpcCallback
+function RpcRegistry:unregister(registry_id)
+    log.ensure(
+        type(registry_id) == "string",
+        "|fzfx.server - RpcRegistry:unregister| error! registry_id(%s) must be string! %s",
+        type(registry_id),
+        vim.inspect(registry_id)
+    )
+    local f = self.callbacks[registry_id]
+    log.ensure(
+        type(f) == "function",
+        "|fzfx.server - RpcRegistry:unregister| error! registered callback(%s) must be function! %s",
+        type(f),
+        vim.inspect(f)
+    )
+    self.callbacks[registry_id] = nil
+    return f
 end
 
---- @class IpcChannel
---- @field address string|nil
---- @field channel_id integer|nil
-local IpcChannel = {
-    address = nil,
-    channel_id = nil,
-}
-
---- @param address string
---- @param channel_id integer
-function IpcChannel:new(address, channel_id)
-    return vim.tbl_deep_extend("force", vim.deepcopy(IpcChannel), {
-        address = address,
-        channel_id = channel_id,
-    })
+--- @param registry_id string
+--- @return RpcCallback
+function RpcRegistry:get(registry_id)
+    log.ensure(
+        type(registry_id) == "string",
+        "|fzfx.server - RpcRegistry:get| error! registry_id(%s) must be string! %s",
+        type(registry_id),
+        vim.inspect(registry_id)
+    )
+    local f = self.callbacks[registry_id]
+    log.ensure(
+        type(f) == "function",
+        "|fzfx.server - RpcRegistry:get| error! registered callback(%s) must be function! %s",
+        type(f),
+        vim.inspect(f)
+    )
+    return f
 end
 
---- @alias IpcHandler userdata
-
---- @class IpcServer
+--- @class RpcServer
 --- @field mode "tcp"|"pipe"|nil
 --- @field address string|nil
---- @field port integer|nil
---- @field registry IpcRegistry|nil
---- @field server_handler IpcHandler|nil
-local IpcServer = {
+--- @field registry RpcRegistry|nil
+local RpcServer = {
     mode = nil,
     address = nil,
-    port = nil,
     registry = nil,
-    server_handler = nil,
-}
-
---- @class IpcPack
---- @field registry_id integer|nil
---- @field tempfile string|nil
-local IpcPack = {
-    registry_id = nil,
-    tempfile = nil,
 }
 
 --- @param mode "tcp"|"pipe"|nil
---- @param address string|nil
---- @return IpcServer
-function IpcServer:new(mode, address)
+--- @param expect_address string|nil
+--- @return RpcServer
+function RpcServer:new(mode, expect_address)
     mode = mode or "tcp"
-    address = address or "127.0.0.1"
+    expect_address = expect_address or "127.0.0.1:0"
 
-    local server_handler = vim.loop.new_tcp()
-    log.ensure(
-        server_handler ~= nil,
-        "|fzfx.server - IpcServer:new| error! failed to create new tcp server handler on address:%s!",
+    --- @type string
+    local address = vim.fn.serverstart(expect_address) --[[@as string ]]
+    log.debug(
+        "|fzfx.server - RpcServer:new| start server on socket address:%s",
         vim.inspect(address)
     )
-    local nodelay_result = server_handler:nodelay(true)
-    if nodelay_result ~= 0 then
-        log.warn(
-            "|fzfx.server - IpcServer:new| error! failed to set nodelay for tcp server handler on address:%s!",
-            vim.inspect(address)
-        )
-    end
-    local keepalive_result = server_handler:keepalive(true, 1)
-    if keepalive_result ~= 0 then
-        log.warn(
-            "|fzfx.server - IpcServer:new| error! failed to set keepalive=1 for tcp server handler on address:%s!",
-            vim.inspect(address)
-        )
-    end
-    local bind_result = server_handler:bind(address, 0)
     log.ensure(
-        bind_result == 0,
-        "|fzfx.server - IpcServer:new| error! failed to bind server handler on address:%s, %s",
-        vim.inspect(address),
-        vim.inspect(bind_result)
-    )
-    local sockname = server_handler:getsockname()
-    log.debug(
-        "|fzfx.server - IpcServer:new| sockname:%s",
-        vim.inspect(sockname)
+        type(address) == "string" and string.len(address) > 0,
+        "error! failed to start socket server on address: %s!",
+        expect_address
     )
 
-    local function on_listen(err)
-        if err then
-            log.err(
-                "|fzfx.server - IpcServer:new.on_listen| error! failed to listen on sockname:%s, %s",
-                vim.inspect(sockname),
-                vim.inspect(err)
-            )
-        end
-        local client_handler = vim.loop.new_tcp() --[[@as uv_tcp_t]]
-        if client_handler == nil then
-            log.err(
-                "|fzfx.server - IpcServer:new| error! failed to create new tcp client handler on sockname:%s!",
-                vim.inspect(sockname)
-            )
-            return
-        end
-        local accept_result =
-            server_handler:accept(client_handler --[[@as uv_stream_t]])
-        if accept_result ~= 0 then
-            log.err(
-                "|fzfx.server - IpcServer:new.on_listen| error! failed to accept client handler on sockname:%s, %s",
-                vim.inspect(sockname),
-                vim.inspect(err)
-            )
-            client_handler:close()
-            return
-        end
+    -- export socket address as environment variable
+    vim.env._FZFX_NVIM_SOCKET_ADDRESS = address
 
-        --- @type string[]
-        local read_data_buffer = {}
+    --- @type RpcRegistry
+    local registry = RpcRegistry:new()
 
-        --- @param read_err string|nil
-        --- @param read_data string|nil
-        local function on_read_start(read_err, read_data)
-            log.debug(
-                "|fzfx.server - IpcServer:new.on_listen.on_read_start| read_err:%s, read_data:%s",
-                vim.inspect(read_err),
-                vim.inspect(read_data)
-            )
-            if read_err then
-                log.err(
-                    "|fzfx.server - IpcServer:new.on_listen.on_read_start| error! read error:%s, read_data:%s",
-                    vim.inspect(read_err),
-                    vim.inspect(read_data)
-                )
-                client_handler:shutdown()
-                client_handler:close()
-            elseif read_data then
-                table.insert(read_data_buffer, read_data)
-            else
-                log.debug(
-                    "|fzfx.server - IpcServer:new.on_listen.on_read_start| read_data_buffer:%s",
-                    vim.inspect(read_data_buffer)
-                )
-                local pack =
-                    vim.fn.json_decode(table.concat(read_data_buffer, ""))
-                if pack == nil or string.len(pack) == 0 then
-                end
-                client_handler:shutdown()
-                client_handler:close()
-            end
-        end
-
-        local read_start_result = client_handler:read_start(on_read_start)
-        if read_start_result ~= 0 then
-            log.err(
-                "|fzfx.server - IpcServer:new.on_listen| error! failed to read start on client handler on sockname:%s, %s",
-                vim.inspect(sockname),
-                vim.inspect(read_start_result)
-            )
-            client_handler:close()
-            return
-        end
-    end
-    local listen_result = server_handler:listen(128, on_listen)
-    log.ensure(
-        listen_result == 0,
-        "|fzfx.server - IpcServer:new| error! failed to listen on sockname:%s, %s",
-        vim.inspect(sockname),
-        vim.inspect(listen_result)
-    )
-
-    -- --- @type integer
-    -- local channel_id = vim.fn.sockconnect(mode, address, {
-    --     on_data = function(chanid, data, name)
-    --         self:accept(chanid, data, name)
-    --     end,
-    --     data_buffered = true,
-    -- })
-    -- log.debug(
-    --     "|fzfx.server - IpcServer:new| listen on channel id:%s",
-    --     vim.inspect(channel_id)
-    -- )
-    -- log.ensure(
-    --     type(channel_id) == "number" and channel_id > 0,
-    --     "error! failed to connect to tcp server on %s!",
-    --     address
-    -- )
-    --- @type IpcChannel
-    local listen_channel = IpcChannel:new(address --[[@as string]], channel_id)
-    --- @type IpcRegistry
-    local registry = IpcRegistry:new()
-
-    return vim.tbl_deep_extend("force", vim.deepcopy(IpcServer), {
+    return vim.tbl_deep_extend("force", vim.deepcopy(RpcServer), {
         mode = mode,
         address = address,
         registry = registry,
-        listen_channel = listen_channel,
     })
 end
 
---- @param chanid integer
---- @param data string
---- @param name string
-function IpcServer:accept(chanid, data, name)
-    log.debug(
-        "|fzfx.server - accept| chanid:%s, data:%s, name:%s",
-        vim.inspect(chanid),
-        vim.inspect(data),
-        vim.inspect(name)
-    )
-    local registry_id = data[1]
-    local input_data = data[2]
-    local callback = self.registry:get(registry_id) --[[@as IpcCallback]]
-    log.debug("|fzfx.server - accept| callback:%s", vim.inspect(callback))
-    log.ensure(
-        type(callback) == "function",
-        "|fzfx.server - accept| error! cannot find registered rpc callback function with id:%s",
-        vim.inspect(registry_id)
-    )
-    callback(chanid, input_data)
+--- @return string
+function RpcServer:close()
+    log.debug("|fzfx.server - RpcServer:close| self: %s!", vim.inspect(self))
+    if type(self.address) == "string" and string.len(self.address) > 0 then
+        local result = vim.fn.serverstop(self.address)
+        log.debug(
+            "|fzfx.server - RpcServer:close| stop result(valid): %s!",
+            vim.inspect(result)
+        )
+    end
+    self.address = nil
 end
 
---- @param f IpcCallback
---- @return integer
-function IpcServer:register(f)
+--- @param f RpcCallback
+--- @return string
+function RpcServer:register(f)
     self.registry:register(f)
 end
 
+--- @param registry_id string
+--- @return RpcCallback
+function RpcServer:unregister(registry_id)
+    return self.registry:unregister(registry_id)
+end
+
 local M = {
-    IpcServer = IpcServer,
-    IpcChannel = IpcChannel,
+    RpcServer = RpcServer,
 }
 
 return M
