@@ -52,8 +52,10 @@ local function files(query, fullscreen, opts)
         )
         provider_switch:switch()
     end
-    local switch_provider_callback_id =
-        server.GlobalRpcServer:register(switch_provider_rpc_callback)
+    local switch_provider_rpc_callback_id = server.GlobalRpcServer:register(
+        provider_switch,
+        switch_provider_rpc_callback
+    )
 
     --- @type table<string, FileSwitch>
     local runtime = {
@@ -76,17 +78,16 @@ local function files(query, fullscreen, opts)
     )
     local preview_command =
         string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))
-    local call_switch_provider_ipc_command = string.format(
-        "%s %s %d",
-        shell.make_lua_command("ipc_client.lua"),
-        rpc_server.address,
-        switch_provider_callback_id
+    local call_switch_provider_rpc_command = string.format(
+        "%s %s",
+        shell.make_lua_command("rpc", "client.lua"),
+        switch_provider_rpc_callback_id
     )
     log.debug(
-        "|fzfx.files - files| query_command:%s, preview_command:%s, call_switch_provider_ipc_command:%s",
+        "|fzfx.files - files| query_command:%s, preview_command:%s, call_switch_provider_rpc_command:%s",
         vim.inspect(query_command),
         vim.inspect(preview_command),
-        vim.inspect(call_switch_provider_ipc_command)
+        vim.inspect(call_switch_provider_rpc_command)
     )
 
     local fzf_opts = {
@@ -113,7 +114,7 @@ local function files(query, fullscreen, opts)
                 "%s:unbind(%s)+execute(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 umode_action,
                 umode_action,
-                call_switch_provider_ipc_command,
+                call_switch_provider_rpc_command,
                 Context.rmode_header,
                 rmode_action,
                 query_command
@@ -126,7 +127,7 @@ local function files(query, fullscreen, opts)
                 "%s:unbind(%s)+execute(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 rmode_action,
                 rmode_action,
-                call_switch_provider_ipc_command,
+                call_switch_provider_rpc_command,
                 Context.umode_header,
                 umode_action,
                 query_command
@@ -140,13 +141,7 @@ local function files(query, fullscreen, opts)
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
     local actions = files_configs.actions.expect
     local ppp = Popup:new(fullscreen and { height = 1, width = 1 } or nil)
-    local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
-        local result = vim.fn.serverstop(rpc_server.address)
-        log.debug(
-            "|fzfx.files - on_launch_exit| serverstop:%s",
-            vim.inspect(result)
-        )
-    end)
+    local launch = Launch:new(ppp, query_command, fzf_opts, actions)
 
     return launch
 end

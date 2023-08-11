@@ -50,7 +50,7 @@ local function setup(options)
     if options.icon.enable then
         local devicon_path =
             search_module_path("nvim-web-devicons", "nvim%-web%-devicons")
-        log.debug("|fzfx.env - setup_devicon| devicon path:%s", devicon_path)
+        log.debug("|fzfx.env - setup| devicon path:%s", devicon_path)
         if type(devicon_path) ~= "string" or string.len(devicon_path) == 0 then
             log.err(
                 "error! you have configured 'icon.enable=true' while cannot find 'nvim-web-devicons' plugin!"
@@ -60,6 +60,15 @@ local function setup(options)
             vim.env._FZFX_NVIM_ICON_ENABLE = 1
         end
     end
+
+    -- self
+    local self_path = search_module_path("fzfx", "fzfx%.nvim")
+    log.debug("|fzfx.env - setup| self path:%s", self_path)
+    log.ensure(
+        type(self_path) == "string" and string.len(self_path) > 0,
+        "|fzfx.env - setup| error! failed to find 'fzfx' plugin!"
+    )
+    vim.env._FZFX_NVIM_SELF_PATH = self_path
 end
 
 local M = {
