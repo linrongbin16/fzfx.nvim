@@ -182,6 +182,39 @@ local function render_line_with_icon(line)
     end
 end
 
+local function render_delimiter_line_with_icon(line, delimiter, pos)
+    if DEVICONS ~= nil then
+        local splits = vim.fn.split(line, delimiter)
+        local filename = splits[pos]
+        if type(filename) == "string" and string.len(filename) > 0 then
+            filename = filename:gsub("\x1b%[%d+m", "")
+        end
+        local ext = vim.fn.fnamemodify(filename, ":e")
+        local icon, color = DEVICONS.get_icon_color(filename, ext)
+        -- if DEBUG_ENABLE then
+        --     log_debug(
+        --         "|fzfx.shell_helpers - render_line_with_icon| line:%s, ext:%s, icon:%s, color:%s\n",
+        --         vim.inspect(line),
+        --         vim.inspect(ext),
+        --         vim.inspect(icon),
+        --         vim.inspect(color)
+        --     )
+        -- end
+        if type(icon) == "string" and string.len(icon) > 0 then
+            local colorfmt = color_csi(color, true)
+            if colorfmt then
+                return string.format("[%sm%s[0m %s", colorfmt, icon, line)
+            else
+                return string.format("%s %s", icon, line)
+            end
+        else
+            return string.format(" %s", line)
+        end
+    else
+        return line
+    end
+end
+
 -- icon render }
 
 local M = {
@@ -194,6 +227,7 @@ local M = {
     get_provider_command = get_provider_command,
     color_csi = color_csi,
     render_line_with_icon = render_line_with_icon,
+    render_delimiter_line_with_icon = render_delimiter_line_with_icon,
 }
 
 return M

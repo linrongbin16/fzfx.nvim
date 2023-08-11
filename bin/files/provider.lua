@@ -32,12 +32,7 @@ local shell_helpers = require("fzfx.shell_helpers")
 
 local provider = _G.arg[1]
 
-if DEBUG_ENABLE then
-    io.write(string.format("DEBUG provider:[%s]\n", provider))
-    -- io.write(
-    --     string.format("DEBUG shell_helpers:%s\n", vim.inspect(shell_helpers))
-    -- )
-end
+shell_helpers.log_debug("provider:[%s]\n", provider)
 
 -- local function render_line_with_icon(line)
 --     if DEVICONS ~= nil then
