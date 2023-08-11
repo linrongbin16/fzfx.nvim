@@ -124,7 +124,11 @@ local function files(query, fullscreen, opts)
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
     local actions = files_configs.actions.expect
     local ppp = Popup:new(fullscreen and { height = 1, width = 1 } or nil)
-    local launch = Launch:new(ppp, query_command, fzf_opts, actions)
+    local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
+        server
+            .get_global_rpc_server()
+            :unregister(switch_provider_rpc_callback_id)
+    end)
 
     return launch
 end
