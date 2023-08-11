@@ -43,25 +43,17 @@ local function files(query, fullscreen, opts)
             or files_configs.providers.unrestricted
     )
 
-    -- ipc
-    local rpc_server = server.RpcServer:new()
-    local function switch_provider_ipc_callback(chanid, data)
+    -- rpc callback
+    local function switch_provider_rpc_callback(provider_switch_context, data)
         log.debug(
-            "|fzfx.files - files.switch_provider_ipc_callback| chanid:%s, data:%s",
-            vim.inspect(chanid),
+            "|fzfx.files - files.switch_provider_rpc_callback| context:%s, data:%s",
+            vim.inspect(provider_switch_context),
             vim.inspect(data)
         )
         provider_switch:switch()
-        local bytes = vim.fn.chansend(chanid, "done")
-        if bytes == 0 then
-            log.err(
-                "|fzfx.files - files.switch_provider_ipc_callback| chansend failed to send any bytes on channel:%s",
-                vim.inspect(rpc_server)
-            )
-        end
     end
     local switch_provider_callback_id =
-        rpc_server:register(switch_provider_ipc_callback)
+        server.GlobalRpcServer:register(switch_provider_rpc_callback)
 
     --- @type table<string, FileSwitch>
     local runtime = {
