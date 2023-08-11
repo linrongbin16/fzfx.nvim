@@ -1,17 +1,21 @@
-local DEBUG_ENABLE = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 local ICON_ENABLE = tostring(vim.env._FZFX_NVIM_ICON_ENABLE):lower() == "1"
+local SELF_PATH = vim.env._FZFX_NVIM_SELF_PATH
+if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
+    io.write(
+        string.format("|fzfx.bin.files.provider| error! SELF_PATH is empty!")
+    )
+end
+vim.opt.runtimepath:append(SELF_PATH)
+local shell_helpers = require("fzfx.shell_helpers")
 
-local args = _G.arg
-local filename = args[1]
+local filename = _G.arg[1]
 local lineno = nil
-if #args >= 2 then
-    lineno = args[2]
+if #_G.arg >= 2 then
+    lineno = _G.arg[2]
 end
 
-if DEBUG_ENABLE then
-    io.write(string.format("DEBUG filename:[%s]\n", vim.inspect(filename)))
-    io.write(string.format("DEBUG lineno:[%s]\n", vim.inspect(lineno)))
-end
+shell_helpers.log_debug("filename:[%s]", vim.inspect(filename))
+shell_helpers.log_debug("lineno:[%s]", vim.inspect(lineno))
 
 if ICON_ENABLE then
     local splits = vim.fn.split(filename)
@@ -35,14 +39,11 @@ if vim.fn.executable("batcat") > 0 or vim.fn.executable("bat") > 0 then
             or "",
         filename
     )
-    if DEBUG_ENABLE then
-        io.write(string.format("DEBUG cmd:[%s]", cmd))
-    end
+
+    shell_helpers.log_debug("cmd:[%s]", cmd)
     os.execute(cmd)
 else
     local cmd = string.format("cat %s", filename)
-    if DEBUG_ENABLE then
-        io.write(string.format("DEBUG cmd:[%s]", cmd))
-    end
+    shell_helpers.log_debug("cmd:[%s]", cmd)
     os.execute(cmd)
 end
