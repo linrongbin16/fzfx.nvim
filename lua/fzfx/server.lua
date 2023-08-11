@@ -120,9 +120,10 @@ function RpcServer:new(mode, expect_address)
     })
 end
 
---- @return string
+--- @return string|nil
 function RpcServer:close()
     log.debug("|fzfx.server - RpcServer:close| self: %s!", vim.inspect(self))
+    local address = self.address
     if type(self.address) == "string" and string.len(self.address) > 0 then
         local result = vim.fn.serverstop(self.address)
         log.debug(
@@ -131,12 +132,13 @@ function RpcServer:close()
         )
     end
     self.address = nil
+    return address
 end
 
 --- @param f RpcCallback
 --- @return string
 function RpcServer:register(f)
-    self.registry:register(f)
+    return self.registry:register(f)
 end
 
 --- @param registry_id string
