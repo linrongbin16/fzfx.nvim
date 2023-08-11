@@ -1,7 +1,7 @@
 local log = require("fzfx.log")
-local path = require("fzfx.path")
 local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
+local conf = require("fzfx.config")
 
 --- @class Launch
 --- @field popup Popup|nil
@@ -63,12 +63,15 @@ local function make_fzf_command(fzf_opts, actions, result)
     return command
 end
 
+--- @alias OnLaunchExit fun(launch:Launch):nil
+
 --- @param popup Popup
 --- @param source string
 --- @param fzf_opts Config
 --- @param actions Config
+--- @param on_launch_exit OnLaunchExit|nil
 --- @return Launch
-function Launch:new(popup, source, fzf_opts, actions)
+function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
     local result = vim.fn.tempname()
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
 
@@ -103,12 +106,10 @@ function Launch:new(popup, source, fzf_opts, actions)
         --     vim.api.nvim_set_current_win(saved_win_context.winnr)
         -- end
 
-        assert(
+        log.ensure(
             vim.fn.filereadable(result) > 0,
-            string.format(
-                "|fzfx.popup - Launch:new.on_fzf_exit| error! result %s must be readable",
-                vim.inspect(result)
-            )
+            "|fzfx.popup - Launch:new.on_fzf_exit| error! result %s must be readable",
+            vim.inspect(result)
         )
         local result_lines = vim.fn.readfile(result)
         log.debug(
@@ -134,8 +135,14 @@ function Launch:new(popup, source, fzf_opts, actions)
                 action_callback(action_lines)
             end
         end
+        if type(on_launch_exit) == "function" then
+            on_launch_exit(self)
+        end
     end
+
+    local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
+    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_opts(conf.get_config().fzf_opts)
     vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(
         "|fzfx.popup - Launch:new| $FZF_DEFAULT_OPTS:%s",
@@ -151,6 +158,7 @@ function Launch:new(popup, source, fzf_opts, actions)
     )
     local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
     vim.env.FZF_DEFAULT_COMMAND = prev_fzf_default_command
+    vim.env.FZF_DEFAULT_OPTS = prev_fzf_default_opts
     vim.cmd([[ startinsert ]])
 
     --- @type Launch

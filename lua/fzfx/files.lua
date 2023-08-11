@@ -3,10 +3,10 @@ local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
 local Launch = require("fzfx.launch").Launch
-local FileSwitch = require("fzfx.utils").FileSwitch
 local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
+local server = require("fzfx.server")
 
 local Context = {
     --- @type string|nil
@@ -23,7 +23,7 @@ local function short_path()
 end
 
 --- @param query string
---- @param bang boolean|integer
+--- @param bang boolean
 --- @param opts Config
 --- @return Launch
 local function files(query, bang, opts)
@@ -34,31 +34,43 @@ local function files(query, bang, opts)
     local rmode_action =
         string.lower(files_configs.actions.builtin.restricted_mode)
 
-    --- @type table<string, FileSwitch>
-    local runtime = {
-        --- @type FileSwitch
-        provider = FileSwitch:new("files_provider", {
-            opts.unrestricted and files_configs.providers.unrestricted
-                or files_configs.providers.restricted,
-        }, {
-            opts.unrestricted and files_configs.providers.restricted
-                or files_configs.providers.unrestricted,
-        }),
-    }
-    log.debug("|fzfx.files - files| runtime:%s", vim.inspect(runtime))
+    local provider_switch = helpers.Switch:new(
+        "files_provider",
+        opts.unrestricted and files_configs.providers.unrestricted
+            or files_configs.providers.restricted,
+        opts.unrestricted and files_configs.providers.restricted
+            or files_configs.providers.unrestricted
+    )
+
+    -- rpc callback
+    local function switch_provider_rpc_callback(context)
+        log.debug(
+            "|fzfx.files - files.switch_provider_rpc_callback| context:%s",
+            vim.inspect(context)
+        )
+        provider_switch:switch()
+    end
+    local switch_provider_rpc_callback_id =
+        server.get_global_rpc_server():register(switch_provider_rpc_callback)
 
     -- query command, both initial query + reload query
     local query_command = string.format(
         "%s %s",
         shell.make_lua_command("files", "provider.lua"),
-        runtime.provider.value
+        provider_switch.tempfile
     )
     local preview_command =
         string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))
+    local call_switch_provider_rpc_command = string.format(
+        "%s %s",
+        shell.make_lua_command("rpc", "client.lua"),
+        switch_provider_rpc_callback_id
+    )
     log.debug(
-        "|fzfx.files - files| query_command:%s, preview_command:%s",
+        "|fzfx.files - files| query_command:%s, preview_command:%s, call_switch_provider_rpc_command:%s",
         vim.inspect(query_command),
-        vim.inspect(preview_command)
+        vim.inspect(preview_command),
+        vim.inspect(call_switch_provider_rpc_command)
     )
 
     local fzf_opts = {
@@ -85,7 +97,7 @@ local function files(query, bang, opts)
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 umode_action,
                 umode_action,
-                runtime.provider:switch(),
+                call_switch_provider_rpc_command,
                 Context.rmode_header,
                 rmode_action,
                 query_command
@@ -98,7 +110,7 @@ local function files(query, bang, opts)
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 rmode_action,
                 rmode_action,
-                runtime.provider:switch(),
+                call_switch_provider_rpc_command,
                 Context.umode_header,
                 umode_action,
                 query_command
@@ -112,7 +124,11 @@ local function files(query, bang, opts)
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
     local actions = files_configs.actions.expect
     local ppp = Popup:new(bang and { height = 1, width = 1 } or nil)
-    local launch = Launch:new(ppp, query_command, fzf_opts, actions)
+    local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
+        server
+            .get_global_rpc_server()
+            :unregister(switch_provider_rpc_callback_id)
+    end)
 
     return launch
 end

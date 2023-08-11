@@ -138,10 +138,20 @@ local function throw(fmt, ...)
     error(string.format(fmt, ...))
 end
 
+--- @param condition boolean
+--- @param fmt string
+--- @param ... any[]|any
+local function ensure(condition, fmt, ...)
+    if not condition then
+        throw(fmt, ...)
+    end
+end
+
 local M = {
     LogLevel = LogLevel,
     setup = setup,
     throw = throw,
+    ensure = ensure,
     err = err,
     warn = warn,
     info = info,

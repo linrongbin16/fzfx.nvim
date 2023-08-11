@@ -1,4 +1,7 @@
 local log = require("fzfx.log")
+local env = require("fzfx.env")
+local path = require("fzfx.path")
+local conf = require("fzfx.config")
 
 -- visual select {
 
@@ -107,23 +110,53 @@ end
 
 -- fzf opts }
 
--- restricted/unrestricted header {
+-- provider switch {
 
---- @class SearchCommandProviderSwitch
---- @field restricted_value
---- @field unrestricted_value
---- @field temporary_file
-local SearchCommandProviderSwitch = {
-    restricted_value = nil,
-    unrestricted_value = nil,
-    temporary_file = nil,
+--- @class Switch
+--- @field name string|nil
+--- @field current string|nil
+--- @field next string|nil
+--- @field tempfile string|nil
+local Switch = {
+    name = nil,
+    current = nil,
+    next = nil,
+    tempfile = nil,
 }
 
--- restricted/unrestricted header }
+--- @param name string
+--- @param current string
+--- @param next string
+--- @return Switch
+function Switch:new(name, current, next)
+    local switch = vim.tbl_deep_extend("force", vim.deepcopy(Switch), {
+        name = name,
+        current = current,
+        next = next,
+        tempfile = env.debug_enable() and path.join(
+            vim.fn.stdpath("data"),
+            "fzfx.nvim",
+            "switch_" .. name
+        ) or vim.fn.tempname(),
+    })
+    vim.fn.writefile({ switch.current }, switch.tempfile, "b")
+    log.debug("|fzfx.helpers - Switch:new| switch:%s", vim.inspect(switch))
+    return switch
+end
+
+function Switch:switch()
+    local tmp = self.next
+    self.next = self.current
+    self.current = tmp
+    vim.fn.writefile({ self.current }, self.tempfile, "b")
+end
+
+-- provider switch }
 
 local M = {
     visual_select = visual_select,
     make_fzf_opts = make_fzf_opts,
+    Switch = Switch,
 }
 
 return M
