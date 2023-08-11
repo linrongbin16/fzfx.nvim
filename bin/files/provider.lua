@@ -1,5 +1,3 @@
-local DEBUG_ENABLE = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
-
 local SELF_PATH = vim.env._FZFX_NVIM_SELF_PATH
 if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
     io.write(

@@ -1,5 +1,3 @@
-local DEBUG_ENABLE = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
-
 local SELF_PATH = vim.env._FZFX_NVIM_SELF_PATH
 if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
     io.write(
@@ -46,9 +44,7 @@ else
     cmd = string.format("%s -- %s", provider_cmd, vim.fn.shellescape(query))
 end
 
-if DEBUG_ENABLE then
-    io.write(string.format("DEBUG cmd:%s\n", vim.inspect(cmd)))
-end
+shell_helpers.log_debug("cmd:%s\n", vim.inspect(cmd))
 
 local p = io.popen(cmd)
 shell_helpers.log_ensure(
