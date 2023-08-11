@@ -65,7 +65,7 @@ local RpcServer = {
 function RpcServer:new()
     --- @type string
     local address = constants.is_windows
-            and vim.fn.serverstart(make_windows_pipe_name()) --[[@as string]]
+        and vim.fn.serverstart(make_windows_pipe_name()) --[[@as string]]
         or vim.fn.serverstart() --[[@as string]]
     log.debug(
         "|fzfx.server - RpcServer:new| start server on socket address:%s",
@@ -77,7 +77,6 @@ function RpcServer:new()
     )
 
     -- export socket address as environment variable
-    vim.env._FZFX_NVIM_SOCKET_MODE = "pipe"
     vim.env._FZFX_NVIM_SOCKET_ADDRESS = address
 
     return vim.tbl_deep_extend("force", vim.deepcopy(RpcServer), {
