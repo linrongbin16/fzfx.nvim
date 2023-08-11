@@ -77,10 +77,10 @@ require("fzfx").setup({
 
 This will help fzfx.nvim avoid the shell command issue.
 
-For the 2nd case, since the user name contains whitespace and usually people install nvim config under home directory, and working under home directory, thus all the lua scripts path of this plugin will contain whitespaces, which highly likely lead to crash. We cannot fix such issue for now.
+For the 2nd case, since the user name `Lin Rongbin` contains whitespace, and this plugin is using full file path, thus all the lua scripts path of this plugin will contain whitespaces. This will most likely lead to whole function crash, sorry we cannot fix such issue for now.
 
-I recommend never use any whitespace in any file path in any operating system (Windows, macOS, Linux).
-It will affect many softwares including this plugin ;).
+I would recommend never use any whitespace in any file path in any operating system (Windows, macOS, Linux).
+It will affect many softwares including this plugin ;(.
 
 ## Install
 
