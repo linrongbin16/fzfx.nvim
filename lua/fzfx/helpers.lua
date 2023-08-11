@@ -1,6 +1,7 @@
 local log = require("fzfx.log")
 local env = require("fzfx.env")
 local path = require("fzfx.path")
+local conf = require("fzfx.config")
 
 -- visual select {
 
@@ -107,23 +108,6 @@ local function make_fzf_opts(opts)
     return table.concat(result, " ")
 end
 
---- @param options Config
-local function export_fzf_default_opts(options)
-    local fzf_opts = make_fzf_opts(options)
-    if type(fzf_opts) == "string" and string.len(fzf_opts) > 0 then
-        vim.env.FZF_DEFAULT_OPTS = fzf_opts
-        log.debug(
-            "|fzfx.env - export_fzf_default_opts| FZF_DEFAULT_OPTS:%s",
-            fzf_opts
-        )
-    else
-        log.debug(
-            "|fzfx.env - export_fzf_default_opts| nil fzf_opts:%s",
-            vim.inspect(fzf_opts)
-        )
-    end
-end
-
 -- fzf opts }
 
 -- provider switch {
@@ -172,7 +156,6 @@ end
 local M = {
     visual_select = visual_select,
     make_fzf_opts = make_fzf_opts,
-    export_fzf_default_opts = export_fzf_default_opts,
     Switch = Switch,
 }
 

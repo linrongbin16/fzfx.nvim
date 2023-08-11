@@ -63,9 +63,10 @@ local function setup(options)
 end
 
 local M = {
+    setup = setup,
     debug_enable = debug_enable,
     icon_enable = icon_enable,
-    setup = setup,
+    socket_address = socket_address,
 }
 
 return M

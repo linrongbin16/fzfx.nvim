@@ -1,7 +1,7 @@
 local log = require("fzfx.log")
-local path = require("fzfx.path")
 local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
+local conf = require("fzfx.config")
 
 --- @class Launch
 --- @field popup Popup|nil
@@ -140,7 +140,9 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         end
     end
 
+    local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
+    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_opts(conf.get_config().fzf_opts)
     vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(
         "|fzfx.popup - Launch:new| $FZF_DEFAULT_OPTS:%s",
@@ -156,6 +158,7 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
     )
     local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
     vim.env.FZF_DEFAULT_COMMAND = prev_fzf_default_command
+    vim.env.FZF_DEFAULT_OPTS = prev_fzf_default_opts
     vim.cmd([[ startinsert ]])
 
     --- @type Launch
