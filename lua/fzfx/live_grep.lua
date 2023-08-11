@@ -4,9 +4,9 @@ local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
 local Launch = require("fzfx.launch").Launch
 local shell = require("fzfx.shell")
-local FileSwitch = require("fzfx.utils").FileSwitch
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
+local server = require("fzfx.server")
 
 local Context = {
     --- @type string|nil
@@ -16,7 +16,7 @@ local Context = {
 }
 
 --- @param query string
---- @param bang boolean|integer
+--- @param bang boolean
 --- @param opts Config
 --- @return Launch
 local function live_grep(query, bang, opts)
@@ -26,22 +26,28 @@ local function live_grep(query, bang, opts)
     local rmode_action =
         string.lower(live_grep_configs.actions.builtin.restricted_mode)
 
-    local runtime = {
-        --- @type FileSwitch
-        provider = FileSwitch:new("live_grep_provider", {
-            opts.unrestricted and live_grep_configs.providers.unrestricted
-                or live_grep_configs.providers.restricted,
-        }, {
-            opts.unrestricted and live_grep_configs.providers.restricted
-                or live_grep_configs.providers.unrestricted,
-        }),
-    }
-    log.debug("|fzfx.live_grep - live_grep| runtime:%s", vim.inspect(runtime))
+    local provider_switch = helpers.Switch:new(
+        "files_provider",
+        opts.unrestricted and live_grep_configs.providers.unrestricted
+            or live_grep_configs.providers.restricted,
+        opts.unrestricted and live_grep_configs.providers.restricted
+            or live_grep_configs.providers.unrestricted
+    )
+    -- rpc callback
+    local function switch_provider_rpc_callback(context)
+        log.debug(
+            "|fzfx.live_grep - live_grep.switch_provider_rpc_callback| context:%s",
+            vim.inspect(context)
+        )
+        provider_switch:switch()
+    end
+    local switch_provider_rpc_callback_id =
+        server.get_global_rpc_server():register(switch_provider_rpc_callback)
 
     local initial_command = string.format(
         "%s %s %s",
         shell.make_lua_command("live_grep", "provider.lua"),
-        runtime.provider.value,
+        provider_switch.tempfile,
         query
     )
     local onchange_reload_delay =
@@ -56,18 +62,24 @@ local function live_grep(query, bang, opts)
                     and onchange_reload_delay
                 or "",
             shell.make_lua_command("live_grep", "provider.lua"),
-            runtime.provider.value
+            provider_switch.tempfile
         )
     )
     local preview_command = string.format(
         "%s {1} {2}",
         shell.make_lua_command("files", "previewer.lua")
     )
+    local call_switch_provider_rpc_command = string.format(
+        "%s %s",
+        shell.make_lua_command("rpc", "client.lua"),
+        switch_provider_rpc_callback_id
+    )
     log.debug(
-        "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s, preview_command:%s",
+        "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s, preview_command:%s, call_switch_provider_rpc_command:%s",
         vim.inspect(initial_command),
         vim.inspect(reload_command),
-        vim.inspect(preview_command)
+        vim.inspect(preview_command),
+        vim.inspect(call_switch_provider_rpc_command)
     )
 
     local fzf_opts = {
@@ -94,7 +106,7 @@ local function live_grep(query, bang, opts)
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 umode_action,
                 umode_action,
-                runtime.provider:switch(),
+                call_switch_provider_rpc_command,
                 Context.rmode_header,
                 rmode_action,
                 reload_command
@@ -107,7 +119,7 @@ local function live_grep(query, bang, opts)
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
                 rmode_action,
                 rmode_action,
-                runtime.provider:switch(),
+                call_switch_provider_rpc_command,
                 Context.umode_header,
                 umode_action,
                 reload_command
@@ -123,7 +135,17 @@ local function live_grep(query, bang, opts)
         vim.list_extend(fzf_opts, vim.deepcopy(live_grep_configs.fzf_opts))
     local actions = live_grep_configs.actions.expect
     local ppp = Popup:new(bang and { height = 1, width = 1 } or nil)
-    local launch = Launch:new(ppp, initial_command, fzf_opts, actions)
+    local launch = Launch:new(
+        ppp,
+        initial_command,
+        fzf_opts,
+        actions,
+        function()
+            server
+                .get_global_rpc_server()
+                :unregister(switch_provider_rpc_callback_id)
+        end
+    )
 
     return launch
 end
