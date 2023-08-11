@@ -11,7 +11,7 @@ local function next_registry_id()
     return tostring(NextRegistryIntegerId)
 end
 
---- @alias RpcCallback fun(user_context:any,data:string):string?
+--- @alias RpcCallback fun(user_context:any):string?
 
 --- @class RpcRegistry
 --- @field user_context any?
@@ -32,83 +32,14 @@ function RpcRegistry:new(user_context, callback)
     )
 end
 
---- @class RpcRegistryManager
---- @field registries table<RpcRegistryId, RpcRegistry>
-local RpcRegistryManager = {
-    registries = {},
-}
-
-function RpcRegistryManager:new()
-    return vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(RpcRegistryManager),
-        { callbacks = {} }
-    )
-end
-
---- @param ctx any
---- @param f RpcCallback
---- @return RpcRegistryId
-function RpcRegistryManager:register(ctx, f)
-    log.ensure(
-        type(f) == "function",
-        "|fzfx.server - RpcRegistryManager:register| error! callback f(%s) must be function! %s",
-        type(f),
-        vim.inspect(f)
-    )
-    local registry_id = next_registry_id()
-    local registry = RpcRegistry:new(ctx, f)
-    self.registries[registry_id] = registry
-    return registry_id
-end
-
---- @param registry_id RpcRegistryId
---- @return RpcRegistry
-function RpcRegistryManager:unregister(registry_id)
-    log.ensure(
-        type(registry_id) == "string",
-        "|fzfx.server - RpcRegistryManager:unregister| error! registry_id(%s) must be string! %s",
-        type(registry_id),
-        vim.inspect(registry_id)
-    )
-    local r = self.registries[registry_id]
-    log.ensure(
-        type(r) == "table",
-        "|fzfx.server - RpcRegistryManager:unregister| error! saved registry(%s) must be table! %s",
-        type(r),
-        vim.inspect(r)
-    )
-    self.registries[registry_id] = nil
-    return r
-end
-
---- @param registry_id RpcRegistryId
---- @return RpcRegistry
-function RpcRegistryManager:get(registry_id)
-    log.ensure(
-        type(registry_id) == "string",
-        "|fzfx.server - RpcRegistryManager:get| error! registry_id(%s) must be string! %s",
-        type(registry_id),
-        vim.inspect(registry_id)
-    )
-    local r = self.registries[registry_id]
-    log.ensure(
-        type(r) == "table",
-        "|fzfx.server - RpcRegistryManager:unregister| error! saved registry(%s) must be table! %s",
-        type(r),
-        vim.inspect(r)
-    )
-    return r
-end
-
 --- @class RpcServer
 --- @field mode "tcp"|"pipe"|nil
 --- @field address string?
---- @field registry_manager RpcRegistryManager?
+--- @field callback_registries table<RpcRegistryId, RpcRegistry>
 local RpcServer = {
     mode = nil,
     address = nil,
-    registry_manager = nil,
+    callback_registries = {},
 }
 
 --- @param mode "tcp"|"pipe"|nil
@@ -133,13 +64,10 @@ function RpcServer:new(mode, expect_address)
     -- export socket address as environment variable
     vim.env._FZFX_NVIM_SOCKET_ADDRESS = address
 
-    --- @type RpcRegistryManager
-    local registry_manager = RpcRegistryManager:new()
-
     return vim.tbl_deep_extend("force", vim.deepcopy(RpcServer), {
         mode = mode,
         address = address,
-        registry_manager = registry_manager,
+        callback_registries = {},
     })
 end
 
@@ -162,13 +90,55 @@ end
 --- @param callback RpcCallback
 --- @return RpcRegistryId
 function RpcServer:register(user_context, callback)
-    return self.registry_manager:register(user_context, callback)
+    log.ensure(
+        type(callback) == "function",
+        "|fzfx.server - RpcServer:register| error! callback f(%s) must be function! %s",
+        type(callback),
+        vim.inspect(callback)
+    )
+    local registry_id = next_registry_id()
+    local registry = RpcRegistry:new(user_context, callback)
+    self.callback_registries[registry_id] = registry
+    return registry_id
 end
 
 --- @param registry_id RpcRegistryId
 --- @return RpcRegistry
 function RpcServer:unregister(registry_id)
-    return self.registry_manager:unregister(registry_id)
+    log.ensure(
+        type(registry_id) == "string",
+        "|fzfx.server - RpcServer:unregister| error! registry_id(%s) must be string! %s",
+        type(registry_id),
+        vim.inspect(registry_id)
+    )
+    local r = self.callback_registries[registry_id]
+    log.ensure(
+        type(r) == "table",
+        "|fzfx.server - RpcServer:unregister| error! saved registry(%s) must be table! %s",
+        type(r),
+        vim.inspect(r)
+    )
+    self.callback_registries[registry_id] = nil
+    return r
+end
+
+--- @param registry_id RpcRegistryId
+--- @return RpcRegistry
+function RpcServer:get(registry_id)
+    log.ensure(
+        type(registry_id) == "string",
+        "|fzfx.server - RpcServer:get| error! registry_id(%s) must be string! %s",
+        type(registry_id),
+        vim.inspect(registry_id)
+    )
+    local r = self.callback_registries[registry_id]
+    log.ensure(
+        type(r) == "table",
+        "|fzfx.server - RpcServer:unregister| error! saved registry(%s) must be table! %s",
+        type(r),
+        vim.inspect(r)
+    )
+    return r
 end
 
 --- @type RpcServer?

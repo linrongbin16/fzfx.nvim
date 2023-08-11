@@ -27,6 +27,7 @@ shell_helpers.log_ensure(
 vim.rpcrequest(
     channel_id,
     "nvim_exec_lua",
+    ---@diagnostic disable-next-line: param-type-mismatch
     [[
     local luaargs = {...}
     local registry_id = luaargs[1]
