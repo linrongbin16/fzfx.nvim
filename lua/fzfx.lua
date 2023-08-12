@@ -15,7 +15,14 @@ local function setup(options)
     log.debug("|fzfx - setup| configs:%s", vim.inspect(configs))
 
     -- cache
-    vim.fn.mkdir(configs.cache.dir, "p")
+    if vim.fn.filereadable(configs.cache.dir) > 0 then
+        log.throw(
+            "error! the 'cache.dir' (%s) already exist but not a directory!",
+            configs.cache.dir
+        )
+    else
+        vim.fn.mkdir(configs.cache.dir, "p")
+    end
 
     -- env
     require("fzfx.env").setup(configs)
