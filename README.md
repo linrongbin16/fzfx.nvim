@@ -35,7 +35,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
-  - Search by yanked register (todo).
+  - Search by yank text (put).
 - (Un)restricted mode: easily switch whether to search hidden and ignored files.
 - Lua support: preview lua function defined commands and key mappings (todo).
 - ...
@@ -76,7 +76,7 @@ But when there're whitespaces on the path, launching correct shell command becom
    })
    ```
 
-   This will help fzfx.nvim avoid the shell command issue. 
+   This will help fzfx.nvim avoid the shell command issue.
 
 2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe` - User name contains whitespace.
 
@@ -179,7 +179,7 @@ Command Naming Rules:
 </thead>
 <tbody>
   <tr>
-    <td rowspan="3">Files</td>
+    <td rowspan="4">Files</td>
     <td>FzfxFiles(U)</td>
     <td>Normal</td>
     <td>Find files (unrestricted)</td>
@@ -195,7 +195,12 @@ Command Naming Rules:
     <td>Find files (unrestricted) by cursor word</td>
   </tr>
   <tr>
-    <td rowspan="3">Live Grep</td>
+    <td>FzfxFiles(U)P</td>
+    <td>Normal</td>
+    <td>Find files (unrestricted) by yank text</td>
+  </tr>
+  <tr>
+    <td rowspan="4">Live Grep</td>
     <td>FzfxLiveGrep(U)</td>
     <td>Normal</td>
     <td>Live grep (unrestricted)</td>
@@ -209,6 +214,11 @@ Command Naming Rules:
     <td>FzfxLiveGrep(U)W</td>
     <td>Normal</td>
     <td>Live grep (unrestricted) by cursor word</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(U)P</td>
+    <td>Normal</td>
+    <td>Live grep (unrestricted) by yank text</td>
   </tr>
 </tbody>
 </table>

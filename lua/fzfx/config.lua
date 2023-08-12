@@ -72,6 +72,24 @@ local Defaults = {
                     },
                 },
             },
+            put = {
+                {
+                    name = "FzfxFilesP",
+                    unrestricted = false,
+                    opts = {
+                        bang = true,
+                        desc = "Find files by yanked text",
+                    },
+                },
+                {
+                    name = "FzfxFilesUP",
+                    unrestricted = true,
+                    opts = {
+                        bang = true,
+                        desc = "Find files unrestricted by yanked text",
+                    },
+                },
+            },
         },
         providers = {
             restricted = default_fd_command,
