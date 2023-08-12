@@ -245,6 +245,10 @@ xnoremap <space>uf :\<C-U>FzfxFilesUV<CR>
 nnoremap <space>wf :\<C-U>FzfxFilesW<CR>
 " unrestricted cursor word
 nnoremap <space>uwf :\<C-U>FzfxFilesUW<CR>
+" yank text
+nnoremap <space>pf :\<C-U>FzfxFilesP<CR>
+" unrestricted yank text
+nnoremap <space>upf :\<C-U>FzfxFilesUP<CR>
 
 " ======== live grep ========
 
@@ -254,13 +258,17 @@ nnoremap <space>l :\<C-U>FzfxLiveGrep<CR>
 xnoremap <space>l :\<C-U>FzfxLiveGrepV<CR>
 " unrestricted
 nnoremap <space>ul :\<C-U>FzfxLiveGrepU<CR>
-" unrestricted by visual select
+" unrestricted visual select
 xnoremap <space>ul :\<C-U>FzfxLiveGrepUV<CR>
 
 " by cursor word
 nnoremap <space>wl :\<C-U>FzfxLiveGrepW<CR>
-" unrestrictly by cursor word
+" unrestrictly cursor word
 nnoremap <space>uwl :\<C-U>FzfxLiveGrepUW<CR>
+" by yank text
+nnoremap <space>pl :\<C-U>FzfxLiveGrepP<CR>
+" unrestrictly yank text
+nnoremap <space>upl :\<C-U>FzfxLiveGrepUP<CR>
 ```
 
 ### Lua
@@ -290,6 +298,12 @@ vim.keymap.set('n', '<space>wf', '<cmd>FzfxFilesW<cr>',
 -- unrestricted cursor word
 vim.keymap.set('n', '<space>uwf', '<cmd>FzfxFilesUW<cr>',
         {silent=true, noremap=true, desc="Unrestricted find files by cursor word"})
+-- yank text
+vim.keymap.set('n', '<space>pf', '<cmd>FzfxFilesP<cr>',
+        {silent=true, noremap=true, desc="Find files by yank text"})
+-- unrestricted yank text
+vim.keymap.set('n', '<space>uwf', '<cmd>FzfxFilesUP<cr>',
+        {silent=true, noremap=true, desc="Unrestricted find files by yank text"})
 
 -- ======== live grep ========
 
@@ -318,6 +332,14 @@ vim.keymap.set('n', '<space>wl',
 vim.keymap.set('n', '<space>uwl',
         '<cmd>FzfxLiveGrepUW<cr>',
         {silent=true, noremap=true, desc="Unrestricted live grep by cursor word"})
+-- yank text
+vim.keymap.set('n', '<space>pl',
+        '<cmd>FzfxLiveGrepP<cr>',
+        {silent=true, noremap=true, desc="Live grep by cursor word"})
+-- unrestricted yank text
+vim.keymap.set('n', '<space>upl',
+        '<cmd>FzfxLiveGrepUP<cr>',
+        {silent=true, noremap=true, desc="Unrestricted live grep by yank text"})
 
 ```
 

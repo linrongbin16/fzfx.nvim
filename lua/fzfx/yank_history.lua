@@ -27,7 +27,7 @@ local Yank = {
 function Yank:new(regname, regtext, regtype, filename, filetype)
     local yank = vim.tbl_deep_extend("force", vim.deepcopy(Yank), {
         regname = regname,
-        regtext = regtext,
+        regtext = vim.fn.trim(regtext),
         regtype = regtype,
         filename = filename,
         filetype = filetype,
@@ -171,12 +171,8 @@ local function get_register_info(regname)
     }
 end
 
---- @return integer
+--- @return integer?
 local function save_yank()
-    -- Only historize first delete in visual mode
-    -- if vim.v.event.visual and vim.v.event.operator == "d" then
-    --     return
-    -- end
     local r = get_register_info(vim.v.event.regname)
     local y = Yank:new(
         r.regname,
@@ -186,8 +182,7 @@ local function save_yank()
         vim.api.nvim_buf_get_name(0)
     )
     log.debug(
-        "|fzfx.yank_history - save_yank| vim.v.event:%s r:%s, y:%s",
-        vim.inspect(vim.v.event),
+        "|fzfx.yank_history - save_yank| r:%s, y:%s",
         vim.inspect(r),
         vim.inspect(y)
     )
@@ -223,6 +218,12 @@ local function setup()
     vim.api.nvim_create_autocmd("TextYankPost", {
         pattern = { "*" },
         callback = function()
+            -- local ok, result = pcall(save_yank)
+            -- log.debug(
+            --     "|fzfx.yank_history - setup| ok:%s, result:%s",
+            --     vim.inspect(ok),
+            --     vim.inspect(result)
+            -- )
             save_yank()
         end,
     })
