@@ -64,20 +64,23 @@ fzfx.nvim internally extends both executables (`nvim`, `fzf`) and lua scripts to
 But when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected escaping characters. Here're two typical cases:
 
 1. `C:\Program Files\Neovim\bin\nvim.exe` - `nvim.exe` installed in `C:\Program Files` directory.
+
+   Please add executables (`nvim.exe`, `fzf.exe`) to `%PATH%` (`$env:PATH` in PowerShell), and set the `env` configuration:
+
+   ```lua
+   require("fzfx").setup({
+       env = {
+           nvim = 'nvim',
+           fzf = 'fzf',
+       }
+   })
+   ```
+
+   This will help fzfx.nvim avoid the shell command issue. 
+
 2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe` - User name contains whitespace.
 
-Please add executables (`nvim.exe`, `fzf.exe`) to `%PATH%` (`$env:PATH` in PowerShell), and set the `env` configuration:
-
-```lua
-require("fzfx").setup({
-    env = {
-        nvim = 'nvim',
-        fzf = 'fzf',
-    }
-})
-```
-
-This will help fzfx.nvim avoid the shell command issue. But we still cannot handle the 2nd case for now, please always try to avoid whitespaces in path.
+   We still cannot handle the 2nd case for now, please always try to avoid whitespaces in path.
 
 <details>
 <summary><b>Click here to read more details</b></summary>
