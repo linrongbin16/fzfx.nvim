@@ -165,7 +165,7 @@ Command Naming Rules:
 - The unrestricted variant is named with `U` suffix.
 - The visual select variant is named with `V` suffix.
 - The cursor word variant is named with `W` suffix.
-- The yank text variant is named with `P` suffix (just like you press the `p` key).
+- The yank text variant is named with `P` suffix (just like press the `p` key).
 
 > Command names can be configured, see [Configuration](#configuration).
 
