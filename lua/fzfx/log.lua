@@ -89,12 +89,16 @@ local function log(level, msg)
     if Configs.console_log then
         vim.cmd("echohl " .. LogLevelHl[level])
         for _, line in ipairs(msg_lines) do
-            vim.cmd(
-                string.format(
-                    'echomsg "%s"',
-                    vim.fn.escape(string.format("%s%s", name, line), '"')
+            if vim.log.levels[level] < vim.log.levels["WARN"] then
+                print(string.format("%s%s", name, line))
+            else
+                vim.cmd(
+                    string.format(
+                        'echomsg "%s"',
+                        vim.fn.escape(string.format("%s%s", name, line), '"')
+                    )
                 )
-            )
+            end
         end
         vim.cmd("echohl None")
     end
