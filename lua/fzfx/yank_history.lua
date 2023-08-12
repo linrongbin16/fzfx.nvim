@@ -1,4 +1,6 @@
+local conf = require("fzfx.config")
 local log = require("fzfx.log")
+local env = require("fzfx.env")
 
 --- @class Yank
 --- @field regname string|nil
@@ -44,10 +46,9 @@ local YankHistory = {
     maxsize = nil,
 }
 
---- @param maxsize integer?
+--- @param maxsize integer
 --- @return YankHistory
 function YankHistory:new(maxsize)
-    maxsize = maxsize or 1
     local yhm = vim.tbl_deep_extend(
         "force",
         vim.deepcopy(YankHistory),
@@ -215,10 +216,13 @@ local function get_global_yank_history()
 end
 
 local function setup()
-    GlobalYankHistory = YankHistory:new()
+    GlobalYankHistory = YankHistory:new(
+        env.debug_enable() and 5
+            or conf.get_config().yank_history.other_opts.history_size
+    )
     vim.api.nvim_create_autocmd("TextYankPost", {
         pattern = { "*" },
-        callback = function(event)
+        callback = function()
             save_yank()
         end,
     })

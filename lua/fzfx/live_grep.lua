@@ -7,6 +7,7 @@ local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
+local yank_history = require("fzfx.yank_history")
 
 local Context = {
     --- @type string|nil
@@ -209,6 +210,25 @@ local function setup()
             )
             return live_grep(
                 word,
+                opts.bang,
+                command_configs.unrestricted and { unrestricted = true }
+                    or { unrestricted = false }
+            )
+        end, command_configs.opts)
+    end
+    for _, command_configs in pairs(live_grep_configs.commands.put) do
+        vim.api.nvim_create_user_command(command_configs.name, function(opts)
+            local yank = yank_history.get_yank()
+            log.debug(
+                "|fzfx.live_grep - setup| command:%s, yank:%s, opts:%s",
+                vim.inspect(command_configs.name),
+                vim.inspect(yank),
+                vim.inspect(opts)
+            )
+            return live_grep(
+                (yank ~= nil and type(yank.regtext) == "string")
+                        and yank.regtext
+                    or "",
                 opts.bang,
                 command_configs.unrestricted and { unrestricted = true }
                     or { unrestricted = false }

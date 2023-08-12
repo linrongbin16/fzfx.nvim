@@ -78,7 +78,7 @@ local Defaults = {
                     unrestricted = false,
                     opts = {
                         bang = true,
-                        desc = "Find files by yanked text",
+                        desc = "Find files by yank text",
                     },
                 },
                 {
@@ -86,7 +86,7 @@ local Defaults = {
                     unrestricted = true,
                     opts = {
                         bang = true,
-                        desc = "Find files unrestricted by yanked text",
+                        desc = "Find files unrestricted by yank text",
                     },
                 },
             },
@@ -171,6 +171,24 @@ local Defaults = {
                     },
                 },
             },
+            put = {
+                {
+                    name = "FzfxLiveGrepP",
+                    unrestricted = false,
+                    opts = {
+                        bang = true,
+                        desc = "Live grep by yank text",
+                    },
+                },
+                {
+                    name = "FzfxLiveGrepUP",
+                    unrestricted = true,
+                    opts = {
+                        bang = true,
+                        desc = "Live grep unrestricted by yank text",
+                    },
+                },
+            },
         },
         providers = {
             restricted = default_rg_command,
@@ -191,6 +209,13 @@ local Defaults = {
         },
         other_opts = {
             onchange_reload_delay = "sleep 0.1 && ",
+        },
+    },
+
+    -- the 'Yank History' commands
+    yank_history = {
+        other_opts = {
+            history_size = 100,
         },
     },
 

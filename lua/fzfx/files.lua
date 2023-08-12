@@ -209,7 +209,9 @@ local function setup()
                 vim.inspect(opts)
             )
             return files(
-                yank ~= nil and yank.regtext or "",
+                (yank ~= nil and type(yank.regtext) == "string")
+                        and yank.regtext
+                    or "",
                 opts.bang,
                 command_configs.unrestricted and { unrestricted = true }
                     or { unrestricted = false }
