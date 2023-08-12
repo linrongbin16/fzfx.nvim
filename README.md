@@ -24,7 +24,6 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - [Vimscript](#vimscript)
   - [Lua](#lua)
 - [Configuration](#configuration)
-  - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
 - [Credit](#credit)
 - [Contribute](#contribute)
 
