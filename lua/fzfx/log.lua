@@ -24,7 +24,7 @@ local Defaults = {
     --- @type boolean
     console_log = true,
     --- @type string|nil
-    name = "fzfx",
+    name = "[fzfx]",
     --- @type boolean
     file_log = false,
     --- @type string|nil
@@ -82,7 +82,7 @@ local function log(level, msg)
     end
 
     local name = ""
-    if type(Configs.name) == "type" and string.len(Configs.name) > 0 then
+    if type(Configs.name) == "string" and string.len(Configs.name) > 0 then
         name = Configs.name .. " "
     end
     local msg_lines = vim.split(msg, "\n")
@@ -104,8 +104,7 @@ local function log(level, msg)
             for _, line in ipairs(msg_lines) do
                 fp:write(
                     string.format(
-                        "%s%s [%s]: %s\n",
-                        name,
+                        "%s [%s]: %s\n",
                         os.date("%Y-%m-%d %H:%M:%S"),
                         level,
                         line
