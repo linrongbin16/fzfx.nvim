@@ -85,7 +85,7 @@ This will help fzfx.nvim avoid the shell command issue. But we still cannot hand
 
 Here's an example of searching files command (macOS):
 
-- `/opt/homebrew/bin/nvim -n --clean --headless -l /Users/linrongbin/.local/share/nvim/lazy/fzfx.nvim/bin/files/provider.lua  /tmp/nvim.linrongbin/3NXwys/0` (macOS).
+- `/opt/homebrew/bin/nvim -n --clean --headless -l /Users/linrongbin/.local/share/nvim/lazy/fzfx.nvim/bin/files/provider.lua  /tmp/nvim.linrongbin/3NXwys/0`
 
 Here's an example of launching fzf command (Windows 10):
 
