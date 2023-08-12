@@ -4,9 +4,7 @@ vim.o.autowrite = true
 vim.o.swapfile = false
 vim.o.confirm = true
 
-local lazypath = vim.fn.expand("<sfile>:p:h") .. "/lazy/lazy.nvim"
-print("lazypath:" .. lazypath)
-
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
         "git",
@@ -20,12 +18,10 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local opts = {
-    root = vim.fn.expand("<sfile>:p:h") .. "/lazy",
     defaults = { lazy = false },
 }
 
 require("lazy").setup({
-    "nvim-tree/nvim-web-devicons",
     {
         "junegunn/fzf",
         build = ":call fzf#install()",
@@ -34,11 +30,12 @@ require("lazy").setup({
         "linrongbin16/fzfx.nvim",
         dev = true,
         dir = "~/github/linrongbin16/fzfx.nvim",
-        opts = {},
-        dependencies = {
-            "nvim-tree/nvim-web-devicons",
-            "junegunn/fzf",
+        opts = {
+            icon = {
+                enable = false,
+            },
         },
+        dependencies = { "junegunn/fzf" },
     },
 }, opts)
 

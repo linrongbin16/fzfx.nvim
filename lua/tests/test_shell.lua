@@ -32,4 +32,28 @@ T["fzf_exec"]["default"] = function()
     expect.equality(vim.fn.executable(fzf_exec) > 0, true)
 end
 
+T["make_lua_command"] = new_set()
+
+T["make_lua_command"]["files"] = function()
+    local nvim_exec = child.lua_get([[ shell.nvim_exec() ]])
+    expect.equality(type(nvim_exec), "string")
+    local provider_command =
+        child.lua_get([[ shell.make_lua_command("files", "provider.lua") ]])
+    expect.equality(type(provider_command), "string")
+    local i1, j1 = provider_command:find("^" .. nvim_exec)
+    expect.equality(i1, 1)
+    expect.equality(j1, #nvim_exec)
+    local previewer_command =
+        child.lua_get([[ shell.make_lua_command("files", "provider.lua") ]])
+    expect.equality(type(previewer_command), "string")
+    local i2, j2 = provider_command:find("^" .. nvim_exec)
+    expect.equality(i2, 1)
+    expect.equality(j2, #nvim_exec)
+end
+
+T["make_lua_command"]["live_grep"] = function()
+    local lua_command =
+        child.lua_get([[ shell.make_lua_command("live_grep", "provider.lua") ]])
+end
+
 return T

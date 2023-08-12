@@ -5,9 +5,7 @@ vim.o.swapfile = false
 vim.o.confirm = true
 vim.o.termguicolors = true
 
-local lazypath = vim.fn.expand("<sfile>:p:h") .. "/lazy/lazy.nvim"
-print("lazypath:" .. lazypath)
-
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
         "git",
@@ -21,7 +19,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local opts = {
-    root = vim.fn.expand("<sfile>:p:h") .. "/lazy",
     defaults = { lazy = false },
 }
 
