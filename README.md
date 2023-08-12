@@ -59,12 +59,14 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 
 ### Path containing whitespace & Escaping issue
 
-fzfx.nvim internally use `nvim` and `fzf`, but when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected shell escape characters. Here're some typical cases:
+fzfx.nvim internally extends both executables (`nvim`, `fzf`) and lua scripts to full path when launching command.
 
-1. `C:\Program Files\Neovim\bin\nvim.exe` (Windows)
-2. `C:\Users\Lin Rongbin\opt\fzf\fzf.exe` (Windows)
+But when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected escaping characters. Here're two typical cases:
 
-For the 1st case, please add executables (`nvim.exe`, `fzf.exe`) to `%PATH%` (`$env:PATH` in PowerShell), and set the `env` configuration:
+1. `C:\Program Files\Neovim\bin\nvim.exe` - `nvim.exe` installed in `C:\Program Files` directory.
+2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe` - User name contains whitespace.
+
+Please add executables (`nvim.exe`, `fzf.exe`) to `%PATH%` (`$env:PATH` in PowerShell), and set the `env` configuration:
 
 ```lua
 require("fzfx").setup({
@@ -75,12 +77,23 @@ require("fzfx").setup({
 })
 ```
 
-This will help fzfx.nvim avoid the shell command issue.
+This will help fzfx.nvim avoid the shell command issue. But we still cannot handle the 2nd case for now, please always try to avoid whitespaces in path.
 
-For the 2nd case, since the user name `Lin Rongbin` contains whitespace, and this plugin is using full file path, thus all the lua scripts path of this plugin will contain whitespaces. This will most likely lead to whole function crash, sorry we cannot fix such issue for now.
+<details>
+<summary><b>Click here to read more details</b></summary>
+<br/>
 
-I would recommend never use any whitespace in any file path in any operating system (Windows, macOS, Linux).
-It will affect many softwares including this plugin ;(.
+Here's an example of searching files command (macOS):
+
+- `/opt/homebrew/bin/nvim -n --clean --headless -l /Users/linrongbin/.local/share/nvim/lazy/fzfx.nvim/bin/files/provider.lua  /tmp/nvim.linrongbin/3NXwys/0` (macOS).
+
+Here's an example of launching fzf command (Windows 10):
+
+- `C:/Users/linrongbin/github/junegunn/fzf/bin/fzf --query "" --header ":: Press \27[38;2;255;121;198mCTRL-U\27[0m to unrestricted mode" --prompt "~/g/l/fzfx.nvim > " --bind "start:unbind(ctrl-r)" --bind "ctrl-u:unbind(ctrl-u)+execute-silent(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\rpc\\client.lua 1)+change-header(:: Press \27[38;2;255;121;198mCTRL-R\27[0m to restricted mode)+rebind(ctrl-r)+reload(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\provider.lua C:\\Users\\linrongbin\\AppData\\Local\\nvim-data\\fzfx.nvim\\switch_files_provider)" --bind "ctrl-r:unbind(ctrl-r)+execute-silent(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\rpc\\client.lua 1)+change-header(:: Press \27[38;2;255;121;198mCTRL-U\27[0m to unrestricted mode)+rebind(ctrl-u)+reload(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\provider.lua C:\\Users\\linrongbin\\AppData\\Local\\nvim-data\\fzfx.nvim\\switch_files_provider)" --preview "C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\previewer.lua {}" --bind "ctrl-l:toggle-preview" --expect "enter" --expect "double-click" >C:\\Users\\LINRON~1\\AppData\\Local\\Temp\\nvim.0\\JSmP06\\2`
+
+If user name contains whitespace, that will make all lua scripts contains whitespace, thus the shell command cannot being correctly evaluated.
+
+</details>
 
 ## Install
 
