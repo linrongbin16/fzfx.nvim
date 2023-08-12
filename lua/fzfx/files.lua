@@ -19,7 +19,7 @@ local Context = {
 local function short_path()
     local cwd_path = vim.fn.fnamemodify(vim.fn.getcwd(), ":~:.")
     local shorten_path = vim.fn.pathshorten(cwd_path)
-    return path.normalize(shorten_path)
+    return shorten_path
 end
 
 --- @param query string
