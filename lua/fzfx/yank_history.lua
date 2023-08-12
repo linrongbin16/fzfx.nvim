@@ -1,19 +1,27 @@
 --- @class Yank
---- @field time integer|nil
 --- @field text string|nil
 --- @field file string|nil
+--- @field time integer|nil
 local Yank = {
-    time = nil,
     text = nil,
     file = nil,
+    time = nil,
 }
 
+--- @param text string
+--- @param file string|nil
+function Yank:new(text, file)
+    local switch = vim.tbl_deep_extend("force", vim.deepcopy(Yank), {
+        text = text,
+        file = file,
+        time = os.time(),
+    })
+end
+
 --- @class YankHistoryManager
---- @field time integer|nil
---- @field text string|nil
+--- @field queue Yank[]
 local YankHistoryManager = {
-    time = nil,
-    text = nil,
+    queue = {},
 }
 
 local function yank_history() end
