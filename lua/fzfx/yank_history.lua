@@ -178,8 +178,8 @@ local function save_yank()
         r.regname,
         r.regtext,
         r.regtype,
-        vim.bo.filetype,
-        vim.api.nvim_buf_get_name(0)
+        vim.api.nvim_buf_get_name(0),
+        vim.bo.filetype
     )
     log.debug(
         "|fzfx.yank_history - save_yank| r:%s, y:%s",

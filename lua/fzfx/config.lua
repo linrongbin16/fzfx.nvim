@@ -258,7 +258,9 @@ local Defaults = {
             },
         },
         actions = {
-            builtin = {},
+            builtin = {
+                delete_buffer = "ctrl-d",
+            },
             expect = {
                 ["esc"] = require("fzfx.action").no_action,
                 ["enter"] = require("fzfx.action").edit,

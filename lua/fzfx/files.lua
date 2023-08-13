@@ -44,11 +44,8 @@ local function files(query, bang, opts)
     )
 
     -- rpc callback
-    local function switch_provider_rpc_callback(context)
-        log.debug(
-            "|fzfx.files - files.switch_provider_rpc_callback| context:%s",
-            vim.inspect(context)
-        )
+    local function switch_provider_rpc_callback()
+        log.debug("|fzfx.files - files.switch_provider_rpc_callback|")
         provider_switch:switch()
     end
     local switch_provider_rpc_callback_id =
