@@ -16,7 +16,7 @@ local Context = {
 
 --- @param query string
 --- @param bang boolean
---- @param opts Config
+--- @param opts Config?
 --- @return Launch
 local function buffers(query, bang, opts)
     local buffers_configs = conf.get_config().buffers
@@ -102,6 +102,9 @@ local function buffers(query, bang, opts)
             server
                 .get_global_rpc_server()
                 :unregister(collect_buffers_rpc_callback_id)
+            server
+                .get_global_rpc_server()
+                :unregister(delete_buffer_rpc_callback_id)
         end
     )
 
@@ -129,12 +132,7 @@ local function setup()
                 vim.inspect(command_configs.name),
                 vim.inspect(opts)
             )
-            return buffers(
-                opts.args,
-                opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
-            )
+            return buffers(opts.args, opts.bang, nil)
         end, command_configs.opts)
     end
     for _, command_configs in pairs(buffers_configs.commands.visual) do
@@ -146,12 +144,7 @@ local function setup()
                 vim.inspect(selected),
                 vim.inspect(opts)
             )
-            return buffers(
-                selected,
-                opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
-            )
+            return buffers(selected, opts.bang, nil)
         end, command_configs.opts)
     end
     for _, command_configs in pairs(buffers_configs.commands.cword) do
@@ -163,12 +156,7 @@ local function setup()
                 vim.inspect(word),
                 vim.inspect(opts)
             )
-            return buffers(
-                word,
-                opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
-            )
+            return buffers(word, opts.bang, nil)
         end, command_configs.opts)
     end
     for _, command_configs in pairs(buffers_configs.commands.put) do
@@ -185,8 +173,7 @@ local function setup()
                         and yank.regtext
                     or "",
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                nil
             )
         end, command_configs.opts)
     end
