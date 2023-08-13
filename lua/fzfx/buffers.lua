@@ -14,6 +14,14 @@ local Context = {
     deletebuf_header = nil,
 }
 
+-- rpc callback
+local function collect_buffers_rpc_callback(context)
+    log.debug(
+        "|fzfx.buffers - buffers.collect_buffers_rpc_callback| context:%s",
+        vim.inspect(context)
+    )
+end
+
 --- @param query string
 --- @param bang boolean
 --- @param opts Config?
@@ -23,14 +31,6 @@ local function buffers(query, bang, opts)
     -- action
     local deletebuf_action =
         string.lower(buffers_configs.actions.builtin.delete_buffer)
-
-    -- rpc callback
-    local function collect_buffers_rpc_callback(context)
-        log.debug(
-            "|fzfx.buffers - buffers.collect_buffers_rpc_callback| context:%s",
-            vim.inspect(context)
-        )
-    end
     local collect_buffers_rpc_callback_id =
         server.get_global_rpc_server():register(collect_buffers_rpc_callback)
 
@@ -44,9 +44,9 @@ local function buffers(query, bang, opts)
         server.get_global_rpc_server():register(delete_buffer_rpc_callback)
 
     -- query command, both initial query + reload query
-    local query_rpc_command = string.format(
+    local query_command = string.format(
         "%s %s",
-        shell.make_lua_command("rpc", "client.lua"),
+        shell.make_lua_command("buffers", "provider.lua"),
         collect_buffers_rpc_callback_id
     )
     local preview_command =
@@ -59,7 +59,7 @@ local function buffers(query, bang, opts)
 
     log.debug(
         "|fzfx.buffers - files| query_command:%s, preview_command:%s, deletebuf_rpc_command:%s",
-        vim.inspect(query_rpc_command),
+        vim.inspect(query_command),
         vim.inspect(preview_command),
         vim.inspect(deletebuf_rpc_command)
     )
@@ -81,7 +81,7 @@ local function buffers(query, bang, opts)
                 "%s:execute-silent(%s)+reload(%s)",
                 deletebuf_action,
                 deletebuf_rpc_command,
-                query_rpc_command
+                query_command
             ),
         },
         {
@@ -93,20 +93,12 @@ local function buffers(query, bang, opts)
     local actions = buffers_configs.actions.expect
     local ppp =
         Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
-    local launch = Launch:new(
-        ppp,
-        query_rpc_command,
-        fzf_opts,
-        actions,
-        function()
-            server
-                .get_global_rpc_server()
-                :unregister(collect_buffers_rpc_callback_id)
-            server
-                .get_global_rpc_server()
-                :unregister(delete_buffer_rpc_callback_id)
-        end
-    )
+    local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
+        server
+            .get_global_rpc_server()
+            :unregister(collect_buffers_rpc_callback_id)
+        server.get_global_rpc_server():unregister(delete_buffer_rpc_callback_id)
+    end)
 
     return launch
 end
