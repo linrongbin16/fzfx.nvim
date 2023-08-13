@@ -1,20 +1,39 @@
 local log = require("fzfx.log")
 local env = require("fzfx.env")
+local utils = require("fzfx.utils")
 
 local function skip_unmodifiable_window()
+    local modifiable = "modifiable"
     local current_bufnr = vim.api.nvim_win_get_buf(0)
+    log.debug(
+        "|fzfx.action - skip_unmodifiable_window| current_bufnr:%s, valid:%s, modifiable:%s",
+        vim.inspect(current_bufnr),
+        vim.inspect(vim.api.nvim_buf_is_valid(current_bufnr)),
+        vim.inspect(utils.get_buf_option(current_bufnr, modifiable))
+    )
     if
         vim.api.nvim_buf_is_valid(current_bufnr)
-        and vim.api.nvim_buf_get_var(current_bufnr, "modifiable")
+        and utils.get_buf_option(current_bufnr, modifiable)
     then
         return
     end
     local all_windows = vim.api.nvim_tabpage_list_wins(0)
+    log.debug(
+        "|fzfx.action - skip_unmodifiable_window| all_windows:%s",
+        vim.inspect(all_windows)
+    )
     for _, winnr in ipairs(all_windows) do
         local bufnr = vim.api.nvim_win_get_buf(winnr)
+        log.debug(
+            "|fzfx.action - skip_unmodifiable_window| winnr:%s, bufnr:%s, valid:%s, modifiable:%s",
+            vim.inspect(winnr),
+            vim.inspect(bufnr),
+            vim.inspect(vim.api.nvim_buf_is_valid(bufnr)),
+            vim.inspect(utils.get_buf_option(bufnr, modifiable))
+        )
         if
             vim.api.nvim_buf_is_valid(bufnr)
-            and vim.api.nvim_buf_get_var(bufnr, "modifiable")
+            and utils.get_buf_option(bufnr, modifiable)
         then
             vim.api.nvim_set_current_win(winnr)
             return
@@ -31,8 +50,8 @@ local function edit(lines)
     for i, line in ipairs(lines) do
         local filename = env.icon_enable() and vim.fn.split(line)[2] or line
         local cmd = string.format("edit %s", vim.fn.expand(filename))
-        log.debug("|fzfx.action - edit| line[%d] cmd:%s", i, vim.inspect(cmd))
         skip_unmodifiable_window()
+        log.debug("|fzfx.action - edit| line[%d] cmd:%s", i, vim.inspect(cmd))
         vim.cmd(cmd)
     end
 end

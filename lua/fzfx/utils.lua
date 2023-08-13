@@ -24,6 +24,16 @@ local function list_filter(f, l)
     return result
 end
 
+--- @param bufnr integer
+--- @param name string
+local function get_buf_option(bufnr, name)
+    if vim.fn.has("nvim-0.7") > 0 then
+        return vim.api.nvim_get_option_value(name, { buf = bufnr })
+    else
+        return vim.api.nvim_buf_get_option(bufnr, name)
+    end
+end
+
 -- vim }
 
 -- --- @class FileSwitch
@@ -95,6 +105,7 @@ local M = {
     table_filter = table_filter,
     list_filter = list_filter,
     -- FileSwitch = FileSwitch,
+    get_buf_option = get_buf_option,
 }
 
 return M
