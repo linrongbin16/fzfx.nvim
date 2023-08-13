@@ -1,6 +1,27 @@
 local log = require("fzfx.log")
 local env = require("fzfx.env")
 
+local function skip_unmodifiable_window()
+    local current_bufnr = vim.api.nvim_win_get_buf(0)
+    if
+        vim.api.nvim_buf_is_valid(current_bufnr)
+        and vim.api.nvim_buf_get_var(current_bufnr, "modifiable")
+    then
+        return
+    end
+    local all_windows = vim.api.nvim_tabpage_list_wins(0)
+    for _, winnr in ipairs(all_windows) do
+        local bufnr = vim.api.nvim_win_get_buf(winnr)
+        if
+            vim.api.nvim_buf_is_valid(bufnr)
+            and vim.api.nvim_buf_get_var(bufnr, "modifiable")
+        then
+            vim.api.nvim_set_current_win(winnr)
+            return
+        end
+    end
+end
+
 local function no_action(lines)
     log.debug("|fzfx.action - exit| lines:%s", vim.inspect(lines))
 end
@@ -11,6 +32,7 @@ local function edit(lines)
         local filename = env.icon_enable() and vim.fn.split(line)[2] or line
         local cmd = string.format("edit %s", vim.fn.expand(filename))
         log.debug("|fzfx.action - edit| line[%d] cmd:%s", i, vim.inspect(cmd))
+        skip_unmodifiable_window()
         vim.cmd(cmd)
     end
 end
@@ -40,6 +62,7 @@ local function edit_rg(lines)
             vim.inspect(edit_cmd),
             vim.inspect(setpos_cmd)
         )
+        skip_unmodifiable_window()
         vim.cmd(edit_cmd)
         if i == #lines then
             vim.cmd(setpos_cmd)

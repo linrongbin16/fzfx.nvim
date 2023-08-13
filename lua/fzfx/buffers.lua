@@ -68,43 +68,19 @@ local function buffers(query, bang, opts)
         { "--query", query },
         {
             "--header",
-            opts.unrestricted and Context.rmode_header
-                or Context.deletebuf_header,
+            Context.deletebuf_header,
         },
         {
             "--prompt",
-            short_path() .. " > ",
+            "Buffers > ",
         },
         {
+            -- deletebuf action: delete buffer, reload query
             "--bind",
             string.format(
-                "start:unbind(%s)",
-                opts.unrestricted and deletebuf_action or rmode_action
-            ),
-        },
-        {
-            -- umode action: swap provider, change rmode header, rebind rmode action, reload query
-            "--bind",
-            string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                "%s:execute-silent(%s)+reload(%s)",
                 deletebuf_action,
-                deletebuf_action,
-                call_switch_provider_rpc_command,
-                Context.rmode_header,
-                rmode_action,
-                query_rpc_command
-            ),
-        },
-        {
-            -- rmode action: swap provider, change umode header, rebind umode action, reload query
-            "--bind",
-            string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                rmode_action,
-                rmode_action,
-                call_switch_provider_rpc_command,
-                Context.deletebuf_header,
-                deletebuf_action,
+                deletebuf_rpc_command,
                 query_rpc_command
             ),
         },
@@ -115,7 +91,8 @@ local function buffers(query, bang, opts)
     }
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(buffers_configs.fzf_opts))
     local actions = buffers_configs.actions.expect
-    local ppp = Popup:new(bang and { height = 1, width = 1 } or nil)
+    local ppp =
+        Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
     local launch = Launch:new(
         ppp,
         query_rpc_command,
