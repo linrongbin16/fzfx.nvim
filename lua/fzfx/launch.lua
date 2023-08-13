@@ -127,7 +127,7 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         if actions[action_key] ~= nil then
             local action_callback = actions[action_key]
             if type(action_callback) ~= "function" then
-                log.err(
+                log.throw(
                     "error! wrong action type on key: %s, must be function(%s): %s",
                     vim.inspect(action_key),
                     type(action_callback),
@@ -137,7 +137,7 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
                 action_callback(action_lines)
             end
         else
-            log.err("error! unknown action key: %s", vim.inspect(action_key))
+            log.throw("error! unknown action key: %s", vim.inspect(action_key))
         end
         if type(on_launch_exit) == "function" then
             on_launch_exit(self)
