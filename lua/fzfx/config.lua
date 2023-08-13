@@ -101,6 +101,7 @@ local Defaults = {
                 restricted_mode = "ctrl-r",
             },
             expect = {
+                ["esc"] = require("fzfx.action").no_action,
                 ["enter"] = require("fzfx.action").edit,
                 ["double-click"] = require("fzfx.action").edit,
             },
@@ -200,6 +201,7 @@ local Defaults = {
                 restricted_mode = "ctrl-r",
             },
             expect = {
+                ["esc"] = require("fzfx.action").no_action,
                 ["enter"] = require("fzfx.action").edit_rg,
                 ["double-click"] = require("fzfx.action").edit_rg,
             },
@@ -209,6 +211,62 @@ local Defaults = {
         },
         other_opts = {
             onchange_reload_delay = "sleep 0.1 && ",
+        },
+    },
+
+    -- the 'Buffers' commands
+    buffers = {
+        commands = {
+            normal = {
+                {
+                    name = "FzfxBuffers",
+                    opts = {
+                        bang = true,
+                        nargs = "?",
+                        complete = "dir",
+                        desc = "Find buffers",
+                    },
+                },
+            },
+            visual = {
+                {
+                    name = "FzfxBuffersV",
+                    opts = {
+                        bang = true,
+                        range = true,
+                        desc = "Find buffers by visual select",
+                    },
+                },
+            },
+            cword = {
+                {
+                    name = "FzfxFilesW",
+                    opts = {
+                        bang = true,
+                        desc = "Find buffers by cursor word",
+                    },
+                },
+            },
+            put = {
+                {
+                    name = "FzfxBuffersP",
+                    opts = {
+                        bang = true,
+                        desc = "Find buffers by yank text",
+                    },
+                },
+            },
+        },
+        actions = {
+            builtin = {},
+            expect = {
+                ["esc"] = require("fzfx.action").no_action,
+                ["enter"] = require("fzfx.action").edit,
+                ["double-click"] = require("fzfx.action").edit,
+            },
+        },
+        fzf_opts = {
+            { "--bind", "ctrl-l:toggle-preview" },
         },
     },
 
@@ -280,7 +338,11 @@ local Defaults = {
 
     cache = {
         --- @type string
-        dir = require("fzfx.path").join(vim.fn.stdpath("data"), "fzfx.nvim"),
+        dir = string.format(
+            "%s%sfzfx.nvim",
+            vim.fn.stdpath("data"),
+            constants.path_separator
+        ),
     },
 
     -- debug
