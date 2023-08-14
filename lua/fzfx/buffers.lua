@@ -27,6 +27,12 @@ local function collect_buffers_rpc_callback()
     local filtered_buffers = {}
     if type(bufs_list) == "table" then
         for _, bufnr in ipairs(bufs_list) do
+            log.debug(
+                "|fzfx.buffers - buffers.collect_buffers_rpc_callback| bufnr:%s, name:%s, buf ft:%s",
+                vim.inspect(bufnr),
+                vim.inspect(vim.api.nvim_buf_get_name(bufnr)),
+                vim.inspect(utils.get_buf_option(bufnr, "filetype"))
+            )
             local should_exclude = false
             if
                 not vim.api.nvim_buf_is_valid(bufnr)
