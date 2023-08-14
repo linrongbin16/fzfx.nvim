@@ -35,10 +35,9 @@ local function live_grep(query, bang, opts)
             or live_grep_configs.providers.unrestricted
     )
     -- rpc callback
-    local function switch_provider_rpc_callback(context)
+    local function switch_provider_rpc_callback()
         log.debug(
-            "|fzfx.live_grep - live_grep.switch_provider_rpc_callback| context:%s",
-            vim.inspect(context)
+            "|fzfx.live_grep - live_grep.switch_provider_rpc_callback| context"
         )
         provider_switch:switch()
     end
