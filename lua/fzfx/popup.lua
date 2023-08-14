@@ -127,6 +127,10 @@ function SavedWindowContext:restore()
             vim.inspect(self.winnr)
         )
     end
+
+    -- exit insert mode if any
+    local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+    vim.api.nvim_feedkeys(esc, "x", false)
 end
 
 --- @class Popup
