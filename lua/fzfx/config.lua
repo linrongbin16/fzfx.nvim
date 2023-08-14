@@ -102,8 +102,8 @@ local Defaults = {
             },
             expect = {
                 ["esc"] = require("fzfx.action").nop,
-                ["enter"] = require("fzfx.action").edit,
-                ["double-click"] = require("fzfx.action").edit,
+                ["enter"] = require("fzfx.action").buffer,
+                ["double-click"] = require("fzfx.action").buffer,
             },
         },
         fzf_opts = {
@@ -202,8 +202,8 @@ local Defaults = {
             },
             expect = {
                 ["esc"] = require("fzfx.action").nop,
-                ["enter"] = require("fzfx.action").edit_rg,
-                ["double-click"] = require("fzfx.action").edit_rg,
+                ["enter"] = require("fzfx.action").buffer_rg,
+                ["double-click"] = require("fzfx.action").buffer_rg,
             },
         },
         fzf_opts = {
@@ -259,12 +259,23 @@ local Defaults = {
         },
         actions = {
             builtin = {
-                delete_buffer = "ctrl-d",
+                delete_buffer = {
+                    "ctrl-d",
+                    function(buffer_numbers)
+                        if
+                            type(buffer_numbers) == "table"
+                            and #buffer_numbers > 0
+                        then
+                            for _, bufnr in ipairs(buffer_numbers) do
+                            end
+                        end
+                    end,
+                },
             },
             expect = {
                 ["esc"] = require("fzfx.action").nop,
-                ["enter"] = require("fzfx.action").edit,
-                ["double-click"] = require("fzfx.action").edit,
+                ["enter"] = require("fzfx.action").buffer,
+                ["double-click"] = require("fzfx.action").buffer,
             },
         },
         fzf_opts = {
