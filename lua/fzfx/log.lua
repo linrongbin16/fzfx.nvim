@@ -87,20 +87,25 @@ local function log(level, msg)
     end
     local msg_lines = vim.split(msg, "\n")
     if Configs.console_log then
-        vim.cmd("echohl " .. LogLevelHl[level])
-        for _, line in ipairs(msg_lines) do
-            if vim.log.levels[level] < vim.log.levels["WARN"] then
-                print(string.format("%s%s", name, line))
-            else
-                vim.cmd(
-                    string.format(
-                        'echomsg "%s"',
-                        vim.fn.escape(string.format("%s%s", name, line), '"')
-                    )
-                )
-            end
+        local msg_chunks = {}
+        for _, mline in ipairs(msg_lines) do
+            table.insert(
+                msg_chunks,
+                { string.format("%s%s", name, mline), LogLevelHl[level] }
+            )
         end
-        vim.cmd("echohl None")
+        vim.api.nvim_echo(msg_chunks, true, {})
+
+        -- vim.cmd("echohl " .. LogLevelHl[level])
+        -- for _, line in ipairs(msg_lines) do
+        --     vim.cmd(
+        --         string.format(
+        --             "echomsg '%s'",
+        --             vim.fn.escape(string.format("%s%s", name, line), "'")
+        --         )
+        --     )
+        -- end
+        -- vim.cmd("echohl None")
     end
     if Configs.file_log then
         local fp = io.open(Configs.file_path, "a")
