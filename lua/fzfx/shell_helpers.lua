@@ -94,7 +94,7 @@ end
 
 --- @param provider string
 --- @return string|nil
-local function get_provider_command(provider)
+local function read_provider_command(provider)
     local f = io.open(provider --[[@as string]], "r")
     log_ensure(
         f ~= nil,
@@ -236,7 +236,7 @@ local M = {
     log_err = log_err,
     log_throw = log_throw,
     log_ensure = log_ensure,
-    get_provider_command = get_provider_command,
+    read_provider_command = read_provider_command,
     color_csi = color_csi,
     render_line_with_icon = render_line_with_icon,
     render_delimiter_line_with_icon = render_delimiter_line_with_icon,

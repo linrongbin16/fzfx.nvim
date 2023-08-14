@@ -11,7 +11,7 @@ local provider = _G.arg[1]
 
 shell_helpers.log_debug("provider:[%s]\n", provider)
 
-local cmd = shell_helpers.get_provider_command(provider) --[[@as string]]
+local cmd = shell_helpers.read_provider_command(provider) --[[@as string]]
 shell_helpers.log_debug("cmd:[%s]", cmd)
 
 local p = io.popen(cmd)
