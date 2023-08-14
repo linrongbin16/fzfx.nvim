@@ -8,6 +8,7 @@ local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
 local yank_history = require("fzfx.yank_history")
+local utils = require("fzfx.utils")
 
 local Context = {
     --- @type string|nil
@@ -16,6 +17,9 @@ local Context = {
 
 -- rpc callback
 local function collect_buffers_rpc_callback()
+    local exclude_filetypes =
+        conf.get_config().buffers.other_opts.exclude_filetypes
+    local exclude_filetypes_helper = utils.ListHelper:new(exclude_filetypes)
     local bufs_list = vim.api.nvim_list_bufs()
     log.debug(
         "|fzfx.buffers - buffers.collect_buffers_rpc_callback| bufs_list:%s",
@@ -24,6 +28,10 @@ local function collect_buffers_rpc_callback()
     local filtered_bufs = {}
     if type(bufs_list) == "table" then
         for _, bufnr in ipairs(bufs_list) do
+            local bufft = utils.get_buf_option(bufnr, "filetype")
+            if not exclude_filetypes_helper:contains(bufft) then
+                table.insert(filtered_bufs, bufnr)
+            end
         end
     end
     return filtered_bufs
