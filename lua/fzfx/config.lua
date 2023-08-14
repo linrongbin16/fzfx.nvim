@@ -289,7 +289,7 @@ local Defaults = {
             { "--bind", "ctrl-l:toggle-preview" },
         },
         other_opts = {
-            exclude_filetypes = { "qf", "neo-tree", "fzf", "cmp_menu" },
+            exclude_filetypes = { "qf", "neo-tree" },
         },
     },
 
