@@ -13,20 +13,25 @@ local utils = require("fzfx.utils")
 local Context = {
     --- @type string|nil
     deletebuf_header = nil,
+    --- @type table<string, boolean>?
+    exclude_filetypes_map = nil,
 }
 
 --- @param bufnr integer
 --- @return boolean
 local function is_exclude_buffer(bufnr)
-    local exclude_filetypes =
-        conf.get_config().buffers.other_opts.exclude_filetypes
-    local bufft = utils.get_buf_option(bufnr, "filetype")
-    for _, exclude_ft in ipairs(exclude_filetypes) do
-        if bufft == exclude_ft then
-            return true
+    if Context.exclude_filetypes_map == nil then
+        Context.exclude_filetypes_map = {}
+        local exclude_filetypes =
+            conf.get_config().buffers.other_opts.exclude_filetypes
+        if type(exclude_filetypes) == "table" and #exclude_filetypes > 0 then
+            for _, ft in ipairs(exclude_filetypes) do
+                Context.exclude_filetypes_map[ft] = true
+            end
         end
     end
-    return false
+    local bufft = utils.get_buf_option(bufnr, "filetype")
+    return Context.exclude_filetypes_map[bufft] ~= nil
 end
 
 --- @param bufnr integer
@@ -82,13 +87,6 @@ local function collect_buffers_rpc_callback()
     return filtered_buffers
 end
 
-local function delete_buffer_rpc_callback(params)
-    log.debug(
-        "|fzfx.buffers - buffers.delete_buffer_rpc_callback| params:%s",
-        vim.inspect(params)
-    )
-end
-
 --- @param query string
 --- @param bang boolean
 --- @param opts Config?
@@ -98,10 +96,20 @@ local function buffers(query, bang, opts)
     -- action
     local deletebuf_action =
         string.lower(buffers_configs.actions.builtin.delete_buffer)
+    local deletebuf_action_callback =
+        buffers_configs.actions.builtin.delete_buffer[2]
 
     -- rpc
     local collect_buffers_rpc_callback_id =
         server.get_global_rpc_server():register(collect_buffers_rpc_callback)
+
+    local function delete_buffer_rpc_callback(params)
+        log.debug(
+            "|fzfx.buffers - buffers.delete_buffer_rpc_callback| params:%s",
+            vim.inspect(params)
+        )
+        -- deletebuf_action_callback()
+    end
     local delete_buffer_rpc_callback_id =
         server.get_global_rpc_server():register(delete_buffer_rpc_callback)
 
@@ -181,7 +189,7 @@ local function setup()
     )
 
     -- Context
-    local deletebuf_action = buffers_configs.actions.builtin.delete_buffer
+    local deletebuf_action = buffers_configs.actions.builtin.delete_buffer[1]
     Context.deletebuf_header = color.delete_buffer_header(deletebuf_action)
 
     -- User commands

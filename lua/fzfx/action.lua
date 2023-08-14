@@ -89,12 +89,22 @@ local function buffer_rg(lines)
     end
 end
 
+local function bdelete(lines)
+    if type(lines) == "table" and #lines > 0 then
+        for _, line in ipairs(lines) do
+            local bufname = env.icon_enable() and vim.fn.split(line)[2] or line
+            vim.cmd(vim.fn.trim(string.format([[ bdelete %s ]], bufname)))
+        end
+    end
+end
+
 local M = {
     nop = nop,
     edit = edit,
     edit_rg = edit_rg,
     buffer = buffer,
     buffer_rg = buffer_rg,
+    bdelete = bdelete,
 }
 
 return M
