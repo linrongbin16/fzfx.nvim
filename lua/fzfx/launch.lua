@@ -4,10 +4,10 @@ local helpers = require("fzfx.helpers")
 local conf = require("fzfx.config")
 
 --- @class Launch
---- @field popup Popup|nil
+--- @field popup Popup?
 --- @field source string|string[]|nil
---- @field jobid integer|nil
---- @field result string|nil
+--- @field jobid integer?
+--- @field result string?
 local Launch = {
     popup = nil,
     source = nil,
@@ -93,7 +93,8 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
             vim.api.nvim_feedkeys("i", "m", false)
         end
-        vim.api.nvim_win_close(popup.winnr, true)
+        self.popup:close()
+
         local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
         vim.api.nvim_feedkeys(esc, "x", false)
 

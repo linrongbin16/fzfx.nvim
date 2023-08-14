@@ -82,13 +82,46 @@ local conf = require("fzfx.config")
 --     return Context.window_context_stack
 -- end
 
---- @class Popup
---- @field bufnr integer|nil
---- @field winnr integer|nil
-local Popup = {
+--- @class SavedWindowContext
+--- @field tabnr integer?
+--- @field bufnr integer?
+--- @field winnr integer?
+local SavedWindowContext = {
     bufnr = nil,
     winnr = nil,
+    tagnr = nil,
 }
+
+function SavedWindowContext:new()
+    local saved =
+        vim.tbl_deep_extend("force", vim.deepcopy(SavedWindowContext), {
+            bufnr = vim.api.nvim_get_current_buf(),
+            winnr = vim.api.nvim_get_current_win(),
+            tabnr = vim.api.nvim_get_current_tabpage(),
+        })
+    log.debug(
+        "|fzfx.popup - SavedWindowContext:new| saved:%s",
+        vim.inspect(saved)
+    )
+    return saved
+end
+
+function SavedWindowContext:restore()
+    log.debug(
+        "|fzfx.popup - SavedWindowContext:restore| self:%s",
+        vim.inspect(self)
+    )
+    if vim.api.nvim_tabpage_is_valid(self.tabnr) then
+        vim.api.nvim_set_current_tabpage(self.tabnr)
+    else
+        log.err("error! invalid saved tabpage! %s", vim.inspect(self.tabnr))
+    end
+    if vim.api.nvim_win_is_valid(self.winnr) then
+        vim.api.nvim_set_current_win(self.winnr)
+    else
+        log.err("error! invalid saved window! %s", vim.inspect(self.winnr))
+    end
+end
 
 --- @class PopupOpts
 --- @field relative "editor"|"win"|nil
@@ -205,12 +238,27 @@ local function make_popup_window_opts(win_opts)
     return popup_opts
 end
 
+--- @class Popup
+--- @field saved_window SavedWindowContext?
+--- @field bufnr integer?
+--- @field winnr integer?
+local Popup = {
+    saved_window = nil,
+    bufnr = nil,
+    winnr = nil,
+}
+
 --- @param win_opts PopupOpts|nil
 --- @return Popup
 function Popup:new(win_opts)
     -- check executable: nvim, fzf
     require("fzfx.shell").nvim_exec()
     require("fzfx.shell").fzf_exec()
+
+    -- save current window context
+    local saved_window = SavedWindowContext:new()
+
+    -- save current window context
 
     -- local win_stack = get_window_context_stack() --[[@as WindowContextStack]]
     -- assert(
@@ -253,7 +301,7 @@ function Popup:new(win_opts)
     local ppp = vim.tbl_deep_extend(
         "force",
         vim.deepcopy(Popup),
-        { bufnr = bufnr, winnr = winnr }
+        { saved_window = saved_window, bufnr = bufnr, winnr = winnr }
     )
 
     return ppp
@@ -261,7 +309,12 @@ end
 
 function Popup:close()
     log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
-    -- vim.api.nvim_win_close(self.winnr, true)
+    vim.api.nvim_win_close(self.winnr, true)
+
+    -- restore previous window
+    if self.saved_window then
+        self.saved_window:restore()
+    end
 end
 
 local M = {
