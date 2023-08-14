@@ -305,7 +305,7 @@ local Defaults = {
         "--ansi",
         "--info=inline",
         "--layout=reverse",
-        "--border=none",
+        "--border=rounded",
         "--height=100%",
     },
 
@@ -341,7 +341,7 @@ local Defaults = {
         --- @type number
         col = 0,
 
-        border = "rounded",
+        border = "none",
         zindex = 51,
     },
 
