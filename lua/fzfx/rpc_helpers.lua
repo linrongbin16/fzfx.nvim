@@ -2,32 +2,21 @@ local log = require("fzfx.log")
 local server = require("fzfx.server")
 
 --- @param registry_id RpcRegistryId
+--- @param params any
 --- @return any
-local function call(registry_id)
-    local registry = server.get_global_rpc_server():get(registry_id)
-    log.debug(
-        "|fzfx.rpc_helpers - call| registry_id:%s, registry:%s",
-        vim.inspect(registry_id),
-        vim.inspect(registry)
-    )
+local function call(registry_id, params)
+    local callback = server.get_global_rpc_server():get(registry_id)
     log.debug(
         "|fzfx.rpc_helpers - call| global_rpc_server:%s",
         vim.inspect(server.get_global_rpc_server())
     )
-    log.ensure(
-        type(registry) == "table",
-        "|fzfx.rpc_helpers - call| error! failed to found registry on registry_id:%s, global_rpc_server:%s",
+    log.debug(
+        "|fzfx.rpc_helpers - call| registry_id:%s, params:%s, registry:%s",
         vim.inspect(registry_id),
-        vim.inspect(server.get_global_rpc_server())
+        vim.inspect(params),
+        vim.inspect(callback)
     )
-    log.ensure(
-        type(registry["callback"]) == "function",
-        "|fzfx.rpc_helpers - call| error! registry.callback(%s) must be function:%s, global_rpc_server:%s",
-        type(registry["callback"]),
-        vim.inspect(registry),
-        vim.inspect(server.get_global_rpc_server())
-    )
-    return registry.callback(registry.user_context)
+    return callback(params)
 end
 
 local M = {
