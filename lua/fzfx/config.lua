@@ -280,7 +280,11 @@ local Defaults = {
 
     cache = {
         --- @type string
-        dir = require("fzfx.path").join(vim.fn.stdpath("data"), "fzfx.nvim"),
+        dir = string.format(
+            "%s%sfzfx.nvim",
+            vim.fn.stdpath("data"),
+            constants.path_separator
+        ),
     },
 
     -- debug
