@@ -107,6 +107,11 @@ local Defaults = {
             },
         },
         fzf_opts = {
+            "--multi",
+            { "--bind", "ctrl-s:select" },
+            { "--bind", "ctrl-alt-s:deselect" },
+            { "--bind", "ctrl-a:select-all" },
+            { "--bind", "ctrl-alt-a:deselect-all" },
             { "--bind", "ctrl-l:toggle-preview" },
         },
     },
@@ -207,6 +212,11 @@ local Defaults = {
             },
         },
         fzf_opts = {
+            "--multi",
+            { "--bind", "ctrl-s:select" },
+            { "--bind", "ctrl-alt-s:deselect" },
+            { "--bind", "ctrl-a:select-all" },
+            { "--bind", "ctrl-alt-a:deselect-all" },
             { "--bind", "ctrl-l:toggle-preview" },
         },
         other_opts = {
@@ -271,6 +281,11 @@ local Defaults = {
             },
         },
         fzf_opts = {
+            "--multi",
+            { "--bind", "ctrl-s:select" },
+            { "--bind", "ctrl-alt-s:deselect" },
+            { "--bind", "ctrl-a:select-all" },
+            { "--bind", "ctrl-alt-a:deselect-all" },
             { "--bind", "ctrl-l:toggle-preview" },
         },
         other_opts = {

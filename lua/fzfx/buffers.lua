@@ -95,7 +95,7 @@ local function buffers(query, bang, opts)
     local buffers_configs = conf.get_config().buffers
     -- action
     local deletebuf_action =
-        string.lower(buffers_configs.actions.builtin.delete_buffer)
+        string.lower(buffers_configs.actions.builtin.delete_buffer[1])
     local deletebuf_action_callback =
         buffers_configs.actions.builtin.delete_buffer[2]
 
@@ -108,7 +108,10 @@ local function buffers(query, bang, opts)
             "|fzfx.buffers - buffers.delete_buffer_rpc_callback| params:%s",
             vim.inspect(params)
         )
-        -- deletebuf_action_callback()
+        if type(params) == "string" then
+            params = { params }
+        end
+        deletebuf_action_callback(params)
     end
     local delete_buffer_rpc_callback_id =
         server.get_global_rpc_server():register(delete_buffer_rpc_callback)
