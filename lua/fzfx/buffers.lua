@@ -50,29 +50,29 @@ end
 local function collect_buffers_rpc_callback()
     local current_bufnr = vim.api.nvim_get_current_buf()
     local bufs_list = vim.api.nvim_list_bufs()
-    log.debug(
-        "|fzfx.buffers - buffers.collect_buffers_rpc_callback| current_bufnr:%s, bufs_list:%s",
-        vim.inspect(current_bufnr),
-        vim.inspect(bufs_list)
-    )
+    -- log.debug(
+    --     "|fzfx.buffers - buffers.collect_buffers_rpc_callback| current_bufnr:%s, bufs_list:%s",
+    --     vim.inspect(current_bufnr),
+    --     vim.inspect(bufs_list)
+    -- )
     local filtered_buffers = {}
     if is_valid_buffer(current_bufnr) then
         table.insert(filtered_buffers, get_buf_path(current_bufnr))
     end
     if type(bufs_list) == "table" then
         for _, bufnr in ipairs(bufs_list) do
-            log.debug(
-                "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 1-bufnr:%s, name:%s, buf ft:%s",
-                vim.inspect(bufnr),
-                vim.inspect(vim.api.nvim_buf_get_name(bufnr)),
-                vim.inspect(utils.get_buf_option(bufnr, "filetype"))
-            )
-            log.debug(
-                "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 1-valid:%s, loaded:%s, buflisted:%s",
-                vim.inspect(vim.api.nvim_buf_is_valid(bufnr)),
-                vim.inspect(vim.api.nvim_buf_is_loaded(bufnr)),
-                vim.inspect(vim.fn.buflisted(bufnr))
-            )
+            -- log.debug(
+            --     "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 1-bufnr:%s, name:%s, buf ft:%s",
+            --     vim.inspect(bufnr),
+            --     vim.inspect(vim.api.nvim_buf_get_name(bufnr)),
+            --     vim.inspect(utils.get_buf_option(bufnr, "filetype"))
+            -- )
+            -- log.debug(
+            --     "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 1-valid:%s, loaded:%s, buflisted:%s",
+            --     vim.inspect(vim.api.nvim_buf_is_valid(bufnr)),
+            --     vim.inspect(vim.api.nvim_buf_is_loaded(bufnr)),
+            --     vim.inspect(vim.fn.buflisted(bufnr))
+            -- )
             local buf_valid = is_valid_buffer(bufnr)
             if buf_valid and bufnr ~= current_bufnr then
                 table.insert(filtered_buffers, get_buf_path(bufnr))
