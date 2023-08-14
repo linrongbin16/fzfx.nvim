@@ -97,6 +97,10 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         -- close popup window and restore old window
         popup:close()
 
+        -- exit insert mode if any
+        local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+        vim.api.nvim_feedkeys(esc, "x", false)
+
         log.ensure(
             vim.fn.filereadable(result) > 0,
             "|fzfx.popup - Launch:new.on_fzf_exit| error! result %s must be readable",
