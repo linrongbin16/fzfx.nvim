@@ -19,22 +19,44 @@ local Context = {
 local function collect_buffers_rpc_callback()
     local exclude_filetypes =
         conf.get_config().buffers.other_opts.exclude_filetypes
-    local exclude_filetypes_helper = utils.ListHelper:new(exclude_filetypes)
     local bufs_list = vim.api.nvim_list_bufs()
     log.debug(
         "|fzfx.buffers - buffers.collect_buffers_rpc_callback| bufs_list:%s",
         vim.inspect(bufs_list)
     )
-    local filtered_bufs = {}
+    local filtered_buffers = {}
     if type(bufs_list) == "table" then
         for _, bufnr in ipairs(bufs_list) do
-            local bufft = utils.get_buf_option(bufnr, "filetype")
-            if not exclude_filetypes_helper:contains(bufft) then
-                table.insert(filtered_bufs, bufnr)
+            local should_exclude = false
+            if
+                not vim.api.nvim_buf_is_valid(bufnr)
+                or not vim.api.nvim_buf_is_loaded(bufnr)
+            then
+                should_exclude = true
+            end
+            if not should_exclude then
+                local buf_ft = utils.get_buf_option(bufnr, "filetype")
+                for _, exclude_ft in ipairs(exclude_filetypes) do
+                    log.debug(
+                        "|fzfx.buffers - buffers.collect_buffers_rpc_callback| buf ft:%s, exclude ft:%s, should exclude:%s",
+                        vim.inspect(buf_ft),
+                        vim.inspect(exclude_ft),
+                        vim.inspect(buf_ft == exclude_ft)
+                    )
+                    if buf_ft == exclude_ft then
+                        should_exclude = true
+                        break
+                    end
+                end
+            end
+            if not should_exclude then
+                local buf_file = vim.api.nvim_buf_get_name(bufnr)
+                buf_file = vim.fn.fnamemodify(buf_file, ":~:.")
+                table.insert(filtered_buffers, buf_file)
             end
         end
     end
-    return filtered_bufs
+    return filtered_buffers
 end
 
 local function delete_buffer_rpc_callback(params)
