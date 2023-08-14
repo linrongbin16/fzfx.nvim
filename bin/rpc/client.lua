@@ -13,6 +13,10 @@ shell_helpers.log_ensure(
     "|fzfx.bin.rpc.client| error! SOCKET_ADDRESS must not be empty!"
 )
 local registry_id = _G.arg[1]
+local params = nil
+if #_G.arg >= 2 then
+    params = _G.arg[2]
+end
 
 shell_helpers.log_debug("SOCKET_ADDRESS:%s", vim.inspect(SOCKET_ADDRESS))
 shell_helpers.log_debug("registry_id:%s", vim.inspect(registry_id))
@@ -31,10 +35,12 @@ vim.rpcrequest(
     [[
     local luaargs = {...}
     local registry_id = luaargs[1]
-    require("fzfx.rpc_helpers").call(registry_id)
+    local params = nil
+    if #luaargs >= 2 then
+        params = luaargs[2]
+    end
+    require("fzfx.rpc_helpers").call(registry_id, params)
     ]],
-    {
-        registry_id,
-    }
+    params == nil and { registry_id } or { registry_id, params }
 )
 vim.fn.chanclose(channel_id)

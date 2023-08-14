@@ -24,8 +24,8 @@ local function setup(options)
         vim.fn.mkdir(configs.cache.dir, "p")
     end
 
-    -- env
-    require("fzfx.env").setup(configs)
+    -- lua module environment
+    require("fzfx.module").setup(configs)
 
     -- rpc server
     require("fzfx.server").setup()
@@ -38,6 +38,9 @@ local function setup(options)
 
     -- live_grep
     require("fzfx.live_grep").setup()
+
+    -- buffers
+    require("fzfx.buffers").setup()
 end
 
 local M = {

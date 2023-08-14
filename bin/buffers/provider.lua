@@ -38,6 +38,15 @@ local buffers = vim.rpcrequest(
 )
 vim.fn.chanclose(channel_id)
 shell_helpers.log_debug(
-    "|fzfx.bin.buffers.provider| buffers:%s",
+    "|fzfx.bin.buffers.provider| buffers(%s):%s",
+    type(buffers),
     vim.inspect(buffers)
 )
+
+if type(buffers) == "table" and #buffers > 0 then
+    for _, line in ipairs(buffers) do
+        -- shell_helpers.log_debug("line:%s", vim.inspect(line))
+        local line_with_icon = shell_helpers.render_line_with_icon(line)
+        io.write(string.format("%s\n", line_with_icon))
+    end
+end

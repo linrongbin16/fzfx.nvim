@@ -1,5 +1,6 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
+local utils = require("fzfx.utils")
 
 -- --- @class WindowContext
 -- --- @field bufnr integer|nil
@@ -127,10 +128,6 @@ function SavedWindowContext:restore()
             vim.inspect(self.winnr)
         )
     end
-
-    -- exit insert mode if any
-    local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
-    vim.api.nvim_feedkeys(esc, "x", false)
 end
 
 --- @class Popup
@@ -279,11 +276,11 @@ function Popup:new(win_opts)
     local bufnr = vim.api.nvim_create_buf(false, true)
     -- setlocal nospell bufhidden=wipe nobuflisted nonumber
     -- setft=fzf
-    vim.api.nvim_set_option_value("spell", false, { buf = bufnr })
-    vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = bufnr })
-    vim.api.nvim_set_option_value("buflisted", false, { buf = bufnr })
-    vim.api.nvim_set_option_value("number", false, { buf = bufnr })
-    vim.api.nvim_set_option_value("filetype", "fzf", { buf = bufnr })
+    utils.set_buf_option(bufnr, "spell", false)
+    utils.set_buf_option(bufnr, "bufhidden", "wipe")
+    utils.set_buf_option(bufnr, "buflisted", false)
+    utils.set_buf_option(bufnr, "number", false)
+    utils.set_buf_option(bufnr, "filetype", "fzf")
 
     --- @type PopupOpts
     local merged_win_opts = vim.tbl_deep_extend(
@@ -298,12 +295,8 @@ function Popup:new(win_opts)
 
     --- set winhighlight='Pmenu:,Normal:Normal'
     --- set colorcolumn=''
-    vim.api.nvim_set_option_value(
-        "winhighlight",
-        "Pmenu:,Normal:Normal",
-        { win = winnr }
-    )
-    vim.api.nvim_set_option_value("colorcolumn", "", { win = winnr })
+    utils.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+    utils.set_win_option(winnr, "colorcolumn", "")
 
     --- @type Popup
     local ppp = vim.tbl_deep_extend("force", vim.deepcopy(Popup), {

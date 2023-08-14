@@ -112,14 +112,9 @@ end
 
 -- icon render {
 
-local ICON_ENABLE = tostring(vim.env._FZFX_NVIM_ICON_ENABLE):lower() == "1"
 local DEVICONS_PATH = vim.env._FZFX_NVIM_DEVICON_PATH
 local DEVICONS = nil
-if
-    ICON_ENABLE
-    and type(DEVICONS_PATH) == "string"
-    and string.len(DEVICONS_PATH) > 0
-then
+if type(DEVICONS_PATH) == "string" and string.len(DEVICONS_PATH) > 0 then
     vim.opt.runtimepath:append(DEVICONS_PATH)
     DEVICONS = require("nvim-web-devicons")
 end

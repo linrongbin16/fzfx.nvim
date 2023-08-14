@@ -107,6 +107,11 @@ local Defaults = {
             },
         },
         fzf_opts = {
+            "--multi",
+            { "--bind", "ctrl-s:select" },
+            { "--bind", "ctrl-alt-s:deselect" },
+            { "--bind", "ctrl-a:select-all" },
+            { "--bind", "ctrl-alt-a:deselect-all" },
             { "--bind", "ctrl-l:toggle-preview" },
         },
     },
@@ -207,6 +212,11 @@ local Defaults = {
             },
         },
         fzf_opts = {
+            "--multi",
+            { "--bind", "ctrl-s:select" },
+            { "--bind", "ctrl-alt-s:deselect" },
+            { "--bind", "ctrl-a:select-all" },
+            { "--bind", "ctrl-alt-a:deselect-all" },
             { "--bind", "ctrl-l:toggle-preview" },
         },
         other_opts = {
@@ -223,7 +233,7 @@ local Defaults = {
                     opts = {
                         bang = true,
                         nargs = "?",
-                        complete = "dir",
+                        complete = "file",
                         desc = "Find buffers",
                     },
                 },
@@ -259,7 +269,10 @@ local Defaults = {
         },
         actions = {
             builtin = {
-                delete_buffer = "ctrl-d",
+                delete_buffer = {
+                    "ctrl-d",
+                    require("fzfx.action").bdelete,
+                },
             },
             expect = {
                 ["esc"] = require("fzfx.action").nop,
@@ -268,7 +281,15 @@ local Defaults = {
             },
         },
         fzf_opts = {
+            "--multi",
+            { "--bind", "ctrl-s:select" },
+            { "--bind", "ctrl-alt-s:deselect" },
+            { "--bind", "ctrl-a:select-all" },
+            { "--bind", "ctrl-alt-a:deselect-all" },
             { "--bind", "ctrl-l:toggle-preview" },
+        },
+        other_opts = {
+            exclude_filetypes = { "qf", "neo-tree" },
         },
     },
 
@@ -284,7 +305,7 @@ local Defaults = {
         "--ansi",
         "--info=inline",
         "--layout=reverse",
-        "--border=none",
+        "--border=rounded",
         "--height=100%",
     },
 
@@ -320,7 +341,7 @@ local Defaults = {
         --- @type number
         col = 0,
 
-        border = "rounded",
+        border = "none",
         zindex = 51,
     },
 
