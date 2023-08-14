@@ -93,7 +93,8 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
             vim.api.nvim_feedkeys("i", "m", false)
         end
-        vim.api.nvim_win_close(popup.winnr, true)
+        popup:close()
+
         local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
         vim.api.nvim_feedkeys(esc, "x", false)
 
