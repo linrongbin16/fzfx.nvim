@@ -38,6 +38,9 @@ local function setup(options)
 
     -- live_grep
     require("fzfx.live_grep").setup()
+
+    -- buffers
+    require("fzfx.buffers").setup()
 end
 
 local M = {

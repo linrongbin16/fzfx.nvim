@@ -270,6 +270,9 @@ local Defaults = {
         fzf_opts = {
             { "--bind", "ctrl-l:toggle-preview" },
         },
+        other_opts = {
+            exclude_filetypes = { "qf" },
+        },
     },
 
     -- the 'Yank History' commands

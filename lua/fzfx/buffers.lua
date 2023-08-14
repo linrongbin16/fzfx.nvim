@@ -15,17 +15,24 @@ local Context = {
 }
 
 -- rpc callback
-local function collect_buffers_rpc_callback(context)
+local function collect_buffers_rpc_callback()
+    local bufs_list = vim.api.nvim_list_bufs()
     log.debug(
-        "|fzfx.buffers - buffers.collect_buffers_rpc_callback| context:%s",
-        vim.inspect(context)
+        "|fzfx.buffers - buffers.collect_buffers_rpc_callback| bufs_list:%s",
+        vim.inspect(bufs_list)
     )
+    local filtered_bufs = {}
+    if type(bufs_list) == "table" then
+        for _, bufnr in ipairs(bufs_list) do
+        end
+    end
+    return filtered_bufs
 end
 
-local function delete_buffer_rpc_callback(context)
+local function delete_buffer_rpc_callback(params)
     log.debug(
-        "|fzfx.buffers - buffers.delete_buffer_rpc_callback| context:%s",
-        vim.inspect(context)
+        "|fzfx.buffers - buffers.delete_buffer_rpc_callback| params:%s",
+        vim.inspect(params)
     )
 end
 

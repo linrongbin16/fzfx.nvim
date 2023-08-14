@@ -188,4 +188,14 @@ M.restricted_mode_header = function(action)
     )
 end
 
+--- @param action string
+--- @return string
+M.delete_buffer_header = function(action)
+    return render(
+        ":: Press %s to delete buffer",
+        M.magenta,
+        string.upper(action)
+    )
+end
+
 return M
