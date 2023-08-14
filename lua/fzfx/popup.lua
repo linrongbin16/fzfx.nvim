@@ -103,7 +103,7 @@ function SavedWindowContext:new()
         "|fzfx.popup - SavedWindowContext:new| saved:%s",
         vim.inspect(saved)
     )
-    return saved
+    return saved --[[@as SavedWindowContext]]
 end
 
 function SavedWindowContext:restore()
@@ -323,6 +323,7 @@ function Popup:close()
         )
     end
 
+    ---@diagnostic disable-next-line: undefined-field
     self.saved_window_context:restore()
 end
 
