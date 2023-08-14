@@ -233,7 +233,7 @@ local Defaults = {
                     opts = {
                         bang = true,
                         nargs = "?",
-                        complete = "dir",
+                        complete = "file",
                         desc = "Find buffers",
                     },
                 },

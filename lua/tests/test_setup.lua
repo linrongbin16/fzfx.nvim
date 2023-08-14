@@ -149,4 +149,52 @@ T["commands"]["live_grep"] = function()
     expect.equality(count, 6)
 end
 
+T["commands"]["buffers"] = function()
+    local global_commands =
+        child.lua_get([[ vim.api.nvim_get_commands({builtin=false}) ]])
+    expect.equality(type(global_commands), "table")
+    -- add_note(
+    --     string.format(
+    --         "global commands(%s):%s",
+    --         type(global_commands),
+    --         vim.inspect(global_commands)
+    --     )
+    -- )
+    local count = 0
+    for name, opts in pairs(global_commands) do
+        if name == "FzfxBuffers" then
+            count = count + 1
+            expect.equality(type(opts), "table")
+            expect.equality(opts["bang"], true)
+            expect.equality(opts["nargs"], "?")
+            expect.equality(opts["range"] == nil or not opts["range"], true)
+            expect.equality(opts["name"], name)
+            add_note(string.format("command %s:%s", name, vim.inspect(opts)))
+        end
+        if name == "FzfxBuffersV" then
+            count = count + 1
+            expect.equality(type(opts), "table")
+            expect.equality(opts["bang"], true)
+            expect.equality(opts["range"], ".")
+            expect.equality(opts["name"], name)
+            add_note(string.format("command %s:%s", name, vim.inspect(opts)))
+        end
+        if name == "FzfxBuffersW" then
+            count = count + 1
+            expect.equality(type(opts), "table")
+            expect.equality(opts["bang"], true)
+            expect.equality(opts["name"], name)
+            add_note(string.format("command %s:%s", name, vim.inspect(opts)))
+        end
+        if name == "FzfxBuffersP" then
+            count = count + 1
+            expect.equality(type(opts), "table")
+            expect.equality(opts["bang"], true)
+            expect.equality(opts["name"], name)
+            add_note(string.format("command %s:%s", name, vim.inspect(opts)))
+        end
+    end
+    expect.equality(count, 4)
+end
+
 return T
