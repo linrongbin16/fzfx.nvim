@@ -91,7 +91,7 @@ local function log(level, msg)
         for _, mline in ipairs(msg_lines) do
             table.insert(
                 msg_chunks,
-                { string.format("%s%s", name, mline), LogLevelHl[level] }
+                { string.format("%s%s\n", name, mline), LogLevelHl[level] }
             )
         end
         vim.api.nvim_echo(msg_chunks, true, {})
