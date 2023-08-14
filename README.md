@@ -34,7 +34,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
-  - Search by yank text (put).
+  - Search by yank text.
 - (Un)restricted mode: easily switch whether to search hidden and ignored files.
 - Lua support: preview lua function defined commands and key mappings (todo).
 - ...
@@ -220,6 +220,27 @@ Command Naming Rules:
     <td>Normal</td>
     <td>Live grep (unrestricted) by yank text</td>
   </tr>
+  <tr>
+    <td rowspan="4">Buffers</td>
+    <td>FzfxBuffers</td>
+    <td>Normal</td>
+    <td>Find buffers</td>
+  </tr>
+  <tr>
+    <td>FzfxBuffersV</td>
+    <td>Visual</td>
+    <td>Find buffers by visual select</td>
+  </tr>
+  <tr>
+    <td>FzfxBuffersW</td>
+    <td>Normal</td>
+    <td>Find buffers by cursor word</td>
+  </tr>
+  <tr>
+    <td>FzfxBuffersP</td>
+    <td>Normal</td>
+    <td>Find buffers by yank text</td>
+  </tr>
 </tbody>
 </table>
 
@@ -268,6 +289,17 @@ nnoremap <space>uwl :\<C-U>FzfxLiveGrepUW<CR>
 nnoremap <space>pl :\<C-U>FzfxLiveGrepP<CR>
 " unrestrictly yank text
 nnoremap <space>upl :\<C-U>FzfxLiveGrepUP<CR>
+
+" ======== buffers ========
+
+" buffers
+nnoremap <space>bf :\<C-U>FzfxBuffers<CR>
+" visual select
+xnoremap <space>bf :\<C-U>FzfxBuffersV<CR>
+" by cursor word
+nnoremap <space>wbf :\<C-U>FzfxBuffersW<CR>
+" by yank text
+nnoremap <space>pbf :\<C-U>FzfxBuffersP<CR>
 ```
 
 ### Lua
@@ -340,6 +372,24 @@ vim.keymap.set('n', '<space>upl',
         '<cmd>FzfxLiveGrepUP<cr>',
         {silent=true, noremap=true, desc="Unrestricted live grep by yank text"})
 
+-- ======== buffers ========
+
+-- buffers
+vim.keymap.set('n', '<space>bf',
+        '<cmd>FzfxBuffers<cr>',
+        {silent=true, noremap=true, desc="Find buffers"})
+-- visual select
+vim.keymap.set('x', '<space>bf',
+        "<cmd>FzfxBuffersV<cr>",
+        {silent=true, noremap=true, desc="Find buffers"})
+-- cursor word
+vim.keymap.set('n', '<space>wbf',
+        '<cmd>FzfxBuffersW<cr>',
+        {silent=true, noremap=true, desc="Find buffers by cursor word"})
+-- yank text
+vim.keymap.set('n', '<space>pbf',
+        '<cmd>FzfxBuffersP<cr>',
+        {silent=true, noremap=true, desc="Find buffers by cursor word"})
 ```
 
 ## Configuration
