@@ -1,6 +1,10 @@
 local log = require("fzfx.log")
 local env = require("fzfx.env")
 
+local function nop(lines)
+    log.debug("|fzfx.action - nop| lines:%s", vim.inspect(lines))
+end
+
 local function edit(lines)
     log.debug("|fzfx.action - edit| lines:%s", vim.inspect(lines))
     for i, line in ipairs(lines) do
@@ -44,6 +48,7 @@ local function edit_rg(lines)
 end
 
 local M = {
+    nop = nop,
     edit = edit,
     edit_rg = edit_rg,
 }

@@ -101,6 +101,7 @@ local Defaults = {
                 restricted_mode = "ctrl-r",
             },
             expect = {
+                ["esc"] = require("fzfx.action").nop,
                 ["enter"] = require("fzfx.action").edit,
                 ["double-click"] = require("fzfx.action").edit,
             },
@@ -200,6 +201,7 @@ local Defaults = {
                 restricted_mode = "ctrl-r",
             },
             expect = {
+                ["esc"] = require("fzfx.action").nop,
                 ["enter"] = require("fzfx.action").edit_rg,
                 ["double-click"] = require("fzfx.action").edit_rg,
             },
