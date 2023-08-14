@@ -34,23 +34,23 @@ function RpcRegistry:new(callback, user_context)
 end
 
 --- @return string|nil
-local function get_pipe_name()
-    if constants.is_windows then
-        local result = vim.fn.trim(
-            string.format(
-                [[ \\.\pipe\nvim-pipe-%d-%d ]],
-                vim.fn.getpid(),
-                os.time()
-            )
+local function get_windows_pipe_name()
+    log.ensure(
+        constants.is_windows,
+        "|fzfx.server - get_windows_pipe_name| error! must use this function in Windows!"
+    )
+    local result = vim.fn.trim(
+        string.format(
+            [[ \\.\pipe\nvim-pipe-%d-%d ]],
+            vim.fn.getpid(),
+            os.time()
         )
-        log.debug(
-            "|fzfx.server - make_windows_pipe_name| result:%s",
-            vim.inspect(result)
-        )
-        return result
-    else
-        return nil
-    end
+    )
+    log.debug(
+        "|fzfx.server - make_windows_pipe_name| result:%s",
+        vim.inspect(result)
+    )
+    return result
 end
 
 --- @class RpcServer
@@ -64,7 +64,9 @@ local RpcServer = {
 --- @return RpcServer
 function RpcServer:new()
     --- @type string
-    local address = vim.fn.serverstart(get_pipe_name()) --[[@as string]]
+    local address = constants.is_windows
+            and vim.fn.serverstart(get_windows_pipe_name())
+        or vim.fn.serverstart() --[[@as string]]
     log.debug(
         "|fzfx.server - RpcServer:new| start server on socket address:%s",
         vim.inspect(address)
