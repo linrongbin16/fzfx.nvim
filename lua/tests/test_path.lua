@@ -56,10 +56,10 @@ T["normalize"]["windows"] = function()
     expect.equality(file2, file1)
 end
 
-T["sep"] = new_set()
+T["path_separator"] = new_set()
 
-T["sep"]["default"] = function()
-    local actual = child.lua_get([[ M.sep() ]])
+T["path_separator"]["default"] = function()
+    local actual = child.lua_get([[ require("fzfx.constants").path_separator ]])
     if vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0 then
         expect.equality(actual, "\\")
     else

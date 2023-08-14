@@ -10,12 +10,8 @@ local function normalize(path)
     return vim.fn.trim(result)
 end
 
-local function sep()
-    return constants.is_windows and "\\" or "/"
-end
-
 local function join(...)
-    return table.concat({ ... }, sep())
+    return table.concat({ ... }, constants.path_separator)
 end
 
 --- @return string
@@ -26,7 +22,6 @@ end
 local M = {
     -- path
     normalize = normalize,
-    sep = sep,
     join = join,
 
     -- plugin dir
