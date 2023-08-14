@@ -82,10 +82,59 @@ local conf = require("fzfx.config")
 --     return Context.window_context_stack
 -- end
 
+--- @class SavedWindowContext
+--- @class bufnr integer?
+--- @class tabnr integer?
+--- @class winnr integer?
+local SavedWindowContext = {
+    bufnr = nil,
+    tabnr = nil,
+    winnr = nil,
+}
+
+function SavedWindowContext:new()
+    local saved =
+        vim.tbl_deep_extend("force", vim.deepcopy(SavedWindowContext), {
+            bufnr = vim.api.nvim_get_current_buf(),
+            winnr = vim.api.nvim_get_current_win(),
+            tabnr = vim.api.nvim_get_current_tabpage(),
+        })
+    log.debug(
+        "|fzfx.popup - SavedWindowContext:new| saved:%s",
+        vim.inspect(saved)
+    )
+    return saved
+end
+
+function SavedWindowContext:restore()
+    log.debug(
+        "|fzfx.popup - SavedWindowContext:restore| self:%s",
+        vim.inspect(self)
+    )
+    if vim.api.nvim_tabpage_is_valid(self.tabnr) then
+        vim.api.nvim_set_current_tabpage(self.tabnr)
+    else
+        log.err(
+            "error! cannot restore to invalid previous tabpage! %s",
+            vim.inspect(self.tabnr)
+        )
+    end
+    if vim.api.nvim_win_is_valid(self.winnr) then
+        vim.api.nvim_set_current_win(self.winnr)
+    else
+        log.err(
+            "error! cannot restore to invalid previous window! %s",
+            vim.inspect(self.winnr)
+        )
+    end
+end
+
 --- @class Popup
+--- @field saved_window_context SavedWindowContext?
 --- @field bufnr integer|nil
 --- @field winnr integer|nil
 local Popup = {
+    saved_window_context = nil,
     bufnr = nil,
     winnr = nil,
 }
@@ -212,6 +261,9 @@ function Popup:new(win_opts)
     require("fzfx.shell").nvim_exec()
     require("fzfx.shell").fzf_exec()
 
+    -- save current window context
+    local saved_window_context = SavedWindowContext:new()
+
     -- local win_stack = get_window_context_stack() --[[@as WindowContextStack]]
     -- assert(
     --     win_stack ~= nil,
@@ -250,18 +302,28 @@ function Popup:new(win_opts)
     vim.api.nvim_set_option_value("colorcolumn", "", { win = winnr })
 
     --- @type Popup
-    local ppp = vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(Popup),
-        { bufnr = bufnr, winnr = winnr }
-    )
+    local ppp = vim.tbl_deep_extend("force", vim.deepcopy(Popup), {
+        saved_window_context = saved_window_context,
+        bufnr = bufnr,
+        winnr = winnr,
+    })
 
     return ppp
 end
 
 function Popup:close()
     log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
-    -- vim.api.nvim_win_close(self.winnr, true)
+
+    if vim.api.nvim_win_is_valid(self.winnr) then
+        vim.api.nvim_win_close(self.winnr, true)
+    else
+        log.throw(
+            "|fzfx.popup - Popup:close| error! cannot close invalid popup window! %s",
+            vim.inspect(self.winnr)
+        )
+    end
+
+    self.saved_window_context:restore()
 end
 
 local M = {
