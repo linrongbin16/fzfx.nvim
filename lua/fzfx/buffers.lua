@@ -28,37 +28,55 @@ local function collect_buffers_rpc_callback()
     if type(bufs_list) == "table" then
         for _, bufnr in ipairs(bufs_list) do
             log.debug(
-                "|fzfx.buffers - buffers.collect_buffers_rpc_callback| bufnr:%s, name:%s, buf ft:%s",
+                "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 1-bufnr:%s, name:%s, buf ft:%s",
                 vim.inspect(bufnr),
                 vim.inspect(vim.api.nvim_buf_get_name(bufnr)),
                 vim.inspect(utils.get_buf_option(bufnr, "filetype"))
+            )
+            log.debug(
+                "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 1-valid:%s, loaded:%s, buflisted:%s",
+                vim.inspect(vim.api.nvim_buf_is_valid(bufnr)),
+                vim.inspect(vim.api.nvim_buf_is_loaded(bufnr)),
+                vim.inspect(vim.fn.buflisted(bufnr))
             )
             local should_exclude = false
             if
                 not vim.api.nvim_buf_is_valid(bufnr)
                 or not vim.api.nvim_buf_is_loaded(bufnr)
+                or vim.fn.buflisted(bufnr) == 0
             then
                 should_exclude = true
             end
             if not should_exclude then
-                local buf_ft = utils.get_buf_option(bufnr, "filetype")
+                local bufft = utils.get_buf_option(bufnr, "filetype")
                 for _, exclude_ft in ipairs(exclude_filetypes) do
-                    log.debug(
-                        "|fzfx.buffers - buffers.collect_buffers_rpc_callback| buf ft:%s, exclude ft:%s, should exclude:%s",
-                        vim.inspect(buf_ft),
-                        vim.inspect(exclude_ft),
-                        vim.inspect(buf_ft == exclude_ft)
-                    )
-                    if buf_ft == exclude_ft then
+                    -- log.debug(
+                    --     "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 2-buf ft:%s, exclude ft:%s, should exclude:%s",
+                    --     vim.inspect(bufft),
+                    --     vim.inspect(exclude_ft),
+                    --     vim.inspect(bufft == exclude_ft)
+                    -- )
+                    if bufft == exclude_ft then
                         should_exclude = true
                         break
                     end
                 end
             end
             if not should_exclude then
-                local buf_file = vim.api.nvim_buf_get_name(bufnr)
-                buf_file = vim.fn.fnamemodify(buf_file, ":~:.")
-                table.insert(filtered_buffers, buf_file)
+                local bufname = vim.api.nvim_buf_get_name(bufnr)
+                if type(bufname) == "string" and string.len(bufname) > 0 then
+                    log.debug(
+                        "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 3-bufnr:%s, buf_file:%s",
+                        vim.inspect(bufnr),
+                        vim.inspect(bufname)
+                    )
+                    local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
+                    log.debug(
+                        "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 3-bufpath:%s",
+                        vim.inspect(bufpath)
+                    )
+                    table.insert(filtered_buffers, bufpath)
+                end
             end
         end
     end
