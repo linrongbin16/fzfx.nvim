@@ -28,7 +28,7 @@ for i = 1, #content do
     end
 end
 
-local provider_cmd = shell_helpers.get_provider_command(provider)
+local provider_cmd = shell_helpers.read_provider_command(provider)
 local cmd = nil
 if flag_pos ~= nil and flag_pos > 0 then
     query = vim.fn.trim(string.sub(content, 1, flag_pos - 1))
