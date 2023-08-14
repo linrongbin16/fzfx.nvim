@@ -240,7 +240,7 @@ local Defaults = {
             },
             cword = {
                 {
-                    name = "FzfxFilesW",
+                    name = "FzfxBuffersW",
                     opts = {
                         bang = true,
                         desc = "Find buffers by cursor word",

@@ -93,19 +93,13 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
             vim.api.nvim_feedkeys("i", "m", false)
         end
+
+        -- close popup window and restore old window
         popup:close()
 
+        -- exit insert mode if any
         local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
         vim.api.nvim_feedkeys(esc, "x", false)
-
-        -- local saved_win_context = get_window_context_stack():pop()
-        -- log.debug(
-        --     "|fzfx.popup - Launch:new.on_fzf_exit| saved_win_context:%s",
-        --     vim.inspect(saved_win_context)
-        -- )
-        -- if saved_win_context then
-        --     vim.api.nvim_set_current_win(saved_win_context.winnr)
-        -- end
 
         log.ensure(
             vim.fn.filereadable(result) > 0,
@@ -125,16 +119,20 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
             vim.inspect(action_key),
             vim.inspect(action_lines)
         )
-        if type(action_key) == "string" and string.len(action_key) == 0 then
-            action_key = "enter"
-        end
-        if not tostring(action_key):match("v:null") then
+        if actions[action_key] ~= nil then
             local action_callback = actions[action_key]
             if type(action_callback) ~= "function" then
-                log.err("error! wrong action type: %s", action_key)
+                log.throw(
+                    "error! wrong action type on key: %s, must be function(%s): %s",
+                    vim.inspect(action_key),
+                    type(action_callback),
+                    vim.inspect(action_callback)
+                )
             else
                 action_callback(action_lines)
             end
+        else
+            log.throw("error! unknown action key: %s", vim.inspect(action_key))
         end
         if type(on_launch_exit) == "function" then
             on_launch_exit(self)
