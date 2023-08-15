@@ -81,6 +81,8 @@ end
 
 -- fzf opts {
 
+local function make_fzf_color_opts(opts) end
+
 --- @param opts Config
 --- @return string|nil
 local function make_fzf_opts(opts)
