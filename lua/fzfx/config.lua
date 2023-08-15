@@ -307,7 +307,7 @@ local Defaults = {
         commands = {
             normal = {
                 {
-                    name = "FzfxGitFiles",
+                    name = "FzfxGFiles",
                     opts = {
                         bang = true,
                         nargs = "?",
@@ -318,7 +318,7 @@ local Defaults = {
             },
             visual = {
                 {
-                    name = "FzfxGitFilesV",
+                    name = "FzfxGFilesV",
                     opts = {
                         bang = true,
                         range = true,
@@ -328,7 +328,7 @@ local Defaults = {
             },
             cword = {
                 {
-                    name = "FzfxGitFilesW",
+                    name = "FzfxGFilesW",
                     opts = {
                         bang = true,
                         desc = "Find git files by cursor word",
@@ -337,7 +337,7 @@ local Defaults = {
             },
             put = {
                 {
-                    name = "FzfxGitFilesP",
+                    name = "FzfxGFilesP",
                     opts = {
                         bang = true,
                         desc = "Find git files by yank text",
