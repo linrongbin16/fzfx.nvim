@@ -9,7 +9,7 @@ local shell_helpers = require("fzfx.shell_helpers")
 
 local provider = _G.arg[1]
 
-shell_helpers.log_debug("provider:[%s]\n", provider)
+shell_helpers.log_debug("provider:[%s]", provider)
 
 local cmd = shell_helpers.read_provider_command(provider) --[[@as string]]
 shell_helpers.log_debug("cmd:[%s]", cmd)

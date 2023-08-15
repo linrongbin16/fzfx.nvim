@@ -318,6 +318,28 @@ local Defaults = {
         "--height=100%",
     },
 
+    -- color
+    color = {
+        enable = true,
+
+        -- fzf colors: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
+        fzf = {
+            fg = { "fg", "Normal" },
+            bg = { "bg", "Normal" },
+            hl = { "fg", "Comment" },
+            ["fg+"] = { "fg", "CursorLine", "CursorColumn", "Normal" },
+            ["bg+"] = { "bg", "CursorLine", "CursorColumn" },
+            ["hl+"] = { "fg", "Statement" },
+            info = { "fg", "PreProc" },
+            border = { "fg", "Ignore" },
+            prompt = { "fg", "Conditional" },
+            pointer = { "fg", "Exception" },
+            marker = { "fg", "Keyword" },
+            spinner = { "fg", "Label" },
+            header = { "fg", "Comment" },
+        },
+    },
+
     -- popup window options
     -- implemented via float window, please check: https://neovim.io/doc/user/api.html#nvim_open_win()
     win_opts = {
@@ -354,10 +376,62 @@ local Defaults = {
         zindex = 51,
     },
 
-    -- icon
+    -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
+    -- unicode: https://symbl.cc/en/
     icon = {
         enable = true,
-        -- default = "",
+
+        file = {
+            -- nerd fonts:
+            --     nf-fa-file_text_o               \uf0f6  (default)
+            --     nf-fa-file_o                    \uf016
+            unknown = "",
+
+            -- nerd fonts:
+            --     nf-custom-folder                \ue5ff (default)
+            --     nf-fa-folder                    \uf07b
+            -- 󰉋    nf-md-folder                    \udb80\ude4b
+            folder = "",
+
+            -- nerd fonts:
+            --     nf-custom-folder_open           \ue5fe (default)
+            --     nf-fa-folder_open               \uf07c
+            -- 󰝰    nf-md-folder_open               \udb81\udf70
+            folder_open = "",
+        },
+
+        fzf = {
+            -- nerd fonts:
+            --     nf-oct-arrow_right              \uf432
+            --     nf-cod-arrow_right              \uea9c
+            --     nf-fa-caret_right               \uf0da  (default)
+            --     nf-weather-direction_right      \ue349
+            --     nf-fa-long_arrow_right          \uf178
+            --
+            -- unicode:
+            -- https://symbl.cc/en/collections/arrow-symbols/
+            -- ➜    U+279C                          &#10140;
+            -- ➤    U+27A4                          &#10148;
+            pointer = "➤ ",
+
+            -- nerd fonts:
+            --     nf-fa-star                      \uf005
+            -- 󰓎    nf-md-star                      \udb81\udcce
+            --     nf-cod-star_full                \ueb59
+            --     nf-oct-dot_fill                 \uf444
+            --     nf-fa-dot_circle_o              \uf192
+            --     nf-cod-check                    \ueab2
+            --     nf-fa-check                     \uf00c
+            -- 󰄬    nf-md-check                     \udb80\udd2c
+            --
+            -- unicode:
+            -- https://symbl.cc/en/collections/star-symbols/
+            -- https://symbl.cc/en/collections/list-bullets/
+            -- https://symbl.cc/en/collections/special-symbols/
+            -- •    U+2022                          &#8226;
+            -- ✓    U+2713                          &#10003;  (default)
+            marker = " ",
+        },
     },
 
     -- environment variables
