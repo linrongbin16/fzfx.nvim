@@ -386,8 +386,21 @@ local Defaults = {
         enable = true,
 
         -- nerd fonts:
-        --     nf-fa-file_text_o               \uf0f6
-        unknown_filetype = "",
+        --     nf-fa-file_text_o               \uf0f6  (default)
+        --     nf-fa-file_o                    \uf016
+        unknown_file = "",
+
+        -- nerd fonts:
+        --     nf-custom-folder                \ue5ff (default)
+        --     nf-fa-folder                    \uf07b
+        -- 󰉋    nf-md-folder                    \udb80\ude4b
+        directory = "",
+
+        -- nerd fonts:
+        --     nf-custom-folder_open           \ue5fe (default)
+        --     nf-fa-folder_open               \uf07c
+        -- 󰝰    nf-md-folder_open               \udb81\udf70
+        directory_open = "",
 
         -- nerd fonts:
         --     nf-oct-arrow_right              \uf432

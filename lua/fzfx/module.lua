@@ -44,6 +44,9 @@ local function setup(options)
             )
         else
             vim.env._FZFX_NVIM_DEVICON_PATH = devicon_path
+            vim.env._FZFX_NVIM_UNKNOWN_FILE_ICON = options.icon.unknown_file
+            vim.env._FZFX_NVIM_DIRECTORY_ICON = options.icon.directory
+            vim.env._FZFX_NVIM_DIRECTORY_OPEN_ICON = options.icon.directory_open
         end
     end
 
