@@ -90,16 +90,20 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
             )
             return
         end
+
+        local esc_key =
+            vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+
+        -- press <ESC> if still in fzf terminal
         if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
-            vim.api.nvim_feedkeys("i", "m", false)
+            vim.api.nvim_feedkeys(esc_key, "x", false)
         end
 
         -- close popup window and restore old window
         popup:close()
 
-        -- exit insert mode if any
-        local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
-        vim.api.nvim_feedkeys(esc, "x", false)
+        -- press <ESC> if in insert mode
+        vim.api.nvim_feedkeys(esc_key, "x", false)
 
         log.ensure(
             vim.fn.filereadable(result) > 0,
