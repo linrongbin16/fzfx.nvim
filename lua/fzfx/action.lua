@@ -98,6 +98,10 @@ local function bdelete(lines)
     end
 end
 
+local function git_checkout(lines)
+    log.debug("|fzfx.action - git_checkout| lines:%s", vim.inspect(lines))
+end
+
 local M = {
     nop = nop,
     edit = edit,
@@ -105,6 +109,7 @@ local M = {
     buffer = buffer,
     buffer_rg = buffer_rg,
     bdelete = bdelete,
+    git_checkout = git_checkout,
 }
 
 return M

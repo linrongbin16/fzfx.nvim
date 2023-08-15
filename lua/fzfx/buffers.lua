@@ -184,12 +184,14 @@ end
 
 local function setup()
     local buffers_configs = conf.get_config().buffers
-
     log.debug(
         "|fzfx.buffers - setup| base_dir:%s, buffers_configs:%s",
         vim.inspect(path.base_dir()),
         vim.inspect(buffers_configs)
     )
+    if not buffers_configs then
+        return
+    end
 
     -- Context
     local deletebuf_action = buffers_configs.actions.builtin.delete_buffer[1]

@@ -302,6 +302,71 @@ local Defaults = {
         },
     },
 
+    -- the 'Git Files' commands
+    git_files = {
+        commands = {
+            normal = {
+                {
+                    name = "FzfxGitFiles",
+                    opts = {
+                        bang = true,
+                        nargs = "?",
+                        complete = "dir",
+                        desc = "Find git files",
+                    },
+                },
+            },
+            visual = {
+                {
+                    name = "FzfxGitFilesV",
+                    opts = {
+                        bang = true,
+                        range = true,
+                        desc = "Find git files by visual select",
+                    },
+                },
+            },
+            cword = {
+                {
+                    name = "FzfxGitFilesW",
+                    opts = {
+                        bang = true,
+                        desc = "Find git files by cursor word",
+                    },
+                },
+            },
+            put = {
+                {
+                    name = "FzfxGitFilesP",
+                    opts = {
+                        bang = true,
+                        desc = "Find git files by yank text",
+                    },
+                },
+            },
+        },
+        providers = {
+            git = "git ls-files",
+        },
+        actions = {
+            builtin = {},
+            expect = {
+                ["esc"] = require("fzfx.action").nop,
+                ["enter"] = require("fzfx.action").edit,
+                ["double-click"] = require("fzfx.action").edit,
+            },
+        },
+        fzf_opts = {
+            default_fzf_opts.multi,
+            default_fzf_opts.select,
+            default_fzf_opts.deselect,
+            default_fzf_opts.select_all,
+            default_fzf_opts.deselect_all,
+            default_fzf_opts.toggle_preview,
+        },
+        other_opts = {},
+    },
+
     -- the 'Yank History' commands
     yank_history = {
         other_opts = {
