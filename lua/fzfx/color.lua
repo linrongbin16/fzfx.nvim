@@ -165,6 +165,7 @@ local function render(fmt, renderer, ...)
     for _, a in ipairs({ ... }) do
         table.insert(args, renderer(a))
     end
+    ---@diagnostic disable-next-line: deprecated
     return string.format(fmt, unpack(args))
 end
 
