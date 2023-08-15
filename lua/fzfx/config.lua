@@ -360,6 +360,27 @@ local Defaults = {
         -- default = "",
     },
 
+    color = {
+        enable = true,
+        mappings = {
+            -- bg
+            bg = { "bg", "Normal" },
+            ["bg+"] = { "bg", "CursorLine" },
+            info = { "fg", "PreProc" },
+            border = { "bg", "Ignore" },
+            spinner = { "bg", "Statement" },
+            hl = { "bg", "Comment" },
+            -- fg
+            fg = { "fg", "Normal" },
+            header = { "fg", "Comment" },
+            ["fg+"] = { "fg", "Normal" },
+            pointer = { "fg", "Exception" },
+            marker = { "fg", "Keyword" },
+            prompt = { "fg", "Conditional" },
+            ["hl+"] = { "fg", "Statement" },
+        },
+    },
+
     -- environment variables
     env = {
         --- @type string|nil

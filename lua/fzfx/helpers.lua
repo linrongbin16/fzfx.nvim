@@ -85,21 +85,39 @@ end
 -- color design based on doc: https://man.archlinux.org/man/fzf.1.en
 -- we can assume:
 -- BG group
---  * bg (background): Normal bg (s:dark_bg)
---  * bg+ (background current line): CursorLine bg
---  * info (info line: right side numbers): PreProc fg
---  * border (border): Ignore bg (not sure, s:dark_bg + 3, candidates: MatchParen, Ignore, DiffChange)
---  * spinner (input indicator: > ): Statement bg (not sure, candidates: Statement, diffAdded)
---  * hl (highlighted substring): Comment bg
+--  * bg (background): `Normal` bg (`s:dark_bg`)
+--  * bg+ (background current line): `CursorLine` bg
+--  * info (info line: right side numbers): `PreProc` fg
+--  * border (border): `Ignore` bg (not sure, `s:dark_bg + 3`, candidates: `MatchParen`, `Ignore`, `DiffChange`)
+--  * spinner (input indicator: > ): `Statement` bg (not sure, candidates: `Statement`, `diffAdded`)
+--  * hl (highlighted substring): `Comment` bg
 -- FG group
---  * fg (text): Normal fg (s:dark_fg)
---  * header (text): Comment fg
---  * fg+ (text): Normal fg (s:dark_fg)
---  * pointer (pointer to current line): Exception fg
---  * marker (selected lines): Keyword fg
---  * prompt (prompt text): Conditional fg
---  * hl+ (highlighted substring current line): Statement fg (not sure, candidates: Statement, diffAdded)
-local function make_fzf_color_opts(opts) end
+--  * fg (text): `Normal` fg (`s:dark_fg`)
+--  * header (text): `Comment` fg
+--  * fg+ (text): `Normal` fg (`s:dark_fg`)
+--  * pointer (pointer to current line): `Exception` fg
+--  * marker (selected lines): `Keyword` fg
+--  * prompt (prompt text): `Conditional` fg
+--  * hl+ (highlighted substring current line): `Statement` fg (not sure, candidates: `Statement`, `diffAdded`)
+--- @return string[]?
+local function make_fzf_color_opts()
+    if not conf.get_config().color.enable then
+        return nil
+    end
+    local color_mappings = conf.get_config().color.mappings
+    local builder = {}
+    for name, opts in pairs(color_mappings) do
+        local c = color.get_color(opts[1], opts[2])
+        if type(c) == "string" and string.len(c) > 0 then
+            table.insert(builder, string.format("%s:%s", name, c))
+        end
+    end
+    log.debug(
+        "|fzfx.helpers - make_fzf_color_opts| builder:%s",
+        vim.inspect(builder)
+    )
+    return { "--color", table.concat(builder, ",") }
+end
 
 --- @param opts Config
 --- @return string|nil
@@ -124,6 +142,17 @@ local function make_fzf_opts(opts)
                 vim.inspect(o)
             )
         end
+    end
+    local color_opts = make_fzf_color_opts()
+    if type(color_opts) == "table" and #color_opts == 2 then
+        table.insert(
+            result,
+            string.format(
+                "%s %s",
+                color_opts[1],
+                vim.fn.shellescape(color_opts[2])
+            )
+        )
     end
     return table.concat(result, " ")
 end
