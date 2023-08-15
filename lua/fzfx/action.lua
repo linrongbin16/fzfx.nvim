@@ -19,11 +19,11 @@ local function edit_rg(lines)
     log.debug("|fzfx.action - edit_rg| lines:%s", vim.inspect(lines))
     for i, line in ipairs(lines) do
         local splits = vim.fn.split(line, ":")
-        local filename = env.icon_enable()
-                and vim.fn.split(splits[1] --[[@as string]])[2]
+        ---@diagnostic disable-next-line: need-check-nil
+        local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
             or splits[1]
-        local row = tonumber(splits[2])
-        local col = tonumber(splits[3])
+        local row = tonumber(splits[2] --[[@as string]])
+        local col = tonumber(splits[3] --[[@as string]])
         local edit_cmd = string.format("edit %s", vim.fn.expand(filename))
         local setpos_cmd =
             string.format("call setpos('.', [0, %d, %d])", row, col)
