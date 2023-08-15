@@ -338,9 +338,6 @@ local Defaults = {
             spinner = { "fg", "Label" },
             header = { "fg", "Comment" },
         },
-
-        -- termimal colors: https://github.com/junegunn/fzf/blob/master/README-VIM.md#fzf-inside-terminal-buffer
-        term = {},
     },
 
     -- popup window options
