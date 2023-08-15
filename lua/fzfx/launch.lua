@@ -102,8 +102,8 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         -- close popup window and restore old window
         popup:close()
 
-        -- press <ESC> if in insert mode
-        vim.api.nvim_feedkeys(esc_key, "x", false)
+        -- -- press <ESC> if in insert mode
+        -- vim.api.nvim_feedkeys(esc_key, "x", false)
 
         log.ensure(
             vim.fn.filereadable(result) > 0,
