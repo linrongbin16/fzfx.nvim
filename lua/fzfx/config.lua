@@ -330,9 +330,9 @@ local Defaults = {
             bg = { "bg", "Normal" },
             ["bg+"] = { "bg", "CursorLine" },
             info = { "fg", "PreProc" },
-            border = { "bg", "Ignore" },
-            spinner = { "bg", "Statement" },
-            hl = { "bg", "Comment" },
+            border = { "fg", "Ignore" },
+            spinner = { "fg", "Statement" },
+            hl = { "fg", "Comment" },
             -- fg
             fg = { "fg", "Normal" },
             header = { "fg", "Comment" },
