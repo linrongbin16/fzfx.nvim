@@ -422,16 +422,19 @@ local Defaults = {
             --     nf-fa-star                      \uf005
             -- 󰓎    nf-md-star                      \udb81\udcce
             --     nf-cod-star_full                \ueb59
-            --     nf-oct-dot_fill                 \uf444  (default)
+            --     nf-oct-dot_fill                 \uf444
             --     nf-fa-dot_circle_o              \uf192
+            --     nf-cod-check                    \ueab2
+            --     nf-fa-check                     \uf00c
+            -- 󰄬    nf-md-check                     \udb80\udd2c
             --
             -- unicode:
             -- https://symbl.cc/en/collections/star-symbols/
             -- https://symbl.cc/en/collections/list-bullets/
             -- https://symbl.cc/en/collections/special-symbols/
             -- •    U+2022                          &#8226;
-            -- ✓    U+2713                          &#10003;
-            marker = "",
+            -- ✓    U+2713                          &#10003;  (default)
+            marker = "✓",
         },
     },
 
