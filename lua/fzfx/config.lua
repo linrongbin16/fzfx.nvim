@@ -473,12 +473,13 @@ local Defaults = {
             --     nf-weather-direction_right      \ue349
             --     nf-fa-long_arrow_right          \uf178
             --     nf-oct-chevron_right            \uf460
+            --     nf-fa-chevron_right             \uf054
             --
             -- unicode:
             -- https://symbl.cc/en/collections/arrow-symbols/
             -- ➜    U+279C                          &#10140;
             -- ➤    U+27A4                          &#10148;
-            pointer = "",
+            pointer = "",
 
             -- nerd fonts:
             --     nf-fa-star                      \uf005
