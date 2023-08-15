@@ -84,15 +84,18 @@ end
 
 --- @return string[]?
 local function make_fzf_color_opts()
-    if not conf.get_config().fzf_color_opts.enable then
+    if not conf.get_config().color.enable then
         return nil
     end
-    local color_mappings = conf.get_config().fzf_color_opts.mappings
+    local fzf_colors = conf.get_config().color.fzf
     local builder = {}
-    for name, opts in pairs(color_mappings) do
-        local c = color.get_color(opts[1], opts[2])
-        if type(c) == "string" and string.len(c) > 0 then
-            table.insert(builder, string.format("%s:%s", name, c))
+    for name, opts in pairs(fzf_colors) do
+        for i = 2, #opts do
+            local c = color.get_color(opts[1], opts[i])
+            if type(c) == "string" and string.len(c) > 0 then
+                table.insert(builder, string.format("%s:%s", name, c))
+                break
+            end
         end
     end
     log.debug(
@@ -114,6 +117,25 @@ local function make_fzf_icon_opts()
     }
 end
 
+--- @param opts string[]
+--- @param o string|string[]
+--- @return string[]
+local function append_fzf_opt(opts, o)
+    if type(o) == "string" and string.len(o) > 0 then
+        table.insert(opts, o)
+    elseif type(o) == "table" and #o == 2 then
+        local k = o[1]
+        local v = o[2]
+        table.insert(opts, string.format("%s %s", k, vim.fn.shellescape(v)))
+    else
+        log.throw(
+            "|fzfx.helpers - append_fzf_opt| invalid fzf opt: %s",
+            vim.inspect(o)
+        )
+    end
+    return opts
+end
+
 --- @param opts Config
 --- @return string|nil
 local function make_fzf_opts(opts)
@@ -122,40 +144,16 @@ local function make_fzf_opts(opts)
     end
     local result = {}
     for _, o in ipairs(opts) do
-        if type(o) == "string" and string.len(o) > 0 then
-            table.insert(result, o)
-        elseif type(o) == "table" and #o == 2 then
-            local k = o[1]
-            local v = o[2]
-            table.insert(
-                result,
-                string.format("%s %s", k, vim.fn.shellescape(v))
-            )
-        else
-            log.throw(
-                "|fzfx.helpers - make_fzf_opts| invalid fzf option: %s",
-                vim.inspect(o)
-            )
-        end
+        append_fzf_opt(result, o)
     end
-    local color_opts = make_fzf_color_opts()
-    if type(color_opts) == "table" and #color_opts == 2 then
-        table.insert(
-            result,
-            string.format(
-                "%s %s",
-                color_opts[1],
-                vim.fn.shellescape(color_opts[2])
-            )
-        )
+    local color_opt = make_fzf_color_opts()
+    if type(color_opt) == "table" and #color_opt == 2 then
+        append_fzf_opt(result, color_opt)
     end
     local icon_opts = make_fzf_icon_opts()
     if type(icon_opts) == "table" and #icon_opts > 0 then
         for _, o in ipairs(icon_opts) do
-            table.insert(
-                result,
-                string.format("%s %s", o[1], vim.fn.shellescape(o[2]))
-            )
+            append_fzf_opt(result, o)
         end
     end
     return table.concat(result, " ")

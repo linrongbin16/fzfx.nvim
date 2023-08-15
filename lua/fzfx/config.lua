@@ -318,30 +318,29 @@ local Defaults = {
         "--height=100%",
     },
 
-    -- fzf color options
-    -- color design based on doc: https://man.archlinux.org/man/fzf.1.en
-    --  * border (border): `Ignore` bg (not sure, `s:dark_bg + 3`, candidates: `MatchParen`, `Ignore`, `DiffChange`)
-    --  * spinner (input indicator: > ): `Statement` bg (not sure, candidates: `Statement`, `diffAdded`)
-    --  * hl+ (highlighted substring current line): `Statement` fg (not sure, candidates: `Statement`, `diffAdded`)
-    fzf_color_opts = {
+    -- color
+    color = {
         enable = true,
-        mappings = {
-            -- bg
+
+        -- fzf colors: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
+        fzf = {
+            fg = { "fg", "Normal" },
             bg = { "bg", "Normal" },
-            ["bg+"] = { "bg", "CursorLine" },
-            -- fg
+            hl = { "fg", "Comment" },
+            ["fg+"] = { "fg", "CursorLine", "CursorColumn", "Normal" },
+            ["bg+"] = { "bg", "CursorLine", "CursorColumn" },
+            ["hl+"] = { "fg", "Statement" },
             info = { "fg", "PreProc" },
             border = { "fg", "Ignore" },
-            spinner = { "fg", "Statement" },
-            hl = { "fg", "Comment" },
-            fg = { "fg", "Normal" },
-            header = { "fg", "Comment" },
-            ["fg+"] = { "fg", "Normal" },
+            prompt = { "fg", "Conditional" },
             pointer = { "fg", "Exception" },
             marker = { "fg", "Keyword" },
-            prompt = { "fg", "Conditional" },
-            ["hl+"] = { "fg", "Statement" },
+            spinner = { "fg", "Label" },
+            header = { "fg", "Comment" },
         },
+
+        -- termimal colors: https://github.com/junegunn/fzf/blob/master/README-VIM.md#fzf-inside-terminal-buffer
+        term = {},
     },
 
     -- popup window options
