@@ -318,6 +318,28 @@ local Defaults = {
         "--height=100%",
     },
 
+    -- fzf color options
+    fzf_color_opts = {
+        enable = true,
+        mappings = {
+            -- bg
+            bg = { "bg", "Normal" },
+            ["bg+"] = { "bg", "CursorLine" },
+            info = { "fg", "PreProc" },
+            border = { "bg", "Ignore" },
+            spinner = { "bg", "Statement" },
+            hl = { "bg", "Comment" },
+            -- fg
+            fg = { "fg", "Normal" },
+            header = { "fg", "Comment" },
+            ["fg+"] = { "fg", "Normal" },
+            pointer = { "fg", "Exception" },
+            marker = { "fg", "Keyword" },
+            prompt = { "fg", "Conditional" },
+            ["hl+"] = { "fg", "Statement" },
+        },
+    },
+
     -- popup window options
     -- implemented via float window, please check: https://neovim.io/doc/user/api.html#nvim_open_win()
     win_opts = {
@@ -358,27 +380,6 @@ local Defaults = {
     icon = {
         enable = true,
         -- default = "",
-    },
-
-    color = {
-        enable = true,
-        mappings = {
-            -- bg
-            bg = { "bg", "Normal" },
-            ["bg+"] = { "bg", "CursorLine" },
-            info = { "fg", "PreProc" },
-            border = { "bg", "Ignore" },
-            spinner = { "bg", "Statement" },
-            hl = { "bg", "Comment" },
-            -- fg
-            fg = { "fg", "Normal" },
-            header = { "fg", "Comment" },
-            ["fg+"] = { "fg", "Normal" },
-            pointer = { "fg", "Exception" },
-            marker = { "fg", "Keyword" },
-            prompt = { "fg", "Conditional" },
-            ["hl+"] = { "fg", "Statement" },
-        },
     },
 
     -- environment variables

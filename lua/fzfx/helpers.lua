@@ -101,10 +101,10 @@ end
 --  * hl+ (highlighted substring current line): `Statement` fg (not sure, candidates: `Statement`, `diffAdded`)
 --- @return string[]?
 local function make_fzf_color_opts()
-    if not conf.get_config().color.enable then
+    if not conf.get_config().fzf_color_opts.enable then
         return nil
     end
-    local color_mappings = conf.get_config().color.mappings
+    local color_mappings = conf.get_config().fzf_color_opts.mappings
     local builder = {}
     for name, opts in pairs(color_mappings) do
         local c = color.get_color(opts[1], opts[2])
