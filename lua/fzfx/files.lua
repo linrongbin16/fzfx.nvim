@@ -140,7 +140,7 @@ local function setup()
         vim.inspect(files_configs)
     )
 
-    if not files then
+    if not files_configs then
         return
     end
 
