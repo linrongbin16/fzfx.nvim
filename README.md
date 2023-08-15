@@ -30,7 +30,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 ## Feature
 
 - Windows support.
-- Icons.
+- Icons & Colors (todo).
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
@@ -157,7 +157,7 @@ require("lazy").setup({
 
 ## Commands
 
-Command Naming Rules:
+Commands are named following below rules:
 
 - All commands are named with prefix `Fzfx`.
 - The main command name has no suffix.
@@ -166,7 +166,19 @@ Command Naming Rules:
 - The cursor word variant is named with `W` suffix.
 - The yank text variant is named with `P` suffix (just like press the `p` key).
 
-> Command names can be configured, see [Configuration](#configuration).
+> Note: command names can be configured, see [Configuration](#configuration).
+
+Here're some most useful builtin keys inside fzf terminal:
+
+- Preview keys
+  - `ctrl-l`: toggle preview.
+- Multi keys
+  - `ctrl-e`: select.
+  - `ctrl-d`: deselect.
+  - `ctrl-a`: select all.
+  - `alt-a`: deselect all.
+
+> Note: builtin keys can be configured, see [Configuration](#configuration).
 
 <table>
 <thead>
@@ -174,72 +186,71 @@ Command Naming Rules:
     <th>Group</th>
     <th>Command</th>
     <th>Mode</th>
-    <th>Description</th>
+    <th>Multi Key?</th>
+    <th>Preview Key?</th>
+    <th>Special Feature</th>
   </tr>
 </thead>
 <tbody>
   <tr>
     <td rowspan="4">Files</td>
     <td>FzfxFiles(U)</td>
-    <td>Normal</td>
-    <td>Find files (unrestricted)</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4"></td>
   </tr>
   <tr>
     <td>FzfxFiles(U)V</td>
-    <td>Visual</td>
-    <td>Find files (unrestricted) by visual select</td>
+    <td>V</td>
   </tr>
   <tr>
     <td>FzfxFiles(U)W</td>
-    <td>Normal</td>
-    <td>Find files (unrestricted) by cursor word</td>
+    <td>N</td>
   </tr>
   <tr>
     <td>FzfxFiles(U)P</td>
-    <td>Normal</td>
-    <td>Find files (unrestricted) by yank text</td>
+    <td>N</td>
   </tr>
   <tr>
     <td rowspan="4">Live Grep</td>
     <td>FzfxLiveGrep(U)</td>
-    <td>Normal</td>
-    <td>Live grep (unrestricted)</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `--` to pass raw options to search command (grep, rg)</td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(U)V</td>
-    <td>Visual</td>
-    <td>Live grep (unrestricted) by visual select</td>
+    <td>V</td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(U)W</td>
-    <td>Normal</td>
-    <td>Live grep (unrestricted) by cursor word</td>
+    <td>N</td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(U)P</td>
-    <td>Normal</td>
-    <td>Live grep (unrestricted) by yank text</td>
+    <td>N</td>
   </tr>
   <tr>
     <td rowspan="4">Buffers</td>
     <td>FzfxBuffers</td>
-    <td>Normal</td>
-    <td>Find buffers</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4"></td>
   </tr>
   <tr>
     <td>FzfxBuffersV</td>
-    <td>Visual</td>
-    <td>Find buffers by visual select</td>
+    <td>V</td>
   </tr>
   <tr>
     <td>FzfxBuffersW</td>
-    <td>Normal</td>
-    <td>Find buffers by cursor word</td>
+    <td>N</td>
   </tr>
   <tr>
     <td>FzfxBuffersP</td>
-    <td>Normal</td>
-    <td>Find buffers by yank text</td>
+    <td>N</td>
   </tr>
 </tbody>
 </table>
