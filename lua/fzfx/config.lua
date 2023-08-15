@@ -385,50 +385,54 @@ local Defaults = {
     icon = {
         enable = true,
 
-        -- nerd fonts:
-        --     nf-fa-file_text_o               \uf0f6  (default)
-        --     nf-fa-file_o                    \uf016
-        unknown_file = "",
+        file = {
+            -- nerd fonts:
+            --     nf-fa-file_text_o               \uf0f6  (default)
+            --     nf-fa-file_o                    \uf016
+            unknown = "",
 
-        -- nerd fonts:
-        --     nf-custom-folder                \ue5ff (default)
-        --     nf-fa-folder                    \uf07b
-        -- 󰉋    nf-md-folder                    \udb80\ude4b
-        directory = "",
+            -- nerd fonts:
+            --     nf-custom-folder                \ue5ff (default)
+            --     nf-fa-folder                    \uf07b
+            -- 󰉋    nf-md-folder                    \udb80\ude4b
+            folder = "",
 
-        -- nerd fonts:
-        --     nf-custom-folder_open           \ue5fe (default)
-        --     nf-fa-folder_open               \uf07c
-        -- 󰝰    nf-md-folder_open               \udb81\udf70
-        directory_open = "",
+            -- nerd fonts:
+            --     nf-custom-folder_open           \ue5fe (default)
+            --     nf-fa-folder_open               \uf07c
+            -- 󰝰    nf-md-folder_open               \udb81\udf70
+            folder_open = "",
+        },
 
-        -- nerd fonts:
-        --     nf-oct-arrow_right              \uf432
-        --     nf-cod-arrow_right              \uea9c
-        --     nf-fa-caret_right               \uf0da  (default)
-        --     nf-weather-direction_right      \ue349
-        --     nf-fa-long_arrow_right          \uf178
-        --
-        -- unicode:
-        -- https://symbl.cc/en/collections/arrow-symbols/
-        -- ➜    U+279C                          &#10140;
-        -- ➤    U+27A4                          &#10148;
-        fzf_pointer = "",
+        fzf = {
+            -- nerd fonts:
+            --     nf-oct-arrow_right              \uf432
+            --     nf-cod-arrow_right              \uea9c
+            --     nf-fa-caret_right               \uf0da  (default)
+            --     nf-weather-direction_right      \ue349
+            --     nf-fa-long_arrow_right          \uf178
+            --
+            -- unicode:
+            -- https://symbl.cc/en/collections/arrow-symbols/
+            -- ➜    U+279C                          &#10140;
+            -- ➤    U+27A4                          &#10148;
+            pointer = "",
 
-        -- nerd fonts:
-        --     nf-fa-star                      \uf005
-        -- 󰓎    nf-md-star                      \udb81\udcce
-        --     nf-cod-star_full                \ueb59
-        --     nf-oct-dot_fill                 \uf444  (default)
-        --     nf-fa-dot_circle_o              \uf192
-        --
-        -- unicode:
-        -- https://symbl.cc/en/collections/star-symbols/
-        -- https://symbl.cc/en/collections/list-bullets/
-        -- https://symbl.cc/en/collections/special-symbols/
-        -- •    U+2022                          &#8226;
-        -- ✓    U+2713                          &#10003;
-        fzf_marker = "",
+            -- nerd fonts:
+            --     nf-fa-star                      \uf005
+            -- 󰓎    nf-md-star                      \udb81\udcce
+            --     nf-cod-star_full                \ueb59
+            --     nf-oct-dot_fill                 \uf444  (default)
+            --     nf-fa-dot_circle_o              \uf192
+            --
+            -- unicode:
+            -- https://symbl.cc/en/collections/star-symbols/
+            -- https://symbl.cc/en/collections/list-bullets/
+            -- https://symbl.cc/en/collections/special-symbols/
+            -- •    U+2022                          &#8226;
+            -- ✓    U+2713                          &#10003;
+            marker = "",
+        },
     },
 
     -- environment variables

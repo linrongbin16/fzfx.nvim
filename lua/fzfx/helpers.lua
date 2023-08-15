@@ -102,6 +102,18 @@ local function make_fzf_color_opts()
     return { "--color", table.concat(builder, ",") }
 end
 
+--- @return string[]?
+local function make_fzf_icon_opts()
+    if not conf.get_config().icon.enable then
+        return nil
+    end
+    local icon_configs = conf.get_config().icon.fzf
+    return {
+        { "--pointer", icon_configs.pointer },
+        { "--marker", icon_configs.marker },
+    }
+end
+
 --- @param opts Config
 --- @return string|nil
 local function make_fzf_opts(opts)
@@ -136,6 +148,15 @@ local function make_fzf_opts(opts)
                 vim.fn.shellescape(color_opts[2])
             )
         )
+    end
+    local icon_opts = make_fzf_icon_opts()
+    if type(icon_opts) == "table" and #icon_opts > 0 then
+        for _, o in ipairs(icon_opts) do
+            table.insert(
+                result,
+                string.format("%s %s", o[1], vim.fn.shellescape(o[2]))
+            )
+        end
     end
     return table.concat(result, " ")
 end

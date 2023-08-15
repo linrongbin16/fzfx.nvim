@@ -113,9 +113,9 @@ end
 -- icon render {
 
 local DEVICONS_PATH = vim.env._FZFX_NVIM_DEVICON_PATH
-local UNKNOWN_FILE_ICON = vim.env._FZFX_NVIM_UNKNOWN_FILE_ICON
-local DIRECTORY_ICON = vim.env._FZFX_NVIM_DIRECTORY_ICON
-local DIRECTORY_OPEN_ICON = vim.env._FZFX_NVIM_DIRECTORY_OPEN_ICON
+local UNKNOWN_FILE_ICON = vim.env._FZFX_NVIM_FILE_UNKNOWN_ICON
+local FOLDER_ICON = vim.env._FZFX_NVIM_FILE_FOLDER_ICON
+local FOLDER_OPEN_ICON = vim.env._FZFX_NVIM_FILE_FOLDER_OPEN_ICON
 local DEVICONS = nil
 if type(DEVICONS_PATH) == "string" and string.len(DEVICONS_PATH) > 0 then
     vim.opt.runtimepath:append(DEVICONS_PATH)
@@ -174,7 +174,7 @@ local function render_line_with_icon(line)
             end
         else
             if vim.fn.isdirectory(line) > 0 then
-                return string.format("%s %s", DIRECTORY_ICON, line)
+                return string.format("%s %s", FOLDER_ICON, line)
             else
                 return string.format("%s %s", UNKNOWN_FILE_ICON, line)
             end
@@ -211,7 +211,7 @@ local function render_delimiter_line_with_icon(line, delimiter, pos)
             end
         else
             if vim.fn.isdirectory(filename) > 0 then
-                return string.format("%s %s", DIRECTORY_ICON, line)
+                return string.format("%s %s", FOLDER_ICON, line)
             else
                 return string.format("%s %s", UNKNOWN_FILE_ICON, line)
             end
