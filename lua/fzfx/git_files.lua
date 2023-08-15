@@ -31,7 +31,7 @@ local function git_files(query, bang, opts)
     vim.fn.writefile({ provider_command }, temp, "b")
     local query_command = string.format(
         "%s %s",
-        shell.make_lua_command("git_files", "provider.lua"),
+        shell.make_lua_command("files", "provider.lua"),
         temp
     )
     local preview_command =
