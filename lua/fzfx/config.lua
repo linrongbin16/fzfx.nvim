@@ -472,12 +472,13 @@ local Defaults = {
             --     nf-fa-caret_right               \uf0da  (default)
             --     nf-weather-direction_right      \ue349
             --     nf-fa-long_arrow_right          \uf178
+            --     nf-oct-chevron_right            \uf460
             --
             -- unicode:
             -- https://symbl.cc/en/collections/arrow-symbols/
             -- ➜    U+279C                          &#10140;
             -- ➤    U+27A4                          &#10148;
-            pointer = "➤ ",
+            pointer = "",
 
             -- nerd fonts:
             --     nf-fa-star                      \uf005
@@ -495,7 +496,7 @@ local Defaults = {
             -- https://symbl.cc/en/collections/special-symbols/
             -- •    U+2022                          &#8226;
             -- ✓    U+2713                          &#10003;  (default)
-            marker = " ",
+            marker = "✓ ",
         },
     },
 
