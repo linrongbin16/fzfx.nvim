@@ -4,6 +4,15 @@ local default_fd_command =
     string.format("%s -cnever -tf -tl -L -i", constants.fd)
 local default_rg_command =
     string.format("%s --column -n --no-heading --color=always -S", constants.rg)
+--- @type table<string, string|string[]>
+local default_fzf_opts = {
+    multi = "--multi",
+    select = { "--bind", "ctrl-e:select" },
+    deselect = { "--bind", "ctrl-d:deselect" },
+    select_all = { "--bind", "ctrl-a:select-all" },
+    deselect_all = { "--bind", "alt-a:deselect-all" },
+    toggle_preview = { "--bind", "ctrl-l:toggle-preview" },
+}
 
 --- @alias Config table<string, any>
 
@@ -107,12 +116,12 @@ local Defaults = {
             },
         },
         fzf_opts = {
-            "--multi",
-            { "--bind", "ctrl-s:select" },
-            { "--bind", "ctrl-alt-s:deselect" },
-            { "--bind", "ctrl-a:select-all" },
-            { "--bind", "ctrl-alt-a:deselect-all" },
-            { "--bind", "ctrl-l:toggle-preview" },
+            default_fzf_opts.multi,
+            default_fzf_opts.select,
+            default_fzf_opts.deselect,
+            default_fzf_opts.select_all,
+            default_fzf_opts.deselect_all,
+            default_fzf_opts.toggle_preview,
         },
     },
 
@@ -212,12 +221,12 @@ local Defaults = {
             },
         },
         fzf_opts = {
-            "--multi",
-            { "--bind", "ctrl-s:select" },
-            { "--bind", "ctrl-alt-s:deselect" },
-            { "--bind", "ctrl-a:select-all" },
-            { "--bind", "ctrl-alt-a:deselect-all" },
-            { "--bind", "ctrl-l:toggle-preview" },
+            default_fzf_opts.multi,
+            default_fzf_opts.select,
+            default_fzf_opts.deselect,
+            default_fzf_opts.select_all,
+            default_fzf_opts.deselect_all,
+            default_fzf_opts.toggle_preview,
         },
         other_opts = {
             onchange_reload_delay = "sleep 0.1 && ",
@@ -270,7 +279,7 @@ local Defaults = {
         actions = {
             builtin = {
                 delete_buffer = {
-                    "ctrl-d",
+                    "ctrl-x",
                     require("fzfx.action").bdelete,
                 },
             },
@@ -281,12 +290,12 @@ local Defaults = {
             },
         },
         fzf_opts = {
-            "--multi",
-            { "--bind", "ctrl-s:select" },
-            { "--bind", "ctrl-alt-s:deselect" },
-            { "--bind", "ctrl-a:select-all" },
-            { "--bind", "ctrl-alt-a:deselect-all" },
-            { "--bind", "ctrl-l:toggle-preview" },
+            default_fzf_opts.multi,
+            default_fzf_opts.select,
+            default_fzf_opts.deselect,
+            default_fzf_opts.select_all,
+            default_fzf_opts.deselect_all,
+            default_fzf_opts.toggle_preview,
         },
         other_opts = {
             exclude_filetypes = { "qf", "neo-tree" },
