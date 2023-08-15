@@ -1,6 +1,7 @@
 local log = require("fzfx.log")
 local env = require("fzfx.env")
 local path = require("fzfx.path")
+local color = require("fzfx.color")
 local conf = require("fzfx.config")
 
 -- visual select {
@@ -81,6 +82,23 @@ end
 
 -- fzf opts {
 
+-- color design based on doc: https://man.archlinux.org/man/fzf.1.en
+-- we can assume:
+-- BG group
+--  * bg (background): Normal bg (s:dark_bg)
+--  * bg+ (background current line): CursorLine bg
+--  * info (info line: right side numbers): PreProc fg
+--  * border (border): Ignore bg (not sure, s:dark_bg + 3, candidates: MatchParen, Ignore, DiffChange)
+--  * spinner (input indicator: > ): Statement bg (not sure, candidates: Statement, diffAdded)
+--  * hl (highlighted substring): Comment bg
+-- FG group
+--  * fg (text): Normal fg (s:dark_fg)
+--  * header (text): Comment fg
+--  * fg+ (text): Normal fg (s:dark_fg)
+--  * pointer (pointer to current line): Exception fg
+--  * marker (selected lines): Keyword fg
+--  * prompt (prompt text): Conditional fg
+--  * hl+ (highlighted substring current line): Statement fg (not sure, candidates: Statement, diffAdded)
 local function make_fzf_color_opts(opts) end
 
 --- @param opts Config

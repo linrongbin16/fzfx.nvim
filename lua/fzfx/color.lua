@@ -40,6 +40,16 @@ local function get_color(attr, group)
     return nil
 end
 
+--- @param color string?
+--- @return boolean
+local function valid_rgb_color(color)
+    if type(color) ~= "string" or string.len(color) == 0 then
+        return false
+    end
+    local r, g, b = color:match("#(..)(..)(..)")
+    return r and g and b
+end
+
 --- @param color string
 --- @param fg boolean
 --- @return string|nil
@@ -136,6 +146,7 @@ end
 --- @type table<string, function>
 local M = {
     get_color = get_color,
+    valid_rgb_color = valid_rgb_color,
     csi = csi,
     ansi = ansi,
 }
