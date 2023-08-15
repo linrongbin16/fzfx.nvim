@@ -1,7 +1,9 @@
+--- @return boolean
 local function debug_enable()
     return tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 end
 
+--- @return boolean
 local function icon_enable()
     return type(vim.env._FZFX_NVIM_DEVICON_PATH) == "string"
         and string.len(vim.env._FZFX_NVIM_DEVICON_PATH) > 0
