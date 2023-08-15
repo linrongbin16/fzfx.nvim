@@ -380,10 +380,42 @@ local Defaults = {
         zindex = 51,
     },
 
-    -- icon
+    -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
+    -- unicode: https://symbl.cc/en/
     icon = {
         enable = true,
-        -- default = "",
+
+        -- nerd fonts:
+        --     nf-fa-file_text_o               \uf0f6
+        unknown_filetype = "",
+
+        -- nerd fonts:
+        --     nf-oct-arrow_right              \uf432
+        --     nf-cod-arrow_right              \uea9c
+        --     nf-fa-caret_right               \uf0da  (default)
+        --     nf-weather-direction_right      \ue349
+        --     nf-fa-long_arrow_right          \uf178
+        --
+        -- unicode:
+        -- https://symbl.cc/en/collections/arrow-symbols/
+        -- ➜    U+279C                          &#10140;
+        -- ➤    U+27A4                          &#10148;
+        fzf_pointer = "",
+
+        -- nerd fonts:
+        --     nf-fa-star                      \uf005
+        -- 󰓎    nf-md-star                      \udb81\udcce
+        --     nf-cod-star_full                \ueb59
+        --     nf-oct-dot_fill                 \uf444  (default)
+        --     nf-fa-dot_circle_o              \uf192
+        --
+        -- unicode:
+        -- https://symbl.cc/en/collections/star-symbols/
+        -- https://symbl.cc/en/collections/list-bullets/
+        -- https://symbl.cc/en/collections/special-symbols/
+        -- •    U+2022                          &#8226;
+        -- ✓    U+2713                          &#10003;
+        fzf_marker = "",
     },
 
     -- environment variables
