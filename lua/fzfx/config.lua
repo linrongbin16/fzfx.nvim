@@ -319,6 +319,10 @@ local Defaults = {
     },
 
     -- fzf color options
+    -- color design based on doc: https://man.archlinux.org/man/fzf.1.en
+    --  * border (border): `Ignore` bg (not sure, `s:dark_bg + 3`, candidates: `MatchParen`, `Ignore`, `DiffChange`)
+    --  * spinner (input indicator: > ): `Statement` bg (not sure, candidates: `Statement`, `diffAdded`)
+    --  * hl+ (highlighted substring current line): `Statement` fg (not sure, candidates: `Statement`, `diffAdded`)
     fzf_color_opts = {
         enable = true,
         mappings = {
