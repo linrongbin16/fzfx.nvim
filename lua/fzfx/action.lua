@@ -19,7 +19,8 @@ local function edit_rg(lines)
     log.debug("|fzfx.action - edit_rg| lines:%s", vim.inspect(lines))
     for i, line in ipairs(lines) do
         local splits = vim.fn.split(line, ":")
-        local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
+        local filename = (env.icon_enable() and #vim.fn.split(splits[1]) >= 2)
+                and vim.fn.split(splits[1])[2]
             or splits[1]
         local row = tonumber(splits[2])
         local col = tonumber(splits[3])
