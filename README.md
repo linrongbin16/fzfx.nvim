@@ -331,6 +331,17 @@ xnoremap <space>bf :\<C-U>FzfxBuffersV<CR>
 nnoremap <space>wbf :\<C-U>FzfxBuffersW<CR>
 " by yank text
 nnoremap <space>pbf :\<C-U>FzfxBuffersP<CR>
+
+" ======== git files ========
+
+" git files
+nnoremap <space>gf :\<C-U>FzfxGFiles<CR>
+" visual select
+xnoremap <space>gf :\<C-U>FzfxGFilesV<CR>
+" by cursor word
+nnoremap <space>wgf :\<C-U>FzfxGFilesW<CR>
+" by yank text
+nnoremap <space>pgf :\<C-U>FzfxGFilesP<CR>
 ```
 
 ### Lua
@@ -420,7 +431,26 @@ vim.keymap.set('n', '<space>wbf',
 -- yank text
 vim.keymap.set('n', '<space>pbf',
         '<cmd>FzfxBuffersP<cr>',
-        {silent=true, noremap=true, desc="Find buffers by cursor word"})
+        {silent=true, noremap=true, desc="Find buffers by yank text"})
+
+-- ======== git files ========
+
+-- git files
+vim.keymap.set('n', '<space>gf',
+        '<cmd>FzfxGFiles<cr>',
+        {silent=true, noremap=true, desc="Find git files"})
+-- visual select
+vim.keymap.set('x', '<space>gf',
+        "<cmd>FzfxGFilesV<cr>",
+        {silent=true, noremap=true, desc="Find git files"})
+-- cursor word
+vim.keymap.set('n', '<space>wgf',
+        '<cmd>FzfxGFilesW<cr>',
+        {silent=true, noremap=true, desc="Find git files by cursor word"})
+-- yank text
+vim.keymap.set('n', '<space>pgf',
+        '<cmd>FzfxGFilesP<cr>',
+        {silent=true, noremap=true, desc="Find git files by yank text"})
 ```
 
 ## Configuration
