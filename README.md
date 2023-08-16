@@ -172,7 +172,7 @@ Especially for git commands:
 
 > Note: command names can be configured, see [Configuration](#configuration).
 
-Here're some most useful builtin keys inside fzf terminal:
+Here're some most useful builtin keys bind to fzf:
 
 - Preview keys
   - `ctrl-l`: toggle preview.
