@@ -82,7 +82,7 @@ end
 
 -- fzf opts {
 
---- @return string[]|any[]
+--- @return FzfOpts
 local function generate_fzf_color_opts()
     if not conf.get_config().color.enable then
         return {}
@@ -105,7 +105,7 @@ local function generate_fzf_color_opts()
     return { { "--color", table.concat(builder, ",") } }
 end
 
---- @return string[]|any[]
+--- @return FzfOpts
 local function generate_fzf_icon_opts()
     if not conf.get_config().icon.enable then
         return {}
@@ -117,9 +117,9 @@ local function generate_fzf_icon_opts()
     }
 end
 
---- @param opts string[]
---- @param o string|string[]
---- @return string[]
+--- @param opts FzfOpts
+--- @param o FzfOpt
+--- @return FzfOpts
 local function append_fzf_opt(opts, o)
     if type(o) == "string" and string.len(o) > 0 then
         table.insert(opts, o)
@@ -136,8 +136,8 @@ local function append_fzf_opt(opts, o)
     return opts
 end
 
---- @param opts Config
---- @return string|nil
+--- @param opts FzfOpts
+--- @return string?
 local function make_fzf_opts(opts)
     if opts == nil or #opts == 0 then
         return nil
@@ -149,6 +149,8 @@ local function make_fzf_opts(opts)
     return table.concat(result, " ")
 end
 
+--- @param opts FzfOpts
+--- @return string?
 local function make_fzf_default_opts(opts)
     local result = {}
     if type(opts) == "table" and #opts > 0 then

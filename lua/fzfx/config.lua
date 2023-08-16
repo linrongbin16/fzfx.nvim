@@ -4,7 +4,10 @@ local default_fd_command =
     string.format("%s -cnever -tf -tl -L -i", constants.fd)
 local default_rg_command =
     string.format("%s --column -n --no-heading --color=always -S", constants.rg)
---- @type table<string, string|string[]>
+
+--- @alias FzfOpt string|string[]
+--- @alias FzfOpts FzfOpt[]
+--- @type table<string, FzfOpt>
 local default_fzf_opts = {
     multi = "--multi",
     select = { "--bind", "ctrl-e:select" },
