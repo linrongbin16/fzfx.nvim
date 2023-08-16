@@ -57,9 +57,13 @@ local function git_branches(query, bang, opts)
         shell.make_lua_command("git_branches", "provider.lua"),
         provider_switch.tempfile
     )
+    local git_log_command = git_branches_configs.previewers.log
+    local temp = vim.fn.tempname()
+    vim.fn.writefile({ git_log_command }, temp, "b")
     local preview_command = string.format(
-        "%s {}",
-        shell.make_lua_command("git_branches", "previewer.lua")
+        "%s %s {}",
+        shell.make_lua_command("git_branches", "previewer.lua"),
+        temp
     )
     local call_switch_provider_rpc_command = string.format(
         "%s %s",

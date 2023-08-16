@@ -457,7 +457,9 @@ local Defaults = {
             local_branch = "git branch",
             remote_branch = "git branch --remotes",
         },
-        previewer = {},
+        previewers = {
+            log = "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
+        },
         actions = {
             builtin = {
                 remote_mode = "ctrl-r",
