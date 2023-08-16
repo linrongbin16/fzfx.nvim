@@ -145,6 +145,17 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
 
     local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
+    local fzf_default_opts = helpers.make_fzf_opts(conf.get_config().fzf_opts)
+    local fzf_color_opts = helpers.make_fzf_color_opts()
+    if type(fzf_color_opts) == "table" and #fzf_color_opts == 2 then
+        fzf_default_opts = fzf_default_opts .. " " .. color_opt
+    end
+    local fzf_icon_opts = helpers.make_fzf_icon_opts()
+    if type(fzf_icon_opts) == "table" and #fzf_icon_opts > 0 then
+        for _, o in ipairs(fzf_icon_opts) do
+            fzf_default_opts = fzf_default_opts .. " " .. o
+        end
+    end
     vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_opts(conf.get_config().fzf_opts)
     vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(

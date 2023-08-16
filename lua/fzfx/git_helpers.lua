@@ -103,20 +103,20 @@ function GitCurrentBranchCommand:wrong()
     return command_result_wrong(self.result)
 end
 
---- @return string[]?
+--- @return string?
 function GitCurrentBranchCommand:value()
     if self:wrong() then
         return nil
     end
     return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-            and self.result.stdout
+            and self.result.stdout[1]
         or nil
 end
 
 local M = {
     GitRootCommand = GitRootCommand,
     GitBranchCommand = GitBranchCommand,
-    GitCurrentBranchCommand = GitCurrentBranchCommand
+    GitCurrentBranchCommand = GitCurrentBranchCommand,
 }
 
 return M

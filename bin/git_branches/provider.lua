@@ -34,6 +34,18 @@ if git_root_cmd:wrong() then
 end
 
 local git_current_branch_cmd = shell_helpers.GitCurrentBranchCommand:run()
+shell_helpers.log_debug(
+    "git_current_branch_cmd.result.stdout:%s",
+    vim.inspect(git_current_branch_cmd.result.stdout)
+)
+shell_helpers.log_debug(
+    "git_current_branch_cmd.result.stderr:%s",
+    vim.inspect(git_current_branch_cmd.result.stderr)
+)
+shell_helpers.log_debug(
+    "git_current_branch_cmd.result.exitcode:%s",
+    vim.inspect(git_current_branch_cmd.result.exitcode)
+)
 if git_current_branch_cmd:wrong() then
     shell_helpers.log_err(
         "|fzfx.bin.git_branches.provider| git_current_branch_cmd.wrong:%s",

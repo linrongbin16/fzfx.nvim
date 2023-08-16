@@ -146,16 +146,6 @@ local function make_fzf_opts(opts)
     for _, o in ipairs(opts) do
         append_fzf_opt(result, o)
     end
-    local color_opt = make_fzf_color_opts()
-    if type(color_opt) == "table" and #color_opt == 2 then
-        append_fzf_opt(result, color_opt)
-    end
-    local icon_opts = make_fzf_icon_opts()
-    if type(icon_opts) == "table" and #icon_opts > 0 then
-        for _, o in ipairs(icon_opts) do
-            append_fzf_opt(result, o)
-        end
-    end
     return table.concat(result, " ")
 end
 
@@ -264,6 +254,8 @@ end
 local M = {
     visual_select = visual_select,
     make_fzf_opts = make_fzf_opts,
+    make_fzf_color_opts = make_fzf_color_opts,
+    make_fzf_icon_opts = make_fzf_icon_opts,
     Switch = Switch,
     MultiSwitch = MultiSwitch,
 }
