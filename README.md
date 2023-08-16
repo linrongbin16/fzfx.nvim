@@ -252,6 +252,26 @@ Here're some most useful builtin keys inside fzf terminal:
     <td>FzfxBuffersP</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td rowspan="4">Git Files</td>
+    <td>FzfxGFiles</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4"></td>
+  </tr>
+  <tr>
+    <td>FzfxGFilesV</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxGFilesW</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGFilesP</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
