@@ -237,6 +237,7 @@ local M = {
     Command = require("fzfx.command").Command,
     GitRootCommand = require("fzfx.git_helpers").GitRootCommand,
     GitBranchCommand = require("fzfx.git_helpers").GitBranchCommand,
+    GitCurrentBranchCommand = require("fzfx.git_helpers").GitCurrentBranchCommand,
 }
 
 return M

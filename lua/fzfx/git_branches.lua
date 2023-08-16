@@ -76,9 +76,9 @@ local function git_branches(query, bang, opts)
     local current_branch = nil
     local git_root_cmd = git_helpers.GitRootCommand:run()
     if not git_root_cmd:wrong() then
-        local git_branch_cmd = git_helpers.GitBranchCommand:run()
-        if not git_branch_cmd:wrong() then
-            current_branch = git_branch_cmd:current_branch()
+        local git_current_branch_cmd = git_helpers.GitCurrentBranchCommand:run()
+        if not git_current_branch_cmd:wrong() then
+            current_branch = git_current_branch_cmd:value()
         end
     end
 

@@ -83,9 +83,40 @@ function GitBranchCommand:current_branch()
     return nil
 end
 
+--- @class GitCurrentBranchCommand
+--- @field result CommandResult?
+local GitCurrentBranchCommand = {
+    result = nil,
+}
+
+--- @return GitCurrentBranchCommand
+function GitCurrentBranchCommand:run()
+    -- git rev-parse --abbrev-ref HEAD
+    local cmd = Command:run({ "git", "rev-parse", "--abbrev-ref", "HEAD" })
+    return vim.tbl_deep_extend("force", vim.deepcopy(GitCurrentBranchCommand), {
+        result = cmd.result,
+    })
+end
+
+--- @return boolean
+function GitCurrentBranchCommand:wrong()
+    return command_result_wrong(self.result)
+end
+
+--- @return string[]?
+function GitCurrentBranchCommand:value()
+    if self:wrong() then
+        return nil
+    end
+    return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
+            and self.result.stdout
+        or nil
+end
+
 local M = {
     GitRootCommand = GitRootCommand,
     GitBranchCommand = GitBranchCommand,
+    GitCurrentBranchCommand = GitCurrentBranchCommand
 }
 
 return M
