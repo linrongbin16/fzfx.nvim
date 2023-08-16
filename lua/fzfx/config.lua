@@ -598,7 +598,7 @@ local Defaults = {
             -- https://symbl.cc/en/collections/special-symbols/
             -- •    U+2022                          &#8226;
             -- ✓    U+2713                          &#10003;  (default)
-            fzf_marker = "✓ ",
+            fzf_marker = "✓",
         },
     },
 
