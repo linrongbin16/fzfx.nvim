@@ -42,6 +42,9 @@ local function setup(options)
     -- git files
     require("fzfx.git_files").setup()
 
+    -- git branches
+    require("fzfx.git_branches").setup()
+
     -- yank history
     require("fzfx.yank_history").setup()
 end

@@ -14,8 +14,7 @@ shell_helpers.log_debug("provider:[%s]", provider)
 local cmd = shell_helpers.read_provider_command(provider) --[[@as string]]
 shell_helpers.log_debug("cmd:[%s]", cmd)
 
-local git_root_cmd =
-    shell_helpers.Command:run({ "git", "rev-parse", "--show-toplevel" })
+local git_root_cmd = shell_helpers.GitRootCommand:run()
 shell_helpers.log_debug(
     "git_root_cmd.result.stdout:%s",
     vim.inspect(git_root_cmd.result.stdout)
@@ -28,11 +27,7 @@ shell_helpers.log_debug(
     "git_root_cmd.result.exitcode:%s",
     vim.inspect(git_root_cmd.result.exitcode)
 )
-if
-    type(git_root_cmd.result.stderr) == "table"
-    and #git_root_cmd.result.stderr > 0
-    and git_root_cmd.result.exitcode ~= 0
-then
+if git_root_cmd:wrong() then
     return
 end
 

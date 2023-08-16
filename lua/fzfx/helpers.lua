@@ -82,12 +82,12 @@ end
 
 -- fzf opts {
 
---- @return string[]?
-local function make_fzf_color_opts()
-    if not conf.get_config().color.enable then
-        return nil
+--- @return FzfOpts
+local function generate_fzf_color_opts()
+    if type(conf.get_config().popup.fzf_color_opts) ~= "table" then
+        return {}
     end
-    local fzf_colors = conf.get_config().color.fzf
+    local fzf_colors = conf.get_config().popup.fzf_color_opts
     local builder = {}
     for name, opts in pairs(fzf_colors) do
         for i = 2, #opts do
@@ -102,24 +102,24 @@ local function make_fzf_color_opts()
         "|fzfx.helpers - make_fzf_color_opts| builder:%s",
         vim.inspect(builder)
     )
-    return { "--color", table.concat(builder, ",") }
+    return { { "--color", table.concat(builder, ",") } }
 end
 
---- @return string[]?
-local function make_fzf_icon_opts()
-    if not conf.get_config().icon.enable then
-        return nil
+--- @return FzfOpts
+local function generate_fzf_icon_opts()
+    if type(conf.get_config().popup.icon) ~= "table" then
+        return {}
     end
-    local icon_configs = conf.get_config().icon.fzf
+    local icon_configs = conf.get_config().popup.icon
     return {
-        { "--pointer", icon_configs.pointer },
-        { "--marker", icon_configs.marker },
+        { "--pointer", icon_configs.fzf_pointer },
+        { "--marker", icon_configs.fzf_marker },
     }
 end
 
---- @param opts string[]
---- @param o string|string[]
---- @return string[]
+--- @param opts FzfOpts
+--- @param o FzfOpt
+--- @return FzfOpts
 local function append_fzf_opt(opts, o)
     if type(o) == "string" and string.len(o) > 0 then
         table.insert(opts, o)
@@ -136,8 +136,8 @@ local function append_fzf_opt(opts, o)
     return opts
 end
 
---- @param opts Config
---- @return string|nil
+--- @param opts FzfOpts
+--- @return string?
 local function make_fzf_opts(opts)
     if opts == nil or #opts == 0 then
         return nil
@@ -146,11 +146,25 @@ local function make_fzf_opts(opts)
     for _, o in ipairs(opts) do
         append_fzf_opt(result, o)
     end
-    local color_opt = make_fzf_color_opts()
-    if type(color_opt) == "table" and #color_opt == 2 then
-        append_fzf_opt(result, color_opt)
+    return table.concat(result, " ")
+end
+
+--- @param opts FzfOpts
+--- @return string?
+local function make_fzf_default_opts(opts)
+    local result = {}
+    if type(opts) == "table" and #opts > 0 then
+        for _, o in ipairs(opts) do
+            append_fzf_opt(result, o)
+        end
     end
-    local icon_opts = make_fzf_icon_opts()
+    local color_opts = generate_fzf_color_opts()
+    if type(color_opts) == "table" and #color_opts > 0 then
+        for _, o in ipairs(color_opts) do
+            append_fzf_opt(result, o)
+        end
+    end
+    local icon_opts = generate_fzf_icon_opts()
     if type(icon_opts) == "table" and #icon_opts > 0 then
         for _, o in ipairs(icon_opts) do
             append_fzf_opt(result, o)
@@ -204,10 +218,69 @@ end
 
 -- provider switch }
 
+-- multi provider switch {
+
+--- @alias MultiSwitchKey string
+--- @alias MultiSwitchValue string
+
+--- @class MultiSwitch
+--- @field name string?
+--- @field map table<MultiSwitchKey, MultiSwitchValue>?
+--- @field tempfile string?
+local MultiSwitch = {
+    name = nil,
+    map = nil,
+    tempfile = nil,
+}
+
+--- @param name string
+--- @param map table<MultiSwitchKey, MultiSwitchValue>
+--- @param current MultiSwitchKey
+--- @return MultiSwitch
+function MultiSwitch:new(name, map, current)
+    local mswitch = vim.tbl_deep_extend("force", vim.deepcopy(MultiSwitch), {
+        name = name,
+        map = map,
+        tempfile = env.debug_enable() and path.join(
+            vim.fn.stdpath("data"),
+            "fzfx.nvim",
+            "multi_switch_" .. name
+        ) or vim.fn.tempname(),
+    })
+    log.ensure(
+        type(map[current]) == "string",
+        "|fzfx.helpers - MultiSwitch:new| map must contains current! map:%s, current:%s",
+        vim.inspect(map),
+        vim.inspect(current)
+    )
+    vim.fn.writefile({ map[current] }, mswitch.tempfile, "b")
+    log.debug(
+        "|fzfx.helpers - MultiSwitch:new| mswitch:%s, current:%s",
+        vim.inspect(mswitch),
+        vim.inspect(current)
+    )
+    return mswitch
+end
+
+--- @param current MultiSwitchKey
+function MultiSwitch:switch(current)
+    log.ensure(
+        type(self.map[current]) == "string",
+        "|fzfx.helpers - MultiSwitch:switch| self.map must contains current! self.map:%s, current:%s",
+        vim.inspect(self.map),
+        vim.inspect(current)
+    )
+    vim.fn.writefile({ self.map[current] }, self.tempfile, "b")
+end
+
+-- multi provider switch }
+
 local M = {
     visual_select = visual_select,
     make_fzf_opts = make_fzf_opts,
+    make_fzf_default_opts = make_fzf_default_opts,
     Switch = Switch,
+    MultiSwitch = MultiSwitch,
 }
 
 return M

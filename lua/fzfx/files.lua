@@ -16,16 +16,13 @@ local Context = {
     rmode_header = nil,
 }
 
---- @return string
-local function short_path()
-    local cwd_path = vim.fn.fnamemodify(vim.fn.getcwd(), ":~:.")
-    local shorten_path = vim.fn.pathshorten(cwd_path)
-    return shorten_path
-end
+--- @alias FilesOptKey "unrestricted"
+--- @alias FilesOptValue boolean
+--- @alias FilesOpts table<FilesOptKey, FilesOptValue>
 
 --- @param query string
 --- @param bang boolean
---- @param opts Config
+--- @param opts FilesOpts
 --- @return Launch
 local function files(query, bang, opts)
     local files_configs = conf.get_config().files
@@ -79,7 +76,7 @@ local function files(query, bang, opts)
         },
         {
             "--prompt",
-            short_path() .. " > ",
+            path.shorten() .. " > ",
         },
         {
             "--bind",
@@ -161,8 +158,7 @@ local function setup()
             return files(
                 opts.args,
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end
@@ -178,8 +174,7 @@ local function setup()
             return files(
                 selected,
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end
@@ -195,8 +190,7 @@ local function setup()
             return files(
                 word,
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end
@@ -214,8 +208,7 @@ local function setup()
                         and yank.regtext
                     or "",
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end

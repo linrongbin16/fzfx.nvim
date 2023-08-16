@@ -180,8 +180,7 @@ local function setup()
             return live_grep(
                 opts.args,
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end
@@ -197,8 +196,7 @@ local function setup()
             return live_grep(
                 selected,
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end
@@ -214,8 +212,7 @@ local function setup()
             return live_grep(
                 word,
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end
@@ -233,8 +230,7 @@ local function setup()
                         and yank.regtext
                     or "",
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end

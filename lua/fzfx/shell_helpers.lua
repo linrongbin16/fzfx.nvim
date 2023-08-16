@@ -113,7 +113,7 @@ end
 -- icon render {
 
 local DEVICONS_PATH = vim.env._FZFX_NVIM_DEVICON_PATH
-local UNKNOWN_FILE_ICON = vim.env._FZFX_NVIM_FILE_UNKNOWN_ICON
+local UNKNOWN_FILE_ICON = vim.env._FZFX_NVIM_UNKNOWN_FILE_ICON
 local FOLDER_ICON = vim.env._FZFX_NVIM_FILE_FOLDER_ICON
 local FOLDER_OPEN_ICON = vim.env._FZFX_NVIM_FILE_FOLDER_OPEN_ICON
 local DEVICONS = nil
@@ -235,6 +235,9 @@ local M = {
     render_line_with_icon = render_line_with_icon,
     render_delimiter_line_with_icon = render_delimiter_line_with_icon,
     Command = require("fzfx.command").Command,
+    GitRootCommand = require("fzfx.git_helpers").GitRootCommand,
+    GitBranchCommand = require("fzfx.git_helpers").GitBranchCommand,
+    GitCurrentBranchCommand = require("fzfx.git_helpers").GitCurrentBranchCommand,
 }
 
 return M

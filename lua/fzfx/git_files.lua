@@ -22,7 +22,7 @@ local function git_files(query, bang, opts)
     local git_files_configs = conf.get_config().git_files
 
     -- query command, both initial query + reload query
-    local provider_command = git_files_configs.providers.git
+    local provider_command = git_files_configs.providers.ls_files
     local temp = vim.fn.tempname()
     vim.fn.writefile({ provider_command }, temp, "b")
     local query_command = string.format(

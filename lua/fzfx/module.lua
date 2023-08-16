@@ -34,20 +34,21 @@ local function setup(options)
     vim.env._FZFX_NVIM_DEBUG_ENABLE = options.debug.enable and 1 or 0
 
     -- icon
-    if options.icon.enable then
+    if type(options.popup.icon) == "table" then
         local devicon_path =
             search_module_path("nvim-web-devicons", "nvim%-web%-devicons")
         log.debug("|fzfx.env - setup| devicon path:%s", devicon_path)
         if type(devicon_path) ~= "string" or string.len(devicon_path) == 0 then
             log.warn(
-                "error! you have configured 'icon.enable=true' while cannot find 'nvim-web-devicons' plugin!"
+                "error! you have configured 'popup.icon' while cannot find 'nvim-web-devicons' plugin!"
             )
         else
             vim.env._FZFX_NVIM_DEVICON_PATH = devicon_path
-            vim.env._FZFX_NVIM_FILE_UNKNOWN_ICON = options.icon.file.unknown
-            vim.env._FZFX_NVIM_FILE_FOLDER_ICON = options.icon.file.folder
+            vim.env._FZFX_NVIM_UNKNOWN_FILE_ICON =
+                options.popup.icon.unknown_file
+            vim.env._FZFX_NVIM_FILE_FOLDER_ICON = options.popup.icon.folder
             vim.env._FZFX_NVIM_FILE_FOLDER_OPEN_ICON =
-                options.icon.file.folder_open
+                options.popup.icon.folder_open
         end
     end
 
