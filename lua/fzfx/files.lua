@@ -134,12 +134,15 @@ end
 
 local function setup()
     local files_configs = conf.get_config().files
-
     log.debug(
         "|fzfx.files - setup| base_dir:%s, files_configs:%s",
         vim.inspect(path.base_dir()),
         vim.inspect(files_configs)
     )
+
+    if not files_configs then
+        return
+    end
 
     -- Context
     local umode_action = files_configs.actions.builtin.unrestricted_mode

@@ -30,9 +30,6 @@ local function setup(options)
     -- rpc server
     require("fzfx.server").setup()
 
-    -- yank history
-    require("fzfx.yank_history").setup()
-
     -- files
     require("fzfx.files").setup()
 
@@ -41,6 +38,12 @@ local function setup(options)
 
     -- buffers
     require("fzfx.buffers").setup()
+
+    -- git files
+    require("fzfx.git_files").setup()
+
+    -- yank history
+    require("fzfx.yank_history").setup()
 end
 
 local M = {

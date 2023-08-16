@@ -158,6 +158,9 @@ local function setup()
         vim.inspect(path.base_dir()),
         vim.inspect(live_grep_configs)
     )
+    if not live_grep_configs then
+        return
+    end
 
     local umode_action = live_grep_configs.actions.builtin.unrestricted_mode
     local rmode_action = live_grep_configs.actions.builtin.restricted_mode

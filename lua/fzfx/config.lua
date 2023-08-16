@@ -302,6 +302,71 @@ local Defaults = {
         },
     },
 
+    -- the 'Git Files' commands
+    git_files = {
+        commands = {
+            normal = {
+                {
+                    name = "FzfxGFiles",
+                    opts = {
+                        bang = true,
+                        nargs = "?",
+                        complete = "dir",
+                        desc = "Find git files",
+                    },
+                },
+            },
+            visual = {
+                {
+                    name = "FzfxGFilesV",
+                    opts = {
+                        bang = true,
+                        range = true,
+                        desc = "Find git files by visual select",
+                    },
+                },
+            },
+            cword = {
+                {
+                    name = "FzfxGFilesW",
+                    opts = {
+                        bang = true,
+                        desc = "Find git files by cursor word",
+                    },
+                },
+            },
+            put = {
+                {
+                    name = "FzfxGFilesP",
+                    opts = {
+                        bang = true,
+                        desc = "Find git files by yank text",
+                    },
+                },
+            },
+        },
+        providers = {
+            git = "git ls-files",
+        },
+        actions = {
+            builtin = {},
+            expect = {
+                ["esc"] = require("fzfx.action").nop,
+                ["enter"] = require("fzfx.action").edit,
+                ["double-click"] = require("fzfx.action").edit,
+            },
+        },
+        fzf_opts = {
+            default_fzf_opts.multi,
+            default_fzf_opts.select,
+            default_fzf_opts.deselect,
+            default_fzf_opts.select_all,
+            default_fzf_opts.deselect_all,
+            default_fzf_opts.toggle_preview,
+        },
+        other_opts = {},
+    },
+
     -- the 'Yank History' commands
     yank_history = {
         other_opts = {
@@ -407,12 +472,14 @@ local Defaults = {
             --     nf-fa-caret_right               \uf0da  (default)
             --     nf-weather-direction_right      \ue349
             --     nf-fa-long_arrow_right          \uf178
+            --     nf-oct-chevron_right            \uf460
+            --     nf-fa-chevron_right             \uf054
             --
             -- unicode:
             -- https://symbl.cc/en/collections/arrow-symbols/
             -- ➜    U+279C                          &#10140;
             -- ➤    U+27A4                          &#10148;
-            pointer = "➤ ",
+            pointer = "",
 
             -- nerd fonts:
             --     nf-fa-star                      \uf005
@@ -430,7 +497,7 @@ local Defaults = {
             -- https://symbl.cc/en/collections/special-symbols/
             -- •    U+2022                          &#8226;
             -- ✓    U+2713                          &#10003;  (default)
-            marker = " ",
+            marker = "✓ ",
         },
     },
 
