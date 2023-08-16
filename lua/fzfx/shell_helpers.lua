@@ -234,6 +234,7 @@ local M = {
     color_csi = color_csi,
     render_line_with_icon = render_line_with_icon,
     render_delimiter_line_with_icon = render_delimiter_line_with_icon,
+    Command = require("fzfx.command").Command,
 }
 
 return M

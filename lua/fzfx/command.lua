@@ -110,3 +110,9 @@ function Command:run(source, opts)
     end
     return c
 end
+
+local M = {
+    Command = Command,
+}
+
+return M

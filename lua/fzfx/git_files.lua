@@ -4,12 +4,8 @@ local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
 local Launch = require("fzfx.launch").Launch
 local shell = require("fzfx.shell")
-local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
-local server = require("fzfx.server")
 local yank_history = require("fzfx.yank_history")
-
-local Context = {}
 
 --- @return string
 local function short_path()
@@ -31,7 +27,7 @@ local function git_files(query, bang, opts)
     vim.fn.writefile({ provider_command }, temp, "b")
     local query_command = string.format(
         "%s %s",
-        shell.make_lua_command("files", "provider.lua"),
+        shell.make_lua_command("git_files", "provider.lua"),
         temp
     )
     local preview_command =
