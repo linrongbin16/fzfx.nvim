@@ -457,6 +457,7 @@ local Defaults = {
             local_branch = "git branch",
             remote_branch = "git branch --remotes",
         },
+        previewer = {},
         actions = {
             builtin = {
                 remote_mode = "ctrl-r",
@@ -482,21 +483,20 @@ local Defaults = {
         },
     },
 
-    -- basic fzf options
-    fzf_opts = {
-        "--ansi",
-        "--info=inline",
-        "--layout=reverse",
-        "--border=rounded",
-        "--height=100%",
-    },
+    popup = {
 
-    -- color
-    color = {
-        enable = true,
+        -- FZF_DEFAULT_OPTS
+        fzf_opts = {
+            "--ansi",
+            "--info=inline",
+            "--layout=reverse",
+            "--border=rounded",
+            "--height=100%",
+        },
 
-        -- fzf colors: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
-        fzf = {
+        -- fzf colors
+        -- see: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
+        fzf_color_opts = {
             fg = { "fg", "Normal" },
             bg = { "bg", "Normal" },
             hl = { "fg", "Comment" },
@@ -511,54 +511,49 @@ local Defaults = {
             spinner = { "fg", "Label" },
             header = { "fg", "Comment" },
         },
-    },
 
-    -- popup window options
-    -- implemented via float window, please check: https://neovim.io/doc/user/api.html#nvim_open_win()
-    win_opts = {
+        -- nvim float window options
+        -- see: https://neovim.io/doc/user/api.html#nvim_open_win()
+        win_opts = {
+            -- popup window height/width.
+            --
+            -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
+            --    e.g. popup height = h * lines, width = w * columns.
+            --
+            -- 2. if h/w > 1, evaluate as absolute height and width, directly pass to vim.api.nvim_open_win.
 
-        -- popup window height/width.
-        --
-        -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
-        --    e.g. popup height = h * lines, width = w * columns.
-        --
-        -- 2. if h/w > 1, evaluate as absolute height and width, directly pass to vim.api.nvim_open_win.
+            --- @type number
+            height = 0.85,
+            --- @type number
+            width = 0.85,
 
-        --- @type number
-        height = 0.85,
-        --- @type number
-        width = 0.85,
+            -- popup window position, by default popup window is right in the center of editor.
+            -- especially useful when popup window is too big and conflicts with command/status line at bottom.
+            --
+            -- 1. if -0.5 <= r/c <= 0.5, evaluate proportionally according to editor's lines and columns.
+            --    e.g. shift rows = r * lines, shift columns = c * columns.
+            --
+            -- 2. if r/c <= -1 or r/c >= 1, evaluate as absolute rows/columns to be shift.
+            --    e.g. you can easily set 'row = -vim.o.cmdheight' to move popup window to up 1~2 lines (based on your 'cmdheight' option).
+            --
+            -- 3. r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
 
-        -- popup window position, by default popup window is right in the center of editor.
-        -- especially useful when popup window is too big and conflicts with command/status line at bottom.
-        --
-        -- 1. if -0.5 <= r/c <= 0.5, evaluate proportionally according to editor's lines and columns.
-        --    e.g. shift rows = r * lines, shift columns = c * columns.
-        --
-        -- 2. if r/c <= -1 or r/c >= 1, evaluate as absolute rows/columns to be shift.
-        --    e.g. you can easily set 'row = -vim.o.cmdheight' to move popup window to up 1~2 lines (based on your 'cmdheight' option).
-        --
-        -- 3. r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
+            --- @type number
+            row = 0,
+            --- @type number
+            col = 0,
 
-        --- @type number
-        row = 0,
-        --- @type number
-        col = 0,
+            border = "none",
+            zindex = 51,
+        },
 
-        border = "none",
-        zindex = 51,
-    },
-
-    -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
-    -- unicode: https://symbl.cc/en/
-    icon = {
-        enable = true,
-
-        file = {
+        -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
+        -- unicode: https://symbl.cc/en/
+        icon = {
             -- nerd fonts:
             --     nf-fa-file_text_o               \uf0f6  (default)
             --     nf-fa-file_o                    \uf016
-            unknown = "",
+            unknown_file = "",
 
             -- nerd fonts:
             --     nf-custom-folder                \ue5ff (default)
@@ -571,9 +566,7 @@ local Defaults = {
             --     nf-fa-folder_open               \uf07c
             -- 󰝰    nf-md-folder_open               \udb81\udf70
             folder_open = "",
-        },
 
-        fzf = {
             -- nerd fonts:
             --     nf-oct-arrow_right              \uf432
             --     nf-cod-arrow_right              \uea9c
@@ -587,7 +580,7 @@ local Defaults = {
             -- https://symbl.cc/en/collections/arrow-symbols/
             -- ➜    U+279C                          &#10140;
             -- ➤    U+27A4                          &#10148;
-            pointer = "",
+            fzf_pointer = "",
 
             -- nerd fonts:
             --     nf-fa-star                      \uf005
@@ -605,7 +598,7 @@ local Defaults = {
             -- https://symbl.cc/en/collections/special-symbols/
             -- •    U+2022                          &#8226;
             -- ✓    U+2713                          &#10003;  (default)
-            marker = "✓ ",
+            fzf_marker = "✓ ",
         },
     },
 

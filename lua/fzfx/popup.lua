@@ -285,7 +285,7 @@ function Popup:new(win_opts)
     --- @type PopupOpts
     local merged_win_opts = vim.tbl_deep_extend(
         "force",
-        vim.deepcopy(conf.get_config().win_opts),
+        vim.deepcopy(conf.get_config().popup.win_opts),
         vim.deepcopy(win_opts) or {}
     )
     local popup_opts = make_popup_window_opts(merged_win_opts)
