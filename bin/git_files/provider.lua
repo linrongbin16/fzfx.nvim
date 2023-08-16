@@ -17,15 +17,15 @@ shell_helpers.log_debug("cmd:[%s]", cmd)
 local git_root_cmd =
     shell_helpers.Command:run({ "git", "rev-parse", "--show-toplevel" })
 shell_helpers.log_debug(
-    "git_root_cmd.result.stdout:[%s]",
+    "git_root_cmd.result.stdout:%s",
     vim.inspect(git_root_cmd.result.stdout)
 )
 shell_helpers.log_debug(
-    "git_root_cmd.result.stderr:[%s]",
+    "git_root_cmd.result.stderr:%s",
     vim.inspect(git_root_cmd.result.stderr)
 )
 shell_helpers.log_debug(
-    "git_root_cmd.result.exitcode:[%s]",
+    "git_root_cmd.result.exitcode:%s",
     vim.inspect(git_root_cmd.result.exitcode)
 )
 if

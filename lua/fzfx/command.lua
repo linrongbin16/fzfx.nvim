@@ -49,7 +49,9 @@ function Command:run(source, opts)
     local function on_stdout(chanid, data, name)
         if type(data) == "table" then
             for _, d in ipairs(data) do
-                table.insert(c.result.stdout, d)
+                if type(d) == "string" and string.len(d) > 0 then
+                    table.insert(c.result.stdout, d)
+                end
             end
         end
     end
@@ -57,7 +59,9 @@ function Command:run(source, opts)
     local function on_stderr(chanid, data, name)
         if type(data) == "table" then
             for _, d in ipairs(data) do
-                table.insert(c.result.stderr, d)
+                if type(d) == "string" and string.len(d) > 0 then
+                    table.insert(c.result.stderr, d)
+                end
             end
         end
     end
