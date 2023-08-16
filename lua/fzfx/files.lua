@@ -158,8 +158,7 @@ local function setup()
             return files(
                 opts.args,
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end
@@ -175,8 +174,7 @@ local function setup()
             return files(
                 selected,
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end
@@ -192,8 +190,7 @@ local function setup()
             return files(
                 word,
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end
@@ -211,8 +208,7 @@ local function setup()
                         and yank.regtext
                     or "",
                 opts.bang,
-                command_configs.unrestricted and { unrestricted = true }
-                    or { unrestricted = false }
+                { unrestricted = command_configs.unrestricted }
             )
         end, command_configs.opts)
     end

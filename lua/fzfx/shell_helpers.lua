@@ -235,6 +235,8 @@ local M = {
     render_line_with_icon = render_line_with_icon,
     render_delimiter_line_with_icon = render_delimiter_line_with_icon,
     Command = require("fzfx.command").Command,
+    GitRootCommand = require("fzfx.git_helpers").GitRootCommand,
+    GitBranchCommand = require("fzfx.git_helpers").GitBranchCommand,
 }
 
 return M

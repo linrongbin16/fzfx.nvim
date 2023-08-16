@@ -8,6 +8,7 @@ local helpers = require("fzfx.helpers")
 local yank_history = require("fzfx.yank_history")
 local color = require("fzfx.color")
 local server = require("fzfx.server")
+local git_helpers = require("fzfx.git_helpers")
 
 local Context = {
     --- @type string|nil
@@ -16,7 +17,7 @@ local Context = {
     local_header = nil,
 }
 
---- @alias GitBranchesOptKey "local"
+--- @alias GitBranchesOptKey "remote"
 --- @alias GitBranchesOptValue boolean
 --- @alias GitBranchesOpts table<GitBranchesOptKey, GitBranchesOptValue>
 
@@ -34,15 +35,17 @@ local function git_branches(query, bang, opts)
 
     local provider_switch = helpers.Switch:new(
         "git_branches_provider",
-        opts.local and git_branches_configs.providers.local_branch
-            or git_branches_configs.providers.remote_branch,
-        opts.local and git_branches_configs.providers.remote_branch
-            or git_branches_configs.providers.local_branch
+        opts.remote and git_branches_configs.providers.remote_branch
+            or git_branches_configs.providers.local_branch,
+        opts.remote and git_branches_configs.providers.local_branch
+            or git_branches_configs.providers.remote_branch
     )
 
     -- rpc callback
     local function switch_provider_rpc_callback()
-        log.debug("|fzfx.git_branches - git_branches.switch_provider_rpc_callback|")
+        log.debug(
+            "|fzfx.git_branches - git_branches.switch_provider_rpc_callback|"
+        )
         provider_switch:switch()
     end
     local switch_provider_rpc_callback_id =
@@ -54,25 +57,83 @@ local function git_branches(query, bang, opts)
         shell.make_lua_command("git_branches", "provider.lua"),
         provider_switch.tempfile
     )
-    local preview_command =
-        string.format("%s {}", shell.make_lua_command("git_branches", "previewer.lua"))
-    log.debug(
-        "|fzfx.git_branches - git_branches| query_command:%s, preview_command:%s",
-        vim.inspect(query_command),
-        vim.inspect(preview_command)
+    local preview_command = string.format(
+        "%s {}",
+        shell.make_lua_command("git_branches", "previewer.lua")
     )
+    local call_switch_provider_rpc_command = string.format(
+        "%s %s",
+        shell.make_lua_command("rpc", "client.lua"),
+        switch_provider_rpc_callback_id
+    )
+    log.debug(
+        "|fzfx.git_branches - git_branches| query_command:%s, preview_command:%s, call_switch_provider_rpc_command:%s",
+        vim.inspect(query_command),
+        vim.inspect(preview_command),
+        vim.inspect(call_switch_provider_rpc_command)
+    )
+
+    local current_branch = nil
+    local git_root_cmd = git_helpers.GitRootCommand:run()
+    if not git_root_cmd:wrong() then
+        local git_branch_cmd = git_helpers.GitBranchCommand:run()
+        if not git_branch_cmd:wrong() then
+            current_branch = git_branch_cmd:current_branch()
+        end
+    end
 
     local fzf_opts = {
         { "--query", query },
         {
+            "--header",
+            opts.remote and Context.local_header or Context.remote_header,
+        },
+        {
             "--prompt",
             "GBranches > ",
+        },
+        {
+            "--bind",
+            string.format(
+                "start:unbind(%s)",
+                opts.remote and remote_action or local_action
+            ),
+        },
+        {
+            -- remote action: swap provider, change rmode header, rebind rmode action, reload query
+            "--bind",
+            string.format(
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                remote_action,
+                remote_action,
+                call_switch_provider_rpc_command,
+                Context.local_header,
+                local_action,
+                query_command
+            ),
+        },
+        {
+            -- local action: swap provider, change umode header, rebind umode action, reload query
+            "--bind",
+            string.format(
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                local_action,
+                local_action,
+                call_switch_provider_rpc_command,
+                Context.remote_header,
+                remote_action,
+                query_command
+            ),
         },
         {
             "--preview",
             preview_command,
         },
     }
+    if type(current_branch) == "string" and string.len(current_branch) > 0 then
+        table.insert(fzf_opts, "--header-lines=1")
+    end
+
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(git_branches_configs.fzf_opts))
     local actions = git_branches_configs.actions.expect
@@ -108,7 +169,11 @@ local function setup()
                 vim.inspect(command_configs.name),
                 vim.inspect(opts)
             )
-            return git_branches(opts.args, opts.bang)
+            return git_branches(
+                opts.args,
+                opts.bang,
+                { remote = command_configs.remote }
+            )
         end, command_configs.opts)
     end
     for _, command_configs in pairs(git_branches_configs.commands.visual) do
@@ -120,7 +185,11 @@ local function setup()
                 vim.inspect(selected),
                 vim.inspect(opts)
             )
-            return git_branches(selected, opts.bang)
+            return git_branches(
+                selected,
+                opts.bang,
+                { remote = command_configs.remote }
+            )
         end, command_configs.opts)
     end
     for _, command_configs in pairs(git_branches_configs.commands.cword) do
@@ -132,7 +201,11 @@ local function setup()
                 vim.inspect(word),
                 vim.inspect(opts)
             )
-            return git_branches(word, opts.bang)
+            return git_branches(
+                word,
+                opts.bang,
+                { remote = command_configs.remote }
+            )
         end, command_configs.opts)
     end
     for _, command_configs in pairs(git_branches_configs.commands.put) do
@@ -148,7 +221,8 @@ local function setup()
                 (yank ~= nil and type(yank.regtext) == "string")
                         and yank.regtext
                     or "",
-                opts.bang
+                opts.bang,
+                { remote = command_configs.remote }
             )
         end, command_configs.opts)
     end

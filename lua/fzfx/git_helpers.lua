@@ -67,8 +67,25 @@ function GitBranchCommand:value()
     return self.result.stdout
 end
 
+--- @return string?
+function GitBranchCommand:current_branch()
+    if self:wrong() then
+        return nil
+    end
+    if type(self.result.stdout) == "table" and #self.result.stdout > 0 then
+        for _, out in ipairs(self.result.stdout) do
+            local trim_out = vim.fn.trim(out)
+            if string.len(trim_out) > 0 and trim_out[1] == "*" then
+                return trim_out
+            end
+        end
+    end
+    return nil
+end
+
 local M = {
     GitRootCommand = GitRootCommand,
+    GitBranchCommand = GitBranchCommand,
 }
 
 return M

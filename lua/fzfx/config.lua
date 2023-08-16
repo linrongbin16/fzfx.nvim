@@ -374,39 +374,78 @@ local Defaults = {
             normal = {
                 {
                     name = "FzfxGBranches",
+                    remote = false,
                     opts = {
                         bang = true,
                         nargs = "?",
                         complete = "dir",
-                        desc = "Find git branches",
+                        desc = "Find local git branches",
+                    },
+                },
+                {
+                    name = "FzfxGBranchesR",
+                    remote = true,
+                    opts = {
+                        bang = true,
+                        nargs = "?",
+                        complete = "dir",
+                        desc = "Find remote git branches",
                     },
                 },
             },
             visual = {
                 {
                     name = "FzfxGBranchesV",
+                    remote = false,
                     opts = {
                         bang = true,
                         range = true,
-                        desc = "Find git branches by visual select",
+                        desc = "Find local git branches by visual select",
+                    },
+                },
+                {
+                    name = "FzfxGBranchesRV",
+                    remote = true,
+                    opts = {
+                        bang = true,
+                        range = true,
+                        desc = "Find remote git branches by visual select",
                     },
                 },
             },
             cword = {
                 {
                     name = "FzfxGBranchesW",
+                    remote = false,
                     opts = {
                         bang = true,
-                        desc = "Find git branches by cursor word",
+                        desc = "Find local git branches by cursor word",
+                    },
+                },
+                {
+                    name = "FzfxGBranchesRW",
+                    remote = true,
+                    opts = {
+                        bang = true,
+                        desc = "Find remote git branches by cursor word",
                     },
                 },
             },
             put = {
                 {
                     name = "FzfxGBranchesP",
+                    remote = false,
                     opts = {
                         bang = true,
-                        desc = "Find git branches by yank text",
+                        desc = "Find local git branches by yank text",
+                    },
+                },
+                {
+                    name = "FzfxGBranchesRP",
+                    remote = true,
+                    opts = {
+                        bang = true,
+                        desc = "Find remote git branches by yank text",
                     },
                 },
             },
