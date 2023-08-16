@@ -82,10 +82,10 @@ end
 
 -- fzf opts {
 
---- @return string[]?
-local function make_fzf_color_opts()
+--- @return string[]|any[]
+local function generate_fzf_color_opts()
     if not conf.get_config().color.enable then
-        return nil
+        return {}
     end
     local fzf_colors = conf.get_config().color.fzf
     local builder = {}
@@ -102,13 +102,13 @@ local function make_fzf_color_opts()
         "|fzfx.helpers - make_fzf_color_opts| builder:%s",
         vim.inspect(builder)
     )
-    return { "--color", table.concat(builder, ",") }
+    return { { "--color", table.concat(builder, ",") } }
 end
 
---- @return string[]?
-local function make_fzf_icon_opts()
+--- @return string[]|any[]
+local function generate_fzf_icon_opts()
     if not conf.get_config().icon.enable then
-        return nil
+        return {}
     end
     local icon_configs = conf.get_config().icon.fzf
     return {
@@ -145,6 +145,28 @@ local function make_fzf_opts(opts)
     local result = {}
     for _, o in ipairs(opts) do
         append_fzf_opt(result, o)
+    end
+    return table.concat(result, " ")
+end
+
+local function make_fzf_default_opts(opts)
+    local result = {}
+    if type(opts) == "table" and #opts > 0 then
+        for _, o in ipairs(opts) do
+            append_fzf_opt(result, o)
+        end
+    end
+    local color_opts = generate_fzf_color_opts()
+    if type(color_opts) == "table" and #color_opts > 0 then
+        for _, o in ipairs(color_opts) do
+            append_fzf_opt(result, o)
+        end
+    end
+    local icon_opts = generate_fzf_icon_opts()
+    if type(icon_opts) == "table" and #icon_opts > 0 then
+        for _, o in ipairs(icon_opts) do
+            append_fzf_opt(result, o)
+        end
     end
     return table.concat(result, " ")
 end
@@ -254,8 +276,7 @@ end
 local M = {
     visual_select = visual_select,
     make_fzf_opts = make_fzf_opts,
-    make_fzf_color_opts = make_fzf_color_opts,
-    make_fzf_icon_opts = make_fzf_icon_opts,
+    make_fzf_default_opts = make_fzf_default_opts,
     Switch = Switch,
     MultiSwitch = MultiSwitch,
 }
