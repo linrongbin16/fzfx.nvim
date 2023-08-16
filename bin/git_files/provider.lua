@@ -31,6 +31,7 @@ shell_helpers.log_debug(
 if
     type(git_root_cmd.result.stderr) == "table"
     and #git_root_cmd.result.stderr > 0
+    and git_root_cmd.result.exitcode ~= 0
 then
     return
 end
