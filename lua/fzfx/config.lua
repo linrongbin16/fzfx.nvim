@@ -285,8 +285,8 @@ local Defaults = {
             },
             expect = {
                 ["esc"] = require("fzfx.action").nop,
-                ["enter"] = require("fzfx.action").edit,
-                ["double-click"] = require("fzfx.action").edit,
+                ["enter"] = require("fzfx.action").buffer,
+                ["double-click"] = require("fzfx.action").buffer,
             },
         },
         fzf_opts = {
