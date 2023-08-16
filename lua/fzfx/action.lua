@@ -100,6 +100,14 @@ end
 
 local function git_checkout(lines)
     log.debug("|fzfx.action - git_checkout| lines:%s", vim.inspect(lines))
+    if type(lines) == "table" and #lines > 0 then
+        local last_line = lines[#lines]
+        if type(last_line) == "string" and string.len(last_line) > 0 then
+            vim.cmd(
+                vim.fn.trim(string.format([[ !git checkout %s ]], last_line))
+            )
+        end
+    end
 end
 
 local M = {

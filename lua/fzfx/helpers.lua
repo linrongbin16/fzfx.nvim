@@ -204,10 +204,68 @@ end
 
 -- provider switch }
 
+-- multi provider switch {
+
+--- @alias MultiSwitchKey string
+--- @alias MultiSwitchValue string
+
+--- @class MultiSwitch
+--- @field name string?
+--- @field map table<MultiSwitchKey, MultiSwitchValue>?
+--- @field tempfile string?
+local MultiSwitch = {
+    name = nil,
+    map = nil,
+    tempfile = nil,
+}
+
+--- @param name string
+--- @param map table<MultiSwitchKey, MultiSwitchValue>
+--- @param current MultiSwitchKey
+--- @return MultiSwitch
+function MultiSwitch:new(name, map, current)
+    local mswitch = vim.tbl_deep_extend("force", vim.deepcopy(MultiSwitch), {
+        name = name,
+        map = map,
+        tempfile = env.debug_enable() and path.join(
+            vim.fn.stdpath("data"),
+            "fzfx.nvim",
+            "multi_switch_" .. name
+        ) or vim.fn.tempname(),
+    })
+    log.ensure(
+        type(map[current]) == "string",
+        "|fzfx.helpers - MultiSwitch:new| map must contains current! map:%s, current:%s",
+        vim.inspect(map),
+        vim.inspect(current)
+    )
+    vim.fn.writefile({ map[current] }, mswitch.tempfile, "b")
+    log.debug(
+        "|fzfx.helpers - MultiSwitch:new| mswitch:%s, current:%s",
+        vim.inspect(mswitch),
+        vim.inspect(current)
+    )
+    return mswitch
+end
+
+--- @param current MultiSwitchKey
+function MultiSwitch:switch(current)
+    log.ensure(
+        type(self.map[current]) == "string",
+        "|fzfx.helpers - MultiSwitch:switch| self.map must contains current! self.map:%s, current:%s",
+        vim.inspect(self.map),
+        vim.inspect(current)
+    )
+    vim.fn.writefile({ self.map[current] }, self.tempfile, "b")
+end
+
+-- multi provider switch }
+
 local M = {
     visual_select = visual_select,
     make_fzf_opts = make_fzf_opts,
     Switch = Switch,
+    MultiSwitch = MultiSwitch,
 }
 
 return M

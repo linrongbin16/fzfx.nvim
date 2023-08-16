@@ -166,6 +166,10 @@ Commands are named following below rules:
 - The cursor word variant is named with `W` suffix.
 - The yank text variant is named with `P` suffix (just like press the `p` key).
 
+Especially for git commands:
+
+- The remote git branch variant is named with `R` suffix.
+
 > Note: command names can be configured, see [Configuration](#configuration).
 
 Here're some most useful builtin keys inside fzf terminal:

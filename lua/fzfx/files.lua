@@ -16,16 +16,13 @@ local Context = {
     rmode_header = nil,
 }
 
---- @return string
-local function short_path()
-    local cwd_path = vim.fn.fnamemodify(vim.fn.getcwd(), ":~:.")
-    local shorten_path = vim.fn.pathshorten(cwd_path)
-    return shorten_path
-end
+--- @alias FilesOptKey "unrestricted"
+--- @alias FilesOptValue boolean
+--- @alias FilesOpts table<FilesOptKey, FilesOptValue>
 
 --- @param query string
 --- @param bang boolean
---- @param opts Config
+--- @param opts FilesOpts
 --- @return Launch
 local function files(query, bang, opts)
     local files_configs = conf.get_config().files
@@ -79,7 +76,7 @@ local function files(query, bang, opts)
         },
         {
             "--prompt",
-            short_path() .. " > ",
+            path.shorten() .. " > ",
         },
         {
             "--bind",

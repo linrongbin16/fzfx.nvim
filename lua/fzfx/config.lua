@@ -12,6 +12,7 @@ local default_fzf_opts = {
     select_all = { "--bind", "ctrl-a:select-all" },
     deselect_all = { "--bind", "alt-a:deselect-all" },
     toggle_preview = { "--bind", "ctrl-l:toggle-preview" },
+    no_multi = "--no-multi",
 }
 
 --- @alias Config table<string, any>
@@ -346,7 +347,7 @@ local Defaults = {
             },
         },
         providers = {
-            git = "git ls-files",
+            ls_files = "git ls-files",
         },
         actions = {
             builtin = {},
@@ -362,6 +363,71 @@ local Defaults = {
             default_fzf_opts.deselect,
             default_fzf_opts.select_all,
             default_fzf_opts.deselect_all,
+            default_fzf_opts.toggle_preview,
+        },
+        other_opts = {},
+    },
+
+    -- the 'Git Branches' commands
+    git_branches = {
+        commands = {
+            normal = {
+                {
+                    name = "FzfxGBranches",
+                    opts = {
+                        bang = true,
+                        nargs = "?",
+                        complete = "dir",
+                        desc = "Find git branches",
+                    },
+                },
+            },
+            visual = {
+                {
+                    name = "FzfxGBranchesV",
+                    opts = {
+                        bang = true,
+                        range = true,
+                        desc = "Find git branches by visual select",
+                    },
+                },
+            },
+            cword = {
+                {
+                    name = "FzfxGBranchesW",
+                    opts = {
+                        bang = true,
+                        desc = "Find git branches by cursor word",
+                    },
+                },
+            },
+            put = {
+                {
+                    name = "FzfxGBranchesP",
+                    opts = {
+                        bang = true,
+                        desc = "Find git branches by yank text",
+                    },
+                },
+            },
+        },
+        providers = {
+            local_branch = "git branch",
+            remote_branch = "git branch --remotes",
+        },
+        actions = {
+            builtin = {
+                remote_mode = "ctrl-r",
+                local_mode = "ctrl-o",
+            },
+            expect = {
+                ["esc"] = require("fzfx.action").nop,
+                ["enter"] = require("fzfx.action").git_checkout,
+                ["double-click"] = require("fzfx.action").git_checkout,
+            },
+        },
+        fzf_opts = {
+            default_fzf_opts.no_multi,
             default_fzf_opts.toggle_preview,
         },
         other_opts = {},
