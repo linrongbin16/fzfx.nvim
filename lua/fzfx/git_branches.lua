@@ -86,9 +86,8 @@ local function git_branches(query, bang, opts)
         end
     end
     log.debug(
-        "|fzfx.git_branches - git_branches| git_root_cmd:%s, git_current_branch_cmd:%s, current_branch:%s",
+        "|fzfx.git_branches - git_branches| git_root_cmd:%s, current_branch:%s",
         vim.inspect(git_root_cmd),
-        vim.inspect(git_current_branch_cmd),
         vim.inspect(current_branch)
     )
 
