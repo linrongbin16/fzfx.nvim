@@ -288,7 +288,7 @@ Especially for git commands:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
+    <td rowspan="4">1. Use `enter` to checkout branch</td>
   </tr>
   <tr>
     <td>FzfxGBranches(R)V</td>
