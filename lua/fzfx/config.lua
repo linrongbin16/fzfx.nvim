@@ -10,9 +10,11 @@ local default_rg_command =
 --- @type table<string, FzfOpt>
 local fzf_opt_candidates = {
     multi = "--multi",
-    toggle = { "--bind", "ctrl-e:toggle" },
-    toggle_all = { "--bind", "ctrl-a:toggle-all" },
-    toggle_preview = { "--bind", "alt-p:toggle-preview" },
+    toggle = "--bind=ctrl-e:toggle",
+    toggle_all = "--bind=ctrl-a:toggle-all",
+    toggle_preview = "--bind=alt-p:toggle-preview",
+    preview_half_page_down = "--bind=ctrl-f:preview-half-page-down",
+    preview_half_page_up = "--bind=ctrl-b:preview-half-page-up",
     no_multi = "--no-multi",
 }
 
@@ -121,6 +123,8 @@ local Defaults = {
             fzf_opt_candidates.multi,
             fzf_opt_candidates.toggle,
             fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.preview_half_page_down,
+            fzf_opt_candidates.preview_half_page_up,
             fzf_opt_candidates.toggle_preview,
         },
     },
@@ -224,6 +228,8 @@ local Defaults = {
             fzf_opt_candidates.multi,
             fzf_opt_candidates.toggle,
             fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.preview_half_page_down,
+            fzf_opt_candidates.preview_half_page_up,
             fzf_opt_candidates.toggle_preview,
         },
         other_opts = {
@@ -291,6 +297,8 @@ local Defaults = {
             fzf_opt_candidates.multi,
             fzf_opt_candidates.toggle,
             fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.preview_half_page_down,
+            fzf_opt_candidates.preview_half_page_up,
             fzf_opt_candidates.toggle_preview,
         },
         other_opts = {
@@ -356,6 +364,8 @@ local Defaults = {
             fzf_opt_candidates.multi,
             fzf_opt_candidates.toggle,
             fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.preview_half_page_down,
+            fzf_opt_candidates.preview_half_page_up,
             fzf_opt_candidates.toggle_preview,
         },
         other_opts = {},
@@ -463,6 +473,8 @@ local Defaults = {
         },
         fzf_opts = {
             fzf_opt_candidates.no_multi,
+            fzf_opt_candidates.preview_half_page_down,
+            fzf_opt_candidates.preview_half_page_up,
             fzf_opt_candidates.toggle_preview,
         },
         other_opts = {},
