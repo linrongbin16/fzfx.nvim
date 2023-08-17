@@ -65,9 +65,7 @@ shell_helpers.log_ensure(
 for line in p:lines("*line") do
     -- shell_helpers.log_debug("line:%s", vim.inspect(line))
     if string.len(line) > 0 then
-        if vim.fn.trim(line):sub(1, 1) == "*" then
-            current_branch = line
-        else
+        if vim.fn.trim(line):sub(1, 1) ~= "*" then
             table.insert(other_branches, line)
         end
     end
