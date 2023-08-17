@@ -20,6 +20,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#commands)
+  - [Binding Keys](#binding-keys)
 - [Recommended Key Mappings](#recommended-key-mappings)
   - [Vimscript](#vimscript)
   - [Lua](#lua)
@@ -172,15 +173,13 @@ Especially for git commands:
 
 > Note: command names can be configured, see [Configuration](#configuration).
 
-Here're some most useful builtin keys bind to fzf:
+### Binding Keys
 
 - Preview keys
-  - `ctrl-l`: toggle preview.
+  - `alt-p`: toggle preview.
 - Multi keys
-  - `ctrl-e`: select.
-  - `ctrl-d`: deselect.
-  - `ctrl-a`: select all.
-  - `alt-a`: deselect all.
+  - `ctrl-e`: toggle(select).
+  - `ctrl-a`: toggle(select all).
 
 > Note: builtin keys can be configured, see [Configuration](#configuration).
 
