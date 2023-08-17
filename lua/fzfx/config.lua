@@ -543,7 +543,7 @@ local Defaults = {
         -- unicode: https://symbl.cc/en/
         icon = {
             -- nerd fonts:
-            --     nf-fa-file_text_o               \uf0f6  (default)
+            --     nf-fa-file_text_o               \uf0f6 (default)
             --     nf-fa-file_o                    \uf016
             unknown_file = "",
 
@@ -562,11 +562,11 @@ local Defaults = {
             -- nerd fonts:
             --     nf-oct-arrow_right              \uf432
             --     nf-cod-arrow_right              \uea9c
-            --     nf-fa-caret_right               \uf0da  (default)
+            --     nf-fa-caret_right               \uf0da
             --     nf-weather-direction_right      \ue349
             --     nf-fa-long_arrow_right          \uf178
             --     nf-oct-chevron_right            \uf460
-            --     nf-fa-chevron_right             \uf054
+            --     nf-fa-chevron_right             \uf054 (default)
             --
             -- unicode:
             -- https://symbl.cc/en/collections/arrow-symbols/
@@ -589,7 +589,7 @@ local Defaults = {
             -- https://symbl.cc/en/collections/list-bullets/
             -- https://symbl.cc/en/collections/special-symbols/
             -- •    U+2022                          &#8226;
-            -- ✓    U+2713                          &#10003;  (default)
+            -- ✓    U+2713                          &#10003; (default)
             fzf_marker = "✓",
         },
     },
