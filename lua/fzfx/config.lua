@@ -18,6 +18,9 @@ local fzf_opt_candidates = {
     no_multi = "--no-multi",
 }
 
+local default_git_log_pretty =
+    "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+
 --- @alias Config table<string, any>
 
 --- @type Config
@@ -458,7 +461,10 @@ local Defaults = {
             remote_branch = "git branch --remotes",
         },
         previewers = {
-            log = "git log --pretty='%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s' --graph --date=relative --color=always",
+            log = string.format(
+                "git log --pretty=%s --graph --date=relative --color=always",
+                vim.fn.shellescape(default_git_log_pretty)
+            ),
             -- log = "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
             -- log = "git log --graph --color=always --date=relative",
         },
