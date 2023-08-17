@@ -86,7 +86,10 @@ local function log(level, msg)
         name = Configs.name .. " "
     end
     local msg_lines = vim.split(msg, "\n")
-    if Configs.console_log then
+    if
+        Configs.console_log
+        and vim.log.levels[level] >= vim.log.levels[LogLevel.INFO]
+    then
         local msg_chunks = {}
         for _, mline in ipairs(msg_lines) do
             table.insert(
