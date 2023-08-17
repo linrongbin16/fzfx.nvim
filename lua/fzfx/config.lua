@@ -277,7 +277,7 @@ local Defaults = {
         actions = {
             builtin = {
                 delete_buffer = {
-                    "ctrl-x",
+                    "ctrl-d",
                     require("fzfx.action").bdelete,
                 },
             },
