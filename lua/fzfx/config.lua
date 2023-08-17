@@ -8,13 +8,11 @@ local default_rg_command =
 --- @alias FzfOpt string|string[]
 --- @alias FzfOpts FzfOpt[]
 --- @type table<string, FzfOpt>
-local default_fzf_opts = {
+local fzf_opt_candidates = {
     multi = "--multi",
-    select = { "--bind", "ctrl-e:select" },
-    deselect = { "--bind", "ctrl-d:deselect" },
-    select_all = { "--bind", "ctrl-a:select-all" },
-    deselect_all = { "--bind", "alt-a:deselect-all" },
-    toggle_preview = { "--bind", "ctrl-l:toggle-preview" },
+    toggle = { "--bind", "ctrl-e:toggle" },
+    toggle_all = { "--bind", "ctrl-a:toggle-all" },
+    toggle_preview = { "--bind", "alt-p:toggle-preview" },
     no_multi = "--no-multi",
 }
 
@@ -120,12 +118,10 @@ local Defaults = {
             },
         },
         fzf_opts = {
-            default_fzf_opts.multi,
-            default_fzf_opts.select,
-            default_fzf_opts.deselect,
-            default_fzf_opts.select_all,
-            default_fzf_opts.deselect_all,
-            default_fzf_opts.toggle_preview,
+            fzf_opt_candidates.multi,
+            fzf_opt_candidates.toggle,
+            fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.toggle_preview,
         },
     },
 
@@ -225,12 +221,10 @@ local Defaults = {
             },
         },
         fzf_opts = {
-            default_fzf_opts.multi,
-            default_fzf_opts.select,
-            default_fzf_opts.deselect,
-            default_fzf_opts.select_all,
-            default_fzf_opts.deselect_all,
-            default_fzf_opts.toggle_preview,
+            fzf_opt_candidates.multi,
+            fzf_opt_candidates.toggle,
+            fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.toggle_preview,
         },
         other_opts = {
             onchange_reload_delay = "sleep 0.1 && ",
@@ -283,7 +277,7 @@ local Defaults = {
         actions = {
             builtin = {
                 delete_buffer = {
-                    "ctrl-x",
+                    "ctrl-d",
                     require("fzfx.action").bdelete,
                 },
             },
@@ -294,12 +288,10 @@ local Defaults = {
             },
         },
         fzf_opts = {
-            default_fzf_opts.multi,
-            default_fzf_opts.select,
-            default_fzf_opts.deselect,
-            default_fzf_opts.select_all,
-            default_fzf_opts.deselect_all,
-            default_fzf_opts.toggle_preview,
+            fzf_opt_candidates.multi,
+            fzf_opt_candidates.toggle,
+            fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.toggle_preview,
         },
         other_opts = {
             exclude_filetypes = { "qf", "neo-tree" },
@@ -361,12 +353,10 @@ local Defaults = {
             },
         },
         fzf_opts = {
-            default_fzf_opts.multi,
-            default_fzf_opts.select,
-            default_fzf_opts.deselect,
-            default_fzf_opts.select_all,
-            default_fzf_opts.deselect_all,
-            default_fzf_opts.toggle_preview,
+            fzf_opt_candidates.multi,
+            fzf_opt_candidates.toggle,
+            fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.toggle_preview,
         },
         other_opts = {},
     },
@@ -472,8 +462,8 @@ local Defaults = {
             },
         },
         fzf_opts = {
-            default_fzf_opts.no_multi,
-            default_fzf_opts.toggle_preview,
+            fzf_opt_candidates.no_multi,
+            fzf_opt_candidates.toggle_preview,
         },
         other_opts = {},
     },
