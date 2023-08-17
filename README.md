@@ -25,7 +25,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - [Vimscript](#vimscript)
   - [Lua](#lua)
 - [Configuration](#configuration)
-- [Changelog](#changelog)
+- [Break Changes](#break-changes)
 - [Credit](#credit)
 - [Contribute](#contribute)
 
@@ -41,9 +41,15 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - Lua support: preview lua function defined commands and key mappings (todo).
 - ...
 
-Here's a live grep demo that searching `fzfx` with rg's `-g *ch.lua` option on specific filetypes.
+<details>
+<summary><b>Click here to see some demo</b></summary>
+<br/>
 
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
+- Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes:
+
+  https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
+
+</details>
 
 ## Requirement
 
@@ -461,12 +467,14 @@ vim.keymap.set('n', '<space>pgf',
 
 For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
-## Changelog
+If you have encounter some breaks on configuration, please see [Break Changes](#break-changes).
+
+## Break Changes
 
 - 2023-08-17
-  1. Re-bind keys 'ctrl-e'(select), 'ctrl-a'(select-all) to 'toggle', 'toggle-all'.
-  2. Remove default bind keys 'ctrl-d'(deselect), 'alt-a'(deselect-all).
-  3. Re-bind key 'ctrl-x' (delete buffer) on `FzfxBuffers` to 'ctrl-d'.
+  - Re-bind keys 'ctrl-e'(select), 'ctrl-a'(select-all) to 'toggle', 'toggle-all'.
+  - Remove default bind keys 'ctrl-d'(deselect), 'alt-a'(deselect-all).
+  - Re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
 
 ## Credit
 
