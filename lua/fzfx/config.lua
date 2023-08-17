@@ -10,9 +10,11 @@ local default_rg_command =
 --- @type table<string, FzfOpt>
 local fzf_opt_candidates = {
     multi = "--multi",
-    toggle = { "--bind", "ctrl-e:toggle" },
-    toggle_all = { "--bind", "ctrl-a:toggle-all" },
-    toggle_preview = { "--bind", "alt-p:toggle-preview" },
+    toggle = "--bind=ctrl-e:toggle",
+    toggle_all = "--bind=ctrl-a:toggle-all",
+    toggle_preview = "--bind=alt-p:toggle-preview",
+    preview_half_page_down = "--bind=ctrl-f:preview-half-page-down",
+    preview_half_page_up = "--bind=ctrl-b:preview-half-page-up",
     no_multi = "--no-multi",
 }
 
@@ -121,6 +123,8 @@ local Defaults = {
             fzf_opt_candidates.multi,
             fzf_opt_candidates.toggle,
             fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.preview_half_page_down,
+            fzf_opt_candidates.preview_half_page_up,
             fzf_opt_candidates.toggle_preview,
         },
     },
@@ -224,6 +228,8 @@ local Defaults = {
             fzf_opt_candidates.multi,
             fzf_opt_candidates.toggle,
             fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.preview_half_page_down,
+            fzf_opt_candidates.preview_half_page_up,
             fzf_opt_candidates.toggle_preview,
         },
         other_opts = {
@@ -291,6 +297,8 @@ local Defaults = {
             fzf_opt_candidates.multi,
             fzf_opt_candidates.toggle,
             fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.preview_half_page_down,
+            fzf_opt_candidates.preview_half_page_up,
             fzf_opt_candidates.toggle_preview,
         },
         other_opts = {
@@ -356,6 +364,8 @@ local Defaults = {
             fzf_opt_candidates.multi,
             fzf_opt_candidates.toggle,
             fzf_opt_candidates.toggle_all,
+            fzf_opt_candidates.preview_half_page_down,
+            fzf_opt_candidates.preview_half_page_up,
             fzf_opt_candidates.toggle_preview,
         },
         other_opts = {},
@@ -463,6 +473,8 @@ local Defaults = {
         },
         fzf_opts = {
             fzf_opt_candidates.no_multi,
+            fzf_opt_candidates.preview_half_page_down,
+            fzf_opt_candidates.preview_half_page_up,
             fzf_opt_candidates.toggle_preview,
         },
         other_opts = {},
@@ -543,7 +555,7 @@ local Defaults = {
         -- unicode: https://symbl.cc/en/
         icon = {
             -- nerd fonts:
-            --     nf-fa-file_text_o               \uf0f6  (default)
+            --     nf-fa-file_text_o               \uf0f6 (default)
             --     nf-fa-file_o                    \uf016
             unknown_file = "",
 
@@ -562,11 +574,11 @@ local Defaults = {
             -- nerd fonts:
             --     nf-oct-arrow_right              \uf432
             --     nf-cod-arrow_right              \uea9c
-            --     nf-fa-caret_right               \uf0da  (default)
+            --     nf-fa-caret_right               \uf0da
             --     nf-weather-direction_right      \ue349
             --     nf-fa-long_arrow_right          \uf178
             --     nf-oct-chevron_right            \uf460
-            --     nf-fa-chevron_right             \uf054
+            --     nf-fa-chevron_right             \uf054 (default)
             --
             -- unicode:
             -- https://symbl.cc/en/collections/arrow-symbols/
@@ -589,7 +601,7 @@ local Defaults = {
             -- https://symbl.cc/en/collections/list-bullets/
             -- https://symbl.cc/en/collections/special-symbols/
             -- •    U+2022                          &#8226;
-            -- ✓    U+2713                          &#10003;  (default)
+            -- ✓    U+2713                          &#10003; (default)
             fzf_marker = "✓",
         },
     },

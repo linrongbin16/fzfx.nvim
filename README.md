@@ -475,6 +475,7 @@ If you have encounter some breaks on configuration, please see [Break Changes](#
   - Re-bind keys 'ctrl-e'(select), 'ctrl-a'(select-all) to 'toggle', 'toggle-all'.
   - Remove default bind keys 'ctrl-d'(deselect), 'alt-a'(deselect-all).
   - Re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
+  - Re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 
 ## Credit
 
