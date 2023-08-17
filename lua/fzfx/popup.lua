@@ -115,7 +115,7 @@ function SavedWindowContext:restore()
     if vim.api.nvim_tabpage_is_valid(self.tabnr) then
         vim.api.nvim_set_current_tabpage(self.tabnr)
     else
-        log.err(
+        log.info(
             "error! cannot restore to invalid previous tabpage! %s",
             vim.inspect(self.tabnr)
         )
@@ -123,7 +123,7 @@ function SavedWindowContext:restore()
     if vim.api.nvim_win_is_valid(self.winnr) then
         vim.api.nvim_set_current_win(self.winnr)
     else
-        log.err(
+        log.info(
             "error! cannot restore to invalid previous window! %s",
             vim.inspect(self.winnr)
         )
@@ -314,8 +314,8 @@ function Popup:close()
     if vim.api.nvim_win_is_valid(self.winnr) then
         vim.api.nvim_win_close(self.winnr, true)
     else
-        log.throw(
-            "|fzfx.popup - Popup:close| error! cannot close invalid popup window! %s",
+        log.info(
+            "error! cannot close invalid popup window! %s",
             vim.inspect(self.winnr)
         )
     end
