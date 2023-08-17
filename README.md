@@ -20,11 +20,12 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#commands)
-  - [Binding Keys](#binding-keys)
+  - [Bind Keys](#bind-keys)
 - [Recommended Key Mappings](#recommended-key-mappings)
   - [Vimscript](#vimscript)
   - [Lua](#lua)
 - [Configuration](#configuration)
+- [Changelog](#changelog)
 - [Credit](#credit)
 - [Contribute](#contribute)
 
@@ -173,7 +174,7 @@ Especially for git commands:
 
 > Note: command names can be configured, see [Configuration](#configuration).
 
-### Binding Keys
+### Bind Keys
 
 - Preview keys
   - `alt-p`: toggle preview.
@@ -459,6 +460,13 @@ vim.keymap.set('n', '<space>pgf',
 ## Configuration
 
 For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
+
+## Changelog
+
+- 2023-08-17
+  1. Re-bind keys 'ctrl-e'(select), 'ctrl-a'(select-all) to 'toggle', 'toggle-all'.
+  2. Remove default bind keys 'ctrl-d'(deselect), 'alt-a'(deselect-all).
+  3. Re-bind key 'ctrl-x' (delete buffer) on `FzfxBuffers` to 'ctrl-d'.
 
 ## Credit
 
