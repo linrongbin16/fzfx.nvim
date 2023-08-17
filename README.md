@@ -282,6 +282,26 @@ Especially for git commands:
     <td>FzfxGFilesP</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td rowspan="4">Git Branches</td>
+    <td>FzfxGBranches(R)</td>
+    <td>N</td>
+    <td rowspan="4">No</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4"></td>
+  </tr>
+  <tr>
+    <td>FzfxGBranches(R)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxGBranches(R)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGBranches(R)P</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
@@ -352,6 +372,26 @@ xnoremap <space>gf :\<C-U>FzfxGFilesV<CR>
 nnoremap <space>wgf :\<C-U>FzfxGFilesW<CR>
 " by yank text
 nnoremap <space>pgf :\<C-U>FzfxGFilesP<CR>
+
+" ======== git branches ========
+
+" git branches
+nnoremap <space>br :\<C-U>FzfxGBranches<CR>
+" by visual select
+xnoremap <space>br :\<C-U>FzfxGBranchesV<CR>
+" remote branches
+nnoremap <space>rbr :\<C-U>FzfxGBranchesR<CR>
+" remote branches by visual select
+xnoremap <space>rbr :\<C-U>FzfxGBranchesRV<CR>
+
+" by cursor word
+nnoremap <space>wbr :\<C-U>FzfxGBranchesW<CR>
+" remote branches by cursor word
+nnoremap <space>rwbr :\<C-U>FzfxGBranchesRW<CR>
+" by yank text
+nnoremap <space>pbr :\<C-U>FzfxGBranchesP<CR>
+" remote branches by yank text
+nnoremap <space>rpbr :\<C-U>FzfxGBranchesRP<CR>
 ```
 
 ### Lua
@@ -461,6 +501,36 @@ vim.keymap.set('n', '<space>wgf',
 vim.keymap.set('n', '<space>pgf',
         '<cmd>FzfxGFilesP<cr>',
         {silent=true, noremap=true, desc="Find git files by yank text"})
+
+-- ======== git branches ========
+
+-- git branches
+vim.keymap.set('n', '<space>br', '<cmd>FzfxGBranches<cr>',
+        {silent=true, noremap=true, desc="Search git branches"})
+-- by visual select
+vim.keymap.set('x', '<space>br', '<cmd>FzfxGBranchesV<CR>',
+        {silent=true, noremap=true, desc="Search git branches"})
+-- remote git branches
+vim.keymap.set('n', '<space>rbr',
+        '<cmd>FzfxGBranchesR<cr>',
+        {silent=true, noremap=true, desc="Search remote git branches"})
+-- remote branches by visual select
+vim.keymap.set('x', '<space>ubr',
+        '<cmd>FzfxGBranchesRV<CR>',
+        {silent=true, noremap=true, desc="Search remote git branches"})
+
+-- cursor word
+vim.keymap.set('n', '<space>wbr', '<cmd>FzfxGBranchesW<cr>',
+        {silent=true, noremap=true, desc="Search git branches by cursor word"})
+-- remote branches by cursor word
+vim.keymap.set('n', '<space>rwbr', '<cmd>FzfxGBranchesRW<cr>',
+        {silent=true, noremap=true, desc="Search remote git branches by cursor word"})
+-- yank text
+vim.keymap.set('n', '<space>pbr', '<cmd>FzfxGBranchesP<cr>',
+        {silent=true, noremap=true, desc="Search git branches by yank text"})
+-- remote branches by yank text
+vim.keymap.set('n', '<space>rwbr', '<cmd>FzfxGBranchesRP<cr>',
+        {silent=true, noremap=true, desc="Search remote git branches by yank text"})
 ```
 
 ## Configuration
