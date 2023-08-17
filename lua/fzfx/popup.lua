@@ -276,7 +276,7 @@ function Popup:new(win_opts)
     local bufnr = vim.api.nvim_create_buf(false, true)
     -- setlocal nospell bufhidden=wipe nobuflisted nonumber
     -- setft=fzf
-    utils.set_win_option(bufnr, "spell", false)
+    -- utils.set_buf_option(bufnr, "spell", false)
     utils.set_buf_option(bufnr, "bufhidden", "wipe")
     utils.set_buf_option(bufnr, "buflisted", false)
     utils.set_buf_option(bufnr, "number", false)
