@@ -1,24 +1,27 @@
 local log = require("fzfx.log")
-local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
 local Launch = require("fzfx.launch").Launch
 local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
-local yank_history = require("fzfx.yank_history")
 local color = require("fzfx.color")
 local server = require("fzfx.server")
 local git_helpers = require("fzfx.git_helpers")
+local utils = require("fzfx.utils")
 
 local Context = {
-    --- @type string|nil
-    remote_header = nil,
-    --- @type string|nil
+    --- @type string?
+    local_key = nil,
+    --- @type string?
+    remote_key = nil,
+    --- @type string?
     local_header = nil,
+    --- @type string?
+    remote_header = nil,
 }
 
---- @alias GitBranchesOptKey "remote"
---- @alias GitBranchesOptValue boolean
+--- @alias GitBranchesOptKey "default_provider"
+--- @alias GitBranchesOptValue "local_branch"|"remote_branch"
 --- @alias GitBranchesOpts table<GitBranchesOptKey, GitBranchesOptValue>
 
 --- @param query string
@@ -27,18 +30,15 @@ local Context = {
 --- @return Launch
 local function git_branches(query, bang, opts)
     local git_branches_configs = conf.get_config().git_branches
-    -- action
-    local remote_action =
-        string.lower(git_branches_configs.actions.builtin.remote_mode)
-    local local_action =
-        string.lower(git_branches_configs.actions.builtin.local_mode)
 
     local provider_switch = helpers.Switch:new(
         "git_branches_provider",
-        opts.remote and git_branches_configs.providers.remote_branch
-            or git_branches_configs.providers.local_branch,
-        opts.remote and git_branches_configs.providers.local_branch
-            or git_branches_configs.providers.remote_branch
+        opts.default_provider == "local_branch"
+                and git_branches_configs.providers.local_branch[2]
+            or git_branches_configs.providers.remote_branch[2],
+        opts.default_provider
+                and git_branches_configs.providers.remote_branch[2]
+            or git_branches_configs.providers.local_branch[2]
     )
 
     -- rpc callback
@@ -57,7 +57,7 @@ local function git_branches(query, bang, opts)
         shell.make_lua_command("git_branches", "provider.lua"),
         provider_switch.tempfile
     )
-    local git_log_command = git_branches_configs.previewers.log
+    local git_log_command = git_branches_configs.previewers
     local temp = vim.fn.tempname()
     vim.fn.writefile({ git_log_command }, temp, "b")
     local preview_command = string.format(
@@ -77,60 +77,44 @@ local function git_branches(query, bang, opts)
         vim.inspect(call_switch_provider_rpc_command)
     )
 
-    local current_branch = nil
-    local git_root_cmd = git_helpers.GitRootCommand:run()
-    if not git_root_cmd:wrong() then
-        local git_current_branch_cmd = git_helpers.GitCurrentBranchCommand:run()
-        if not git_current_branch_cmd:wrong() then
-            current_branch = git_current_branch_cmd:value()
-        end
-    end
-    log.debug(
-        "|fzfx.git_branches - git_branches| git_root_cmd:%s, current_branch:%s",
-        vim.inspect(git_root_cmd),
-        vim.inspect(current_branch)
-    )
-
     local fzf_opts = {
         { "--query", query },
         {
             "--header",
-            opts.remote and Context.local_header or Context.remote_header,
-        },
-        {
-            "--prompt",
-            "GBranches > ",
+            opts.default_provider == "local_branch" and Context.remote_header
+                or Context.local_header,
         },
         {
             "--bind",
             string.format(
                 "start:unbind(%s)",
-                opts.remote and remote_action or local_action
+                opts.default_provider == "local_branch" and Context.local_key
+                    or Context.remote_key
             ),
         },
         {
-            -- remote action: swap provider, change rmode header, rebind rmode action, reload query
+            -- remote key: swap provider, change rmode header, rebind rmode action, reload query
             "--bind",
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                remote_action,
-                remote_action,
+                Context.remote_key,
+                Context.remote_key,
                 call_switch_provider_rpc_command,
                 Context.local_header,
-                local_action,
+                Context.local_key,
                 query_command
             ),
         },
         {
-            -- local action: swap provider, change umode header, rebind umode action, reload query
+            -- local key: swap provider, change umode header, rebind umode action, reload query
             "--bind",
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                local_action,
-                local_action,
+                Context.local_key,
+                Context.local_key,
                 call_switch_provider_rpc_command,
                 Context.remote_header,
-                remote_action,
+                Context.remote_key,
                 query_command
             ),
         },
@@ -138,14 +122,26 @@ local function git_branches(query, bang, opts)
             "--preview",
             preview_command,
         },
+        function()
+            local git_root_cmd = git_helpers.GitRootCommand:run()
+            if git_root_cmd:wrong() then
+                return nil
+            end
+            local git_current_branch_cmd =
+                git_helpers.GitCurrentBranchCommand:run()
+            if git_current_branch_cmd:wrong() then
+                return nil
+            end
+            return utils.string_not_empty(git_current_branch_cmd:value())
+                    and "--header-lines=1"
+                or nil
+        end,
     }
-    if type(current_branch) == "string" and string.len(current_branch) > 0 then
-        table.insert(fzf_opts, "--header-lines=1")
-    end
 
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(git_branches_configs.fzf_opts))
-    local actions = git_branches_configs.actions.expect
+    fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
+    local actions = git_branches_configs.actions
     local ppp =
         Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
     local launch = Launch:new(ppp, query_command, fzf_opts, actions)
@@ -155,83 +151,31 @@ end
 
 local function setup()
     local git_branches_configs = conf.get_config().git_branches
-    log.debug(
-        "|fzfx.git_branches - setup| base_dir:%s, git_branches_configs:%s",
-        vim.inspect(path.base_dir()),
-        vim.inspect(git_branches_configs)
-    )
     if not git_branches_configs then
         return
     end
 
     -- Context
-    local remote_action = git_branches_configs.actions.builtin.remote_mode
-    local local_action = git_branches_configs.actions.builtin.local_mode
-    Context.remote_header = color.git_remote_branches_header(remote_action)
-    Context.local_header = color.git_local_branches_header(local_action)
+    Context.local_key =
+        string.lower(git_branches_configs.providers.local_branch[1])
+    Context.remote_key =
+        string.lower(git_branches_configs.providers.remote_branch[1])
+    Context.local_header = color.git_local_branches_header(Context.local_key)
+    Context.remote_header = color.git_remote_branches_header(Context.remote_key)
 
     -- User commands
-    for _, command_configs in pairs(git_branches_configs.commands.normal) do
+    for _, command_configs in pairs(git_branches_configs.commands) do
         vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            log.debug(
-                "|fzfx.git_branches - setup| command:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(opts)
-            )
+            -- log.debug(
+            --     "|fzfx.git_branches - setup| command:%s, opts:%s",
+            --     vim.inspect(command_configs.name),
+            --     vim.inspect(opts)
+            -- )
+            local query = helpers.get_command_feed(opts, command_configs.feed)
             return git_branches(
-                opts.args,
+                query,
                 opts.bang,
-                { remote = command_configs.remote }
-            )
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(git_branches_configs.commands.visual) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local selected = helpers.visual_select()
-            log.debug(
-                "|fzfx.git_branches - setup| command:%s, selected:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(selected),
-                vim.inspect(opts)
-            )
-            return git_branches(
-                selected,
-                opts.bang,
-                { remote = command_configs.remote }
-            )
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(git_branches_configs.commands.cword) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local word = vim.fn.expand("<cword>")
-            log.debug(
-                "|fzfx.git_branches - setup| command:%s, word:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(word),
-                vim.inspect(opts)
-            )
-            return git_branches(
-                word,
-                opts.bang,
-                { remote = command_configs.remote }
-            )
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(git_branches_configs.commands.put) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local yank = yank_history.get_yank()
-            log.debug(
-                "|fzfx.git_branches - setup| command:%s, yank:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(yank),
-                vim.inspect(opts)
-            )
-            return git_branches(
-                (yank ~= nil and type(yank.regtext) == "string")
-                        and yank.regtext
-                    or "",
-                opts.bang,
-                { remote = command_configs.remote }
+                { default_provider = command_configs.default_provider }
             )
         end, command_configs.opts)
     end

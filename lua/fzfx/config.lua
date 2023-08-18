@@ -486,6 +486,10 @@ local Defaults = {
             default_fzf_options.preview_half_page_down,
             default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
+            {
+                "--prompt",
+                "GBranches > ",
+            },
         },
     },
 
