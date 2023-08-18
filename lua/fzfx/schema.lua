@@ -27,8 +27,7 @@ local ProviderTypeEnum = {
 -- E.g. add the icons for each file.
 --
 --- @alias FunctionLineProcessor fun(line:string):string
---- @alias BuiltinLineProcessorKeyLineType "file"
---- @alias BuiltinLineProcessorKey BuiltinLineProcessorKeyLineType|"line_delimiter"|"filename_position"
+--- @alias BuiltinLineProcessorKey "line_type"|"line_delimiter"|"filename_position"
 --- @alias BuiltinLineProcessorValue string|integer|boolean
 --- @alias BuiltinLineProcessor table<BuiltinLineProcessorKey, BuiltinLineProcessorValue>
 --- @alias LineProcessor FunctionLineProcessor|BuiltinLineProcessor
@@ -117,6 +116,7 @@ local Pipeline = {
     provider = nil,
     provider_type = nil,
     line_processor = nil,
+    line_processor_type = nil,
     previewer = nil,
     previewer_type = nil,
     help_format = nil,
@@ -126,8 +126,8 @@ function Pipeline:make(opts)
     return vim.tbl_deep_extend("force", vim.deepcopy(Pipeline), opts or {})
 end
 
--- ======== Command ========
--- Command defines how to generate a fzfx command in this plugin.
+-- ======== Schema ========
+-- Schema defines how to generate a fzfx command in this plugin.
 -- It can have multiple providers, you can press the interactive key to switch to the binded provider.
 -- It can have multiple previewers, you can press the interactive key to switch to the binded previewer.
 -- It has a default provider and previewer.
@@ -138,7 +138,7 @@ end
 --
 -- Note: The providers and previewers must match, when there's only 1 provider and previewer, the interactive key will be omitted.
 --
---- @class Command
+--- @class Schema
 --- @field name string?
 --- @field pipelines table<InteractiveKey, Pipeline>?
 --- @field default_pipeline Pipeline?
@@ -147,7 +147,7 @@ end
 --- @field command_opts table<UserCommandAttributeKey, UserCommandAttributeValue>?
 --- @field command_feed CommandFeed?
 --- @field fzf_opts FzfOpts?
-local Command = {
+local Schema = {
     name = nil,
     pipelines = nil,
     default_pipeline = nil,
@@ -158,8 +158,8 @@ local Command = {
     fzf_opts = nil,
 }
 
-function Command:make(opts)
-    return vim.tbl_deep_extend("force", vim.deepcopy(Command), opts or {})
+function Schema:make(opts)
+    return vim.tbl_deep_extend("force", vim.deepcopy(Schema), opts or {})
 end
 
 --- @class NormalCommandOpts
@@ -222,7 +222,7 @@ local M = {
     PreviewerTypeEnum = PreviewerTypeEnum,
     CommandFeedEnum = CommandFeedEnum,
     Pipeline = Pipeline,
-    Schema = Command,
+    Schema = Schema,
     NormalCommandOpts = NormalCommandOpts,
     VisualCommandOpts = VisualCommandOpts,
     CwordCommandOpts = CwordCommandOpts,
