@@ -115,7 +115,6 @@ end
 local DEVICONS_PATH = vim.env._FZFX_NVIM_DEVICONS_PATH
 local UNKNOWN_FILE_ICON = vim.env._FZFX_NVIM_UNKNOWN_FILE_ICON
 local FOLDER_ICON = vim.env._FZFX_NVIM_FILE_FOLDER_ICON
-local FOLDER_OPEN_ICON = vim.env._FZFX_NVIM_FILE_FOLDER_OPEN_ICON
 local DEVICONS = nil
 if type(DEVICONS_PATH) == "string" and string.len(DEVICONS_PATH) > 0 then
     vim.opt.runtimepath:append(DEVICONS_PATH)
@@ -125,7 +124,7 @@ end
 --- @param color string
 --- @param fg boolean
 --- @return string|nil
-local function color_csi(color, fg)
+local function csi(color, fg)
     local code = fg and 38 or 48
     local r, g, b = color:match("#(..)(..)(..)")
     if r and g and b then
@@ -155,7 +154,7 @@ end
 local function render_line_with_icon(line)
     if DEVICONS ~= nil then
         local ext = vim.fn.fnamemodify(line, ":e")
-        local icon, color = DEVICONS.get_icon_color(line, ext)
+        local icon, icon_color = DEVICONS.get_icon_color(line, ext)
         -- if DEBUG_ENABLE then
         --     log_debug(
         --         "|fzfx.shell_helpers - render_line_with_icon| line:%s, ext:%s, icon:%s, color:%s\n",
@@ -166,7 +165,7 @@ local function render_line_with_icon(line)
         --     )
         -- end
         if type(icon) == "string" and string.len(icon) > 0 then
-            local colorfmt = color_csi(color, true)
+            local colorfmt = csi(icon_color, true)
             if colorfmt then
                 return string.format("[%sm%s[0m %s", colorfmt, icon, line)
             else
@@ -203,7 +202,7 @@ local function render_delimiter_line_with_icon(line, delimiter, pos)
         --     )
         -- end
         if type(icon) == "string" and string.len(icon) > 0 then
-            local colorfmt = color_csi(color, true)
+            local colorfmt = csi(color, true)
             if colorfmt then
                 return string.format("[%sm%s[0m %s", colorfmt, icon, line)
             else
@@ -231,7 +230,7 @@ local M = {
     log_throw = log_throw,
     log_ensure = log_ensure,
     read_provider_command = read_provider_command,
-    color_csi = color_csi,
+    color_csi = csi,
     render_line_with_icon = render_line_with_icon,
     render_delimiter_line_with_icon = render_delimiter_line_with_icon,
     Command = require("fzfx.command").Command,

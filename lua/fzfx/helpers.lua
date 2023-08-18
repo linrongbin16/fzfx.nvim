@@ -106,7 +106,7 @@ end
 
 -- fzf opts {
 
---- @return FzfOpts
+--- @return FzfOption[]
 local function generate_fzf_color_opts()
     if type(conf.get_config().popup.fzf_color_opts) ~= "table" then
         return {}
@@ -129,7 +129,7 @@ local function generate_fzf_color_opts()
     return { { "--color", table.concat(builder, ",") } }
 end
 
---- @return FzfOpts
+--- @return FzfOption[]
 local function generate_fzf_icon_opts()
     if type(conf.get_config().popup.icon) ~= "table" then
         return {}
@@ -141,9 +141,9 @@ local function generate_fzf_icon_opts()
     }
 end
 
---- @param opts FzfOpts
---- @param o FzfOpt
---- @return FzfOpts
+--- @param opts FzfOption[]
+--- @param o FzfOption
+--- @return FzfOption[]
 local function append_fzf_opt(opts, o)
     if type(o) == "string" and string.len(o) > 0 then
         table.insert(opts, o)
@@ -151,6 +151,14 @@ local function append_fzf_opt(opts, o)
         local k = o[1]
         local v = o[2]
         table.insert(opts, string.format("%s %s", k, vim.fn.shellescape(v)))
+    elseif type(o) == "function" then
+        local result_o = o()
+        log.ensure(
+            type(result_o) == "string" or type(result_o) == "table",
+            "|fzfx.helpers - append_fzf_opt| result of function o must be string or list! %s",
+            vim.inspect(result_o)
+        )
+        opts = append_fzf_opt(opts, result_o)
     else
         log.throw(
             "|fzfx.helpers - append_fzf_opt| invalid fzf opt: %s",
@@ -160,7 +168,7 @@ local function append_fzf_opt(opts, o)
     return opts
 end
 
---- @param opts FzfOpts
+--- @param opts FzfOption[]
 --- @return string?
 local function make_fzf_opts(opts)
     if opts == nil or #opts == 0 then
@@ -173,7 +181,7 @@ local function make_fzf_opts(opts)
     return table.concat(result, " ")
 end
 
---- @param opts FzfOpts
+--- @param opts FzfOption[]
 --- @return string?
 local function make_fzf_default_opts(opts)
     local result = {}
