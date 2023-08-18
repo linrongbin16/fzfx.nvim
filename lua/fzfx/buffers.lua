@@ -11,42 +11,40 @@ local yank_history = require("fzfx.yank_history")
 local utils = require("fzfx.utils")
 
 local Context = {
-    --- @type string|nil
-    deletebuf_header = nil,
+    --- @type string?
+    bdelete_key = nil,
+    --- @type string?
+    bdelete_header = nil,
     --- @type table<string, boolean>?
-    exclude_filetypes_map = nil,
+    exclude_filetypes = nil,
 }
 
 --- @param bufnr integer
 --- @return boolean
-local function is_exclude_buffer(bufnr)
-    if Context.exclude_filetypes_map == nil then
-        Context.exclude_filetypes_map = {}
+local function buf_exclude(bufnr)
+    if Context.exclude_filetypes == nil then
+        Context.exclude_filetypes = {}
         local exclude_filetypes =
             conf.get_config().buffers.other_opts.exclude_filetypes
         if type(exclude_filetypes) == "table" and #exclude_filetypes > 0 then
             for _, ft in ipairs(exclude_filetypes) do
-                Context.exclude_filetypes_map[ft] = true
+                Context.exclude_filetypes[ft] = true
             end
         end
     end
-    local bufft = utils.get_buf_option(bufnr, "filetype")
-    return Context.exclude_filetypes_map[bufft] ~= nil
+    local ft = utils.get_buf_option(bufnr, "filetype")
+    return Context.exclude_filetypes[ft] ~= nil
 end
 
 --- @param bufnr integer
 --- @return boolean
-local function is_valid_buffer(bufnr)
-    local bufname = vim.api.nvim_buf_get_name(bufnr)
-    return vim.api.nvim_buf_is_valid(bufnr)
-        and vim.api.nvim_buf_is_loaded(bufnr)
-        and vim.fn.buflisted(bufnr) > 0
-        and type(bufname) == "string"
-        and string.len(bufname) > 0
-        and not is_exclude_buffer(bufnr)
+local function buf_valid(bufnr)
+    return utils.buffer_valid(bufnr) and not buf_exclude(bufnr)
 end
 
-local function get_buf_path(bufnr)
+--- @param bufnr integer
+--- @return string
+local function buf_path(bufnr)
     local bufname = vim.api.nvim_buf_get_name(bufnr)
     return vim.fn.fnamemodify(bufname, ":~:.")
 end
@@ -60,9 +58,9 @@ local function collect_buffers_rpc_callback()
     --     vim.inspect(current_bufnr),
     --     vim.inspect(bufs_list)
     -- )
-    local filtered_buffers = {}
-    if is_valid_buffer(current_bufnr) then
-        table.insert(filtered_buffers, get_buf_path(current_bufnr))
+    local filtered_bufs_list = {}
+    if buf_valid(current_bufnr) then
+        table.insert(filtered_bufs_list, buf_path(current_bufnr))
     end
     if type(bufs_list) == "table" then
         for _, bufnr in ipairs(bufs_list) do
@@ -78,13 +76,12 @@ local function collect_buffers_rpc_callback()
             --     vim.inspect(vim.api.nvim_buf_is_loaded(bufnr)),
             --     vim.inspect(vim.fn.buflisted(bufnr))
             -- )
-            local buf_valid = is_valid_buffer(bufnr)
-            if buf_valid and bufnr ~= current_bufnr then
-                table.insert(filtered_buffers, get_buf_path(bufnr))
+            if buf_valid(bufnr) and bufnr ~= current_bufnr then
+                table.insert(filtered_bufs_list, buf_path(bufnr))
             end
         end
     end
-    return filtered_buffers
+    return filtered_bufs_list
 end
 
 --- @param query string
@@ -93,11 +90,9 @@ end
 --- @return Launch
 local function buffers(query, bang, opts)
     local buffers_configs = conf.get_config().buffers
+
     -- action
-    local deletebuf_action =
-        string.lower(buffers_configs.actions.builtin.delete_buffer[1])
-    local deletebuf_action_callback =
-        buffers_configs.actions.builtin.delete_buffer[2]
+    local bdelete_action = buffers_configs.actions.builtin.delete_buffer[2]
 
     -- rpc
     local collect_buffers_rpc_callback_id =
@@ -111,7 +106,7 @@ local function buffers(query, bang, opts)
         if type(params) == "string" then
             params = { params }
         end
-        deletebuf_action_callback(params)
+        bdelete_action(params)
     end
     local delete_buffer_rpc_callback_id =
         server.get_global_rpc_server():register(delete_buffer_rpc_callback)
@@ -124,36 +119,32 @@ local function buffers(query, bang, opts)
     )
     local preview_command =
         string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))
-    local deletebuf_rpc_command = string.format(
+    local bdelete_rpc_command = string.format(
         "%s %s {}",
         shell.make_lua_command("rpc", "client.lua"),
         delete_buffer_rpc_callback_id
     )
 
     log.debug(
-        "|fzfx.buffers - files| query_command:%s, preview_command:%s, deletebuf_rpc_command:%s",
+        "|fzfx.buffers - files| query_command:%s, preview_command:%s, bdelete_rpc_command:%s",
         vim.inspect(query_command),
         vim.inspect(preview_command),
-        vim.inspect(deletebuf_rpc_command)
+        vim.inspect(bdelete_rpc_command)
     )
 
     local fzf_opts = {
         { "--query", query },
         {
             "--header",
-            Context.deletebuf_header,
+            Context.bdelete_header,
         },
         {
-            "--prompt",
-            "Buffers > ",
-        },
-        {
-            -- deletebuf action: delete buffer, reload query
+            -- bdelete action: delete buffer, reload query
             "--bind",
             string.format(
                 "%s:execute-silent(%s)+reload(%s)",
-                deletebuf_action,
-                deletebuf_rpc_command,
+                Context.bdelete_key,
+                bdelete_rpc_command,
                 query_command
             ),
         },
@@ -163,13 +154,8 @@ local function buffers(query, bang, opts)
         },
     }
 
-    local current_bufnr = vim.api.nvim_get_current_buf()
-    if is_valid_buffer(current_bufnr) then
-        table.insert(fzf_opts, "--header-lines=1")
-    end
-
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(buffers_configs.fzf_opts))
-    local actions = buffers_configs.actions.expect
+    local actions = buffers_configs.actions
     local ppp =
         Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
     local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
@@ -184,70 +170,19 @@ end
 
 local function setup()
     local buffers_configs = conf.get_config().buffers
-    log.debug(
-        "|fzfx.buffers - setup| base_dir:%s, buffers_configs:%s",
-        vim.inspect(path.base_dir()),
-        vim.inspect(buffers_configs)
-    )
     if not buffers_configs then
         return
     end
 
     -- Context
-    local deletebuf_action = buffers_configs.actions.builtin.delete_buffer[1]
-    Context.deletebuf_header = color.delete_buffer_header(deletebuf_action)
+    Context.bdelete_key = buffers_configs.interactions.bdelete[1]
+    Context.bdelete_header = color.delete_buffer_header(Context.bdelete_key)
 
     -- User commands
-    for _, command_configs in pairs(buffers_configs.commands.normal) do
+    for _, command_configs in pairs(buffers_configs.commands) do
         vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            log.debug(
-                "|fzfx.buffers - setup| command:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(opts)
-            )
-            return buffers(opts.args, opts.bang, nil)
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(buffers_configs.commands.visual) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local selected = helpers.visual_select()
-            log.debug(
-                "|fzfx.buffers - setup| command:%s, selected:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(selected),
-                vim.inspect(opts)
-            )
-            return buffers(selected, opts.bang, nil)
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(buffers_configs.commands.cword) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local word = vim.fn.expand("<cword>")
-            log.debug(
-                "|fzfx.buffers - setup| command:%s, word:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(word),
-                vim.inspect(opts)
-            )
-            return buffers(word, opts.bang, nil)
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(buffers_configs.commands.put) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local yank = yank_history.get_yank()
-            log.debug(
-                "|fzfx.buffers - setup| command:%s, yank:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(yank),
-                vim.inspect(opts)
-            )
-            return buffers(
-                (yank ~= nil and type(yank.regtext) == "string")
-                        and yank.regtext
-                    or "",
-                opts.bang,
-                nil
-            )
+            local query = helpers.get_command_feed(opts, command_configs.feed)
+            return buffers(query, opts.bang, nil)
         end, command_configs.opts)
     end
 end

@@ -142,10 +142,12 @@ local function generate_fzf_icon_opts()
 end
 
 --- @param opts FzfOption[]
---- @param o FzfOption
+--- @param o FzfOption?
 --- @return FzfOption[]
 local function append_fzf_opt(opts, o)
-    if type(o) == "string" and string.len(o) > 0 then
+    if o == nil then
+        -- pass
+    elseif type(o) == "string" and string.len(o) > 0 then
         table.insert(opts, o)
     elseif type(o) == "table" and #o == 2 then
         local k = o[1]

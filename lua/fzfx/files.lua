@@ -75,10 +75,6 @@ local function files(query, bang, opts)
                 or Context.rmode_header,
         },
         {
-            "--prompt",
-            path.shorten() .. " > ",
-        },
-        {
             "--bind",
             string.format(
                 "start:unbind(%s)",
@@ -132,12 +128,6 @@ end
 
 local function setup()
     local files_configs = conf.get_config().files
-    log.debug(
-        "|fzfx.files - setup| base_dir:%s, files_configs:%s",
-        vim.inspect(path.base_dir()),
-        vim.inspect(files_configs)
-    )
-
     if not files_configs then
         return
     end
@@ -151,11 +141,11 @@ local function setup()
     -- User commands
     for _, command_configs in pairs(files_configs.commands) do
         vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            log.debug(
-                "|fzfx.files - setup| command_configs:%s, opts:%s",
-                vim.inspect(command_configs),
-                vim.inspect(opts)
-            )
+            -- log.debug(
+            --     "|fzfx.files - setup| command_configs:%s, opts:%s",
+            --     vim.inspect(command_configs),
+            --     vim.inspect(opts)
+            -- )
             local query = helpers.get_command_feed(opts, command_configs.feed)
             return files(
                 query,

@@ -1,7 +1,3 @@
-local log = require("fzfx.log")
-local path = require("fzfx.path")
-local env = require("fzfx.env")
-
 local function table_filter(f, t)
     local result = {}
     for k, v in pairs(t) do
@@ -69,13 +65,26 @@ local function set_win_option(winnr, name, value)
 end
 
 --- @param s any
+--- @return boolean
 local function string_empty(s)
     return type(s) ~= "string" or string.len(s) == 0
 end
 
 --- @param s any
+--- @return boolean
 local function string_not_empty(s)
     return type(s) == "string" and string.len(s) > 0
+end
+
+--- @param bufnr integer
+--- @return boolean
+local function buffer_valid(bufnr)
+    local bufname = vim.api.nvim_buf_get_name(bufnr)
+    return vim.api.nvim_buf_is_valid(bufnr)
+        and vim.api.nvim_buf_is_loaded(bufnr)
+        and vim.fn.buflisted(bufnr) > 0
+        and type(bufname) == "string"
+        and string.len(bufname) > 0
 end
 
 local M = {
@@ -86,6 +95,7 @@ local M = {
     set_win_option = set_win_option,
     string_empty = string_empty,
     string_not_empty = string_not_empty,
+    buffer_valid = buffer_valid,
 }
 
 return M

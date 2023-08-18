@@ -90,8 +90,6 @@ local function live_grep(query, bang, opts)
             opts.default_provider == "restricted" and Context.umode_header
                 or Context.rmode_header,
         },
-        { "--prompt", "Live Grep > " },
-        { "--delimiter", ":" },
         {
             "--bind",
             string.format(
@@ -131,7 +129,6 @@ local function live_grep(query, bang, opts)
             "--preview",
             preview_command,
         },
-        { "--preview-window", "+{2}-/2" },
     }
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(live_grep_configs.fzf_opts))
@@ -155,11 +152,6 @@ end
 
 local function setup()
     local live_grep_configs = conf.get_config().live_grep
-    log.debug(
-        "|fzfx.live_grep - setup| base_dir:%s, live_grep_configs:%s",
-        vim.inspect(path.base_dir()),
-        vim.inspect(live_grep_configs)
-    )
     if not live_grep_configs then
         return
     end
@@ -174,11 +166,11 @@ local function setup()
     -- User commands
     for _, command_configs in pairs(live_grep_configs.commands) do
         vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            log.debug(
-                "|fzfx.live_grep - setup| command_configs:%s, opts:%s",
-                vim.inspect(command_configs),
-                vim.inspect(opts)
-            )
+            -- log.debug(
+            --     "|fzfx.live_grep - setup| command_configs:%s, opts:%s",
+            --     vim.inspect(command_configs),
+            --     vim.inspect(opts)
+            -- )
             return live_grep(
                 opts.args,
                 opts.bang,
