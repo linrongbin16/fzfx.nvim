@@ -1,11 +1,10 @@
-local Pipeline = require("fzfx.schema_interface").Pipeline
-local Command = require("fzfx.schema_interface").Command
-local ProviderTypeEnum = require("fzfx.schema_interface").ProviderTypeEnum
-local LineProcessorTypeEnum =
-    require("fzfx.schema_interface").LineProcessorTypeEnum
-local PreviewerTypeEnum = require("fzfx.schema_interface").PreviewerTypeEnum
-local CommandFeedEnum = require("fzfx.schema_interface").CommandFeedEnum
-local NormalCommandOpts = require("fzfx.schema_interface").NormalCommandOpts
+local Pipeline = require("fzfx.schema_def").Pipeline
+local Command = require("fzfx.schema_def").Command
+local ProviderTypeEnum = require("fzfx.schema_def").ProviderTypeEnum
+local LineProcessorTypeEnum = require("fzfx.schema_def").LineProcessorTypeEnum
+local PreviewerTypeEnum = require("fzfx.schema_def").PreviewerTypeEnum
+local CommandFeedEnum = require("fzfx.schema_def").CommandFeedEnum
+local NormalCommandOpts = require("fzfx.schema_def").NormalCommandOpts
 local constants = require("fzfx.constants")
 local env = require("fzfx.env")
 local color = require("fzfx.color")
