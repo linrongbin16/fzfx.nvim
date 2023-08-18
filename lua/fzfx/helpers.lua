@@ -108,10 +108,10 @@ end
 
 --- @return FzfOption[]
 local function generate_fzf_color_opts()
-    if type(conf.get_config().popup.fzf_color_opts) ~= "table" then
+    if type(conf.get_config().fzf_color_opts) ~= "table" then
         return {}
     end
-    local fzf_colors = conf.get_config().popup.fzf_color_opts
+    local fzf_colors = conf.get_config().fzf_color_opts
     local builder = {}
     for name, opts in pairs(fzf_colors) do
         for i = 2, #opts do
@@ -131,10 +131,10 @@ end
 
 --- @return FzfOption[]
 local function generate_fzf_icon_opts()
-    if type(conf.get_config().popup.icon) ~= "table" then
+    if type(conf.get_config().icons) ~= "table" then
         return {}
     end
-    local icon_configs = conf.get_config().popup.icon
+    local icon_configs = conf.get_config().icons
     return {
         { "--pointer", icon_configs.fzf_pointer },
         { "--marker", icon_configs.fzf_marker },
@@ -181,9 +181,9 @@ local function make_fzf_opts(opts)
     return table.concat(result, " ")
 end
 
---- @param opts FzfOption[]
 --- @return string?
-local function make_fzf_default_opts(opts)
+local function make_fzf_default_opts()
+    local opts = conf.get_config().fzf_opts
     local result = {}
     if type(opts) == "table" and #opts > 0 then
         for _, o in ipairs(opts) do

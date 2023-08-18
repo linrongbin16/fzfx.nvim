@@ -145,8 +145,7 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
 
     local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
-    vim.env.FZF_DEFAULT_OPTS =
-        helpers.make_fzf_default_opts(conf.get_config().popup.fzf_opts)
+    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_default_opts()
     vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(
         "|fzfx.popup - Launch:new| $FZF_DEFAULT_OPTS:%s",
