@@ -3,32 +3,34 @@ local env = require("fzfx.env")
 local path = require("fzfx.path")
 
 local function nop(lines)
-    log.debug("|fzfx.action - nop| lines:%s", vim.inspect(lines))
+    log.debug("|fzfx.actions - nop| lines:%s", vim.inspect(lines))
 end
 
 local function edit(lines)
-    log.debug("|fzfx.action - edit| lines:%s", vim.inspect(lines))
+    log.debug("|fzfx.actions - edit| lines:%s", vim.inspect(lines))
     for i, line in ipairs(lines) do
         local filename = env.icon_enable() and vim.fn.split(line)[2] or line
+        filename = path.normalize(filename)
         local cmd = string.format("edit %s", vim.fn.expand(filename))
-        log.debug("|fzfx.action - edit| line[%d] cmd:%s", i, vim.inspect(cmd))
+        log.debug("|fzfx.actions - edit| line[%d] cmd:[%s]", i, cmd)
         vim.cmd(cmd)
     end
 end
 
 local function edit_rg(lines)
-    log.debug("|fzfx.action - edit_rg| lines:%s", vim.inspect(lines))
+    log.debug("|fzfx.actions - edit_rg| lines:%s", vim.inspect(lines))
     for i, line in ipairs(lines) do
         local splits = vim.fn.split(line, ":")
         local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
             or splits[1]
+        filename = path.normalize(filename)
         local row = tonumber(splits[2])
         local col = tonumber(splits[3])
         local edit_cmd = string.format("edit %s", vim.fn.expand(filename))
         local setpos_cmd =
             string.format("call setpos('.', [0, %d, %d])", row, col)
         log.debug(
-            "|fzfx.action - edit_rg| line[%d] - splits:%s, filename:%s, row:%d, col:%d",
+            "|fzfx.actions - edit_rg| line[%d] - splits:%s, filename:%s, row:%d, col:%d",
             i,
             vim.inspect(splits),
             vim.inspect(filename),
@@ -36,10 +38,10 @@ local function edit_rg(lines)
             vim.inspect(col)
         )
         log.debug(
-            "|fzfx.action - edit_rg| line[%d] - edit_cmd:%s, setpos_cmd:%s",
+            "|fzfx.actions - edit_rg| line[%d] - edit_cmd:[%s], setpos_cmd:[%s]",
             i,
-            vim.inspect(edit_cmd),
-            vim.inspect(setpos_cmd)
+            edit_cmd,
+            setpos_cmd
         )
         vim.cmd(edit_cmd)
         if i == #lines then
@@ -49,28 +51,30 @@ local function edit_rg(lines)
 end
 
 local function buffer(lines)
-    log.debug("|fzfx.action - buffer| lines:%s", vim.inspect(lines))
+    log.debug("|fzfx.actions - buffer| lines:%s", vim.inspect(lines))
     for i, line in ipairs(lines) do
         local filename = env.icon_enable() and vim.fn.split(line)[2] or line
+        filename = path.normalize(filename)
         local cmd = string.format("buffer %s", vim.fn.expand(filename))
-        log.debug("|fzfx.action - buffer| line[%d] cmd:%s", i, vim.inspect(cmd))
+        log.debug("|fzfx.actions - buffer| line[%d] cmd:[%s]", i, cmd)
         vim.cmd(cmd)
     end
 end
 
 local function buffer_rg(lines)
-    log.debug("|fzfx.action - buffer_rg| lines:%s", vim.inspect(lines))
+    log.debug("|fzfx.actions - buffer_rg| lines:%s", vim.inspect(lines))
     for i, line in ipairs(lines) do
         local splits = vim.fn.split(line, ":")
         local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
             or splits[1]
+        filename = path.normalize(filename)
         local row = tonumber(splits[2])
         local col = tonumber(splits[3])
         local buffer_cmd = string.format("buffer %s", vim.fn.expand(filename))
         local setpos_cmd =
             string.format("call setpos('.', [0, %d, %d])", row, col)
         log.debug(
-            "|fzfx.action - buffer_rg| line[%d] - splits:%s, filename:%s, row:%d, col:%d",
+            "|fzfx.actions - buffer_rg| line[%d] - splits:%s, filename:%s, row:%d, col:%d",
             i,
             vim.inspect(splits),
             vim.inspect(filename),
@@ -78,10 +82,10 @@ local function buffer_rg(lines)
             vim.inspect(col)
         )
         log.debug(
-            "|fzfx.action - buffer_rg| line[%d] - buffer_cmd:%s, setpos_cmd:%s",
+            "|fzfx.actions - buffer_rg| line[%d] - buffer_cmd:[%s], setpos_cmd:[%s]",
             i,
-            vim.inspect(buffer_cmd),
-            vim.inspect(setpos_cmd)
+            buffer_cmd,
+            setpos_cmd
         )
         vim.cmd(buffer_cmd)
         if i == #lines then
@@ -108,7 +112,7 @@ local function bdelete(lines)
 end
 
 local function git_checkout(lines)
-    log.debug("|fzfx.action - git_checkout| lines:%s", vim.inspect(lines))
+    log.debug("|fzfx.actions - git_checkout| lines:%s", vim.inspect(lines))
     if type(lines) == "table" and #lines > 0 then
         local last_line = lines[#lines]
         if type(last_line) == "string" and string.len(last_line) > 0 then
