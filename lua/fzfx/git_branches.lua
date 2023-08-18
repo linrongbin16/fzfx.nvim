@@ -36,7 +36,7 @@ local function git_branches(query, bang, opts)
         opts.default_provider == "local_branch"
                 and git_branches_configs.providers.local_branch[2]
             or git_branches_configs.providers.remote_branch[2],
-        opts.default_provider
+        opts.default_provider == "local_branch"
                 and git_branches_configs.providers.remote_branch[2]
             or git_branches_configs.providers.local_branch[2]
     )
