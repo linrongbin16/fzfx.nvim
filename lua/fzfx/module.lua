@@ -5,7 +5,7 @@ local function search_module_path(plugin, path)
     local plugin_ok, plugin_module = pcall(require, plugin)
     if not plugin_ok then
         log.debug(
-            "|fzfx.env - search_module_path| failed to load lua module %s: %s",
+            "|fzfx.module - search_module_path| failed to load lua module %s: %s",
             vim.inspect(plugin),
             vim.inspect(plugin_module)
         )
@@ -15,13 +15,13 @@ local function search_module_path(plugin, path)
             and vim.fn.split(vim.o.runtimepath, ",")
         or {}
     for i, p in ipairs(rtp) do
-        log.debug("|fzfx.env - search_module_path| p[%d]:%s", i, p)
+        log.debug("|fzfx.module - search_module_path| p[%d]:%s", i, p)
         if type(p) == "string" and string.match(p, path) then
             return p
         end
     end
     log.debug(
-        "|fzfx.env - search_module_path| failed to find lua module %s on runtimepath: %s",
+        "|fzfx.module - search_module_path| failed to find lua module %s on runtimepath: %s",
         vim.inspect(plugin),
         vim.inspect(rtp)
     )
