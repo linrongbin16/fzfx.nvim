@@ -309,12 +309,6 @@ local Defaults = {
                 "--prompt",
                 "Buffers > ",
             },
-            function()
-                local bufnr = vim.api.nvim_get_current_buf()
-                return require("fzfx.utils").buf_valid(bufnr)
-                        and "--header-lines=1"
-                    or nil
-            end,
         },
         other_opts = {
             exclude_filetypes = { "qf", "neo-tree" },

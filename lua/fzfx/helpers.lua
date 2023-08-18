@@ -156,8 +156,10 @@ local function append_fzf_opt(opts, o)
     elseif type(o) == "function" then
         local result_o = o()
         log.ensure(
-            type(result_o) == "string" or type(result_o) == "table",
-            "|fzfx.helpers - append_fzf_opt| result of function o must be string or list! %s",
+            type(result_o) == "string"
+                or type(result_o) == "table"
+                or result_o == nil,
+            "|fzfx.helpers - append_fzf_opt| result of function o must be string/list/nil! %s",
             vim.inspect(result_o)
         )
         opts = append_fzf_opt(opts, result_o)

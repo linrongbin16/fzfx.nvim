@@ -50,11 +50,11 @@ local function buf_path(bufnr)
 end
 
 -- rpc callback
-local function collect_buffers_rpc_callback()
+local function collect_bufs_rpc_callback()
     local current_bufnr = vim.api.nvim_get_current_buf()
     local bufs_list = vim.api.nvim_list_bufs()
     -- log.debug(
-    --     "|fzfx.buffers - buffers.collect_buffers_rpc_callback| current_bufnr:%s, bufs_list:%s",
+    --     "|fzfx.buffers - buffers.collect_bufs_rpc_callback| current_bufnr:%s, bufs_list:%s",
     --     vim.inspect(current_bufnr),
     --     vim.inspect(bufs_list)
     -- )
@@ -65,13 +65,13 @@ local function collect_buffers_rpc_callback()
     if type(bufs_list) == "table" then
         for _, bufnr in ipairs(bufs_list) do
             -- log.debug(
-            --     "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 1-bufnr:%s, name:%s, buf ft:%s",
+            --     "|fzfx.buffers - buffers.collect_bufs_rpc_callback| 1-bufnr:%s, name:%s, buf ft:%s",
             --     vim.inspect(bufnr),
             --     vim.inspect(vim.api.nvim_buf_get_name(bufnr)),
             --     vim.inspect(utils.get_buf_option(bufnr, "filetype"))
             -- )
             -- log.debug(
-            --     "|fzfx.buffers - buffers.collect_buffers_rpc_callback| 1-valid:%s, loaded:%s, buflisted:%s",
+            --     "|fzfx.buffers - buffers.collect_bufs_rpc_callback| 1-valid:%s, loaded:%s, buflisted:%s",
             --     vim.inspect(vim.api.nvim_buf_is_valid(bufnr)),
             --     vim.inspect(vim.api.nvim_buf_is_loaded(bufnr)),
             --     vim.inspect(vim.fn.buflisted(bufnr))
@@ -92,15 +92,15 @@ local function buffers(query, bang, opts)
     local buffers_configs = conf.get_config().buffers
 
     -- action
-    local bdelete_action = buffers_configs.actions.builtin.delete_buffer[2]
+    local bdelete_action = buffers_configs.interactions.bdelete[2]
 
     -- rpc
-    local collect_buffers_rpc_callback_id =
-        server.get_global_rpc_server():register(collect_buffers_rpc_callback)
+    local collect_bufs_rpc_callback_id =
+        server.get_global_rpc_server():register(collect_bufs_rpc_callback)
 
-    local function delete_buffer_rpc_callback(params)
+    local function bdelete_rpc_callback(params)
         log.debug(
-            "|fzfx.buffers - buffers.delete_buffer_rpc_callback| params:%s",
+            "|fzfx.buffers - buffers.bdelete_rpc_callback| params:%s",
             vim.inspect(params)
         )
         if type(params) == "string" then
@@ -108,21 +108,21 @@ local function buffers(query, bang, opts)
         end
         bdelete_action(params)
     end
-    local delete_buffer_rpc_callback_id =
-        server.get_global_rpc_server():register(delete_buffer_rpc_callback)
+    local bdelete_rpc_callback_id =
+        server.get_global_rpc_server():register(bdelete_rpc_callback)
 
     -- query command, both initial query + reload query
     local query_command = string.format(
         "%s %s",
         shell.make_lua_command("buffers", "provider.lua"),
-        collect_buffers_rpc_callback_id
+        collect_bufs_rpc_callback_id
     )
     local preview_command =
         string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))
     local bdelete_rpc_command = string.format(
         "%s %s {}",
         shell.make_lua_command("rpc", "client.lua"),
-        delete_buffer_rpc_callback_id
+        bdelete_rpc_callback_id
     )
 
     log.debug(
@@ -132,6 +132,7 @@ local function buffers(query, bang, opts)
         vim.inspect(bdelete_rpc_command)
     )
 
+    local current_bufnr = vim.api.nvim_get_current_buf()
     local fzf_opts = {
         { "--query", query },
         {
@@ -152,6 +153,7 @@ local function buffers(query, bang, opts)
             "--preview",
             preview_command,
         },
+        buf_valid(current_bufnr) and "--header-lines=1" or nil,
     }
 
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(buffers_configs.fzf_opts))
@@ -159,10 +161,8 @@ local function buffers(query, bang, opts)
     local ppp =
         Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
     local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
-        server
-            .get_global_rpc_server()
-            :unregister(collect_buffers_rpc_callback_id)
-        server.get_global_rpc_server():unregister(delete_buffer_rpc_callback_id)
+        server.get_global_rpc_server():unregister(collect_bufs_rpc_callback_id)
+        server.get_global_rpc_server():unregister(bdelete_rpc_callback_id)
     end)
 
     return launch
