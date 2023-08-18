@@ -3,6 +3,8 @@ local env = require("fzfx.env")
 local path = require("fzfx.path")
 local color = require("fzfx.color")
 local conf = require("fzfx.config")
+local yank_history = require("fzfx.yank_history")
+local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
 -- visual select {
 
@@ -79,6 +81,28 @@ local function visual_select()
 end
 
 -- visual select }
+
+--- @param opts Configs
+--- @param feed_type UserCommandFeed
+--- @return string
+local function get_command_feed(opts, feed_type)
+    if feed_type == UserCommandFeedEnum.ARGS then
+        return opts.args
+    elseif feed_type == UserCommandFeedEnum.VISUAL then
+        return visual_select()
+    elseif feed_type == UserCommandFeedEnum.CWORD then
+        return vim.fn.expand("<cword>")
+    elseif feed_type == UserCommandFeedEnum.PUT then
+        local y = yank_history.get_yank()
+        return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
+    else
+        log.throw(
+            "|fzfx.helpers - get_command_feed| error! invalid command feed type! %s",
+            vim.inspect(feed_type)
+        )
+        return ""
+    end
+end
 
 -- fzf opts {
 
@@ -276,7 +300,7 @@ end
 -- multi provider switch }
 
 local M = {
-    visual_select = visual_select,
+    get_command_feed = get_command_feed,
     make_fzf_opts = make_fzf_opts,
     make_fzf_default_opts = make_fzf_default_opts,
     Switch = Switch,

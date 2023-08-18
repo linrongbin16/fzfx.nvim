@@ -7,17 +7,20 @@ local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
-local yank_history = require("fzfx.yank_history")
 
 local Context = {
-    --- @type string|nil
+    --- @type string?
+    rmode_key = nil,
+    --- @type string?
+    umode_key = nil,
+    --- @type string?
     umode_header = nil,
-    --- @type string|nil
+    --- @type string?
     rmode_header = nil,
 }
 
---- @alias FilesOptKey "unrestricted"
---- @alias FilesOptValue boolean
+--- @alias FilesOptKey "default_provider"
+--- @alias FilesOptValue "restricted"|"unrestricted"
 --- @alias FilesOpts table<FilesOptKey, FilesOptValue>
 
 --- @param query string
@@ -26,18 +29,15 @@ local Context = {
 --- @return Launch
 local function files(query, bang, opts)
     local files_configs = conf.get_config().files
-    -- action
-    local umode_action =
-        string.lower(files_configs.actions.builtin.unrestricted_mode)
-    local rmode_action =
-        string.lower(files_configs.actions.builtin.restricted_mode)
 
     local provider_switch = helpers.Switch:new(
         "files_provider",
-        opts.unrestricted and files_configs.providers.unrestricted
-            or files_configs.providers.restricted,
-        opts.unrestricted and files_configs.providers.restricted
-            or files_configs.providers.unrestricted
+        opts.default_provider == "restricted"
+                and files_configs.providers.restricted[2]
+            or files_configs.providers.unrestricted[2],
+        opts.default_provider == "restricted"
+                and files_configs.providers.unrestricted[2]
+            or files_configs.providers.restricted[1]
     )
 
     -- rpc callback
@@ -72,7 +72,8 @@ local function files(query, bang, opts)
         { "--query", query },
         {
             "--header",
-            opts.unrestricted and Context.rmode_header or Context.umode_header,
+            opts.default_provider == "restricted" and Context.umode_header
+                or Context.rmode_header,
         },
         {
             "--prompt",
@@ -82,7 +83,8 @@ local function files(query, bang, opts)
             "--bind",
             string.format(
                 "start:unbind(%s)",
-                opts.unrestricted and umode_action or rmode_action
+                opts.default_provider == "restricted" and Context.rmode_key
+                    or Context.umode_key
             ),
         },
         {
@@ -90,11 +92,11 @@ local function files(query, bang, opts)
             "--bind",
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                umode_action,
-                umode_action,
+                Context.umode_key,
+                Context.umode_key,
                 call_switch_provider_rpc_command,
                 Context.rmode_header,
-                rmode_action,
+                Context.rmode_key,
                 query_command
             ),
         },
@@ -103,11 +105,11 @@ local function files(query, bang, opts)
             "--bind",
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                rmode_action,
-                rmode_action,
+                Context.rmode_key,
+                Context.rmode_key,
                 call_switch_provider_rpc_command,
                 Context.umode_header,
-                umode_action,
+                Context.umode_key,
                 query_command
             ),
         },
@@ -142,73 +144,24 @@ local function setup()
     end
 
     -- Context
-    local umode_action = files_configs.actions.builtin.unrestricted_mode
-    local rmode_action = files_configs.actions.builtin.restricted_mode
-    Context.umode_header = color.unrestricted_mode_header(umode_action)
-    Context.rmode_header = color.restricted_mode_header(rmode_action)
+    Context.rmode_key = string.lower(files_configs.providers.restricted[1])
+    Context.umode_key = string.lower(files_configs.providers.unrestricted[1])
+    Context.rmode_header = color.restricted_mode_header(Context.rmode_key)
+    Context.umode_header = color.unrestricted_mode_header(Context.umode_key)
 
     -- User commands
-    for _, command_configs in pairs(files_configs.commands.normal) do
+    for _, command_configs in pairs(files_configs.commands) do
         vim.api.nvim_create_user_command(command_configs.name, function(opts)
             log.debug(
-                "|fzfx.files - setup| command:%s, opts:%s",
-                vim.inspect(command_configs.name),
+                "|fzfx.files - setup| command_configs:%s, opts:%s",
+                vim.inspect(command_configs),
                 vim.inspect(opts)
             )
+            local query = helpers.get_command_feed(opts, command_configs.feed)
             return files(
-                opts.args,
+                query,
                 opts.bang,
-                { unrestricted = command_configs.unrestricted }
-            )
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(files_configs.commands.visual) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local selected = helpers.visual_select()
-            log.debug(
-                "|fzfx.files - setup| command:%s, selected:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(selected),
-                vim.inspect(opts)
-            )
-            return files(
-                selected,
-                opts.bang,
-                { unrestricted = command_configs.unrestricted }
-            )
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(files_configs.commands.cword) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local word = vim.fn.expand("<cword>")
-            log.debug(
-                "|fzfx.files - setup| command:%s, word:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(word),
-                vim.inspect(opts)
-            )
-            return files(
-                word,
-                opts.bang,
-                { unrestricted = command_configs.unrestricted }
-            )
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(files_configs.commands.put) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local yank = yank_history.get_yank()
-            log.debug(
-                "|fzfx.files - setup| command:%s, yank:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(yank),
-                vim.inspect(opts)
-            )
-            return files(
-                (yank ~= nil and type(yank.regtext) == "string")
-                        and yank.regtext
-                    or "",
-                opts.bang,
-                { unrestricted = command_configs.unrestricted }
+                { default_provider = command_configs.default_provider }
             )
         end, command_configs.opts)
     end
