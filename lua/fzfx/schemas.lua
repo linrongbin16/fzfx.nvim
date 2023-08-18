@@ -1,33 +1,28 @@
-local constants = require("fzfx.constants")
-
---- @type Command[]
+--- @type table<string, Schema>
 local Defaults = {
     -- the 'Files' commands
-
-    -- FzfxFiles
-    require("fzfx.files2").files,
-    -- FzfxFilesU
-    require("fzfx.files2").files_u,
+    FzfxFiles = require("fzfx.files2").files,
+    FzfxFilesU = require("fzfx.files2").files_u,
 }
 
---- @type Config
+--- @type table<string, Schema>
 local Schemas = {}
 
---- @param options Config|nil
---- @return Config
-local function setup(options)
-    Schemas = vim.tbl_deep_extend("force", Defaults, options or {})
+--- @param schemas table<string, Schema>?
+--- @return table<string, Schema>?
+local function setup(schemas)
+    Schemas = vim.tbl_deep_extend("force", Defaults, schemas or {})
     return Schemas
 end
 
---- @return Config
-local function get_config()
+--- @return table<string, Schema>?
+local function get_schemas()
     return Schemas
 end
 
 local M = {
     setup = setup,
-    get_config = get_config,
+    get_schemas = get_schemas,
 }
 
 return M
