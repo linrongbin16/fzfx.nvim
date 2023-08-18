@@ -7,38 +7,41 @@ local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
-local yank_history = require("fzfx.yank_history")
+local utils = require("fzfx.utils")
 
 local Context = {
-    --- @type string|nil
+    --- @type string?
+    rmode_key = nil,
+    --- @type string?
+    umode_key = nil,
+    --- @type string?
     umode_header = nil,
-    --- @type string|nil
+    --- @type string?
     rmode_header = nil,
 }
 
+--- @alias LiveGrepOptKey "default_provider"
+--- @alias LiveGrepOptValue "restricted"|"unrestricted"
+--- @alias LiveGrepOpts table<LiveGrepOptKey, LiveGrepOptValue>
 --- @param query string
 --- @param bang boolean
---- @param opts Configs
+--- @param opts LiveGrepOpts
 --- @return Launch
 local function live_grep(query, bang, opts)
     local live_grep_configs = conf.get_config().live_grep
-    local umode_action =
-        string.lower(live_grep_configs.actions.builtin.unrestricted_mode)
-    local rmode_action =
-        string.lower(live_grep_configs.actions.builtin.restricted_mode)
 
     local provider_switch = helpers.Switch:new(
-        "files_provider",
-        opts.unrestricted and live_grep_configs.providers.unrestricted
-            or live_grep_configs.providers.restricted,
-        opts.unrestricted and live_grep_configs.providers.restricted
-            or live_grep_configs.providers.unrestricted
+        "live_grep_provider",
+        opts.default_provider == "restricted"
+                and live_grep_configs.providers.restricted
+            or live_grep_configs.providers.unrestricted,
+        opts.default_provider == "restricted"
+                and live_grep_configs.providers.unrestricted
+            or live_grep_configs.providers.restricted
     )
     -- rpc callback
     local function switch_provider_rpc_callback()
-        log.debug(
-            "|fzfx.live_grep - live_grep.switch_provider_rpc_callback| context"
-        )
+        log.debug("|fzfx.live_grep - live_grep.switch_provider_rpc_callback|")
         provider_switch:switch()
     end
     local switch_provider_rpc_callback_id =
@@ -55,10 +58,7 @@ local function live_grep(query, bang, opts)
     local reload_command = vim.fn.trim(
         string.format(
             "%s %s %s {q}",
-            (
-                type(onchange_reload_delay) == "string"
-                and string.len(onchange_reload_delay) > 0
-            )
+            utils.string_not_empty(onchange_reload_delay)
                     and onchange_reload_delay
                 or "",
             shell.make_lua_command("live_grep", "provider.lua"),
@@ -87,7 +87,8 @@ local function live_grep(query, bang, opts)
         { "--query", query },
         {
             "--header",
-            opts.unrestricted and Context.rmode_header or Context.umode_header,
+            opts.default_provider == "restricted" and Context.umode_header
+                or Context.rmode_header,
         },
         { "--prompt", "Live Grep > " },
         { "--delimiter", ":" },
@@ -95,7 +96,8 @@ local function live_grep(query, bang, opts)
             "--bind",
             string.format(
                 "start:unbind(%s)",
-                opts.unrestricted and umode_action or rmode_action
+                opts.default_provider == "restricted" and Context.rmode_key
+                    or Context.umode_key
             ),
         },
         { "--bind", string.format("change:reload:%s", reload_command) },
@@ -104,11 +106,11 @@ local function live_grep(query, bang, opts)
             "--bind",
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                umode_action,
-                umode_action,
+                Context.umode_key,
+                Context.umode_key,
                 call_switch_provider_rpc_command,
                 Context.rmode_header,
-                rmode_action,
+                Context.rmode_key,
                 reload_command
             ),
         },
@@ -117,11 +119,11 @@ local function live_grep(query, bang, opts)
             "--bind",
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                rmode_action,
-                rmode_action,
+                Context.rmode_key,
+                Context.rmode_key,
                 call_switch_provider_rpc_command,
                 Context.umode_header,
-                umode_action,
+                Context.umode_key,
                 reload_command
             ),
         },
@@ -162,75 +164,25 @@ local function setup()
         return
     end
 
-    local umode_action = live_grep_configs.actions.builtin.unrestricted_mode
-    local rmode_action = live_grep_configs.actions.builtin.restricted_mode
-
     -- Context
-    Context.umode_header = color.unrestricted_mode_header(umode_action)
-    Context.rmode_header = color.restricted_mode_header(rmode_action)
+    Context.rmode_key = string.lower(live_grep_configs.providers.restricted[1])
+    Context.umode_key =
+        string.lower(live_grep_configs.providers.unrestricted[1])
+    Context.rmode_header = color.restricted_mode_header(Context.rmode_key)
+    Context.umode_header = color.unrestricted_mode_header(Context.umode_key)
 
     -- User commands
-    for _, command_configs in pairs(live_grep_configs.commands.normal) do
+    for _, command_configs in pairs(live_grep_configs.commands) do
         vim.api.nvim_create_user_command(command_configs.name, function(opts)
             log.debug(
-                "|fzfx.live_grep - setup| command:%s, opts:%s",
-                vim.inspect(command_configs.name),
+                "|fzfx.live_grep - setup| command_configs:%s, opts:%s",
+                vim.inspect(command_configs),
                 vim.inspect(opts)
             )
             return live_grep(
                 opts.args,
                 opts.bang,
-                { unrestricted = command_configs.unrestricted }
-            )
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(live_grep_configs.commands.visual) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local selected = helpers.visual_select()
-            log.debug(
-                "|fzfx.live_grep - setup| command:%s, selected:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(selected),
-                vim.inspect(opts)
-            )
-            return live_grep(
-                selected,
-                opts.bang,
-                { unrestricted = command_configs.unrestricted }
-            )
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(live_grep_configs.commands.cword) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local word = vim.fn.expand("<cword>")
-            log.debug(
-                "|fzfx.live_grep - setup| command:%s, word:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(word),
-                vim.inspect(opts)
-            )
-            return live_grep(
-                word,
-                opts.bang,
-                { unrestricted = command_configs.unrestricted }
-            )
-        end, command_configs.opts)
-    end
-    for _, command_configs in pairs(live_grep_configs.commands.put) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local yank = yank_history.get_yank()
-            log.debug(
-                "|fzfx.live_grep - setup| command:%s, yank:%s, opts:%s",
-                vim.inspect(command_configs.name),
-                vim.inspect(yank),
-                vim.inspect(opts)
-            )
-            return live_grep(
-                (yank ~= nil and type(yank.regtext) == "string")
-                        and yank.regtext
-                    or "",
-                opts.bang,
-                { unrestricted = command_configs.unrestricted }
+                { default_provider = command_configs.default_provider }
             )
         end, command_configs.opts)
     end

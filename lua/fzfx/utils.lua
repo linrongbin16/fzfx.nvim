@@ -68,12 +68,24 @@ local function set_win_option(winnr, name, value)
     end
 end
 
+--- @param s any
+local function string_empty(s)
+    return type(s) ~= "string" or string.len(s) == 0
+end
+
+--- @param s any
+local function string_not_empty(s)
+    return type(s) == "string" and string.len(s) > 0
+end
+
 local M = {
     table_filter = table_filter,
     list_filter = list_filter,
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
     set_win_option = set_win_option,
+    string_empty = string_empty,
+    string_not_empty = string_not_empty,
 }
 
 return M

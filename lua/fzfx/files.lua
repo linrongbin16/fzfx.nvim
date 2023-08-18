@@ -22,7 +22,6 @@ local Context = {
 --- @alias FilesOptKey "default_provider"
 --- @alias FilesOptValue "restricted"|"unrestricted"
 --- @alias FilesOpts table<FilesOptKey, FilesOptValue>
-
 --- @param query string
 --- @param bang boolean
 --- @param opts FilesOpts
