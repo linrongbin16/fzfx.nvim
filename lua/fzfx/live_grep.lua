@@ -172,8 +172,9 @@ local function setup()
             --     vim.inspect(command_configs),
             --     vim.inspect(opts)
             -- )
+            local query = helpers.get_command_feed(opts, command_configs.feed)
             return live_grep(
-                opts.args,
+                query,
                 opts.bang,
                 { default_provider = command_configs.default_provider }
             )
