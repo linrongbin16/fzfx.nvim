@@ -1,5 +1,9 @@
 local Pipeline = require("fzfx.schema").Pipeline
-local Schema = require("fzfx.schema").Schema
+local Command = require("fzfx.schema").Command
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local LineProcessorTypeEnum = require("fzfx.schema").LineProcessorTypeEnum
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
+local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local NormalCommandOpts = require("fzfx.schema").NormalCommandOpts
 local constants = require("fzfx.constants")
 local env = require("fzfx.env")
@@ -9,16 +13,6 @@ local fzf_opt_constants = require("fzfx.fzf_opt_constants")
 
 local default_fd_command =
     string.format("%s -cnever -tf -tl -L -i", constants.fd)
-
---- @return string
-local function restricted_provider()
-    return default_fd_command
-end
-
---- @return string
-local function unrestricted_provider()
-    return default_fd_command .. " -u"
-end
 
 --- @param line string
 --- @return string
@@ -102,16 +96,22 @@ local function previewer(...)
 end
 
 local restricted_pipeline = Pipeline:make({
-    provider = restricted_provider,
+    provider = default_fd_command,
+    provider_type = ProviderTypeEnum.PLAIN,
     line_processor = processor,
+    line_processor_type = LineProcessorTypeEnum.FUNCTION,
     previewer = previewer,
+    previewer_type = PreviewerTypeEnum.COMMAND,
     help_format = "%s to restricted mode",
 })
 
 local unrestricted_pipeline = Pipeline:make({
-    provider = unrestricted_provider,
+    provider = default_fd_command .. " -u",
+    provider_type = ProviderTypeEnum.PLAIN,
     line_processor = processor,
+    line_processor_type = LineProcessorTypeEnum.FUNCTION,
     previewer = previewer,
+    previewer_type = PreviewerTypeEnum.COMMAND,
     help_format = "%s to unrestricted mode",
 })
 
@@ -124,7 +124,7 @@ local default_fzf_opts = {
     fzf_opt_constants.toggle_preview,
 }
 
-local files = Schema:make({
+local files = Command:make({
     name = "FzfxFiles",
     pipelines = {
         ["ctrl-r"] = restricted_pipeline,
@@ -141,12 +141,34 @@ local files = Schema:make({
         desc = "Find files",
         complete = "dir",
     }),
-    feed_method = "args",
+    feed_method = CommandFeedEnum.ARGS,
+    fzf_opts = default_fzf_opts,
+})
+
+local files_u = Command:make({
+    name = "FzfxFilesU",
+    pipelines = {
+        ["ctrl-r"] = restricted_pipeline,
+        ["ctrl-u"] = unrestricted_pipeline,
+    },
+    default_pipeline = unrestricted_pipeline,
+    interactive_actions = nil,
+    expect_actions = {
+        ["esc"] = action.nop,
+        ["enter"] = action.edit,
+        ["double-click"] = action.edit,
+    },
+    command_opts = NormalCommandOpts:make({
+        desc = "Find files unrestricted",
+        complete = "dir",
+    }),
+    feed_method = CommandFeedEnum.ARGS,
     fzf_opts = default_fzf_opts,
 })
 
 local M = {
     files = files,
+    files_u = files_u,
 }
 
 return M
