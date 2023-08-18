@@ -76,17 +76,6 @@ local function string_not_empty(s)
     return type(s) == "string" and string.len(s) > 0
 end
 
---- @param bufnr integer
---- @return boolean
-local function buffer_valid(bufnr)
-    local bufname = vim.api.nvim_buf_get_name(bufnr)
-    return vim.api.nvim_buf_is_valid(bufnr)
-        and vim.api.nvim_buf_is_loaded(bufnr)
-        and vim.fn.buflisted(bufnr) > 0
-        and type(bufname) == "string"
-        and string.len(bufname) > 0
-end
-
 local M = {
     table_filter = table_filter,
     list_filter = list_filter,
@@ -95,7 +84,6 @@ local M = {
     set_win_option = set_win_option,
     string_empty = string_empty,
     string_not_empty = string_not_empty,
-    buffer_valid = buffer_valid,
 }
 
 return M

@@ -1,5 +1,4 @@
 local log = require("fzfx.log")
-local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
 local Launch = require("fzfx.launch").Launch
@@ -7,7 +6,6 @@ local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
-local yank_history = require("fzfx.yank_history")
 local utils = require("fzfx.utils")
 
 local Context = {
@@ -39,7 +37,13 @@ end
 --- @param bufnr integer
 --- @return boolean
 local function buf_valid(bufnr)
-    return utils.buffer_valid(bufnr) and not buf_exclude(bufnr)
+    local bufname = vim.api.nvim_buf_get_name(bufnr)
+    return vim.api.nvim_buf_is_valid(bufnr)
+        and vim.api.nvim_buf_is_loaded(bufnr)
+        and vim.fn.buflisted(bufnr) > 0
+        and type(bufname) == "string"
+        and string.len(bufname) > 0
+        and not buf_exclude(bufnr)
 end
 
 --- @param bufnr integer
