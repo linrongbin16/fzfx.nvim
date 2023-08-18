@@ -145,24 +145,12 @@ end
 --- @param o FzfOption?
 --- @return FzfOption[]
 local function append_fzf_opt(opts, o)
-    if o == nil then
-        -- pass
-    elseif type(o) == "string" and string.len(o) > 0 then
+    if type(o) == "string" and string.len(o) > 0 then
         table.insert(opts, o)
     elseif type(o) == "table" and #o == 2 then
         local k = o[1]
         local v = o[2]
         table.insert(opts, string.format("%s %s", k, vim.fn.shellescape(v)))
-    elseif type(o) == "function" then
-        local result_o = o()
-        log.ensure(
-            type(result_o) == "string"
-                or type(result_o) == "table"
-                or result_o == nil,
-            "|fzfx.helpers - append_fzf_opt| result of function o must be string/list/nil! %s",
-            vim.inspect(result_o)
-        )
-        opts = append_fzf_opt(opts, result_o)
     else
         log.throw(
             "|fzfx.helpers - append_fzf_opt| invalid fzf opt: %s",
@@ -170,6 +158,28 @@ local function append_fzf_opt(opts, o)
         )
     end
     return opts
+end
+
+--- @param opts FzfOption[]
+--- @return FzfOption[]
+local function preprocess_fzf_opts(opts)
+    if opts == nil or #opts == 0 then
+        return {}
+    end
+    local result = {}
+    for _, o in ipairs(opts) do
+        if o == nil then
+            -- pass
+        elseif type(o) == "function" then
+            local result_o = o()
+            if result_o ~= nil then
+                table.insert(result, result_o)
+            end
+        else
+            table.insert(result, o)
+        end
+    end
+    return result
 end
 
 --- @param opts FzfOption[]
@@ -313,6 +323,7 @@ end
 
 local M = {
     get_command_feed = get_command_feed,
+    preprocess_fzf_opts = preprocess_fzf_opts,
     make_fzf_opts = make_fzf_opts,
     make_fzf_default_opts = make_fzf_default_opts,
     Switch = Switch,

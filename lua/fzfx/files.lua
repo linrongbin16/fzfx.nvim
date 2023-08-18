@@ -114,6 +114,7 @@ local function files(query, bang, opts)
         },
     }
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
+    fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
     local actions = files_configs.actions
     local ppp =
         Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)

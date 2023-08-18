@@ -132,7 +132,6 @@ local function buffers(query, bang, opts)
         vim.inspect(bdelete_rpc_command)
     )
 
-    local current_bufnr = vim.api.nvim_get_current_buf()
     local fzf_opts = {
         { "--query", query },
         {
@@ -153,10 +152,14 @@ local function buffers(query, bang, opts)
             "--preview",
             preview_command,
         },
-        buf_valid(current_bufnr) and "--header-lines=1" or nil,
+        function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            return buf_valid(bufnr) and "--header-lines=1" or nil
+        end,
     }
 
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(buffers_configs.fzf_opts))
+    fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
     local actions = buffers_configs.actions
     local ppp =
         Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
