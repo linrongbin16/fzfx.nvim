@@ -61,7 +61,8 @@ local function setup()
             --     vim.inspect(command_configs.name),
             --     vim.inspect(opts)
             -- )
-            return git_files(opts.args, opts.bang)
+            local query = helpers.get_command_feed(opts, command_configs.feed)
+            return git_files(query, opts.bang)
         end, command_configs.opts)
     end
 end
