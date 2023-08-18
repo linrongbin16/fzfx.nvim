@@ -16,7 +16,7 @@ end
 
 --- @param query string
 --- @param bang boolean
---- @param opts Config?
+--- @param opts Configs?
 --- @return Launch
 local function git_files(query, bang, opts)
     local git_files_configs = conf.get_config().git_files

@@ -34,14 +34,14 @@ end
 T["icon"] = new_set()
 
 T["icon"]["icon_disable"] = function()
-    child.lua([[ vim.env._FZFX_NVIM_DEVICON_PATH='' ]])
+    child.lua([[ vim.env._FZFX_NVIM_DEVICONS_PATH='' ]])
     local actual = child.lua_get([[ M.icon_enable() ]])
     add_note(string.format("actual(%s):%s", type(actual), vim.inspect(actual)))
     expect.equality(actual, false)
 end
 
 T["icon"]["icon_enable"] = function()
-    child.lua([[ vim.env._FZFX_NVIM_DEVICON_PATH='~/github/linrongbin16' ]])
+    child.lua([[ vim.env._FZFX_NVIM_DEVICONS_PATH='~/github/linrongbin16' ]])
     local actual = child.lua_get([[ M.icon_enable() ]])
     add_note(string.format("actual(%s):%s", type(actual), vim.inspect(actual)))
     expect.equality(actual, true)

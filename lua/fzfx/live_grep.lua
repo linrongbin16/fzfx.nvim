@@ -18,7 +18,7 @@ local Context = {
 
 --- @param query string
 --- @param bang boolean
---- @param opts Config
+--- @param opts Configs
 --- @return Launch
 local function live_grep(query, bang, opts)
     local live_grep_configs = conf.get_config().live_grep

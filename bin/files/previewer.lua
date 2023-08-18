@@ -1,5 +1,5 @@
-local ICON_ENABLE = type(vim.env._FZFX_NVIM_DEVICON_PATH) == "string"
-    and string.len(vim.env._FZFX_NVIM_DEVICON_PATH) > 0
+local ICON_ENABLE = type(vim.env._FZFX_NVIM_DEVICONS_PATH) == "string"
+    and string.len(vim.env._FZFX_NVIM_DEVICONS_PATH) > 0
 local SELF_PATH = vim.env._FZFX_NVIM_SELF_PATH
 if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
     io.write(

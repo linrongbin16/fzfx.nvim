@@ -20,9 +20,9 @@ local default_fzf_options = {
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
---- @alias Config table<string, any>
+--- @alias Configs table<string, any>
 
---- @type Config
+--- @type Configs
 local Defaults = {
     -- the 'Files' commands
     files = {
@@ -639,17 +639,17 @@ local Defaults = {
     },
 }
 
---- @type Config
+--- @type Configs
 local Configs = {}
 
---- @param options Config|nil
---- @return Config
+--- @param options Configs|nil
+--- @return Configs
 local function setup(options)
     Configs = vim.tbl_deep_extend("force", Defaults, options or {})
     return Configs
 end
 
---- @return Config
+--- @return Configs
 local function get_config()
     return Configs
 end

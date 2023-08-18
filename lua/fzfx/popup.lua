@@ -164,7 +164,7 @@ local function safe_range(left, value, right)
     return math.min(math.max(left, value), right)
 end
 
---- @param win_opts Config
+--- @param win_opts Configs
 --- @return PopupOpts
 local function make_popup_window_opts(win_opts)
     --- @type integer

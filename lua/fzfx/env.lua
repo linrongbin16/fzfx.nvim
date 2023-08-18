@@ -5,8 +5,8 @@ end
 
 --- @return boolean
 local function icon_enable()
-    return type(vim.env._FZFX_NVIM_DEVICON_PATH) == "string"
-        and string.len(vim.env._FZFX_NVIM_DEVICON_PATH) > 0
+    return type(vim.env._FZFX_NVIM_DEVICONS_PATH) == "string"
+        and string.len(vim.env._FZFX_NVIM_DEVICONS_PATH) > 0
 end
 
 local M = {
