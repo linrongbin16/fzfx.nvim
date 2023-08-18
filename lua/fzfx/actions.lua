@@ -1,5 +1,6 @@
 local log = require("fzfx.log")
 local env = require("fzfx.env")
+local path = require("fzfx.path")
 
 local function nop(lines)
     log.debug("|fzfx.action - nop| lines:%s", vim.inspect(lines))
@@ -93,7 +94,15 @@ local function bdelete(lines)
     if type(lines) == "table" and #lines > 0 then
         for _, line in ipairs(lines) do
             local bufname = env.icon_enable() and vim.fn.split(line)[2] or line
-            vim.cmd(vim.fn.trim(string.format([[ bdelete %s ]], bufname)))
+            bufname = path.normalize(bufname)
+            local cmd = vim.fn.trim(string.format([[ bdelete %s ]], bufname))
+            log.debug(
+                "|fzfx.actions - bdelete| line:[%s], bufname:[%s], cmd:[%s]",
+                line,
+                bufname,
+                cmd
+            )
+            vim.cmd(cmd)
         end
     end
 end

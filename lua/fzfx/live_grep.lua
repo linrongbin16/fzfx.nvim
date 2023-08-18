@@ -1,5 +1,4 @@
 local log = require("fzfx.log")
-local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
 local Launch = require("fzfx.launch").Launch
