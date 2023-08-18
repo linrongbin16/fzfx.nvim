@@ -42,8 +42,8 @@ local function merge_fzf_opts(fzf_opts, actions)
     return merged_opts
 end
 
---- @param fzf_opts Config
---- @param actions Config
+--- @param fzf_opts Configs
+--- @param actions Configs
 --- @param result string
 --- @return string
 local function make_fzf_command(fzf_opts, actions, result)
@@ -67,8 +67,8 @@ end
 
 --- @param popup Popup
 --- @param source string
---- @param fzf_opts Config
---- @param actions Config
+--- @param fzf_opts Configs
+--- @param actions Configs
 --- @param on_launch_exit OnLaunchExit|nil
 --- @return Launch
 function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
@@ -145,8 +145,7 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
 
     local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
-    vim.env.FZF_DEFAULT_OPTS =
-        helpers.make_fzf_default_opts(conf.get_config().popup.fzf_opts)
+    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_default_opts()
     vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(
         "|fzfx.popup - Launch:new| $FZF_DEFAULT_OPTS:%s",

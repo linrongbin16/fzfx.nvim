@@ -17,7 +17,7 @@ local LogLevelHl = {
     ["DEBUG"] = "Comment",
 }
 
---- @type Config
+--- @type Configs
 local Defaults = {
     --- @type LogLevel
     level = "INFO",
@@ -35,7 +35,7 @@ local Defaults = {
     file_path = nil,
 }
 
---- @type Config
+--- @type Configs
 local Configs = {}
 
 --- @type string
@@ -43,7 +43,7 @@ local PathSeparator = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
         and "\\"
     or "/"
 
---- @param option Config
+--- @param option Configs
 --- @return nil
 local function setup(option)
     Configs = vim.tbl_deep_extend("force", vim.deepcopy(Defaults), option or {})

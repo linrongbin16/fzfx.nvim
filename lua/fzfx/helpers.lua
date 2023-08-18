@@ -3,6 +3,8 @@ local env = require("fzfx.env")
 local path = require("fzfx.path")
 local color = require("fzfx.color")
 local conf = require("fzfx.config")
+local yank_history = require("fzfx.yank_history")
+local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
 -- visual select {
 
@@ -80,14 +82,36 @@ end
 
 -- visual select }
 
+--- @param opts Configs
+--- @param feed_type UserCommandFeed
+--- @return string
+local function get_command_feed(opts, feed_type)
+    if feed_type == UserCommandFeedEnum.ARGS then
+        return opts.args
+    elseif feed_type == UserCommandFeedEnum.VISUAL then
+        return visual_select()
+    elseif feed_type == UserCommandFeedEnum.CWORD then
+        return vim.fn.expand("<cword>")
+    elseif feed_type == UserCommandFeedEnum.PUT then
+        local y = yank_history.get_yank()
+        return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
+    else
+        log.throw(
+            "|fzfx.helpers - get_command_feed| error! invalid command feed type! %s",
+            vim.inspect(feed_type)
+        )
+        return ""
+    end
+end
+
 -- fzf opts {
 
---- @return FzfOpts
+--- @return FzfOption[]
 local function generate_fzf_color_opts()
-    if type(conf.get_config().popup.fzf_color_opts) ~= "table" then
+    if type(conf.get_config().fzf_color_opts) ~= "table" then
         return {}
     end
-    local fzf_colors = conf.get_config().popup.fzf_color_opts
+    local fzf_colors = conf.get_config().fzf_color_opts
     local builder = {}
     for name, opts in pairs(fzf_colors) do
         for i = 2, #opts do
@@ -105,21 +129,21 @@ local function generate_fzf_color_opts()
     return { { "--color", table.concat(builder, ",") } }
 end
 
---- @return FzfOpts
+--- @return FzfOption[]
 local function generate_fzf_icon_opts()
-    if type(conf.get_config().popup.icon) ~= "table" then
+    if type(conf.get_config().icons) ~= "table" then
         return {}
     end
-    local icon_configs = conf.get_config().popup.icon
+    local icon_configs = conf.get_config().icons
     return {
         { "--pointer", icon_configs.fzf_pointer },
         { "--marker", icon_configs.fzf_marker },
     }
 end
 
---- @param opts FzfOpts
---- @param o FzfOpt
---- @return FzfOpts
+--- @param opts FzfOption[]
+--- @param o FzfOption?
+--- @return FzfOption[]
 local function append_fzf_opt(opts, o)
     if type(o) == "string" and string.len(o) > 0 then
         table.insert(opts, o)
@@ -136,7 +160,29 @@ local function append_fzf_opt(opts, o)
     return opts
 end
 
---- @param opts FzfOpts
+--- @param opts FzfOption[]
+--- @return FzfOption[]
+local function preprocess_fzf_opts(opts)
+    if opts == nil or #opts == 0 then
+        return {}
+    end
+    local result = {}
+    for _, o in ipairs(opts) do
+        if o == nil then
+            -- pass
+        elseif type(o) == "function" then
+            local result_o = o()
+            if result_o ~= nil then
+                table.insert(result, result_o)
+            end
+        else
+            table.insert(result, o)
+        end
+    end
+    return result
+end
+
+--- @param opts FzfOption[]
 --- @return string?
 local function make_fzf_opts(opts)
     if opts == nil or #opts == 0 then
@@ -149,9 +195,9 @@ local function make_fzf_opts(opts)
     return table.concat(result, " ")
 end
 
---- @param opts FzfOpts
 --- @return string?
-local function make_fzf_default_opts(opts)
+local function make_fzf_default_opts()
+    local opts = conf.get_config().fzf_opts
     local result = {}
     if type(opts) == "table" and #opts > 0 then
         for _, o in ipairs(opts) do
@@ -276,7 +322,8 @@ end
 -- multi provider switch }
 
 local M = {
-    visual_select = visual_select,
+    get_command_feed = get_command_feed,
+    preprocess_fzf_opts = preprocess_fzf_opts,
     make_fzf_opts = make_fzf_opts,
     make_fzf_default_opts = make_fzf_default_opts,
     Switch = Switch,
