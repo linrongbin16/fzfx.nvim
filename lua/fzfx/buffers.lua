@@ -178,7 +178,7 @@ local function setup()
     end
 
     -- Context
-    Context.bdelete_key = buffers_configs.interactions.bdelete[1]
+    Context.bdelete_key = string.lower(buffers_configs.interactions.bdelete[1])
     Context.bdelete_header = color.delete_buffer_header(Context.bdelete_key)
 
     -- User commands
