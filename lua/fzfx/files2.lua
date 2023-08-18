@@ -122,6 +122,10 @@ local default_fzf_opts = {
     fzf_opt_constants.preview_half_page_down,
     fzf_opt_constants.preview_half_page_up,
     fzf_opt_constants.toggle_preview,
+    function()
+        local path = require("fzfx.path")
+        return { "--prompt", path.shorten() .. " > " }
+    end,
 }
 
 local files = Command:make({
