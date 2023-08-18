@@ -546,6 +546,8 @@ If you have encounter some breaks on configuration, please see [Break Changes](#
   - Remove default bind keys 'ctrl-d'(deselect), 'alt-a'(deselect-all).
   - Re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
   - Re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
+- 2023-08-19
+  - Refactor configs schema for better structure.
 
 ## Credit
 
