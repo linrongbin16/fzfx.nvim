@@ -96,7 +96,7 @@ local function buffers(query, bang, opts)
     local buffers_configs = conf.get_config().buffers
 
     -- action
-    local bdelete_action = buffers_configs.interactions.bdelete[2]
+    local bdelete_action = buffers_configs.interactions[2]
 
     -- rpc
     local collect_bufs_rpc_callback_id =
@@ -182,7 +182,7 @@ local function setup()
     end
 
     -- Context
-    Context.bdelete_key = string.lower(buffers_configs.interactions.bdelete[1])
+    Context.bdelete_key = string.lower(buffers_configs.interactions[1])
     Context.bdelete_header = color.delete_buffer_header(Context.bdelete_key)
 
     -- User commands

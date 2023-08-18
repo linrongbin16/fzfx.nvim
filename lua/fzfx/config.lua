@@ -288,10 +288,8 @@ local Defaults = {
             },
         },
         interactions = {
-            bdelete = {
-                "ctrl-d",
-                require("fzfx.actions").bdelete,
-            },
+            "ctrl-d",
+            require("fzfx.actions").bdelete,
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
