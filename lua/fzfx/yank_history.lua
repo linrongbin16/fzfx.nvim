@@ -199,7 +199,7 @@ end
 local function get_yank()
     log.ensure(
         GlobalYankHistory ~= nil,
-        "|fzfx.yank_history - get_yank| error! GlobalYankHistoryManager must not be nil!"
+        "|fzfx.yank_history - get_yank| error! GlobalYankHistory must not be nil!"
     )
     ---@diagnostic disable-next-line: need-check-nil
     return GlobalYankHistory:get()
@@ -213,7 +213,7 @@ end
 local function setup()
     GlobalYankHistory = YankHistory:new(
         env.debug_enable() and 5
-            or conf.get_config().yank_history.other_opts.history_size
+            or conf.get_config().yank_history.other_opts.maxsize
     )
     vim.api.nvim_create_autocmd("TextYankPost", {
         pattern = { "*" },

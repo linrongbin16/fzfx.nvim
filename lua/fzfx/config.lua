@@ -492,7 +492,7 @@ local Defaults = {
     -- the 'Yank History' commands
     yank_history = {
         other_opts = {
-            history_size = 100,
+            maxsize = 100,
         },
     },
 
