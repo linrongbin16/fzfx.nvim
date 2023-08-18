@@ -36,7 +36,7 @@ local function files(query, bang, opts)
             or files_configs.providers.unrestricted[2],
         opts.default_provider == "restricted"
                 and files_configs.providers.unrestricted[2]
-            or files_configs.providers.restricted[1]
+            or files_configs.providers.restricted[2]
     )
 
     -- rpc callback

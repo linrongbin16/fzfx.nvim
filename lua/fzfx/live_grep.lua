@@ -33,11 +33,11 @@ local function live_grep(query, bang, opts)
     local provider_switch = helpers.Switch:new(
         "live_grep_provider",
         opts.default_provider == "restricted"
-                and live_grep_configs.providers.restricted
-            or live_grep_configs.providers.unrestricted,
+                and live_grep_configs.providers.restricted[2]
+            or live_grep_configs.providers.unrestricted[2],
         opts.default_provider == "restricted"
-                and live_grep_configs.providers.unrestricted
-            or live_grep_configs.providers.restricted
+                and live_grep_configs.providers.unrestricted[2]
+            or live_grep_configs.providers.restricted[2]
     )
     -- rpc callback
     local function switch_provider_rpc_callback()
