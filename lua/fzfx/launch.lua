@@ -72,6 +72,7 @@ end
 --- @field shellquote string?
 --- @field shellredir string?
 --- @field shellpipe string?
+--- @field shellxescape string?
 local ShellOptsContext = {
     shell = nil,
     shellslash = nil,
@@ -80,6 +81,7 @@ local ShellOptsContext = {
     shellquote = nil,
     shellredir = nil,
     shellpipe = nil,
+    shellxescape = nil,
 }
 
 --- @return ShellOptsContext
@@ -92,16 +94,18 @@ function ShellOptsContext:save()
         shellquote = vim.o.shellquote,
         shellredir = vim.o.shellredir,
         shellpipe = vim.o.shellpipe,
+        shellxescape = vim.o.shellxescape,
     })
     log.debug(
-        "|fzfx.launch - ShellOptsContext:save| before, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s",
+        "|fzfx.launch - ShellOptsContext:save| before, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s, shellxescape:%s",
         vim.inspect(vim.o.shell),
         vim.inspect(vim.o.shellslash),
         vim.inspect(vim.o.shellcmdflag),
         vim.inspect(vim.o.shellxquote),
         vim.inspect(vim.o.shellquote),
         vim.inspect(vim.o.shellredir),
-        vim.inspect(vim.o.shellpipe)
+        vim.inspect(vim.o.shellpipe),
+        vim.inspect(vim.o.shellxescape)
     )
 
     if constants.is_windows then
@@ -112,24 +116,26 @@ function ShellOptsContext:save()
         vim.o.shellquote = ""
         vim.o.shellredir = ">%s 2>&1"
         vim.o.shellpipe = "2>&1| tee"
+        vim.o.shellxescape = ""
     else
         vim.o.shell = "sh"
     end
 
     log.debug(
-        "|fzfx.launch - ShellOptsContext:save| after, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s",
+        "|fzfx.launch - ShellOptsContext:save| after, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s, shellxescape:%s",
         vim.inspect(vim.o.shell),
         vim.inspect(vim.o.shellslash),
         vim.inspect(vim.o.shellcmdflag),
         vim.inspect(vim.o.shellxquote),
         vim.inspect(vim.o.shellquote),
         vim.inspect(vim.o.shellredir),
-        vim.inspect(vim.o.shellpipe)
+        vim.inspect(vim.o.shellpipe),
+        vim.inspect(vim.o.shellxescape)
     )
     return ctx
 end
 
---- @return ShellOptsContext
+--- @return nil
 function ShellOptsContext:restore()
     vim.o.shell = self.shell
     vim.o.shellslash = self.shellslash
@@ -138,6 +144,7 @@ function ShellOptsContext:restore()
     vim.o.shellquote = self.shellquote
     vim.o.shellredir = self.shellredir
     vim.o.shellpipe = self.shellpipe
+    vim.o.shellxescape = self.shellxescape
 end
 
 --- @alias OnLaunchExit fun(launch:Launch):nil
@@ -150,6 +157,14 @@ end
 --- @return Launch
 function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
     local result = vim.fn.tempname()
+
+    -- save contexts
+    local shell_opts = ShellOptsContext:save()
+    local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
+    local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
+    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_default_opts()
+    vim.env.FZF_DEFAULT_COMMAND = source
+
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
 
     local function on_fzf_exit(jobid2, exitcode, event)
@@ -220,12 +235,6 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         end
     end
 
-    -- save contexts
-    local shell_opts = ShellOptsContext:save()
-    local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
-    local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
-    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_default_opts()
-    vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(
         "|fzfx.popup - Launch:new| $FZF_DEFAULT_OPTS:%s",
         vim.inspect(vim.env.FZF_DEFAULT_OPTS)
