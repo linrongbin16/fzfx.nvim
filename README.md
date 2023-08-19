@@ -37,7 +37,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - Search by visual select.
   - Search by cursor word.
   - Search by yank text.
-- Data source switch: easily switch on different data sources, e.g. whether to search hidden and ignored files, local or remote git branches, etc.
+- Data source switch: easily switch on different data sources. Such as whether to search hidden and ignored files when live grep, local or remote branches when search git branches, etc.
 - Lua support: preview lua function defined commands and key mappings (todo).
 - ...
 
