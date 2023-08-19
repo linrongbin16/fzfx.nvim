@@ -1,12 +1,12 @@
 if vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0 then
-    vim.opt.shell = "powershell.exe"
-    vim.opt.shellslash = true
-    vim.opt.shellxquote = ""
-    vim.opt.shellcmdflag =
+    vim.o.shell = "powershell.exe"
+    vim.o.shellslash = true
+    vim.o.shellxquote = ""
+    vim.o.shellcmdflag =
         "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "
-    vim.opt.shellquote = ""
-    vim.opt.shellpipe = "| Out-File -Encoding UTF8 %s"
-    vim.opt.shellredir = "| Out-File -Encoding UTF8 %s"
+    vim.o.shellquote = ""
+    vim.o.shellpipe = "| Out-File -Encoding UTF8 %s"
+    vim.o.shellredir = "| Out-File -Encoding UTF8 %s"
 end
 
 vim.o.number = true
@@ -44,7 +44,13 @@ require("lazy").setup({
         "linrongbin16/fzfx.nvim",
         dev = true,
         dir = "~/github/linrongbin16/fzfx.nvim",
-        opts = {},
+        opts = {
+            debug = {
+                enable = true,
+                file_log = true,
+                console_log = false,
+            },
+        },
         dependencies = {
             "folke/tokyonight.nvim",
             "nvim-tree/nvim-web-devicons",

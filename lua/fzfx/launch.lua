@@ -69,40 +69,75 @@ end
 --- @field shellslash string?
 --- @field shellcmdflag string?
 --- @field shellxquote string?
+--- @field shellquote string?
+--- @field shellredir string?
+--- @field shellpipe string?
 local ShellOptsContext = {
     shell = nil,
     shellslash = nil,
     shellcmdflag = nil,
     shellxquote = nil,
+    shellquote = nil,
+    shellredir = nil,
+    shellpipe = nil,
 }
 
 --- @return ShellOptsContext
 function ShellOptsContext:save()
     local ctx = vim.tbl_deep_extend("force", vim.deepcopy(ShellOptsContext), {
-        shell = vim.opt.shell,
-        shellslash = vim.opt.shellslash,
-        shellcmdflag = vim.opt.shellcmdflag,
-        shellxquote = vim.opt.shellxquote,
+        shell = vim.o.shell,
+        shellslash = vim.o.shellslash,
+        shellcmdflag = vim.o.shellcmdflag,
+        shellxquote = vim.o.shellxquote,
+        shellquote = vim.o.shellquote,
+        shellredir = vim.o.shellredir,
+        shellpipe = vim.o.shellpipe,
     })
+    log.debug(
+        "|fzfx.launch - ShellOptsContext:save| before, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s",
+        vim.inspect(vim.o.shell),
+        vim.inspect(vim.o.shellslash),
+        vim.inspect(vim.o.shellcmdflag),
+        vim.inspect(vim.o.shellxquote),
+        vim.inspect(vim.o.shellquote),
+        vim.inspect(vim.o.shellredir),
+        vim.inspect(vim.o.shellpipe)
+    )
 
     if constants.is_windows then
-        vim.opt.shell = "cmd.exe"
-        vim.opt.shellslash = false
-        vim.opt.shellcmdflag = "/s /c"
-        vim.opt.shellxquote = '"'
+        vim.o.shell = "cmd.exe"
+        vim.o.shellslash = false
+        vim.o.shellcmdflag = "/s /c"
+        vim.o.shellxquote = '"'
+        vim.o.shellquote = ""
+        vim.o.shellredir = ">%s 2>&1"
+        vim.o.shellpipe = "2>&1| tee"
     else
-        vim.opt.shell = "sh"
+        vim.o.shell = "sh"
     end
 
+    log.debug(
+        "|fzfx.launch - ShellOptsContext:save| after, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s",
+        vim.inspect(vim.o.shell),
+        vim.inspect(vim.o.shellslash),
+        vim.inspect(vim.o.shellcmdflag),
+        vim.inspect(vim.o.shellxquote),
+        vim.inspect(vim.o.shellquote),
+        vim.inspect(vim.o.shellredir),
+        vim.inspect(vim.o.shellpipe)
+    )
     return ctx
 end
 
 --- @return ShellOptsContext
 function ShellOptsContext:restore()
-    vim.opt.shell = self.shell
-    vim.opt.shellslash = self.shellslash
-    vim.opt.shellcmdflag = self.shellcmdflag
-    vim.opt.shellxquote = self.shellxquote
+    vim.o.shell = self.shell
+    vim.o.shellslash = self.shellslash
+    vim.o.shellcmdflag = self.shellcmdflag
+    vim.o.shellxquote = self.shellxquote
+    vim.o.shellquote = self.shellquote
+    vim.o.shellredir = self.shellredir
+    vim.o.shellpipe = self.shellpipe
 end
 
 --- @alias OnLaunchExit fun(launch:Launch):nil
