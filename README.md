@@ -59,6 +59,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 ## Requirement
 
 - Neovim &ge; 0.5.
+- [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), recommand to install them with [cargo](https://www.rust-lang.org/):
 
   ```bash
@@ -67,7 +68,15 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   cargo install --locked bat
   ```
 
-- [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
+<details>
+<summary><b>Click here to see how to install shell environment on Windows</b></summary>
+<br/>
+
+### [Git for Windows](https://git-scm.com/download/win)
+
+### [scoop](https://scoop.sh/)
+
+</details>
 
 ### Path containing whitespace & Escaping issue
 

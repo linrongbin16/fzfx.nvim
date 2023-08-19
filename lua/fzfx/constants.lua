@@ -9,6 +9,10 @@ local bat = vim.fn.executable("batcat") > 0 and "batcat" or "bat"
 local rg = "rg"
 local fd = vim.fn.executable("fdfind") > 0 and "fdfind" or "fd"
 
+local has_bat = vim.fn.executable("batcat") > 0 or vim.fn.executable("bat") > 0
+local has_rg = vim.fn.executable("rg") > 0
+local has_fd = vim.fn.executable("fdfind") > 0 or vim.fn.executable("fd") > 0
+
 local M = {
     -- os
     is_windows = is_windows,
@@ -21,6 +25,9 @@ local M = {
     bat = bat,
     rg = rg,
     fd = fd,
+    has_bat = has_bat,
+    has_rg = has_rg,
+    has_fd = has_fd,
 }
 
 return M

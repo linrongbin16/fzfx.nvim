@@ -1,10 +1,28 @@
 local constants = require("fzfx.constants")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
-local default_fd_command =
+-- find
+local default_restricted_find = [[find -L -type f -not -path '*/\.git/*']]
+local default_unrestricted_find = [[find -L -type f]]
+
+-- fd
+local default_restricted_fd =
     string.format("%s -cnever -tf -tl -L -i", constants.fd)
-local default_rg_command =
+local default_unrestricted_fd =
+    string.format("%s -cnever -tf -tl -L -i -u", constants.fd)
+
+-- grep
+local default_restricted_grep =
+    [[grep --color=always -n -H -r --exclude-dir=".git" --exclude-dir='.*' --exclude='.*']]
+local default_unrestricted_grep = [[grep --color=always -n -H -r]]
+
+-- rg
+local default_restricted_rg =
     string.format("%s --column -n --no-heading --color=always -S", constants.rg)
+local default_unrestricted_rg = string.format(
+    "%s --column -n --no-heading --color=always -S -uu",
+    constants.rg
+)
 
 --- @type table<string, FzfOption>
 local default_fzf_options = {
@@ -111,8 +129,8 @@ local Defaults = {
             },
         },
         providers = {
-            restricted = { "ctrl-r", default_fd_command },
-            unrestricted = { "ctrl-u", default_fd_command .. " -u" },
+            restricted = { "ctrl-r", default_restricted_fd },
+            unrestricted = { "ctrl-u", default_unrestricted_fd },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -220,8 +238,8 @@ local Defaults = {
             },
         },
         providers = {
-            restricted = { "ctrl-r", default_rg_command },
-            unrestricted = { "ctrl-u", default_rg_command .. " -uu" },
+            restricted = { "ctrl-r", default_restricted_rg },
+            unrestricted = { "ctrl-u", default_unrestricted_rg },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
