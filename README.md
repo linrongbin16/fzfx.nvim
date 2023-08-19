@@ -38,10 +38,9 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - Search by cursor word.
   - Search by yank text.
 - Easily switch on different data sources:
-  - Find files: whether to search hidden and ignored files.
-  - Live grep: whether to search hidden and ignored files.
-  - Git branches: local or remote branches.
-  - Git commits (todo): all commits or only on current file.
+  - Whether to search hidden and ignored files when searching files and text.
+  - Local or remote branches when searching git branches.
+  - All commits or only on current file (buffer) when searching git commits (todo).
   - ...
 - Lua support: preview lua function defined commands and key mappings (todo).
 - ...
