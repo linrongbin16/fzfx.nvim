@@ -33,11 +33,16 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - Windows support.
 - Icons & colors.
+- Dynamically passing raw options to `$FZF_DEFAULT_COMMAND`, e.g. grep, rg, find, fd, etc (partially implemented).
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
   - Search by yank text.
-- (Un)restricted mode: easily switch whether to search hidden and ignored files.
+- Easily switch on data sources:
+  - Whether to search hidden and ignored files when searching files and text.
+  - Local or remote branches when searching git branches.
+  - All diagnostics on workspace or only on current buffer when searching lsp diagnostics (todo).
+  - ...
 - Lua support: preview lua function defined commands and key mappings (todo).
 - ...
 
