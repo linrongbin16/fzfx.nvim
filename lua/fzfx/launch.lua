@@ -1,3 +1,4 @@
+local constants = require("fzfx.constants")
 local log = require("fzfx.log")
 local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
@@ -63,6 +64,89 @@ local function make_fzf_command(fzf_opts, actions, result)
     return command
 end
 
+--- @class ShellOptsContext
+--- @field shell string?
+--- @field shellslash string?
+--- @field shellcmdflag string?
+--- @field shellxquote string?
+--- @field shellquote string?
+--- @field shellredir string?
+--- @field shellpipe string?
+--- @field shellxescape string?
+local ShellOptsContext = {
+    shell = nil,
+    shellslash = nil,
+    shellcmdflag = nil,
+    shellxquote = nil,
+    shellquote = nil,
+    shellredir = nil,
+    shellpipe = nil,
+    shellxescape = nil,
+}
+
+--- @return ShellOptsContext
+function ShellOptsContext:save()
+    local ctx = vim.tbl_deep_extend("force", vim.deepcopy(ShellOptsContext), {
+        shell = vim.o.shell,
+        shellslash = vim.o.shellslash,
+        shellcmdflag = vim.o.shellcmdflag,
+        shellxquote = vim.o.shellxquote,
+        shellquote = vim.o.shellquote,
+        shellredir = vim.o.shellredir,
+        shellpipe = vim.o.shellpipe,
+        shellxescape = vim.o.shellxescape,
+    })
+    log.debug(
+        "|fzfx.launch - ShellOptsContext:save| before, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s, shellxescape:%s",
+        vim.inspect(vim.o.shell),
+        vim.inspect(vim.o.shellslash),
+        vim.inspect(vim.o.shellcmdflag),
+        vim.inspect(vim.o.shellxquote),
+        vim.inspect(vim.o.shellquote),
+        vim.inspect(vim.o.shellredir),
+        vim.inspect(vim.o.shellpipe),
+        vim.inspect(vim.o.shellxescape)
+    )
+
+    if constants.is_windows then
+        vim.o.shell = "cmd.exe"
+        vim.o.shellslash = false
+        vim.o.shellcmdflag = "/s /c"
+        vim.o.shellxquote = '"'
+        vim.o.shellquote = ""
+        vim.o.shellredir = ">%s 2>&1"
+        vim.o.shellpipe = "2>&1| tee"
+        vim.o.shellxescape = ""
+    else
+        vim.o.shell = "sh"
+    end
+
+    log.debug(
+        "|fzfx.launch - ShellOptsContext:save| after, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s, shellxescape:%s",
+        vim.inspect(vim.o.shell),
+        vim.inspect(vim.o.shellslash),
+        vim.inspect(vim.o.shellcmdflag),
+        vim.inspect(vim.o.shellxquote),
+        vim.inspect(vim.o.shellquote),
+        vim.inspect(vim.o.shellredir),
+        vim.inspect(vim.o.shellpipe),
+        vim.inspect(vim.o.shellxescape)
+    )
+    return ctx
+end
+
+--- @return nil
+function ShellOptsContext:restore()
+    vim.o.shell = self.shell
+    vim.o.shellslash = self.shellslash
+    vim.o.shellcmdflag = self.shellcmdflag
+    vim.o.shellxquote = self.shellxquote
+    vim.o.shellquote = self.shellquote
+    vim.o.shellredir = self.shellredir
+    vim.o.shellpipe = self.shellpipe
+    vim.o.shellxescape = self.shellxescape
+end
+
 --- @alias OnLaunchExit fun(launch:Launch):nil
 
 --- @param popup Popup
@@ -73,6 +157,14 @@ end
 --- @return Launch
 function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
     local result = vim.fn.tempname()
+
+    -- save shell opts
+    local shell_opts = ShellOptsContext:save()
+    local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
+    local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
+    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_default_opts()
+    vim.env.FZF_DEFAULT_COMMAND = source
+
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
 
     local function on_fzf_exit(jobid2, exitcode, event)
@@ -143,10 +235,6 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         end
     end
 
-    local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
-    local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
-    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_default_opts()
-    vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(
         "|fzfx.popup - Launch:new| $FZF_DEFAULT_OPTS:%s",
         vim.inspect(vim.env.FZF_DEFAULT_OPTS)
@@ -159,9 +247,15 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         "|fzfx.popup - Launch:new| fzf_command:%s",
         vim.inspect(fzf_command)
     )
+
+    -- launch
     local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
+
+    -- restore shell opts
+    shell_opts:restore()
     vim.env.FZF_DEFAULT_COMMAND = prev_fzf_default_command
     vim.env.FZF_DEFAULT_OPTS = prev_fzf_default_opts
+
     vim.cmd([[ startinsert ]])
 
     --- @type Launch
