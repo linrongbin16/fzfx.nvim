@@ -33,7 +33,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - Windows support.
 - Icons & colors.
-- Dynamically passing raw options to `$FZF_DEFAULT_COMMAND`, e.g. grep, rg, find, fd, etc.
+- Dynamically passing raw options to `$FZF_DEFAULT_COMMAND`, e.g. grep, rg, find, fd, etc (partially implemented).
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
