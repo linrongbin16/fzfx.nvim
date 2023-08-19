@@ -1,3 +1,4 @@
+local constants = require("fzfx.constants")
 local log = require("fzfx.log")
 local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
@@ -61,6 +62,47 @@ local function make_fzf_command(fzf_opts, actions, result)
         vim.inspect(command)
     )
     return command
+end
+
+--- @class ShellOptsContext
+--- @field shell string?
+--- @field shellslash string?
+--- @field shellcmdflag string?
+--- @field shellxquote string?
+local ShellOptsContext = {
+    shell = nil,
+    shellslash = nil,
+    shellcmdflag = nil,
+    shellxquote = nil,
+}
+
+--- @return ShellOptsContext
+function ShellOptsContext:save()
+    local ctx = vim.tbl_deep_extend("force", vim.deepcopy(ShellOptsContext), {
+        shell = vim.opt.shell,
+        shellslash = vim.opt.shellslash,
+        shellcmdflag = vim.opt.shellcmdflag,
+        shellxquote = vim.opt.shellxquote,
+    })
+
+    if constants.is_windows then
+        vim.opt.shell = "cmd.exe"
+        vim.opt.shellslash = false
+        vim.opt.shellcmdflag = "/s /c"
+        vim.opt.shellxquote = '"'
+    else
+        vim.opt.shell = "sh"
+    end
+
+    return ctx
+end
+
+--- @return ShellOptsContext
+function ShellOptsContext:restore()
+    vim.opt.shell = self.shell
+    vim.opt.shellslash = self.shellslash
+    vim.opt.shellcmdflag = self.shellcmdflag
+    vim.opt.shellxquote = self.shellxquote
 end
 
 --- @alias OnLaunchExit fun(launch:Launch):nil
@@ -143,6 +185,8 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         end
     end
 
+    -- save contexts
+    local shell_opts = ShellOptsContext:save()
     local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
     vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_default_opts()
@@ -159,9 +203,15 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         "|fzfx.popup - Launch:new| fzf_command:%s",
         vim.inspect(fzf_command)
     )
+
+    -- launch
     local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
+
+    -- restore contexts
+    shell_opts:restore()
     vim.env.FZF_DEFAULT_COMMAND = prev_fzf_default_command
     vim.env.FZF_DEFAULT_OPTS = prev_fzf_default_opts
+
     vim.cmd([[ startinsert ]])
 
     --- @type Launch
