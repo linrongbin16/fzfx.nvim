@@ -158,7 +158,7 @@ end
 function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
     local result = vim.fn.tempname()
 
-    -- save contexts
+    -- save shell opts
     local shell_opts = ShellOptsContext:save()
     local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
@@ -251,7 +251,7 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
     -- launch
     local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
 
-    -- restore contexts
+    -- restore shell opts
     shell_opts:restore()
     vim.env.FZF_DEFAULT_COMMAND = prev_fzf_default_command
     vim.env.FZF_DEFAULT_OPTS = prev_fzf_default_opts
