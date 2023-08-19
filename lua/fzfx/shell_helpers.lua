@@ -1,5 +1,18 @@
 -- infra utils {
 
+if vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0 then
+    vim.o.shell = "cmd.exe"
+    vim.o.shellslash = false
+    vim.o.shellcmdflag = "/s /c"
+    vim.o.shellxquote = '"'
+    vim.o.shellquote = ""
+    vim.o.shellredir = ">%s 2>&1"
+    vim.o.shellpipe = "2>&1| tee"
+    vim.o.shellxescape = ""
+else
+    vim.o.shell = "sh"
+end
+
 --- @type string
 local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
         and "\\"
@@ -222,6 +235,35 @@ end
 
 -- icon render }
 
+-- parse query {
+
+--- @param content string
+--- @return string[]
+local function parse_query(content)
+    local flag = "--"
+    local flag_pos = nil
+    local query = ""
+    local option = nil
+
+    for i = 1, #content do
+        if i + 1 <= #content and string.sub(content, i, i + 1) == flag then
+            flag_pos = i
+            break
+        end
+    end
+
+    if flag_pos ~= nil and flag_pos > 0 then
+        query = vim.fn.trim(string.sub(content, 1, flag_pos - 1))
+        option = vim.fn.trim(string.sub(content, flag_pos + 2))
+    else
+        query = vim.fn.trim(content)
+    end
+
+    return { query, option }
+end
+
+-- parse query }
+
 local M = {
     log_debug = log_debug,
     log_info = log_info,
@@ -233,6 +275,7 @@ local M = {
     color_csi = csi,
     render_line_with_icon = render_line_with_icon,
     render_delimiter_line_with_icon = render_delimiter_line_with_icon,
+    parse_query = parse_query,
     Command = require("fzfx.command").Command,
     GitRootCommand = require("fzfx.git_helpers").GitRootCommand,
     GitBranchCommand = require("fzfx.git_helpers").GitBranchCommand,

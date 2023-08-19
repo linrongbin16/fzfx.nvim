@@ -17,22 +17,12 @@ if content == nil then
     content = ""
 end
 
-local flag = "--"
-local flag_pos = nil
-local query = ""
-
-for i = 1, #content do
-    if i + 1 <= #content and string.sub(content, i, i + 1) == flag then
-        flag_pos = i
-        break
-    end
-end
-
 local provider_cmd = shell_helpers.read_provider_command(provider)
 local cmd = nil
-if flag_pos ~= nil and flag_pos > 0 then
-    query = vim.fn.trim(string.sub(content, 1, flag_pos - 1))
-    local option = vim.fn.trim(string.sub(content, flag_pos + 2))
+local parsed_query = shell_helpers.parse_query(content)
+if parsed_query[2] ~= nil and string.len(parsed_query[2]) > 0 then
+    local query = parsed_query[1]
+    local option = parsed_query[2]
     cmd = string.format(
         "%s %s -- %s",
         provider_cmd,
@@ -40,7 +30,7 @@ if flag_pos ~= nil and flag_pos > 0 then
         vim.fn.shellescape(query)
     )
 else
-    query = vim.fn.trim(content)
+    local query = parsed_query[1]
     cmd = string.format("%s -- %s", provider_cmd, vim.fn.shellescape(query))
 end
 
