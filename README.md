@@ -244,8 +244,8 @@ Especially for git commands:
 - Preview keys
   - `alt-p`: toggle preview.
 - Multi keys
-  - `ctrl-e`: toggle(select).
-  - `ctrl-a`: toggle(select all).
+  - `ctrl-e`: toggle select.
+  - `ctrl-a`: toggle select all.
 
 > Note: builtin keys can be configured, see [Configuration](#configuration).
 
