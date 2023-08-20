@@ -14,6 +14,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - [Feature](#feature)
 - [Requirement](#requirement)
+  - [For Windows](#for-windows)
   - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
 - [Install](#install)
   - [vim-plug](#vim-plug)
@@ -69,7 +70,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   ```
 
 <details>
-<summary><b>Click here to see how to install shell environment on Windows</b></summary>
+<summary><b>Click here to see how to install linux commands on Windows</b></summary>
 <br/>
 
 ### [Git for Windows](https://git-scm.com/download/win)
@@ -80,7 +81,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 ### Path containing whitespace & Escaping issue
 
-fzfx.nvim internally extends both executables (`nvim`, `fzf`) and lua scripts to full path when launching command.
+fzfx.nvim internally extends `nvim`, `fzf` and lua scripts to full path when launching command.
 
 But when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected escaping characters. Here're two typical cases:
 

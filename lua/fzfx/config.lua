@@ -2,8 +2,9 @@ local constants = require("fzfx.constants")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
 -- find
-local default_restricted_find = [[find -L -type f -not -path '*/\.git/*']]
-local default_unrestricted_find = [[find -L -type f]]
+local default_restricted_find =
+    [[find -L . -type f -not -path '*/\.git/*' -not -name '\.*']]
+local default_unrestricted_find = [[find -L . -type f]]
 
 -- fd
 local default_restricted_fd =
@@ -13,7 +14,7 @@ local default_unrestricted_fd =
 
 -- grep
 local default_restricted_grep =
-    [[grep --color=always -n -H -r --exclude-dir=".git" --exclude-dir='.*' --exclude='.*']]
+    [[grep --color=always -n -H -r --exclude-dir='.git']]
 local default_unrestricted_grep = [[grep --color=always -n -H -r]]
 
 -- rg
@@ -129,8 +130,16 @@ local Defaults = {
             },
         },
         providers = {
-            restricted = { "ctrl-r", default_restricted_fd },
-            unrestricted = { "ctrl-u", default_unrestricted_fd },
+            restricted = {
+                "ctrl-r",
+                constants.has_fd and default_restricted_fd
+                    or default_restricted_find,
+            },
+            unrestricted = {
+                "ctrl-u",
+                constants.has_fd and default_unrestricted_fd
+                    or default_unrestricted_find,
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -238,8 +247,16 @@ local Defaults = {
             },
         },
         providers = {
-            restricted = { "ctrl-r", default_restricted_rg },
-            unrestricted = { "ctrl-u", default_unrestricted_rg },
+            restricted = {
+                "ctrl-r",
+                constants.has_rg and default_restricted_rg
+                    or default_restricted_grep,
+            },
+            unrestricted = {
+                "ctrl-u",
+                constants.has_rg and default_unrestricted_rg
+                    or default_unrestricted_grep,
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
