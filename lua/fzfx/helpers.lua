@@ -150,7 +150,10 @@ local function append_fzf_opt(opts, o)
     elseif type(o) == "table" and #o == 2 then
         local k = o[1]
         local v = o[2]
-        table.insert(opts, string.format("%s %s", k, vim.fn.shellescape(v)))
+        table.insert(
+            opts,
+            string.format("%s %s", k, vim.fn["fzf#shellescape"](v))
+        )
     else
         log.throw(
             "|fzfx.helpers - append_fzf_opt| invalid fzf opt: %s",

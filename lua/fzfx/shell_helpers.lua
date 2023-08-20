@@ -123,6 +123,25 @@ end
 
 -- provider }
 
+-- junegunn/fzf {
+
+local JUNEGUNN_FZF_PATH = vim.env._FZFX_NVIM_JUNEGUNN_FZF_PATH
+log_ensure(
+    type(JUNEGUNN_FZF_PATH) == "string" and string.len(JUNEGUNN_FZF_PATH) > 0,
+    "|fzfx.shell_helpers| JUNEGUNN_FZF_PATH is empty!"
+)
+vim.opt.runtimepath:append(JUNEGUNN_FZF_PATH)
+vim.cmd(string.format(
+    [[
+source %s%splugin%sfzf.vim
+]],
+    JUNEGUNN_FZF_PATH,
+    PATH_SEPARATOR,
+    PATH_SEPARATOR
+))
+
+-- junegunn/fzf }
+
 -- icon render {
 
 local DEVICONS_PATH = vim.env._FZFX_NVIM_DEVICONS_PATH

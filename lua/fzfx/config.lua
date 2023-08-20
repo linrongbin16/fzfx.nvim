@@ -2,8 +2,11 @@ local constants = require("fzfx.constants")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
 -- find
-local default_restricted_find =
-    [[find -L . -type f -not -path '*/\.git/*' -not -name '\.*']]
+local default_restricted_find_exclude_git = [[*/\.git/*]]
+local default_restricted_find = string.format(
+    [[find -L . -type f -not -path %s]],
+    vim.fn["fzf#shellescape"](default_restricted_find_exclude_git)
+)
 local default_unrestricted_find = [[find -L . -type f]]
 
 -- fd
@@ -507,7 +510,7 @@ local Defaults = {
         -- "git log --graph --color=always --date=relative",
         previewers = string.format(
             "git log --pretty=%s --graph --date=relative --color=always",
-            vim.fn.shellescape(default_git_log_pretty)
+            vim.fn["fzf#shellescape"](default_git_log_pretty)
         ),
         actions = {
             ["esc"] = require("fzfx.actions").nop,

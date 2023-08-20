@@ -27,11 +27,15 @@ if parsed_query[2] ~= nil and string.len(parsed_query[2]) > 0 then
         "%s %s -- %s",
         provider_cmd,
         option,
-        vim.fn.shellescape(query)
+        vim.fn["fzf#shellescape"](query)
     )
 else
     local query = parsed_query[1]
-    cmd = string.format("%s -- %s", provider_cmd, vim.fn.shellescape(query))
+    cmd = string.format(
+        "%s -- %s",
+        provider_cmd,
+        vim.fn["fzf#shellescape"](query)
+    )
 end
 
 shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
