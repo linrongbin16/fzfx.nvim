@@ -75,7 +75,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 <summary><b>Click here to see how to install linux commands on Windows</b></summary>
 <br/>
 
-Actually there're many ways to install portable linux shell and builtin commands on Windows, but personally I would recommend below two methods.
+There're many ways to install portable linux shell and builtin commands on Windows, but personally I would recommend below two methods.
 
 #### [Git for Windows](https://git-scm.com/download/win)
 
