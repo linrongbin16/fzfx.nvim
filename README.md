@@ -112,7 +112,7 @@ scoop install mingw
 scoop install coreutils
 scoop install sleep
 scoop install grep
-scoop install find
+scoop install findutils
 ```
 
 #### Fix Conflicts between embeded commands in `C:\Windows\System32` and portable linux commands
