@@ -95,7 +95,7 @@ Install with the below 3 options:
 
   <img alt="install-windows-git3.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git3.png" width="70%" />
 
-After this step, **git.exe** and builtin linux commands(such as **sh.exe**, **grep.exe**, **find.exe**, **sleep.exe**, **cd.exe**, **ls.exe**) will be available in **$env:PATH**.
+After this step, **git.exe** and builtin linux commands(such as **sh.exe**, **grep.exe**, **find.exe**, **sleep.exe**, **cd.exe**, **ls.exe**) will be available in `%PATH%`.
 
 #### [scoop](https://scoop.sh/)
 
@@ -114,6 +114,13 @@ scoop install sleep
 scoop install grep
 scoop install find
 ```
+
+#### Fix Conflicts between embeded commands in `C:\Windows\System32` and portable linux commands
+
+Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\Windows\System32` (or `%SystemRoot%\system32`), which could override our installations. To fix this issue, we could prioritize the git or scoop environment variables in `%PATH%`.
+
+
+
 
 </details>
 
