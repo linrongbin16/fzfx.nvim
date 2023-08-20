@@ -45,6 +45,9 @@ require("lazy").setup({
         dev = true,
         dir = "~/github/linrongbin16/fzfx.nvim",
         opts = {
+            env = {
+                nvim = "nvim",
+            },
             debug = {
                 enable = true,
                 file_log = true,

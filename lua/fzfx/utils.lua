@@ -1,3 +1,5 @@
+local constants = require('fzfx.constants')
+
 local function table_filter(f, t)
     local result = {}
     for k, v in pairs(t) do
@@ -76,6 +78,111 @@ local function string_not_empty(s)
     return type(s) == "string" and string.len(s) > 0
 end
 
+--- @class ShellOptsContext
+--- @field shell string?
+--- @field shellslash string?
+--- @field shellcmdflag string?
+--- @field shellxquote string?
+--- @field shellquote string?
+--- @field shellredir string?
+--- @field shellpipe string?
+--- @field shellxescape string?
+local ShellOptsContext = {
+    shell = nil,
+    shellslash = nil,
+    shellcmdflag = nil,
+    shellxquote = nil,
+    shellquote = nil,
+    shellredir = nil,
+    shellpipe = nil,
+    shellxescape = nil,
+}
+
+--- @return ShellOptsContext
+function ShellOptsContext:save()
+    local ctx = vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(ShellOptsContext),
+        constants.is_windows
+                and {
+                    shell = vim.o.shell,
+                    shellslash = vim.o.shellslash,
+                    shellcmdflag = vim.o.shellcmdflag,
+                    shellxquote = vim.o.shellxquote,
+                    shellquote = vim.o.shellquote,
+                    shellredir = vim.o.shellredir,
+                    shellpipe = vim.o.shellpipe,
+                    shellxescape = vim.o.shellxescape,
+                }
+            or {
+                shell = vim.o.shell,
+            }
+    )
+    -- log.debug(
+    --     "|fzfx.launch - ShellOptsContext:save| before, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s, shellxescape:%s",
+    --     vim.inspect(vim.o.shell),
+    --     vim.inspect(vim.o.shellslash),
+    --     vim.inspect(vim.o.shellcmdflag),
+    --     vim.inspect(vim.o.shellxquote),
+    --     vim.inspect(vim.o.shellquote),
+    --     vim.inspect(vim.o.shellredir),
+    --     vim.inspect(vim.o.shellpipe),
+    --     vim.inspect(vim.o.shellxescape)
+    -- )
+
+    if constants.is_windows then
+        vim.o.shell = "cmd.exe"
+        vim.o.shellslash = false
+        vim.o.shellcmdflag = "/s /c"
+        vim.o.shellxquote = '"'
+        vim.o.shellquote = ""
+        vim.o.shellredir = ">%s 2>&1"
+        vim.o.shellpipe = "2>&1| tee"
+        vim.o.shellxescape = ""
+    else
+        vim.o.shell = "sh"
+    end
+
+    -- log.debug(
+    --     "|fzfx.launch - ShellOptsContext:save| after, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s, shellxescape:%s",
+    --     vim.inspect(vim.o.shell),
+    --     vim.inspect(vim.o.shellslash),
+    --     vim.inspect(vim.o.shellcmdflag),
+    --     vim.inspect(vim.o.shellxquote),
+    --     vim.inspect(vim.o.shellquote),
+    --     vim.inspect(vim.o.shellredir),
+    --     vim.inspect(vim.o.shellpipe),
+    --     vim.inspect(vim.o.shellxescape)
+    -- )
+    return ctx
+end
+
+--- @return nil
+function ShellOptsContext:restore()
+    if constants.is_windows then
+        vim.o.shell = self.shell
+        vim.o.shellslash = self.shellslash
+        vim.o.shellcmdflag = self.shellcmdflag
+        vim.o.shellxquote = self.shellxquote
+        vim.o.shellquote = self.shellquote
+        vim.o.shellredir = self.shellredir
+        vim.o.shellpipe = self.shellpipe
+        vim.o.shellxescape = self.shellxescape
+    else
+        vim.o.shell = self.shell
+    end
+end
+
+
+--- @param s string
+--- @return string
+local function shellescape(s)
+    local shell_opts_context = ShellOptsContext:save()
+    local result = vim.fn.shellescape(s)
+    shell_opts_context:restore()
+    return result
+end
+
 local M = {
     table_filter = table_filter,
     list_filter = list_filter,
@@ -84,6 +191,8 @@ local M = {
     set_win_option = set_win_option,
     string_empty = string_empty,
     string_not_empty = string_not_empty,
+    ShellOptsContext = ShellOptsContext,
+    shellescape = shellescape,
 }
 
 return M

@@ -14,6 +14,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - [Feature](#feature)
 - [Requirement](#requirement)
+  - [Windows](#windows)
   - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
 - [Install](#install)
   - [vim-plug](#vim-plug)
@@ -33,7 +34,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - Windows support.
 - Icons & colors.
-- Dynamically passing raw options to `$FZF_DEFAULT_COMMAND`, e.g. grep, rg, find, fd, etc (partially implemented).
+- Dynamically passing raw options to live grep, e.g. grep, rg.
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
@@ -59,19 +60,70 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 ## Requirement
 
 - Neovim &ge; 0.5.
-- [rg](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), recommand to install them with [cargo](https://www.rust-lang.org/):
-
-  ```bash
-  cargo install ripgrep
-  cargo install fd-find
-  cargo install --locked bat
-  ```
-
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
+- [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep** commands on unix/linux).
+- [fd](https://github.com/sharkdp/fd) (optional for **files** commands on unix/linux).
+- [bat](https://github.com/sharkdp/bat), (optional for preview files on unix/linux, e.g. the right side of **live grep**, **files** commands).
+
+> Note: **live grep**, **files** and preview files will use builtin linux commands ([grep](https://man7.org/linux/man-pages/man1/grep.1.html), [find](https://man7.org/linux/man-pages/man1/find.1.html), [cat](https://man7.org/linux/man-pages/man1/cat.1.html)) if `rg`, `fd`, `bat` not installed.
+>
+> While on Windows, we don't have a builtin shell environment, so install `rg`, `fd` and `bat` should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
+
+### Windows
+
+<details>
+<summary><b>Click here to see how to install linux commands on Windows</b></summary>
+<br/>
+
+There're many ways to install portable linux shell and builtin commands on Windows, but personally I would recommend below two methods.
+
+#### [Git for Windows](https://git-scm.com/download/win)
+
+Install with the below 3 options:
+
+- In **Select Components**, select **Associate .sh files to be run with Bash**.
+
+  <img alt="install-windows-git1.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git1.png" width="70%" />
+
+- In **Adjusting your PATH environment**, select **Use Git and optional Unix tools
+  from the Command Prompt**.
+
+  <img alt="install-windows-git2.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git2.png" width="70%" />
+
+- In **Configuring the terminal emulator to use with Git Bash**, select **Use Windows's
+  default console window**.
+
+  <img alt="install-windows-git3.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git3.png" width="70%" />
+
+After this step, **git.exe** and builtin linux commands(such as **sh.exe**, **grep.exe**, **find.exe**, **sleep.exe**, **cd.exe**, **ls.exe**) will be available in **$env:PATH**.
+
+#### [scoop](https://scoop.sh/)
+
+Run below powershell commands:
+
+```powershell
+# scoop
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+irm get.scoop.sh | iex
+
+scoop bucket add extras
+scoop install git
+scoop install mingw
+scoop install coreutils
+scoop install sleep
+scoop install grep
+scoop install find
+```
+
+</details>
 
 ### Path containing whitespace & Escaping issue
 
-fzfx.nvim internally extends both executables (`nvim`, `fzf`) and lua scripts to full path when launching command.
+<details>
+<summary><b>Click here to how whitespaces affected escaping characters on path</b></summary>
+<br/>
+
+This plugin internally extends `nvim`, `fzf` and lua scripts to full path when launching command.
 
 But when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected escaping characters. Here're two typical cases:
 
@@ -90,23 +142,19 @@ But when there're whitespaces on the path, launching correct shell command becom
 
    This will help fzfx.nvim avoid the shell command issue.
 
-2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe` - User name contains whitespace.
+2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe` or `/Users/linrongbin/Library/Application\ Support/Neovim/bin/nvim` - `Lin Rongbin` (user name) or `Application Support` (macOS application) contains whitespace.
 
    We still cannot handle the 2nd case for now, please always try to avoid whitespaces in path.
 
-<details>
-<summary><b>Click here to read more details</b></summary>
-<br/>
+   Here's an example of searching files command (macOS):
 
-Here's an example of searching files command (macOS):
+   - `/opt/homebrew/bin/nvim -n --clean --headless -l /Users/linrongbin/.local/share/nvim/lazy/fzfx.nvim/bin/files/provider.lua  /tmp/nvim.linrongbin/3NXwys/0`
 
-- `/opt/homebrew/bin/nvim -n --clean --headless -l /Users/linrongbin/.local/share/nvim/lazy/fzfx.nvim/bin/files/provider.lua  /tmp/nvim.linrongbin/3NXwys/0`
+   Here's an example of launching fzf command (Windows 10):
 
-Here's an example of launching fzf command (Windows 10):
+   - `C:/Users/linrongbin/github/junegunn/fzf/bin/fzf --query "" --header ":: Press \27[38;2;255;121;198mCTRL-U\27[0m to unrestricted mode" --prompt "~/g/l/fzfx.nvim > " --bind "start:unbind(ctrl-r)" --bind "ctrl-u:unbind(ctrl-u)+execute-silent(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\rpc\\client.lua 1)+change-header(:: Press \27[38;2;255;121;198mCTRL-R\27[0m to restricted mode)+rebind(ctrl-r)+reload(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\provider.lua C:\\Users\\linrongbin\\AppData\\Local\\nvim-data\\fzfx.nvim\\switch_files_provider)" --bind "ctrl-r:unbind(ctrl-r)+execute-silent(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\rpc\\client.lua 1)+change-header(:: Press \27[38;2;255;121;198mCTRL-U\27[0m to unrestricted mode)+rebind(ctrl-u)+reload(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\provider.lua C:\\Users\\linrongbin\\AppData\\Local\\nvim-data\\fzfx.nvim\\switch_files_provider)" --preview "C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\previewer.lua {}" --bind "ctrl-l:toggle-preview" --expect "enter" --expect "double-click" >C:\\Users\\LINRON~1\\AppData\\Local\\Temp\\nvim.0\\JSmP06\\2`
 
-- `C:/Users/linrongbin/github/junegunn/fzf/bin/fzf --query "" --header ":: Press \27[38;2;255;121;198mCTRL-U\27[0m to unrestricted mode" --prompt "~/g/l/fzfx.nvim > " --bind "start:unbind(ctrl-r)" --bind "ctrl-u:unbind(ctrl-u)+execute-silent(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\rpc\\client.lua 1)+change-header(:: Press \27[38;2;255;121;198mCTRL-R\27[0m to restricted mode)+rebind(ctrl-r)+reload(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\provider.lua C:\\Users\\linrongbin\\AppData\\Local\\nvim-data\\fzfx.nvim\\switch_files_provider)" --bind "ctrl-r:unbind(ctrl-r)+execute-silent(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\rpc\\client.lua 1)+change-header(:: Press \27[38;2;255;121;198mCTRL-U\27[0m to unrestricted mode)+rebind(ctrl-u)+reload(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\provider.lua C:\\Users\\linrongbin\\AppData\\Local\\nvim-data\\fzfx.nvim\\switch_files_provider)" --preview "C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\previewer.lua {}" --bind "ctrl-l:toggle-preview" --expect "enter" --expect "double-click" >C:\\Users\\LINRON~1\\AppData\\Local\\Temp\\nvim.0\\JSmP06\\2`
-
-If user name contains whitespace, that will make all lua scripts contains whitespace, thus the shell command cannot being correctly evaluated.
+   If the path contains whitespace, that will make all lua scripts contains whitespace, thus the shell command cannot being correctly evaluated.
 
 </details>
 

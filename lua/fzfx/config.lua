@@ -1,10 +1,33 @@
 local constants = require("fzfx.constants")
+local utils = require("fzfx.utils")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
-local default_fd_command =
+-- find
+local default_restricted_find_exclude_git = [[*/\.git/*]]
+local default_restricted_find = string.format(
+    [[find -L . -type f -not -path %s]],
+    utils.shellescape(default_restricted_find_exclude_git)
+)
+local default_unrestricted_find = [[find -L . -type f]]
+
+-- fd
+local default_restricted_fd =
     string.format("%s -cnever -tf -tl -L -i", constants.fd)
-local default_rg_command =
+local default_unrestricted_fd =
+    string.format("%s -cnever -tf -tl -L -i -u", constants.fd)
+
+-- grep
+local default_restricted_grep =
+    [[grep --color=always -n -H -r --exclude-dir='.git']]
+local default_unrestricted_grep = [[grep --color=always -n -H -r]]
+
+-- rg
+local default_restricted_rg =
     string.format("%s --column -n --no-heading --color=always -S", constants.rg)
+local default_unrestricted_rg = string.format(
+    "%s --column -n --no-heading --color=always -S -uu",
+    constants.rg
+)
 
 --- @type table<string, FzfOption>
 local default_fzf_options = {
@@ -111,8 +134,16 @@ local Defaults = {
             },
         },
         providers = {
-            restricted = { "ctrl-r", default_fd_command },
-            unrestricted = { "ctrl-u", default_fd_command .. " -u" },
+            restricted = {
+                "ctrl-r",
+                constants.has_fd and default_restricted_fd
+                    or default_restricted_find,
+            },
+            unrestricted = {
+                "ctrl-u",
+                constants.has_fd and default_unrestricted_fd
+                    or default_unrestricted_find,
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -220,8 +251,16 @@ local Defaults = {
             },
         },
         providers = {
-            restricted = { "ctrl-r", default_rg_command },
-            unrestricted = { "ctrl-u", default_rg_command .. " -uu" },
+            restricted = {
+                "ctrl-r",
+                constants.has_rg and default_restricted_rg
+                    or default_restricted_grep,
+            },
+            unrestricted = {
+                "ctrl-u",
+                constants.has_rg and default_unrestricted_rg
+                    or default_unrestricted_grep,
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -240,7 +279,9 @@ local Defaults = {
             { "--preview-window", "+{2}-/2" },
         },
         other_opts = {
-            onchange_reload_delay = "sleep 0.1 && ",
+            onchange_reload_delay = vim.fn.executable("sleep") > 0
+                    and "sleep 0.1 && "
+                or nil,
         },
     },
 
@@ -472,7 +513,7 @@ local Defaults = {
         -- "git log --graph --color=always --date=relative",
         previewers = string.format(
             "git log --pretty=%s --graph --date=relative --color=always",
-            vim.fn.shellescape(default_git_log_pretty)
+            utils.shellescape(default_git_log_pretty)
         ),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
