@@ -119,7 +119,7 @@ scoop install findutils
 
 Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\Windows\System32` (or `%SystemRoot%\system32`), which could override our installations. To fix this issue, we could prioritize the git or scoop environment variables in `%PATH%`.
 
-![Windows-Path](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5296429b-daae-40f6-be16-6c065ef7bf05)
+<img alt="windows-path" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5296429b-daae-40f6-be16-6c065ef7bf05" width="70%" />
 
 </details>
 
