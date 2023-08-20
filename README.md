@@ -14,7 +14,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - [Feature](#feature)
 - [Requirement](#requirement)
-  - [For Windows](#for-windows)
+  - [Windows](#windows)
   - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
 - [Install](#install)
   - [vim-plug](#vim-plug)
@@ -61,21 +61,58 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - Neovim &ge; 0.5.
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
-- [rg](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), recommand to install them with [cargo](https://www.rust-lang.org/):
+- [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep** commands on unix/linux).
+- [fd](https://github.com/sharkdp/fd) (optional for **files** commands on unix/linux).
+- [bat](https://github.com/sharkdp/bat), (optional for preview files on unix/linux, e.g. the right side of **live grep**, **files** commands).
+  > Note: **live grep**, **files** and preview files will use builtin linux commands ([grep](https://man7.org/linux/man-pages/man1/grep.1.html), [find](https://man7.org/linux/man-pages/man1/find.1.html), [cat](https://man7.org/linux/man-pages/man1/cat.1.html)) if `rg`, `fd`, `bat` not installed.
+  >
+  > While on Windows, we don't have a linux shell environment, so install `rg`, `fd` and `bat` should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
 
-  ```bash
-  cargo install ripgrep
-  cargo install fd-find
-  cargo install --locked bat
-  ```
+### Windows
 
 <details>
 <summary><b>Click here to see how to install linux commands on Windows</b></summary>
 <br/>
 
-### [Git for Windows](https://git-scm.com/download/win)
+Actually there're many ways to install portable linux shell and builtin commands on Windows, but personally I would recommend below two methods.
 
-### [scoop](https://scoop.sh/)
+#### [Git for Windows](https://git-scm.com/download/win)
+
+Install with the below 3 options:
+
+- In **Select Components**, select **Associate .sh files to be run with Bash**.
+
+  <img alt="install-windows-git1.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git1.png" width="70%" />
+
+- In **Adjusting your PATH environment**, select **Use Git and optional Unix tools
+  from the Command Prompt**.
+
+  <img alt="install-windows-git2.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git2.png" width="70%" />
+
+- In **Configuring the terminal emulator to use with Git Bash**, select **Use Windows's
+  default console window**.
+
+  <img alt="install-windows-git3.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git3.png" width="70%" />
+
+After this step, **git.exe** and builtin linux commands(such as **sh.exe**, **grep.exe**, **find.exe**, **sleep.exe**) will be available in **$env:PATH**.
+
+#### [scoop](https://scoop.sh/)
+
+Run below powershell commands:
+
+```powershell
+# scoop
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+irm get.scoop.sh | iex
+
+scoop bucket add extras
+scoop install git
+scoop install mingw
+scoop install coreutils
+scoop install sleep
+scoop install grep
+scoop install find
+```
 
 </details>
 
