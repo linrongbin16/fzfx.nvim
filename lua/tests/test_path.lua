@@ -32,7 +32,7 @@ T["normalize"]["windows"] = function()
     local dir1 = [[C:/Users/linrongbin/github/linrongbin16/fzfx.nvim/lua/tests]]
     local dir2 = child.lua_get(
         string.format(
-            [[ M.normalize("%s") ]],
+            [[ M.normalize("%s", true) ]],
             vim.fn.escape(
                 [[C:\Users\linrongbin\github\linrongbin16\fzfx.nvim\lua\tests]],
                 "\\"
@@ -40,12 +40,12 @@ T["normalize"]["windows"] = function()
         )
     )
     local file1 =
-        [[C:/Users/linrongbin/github/linrongbin16/fzfx.nvim/lua/tests/test_path.lua]]
+        [[C:\Users\linrongbin\github\linrongbin16\fzfx.nvim\lua\tests\test_path.lua]]
     local file2 = child.lua_get(
         string.format(
             [[ M.normalize("%s") ]],
             vim.fn.escape(
-                [[C:\Users\linrongbin\github\linrongbin16\fzfx.nvim\lua\tests\test_path.lua]],
+                [[C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\lua\\tests\\test_path.lua]],
                 "\\"
             )
         )
