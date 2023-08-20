@@ -29,18 +29,19 @@ local function search_module_path(plugin, path)
 end
 
 --- @return string|nil
-local function search_vim_plugin_path(path)
+local function search_vim_plugin_path(plugin)
     local rtp = type(vim.o.runtimepath) == "string"
             and vim.fn.split(vim.o.runtimepath, ",")
         or {}
     for i, p in ipairs(rtp) do
         log.debug("|fzfx.module - search_vim_plugin_path| p[%d]:%s", i, p)
-        if type(p) == "string" and string.match(p, path) then
+        if type(p) == "string" and string.match(require("fzfx.path").normalize(p, true), plugin) then
             return p
         end
     end
     log.debug(
-        "|fzfx.module - search_module_path| failed to find lua module %s on runtimepath: %s",
+        "|fzfx.module - search_vim_plugin_path| failed to find vim plugin %s on runtimepath: %s",
+        vim.inspect(plugin),
         vim.inspect(rtp)
     )
     return nil
@@ -80,17 +81,17 @@ local function setup(configs)
     )
     vim.env._FZFX_NVIM_SELF_PATH = self_path
 
-    -- junegunn/fzf
-    local junegunn_fzf_path = search_vim_plugin_path("junegunn/fzf$")
-    log.debug("|fzfx.module - setup| junegunn/fzf path:%s", junegunn_fzf_path)
-    if
-        type(junegunn_fzf_path) ~= "string"
-        or string.len(junegunn_fzf_path) == 0
-    then
-        log.throw("error! cannot find 'junegunn/fzf' plugin!")
-    else
-        vim.env._FZFX_NVIM_JUNEGUNN_FZF_PATH = junegunn_fzf_path
-    end
+    -- -- junegunn/fzf
+    -- local junegunn_fzf_path = search_vim_plugin_path("junegunn/fzf$")
+    -- log.debug("|fzfx.module - setup| junegunn/fzf path:%s", junegunn_fzf_path)
+    -- if
+    --     type(junegunn_fzf_path) ~= "string"
+    --     or string.len(junegunn_fzf_path) == 0
+    -- then
+    --     log.throw("error! cannot find 'junegunn/fzf' plugin!")
+    -- else
+    --     vim.env._FZFX_NVIM_JUNEGUNN_FZF_PATH = junegunn_fzf_path
+    -- end
 end
 
 local M = {
