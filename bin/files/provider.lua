@@ -23,7 +23,7 @@ shell_helpers.log_ensure(
 --- @diagnostic disable-next-line: need-check-nil
 for line in p:lines("*line") do
     -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-    local line_with_icon = shell_helpers.render_line_with_icon(line)
+    local line_with_icon = shell_helpers.render_filepath_line(line)
     io.write(string.format("%s\n", line_with_icon))
 end
 --- @diagnostic disable-next-line: need-check-nil

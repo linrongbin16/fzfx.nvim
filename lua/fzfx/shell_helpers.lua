@@ -164,72 +164,71 @@ local function csi(color, fg)
     end
 end
 
-local function render_line_with_icon(line)
-    if DEVICONS ~= nil then
-        local ext = vim.fn.fnamemodify(line, ":e")
-        local icon, icon_color = DEVICONS.get_icon_color(line, ext)
-        -- if DEBUG_ENABLE then
-        --     log_debug(
-        --         "|fzfx.shell_helpers - render_line_with_icon| line:%s, ext:%s, icon:%s, color:%s\n",
-        --         vim.inspect(line),
-        --         vim.inspect(ext),
-        --         vim.inspect(icon),
-        --         vim.inspect(color)
-        --     )
-        -- end
-        if type(icon) == "string" and string.len(icon) > 0 then
-            local colorfmt = csi(icon_color, true)
-            if colorfmt then
-                return string.format("[%sm%s[0m %s", colorfmt, icon, line)
-            else
-                return string.format("%s %s", icon, line)
-            end
-        else
-            if vim.fn.isdirectory(line) > 0 then
-                return string.format("%s %s", FOLDER_ICON, line)
-            else
-                return string.format("%s %s", UNKNOWN_FILE_ICON, line)
-            end
-        end
-    else
-        return line
+--- @param p string?
+local function normalize_filepath(p)
+    if type(p) ~= "string" or string.len(p) == 0 then
+        return p
     end
+    if p:sub(1, 2) == [[./]] or p:sub(1, 2) == [[.\]] then
+        return p:sub(3, #p)
+    end
+    return p
 end
 
-local function render_delimiter_line_with_icon(line, delimiter, pos)
-    if DEVICONS ~= nil then
+--- @param line string
+--- @param delimiter string?
+--- @param pos integer?
+local function render_filepath_line(line, delimiter, pos)
+    if DEVICONS == nil then
+        return normalize_filepath(line)
+    end
+    local filename = nil
+    if
+        type(delimiter) == "string"
+        and string.len(delimiter) > 0
+        and type(pos) == "number"
+    then
         local splits = vim.fn.split(line, delimiter)
-        local filename = splits[pos]
-        if type(filename) == "string" and string.len(filename) > 0 then
-            filename = filename:gsub("\x1b%[%d+m", "")
-        end
-        local ext = vim.fn.fnamemodify(filename, ":e")
-        local icon, color = DEVICONS.get_icon_color(filename, ext)
-        -- if DEBUG_ENABLE then
-        --     log_debug(
-        --         "|fzfx.shell_helpers - render_line_with_icon| line:%s, ext:%s, icon:%s, color:%s\n",
-        --         vim.inspect(line),
-        --         vim.inspect(ext),
-        --         vim.inspect(icon),
-        --         vim.inspect(color)
-        --     )
-        -- end
-        if type(icon) == "string" and string.len(icon) > 0 then
-            local colorfmt = csi(color, true)
-            if colorfmt then
-                return string.format("[%sm%s[0m %s", colorfmt, icon, line)
-            else
-                return string.format("%s %s", icon, line)
-            end
+        filename = splits[pos]
+    else
+        filename = line
+    end
+    if type(filename) == "string" and string.len(filename) > 0 then
+        filename = filename:gsub("\x1b%[%d+m", "")
+    end
+    local ext = vim.fn.fnamemodify(filename, ":e")
+    local icon, icon_color = DEVICONS.get_icon_color(filename, ext)
+    -- if DEBUG_ENABLE then
+    --     log_debug(
+    --         "|fzfx.shell_helpers - render_line_with_icon| line:%s, ext:%s, icon:%s, color:%s\n",
+    --         vim.inspect(line),
+    --         vim.inspect(ext),
+    --         vim.inspect(icon),
+    --         vim.inspect(color)
+    --     )
+    -- end
+    if type(icon) == "string" and string.len(icon) > 0 then
+        local colorfmt = csi(icon_color, true)
+        if colorfmt then
+            return string.format(
+                "[%sm%s[0m %s",
+                colorfmt,
+                icon,
+                normalize_filepath(line)
+            )
         else
-            if vim.fn.isdirectory(filename) > 0 then
-                return string.format("%s %s", FOLDER_ICON, line)
-            else
-                return string.format("%s %s", UNKNOWN_FILE_ICON, line)
-            end
+            return string.format("%s %s", icon, normalize_filepath(line))
         end
     else
-        return line
+        if vim.fn.isdirectory(filename) > 0 then
+            return string.format("%s %s", FOLDER_ICON, normalize_filepath(line))
+        else
+            return string.format(
+                "%s %s",
+                UNKNOWN_FILE_ICON,
+                normalize_filepath(line)
+            )
+        end
     end
 end
 
@@ -273,8 +272,7 @@ local M = {
     log_ensure = log_ensure,
     read_provider_command = read_provider_command,
     color_csi = csi,
-    render_line_with_icon = render_line_with_icon,
-    render_delimiter_line_with_icon = render_delimiter_line_with_icon,
+    render_filepath_line = render_filepath_line,
     parse_query = parse_query,
     Command = require("fzfx.command").Command,
     GitRootCommand = require("fzfx.git_helpers").GitRootCommand,

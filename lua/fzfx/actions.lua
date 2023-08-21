@@ -23,6 +23,7 @@ local function edit_rg(lines)
         local splits = vim.fn.split(line, ":")
         local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
             or splits[1]
+        log.debug("|fzfx.actions - edit_rg| filename:%s", vim.inspect(filename))
         filename = path.normalize(filename)
         local row = tonumber(splits[2])
         local col = tonumber(splits[3])
@@ -39,6 +40,43 @@ local function edit_rg(lines)
         )
         log.debug(
             "|fzfx.actions - edit_rg| line[%d] - edit_cmd:[%s], setpos_cmd:[%s]",
+            i,
+            edit_cmd,
+            setpos_cmd
+        )
+        vim.cmd(edit_cmd)
+        if i == #lines then
+            vim.cmd(setpos_cmd)
+        end
+    end
+end
+
+local function edit_grep(lines)
+    log.debug("|fzfx.actions - edit_grep| lines:%s", vim.inspect(lines))
+    for i, line in ipairs(lines) do
+        local splits = vim.fn.split(line, ":")
+        local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
+            or splits[1]
+        log.debug(
+            "|fzfx.actions - edit_grep| filename:%s",
+            vim.inspect(filename)
+        )
+        filename = path.normalize(filename)
+        local row = tonumber(splits[2])
+        local col = 0
+        local edit_cmd = string.format("edit %s", vim.fn.expand(filename))
+        local setpos_cmd =
+            string.format("call setpos('.', [0, %d, %d])", row, col)
+        log.debug(
+            "|fzfx.actions - edit_grep| line[%d] - splits:%s, filename:%s, row:%d, col:%d",
+            i,
+            vim.inspect(splits),
+            vim.inspect(filename),
+            vim.inspect(row),
+            vim.inspect(col)
+        )
+        log.debug(
+            "|fzfx.actions - edit_grep| line[%d] - edit_cmd:[%s], setpos_cmd:[%s]",
             i,
             edit_cmd,
             setpos_cmd
@@ -127,6 +165,7 @@ local M = {
     nop = nop,
     edit = edit,
     edit_rg = edit_rg,
+    edit_grep = edit_grep,
     buffer = buffer,
     buffer_rg = buffer_rg,
     bdelete = bdelete,

@@ -264,8 +264,11 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_rg,
-            ["double-click"] = require("fzfx.actions").edit_rg,
+            ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
+                or require("fzfx.actions").edit_grep,
+            ["double-click"] = constants.has_rg
+                    and require("fzfx.actions").edit_rg
+                or require("fzfx.actions").edit_grep,
         },
         fzf_opts = {
             default_fzf_options.multi,

@@ -46,7 +46,7 @@ shell_helpers.log_debug(
 if type(buffers) == "table" and #buffers > 0 then
     for _, line in ipairs(buffers) do
         -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-        local line_with_icon = shell_helpers.render_line_with_icon(line)
+        local line_with_icon = shell_helpers.render_filepath_line(line)
         io.write(string.format("%s\n", line_with_icon))
     end
 end
