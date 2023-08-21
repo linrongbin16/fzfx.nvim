@@ -3,14 +3,18 @@ local utils = require("fzfx.utils")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
 -- find
-local default_restricted_find_exclude_git = [[*/\.git/*]]
-local default_restricted_find_exclude_svn = [[*/\.svn/*]]
-local default_restricted_find_exclude_hg = [[*/\.hg/*]]
+-- local default_restricted_find_exclude_git = [[*/\.git/*]]
+-- local default_restricted_find_exclude_svn = [[*/\.svn/*]]
+-- local default_restricted_find_exclude_hg = [[*/\.hg/*]]
+local default_restricted_find_exclude_hidden_folder = [[*/\.*]]
+local default_restricted_find_exclude_hidden_file = [[.*]]
 local default_restricted_find = string.format(
-    [[find -L . -type f -not -path %s -not -path %s -not -path %s]],
-    utils.shellescape(default_restricted_find_exclude_git),
-    utils.shellescape(default_restricted_find_exclude_svn),
-    utils.shellescape(default_restricted_find_exclude_hg)
+    [[find -L . -type f -not -path %s -not -name %s]],
+    -- utils.shellescape(default_restricted_find_exclude_git),
+    -- utils.shellescape(default_restricted_find_exclude_svn),
+    -- utils.shellescape(default_restricted_find_exclude_hg),
+    utils.shellescape(default_restricted_find_exclude_hidden_folder),
+    utils.shellescape(default_restricted_find_exclude_hidden_file)
 )
 local default_unrestricted_find = [[find -L . -type f]]
 
@@ -21,14 +25,16 @@ local default_unrestricted_fd =
     string.format("%s -cnever -tf -tl -L -i -u", constants.fd)
 
 -- grep
-local default_restricted_grep_exclude_git = ".git"
-local default_restricted_grep_exclude_svn = ".svn"
-local default_restricted_grep_exclude_hg = ".hg"
+-- local default_restricted_grep_exclude_git = ".git"
+-- local default_restricted_grep_exclude_svn = ".svn"
+-- local default_restricted_grep_exclude_hg = ".hg"
+local default_restricted_grep_exclude_hidden = [[./.*]]
 local default_restricted_grep = string.format(
-    [[grep --color=always -n -H -r --exclude-dir=%s --exclude-dir=%s --exclude-dir=%s]],
-    utils.shellescape(default_restricted_grep_exclude_git),
-    utils.shellescape(default_restricted_grep_exclude_svn),
-    utils.shellescape(default_restricted_grep_exclude_hg)
+    [[grep --color=always -n -H -r --exclude-dir=%s --exclude=%s]],
+    -- utils.shellescape(default_restricted_grep_exclude_git),
+    -- utils.shellescape(default_restricted_grep_exclude_svn),
+    utils.shellescape(default_restricted_grep_exclude_hidden),
+    utils.shellescape(default_restricted_grep_exclude_hidden)
 )
 local default_unrestricted_grep = [[grep --color=always -n -H -r]]
 
