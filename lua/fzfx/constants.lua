@@ -1,3 +1,5 @@
+-- Zero Dependency
+
 --- @type boolean
 local is_windows = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
 --- @type boolean

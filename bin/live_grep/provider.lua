@@ -44,8 +44,7 @@ shell_helpers.log_ensure(
 )
 --- @diagnostic disable-next-line: need-check-nil
 for line in p:lines("*line") do
-    local line_with_icon =
-        shell_helpers.render_delimiter_line_with_icon(line, ":", 1)
+    local line_with_icon = shell_helpers.render_filepath_line(line, ":", 1)
     io.write(string.format("%s\n", line_with_icon))
 end
 --- @diagnostic disable-next-line: need-check-nil
