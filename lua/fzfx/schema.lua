@@ -1,3 +1,5 @@
+-- Zero Dependency
+
 -- Schema Definitions
 -- See: https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command
 --

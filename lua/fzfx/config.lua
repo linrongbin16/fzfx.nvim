@@ -4,9 +4,13 @@ local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
 -- find
 local default_restricted_find_exclude_git = [[*/\.git/*]]
+local default_restricted_find_exclude_svn = [[*/\.svn/*]]
+local default_restricted_find_exclude_hg = [[*/\.hg/*]]
 local default_restricted_find = string.format(
-    [[find -L . -type f -not -path %s]],
-    utils.shellescape(default_restricted_find_exclude_git)
+    [[find -L . -type f -not -path %s -not -path %s -not -path %s]],
+    utils.shellescape(default_restricted_find_exclude_git),
+    utils.shellescape(default_restricted_find_exclude_svn),
+    utils.shellescape(default_restricted_find_exclude_hg)
 )
 local default_unrestricted_find = [[find -L . -type f]]
 
@@ -17,8 +21,15 @@ local default_unrestricted_fd =
     string.format("%s -cnever -tf -tl -L -i -u", constants.fd)
 
 -- grep
-local default_restricted_grep =
-    [[grep --color=always -n -H -r --exclude-dir='.git']]
+local default_restricted_grep_exclude_git = ".git"
+local default_restricted_grep_exclude_svn = ".svn"
+local default_restricted_grep_exclude_hg = ".hg"
+local default_restricted_grep = string.format(
+    [[grep --color=always -n -H -r --exclude-dir=%s --exclude-dir=%s --exclude-dir=%s]],
+    utils.shellescape(default_restricted_grep_exclude_git),
+    utils.shellescape(default_restricted_grep_exclude_svn),
+    utils.shellescape(default_restricted_grep_exclude_hg)
+)
 local default_unrestricted_grep = [[grep --color=always -n -H -r]]
 
 -- rg
