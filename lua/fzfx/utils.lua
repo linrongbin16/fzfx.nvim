@@ -1,4 +1,4 @@
-local constants = require('fzfx.constants')
+local constants = require("fzfx.constants")
 
 local function table_filter(f, t)
     local result = {}
@@ -173,14 +173,21 @@ function ShellOptsContext:restore()
     end
 end
 
-
 --- @param s string
+--- @param special any?
 --- @return string
-local function shellescape(s)
-    local shell_opts_context = ShellOptsContext:save()
-    local result = vim.fn.shellescape(s)
-    shell_opts_context:restore()
-    return result
+local function shellescape(s, special)
+    if constants.is_windows then
+        local shellslash = vim.o.shellslash
+        vim.o.shellslash = false
+        local result = special ~= nil and vim.fn.shellescape(s, special)
+            or vim.fn.shellescape(s)
+        vim.o.shellslash = shellslash
+        return result
+    else
+        return special ~= nil and vim.fn.shellescape(s, special)
+            or vim.fn.shellescape(s)
+    end
 end
 
 local M = {
