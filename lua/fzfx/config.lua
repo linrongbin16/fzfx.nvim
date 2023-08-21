@@ -5,10 +5,10 @@ local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 -- find
 local default_restricted_find_exclude_git = [[*/\.git/*]]
 local default_restricted_find = string.format(
-    [[find -L .[^.]* * -type f -not -path %s -printf %s]],
+    [[find -L . -type f -not -path %s]],
     utils.shellescape(default_restricted_find_exclude_git)
 )
-local default_unrestricted_find = [[find -L .[^.]* * -type f]]
+local default_unrestricted_find = [[find -L . -type f]]
 
 -- fd
 local default_restricted_fd =
