@@ -2,6 +2,8 @@ local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
+-- gnu find
+
 -- find
 -- local default_restricted_find_exclude_git = [[*/\.git/*]]
 -- local default_restricted_find_exclude_svn = [[*/\.svn/*]]
@@ -24,15 +26,20 @@ local default_restricted_fd =
 local default_unrestricted_fd =
     string.format("%s -cnever -tf -tl -L -i -u", constants.fd)
 
+-- gnu grep
+local default_restricted_gnu_grep_exclude_hidden = [[.*]]
+local default_restricted_gnu_grep = string.format(
+    [[%s --color=always -n -H -r --exclude-dir=%s --exclude=%s]],
+    constants.gnu_grep,
+    utils.shellescape(default_restricted_gnu_grep_exclude_hidden),
+    utils.shellescape(default_restricted_gnu_grep_exclude_hidden)
+)
+local default_unrestricted_gnu_grep = [[grep --color=always -n -H -r]]
+
 -- grep
--- local default_restricted_grep_exclude_git = ".git"
--- local default_restricted_grep_exclude_svn = ".svn"
--- local default_restricted_grep_exclude_hg = ".hg"
 local default_restricted_grep_exclude_hidden = [[./.*]]
 local default_restricted_grep = string.format(
     [[grep --color=always -n -H -r --exclude-dir=%s --exclude=%s]],
-    -- utils.shellescape(default_restricted_grep_exclude_git),
-    -- utils.shellescape(default_restricted_grep_exclude_svn),
     utils.shellescape(default_restricted_grep_exclude_hidden),
     utils.shellescape(default_restricted_grep_exclude_hidden)
 )
@@ -271,12 +278,20 @@ local Defaults = {
             restricted = {
                 "ctrl-r",
                 constants.has_rg and default_restricted_rg
-                    or default_restricted_grep,
+                    or (
+                        constants.has_gnu_grep
+                            and default_restricted_gnu_grep
+                        or default_restricted_grep
+                    ),
             },
             unrestricted = {
                 "ctrl-u",
                 constants.has_rg and default_unrestricted_rg
-                    or default_unrestricted_grep,
+                    or (
+                        constants.has_gnu_grep
+                            and default_unrestricted_gnu_grep
+                        or default_unrestricted_grep
+                    ),
             },
         },
         actions = {

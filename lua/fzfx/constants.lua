@@ -29,13 +29,10 @@ local has_gnu_grep = (
 ) or ((is_macos or is_bsd) and vim.fn.executable("ggrep") > 0)
 local gnu_grep = (is_bsd or is_macos) and "ggrep" or "grep"
 
-local grep = "grep"
-
 local has_gnu_find = (
     (is_windows or is_linux) and vim.fn.executable("find") > 0
 ) or ((is_macos or is_bsd) and vim.fn.executable("gfind") > 0)
 local gnu_find = (is_bsd or is_macos) and "gfind" or "find"
-local find = "find"
 
 local M = {
     -- os
@@ -58,12 +55,10 @@ local M = {
     fd = fd,
 
     has_gnu_grep = has_gnu_grep,
-    gun_grep = gnu_grep,
-    grep = grep,
+    gnu_grep = gnu_grep,
 
     has_gnu_find = has_gnu_find,
     gnu_find = gnu_find,
-    find = find,
 }
 
 return M
