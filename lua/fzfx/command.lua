@@ -1,3 +1,5 @@
+-- Zero Dependency
+
 --- @class CommandResult
 --- @field stdout string[]?
 --- @field stderr string[]?
