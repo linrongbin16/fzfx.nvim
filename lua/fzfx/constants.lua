@@ -26,13 +26,13 @@ local fd = vim.fn.executable("fdfind") > 0 and "fdfind" or "fd"
 
 local has_gnu_grep = (
     (is_windows or is_linux) and vim.fn.executable("grep") > 0
-) or ((is_macos or is_bsd) and vim.fn.executable("ggrep") > 0)
-local gnu_grep = (is_bsd or is_macos) and "ggrep" or "grep"
+) or vim.fn.executable("ggrep") > 0
+local gnu_grep = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
 
 local has_gnu_find = (
     (is_windows or is_linux) and vim.fn.executable("find") > 0
-) or ((is_macos or is_bsd) and vim.fn.executable("gfind") > 0)
-local gnu_find = (is_bsd or is_macos) and "gfind" or "find"
+) or vim.fn.executable("gfind") > 0
+local gnu_find = vim.fn.executable("gfind") > 0 and "gfind" or "find"
 
 local M = {
     -- os
