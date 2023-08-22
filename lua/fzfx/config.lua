@@ -2,11 +2,20 @@ local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
+-- gnu find
+local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
+local default_restricted_gnu_find = string.format(
+    [[%s -L . -type f -not -path %s]],
+    constants.gnu_find,
+    utils.shellescape(default_restricted_gnu_find_exclude_hidden)
+)
+local default_unrestricted_gnu_find = [[find -L . -type f]]
+
 -- find
-local default_restricted_find_exclude_git = [[*/\.git/*]]
+local default_restricted_find_exclude_hidden = [[*/.*]]
 local default_restricted_find = string.format(
     [[find -L . -type f -not -path %s]],
-    utils.shellescape(default_restricted_find_exclude_git)
+    utils.shellescape(default_restricted_find_exclude_hidden)
 )
 local default_unrestricted_find = [[find -L . -type f]]
 
@@ -16,9 +25,23 @@ local default_restricted_fd =
 local default_unrestricted_fd =
     string.format("%s -cnever -tf -tl -L -i -u", constants.fd)
 
+-- gnu grep
+local default_restricted_gnu_grep_exclude_hidden = [[.*]]
+local default_restricted_gnu_grep = string.format(
+    [[%s --color=always -n -H -r --exclude-dir=%s --exclude=%s]],
+    constants.gnu_grep,
+    utils.shellescape(default_restricted_gnu_grep_exclude_hidden),
+    utils.shellescape(default_restricted_gnu_grep_exclude_hidden)
+)
+local default_unrestricted_gnu_grep = [[grep --color=always -n -H -r]]
+
 -- grep
-local default_restricted_grep =
-    [[grep --color=always -n -H -r --exclude-dir='.git']]
+local default_restricted_grep_exclude_hidden = [[./.*]]
+local default_restricted_grep = string.format(
+    [[grep --color=always -n -H -r --exclude-dir=%s --exclude=%s]],
+    utils.shellescape(default_restricted_grep_exclude_hidden),
+    utils.shellescape(default_restricted_grep_exclude_hidden)
+)
 local default_unrestricted_grep = [[grep --color=always -n -H -r]]
 
 -- rg
@@ -137,12 +160,20 @@ local Defaults = {
             restricted = {
                 "ctrl-r",
                 constants.has_fd and default_restricted_fd
-                    or default_restricted_find,
+                    or (
+                        constants.has_gnu_find
+                            and default_restricted_gnu_find
+                        or default_restricted_find
+                    ),
             },
             unrestricted = {
                 "ctrl-u",
                 constants.has_fd and default_unrestricted_fd
-                    or default_unrestricted_find,
+                    or (
+                        constants.has_gnu_find
+                            and default_unrestricted_gnu_find
+                        or default_unrestricted_find
+                    ),
             },
         },
         actions = {
@@ -254,12 +285,20 @@ local Defaults = {
             restricted = {
                 "ctrl-r",
                 constants.has_rg and default_restricted_rg
-                    or default_restricted_grep,
+                    or (
+                        constants.has_gnu_grep
+                            and default_restricted_gnu_grep
+                        or default_restricted_grep
+                    ),
             },
             unrestricted = {
                 "ctrl-u",
                 constants.has_rg and default_unrestricted_rg
-                    or default_unrestricted_grep,
+                    or (
+                        constants.has_gnu_grep
+                            and default_unrestricted_gnu_grep
+                        or default_unrestricted_grep
+                    ),
             },
         },
         actions = {

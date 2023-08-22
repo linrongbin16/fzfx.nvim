@@ -61,11 +61,11 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - Neovim &ge; 0.5.
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
-- [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep** commands on unix/linux).
-- [fd](https://github.com/sharkdp/fd) (optional for **files** commands on unix/linux).
-- [bat](https://github.com/sharkdp/bat) (optional for preview files on unix/linux, e.g. the right side of **live grep**, **files** commands).
+- [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**).
+- [fd](https://github.com/sharkdp/fd) (optional for **files**).
+- [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**).
 
-> Note: **live grep**, **files** and preview files will use builtin linux commands ([grep](https://man7.org/linux/man-pages/man1/grep.1.html), [find](https://man7.org/linux/man-pages/man1/find.1.html), [cat](https://man7.org/linux/man-pages/man1/cat.1.html)) if `rg`, `fd`, `bat` not installed.
+> Note: **live grep**, **files** and preview files will use builtin unix/linux commands ([grep](https://man7.org/linux/man-pages/man1/grep.1.html), [find](https://man7.org/linux/man-pages/man1/find.1.html), [cat](https://man7.org/linux/man-pages/man1/cat.1.html)) if `rg`, `fd`, `bat` not installed.
 >
 > While on Windows, we don't have a builtin shell environment, so install `rg`, `fd` and `bat` should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
 
