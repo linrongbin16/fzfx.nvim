@@ -283,7 +283,7 @@ local ProviderSwitch = {
 --- @param providers table<string, Provider>
 --- @param provider_types table<string, ProviderType>
 --- @param provider_key string
---- @param query string?
+--- @param query string
 --- @param filename string
 local function provider_switch_dump(
     providers,
@@ -353,7 +353,7 @@ end
 --- @param providers table<string, Provider>
 --- @param provider_types table<string, ProviderType>
 --- @param default_provider_key string
---- @param query string?
+--- @param query string
 --- @return ProviderSwitch
 function ProviderSwitch:new(
     name,
@@ -383,7 +383,7 @@ function ProviderSwitch:new(
 end
 
 --- @param provider_key string
---- @param query string?
+--- @param query string
 --- @return ProviderType
 function ProviderSwitch:switch(provider_key, query)
     provider_switch_dump(
