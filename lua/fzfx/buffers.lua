@@ -24,19 +24,19 @@ local function buffers(query, bang, opts)
 
     -- action
     local bdelete_action = buffers_configs.interactions[2]
-    local buf_provider = buffers_configs.providers
+    local buf_providers = buffers_configs.providers
 
     local provider_switch = helpers.ProviderSwitch:new(
-        "buffers",
-        { [buf_provider[1]] = buf_provider[2] },
-        { [buf_provider[1]] = buf_provider[3] },
-        buf_provider[1],
+        "buffers_provider",
+        { [buf_providers[1]] = buf_providers[2] },
+        { [buf_providers[1]] = buf_providers[3] },
+        buf_providers[1],
         query
     )
 
     -- rpc
     local function collect_bufs_rpc_callback()
-        provider_switch:switch(buf_provider[1])
+        provider_switch:switch(buf_providers[1])
     end
 
     local collect_bufs_rpc_callback_id =

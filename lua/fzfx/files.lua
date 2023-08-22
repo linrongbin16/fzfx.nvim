@@ -29,15 +29,36 @@ local Context = {
 local function files(query, bang, opts)
     local files_configs = conf.get_config().files
 
-    local provider_switch = helpers.Switch:new(
+    local files_providers = files_configs.providers
+    local provider_switch = helpers.ProviderSwitch:new(
         "files_provider",
-        opts.default_provider == "restricted"
-                and files_configs.providers.restricted[2]
-            or files_configs.providers.unrestricted[2],
-        opts.default_provider == "restricted"
-                and files_configs.providers.unrestricted[2]
-            or files_configs.providers.restricted[2]
+        {
+            [files_providers.restricted[1]] = files_providers.restricted[2],
+            [files_providers.unrestricted[1]] = files_providers.unrestricted[2],
+        },
+        {
+            [files_providers.restricted[1]] = #files_providers.restricted >= 3
+                    and files_providers.restricted[3]
+                or "string",
+            [files_providers.unrestricted[1]] = #files_providers.unrestricted
+                        >= 3
+                    and files_providers.unrestricted[3]
+                or "string",
+        },
+        opts.default_provider == "restricted" and files_providers.restricted[1]
+            or files_providers.unrestricted[1],
+        query
     )
+
+    -- local provider_switch = helpers.Switch:new(
+    --     "files_provider",
+    --     opts.default_provider == "restricted"
+    --             and files_configs.providers.restricted[2]
+    --         or files_configs.providers.unrestricted[2],
+    --     opts.default_provider == "restricted"
+    --             and files_configs.providers.unrestricted[2]
+    --         or files_configs.providers.restricted[2]
+    -- )
 
     -- rpc callback
     local function switch_provider_rpc_callback()
