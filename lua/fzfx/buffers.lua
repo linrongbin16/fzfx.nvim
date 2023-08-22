@@ -97,8 +97,21 @@ local function buffers(query, bang, opts)
 
     -- action
     local bdelete_action = buffers_configs.interactions[2]
+    local buf_provider = buffers_configs.providers
+
+    local provider_switch = helpers.ProviderSwitch:new(
+        "buffers",
+        { [buf_provider[1]] = buf_provider[2] },
+        { [buf_provider[1]] = buf_provider[3] },
+        buf_provider[1],
+        query
+    )
 
     -- rpc
+    local function collect_bufs_rpc_callback()
+        provider_switch:switch(buf_provider[1])
+    end
+
     local collect_bufs_rpc_callback_id =
         server.get_global_rpc_server():register(collect_bufs_rpc_callback)
 
@@ -117,9 +130,10 @@ local function buffers(query, bang, opts)
 
     -- query command, both initial query + reload query
     local query_command = string.format(
-        "%s %s",
+        "%s %s %s",
         shell.make_lua_command("buffers", "provider.lua"),
-        collect_bufs_rpc_callback_id
+        collect_bufs_rpc_callback_id,
+        provider_switch.tempfile
     )
     local preview_command =
         string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))

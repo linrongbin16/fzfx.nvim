@@ -370,6 +370,39 @@ local Defaults = {
                 },
             },
         },
+        providers = {
+            "default",
+            function(query)
+                --- @param b integer
+                --- @return string
+                local function relpath(b)
+                    local bufname = vim.api.nvim_buf_get_name(b)
+                    return vim.fn.fnamemodify(bufname, ":~:.")
+                end
+
+                local exclude_filetypes = { ["qf"] = true, ["neo-tree"] = true }
+                local current_bufnr = vim.api.nvim_get_current_buf()
+                local list_bufs = vim.api.nvim_list_bufs()
+                local result_bufs = {}
+                if utils.is_buf_valid(current_bufnr) then
+                    table.insert(result_bufs, relpath(current_bufnr))
+                end
+                if type(list_bufs) == "table" then
+                    for _, bufnr in ipairs(list_bufs) do
+                        local ft = utils.get_buf_option(bufnr, "filetype")
+                        if
+                            utils.is_buf_valid(bufnr)
+                            and bufnr ~= current_bufnr
+                            and not exclude_filetypes[ft]
+                        then
+                            table.insert(result_bufs, relpath(bufnr))
+                        end
+                    end
+                end
+                return result_bufs
+            end,
+            "list",
+        },
         interactions = {
             "ctrl-d",
             require("fzfx.actions").bdelete,

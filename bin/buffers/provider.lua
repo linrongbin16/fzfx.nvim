@@ -10,11 +10,13 @@ local shell_helpers = require("fzfx.shell_helpers")
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_SOCKET_ADDRESS
 shell_helpers.log_ensure(
     type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
-    "|fzfx.bin.rpc.client| error! SOCKET_ADDRESS must not be empty!"
+    "|fzfx.bin.buffers.provider| error! SOCKET_ADDRESS must not be empty!"
 )
 local registry_id = _G.arg[1]
+local bufs_result = _G.arg[2]
 
 shell_helpers.log_debug("registry_id:[%s]", registry_id)
+shell_helpers.log_debug("bufs_result:[%s]", bufs_result)
 
 local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
 shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
@@ -23,7 +25,7 @@ shell_helpers.log_ensure(
     "|fzfx.bin.buffers.provider| error! failed to connect socket on SOCKET_ADDRESS:%s",
     vim.inspect(SOCKET_ADDRESS)
 )
-local buffers = vim.rpcrequest(
+vim.rpcrequest(
     channel_id,
     "nvim_exec_lua",
     ---@diagnostic disable-next-line: param-type-mismatch
@@ -37,16 +39,16 @@ local buffers = vim.rpcrequest(
     }
 )
 vim.fn.chanclose(channel_id)
-shell_helpers.log_debug(
-    "|fzfx.bin.buffers.provider| buffers(%s):%s",
-    type(buffers),
-    vim.inspect(buffers)
-)
 
-if type(buffers) == "table" and #buffers > 0 then
-    for _, line in ipairs(buffers) do
-        -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-        local line_with_icon = shell_helpers.render_filepath_line(line)
-        io.write(string.format("%s\n", line_with_icon))
-    end
+local f = io.open(bufs_result, "r")
+shell_helpers.log_ensure(
+    f ~= nil,
+    "|fzfx.bin.buffers.provider| error! failed to open bufs_result:%s",
+    vim.inspect(bufs_result)
+)
+--- @diagnostic disable-next-line: need-check-nil
+for line in f:lines("*line") do
+    -- shell_helpers.log_debug("line:%s", vim.inspect(line))
+    local line_with_icon = shell_helpers.render_filepath_line(line)
+    io.write(string.format("%s\n", line_with_icon))
 end
