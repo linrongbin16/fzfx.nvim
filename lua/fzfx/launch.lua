@@ -74,14 +74,6 @@ end
 --- @return Launch
 function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
     local result = vim.fn.tempname()
-
-    -- save shell opts
-    local shell_opts_context = utils.ShellOptsContext:save()
-    local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
-    local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
-    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_default_opts()
-    vim.env.FZF_DEFAULT_COMMAND = source
-
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
 
     local function on_fzf_exit(jobid2, exitcode, event)
@@ -152,6 +144,12 @@ function Launch:new(popup, source, fzf_opts, actions, on_launch_exit)
         end
     end
 
+    -- save shell opts
+    local shell_opts_context = utils.ShellOptsContext:save()
+    local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
+    local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
+    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_default_opts()
+    vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(
         "|fzfx.popup - Launch:new| $FZF_DEFAULT_OPTS:%s",
         vim.inspect(vim.env.FZF_DEFAULT_OPTS)
