@@ -3,20 +3,19 @@ local utils = require("fzfx.utils")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
 -- gnu find
+local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
+local default_restricted_gnu_find = string.format(
+    [[%s -L . -type f -not -path %s]],
+    constants.gnu_find,
+    utils.shellescape(default_restricted_gnu_find_exclude_hidden)
+)
+local default_unrestricted_gnu_find = [[find -L . -type f]]
 
 -- find
--- local default_restricted_find_exclude_git = [[*/\.git/*]]
--- local default_restricted_find_exclude_svn = [[*/\.svn/*]]
--- local default_restricted_find_exclude_hg = [[*/\.hg/*]]
-local default_restricted_find_exclude_hidden_folder = [[*/\.*]]
-local default_restricted_find_exclude_hidden_file = [[.*]]
+local default_restricted_find_exclude_hidden = [[*/.*]]
 local default_restricted_find = string.format(
-    [[find -L . -type f -not -path %s -not -name %s]],
-    -- utils.shellescape(default_restricted_find_exclude_git),
-    -- utils.shellescape(default_restricted_find_exclude_svn),
-    -- utils.shellescape(default_restricted_find_exclude_hg),
-    utils.shellescape(default_restricted_find_exclude_hidden_folder),
-    utils.shellescape(default_restricted_find_exclude_hidden_file)
+    [[find -L . -type f -not -path %s]],
+    utils.shellescape(default_restricted_find_exclude_hidden)
 )
 local default_unrestricted_find = [[find -L . -type f]]
 
@@ -161,12 +160,20 @@ local Defaults = {
             restricted = {
                 "ctrl-r",
                 constants.has_fd and default_restricted_fd
-                    or default_restricted_find,
+                    or (
+                        constants.has_gnu_find
+                            and default_restricted_gnu_find
+                        or default_restricted_find
+                    ),
             },
             unrestricted = {
                 "ctrl-u",
                 constants.has_fd and default_unrestricted_fd
-                    or default_unrestricted_find,
+                    or (
+                        constants.has_gnu_find
+                            and default_unrestricted_gnu_find
+                        or default_unrestricted_find
+                    ),
             },
         },
         actions = {
