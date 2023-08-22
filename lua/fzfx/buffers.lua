@@ -13,80 +13,7 @@ local Context = {
     bdelete_key = nil,
     --- @type string?
     bdelete_header = nil,
-    --- @type table<string, boolean>?
-    exclude_filetypes = nil,
 }
-
---- @param bufnr integer
---- @return boolean
-local function buf_exclude(bufnr)
-    if Context.exclude_filetypes == nil then
-        Context.exclude_filetypes = {}
-        local exclude_filetypes =
-            conf.get_config().buffers.other_opts.exclude_filetypes
-        if type(exclude_filetypes) == "table" and #exclude_filetypes > 0 then
-            for _, ft in ipairs(exclude_filetypes) do
-                Context.exclude_filetypes[ft] = true
-            end
-        end
-    end
-    local ft = utils.get_buf_option(bufnr, "filetype")
-    return Context.exclude_filetypes[ft] ~= nil
-end
-
---- @param bufnr integer
---- @return boolean
-local function buf_valid(bufnr)
-    local bufname = vim.api.nvim_buf_get_name(bufnr)
-    return vim.api.nvim_buf_is_valid(bufnr)
-        and vim.api.nvim_buf_is_loaded(bufnr)
-        and vim.fn.buflisted(bufnr) > 0
-        and type(bufname) == "string"
-        and string.len(bufname) > 0
-        and not buf_exclude(bufnr)
-end
-
---- @param bufnr integer
---- @return string
-local function buf_path(bufnr)
-    local bufname = vim.api.nvim_buf_get_name(bufnr)
-    return vim.fn.fnamemodify(bufname, ":~:.")
-end
-
--- rpc callback
-local function collect_bufs_rpc_callback()
-    local current_bufnr = vim.api.nvim_get_current_buf()
-    local bufs_list = vim.api.nvim_list_bufs()
-    -- log.debug(
-    --     "|fzfx.buffers - buffers.collect_bufs_rpc_callback| current_bufnr:%s, bufs_list:%s",
-    --     vim.inspect(current_bufnr),
-    --     vim.inspect(bufs_list)
-    -- )
-    local filtered_bufs_list = {}
-    if buf_valid(current_bufnr) then
-        table.insert(filtered_bufs_list, buf_path(current_bufnr))
-    end
-    if type(bufs_list) == "table" then
-        for _, bufnr in ipairs(bufs_list) do
-            -- log.debug(
-            --     "|fzfx.buffers - buffers.collect_bufs_rpc_callback| 1-bufnr:%s, name:%s, buf ft:%s",
-            --     vim.inspect(bufnr),
-            --     vim.inspect(vim.api.nvim_buf_get_name(bufnr)),
-            --     vim.inspect(utils.get_buf_option(bufnr, "filetype"))
-            -- )
-            -- log.debug(
-            --     "|fzfx.buffers - buffers.collect_bufs_rpc_callback| 1-valid:%s, loaded:%s, buflisted:%s",
-            --     vim.inspect(vim.api.nvim_buf_is_valid(bufnr)),
-            --     vim.inspect(vim.api.nvim_buf_is_loaded(bufnr)),
-            --     vim.inspect(vim.fn.buflisted(bufnr))
-            -- )
-            if buf_valid(bufnr) and bufnr ~= current_bufnr then
-                table.insert(filtered_bufs_list, buf_path(bufnr))
-            end
-        end
-    end
-    return filtered_bufs_list
-end
 
 --- @param query string
 --- @param bang boolean
@@ -170,10 +97,6 @@ local function buffers(query, bang, opts)
             "--preview",
             preview_command,
         },
-        function()
-            local bufnr = vim.api.nvim_get_current_buf()
-            return buf_valid(bufnr) and "--header-lines=1" or nil
-        end,
     }
 
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(buffers_configs.fzf_opts))

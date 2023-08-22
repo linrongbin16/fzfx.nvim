@@ -423,9 +423,10 @@ local Defaults = {
                 "--prompt",
                 "Buffers > ",
             },
-        },
-        other_opts = {
-            exclude_filetypes = { "qf", "neo-tree" },
+            function()
+                local bufnr = vim.api.nvim_get_current_buf()
+                return utils.is_buf_valid(bufnr) and "--header-lines=1" or nil
+            end,
         },
     },
 
