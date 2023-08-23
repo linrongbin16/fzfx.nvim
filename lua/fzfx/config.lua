@@ -1,7 +1,6 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
-local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 
 -- gnu find
 local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
@@ -685,7 +684,7 @@ local Defaults = {
                 ),
             },
         },
-        previewers = "git show",
+        previewers = "git show --color=always",
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").yank_git_commit,

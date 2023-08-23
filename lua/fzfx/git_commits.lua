@@ -40,6 +40,13 @@ local function git_commits(query, bang, opts)
                 current_bufname
             )
         or git_commits_configs.providers.all_commits[2]
+    log.debug(
+        "|fzfx.git_commits - git_commits| buffer_only_provider:%s, current_bufnr (valid:%s):%s, current_bufname:%s",
+        buffer_only_provider,
+        utils.is_buf_valid(current_bufnr),
+        current_bufnr,
+        current_bufname
+    )
     local provider_switch = helpers.Switch:new(
         "git_commits_provider",
         opts.default_provider == "all_commits"
@@ -89,15 +96,15 @@ local function git_commits(query, bang, opts)
         { "--query", query },
         {
             "--header",
-            opts.default_provider == "all_commits" and Context.all_header
-                or Context.buffer_header,
+            opts.default_provider == "all_commits" and Context.buffer_header
+                or Context.all_header,
         },
         {
             "--bind",
             string.format(
                 "start:unbind(%s)",
-                opts.default_provider == "all_commits" and Context.buffer_key
-                    or Context.all_key
+                opts.default_provider == "all_commits" and Context.all_key
+                    or Context.buffer_key
             ),
         },
         {
