@@ -1,6 +1,7 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 
 -- gnu find
 local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
@@ -557,6 +558,126 @@ local Defaults = {
             "git log --pretty=%s --graph --date=relative --color=always",
             utils.shellescape(default_git_log_pretty)
         ),
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").git_checkout,
+            ["double-click"] = require("fzfx.actions").git_checkout,
+        },
+        fzf_opts = {
+            default_fzf_options.no_multi,
+            default_fzf_options.preview_half_page_down,
+            default_fzf_options.preview_half_page_up,
+            default_fzf_options.toggle_preview,
+            {
+                "--prompt",
+                "GBranches > ",
+            },
+        },
+    },
+
+    -- the 'Git Commits' commands
+    git_commits = {
+        commands = {
+            -- normal
+            {
+                name = "FzfxGCommits",
+                feed = UserCommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find local git branches",
+                },
+                default_provider = "local_branch",
+            },
+            {
+                name = "FzfxGBranchesR",
+                feed = UserCommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find remote git branches",
+                },
+                default_provider = "remote_branch",
+            },
+            -- visual
+            {
+                name = "FzfxGBranchesV",
+                feed = UserCommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find local git branches by visual select",
+                },
+                default_provider = "local_branch",
+            },
+            {
+                name = "FzfxGBranchesRV",
+                feed = UserCommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find remote git branches by visual select",
+                },
+                default_provider = "remote_branch",
+            },
+            -- cword
+            {
+                name = "FzfxGBranchesW",
+                feed = UserCommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find local git branches by cursor word",
+                },
+                default_provider = "local_branch",
+            },
+            {
+                name = "FzfxGBranchesRW",
+                feed = UserCommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find remote git branches by cursor word",
+                },
+                default_provider = "remote_branch",
+            },
+            -- put
+            {
+                name = "FzfxGBranchesP",
+                feed = UserCommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find local git branches by yank text",
+                },
+                default_provider = "local_branch",
+            },
+            {
+                name = "FzfxGBranchesRP",
+                feed = UserCommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find remote git branches by yank text",
+                },
+                default_provider = "remote_branch",
+            },
+        },
+        providers = {
+            all_commits = {
+                "ctrl-a",
+                string.format(
+                    "git log --pretty=%s --date=relative --color=always",
+                    utils.shellescape(default_git_log_pretty)
+                ),
+            },
+            buffer_commits = {
+                "ctrl-u",
+                string.format(
+                    "git log --pretty=%s --date=relative --color=always",
+                    utils.shellescape(default_git_log_pretty)
+                ),
+            },
+        },
+        previewers = "git show",
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").git_checkout,

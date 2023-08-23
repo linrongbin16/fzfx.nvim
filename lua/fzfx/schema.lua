@@ -12,8 +12,8 @@
 --  * List provider: a lua function to run and directly generate the lines.
 --
 --- @alias PlainProvider string
---- @alias CommandProvider fun(query:string?):string
---- @alias ListProvider fun(query:string?):string[]
+--- @alias CommandProvider fun(context:any,query:string?):string
+--- @alias ListProvider fun(context:any,query:string?):string[]
 --
 --- @alias Provider PlainProvider|CommandProvider|ListProvider
 --
