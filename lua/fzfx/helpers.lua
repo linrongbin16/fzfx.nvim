@@ -271,72 +271,85 @@ end
 --- @class ProviderSwitch
 --- @field name string?
 --- @field providers table<string, Provider>?
+--- @field provider_types table<string, ProviderType>?
 --- @field tempfile string?
 local ProviderSwitch = {
     name = nil,
     providers = nil,
+    provider_types = nil,
     tempfile = nil,
 }
 
 --- @package
 --- @param providers table<string, Provider>
+--- @param provider_types table<string, ProviderType>
 --- @param provider_key string
 --- @param query string?
 --- @param filename string
-local function provider_switch_dump(providers, provider_key, query, filename)
+--- @return ProviderType
+local function provider_switch_dump(
+    providers,
+    provider_types,
+    provider_key,
+    query,
+    filename
+)
     local provider = providers[provider_key]
+    local provider_type = provider_types[provider_key]
     log.ensure(
         type(provider) == "string" or type(provider) == "function",
         "|fzfx.helpers - provider_switch_dump| providers must contains provider key! providers:%s, provider_key:%s",
         vim.inspect(providers),
         vim.inspect(provider_key)
     )
-    if type(provider) == "string" then
-        log.debug(
-            "|fzfx.helpers - provider_switch_dump| plain provider, providers:%s provider_key:%s, provider:%s",
+    log.ensure(
+        provider_type == ProviderTypeEnum.PLAIN
+            or provider_type == ProviderTypeEnum.COMMAND
+            or provider_type == ProviderTypeEnum.LIST,
+        "|fzfx.helpers - provider_switch_dump| provider_types must contains provider key! provider_types:%s, provider_key:%s",
+        vim.inspect(provider_types),
+        vim.inspect(provider_key)
+    )
+    if provider_type == "plain" then
+        log.ensure(
+            type(provider) == "string",
+            "|fzfx.helpers - provider_switch_dump| plain provider must be string! providers:%s provider_key:%s, provider:%s",
             vim.inspect(providers),
             vim.inspect(provider_key),
             vim.inspect(provider)
         )
         vim.fn.writefile({ provider }, filename)
-        return ProviderTypeEnum.PLAIN
-    elseif type(provider) == "function" then
+    elseif provider_type == "command" then
         local result = provider(query)
-        if type(result) == "string" then
-            log.debug(
-                "|fzfx.helpers - provider_switch_dump| command provider, providers:%s provider_key:%s, provider:%s",
-                vim.inspect(providers),
-                vim.inspect(provider_key),
-                vim.inspect(provider)
-            )
-            vim.fn.writefile({ result }, filename)
-            return ProviderTypeEnum.COMMAND
-        elseif type(result) == "table" then
-            log.debug(
-                "|fzfx.helpers - provider_switch_dump| list provider, providers:%s provider_key:%s, provider:%s",
-                vim.inspect(providers),
-                vim.inspect(provider_key),
-                vim.inspect(provider)
-            )
-            vim.fn.writefile(result, filename)
-            return ProviderTypeEnum.LIST
-        else
-            log.throw(
-                "|fzfx.helpers - provider_switch_dump| error! invalid provider result, providers:%s, provider_key:%s, result:%s",
-                vim.inspect(providers),
-                vim.inspect(provider_key),
-                vim.inspect(result)
-            )
-            return nil
-        end
+        log.ensure(
+            type(result) == "string",
+            "|fzfx.helpers - provider_switch_dump| command provider result must be string! providers:%s provider_key:%s, provider:%s, result:%s",
+            vim.inspect(providers),
+            vim.inspect(provider_key),
+            vim.inspect(provider),
+            vim.inspect(result)
+        )
+        vim.fn.writefile({ result }, filename)
+    elseif provider_type == "list" then
+        local result = provider(query)
+        log.ensure(
+            type(result) == "table",
+            "|fzfx.helpers - provider_switch_dump| list provider (%s) result must be array! providers:%s, result:%s",
+            vim.inspect(provider_key),
+            vim.inspect(providers),
+            vim.inspect(result)
+        )
+        vim.fn.writefile(result, filename)
     else
         log.throw(
-            "|fzfx.helpers - provider_switch_dump| error! invalid provider, providers:%s, provider_key:%s",
+            "|fzfx.helpers - provider_switch_dump| error! invalid provider type:%s, providers:%s, provider_types:%s, provider_key:%s",
+            vim.inspect(provider_type),
             vim.inspect(providers),
+            vim.inspect(provider_types),
             vim.inspect(provider_key)
         )
-        return nil
     end
+    return provider_type
 end
 
 --- @param name string
@@ -376,14 +389,13 @@ end
 --- @param query string?
 --- @return ProviderType
 function ProviderSwitch:switch(provider_key, query)
-    provider_switch_dump(
+    return provider_switch_dump(
         self.providers,
         self.provider_types,
         provider_key,
         query,
         self.tempfile
     )
-    return self.provider_types[provider_key]
 end
 
 -- multiple provider switch }
