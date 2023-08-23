@@ -17,7 +17,7 @@ shell_helpers.log_debug("branch:[%s]", vim.inspect(commit))
 
 commit = vim.fn.split(commit)[1]
 local cmd = shell_helpers.read_provider_command(previewer) --[[@as string]]
-cmd = string.format("%s -- %s", cmd, commit)
+cmd = string.format("%s %s", cmd, commit)
 
 shell_helpers.log_debug("cmd:[%s]", cmd)
 os.execute(cmd)
