@@ -6,6 +6,7 @@ local conf = require("fzfx.config")
 local yank_history = require("fzfx.yank_history")
 local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 local utils = require("fzfx.utils")
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 
 -- visual select {
 
@@ -265,62 +266,127 @@ end
 
 -- provider switch }
 
--- multi provider switch {
+-- multiple provider switch {
 
---- @alias MultiSwitchKey string
---- @alias MultiSwitchValue string
-
---- @class MultiSwitch
+--- @class ProviderSwitch
 --- @field name string?
---- @field map table<MultiSwitchKey, MultiSwitchValue>?
+--- @field providers table<string, Provider>?
 --- @field tempfile string?
-local MultiSwitch = {
+local ProviderSwitch = {
     name = nil,
-    map = nil,
+    providers = nil,
     tempfile = nil,
 }
 
+--- @package
+--- @param providers table<string, Provider>
+--- @param provider_key string
+--- @param query string?
+--- @param filename string
+local function provider_switch_dump(providers, provider_key, query, filename)
+    local provider = providers[provider_key]
+    log.ensure(
+        type(provider) == "string" or type(provider) == "function",
+        "|fzfx.helpers - provider_switch_dump| providers must contains provider key! providers:%s, provider_key:%s",
+        vim.inspect(providers),
+        vim.inspect(provider_key)
+    )
+    if type(provider) == "string" then
+        log.debug(
+            "|fzfx.helpers - provider_switch_dump| plain provider, providers:%s provider_key:%s, provider:%s",
+            vim.inspect(providers),
+            vim.inspect(provider_key),
+            vim.inspect(provider)
+        )
+        vim.fn.writefile({ provider }, filename)
+        return ProviderTypeEnum.PLAIN
+    elseif type(provider) == "function" then
+        local result = provider(query)
+        if type(result) == "string" then
+            log.debug(
+                "|fzfx.helpers - provider_switch_dump| command provider, providers:%s provider_key:%s, provider:%s",
+                vim.inspect(providers),
+                vim.inspect(provider_key),
+                vim.inspect(provider)
+            )
+            vim.fn.writefile({ result }, filename)
+            return ProviderTypeEnum.COMMAND
+        elseif type(result) == "table" then
+            log.debug(
+                "|fzfx.helpers - provider_switch_dump| list provider, providers:%s provider_key:%s, provider:%s",
+                vim.inspect(providers),
+                vim.inspect(provider_key),
+                vim.inspect(provider)
+            )
+            vim.fn.writefile(result, filename)
+            return ProviderTypeEnum.LIST
+        else
+            log.throw(
+                "|fzfx.helpers - provider_switch_dump| error! invalid provider result, providers:%s, provider_key:%s, result:%s",
+                vim.inspect(providers),
+                vim.inspect(provider_key),
+                vim.inspect(result)
+            )
+            return nil
+        end
+    else
+        log.throw(
+            "|fzfx.helpers - provider_switch_dump| error! invalid provider, providers:%s, provider_key:%s",
+            vim.inspect(providers),
+            vim.inspect(provider_key)
+        )
+        return nil
+    end
+end
+
 --- @param name string
---- @param map table<MultiSwitchKey, MultiSwitchValue>
---- @param current MultiSwitchKey
---- @return MultiSwitch
-function MultiSwitch:new(name, map, current)
-    local mswitch = vim.tbl_deep_extend("force", vim.deepcopy(MultiSwitch), {
+--- @param providers table<string, Provider>
+--- @param provider_types table<string, ProviderType>
+--- @param default_provider_key string
+--- @param query string?
+--- @return ProviderSwitch
+function ProviderSwitch:new(
+    name,
+    providers,
+    provider_types,
+    default_provider_key,
+    query
+)
+    local ps = vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
         name = name,
-        map = map,
+        providers = providers,
+        provider_types = provider_types,
         tempfile = env.debug_enable() and path.join(
             vim.fn.stdpath("data"),
             "fzfx.nvim",
             "multi_switch_" .. name
         ) or vim.fn.tempname(),
     })
-    log.ensure(
-        type(map[current]) == "string",
-        "|fzfx.helpers - MultiSwitch:new| map must contains current! map:%s, current:%s",
-        vim.inspect(map),
-        vim.inspect(current)
+    provider_switch_dump(
+        providers,
+        provider_types,
+        default_provider_key,
+        query,
+        ps.tempfile
     )
-    vim.fn.writefile({ map[current] }, mswitch.tempfile, "b")
-    log.debug(
-        "|fzfx.helpers - MultiSwitch:new| mswitch:%s, current:%s",
-        vim.inspect(mswitch),
-        vim.inspect(current)
-    )
-    return mswitch
+    return ps
 end
 
---- @param current MultiSwitchKey
-function MultiSwitch:switch(current)
-    log.ensure(
-        type(self.map[current]) == "string",
-        "|fzfx.helpers - MultiSwitch:switch| self.map must contains current! self.map:%s, current:%s",
-        vim.inspect(self.map),
-        vim.inspect(current)
+--- @param provider_key string
+--- @param query string?
+--- @return ProviderType
+function ProviderSwitch:switch(provider_key, query)
+    provider_switch_dump(
+        self.providers,
+        self.provider_types,
+        provider_key,
+        query,
+        self.tempfile
     )
-    vim.fn.writefile({ self.map[current] }, self.tempfile, "b")
+    return self.provider_types[provider_key]
 end
 
--- multi provider switch }
+-- multiple provider switch }
 
 local M = {
     get_command_feed = get_command_feed,
@@ -328,7 +394,7 @@ local M = {
     make_fzf_opts = make_fzf_opts,
     make_fzf_default_opts = make_fzf_default_opts,
     Switch = Switch,
-    MultiSwitch = MultiSwitch,
+    ProviderSwitch = ProviderSwitch,
 }
 
 return M
