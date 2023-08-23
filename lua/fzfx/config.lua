@@ -662,22 +662,43 @@ local Defaults = {
             },
         },
         providers = {
+            --- @alias ProviderConfig {[1]:string,[2]:Provider,[3]:ProviderType?}
+            --- @type ProviderConfig
             all_commits = {
                 "ctrl-a",
+                --- @type PlainProvider
                 string.format(
                     "git log --pretty=%s --date=relative --color=always",
                     utils.shellescape(default_git_log_pretty)
                 ),
             },
+            --- @type ProviderConfig
             buffer_commits = {
                 "ctrl-u",
-                string.format(
-                    "git log --pretty=%s --date=relative --color=always",
-                    utils.shellescape(default_git_log_pretty)
-                ),
+                --- @param bufnr integer
+                function(bufnr)
+                    local bufname = vim.api.nvim_buf_get_name(bufnr)
+                    local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
+                    return string.format(
+                        "git log --pretty=%s --date=relative --color=always -- %s",
+                        utils.shellescape(default_git_log_pretty),
+                        bufpath
+                    )
+                end,
+                ProviderTypeEnum.COMMAND,
             },
         },
-        previewers = "git show",
+        --- @alias PreviewerConfig {[1]:Previewer,[2]:PreviewerType?}
+        --- @type PreviewerConfig
+        previewers = {
+            --- @param provider string the provider's name, e.g. 'all_commits', 'buffer_commits'.
+            --- @param line string
+            --- @return string
+            function(provider, line)
+                local git_commit = vim.fn.split(line)[1]
+                return string.format("git show %s", git_commit)
+            end,
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").git_checkout,
