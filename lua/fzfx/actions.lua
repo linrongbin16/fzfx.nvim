@@ -161,6 +161,14 @@ local function git_checkout(lines)
     end
 end
 
+local function yank_git_commit(lines)
+    if type(lines) == "table" and #lines > 0 then
+        local line = lines[#lines]
+        local git_commit = vim.fn.split(line)[1]
+        vim.api.nvim_command("let @+ = '" .. git_commit .. "'")
+    end
+end
+
 local M = {
     nop = nop,
     edit = edit,
@@ -170,6 +178,7 @@ local M = {
     buffer_rg = buffer_rg,
     bdelete = bdelete,
     git_checkout = git_checkout,
+    yank_git_commit = yank_git_commit,
 }
 
 return M

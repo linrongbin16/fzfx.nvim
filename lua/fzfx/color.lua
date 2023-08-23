@@ -211,4 +211,16 @@ M.git_local_branches_header = function(action)
     return render(":: Press %s to local mode", M.magenta, string.upper(action))
 end
 
+--- @param action string
+--- @return string
+M.git_all_commits_header = function(action)
+    return render(":: Press %s to all mode", M.magenta, string.upper(action))
+end
+
+--- @param action string
+--- @return string
+M.git_buffer_commits_header = function(action)
+    return render(":: Press %s to buffer mode", M.magenta, string.upper(action))
+end
+
 return M
