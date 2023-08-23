@@ -671,7 +671,7 @@ local Defaults = {
                 "ctrl-a",
                 --- @type PlainProvider
                 string.format(
-                    "git log --pretty=%s --date=relative --color=always",
+                    "git log --pretty=%s --date=short --color=always",
                     utils.shellescape(default_git_log_pretty)
                 ),
             },
@@ -680,7 +680,7 @@ local Defaults = {
                 "ctrl-u",
                 --- @type PlainProvider
                 string.format(
-                    "git log --pretty=%s --date=relative --color=always",
+                    "git log --pretty=%s --date=short --color=always",
                     utils.shellescape(default_git_log_pretty)
                 ),
             },

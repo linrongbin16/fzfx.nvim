@@ -31,13 +31,21 @@ local Context = {
 local function git_commits(query, bang, opts)
     local git_commits_configs = conf.get_config().git_commits
 
+    local current_bufnr = vim.api.nvim_get_current_buf()
+    local current_bufname = vim.api.nvim_buf_get_name(current_bufnr)
+    local buffer_only_provider = utils.is_buf_valid(current_bufnr)
+            and string.format(
+                "%s -- %s",
+                git_commits_configs.providers.buffer_commits[2],
+                current_bufname
+            )
+        or git_commits_configs.providers.all_commits[2]
     local provider_switch = helpers.Switch:new(
         "git_commits_provider",
         opts.default_provider == "all_commits"
                 and git_commits_configs.providers.all_commits[2]
-            or git_commits_configs.providers.buffer_commits[2],
-        opts.default_provider == "buffer_commits"
-                and git_commits_configs.providers.buffer_commits[2]
+            or buffer_only_provider,
+        opts.default_provider == "buffer_commits" and buffer_only_provider
             or git_commits_configs.providers.all_commits[2]
     )
 
