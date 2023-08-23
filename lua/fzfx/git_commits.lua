@@ -150,10 +150,9 @@ local function setup()
     end
 
     -- Context
-    Context.all_key =
-        string.lower(git_commits_configs.providers.local_branch[1])
+    Context.all_key = string.lower(git_commits_configs.providers.all_commits[1])
     Context.buffer_key =
-        string.lower(git_commits_configs.providers.remote_branch[1])
+        string.lower(git_commits_configs.providers.buffer_commits[1])
     Context.all_header = color.git_all_commits_header(Context.all_key)
     Context.buffer_header = color.git_buffer_commits_header(Context.buffer_key)
 
