@@ -1,8 +1,6 @@
 local log = require("fzfx.log")
-local path = require("fzfx.path")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
-local Launch = require("fzfx.launch").Launch
 local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
@@ -25,7 +23,7 @@ local Context = {
 --- @param query string
 --- @param bang boolean
 --- @param opts FilesOpts
---- @return Launch
+--- @return Popup
 local function files(query, bang, opts)
     local files_configs = conf.get_config().files
 
@@ -116,15 +114,18 @@ local function files(query, bang, opts)
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(files_configs.fzf_opts))
     fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
     local actions = files_configs.actions
-    local ppp =
-        Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
-    local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
-        server
-            .get_global_rpc_server()
-            :unregister(switch_provider_rpc_callback_id)
-    end)
-
-    return launch
+    local p = Popup:new(
+        bang and { height = 1, width = 1, row = 0, col = 0 } or nil,
+        query_command,
+        fzf_opts,
+        actions,
+        function()
+            server
+                .get_global_rpc_server()
+                :unregister(switch_provider_rpc_callback_id)
+        end
+    )
+    return p
 end
 
 local function setup()

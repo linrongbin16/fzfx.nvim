@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
-local Launch = require("fzfx.launch").Launch
 local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
@@ -85,7 +84,7 @@ end
 --- @param query string
 --- @param bang boolean
 --- @param opts Configs?
---- @return Launch
+--- @return Popup
 local function buffers(query, bang, opts)
     local buffers_configs = conf.get_config().buffers
 
@@ -159,14 +158,20 @@ local function buffers(query, bang, opts)
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(buffers_configs.fzf_opts))
     fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
     local actions = buffers_configs.actions
-    local ppp =
-        Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
-    local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
-        server.get_global_rpc_server():unregister(collect_bufs_rpc_callback_id)
-        server.get_global_rpc_server():unregister(bdelete_rpc_callback_id)
-    end)
+    local p = Popup:new(
+        bang and { height = 1, width = 1, row = 0, col = 0 } or nil,
+        query_command,
+        fzf_opts,
+        actions,
+        function()
+            server
+                .get_global_rpc_server()
+                :unregister(collect_bufs_rpc_callback_id)
+            server.get_global_rpc_server():unregister(bdelete_rpc_callback_id)
+        end
+    )
 
-    return launch
+    return p
 end
 
 local function setup()
