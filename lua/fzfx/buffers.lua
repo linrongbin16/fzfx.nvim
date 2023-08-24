@@ -159,10 +159,6 @@ local function buffers(query, bang, opts)
             "--preview",
             preview_command,
         },
-        function()
-            local bufnr = vim.api.nvim_get_current_buf()
-            return buf_valid(bufnr) and "--header-lines=1" or nil
-        end,
     }
 
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(buffers_configs.fzf_opts))
