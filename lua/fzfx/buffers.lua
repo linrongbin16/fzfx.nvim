@@ -7,7 +7,7 @@ local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
 local utils = require("fzfx.utils")
 
-local Context = {
+local Constants = {
     --- @type string?
     bdelete_key = nil,
     --- @type string?
@@ -19,18 +19,18 @@ local Context = {
 --- @param bufnr integer
 --- @return boolean
 local function buf_exclude(bufnr)
-    if Context.exclude_filetypes == nil then
-        Context.exclude_filetypes = {}
+    if Constants.exclude_filetypes == nil then
+        Constants.exclude_filetypes = {}
         local exclude_filetypes =
             conf.get_config().buffers.other_opts.exclude_filetypes
         if type(exclude_filetypes) == "table" and #exclude_filetypes > 0 then
             for _, ft in ipairs(exclude_filetypes) do
-                Context.exclude_filetypes[ft] = true
+                Constants.exclude_filetypes[ft] = true
             end
         end
     end
     local ft = utils.get_buf_option(bufnr, "filetype")
-    return Context.exclude_filetypes[ft] ~= nil
+    return Constants.exclude_filetypes[ft] ~= nil
 end
 
 --- @param bufnr integer
@@ -133,14 +133,14 @@ local function buffers(query, bang, opts)
         { "--query", query },
         {
             "--header",
-            Context.bdelete_header,
+            Constants.bdelete_header,
         },
         {
             -- bdelete action: delete buffer, reload query
             "--bind",
             string.format(
                 "%s:execute-silent(%s)+reload(%s)",
-                Context.bdelete_key,
+                Constants.bdelete_key,
                 bdelete_rpc_command,
                 query_command
             ),
@@ -181,8 +181,8 @@ local function setup()
     end
 
     -- Context
-    Context.bdelete_key = string.lower(buffers_configs.interactions[1])
-    Context.bdelete_header = color.delete_buffer_header(Context.bdelete_key)
+    Constants.bdelete_key = string.lower(buffers_configs.interactions[1])
+    Constants.bdelete_header = color.delete_buffer_header(Constants.bdelete_key)
 
     -- User commands
     for _, command_configs in pairs(buffers_configs.commands) do
