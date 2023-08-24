@@ -232,6 +232,7 @@ Commands are named following below rules:
 - The visual select variant is named with `V` suffix.
 - The cursor word variant is named with `W` suffix.
 - The yank text variant is named with `P` suffix (just like press the `p` key).
+- The current buffer only variant is named with `B` suffix.
 
 Especially for git commands:
 
@@ -360,6 +361,32 @@ Especially for git commands:
   <tr>
     <td>FzfxGBranches(R)P</td>
     <td>N</td>
+  </tr>
+  <tr>
+    <td rowspan="4">Git Commits</td>
+    <td>FzfxGCommits(B)</td>
+    <td>N</td>
+    <td>No</td>
+    <td>Yes</td>
+    <td rowspan="4">1. Use `enter` to copy commit SHA</td>
+  </tr>
+  <tr>
+    <td>FzfxGCommits(B)V</td>
+    <td>V</td>
+    <td>No</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>FzfxGCommits(B)W</td>
+    <td>N</td>
+    <td>No</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>FzfxGCommits(B)P</td>
+    <td>N</td>
+    <td>No</td>
+    <td>Yes</td>
   </tr>
 </tbody>
 </table>
