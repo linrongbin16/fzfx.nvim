@@ -554,7 +554,7 @@ local Defaults = {
         -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
         -- "git log --graph --color=always --date=relative",
         previewers = string.format(
-            "git log --pretty=%s --graph --date=relative --color=always",
+            "git log --pretty=%s --graph --date=short --color=always",
             utils.shellescape(default_git_log_pretty)
         ),
         actions = {
