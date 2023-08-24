@@ -33,6 +33,14 @@ local function git_commits(query, bang, opts)
 
     local current_bufnr = vim.api.nvim_get_current_buf()
     local current_bufname = vim.api.nvim_buf_get_name(current_bufnr)
+    local current_buf_valid = utils.is_buf_valid(current_bufnr)
+    if opts.default_provider == "buffer_commits" and not current_buf_valid then
+        log.throw(
+            "error! invalid current buffer (%s): %s",
+            current_bufnr,
+            vim.inspect(current_bufname)
+        )
+    end
     local buffer_only_provider = utils.is_buf_valid(current_bufnr)
             and string.format(
                 "%s -- %s",
@@ -92,52 +100,56 @@ local function git_commits(query, bang, opts)
         vim.inspect(call_switch_provider_rpc_command)
     )
 
-    local fzf_opts = {
-        { "--query", query },
+    local fzf_opts =
         {
-            "--header",
-            opts.default_provider == "all_commits" and Context.buffer_header
-                or Context.all_header,
-        },
-        {
-            "--bind",
-            string.format(
-                "start:unbind(%s)",
-                opts.default_provider == "all_commits" and Context.all_key
-                    or Context.buffer_key
-            ),
-        },
-        {
-            -- buffer key: swap provider, change rmode header, rebind rmode action, reload query
-            "--bind",
-            string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                Context.buffer_key,
-                Context.buffer_key,
-                call_switch_provider_rpc_command,
-                Context.all_header,
-                Context.all_key,
-                query_command
-            ),
-        },
-        {
-            -- all key: swap provider, change umode header, rebind umode action, reload query
-            "--bind",
-            string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                Context.all_key,
-                Context.all_key,
-                call_switch_provider_rpc_command,
-                Context.buffer_header,
-                Context.buffer_key,
-                query_command
-            ),
-        },
-        {
-            "--preview",
-            preview_command,
-        },
-    }
+            { "--query", query },
+            (opts.default_provider ~= "all_commits" or current_buf_valid) and {
+                "--header",
+                opts.default_provider == "all_commits"
+                        and Context.buffer_header
+                    or Context.all_header,
+            } or nil,
+            {
+                "--bind",
+                string.format(
+                    "start:unbind(%s)",
+                    opts.default_provider == "all_commits" and Context.all_key
+                        or Context.buffer_key
+                ),
+            },
+            current_buf_valid
+                    and {
+                        -- buffer key: swap provider, change rmode header, rebind rmode action, reload query
+                        "--bind",
+                        string.format(
+                            "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                            Context.buffer_key,
+                            Context.buffer_key,
+                            call_switch_provider_rpc_command,
+                            Context.all_header,
+                            Context.all_key,
+                            query_command
+                        ),
+                    }
+                or nil,
+            {
+                -- all key: swap provider, change umode header, rebind umode action, reload query
+                "--bind",
+                string.format(
+                    "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
+                    Context.all_key,
+                    Context.all_key,
+                    call_switch_provider_rpc_command,
+                    Context.buffer_header,
+                    Context.buffer_key,
+                    query_command
+                ),
+            },
+            {
+                "--preview",
+                preview_command,
+            },
+        }
 
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(git_commits_configs.fzf_opts))
