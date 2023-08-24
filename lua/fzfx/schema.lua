@@ -12,8 +12,8 @@
 --  * List provider: a lua function to run and directly generate the lines.
 --
 --- @alias PlainProvider string
---- @alias CommandProvider fun(query:string?):string
---- @alias ListProvider fun(query:string?):string[]
+--- @alias CommandProvider fun(context:any,query:string?):string
+--- @alias ListProvider fun(context:any,query:string?):string[]
 --
 --- @alias Provider PlainProvider|CommandProvider|ListProvider
 --
@@ -55,7 +55,7 @@ local LineProcessorTypeEnum = {
 --  * Command previewer: a lua function that generate a command string to execute and echo details.
 --  * Builtin previewer (todo): a nvim buffer & window, I think the biggest benefits can be allowing users to navigate to the buffer and edit it directly.
 --
---- @alias CommandPreviewer fun(line:string):string
+--- @alias CommandPreviewer fun(provider:string,line:string):string
 --
 --- @alias Previewer CommandPreviewer
 --

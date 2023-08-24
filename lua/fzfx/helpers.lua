@@ -284,6 +284,7 @@ local ProviderSwitch = {
 --- @param providers table<string, Provider>
 --- @param provider_types table<string, ProviderType>
 --- @param provider_key string
+--- @param context any
 --- @param query string?
 --- @param filename string
 --- @return ProviderType
@@ -291,6 +292,7 @@ local function provider_switch_dump(
     providers,
     provider_types,
     provider_key,
+    context,
     query,
     filename
 )
@@ -320,7 +322,7 @@ local function provider_switch_dump(
         )
         vim.fn.writefile({ provider }, filename)
     elseif provider_type == "command" then
-        local result = provider(query)
+        local result = provider(context, query)
         log.ensure(
             type(result) == "string",
             "|fzfx.helpers - provider_switch_dump| command provider result must be string! providers:%s provider_key:%s, provider:%s, result:%s",
@@ -331,7 +333,7 @@ local function provider_switch_dump(
         )
         vim.fn.writefile({ result }, filename)
     elseif provider_type == "list" then
-        local result = provider(query)
+        local result = provider(context, query)
         log.ensure(
             type(result) == "table",
             "|fzfx.helpers - provider_switch_dump| list provider (%s) result must be array! providers:%s, result:%s",
@@ -356,6 +358,7 @@ end
 --- @param providers table<string, Provider>
 --- @param provider_types table<string, ProviderType>
 --- @param default_provider_key string
+--- @param context any
 --- @param query string?
 --- @return ProviderSwitch
 function ProviderSwitch:new(
@@ -363,6 +366,7 @@ function ProviderSwitch:new(
     providers,
     provider_types,
     default_provider_key,
+    context,
     query
 )
     local ps = vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
@@ -379,6 +383,7 @@ function ProviderSwitch:new(
         providers,
         provider_types,
         default_provider_key,
+        context,
         query,
         ps.tempfile
     )
@@ -386,13 +391,15 @@ function ProviderSwitch:new(
 end
 
 --- @param provider_key string
+--- @param context any
 --- @param query string?
 --- @return ProviderType
-function ProviderSwitch:switch(provider_key, query)
+function ProviderSwitch:switch(provider_key, context, query)
     return provider_switch_dump(
         self.providers,
         self.provider_types,
         provider_key,
+        context,
         query,
         self.tempfile
     )

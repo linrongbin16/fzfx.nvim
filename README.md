@@ -64,6 +64,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**).
 - [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**).
+- [git](https://git-scm.com/) (optional for **git** commands).
 
 > Note: **live grep**, **files** and preview files will use builtin unix/linux commands ([grep](https://man7.org/linux/man-pages/man1/grep.1.html), [find](https://man7.org/linux/man-pages/man1/find.1.html), [cat](https://man7.org/linux/man-pages/man1/cat.1.html)) if `rg`, `fd`, `bat` not installed.
 >
@@ -232,6 +233,7 @@ Commands are named following below rules:
 - The visual select variant is named with `V` suffix.
 - The cursor word variant is named with `W` suffix.
 - The yank text variant is named with `P` suffix (just like press the `p` key).
+- The current buffer only variant is named with `B` suffix.
 
 Especially for git commands:
 
@@ -361,6 +363,32 @@ Especially for git commands:
     <td>FzfxGBranches(R)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td rowspan="4">Git Commits</td>
+    <td>FzfxGCommits(B)</td>
+    <td>N</td>
+    <td>No</td>
+    <td>Yes</td>
+    <td rowspan="4">1. Use `enter` to copy commit SHA</td>
+  </tr>
+  <tr>
+    <td>FzfxGCommits(B)V</td>
+    <td>V</td>
+    <td>No</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>FzfxGCommits(B)W</td>
+    <td>N</td>
+    <td>No</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>FzfxGCommits(B)P</td>
+    <td>N</td>
+    <td>No</td>
+    <td>Yes</td>
+  </tr>
 </tbody>
 </table>
 
@@ -451,6 +479,26 @@ nnoremap <space>rwbr :\<C-U>FzfxGBranchesRW<CR>
 nnoremap <space>pbr :\<C-U>FzfxGBranchesP<CR>
 " remote branches by yank text
 nnoremap <space>rpbr :\<C-U>FzfxGBranchesRP<CR>
+
+" ======== git commits ========
+
+" git commits
+nnoremap <space>gc :\<C-U>FzfxGCommits<CR>
+" by visual select
+xnoremap <space>gc :\<C-U>FzfxGCommitsV<CR>
+" only current buffer
+nnoremap <space>bgc :\<C-U>FzfxGCommitsB<CR>
+" only current buffer by visual select
+xnoremap <space>bgc :\<C-U>FzfxGCommitsBV<CR>
+
+" by cursor word
+nnoremap <space>wgc :\<C-U>FzfxGCommitsW<CR>
+" only current buffer by cursor word
+nnoremap <space>bwgc :\<C-U>FzfxGCommitsBW<CR>
+" by yank text
+nnoremap <space>pgc :\<C-U>FzfxGCommitsP<CR>
+" only current buffer by yank text
+nnoremap <space>bpgc :\<C-U>FzfxGCommitsBP<CR>
 ```
 
 ### Lua
@@ -590,6 +638,36 @@ vim.keymap.set('n', '<space>pbr', '<cmd>FzfxGBranchesP<cr>',
 -- remote branches by yank text
 vim.keymap.set('n', '<space>rwbr', '<cmd>FzfxGBranchesRP<cr>',
         {silent=true, noremap=true, desc="Search remote git branches by yank text"})
+
+-- ======== git commits ========
+
+-- git commits
+vim.keymap.set('n', '<space>gc', '<cmd>FzfxGCommits<cr>',
+        {silent=true, noremap=true, desc="Search git commits"})
+-- by visual select
+vim.keymap.set('x', '<space>gc', '<cmd>FzfxGCommitsV<CR>',
+        {silent=true, noremap=true, desc="Search git commits"})
+-- only current buffer
+vim.keymap.set('n', '<space>bgc',
+        '<cmd>FzfxGCommitsB<cr>',
+        {silent=true, noremap=true, desc="Search git commits only on current buffer"})
+-- only current buffer by visual select
+vim.keymap.set('x', '<space>bgc',
+        '<cmd>FzfxGCommitsBV<CR>',
+        {silent=true, noremap=true, desc="Search git commits only on current buffer"})
+
+-- cursor word
+vim.keymap.set('n', '<space>wgc', '<cmd>FzfxGCommitsW<cr>',
+        {silent=true, noremap=true, desc="Search git commits by cursor word"})
+-- only current buffer by cursor word
+vim.keymap.set('n', '<space>bwgc', '<cmd>FzfxGCommitsBW<cr>',
+        {silent=true, noremap=true, desc="Search git commits only on current buffer by cursor word"})
+-- yank text
+vim.keymap.set('n', '<space>pgc', '<cmd>FzfxGCommitsP<cr>',
+        {silent=true, noremap=true, desc="Search git commits by yank text"})
+-- only current buffer by yank text
+vim.keymap.set('n', '<space>bpgc', '<cmd>FzfxGCommitsBP<cr>',
+        {silent=true, noremap=true, desc="Search git commits only on current buffer by yank text"})
 ```
 
 ## Configuration

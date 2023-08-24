@@ -472,7 +472,7 @@ local Defaults = {
                     bang = true,
                     nargs = "?",
                     complete = "dir",
-                    desc = "Find local git branches",
+                    desc = "Search local git branches",
                 },
                 default_provider = "local_branch",
             },
@@ -483,7 +483,7 @@ local Defaults = {
                     bang = true,
                     nargs = "?",
                     complete = "dir",
-                    desc = "Find remote git branches",
+                    desc = "Search remote git branches",
                 },
                 default_provider = "remote_branch",
             },
@@ -494,7 +494,7 @@ local Defaults = {
                 opts = {
                     bang = true,
                     range = true,
-                    desc = "Find local git branches by visual select",
+                    desc = "Search local git branches by visual select",
                 },
                 default_provider = "local_branch",
             },
@@ -504,7 +504,7 @@ local Defaults = {
                 opts = {
                     bang = true,
                     range = true,
-                    desc = "Find remote git branches by visual select",
+                    desc = "Search remote git branches by visual select",
                 },
                 default_provider = "remote_branch",
             },
@@ -514,7 +514,7 @@ local Defaults = {
                 feed = UserCommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
-                    desc = "Find local git branches by cursor word",
+                    desc = "Search local git branches by cursor word",
                 },
                 default_provider = "local_branch",
             },
@@ -523,7 +523,7 @@ local Defaults = {
                 feed = UserCommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
-                    desc = "Find remote git branches by cursor word",
+                    desc = "Search remote git branches by cursor word",
                 },
                 default_provider = "remote_branch",
             },
@@ -533,7 +533,7 @@ local Defaults = {
                 feed = UserCommandFeedEnum.PUT,
                 opts = {
                     bang = true,
-                    desc = "Find local git branches by yank text",
+                    desc = "Search local git branches by yank text",
                 },
                 default_provider = "local_branch",
             },
@@ -542,7 +542,7 @@ local Defaults = {
                 feed = UserCommandFeedEnum.PUT,
                 opts = {
                     bang = true,
-                    desc = "Find remote git branches by yank text",
+                    desc = "Search remote git branches by yank text",
                 },
                 default_provider = "remote_branch",
             },
@@ -554,7 +554,7 @@ local Defaults = {
         -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
         -- "git log --graph --color=always --date=relative",
         previewers = string.format(
-            "git log --pretty=%s --graph --date=relative --color=always",
+            "git log --pretty=%s --graph --date=short --color=always",
             utils.shellescape(default_git_log_pretty)
         ),
         actions = {
@@ -570,6 +570,134 @@ local Defaults = {
             {
                 "--prompt",
                 "GBranches > ",
+            },
+        },
+    },
+
+    -- the 'Git Commits' commands
+    git_commits = {
+        commands = {
+            -- normal
+            {
+                name = "FzfxGCommits",
+                feed = UserCommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    desc = "Search git commits",
+                },
+                default_provider = "all_commits",
+            },
+            {
+                name = "FzfxGCommitsB",
+                feed = UserCommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    desc = "Search git commits only on current buffer",
+                },
+                default_provider = "buffer_commits",
+            },
+            -- visual
+            {
+                name = "FzfxGCommitsV",
+                feed = UserCommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Search git commits by visual select",
+                },
+                default_provider = "all_commits",
+            },
+            {
+                name = "FzfxGCommitsBV",
+                feed = UserCommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Search git commits only on current buffer by visual select",
+                },
+                default_provider = "buffer_commits",
+            },
+            -- cword
+            {
+                name = "FzfxGCommitsW",
+                feed = UserCommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Search git commits by cursor word",
+                },
+                default_provider = "all_commits",
+            },
+            {
+                name = "FzfxGCommitsBW",
+                feed = UserCommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Search git commits only on current buffer by cursor word",
+                },
+                default_provider = "buffer_commits",
+            },
+            -- put
+            {
+                name = "FzfxGCommitsP",
+                feed = UserCommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Search git commits by yank text",
+                },
+                default_provider = "all_commits",
+            },
+            {
+                name = "FzfxGCommitsBP",
+                feed = UserCommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Search git commits only on current buffer by yank text",
+                },
+                default_provider = "buffer_commits",
+            },
+        },
+        providers = {
+            --- @alias ProviderConfig {[1]:string,[2]:Provider,[3]:ProviderType?}
+            --
+            --- @alias ProviderConfigContext {cursor_bufnr:integer,cursor_winnr:integer}
+            -- bufnr: buffer number before plugin start
+            -- winnr: window number before plugin start
+            --
+            --- @type ProviderConfig
+            all_commits = {
+                "ctrl-a",
+                --- @type PlainProvider
+                string.format(
+                    "git log --pretty=%s --date=short --color=always",
+                    utils.shellescape(default_git_log_pretty)
+                ),
+            },
+            --- @type ProviderConfig
+            buffer_commits = {
+                "ctrl-u",
+                --- @type PlainProvider
+                string.format(
+                    "git log --pretty=%s --date=short --color=always",
+                    utils.shellescape(default_git_log_pretty)
+                ),
+            },
+        },
+        previewers = "git show --color=always",
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").yank_git_commit,
+            ["double-click"] = require("fzfx.actions").yank_git_commit,
+        },
+        fzf_opts = {
+            default_fzf_options.no_multi,
+            default_fzf_options.preview_half_page_down,
+            default_fzf_options.preview_half_page_up,
+            default_fzf_options.toggle_preview,
+            {
+                "--prompt",
+                "GCommits > ",
             },
         },
     },
