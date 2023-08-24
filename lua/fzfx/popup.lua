@@ -131,7 +131,7 @@ local function make_popup_window_opts(win_opts)
 end
 
 --- @param win_opts PopupWindowOpts?
---- @return PopupWindowOpts
+--- @return PopupWindow
 function PopupWindow:new(win_opts)
     -- check executable: nvim, fzf
     require("fzfx.shell").nvim_exec()
@@ -173,14 +173,14 @@ function PopupWindow:new(win_opts)
     utils.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
     utils.set_win_option(winnr, "colorcolumn", "")
 
-    --- @type PopupWindowOpts
-    local ppp = vim.tbl_deep_extend("force", vim.deepcopy(PopupWindow), {
+    --- @type PopupWindow
+    local pw = vim.tbl_deep_extend("force", vim.deepcopy(PopupWindow), {
         window_opts_context = window_opts_context,
         bufnr = bufnr,
         winnr = winnr,
     })
 
-    return ppp
+    return pw
 end
 
 function PopupWindow:close()
