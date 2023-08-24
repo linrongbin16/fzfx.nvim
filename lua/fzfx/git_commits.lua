@@ -60,7 +60,7 @@ local function git_commits(query, bang, opts)
         opts.default_provider == "all_commits"
                 and git_commits_configs.providers.all_commits[2]
             or buffer_only_provider,
-        opts.default_provider == "buffer_commits" and buffer_only_provider
+        opts.default_provider == "all_commits" and buffer_only_provider
             or git_commits_configs.providers.all_commits[2]
     )
 
