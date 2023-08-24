@@ -48,29 +48,14 @@ end
 
 -- rpc callback
 local function collect_bufs_rpc_callback()
-    local current_bufnr = vim.fn.bufnr()
-    local has_current_bufnr = false
-    local bufs_list = {}
-    ---@diagnostic disable-next-line: param-type-mismatch
-    local max_bufnr = vim.fn.bufnr("$")
-    for i = 1, max_bufnr do
-        if vim.fn.buflisted(i) > 0 and not buf_exclude(i) then
-            if i == current_bufnr then
-                has_current_bufnr = true
-            else
-                table.insert(bufs_list, i)
-            end
-        end
-    end
+    local current_bufnr = vim.api.nvim_get_current_buf()
+    local bufs_list = vim.api.nvim_list_bufs()
     -- log.debug(
     --     "|fzfx.buffers - buffers.collect_bufs_rpc_callback| current_bufnr:%s, bufs_list:%s",
     --     vim.inspect(current_bufnr),
     --     vim.inspect(bufs_list)
     -- )
     local filtered_bufs_list = {}
-    if has_current_bufnr then
-        table.insert(filtered_bufs_list, buf_path(current_bufnr))
-    end
     if type(bufs_list) == "table" then
         for _, bufnr in ipairs(bufs_list) do
             -- log.debug(
@@ -85,9 +70,12 @@ local function collect_bufs_rpc_callback()
             --     vim.inspect(vim.api.nvim_buf_is_loaded(bufnr)),
             --     vim.inspect(vim.fn.buflisted(bufnr))
             -- )
-            table.insert(filtered_bufs_list, buf_path(bufnr))
+            if buf_valid(bufnr) then
+                table.insert(filtered_bufs_list, buf_path(bufnr))
+            end
         end
     end
+    table.sort(filtered_bufs_list)
     return filtered_bufs_list
 end
 
@@ -159,6 +147,10 @@ local function buffers(query, bang, opts)
             "--preview",
             preview_command,
         },
+        function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            return buf_valid(bufnr) and "--header-lines=1" or nil
+        end,
     }
 
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(buffers_configs.fzf_opts))
