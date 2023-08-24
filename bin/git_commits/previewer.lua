@@ -11,7 +11,6 @@ local shell_helpers = require("fzfx.shell_helpers")
 
 local previewer = _G.arg[1]
 local commit = _G.arg[2]
-
 shell_helpers.log_debug("previewer:[%s]", vim.inspect(previewer))
 shell_helpers.log_debug("branch:[%s]", vim.inspect(commit))
 
