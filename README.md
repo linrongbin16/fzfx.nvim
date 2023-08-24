@@ -367,27 +367,21 @@ Especially for git commands:
     <td rowspan="4">Git Commits</td>
     <td>FzfxGCommits(B)</td>
     <td>N</td>
-    <td>No</td>
-    <td>Yes</td>
+    <td rowspan="4">No</td>
+    <td rowspan="4">Yes</td>
     <td rowspan="4">1. Use `enter` to copy commit SHA</td>
   </tr>
   <tr>
     <td>FzfxGCommits(B)V</td>
     <td>V</td>
-    <td>No</td>
-    <td>Yes</td>
   </tr>
   <tr>
     <td>FzfxGCommits(B)W</td>
     <td>N</td>
-    <td>No</td>
-    <td>Yes</td>
   </tr>
   <tr>
     <td>FzfxGCommits(B)P</td>
     <td>N</td>
-    <td>No</td>
-    <td>Yes</td>
   </tr>
 </tbody>
 </table>
