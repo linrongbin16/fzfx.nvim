@@ -1,12 +1,10 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
-local Launch = require("fzfx.launch").Launch
 local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
 local color = require("fzfx.color")
 local server = require("fzfx.server")
-local git_helpers = require("fzfx.git_helpers")
 local utils = require("fzfx.utils")
 
 local Context = {
@@ -27,7 +25,7 @@ local Context = {
 --- @param query string
 --- @param bang boolean
 --- @param opts GitCommitsOpts
---- @return Launch
+--- @return Popup
 local function git_commits(query, bang, opts)
     local git_commits_configs = conf.get_config().git_commits
 
@@ -155,11 +153,13 @@ local function git_commits(query, bang, opts)
         vim.list_extend(fzf_opts, vim.deepcopy(git_commits_configs.fzf_opts))
     fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
     local actions = git_commits_configs.actions
-    local ppp =
-        Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
-    local launch = Launch:new(ppp, query_command, fzf_opts, actions)
-
-    return launch
+    local p = Popup:new(
+        bang and { height = 1, width = 1, row = 0, col = 0 } or nil,
+        query_command,
+        fzf_opts,
+        actions
+    )
+    return p
 end
 
 local function setup()

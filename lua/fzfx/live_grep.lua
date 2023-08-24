@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
-local Launch = require("fzfx.launch").Launch
 local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
@@ -25,7 +24,7 @@ local Context = {
 --- @param query string
 --- @param bang boolean
 --- @param opts LiveGrepOpts
---- @return Launch
+--- @return Popup
 local function live_grep(query, bang, opts)
     local live_grep_configs = conf.get_config().live_grep
 
@@ -133,10 +132,8 @@ local function live_grep(query, bang, opts)
         vim.list_extend(fzf_opts, vim.deepcopy(live_grep_configs.fzf_opts))
     fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
     local actions = live_grep_configs.actions
-    local ppp =
-        Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
-    local launch = Launch:new(
-        ppp,
+    local p = Popup:new(
+        bang and { height = 1, width = 1, row = 0, col = 0 } or nil,
         initial_command,
         fzf_opts,
         actions,
@@ -146,8 +143,7 @@ local function live_grep(query, bang, opts)
                 :unregister(switch_provider_rpc_callback_id)
         end
     )
-
-    return launch
+    return p
 end
 
 local function setup()

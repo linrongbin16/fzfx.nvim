@@ -35,7 +35,10 @@ local function search_vim_plugin_path(plugin)
         or {}
     for i, p in ipairs(rtp) do
         log.debug("|fzfx.module - search_vim_plugin_path| p[%d]:%s", i, p)
-        if type(p) == "string" and string.match(require("fzfx.path").normalize(p, true), plugin) then
+        if
+            type(p) == "string"
+            and string.match(require("fzfx.path").normalize(p, true), plugin)
+        then
             return p
         end
     end
@@ -61,8 +64,8 @@ local function setup(configs)
             type(devicons_path) ~= "string"
             or string.len(devicons_path) == 0
         then
-            log.warn(
-                "error! you have configured 'icons' while cannot find 'nvim-web-devicons' plugin!"
+            log.debug(
+                "|fzfx.module - setup| you have configured 'icons' while cannot find 'nvim-web-devicons' plugin!"
             )
         else
             vim.env._FZFX_NVIM_DEVICONS_PATH = devicons_path

@@ -1,14 +1,13 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
-local Launch = require("fzfx.launch").Launch
 local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
 local utils = require("fzfx.utils")
 
-local Context = {
+local Constants = {
     --- @type string?
     bdelete_key = nil,
     --- @type string?
@@ -20,18 +19,18 @@ local Context = {
 --- @param bufnr integer
 --- @return boolean
 local function buf_exclude(bufnr)
-    if Context.exclude_filetypes == nil then
-        Context.exclude_filetypes = {}
+    if Constants.exclude_filetypes == nil then
+        Constants.exclude_filetypes = {}
         local exclude_filetypes =
             conf.get_config().buffers.other_opts.exclude_filetypes
         if type(exclude_filetypes) == "table" and #exclude_filetypes > 0 then
             for _, ft in ipairs(exclude_filetypes) do
-                Context.exclude_filetypes[ft] = true
+                Constants.exclude_filetypes[ft] = true
             end
         end
     end
     local ft = utils.get_buf_option(bufnr, "filetype")
-    return Context.exclude_filetypes[ft] ~= nil
+    return Constants.exclude_filetypes[ft] ~= nil
 end
 
 --- @param bufnr integer
@@ -85,7 +84,7 @@ end
 --- @param query string
 --- @param bang boolean
 --- @param opts Configs?
---- @return Launch
+--- @return Popup
 local function buffers(query, bang, opts)
     local buffers_configs = conf.get_config().buffers
 
@@ -134,14 +133,14 @@ local function buffers(query, bang, opts)
         { "--query", query },
         {
             "--header",
-            Context.bdelete_header,
+            Constants.bdelete_header,
         },
         {
             -- bdelete action: delete buffer, reload query
             "--bind",
             string.format(
                 "%s:execute-silent(%s)+reload(%s)",
-                Context.bdelete_key,
+                Constants.bdelete_key,
                 bdelete_rpc_command,
                 query_command
             ),
@@ -159,14 +158,20 @@ local function buffers(query, bang, opts)
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(buffers_configs.fzf_opts))
     fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
     local actions = buffers_configs.actions
-    local ppp =
-        Popup:new(bang and { height = 1, width = 1, row = 0, col = 0 } or nil)
-    local launch = Launch:new(ppp, query_command, fzf_opts, actions, function()
-        server.get_global_rpc_server():unregister(collect_bufs_rpc_callback_id)
-        server.get_global_rpc_server():unregister(bdelete_rpc_callback_id)
-    end)
+    local p = Popup:new(
+        bang and { height = 1, width = 1, row = 0, col = 0 } or nil,
+        query_command,
+        fzf_opts,
+        actions,
+        function()
+            server
+                .get_global_rpc_server()
+                :unregister(collect_bufs_rpc_callback_id)
+            server.get_global_rpc_server():unregister(bdelete_rpc_callback_id)
+        end
+    )
 
-    return launch
+    return p
 end
 
 local function setup()
@@ -176,8 +181,8 @@ local function setup()
     end
 
     -- Context
-    Context.bdelete_key = string.lower(buffers_configs.interactions[1])
-    Context.bdelete_header = color.delete_buffer_header(Context.bdelete_key)
+    Constants.bdelete_key = string.lower(buffers_configs.interactions[1])
+    Constants.bdelete_header = color.delete_buffer_header(Constants.bdelete_key)
 
     -- User commands
     for _, command_configs in pairs(buffers_configs.commands) do

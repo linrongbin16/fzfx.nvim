@@ -275,9 +275,9 @@ local M = {
     render_filepath_line = render_filepath_line,
     parse_query = parse_query,
     Command = require("fzfx.command").Command,
-    GitRootCommand = require("fzfx.git_helpers").GitRootCommand,
-    GitBranchCommand = require("fzfx.git_helpers").GitBranchCommand,
-    GitCurrentBranchCommand = require("fzfx.git_helpers").GitCurrentBranchCommand,
+    GitRootCommand = require("fzfx.git_command_helpers").GitRootCommand,
+    GitBranchCommand = require("fzfx.git_command_helpers").GitBranchCommand,
+    GitCurrentBranchCommand = require("fzfx.git_command_helpers").GitCurrentBranchCommand,
 }
 
 return M

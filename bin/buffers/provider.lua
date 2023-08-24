@@ -13,7 +13,6 @@ shell_helpers.log_ensure(
     "|fzfx.bin.rpc.client| error! SOCKET_ADDRESS must not be empty!"
 )
 local registry_id = _G.arg[1]
-
 shell_helpers.log_debug("registry_id:[%s]", registry_id)
 
 local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })

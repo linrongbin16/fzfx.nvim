@@ -15,7 +15,6 @@ local params = nil
 if #_G.arg >= 2 then
     params = _G.arg[2]
 end
-
 shell_helpers.log_debug("SOCKET_ADDRESS:%s", vim.inspect(SOCKET_ADDRESS))
 shell_helpers.log_debug("registry_id:%s", vim.inspect(registry_id))
 shell_helpers.log_debug("params:%s", vim.inspect(params))

@@ -51,7 +51,7 @@ local function is_buf_valid(bufnr)
     local bufname = vim.api.nvim_buf_get_name(bufnr)
     return vim.api.nvim_buf_is_valid(bufnr)
         and vim.api.nvim_buf_is_loaded(bufnr)
-        -- and vim.fn.buflisted(bufnr) > 0
+        and vim.fn.buflisted(bufnr) > 0
         and type(bufname) == "string"
         and string.len(bufname) > 0
 end
@@ -203,6 +203,35 @@ local function shellescape(s, special)
     end
 end
 
+--- @class WindowOptsContext
+--- @class bufnr integer?
+--- @class tabnr integer?
+--- @class winnr integer?
+local WindowOptsContext = {
+    bufnr = nil,
+    tabnr = nil,
+    winnr = nil,
+}
+
+--- @return WindowOptsContext
+function WindowOptsContext:save()
+    return vim.tbl_deep_extend("force", vim.deepcopy(WindowOptsContext), {
+        bufnr = vim.api.nvim_get_current_buf(),
+        winnr = vim.api.nvim_get_current_win(),
+        tabnr = vim.api.nvim_get_current_tabpage(),
+    }) --[[@as WindowOptsContext]]
+end
+
+--- @return nil
+function WindowOptsContext:restore()
+    if vim.api.nvim_tabpage_is_valid(self.tabnr) then
+        vim.api.nvim_set_current_tabpage(self.tabnr)
+    end
+    if vim.api.nvim_win_is_valid(self.winnr) then
+        vim.api.nvim_set_current_win(self.winnr)
+    end
+end
+
 local M = {
     table_filter = table_filter,
     list_filter = list_filter,
@@ -214,6 +243,7 @@ local M = {
     string_not_empty = string_not_empty,
     ShellOptsContext = ShellOptsContext,
     shellescape = shellescape,
+    WindowOptsContext = WindowOptsContext,
 }
 
 return M

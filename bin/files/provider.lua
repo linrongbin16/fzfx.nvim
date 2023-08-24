@@ -8,7 +8,6 @@ vim.opt.runtimepath:append(SELF_PATH)
 local shell_helpers = require("fzfx.shell_helpers")
 
 local provider = _G.arg[1]
-
 shell_helpers.log_debug("provider:[%s]", provider)
 
 local cmd = shell_helpers.read_provider_command(provider) --[[@as string]]
