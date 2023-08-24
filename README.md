@@ -478,6 +478,26 @@ nnoremap <space>rwbr :\<C-U>FzfxGBranchesRW<CR>
 nnoremap <space>pbr :\<C-U>FzfxGBranchesP<CR>
 " remote branches by yank text
 nnoremap <space>rpbr :\<C-U>FzfxGBranchesRP<CR>
+
+" ======== git commits ========
+
+" git commits
+nnoremap <space>gc :\<C-U>FzfxGCommits<CR>
+" by visual select
+xnoremap <space>gc :\<C-U>FzfxGCommitsV<CR>
+" only current buffer
+nnoremap <space>bgc :\<C-U>FzfxGCommitsB<CR>
+" only current buffer by visual select
+xnoremap <space>bgc :\<C-U>FzfxGCommitsBV<CR>
+
+" by cursor word
+nnoremap <space>wgc :\<C-U>FzfxGCommitsW<CR>
+" only current buffer by cursor word
+nnoremap <space>bwgc :\<C-U>FzfxGCommitsBW<CR>
+" by yank text
+nnoremap <space>pgc :\<C-U>FzfxGCommitsP<CR>
+" only current buffer by yank text
+nnoremap <space>bpgc :\<C-U>FzfxGCommitsBP<CR>
 ```
 
 ### Lua
@@ -617,6 +637,36 @@ vim.keymap.set('n', '<space>pbr', '<cmd>FzfxGBranchesP<cr>',
 -- remote branches by yank text
 vim.keymap.set('n', '<space>rwbr', '<cmd>FzfxGBranchesRP<cr>',
         {silent=true, noremap=true, desc="Search remote git branches by yank text"})
+
+-- ======== git commits ========
+
+-- git commits
+vim.keymap.set('n', '<space>gc', '<cmd>FzfxGCommits<cr>',
+        {silent=true, noremap=true, desc="Search git commits"})
+-- by visual select
+vim.keymap.set('x', '<space>gc', '<cmd>FzfxGCommitsV<CR>',
+        {silent=true, noremap=true, desc="Search git commits"})
+-- only current buffer
+vim.keymap.set('n', '<space>bgc',
+        '<cmd>FzfxGCommitsB<cr>',
+        {silent=true, noremap=true, desc="Search git commits only on current buffer"})
+-- only current buffer by visual select
+vim.keymap.set('x', '<space>bgc',
+        '<cmd>FzfxGCommitsBV<CR>',
+        {silent=true, noremap=true, desc="Search git commits only on current buffer"})
+
+-- cursor word
+vim.keymap.set('n', '<space>wgc', '<cmd>FzfxGCommitsW<cr>',
+        {silent=true, noremap=true, desc="Search git commits by cursor word"})
+-- only current buffer by cursor word
+vim.keymap.set('n', '<space>bwgc', '<cmd>FzfxGCommitsBW<cr>',
+        {silent=true, noremap=true, desc="Search git commits only on current buffer by cursor word"})
+-- yank text
+vim.keymap.set('n', '<space>pgc', '<cmd>FzfxGCommitsP<cr>',
+        {silent=true, noremap=true, desc="Search git commits by yank text"})
+-- only current buffer by yank text
+vim.keymap.set('n', '<space>bpgc', '<cmd>FzfxGCommitsBP<cr>',
+        {silent=true, noremap=true, desc="Search git commits only on current buffer by yank text"})
 ```
 
 ## Configuration
