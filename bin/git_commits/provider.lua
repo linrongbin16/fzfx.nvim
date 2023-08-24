@@ -18,16 +18,8 @@ shell_helpers.log_debug("cmd:[%s]", cmd)
 
 local git_root_cmd = shell_helpers.GitRootCommand:run()
 -- shell_helpers.log_debug(
---     "git_root_cmd.result.stdout:%s",
---     vim.inspect(git_root_cmd.result.stdout)
--- )
--- shell_helpers.log_debug(
---     "git_root_cmd.result.stderr:%s",
---     vim.inspect(git_root_cmd.result.stderr)
--- )
--- shell_helpers.log_debug(
---     "git_root_cmd.result.exitcode:%s",
---     vim.inspect(git_root_cmd.result.exitcode)
+--     "git_root_cmd.result:%s",
+--     vim.inspect(git_root_cmd.result)
 -- )
 if git_root_cmd:wrong() then
     return
