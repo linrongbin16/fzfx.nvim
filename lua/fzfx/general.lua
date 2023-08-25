@@ -102,6 +102,7 @@ local function general(query, bang, general_configs, default_pipeline)
     for pipeline, provider_opts in pairs(general_configs.providers) do
         local switch_pipeline_key = string.lower(provider_opts[1])
         table.insert(
+            header_builder,
             color.render(
                 "%s to %s",
                 color.magenta,
