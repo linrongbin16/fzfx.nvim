@@ -85,16 +85,17 @@ end
 -- visual select }
 
 --- @param opts Configs
---- @param feed_type UserCommandFeed
+--- @param feed_type "args"|"visual"|"cword"|"put"
 --- @return string
 local function get_command_feed(opts, feed_type)
-    if feed_type == UserCommandFeedEnum.ARGS then
+    feed_type = string.lower(feed_type)
+    if feed_type == "args" then
         return opts.args
-    elseif feed_type == UserCommandFeedEnum.VISUAL then
+    elseif feed_type == "visual" then
         return visual_select()
-    elseif feed_type == UserCommandFeedEnum.CWORD then
+    elseif feed_type == "cword" then
         return vim.fn.expand("<cword>")
-    elseif feed_type == UserCommandFeedEnum.PUT then
+    elseif feed_type == "put" then
         local y = yank_history.get_yank()
         return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
     else
