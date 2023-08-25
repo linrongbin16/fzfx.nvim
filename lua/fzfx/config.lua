@@ -51,7 +51,7 @@ local default_unrestricted_rg = string.format(
     constants.rg
 )
 
---- @type table<string, FzfOption>
+--- @type table<string, FzfOpt>
 local default_fzf_options = {
     multi = "--multi",
     toggle = "--bind=ctrl-e:toggle",
