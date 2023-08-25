@@ -4,9 +4,7 @@ local path = require("fzfx.path")
 local color = require("fzfx.color")
 local conf = require("fzfx.config")
 local yank_history = require("fzfx.yank_history")
-local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 local utils = require("fzfx.utils")
-local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 
 -- visual select {
 
@@ -306,9 +304,9 @@ local function provider_switch_dump(
         vim.inspect(provider_key)
     )
     log.ensure(
-        provider_type == ProviderTypeEnum.PLAIN
-            or provider_type == ProviderTypeEnum.COMMAND
-            or provider_type == ProviderTypeEnum.LIST,
+        provider_type == "plain"
+            or provider_type == "command"
+            or provider_type == "list",
         "|fzfx.helpers - provider_switch_dump| provider_types must contains provider key! provider_types:%s, provider_key:%s",
         vim.inspect(provider_types),
         vim.inspect(provider_key)

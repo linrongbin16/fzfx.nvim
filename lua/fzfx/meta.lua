@@ -1,0 +1,74 @@
+-- Zero Dependency
+
+-- Meta Definitions
+-- See: https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command
+--
+-- ========== Provider ==========
+--
+-- A provider is a shell command that run and generate the lines list for fzf (e.g. things on the left side).
+-- We have 3 types of providers:
+--  * Plain provider: a simple command string to execute and generate the lines list for fzf.
+--  * Command provider: a lua function to run and generate the command string, execute it and generate the lines.
+--  * List provider: a lua function to run and directly generate the lines.
+--
+-- The first parameter 'context' is something before this plugin start.
+-- E.g. the bufnr, winnr before this plugin start.
+-- Since some information will need the context before plugin starting, for example some buffer only commands needs the buffer number before plugin start.
+--
+-- The second parameter 'query' is the query in fzf prompt.
+--
+--- @alias ProviderContext {bufnr:integer,winnr:integer}
+--
+--- @alias PlainProvider string
+--- @alias CommandProvider fun(context:ProviderContext,query:string?):string
+--- @alias ListProvider fun(context:ProviderContext,query:string?):string[]
+--
+--- @alias Provider PlainProvider|CommandProvider|ListProvider
+--- @alias ProviderType "plain"|"command"|"list"
+
+-- ========== Previewer ==========
+--
+-- A previewer is a shell command that run and echo details for fzf (e.g. things on the right side).
+-- We have 2 types of previewers:
+--  * Command previewer: a lua function that generate a command string to execute and echo details.
+--  * Builtin previewer (todo): a nvim buffer & window, I think the biggest benefits can be allowing users to navigate to the buffer and edit it directly.
+--
+-- The BuiltinPreviewer returns the configs for the nvim window.
+--
+--- @alias CommandPreviewer fun(line:string):string
+--- @alias BuiltinPreviewer fun(line:string):table
+--
+--- @alias Previewer CommandPreviewer|BuiltinPreviewer
+--- @alias PreviewerType "command"|"builtin"
+
+-- ========== Command Option ==========
+--
+-- User command options are something that passing to nvim user command lua api.
+-- See:
+--  * https://neovim.io/doc/user/api.html#nvim_create_user_command()
+--  * https://neovim.io/doc/user/map.html#command-attributes
+--
+--- @alias CommandOptKey "nargs"|"bang"|"complete"|"desc"|"range"
+--- @alias CommandOptValue string|boolean
+--- @alias CommandOpt table<CommandOptKey, CommandOptValue>
+
+-- ========== Command Feed ==========
+--
+-- User command feeds are method that what to feed the fzfx command.
+-- E.g. visual selected, cursor word, etc.
+--
+--- @alias CommandFeed "args"|"visual"|"cword"|"put"
+
+-- ========== Fzf Option ==========
+--
+-- A fzf option is passing directly to the final fzf command (e.g. --multi, --bind=ctrl-e:toggle).
+-- We have 3 types of fzf options:
+--  * Plain fzf option: a simple string, e.g. '--multi'.
+--  * Pair fzf option: a list of two strings, e.g. { '--bind', 'ctrl-e:toggle' }.
+--  * Function fzf option: a lua function that run and generate above two kinds of fzf options.
+--
+--- @alias PlainFzfOpt string
+--- @alias PairFzfOpt string[]
+--- @alias FunctionFzfOpt fun():PlainFzfOpt|PairFzfOpt
+--
+--- @alias FzfOpt PlainFzfOpt|PairFzfOpt|FunctionFzfOpt
