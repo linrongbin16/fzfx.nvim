@@ -15,7 +15,10 @@
 --
 -- The second parameter 'query' is the query in fzf prompt.
 --
---- @alias PipelineContext {bufnr:integer,winnr:integer,tabnr:integer}
+--- @class PipelineContext
+--- @field bufnr integer
+--- @field winnr integer
+--- @field tabnr integer
 --
 --- @alias PlainProvider string
 --- @alias CommandProvider fun(query:string?,context:PipelineContext?):string
