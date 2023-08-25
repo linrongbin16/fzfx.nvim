@@ -4,6 +4,7 @@ local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
 local color = require("fzfx.color")
+local utils = require("fzfx.utils")
 
 --- @param query string
 --- @param bang boolean
@@ -71,7 +72,7 @@ local function general(query, bang, general_configs, default_pipeline)
         shell.make_lua_command("general", "provider.lua"),
         provider_switch.metafile,
         provider_switch.resultfile,
-        query
+        utils.shellescape(query)
     )
     local reload_query_command = string.format(
         "%s %s %s {q}",
@@ -161,7 +162,7 @@ local function general(query, bang, general_configs, default_pipeline)
     return p
 end
 
---- @param general_configs Configs
+--- @param general_configs Configs?
 local function setup(general_configs)
     if not general_configs then
         return

@@ -160,7 +160,7 @@ end
 --- @param fmt string
 --- @param renderer fun(text:string,hl:string|nil):string
 --- @return string
-local function render(fmt, renderer, ...)
+M.render = function(fmt, renderer, ...)
     local args = {}
     for _, a in ipairs({ ... }) do
         table.insert(args, renderer(a))
@@ -172,7 +172,7 @@ end
 --- @param action string
 --- @return string
 M.unrestricted_mode_header = function(action)
-    return render(
+    return M.render(
         ":: Press %s to unrestricted mode",
         M.magenta,
         string.upper(action)
@@ -182,7 +182,7 @@ end
 --- @param action string
 --- @return string
 M.restricted_mode_header = function(action)
-    return render(
+    return M.render(
         ":: Press %s to restricted mode",
         M.magenta,
         string.upper(action)
@@ -192,7 +192,7 @@ end
 --- @param action string
 --- @return string
 M.delete_buffer_header = function(action)
-    return render(
+    return M.render(
         ":: Press %s to delete buffer",
         M.magenta,
         string.upper(action)
@@ -202,25 +202,37 @@ end
 --- @param action string
 --- @return string
 M.git_remote_branches_header = function(action)
-    return render(":: Press %s to remote mode", M.magenta, string.upper(action))
+    return M.render(
+        ":: Press %s to remote mode",
+        M.magenta,
+        string.upper(action)
+    )
 end
 
 --- @param action string
 --- @return string
 M.git_local_branches_header = function(action)
-    return render(":: Press %s to local mode", M.magenta, string.upper(action))
+    return M.render(
+        ":: Press %s to local mode",
+        M.magenta,
+        string.upper(action)
+    )
 end
 
 --- @param action string
 --- @return string
 M.git_all_commits_header = function(action)
-    return render(":: Press %s to all mode", M.magenta, string.upper(action))
+    return M.render(":: Press %s to all mode", M.magenta, string.upper(action))
 end
 
 --- @param action string
 --- @return string
 M.git_buffer_commits_header = function(action)
-    return render(":: Press %s to buffer mode", M.magenta, string.upper(action))
+    return M.render(
+        ":: Press %s to buffer mode",
+        M.magenta,
+        string.upper(action)
+    )
 end
 
 return M
