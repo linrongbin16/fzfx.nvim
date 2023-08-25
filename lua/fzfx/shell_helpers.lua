@@ -121,6 +121,21 @@ local function read_provider_command(provider)
     return cmd
 end
 
+--- @param filename string
+local function readfile(filename)
+    local f = io.open(filename, "r")
+    log_ensure(
+        f ~= nil,
+        "|fzfx.shell_helpers| error! failed to read file:%s",
+        vim.inspect(filename)
+    )
+    ---@diagnostic disable-next-line: need-check-nil
+    local content = vim.fn.trim(f:read("*a"))
+    ---@diagnostic disable-next-line: need-check-nil
+    f:close()
+    return content
+end
+
 -- provider }
 
 -- icon render {
@@ -271,6 +286,7 @@ local M = {
     log_throw = log_throw,
     log_ensure = log_ensure,
     read_provider_command = read_provider_command,
+    readfile = readfile,
     color_csi = csi,
     render_filepath_line = render_filepath_line,
     parse_query = parse_query,

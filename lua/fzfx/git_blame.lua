@@ -3,8 +3,6 @@ local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
 local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
-local color = require("fzfx.color")
-local server = require("fzfx.server")
 local utils = require("fzfx.utils")
 
 --- @param query string

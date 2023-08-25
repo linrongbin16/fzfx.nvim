@@ -15,11 +15,11 @@
 --
 -- The second parameter 'query' is the query in fzf prompt.
 --
---- @alias ProviderContext {bufnr:integer,winnr:integer}
+--- @alias PipelineContext {bufnr:integer,winnr:integer,tabnr:integer}
 --
 --- @alias PlainProvider string
---- @alias CommandProvider fun(context:ProviderContext?,query:string?):string
---- @alias ListProvider fun(context:ProviderContext?,query:string?):string[]
+--- @alias CommandProvider fun(query:string?,context:PipelineContext?):string
+--- @alias ListProvider fun(query:string?,context:PipelineContext?):string[]
 --
 --- @alias Provider PlainProvider|CommandProvider|ListProvider
 --- @alias ProviderType "plain"|"command"|"list"
@@ -27,18 +27,20 @@
 -- ========== Previewer ==========
 --
 -- A previewer is a shell command that run and echo details for fzf (e.g. things on the right side).
--- We have 2 types of previewers:
+-- We have 3 types of previewers:
 --  * Command previewer: a lua function that generate a command string to execute and echo details.
+--  * List previewer: a lua function that directly generate a list of strings.
 --  * Builtin previewer (todo): a nvim buffer & window, I think the biggest benefits can be allowing users to navigate to the buffer and edit it directly.
 --
--- The first parameter `pipeline` is the name of a pipeline (see below).
+-- The first parameter `provider` is the name of a pipeline (see below).
 -- The BuiltinPreviewer returns the configs for the nvim window.
 --
---- @alias CommandPreviewer fun(pipeline:string,line:string):string
---- @alias BuiltinPreviewer fun(pipeline:string,line:string):table
+--- @alias CommandPreviewer fun(line:string,context:PipelineContext?,pipeline:PipelineName?):string
+--- @alias ListPreviewer fun(line:string,context:PipelineContext?,pipeline:PipelineName?):string[]
+--- @alias BuiltinPreviewer fun(line:string,context:PipelineContext?,pipeline:PipelineName?):table
 --
---- @alias Previewer CommandPreviewer|BuiltinPreviewer
---- @alias PreviewerType "command"|"builtin"
+--- @alias Previewer CommandPreviewer|ListPreviewer|BuiltinPreviewer
+--- @alias PreviewerType "command"|"list"|"builtin"
 
 -- ========== Command Option ==========
 --

@@ -658,7 +658,9 @@ local Defaults = {
             },
         },
         providers = {
-            --- @alias ProviderConfig {[1]:string,[2]:Provider,[3]:ProviderType?}
+            --- @alias ProviderConfig {[1]:PipelineName,[2]:Provider,[3]:ProviderType?,[4]:ActionHelp?}
+            -- default ProviderType is 'plain'
+            -- default help is no help.
             --
             --- @type ProviderConfig
             all_commits = {
@@ -709,7 +711,6 @@ local Defaults = {
                     nargs = "?",
                     desc = "Search git commits",
                 },
-                default_provider = "all_commits",
             },
             -- visual
             {
@@ -720,7 +721,6 @@ local Defaults = {
                     range = true,
                     desc = "Search git commits by visual select",
                 },
-                default_provider = "all_commits",
             },
             -- cword
             {
@@ -730,7 +730,6 @@ local Defaults = {
                     bang = true,
                     desc = "Search git commits by cursor word",
                 },
-                default_provider = "all_commits",
             },
             -- put
             {
@@ -740,11 +739,55 @@ local Defaults = {
                     bang = true,
                     desc = "Search git commits by yank text",
                 },
-                default_provider = "all_commits",
             },
         },
-        providers = "git blame --date=short --color-lines",
-        previewers = "git show --color=always",
+        providers = {
+            --- @type ProviderConfig
+            default = {
+                --- @type PipelineName
+                "default",
+                --- @type CommandProvider
+                --- @param query string?
+                --- @param context PipelineContext?
+                --- @return string
+                function(query, context)
+                    assert(
+                        context,
+                        "error! git blame default provider context cannot be nil!"
+                    )
+                    if not utils.is_buf_valid(context.bufnr) then
+                        error(
+                            string.format(
+                                "error! git blame invalid bufnr: %s!",
+                                vim.inspect(context.bufnr)
+                            )
+                        )
+                    end
+                    local bufname = vim.api.nvim_buf_get_name(context.bufnr)
+                    local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
+                    return string.format(
+                        "git blame --date=short --color-lines %s",
+                        bufpath
+                    )
+                end,
+                --- @type ProviderType
+                "command",
+            },
+        },
+        previewers = {
+            --- @alias PreviewerConfig {[1]:Previewer,[2]:PreviewerType}
+            -- default PreviewerType is 'command'
+            --
+            --- @type PreviewerConfig
+            default = {
+                --- @type CommandPreviewer
+                function(line)
+                    local commit = vim.fn.split(line)[1]
+                    return string.format("git show --color=always %s", commit)
+                end,
+                "command",
+            },
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").yank_git_commit,
