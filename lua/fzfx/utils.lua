@@ -50,7 +50,6 @@ end
 local function is_buf_valid(bufnr)
     local bufname = vim.api.nvim_buf_get_name(bufnr)
     return vim.api.nvim_buf_is_valid(bufnr)
-        and vim.api.nvim_buf_is_loaded(bufnr)
         and vim.fn.buflisted(bufnr) > 0
         and type(bufname) == "string"
         and string.len(bufname) > 0

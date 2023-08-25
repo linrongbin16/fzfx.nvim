@@ -6,15 +6,15 @@ local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
 
-local Context = {
+local Constants = {
     --- @type string?
-    rmode_key = nil,
+    restricted_key = nil,
     --- @type string?
-    umode_key = nil,
+    unrestricted_key = nil,
     --- @type string?
-    umode_header = nil,
+    restricted_header = nil,
     --- @type string?
-    rmode_header = nil,
+    unrestricted_header = nil,
 }
 
 --- @alias FilesOptKey "default_provider"
@@ -69,15 +69,17 @@ local function files(query, bang, opts)
         { "--query", query },
         {
             "--header",
-            opts.default_provider == "restricted" and Context.umode_header
-                or Context.rmode_header,
+            opts.default_provider == "restricted"
+                    and Constants.unrestricted_header
+                or Constants.restricted_header,
         },
         {
             "--bind",
             string.format(
                 "start:unbind(%s)",
-                opts.default_provider == "restricted" and Context.rmode_key
-                    or Context.umode_key
+                opts.default_provider == "restricted"
+                        and Constants.restricted_key
+                    or Constants.unrestricted_key
             ),
         },
         {
@@ -85,11 +87,11 @@ local function files(query, bang, opts)
             "--bind",
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                Context.umode_key,
-                Context.umode_key,
+                Constants.unrestricted_key,
+                Constants.unrestricted_key,
                 call_switch_provider_rpc_command,
-                Context.rmode_header,
-                Context.rmode_key,
+                Constants.restricted_header,
+                Constants.restricted_key,
                 query_command
             ),
         },
@@ -98,11 +100,11 @@ local function files(query, bang, opts)
             "--bind",
             string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                Context.rmode_key,
-                Context.rmode_key,
+                Constants.restricted_key,
+                Constants.restricted_key,
                 call_switch_provider_rpc_command,
-                Context.umode_header,
-                Context.umode_key,
+                Constants.unrestricted_header,
+                Constants.unrestricted_key,
                 query_command
             ),
         },
@@ -135,10 +137,14 @@ local function setup()
     end
 
     -- Context
-    Context.rmode_key = string.lower(files_configs.providers.restricted[1])
-    Context.umode_key = string.lower(files_configs.providers.unrestricted[1])
-    Context.rmode_header = color.restricted_mode_header(Context.rmode_key)
-    Context.umode_header = color.unrestricted_mode_header(Context.umode_key)
+    Constants.restricted_key =
+        string.lower(files_configs.providers.restricted[1])
+    Constants.unrestricted_key =
+        string.lower(files_configs.providers.unrestricted[1])
+    Constants.restricted_header =
+        color.restricted_mode_header(Constants.restricted_key)
+    Constants.unrestricted_header =
+        color.unrestricted_mode_header(Constants.unrestricted_key)
 
     -- User commands
     for _, command_configs in pairs(files_configs.commands) do
