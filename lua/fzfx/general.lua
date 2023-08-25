@@ -1,9 +1,7 @@
 local log = require("fzfx.log")
-local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
 local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
-local utils = require("fzfx.utils")
 local server = require("fzfx.server")
 local color = require("fzfx.color")
 
@@ -20,7 +18,6 @@ local function general(query, bang, general_configs, default_pipeline)
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
 
-    local pipeline_size = 0
     -- provider
     local providers_map = {}
     local provider_types_map = {}
@@ -29,7 +26,6 @@ local function general(query, bang, general_configs, default_pipeline)
         local provider_type = provider_opts[3] or "plain"
         providers_map[pipeline] = provider
         provider_types_map[pipeline] = provider_type
-        pipeline_size = pipeline_size + 1
     end
     local default_provider_action_key = nil
     if default_pipeline == nil then

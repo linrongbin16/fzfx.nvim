@@ -31,20 +31,9 @@ local metajson = vim.fn.json_decode(metajsonstring) --[[@as {provider_type:Provi
 shell_helpers.log_debug("metajson:[%s]", vim.inspect(metajson))
 
 if metajson.provider_type == "command" then
+    --- @type string
     local cmd = shell_helpers.readfile(resultfile)
-    local p = io.popen(cmd)
-    shell_helpers.log_ensure(
-        p ~= nil,
-        "error! failed to open pipe on cmd! %s",
-        vim.inspect(cmd)
-    )
-    --- @diagnostic disable-next-line: need-check-nil
-    for line in p:lines("*line") do
-        -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-        io.write(string.format("%s\n", line))
-    end
-    --- @diagnostic disable-next-line: need-check-nil
-    p:close()
+    os.execute(cmd)
 elseif metajson.provider_type == "list" then
     local f = io.open(resultfile, "r")
     shell_helpers.log_ensure(
