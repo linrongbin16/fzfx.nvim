@@ -64,7 +64,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**).
 - [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**).
-- [git](https://git-scm.com/) (optional for **git** commands).
+- [git](https://git-scm.com/) (optional for **git files, branches, commits** commands).
 
 > Note: **live grep**, **files** and preview files will use builtin unix/linux commands ([grep](https://man7.org/linux/man-pages/man1/grep.1.html), [find](https://man7.org/linux/man-pages/man1/find.1.html), [cat](https://man7.org/linux/man-pages/man1/cat.1.html)) if `rg`, `fd`, `bat` not installed.
 >
