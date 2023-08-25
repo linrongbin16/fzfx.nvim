@@ -49,13 +49,19 @@ end
 -- rpc callback
 local function collect_bufs_rpc_callback()
     local current_bufnr = vim.api.nvim_get_current_buf()
+    local current_bufpath = buf_path(current_bufnr)
     local bufs_list = vim.api.nvim_list_bufs()
-    -- log.debug(
-    --     "|fzfx.buffers - buffers.collect_bufs_rpc_callback| current_bufnr:%s, bufs_list:%s",
-    --     vim.inspect(current_bufnr),
-    --     vim.inspect(bufs_list)
-    -- )
-    local filtered_bufs_list = {}
+    log.debug(
+        "|fzfx.buffers - buffers.collect_bufs_rpc_callback| current_buf(%s):%s, bufs_list:%s",
+        current_bufnr,
+        current_bufpath,
+        vim.inspect(bufs_list)
+    )
+
+    local bufpaths_list = {}
+    if buf_valid(current_bufnr) then
+        table.insert(bufpaths_list, current_bufpath)
+    end
     if type(bufs_list) == "table" then
         for _, bufnr in ipairs(bufs_list) do
             -- log.debug(
@@ -70,13 +76,17 @@ local function collect_bufs_rpc_callback()
             --     vim.inspect(vim.api.nvim_buf_is_loaded(bufnr)),
             --     vim.inspect(vim.fn.buflisted(bufnr))
             -- )
-            if buf_valid(bufnr) then
-                table.insert(filtered_bufs_list, buf_path(bufnr))
+            local bufpath = buf_path(bufnr)
+            if buf_valid(bufnr) and bufpath ~= current_bufpath then
+                table.insert(bufpaths_list, bufpath)
             end
         end
     end
-    table.sort(filtered_bufs_list)
-    return filtered_bufs_list
+    log.debug(
+        "|fzfx.buffers - collect_bufs_rpc_callback| bufpaths_list:%s",
+        vim.inspect(bufpaths_list)
+    )
+    return bufpaths_list
 end
 
 --- @param query string
