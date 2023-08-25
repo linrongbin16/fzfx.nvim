@@ -19,6 +19,8 @@ local function general(query, bang, general_configs, default_pipeline)
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
 
+    local pipeline_size = 0
+
     -- provider
     local providers_map = {}
     local provider_types_map = {}
@@ -27,6 +29,7 @@ local function general(query, bang, general_configs, default_pipeline)
         local provider_type = provider_opts[3] or "plain"
         providers_map[pipeline] = provider
         provider_types_map[pipeline] = provider_type
+        pipeline_size = pipeline_size + 1
     end
     local default_provider_action_key = nil
     if default_pipeline == nil then
@@ -111,44 +114,50 @@ local function general(query, bang, general_configs, default_pipeline)
             )
         )
     end
-    local headers = ":: Press " .. table.concat(header_builder, ", ")
-    for pipeline, provider_opts in pairs(general_configs.providers) do
-        local switch_pipeline_key = string.lower(provider_opts[1])
-        local function switch_pipeline_callback(query_params)
-            provider_switch:switch(pipeline, query_params)
-            previewer_switch:switch(pipeline)
-        end
-        local switch_pipeline_registry_id =
-            server.get_global_rpc_server():register(switch_pipeline_callback)
-        local switch_pipeline_command = string.format(
-            "%s %s",
-            shell.make_lua_command("rpc", "client.lua"),
-            switch_pipeline_registry_id
-        )
-        local bind_builder = string.format(
-            "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+reload(%s)",
-            switch_pipeline_key,
-            switch_pipeline_key,
-            switch_pipeline_command,
-            headers,
-            reload_query_command
-        )
-        for pipeline2, provider_opts2 in pairs(general_configs.providers) do
-            if pipeline2 ~= pipeline then
-                local switch_pipeline_key2 = string.lower(provider_opts2[1])
-                bind_builder = bind_builder
-                    .. string.format("+rebind(%s)", switch_pipeline_key2)
+
+    -- only have 1 pipeline, no need to add help message and switch keys
+    if pipeline_size > 1 then
+        local headers = ":: Press " .. table.concat(header_builder, ", ")
+        for pipeline, provider_opts in pairs(general_configs.providers) do
+            local switch_pipeline_key = string.lower(provider_opts[1])
+            local function switch_pipeline_callback(query_params)
+                provider_switch:switch(pipeline, query_params)
+                previewer_switch:switch(pipeline)
             end
+            local switch_pipeline_registry_id = server
+                .get_global_rpc_server()
+                :register(switch_pipeline_callback)
+            local switch_pipeline_command = string.format(
+                "%s %s",
+                shell.make_lua_command("rpc", "client.lua"),
+                switch_pipeline_registry_id
+            )
+            local bind_builder = string.format(
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+reload(%s)",
+                switch_pipeline_key,
+                switch_pipeline_key,
+                switch_pipeline_command,
+                headers,
+                reload_query_command
+            )
+            for pipeline2, provider_opts2 in pairs(general_configs.providers) do
+                if pipeline2 ~= pipeline then
+                    local switch_pipeline_key2 = string.lower(provider_opts2[1])
+                    bind_builder = bind_builder
+                        .. string.format("+rebind(%s)", switch_pipeline_key2)
+                end
+            end
+            table.insert(fzf_opts, {
+                "--bind",
+                bind_builder,
+            })
         end
         table.insert(fzf_opts, {
             "--bind",
-            bind_builder,
+            string.format("start:unbind(%s)", default_provider_action_key),
         })
     end
-    table.insert(fzf_opts, {
-        "--bind",
-        string.format("start:unbind(%s)", default_provider_action_key),
-    })
+
     table.insert(fzf_opts, { "--preview", preview_command })
 
     fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(general_configs.fzf_opts))
