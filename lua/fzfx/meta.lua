@@ -1,5 +1,3 @@
--- Zero Dependency
-
 -- Meta Definitions
 -- See: https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command
 --
@@ -20,8 +18,8 @@
 --- @alias ProviderContext {bufnr:integer,winnr:integer}
 --
 --- @alias PlainProvider string
---- @alias CommandProvider fun(context:ProviderContext,query:string?):string
---- @alias ListProvider fun(context:ProviderContext,query:string?):string[]
+--- @alias CommandProvider fun(context:ProviderContext?,query:string?):string
+--- @alias ListProvider fun(context:ProviderContext?,query:string?):string[]
 --
 --- @alias Provider PlainProvider|CommandProvider|ListProvider
 --- @alias ProviderType "plain"|"command"|"list"
@@ -33,10 +31,11 @@
 --  * Command previewer: a lua function that generate a command string to execute and echo details.
 --  * Builtin previewer (todo): a nvim buffer & window, I think the biggest benefits can be allowing users to navigate to the buffer and edit it directly.
 --
+-- The first parameter `pipeline` is the name of a pipeline (see below).
 -- The BuiltinPreviewer returns the configs for the nvim window.
 --
---- @alias CommandPreviewer fun(line:string):string
---- @alias BuiltinPreviewer fun(line:string):table
+--- @alias CommandPreviewer fun(pipeline:string,line:string):string
+--- @alias BuiltinPreviewer fun(pipeline:string,line:string):table
 --
 --- @alias Previewer CommandPreviewer|BuiltinPreviewer
 --- @alias PreviewerType "command"|"builtin"
@@ -72,3 +71,52 @@
 --- @alias FunctionFzfOpt fun():PlainFzfOpt|PairFzfOpt
 --
 --- @alias FzfOpt PlainFzfOpt|PairFzfOpt|FunctionFzfOpt
+
+-- ========== Action ==========
+--
+-- An action is user press a key and we do something.
+-- We have 2 types of actions:
+--  * Interaction: interactively execute something without exit fzf.
+--  * Action: exit fzf and do something in callback.
+--
+--- @alias ActionKey string
+--- @alias ActionHelp string
+--
+--- @alias Interaction fun(line:string?):any
+--- @alias Action fun(line:string[]|nil):any
+
+-- ========== Pipeline ==========
+--
+-- A pipeline tries to match a provider with a previewer, with a interactive action key to switch the data sources, and the help message.
+-- (Note: when you only have 1 provider, the interactive key and help message can be ommitted).
+--
+-- So we say the provider-interaction-previewer is a pipeline (data flow).
+--
+--- @alias PipelineName string
+--
+--- @class Pipeline
+--- @field name PipelineName
+--- @field provider Provider
+--- @field provider_type ProviderType
+--- @field previewer Previewer
+--- @field previewer_type PreviewerType
+--- @field switch ActionKey?
+--- @field help ActionHelp?
+
+-- ========== Schema ==========
+--
+-- Finally a schema defines the modern fzf command we are using, e.g. `FzfxLiveGrep`, `FzfxFiles`, etc.
+-- The fzf command we try to define should be quite powerful:
+--
+--  * We can have multiple data sources from different providers, switch by different interactive actions.
+--  * We can have multiple previewers, each bind to one provider.
+--  * We can have multiple interactive keys to do something without exiting fzf.
+--  * We can have multiple expect keys to exit fzf and run the callbacks.
+--  * We can have extra fzf options.
+--
+--- @class Schema
+--- @field name string
+--- @field pipelines table<PipelineName, Pipeline>
+--- @field interactions table<ActionKey, Interaction>
+--- @field interaction_helps table<ActionKey, Interaction>
+--- @field actions table<ActionKey, Action>
