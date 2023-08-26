@@ -26,26 +26,6 @@ local ProviderSwitch = {
     resultfile = nil,
 }
 
---- @package
---- @param pipeline PipelineName
---- @param providers table<PipelineName, Provider>
---- @param provider_types table<PipelineName, ProviderType>
---- @param context PipelineContext?
---- @param query string?
---- @param metafile string
---- @param resultfile string
---- @return ProviderType
-local function provider_switch_dump(
-    pipeline,
-    providers,
-    provider_types,
-    context,
-    query,
-    metafile,
-    resultfile
-)
-end
-
 --- @param name string
 --- @param pipeline PipelineName
 --- @param provider_configs Configs
@@ -77,7 +57,7 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
 end
 
 --- @param next_pipeline PipelineName
---- @return ProviderType
+--- @return nil
 function ProviderSwitch:switch(next_pipeline)
     self.pipeline = next_pipeline
 end

@@ -73,6 +73,13 @@ local PreviewerTypeEnum = {
 -- E.g. visual selected, cursor word, etc.
 --
 --- @alias CommandFeed "args"|"visual"|"cword"|"put"
+--- @enum CommandFeedEnum
+local CommandFeedEnum = {
+    ARGS = "args",
+    VISUAL = "visual",
+    CWORD = "cword",
+    PUT = "put",
+}
 
 -- ========== Fzf Option ==========
 --
@@ -140,6 +147,7 @@ local PreviewerTypeEnum = {
 local M = {
     ProviderTypeEnum = ProviderTypeEnum,
     PreviewerTypeEnum = PreviewerTypeEnum,
+    CommandFeedEnum = CommandFeedEnum,
 }
 
 return M
