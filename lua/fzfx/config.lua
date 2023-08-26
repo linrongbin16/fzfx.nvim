@@ -709,7 +709,26 @@ local Defaults = {
                 provider_type = ProviderTypeEnum.COMMAND,
             },
         },
-        previewers = "git show --color=always",
+        previewers = {
+            --- @type PreviewerConfig
+            all_commits = {
+                --- @type CommandPreviewer
+                previewer = function(line)
+                    local commit = vim.fn.split(line)[1]
+                    return string.format("git show --color=always %s", commit)
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            },
+            --- @type PreviewerConfig
+            buffer_commits = {
+                --- @type CommandPreviewer
+                previewer = function(line)
+                    local commit = vim.fn.split(line)[1]
+                    return string.format("git show --color=always %s", commit)
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            },
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").yank_git_commit,
