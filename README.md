@@ -383,6 +383,26 @@ Especially for git commands:
     <td>FzfxGCommits(B)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td rowspan="4">Git Blame</td>
+    <td>FzfxGBlame</td>
+    <td>N</td>
+    <td rowspan="4">No</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `enter` to copy commit SHA</td>
+  </tr>
+  <tr>
+    <td>FzfxGBlameV</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxGBlameW</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGBlameP</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
