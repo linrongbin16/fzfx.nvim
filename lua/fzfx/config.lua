@@ -540,7 +540,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxGBranchesP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Search local git branches by yank text",
@@ -549,7 +549,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGBranchesRP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Search remote git branches by yank text",
@@ -590,7 +590,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxGCommits",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -600,7 +600,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGCommitsB",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -611,7 +611,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxGCommitsV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -621,7 +621,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGCommitsBV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -632,7 +632,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxGCommitsW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Search git commits by cursor word",
@@ -641,7 +641,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGCommitsBW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Search git commits only on current buffer by cursor word",
@@ -651,7 +651,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxGCommitsP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Search git commits by yank text",
@@ -660,7 +660,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGCommitsBP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Search git commits only on current buffer by yank text",
@@ -712,7 +712,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxGBlame",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -722,7 +722,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxGBlameV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -732,7 +732,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxGBlameW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Search git commits by cursor word",
@@ -741,7 +741,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxGBlameP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Search git commits by yank text",
