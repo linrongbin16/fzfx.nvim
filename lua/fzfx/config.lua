@@ -753,12 +753,12 @@ local Defaults = {
                 function(query, context)
                     assert(
                         context,
-                        "error! git blame default provider context cannot be nil!"
+                        "|fzfx.config - git_blame.providers| error! 'FzfxGBlame' commands cannot have nil pipeline context!"
                     )
                     if not utils.is_buf_valid(context.bufnr) then
                         error(
                             string.format(
-                                "error! git blame invalid bufnr: %s!",
+                                "error! 'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             )
                         )
