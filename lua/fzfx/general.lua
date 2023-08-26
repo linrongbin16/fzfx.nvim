@@ -57,7 +57,7 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
 end
 
 --- @param next_pipeline PipelineName
---- @return ProviderType
+--- @return nil
 function ProviderSwitch:switch(next_pipeline)
     self.pipeline = next_pipeline
 end
