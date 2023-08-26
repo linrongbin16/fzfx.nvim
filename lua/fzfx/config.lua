@@ -1,5 +1,7 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
+local ProviderTypeEnum = require("fzfx.meta").ProviderTypeEnum
+local PreviewerTypeEnum = require("fzfx.meta").PreviewerTypeEnum
 
 -- gnu find
 local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
@@ -65,8 +67,16 @@ local default_fzf_options = {
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
---- @alias Configs table<string, any>
+--- @class ProviderConfig
+--- @field key ActionKey
+--- @field provider Provider
+--- @field provider_type ProviderType? by default "plain"
 
+--- @class PreviewerConfig
+--- @field previewer Previewer
+--- @field previewer_type PreviewerType
+
+--- @alias Configs table<string, any>
 --- @type Configs
 local Defaults = {
     -- the 'Files' commands
@@ -658,10 +668,6 @@ local Defaults = {
             },
         },
         providers = {
-            --- @alias ProviderConfig {[1]:PipelineName,[2]:Provider,[3]:ProviderType?,[4]:ActionHelp?}
-            -- default ProviderType is 'plain'
-            -- default help is no help.
-            --
             --- @type ProviderConfig
             all_commits = {
                 "ctrl-a",
@@ -745,12 +751,12 @@ local Defaults = {
             --- @type ProviderConfig
             default = {
                 --- @type PipelineName
-                "default",
+                key = "default",
                 --- @type CommandProvider
                 --- @param query string?
                 --- @param context PipelineContext?
                 --- @return string
-                function(query, context)
+                provider = function(query, context)
                     assert(
                         context,
                         "|fzfx.config - git_blame.providers| error! 'FzfxGBlame' commands cannot have nil pipeline context!"
@@ -771,21 +777,18 @@ local Defaults = {
                     )
                 end,
                 --- @type ProviderType
-                "command",
+                provider_type = "command",
             },
         },
         previewers = {
-            --- @alias PreviewerConfig {[1]:Previewer,[2]:PreviewerType}
-            -- default PreviewerType is 'command'
-            --
             --- @type PreviewerConfig
             default = {
                 --- @type CommandPreviewer
-                function(line)
+                previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
-                "command",
+                previewer_type = "command",
             },
         },
         actions = {

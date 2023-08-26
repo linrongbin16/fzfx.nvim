@@ -1,4 +1,5 @@
 local log = require("fzfx.log")
+local general = require("fzfx.general")
 
 --- @param options Configs|nil
 --- @return nil
@@ -49,7 +50,7 @@ local function setup(options)
     require("fzfx.git_commits").setup()
 
     -- git blame
-    require("fzfx.git_blame").setup()
+    general.setup("git_blame", configs.git_blame)
 
     -- yank history
     require("fzfx.yank_history").setup()

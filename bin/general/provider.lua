@@ -12,12 +12,38 @@ shell_helpers.log_ensure(
     type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
     "|fzfx.bin.general.provider| error! SOCKET_ADDRESS must not be empty!"
 )
-local metafile = _G.arg[1]
-local resultfile = _G.arg[2]
-local query = _G.arg[3]
+local registry_id = _G.arg[1]
+local metafile = _G.arg[2]
+local resultfile = _G.arg[3]
+local query = _G.arg[4]
+shell_helpers.log_debug("registry_id:[%s]", registry_id)
 shell_helpers.log_debug("metafile:[%s]", metafile)
 shell_helpers.log_debug("resultfile:[%s]", resultfile)
 shell_helpers.log_debug("query:[%s]", query)
+
+local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
+-- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
+-- shell_helpers.log_ensure(
+--     channel_id > 0,
+--     "|fzfx.bin.buffers.provider| error! failed to connect socket on SOCKET_ADDRESS:%s",
+--     vim.inspect(SOCKET_ADDRESS)
+-- )
+vim.rpcrequest(
+    channel_id,
+    "nvim_exec_lua",
+    ---@diagnostic disable-next-line: param-type-mismatch
+    [[
+    local luaargs = {...}
+    local registry_id = luaargs[1]
+    local query = luaargs[2]
+    return require("fzfx.rpc_helpers").call(registry_id, query)
+    ]],
+    {
+        registry_id,
+        query,
+    }
+)
+vim.fn.chanclose(channel_id)
 
 --- @type string
 local metajsonstring = shell_helpers.readfile(metafile)
