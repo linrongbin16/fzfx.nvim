@@ -26,6 +26,12 @@
 --
 --- @alias Provider PlainProvider|CommandProvider|ListProvider
 --- @alias ProviderType "plain"|"command"|"list"
+--- @enum ProviderTypeEnum
+local ProviderTypeEnum = {
+    PLAIN = "plain",
+    COMMAND = "command",
+    LIST = "list",
+}
 
 -- ========== Previewer ==========
 --
@@ -44,6 +50,11 @@
 --
 --- @alias Previewer CommandPreviewer|ListPreviewer|BuiltinPreviewer
 --- @alias PreviewerType "command"|"list"|"builtin"
+--- @enum PreviewerTypeEnum
+local PreviewerTypeEnum = {
+    COMMAND = "command",
+    LIST = "list",
+}
 
 -- ========== Command Option ==========
 --
@@ -125,3 +136,10 @@
 --- @field interactions table<ActionKey, Interaction>
 --- @field interaction_helps table<ActionKey, Interaction>
 --- @field actions table<ActionKey, Action>
+
+local M = {
+    ProviderTypeEnum = ProviderTypeEnum,
+    PreviewerTypeEnum = PreviewerTypeEnum,
+}
+
+return M
