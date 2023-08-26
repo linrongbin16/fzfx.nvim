@@ -149,7 +149,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxFilesP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find files by yank text",
@@ -158,7 +158,7 @@ local Defaults = {
             },
             {
                 name = "FzfxFilesUP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find files unrestricted by yank text",
@@ -213,7 +213,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxLiveGrep",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "*",
@@ -223,7 +223,7 @@ local Defaults = {
             },
             {
                 name = "FzfxLiveGrepU",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "*",
@@ -234,7 +234,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxLiveGrepV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -244,7 +244,7 @@ local Defaults = {
             },
             {
                 name = "FzfxLiveGrepUV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -255,7 +255,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxLiveGrepW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Live grep by cursor word",
@@ -264,7 +264,7 @@ local Defaults = {
             },
             {
                 name = "FzfxLiveGrepUW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Live grep unrestricted by cursor word",
@@ -274,7 +274,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxLiveGrepP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Live grep by yank text",
@@ -283,7 +283,7 @@ local Defaults = {
             },
             {
                 name = "FzfxLiveGrepUP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Live grep unrestricted by yank text",
@@ -343,7 +343,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxBuffers",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -354,7 +354,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxBuffersV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -364,7 +364,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxBuffersW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find buffers by cursor word",
@@ -373,7 +373,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxBuffersP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find buffers by yank text",
@@ -412,7 +412,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxGFiles",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -423,7 +423,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxGFilesV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -433,7 +433,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxGFilesW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find git files by cursor word",
@@ -442,7 +442,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxGFilesP",
-                feed = "put",
+                feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find git files by yank text",
@@ -477,7 +477,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxGBranches",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -488,7 +488,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGBranchesR",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -500,7 +500,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxGBranchesV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -510,7 +510,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGBranchesRV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -521,7 +521,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxGBranchesW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Search local git branches by cursor word",
@@ -530,7 +530,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGBranchesRW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Search remote git branches by cursor word",
