@@ -669,19 +669,44 @@ local Defaults = {
             },
         },
         providers = {
+            --- @type ProviderConfig
             all_commits = {
-                "ctrl-a",
-                string.format(
+                --- @type ActionKey
+                key = "ctrl-a",
+                --- @type PlainProvider
+                provider = string.format(
                     "git log --pretty=%s --date=short --color=always",
                     utils.shellescape(default_git_log_pretty)
                 ),
             },
+            --- @type ProviderConfig
             buffer_commits = {
-                "ctrl-u",
-                string.format(
-                    "git log --pretty=%s --date=short --color=always",
-                    utils.shellescape(default_git_log_pretty)
-                ),
+                --- @type ActionKey
+                key = "ctrl-u",
+                --- @type CommandProvider
+                --- @param query string?
+                --- @param context PipelineContext?
+                --- @return string
+                provider = function(query, context)
+                    assert(
+                        context,
+                        "|fzfx.config - git_commits.providers.buffer_commits| error! 'FzfxGCommits' commands cannot have nil pipeline context!"
+                    )
+                    if not utils.is_buf_valid(context.bufnr) then
+                        error(
+                            string.format(
+                                "error! 'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
+                                vim.inspect(context.bufnr)
+                            )
+                        )
+                    end
+                    return string.format(
+                        "git log --pretty=%s --date=short --color=always -- %s",
+                        utils.shellescape(default_git_log_pretty),
+                        vim.api.nvim_buf_get_name(context.bufnr)
+                    )
+                end,
+                provider_type = ProviderTypeEnum.COMMAND,
             },
         },
         previewers = "git show --color=always",
@@ -747,7 +772,7 @@ local Defaults = {
         providers = {
             --- @type ProviderConfig
             default = {
-                --- @type PipelineName
+                --- @type ActionKey
                 key = "default",
                 --- @type CommandProvider
                 --- @param query string?
@@ -774,7 +799,7 @@ local Defaults = {
                     )
                 end,
                 --- @type ProviderType
-                provider_type = "command",
+                provider_type = ProviderTypeEnum.COMMAND,
             },
         },
         previewers = {
@@ -785,7 +810,7 @@ local Defaults = {
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
-                previewer_type = "command",
+                previewer_type = PreviewerTypeEnum.COMMAND,
             },
         },
         actions = {

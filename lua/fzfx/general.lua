@@ -336,6 +336,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         end
         local headers = ":: Press " .. table.concat(header_builder, ", ")
 
+        table.insert(fzf_opts, {
+            "--header",
+            headers,
+        })
+
         for pipeline, provider_opts in pairs(pipeline_configs.providers) do
             local switch_pipeline_key = string.lower(provider_opts.key)
 
