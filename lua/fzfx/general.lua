@@ -305,15 +305,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         server:get_global_rpc_server():register(preview_rpc)
 
     local query_command = string.format(
-        "%s %s %s %s",
+        "%s %s %s %s %s",
         shell.make_lua_command("general", "provider.lua"),
+        provide_rpc_registry_id,
         provider_switch.metafile,
         provider_switch.resultfile,
         utils.shellescape(query)
     )
     local reload_query_command = string.format(
-        "%s %s %s {q}",
+        "%s %s %s %s {q}",
         shell.make_lua_command("general", "provider.lua"),
+        provide_rpc_registry_id,
         provider_switch.metafile,
         provider_switch.resultfile
     )
