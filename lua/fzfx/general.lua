@@ -319,11 +319,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         },
     }
 
-    -- only have 1 pipeline, no need to add help message and switch keys
+    -- when only have 1 pipeline, no need to add help message and switch keys
     if pipeline_size > 1 then
         local header_builder = {}
         for pipeline, provider_opts in pairs(pipeline_configs.providers) do
-            local switch_pipeline_key = string.lower(provider_opts[1])
+            local switch_pipeline_key = string.lower(provider_opts.key)
             table.insert(
                 header_builder,
                 color.render(
