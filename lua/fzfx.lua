@@ -48,6 +48,9 @@ local function setup(options)
     -- git commits
     require("fzfx.git_commits").setup()
 
+    -- git blame
+    require("fzfx.git_blame").setup()
+
     -- yank history
     require("fzfx.yank_history").setup()
 end

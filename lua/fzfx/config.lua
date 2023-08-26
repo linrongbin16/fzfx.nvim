@@ -1,6 +1,5 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
-local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 
 -- gnu find
 local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
@@ -52,7 +51,7 @@ local default_unrestricted_rg = string.format(
     constants.rg
 )
 
---- @type table<string, FzfOption>
+--- @type table<string, FzfOpt>
 local default_fzf_options = {
     multi = "--multi",
     toggle = "--bind=ctrl-e:toggle",
@@ -76,7 +75,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxFiles",
-                feed = UserCommandFeedEnum.ARGS,
+                feed = "args",
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -87,7 +86,7 @@ local Defaults = {
             },
             {
                 name = "FzfxFilesU",
-                feed = UserCommandFeedEnum.ARGS,
+                feed = "args",
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -99,7 +98,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxFilesV",
-                feed = UserCommandFeedEnum.VISUAL,
+                feed = "visual",
                 opts = {
                     bang = true,
                     range = true,
@@ -109,7 +108,7 @@ local Defaults = {
             },
             {
                 name = "FzfxFilesUV",
-                feed = UserCommandFeedEnum.VISUAL,
+                feed = "visual",
                 opts = {
                     bang = true,
                     range = true,
@@ -120,7 +119,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxFilesW",
-                feed = UserCommandFeedEnum.CWORD,
+                feed = "cword",
                 opts = {
                     bang = true,
                     desc = "Find files by cursor word",
@@ -129,7 +128,7 @@ local Defaults = {
             },
             {
                 name = "FzfxFilesUW",
-                feed = UserCommandFeedEnum.CWORD,
+                feed = "cword",
                 opts = {
                     bang = true,
                     desc = "Find files unrestricted by cursor word",
@@ -139,7 +138,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxFilesP",
-                feed = UserCommandFeedEnum.PUT,
+                feed = "put",
                 opts = {
                     bang = true,
                     desc = "Find files by yank text",
@@ -148,7 +147,7 @@ local Defaults = {
             },
             {
                 name = "FzfxFilesUP",
-                feed = UserCommandFeedEnum.PUT,
+                feed = "put",
                 opts = {
                     bang = true,
                     desc = "Find files unrestricted by yank text",
@@ -203,7 +202,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxLiveGrep",
-                feed = UserCommandFeedEnum.ARGS,
+                feed = "args",
                 opts = {
                     bang = true,
                     nargs = "*",
@@ -213,7 +212,7 @@ local Defaults = {
             },
             {
                 name = "FzfxLiveGrepU",
-                feed = UserCommandFeedEnum.ARGS,
+                feed = "args",
                 opts = {
                     bang = true,
                     nargs = "*",
@@ -224,7 +223,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxLiveGrepV",
-                feed = UserCommandFeedEnum.VISUAL,
+                feed = "visual",
                 opts = {
                     bang = true,
                     range = true,
@@ -234,7 +233,7 @@ local Defaults = {
             },
             {
                 name = "FzfxLiveGrepUV",
-                feed = UserCommandFeedEnum.VISUAL,
+                feed = "visual",
                 opts = {
                     bang = true,
                     range = true,
@@ -245,7 +244,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxLiveGrepW",
-                feed = UserCommandFeedEnum.CWORD,
+                feed = "cword",
                 opts = {
                     bang = true,
                     desc = "Live grep by cursor word",
@@ -254,7 +253,7 @@ local Defaults = {
             },
             {
                 name = "FzfxLiveGrepUW",
-                feed = UserCommandFeedEnum.CWORD,
+                feed = "cword",
                 opts = {
                     bang = true,
                     desc = "Live grep unrestricted by cursor word",
@@ -264,7 +263,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxLiveGrepP",
-                feed = UserCommandFeedEnum.PUT,
+                feed = "put",
                 opts = {
                     bang = true,
                     desc = "Live grep by yank text",
@@ -273,7 +272,7 @@ local Defaults = {
             },
             {
                 name = "FzfxLiveGrepUP",
-                feed = UserCommandFeedEnum.PUT,
+                feed = "put",
                 opts = {
                     bang = true,
                     desc = "Live grep unrestricted by yank text",
@@ -333,7 +332,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxBuffers",
-                feed = UserCommandFeedEnum.ARGS,
+                feed = "args",
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -344,7 +343,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxBuffersV",
-                feed = UserCommandFeedEnum.VISUAL,
+                feed = "visual",
                 opts = {
                     bang = true,
                     range = true,
@@ -354,7 +353,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxBuffersW",
-                feed = UserCommandFeedEnum.CWORD,
+                feed = "cword",
                 opts = {
                     bang = true,
                     desc = "Find buffers by cursor word",
@@ -363,7 +362,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxBuffersP",
-                feed = UserCommandFeedEnum.PUT,
+                feed = "put",
                 opts = {
                     bang = true,
                     desc = "Find buffers by yank text",
@@ -402,7 +401,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxGFiles",
-                feed = UserCommandFeedEnum.ARGS,
+                feed = "args",
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -413,7 +412,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxGFilesV",
-                feed = UserCommandFeedEnum.VISUAL,
+                feed = "visual",
                 opts = {
                     bang = true,
                     range = true,
@@ -423,7 +422,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxGFilesW",
-                feed = UserCommandFeedEnum.CWORD,
+                feed = "cword",
                 opts = {
                     bang = true,
                     desc = "Find git files by cursor word",
@@ -432,7 +431,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxGFilesP",
-                feed = UserCommandFeedEnum.PUT,
+                feed = "put",
                 opts = {
                     bang = true,
                     desc = "Find git files by yank text",
@@ -467,7 +466,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxGBranches",
-                feed = UserCommandFeedEnum.ARGS,
+                feed = "args",
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -478,7 +477,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGBranchesR",
-                feed = UserCommandFeedEnum.ARGS,
+                feed = "args",
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -490,7 +489,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxGBranchesV",
-                feed = UserCommandFeedEnum.VISUAL,
+                feed = "visual",
                 opts = {
                     bang = true,
                     range = true,
@@ -500,7 +499,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGBranchesRV",
-                feed = UserCommandFeedEnum.VISUAL,
+                feed = "visual",
                 opts = {
                     bang = true,
                     range = true,
@@ -511,7 +510,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxGBranchesW",
-                feed = UserCommandFeedEnum.CWORD,
+                feed = "cword",
                 opts = {
                     bang = true,
                     desc = "Search local git branches by cursor word",
@@ -520,7 +519,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGBranchesRW",
-                feed = UserCommandFeedEnum.CWORD,
+                feed = "cword",
                 opts = {
                     bang = true,
                     desc = "Search remote git branches by cursor word",
@@ -530,7 +529,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxGBranchesP",
-                feed = UserCommandFeedEnum.PUT,
+                feed = "put",
                 opts = {
                     bang = true,
                     desc = "Search local git branches by yank text",
@@ -539,7 +538,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGBranchesRP",
-                feed = UserCommandFeedEnum.PUT,
+                feed = "put",
                 opts = {
                     bang = true,
                     desc = "Search remote git branches by yank text",
@@ -580,7 +579,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxGCommits",
-                feed = UserCommandFeedEnum.ARGS,
+                feed = "args",
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -590,7 +589,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGCommitsB",
-                feed = UserCommandFeedEnum.ARGS,
+                feed = "args",
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -601,7 +600,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxGCommitsV",
-                feed = UserCommandFeedEnum.VISUAL,
+                feed = "visual",
                 opts = {
                     bang = true,
                     range = true,
@@ -611,7 +610,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGCommitsBV",
-                feed = UserCommandFeedEnum.VISUAL,
+                feed = "visual",
                 opts = {
                     bang = true,
                     range = true,
@@ -622,7 +621,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxGCommitsW",
-                feed = UserCommandFeedEnum.CWORD,
+                feed = "cword",
                 opts = {
                     bang = true,
                     desc = "Search git commits by cursor word",
@@ -631,7 +630,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGCommitsBW",
-                feed = UserCommandFeedEnum.CWORD,
+                feed = "cword",
                 opts = {
                     bang = true,
                     desc = "Search git commits only on current buffer by cursor word",
@@ -641,7 +640,7 @@ local Defaults = {
             -- put
             {
                 name = "FzfxGCommitsP",
-                feed = UserCommandFeedEnum.PUT,
+                feed = "put",
                 opts = {
                     bang = true,
                     desc = "Search git commits by yank text",
@@ -650,7 +649,7 @@ local Defaults = {
             },
             {
                 name = "FzfxGCommitsBP",
-                feed = UserCommandFeedEnum.PUT,
+                feed = "put",
                 opts = {
                     bang = true,
                     desc = "Search git commits only on current buffer by yank text",
@@ -659,11 +658,9 @@ local Defaults = {
             },
         },
         providers = {
-            --- @alias ProviderConfig {[1]:string,[2]:Provider,[3]:ProviderType?}
-            --
-            --- @alias ProviderConfigContext {cursor_bufnr:integer,cursor_winnr:integer}
-            -- bufnr: buffer number before plugin start
-            -- winnr: window number before plugin start
+            --- @alias ProviderConfig {[1]:PipelineName,[2]:Provider,[3]:ProviderType?,[4]:ActionHelp?}
+            -- default ProviderType is 'plain'
+            -- default help is no help.
             --
             --- @type ProviderConfig
             all_commits = {
@@ -698,6 +695,112 @@ local Defaults = {
             {
                 "--prompt",
                 "GCommits > ",
+            },
+        },
+    },
+
+    -- the 'Git Blame' command
+    git_blame = {
+        commands = {
+            -- normal
+            {
+                name = "FzfxGBlame",
+                feed = "args",
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    desc = "Search git commits",
+                },
+            },
+            -- visual
+            {
+                name = "FzfxGBlameV",
+                feed = "visual",
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Search git commits by visual select",
+                },
+            },
+            -- cword
+            {
+                name = "FzfxGBlameW",
+                feed = "cword",
+                opts = {
+                    bang = true,
+                    desc = "Search git commits by cursor word",
+                },
+            },
+            -- put
+            {
+                name = "FzfxGBlameP",
+                feed = "put",
+                opts = {
+                    bang = true,
+                    desc = "Search git commits by yank text",
+                },
+            },
+        },
+        providers = {
+            --- @type ProviderConfig
+            default = {
+                --- @type PipelineName
+                "default",
+                --- @type CommandProvider
+                --- @param query string?
+                --- @param context PipelineContext?
+                --- @return string
+                function(query, context)
+                    assert(
+                        context,
+                        "|fzfx.config - git_blame.providers| error! 'FzfxGBlame' commands cannot have nil pipeline context!"
+                    )
+                    if not utils.is_buf_valid(context.bufnr) then
+                        error(
+                            string.format(
+                                "error! 'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
+                                vim.inspect(context.bufnr)
+                            )
+                        )
+                    end
+                    local bufname = vim.api.nvim_buf_get_name(context.bufnr)
+                    local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
+                    return string.format(
+                        "git blame --date=short --color-lines %s",
+                        bufpath
+                    )
+                end,
+                --- @type ProviderType
+                "command",
+            },
+        },
+        previewers = {
+            --- @alias PreviewerConfig {[1]:Previewer,[2]:PreviewerType}
+            -- default PreviewerType is 'command'
+            --
+            --- @type PreviewerConfig
+            default = {
+                --- @type CommandPreviewer
+                function(line)
+                    local commit = vim.fn.split(line)[1]
+                    return string.format("git show --color=always %s", commit)
+                end,
+                "command",
+            },
+        },
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").yank_git_commit,
+            ["double-click"] = require("fzfx.actions").yank_git_commit,
+        },
+        fzf_opts = {
+            default_fzf_options.no_multi,
+            default_fzf_options.preview_half_page_down,
+            default_fzf_options.preview_half_page_up,
+            default_fzf_options.toggle_preview,
+            {
+                "--prompt",
+                "GBlame > ",
             },
         },
     },

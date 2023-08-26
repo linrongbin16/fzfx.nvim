@@ -48,6 +48,9 @@ end
 --- @param bufnr integer
 --- @return boolean
 local function is_buf_valid(bufnr)
+    if bufnr == nil or type(bufnr) ~= "number" then
+        return false
+    end
     local bufname = vim.api.nvim_buf_get_name(bufnr)
     return vim.api.nvim_buf_is_valid(bufnr)
         and vim.fn.buflisted(bufnr) > 0

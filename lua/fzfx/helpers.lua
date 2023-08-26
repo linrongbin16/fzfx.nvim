@@ -4,9 +4,7 @@ local path = require("fzfx.path")
 local color = require("fzfx.color")
 local conf = require("fzfx.config")
 local yank_history = require("fzfx.yank_history")
-local UserCommandFeedEnum = require("fzfx.schema").UserCommandFeedEnum
 local utils = require("fzfx.utils")
-local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 
 -- visual select {
 
@@ -85,16 +83,17 @@ end
 -- visual select }
 
 --- @param opts Configs
---- @param feed_type UserCommandFeed
+--- @param feed_type "args"|"visual"|"cword"|"put"
 --- @return string
 local function get_command_feed(opts, feed_type)
-    if feed_type == UserCommandFeedEnum.ARGS then
+    feed_type = string.lower(feed_type)
+    if feed_type == "args" then
         return opts.args
-    elseif feed_type == UserCommandFeedEnum.VISUAL then
+    elseif feed_type == "visual" then
         return visual_select()
-    elseif feed_type == UserCommandFeedEnum.CWORD then
+    elseif feed_type == "cword" then
         return vim.fn.expand("<cword>")
-    elseif feed_type == UserCommandFeedEnum.PUT then
+    elseif feed_type == "put" then
         local y = yank_history.get_yank()
         return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
     else
@@ -108,7 +107,7 @@ end
 
 -- fzf opts {
 
---- @return FzfOption[]
+--- @return FzfOpt[]
 local function generate_fzf_color_opts()
     if type(conf.get_config().fzf_color_opts) ~= "table" then
         return {}
@@ -131,7 +130,7 @@ local function generate_fzf_color_opts()
     return { { "--color", table.concat(builder, ",") } }
 end
 
---- @return FzfOption[]
+--- @return FzfOpt[]
 local function generate_fzf_icon_opts()
     if type(conf.get_config().icons) ~= "table" then
         return {}
@@ -143,9 +142,9 @@ local function generate_fzf_icon_opts()
     }
 end
 
---- @param opts FzfOption[]
---- @param o FzfOption?
---- @return FzfOption[]
+--- @param opts FzfOpt[]
+--- @param o FzfOpt?
+--- @return FzfOpt[]
 local function append_fzf_opt(opts, o)
     if type(o) == "string" and string.len(o) > 0 then
         table.insert(opts, o)
@@ -162,8 +161,8 @@ local function append_fzf_opt(opts, o)
     return opts
 end
 
---- @param opts FzfOption[]
---- @return FzfOption[]
+--- @param opts FzfOpt[]
+--- @return FzfOpt[]
 local function preprocess_fzf_opts(opts)
     if opts == nil or #opts == 0 then
         return {}
@@ -184,7 +183,7 @@ local function preprocess_fzf_opts(opts)
     return result
 end
 
---- @param opts FzfOption[]
+--- @param opts FzfOpt[]
 --- @return string?
 local function make_fzf_opts(opts)
     if opts == nil or #opts == 0 then
@@ -269,143 +268,267 @@ end
 -- multiple provider switch {
 
 --- @class ProviderSwitch
---- @field name string?
---- @field providers table<string, Provider>?
---- @field provider_types table<string, ProviderType>?
---- @field tempfile string?
+--- @field current_pipeline PipelineName?
+--- @field providers table<PipelineName, Provider>?
+--- @field provider_types table<PipelineName, ProviderType>?
+--- @field context PipelineContext?
+--- @field metafile string?
+--- @field resultfile string?
 local ProviderSwitch = {
-    name = nil,
+    current_pipeline = nil,
     providers = nil,
     provider_types = nil,
-    tempfile = nil,
+    context = nil,
+    metafile = nil,
+    resultfile = nil,
 }
 
 --- @package
---- @param providers table<string, Provider>
---- @param provider_types table<string, ProviderType>
---- @param provider_key string
---- @param context any
+--- @param pipeline PipelineName
+--- @param providers table<PipelineName, Provider>
+--- @param provider_types table<PipelineName, ProviderType>
+--- @param context PipelineContext?
 --- @param query string?
---- @param filename string
+--- @param metafile string
+--- @param resultfile string
 --- @return ProviderType
 local function provider_switch_dump(
+    pipeline,
     providers,
     provider_types,
-    provider_key,
     context,
     query,
-    filename
+    metafile,
+    resultfile
 )
-    local provider = providers[provider_key]
-    local provider_type = provider_types[provider_key]
+    local provider = providers[pipeline]
+    local provider_type = provider_types[pipeline]
     log.ensure(
         type(provider) == "string" or type(provider) == "function",
-        "|fzfx.helpers - provider_switch_dump| providers must contains provider key! providers:%s, provider_key:%s",
+        "|fzfx.helpers - provider_switch_dump| invalid provider! providers:%s, pipeline:%s",
         vim.inspect(providers),
-        vim.inspect(provider_key)
+        vim.inspect(pipeline)
     )
     log.ensure(
-        provider_type == ProviderTypeEnum.PLAIN
-            or provider_type == ProviderTypeEnum.COMMAND
-            or provider_type == ProviderTypeEnum.LIST,
-        "|fzfx.helpers - provider_switch_dump| provider_types must contains provider key! provider_types:%s, provider_key:%s",
+        provider_type == "plain"
+            or provider_type == "command"
+            or provider_type == "list",
+        "|fzfx.helpers - provider_switch_dump| invalid provider! provider_types:%s, pipeline:%s",
         vim.inspect(provider_types),
-        vim.inspect(provider_key)
+        vim.inspect(pipeline)
     )
+    local metajson = vim.fn.json_encode({
+        pipeline = pipeline,
+        provider_type = provider_type,
+    })
+    vim.fn.writefile({ metajson }, metafile)
     if provider_type == "plain" then
         log.ensure(
             type(provider) == "string",
-            "|fzfx.helpers - provider_switch_dump| plain provider must be string! providers:%s provider_key:%s, provider:%s",
+            "|fzfx.helpers - provider_switch_dump| plain provider must be string! providers:%s pipeline:%s, provider:%s",
             vim.inspect(providers),
-            vim.inspect(provider_key),
+            vim.inspect(pipeline),
             vim.inspect(provider)
         )
-        vim.fn.writefile({ provider }, filename)
+        vim.fn.writefile({ provider }, resultfile)
     elseif provider_type == "command" then
-        local result = provider(context, query)
+        local result = provider(query, context)
         log.ensure(
             type(result) == "string",
-            "|fzfx.helpers - provider_switch_dump| command provider result must be string! providers:%s provider_key:%s, provider:%s, result:%s",
+            "|fzfx.helpers - provider_switch_dump| command provider result must be string! providers:%s pipeline:%s, result:%s",
             vim.inspect(providers),
-            vim.inspect(provider_key),
-            vim.inspect(provider),
+            vim.inspect(pipeline),
             vim.inspect(result)
         )
-        vim.fn.writefile({ result }, filename)
+        vim.fn.writefile({ result }, resultfile)
     elseif provider_type == "list" then
-        local result = provider(context, query)
+        local result = provider(query, context)
         log.ensure(
             type(result) == "table",
-            "|fzfx.helpers - provider_switch_dump| list provider (%s) result must be array! providers:%s, result:%s",
-            vim.inspect(provider_key),
+            "|fzfx.helpers - provider_switch_dump| list provider result must be array! providers:%s, pipeline:%s, result:%s",
             vim.inspect(providers),
+            vim.inspect(pipeline),
             vim.inspect(result)
         )
-        vim.fn.writefile(result, filename)
+        vim.fn.writefile(result, resultfile)
     else
         log.throw(
-            "|fzfx.helpers - provider_switch_dump| error! invalid provider type:%s, providers:%s, provider_types:%s, provider_key:%s",
-            vim.inspect(provider_type),
-            vim.inspect(providers),
+            "|fzfx.helpers - provider_switch_dump| error! invalid provider type, provider_types:%s, pipeline:%s",
             vim.inspect(provider_types),
-            vim.inspect(provider_key)
+            vim.inspect(pipeline)
         )
     end
     return provider_type
 end
 
 --- @param name string
---- @param providers table<string, Provider>
---- @param provider_types table<string, ProviderType>
---- @param default_provider_key string
---- @param context any
+--- @param current_pipeline PipelineName
+--- @param providers table<PipelineName, Provider>
+--- @param provider_types table<PipelineName, ProviderType>
+--- @param context PipelineContext?
 --- @param query string?
 --- @return ProviderSwitch
 function ProviderSwitch:new(
     name,
+    current_pipeline,
     providers,
     provider_types,
-    default_provider_key,
     context,
     query
 )
     local ps = vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
-        name = name,
+        current_pipeline = current_pipeline,
         providers = providers,
         provider_types = provider_types,
-        tempfile = env.debug_enable() and path.join(
+        context = context,
+        metafile = env.debug_enable() and path.join(
             vim.fn.stdpath("data"),
             "fzfx.nvim",
-            "multi_switch_" .. name
+            "provider_switch_metafile_" .. name
+        ) or vim.fn.tempname(),
+        resultfile = env.debug_enable() and path.join(
+            vim.fn.stdpath("data"),
+            "fzfx.nvim",
+            "provider_switch_resultfile_" .. name
         ) or vim.fn.tempname(),
     })
     provider_switch_dump(
+        current_pipeline,
         providers,
         provider_types,
-        default_provider_key,
         context,
         query,
-        ps.tempfile
+        ps.metafile,
+        ps.resultfile
     )
     return ps
 end
 
---- @param provider_key string
---- @param context any
+--- @param next_pipeline PipelineName
 --- @param query string?
 --- @return ProviderType
-function ProviderSwitch:switch(provider_key, context, query)
+function ProviderSwitch:switch(next_pipeline, query)
     return provider_switch_dump(
+        next_pipeline,
         self.providers,
         self.provider_types,
-        provider_key,
-        context,
+        self.context,
         query,
-        self.tempfile
+        self.metafile,
+        self.resultfile
     )
 end
 
 -- multiple provider switch }
+
+-- multiple previewer switch {
+
+--- @class PreviewerSwitch
+--- @field current_pipeline PipelineName?
+--- @field previewers table<PipelineName, Previewer>?
+--- @field previewer_types table<PipelineName, PreviewerType>?
+--- @field metafile string?
+--- @field resultfile string?
+local PreviewerSwitch = {
+    current_pipeline = nil,
+    previewers = nil,
+    previewer_types = nil,
+    context = nil,
+    metafile = nil,
+    resultfile = nil,
+}
+
+--- @param name string
+--- @param current_pipeline PipelineName
+--- @param previewers table<PipelineName, Previewer>
+--- @param previewer_types table<PipelineName, PreviewerType>
+--- @param context PipelineContext?
+--- @return PreviewerSwitch
+function PreviewerSwitch:new(
+    name,
+    current_pipeline,
+    previewers,
+    previewer_types,
+    context
+)
+    local ps = vim.tbl_deep_extend("force", vim.deepcopy(PreviewerSwitch), {
+        current_pipeline = current_pipeline,
+        previewers = previewers,
+        previewer_types = previewer_types,
+        context = context,
+        metafile = env.debug_enable() and path.join(
+            vim.fn.stdpath("data"),
+            "fzfx.nvim",
+            "previewer_switch_metafile_" .. name
+        ) or vim.fn.tempname(),
+        resultfile = env.debug_enable() and path.join(
+            vim.fn.stdpath("data"),
+            "fzfx.nvim",
+            "previewer_switch_resultfile_" .. name
+        ) or vim.fn.tempname(),
+    })
+    return ps
+end
+
+--- @param next_pipeline PipelineName
+--- @return nil
+function PreviewerSwitch:switch(next_pipeline)
+    self.current_pipeline = next_pipeline
+end
+
+--- @param line string
+--- @return PreviewerType
+function PreviewerSwitch:preview(line)
+    local previewer = self.previewers[self.current_pipeline]
+    local previewer_type = self.previewer_types[self.current_pipeline]
+    log.ensure(
+        type(previewer) == "function",
+        "|fzfx.helpers - previewer_switch_dump| invalid previewer! previewers:%s, pipeline:%s",
+        vim.inspect(self.previewers),
+        vim.inspect(self.current_pipeline)
+    )
+    log.ensure(
+        previewer_type == "command" or previewer_type == "list",
+        "|fzfx.helpers - previewer_switch_dump| invalid previewer_type! previewer_types:%s, pipeline:%s",
+        vim.inspect(self.previewer_types),
+        vim.inspect(self.current_pipeline)
+    )
+    local metajson = vim.fn.json_encode({
+        pipeline = self.current_pipeline,
+        previewer_type = previewer_type,
+    })
+    vim.fn.writefile({ metajson }, self.metafile)
+    if previewer_type == "command" then
+        local result = previewer(line, self.context, self.current_pipeline)
+        log.ensure(
+            type(result) == "string",
+            "|fzfx.helpers - previewer_switch_dump| command previewer result must be string! previewers:%s pipeline:%s, result:%s",
+            vim.inspect(self.previewers),
+            vim.inspect(self.current_pipeline),
+            vim.inspect(result)
+        )
+        vim.fn.writefile({ result }, self.resultfile)
+    elseif previewer_type == "list" then
+        local result = previewer(line, self.context, self.current_pipeline)
+        log.ensure(
+            type(result) == "table",
+            "|fzfx.helpers - previewer_switch_dump| list previewer result must be array! previewers:%s, pipeline:%s, result:%s",
+            vim.inspect(self.previewers),
+            vim.inspect(self.current_pipeline),
+            vim.inspect(result)
+        )
+        vim.fn.writefile(result, self.resultfile)
+    else
+        log.throw(
+            "|fzfx.helpers - previewer_switch_dump| error! invalid previewer type, previewer_types:%s, pipeline:%s",
+            vim.inspect(self.previewer_types),
+            vim.inspect(self.current_pipeline)
+        )
+    end
+    return previewer_type
+end
+
+-- multiple previewer switch }
 
 local M = {
     get_command_feed = get_command_feed,
@@ -414,6 +537,7 @@ local M = {
     make_fzf_default_opts = make_fzf_default_opts,
     Switch = Switch,
     ProviderSwitch = ProviderSwitch,
+    PreviewerSwitch = PreviewerSwitch,
 }
 
 return M
