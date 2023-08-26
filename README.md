@@ -383,6 +383,26 @@ Especially for git commands:
     <td>FzfxGCommits(B)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td rowspan="4">Git Blame</td>
+    <td>FzfxGBlame</td>
+    <td>N</td>
+    <td rowspan="4">No</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `enter` to copy commit SHA</td>
+  </tr>
+  <tr>
+    <td>FzfxGBlameV</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxGBlameW</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGBlameP</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
@@ -493,6 +513,17 @@ nnoremap <space>bwgc :\<C-U>FzfxGCommitsBW<CR>
 nnoremap <space>pgc :\<C-U>FzfxGCommitsP<CR>
 " only current buffer by yank text
 nnoremap <space>bpgc :\<C-U>FzfxGCommitsBP<CR>
+
+" ======== git blame ========
+
+" git blame
+nnoremap <space>gb :\<C-U>FzfxGBlame<CR>
+" visual select
+xnoremap <space>gb :\<C-U>FzfxGBlameV<CR>
+" by cursor word
+nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
+" by yank text
+nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
 ```
 
 ### Lua
@@ -662,6 +693,25 @@ vim.keymap.set('n', '<space>pgc', '<cmd>FzfxGCommitsP<cr>',
 -- only current buffer by yank text
 vim.keymap.set('n', '<space>bpgc', '<cmd>FzfxGCommitsBP<cr>',
         {silent=true, noremap=true, desc="Search git commits only on current buffer by yank text"})
+
+-- ======== git blame ========
+
+-- git blame
+vim.keymap.set('n', '<space>gb',
+        '<cmd>FzfxGBlame<cr>',
+        {silent=true, noremap=true, desc="Search git blame"})
+-- visual select
+vim.keymap.set('x', '<space>gb',
+        "<cmd>FzfxGBlameV<cr>",
+        {silent=true, noremap=true, desc="Search git blame"})
+-- cursor word
+vim.keymap.set('n', '<space>wgb',
+        '<cmd>FzfxGBlameW<cr>',
+        {silent=true, noremap=true, desc="Search git blame by cursor word"})
+-- yank text
+vim.keymap.set('n', '<space>pgb',
+        '<cmd>FzfxGBlameP<cr>',
+        {silent=true, noremap=true, desc="Search git blame by yank text"})
 ```
 
 ## Configuration
