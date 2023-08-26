@@ -70,6 +70,14 @@ local function general(query, bang, general_configs, default_pipeline)
         pipeline_context
     )
 
+    --- @param line_param string
+    local function preview_rpc(line_param)
+        previewer_switch:preview(line_param)
+    end
+
+    local preview_rpc_registry_id =
+        server:get_global_rpc_server():register(preview_rpc)
+
     local query_command = string.format(
         "%s %s %s %s",
         shell.make_lua_command("general", "provider.lua"),
@@ -84,8 +92,9 @@ local function general(query, bang, general_configs, default_pipeline)
         provider_switch.resultfile
     )
     local preview_command = string.format(
-        "%s %s %s {}",
+        "%s %s %s %s {}",
         shell.make_lua_command("general", "previewer.lua"),
+        preview_rpc_registry_id,
         previewer_switch.metafile,
         previewer_switch.resultfile
     )
@@ -101,23 +110,24 @@ local function general(query, bang, general_configs, default_pipeline)
             preview_command,
         },
     }
-    local header_builder = {}
-    for pipeline, provider_opts in pairs(general_configs.providers) do
-        local switch_pipeline_key = string.lower(provider_opts[1])
-        table.insert(
-            header_builder,
-            color.render(
-                "%s to %s",
-                color.magenta,
-                string.upper(switch_pipeline_key),
-                table.concat(vim.fn.split(pipeline, "_"), " ")
-            )
-        )
-    end
 
     -- only have 1 pipeline, no need to add help message and switch keys
     if pipeline_size > 1 then
+        local header_builder = {}
+        for pipeline, provider_opts in pairs(general_configs.providers) do
+            local switch_pipeline_key = string.lower(provider_opts[1])
+            table.insert(
+                header_builder,
+                color.render(
+                    "%s to %s",
+                    color.magenta,
+                    string.upper(switch_pipeline_key),
+                    table.concat(vim.fn.split(pipeline, "_"), " ")
+                )
+            )
+        end
         local headers = ":: Press " .. table.concat(header_builder, ", ")
+
         for pipeline, provider_opts in pairs(general_configs.providers) do
             local switch_pipeline_key = string.lower(provider_opts[1])
             local function switch_pipeline_callback(query_params)
@@ -167,7 +177,10 @@ local function general(query, bang, general_configs, default_pipeline)
         bang and { height = 1, width = 1, row = 0, col = 0 } or nil,
         query_command,
         fzf_opts,
-        actions
+        actions,
+        function()
+            server.get_global_rpc_server():unregister(preview_rpc_registry_id)
+        end
     )
     return p
 end
