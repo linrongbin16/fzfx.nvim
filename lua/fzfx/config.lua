@@ -2,6 +2,7 @@ local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 local ProviderTypeEnum = require("fzfx.meta").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.meta").PreviewerTypeEnum
+local CommandFeedEnum = require("fzfx.meta").CommandFeedEnum
 
 -- gnu find
 local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
@@ -85,7 +86,7 @@ local Defaults = {
             -- normal
             {
                 name = "FzfxFiles",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -96,7 +97,7 @@ local Defaults = {
             },
             {
                 name = "FzfxFilesU",
-                feed = "args",
+                feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
@@ -108,7 +109,7 @@ local Defaults = {
             -- visual
             {
                 name = "FzfxFilesV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -118,7 +119,7 @@ local Defaults = {
             },
             {
                 name = "FzfxFilesUV",
-                feed = "visual",
+                feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
@@ -129,7 +130,7 @@ local Defaults = {
             -- cword
             {
                 name = "FzfxFilesW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find files by cursor word",
@@ -138,7 +139,7 @@ local Defaults = {
             },
             {
                 name = "FzfxFilesUW",
-                feed = "cword",
+                feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find files unrestricted by cursor word",
