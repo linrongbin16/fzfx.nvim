@@ -720,6 +720,8 @@ For complete options and default configurations, please check [config.lua](https
 
 If you have encounter some breaks on configuration, please see [Break Changes](#break-changes).
 
+From [#102](https://github.com/linrongbin16/fzfx.nvim/pull/102) I introduced a general fzfx command creator which covers most of the usage. Please read [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [meta.lua](https://github.com/linrongbin16/fzfx.nvim/pull/102/files#diff-f211a75102c0434c0fbf94009ca81544399f9f65704c609ac5461d89b40059cb) to understand it and how to configure it.
+
 ## Break Changes
 
 - 2023-08-17
