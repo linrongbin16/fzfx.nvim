@@ -669,19 +669,15 @@ local Defaults = {
             },
         },
         providers = {
-            --- @type ProviderConfig
             all_commits = {
                 "ctrl-a",
-                --- @type PlainProvider
                 string.format(
                     "git log --pretty=%s --date=short --color=always",
                     utils.shellescape(default_git_log_pretty)
                 ),
             },
-            --- @type ProviderConfig
             buffer_commits = {
                 "ctrl-u",
-                --- @type PlainProvider
                 string.format(
                     "git log --pretty=%s --date=short --color=always",
                     utils.shellescape(default_git_log_pretty)
