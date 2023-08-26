@@ -50,7 +50,7 @@ local function setup(options)
     require("fzfx.git_commits").setup()
 
     -- git blame
-    general.setup(configs.git_blame)
+    general.setup("git_blame", configs.git_blame)
 
     -- yank history
     require("fzfx.yank_history").setup()
