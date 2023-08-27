@@ -716,7 +716,7 @@ local Defaults = {
                                 "error! 'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
-                            EchoHighlights.WARN
+                            EchoHighlights.ERROR
                         )
                         return nil
                     end

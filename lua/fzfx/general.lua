@@ -62,14 +62,15 @@ function ProviderSwitch:switch(next_pipeline)
     self.pipeline = next_pipeline
 end
 
+--- @param name string
 --- @param query string?
 --- @param context PipelineContext?
-function ProviderSwitch:provide(query, context)
-    -- log.debug("|fzfx.general - ProviderSwitch:provide| 1")
+function ProviderSwitch:provide(name, query, context)
+    log.debug("|fzfx.general - ProviderSwitch:provide| 1")
     local provider = self.providers[self.pipeline]
-    -- log.debug("|fzfx.general - ProviderSwitch:provide| 2")
+    log.debug("|fzfx.general - ProviderSwitch:provide| 2")
     local provider_type = self.provider_types[self.pipeline]
-    -- log.debug("|fzfx.general - ProviderSwitch:provide| 3")
+    log.debug("|fzfx.general - ProviderSwitch:provide| 3")
     log.ensure(
         provider == nil
             or type(provider) == "string"
@@ -77,7 +78,7 @@ function ProviderSwitch:provide(query, context)
         "|fzfx.general - ProviderSwitch:provide| invalid provider! %s",
         vim.inspect(self)
     )
-    -- log.debug("|fzfx.general - ProviderSwitch:provide| 4")
+    log.debug("|fzfx.general - ProviderSwitch:provide| 4")
     log.ensure(
         provider_type == ProviderTypeEnum.PLAIN
             or provider_type == ProviderTypeEnum.COMMAND
@@ -85,23 +86,23 @@ function ProviderSwitch:provide(query, context)
         "|fzfx.general - ProviderSwitch:provide| invalid provider type! %s",
         vim.inspect(self)
     )
-    -- log.debug("|fzfx.general - ProviderSwitch:provide| 5")
+    log.debug("|fzfx.general - ProviderSwitch:provide| 5")
     local metajson = vim.fn.json_encode({
         pipeline = self.pipeline,
         provider_type = provider_type,
     })
-    -- log.debug("|fzfx.general - ProviderSwitch:provide| 6")
+    log.debug("|fzfx.general - ProviderSwitch:provide| 6")
     vim.fn.writefile({ metajson }, self.metafile)
-    -- log.debug("|fzfx.general - ProviderSwitch:provide| 7")
+    log.debug("|fzfx.general - ProviderSwitch:provide| 7")
     if provider_type == ProviderTypeEnum.PLAIN then
-        -- log.debug("|fzfx.general - ProviderSwitch:provide| 8")
+        log.debug("|fzfx.general - ProviderSwitch:provide| 8")
         log.ensure(
             provider == nil or type(provider) == "string",
             "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
             vim.inspect(self),
             vim.inspect(provider)
         )
-        -- log.debug("|fzfx.general - ProviderSwitch:provide| 9")
+        log.debug("|fzfx.general - ProviderSwitch:provide| 9")
         if provider == nil then
             -- log.debug(
             --     "|fzfx.general - ProviderSwitch:provide| plain nil provider-before, resultfile:%s",
@@ -120,46 +121,74 @@ function ProviderSwitch:provide(query, context)
             -- )
         end
     elseif provider_type == ProviderTypeEnum.COMMAND then
-        -- log.debug("|fzfx.general - ProviderSwitch:provide| 10")
-        local result = provider(query, context)
-        -- log.debug("|fzfx.general - ProviderSwitch:provide| 11")
+        log.debug("|fzfx.general - ProviderSwitch:provide| 10")
+        local ok, result = pcall(provider, query, context)
+        log.debug(
+            "|fzfx.general - ProviderSwitch:provide| 11, ok:%s, result:%s",
+            vim.inspect(ok),
+            vim.inspect(result)
+        )
         log.ensure(
             result == nil or type(result) == "string",
             "|fzfx.general - ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
             vim.inspect(self),
             vim.inspect(result)
         )
-        -- log.debug("|fzfx.general - ProviderSwitch:provide| 12")
-        if result == nil then
-            -- log.debug(
-            --     "|fzfx.general - ProviderSwitch:provide| command provider nil result-before, result:%s",
-            --     vim.inspect(result)
-            -- )
+        log.debug("|fzfx.general - ProviderSwitch:provide| 12")
+        if not ok then
             vim.fn.writefile({ "" }, self.resultfile)
+            log.err(
+                "error! failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
+                vim.inspect(name),
+                vim.inspect(provider),
+                vim.inspect(query),
+                vim.inspect(context),
+                vim.inspect(result)
+            )
+        else
+            if result == nil then
+                -- log.debug(
+                --     "|fzfx.general - ProviderSwitch:provide| command provider nil result-before, result:%s",
+                --     vim.inspect(result)
+                -- )
+                vim.fn.writefile({ "" }, self.resultfile)
             -- log.debug(
             --     "|fzfx.general - ProviderSwitch:provide| command provider nil result-after, result:%s",
             --     vim.inspect(result)
             -- )
-        else
-            -- log.debug(
-            --     "|fzfx.general - ProviderSwitch:provide| command provider not-null result-before, result:%s",
-            --     vim.inspect(result)
-            -- )
-            vim.fn.writefile({ result }, self.resultfile)
-            -- log.debug(
-            --     "|fzfx.general - ProviderSwitch:provide| command provider not-null result-after, result:%s",
-            --     vim.inspect(result)
-            -- )
+            else
+                -- log.debug(
+                --     "|fzfx.general - ProviderSwitch:provide| command provider not-null result-before, result:%s",
+                --     vim.inspect(result)
+                -- )
+                vim.fn.writefile({ result }, self.resultfile)
+                -- log.debug(
+                --     "|fzfx.general - ProviderSwitch:provide| command provider not-null result-after, result:%s",
+                --     vim.inspect(result)
+                -- )
+            end
         end
     elseif provider_type == ProviderTypeEnum.LIST then
-        local result = provider(query, context)
-        log.ensure(
-            type(result) == "table",
-            "|fzfx.general - ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
-            vim.inspect(self),
-            vim.inspect(result)
-        )
-        vim.fn.writefile(result, self.resultfile)
+        local ok, result = pcall(provider, query, context)
+        if not ok then
+            vim.fn.writefile({ "" }, self.resultfile)
+            log.err(
+                "error! failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
+                vim.inspect(name),
+                vim.inspect(provider),
+                vim.inspect(query),
+                vim.inspect(context),
+                vim.inspect(result)
+            )
+        else
+            log.ensure(
+                type(result) == "table",
+                "|fzfx.general - ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
+                vim.inspect(self),
+                vim.inspect(result)
+            )
+            vim.fn.writefile(result, self.resultfile)
+        end
     else
         log.throw(
             "|fzfx.general - ProviderSwitch:provide| error! invalid provider type! %s",
@@ -223,10 +252,11 @@ function PreviewerSwitch:switch(next_pipeline)
     self.pipeline = next_pipeline
 end
 
+--- @param name string
 --- @param line string
 --- @param context PipelineContext?
 --- @return PreviewerType
-function PreviewerSwitch:preview(line, context)
+function PreviewerSwitch:preview(name, line, context)
     local previewer = self.previewers[self.pipeline]
     local previewer_type = self.previewer_types[self.pipeline]
     log.ensure(
@@ -246,27 +276,51 @@ function PreviewerSwitch:preview(line, context)
     })
     vim.fn.writefile({ metajson }, self.metafile)
     if previewer_type == PreviewerTypeEnum.COMMAND then
-        local result = previewer(line, context, self.pipeline)
-        log.ensure(
-            result == nil or type(result) == "string",
-            "|fzfx.general - PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
-            vim.inspect(self),
-            vim.inspect(result)
-        )
-        if result == nil then
+        local ok, result = pcall(previewer, line, context)
+        if not ok then
             vim.fn.writefile({ "" }, self.resultfile)
+            log.err(
+                "error! failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
+                vim.inspect(name),
+                vim.inspect(previewer),
+                vim.inspect(line),
+                vim.inspect(context),
+                vim.inspect(result)
+            )
         else
-            vim.fn.writefile({ result }, self.resultfile)
+            log.ensure(
+                result == nil or type(result) == "string",
+                "|fzfx.general - PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
+                vim.inspect(self),
+                vim.inspect(result)
+            )
+            if result == nil then
+                vim.fn.writefile({ "" }, self.resultfile)
+            else
+                vim.fn.writefile({ result }, self.resultfile)
+            end
         end
     elseif previewer_type == PreviewerTypeEnum.LIST then
-        local result = previewer(line, context, self.pipeline)
-        log.ensure(
-            type(result) == "table",
-            "|fzfx.general - PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
-            vim.inspect(self),
-            vim.inspect(result)
-        )
-        vim.fn.writefile(result, self.resultfile)
+        local ok, result = pcall(previewer, line, context)
+        if not ok then
+            vim.fn.writefile({ "" }, self.resultfile)
+            log.err(
+                "error! failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
+                vim.inspect(name),
+                vim.inspect(previewer),
+                vim.inspect(line),
+                vim.inspect(context),
+                vim.inspect(result)
+            )
+        else
+            log.ensure(
+                type(result) == "table",
+                "|fzfx.general - PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
+                vim.inspect(self),
+                vim.inspect(result)
+            )
+            vim.fn.writefile(result, self.resultfile)
+        end
     else
         log.throw(
             "|fzfx.general - PreviewerSwitch:preview| error! invalid previewer type! %s",
@@ -383,7 +437,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             vim.inspect(query_params),
             vim.inspect(context)
         )
-        provider_switch:provide(query_params, context)
+        provider_switch:provide(name, query_params, context)
     end
 
     --- @param line_params string
@@ -393,7 +447,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             vim.inspect(line_params),
             vim.inspect(context)
         )
-        previewer_switch:preview(line_params)
+        previewer_switch:preview(name, line_params)
     end
 
     local provide_rpc_registry_id =
