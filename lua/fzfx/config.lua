@@ -77,17 +77,15 @@ local EchoHighlights = {
 }
 
 --- @param msg string
---- @param level EchoHighlights?
+--- @param level "ERROR"|"WARN"|"INFO"|"DEBUG"
 local function echo_msg(msg, level)
+    level = level or "INFO"
     local msg_lines = vim.split(msg, "\n")
-    local msg_chunks = {}
-    for _, mline in ipairs(msg_lines) do
-        table.insert(
-            msg_chunks,
-            { string.format("[fzfx] %s\n", mline), EchoHighlights[level] }
-        )
+    vim.cmd("echohl " .. EchoHighlights[level])
+    for _, line in ipairs(msg_lines) do
+        vim.api.nvim_out_write(string.format("[fzfx] %s\n", line))
     end
-    vim.api.nvim_echo(msg_chunks, true, {})
+    vim.cmd("echohl None")
 end
 
 --- @class ProviderConfig
@@ -716,7 +714,7 @@ local Defaults = {
                                 "error! 'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
-                            EchoHighlights.ERROR
+                            "ERROR"
                         )
                         return nil
                     end
@@ -824,7 +822,7 @@ local Defaults = {
                                 "error! 'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
-                            EchoHighlights.ERROR
+                            "ERROR"
                         )
                         return nil
                     end

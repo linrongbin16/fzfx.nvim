@@ -23,20 +23,17 @@ local function setup()
             provider_opts.key = provider_opts[1]
             if provider_name == "buffer_commits" then
                 --- @param query string?
-                --- @param context PipelineContext?
-                --- @return string
+                --- @param context PipelineContext
+                --- @return string?
                 local function buffer_provider(query, context)
-                    assert(
-                        context,
-                        "|fzfx.git_commits - setup| error! 'FzfxGCommits' commands cannot have nil pipeline context!"
-                    )
                     if not utils.is_buf_valid(context.bufnr) then
-                        error(
+                        log.warn(
                             string.format(
-                                "error! 'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
+                                "warning! 'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             )
                         )
+                        return nil
                     end
                     return string.format(
                         "%s -- %s",

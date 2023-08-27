@@ -4,6 +4,8 @@ vim.o.autowrite = true
 vim.o.swapfile = false
 vim.o.confirm = true
 vim.o.termguicolors = true
+vim.o.showcmd = true
+vim.o.cmdheight = 2
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -50,7 +52,7 @@ require("lazy").setup({
         config = function()
             require("fzfx").setup({
                 debug = {
-                    enable = true,
+                    enable = false,
                     file_log = true,
                 },
                 git_commits = {
