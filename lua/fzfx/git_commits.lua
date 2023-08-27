@@ -11,15 +11,14 @@ local function setup()
         return
     end
 
+    local deprecated = false
     for provider_name, provider_opts in pairs(git_commits_configs.providers) do
         if
             #provider_opts >= 2
             or type(provider_opts[1]) == "string"
             or type(provider_opts[2]) == "string"
         then
-            log.warn(
-                "warning! deprecated 'FzfxGCommits' configs, please migrate to latest config schema!"
-            )
+            deprecated = true
             --- @type ActionKey
             provider_opts.key = provider_opts[1]
             if provider_name == "buffer_commits" then
@@ -56,9 +55,7 @@ local function setup()
         end
     end
     if type(git_commits_configs.previewers) == "string" then
-        log.warn(
-            "warning! deprecated 'FzfxGCommits' configs, please migrate to latest config schema!"
-        )
+        deprecated = true
         local old_previewer = git_commits_configs.previewers
         git_commits_configs.previewers = {}
         for provider_name, _ in pairs(git_commits_configs.providers) do
@@ -72,6 +69,11 @@ local function setup()
         end
     end
 
+    if deprecated then
+        log.warn(
+            "warning! deprecated 'FzfxGCommits' configs, please migrate to latest config schema!"
+        )
+    end
     general.setup("git_commits", git_commits_configs)
 end
 
