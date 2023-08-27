@@ -707,7 +707,7 @@ local Defaults = {
                     if not utils.is_buf_valid(context.bufnr) then
                         echo_msg(
                             string.format(
-                                "error! 'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
+                                "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
                             "ERROR"
@@ -815,7 +815,7 @@ local Defaults = {
                     if not utils.is_buf_valid(context.bufnr) then
                         echo_msg(
                             string.format(
-                                "error! 'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
+                                "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
                             "ERROR"
