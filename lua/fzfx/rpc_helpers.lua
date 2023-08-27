@@ -6,16 +6,16 @@ local server = require("fzfx.server")
 --- @return any
 local function call(registry_id, params)
     local callback = server.get_global_rpc_server():get(registry_id)
-    log.debug(
-        "|fzfx.rpc_helpers - call| global_rpc_server:%s",
-        vim.inspect(server.get_global_rpc_server())
-    )
-    log.debug(
-        "|fzfx.rpc_helpers - call| registry_id:%s, params:%s, registry:%s",
-        vim.inspect(registry_id),
-        vim.inspect(params),
-        vim.inspect(callback)
-    )
+    -- log.debug(
+    --     "|fzfx.rpc_helpers - call| global_rpc_server:%s",
+    --     vim.inspect(server.get_global_rpc_server())
+    -- )
+    -- log.debug(
+    --     "|fzfx.rpc_helpers - call| registry_id:%s, params:%s, registry:%s",
+    --     vim.inspect(registry_id),
+    --     vim.inspect(params),
+    --     vim.inspect(callback)
+    -- )
     return callback(params)
 end
 
