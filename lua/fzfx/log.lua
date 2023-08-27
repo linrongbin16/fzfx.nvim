@@ -9,12 +9,13 @@ local LogLevel = {
     DEBUG = "DEBUG",
 }
 
---- @type table<LogLevel, LogMessageHl>
-local LogLevelHl = {
-    ["ERROR"] = "ErrorMsg",
-    ["WARN"] = "WarningMsg",
-    ["INFO"] = "None",
-    ["DEBUG"] = "Comment",
+local LogLevelValue = {
+    TRACE = 0,
+    DEBUG = 1,
+    INFO = 2,
+    WARN = 3,
+    ERROR = 4,
+    OFF = 5,
 }
 
 --- @type Configs
@@ -64,7 +65,6 @@ local function setup(option)
     assert(type(Configs.name) == "string")
     assert(string.len(Configs.name) > 0)
     assert(type(Configs.level) == "string")
-    assert(LogLevelHl[Configs.level] ~= nil)
     if Configs.file_log then
         assert(type(Configs.file_path) == "string")
         assert(string.len(Configs.file_path) > 0)
@@ -77,38 +77,26 @@ end
 --- @param msg string
 --- @return nil
 local function log(level, msg)
-    if vim.log.levels[level] < vim.log.levels[Configs.level] then
+    if LogLevelValue[level] < LogLevelValue[Configs.level] then
         return
     end
 
-    local name = ""
-    if type(Configs.name) == "string" and string.len(Configs.name) > 0 then
-        name = Configs.name .. " "
-    end
     local msg_lines = vim.split(msg, "\n")
     if
         Configs.console_log
-        and vim.log.levels[level] >= vim.log.levels[LogLevel.INFO]
+        and LogLevelValue[level] >= LogLevelValue[LogLevel.INFO]
     then
-        local msg_chunks = {}
-        for _, mline in ipairs(msg_lines) do
-            table.insert(
-                msg_chunks,
-                { string.format("%s%s\n", name, mline), LogLevelHl[level] }
+        local level_name = ""
+        if string.upper(level) == "ERROR" then
+            level_name = "error! "
+        elseif string.upper(level) == "WARN" then
+            level_name = "warning! "
+        end
+        for _, line in ipairs(msg_lines) do
+            vim.api.nvim_out_write(
+                string.format("[fzfx] %s%s\n", level_name, line)
             )
         end
-        vim.api.nvim_echo(msg_chunks, true, {})
-
-        -- vim.cmd("echohl " .. LogLevelHl[level])
-        -- for _, line in ipairs(msg_lines) do
-        --     vim.cmd(
-        --         string.format(
-        --             "echomsg '%s'",
-        --             vim.fn.escape(string.format("%s%s", name, line), "'")
-        --         )
-        --     )
-        -- end
-        -- vim.cmd("echohl None")
     end
     if Configs.file_log then
         local fp = io.open(Configs.file_path, "a")

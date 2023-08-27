@@ -281,7 +281,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, on_launch_exit)
         )
         if exitcode > 1 and (exitcode ~= 130 and exitcode ~= 129) then
             log.err(
-                "error! command '%s' running with exit code %d",
+                "command '%s' running with exit code %d",
                 fzf_command,
                 exitcode
             )

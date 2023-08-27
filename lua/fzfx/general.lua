@@ -7,8 +7,8 @@ local color = require("fzfx.color")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
 local path = require("fzfx.path")
-local ProviderTypeEnum = require("fzfx.meta").ProviderTypeEnum
-local PreviewerTypeEnum = require("fzfx.meta").PreviewerTypeEnum
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 
 -- provider switch {
 
@@ -62,13 +62,16 @@ function ProviderSwitch:switch(next_pipeline)
     self.pipeline = next_pipeline
 end
 
+--- @param name string
 --- @param query string?
 --- @param context PipelineContext?
-function ProviderSwitch:provide(query, context)
+function ProviderSwitch:provide(name, query, context)
     local provider = self.providers[self.pipeline]
     local provider_type = self.provider_types[self.pipeline]
     log.ensure(
-        type(provider) == "string" or type(provider) == "function",
+        provider == nil
+            or type(provider) == "string"
+            or type(provider) == "function",
         "|fzfx.general - ProviderSwitch:provide| invalid provider! %s",
         vim.inspect(self)
     )
@@ -86,30 +89,72 @@ function ProviderSwitch:provide(query, context)
     vim.fn.writefile({ metajson }, self.metafile)
     if provider_type == ProviderTypeEnum.PLAIN then
         log.ensure(
-            type(provider) == "string",
-            "|fzfx.general - ProviderSwitch:provide| plain provider must be string! self:%s, provider:%s",
+            provider == nil or type(provider) == "string",
+            "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
             vim.inspect(self),
             vim.inspect(provider)
         )
-        vim.fn.writefile({ provider }, self.resultfile)
+        if provider == nil then
+            vim.fn.writefile({ "" }, self.resultfile)
+        else
+            vim.fn.writefile({ provider }, self.resultfile)
+        end
     elseif provider_type == ProviderTypeEnum.COMMAND then
-        local result = provider(query, context)
+        local ok, result = pcall(provider, query, context)
+        log.debug(
+            "|fzfx.general - ProviderSwitch:provide| pcall command provider, ok:%s, result:%s",
+            vim.inspect(ok),
+            vim.inspect(result)
+        )
         log.ensure(
-            type(result) == "string",
+            result == nil or type(result) == "string",
             "|fzfx.general - ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
             vim.inspect(self),
             vim.inspect(result)
         )
-        vim.fn.writefile({ result }, self.resultfile)
+        if not ok then
+            vim.fn.writefile({ "" }, self.resultfile)
+            log.err(
+                "failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
+                vim.inspect(name),
+                vim.inspect(provider),
+                vim.inspect(query),
+                vim.inspect(context),
+                vim.inspect(result)
+            )
+        else
+            if result == nil then
+                vim.fn.writefile({ "" }, self.resultfile)
+            else
+                vim.fn.writefile({ result }, self.resultfile)
+            end
+        end
     elseif provider_type == ProviderTypeEnum.LIST then
-        local result = provider(query, context)
-        log.ensure(
-            type(result) == "table",
-            "|fzfx.general - ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
-            vim.inspect(self),
+        local ok, result = pcall(provider, query, context)
+        log.debug(
+            "|fzfx.general - ProviderSwitch:provide| pcall list provider, ok:%s, result:%s",
+            vim.inspect(ok),
             vim.inspect(result)
         )
-        vim.fn.writefile(result, self.resultfile)
+        if not ok then
+            vim.fn.writefile({ "" }, self.resultfile)
+            log.err(
+                "failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
+                vim.inspect(name),
+                vim.inspect(provider),
+                vim.inspect(query),
+                vim.inspect(context),
+                vim.inspect(result)
+            )
+        else
+            log.ensure(
+                type(result) == "table",
+                "|fzfx.general - ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
+                vim.inspect(self),
+                vim.inspect(result)
+            )
+            vim.fn.writefile(result, self.resultfile)
+        end
     else
         log.throw(
             "|fzfx.general - ProviderSwitch:provide| error! invalid provider type! %s",
@@ -173,10 +218,11 @@ function PreviewerSwitch:switch(next_pipeline)
     self.pipeline = next_pipeline
 end
 
+--- @param name string
 --- @param line string
 --- @param context PipelineContext?
 --- @return PreviewerType
-function PreviewerSwitch:preview(line, context)
+function PreviewerSwitch:preview(name, line, context)
     local previewer = self.previewers[self.pipeline]
     local previewer_type = self.previewer_types[self.pipeline]
     log.ensure(
@@ -196,23 +242,61 @@ function PreviewerSwitch:preview(line, context)
     })
     vim.fn.writefile({ metajson }, self.metafile)
     if previewer_type == PreviewerTypeEnum.COMMAND then
-        local result = previewer(line, context, self.pipeline)
-        log.ensure(
-            type(result) == "string",
-            "|fzfx.general - PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
-            vim.inspect(self),
+        local ok, result = pcall(previewer, line, context)
+        log.debug(
+            "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
+            vim.inspect(ok),
             vim.inspect(result)
         )
-        vim.fn.writefile({ result }, self.resultfile)
+        if not ok then
+            vim.fn.writefile({ "" }, self.resultfile)
+            log.err(
+                "failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
+                vim.inspect(name),
+                vim.inspect(previewer),
+                vim.inspect(line),
+                vim.inspect(context),
+                vim.inspect(result)
+            )
+        else
+            log.ensure(
+                result == nil or type(result) == "string",
+                "|fzfx.general - PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
+                vim.inspect(self),
+                vim.inspect(result)
+            )
+            if result == nil then
+                vim.fn.writefile({ "" }, self.resultfile)
+            else
+                vim.fn.writefile({ result }, self.resultfile)
+            end
+        end
     elseif previewer_type == PreviewerTypeEnum.LIST then
-        local result = previewer(line, context, self.pipeline)
-        log.ensure(
-            type(result) == "table",
-            "|fzfx.general - PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
-            vim.inspect(self),
+        local ok, result = pcall(previewer, line, context)
+        log.debug(
+            "|fzfx.general - PreviewerSwitch:preview| pcall list previewer, ok:%s, result:%s",
+            vim.inspect(ok),
             vim.inspect(result)
         )
-        vim.fn.writefile(result, self.resultfile)
+        if not ok then
+            vim.fn.writefile({ "" }, self.resultfile)
+            log.err(
+                "failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
+                vim.inspect(name),
+                vim.inspect(previewer),
+                vim.inspect(line),
+                vim.inspect(context),
+                vim.inspect(result)
+            )
+        else
+            log.ensure(
+                type(result) == "table",
+                "|fzfx.general - PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
+                vim.inspect(self),
+                vim.inspect(result)
+            )
+            vim.fn.writefile(result, self.resultfile)
+        end
     else
         log.throw(
             "|fzfx.general - PreviewerSwitch:preview| error! invalid previewer type! %s",
@@ -223,6 +307,59 @@ function PreviewerSwitch:preview(line, context)
 end
 
 -- previewer switch }
+
+-- header switch {
+
+--- @class HeaderSwitch
+--- @field headers table<PipelineName, string[]>?
+local HeaderSwitch = {
+    headers = nil,
+}
+
+--- @param provider_configs Configs
+--- @return HeaderSwitch
+function HeaderSwitch:new(provider_configs)
+    local headers_map = {}
+    for provider_name, provider_opts in pairs(provider_configs) do
+        local switch_help = {}
+        for provider_name2, provider_opts2 in pairs(provider_configs) do
+            local switch_key2 = string.lower(provider_opts2.key)
+            if provider_name2 ~= provider_name then
+                table.insert(
+                    switch_help,
+                    color.render(
+                        "%s to "
+                            .. table.concat(
+                                vim.fn.split(provider_name2, "_"),
+                                " "
+                            ),
+                        color.magenta,
+                        string.upper(switch_key2)
+                    )
+                )
+            end
+        end
+        headers_map[provider_name] = switch_help
+    end
+    return vim.tbl_deep_extend("force", vim.deepcopy(HeaderSwitch), {
+        headers = headers_map,
+    })
+end
+
+--- @param pipeline PipelineName
+--- @return FzfOpt?
+function HeaderSwitch:get_header(pipeline)
+    log.ensure(
+        type(self.headers[pipeline]) == "table",
+        "|fzfx.general - HeaderSwitch:get_header| pipeline (%s) must exists in headers! %s",
+        vim.inspect(pipeline),
+        vim.inspect(self)
+    )
+    local switch_help = self.headers[pipeline]
+    return string.format(":: Press %s", table.concat(switch_help, ", "))
+end
+
+-- header switch }
 
 --- @param pipeline_configs Configs
 local function get_pipeline_size(pipeline_configs)
@@ -271,12 +408,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     --- @param query_params string
     local function provide_rpc(query_params)
-        provider_switch:provide(query_params, context)
+        provider_switch:provide(name, query_params, context)
     end
 
     --- @param line_params string
     local function preview_rpc(line_params)
-        previewer_switch:preview(line_params)
+        previewer_switch:preview(name, line_params)
     end
 
     local provide_rpc_registry_id =
@@ -319,53 +456,47 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         },
     }
 
-    -- only have 1 pipeline, no need to add help message and switch keys
+    local header_switch = HeaderSwitch:new(pipeline_configs.providers)
+    local switch_rpc_registries = {}
+
+    -- when only have 1 pipeline, no need to add help for switch keys
     if pipeline_size > 1 then
-        local header_builder = {}
-        for pipeline, provider_opts in pairs(pipeline_configs.providers) do
-            local switch_pipeline_key = string.lower(provider_opts[1])
-            table.insert(
-                header_builder,
-                color.render(
-                    "%s to %s",
-                    color.magenta,
-                    string.upper(switch_pipeline_key),
-                    table.concat(vim.fn.split(pipeline, "_"), " ")
-                )
-            )
-        end
-        local headers = ":: Press " .. table.concat(header_builder, ", ")
+        local header = header_switch:get_header(default_pipeline)
+        table.insert(fzf_opts, {
+            "--header",
+            header,
+        })
 
         for pipeline, provider_opts in pairs(pipeline_configs.providers) do
-            local switch_pipeline_key = string.lower(provider_opts.key)
+            local switch_key = string.lower(provider_opts.key)
 
-            local function switch_pipeline_rpc()
+            local function switch_rpc()
                 provider_switch:switch(pipeline)
                 previewer_switch:switch(pipeline)
             end
 
-            local switch_pipeline_registry_id =
-                server.get_global_rpc_server():register(switch_pipeline_rpc)
+            local switch_rpc_registry_id =
+                server.get_global_rpc_server():register(switch_rpc)
+            table.insert(switch_rpc_registries, switch_rpc_registry_id)
 
             local switch_pipeline_command = string.format(
                 "%s %s",
                 shell.make_lua_command("rpc", "client.lua"),
-                switch_pipeline_registry_id
+                switch_rpc_registry_id
             )
             local bind_builder = string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+reload(%s)",
-                switch_pipeline_key,
-                switch_pipeline_key,
+                switch_key,
+                switch_key,
                 switch_pipeline_command,
-                headers,
+                header_switch:get_header(pipeline),
                 reload_query_command
             )
             for pipeline2, provider_opts2 in pairs(pipeline_configs.providers) do
                 if pipeline2 ~= pipeline then
-                    local switch_pipeline_key2 =
-                        string.lower(provider_opts2.key)
+                    local switch_key2 = string.lower(provider_opts2.key)
                     bind_builder = bind_builder
-                        .. string.format("+rebind(%s)", switch_pipeline_key2)
+                        .. string.format("+rebind(%s)", switch_key2)
                 end
             end
             table.insert(fzf_opts, {
@@ -379,8 +510,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         })
     end
 
-    table.insert(fzf_opts, { "--preview", preview_command })
-
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
     fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
@@ -391,7 +520,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         fzf_opts,
         actions,
         function()
+            server.get_global_rpc_server():unregister(provide_rpc_registry_id)
             server.get_global_rpc_server():unregister(preview_rpc_registry_id)
+            for _, switch_registry_id in ipairs(switch_rpc_registries) do
+                server.get_global_rpc_server():unregister(switch_registry_id)
+            end
         end
     )
     return p
@@ -407,11 +540,6 @@ local function setup(name, pipeline_configs)
     -- User commands
     for _, command_configs in pairs(pipeline_configs.commands) do
         vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            -- log.debug(
-            --     "|fzfx.general - setup| command:%s, opts:%s",
-            --     vim.inspect(command_configs.name),
-            --     vim.inspect(opts)
-            -- )
             local query = helpers.get_command_feed(opts, command_configs.feed)
             return general(
                 name,

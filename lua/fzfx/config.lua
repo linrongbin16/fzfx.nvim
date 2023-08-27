@@ -1,8 +1,8 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
-local ProviderTypeEnum = require("fzfx.meta").ProviderTypeEnum
-local PreviewerTypeEnum = require("fzfx.meta").PreviewerTypeEnum
-local CommandFeedEnum = require("fzfx.meta").CommandFeedEnum
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
+local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 -- gnu find
 local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
@@ -67,6 +67,22 @@ local default_fzf_options = {
 
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+
+--- @param msg string
+--- @param level "ERROR"|"WARN"|"INFO"|"DEBUG"
+local function echo_msg(msg, level)
+    --- @type string
+    local level_name = ""
+    if string.upper(level) == "ERROR" then
+        level_name = "error! "
+    elseif string.upper(level) == "WARN" then
+        level_name = "warning! "
+    end
+    local msg_lines = vim.split(msg, "\n")
+    for _, line in ipairs(msg_lines) do
+        vim.api.nvim_out_write(string.format("[fzfx] %s%s\n", level_name, line))
+    end
+end
 
 --- @class ProviderConfig
 --- @field key ActionKey
@@ -669,22 +685,64 @@ local Defaults = {
             },
         },
         providers = {
+            --- @type ProviderConfig
             all_commits = {
-                "ctrl-a",
-                string.format(
+                --- @type ActionKey
+                key = "ctrl-a",
+                --- @type PlainProvider
+                provider = string.format(
                     "git log --pretty=%s --date=short --color=always",
                     utils.shellescape(default_git_log_pretty)
                 ),
             },
+            --- @type ProviderConfig
             buffer_commits = {
-                "ctrl-u",
-                string.format(
-                    "git log --pretty=%s --date=short --color=always",
-                    utils.shellescape(default_git_log_pretty)
-                ),
+                --- @type ActionKey
+                key = "ctrl-u",
+                --- @type CommandProvider
+                --- @param query string?
+                --- @param context PipelineContext
+                --- @return string?
+                provider = function(query, context)
+                    if not utils.is_buf_valid(context.bufnr) then
+                        echo_msg(
+                            string.format(
+                                "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
+                                vim.inspect(context.bufnr)
+                            ),
+                            "ERROR"
+                        )
+                        return nil
+                    end
+                    return string.format(
+                        "git log --pretty=%s --date=short --color=always -- %s",
+                        utils.shellescape(default_git_log_pretty),
+                        vim.api.nvim_buf_get_name(context.bufnr)
+                    )
+                end,
+                provider_type = ProviderTypeEnum.COMMAND,
             },
         },
-        previewers = "git show --color=always",
+        previewers = {
+            --- @type PreviewerConfig
+            all_commits = {
+                --- @type CommandPreviewer
+                previewer = function(line)
+                    local commit = vim.fn.split(line)[1]
+                    return string.format("git show --color=always %s", commit)
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            },
+            --- @type PreviewerConfig
+            buffer_commits = {
+                --- @type CommandPreviewer
+                previewer = function(line)
+                    local commit = vim.fn.split(line)[1]
+                    return string.format("git show --color=always %s", commit)
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            },
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").yank_git_commit,
@@ -747,24 +805,22 @@ local Defaults = {
         providers = {
             --- @type ProviderConfig
             default = {
-                --- @type PipelineName
+                --- @type ActionKey
                 key = "default",
                 --- @type CommandProvider
                 --- @param query string?
-                --- @param context PipelineContext?
+                --- @param context PipelineContext
                 --- @return string
                 provider = function(query, context)
-                    assert(
-                        context,
-                        "|fzfx.config - git_blame.providers| error! 'FzfxGBlame' commands cannot have nil pipeline context!"
-                    )
                     if not utils.is_buf_valid(context.bufnr) then
-                        error(
+                        echo_msg(
                             string.format(
-                                "error! 'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
+                                "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
-                            )
+                            ),
+                            "ERROR"
                         )
+                        return nil
                     end
                     local bufname = vim.api.nvim_buf_get_name(context.bufnr)
                     local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
@@ -774,7 +830,7 @@ local Defaults = {
                     )
                 end,
                 --- @type ProviderType
-                provider_type = "command",
+                provider_type = ProviderTypeEnum.COMMAND,
             },
         },
         previewers = {
@@ -785,7 +841,7 @@ local Defaults = {
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
-                previewer_type = "command",
+                previewer_type = PreviewerTypeEnum.COMMAND,
             },
         },
         actions = {

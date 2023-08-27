@@ -8,7 +8,12 @@ local NextRegistryIntegerId = 0
 
 --- @return RpcRegistryId
 local function next_registry_id()
-    NextRegistryIntegerId = NextRegistryIntegerId + 1
+    -- int32 max: 2147483647
+    if NextRegistryIntegerId > 2000000000 then
+        NextRegistryIntegerId = 1
+    else
+        NextRegistryIntegerId = NextRegistryIntegerId + 1
+    end
     return tostring(NextRegistryIntegerId)
 end
 
