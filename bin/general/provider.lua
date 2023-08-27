@@ -59,6 +59,7 @@ shell_helpers.log_debug("metajson:[%s]", vim.inspect(metajson))
 if metajson.provider_type == "plain" or "command" then
     --- @type string
     local cmd = shell_helpers.readfile(resultfile)
+    shell_helpers.log_debug("cmd:[%s]", cmd)
     os.execute(cmd)
 elseif metajson.provider_type == "list" then
     local f = io.open(resultfile, "r")
