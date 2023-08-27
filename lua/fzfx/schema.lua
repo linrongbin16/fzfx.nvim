@@ -9,11 +9,10 @@
 --  * Command provider: a lua function to run and generate the command string, execute it and generate the lines.
 --  * List provider: a lua function to run and directly generate the lines.
 --
--- The first parameter 'context' is something before this plugin start.
+-- The 1st parameter 'query' is the query in fzf prompt.
+-- The 2nd parameter 'context' contains information before this plugin start.
 -- E.g. the bufnr, winnr before this plugin start.
--- Since some information will need the context before plugin starting, for example some buffer only commands needs the buffer number before plugin start.
---
--- The second parameter 'query' is the query in fzf prompt.
+-- Since some providers will need the context before plugin starting, for example some buffer only commands needs the buffer number before plugin start.
 --
 --- @class PipelineContext
 --- @field bufnr integer
@@ -41,7 +40,6 @@ local ProviderTypeEnum = {
 --  * List previewer: a lua function that directly generate a list of strings.
 --  * Builtin previewer (todo): a nvim buffer & window, I think the biggest benefits can be allowing users to navigate to the buffer and edit it directly.
 --
--- The first parameter `provider` is the name of a pipeline (see below).
 -- The BuiltinPreviewer returns the configs for the nvim window.
 --
 --- @alias CommandPreviewer fun(line:string?,context:PipelineContext?):string?
