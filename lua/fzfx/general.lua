@@ -227,18 +227,15 @@ end
 -- header switch {
 
 --- @class HeaderSwitch
---- @field pipeline PipelineName?
 --- @field headers table<PipelineName, string[]>?
 local HeaderSwitch = {
-    pipeline = nil,
     headers = nil,
 }
 
---- @param pipeline PipelineName
 --- @param provider_configs Configs
 --- @return HeaderSwitch
-function HeaderSwitch:new(pipeline, provider_configs)
-    local headers = {}
+function HeaderSwitch:new(provider_configs)
+    local headers_map = {}
     for provider_name, provider_opts in pairs(provider_configs) do
         local switch_help = {}
         for provider_name2, provider_opts2 in pairs(provider_configs) do
@@ -258,35 +255,23 @@ function HeaderSwitch:new(pipeline, provider_configs)
                 )
             end
         end
-        headers[provider_name] = switch_help
+        headers_map[provider_name] = switch_help
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(HeaderSwitch), {
-        pipeline = pipeline,
-        headers = headers,
+        headers = headers_map,
     })
 end
 
---- @param next_pipeline PipelineName
---- @return nil
-function HeaderSwitch:switch(next_pipeline)
-    log.ensure(
-        type(self.headers[next_pipeline]) == "table",
-        "|fzfx.general - HeaderSwitch:get_header| next pipeline (%s) must exists in headers! %s",
-        vim.inspect(next_pipeline),
-        vim.inspect(self)
-    )
-    self.pipeline = next_pipeline
-end
-
+--- @param pipeline PipelineName
 --- @return FzfOpt?
-function HeaderSwitch:get_header()
+function HeaderSwitch:get_header(pipeline)
     log.ensure(
-        type(self.headers[self.pipeline]) == "table",
+        type(self.headers[pipeline]) == "table",
         "|fzfx.general - HeaderSwitch:get_header| pipeline (%s) must exists in headers! %s",
-        vim.inspect(self.pipeline),
+        vim.inspect(pipeline),
         vim.inspect(self)
     )
-    local switch_help = self.headers[self.pipeline]
+    local switch_help = self.headers[pipeline]
     return string.format(":: Press %s", table.concat(switch_help, ", "))
 end
 
@@ -387,13 +372,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         },
     }
 
-    local header_switch =
-        HeaderSwitch:new(default_pipeline, pipeline_configs.providers)
+    local header_switch = HeaderSwitch:new(pipeline_configs.providers)
     local switch_rpc_registries = {}
 
     -- when only have 1 pipeline, no need to add help for switch keys
     if pipeline_size > 1 then
-        local header = header_switch:get_header()
+        local header = header_switch:get_header(default_pipeline)
         table.insert(fzf_opts, {
             "--header",
             header,
@@ -405,7 +389,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             local function switch_rpc()
                 provider_switch:switch(pipeline)
                 previewer_switch:switch(pipeline)
-                header_switch:switch(pipeline)
             end
 
             local switch_rpc_registry_id =
@@ -422,7 +405,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 switch_key,
                 switch_key,
                 switch_pipeline_command,
-                header_switch:get_header(),
+                header_switch:get_header(pipeline),
                 reload_query_command
             )
             for pipeline2, provider_opts2 in pairs(pipeline_configs.providers) do
