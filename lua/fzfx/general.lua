@@ -65,8 +65,11 @@ end
 --- @param query string?
 --- @param context PipelineContext?
 function ProviderSwitch:provide(query, context)
+    -- log.debug("|fzfx.general - ProviderSwitch:provide| 1")
     local provider = self.providers[self.pipeline]
+    -- log.debug("|fzfx.general - ProviderSwitch:provide| 2")
     local provider_type = self.provider_types[self.pipeline]
+    -- log.debug("|fzfx.general - ProviderSwitch:provide| 3")
     log.ensure(
         provider == nil
             or type(provider) == "string"
@@ -74,6 +77,7 @@ function ProviderSwitch:provide(query, context)
         "|fzfx.general - ProviderSwitch:provide| invalid provider! %s",
         vim.inspect(self)
     )
+    -- log.debug("|fzfx.general - ProviderSwitch:provide| 4")
     log.ensure(
         provider_type == ProviderTypeEnum.PLAIN
             or provider_type == ProviderTypeEnum.COMMAND
@@ -81,35 +85,71 @@ function ProviderSwitch:provide(query, context)
         "|fzfx.general - ProviderSwitch:provide| invalid provider type! %s",
         vim.inspect(self)
     )
+    -- log.debug("|fzfx.general - ProviderSwitch:provide| 5")
     local metajson = vim.fn.json_encode({
         pipeline = self.pipeline,
         provider_type = provider_type,
     })
+    -- log.debug("|fzfx.general - ProviderSwitch:provide| 6")
     vim.fn.writefile({ metajson }, self.metafile)
+    -- log.debug("|fzfx.general - ProviderSwitch:provide| 7")
     if provider_type == ProviderTypeEnum.PLAIN then
+        -- log.debug("|fzfx.general - ProviderSwitch:provide| 8")
         log.ensure(
             provider == nil or type(provider) == "string",
             "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
             vim.inspect(self),
             vim.inspect(provider)
         )
+        -- log.debug("|fzfx.general - ProviderSwitch:provide| 9")
         if provider == nil then
+            -- log.debug(
+            --     "|fzfx.general - ProviderSwitch:provide| plain nil provider-before, resultfile:%s",
+            --     self.resultfile
+            -- )
             vim.fn.writefile({ "" }, self.resultfile)
+            -- log.debug(
+            --     "|fzfx.general - ProviderSwitch:provide| plain nil provider-after, resultfile:%s",
+            --     self.resultfile
+            -- )
         else
             vim.fn.writefile({ provider }, self.resultfile)
+            -- log.debug(
+            --     "|fzfx.general - ProviderSwitch:provide| plain not-null provider, resultfile:%s",
+            --     self.resultfile
+            -- )
         end
     elseif provider_type == ProviderTypeEnum.COMMAND then
+        -- log.debug("|fzfx.general - ProviderSwitch:provide| 10")
         local result = provider(query, context)
+        -- log.debug("|fzfx.general - ProviderSwitch:provide| 11")
         log.ensure(
             result == nil or type(result) == "string",
             "|fzfx.general - ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
             vim.inspect(self),
             vim.inspect(result)
         )
+        -- log.debug("|fzfx.general - ProviderSwitch:provide| 12")
         if result == nil then
+            -- log.debug(
+            --     "|fzfx.general - ProviderSwitch:provide| command provider nil result-before, result:%s",
+            --     vim.inspect(result)
+            -- )
             vim.fn.writefile({ "" }, self.resultfile)
+            -- log.debug(
+            --     "|fzfx.general - ProviderSwitch:provide| command provider nil result-after, result:%s",
+            --     vim.inspect(result)
+            -- )
         else
+            -- log.debug(
+            --     "|fzfx.general - ProviderSwitch:provide| command provider not-null result-before, result:%s",
+            --     vim.inspect(result)
+            -- )
             vim.fn.writefile({ result }, self.resultfile)
+            -- log.debug(
+            --     "|fzfx.general - ProviderSwitch:provide| command provider not-null result-after, result:%s",
+            --     vim.inspect(result)
+            -- )
         end
     elseif provider_type == ProviderTypeEnum.LIST then
         local result = provider(query, context)
@@ -338,11 +378,21 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     --- @param query_params string
     local function provide_rpc(query_params)
+        log.debug(
+            "|fzfx.general - general.provide_rpc| query_params:%s, context:%s",
+            vim.inspect(query_params),
+            vim.inspect(context)
+        )
         provider_switch:provide(query_params, context)
     end
 
     --- @param line_params string
     local function preview_rpc(line_params)
+        log.debug(
+            "|fzfx.general - general.preview_rpc| line_params:%s, context:%s",
+            vim.inspect(line_params),
+            vim.inspect(context)
+        )
         previewer_switch:preview(line_params)
     end
 

@@ -80,16 +80,14 @@ local EchoHighlights = {
 --- @param level EchoHighlights?
 local function echo_msg(msg, level)
     local msg_lines = vim.split(msg, "\n")
-    vim.cmd([[ echohl ]] .. EchoHighlights[level])
-    for _, line in ipairs(msg_lines) do
-        vim.cmd(
-            string.format(
-                [[echomsg '%s']],
-                vim.fn.escape(string.format("[fzfx] %s", line), "'")
-            )
+    local msg_chunks = {}
+    for _, mline in ipairs(msg_lines) do
+        table.insert(
+            msg_chunks,
+            { string.format("[fzfx] %s\n", mline), EchoHighlights[level] }
         )
     end
-    vim.cmd("echohl None")
+    vim.api.nvim_echo(msg_chunks, true, {})
 end
 
 --- @class ProviderConfig
