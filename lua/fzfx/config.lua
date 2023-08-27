@@ -1,8 +1,8 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
-local ProviderTypeEnum = require("fzfx.meta").ProviderTypeEnum
-local PreviewerTypeEnum = require("fzfx.meta").PreviewerTypeEnum
-local CommandFeedEnum = require("fzfx.meta").CommandFeedEnum
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
+local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 -- gnu find
 local default_restricted_gnu_find_exclude_hidden = [[*/.*]]

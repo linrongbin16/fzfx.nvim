@@ -2,7 +2,7 @@ local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local utils = require("fzfx.utils")
 local general = require("fzfx.general")
-local PreviewerTypeEnum = require("fzfx.meta").PreviewerTypeEnum
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 
 local function setup()
     local git_commits_configs = conf.get_config().git_commits

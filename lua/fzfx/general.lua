@@ -7,8 +7,8 @@ local color = require("fzfx.color")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
 local path = require("fzfx.path")
-local ProviderTypeEnum = require("fzfx.meta").ProviderTypeEnum
-local PreviewerTypeEnum = require("fzfx.meta").PreviewerTypeEnum
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 
 -- provider switch {
 
