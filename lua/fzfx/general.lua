@@ -94,7 +94,7 @@ function ProviderSwitch:provide(query, context)
             vim.inspect(provider)
         )
         if provider == nil then
-            vim.fn.writefile({}, self.resultfile)
+            vim.fn.writefile({ "" }, self.resultfile)
         else
             vim.fn.writefile({ provider }, self.resultfile)
         end
@@ -107,7 +107,7 @@ function ProviderSwitch:provide(query, context)
             vim.inspect(result)
         )
         if result == nil then
-            vim.fn.writefile({}, self.resultfile)
+            vim.fn.writefile({ "" }, self.resultfile)
         else
             vim.fn.writefile({ result }, self.resultfile)
         end
@@ -214,7 +214,7 @@ function PreviewerSwitch:preview(line, context)
             vim.inspect(result)
         )
         if result == nil then
-            vim.fn.writefile({}, self.resultfile)
+            vim.fn.writefile({ "" }, self.resultfile)
         else
             vim.fn.writefile({ result }, self.resultfile)
         end

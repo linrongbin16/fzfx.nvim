@@ -708,13 +708,9 @@ local Defaults = {
                 key = "ctrl-u",
                 --- @type CommandProvider
                 --- @param query string?
-                --- @param context PipelineContext?
+                --- @param context PipelineContext
                 --- @return string?
                 provider = function(query, context)
-                    assert(
-                        context,
-                        "|fzfx.config - git_commits.providers.buffer_commits| error! 'FzfxGCommits' commands cannot have nil pipeline context!"
-                    )
                     if not utils.is_buf_valid(context.bufnr) then
                         echo_msg(
                             string.format(
@@ -820,20 +816,18 @@ local Defaults = {
                 key = "default",
                 --- @type CommandProvider
                 --- @param query string?
-                --- @param context PipelineContext?
+                --- @param context PipelineContext
                 --- @return string
                 provider = function(query, context)
-                    assert(
-                        context,
-                        "|fzfx.config - git_blame.providers| error! 'FzfxGBlame' commands cannot have nil pipeline context!"
-                    )
                     if not utils.is_buf_valid(context.bufnr) then
-                        error(
+                        echo_msg(
                             string.format(
                                 "error! 'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
-                            )
+                            ),
+                            EchoLevels.ERROR
                         )
+                        return nil
                     end
                     local bufname = vim.api.nvim_buf_get_name(context.bufnr)
                     local bufpath = vim.fn.fnamemodify(bufname, ":~:.")

@@ -22,7 +22,7 @@
 --
 --- @alias PlainProvider string?
 --- @alias CommandProvider fun(query:string?,context:PipelineContext?):string?
---- @alias ListProvider fun(query:string?,context:PipelineContext?):string[]
+--- @alias ListProvider fun(query:string?,context:PipelineContext?):string[]?
 --
 --- @alias Provider PlainProvider|CommandProvider|ListProvider
 --- @alias ProviderType "plain"|"command"|"list"
@@ -44,9 +44,9 @@ local ProviderTypeEnum = {
 -- The first parameter `provider` is the name of a pipeline (see below).
 -- The BuiltinPreviewer returns the configs for the nvim window.
 --
---- @alias CommandPreviewer fun(line:string?,context:PipelineContext?,pipeline:PipelineName?):string
---- @alias ListPreviewer fun(line:string?,context:PipelineContext?,pipeline:PipelineName?):string[]
---- @alias BuiltinPreviewer fun(line:string?,context:PipelineContext?,pipeline:PipelineName?):table
+--- @alias CommandPreviewer fun(line:string?,context:PipelineContext?):string?
+--- @alias ListPreviewer fun(line:string?,context:PipelineContext?):string[]?
+--- @alias BuiltinPreviewer fun(line:string?,context:PipelineContext?):table?
 --
 --- @alias Previewer CommandPreviewer|ListPreviewer|BuiltinPreviewer
 --- @alias PreviewerType "command"|"list"|"builtin"
