@@ -68,8 +68,8 @@ local default_fzf_options = {
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
---- @enum EchoLevels
-local EchoLevels = {
+--- @enum EchoHighlights
+local EchoHighlights = {
     ERROR = "ErrorMsg",
     WARN = "WarningMsg",
     INFO = "None",
@@ -77,19 +77,20 @@ local EchoLevels = {
 }
 
 --- @param msg string
---- @param level EchoLevels?
+--- @param level EchoHighlights?
 local function echo_msg(msg, level)
-    local chunks = {}
-    table.insert(chunks, {
-        string.format("[fzfx] %s\n", msg),
-        level and EchoLevels[level] or EchoLevels.INFO,
-    })
-    vim.api.nvim_echo(chunks, true, {})
+    local msg_lines = vim.split(msg, "\n")
+    vim.cmd([[ echohl ]] .. EchoHighlights[level])
+    for _, line in ipairs(msg_lines) do
+        vim.cmd(
+            string.format(
+                [[echomsg '%s']],
+                vim.fn.escape(string.format("[fzfx] %s", line), "'")
+            )
+        )
+    end
+    vim.cmd("echohl None")
 end
-
-local function echo_warning() end
-
-local function echo_error() end
 
 --- @class ProviderConfig
 --- @field key ActionKey
@@ -717,7 +718,7 @@ local Defaults = {
                                 "error! 'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
-                            EchoLevels.WARN
+                            EchoHighlights.WARN
                         )
                         return nil
                     end
@@ -825,7 +826,7 @@ local Defaults = {
                                 "error! 'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
-                            EchoLevels.ERROR
+                            EchoHighlights.ERROR
                         )
                         return nil
                     end
