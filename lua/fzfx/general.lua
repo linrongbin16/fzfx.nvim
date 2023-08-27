@@ -138,7 +138,7 @@ function ProviderSwitch:provide(name, query, context)
         if not ok then
             vim.fn.writefile({ "" }, self.resultfile)
             log.err(
-                "error! failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
+                "failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
                 vim.inspect(name),
                 vim.inspect(provider),
                 vim.inspect(query),
@@ -173,7 +173,7 @@ function ProviderSwitch:provide(name, query, context)
         if not ok then
             vim.fn.writefile({ "" }, self.resultfile)
             log.err(
-                "error! failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
+                "failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
                 vim.inspect(name),
                 vim.inspect(provider),
                 vim.inspect(query),
@@ -280,7 +280,7 @@ function PreviewerSwitch:preview(name, line, context)
         if not ok then
             vim.fn.writefile({ "" }, self.resultfile)
             log.err(
-                "error! failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
+                "failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(name),
                 vim.inspect(previewer),
                 vim.inspect(line),
@@ -305,7 +305,7 @@ function PreviewerSwitch:preview(name, line, context)
         if not ok then
             vim.fn.writefile({ "" }, self.resultfile)
             log.err(
-                "error! failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
+                "failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(name),
                 vim.inspect(previewer),
                 vim.inspect(line),
