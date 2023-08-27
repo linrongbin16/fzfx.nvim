@@ -29,7 +29,7 @@ local function setup()
                     if not utils.is_buf_valid(context.bufnr) then
                         log.warn(
                             string.format(
-                                "warning! 'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
+                                "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             )
                         )
@@ -68,7 +68,7 @@ local function setup()
 
     if deprecated then
         log.warn(
-            "warning! deprecated 'FzfxGCommits' configs, please migrate to latest config schema!"
+            "deprecated 'FzfxGCommits' configs, please migrate to latest config schema!"
         )
     end
     general.setup("git_commits", git_commits_configs)
