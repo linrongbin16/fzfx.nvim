@@ -443,8 +443,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         })
     end
 
-    table.insert(fzf_opts, { "--preview", preview_command })
-
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
     fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
