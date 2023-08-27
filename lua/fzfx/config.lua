@@ -68,6 +68,29 @@ local default_fzf_options = {
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
+--- @enum EchoLevels
+local EchoLevels = {
+    ERROR = "ErrorMsg",
+    WARN = "WarningMsg",
+    INFO = "None",
+    DEBUG = "Comment",
+}
+
+--- @param msg string
+--- @param level EchoLevels?
+local function echo_msg(msg, level)
+    local chunks = {}
+    table.insert(chunks, {
+        string.format("[fzfx] %s\n", msg),
+        level and EchoLevels[level] or EchoLevels.INFO,
+    })
+    vim.api.nvim_echo(chunks, true, {})
+end
+
+local function echo_warning() end
+
+local function echo_error() end
+
 --- @class ProviderConfig
 --- @field key ActionKey
 --- @field provider Provider
@@ -686,19 +709,21 @@ local Defaults = {
                 --- @type CommandProvider
                 --- @param query string?
                 --- @param context PipelineContext?
-                --- @return string
+                --- @return string?
                 provider = function(query, context)
                     assert(
                         context,
                         "|fzfx.config - git_commits.providers.buffer_commits| error! 'FzfxGCommits' commands cannot have nil pipeline context!"
                     )
                     if not utils.is_buf_valid(context.bufnr) then
-                        error(
+                        echo_msg(
                             string.format(
                                 "error! 'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
-                            )
+                            ),
+                            EchoLevels.WARN
                         )
+                        return nil
                     end
                     return string.format(
                         "git log --pretty=%s --date=short --color=always -- %s",

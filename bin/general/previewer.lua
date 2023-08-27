@@ -15,11 +15,14 @@ shell_helpers.log_ensure(
 local registry_id = _G.arg[1]
 local metafile = _G.arg[2]
 local resultfile = _G.arg[3]
-local line = _G.arg[4]
+local line = nil
+if #_G.arg >= 4 then
+    line = _G.arg[4]
+end
 shell_helpers.log_debug("registry_id:[%s]", registry_id)
 shell_helpers.log_debug("metafile:[%s]", metafile)
 shell_helpers.log_debug("resultfile:[%s]", resultfile)
-shell_helpers.log_debug("line:[%s]", line)
+shell_helpers.log_debug("line:[%s]", vim.inspect(line))
 
 local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
 -- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
@@ -58,8 +61,12 @@ shell_helpers.log_debug("metajson:[%s]", vim.inspect(metajson))
 
 if metajson.previewer_type == "command" then
     local cmd = shell_helpers.readfile(resultfile)
-    shell_helpers.log_debug("cmd:[%s]", cmd)
-    os.execute(cmd)
+    shell_helpers.log_debug("cmd:[%s]", vim.inspect(cmd))
+    if cmd == nil or string.len(cmd) == 0 then
+        os.exit(0)
+    else
+        os.execute(cmd)
+    end
 elseif metajson.previewer_type == "list" then
     local f = io.open(resultfile, "r")
     shell_helpers.log_ensure(

@@ -3,6 +3,7 @@ local conf = require("fzfx.config")
 local utils = require("fzfx.utils")
 local general = require("fzfx.general")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 
 local function setup()
     local git_commits_configs = conf.get_config().git_commits
@@ -46,9 +47,11 @@ local function setup()
                 end
                 --- @type CommandProvider
                 provider_opts.provider = buffer_provider
+                provider_opts.provider_type = ProviderTypeEnum.COMMAND
             else
                 --- @type PlainProvider
                 provider_opts.provider = provider_opts[2]
+                provider_opts.provider_type = ProviderTypeEnum.PLAIN
             end
         end
     end

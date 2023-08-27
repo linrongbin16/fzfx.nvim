@@ -68,7 +68,9 @@ function ProviderSwitch:provide(query, context)
     local provider = self.providers[self.pipeline]
     local provider_type = self.provider_types[self.pipeline]
     log.ensure(
-        type(provider) == "string" or type(provider) == "function",
+        provider == nil
+            or type(provider) == "string"
+            or type(provider) == "function",
         "|fzfx.general - ProviderSwitch:provide| invalid provider! %s",
         vim.inspect(self)
     )
@@ -86,21 +88,29 @@ function ProviderSwitch:provide(query, context)
     vim.fn.writefile({ metajson }, self.metafile)
     if provider_type == ProviderTypeEnum.PLAIN then
         log.ensure(
-            type(provider) == "string",
-            "|fzfx.general - ProviderSwitch:provide| plain provider must be string! self:%s, provider:%s",
+            provider == nil or type(provider) == "string",
+            "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
             vim.inspect(self),
             vim.inspect(provider)
         )
-        vim.fn.writefile({ provider }, self.resultfile)
+        if provider == nil then
+            vim.fn.writefile({}, self.resultfile)
+        else
+            vim.fn.writefile({ provider }, self.resultfile)
+        end
     elseif provider_type == ProviderTypeEnum.COMMAND then
         local result = provider(query, context)
         log.ensure(
-            type(result) == "string",
+            result == nil or type(result) == "string",
             "|fzfx.general - ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
             vim.inspect(self),
             vim.inspect(result)
         )
-        vim.fn.writefile({ result }, self.resultfile)
+        if result == nil then
+            vim.fn.writefile({}, self.resultfile)
+        else
+            vim.fn.writefile({ result }, self.resultfile)
+        end
     elseif provider_type == ProviderTypeEnum.LIST then
         local result = provider(query, context)
         log.ensure(
@@ -198,12 +208,16 @@ function PreviewerSwitch:preview(line, context)
     if previewer_type == PreviewerTypeEnum.COMMAND then
         local result = previewer(line, context, self.pipeline)
         log.ensure(
-            type(result) == "string",
+            result == nil or type(result) == "string",
             "|fzfx.general - PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
             vim.inspect(self),
             vim.inspect(result)
         )
-        vim.fn.writefile({ result }, self.resultfile)
+        if result == nil then
+            vim.fn.writefile({}, self.resultfile)
+        else
+            vim.fn.writefile({ result }, self.resultfile)
+        end
     elseif previewer_type == PreviewerTypeEnum.LIST then
         local result = previewer(line, context, self.pipeline)
         log.ensure(
