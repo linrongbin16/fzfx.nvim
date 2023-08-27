@@ -8,7 +8,11 @@ local NextRegistryIntegerId = 0
 
 --- @return RpcRegistryId
 local function next_registry_id()
-    NextRegistryIntegerId = NextRegistryIntegerId + 1
+    if NextRegistryIntegerId > 2 ^ 30 then
+        NextRegistryIntegerId = 1
+    else
+        NextRegistryIntegerId = NextRegistryIntegerId + 1
+    end
     return tostring(NextRegistryIntegerId)
 end
 
