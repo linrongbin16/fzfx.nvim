@@ -49,6 +49,10 @@ require("lazy").setup({
         dir = "~/github/linrongbin16/fzfx.nvim",
         config = function()
             require("fzfx").setup({
+                debug = {
+                    enable = true,
+                    file_log = true,
+                },
                 git_commits = {
                     commands = {
                         -- normal
