@@ -72,12 +72,15 @@ local default_git_log_pretty =
 --- @param level "ERROR"|"WARN"|"INFO"|"DEBUG"
 local function echo_msg(msg, level)
     --- @type string
-    level = (string.upper(level) == "ERROR" or string.upper(level) == "WARN")
-            and string.lower(level)
-        or ""
+    local level_name = ""
+    if string.upper(level) == "ERROR" then
+        level_name = "error! "
+    elseif string.upper(level) == "WARN" then
+        level_name = "warning! "
+    end
     local msg_lines = vim.split(msg, "\n")
     for _, line in ipairs(msg_lines) do
-        vim.api.nvim_out_write(string.format("[fzfx] %s%s\n", level, line))
+        vim.api.nvim_out_write(string.format("[fzfx] %s%s\n", level_name, line))
     end
 end
 
