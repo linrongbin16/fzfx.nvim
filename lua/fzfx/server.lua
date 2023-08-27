@@ -8,7 +8,8 @@ local NextRegistryIntegerId = 0
 
 --- @return RpcRegistryId
 local function next_registry_id()
-    if NextRegistryIntegerId > 2 ^ 30 then
+    -- int32 max: 2147483647
+    if NextRegistryIntegerId > 2000000000 then
         NextRegistryIntegerId = 1
     else
         NextRegistryIntegerId = NextRegistryIntegerId + 1
