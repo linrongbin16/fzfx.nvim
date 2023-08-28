@@ -1,5 +1,5 @@
 --- @class Object
---- @field __class
+--- @field __class string
 
 local Object = {
     __class = "object",
