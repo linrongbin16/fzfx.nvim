@@ -32,15 +32,10 @@ require("packer").startup(function(use)
     use("nvim-tree/nvim-web-devicons")
     use({ "junegunn/fzf", run = ":call fzf#install()" })
     use({
-        "linrongbin16/fzfx.nvim",
-        dev = true,
-        dir = "~/github/linrongbin16/fzfx.nvim",
-        opts = {},
-        dependencies = {
-            "folke/tokyonight.nvim",
-            "nvim-tree/nvim-web-devicons",
-            "junegunn/fzf",
-        },
+        "~/github/linrongbin16/fzfx.nvim",
+        config = function()
+            require("fzfx").setup()
+        end,
     })
 
     if packer_bootstrap then
