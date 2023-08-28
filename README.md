@@ -991,6 +991,16 @@ Above is an example that adding two groups of self-defined groups of commands `F
 A group of commands config schema is:
 
 ```lua
+
+--- @class GroupConfig
+--- @field commands CommandConfig[]
+--- @field providers table<PipelineName, ProviderConfig>
+--- @field previewers table<PipelineName, PreviewerConfig>
+--- @field actions table<ActionKey, Action>
+--- @field interactions table<ActionKey, Action>?
+--- @field fzf_opts FzfOpt[]
+
+--- @type GroupConfig
 {
     --- @type CommandConfig[]
     commands = ...,
