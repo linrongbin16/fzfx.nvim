@@ -98,6 +98,14 @@ local function echo_msg(msg, level)
     vim.api.nvim_echo(msg_chunks, false, {})
 end
 
+--- @class GroupConfig
+--- @field commands UserCommandConfig[]
+--- @field providers table<PipelineName, ProviderConfig>
+--- @field previewers table<PipelineName, PreviewerConfig>
+--- @field interactions table<ActionKey, Interaction>?
+--- @field actions table<ActionKey, Action>
+--- @field fzf_opts FzfOpt[]
+
 --- @class ProviderConfig
 --- @field key ActionKey
 --- @field provider Provider
@@ -107,11 +115,18 @@ end
 --- @field previewer Previewer
 --- @field previewer_type PreviewerType
 
+--- @class UserCommandConfig
+--- @field name string
+--- @field feed CommandFeed
+--- @field opts CommandOpt
+--- @field default_provider PipelineName?
+
 --- @alias Configs table<string, any>
 --- @type Configs
 local Defaults = {
     -- the 'Files' commands
     files = {
+        --- @type UserCommandConfig[]
         commands = {
             -- normal
             {
@@ -239,6 +254,7 @@ local Defaults = {
 
     -- the 'Live Grep' commands
     live_grep = {
+        --- @type UserCommandConfig[]
         commands = {
             -- normal
             {
@@ -615,6 +631,7 @@ local Defaults = {
     },
 
     -- the 'Git Commits' commands
+    --- @type GroupConfig
     git_commits = {
         commands = {
             -- normal
@@ -699,24 +716,15 @@ local Defaults = {
             },
         },
         providers = {
-            --- @type ProviderConfig
             all_commits = {
-                --- @type ActionKey
                 key = "ctrl-a",
-                --- @type PlainProvider
                 provider = string.format(
                     "git log --pretty=%s --date=short --color=always",
                     utils.shellescape(default_git_log_pretty)
                 ),
             },
-            --- @type ProviderConfig
             buffer_commits = {
-                --- @type ActionKey
                 key = "ctrl-u",
-                --- @type CommandProvider
-                --- @param query string?
-                --- @param context PipelineContext
-                --- @return string?
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
                         echo_msg(
@@ -738,18 +746,14 @@ local Defaults = {
             },
         },
         previewers = {
-            --- @type PreviewerConfig
             all_commits = {
-                --- @type CommandPreviewer
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
                 previewer_type = PreviewerTypeEnum.COMMAND,
             },
-            --- @type PreviewerConfig
             buffer_commits = {
-                --- @type CommandPreviewer
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
@@ -775,6 +779,7 @@ local Defaults = {
     },
 
     -- the 'Git Blame' command
+    --- @type GroupConfig
     git_blame = {
         commands = {
             -- normal
@@ -817,14 +822,8 @@ local Defaults = {
             },
         },
         providers = {
-            --- @type ProviderConfig
             default = {
-                --- @type ActionKey
                 key = "default",
-                --- @type CommandProvider
-                --- @param query string?
-                --- @param context PipelineContext
-                --- @return string
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
                         echo_msg(
@@ -843,14 +842,11 @@ local Defaults = {
                         bufpath
                     )
                 end,
-                --- @type ProviderType
                 provider_type = ProviderTypeEnum.COMMAND,
             },
         },
         previewers = {
-            --- @type PreviewerConfig
             default = {
-                --- @type CommandPreviewer
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
