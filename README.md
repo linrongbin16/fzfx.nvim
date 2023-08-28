@@ -1035,6 +1035,8 @@ For more detailed definitions please see [A General Schema for Creating FZF Comm
   - Re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 - 2023-08-19
   - Refactor configs schema for better structure.
+- 2023-08-28
+  - Notify users to migrate to new configs schema.
 
 ## Credit
 
