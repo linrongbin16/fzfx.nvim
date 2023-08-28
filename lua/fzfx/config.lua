@@ -23,9 +23,9 @@ local default_unrestricted_find = [[find -L . -type f]]
 
 -- fd
 local default_restricted_fd =
-    string.format("%s -cnever -tf -tl -L -i", constants.fd)
+    string.format("%s . -cnever -tf -tl -L -i", constants.fd)
 local default_unrestricted_fd =
-    string.format("%s -cnever -tf -tl -L -i -u", constants.fd)
+    string.format("%s . -cnever -tf -tl -L -i -u", constants.fd)
 
 -- gnu grep
 local default_restricted_gnu_grep_exclude_hidden = [[.*]]
