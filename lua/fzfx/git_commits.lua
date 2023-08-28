@@ -47,10 +47,10 @@ local function setup()
                 provider_opts.provider = provider_opts[2]
                 provider_opts.provider_type = ProviderTypeEnum.PLAIN
             end
+            log.warn(
+                "deprecated 'FzfxGCommits' provider configs, please migrate to latest config schema!"
+            )
         end
-        log.warn(
-            "deprecated 'FzfxGCommits' provider configs, please migrate to latest config schema!"
-        )
     end
     if type(git_commits_configs.previewers) == "string" then
         local old_previewer = git_commits_configs.previewers
