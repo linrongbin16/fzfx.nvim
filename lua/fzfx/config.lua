@@ -23,9 +23,9 @@ local default_unrestricted_find = [[find -L . -type f]]
 
 -- fd
 local default_restricted_fd =
-    string.format("%s -cnever -tf -tl -L -i", constants.fd)
+    string.format("%s . -cnever -tf -tl -L -i", constants.fd)
 local default_unrestricted_fd =
-    string.format("%s -cnever -tf -tl -L -i -u", constants.fd)
+    string.format("%s . -cnever -tf -tl -L -i -u", constants.fd)
 
 -- gnu grep
 local default_restricted_gnu_grep_exclude_hidden = [[.*]]
@@ -68,9 +68,18 @@ local default_fzf_options = {
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
+--- @enum EchoHighlights
+local EchoHighlights = {
+    ERROR = "ErrorMsg",
+    WARN = "WarningMsg",
+    INFO = "None",
+    DEBUG = "Comment",
+}
+
 --- @param msg string
 --- @param level "ERROR"|"WARN"|"INFO"|"DEBUG"
 local function echo_msg(msg, level)
+    level = level or "INFO"
     --- @type string
     local level_name = ""
     if string.upper(level) == "ERROR" then
@@ -79,9 +88,14 @@ local function echo_msg(msg, level)
         level_name = "warning! "
     end
     local msg_lines = vim.split(msg, "\n")
+    local msg_chunks = {}
     for _, line in ipairs(msg_lines) do
-        vim.api.nvim_out_write(string.format("[fzfx] %s%s\n", level_name, line))
+        table.insert(msg_chunks, {
+            string.format("[fzfx] %s%s", level_name, line),
+            EchoHighlights[level],
+        })
     end
+    vim.api.nvim_echo(msg_chunks, false, {})
 end
 
 --- @class ProviderConfig
@@ -710,7 +724,7 @@ local Defaults = {
                                 "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
-                            "ERROR"
+                            "WARN"
                         )
                         return nil
                     end
@@ -818,7 +832,7 @@ local Defaults = {
                                 "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
-                            "ERROR"
+                            "WARN"
                         )
                         return nil
                     end
@@ -867,6 +881,9 @@ local Defaults = {
             maxsize = 100,
         },
     },
+
+    -- the 'Users' commands
+    users = nil,
 
     -- FZF_DEFAULT_OPTS
     fzf_opts = {

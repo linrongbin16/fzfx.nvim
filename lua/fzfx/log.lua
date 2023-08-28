@@ -1,5 +1,11 @@
 --- @alias LogLevel "ERROR"|"WARN"|"INFO"|"DEBUG"
---- @alias LogMessageHl "ErrorMsg"|"WarningMsg"|"None"|"Comment"
+--- @alias LogHighlights "ErrorMsg"|"WarningMsg"|"None"|"Comment"
+local LogHighlights = {
+    ERROR = "ErrorMsg",
+    WARN = "WarningMsg",
+    INFO = "None",
+    DEBUG = "Comment",
+}
 
 --- @type table<LogLevel, LogLevel>
 local LogLevel = {
@@ -82,6 +88,7 @@ local function log(level, msg)
     end
 
     local msg_lines = vim.split(msg, "\n")
+    local msg_chunks = {}
     if
         Configs.console_log
         and LogLevelValue[level] >= LogLevelValue[LogLevel.INFO]
@@ -93,10 +100,15 @@ local function log(level, msg)
             level_name = "warning! "
         end
         for _, line in ipairs(msg_lines) do
-            vim.api.nvim_out_write(
-                string.format("[fzfx] %s%s\n", level_name, line)
-            )
+            -- vim.api.nvim_out_write(
+            --     string.format("[fzfx] %s%s\n", level_name, line)
+            -- )
+            table.insert(msg_chunks, {
+                string.format("[fzfx] %s%s", level_name, line),
+                LogHighlights[level],
+            })
         end
+        vim.api.nvim_echo(msg_chunks, false, {})
     end
     if Configs.file_log then
         local fp = io.open(Configs.file_path, "a")

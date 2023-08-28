@@ -26,6 +26,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - [Vimscript](#vimscript)
   - [Lua](#lua)
 - [Configuration](#configuration)
+  - [Create your own commands](#create-your-own-commands)
 - [Break Changes](#break-changes)
 - [Credit](#credit)
 - [Contribute](#contribute)
@@ -720,7 +721,9 @@ For complete options and default configurations, please check [config.lua](https
 
 If you have encounter some breaks on configuration, please see [Break Changes](#break-changes).
 
-From [#102](https://github.com/linrongbin16/fzfx.nvim/pull/102) I introduced a general fzfx command creator which covers most of the usage. Please read [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/87364209e6f0b8bcf650d29594aea09fb2b68ecf/lua/fzfx/schema.lua#L1) for how to use it.
+### Create your own commands
+
+To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/c521e3027b26b4ffe1a49a5b1ceba6669ae62b6c/lua/fzfx/schema.lua#L1).
 
 ## Break Changes
 
@@ -731,6 +734,8 @@ From [#102](https://github.com/linrongbin16/fzfx.nvim/pull/102) I introduced a g
   - Re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 - 2023-08-19
   - Refactor configs schema for better structure.
+- 2023-08-28
+  - Notify users to migrate to new configs schema.
 
 ## Credit
 

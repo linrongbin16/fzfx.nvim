@@ -1,8 +1,15 @@
 local schema = require("fzfx.schema")
 
--- print(
---     "[fzfx] warning! deprecated 'fzfx.meta' usage, please migrate to latest config schema!"
--- )
+vim.api.nvim_echo(
+    {
+        {
+            "[fzfx] warning! deprecated 'fzfx.meta', please migrate to latest config schema!",
+            "WarningMsg",
+        },
+    },
+    false,
+    {}
+)
 
 local M = {
     ProviderTypeEnum = schema.ProviderTypeEnum,
