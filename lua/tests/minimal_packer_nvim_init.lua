@@ -32,9 +32,11 @@ require("packer").startup(function(use)
     use("nvim-tree/nvim-web-devicons")
     use({ "junegunn/fzf", run = ":call fzf#install()" })
     use({
-        "~/github/linrongbin16/fzfx.nvim",
+        vim.fn.expand("~/github/linrongbin16/fzfx.nvim"),
         config = function()
-            require("fzfx").setup()
+            require("fzfx").setup({
+                debug = { enable = true, file_log = true },
+            })
         end,
     })
 

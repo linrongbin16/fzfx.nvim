@@ -11,9 +11,7 @@ local function search_module_path(plugin, path)
         )
         return nil
     end
-    local rtp = type(vim.o.runtimepath) == "string"
-            and vim.fn.split(vim.o.runtimepath, ",")
-        or {}
+    local rtp = vim.api.nvim_list_runtime_paths()
     for i, p in ipairs(rtp) do
         log.debug("|fzfx.module - search_module_path| p[%d]:%s", i, p)
         if type(p) == "string" and string.match(p, path) then
