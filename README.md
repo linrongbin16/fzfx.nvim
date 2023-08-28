@@ -26,6 +26,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - [Vimscript](#vimscript)
   - [Lua](#lua)
 - [Configuration](#configuration)
+  - [Create your own commands](#create-your-own-commands)
 - [Break Changes](#break-changes)
 - [Credit](#credit)
 - [Contribute](#contribute)
@@ -720,7 +721,272 @@ For complete options and default configurations, please check [config.lua](https
 
 If you have encounter some breaks on configuration, please see [Break Changes](#break-changes).
 
-From [#102](https://github.com/linrongbin16/fzfx.nvim/pull/102) I introduced a general fzfx command creator which covers most of the usage. Please read [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/87364209e6f0b8bcf650d29594aea09fb2b68ecf/lua/fzfx/schema.lua#L1) for how to use it.
+### Create your own commands
+
+To create your own commands, please add configs in `users` field:
+
+```lua
+require('fzfx').setup({
+    users = {
+        files = {
+            commands = {
+                -- normal
+                {
+                    name = "FzfxFiles",
+                    feed = "args",
+                    opts = {
+                        bang = true,
+                        nargs = "?",
+                        complete = "dir",
+                        desc = "Find files",
+                    },
+                    default_provider = "restricted",
+                },
+                {
+                    name = "FzfxFilesU",
+                    feed = "args",
+                    opts = {
+                        bang = true,
+                        nargs = "?",
+                        complete = "dir",
+                        desc = "Find files",
+                    },
+                    default_provider = "unrestricted",
+                },
+                -- visual
+                {
+                    name = "FzfxFilesV",
+                    feed = "visual",
+                    opts = {
+                        bang = true,
+                        range = true,
+                        desc = "Find files by visual select",
+                    },
+                    default_provider = "restricted",
+                },
+                {
+                    name = "FzfxFilesUV",
+                    feed = "visual",
+                    opts = {
+                        bang = true,
+                        range = true,
+                        desc = "Find files unrestricted by visual select",
+                    },
+                    default_provider = "unrestricted",
+                },
+                -- cword
+                {
+                    name = "FzfxFilesW",
+                    feed = "cword",
+                    opts = {
+                        bang = true,
+                        desc = "Find files by cursor word",
+                    },
+                    default_provider = "restricted",
+                },
+                {
+                    name = "FzfxFilesUW",
+                    feed = "cword",
+                    opts = {
+                        bang = true,
+                        desc = "Find files unrestricted by cursor word",
+                    },
+                    default_provider = "unrestricted",
+                },
+                -- put
+                {
+                    name = "FzfxFilesP",
+                    feed = "put",
+                    opts = {
+                        bang = true,
+                        desc = "Find files by yank text",
+                    },
+                    default_provider = "restricted",
+                },
+                {
+                    name = "FzfxFilesUP",
+                    feed = "put",
+                    opts = {
+                        bang = true,
+                        desc = "Find files unrestricted by yank text",
+                    },
+                    default_provider = "unrestricted",
+                },
+            },
+            providers = {
+                restricted = {
+                    key = "ctrl-r",
+                    provider = "fd . -tf",
+                },
+                unrestricted = {
+                    key = "ctrl-u",
+                    provider = "fd . -tf -uu",
+                },
+            },
+            previewers = {
+                restricted = {
+                    previewer = function(line)
+                        return string.format("bat --style=numbers,changes --pager=never -- %s", line)
+                    end,
+                    previewer_type = "command",
+                },
+                unrestricted = {
+                    previewer = function(line)
+                        return string.format("bat --style=numbers,changes --pager=never -- %s", line)
+                    end,
+                    previewer_type = "command",
+                },
+            },
+            actions = {
+                ["esc"] = require("fzfx.actions").nop,
+                ["enter"] = require("fzfx.actions").edit,
+                ["double-click"] = require("fzfx.actions").edit,
+            },
+            fzf_opts = {
+                "--multi",
+                "--bind=ctrl-e:toggle",
+                "--bind=ctrl-a:toggle-all"
+                function()
+                    return { "--prompt", vim.fn.fnamemodify(vim.fn.getcwd(), ":~:.") .. " > " }
+                end,
+            },
+        },
+        live_grep = {
+            commands = {
+                -- normal
+                {
+                    name = "FzfxLiveGrep",
+                    feed = "args",
+                    opts = {
+                        bang = true,
+                        nargs = "*",
+                        desc = "Live grep",
+                    },
+                    default_provider = "restricted",
+                },
+                {
+                    name = "FzfxLiveGrepU",
+                    feed = "args",
+                    opts = {
+                        bang = true,
+                        nargs = "*",
+                        desc = "Live grep unrestricted",
+                    },
+                    default_provider = "unrestricted",
+                },
+                -- visual
+                {
+                    name = "FzfxLiveGrepV",
+                    feed = "visual",
+                    opts = {
+                        bang = true,
+                        range = true,
+                        desc = "Live grep by visual select",
+                    },
+                    default_provider = "restricted",
+                },
+                {
+                    name = "FzfxLiveGrepUV",
+                    feed = "visual",
+                    opts = {
+                        bang = true,
+                        range = true,
+                        desc = "Live grep unrestricted by visual select",
+                    },
+                    default_provider = "unrestricted",
+                },
+                -- cword
+                {
+                    name = "FzfxLiveGrepW",
+                    feed = "cword",
+                    opts = {
+                        bang = true,
+                        desc = "Live grep by cursor word",
+                    },
+                    default_provider = "restricted",
+                },
+                {
+                    name = "FzfxLiveGrepUW",
+                    feed = "cword",
+                    opts = {
+                        bang = true,
+                        desc = "Live grep unrestricted by cursor word",
+                    },
+                    default_provider = "unrestricted",
+                },
+                -- put
+                {
+                    name = "FzfxLiveGrepP",
+                    feed = "put",
+                    opts = {
+                        bang = true,
+                        desc = "Live grep by yank text",
+                    },
+                    default_provider = "restricted",
+                },
+                {
+                    name = "FzfxLiveGrepUP",
+                    feed = "put",
+                    opts = {
+                        bang = true,
+                        desc = "Live grep unrestricted by yank text",
+                    },
+                    default_provider = "unrestricted",
+                },
+            },
+            providers = {
+                restricted = {
+                    key = "ctrl-r",
+                    provider = function(query)
+                        local rg_cmd = string.format('rg --column -n --no-heading --color=always -S -- %s', utils.shellescape(query))
+                        return vim.fn.executable("sleep") > 0 and ("sleep 0.1 && " .. rg_cmd) or rg_cmd
+                    end,
+                    provider_type = "command"
+                },
+                unrestricted = {
+                    key = "ctrl-u",
+                    provider = function(query)
+                        local rg_cmd = string.format('rg --column -n --no-heading --color=always -S -uu -- %s', utils.shellescape(query))
+                        return vim.fn.executable("sleep") > 0 and ("sleep 0.1 && " .. rg_cmd) or rg_cmd
+                    end,
+                    provider_type = "command"
+                },
+            },
+            previewers = {
+                restricted = {
+                    previewer = function(line)
+                        local filepath = vim.fn.split(line)[1]
+                        return string.format("bat --style=numbers,changes --pager=never -- %s", filepath)
+                    end,
+                    previewer_type = "command",
+                },
+                unrestricted = {
+                    previewer = function(line)
+                        local filepath = vim.fn.split(line)[1]
+                        return string.format("bat --style=numbers,changes --pager=never -- %s", filepath)
+                    end,
+                    previewer_type = "command",
+                },
+            },
+            actions = {
+                ["esc"] = require("fzfx.actions").nop,
+                ["enter"] = require("fzfx.actions").edit_rg,
+                ["double-click"] = require("fzfx.actions").edit_rg,
+            },
+            fzf_opts = {
+                "--multi",
+                "--bind=ctrl-e:toggle",
+                "--bind=ctrl-a:toggle-all"
+                { "--prompt", "Live Grep > " },
+                { "--delimiter", ":" },
+                { "--preview-window", "+{2}-/2" },
+            },
+        },
+    }
+})
+```
+
+Above is an example that adding two groups of self-defined groups of commands `FzfxFiles` and `FzfxLiveGrep`.
 
 ## Break Changes
 
