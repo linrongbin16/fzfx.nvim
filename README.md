@@ -723,7 +723,9 @@ If you have encounter some breaks on configuration, please see [Break Changes](#
 
 ### Create your own commands
 
-To create your own commands, please add configs in `users` field:
+To create your own commands, please add configs in `users` field.
+
+Below is an example of two groups self-defined commands `FzfxFiles` and `FzfxLiveGrep`.
 
 ```lua
 require('fzfx').setup({
@@ -986,9 +988,7 @@ require('fzfx').setup({
 })
 ```
 
-Above is an example that adding two groups of self-defined groups of commands `FzfxFiles` and `FzfxLiveGrep`.
-
-A group of commands config schema is:
+A group of commands needs to define below fields:
 
 ```lua
 
