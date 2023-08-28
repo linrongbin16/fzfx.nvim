@@ -68,9 +68,18 @@ local default_fzf_options = {
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
+--- @enum EchoHighlights
+local EchoHighlights = {
+    ERROR = "ErrorMsg",
+    WARN = "WarningMsg",
+    INFO = "None",
+    DEBUG = "Comment",
+}
+
 --- @param msg string
 --- @param level "ERROR"|"WARN"|"INFO"|"DEBUG"
 local function echo_msg(msg, level)
+    level = level or "INFO"
     --- @type string
     local level_name = ""
     if string.upper(level) == "ERROR" then
@@ -79,9 +88,14 @@ local function echo_msg(msg, level)
         level_name = "warning! "
     end
     local msg_lines = vim.split(msg, "\n")
+    local msg_chunks = {}
     for _, line in ipairs(msg_lines) do
-        vim.api.nvim_out_write(string.format("[fzfx] %s%s\n", level_name, line))
+        table.insert(msg_chunks, {
+            string.format("[fzfx] %s%s", level_name, line),
+            EchoHighlights[level],
+        })
     end
+    vim.api.nvim_echo(msg_chunks, false, {})
 end
 
 --- @class ProviderConfig
