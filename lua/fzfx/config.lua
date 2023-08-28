@@ -724,7 +724,7 @@ local Defaults = {
                                 "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
-                            "ERROR"
+                            "WARN"
                         )
                         return nil
                     end
@@ -832,7 +832,7 @@ local Defaults = {
                                 "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
                                 vim.inspect(context.bufnr)
                             ),
-                            "ERROR"
+                            "WARN"
                         )
                         return nil
                     end
