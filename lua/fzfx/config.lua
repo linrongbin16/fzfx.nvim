@@ -1,5 +1,6 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
+local env = require("fzfx.env")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
@@ -120,6 +121,29 @@ end
 --- @field feed CommandFeed
 --- @field opts CommandOpt
 --- @field default_provider PipelineName?
+
+--- @param line string
+--- @return string
+local function file_previewer(line)
+    local filename = env.icon_enable() and vim.fn.split(line)[2] or line
+    if constants.has_bat then
+        local style = "numbers,changes"
+        if
+            type(vim.env["BAT_STYLE"]) == "string"
+            and string.len(vim.env["BAT_STYLE"]) > 0
+        then
+            style = vim.env["BAT_STYLE"]
+        end
+        return string.format(
+            "%s --style=%s --color=always --pager=never -- %s",
+            constants.bat,
+            style,
+            filename
+        )
+    else
+        return string.format("cat %s", filename)
+    end
+end
 
 --- @alias Configs table<string, any>
 --- @type Configs
@@ -384,6 +408,7 @@ local Defaults = {
     },
 
     -- the 'Buffers' commands
+    --- @type GroupConfig
     buffers = {
         commands = {
             -- normal
@@ -426,9 +451,55 @@ local Defaults = {
                 },
             },
         },
+        providers = {
+            default = {
+                key = "default",
+                provider = function(query, context)
+                    local function valid_bufnr(b)
+                        local exclude_filetypes = {
+                            ["qf"] = true,
+                            ["neo-tree"] = true,
+                        }
+                        local ft = utils.get_buf_option(b, "filetype")
+                        return utils.is_buf_valid(b)
+                            and not exclude_filetypes[ft]
+                    end
+                    local function buf_path(b)
+                        return vim.fn.fnamemodify(
+                            vim.api.nvim_buf_get_name(b),
+                            ":~:."
+                        )
+                    end
+                    local bufnrs_list = vim.api.nvim_list_bufs()
+                    local bufpaths_list = {}
+                    local current_bufpath = valid_bufnr(context.bufnr)
+                            and buf_path(context.bufnr)
+                        or nil
+                    if
+                        type(current_bufpath) == "string"
+                        and string.len(current_bufpath) > 0
+                    then
+                        table.insert(bufpaths_list, current_bufpath)
+                    end
+                    for _, bn in ipairs(bufnrs_list) do
+                        local bp = buf_path(bn)
+                        if valid_bufnr(bn) and bp ~= current_bufpath then
+                            table.insert(bufpaths_list, bp)
+                        end
+                    end
+                    return bufpaths_list
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            },
+        },
+        previewers = {
+            default = {
+                previewer = file_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            },
+        },
         interactions = {
-            "ctrl-d",
-            require("fzfx.actions").bdelete,
+            ["ctrl-d"] = require("fzfx.actions").bdelete,
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
