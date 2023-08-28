@@ -196,7 +196,6 @@ return require('packer').startup(function(use)
     use { "junegunn/fzf", run = ":call fzf#install()" }
     use {
         "linrongbin16/fzfx.nvim",
-        requires = { "junegunn/fzf" },
         config = function()
             require("fzfx").setup()
         end
