@@ -54,6 +54,20 @@ local function setup(options)
 
     -- yank history
     require("fzfx.yank_history").setup()
+
+    -- users commands
+    if type(configs.users) == "table" then
+        for user_group, user_configs in pairs(configs.users) do
+            local ok, error_msg = pcall(general.setup, user_group, user_configs)
+            if not ok then
+                log.err(
+                    "failed to create user commands for %s! %s",
+                    vim.inspect(user_group),
+                    vim.inspect(error_msg)
+                )
+            end
+        end
+    end
 end
 
 local M = {
