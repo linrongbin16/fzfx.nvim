@@ -988,6 +988,34 @@ require('fzfx').setup({
 
 Above is an example that adding two groups of self-defined groups of commands `FzfxFiles` and `FzfxLiveGrep`.
 
+A group of commands config schema is:
+
+```lua
+{
+    --- @type CommandConfig[]
+    commands = ...,
+    --- @type table<PipelineName, ProviderConfig>
+    providers = ...,
+    --- @type table<PipelineName, PreviewerConfig>
+    previewers = ...,
+    --- @type table<ActionKey, Action>
+    actions = ...,
+    --- @type table<ActionKey, Action>?
+    interactions = ..., -- todo
+    --- @type FzfOpt[]
+    fzf_opts = ...,
+}
+```
+
+- `commands`: user commands.
+- `providers`: data sources, e.g. shell commands like `fd . -tf` to generate a lines list for fzf on the left side.
+- `previewers`: data consumers, e.g. shell commands like `bat --style=numbers,changes` to read a line and generate preview window for fzf on the right side.
+- `actions`: expect keys, e.g. user press these keys to exit fzf and optionally do somethings in callback functions.
+- `interactions` (todo): interactive keys, e.g. user press these keys to do somethings without exiting fzf. The interactive keys binded to providers are used to switch on different data sources.
+- `fzf_opts`: other fzf options.
+
+For more detailed definitions please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/c521e3027b26b4ffe1a49a5b1ceba6669ae62b6c/lua/fzfx/schema.lua#L1).
+
 ## Break Changes
 
 - 2023-08-17
