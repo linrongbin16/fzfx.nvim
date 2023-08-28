@@ -235,6 +235,7 @@ local Defaults = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit,
             ["double-click"] = require("fzfx.actions").edit,
+            ["ctrl-q"] = require("fzfx.actions").setqflist,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -364,6 +365,7 @@ local Defaults = {
             ["double-click"] = constants.has_rg
                     and require("fzfx.actions").edit_rg
                 or require("fzfx.actions").edit_grep,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,

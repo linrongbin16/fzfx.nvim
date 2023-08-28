@@ -169,6 +169,36 @@ local function yank_git_commit(lines)
     end
 end
 
+local function setqflist(lines)
+    log.debug("|fzfx.actions - setqflist| lines:%s", vim.inspect(lines))
+    local qflist = {}
+    for _, line in ipairs(lines) do
+        local filename = env.icon_enable() and vim.fn.split(line)[2] or line
+        filename = path.normalize(filename)
+        table.insert(qflist, filename)
+    end
+    log.debug("|fzfx.actions - setqflist| list:%s", vim.inspect(qflist))
+    vim.fn.setqflist(qflist, "a")
+end
+
+local function setqflist_rg(lines)
+    log.debug("|fzfx.actions - setqflist_rg| lines:%s", vim.inspect(lines))
+    local qflist = {}
+    for i, line in ipairs(lines) do
+        local splits = vim.fn.split(line, ":")
+        local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
+            or splits[1]
+        log.debug(
+            "|fzfx.actions - setqflist_rg| filename:%s",
+            vim.inspect(filename)
+        )
+        filename = path.normalize(filename)
+        table.insert(qflist, filename)
+    end
+    log.debug("|fzfx.actions - setqflist_rg| list:%s", vim.inspect(qflist))
+    vim.fn.setqflist(qflist, "a")
+end
+
 local M = {
     nop = nop,
     edit = edit,
@@ -179,6 +209,8 @@ local M = {
     bdelete = bdelete,
     git_checkout = git_checkout,
     yank_git_commit = yank_git_commit,
+    setqflist = setqflist,
+    setqflist_rg = setqflist_rg,
 }
 
 return M
