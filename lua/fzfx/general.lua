@@ -431,6 +431,9 @@ end
 local function get_pipeline_size(pipeline_configs)
     local n = 0
     if type(pipeline_configs) == "table" then
+        if Clazz:instanceof(pipeline_configs.providers, ProviderConfig) then
+            return 1
+        end
         for _, _ in pairs(pipeline_configs.providers) do
             n = n + 1
         end
