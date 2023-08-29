@@ -9,6 +9,7 @@ local utils = require("fzfx.utils")
 local general = require("fzfx.general")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local InteractionConfig = require("fzfx.config").InteractionConfig
 
 local Constants = {
     --- @type string?
@@ -210,6 +211,21 @@ local function setup()
     end
 
     local deprecated = false
+    -- interactions
+    if
+        type(buffers_configs.interactions) == "table"
+        and #buffers_configs.interactions == 2
+        and type(buffers_configs.interactions[1]) == "string"
+        and type(buffers_configs.interactions[2]) == "function"
+        and buffers_configs.interactions["delete_buffer"] == nil
+    then
+        buffers_configs.interactions.delete_buffer = InteractionConfig:make({
+            key = buffers_configs.interactions[1],
+            interaction = buffers_configs.interactions[2],
+        })
+        deprecated = true
+    end
+
     for provider_name, provider_opts in pairs(buffers_configs.providers) do
         if
             #provider_opts >= 2
@@ -263,6 +279,12 @@ local function setup()
         end
         deprecated = true
     end
+
+    -- other_opts
+    if type(buffers_configs.other_opts["exclude_filetypes"]) == "table" then
+        deprecated = true
+    end
+
     general.setup("buffers", buffers_configs)
     if deprecated then
         log.info(
