@@ -4,6 +4,7 @@ local env = require("fzfx.env")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
+local Clazz = require("fzfx.object").Clazz
 
 -- gnu find
 local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
@@ -99,28 +100,51 @@ local function echo_msg(msg, level)
     vim.api.nvim_echo(msg_chunks, false, {})
 end
 
---- @class GroupConfig
---- @field commands UserCommandConfig[]
---- @field providers table<PipelineName, ProviderConfig>
---- @field previewers table<PipelineName, PreviewerConfig>
---- @field interactions table<ActionKey, Interaction>?
---- @field actions table<ActionKey, Action>
---- @field fzf_opts FzfOpt[]
-
 --- @class ProviderConfig
 --- @field key ActionKey
 --- @field provider Provider
 --- @field provider_type ProviderType? by default "plain"
+local ProviderConfig = Clazz:implement("config.ProviderConfig", {
+    key = nil,
+    provider = nil,
+    provider_type = nil,
+})
 
 --- @class PreviewerConfig
 --- @field previewer Previewer
 --- @field previewer_type PreviewerType
+local PreviewerConfig = Clazz:implement("config.PreviewerConfig", {
+    previewer = nil,
+    previewer_type = nil,
+})
 
 --- @class UserCommandConfig
 --- @field name string
 --- @field feed CommandFeed
 --- @field opts CommandOpt
 --- @field default_provider PipelineName?
+local UserCommandConfig = Clazz:implement("config.UserCommandConfig", {
+    name = nil,
+    feed = nil,
+    opts = nil,
+    default_provider = nil,
+})
+
+--- @class GroupConfig
+--- @field commands UserCommandConfig|UserCommandConfig[]
+--- @field providers ProviderConfig|table<PipelineName, ProviderConfig>
+--- @field previewers PreviewerConfig|table<PipelineName, PreviewerConfig>
+--- @field interactions table<ActionKey, Interaction>?
+--- @field actions table<ActionKey, Action>
+--- @field fzf_opts FzfOpt[]?
+local GroupConfig = Clazz:implement("config.GroupConfig", {
+    commands = nil,
+    providers = nil,
+    previewers = nil,
+    interactions = nil,
+    actions = nil,
+    fzf_opts = nil,
+})
 
 --- @param line string
 --- @return string

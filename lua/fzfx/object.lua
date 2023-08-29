@@ -1,25 +1,33 @@
 --- @class Object
 --- @field __class string
 
-local Object = {
-    __class = "object",
+local Clazz = {
+    __classname = "object",
 }
 
---- @param classname string?
-function Object:new(classname)
-    return vim.tbl_deep_extend("force", vim.deepcopy(Object), {
-        __class = classname or "object",
+--- @param classname string
+--- @param body table
+function Clazz:implement(classname, body)
+    local o = vim.tbl_deep_extend("force", vim.deepcopy(Clazz), {
+        __classname = classname,
     })
+    return vim.tbl_deep_extend("force", vim.deepcopy(o), body)
 end
 
 --- @param o any?
+--- @param clz any?
 --- @return boolean
-function Object:instanceof(o)
-    return type(o) == "table" and o.__class == self.__class
+function Clazz:instanceof(o, clz)
+    return type(o) == "table"
+        and type(clz) == "table"
+        and type(o.__class) == "string"
+        and string.len(o.__class) > 0
+        and type(clz.__class) == "string"
+        and string.len(clz.__class) > 0
 end
 
 local M = {
-    Object = Object,
+    Clazz = Clazz,
 }
 
 return M
