@@ -4,7 +4,7 @@ local env = require("fzfx.env")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-local Clazz = require("fzfx.object").Clazz
+local Clazz = require("fzfx.clazz").Clazz
 
 -- gnu find
 local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
@@ -154,11 +154,29 @@ function UserCommandConfig:make(opts)
     )
 end
 
+--- @alias InteractionName string
+--
+--- @class InteractionConfig
+--- @field key ActionKey
+--- @field interaction Interaction
+local InteractionConfig = Clazz:implement("fzfx.config.InteractionConfig", {
+    key = nil,
+    interaction = nil,
+})
+
+function InteractionConfig:make(opts)
+    return vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(InteractionConfig),
+        opts or {}
+    )
+end
+
 --- @class GroupConfig
 --- @field commands UserCommandConfig|UserCommandConfig[]
 --- @field providers ProviderConfig|table<PipelineName, ProviderConfig>
 --- @field previewers PreviewerConfig|table<PipelineName, PreviewerConfig>
---- @field interactions table<ActionKey, Interaction>?
+--- @field interactions table<InteractionName, InteractionConfig>?
 --- @field actions table<ActionKey, Action>
 --- @field fzf_opts FzfOpt[]?
 local GroupConfig = Clazz:implement("fzfx.config.GroupConfig", {
@@ -461,10 +479,10 @@ local Defaults = {
 
     -- the 'Buffers' commands
     --- @type GroupConfig
-    buffers = {
+    buffers = GroupConfig:make({
         commands = {
             -- normal
-            {
+            UserCommandConfig:make({
                 name = "FzfxBuffers",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -473,9 +491,9 @@ local Defaults = {
                     complete = "file",
                     desc = "Find buffers",
                 },
-            },
+            }),
             -- visual
-            {
+            UserCommandConfig:make({
                 name = "FzfxBuffersV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -483,75 +501,73 @@ local Defaults = {
                     range = true,
                     desc = "Find buffers by visual select",
                 },
-            },
+            }),
             -- cword
-            {
+            UserCommandConfig:make({
                 name = "FzfxBuffersW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find buffers by cursor word",
                 },
-            },
+            }),
             -- put
-            {
+            UserCommandConfig:make({
                 name = "FzfxBuffersP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find buffers by yank text",
                 },
-            },
+            }),
         },
-        providers = {
-            default = {
-                key = "default",
-                provider = function(query, context)
-                    local function valid_bufnr(b)
-                        local exclude_filetypes = {
-                            ["qf"] = true,
-                            ["neo-tree"] = true,
-                        }
-                        local ft = utils.get_buf_option(b, "filetype")
-                        return utils.is_buf_valid(b)
-                            and not exclude_filetypes[ft]
+        providers = ProviderConfig:make({
+            key = "default",
+            provider = function(query, context)
+                local function valid_bufnr(b)
+                    local exclude_filetypes = {
+                        ["qf"] = true,
+                        ["neo-tree"] = true,
+                    }
+                    local ft = utils.get_buf_option(b, "filetype")
+                    return utils.is_buf_valid(b) and not exclude_filetypes[ft]
+                end
+                local function buf_path(b)
+                    return vim.fn.fnamemodify(
+                        vim.api.nvim_buf_get_name(b),
+                        ":~:."
+                    )
+                end
+                local bufnrs_list = vim.api.nvim_list_bufs()
+                local bufpaths_list = {}
+                local current_bufpath = valid_bufnr(context.bufnr)
+                        and buf_path(context.bufnr)
+                    or nil
+                if
+                    type(current_bufpath) == "string"
+                    and string.len(current_bufpath) > 0
+                then
+                    table.insert(bufpaths_list, current_bufpath)
+                end
+                for _, bn in ipairs(bufnrs_list) do
+                    local bp = buf_path(bn)
+                    if valid_bufnr(bn) and bp ~= current_bufpath then
+                        table.insert(bufpaths_list, bp)
                     end
-                    local function buf_path(b)
-                        return vim.fn.fnamemodify(
-                            vim.api.nvim_buf_get_name(b),
-                            ":~:."
-                        )
-                    end
-                    local bufnrs_list = vim.api.nvim_list_bufs()
-                    local bufpaths_list = {}
-                    local current_bufpath = valid_bufnr(context.bufnr)
-                            and buf_path(context.bufnr)
-                        or nil
-                    if
-                        type(current_bufpath) == "string"
-                        and string.len(current_bufpath) > 0
-                    then
-                        table.insert(bufpaths_list, current_bufpath)
-                    end
-                    for _, bn in ipairs(bufnrs_list) do
-                        local bp = buf_path(bn)
-                        if valid_bufnr(bn) and bp ~= current_bufpath then
-                            table.insert(bufpaths_list, bp)
-                        end
-                    end
-                    return bufpaths_list
-                end,
-                provider_type = ProviderTypeEnum.LIST,
-            },
-        },
-        previewers = {
-            default = {
-                previewer = file_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND,
-            },
-        },
+                end
+                return bufpaths_list
+            end,
+            provider_type = ProviderTypeEnum.LIST,
+        }),
+        previewers = PreviewerConfig:make({
+            previewer = file_previewer,
+            previewer_type = PreviewerTypeEnum.COMMAND,
+        }),
         interactions = {
-            ["ctrl-d"] = require("fzfx.actions").bdelete,
+            delete_buffer = InteractionConfig:make({
+                key = "ctrl-d",
+                interaction = require("fzfx.actions").bdelete,
+            }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -570,10 +586,7 @@ local Defaults = {
                 "Buffers > ",
             },
         },
-        other_opts = {
-            exclude_filetypes = { "qf", "neo-tree" },
-        },
-    },
+    }),
 
     -- the 'Git Files' commands
     git_files = {
@@ -1168,6 +1181,7 @@ local M = {
     ProviderConfig = ProviderConfig,
     PreviewerConfig = PreviewerConfig,
     UserCommandConfig = UserCommandConfig,
+    GroupConfig = GroupConfig,
 }
 
 return M
