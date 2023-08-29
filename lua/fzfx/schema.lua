@@ -148,14 +148,26 @@ local CommandFeedEnum = {
 --
 -- Utility for easier writing 'fzfx.config'.
 --
+--- @alias ProviderLineType "file"
+--- @enum ProviderLineTypeEnum
+local ProviderLineTypeEnum = {
+    FILE = "file",
+}
+
 --- @class ProviderConfig
 --- @field key ActionKey
 --- @field provider Provider
 --- @field provider_type ProviderType? by default "plain"
+--- @field line_type ProviderLineType?
+--- @field line_delimiter string?
+--- @field line_pos integer?
 local ProviderConfig = Clazz:implement("fzfx.config.ProviderConfig", {
     key = nil,
     provider = nil,
     provider_type = nil,
+    line_type = nil,
+    line_delimiter = nil,
+    line_pos = nil,
 })
 
 function ProviderConfig:make(opts)
@@ -247,6 +259,7 @@ local M = {
     PreviewerTypeEnum = PreviewerTypeEnum,
     CommandFeedEnum = CommandFeedEnum,
     ProviderConfig = ProviderConfig,
+    ProviderLineTypeEnum = ProviderLineTypeEnum,
     PreviewerConfig = PreviewerConfig,
     UserCommandConfig = UserCommandConfig,
     InteractionConfig = InteractionConfig,

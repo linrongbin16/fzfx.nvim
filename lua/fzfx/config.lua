@@ -5,6 +5,7 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local ProviderConfig = require("fzfx.schema").ProviderConfig
+local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 local UserCommandConfig = require("fzfx.schema").UserCommandConfig
 local InteractionConfig = require("fzfx.schema").InteractionConfig
@@ -470,6 +471,7 @@ local Defaults = {
                 return bufpaths_list
             end,
             provider_type = ProviderTypeEnum.LIST,
+            line_type = ProviderLineTypeEnum.FILE,
         }),
         previewers = PreviewerConfig:make({
             previewer = file_previewer,

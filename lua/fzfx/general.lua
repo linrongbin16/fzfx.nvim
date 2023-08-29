@@ -19,14 +19,12 @@ local DEFAULT_PIPELINE = "default"
 
 --- @class ProviderSwitch
 --- @field pipeline PipelineName?
---- @field providers table<PipelineName, Provider>?
---- @field provider_types table<PipelineName, ProviderType>?
+--- @field provider_configs table<PipelineName, ProviderConfig>?
 --- @field metafile string?
 --- @field resultfile string?
 local ProviderSwitch = {
     pipeline = nil,
-    providers = nil,
-    provider_types = nil,
+    provider_configs = nil,
     metafile = nil,
     resultfile = nil,
 }
@@ -36,27 +34,15 @@ local ProviderSwitch = {
 --- @param provider_configs Configs
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
-    local providers_map = {}
-    local provider_types_map = {}
+    local provider_configs_map = {}
     if Clazz:instanceof(provider_configs, ProviderConfig) then
-        local provider_name = DEFAULT_PIPELINE
-        local provider_opts = provider_configs
-        local provider = provider_opts.provider
-        local provider_type = provider_opts.provider_type or "plain"
-        providers_map[provider_name] = provider
-        provider_types_map[provider_name] = provider_type
+        provider_configs_map[DEFAULT_PIPELINE] = provider_configs
     else
-        for provider_name, provider_opts in pairs(provider_configs) do
-            local provider = provider_opts.provider
-            local provider_type = provider_opts.provider_type or "plain"
-            providers_map[provider_name] = provider
-            provider_types_map[provider_name] = provider_type
-        end
+        provider_configs_map = provider_configs
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
         pipeline = pipeline,
-        providers = providers_map,
-        provider_types = provider_types_map,
+        provider_configs = provider_configs_map,
         metafile = env.debug_enable() and path.join(
             vim.fn.stdpath("data"),
             "fzfx.nvim",
@@ -80,41 +66,54 @@ end
 --- @param query string?
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
-    local provider = self.providers[self.pipeline]
-    local provider_type = self.provider_types[self.pipeline]
+    local provider_config = self.provider_configs[self.pipeline]
     log.ensure(
-        provider == nil
-            or type(provider) == "string"
-            or type(provider) == "function",
-        "|fzfx.general - ProviderSwitch:provide| invalid provider! %s",
-        vim.inspect(self)
+        type(provider_config) == "table",
+        "invalid provider config in %s! pipeline: %s, provider config: %s",
+        vim.inspect(name),
+        vim.inspect(self.pipeline),
+        vim.inspect(provider_config)
     )
     log.ensure(
-        provider_type == ProviderTypeEnum.PLAIN
-            or provider_type == ProviderTypeEnum.COMMAND
-            or provider_type == ProviderTypeEnum.LIST,
-        "|fzfx.general - ProviderSwitch:provide| invalid provider type! %s",
-        vim.inspect(self)
+        provider_config.provider == nil
+            or type(provider_config.provider) == "string"
+            or type(provider_config.provider) == "function",
+        "invalid provider in %s! pipeline: %s, provider: %s",
+        vim.inspect(name),
+        vim.inspect(self.pipeline),
+        vim.inspect(provider_config)
+    )
+    log.ensure(
+        provider_config.provider_type == ProviderTypeEnum.PLAIN
+            or provider_config.provider_type == ProviderTypeEnum.COMMAND
+            or provider_config.provider_type == ProviderTypeEnum.LIST,
+        "invalid provider type in %s! pipeline: %s, provider type: %s",
+        vim.inspect(name),
+        vim.inspect(self.pipeline),
+        vim.inspect(provider_config)
     )
     local metajson = vim.fn.json_encode({
         pipeline = self.pipeline,
-        provider_type = provider_type,
+        provider_type = provider_config.provider_type,
+        provider_line_type = provider_config.line_type,
+        provider_line_delimiter = provider_config.line_delimiter,
+        provider_line_pos = provider_config.line_pos,
     })
     vim.fn.writefile({ metajson }, self.metafile)
-    if provider_type == ProviderTypeEnum.PLAIN then
+    if provider_config.provider_type == ProviderTypeEnum.PLAIN then
         log.ensure(
-            provider == nil or type(provider) == "string",
+            provider_config == nil or type(provider_config) == "string",
             "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
             vim.inspect(self),
-            vim.inspect(provider)
+            vim.inspect(provider_config)
         )
-        if provider == nil then
+        if provider_config == nil then
             vim.fn.writefile({ "" }, self.resultfile)
         else
-            vim.fn.writefile({ provider }, self.resultfile)
+            vim.fn.writefile({ provider_config }, self.resultfile)
         end
-    elseif provider_type == ProviderTypeEnum.COMMAND then
-        local ok, result = pcall(provider, query, context)
+    elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
+        local ok, result = pcall(provider_config.provider, query, context)
         log.debug(
             "|fzfx.general - ProviderSwitch:provide| pcall command provider, ok:%s, result:%s",
             vim.inspect(ok),
@@ -131,7 +130,7 @@ function ProviderSwitch:provide(name, query, context)
             log.err(
                 "failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
                 vim.inspect(name),
-                vim.inspect(provider),
+                vim.inspect(provider_config),
                 vim.inspect(query),
                 vim.inspect(context),
                 vim.inspect(result)
@@ -143,8 +142,8 @@ function ProviderSwitch:provide(name, query, context)
                 vim.fn.writefile({ result }, self.resultfile)
             end
         end
-    elseif provider_type == ProviderTypeEnum.LIST then
-        local ok, result = pcall(provider, query, context)
+    elseif provider_config.provider_type == ProviderTypeEnum.LIST then
+        local ok, result = pcall(provider_config.provider, query, context)
         log.debug(
             "|fzfx.general - ProviderSwitch:provide| pcall list provider, ok:%s, result:%s",
             vim.inspect(ok),
@@ -155,7 +154,7 @@ function ProviderSwitch:provide(name, query, context)
             log.err(
                 "failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
                 vim.inspect(name),
-                vim.inspect(provider),
+                vim.inspect(provider_config),
                 vim.inspect(query),
                 vim.inspect(context),
                 vim.inspect(result)
@@ -175,7 +174,8 @@ function ProviderSwitch:provide(name, query, context)
             vim.inspect(self)
         )
     end
-    return provider_type
+    ---@diagnostic disable-next-line: need-check-nil
+    return provider_config.provider_type
 end
 
 -- provider switch }
