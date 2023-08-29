@@ -159,9 +159,11 @@ end
 --- @class InteractionConfig
 --- @field key ActionKey
 --- @field interaction Interaction
+--- @field reload_after_execute boolean?
 local InteractionConfig = Clazz:implement("fzfx.config.InteractionConfig", {
     key = nil,
     interaction = nil,
+    reload_after_execute = false,
 })
 
 function InteractionConfig:make(opts)
@@ -567,6 +569,7 @@ local Defaults = {
             delete_buffer = InteractionConfig:make({
                 key = "ctrl-d",
                 interaction = require("fzfx.actions").bdelete,
+                reload_after_execute = true,
             }),
         },
         actions = {
@@ -586,7 +589,9 @@ local Defaults = {
                 "Buffers > ",
             },
             function()
-                return buf_valid(current_bufnr) and "--header-lines=1" or nil
+                local current_bufnr = vim.api.nvim_get_current_buf()
+                return utils.is_buf_valid(current_bufnr) and "--header-lines=1"
+                    or nil
             end,
         },
     }),

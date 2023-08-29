@@ -317,16 +317,17 @@ local HeaderSwitch = {
 }
 
 --- @param provider_configs Configs
+--- @param interaction_configs Configs
 --- @return HeaderSwitch
-function HeaderSwitch:new(provider_configs)
+function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
     for provider_name, provider_opts in pairs(provider_configs) do
-        local switch_help = {}
+        local help_builder = {}
         for provider_name2, provider_opts2 in pairs(provider_configs) do
             local switch_key2 = string.lower(provider_opts2.key)
             if provider_name2 ~= provider_name then
                 table.insert(
-                    switch_help,
+                    help_builder,
                     color.render(
                         "%s to "
                             .. table.concat(
@@ -339,7 +340,24 @@ function HeaderSwitch:new(provider_configs)
                 )
             end
         end
-        headers_map[provider_name] = switch_help
+        if type(interaction_configs) == "table" then
+            for interaction_name, interaction_opts in pairs(interaction_configs) do
+                local action_key = interaction_opts.key
+                table.insert(
+                    help_builder,
+                    color.render(
+                        "%s to "
+                            .. table.concat(
+                                vim.fn.split(interaction_name, "_"),
+                                " "
+                            ),
+                        color.magenta,
+                        string.upper(action_key)
+                    )
+                )
+            end
+        end
+        headers_map[provider_name] = help_builder
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(HeaderSwitch), {
         headers = headers_map,
@@ -456,17 +474,24 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         },
     }
 
-    local header_switch = HeaderSwitch:new(pipeline_configs.providers)
-    local switch_rpc_registries = {}
+    local header_switch = HeaderSwitch:new(
+        pipeline_configs.providers,
+        pipeline_configs.interactions
+    )
 
-    -- when only have 1 pipeline, no need to add help for switch keys
-    if pipeline_size > 1 then
+    -- have interactions or pipelines >= 2
+    if type(pipeline_configs.interactions) == "table" or pipeline_size > 1 then
         local header = header_switch:get_header(default_pipeline)
         table.insert(fzf_opts, {
             "--header",
             header,
         })
+    end
 
+    local switch_rpc_registries = {}
+
+    -- when only have 1 pipeline, no need to add help for switch keys
+    if pipeline_size > 1 then
         for pipeline, provider_opts in pairs(pipeline_configs.providers) do
             local switch_key = string.lower(provider_opts.key)
 
