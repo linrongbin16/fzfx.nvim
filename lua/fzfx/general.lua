@@ -488,6 +488,45 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         })
     end
 
+    local interaction_rpc_registries = {}
+    -- when no interactions, no need to add help
+    if type(pipeline_configs.interactions) == "table" then
+        for _, interaction_opts in pairs(pipeline_configs.interactions) do
+            local action_key = string.lower(interaction_opts.key)
+            local action = interaction_opts.interaction
+
+            local function interaction_rpc(line_params)
+                action(line_params)
+            end
+
+            local interaction_rpc_registry_id =
+                server.get_global_rpc_server():register(interaction_rpc)
+            table.insert(
+                interaction_rpc_registries,
+                interaction_rpc_registry_id
+            )
+
+            local action_command = string.format(
+                "%s %s",
+                shell.make_lua_command("rpc", "client.lua"),
+                interaction_rpc_registry_id
+            )
+            local bind_builder = string.format(
+                "%s:execute-silent(%s)",
+                action_key,
+                action_command
+            )
+            if interaction_opts.reload_after_execute then
+                bind_builder = bind_builder
+                    .. string.format("+reload(%s)", reload_query_command)
+            end
+            table.insert(fzf_opts, {
+                "--bind",
+                bind_builder,
+            })
+        end
+    end
+
     local switch_rpc_registries = {}
 
     -- when only have 1 pipeline, no need to add help for switch keys
@@ -504,7 +543,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 server.get_global_rpc_server():register(switch_rpc)
             table.insert(switch_rpc_registries, switch_rpc_registry_id)
 
-            local switch_pipeline_command = string.format(
+            local switch_command = string.format(
                 "%s %s",
                 shell.make_lua_command("rpc", "client.lua"),
                 switch_rpc_registry_id
@@ -513,7 +552,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+reload(%s)",
                 switch_key,
                 switch_key,
-                switch_pipeline_command,
+                switch_command,
                 header_switch:get_header(pipeline),
                 reload_query_command
             )

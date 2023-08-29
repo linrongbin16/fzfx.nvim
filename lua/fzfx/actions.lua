@@ -133,6 +133,9 @@ local function buffer_rg(lines)
 end
 
 local function bdelete(lines)
+    if type(lines) == "string" then
+        lines = { lines }
+    end
     if type(lines) == "table" and #lines > 0 then
         for _, line in ipairs(lines) do
             local bufname = env.icon_enable() and vim.fn.split(line)[2] or line
