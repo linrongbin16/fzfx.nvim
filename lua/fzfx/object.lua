@@ -11,7 +11,7 @@ function Clazz:implement(classname, body)
     local o = vim.tbl_deep_extend("force", vim.deepcopy(Clazz), {
         __classname = classname,
     })
-    return vim.tbl_deep_extend("force", vim.deepcopy(o), body)
+    return vim.tbl_deep_extend("force", vim.deepcopy(o), body or nil)
 end
 
 --- @param o any?

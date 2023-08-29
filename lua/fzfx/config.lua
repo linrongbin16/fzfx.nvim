@@ -104,31 +104,55 @@ end
 --- @field key ActionKey
 --- @field provider Provider
 --- @field provider_type ProviderType? by default "plain"
-local ProviderConfig = Clazz:implement("config.ProviderConfig", {
+local ProviderConfig = Clazz:implement("fzfx.config.ProviderConfig", {
     key = nil,
     provider = nil,
     provider_type = nil,
 })
 
+function ProviderConfig:make(opts)
+    return vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(ProviderConfig),
+        opts or {}
+    )
+end
+
 --- @class PreviewerConfig
 --- @field previewer Previewer
 --- @field previewer_type PreviewerType
-local PreviewerConfig = Clazz:implement("config.PreviewerConfig", {
+local PreviewerConfig = Clazz:implement("fzfx.config.PreviewerConfig", {
     previewer = nil,
     previewer_type = nil,
 })
+
+function PreviewerConfig:make(opts)
+    return vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(PreviewerConfig),
+        opts or {}
+    )
+end
 
 --- @class UserCommandConfig
 --- @field name string
 --- @field feed CommandFeed
 --- @field opts CommandOpt
 --- @field default_provider PipelineName?
-local UserCommandConfig = Clazz:implement("config.UserCommandConfig", {
+local UserCommandConfig = Clazz:implement("fzfx.config.UserCommandConfig", {
     name = nil,
     feed = nil,
     opts = nil,
     default_provider = nil,
 })
+
+function UserCommandConfig:make(opts)
+    return vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(UserCommandConfig),
+        opts or {}
+    )
+end
 
 --- @class GroupConfig
 --- @field commands UserCommandConfig|UserCommandConfig[]
@@ -137,7 +161,7 @@ local UserCommandConfig = Clazz:implement("config.UserCommandConfig", {
 --- @field interactions table<ActionKey, Interaction>?
 --- @field actions table<ActionKey, Action>
 --- @field fzf_opts FzfOpt[]?
-local GroupConfig = Clazz:implement("config.GroupConfig", {
+local GroupConfig = Clazz:implement("fzfx.config.GroupConfig", {
     commands = nil,
     providers = nil,
     previewers = nil,
@@ -145,6 +169,10 @@ local GroupConfig = Clazz:implement("config.GroupConfig", {
     actions = nil,
     fzf_opts = nil,
 })
+
+function GroupConfig:make(opts)
+    return vim.tbl_deep_extend("force", vim.deepcopy(GroupConfig), opts or {})
+end
 
 --- @param line string
 --- @return string
@@ -1137,6 +1165,9 @@ end
 local M = {
     setup = setup,
     get_config = get_config,
+    ProviderConfig = ProviderConfig,
+    PreviewerConfig = PreviewerConfig,
+    UserCommandConfig = UserCommandConfig,
 }
 
 return M
