@@ -56,7 +56,7 @@ shell_helpers.log_ensure(
 local metajson = vim.fn.json_decode(metajsonstring) --[[@as {provider_type:ProviderType}]]
 shell_helpers.log_debug("metajson:[%s]", vim.inspect(metajson))
 
-if metajson.provider_type == "plain" or "command" then
+if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     --- @type string
     local cmd = shell_helpers.readfile(resultfile)
     shell_helpers.log_debug("cmd:[%s]", vim.inspect(cmd))
