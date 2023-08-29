@@ -571,6 +571,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             local action = interaction_opts.interaction
 
             local function interaction_rpc(line_params)
+                log.debug(
+                    "|fzfx.general - general.interaction_rpc| line_params:%s",
+                    vim.inspect(line_params)
+                )
                 action(line_params)
             end
 
@@ -582,7 +586,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             )
 
             local action_command = string.format(
-                "%s %s",
+                "%s %s {}",
                 shell.make_lua_command("rpc", "client.lua"),
                 interaction_rpc_registry_id
             )
