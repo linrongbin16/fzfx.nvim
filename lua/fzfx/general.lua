@@ -67,6 +67,7 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
+    provider_config.provider_type = provider_config.provider_type or "plain"
     log.ensure(
         type(provider_config) == "table",
         "invalid provider config in %s! pipeline: %s, provider config: %s",
@@ -93,6 +94,7 @@ function ProviderSwitch:provide(name, query, context)
         vim.inspect(self.pipeline),
         vim.inspect(provider_config)
     )
+
     --- @class ProviderMetaJson
     --- @field pipeline PipelineName
     --- @field provider_type ProviderType
@@ -102,19 +104,16 @@ function ProviderSwitch:provide(name, query, context)
 
     local metajson = vim.fn.json_encode({
         pipeline = self.pipeline,
-        provider_type = provider_config.provider_type or "plain",
+        provider_type = provider_config.provider_type,
         provider_line_type = provider_config.line_type,
         provider_line_delimiter = provider_config.line_delimiter,
         provider_line_pos = provider_config.line_pos,
     } --[[@as ProviderMetaJson ]])
     vim.fn.writefile({ metajson }, self.metafile)
-    if
-        provider_config.provider_type == nil
-        or provider_config.provider_type == ProviderTypeEnum.PLAIN
-    then
+
+    if provider_config.provider_type == ProviderTypeEnum.PLAIN then
         log.ensure(
-            provider_config.provider_type == nil
-                or type(provider_config.provider_type) == "string",
+            type(provider_config.provider_type) == "string",
             "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
             vim.inspect(self),
             vim.inspect(provider_config)
@@ -187,7 +186,7 @@ function ProviderSwitch:provide(name, query, context)
         )
     end
     ---@diagnostic disable-next-line: need-check-nil
-    return provider_config.provider_type or "plain"
+    return provider_config.provider_type
 end
 
 -- provider switch }
