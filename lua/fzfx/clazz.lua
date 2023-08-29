@@ -24,6 +24,7 @@ function Clazz:instanceof(o, clz)
         and string.len(o.__class) > 0
         and type(clz.__class) == "string"
         and string.len(clz.__class) > 0
+        and o.__class == clz.__class
 end
 
 local M = {

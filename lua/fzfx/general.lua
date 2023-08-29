@@ -9,6 +9,11 @@ local env = require("fzfx.env")
 local path = require("fzfx.path")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
+local Clazz = require("fzfx.clazz").Clazz
+local ProviderConfig = require("fzfx.schema").ProviderConfig
+local PreviewerConfig = require("fzfx.schema").PreviewerConfig
+
+local DEFAULT_PIPELINE = "default"
 
 -- provider switch {
 
@@ -33,11 +38,20 @@ local ProviderSwitch = {
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local providers_map = {}
     local provider_types_map = {}
-    for provider_name, provider_opts in pairs(provider_configs) do
+    if Clazz:instanceof(provider_configs, ProviderConfig) then
+        local provider_name = DEFAULT_PIPELINE
+        local provider_opts = provider_configs
         local provider = provider_opts.provider
         local provider_type = provider_opts.provider_type or "plain"
         providers_map[provider_name] = provider
         provider_types_map[provider_name] = provider_type
+    else
+        for provider_name, provider_opts in pairs(provider_configs) do
+            local provider = provider_opts.provider
+            local provider_type = provider_opts.provider_type or "plain"
+            providers_map[provider_name] = provider
+            provider_types_map[provider_name] = provider_type
+        end
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
         pipeline = pipeline,
@@ -189,11 +203,20 @@ local PreviewerSwitch = {
 function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local previewers_map = {}
     local previewer_types_map = {}
-    for previewer_name, previewer_opts in pairs(previewer_configs) do
+    if Clazz:instanceof(previewer_configs, PreviewerConfig) then
+        local previewer_name = DEFAULT_PIPELINE
+        local previewer_opts = previewer_configs
         local previewer = previewer_opts.previewer
         local previewer_type = previewer_opts.previewer_type
         previewers_map[previewer_name] = previewer
         previewer_types_map[previewer_name] = previewer_type
+    else
+        for previewer_name, previewer_opts in pairs(previewer_configs) do
+            local previewer = previewer_opts.previewer
+            local previewer_type = previewer_opts.previewer_type
+            previewers_map[previewer_name] = previewer
+            previewer_types_map[previewer_name] = previewer_type
+        end
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(PreviewerSwitch), {
         pipeline = pipeline,
@@ -408,7 +431,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local default_provider_key = nil
     if default_pipeline == nil then
-        local pipeline, provider_opts = next(pipeline_configs.providers)
+        local pipeline = nil
+        local provider_opts = nil
+        if Clazz:instanceof(pipeline_configs.providers, ProviderConfig) then
+            pipeline = DEFAULT_PIPELINE
+            provider_opts = pipeline_configs.providers
+        else
+            pipeline, provider_opts = next(pipeline_configs.providers)
+        end
         default_pipeline = pipeline
         default_provider_key = provider_opts.key
     else
