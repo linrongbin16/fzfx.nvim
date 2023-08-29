@@ -346,6 +346,7 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
     if Clazz:instanceof(provider_configs, ProviderConfig) then
         local help_builder = {}
+        local provider_name = DEFAULT_PIPELINE
         if type(interaction_configs) == "table" then
             for interaction_name, interaction_opts in pairs(interaction_configs) do
                 local action_key = interaction_opts.key
@@ -363,6 +364,7 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
                 )
             end
         end
+        headers_map[provider_name] = help_builder
     else
         for provider_name, provider_opts in pairs(provider_configs) do
             local help_builder = {}
