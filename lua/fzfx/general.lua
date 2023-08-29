@@ -84,7 +84,8 @@ function ProviderSwitch:provide(name, query, context)
         vim.inspect(provider_config)
     )
     log.ensure(
-        provider_config.provider_type == ProviderTypeEnum.PLAIN
+        provider_config.provider_type == nil
+            or provider_config.provider_type == ProviderTypeEnum.PLAIN
             or provider_config.provider_type == ProviderTypeEnum.COMMAND
             or provider_config.provider_type == ProviderTypeEnum.LIST,
         "invalid provider type in %s! pipeline: %s, provider type: %s",
@@ -107,17 +108,21 @@ function ProviderSwitch:provide(name, query, context)
         provider_line_pos = provider_config.line_pos,
     } --[[@as ProviderMetaJson ]])
     vim.fn.writefile({ metajson }, self.metafile)
-    if provider_config.provider_type == ProviderTypeEnum.PLAIN then
+    if
+        provider_config.provider_type == nil
+        or provider_config.provider_type == ProviderTypeEnum.PLAIN
+    then
         log.ensure(
-            provider_config == nil or type(provider_config) == "string",
+            provider_config.provider_type == nil
+                or type(provider_config.provider_type) == "string",
             "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
             vim.inspect(self),
             vim.inspect(provider_config)
         )
-        if provider_config == nil then
+        if provider_config.provider == nil then
             vim.fn.writefile({ "" }, self.resultfile)
         else
-            vim.fn.writefile({ provider_config }, self.resultfile)
+            vim.fn.writefile({ provider_config.provider }, self.resultfile)
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
         local ok, result = pcall(provider_config.provider, query, context)
@@ -182,7 +187,7 @@ function ProviderSwitch:provide(name, query, context)
         )
     end
     ---@diagnostic disable-next-line: need-check-nil
-    return provider_config.provider_type
+    return provider_config.provider_type or "plain"
 end
 
 -- provider switch }
