@@ -89,7 +89,7 @@ local CommandFeedEnum = {
 --
 --- @alias PlainFzfOpt string
 --- @alias PairFzfOpt string[]
---- @alias FunctionFzfOpt fun():PlainFzfOpt|PairFzfOpt
+--- @alias FunctionFzfOpt fun(context:PipelineName):PlainFzfOpt|PairFzfOpt
 --
 --- @alias FzfOpt PlainFzfOpt|PairFzfOpt|FunctionFzfOpt
 

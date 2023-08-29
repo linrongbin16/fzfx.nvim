@@ -585,6 +585,9 @@ local Defaults = {
                 "--prompt",
                 "Buffers > ",
             },
+            function()
+                return buf_valid(current_bufnr) and "--header-lines=1" or nil
+            end,
         },
     }),
 
