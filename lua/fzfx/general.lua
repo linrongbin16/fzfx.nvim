@@ -344,25 +344,8 @@ local HeaderSwitch = {
 --- @return HeaderSwitch
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
-    for provider_name, provider_opts in pairs(provider_configs) do
+    if Clazz:instanceof(provider_configs, ProviderConfig) then
         local help_builder = {}
-        for provider_name2, provider_opts2 in pairs(provider_configs) do
-            local switch_key2 = string.lower(provider_opts2.key)
-            if provider_name2 ~= provider_name then
-                table.insert(
-                    help_builder,
-                    color.render(
-                        "%s to "
-                            .. table.concat(
-                                vim.fn.split(provider_name2, "_"),
-                                " "
-                            ),
-                        color.magenta,
-                        string.upper(switch_key2)
-                    )
-                )
-            end
-        end
         if type(interaction_configs) == "table" then
             for interaction_name, interaction_opts in pairs(interaction_configs) do
                 local action_key = interaction_opts.key
@@ -380,7 +363,47 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
                 )
             end
         end
-        headers_map[provider_name] = help_builder
+    else
+        for provider_name, provider_opts in pairs(provider_configs) do
+            local help_builder = {}
+            for provider_name2, provider_opts2 in pairs(provider_configs) do
+                local switch_key2 = string.lower(provider_opts2.key)
+                if provider_name2 ~= provider_name then
+                    table.insert(
+                        help_builder,
+                        color.render(
+                            "%s to "
+                                .. table.concat(
+                                    vim.fn.split(provider_name2, "_"),
+                                    " "
+                                ),
+                            color.magenta,
+                            string.upper(switch_key2)
+                        )
+                    )
+                end
+            end
+            if type(interaction_configs) == "table" then
+                for interaction_name, interaction_opts in
+                    pairs(interaction_configs)
+                do
+                    local action_key = interaction_opts.key
+                    table.insert(
+                        help_builder,
+                        color.render(
+                            "%s to "
+                                .. table.concat(
+                                    vim.fn.split(interaction_name, "_"),
+                                    " "
+                                ),
+                            color.magenta,
+                            string.upper(action_key)
+                        )
+                    )
+                end
+            end
+            headers_map[provider_name] = help_builder
+        end
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(HeaderSwitch), {
         headers = headers_map,
@@ -434,9 +457,19 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         local pipeline = nil
         local provider_opts = nil
         if Clazz:instanceof(pipeline_configs.providers, ProviderConfig) then
+            log.debug(
+                "|fzfx.general - general| providers instanceof ProviderConfig, providers:%s, ProviderConfig:%s",
+                vim.inspect(pipeline_configs.providers),
+                vim.inspect(ProviderConfig)
+            )
             pipeline = DEFAULT_PIPELINE
             provider_opts = pipeline_configs.providers
         else
+            log.debug(
+                "|fzfx.general - general| providers not instanceof ProviderConfig, providers:%s, ProviderConfig:%s",
+                vim.inspect(pipeline_configs.providers),
+                vim.inspect(ProviderConfig)
+            )
             pipeline, provider_opts = next(pipeline_configs.providers)
         end
         default_pipeline = pipeline

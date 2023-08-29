@@ -1,5 +1,5 @@
 --- @class Object
---- @field __class string
+--- @field __classname string
 
 local Clazz = {
     __classname = "object",
@@ -20,11 +20,11 @@ end
 function Clazz:instanceof(o, clz)
     return type(o) == "table"
         and type(clz) == "table"
-        and type(o.__class) == "string"
-        and string.len(o.__class) > 0
-        and type(clz.__class) == "string"
-        and string.len(clz.__class) > 0
-        and o.__class == clz.__class
+        and type(o.__classname) == "string"
+        and string.len(o.__classname) > 0
+        and type(clz.__classname) == "string"
+        and string.len(clz.__classname) > 0
+        and o.__classname == clz.__classname
 end
 
 local M = {
