@@ -92,13 +92,20 @@ function ProviderSwitch:provide(name, query, context)
         vim.inspect(self.pipeline),
         vim.inspect(provider_config)
     )
+    --- @class ProviderMetaJson
+    --- @field pipeline PipelineName
+    --- @field provider_type ProviderType
+    --- @field provider_line_type ProviderLineType?
+    --- @field provider_line_delimiter string?
+    --- @field provider_line_pos integer?
+
     local metajson = vim.fn.json_encode({
         pipeline = self.pipeline,
-        provider_type = provider_config.provider_type,
+        provider_type = provider_config.provider_type or "plain",
         provider_line_type = provider_config.line_type,
         provider_line_delimiter = provider_config.line_delimiter,
         provider_line_pos = provider_config.line_pos,
-    })
+    } --[[@as ProviderMetaJson ]])
     vim.fn.writefile({ metajson }, self.metafile)
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then
         log.ensure(

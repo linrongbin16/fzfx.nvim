@@ -52,8 +52,8 @@ shell_helpers.log_ensure(
     "|fzfx.bin.general.provider| error! metajson is not string! %s",
     vim.inspect(metajsonstring)
 )
---- @type {provider_type:ProviderType}
-local metajson = vim.fn.json_decode(metajsonstring) --[[@as {provider_type:ProviderType}]]
+--- @type ProviderMetaJson
+local metajson = vim.fn.json_decode(metajsonstring) --[[@as ProviderMetaJson]]
 shell_helpers.log_debug("metajson:[%s]", vim.inspect(metajson))
 
 if metajson.provider_type == "plain" or metajson.provider_type == "command" then
@@ -63,7 +63,28 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
     else
-        os.execute(cmd)
+        if metajson.provider_line_type == "file" then
+            local p = io.popen(cmd)
+            shell_helpers.log_ensure(
+                p ~= nil,
+                "error! failed to open pipe on provider cmd! %s",
+                vim.inspect(cmd)
+            )
+            --- @diagnostic disable-next-line: need-check-nil
+            for line in p:lines("*line") do
+                -- shell_helpers.log_debug("line:%s", vim.inspect(line))
+                local line_with_icon = shell_helpers.render_filepath_line(
+                    line,
+                    metajson.provider_line_delimiter,
+                    metajson.provider_line_pos
+                )
+                io.write(string.format("%s\n", line_with_icon))
+            end
+            --- @diagnostic disable-next-line: need-check-nil
+            p:close()
+        else
+            os.execute(cmd)
+        end
     end
 elseif metajson.provider_type == "list" then
     local f = io.open(resultfile, "r")
@@ -72,10 +93,22 @@ elseif metajson.provider_type == "list" then
         "error! failed to open file on resultfile! %s",
         vim.inspect(resultfile)
     )
-    --- @diagnostic disable-next-line: need-check-nil
-    for line in f:lines("*line") do
-        -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-        io.write(string.format("%s\n", line))
+    if metajson.provider_line_type == "file" then
+        --- @diagnostic disable-next-line: need-check-nil
+        for line in f:lines("*line") do
+            local line_with_icon = shell_helpers.render_filepath_line(
+                line,
+                metajson.provider_line_delimiter,
+                metajson.provider_line_pos
+            )
+            io.write(string.format("%s\n", line_with_icon))
+        end
+    else
+        --- @diagnostic disable-next-line: need-check-nil
+        for line in f:lines("*line") do
+            -- shell_helpers.log_debug("line:%s", vim.inspect(line))
+            io.write(string.format("%s\n", line))
+        end
     end
     --- @diagnostic disable-next-line: need-check-nil
     f:close()
