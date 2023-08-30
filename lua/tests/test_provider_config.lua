@@ -39,8 +39,32 @@ T["provider_config"]["simple"] = function()
         })
         return pc.key
         ]]))
-        add_note(string.format("pc_key (%s) == 'ctrl-u'", pc_key))
-        expect.equality(pc_key, "ctrl-u")
+        add_note(string.format("pc.key (%s) == 'ctrl-u'", pc_key.key))
+        expect.equality(pc_key.key, "ctrl-u")
+    end
+    do
+        local pc_provider = child.lua(string.format([[
+        local pc = ProviderConfig:make({
+            key = "ctrl-u",
+            provider = "fd . -tf",
+        })
+        return pc.provider
+        ]]))
+        add_note(string.format("pc.provider (%s) == 'fd . -tf'", pc_provider))
+        expect.equality(pc_provider, "fd . -tf")
+    end
+    do
+        local pc_provider_type = child.lua(string.format([[
+        local pc = ProviderConfig:make({
+            key = "ctrl-u",
+            provider = "fd . -tf",
+        })
+        return pc.provider_type
+        ]]))
+        add_note(
+            string.format("pc.provider_type (%s) == 'plain'", pc_provider_type)
+        )
+        expect.equality(pc_provider_type, "plain")
     end
 end
 
