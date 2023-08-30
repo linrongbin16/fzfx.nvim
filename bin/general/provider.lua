@@ -103,7 +103,6 @@ elseif metajson.provider_type == "list" then
                 end
             end
         else
-            --- @diagnostic disable-next-line: need-check-nil
             for line in f:lines("*line") do
                 -- shell_helpers.log_debug("line:%s", vim.inspect(line))
                 if string.len(vim.fn.trim(line)) > 0 then
@@ -111,7 +110,6 @@ elseif metajson.provider_type == "list" then
                 end
             end
         end
-        --- @diagnostic disable-next-line: need-check-nil
         f:close()
     else
         shell_helpers.debug(
