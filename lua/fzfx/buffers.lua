@@ -47,7 +47,7 @@ local function setup()
                 "deprecated 'FzfxGCommits' previewer configs, please migrate to latest config schema!"
             )
         end
-        local delay = 10 * 1000
+        local delay = 3 * 1000
         vim.defer_fn(deprecated_notification, delay)
         vim.api.nvim_create_autocmd("VimEnter", {
             pattern = { "*" },
