@@ -690,6 +690,10 @@ local function setup(name, pipeline_configs)
         return
     end
 
+    log.debug(
+        "|fzfx.general - setup| pipeline_configs:%s",
+        vim.inspect(pipeline_configs)
+    )
     -- User commands
     for _, command_configs in pairs(pipeline_configs.commands) do
         vim.api.nvim_create_user_command(command_configs.name, function(opts)
