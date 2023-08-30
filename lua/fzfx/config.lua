@@ -7,7 +7,7 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
-local UserCommandConfig = require("fzfx.schema").UserCommandConfig
+local CommandConfig = require("fzfx.schema").CommandConfig
 local InteractionConfig = require("fzfx.schema").InteractionConfig
 local GroupConfig = require("fzfx.schema").GroupConfig
 
@@ -133,7 +133,7 @@ end
 local Defaults = {
     -- the 'Files' commands
     files = {
-        --- @type UserCommandConfig[]
+        --- @type CommandConfig[]
         commands = {
             -- normal
             {
@@ -261,7 +261,7 @@ local Defaults = {
 
     -- the 'Live Grep' commands
     live_grep = {
-        --- @type UserCommandConfig[]
+        --- @type CommandConfig[]
         commands = {
             -- normal
             {
@@ -395,7 +395,7 @@ local Defaults = {
     buffers = GroupConfig:make({
         commands = {
             -- normal
-            UserCommandConfig:make({
+            CommandConfig:make({
                 name = "FzfxBuffers",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -406,7 +406,7 @@ local Defaults = {
                 },
             }),
             -- visual
-            UserCommandConfig:make({
+            CommandConfig:make({
                 name = "FzfxBuffersV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -416,7 +416,7 @@ local Defaults = {
                 },
             }),
             -- cword
-            UserCommandConfig:make({
+            CommandConfig:make({
                 name = "FzfxBuffersW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -425,7 +425,7 @@ local Defaults = {
                 },
             }),
             -- put
-            UserCommandConfig:make({
+            CommandConfig:make({
                 name = "FzfxBuffersP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -1098,10 +1098,6 @@ end
 local M = {
     setup = setup,
     get_config = get_config,
-    ProviderConfig = ProviderConfig,
-    PreviewerConfig = PreviewerConfig,
-    UserCommandConfig = UserCommandConfig,
-    GroupConfig = GroupConfig,
 }
 
 return M

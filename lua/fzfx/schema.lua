@@ -194,24 +194,20 @@ function PreviewerConfig:make(opts)
     )
 end
 
---- @class UserCommandConfig
+--- @class CommandConfig
 --- @field name string
 --- @field feed CommandFeed
 --- @field opts CommandOpt
 --- @field default_provider PipelineName?
-local UserCommandConfig = Clazz:implement("fzfx.config.UserCommandConfig", {
+local CommandConfig = Clazz:implement("fzfx.config.CommandConfig", {
     name = nil,
     feed = nil,
     opts = nil,
     default_provider = nil,
 })
 
-function UserCommandConfig:make(opts)
-    return vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(UserCommandConfig),
-        opts or {}
-    )
+function CommandConfig:make(opts)
+    return vim.tbl_deep_extend("force", vim.deepcopy(CommandConfig), opts or {})
 end
 
 --- @alias InteractionName string
@@ -235,7 +231,7 @@ function InteractionConfig:make(opts)
 end
 
 --- @class GroupConfig
---- @field commands UserCommandConfig|UserCommandConfig[]
+--- @field commands CommandConfig|CommandConfig[]
 --- @field providers ProviderConfig|table<PipelineName, ProviderConfig>
 --- @field previewers PreviewerConfig|table<PipelineName, PreviewerConfig>
 --- @field interactions table<InteractionName, InteractionConfig>?
@@ -261,7 +257,7 @@ local M = {
     ProviderConfig = ProviderConfig,
     ProviderLineTypeEnum = ProviderLineTypeEnum,
     PreviewerConfig = PreviewerConfig,
-    UserCommandConfig = UserCommandConfig,
+    CommandConfig = CommandConfig,
     InteractionConfig = InteractionConfig,
     GroupConfig = GroupConfig,
 }
