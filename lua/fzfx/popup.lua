@@ -149,11 +149,10 @@ function PopupWindow:new(win_opts)
 
     --- @type integer
     local bufnr = vim.api.nvim_create_buf(false, true)
-    -- setlocal bufhidden=wipe nobuflisted nonumber
+    -- setlocal bufhidden=wipe nobuflisted
     -- setft=fzf
     utils.set_buf_option(bufnr, "bufhidden", "wipe")
     utils.set_buf_option(bufnr, "buflisted", false)
-    utils.set_buf_option(bufnr, "number", false)
     utils.set_buf_option(bufnr, "filetype", "fzf")
 
     --- @type PopupWindowOpts
@@ -167,10 +166,11 @@ function PopupWindow:new(win_opts)
     --- @type integer
     local winnr = vim.api.nvim_open_win(bufnr, true, popup_opts)
 
-    --- setlocal nospell
+    --- setlocal nospell nonumber
     --- set winhighlight='Pmenu:,Normal:Normal'
     --- set colorcolumn=''
     utils.set_win_option(winnr, "spell", false)
+    utils.set_win_option(winnr, "number", false)
     utils.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
     utils.set_win_option(winnr, "colorcolumn", "")
 
