@@ -36,6 +36,8 @@ local ProviderSwitch = {
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
     if Clazz:instanceof(provider_configs, ProviderConfig) then
+        provider_configs.provider_type = provider_configs.provider_type
+            or ProviderTypeEnum.PLAIN
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
     else
         provider_configs_map = provider_configs
@@ -67,6 +69,8 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
+    provider_config.provider_type = provider_config.provider_type
+        or ProviderTypeEnum.PLAIN
     log.ensure(
         type(provider_config) == "table",
         "invalid provider config in %s! pipeline: %s, provider config: %s",
