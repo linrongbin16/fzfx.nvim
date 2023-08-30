@@ -67,7 +67,6 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
-    provider_config.provider_type = provider_config.provider_type or "plain"
     log.ensure(
         type(provider_config) == "table",
         "invalid provider config in %s! pipeline: %s, provider config: %s",
@@ -701,6 +700,9 @@ end
 
 local M = {
     setup = setup,
+    ProviderSwitch = ProviderSwitch,
+    PreviewerSwitch = PreviewerSwitch,
+    HeaderSwitch = HeaderSwitch,
 }
 
 return M
