@@ -1,8 +1,8 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
-local notify = require("fzfx.notify")
-local NotifyLevel = require("fzfx.notify").NotifyLevel
+local log = require("fzfx.log")
+local LogLevel = require("fzfx.log").LogLevel
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
@@ -755,8 +755,8 @@ local Defaults = {
                 key = "ctrl-u",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
-                        notify.notify(
-                            NotifyLevel.WARN,
+                        log.echo(
+                            LogLevel.WARN,
                             "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
                             vim.inspect(context.bufnr)
                         )
@@ -852,8 +852,8 @@ local Defaults = {
                 key = "default",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
-                        notify.notify(
-                            NotifyLevel.WARN,
+                        log.echo(
+                            LogLevel.WARN,
                             "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
                             vim.inspect(context.bufnr)
                         )
