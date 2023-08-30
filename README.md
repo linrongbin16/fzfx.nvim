@@ -35,7 +35,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - Windows support.
 - Icons & colors.
-- Dynamically passing raw options to live grep, e.g. grep, rg.
+- Lua support: preview lua function defined commands and key mappings (todo).
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
@@ -44,9 +44,9 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - Whether to search hidden and ignored files when searching files and text.
   - Local or remote branches when searching git branches.
   - All diagnostics on workspace or only on current buffer when searching lsp diagnostics (todo).
-  - ...
-- Lua support: preview lua function defined commands and key mappings (todo).
 - ...
+
+Actually the real power comes from the the fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
 
 <details>
 <summary><b>Click here to see some demo</b></summary>
