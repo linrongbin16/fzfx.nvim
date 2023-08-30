@@ -49,7 +49,7 @@ require("lazy").setup({
                 nvim = "nvim",
             },
             debug = {
-                enable = true,
+                enable = false,
                 file_log = true,
                 console_log = false,
             },

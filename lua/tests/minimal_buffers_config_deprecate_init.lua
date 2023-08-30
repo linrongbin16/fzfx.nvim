@@ -49,7 +49,7 @@ require("lazy").setup({
         config = function()
             require("fzfx").setup({
                 debug = {
-                    enable = true,
+                    enable = false,
                     file_log = true,
                 },
                 buffers = {
