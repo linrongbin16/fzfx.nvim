@@ -1,5 +1,6 @@
---- @alias LogLevel "ERROR"|"WARN"|"INFO"|"DEBUG"
---- @alias LogHighlights "ErrorMsg"|"WarningMsg"|"None"|"Comment"
+local notify = require("fzfx.notify")
+local NotifyLevel = require("fzfx.notify").NotifyLevel
+
 local LogHighlights = {
     ERROR = "ErrorMsg",
     WARN = "WarningMsg",
@@ -7,22 +8,18 @@ local LogHighlights = {
     DEBUG = "Comment",
 }
 
---- @type table<LogLevel, LogLevel>
-local LogLevel = {
-    ERROR = "ERROR",
-    WARN = "WARN",
-    INFO = "INFO",
-    DEBUG = "DEBUG",
-}
+-- see: `lua print(vim.inspect(vim.log.levels))`
+local LogLevelValue = vim.fn.has("nvim-0.7") > 0 and vim.log.levels
+    or {
+        TRACE = 0,
+        DEBUG = 1,
+        INFO = 2,
+        WARN = 3,
+        ERROR = 4,
+        OFF = 5,
+    }
 
-local LogLevelValue = {
-    TRACE = 0,
-    DEBUG = 1,
-    INFO = 2,
-    WARN = 3,
-    ERROR = 4,
-    OFF = 5,
-}
+--- @alias LogLevel "ERROR"|"WARN"|"INFO"|"DEBUG"
 
 --- @type Configs
 local Defaults = {
@@ -91,7 +88,7 @@ local function log(level, msg)
     local msg_chunks = {}
     if
         Configs.console_log
-        and LogLevelValue[level] >= LogLevelValue[LogLevel.INFO]
+        and LogLevelValue[level] >= LogLevelValue["INFO"]
     then
         local level_name = ""
         if string.upper(level) == "ERROR" then
@@ -99,16 +96,17 @@ local function log(level, msg)
         elseif string.upper(level) == "WARN" then
             level_name = "warning! "
         end
-        for _, line in ipairs(msg_lines) do
-            -- vim.api.nvim_out_write(
-            --     string.format("[fzfx] %s%s\n", level_name, line)
-            -- )
-            table.insert(msg_chunks, {
-                string.format("[fzfx] %s%s", level_name, line),
-                LogHighlights[level],
-            })
-        end
-        vim.api.nvim_echo(msg_chunks, false, {})
+        notify.notify(level, msg)
+        -- for _, line in ipairs(msg_lines) do
+        -- vim.api.nvim_out_write(
+        --     string.format("[fzfx] %s%s\n", level_name, line)
+        -- )
+        -- table.insert(msg_chunks, {
+        --     string.format("[fzfx] %s%s", level_name, line),
+        --     LogHighlights[level],
+        -- })
+        -- end
+        -- vim.api.nvim_echo(msg_chunks, false, {})
     end
     if Configs.file_log then
         local fp = io.open(Configs.file_path, "a")
@@ -159,7 +157,6 @@ local function ensure(condition, fmt, ...)
 end
 
 local M = {
-    LogLevel = LogLevel,
     setup = setup,
     throw = throw,
     ensure = ensure,

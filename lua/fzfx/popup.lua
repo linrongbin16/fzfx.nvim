@@ -334,7 +334,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, on_launch_exit)
                 action_callback(action_lines)
             end
         else
-            log.throw("error! unknown action key: %s", vim.inspect(action_key))
+            log.err("unknown action key: %s", vim.inspect(action_key))
         end
         if type(on_launch_exit) == "function" then
             on_launch_exit(self)

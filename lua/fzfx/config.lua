@@ -1,6 +1,8 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
+local notify = require("fzfx.notify")
+local NotifyLevel = require("fzfx.notify").NotifyLevel
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
@@ -74,36 +76,6 @@ local default_fzf_options = {
 
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
-
---- @enum EchoHighlights
-local EchoHighlights = {
-    ERROR = "ErrorMsg",
-    WARN = "WarningMsg",
-    INFO = "None",
-    DEBUG = "Comment",
-}
-
---- @param msg string
---- @param level "ERROR"|"WARN"|"INFO"|"DEBUG"
-local function echo_msg(msg, level)
-    level = level or "INFO"
-    --- @type string
-    local level_name = ""
-    if string.upper(level) == "ERROR" then
-        level_name = "error! "
-    elseif string.upper(level) == "WARN" then
-        level_name = "warning! "
-    end
-    local msg_lines = vim.split(msg, "\n")
-    local msg_chunks = {}
-    for _, line in ipairs(msg_lines) do
-        table.insert(msg_chunks, {
-            string.format("[fzfx] %s%s", level_name, line),
-            EchoHighlights[level],
-        })
-    end
-    vim.api.nvim_echo(msg_chunks, false, {})
-end
 
 --- @param line string
 --- @return string
@@ -783,12 +755,10 @@ local Defaults = {
                 key = "ctrl-u",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
-                        echo_msg(
-                            string.format(
-                                "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
-                                vim.inspect(context.bufnr)
-                            ),
-                            "WARN"
+                        notify.notify(
+                            NotifyLevel.WARN,
+                            "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
+                            vim.inspect(context.bufnr)
                         )
                         return nil
                     end
@@ -882,12 +852,10 @@ local Defaults = {
                 key = "default",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
-                        echo_msg(
-                            string.format(
-                                "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
-                                vim.inspect(context.bufnr)
-                            ),
-                            "WARN"
+                        notify.notify(
+                            NotifyLevel.WARN,
+                            "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
+                            vim.inspect(context.bufnr)
                         )
                         return nil
                     end

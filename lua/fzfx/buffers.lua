@@ -42,9 +42,33 @@ local function setup()
 
     general.setup("buffers", buffers_configs)
     if deprecated then
-        log.info(
-            "deprecated 'FzfxGCommits' previewer configs, please migrate to latest config schema!"
+        log.warn(
+            "deprecated FzfxGCommits previewer configs, please migrate to latest config schema!"
         )
+        -- local vim_enter_notified = false
+        -- vim.api.nvim_create_autocmd("VimEnter", {
+        --     pattern = { "*" },
+        --     callback = function()
+        --         if not vim_enter_notified then
+        --             log.warn(
+        --                 'deprecated "FzfxGCommits" previewer configs, please migrate to latest config schema!'
+        --             )
+        --             vim_enter_notified = true
+        --         end
+        --     end,
+        -- })
+        -- local buf_enter_notified = false
+        -- vim.api.nvim_create_autocmd("BufEnter", {
+        --     pattern = { "*" },
+        --     callback = function()
+        --         if not buf_enter_notified then
+        --             log.warn(
+        --                 'deprecated "FzfxGCommits" previewer configs, please migrate to latest config schema!'
+        --             )
+        --             buf_enter_notified = true
+        --         end
+        --     end,
+        -- })
     end
 end
 
