@@ -17,87 +17,31 @@ local T = new_set({
     },
 })
 
-T = new_set()
+T["provider_config"] = new_set()
 
-T["simple"] = function()
-    local actual = child.lua_get(string.format([[
+T["provider_config"]["simple"] = function()
+    do
+        local pc_type = child.lua(string.format([[
         local pc = ProviderConfig:make({
             key = "ctrl-u",
             provider = "fd . -tf",
         })
+        return type(pc)
         ]]))
-end
-
-T["provider_config"]["unix"] = function()
-    local dir1 = "~/github/linrongbin16/fzfx.nvim/lua/tests"
-    local dir2 = child.lua_get(string.format([[ M.normalize("%s") ]], dir1))
-    local file1 = "~/github/linrongbin16/fzfx.nvim/lua/tests/test_path.lua"
-    local file2 = child.lua_get(string.format([[ M.normalize("%s") ]], file1))
-    add_note(string.format("%s == %s", dir1, dir2))
-    expect.equality(dir2, dir1)
-    add_note(string.format("%s == %s", file1, file2))
-    expect.equality(file2, file1)
-end
-
-T["normalize"]["windows"] = function()
-    local dir1 = [[C:/Users/linrongbin/github/linrongbin16/fzfx.nvim/lua/tests]]
-    local dir2 = child.lua_get(
-        string.format(
-            [[ M.normalize("%s", true) ]],
-            vim.fn.escape(
-                [[C:\Users\linrongbin\github\linrongbin16\fzfx.nvim\lua\tests]],
-                "\\"
-            )
-        )
-    )
-    local file1 =
-        [[C:\Users\linrongbin\github\linrongbin16\fzfx.nvim\lua\tests\test_path.lua]]
-    local file2 = child.lua_get(
-        string.format(
-            [[ M.normalize("%s") ]],
-            vim.fn.escape(
-                [[C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\lua\\tests\\test_path.lua]],
-                "\\"
-            )
-        )
-    )
-    add_note(string.format("%s == %s", dir1, dir2))
-    expect.equality(dir2, dir1)
-    add_note(string.format("%s == %s", file1, file2))
-    expect.equality(file2, file1)
-end
-
-T["path_separator"] = new_set()
-
-T["path_separator"]["default"] = function()
-    local actual = child.lua_get([[ require("fzfx.constants").path_separator ]])
-    if vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0 then
-        expect.equality(actual, "\\")
-    else
-        expect.equality(actual, "/")
+        add_note(string.format("pc_type (%s) == 'table'", pc_type))
+        expect.equality(pc_type, "table")
     end
-end
-
-T["join"] = new_set()
-
-T["join"]["default"] = function()
-    local expect1 = "bin/files/provider.lua"
-    local actual1 = child.lua_get([[ M.join("bin", "files", "provider.lua") ]])
-    add_note(string.format("%s == %s", expect1, actual1))
-    local expect2 = "files/provider.lua"
-    local actual2 = child.lua_get([[ M.join("files", "provider.lua") ]])
-    add_note(string.format("%s == %s", expect2, actual2))
-    local expect3 = "provider.lua"
-    local actual3 = child.lua_get([[ M.join("provider.lua") ]])
-    add_note(string.format("%s == %s", expect3, actual3))
-end
-
-T["base_dir"] = new_set()
-
-T["base_dir"]["base_dir"] = function()
-    local actual = child.lua_get([[ M.base_dir() ]])
-    add_note(string.format("base dir: %s", actual))
-    expect.equality(vim.fn.expand("~/github/linrongbin16/fzfx.nvim"), actual)
+    do
+        local pc_key = child.lua(string.format([[
+        local pc = ProviderConfig:make({
+            key = "ctrl-u",
+            provider = "fd . -tf",
+        })
+        return pc.key
+        ]]))
+        add_note(string.format("pc_key (%s) == 'ctrl-u'", pc_key))
+        expect.equality(pc_key, "ctrl-u")
+    end
 end
 
 return T
