@@ -8,6 +8,10 @@ local function setup()
     if not buffers_configs then
         return
     end
+    log.debug(
+        "|fzfx.buffers - setup| buffers_configs:",
+        vim.inspect(buffers_configs)
+    )
 
     local deprecated = false
     -- interactions
@@ -18,10 +22,12 @@ local function setup()
         and type(buffers_configs.interactions[2]) == "function"
         and buffers_configs.interactions["delete_buffer"] == nil
     then
-        buffers_configs.interactions.delete_buffer = InteractionConfig:make({
+        local new_interactions = {}
+        new_interactions["delete_buffer"] = InteractionConfig:make({
             key = buffers_configs.interactions[1],
             interaction = buffers_configs.interactions[2],
         })
+        buffers_configs.interactions = new_interactions
         deprecated = true
     end
     -- other_opts

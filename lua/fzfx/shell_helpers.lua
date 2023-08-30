@@ -195,7 +195,7 @@ end
 --- @param pos integer?
 local function render_filepath_line(line, delimiter, pos)
     if DEVICONS == nil then
-        return normalize_filepath(line)
+        return line
     end
     local filename = nil
     if
@@ -225,24 +225,15 @@ local function render_filepath_line(line, delimiter, pos)
     if type(icon) == "string" and string.len(icon) > 0 then
         local colorfmt = csi(icon_color, true)
         if colorfmt then
-            return string.format(
-                "[%sm%s[0m %s",
-                colorfmt,
-                icon,
-                normalize_filepath(line)
-            )
+            return string.format("[%sm%s[0m %s", colorfmt, icon, line)
         else
-            return string.format("%s %s", icon, normalize_filepath(line))
+            return string.format("%s %s", icon, line)
         end
     else
         if vim.fn.isdirectory(filename) > 0 then
-            return string.format("%s %s", FOLDER_ICON, normalize_filepath(line))
+            return string.format("%s %s", FOLDER_ICON, line)
         else
-            return string.format(
-                "%s %s",
-                UNKNOWN_FILE_ICON,
-                normalize_filepath(line)
-            )
+            return string.format("%s %s", UNKNOWN_FILE_ICON, line)
         end
     end
 end
