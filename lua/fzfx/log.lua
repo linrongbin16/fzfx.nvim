@@ -1,12 +1,12 @@
 local notify = require("fzfx.notify")
-local NotifyLevel = require("fzfx.notify").NotifyLevel
-
-local LogHighlights = {
-    ERROR = "ErrorMsg",
-    WARN = "WarningMsg",
-    INFO = "None",
-    DEBUG = "Comment",
-}
+-- local NotifyLevel = require("fzfx.notify").NotifyLevel
+--
+-- local LogHighlights = {
+--     ERROR = "ErrorMsg",
+--     WARN = "WarningMsg",
+--     INFO = "None",
+--     DEBUG = "Comment",
+-- }
 
 -- see: `lua print(vim.inspect(vim.log.levels))`
 local LogLevelValue = vim.fn.has("nvim-0.7") > 0 and vim.log.levels
@@ -85,17 +85,14 @@ local function log(level, msg)
     end
 
     local msg_lines = vim.split(msg, "\n")
-    local msg_chunks = {}
-    if
-        Configs.console_log
-        and LogLevelValue[level] >= LogLevelValue["INFO"]
-    then
-        local level_name = ""
-        if string.upper(level) == "ERROR" then
-            level_name = "error! "
-        elseif string.upper(level) == "WARN" then
-            level_name = "warning! "
-        end
+    -- local msg_chunks = {}
+    if Configs.console_log and LogLevelValue[level] >= LogLevelValue.INFO then
+        -- local level_name = ""
+        -- if string.upper(level) == "ERROR" then
+        --     level_name = "error! "
+        -- elseif string.upper(level) == "WARN" then
+        --     level_name = "warning! "
+        -- end
         notify.notify(level, msg)
         -- for _, line in ipairs(msg_lines) do
         -- vim.api.nvim_out_write(
