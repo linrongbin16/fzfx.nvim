@@ -733,6 +733,8 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Refactor configs schema for better structure.
 - 2023-08-28
   - Notify users to migrate 'git_commits' ('FzfxGCommits') configs to new configs schema.
+- 2023-08-30
+  - Notify users to migrate 'buffers' ('FzfxBuffers') configs to new configs schema.
 
 ## Credit
 
