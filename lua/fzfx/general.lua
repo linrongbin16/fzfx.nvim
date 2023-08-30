@@ -180,6 +180,9 @@ function ProviderSwitch:provide(name, query, context)
                 vim.inspect(self),
                 vim.inspect(result)
             )
+            if #result == 0 then
+                table.insert(result, "")
+            end
             vim.fn.writefile(result, self.resultfile)
         end
     else
