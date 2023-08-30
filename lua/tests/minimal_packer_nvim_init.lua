@@ -35,7 +35,7 @@ require("packer").startup(function(use)
         vim.fn.expand("~/github/linrongbin16/fzfx.nvim"),
         config = function()
             require("fzfx").setup({
-                debug = { enable = true, file_log = true },
+                debug = { enable = false, file_log = true },
             })
         end,
     })

@@ -11,6 +11,7 @@ local function setup()
         return
     end
 
+    local deprecated = false
     for provider_name, provider_opts in pairs(git_commits_configs.providers) do
         if
             #provider_opts >= 2
@@ -47,9 +48,7 @@ local function setup()
                 provider_opts.provider = provider_opts[2]
                 provider_opts.provider_type = ProviderTypeEnum.PLAIN
             end
-            log.warn(
-                "deprecated 'FzfxGCommits' provider configs, please migrate to latest config schema!"
-            )
+            deprecated = true
         end
     end
     if type(git_commits_configs.previewers) == "string" then
@@ -64,11 +63,24 @@ local function setup()
                 previewer_type = PreviewerTypeEnum.COMMAND,
             }
         end
-        log.warn(
-            "deprecated 'FzfxGCommits' previewer configs, please migrate to latest config schema!"
-        )
+        deprecated = true
     end
     general.setup("git_commits", git_commits_configs)
+    if deprecated then
+        local function deprecated_notification()
+            log.warn(
+                "deprecated 'FzfxGCommits' previewer configs, please migrate to latest config schema!"
+            )
+        end
+        local delay = 3 * 1000
+        vim.defer_fn(deprecated_notification, delay)
+        vim.api.nvim_create_autocmd("VimEnter", {
+            pattern = { "*" },
+            callback = function()
+                vim.defer_fn(deprecated_notification, delay)
+            end,
+        })
+    end
 end
 
 local M = {

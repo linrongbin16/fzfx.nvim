@@ -1,5 +1,3 @@
---- @alias LogLevel "ERROR"|"WARN"|"INFO"|"DEBUG"
---- @alias LogHighlights "ErrorMsg"|"WarningMsg"|"None"|"Comment"
 local LogHighlights = {
     ERROR = "ErrorMsg",
     WARN = "WarningMsg",
@@ -7,26 +5,90 @@ local LogHighlights = {
     DEBUG = "Comment",
 }
 
---- @type table<LogLevel, LogLevel>
+-- see: `lua print(vim.inspect(vim.log.levels))`
+local LogLevelValue = vim.fn.has("nvim-0.7") > 0 and vim.log.levels
+    or {
+        TRACE = 0,
+        DEBUG = 1,
+        INFO = 2,
+        WARN = 3,
+        ERROR = 4,
+        OFF = 5,
+    }
+
+--- @enum LogLevel
 local LogLevel = {
-    ERROR = "ERROR",
-    WARN = "WARN",
-    INFO = "INFO",
+    TRACE = "TRACE",
     DEBUG = "DEBUG",
+    INFO = "INFO",
+    WARN = "WARN",
+    ERROR = "ERROR",
+    OFF = "OFF",
 }
 
-local LogLevelValue = {
-    TRACE = 0,
-    DEBUG = 1,
-    INFO = 2,
-    WARN = 3,
-    ERROR = 4,
-    OFF = 5,
-}
+local LogLevelIndexes = {}
+local MaxLogLevelValue = -1
+local MinLogLevelValue = 2147483647
+do
+    for name, value in pairs(LogLevelValue) do
+        MaxLogLevelValue = math.max(MaxLogLevelValue, value)
+        MinLogLevelValue = math.min(MinLogLevelValue, value)
+        LogLevelIndexes[value] = name
+    end
+end
+
+--- @param level LogLevel?
+--- @param fmt string
+--- @param ... any?
+local function echo(level, fmt, ...)
+    level = level or LogLevel.INFO
+    if type(level) == "string" then
+        if string.len(level) == 0 then
+            error(
+                string.format(
+                    "error! invalid 'level' (%s) to log!",
+                    vim.inspect(level)
+                )
+            )
+        end
+        level = string.upper(level)
+        if not LogLevel[level] then
+            error(
+                string.format(
+                    "error! invalid 'level' (%s) to log!",
+                    vim.inspect(level)
+                )
+            )
+        end
+    else
+        error(
+            string.format(
+                "error! invalid 'level' (%s) to log!",
+                vim.inspect(level)
+            )
+        )
+    end
+    local msg = string.format(fmt, ...)
+    local msg_lines = vim.split(msg, "\n")
+    local msg_chunks = {}
+    local level_name = ""
+    if level == "ERROR" then
+        level_name = "error! "
+    elseif level == "WARN" then
+        level_name = "warning! "
+    end
+    for _, line in ipairs(msg_lines) do
+        table.insert(msg_chunks, {
+            string.format("[fzfx] %s%s", level_name, line),
+            LogHighlights[level],
+        })
+    end
+    vim.api.nvim_echo(msg_chunks, false, {})
+end
 
 --- @type Configs
 local Defaults = {
-    --- @type LogLevel
+    --- @type "ERROR"|"WARN"|"INFO"|"DEBUG"
     level = "INFO",
     --- @type boolean
     console_log = true,
@@ -79,7 +141,7 @@ local function setup(option)
     end
 end
 
---- @param level LogLevel
+--- @param level "ERROR"|"WARN"|"INFO"|"DEBUG"
 --- @param msg string
 --- @return nil
 local function log(level, msg)
@@ -88,27 +150,8 @@ local function log(level, msg)
     end
 
     local msg_lines = vim.split(msg, "\n")
-    local msg_chunks = {}
-    if
-        Configs.console_log
-        and LogLevelValue[level] >= LogLevelValue[LogLevel.INFO]
-    then
-        local level_name = ""
-        if string.upper(level) == "ERROR" then
-            level_name = "error! "
-        elseif string.upper(level) == "WARN" then
-            level_name = "warning! "
-        end
-        for _, line in ipairs(msg_lines) do
-            -- vim.api.nvim_out_write(
-            --     string.format("[fzfx] %s%s\n", level_name, line)
-            -- )
-            table.insert(msg_chunks, {
-                string.format("[fzfx] %s%s", level_name, line),
-                LogHighlights[level],
-            })
-        end
-        vim.api.nvim_echo(msg_chunks, false, {})
+    if Configs.console_log and LogLevelValue[level] >= LogLevelValue.INFO then
+        echo(level, msg)
     end
     if Configs.file_log then
         local fp = io.open(Configs.file_path, "a")
@@ -159,7 +202,6 @@ local function ensure(condition, fmt, ...)
 end
 
 local M = {
-    LogLevel = LogLevel,
     setup = setup,
     throw = throw,
     ensure = ensure,
@@ -167,6 +209,8 @@ local M = {
     warn = warn,
     info = info,
     debug = debug,
+    LogLevel = LogLevel,
+    echo = echo,
 }
 
 return M

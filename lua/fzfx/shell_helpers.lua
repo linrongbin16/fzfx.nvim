@@ -1,6 +1,8 @@
 -- infra utils {
 
-if vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0 then
+local IS_WINDOWS = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
+
+if IS_WINDOWS then
     vim.o.shell = "cmd.exe"
     vim.o.shellslash = false
     vim.o.shellcmdflag = "/s /c"
@@ -195,7 +197,7 @@ end
 --- @param pos integer?
 local function render_filepath_line(line, delimiter, pos)
     if DEVICONS == nil then
-        return normalize_filepath(line)
+        return line
     end
     local filename = nil
     if
@@ -208,15 +210,28 @@ local function render_filepath_line(line, delimiter, pos)
     else
         filename = line
     end
+    -- remove ansi color codes
+    -- see: https://stackoverflow.com/a/55324681/4438921
     if type(filename) == "string" and string.len(filename) > 0 then
-        filename = filename:gsub("\x1b%[%d+m", "")
+        if IS_WINDOWS then
+            filename = filename:gsub('\x1b%[%d+m\x1b%[K','')
+                               :gsub('\x1b%[m\x1b%[K', '')
+        end
+        filename = filename:gsub('\x1b%[%d+;%d+;%d+;%d+;%d+m','')
+                           :gsub('\x1b%[%d+;%d+;%d+;%d+m','')
+                           :gsub('\x1b%[%d+;%d+;%d+m','')
+                           :gsub('\x1b%[%d+;%d+m','')
+                           :gsub('\x1b%[%d+m','')
     end
     local ext = vim.fn.fnamemodify(filename, ":e")
     local icon, icon_color = DEVICONS.get_icon_color(filename, ext)
     -- if DEBUG_ENABLE then
     --     log_debug(
-    --         "|fzfx.shell_helpers - render_line_with_icon| line:%s, ext:%s, icon:%s, color:%s\n",
-    --         vim.inspect(line),
+    --         "|fzfx.shell_helpers - render_line_with_icon| line:%s",
+    --         vim.inspect(line)
+    --     )
+    --     log_debug(
+    --         "|fzfx.shell_helpers - render_line_with_icon| ext:%s, icon:%s, color:%s",
     --         vim.inspect(ext),
     --         vim.inspect(icon),
     --         vim.inspect(color)
@@ -225,24 +240,15 @@ local function render_filepath_line(line, delimiter, pos)
     if type(icon) == "string" and string.len(icon) > 0 then
         local colorfmt = csi(icon_color, true)
         if colorfmt then
-            return string.format(
-                "[%sm%s[0m %s",
-                colorfmt,
-                icon,
-                normalize_filepath(line)
-            )
+            return string.format("[%sm%s[0m %s", colorfmt, icon, line)
         else
-            return string.format("%s %s", icon, normalize_filepath(line))
+            return string.format("%s %s", icon, line)
         end
     else
         if vim.fn.isdirectory(filename) > 0 then
-            return string.format("%s %s", FOLDER_ICON, normalize_filepath(line))
+            return string.format("%s %s", FOLDER_ICON, line)
         else
-            return string.format(
-                "%s %s",
-                UNKNOWN_FILE_ICON,
-                normalize_filepath(line)
-            )
+            return string.format("%s %s", UNKNOWN_FILE_ICON, line)
         end
     end
 end

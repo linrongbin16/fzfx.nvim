@@ -1,3 +1,5 @@
+local Clazz = require("fzfx.clazz").Clazz
+
 -- Schema
 -- See: https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command
 --
@@ -142,10 +144,121 @@ local CommandFeedEnum = {
 --- @field interaction_helps table<ActionKey, Interaction>
 --- @field actions table<ActionKey, Action>
 
+-- ========== Config ==========
+--
+-- Utility for easier writing 'fzfx.config'.
+--
+--- @alias ProviderLineType "file"
+--- @enum ProviderLineTypeEnum
+local ProviderLineTypeEnum = {
+    FILE = "file",
+}
+
+--- @class ProviderConfig
+--- @field key ActionKey
+--- @field provider Provider
+--- @field provider_type ProviderType? by default "plain"
+--- @field line_type ProviderLineType?
+--- @field line_delimiter string?
+--- @field line_pos integer?
+local ProviderConfig = Clazz:implement("fzfx.config.ProviderConfig", {
+    key = nil,
+    provider = nil,
+    provider_type = nil,
+    line_type = nil,
+    line_delimiter = nil,
+    line_pos = nil,
+})
+
+function ProviderConfig:make(opts)
+    local pc =
+        vim.tbl_deep_extend("force", vim.deepcopy(ProviderConfig), opts or {})
+    pc.provider_type = pc.provider_type or ProviderTypeEnum.PLAIN
+    return pc
+end
+
+--- @class PreviewerConfig
+--- @field previewer Previewer
+--- @field previewer_type PreviewerType
+local PreviewerConfig = Clazz:implement("fzfx.config.PreviewerConfig", {
+    previewer = nil,
+    previewer_type = nil,
+})
+
+function PreviewerConfig:make(opts)
+    return vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(PreviewerConfig),
+        opts or {}
+    )
+end
+
+--- @class CommandConfig
+--- @field name string
+--- @field feed CommandFeed
+--- @field opts CommandOpt
+--- @field default_provider PipelineName?
+local CommandConfig = Clazz:implement("fzfx.config.CommandConfig", {
+    name = nil,
+    feed = nil,
+    opts = nil,
+    default_provider = nil,
+})
+
+function CommandConfig:make(opts)
+    return vim.tbl_deep_extend("force", vim.deepcopy(CommandConfig), opts or {})
+end
+
+--- @alias InteractionName string
+--
+--- @class InteractionConfig
+--- @field key ActionKey
+--- @field interaction Interaction
+--- @field reload_after_execute boolean?
+local InteractionConfig = Clazz:implement("fzfx.config.InteractionConfig", {
+    key = nil,
+    interaction = nil,
+    reload_after_execute = false,
+})
+
+function InteractionConfig:make(opts)
+    return vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(InteractionConfig),
+        opts or {}
+    )
+end
+
+--- @class GroupConfig
+--- @field commands CommandConfig|CommandConfig[]
+--- @field providers ProviderConfig|table<PipelineName, ProviderConfig>
+--- @field previewers PreviewerConfig|table<PipelineName, PreviewerConfig>
+--- @field interactions table<InteractionName, InteractionConfig>?
+--- @field actions table<ActionKey, Action>
+--- @field fzf_opts FzfOpt[]?
+local GroupConfig = Clazz:implement("fzfx.config.GroupConfig", {
+    commands = nil,
+    providers = nil,
+    previewers = nil,
+    interactions = nil,
+    actions = nil,
+    fzf_opts = nil,
+})
+
+function GroupConfig:make(opts)
+    return vim.tbl_deep_extend("force", vim.deepcopy(GroupConfig), opts or {})
+end
+
 local M = {
     ProviderTypeEnum = ProviderTypeEnum,
     PreviewerTypeEnum = PreviewerTypeEnum,
     CommandFeedEnum = CommandFeedEnum,
+    ProviderConfig = ProviderConfig,
+    ProviderLineTypeEnum = ProviderLineTypeEnum,
+    PreviewerConfig = PreviewerConfig,
+    CommandConfig = CommandConfig,
+    InteractionConfig = InteractionConfig,
+    GroupConfig = GroupConfig,
 }
 
 return M

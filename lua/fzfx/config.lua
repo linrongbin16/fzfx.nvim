@@ -1,8 +1,17 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
+local env = require("fzfx.env")
+local log = require("fzfx.log")
+local LogLevel = require("fzfx.log").LogLevel
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
+local ProviderConfig = require("fzfx.schema").ProviderConfig
+local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
+local PreviewerConfig = require("fzfx.schema").PreviewerConfig
+local CommandConfig = require("fzfx.schema").CommandConfig
+local InteractionConfig = require("fzfx.schema").InteractionConfig
+local GroupConfig = require("fzfx.schema").GroupConfig
 
 -- gnu find
 local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
@@ -68,65 +77,35 @@ local default_fzf_options = {
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
---- @enum EchoHighlights
-local EchoHighlights = {
-    ERROR = "ErrorMsg",
-    WARN = "WarningMsg",
-    INFO = "None",
-    DEBUG = "Comment",
-}
-
---- @param msg string
---- @param level "ERROR"|"WARN"|"INFO"|"DEBUG"
-local function echo_msg(msg, level)
-    level = level or "INFO"
-    --- @type string
-    local level_name = ""
-    if string.upper(level) == "ERROR" then
-        level_name = "error! "
-    elseif string.upper(level) == "WARN" then
-        level_name = "warning! "
+--- @param line string
+--- @return string
+local function file_previewer(line)
+    local filename = env.icon_enable() and vim.fn.split(line)[2] or line
+    if constants.has_bat then
+        local style = "numbers,changes"
+        if
+            type(vim.env["BAT_STYLE"]) == "string"
+            and string.len(vim.env["BAT_STYLE"]) > 0
+        then
+            style = vim.env["BAT_STYLE"]
+        end
+        return string.format(
+            "%s --style=%s --color=always --pager=never -- %s",
+            constants.bat,
+            style,
+            filename
+        )
+    else
+        return string.format("cat %s", filename)
     end
-    local msg_lines = vim.split(msg, "\n")
-    local msg_chunks = {}
-    for _, line in ipairs(msg_lines) do
-        table.insert(msg_chunks, {
-            string.format("[fzfx] %s%s", level_name, line),
-            EchoHighlights[level],
-        })
-    end
-    vim.api.nvim_echo(msg_chunks, false, {})
 end
-
---- @class GroupConfig
---- @field commands UserCommandConfig[]
---- @field providers table<PipelineName, ProviderConfig>
---- @field previewers table<PipelineName, PreviewerConfig>
---- @field interactions table<ActionKey, Interaction>?
---- @field actions table<ActionKey, Action>
---- @field fzf_opts FzfOpt[]
-
---- @class ProviderConfig
---- @field key ActionKey
---- @field provider Provider
---- @field provider_type ProviderType? by default "plain"
-
---- @class PreviewerConfig
---- @field previewer Previewer
---- @field previewer_type PreviewerType
-
---- @class UserCommandConfig
---- @field name string
---- @field feed CommandFeed
---- @field opts CommandOpt
---- @field default_provider PipelineName?
 
 --- @alias Configs table<string, any>
 --- @type Configs
 local Defaults = {
     -- the 'Files' commands
     files = {
-        --- @type UserCommandConfig[]
+        --- @type CommandConfig[]
         commands = {
             -- normal
             {
@@ -254,7 +233,7 @@ local Defaults = {
 
     -- the 'Live Grep' commands
     live_grep = {
-        --- @type UserCommandConfig[]
+        --- @type CommandConfig[]
         commands = {
             -- normal
             {
@@ -384,10 +363,11 @@ local Defaults = {
     },
 
     -- the 'Buffers' commands
-    buffers = {
+    --- @type GroupConfig
+    buffers = GroupConfig:make({
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxBuffers",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -396,9 +376,9 @@ local Defaults = {
                     complete = "file",
                     desc = "Find buffers",
                 },
-            },
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxBuffersV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -406,29 +386,75 @@ local Defaults = {
                     range = true,
                     desc = "Find buffers by visual select",
                 },
-            },
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxBuffersW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find buffers by cursor word",
                 },
-            },
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxBuffersP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find buffers by yank text",
                 },
-            },
+            }),
         },
+        providers = ProviderConfig:make({
+            key = "default",
+            provider = function(query, context)
+                local function valid_bufnr(b)
+                    local exclude_filetypes = {
+                        ["qf"] = true,
+                        ["neo-tree"] = true,
+                    }
+                    local ft = utils.get_buf_option(b, "filetype")
+                    return utils.is_buf_valid(b) and not exclude_filetypes[ft]
+                end
+                local function buf_path(b)
+                    return vim.fn.fnamemodify(
+                        vim.api.nvim_buf_get_name(b),
+                        ":~:."
+                    )
+                end
+                local bufnrs_list = vim.api.nvim_list_bufs()
+                local bufpaths_list = {}
+                local current_bufpath = valid_bufnr(context.bufnr)
+                        and buf_path(context.bufnr)
+                    or nil
+                if
+                    type(current_bufpath) == "string"
+                    and string.len(current_bufpath) > 0
+                then
+                    table.insert(bufpaths_list, current_bufpath)
+                end
+                for _, bn in ipairs(bufnrs_list) do
+                    local bp = buf_path(bn)
+                    if valid_bufnr(bn) and bp ~= current_bufpath then
+                        table.insert(bufpaths_list, bp)
+                    end
+                end
+                return bufpaths_list
+            end,
+            provider_type = ProviderTypeEnum.LIST,
+            line_type = ProviderLineTypeEnum.FILE,
+        }),
+        previewers = PreviewerConfig:make({
+            previewer = file_previewer,
+            previewer_type = PreviewerTypeEnum.COMMAND,
+        }),
         interactions = {
-            "ctrl-d",
-            require("fzfx.actions").bdelete,
+            delete_buffer = InteractionConfig:make({
+                key = "ctrl-d",
+                interaction = require("fzfx.actions").bdelete,
+                reload_after_execute = true,
+            }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -446,11 +472,13 @@ local Defaults = {
                 "--prompt",
                 "Buffers > ",
             },
+            function()
+                local current_bufnr = vim.api.nvim_get_current_buf()
+                return utils.is_buf_valid(current_bufnr) and "--header-lines=1"
+                    or nil
+            end,
         },
-        other_opts = {
-            exclude_filetypes = { "qf", "neo-tree" },
-        },
-    },
+    }),
 
     -- the 'Git Files' commands
     git_files = {
@@ -727,12 +755,10 @@ local Defaults = {
                 key = "ctrl-u",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
-                        echo_msg(
-                            string.format(
-                                "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
-                                vim.inspect(context.bufnr)
-                            ),
-                            "WARN"
+                        log.echo(
+                            LogLevel.WARN,
+                            "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
+                            vim.inspect(context.bufnr)
                         )
                         return nil
                     end
@@ -826,12 +852,10 @@ local Defaults = {
                 key = "default",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
-                        echo_msg(
-                            string.format(
-                                "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
-                                vim.inspect(context.bufnr)
-                            ),
-                            "WARN"
+                        log.echo(
+                            LogLevel.WARN,
+                            "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
+                            vim.inspect(context.bufnr)
                         )
                         return nil
                     end
