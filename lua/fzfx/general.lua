@@ -40,6 +40,10 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
             or ProviderTypeEnum.PLAIN
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
     else
+        for _, provider_opts in pairs(provider_configs) do
+            provider_opts.provider_type = provider_opts.provider_type
+                or ProviderTypeEnum.PLAIN
+        end
         provider_configs_map = provider_configs
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
@@ -69,8 +73,6 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
-    provider_config.provider_type = provider_config.provider_type
-        or ProviderTypeEnum.PLAIN
     log.ensure(
         type(provider_config) == "table",
         "invalid provider config in %s! pipeline: %s, provider config: %s",
@@ -88,8 +90,7 @@ function ProviderSwitch:provide(name, query, context)
         vim.inspect(provider_config)
     )
     log.ensure(
-        provider_config.provider_type == nil
-            or provider_config.provider_type == ProviderTypeEnum.PLAIN
+        provider_config.provider_type == ProviderTypeEnum.PLAIN
             or provider_config.provider_type == ProviderTypeEnum.COMMAND
             or provider_config.provider_type == ProviderTypeEnum.LIST,
         "invalid provider type in %s! pipeline: %s, provider type: %s",
