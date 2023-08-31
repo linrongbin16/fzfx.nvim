@@ -77,6 +77,8 @@ local default_fzf_options = {
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
+-- file {
+
 --- @param line string
 --- @return string
 local function file_previewer(line)
@@ -99,6 +101,70 @@ local function file_previewer(line)
         return string.format("cat %s", filename)
     end
 end
+
+-- file }
+
+-- lsp diagnostics {
+
+--- @alias LspDiagnosticOpts {mode:"buffer_diagnostics"|"workspace_diagnostics",severity:integer?,bufnr:integer?}
+--- @param opts LspDiagnosticOpts
+local function lsp_diagnostics_provider(opts)
+    if not constants.has_vim_diagnostics then
+        local active_lsp_clients = vim.lsp.get_active_clients()
+    end
+    local signs = constants.has_vim_diagnostics
+            and {
+                ["Error"] = {
+                    severity = 1,
+                    default = "E",
+                    sign = "DiagnosticSignError",
+                },
+                ["Warn"] = {
+                    severity = 2,
+                    default = "W",
+                    sign = "DiagnosticSignWarn",
+                },
+                ["Info"] = {
+                    severity = 3,
+                    default = "I",
+                    sign = "DiagnosticSignInfo",
+                },
+                ["Hint"] = {
+                    severity = 4,
+                    default = "H",
+                    sign = "DiagnosticSignHint",
+                },
+            }
+        or {
+            -- At one point or another, we'll drop support for the old LSP diag
+            ["Error"] = {
+                severity = 1,
+                default = "E",
+                sign = "LspDiagnosticsSignError",
+            },
+            ["Warn"] = {
+                severity = 2,
+                default = "W",
+                sign = "LspDiagnosticsSignWarning",
+            },
+            ["Info"] = {
+                severity = 3,
+                default = "I",
+                sign = "LspDiagnosticsSignInformation",
+            },
+            ["Hint"] = {
+                severity = 4,
+                default = "H",
+                sign = "LspDiagnosticsSignHint",
+            },
+        }
+
+    if opts.mode == "buffer_diagnostics" then
+    else
+    end
+end
+
+-- lsp diagnostics }
 
 --- @alias Configs table<string, any>
 --- @type Configs
@@ -983,7 +1049,54 @@ local Defaults = {
         providers = {
             workspace_diagnostics = ProviderConfig:make({
                 key = "ctrl-a",
-                provider = function(query, context) end,
+                provider = function(query, context)
+                    local signs = vim.diagnostic
+                            and {
+                                ["Error"] = {
+                                    severity = 1,
+                                    default = "E",
+                                    sign = "DiagnosticSignError",
+                                },
+                                ["Warn"] = {
+                                    severity = 2,
+                                    default = "W",
+                                    sign = "DiagnosticSignWarn",
+                                },
+                                ["Info"] = {
+                                    severity = 3,
+                                    default = "I",
+                                    sign = "DiagnosticSignInfo",
+                                },
+                                ["Hint"] = {
+                                    severity = 4,
+                                    default = "H",
+                                    sign = "DiagnosticSignHint",
+                                },
+                            }
+                        or {
+                            -- At one point or another, we'll drop support for the old LSP diag
+                            ["Error"] = {
+                                severity = 1,
+                                default = "E",
+                                sign = "LspDiagnosticsSignError",
+                            },
+                            ["Warn"] = {
+                                severity = 2,
+                                default = "W",
+                                sign = "LspDiagnosticsSignWarning",
+                            },
+                            ["Info"] = {
+                                severity = 3,
+                                default = "I",
+                                sign = "LspDiagnosticsSignInformation",
+                            },
+                            ["Hint"] = {
+                                severity = 4,
+                                default = "H",
+                                sign = "LspDiagnosticsSignHint",
+                            },
+                        }
+                end,
                 provider_type = ProviderTypeEnum.LIST,
             }),
             buffer_diagnostics = ProviderConfig:make({
