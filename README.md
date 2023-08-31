@@ -36,19 +36,19 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - Icons & colors.
 - Windows support.
 - Lua support: preview lua function defined commands and key mappings (todo).
-- Fully dynamic parsing user query and selection, thus generate data source and preview content. A typical use case is passing raw rg options via `--` flag (see demo).
+- Fully dynamic parsing user query and selection, a typical use case is passing raw rg options via `--` flag (see demo).
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
   - Search by yank text.
 - Easily switch on data sources:
-  - Whether to search hidden and ignored files when searching files and text.
-  - Local or remote branches when searching git branches.
-  - All diagnostics on workspace or only on current buffer when searching lsp diagnostics (todo).
-- Maximized control on configuration.
+  - Whether to search hidden or ignored files.
+  - Local or remote git branches.
+  - All diagnostics on workspace or only on current buffer (todo).
+- Maximized configuration.
 - ...
 
-> The real power comes from the the fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#configuration).
+> Actually all above features come from the the fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#configuration).
 
 <details>
 <summary><b>Click here to see some demo</b></summary>
