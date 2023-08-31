@@ -749,9 +749,9 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 - 2023-08-19
   - Refactor configs schema for better structure.
 - 2023-08-28
-  - Deprecate `git_commits` (`FzfxGCommits`) configs, notify user migrate to new schema.
+  - Deprecate 'git_commits' (`FzfxGCommits`) configs, notify user migrate to new schema.
 - 2023-08-30
-  - Deprecate `buffers` (`FzfxBuffers`) configs, notify user migrate to new schema.
+  - Deprecate 'buffers' (`FzfxBuffers`) configs, notify user migrate to new schema.
 
 ## Credit
 
