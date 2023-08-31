@@ -64,10 +64,10 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 - Neovim &ge; 0.5.
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
-- [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep** commands, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
-- [fd](https://github.com/sharkdp/fd) (optional for **files** commands, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
-- [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**, etc, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
-- [git](https://git-scm.com/) (optional for **git files**, **git branches**, **git commits**, etc commands).
+- [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
+- [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
+- [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
+- [git](https://git-scm.com/) (optional for **git** commands).
 
 > Note: `grep`, `find` and `cat` are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install `rg`, `fd` and `bat` should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
 
