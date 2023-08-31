@@ -410,6 +410,11 @@ Especially for git commands:
 
 ### Vimscript
 
+
+<details>
+<summary><b>Click here to see vimscripts</b></summary>
+<br/>
+
 ```vim
 
 " ======== files ========
@@ -526,7 +531,13 @@ nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
 nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
 ```
 
+</details>
+
 ### Lua
+
+<details>
+<summary><b>Click here to see lua scripts</b></summary>
+<br/>
 
 ```lua
 
@@ -713,6 +724,8 @@ vim.keymap.set('n', '<space>pgb',
         '<cmd>FzfxGBlameP<cr>',
         {silent=true, noremap=true, desc="Search git blame by yank text"})
 ```
+
+</details>
 
 ## Configuration
 
