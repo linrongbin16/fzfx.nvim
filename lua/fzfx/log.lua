@@ -26,14 +26,12 @@ local LogLevel = {
     OFF = "OFF",
 }
 
-local LogLevelIndexes = {}
 local MaxLogLevelValue = -1
 local MinLogLevelValue = 2147483647
 do
-    for name, value in pairs(LogLevelValue) do
+    for _, value in pairs(LogLevelValue) do
         MaxLogLevelValue = math.max(MaxLogLevelValue, value)
         MinLogLevelValue = math.min(MinLogLevelValue, value)
-        LogLevelIndexes[value] = name
     end
 end
 
