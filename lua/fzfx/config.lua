@@ -809,7 +809,7 @@ local Defaults = {
     git_blame = {
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxGBlame",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -817,9 +817,9 @@ local Defaults = {
                     nargs = "?",
                     desc = "Search git commits",
                 },
-            },
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxGBlameV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -827,28 +827,28 @@ local Defaults = {
                     range = true,
                     desc = "Search git commits by visual select",
                 },
-            },
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxGBlameW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Search git commits by cursor word",
                 },
-            },
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxGBlameP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Search git commits by yank text",
                 },
-            },
+            }),
         },
         providers = {
-            default = {
+            default = ProviderConfig:make({
                 key = "default",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
@@ -867,16 +867,16 @@ local Defaults = {
                     )
                 end,
                 provider_type = ProviderTypeEnum.COMMAND,
-            },
+            }),
         },
         previewers = {
-            default = {
+            default = PreviewerConfig:make({
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
                 previewer_type = PreviewerTypeEnum.COMMAND,
-            },
+            }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
