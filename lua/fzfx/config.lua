@@ -1087,7 +1087,7 @@ local Defaults = {
         },
         providers = {
             workspace_diagnostics = ProviderConfig:make({
-                key = "ctrl-a",
+                key = "ctrl-w",
                 provider = function(query, context)
                     return lsp_diagnostics_provider({
                         mode = "workspace_diagnostics",
