@@ -158,6 +158,8 @@ local function lsp_diagnostics_provider(opts)
         log.echo(LogLevel.INFO, "no diagnostics found.")
         return nil
     end
+
+    local function process_diag(diag) end
 end
 
 -- lsp diagnostics }
