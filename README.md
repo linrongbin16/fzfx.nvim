@@ -34,8 +34,8 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 ## Feature
 
 - Windows support.
-- Icons & colors.
 - Lua support: preview lua function defined commands and key mappings (todo).
+- Icons & colors.
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
