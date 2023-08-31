@@ -818,8 +818,8 @@ local Defaults = {
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
                         log.echo(
-                            LogLevel.WARN,
-                            "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
+                            LogLevel.INFO,
+                            "no commits found on invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
                         return nil
@@ -916,7 +916,7 @@ local Defaults = {
                     if not utils.is_buf_valid(context.bufnr) then
                         log.echo(
                             LogLevel.WARN,
-                            "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
+                            "no commits found on invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
                         return nil
