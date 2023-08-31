@@ -1107,10 +1107,7 @@ local Defaults = {
             }),
         },
         previewers = PreviewerConfig:make({
-            previewer = function(line)
-                local commit = vim.fn.split(line)[1]
-                return string.format("git show --color=always %s", commit)
-            end,
+            previewer = file_previewer,
             previewer_type = PreviewerTypeEnum.COMMAND,
         }),
         actions = {
