@@ -108,59 +108,55 @@ end
 
 --- @alias LspDiagnosticOpts {mode:"buffer_diagnostics"|"workspace_diagnostics",severity:integer?,bufnr:integer?}
 --- @param opts LspDiagnosticOpts
+--- @return string[]?
 local function lsp_diagnostics_provider(opts)
     if not constants.has_vim_diagnostics then
         local active_lsp_clients = vim.lsp.get_active_clients()
+        if utils.list_empty(active_lsp_clients) then
+            log.echo(LogLevel.INFO, "no active lsp clients.")
+            return nil
+        end
     end
-    local signs = constants.has_vim_diagnostics
-            and {
-                ["Error"] = {
-                    severity = 1,
-                    default = "E",
-                    sign = "DiagnosticSignError",
-                },
-                ["Warn"] = {
-                    severity = 2,
-                    default = "W",
-                    sign = "DiagnosticSignWarn",
-                },
-                ["Info"] = {
-                    severity = 3,
-                    default = "I",
-                    sign = "DiagnosticSignInfo",
-                },
-                ["Hint"] = {
-                    severity = 4,
-                    default = "H",
-                    sign = "DiagnosticSignHint",
-                },
-            }
-        or {
-            -- At one point or another, we'll drop support for the old LSP diag
-            ["Error"] = {
-                severity = 1,
-                default = "E",
-                sign = "LspDiagnosticsSignError",
-            },
-            ["Warn"] = {
-                severity = 2,
-                default = "W",
-                sign = "LspDiagnosticsSignWarning",
-            },
-            ["Info"] = {
-                severity = 3,
-                default = "I",
-                sign = "LspDiagnosticsSignInformation",
-            },
-            ["Hint"] = {
-                severity = 4,
-                default = "H",
-                sign = "LspDiagnosticsSignHint",
-            },
-        }
+    local signs = {
+        ["Error"] = {
+            severity = 1,
+            text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
+            texthl = "DiagnosticSignError",
+        },
+        ["Warn"] = {
+            severity = 2,
+            text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
+            texthl = "DiagnosticSignWarn",
+        },
+        ["Info"] = {
+            severity = 3,
+            text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
+            texthl = "DiagnosticSignInfo",
+        },
+        ["Hint"] = {
+            severity = 4,
+            text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
+            texthl = "DiagnosticSignHint",
+        },
+    }
+    for sign_name, sign_opts in pairs(signs) do
+        local sign_def = vim.fn.sign_getdefined(sign_opts.sign)
+        if not utils.list_empty(sign_def) then
+            sign_opts.text = vim.fn.trim(sign_def[1].text)
+            sign_opts.texthl = sign_def[1].texthl
+        end
+    end
 
-    if opts.mode == "buffer_diagnostics" then
-    else
+    local diag_results = vim.diagnostic.get(
+        opts.mode == "buffer_diagnostics" and opts.bufnr or nil
+    )
+    -- descending: error, warn, info, hint
+    table.sort(diag_results, function(a, b)
+        return a.severity < b.severity
+    end)
+    if utils.list_empty(diag_results) then
+        log.echo(LogLevel.INFO, "no diagnostics found.")
+        return nil
     end
 end
 

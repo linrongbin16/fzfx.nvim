@@ -34,9 +34,6 @@ local has_gnu_find = (
 ) or vim.fn.executable("gfind") > 0
 local gnu_find = vim.fn.executable("gfind") > 0 and "gfind" or "find"
 
--- lsp diagnostics
-local has_vim_diagnostics = vim.fn.has("nvim-0.6") > 0 and vim.diagnostic ~= nil
-
 local M = {
     -- os
     is_windows = is_windows,
@@ -62,8 +59,6 @@ local M = {
 
     has_gnu_find = has_gnu_find,
     gnu_find = gnu_find,
-
-    has_vim_diagnostics = has_vim_diagnostics,
 }
 
 return M
