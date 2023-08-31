@@ -44,9 +44,10 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - Whether to search hidden and ignored files when searching files and text.
   - Local or remote branches when searching git branches.
   - All diagnostics on workspace or only on current buffer when searching lsp diagnostics (todo).
-- etc
+- Maximized control on configuration.
+- ...
 
-> The real power comes from the the fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
+> The real power comes from the the fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Create your own commands](#create-your-own-commands).
 
 <details>
 <summary><b>Click here to see some demo</b></summary>
