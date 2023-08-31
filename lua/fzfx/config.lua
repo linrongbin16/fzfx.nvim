@@ -139,7 +139,7 @@ local function lsp_diagnostics_provider(opts)
             texthl = "DiagnosticSignHint",
         },
     }
-    for sign_name, sign_opts in pairs(signs) do
+    for _, sign_opts in pairs(signs) do
         local sign_def = vim.fn.sign_getdefined(sign_opts.sign)
         if not utils.list_empty(sign_def) then
             sign_opts.text = vim.fn.trim(sign_def[1].text)
@@ -915,7 +915,7 @@ local Defaults = {
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
                         log.echo(
-                            LogLevel.WARN,
+                            LogLevel.INFO,
                             "no commits found on invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
