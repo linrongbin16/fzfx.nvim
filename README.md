@@ -245,6 +245,8 @@ Especially for git commands:
 
 - Preview keys
   - `alt-p`: toggle preview.
+  - `ctrl-f`: preview half page down.
+  - `ctrl-b`: preview half page up.
 - Multi keys
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
