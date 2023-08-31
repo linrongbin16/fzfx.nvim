@@ -660,7 +660,7 @@ local Defaults = {
 
     -- the 'Git Commits' commands
     --- @type GroupConfig
-    git_commits = {
+    git_commits = GroupConfig:make({
         commands = {
             -- normal
             CommandConfig:make({
@@ -802,11 +802,11 @@ local Defaults = {
                 "GCommits > ",
             },
         },
-    },
+    }),
 
     -- the 'Git Blame' command
     --- @type GroupConfig
-    git_blame = {
+    git_blame = GroupConfig:make({
         commands = {
             -- normal
             CommandConfig:make({
@@ -893,7 +893,124 @@ local Defaults = {
                 "GBlame > ",
             },
         },
-    },
+    }),
+
+    -- the 'Lsp Diagnostics' command
+    --- @type GroupConfig
+    lsp_diagnostics = GroupConfig:make({
+        commands = {
+            -- normal
+            CommandConfig:make({
+                name = "FzfxLspDiagnostics",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    desc = "Search lsp diagnostics on workspace",
+                },
+                default_provider = "workspace_diagnostics",
+            }),
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsB",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    desc = "Search lsp diagnostics on current buffer",
+                },
+                default_provider = "buffer_diagnostics",
+            }),
+            -- visual
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Search lsp diagnostics on workspace by visual select",
+                },
+                default_provider = "workspace_diagnostics",
+            }),
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsBV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Search lsp diagnostics on current buffer by visual select",
+                },
+                default_provider = "buffer_diagnostics",
+            }),
+            -- cword
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on workspace by cursor word",
+                },
+                default_provider = "workspace_diagnostics",
+            }),
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsBW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on current buffer by cursor word",
+                },
+                default_provider = "buffer_diagnostics",
+            }),
+            -- put
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on workspace by yank text",
+                },
+                default_provider = "workspace_diagnostics",
+            }),
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsBP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on current buffer by yank text",
+                },
+                default_provider = "buffer_diagnostics",
+            }),
+        },
+        providers = {
+            workspace_diagnostics = ProviderConfig:make({
+                key = "ctrl-a",
+                provider = function(query, context) end,
+                provider_type = ProviderTypeEnum.LIST,
+            }),
+            buffer_diagnostics = ProviderConfig:make({
+                key = "ctrl-u",
+                provider = function(query, context) end,
+                provider_type = ProviderTypeEnum.LIST,
+            }),
+        },
+        previewers = PreviewerConfig:make({}),
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
+        },
+        fzf_opts = {
+            default_fzf_options.multi,
+            default_fzf_options.toggle,
+            default_fzf_options.toggle_all,
+            default_fzf_options.preview_half_page_down,
+            default_fzf_options.preview_half_page_up,
+            default_fzf_options.toggle_preview,
+            {
+                "--prompt",
+                "LspDiagnostics > ",
+            },
+        },
+    }),
 
     -- the 'Yank History' commands
     yank_history = {
