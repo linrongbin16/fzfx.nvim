@@ -80,34 +80,6 @@ local default_git_log_pretty =
 
 -- file {
 
---- @param line string
---- @return string
-local function file_previewer(line)
-    -- log.debug("|fzfx.config - file_previewer| line:%s", vim.inspect(line))
-    local filename = env.icon_enable() and vim.fn.split(line)[2] or line
-    if constants.has_bat then
-        local style = "numbers,changes"
-        if
-            type(vim.env["BAT_STYLE"]) == "string"
-            and string.len(vim.env["BAT_STYLE"]) > 0
-        then
-            style = vim.env["BAT_STYLE"]
-        end
-        return string.format(
-            "%s --style=%s --color=always --pager=never -- %s",
-            constants.bat,
-            style,
-            filename
-        )
-    else
-        return string.format("cat %s", filename)
-    end
-end
-
--- file }
-
--- grep file previewer {
-
 --- @param delimiter string?
 --- @param filename_pos integer?
 --- @param lineno_pos integer?
@@ -157,7 +129,7 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
     return wrap
 end
 
--- grep file previewer }
+-- file }
 
 -- lsp diagnostics {
 
@@ -1164,11 +1136,11 @@ local Defaults = {
         },
         previewers = {
             workspace_diagnostics = PreviewerConfig:make({
-                previewer = make_file_previewer(":", 1),
+                previewer = make_file_previewer(":", 1, 2),
                 previewer_type = PreviewerTypeEnum.COMMAND,
             }),
             buffer_diagnostics = PreviewerConfig:make({
-                previewer = make_file_previewer(":", 1),
+                previewer = make_file_previewer(":", 1, 2),
                 previewer_type = PreviewerTypeEnum.COMMAND,
             }),
         },
