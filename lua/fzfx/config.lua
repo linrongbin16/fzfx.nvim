@@ -83,6 +83,7 @@ local default_git_log_pretty =
 --- @param line string
 --- @return string
 local function file_previewer(line)
+    log.debug("|fzfx.config - file_previewer| line:%s", vim.inspect(line))
     local filename = env.icon_enable() and vim.fn.split(line)[2] or line
     if constants.has_bat then
         local style = "numbers,changes"
@@ -1094,6 +1095,7 @@ local Defaults = {
                     })
                 end,
                 provider_type = ProviderTypeEnum.LIST,
+                line_type = ProviderLineTypeEnum.FILE,
             }),
             buffer_diagnostics = ProviderConfig:make({
                 key = "ctrl-u",
@@ -1104,6 +1106,7 @@ local Defaults = {
                     })
                 end,
                 provider_type = ProviderTypeEnum.LIST,
+                line_type = ProviderLineTypeEnum.FILE,
             }),
         },
         previewers = PreviewerConfig:make({
