@@ -176,15 +176,16 @@ function ProviderSwitch:provide(name, query, context)
             )
         else
             log.ensure(
-                type(result) == "table",
+                result == nil or type(result) == "table",
                 "|fzfx.general - ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
                 vim.inspect(self),
                 vim.inspect(result)
             )
-            if #result == 0 then
-                table.insert(result, "")
+            if utils.list_empty(result) then
+                vim.fn.writefile({ "" }, self.resultfile)
+            else
+                vim.fn.writefile(result, self.resultfile)
             end
-            vim.fn.writefile(result, self.resultfile)
         end
     else
         log.throw(
