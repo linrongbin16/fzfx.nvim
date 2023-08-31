@@ -89,6 +89,12 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
     --- @return string
     local function wrap(line)
         log.debug(
+            "|fzfx.config - make_file_previewer| delimiter:%s, filename_pos:%s, lineno_pos:%s",
+            vim.inspect(delimiter),
+            vim.inspect(filename_pos),
+            vim.inspect(lineno_pos)
+        )
+        log.debug(
             "|fzfx.config - make_file_previewer| line:%s",
             vim.inspect(line)
         )
@@ -217,7 +223,7 @@ local function lsp_diagnostics_provider(opts)
                 [[%s:%s:%s:%s%s]],
                 d.filename,
                 color.green_8bit(tostring(d.lnum)),
-                color.blue_8bit(tostring(d.col)),
+                tostring(d.col),
                 (type(d.text) == "string" and string.len(d.text) > 0) and " "
                     or "",
                 (type(d.text) == "string" and string.len(d.text) > 0) and d.text
@@ -1121,6 +1127,8 @@ local Defaults = {
                 end,
                 provider_type = ProviderTypeEnum.LIST,
                 line_type = ProviderLineTypeEnum.FILE,
+                line_delimiter = ":",
+                line_pos = 1,
             }),
             buffer_diagnostics = ProviderConfig:make({
                 key = "ctrl-u",
@@ -1132,6 +1140,8 @@ local Defaults = {
                 end,
                 provider_type = ProviderTypeEnum.LIST,
                 line_type = ProviderLineTypeEnum.FILE,
+                line_delimiter = ":",
+                line_pos = 1,
             }),
         },
         previewers = {
