@@ -663,7 +663,7 @@ local Defaults = {
     git_commits = {
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxGCommits",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -672,8 +672,8 @@ local Defaults = {
                     desc = "Search git commits",
                 },
                 default_provider = "all_commits",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGCommitsB",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -682,9 +682,9 @@ local Defaults = {
                     desc = "Search git commits only on current buffer",
                 },
                 default_provider = "buffer_commits",
-            },
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxGCommitsV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -693,8 +693,8 @@ local Defaults = {
                     desc = "Search git commits by visual select",
                 },
                 default_provider = "all_commits",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGCommitsBV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -703,9 +703,9 @@ local Defaults = {
                     desc = "Search git commits only on current buffer by visual select",
                 },
                 default_provider = "buffer_commits",
-            },
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxGCommitsW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -713,8 +713,8 @@ local Defaults = {
                     desc = "Search git commits by cursor word",
                 },
                 default_provider = "all_commits",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGCommitsBW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -722,9 +722,9 @@ local Defaults = {
                     desc = "Search git commits only on current buffer by cursor word",
                 },
                 default_provider = "buffer_commits",
-            },
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxGCommitsP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -732,8 +732,8 @@ local Defaults = {
                     desc = "Search git commits by yank text",
                 },
                 default_provider = "all_commits",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGCommitsBP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -741,17 +741,17 @@ local Defaults = {
                     desc = "Search git commits only on current buffer by yank text",
                 },
                 default_provider = "buffer_commits",
-            },
+            }),
         },
         providers = {
-            all_commits = {
+            all_commits = ProviderConfig:make({
                 key = "ctrl-a",
                 provider = string.format(
                     "git log --pretty=%s --date=short --color=always",
                     utils.shellescape(default_git_log_pretty)
                 ),
-            },
-            buffer_commits = {
+            }),
+            buffer_commits = ProviderConfig:make({
                 key = "ctrl-u",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
@@ -769,23 +769,23 @@ local Defaults = {
                     )
                 end,
                 provider_type = ProviderTypeEnum.COMMAND,
-            },
+            }),
         },
         previewers = {
-            all_commits = {
+            all_commits = PreviewerConfig:make({
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
                 previewer_type = PreviewerTypeEnum.COMMAND,
-            },
-            buffer_commits = {
+            }),
+            buffer_commits = PreviewerConfig:make({
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
                 previewer_type = PreviewerTypeEnum.COMMAND,
-            },
+            }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -809,7 +809,7 @@ local Defaults = {
     git_blame = {
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxGBlame",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -817,9 +817,9 @@ local Defaults = {
                     nargs = "?",
                     desc = "Search git commits",
                 },
-            },
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxGBlameV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -827,28 +827,28 @@ local Defaults = {
                     range = true,
                     desc = "Search git commits by visual select",
                 },
-            },
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxGBlameW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Search git commits by cursor word",
                 },
-            },
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxGBlameP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Search git commits by yank text",
                 },
-            },
+            }),
         },
         providers = {
-            default = {
+            default = ProviderConfig:make({
                 key = "default",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
@@ -867,16 +867,16 @@ local Defaults = {
                     )
                 end,
                 provider_type = ProviderTypeEnum.COMMAND,
-            },
+            }),
         },
         previewers = {
-            default = {
+            default = PreviewerConfig:make({
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
                 previewer_type = PreviewerTypeEnum.COMMAND,
-            },
+            }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,

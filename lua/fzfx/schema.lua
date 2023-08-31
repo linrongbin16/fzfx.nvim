@@ -171,10 +171,11 @@ local ProviderConfig = Clazz:implement("fzfx.config.ProviderConfig", {
 })
 
 function ProviderConfig:make(opts)
-    local pc =
-        vim.tbl_deep_extend("force", vim.deepcopy(ProviderConfig), opts or {})
-    pc.provider_type = pc.provider_type or ProviderTypeEnum.PLAIN
-    return pc
+    return vim.tbl_deep_extend(
+        "force",
+        vim.deepcopy(ProviderConfig),
+        opts or {}
+    )
 end
 
 --- @class PreviewerConfig
