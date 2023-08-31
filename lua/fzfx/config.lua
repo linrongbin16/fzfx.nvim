@@ -216,8 +216,8 @@ local function lsp_diagnostics_provider(opts)
             local line = string.format(
                 [[%s:%s:%s:%s%s]],
                 d.filename,
-                color.green_8b(tostring(d.lnum)),
-                color.blue_8b(tostring(d.col)),
+                color.green_8bit(tostring(d.lnum)),
+                color.blue_8bit(tostring(d.col)),
                 (type(d.text) == "string" and string.len(d.text) > 0) and " "
                     or "",
                 (type(d.text) == "string" and string.len(d.text) > 0) and d.text

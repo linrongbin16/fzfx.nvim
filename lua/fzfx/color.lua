@@ -163,7 +163,7 @@ for color, default_hl in pairs({
     M[color] = function(text, hl)
         return ansi(text, color, hl or default_hl)
     end
-    M[color .. "_8b"] = function(text)
+    M[color .. "_8bit"] = function(text)
         return ansi(text, color, nil)
     end
 end
