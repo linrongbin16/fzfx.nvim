@@ -33,20 +33,22 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 ## Feature
 
-- Windows support.
 - Icons & colors.
-- Dynamically passing raw options to live grep, e.g. grep, rg.
+- Windows support.
+- Lua support: preview lua function defined commands and key mappings (todo).
+- Fully dynamic parsing user query and selection, a typical use case is passing raw rg options via `--` flag (see demo).
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
   - Search by yank text.
 - Easily switch on data sources:
-  - Whether to search hidden and ignored files when searching files and text.
-  - Local or remote branches when searching git branches.
-  - All diagnostics on workspace or only on current buffer when searching lsp diagnostics (todo).
-  - ...
-- Lua support: preview lua function defined commands and key mappings (todo).
+  - Whether to search hidden or ignored files.
+  - Local or remote git branches.
+  - All diagnostics on workspace or only on current buffer (todo).
+- Maximized configuration.
 - ...
+
+> Actually all above features come from the real power of fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#configuration).
 
 <details>
 <summary><b>Click here to see some demo</b></summary>
@@ -243,6 +245,8 @@ Especially for git commands:
 
 - Preview keys
   - `alt-p`: toggle preview.
+  - `ctrl-f`: preview half page down.
+  - `ctrl-b`: preview half page up.
 - Multi keys
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
@@ -408,6 +412,11 @@ Especially for git commands:
 
 ### Vimscript
 
+
+<details>
+<summary><b>Click here to see vimscripts</b></summary>
+<br/>
+
 ```vim
 
 " ======== files ========
@@ -524,7 +533,13 @@ nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
 nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
 ```
 
+</details>
+
 ### Lua
+
+<details>
+<summary><b>Click here to see lua scripts</b></summary>
+<br/>
 
 ```lua
 
@@ -711,6 +726,8 @@ vim.keymap.set('n', '<space>pgb',
         '<cmd>FzfxGBlameP<cr>',
         {silent=true, noremap=true, desc="Search git blame by yank text"})
 ```
+
+</details>
 
 ## Configuration
 
