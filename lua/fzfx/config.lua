@@ -3,6 +3,7 @@ local utils = require("fzfx.utils")
 local env = require("fzfx.env")
 local log = require("fzfx.log")
 local LogLevel = require("fzfx.log").LogLevel
+local color = require("fzfx.color")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
@@ -159,7 +160,47 @@ local function lsp_diagnostics_provider(opts)
         return nil
     end
 
-    local function process_diag(diag) end
+    --- @alias DiagItem {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}
+    --- @return DiagItem?
+    local function preprocess_diag_item(diag)
+        if not vim.api.nvim_buf_is_valid(diag.bufnr) then
+            return nil
+        end
+        local bufname = vim.api.nvim_buf_get_name(diag.bufnr)
+        local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
+        local range_start = diag.range and diag.range["start"]
+        local row = diag.lnum or range_start.line
+        local col = diag.col or range_start.character
+        return {
+            bufnr = diag.bufnr,
+            filename = bufpath,
+            lnum = row + 1,
+            col = col + 1,
+            text = vim.trim(diag.message:gsub("[\n]", "")),
+            severity = diag.severity or 1,
+        }
+    end
+
+    local diag_lines = {}
+    for _, diag in ipairs(diag_results) do
+        local d = preprocess_diag_item(diag)
+        if d ~= nil then
+            -- it looks like:
+            -- `lua/fzfx/config.lua:10:13:local ProviderConfig = require("fzfx.schema").ProviderConfig`
+            local line = string.format(
+                [[%s:%s:%s:%s%s]],
+                d.filename,
+                color.green_8b(tostring(d.lnum)),
+                color.blue_8b(tostring(d.col)),
+                (type(d.text) == "string" and string.len(d.text) > 0) and " "
+                    or "",
+                (type(d.text) == "string" and string.len(d.text) > 0) and d.text
+                    or ""
+            )
+            table.insert(diag_lines, line)
+        end
+    end
+    return diag_lines
 end
 
 -- lsp diagnostics }
@@ -1048,62 +1089,30 @@ local Defaults = {
             workspace_diagnostics = ProviderConfig:make({
                 key = "ctrl-a",
                 provider = function(query, context)
-                    local signs = vim.diagnostic
-                            and {
-                                ["Error"] = {
-                                    severity = 1,
-                                    default = "E",
-                                    sign = "DiagnosticSignError",
-                                },
-                                ["Warn"] = {
-                                    severity = 2,
-                                    default = "W",
-                                    sign = "DiagnosticSignWarn",
-                                },
-                                ["Info"] = {
-                                    severity = 3,
-                                    default = "I",
-                                    sign = "DiagnosticSignInfo",
-                                },
-                                ["Hint"] = {
-                                    severity = 4,
-                                    default = "H",
-                                    sign = "DiagnosticSignHint",
-                                },
-                            }
-                        or {
-                            -- At one point or another, we'll drop support for the old LSP diag
-                            ["Error"] = {
-                                severity = 1,
-                                default = "E",
-                                sign = "LspDiagnosticsSignError",
-                            },
-                            ["Warn"] = {
-                                severity = 2,
-                                default = "W",
-                                sign = "LspDiagnosticsSignWarning",
-                            },
-                            ["Info"] = {
-                                severity = 3,
-                                default = "I",
-                                sign = "LspDiagnosticsSignInformation",
-                            },
-                            ["Hint"] = {
-                                severity = 4,
-                                default = "H",
-                                sign = "LspDiagnosticsSignHint",
-                            },
-                        }
+                    return lsp_diagnostics_provider({
+                        mode = "workspace_diagnostics",
+                    })
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             }),
             buffer_diagnostics = ProviderConfig:make({
                 key = "ctrl-u",
-                provider = function(query, context) end,
+                provider = function(query, context)
+                    return lsp_diagnostics_provider({
+                        mode = "buffer_diagnostics",
+                        bufnr = context.bufnr,
+                    })
+                end,
                 provider_type = ProviderTypeEnum.LIST,
             }),
         },
-        previewers = PreviewerConfig:make({}),
+        previewers = PreviewerConfig:make({
+            previewer = function(line)
+                local commit = vim.fn.split(line)[1]
+                return string.format("git show --color=always %s", commit)
+            end,
+            previewer_type = PreviewerTypeEnum.COMMAND,
+        }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_rg,
@@ -1116,10 +1125,14 @@ local Defaults = {
             default_fzf_options.preview_half_page_down,
             default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
-            {
-                "--prompt",
-                "LspDiagnostics > ",
-            },
+            { "--delimiter", ":" },
+            { "--preview-window", "+{2}-/2" },
+            function()
+                return {
+                    "--prompt",
+                    require("fzfx.path").shorten() .. " > ",
+                }
+            end,
         },
     }),
 
