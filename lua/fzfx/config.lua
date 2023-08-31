@@ -83,7 +83,7 @@ local default_git_log_pretty =
 --- @param line string
 --- @return string
 local function file_previewer(line)
-    log.debug("|fzfx.config - file_previewer| line:%s", vim.inspect(line))
+    -- log.debug("|fzfx.config - file_previewer| line:%s", vim.inspect(line))
     local filename = env.icon_enable() and vim.fn.split(line)[2] or line
     if constants.has_bat then
         local style = "numbers,changes"
@@ -105,6 +105,59 @@ local function file_previewer(line)
 end
 
 -- file }
+
+-- grep file previewer {
+
+--- @param delimiter string?
+--- @param filename_pos integer?
+--- @param lineno_pos integer?
+--- @return fun(line:string):string
+local function make_file_previewer(delimiter, filename_pos, lineno_pos)
+    --- @param line string
+    --- @return string
+    local function wrap(line)
+        log.debug(
+            "|fzfx.config - make_file_previewer| line:%s",
+            vim.inspect(line)
+        )
+        local filename = line
+        local lineno = nil
+        if
+            type(delimiter) == "string"
+            and string.len(delimiter) > 0
+            and type(filename_pos) == "number"
+            and filename_pos > 0
+        then
+            local line_splits = vim.fn.split(line, delimiter)
+            filename = line_splits[filename_pos]
+            lineno = line_splits[lineno_pos]
+        end
+        filename = env.icon_enable() and vim.fn.split(filename)[2] or filename
+        if constants.has_bat then
+            local style = "numbers,changes"
+            if
+                type(vim.env["BAT_STYLE"]) == "string"
+                and string.len(vim.env["BAT_STYLE"]) > 0
+            then
+                style = vim.env["BAT_STYLE"]
+            end
+            return string.format(
+                "%s --style=%s --color=always --pager=never %s -- %s",
+                constants.bat,
+                style,
+                (lineno ~= nil and string.len(lineno) > 0)
+                        and string.format("--highlight-line=%s", lineno)
+                    or "",
+                filename
+            )
+        else
+            return string.format("cat %s", filename)
+        end
+    end
+    return wrap
+end
+
+-- grep file previewer }
 
 -- lsp diagnostics {
 
@@ -552,7 +605,7 @@ local Defaults = {
             line_type = ProviderLineTypeEnum.FILE,
         }),
         previewers = PreviewerConfig:make({
-            previewer = file_previewer,
+            previewer = make_file_previewer(),
             previewer_type = PreviewerTypeEnum.COMMAND,
         }),
         interactions = {
@@ -1109,10 +1162,16 @@ local Defaults = {
                 line_type = ProviderLineTypeEnum.FILE,
             }),
         },
-        previewers = PreviewerConfig:make({
-            previewer = file_previewer,
-            previewer_type = PreviewerTypeEnum.COMMAND,
-        }),
+        previewers = {
+            workspace_diagnostics = PreviewerConfig:make({
+                previewer = make_file_previewer(":", 1),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+            buffer_diagnostics = PreviewerConfig:make({
+                previewer = make_file_previewer(":", 1),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_rg,
