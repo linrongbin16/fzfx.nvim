@@ -36,6 +36,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - Icons & colors.
 - Windows support.
 - Lua support: preview lua function defined commands and key mappings (todo).
+- Fully dynamic parsing user query and selection, thus generate data source and preview content. A typical use case is passing raw rg options via `--` flag (see demo).
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
