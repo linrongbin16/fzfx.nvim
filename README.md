@@ -48,7 +48,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - Maximized configuration.
 - ...
 
-> Actually all above features are built on an engine that support fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#configuration) and [Wiki](https://github.com/linrongbin16/fzfx.nvim/wiki/Wiki-Home).
+> Actually all above features are built on an engine that support fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#configuration) and [Wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
 
 <details>
 <summary><b>Click here to see some demo</b></summary>
