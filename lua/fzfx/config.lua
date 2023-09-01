@@ -213,6 +213,11 @@ local function lsp_diagnostics_provider(opts)
         }
     end
 
+    -- simulate rg's filepath color, see:
+    -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
+    -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
+    local filepath_color = constants.is_windows and color.cyan_8bit
+        or color.magenta_8bit
     local diag_lines = {}
     for _, diag in ipairs(diag_results) do
         local d = preprocess_diag_item(diag)
@@ -221,7 +226,7 @@ local function lsp_diagnostics_provider(opts)
             -- `lua/fzfx/config.lua:10:13:local ProviderConfig = require("fzfx.schema").ProviderConfig`
             local line = string.format(
                 [[%s:%s:%s:%s%s]],
-                color.magenta_8bit(d.filename),
+                filepath_color(d.filename),
                 color.green_8bit(tostring(d.lnum)),
                 tostring(d.col),
                 (type(d.text) == "string" and string.len(d.text) > 0) and " "
