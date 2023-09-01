@@ -551,6 +551,26 @@ xnoremap <space>gb :\<C-U>FzfxGBlameV<CR>
 nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
 " by yank text
 nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
+
+" ======== lsp diagnostics ========
+
+" lsp diagnostics
+nnoremap <space>dg :\<C-U>FzfxLspDiagnostics<CR>
+" by visual select
+xnoremap <space>dg :\<C-U>FzfxLspDiagnosticsV<CR>
+" only current buffer
+nnoremap <space>bdg :\<C-U>FzfxLspDiagnosticsB<CR>
+" only current buffer by visual select
+xnoremap <space>bdg :\<C-U>FzfxLspDiagnosticsBV<CR>
+
+" by cursor word
+nnoremap <space>wdg :\<C-U>FzfxLspDiagnosticsW<CR>
+" only current buffer by cursor word
+nnoremap <space>bwdg :\<C-U>FzfxLspDiagnosticsBW<CR>
+" by yank text
+nnoremap <space>pdg :\<C-U>FzfxLspDiagnosticsP<CR>
+" only current buffer by yank text
+nnoremap <space>bpdg :\<C-U>FzfxLspDiagnosticsBP<CR>
 ```
 
 </details>
@@ -745,6 +765,37 @@ vim.keymap.set('n', '<space>wgb',
 vim.keymap.set('n', '<space>pgb',
         '<cmd>FzfxGBlameP<cr>',
         {silent=true, noremap=true, desc="Search git blame by yank text"})
+
+-- ======== lsp diagnostics ========
+
+-- git commits
+vim.keymap.set('n', '<space>dg', '<cmd>FzfxLspDiagnostics<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics"})
+-- by visual select
+vim.keymap.set('x', '<space>dg', '<cmd>FzfxLspDiagnosticsV<CR>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics"})
+-- only current buffer
+vim.keymap.set('n', '<space>bdg',
+        '<cmd>FzfxLspDiagnosticsB<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer"})
+-- only current buffer by visual select
+vim.keymap.set('x', '<space>bdg',
+        '<cmd>FzfxLspDiagnosticsBV<CR>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer"})
+
+-- cursor word
+vim.keymap.set('n', '<space>wdg', '<cmd>FzfxLspDiagnosticsW<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics by cursor word"})
+-- only current buffer by cursor word
+vim.keymap.set('n', '<space>bwdg', '<cmd>FzfxLspDiagnosticsBW<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer by cursor word"})
+-- yank text
+vim.keymap.set('n', '<space>pdg', '<cmd>FzfxLspDiagnosticsP<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics by yank text"})
+-- only current buffer by yank text
+vim.keymap.set('n', '<space>bpdg', '<cmd>FzfxLspDiagnosticsBP<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer by yank text"})
+
 ```
 
 </details>
