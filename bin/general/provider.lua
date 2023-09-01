@@ -68,6 +68,8 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     else
         local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
         local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+        shell_helpers.log_debug("out_pipe:%s", vim.inspect(out_pipe))
+        shell_helpers.log_debug("err_pipe:%s", vim.inspect(err_pipe))
         --- @type string?
         local prev_line_content = nil
 
@@ -76,17 +78,23 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             err_pipe:shutdown()
         end
 
-        local process_handler, process_id = vim.loop.spawn(
-            cmd,
-            { stdio = { nil, out_pipe, err_pipe } },
-            function(code, signal)
-                out_pipe:read_stop()
-                err_pipe:read_stop()
-                out_pipe:close()
-                err_pipe:close()
-                exit_cb(code, signal)
-            end
+        local cmd_splits = vim.fn.split(cmd)
+        local process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
+            args = { unpack(cmd_splits, 2) },
+            stdio = { nil, out_pipe, err_pipe },
+            verbatim = true,
+        }, function(code, signal)
+            out_pipe:read_stop()
+            err_pipe:read_stop()
+            out_pipe:close()
+            err_pipe:close()
+            exit_cb(code, signal)
+        end)
+        shell_helpers.log_debug(
+            "process_handler:%s",
+            vim.inspect(process_handler)
         )
+        shell_helpers.log_debug("process_id:%s", vim.inspect(process_id))
 
         --- @param data string
         local function process_lines(data)
@@ -122,6 +130,11 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         end
 
         local read_cb = function(err, data)
+            shell_helpers.log_debug(
+                "read_cb err:%s, data:%s",
+                vim.inspect(err),
+                vim.inspect(data)
+            )
             if err then
                 exit_cb(130, 0)
             end
@@ -155,6 +168,11 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         end
 
         local err_cb = function(err, data)
+            shell_helpers.log_debug(
+                "err_cb err:%s, data:%s",
+                vim.inspect(err),
+                vim.inspect(data)
+            )
             if err then
                 exit_cb(130, 0)
             end
