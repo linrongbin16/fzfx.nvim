@@ -1,8 +1,5 @@
 -- infra utils {
 
-local string_byte = string.byte
-local string_sub = string.sub
-
 local IS_WINDOWS = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
 
 if IS_WINDOWS then
@@ -251,7 +248,7 @@ end
 --- @return integer?
 local function find_next_newline(s, start_idx)
     for i = start_idx or 1, #s do
-        if string_byte(s, i) == 10 then
+        if string.byte(s, i) == 10 then
             return i
         end
     end
@@ -263,7 +260,7 @@ end
 --- @return integer?
 local function find_last_newline(s, start_idx)
     for i = #s, 1, -1 do
-        if string_byte(s, i) == 10 then
+        if string.byte(s, i) == 10 then
             return i
         end
     end

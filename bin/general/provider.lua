@@ -1,18 +1,13 @@
-local string_sub = string.sub
-local string_byte = string.byte
-local string_len = string.len
-local string_format = string.format
-
 local SELF_PATH = vim.env._FZFX_NVIM_SELF_PATH
-if type(SELF_PATH) ~= "string" or string_len(SELF_PATH) == 0 then
-    io.write(string_format("|provider| error! SELF_PATH is empty!"))
+if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
+    io.write(string.format("|provider| error! SELF_PATH is empty!"))
 end
 vim.opt.runtimepath:append(SELF_PATH)
 local shell_helpers = require("fzfx.shell_helpers")
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_SOCKET_ADDRESS
 shell_helpers.log_ensure(
-    type(SOCKET_ADDRESS) == "string" and string_len(SOCKET_ADDRESS) > 0,
+    type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
     "|provider| error! SOCKET_ADDRESS must not be empty!"
 )
 local registry_id = _G.arg[1]
@@ -51,7 +46,7 @@ vim.fn.chanclose(channel_id)
 --- @type string
 local metajsonstring = shell_helpers.readfile(metafile)
 shell_helpers.log_ensure(
-    type(metajsonstring) == "string" and string_len(metajsonstring) > 0,
+    type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
     "|provider| error! metajson is not string! %s",
     vim.inspect(metajsonstring)
 )
@@ -63,7 +58,7 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     --- @type string
     local cmd = shell_helpers.readfile(resultfile)
     shell_helpers.log_debug("cmd:[%s]", vim.inspect(cmd))
-    if cmd == nil or string_len(cmd) == 0 then
+    if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
     else
         local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
@@ -101,7 +96,7 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             local start_idx = 1
             repeat
                 local nl_idx = shell_helpers.find_next_newline(data, start_idx)
-                local line = string_sub(data, start_idx, nl_idx - 1)
+                local line = data:sub(start_idx, nl_idx - 1)
                 -- We used to limit lines fed into fzf to 1K for perf reasons
                 -- but it turned out to have some negative consequnces (#580)
                 -- if #line > 1024 then
@@ -110,19 +105,19 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
                 --   .. "consider adding '--max-columns=512' to ripgrep options: %s\n",
                 --   #line, line:sub(1,256)))
                 -- end
-                if line and string_len(line) > 0 then
+                if line and string.len(line) > 0 then
                     if metajson.provider_line_type == "file" then
-                        if string_len(vim.fn.trim(line)) > 0 then
+                        if string.len(vim.fn.trim(line)) > 0 then
                             local rendered_line =
                                 shell_helpers.render_filepath_line(
                                     line,
                                     metajson.provider_line_delimiter,
                                     metajson.provider_line_pos
                                 )
-                            io.write(string_format("%s\n", rendered_line))
+                            io.write(string.format("%s\n", rendered_line))
                         end
                     else
-                        io.write(string_format("%s\n", line))
+                        io.write(string.format("%s\n", line))
                     end
                 end
                 start_idx = nl_idx + 1
@@ -144,14 +139,14 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             if prev_line_content then
                 -- truncate super long line
                 if #prev_line_content > 4096 then
-                    prev_line_content = string_sub(prev_line_content, 1, 4096)
+                    prev_line_content = prev_line_content:sub(1, 4096)
                 end
                 data = prev_line_content .. data
                 prev_line_content = nil
             end
 
             -- data is end with '\n' (10)
-            if string_byte(data, #data) == 10 then
+            if string.byte(data, #data) == 10 then
                 process_lines(data)
             else
                 -- data is not end with '\n' (10)
@@ -160,8 +155,8 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
                 if not nl_index then
                     prev_line_content = data
                 else
-                    prev_line_content = string_sub(data, nl_index + 1)
-                    local stripped_with_newline = string_sub(data, 1, nl_index)
+                    prev_line_content = data:sub(nl_index + 1)
+                    local stripped_with_newline = data:sub(1, nl_index)
                     process_lines(stripped_with_newline)
                 end
             end
