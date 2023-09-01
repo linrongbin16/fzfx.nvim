@@ -490,7 +490,7 @@ local Defaults = {
             default_fzf_options.toggle_preview,
             { "--prompt", "Live Grep > " },
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
+            { "--preview-window", "+{2}-/3" },
         },
         other_opts = {
             onchange_reload_delay = vim.fn.executable("sleep") > 0
@@ -1167,7 +1167,7 @@ local Defaults = {
             default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
+            { "--preview-window", "+{2}-/3" },
             function()
                 return {
                     "--prompt",
