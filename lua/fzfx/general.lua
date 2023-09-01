@@ -626,6 +626,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             local switch_key = string.lower(provider_opts.key)
 
             local function switch_rpc()
+                log.debug(
+                    "|fzfx.general - general.switch_rpc| pipeline:%s",
+                    vim.inspect(pipeline)
+                )
                 provider_switch:switch(pipeline)
                 previewer_switch:switch(pipeline)
             end
