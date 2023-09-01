@@ -242,7 +242,7 @@ Especially for git commands:
 
 - The remote git branch variant is named with `R` suffix.
 
-> Note: command names can be configured, see [Configuration](#configuration).
+> Note: command names can be configured, see [Configuration](#-configuration).
 
 ### Bind Keys
 
@@ -254,7 +254,7 @@ Especially for git commands:
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
 
-> Note: builtin keys can be configured, see [Configuration](#configuration).
+> Note: builtin keys can be configured, see [Configuration](#-configuration).
 
 <table>
 <thead>
@@ -806,7 +806,7 @@ vim.keymap.set('n', '<space>bpdg', '<cmd>FzfxLspDiagnosticsBP<cr>',
 
 For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
-If you have encounter some breaks on configuration, please see [Break Changes](#break-changes).
+If you have encounter some breaks on configuration, please see [Break Changes](#-break-changes).
 
 ### Create your own commands
 
