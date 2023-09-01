@@ -14,24 +14,24 @@
 
 This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim). A brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
 
-- [Feature](#feature)
-- [Requirement](#requirement)
+- [Feature](#-feature)
+- [Requirement](#-requirement)
   - [Windows](#windows)
   - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
-- [Install](#install)
+- [Install](#-install)
   - [vim-plug](#vim-plug)
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
-- [Commands](#commands)
+- [Commands](#-commands)
   - [Bind Keys](#bind-keys)
-- [Recommended Key Mappings](#recommended-key-mappings)
+- [Recommended Key Mappings](#-recommended-key-mappings)
   - [Vimscript](#vimscript)
   - [Lua](#lua)
-- [Configuration](#configuration)
+- [Configuration](#-configuration)
   - [Create your own commands](#create-your-own-commands)
-- [Break Changes](#break-changes)
-- [Credit](#credit)
-- [Contribute](#contribute)
+- [Break Changes](#-break-changes)
+- [Credit](#-credit)
+- [Contribute](#-contribute)
 
 ## ✨ Feature
 
