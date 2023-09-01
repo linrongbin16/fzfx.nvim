@@ -125,11 +125,11 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         end
 
         local read_cb = function(err, data)
-            shell_helpers.log_debug(
-                "read_cb err:%s, data:%s",
-                vim.inspect(err),
-                vim.inspect(data)
-            )
+            -- shell_helpers.log_debug(
+            --     "read_cb err:%s, data:%s",
+            --     vim.inspect(err),
+            --     vim.inspect(data)
+            -- )
             if err then
                 exit_cb(130, 0)
             end
