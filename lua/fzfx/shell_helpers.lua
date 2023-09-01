@@ -151,47 +151,6 @@ if type(DEVICONS_PATH) == "string" and string.len(DEVICONS_PATH) > 0 then
     DEVICONS = require("nvim-web-devicons")
 end
 
---- @param color string
---- @param fg boolean
---- @return string|nil
-local function csi(color, fg)
-    local code = fg and 38 or 48
-    local r, g, b = color:match("#(..)(..)(..)")
-    if r and g and b then
-        r = tonumber(r, 16)
-        g = tonumber(g, 16)
-        b = tonumber(b, 16)
-        local result = string.format("%d;2;%d;%d;%d", code, r, g, b)
-        -- log_debug(
-        --     "|fzfx.shell_helpers - color_csi| rgb, color:%s, fg:%s, result:%s",
-        --     vim.inspect(color),
-        --     vim.inspect(fg),
-        --     vim.inspect(result)
-        -- )
-        return result
-    else
-        local result = string.format("%d;5;%s", code, color)
-        -- log_debug(
-        --     "|fzfx.shell_helpers - color_csi| non-rgb, color:%s, fg:%s, result:%s",
-        --     vim.inspect(color),
-        --     vim.inspect(fg),
-        --     vim.inspect(result)
-        -- )
-        return result
-    end
-end
-
---- @param p string?
-local function normalize_filepath(p)
-    if type(p) ~= "string" or string.len(p) == 0 then
-        return p
-    end
-    if p:sub(1, 2) == [[./]] or p:sub(1, 2) == [[.\]] then
-        return p:sub(3, #p)
-    end
-    return p
-end
-
 --- @param line string
 --- @param delimiter string?
 --- @param pos integer?
@@ -214,14 +173,16 @@ local function render_filepath_line(line, delimiter, pos)
     -- see: https://stackoverflow.com/a/55324681/4438921
     if type(filename) == "string" and string.len(filename) > 0 then
         if IS_WINDOWS then
-            filename = filename:gsub('\x1b%[%d+m\x1b%[K','')
-                               :gsub('\x1b%[m\x1b%[K', '')
+            filename = filename
+                :gsub("\x1b%[%d+m\x1b%[K", "")
+                :gsub("\x1b%[m\x1b%[K", "")
         end
-        filename = filename:gsub('\x1b%[%d+;%d+;%d+;%d+;%d+m','')
-                           :gsub('\x1b%[%d+;%d+;%d+;%d+m','')
-                           :gsub('\x1b%[%d+;%d+;%d+m','')
-                           :gsub('\x1b%[%d+;%d+m','')
-                           :gsub('\x1b%[%d+m','')
+        filename = filename
+            :gsub("\x1b%[%d+;%d+;%d+;%d+;%d+m", "")
+            :gsub("\x1b%[%d+;%d+;%d+;%d+m", "")
+            :gsub("\x1b%[%d+;%d+;%d+m", "")
+            :gsub("\x1b%[%d+;%d+m", "")
+            :gsub("\x1b%[%d+m", "")
     end
     local ext = vim.fn.fnamemodify(filename, ":e")
     local icon, icon_color = DEVICONS.get_icon_color(filename, ext)
@@ -238,7 +199,7 @@ local function render_filepath_line(line, delimiter, pos)
     --     )
     -- end
     if type(icon) == "string" and string.len(icon) > 0 then
-        local colorfmt = csi(icon_color, true)
+        local colorfmt = require("fzfx.color").csi(icon_color, true)
         if colorfmt then
             return string.format("[%sm%s[0m %s", colorfmt, icon, line)
         else
@@ -293,7 +254,6 @@ local M = {
     log_ensure = log_ensure,
     read_provider_command = read_provider_command,
     readfile = readfile,
-    color_csi = csi,
     render_filepath_line = render_filepath_line,
     parse_query = parse_query,
     Command = require("fzfx.command").Command,

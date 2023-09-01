@@ -14,9 +14,12 @@ local AnsiCode = {
 
 --- @alias VimSyntaxHighlightAttribute "fg"|"bg"
 --- @param attr VimSyntaxHighlightAttribute
---- @param group string
+--- @param group string?
 --- @return string|nil
 local function get_color(attr, group)
+    if type(group) ~= "string" then
+        return nil
+    end
     local gui = vim.fn.has("termguicolors") > 0 and vim.o.termguicolors
     local family = gui and "gui" or "cterm"
     local pattern = gui and "^#[%l%d]+" or "^[%d]+$"
@@ -72,11 +75,11 @@ end
 
 --- @param text string
 --- @param name string
---- @param hl string
+--- @param hl string?
 --- @return string
 local function ansi(text, name, hl)
-    local fg = get_color("fg", hl)
     local fgcolor = nil
+    local fg = get_color("fg", hl)
     if type(fg) == "string" then
         fgcolor = csi(fg, true)
         -- log.debug(
@@ -99,8 +102,8 @@ local function ansi(text, name, hl)
         -- )
     end
 
-    local bg = get_color("bg", hl)
     local finalcolor = nil
+    local bg = get_color("bg", hl)
     if type(bg) == "string" then
         local bgcolor = csi(bg, false)
         -- log.debug(
@@ -154,6 +157,9 @@ for color, default_hl in pairs({
     --- @return string
     M[color] = function(text, hl)
         return ansi(text, color, hl or default_hl)
+    end
+    M[color .. "_8bit"] = function(text)
+        return ansi(text, color, nil)
     end
 end
 

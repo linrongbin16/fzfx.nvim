@@ -3,6 +3,7 @@ local utils = require("fzfx.utils")
 local env = require("fzfx.env")
 local log = require("fzfx.log")
 local LogLevel = require("fzfx.log").LogLevel
+local color = require("fzfx.color")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
@@ -77,28 +78,164 @@ local default_fzf_options = {
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
---- @param line string
---- @return string
-local function file_previewer(line)
-    local filename = env.icon_enable() and vim.fn.split(line)[2] or line
-    if constants.has_bat then
-        local style = "numbers,changes"
-        if
-            type(vim.env["BAT_STYLE"]) == "string"
-            and string.len(vim.env["BAT_STYLE"]) > 0
-        then
-            style = vim.env["BAT_STYLE"]
-        end
-        return string.format(
-            "%s --style=%s --color=always --pager=never -- %s",
-            constants.bat,
-            style,
-            filename
+-- file {
+
+--- @param delimiter string?
+--- @param filename_pos integer?
+--- @param lineno_pos integer?
+--- @return fun(line:string):string
+local function make_file_previewer(delimiter, filename_pos, lineno_pos)
+    --- @param line string
+    --- @return string
+    local function wrap(line)
+        log.debug(
+            "|fzfx.config - make_file_previewer| delimiter:%s, filename_pos:%s, lineno_pos:%s",
+            vim.inspect(delimiter),
+            vim.inspect(filename_pos),
+            vim.inspect(lineno_pos)
         )
-    else
-        return string.format("cat %s", filename)
+        log.debug(
+            "|fzfx.config - make_file_previewer| line:%s",
+            vim.inspect(line)
+        )
+        local filename = line
+        local lineno = nil
+        if
+            type(delimiter) == "string"
+            and string.len(delimiter) > 0
+            and type(filename_pos) == "number"
+            and filename_pos > 0
+        then
+            local line_splits = vim.fn.split(line, delimiter)
+            filename = line_splits[filename_pos]
+            lineno = line_splits[lineno_pos]
+        end
+        filename = env.icon_enable() and vim.fn.split(filename)[2] or filename
+        if constants.has_bat then
+            local style = "numbers,changes"
+            if
+                type(vim.env["BAT_STYLE"]) == "string"
+                and string.len(vim.env["BAT_STYLE"]) > 0
+            then
+                style = vim.env["BAT_STYLE"]
+            end
+            return string.format(
+                "%s --style=%s --color=always --pager=never %s -- %s",
+                constants.bat,
+                style,
+                (lineno ~= nil and string.len(lineno) > 0)
+                        and string.format("--highlight-line=%s", lineno)
+                    or "",
+                filename
+            )
+        else
+            return string.format("cat %s", filename)
+        end
     end
+    return wrap
 end
+
+-- file }
+
+-- lsp diagnostics {
+
+--- @alias LspDiagnosticOpts {mode:"buffer_diagnostics"|"workspace_diagnostics",severity:integer?,bufnr:integer?}
+--- @param opts LspDiagnosticOpts
+--- @return string[]?
+local function lsp_diagnostics_provider(opts)
+    if not constants.has_vim_diagnostics then
+        local active_lsp_clients = vim.lsp.get_active_clients()
+        if utils.list_empty(active_lsp_clients) then
+            log.echo(LogLevel.INFO, "no active lsp clients.")
+            return nil
+        end
+    end
+    local signs = {
+        ["Error"] = {
+            severity = 1,
+            text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
+            texthl = "DiagnosticSignError",
+        },
+        ["Warn"] = {
+            severity = 2,
+            text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
+            texthl = "DiagnosticSignWarn",
+        },
+        ["Info"] = {
+            severity = 3,
+            text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
+            texthl = "DiagnosticSignInfo",
+        },
+        ["Hint"] = {
+            severity = 4,
+            text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
+            texthl = "DiagnosticSignHint",
+        },
+    }
+    for _, sign_opts in pairs(signs) do
+        local sign_def = vim.fn.sign_getdefined(sign_opts.sign)
+        if not utils.list_empty(sign_def) then
+            sign_opts.text = vim.fn.trim(sign_def[1].text)
+            sign_opts.texthl = sign_def[1].texthl
+        end
+    end
+
+    local diag_results = vim.diagnostic.get(
+        opts.mode == "buffer_diagnostics" and opts.bufnr or nil
+    )
+    -- descending: error, warn, info, hint
+    table.sort(diag_results, function(a, b)
+        return a.severity < b.severity
+    end)
+    if utils.list_empty(diag_results) then
+        log.echo(LogLevel.INFO, "no diagnostics found.")
+        return nil
+    end
+
+    --- @alias DiagItem {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}
+    --- @return DiagItem?
+    local function preprocess_diag_item(diag)
+        if not vim.api.nvim_buf_is_valid(diag.bufnr) then
+            return nil
+        end
+        local bufname = vim.api.nvim_buf_get_name(diag.bufnr)
+        local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
+        local range_start = diag.range and diag.range["start"]
+        local row = diag.lnum or range_start.line
+        local col = diag.col or range_start.character
+        return {
+            bufnr = diag.bufnr,
+            filename = bufpath,
+            lnum = row + 1,
+            col = col + 1,
+            text = vim.trim(diag.message:gsub("[\n]", "")),
+            severity = diag.severity or 1,
+        }
+    end
+
+    local diag_lines = {}
+    for _, diag in ipairs(diag_results) do
+        local d = preprocess_diag_item(diag)
+        if d ~= nil then
+            -- it looks like:
+            -- `lua/fzfx/config.lua:10:13:local ProviderConfig = require("fzfx.schema").ProviderConfig`
+            local line = string.format(
+                [[%s:%s:%s:%s%s]],
+                color.magenta_8bit(d.filename),
+                color.green_8bit(tostring(d.lnum)),
+                tostring(d.col),
+                (type(d.text) == "string" and string.len(d.text) > 0) and " "
+                    or "",
+                (type(d.text) == "string" and string.len(d.text) > 0) and d.text
+                    or ""
+            )
+            table.insert(diag_lines, line)
+        end
+    end
+    return diag_lines
+end
+
+-- lsp diagnostics }
 
 --- @alias Configs table<string, any>
 --- @type Configs
@@ -353,7 +490,7 @@ local Defaults = {
             default_fzf_options.toggle_preview,
             { "--prompt", "Live Grep > " },
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
+            { "--preview-window", "+{2}-/3" },
         },
         other_opts = {
             onchange_reload_delay = vim.fn.executable("sleep") > 0
@@ -446,7 +583,7 @@ local Defaults = {
             line_type = ProviderLineTypeEnum.FILE,
         }),
         previewers = PreviewerConfig:make({
-            previewer = file_previewer,
+            previewer = make_file_previewer(),
             previewer_type = PreviewerTypeEnum.COMMAND,
         }),
         interactions = {
@@ -660,7 +797,7 @@ local Defaults = {
 
     -- the 'Git Commits' commands
     --- @type GroupConfig
-    git_commits = {
+    git_commits = GroupConfig:make({
         commands = {
             -- normal
             CommandConfig:make({
@@ -756,8 +893,8 @@ local Defaults = {
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
                         log.echo(
-                            LogLevel.WARN,
-                            "'FzfxGCommits' commands (buffer only) cannot run on an invalid buffer (%s)!",
+                            LogLevel.INFO,
+                            "no commits found on invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
                         return nil
@@ -802,11 +939,11 @@ local Defaults = {
                 "GCommits > ",
             },
         },
-    },
+    }),
 
     -- the 'Git Blame' command
     --- @type GroupConfig
-    git_blame = {
+    git_blame = GroupConfig:make({
         commands = {
             -- normal
             CommandConfig:make({
@@ -853,8 +990,8 @@ local Defaults = {
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
                         log.echo(
-                            LogLevel.WARN,
-                            "'FzfxGBlame' commands cannot run on an invalid buffer (%s)!",
+                            LogLevel.INFO,
+                            "no commits found on invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
                         return nil
@@ -893,7 +1030,152 @@ local Defaults = {
                 "GBlame > ",
             },
         },
-    },
+    }),
+
+    -- the 'Lsp Diagnostics' command
+    --- @type GroupConfig
+    lsp_diagnostics = GroupConfig:make({
+        commands = {
+            -- normal
+            CommandConfig:make({
+                name = "FzfxLspDiagnostics",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    desc = "Search lsp diagnostics on workspace",
+                },
+                default_provider = "workspace_diagnostics",
+            }),
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsB",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    desc = "Search lsp diagnostics on current buffer",
+                },
+                default_provider = "buffer_diagnostics",
+            }),
+            -- visual
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Search lsp diagnostics on workspace by visual select",
+                },
+                default_provider = "workspace_diagnostics",
+            }),
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsBV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Search lsp diagnostics on current buffer by visual select",
+                },
+                default_provider = "buffer_diagnostics",
+            }),
+            -- cword
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on workspace by cursor word",
+                },
+                default_provider = "workspace_diagnostics",
+            }),
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsBW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on current buffer by cursor word",
+                },
+                default_provider = "buffer_diagnostics",
+            }),
+            -- put
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on workspace by yank text",
+                },
+                default_provider = "workspace_diagnostics",
+            }),
+            CommandConfig:make({
+                name = "FzfxLspDiagnosticsBP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on current buffer by yank text",
+                },
+                default_provider = "buffer_diagnostics",
+            }),
+        },
+        providers = {
+            workspace_diagnostics = ProviderConfig:make({
+                key = "ctrl-w",
+                provider = function(query, context)
+                    return lsp_diagnostics_provider({
+                        mode = "workspace_diagnostics",
+                    })
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+                line_type = ProviderLineTypeEnum.FILE,
+                line_delimiter = ":",
+                line_pos = 1,
+            }),
+            buffer_diagnostics = ProviderConfig:make({
+                key = "ctrl-u",
+                provider = function(query, context)
+                    return lsp_diagnostics_provider({
+                        mode = "buffer_diagnostics",
+                        bufnr = context.bufnr,
+                    })
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+                line_type = ProviderLineTypeEnum.FILE,
+                line_delimiter = ":",
+                line_pos = 1,
+            }),
+        },
+        previewers = {
+            workspace_diagnostics = PreviewerConfig:make({
+                previewer = make_file_previewer(":", 1, 2),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+            buffer_diagnostics = PreviewerConfig:make({
+                previewer = make_file_previewer(":", 1, 2),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+        },
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
+        },
+        fzf_opts = {
+            default_fzf_options.multi,
+            default_fzf_options.toggle,
+            default_fzf_options.toggle_all,
+            default_fzf_options.preview_half_page_down,
+            default_fzf_options.preview_half_page_up,
+            default_fzf_options.toggle_preview,
+            { "--delimiter", ":" },
+            { "--preview-window", "+{2}-/3" },
+            function()
+                return {
+                    "--prompt",
+                    require("fzfx.path").shorten() .. " > ",
+                }
+            end,
+        },
+    }),
 
     -- the 'Yank History' commands
     yank_history = {

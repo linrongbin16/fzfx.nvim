@@ -2,7 +2,15 @@
 
 local constants = require("fzfx.constants")
 
-local function table_filter(f, t)
+--- @param t table
+--- @return boolean
+local function tbl_empty(t)
+    return t == nil or not next(t) --[[@as boolean]]
+end
+
+--- @param f fun(k:any,v:any):boolean
+--- @param t table
+local function tbl_filter(f, t)
     local result = {}
     for k, v in pairs(t) do
         if f(k, v) then
@@ -12,6 +20,14 @@ local function table_filter(f, t)
     return result
 end
 
+--- @param l table
+--- @return boolean
+local function list_empty(l)
+    return l == nil or #l == 0
+end
+
+--- @param f fun(k:any,v:any):boolean
+--- @param l any[]
 local function list_filter(f, l)
     local result = {}
     for i, v in ipairs(l) do
@@ -235,7 +251,9 @@ function WindowOptsContext:restore()
 end
 
 local M = {
-    table_filter = table_filter,
+    tbl_empty = tbl_empty,
+    tbl_filter = tbl_filter,
+    list_empty = list_empty,
     list_filter = list_filter,
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,

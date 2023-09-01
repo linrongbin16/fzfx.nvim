@@ -52,6 +52,9 @@ local function setup(options)
     -- git blame
     general.setup("git_blame", configs.git_blame)
 
+    -- lsp diagnostics
+    general.setup("lsp_diagnostics", configs.lsp_diagnostics)
+
     -- yank history
     require("fzfx.yank_history").setup()
 
