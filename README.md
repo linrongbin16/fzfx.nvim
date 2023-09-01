@@ -33,7 +33,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - [Credit](#credit)
 - [Contribute](#contribute)
 
-## Feature
+## ✨ Feature
 
 - Icons & colors.
 - Windows support.
@@ -62,7 +62,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 </details>
 
-## Requirement
+## ⚡ Requirement
 
 - Neovim &ge; 0.5.
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
@@ -169,7 +169,7 @@ But when there're whitespaces on the path, launching correct shell command becom
 
 </details>
 
-## Install
+## 📦 Install
 
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
@@ -226,7 +226,7 @@ require("lazy").setup({
 })
 ```
 
-## Commands
+## 🎬 Commands
 
 Commands are named following below rules:
 
@@ -431,7 +431,7 @@ Especially for git commands:
 </tbody>
 </table>
 
-## Recommended Key Mappings
+## 📎 Recommended Key Mappings
 
 ### Vimscript
 
@@ -802,7 +802,7 @@ vim.keymap.set('n', '<space>bpdg', '<cmd>FzfxLspDiagnosticsBP<cr>',
 
 </details>
 
-## Configuration
+## 🔧 Configuration
 
 For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
@@ -812,7 +812,7 @@ If you have encounter some breaks on configuration, please see [Break Changes](#
 
 To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/c521e3027b26b4ffe1a49a5b1ceba6669ae62b6c/lua/fzfx/schema.lua#L1).
 
-## Break Changes
+## 💩 Break Changes
 
 - 2023-08-17
   - Re-bind keys 'ctrl-e'(select), 'ctrl-a'(select-all) to 'toggle', 'toggle-all'.
@@ -826,12 +826,12 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 - 2023-08-30
   - Deprecate 'buffers' (`FzfxBuffers`) configs, notify user migrate to new schema.
 
-## Credit
+## 🍀 Credit
 
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
 
-## Contribute
+## 🎉 Contribute
 
 Please open [issue](https://github.com/linrongbin16/fzfx.nvim/issues)/[PR](https://github.com/linrongbin16/fzfx.nvim/pulls) for anything about fzfx.nvim.
 
