@@ -226,7 +226,7 @@ require("lazy").setup({
 })
 ```
 
-## ✈️ Commands
+## 🚀 Commands
 
 Commands are named following below rules:
 
@@ -431,7 +431,7 @@ Especially for git commands:
 </tbody>
 </table>
 
-## 🚀 Recommended Key Mappings
+## 📌 Recommended Key Mappings
 
 ### Vimscript
 
