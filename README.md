@@ -406,6 +406,26 @@ Especially for git commands:
     <td>FzfxGBlameP</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td rowspan="4">Lsp Diagnostics</td>
+    <td>FzfxLspDiagnostics(B)</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4"></td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)P</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
