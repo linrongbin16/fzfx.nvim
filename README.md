@@ -62,7 +62,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 </details>
 
-## ⚡ Requirement
+## ✅ Requirement
 
 - Neovim &ge; 0.5.
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
@@ -226,7 +226,7 @@ require("lazy").setup({
 })
 ```
 
-## 🎬 Commands
+## 🚀 Commands
 
 Commands are named following below rules:
 
@@ -431,7 +431,7 @@ Especially for git commands:
 </tbody>
 </table>
 
-## 🔑 Recommended Key Mappings
+## 📌 Recommended Key Mappings
 
 ### Vimscript
 
@@ -802,7 +802,7 @@ vim.keymap.set('n', '<space>bpdg', '<cmd>FzfxLspDiagnosticsBP<cr>',
 
 </details>
 
-## 🔧 Configuration
+## ⚙️ Configuration
 
 For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
@@ -831,7 +831,7 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
 
-## 🎉 Contribute
+## 🎁 Contribute
 
 Please open [issue](https://github.com/linrongbin16/fzfx.nvim/issues)/[PR](https://github.com/linrongbin16/fzfx.nvim/pulls) for anything about fzfx.nvim.
 
