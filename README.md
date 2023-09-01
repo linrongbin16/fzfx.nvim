@@ -2,36 +2,38 @@
 
 # fzfx.nvim
 
-[![Neovim-v0.5](https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg?style=flat-square&logo=Neovim&logoColor=green)](https://github.com/neovim/neovim/releases/tag/v0.5.0)
-[![License](https://img.shields.io/github/license/linrongbin16/lin.nvim?style=flat-square&logo=GNU)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
-![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black)
-![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white)
-![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white)
+[![Neovim-v0.5](https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg?logo=Neovim&logoColor=green&style=flat-square)](https://github.com/neovim/neovim/releases/tag/v0.5.0)
+[![typecheck.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/typecheck.yml?logo=lua&logoColor=blue&style=flat-square&label=TypeCheck)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/typecheck.yml)
+
+<!-- [![License](https://img.shields.io/github/license/linrongbin16/lin.nvim?style=flat-square&logo=GNU)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE) -->
+<!-- ![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black) -->
+<!-- ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white) -->
+<!-- ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white) -->
 
 > E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
 
 This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim). A brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
 
-- [Feature](#feature)
-- [Requirement](#requirement)
+- [Feature](#-feature)
+- [Requirement](#-requirement)
   - [Windows](#windows)
   - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
-- [Install](#install)
+- [Install](#-install)
   - [vim-plug](#vim-plug)
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
-- [Commands](#commands)
+- [Commands](#-commands)
   - [Bind Keys](#bind-keys)
-- [Recommended Key Mappings](#recommended-key-mappings)
+- [Recommended Key Mappings](#-recommended-key-mappings)
   - [Vimscript](#vimscript)
   - [Lua](#lua)
-- [Configuration](#configuration)
+- [Configuration](#-configuration)
   - [Create your own commands](#create-your-own-commands)
-- [Break Changes](#break-changes)
-- [Credit](#credit)
-- [Contribute](#contribute)
+- [Break Changes](#-break-changes)
+- [Credit](#-credit)
+- [Contribute](#-contribute)
 
-## Feature
+## ✨ Feature
 
 - Icons & colors.
 - Windows support.
@@ -48,7 +50,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - Maximized configuration.
 - ...
 
-> Actually all above features are built on an engine that support fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#configuration) and [Wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
+> Actually all above features are built on an engine that support fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#-configuration) and [Wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
 
 <details>
 <summary><b>Click here to see some demo</b></summary>
@@ -60,7 +62,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 
 </details>
 
-## Requirement
+## ⚡ Requirement
 
 - Neovim &ge; 0.5.
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
@@ -167,7 +169,7 @@ But when there're whitespaces on the path, launching correct shell command becom
 
 </details>
 
-## Install
+## 📦 Install
 
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
@@ -224,7 +226,7 @@ require("lazy").setup({
 })
 ```
 
-## Commands
+## 🎬 Commands
 
 Commands are named following below rules:
 
@@ -240,7 +242,7 @@ Especially for git commands:
 
 - The remote git branch variant is named with `R` suffix.
 
-> Note: command names can be configured, see [Configuration](#configuration).
+> Note: command names can be configured, see [Configuration](#-configuration).
 
 ### Bind Keys
 
@@ -252,7 +254,7 @@ Especially for git commands:
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
 
-> Note: builtin keys can be configured, see [Configuration](#configuration).
+> Note: builtin keys can be configured, see [Configuration](#-configuration).
 
 <table>
 <thead>
@@ -406,10 +408,30 @@ Especially for git commands:
     <td>FzfxGBlameP</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td rowspan="4">Lsp Diagnostics</td>
+    <td>FzfxLspDiagnostics(B)</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4"></td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)P</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
-## Recommended Key Mappings
+## 🔑 Recommended Key Mappings
 
 ### Vimscript
 
@@ -531,6 +553,26 @@ xnoremap <space>gb :\<C-U>FzfxGBlameV<CR>
 nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
 " by yank text
 nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
+
+" ======== lsp diagnostics ========
+
+" lsp diagnostics
+nnoremap <space>dg :\<C-U>FzfxLspDiagnostics<CR>
+" by visual select
+xnoremap <space>dg :\<C-U>FzfxLspDiagnosticsV<CR>
+" only current buffer
+nnoremap <space>bdg :\<C-U>FzfxLspDiagnosticsB<CR>
+" only current buffer by visual select
+xnoremap <space>bdg :\<C-U>FzfxLspDiagnosticsBV<CR>
+
+" by cursor word
+nnoremap <space>wdg :\<C-U>FzfxLspDiagnosticsW<CR>
+" only current buffer by cursor word
+nnoremap <space>bwdg :\<C-U>FzfxLspDiagnosticsBW<CR>
+" by yank text
+nnoremap <space>pdg :\<C-U>FzfxLspDiagnosticsP<CR>
+" only current buffer by yank text
+nnoremap <space>bpdg :\<C-U>FzfxLspDiagnosticsBP<CR>
 ```
 
 </details>
@@ -725,21 +767,52 @@ vim.keymap.set('n', '<space>wgb',
 vim.keymap.set('n', '<space>pgb',
         '<cmd>FzfxGBlameP<cr>',
         {silent=true, noremap=true, desc="Search git blame by yank text"})
+
+-- ======== lsp diagnostics ========
+
+-- git commits
+vim.keymap.set('n', '<space>dg', '<cmd>FzfxLspDiagnostics<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics"})
+-- by visual select
+vim.keymap.set('x', '<space>dg', '<cmd>FzfxLspDiagnosticsV<CR>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics"})
+-- only current buffer
+vim.keymap.set('n', '<space>bdg',
+        '<cmd>FzfxLspDiagnosticsB<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer"})
+-- only current buffer by visual select
+vim.keymap.set('x', '<space>bdg',
+        '<cmd>FzfxLspDiagnosticsBV<CR>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer"})
+
+-- cursor word
+vim.keymap.set('n', '<space>wdg', '<cmd>FzfxLspDiagnosticsW<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics by cursor word"})
+-- only current buffer by cursor word
+vim.keymap.set('n', '<space>bwdg', '<cmd>FzfxLspDiagnosticsBW<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer by cursor word"})
+-- yank text
+vim.keymap.set('n', '<space>pdg', '<cmd>FzfxLspDiagnosticsP<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics by yank text"})
+-- only current buffer by yank text
+vim.keymap.set('n', '<space>bpdg', '<cmd>FzfxLspDiagnosticsBP<cr>',
+        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer by yank text"})
+
 ```
 
 </details>
 
-## Configuration
+## 🔧 Configuration
 
 For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
-If you have encounter some breaks on configuration, please see [Break Changes](#break-changes).
+If you have encounter some breaks on configuration, please see [Break Changes](#-break-changes).
 
 ### Create your own commands
 
 To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/c521e3027b26b4ffe1a49a5b1ceba6669ae62b6c/lua/fzfx/schema.lua#L1).
 
-## Break Changes
+## 💩 Break Changes
 
 - 2023-08-17
   - Re-bind keys 'ctrl-e'(select), 'ctrl-a'(select-all) to 'toggle', 'toggle-all'.
@@ -753,12 +826,12 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 - 2023-08-30
   - Deprecate 'buffers' (`FzfxBuffers`) configs, notify user migrate to new schema.
 
-## Credit
+## 🍀 Credit
 
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
 
-## Contribute
+## 🎉 Contribute
 
 Please open [issue](https://github.com/linrongbin16/fzfx.nvim/issues)/[PR](https://github.com/linrongbin16/fzfx.nvim/pulls) for anything about fzfx.nvim.
 
