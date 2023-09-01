@@ -14,9 +14,12 @@ local AnsiCode = {
 
 --- @alias VimSyntaxHighlightAttribute "fg"|"bg"
 --- @param attr VimSyntaxHighlightAttribute
---- @param group string
+--- @param group string?
 --- @return string|nil
 local function get_color(attr, group)
+    if type(group) ~= "string" then
+        return nil
+    end
     local gui = vim.fn.has("termguicolors") > 0 and vim.o.termguicolors
     local family = gui and "gui" or "cterm"
     local pattern = gui and "^#[%l%d]+" or "^[%d]+$"
@@ -76,10 +79,9 @@ end
 --- @return string
 local function ansi(text, name, hl)
     local fgcolor = nil
-    if type(hl) == "string" then
-        local fg = get_color("fg", hl)
-        if type(fg) == "string" then
-            fgcolor = csi(fg, true)
+    local fg = get_color("fg", hl)
+    if type(fg) == "string" then
+        fgcolor = csi(fg, true)
         -- log.debug(
         --     "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
         --     vim.inspect(text),
@@ -88,46 +90,39 @@ local function ansi(text, name, hl)
         --     vim.inspect(fg),
         --     vim.inspect(fgcolor)
         -- )
-        else
-            fgcolor = AnsiCode[name]
-            -- log.debug(
-            --     "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
-            --     vim.inspect(text),
-            --     vim.inspect(name),
-            --     vim.inspect(hl),
-            --     vim.inspect(fg),
-            --     vim.inspect(fgcolor)
-            -- )
-        end
     else
         fgcolor = AnsiCode[name]
+        -- log.debug(
+        --     "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
+        --     vim.inspect(text),
+        --     vim.inspect(name),
+        --     vim.inspect(hl),
+        --     vim.inspect(fg),
+        --     vim.inspect(fgcolor)
+        -- )
     end
 
     local finalcolor = nil
-    if type(hl) == "string" then
-        local bg = get_color("bg", hl)
-        if type(bg) == "string" then
-            local bgcolor = csi(bg, false)
-            -- log.debug(
-            --     "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, bg:%s, bgcolor:%s",
-            --     vim.inspect(text),
-            --     vim.inspect(name),
-            --     vim.inspect(hl),
-            --     vim.inspect(bg),
-            --     vim.inspect(bgcolor)
-            -- )
-            finalcolor = string.format("%s;%s", fgcolor, bgcolor)
-        else
-            -- log.debug(
-            --     "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, bg:%s",
-            --     vim.inspect(text),
-            --     vim.inspect(name),
-            --     vim.inspect(hl),
-            --     vim.inspect(bg)
-            -- )
-            finalcolor = fgcolor
-        end
+    local bg = get_color("bg", hl)
+    if type(bg) == "string" then
+        local bgcolor = csi(bg, false)
+        -- log.debug(
+        --     "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, bg:%s, bgcolor:%s",
+        --     vim.inspect(text),
+        --     vim.inspect(name),
+        --     vim.inspect(hl),
+        --     vim.inspect(bg),
+        --     vim.inspect(bgcolor)
+        -- )
+        finalcolor = string.format("%s;%s", fgcolor, bgcolor)
     else
+        -- log.debug(
+        --     "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, bg:%s",
+        --     vim.inspect(text),
+        --     vim.inspect(name),
+        --     vim.inspect(hl),
+        --     vim.inspect(bg)
+        -- )
         finalcolor = fgcolor
     end
 
