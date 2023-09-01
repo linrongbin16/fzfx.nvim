@@ -131,7 +131,7 @@ Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\W
 ### Path containing whitespace & Escaping issue
 
 <details>
-<summary><b>Click here to how whitespaces affected escaping characters on path</b></summary>
+<summary><b>Click here to see how whitespace affect escaping characters on path</b></summary>
 <br/>
 
 This plugin internally extends `nvim`, `fzf` and lua scripts to full path when launching command.
