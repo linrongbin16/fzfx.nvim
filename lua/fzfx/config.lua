@@ -221,7 +221,7 @@ local function lsp_diagnostics_provider(opts)
             -- `lua/fzfx/config.lua:10:13:local ProviderConfig = require("fzfx.schema").ProviderConfig`
             local line = string.format(
                 [[%s:%s:%s:%s%s]],
-                d.filename,
+                color.magenta_8bit(d.filename),
                 color.green_8bit(tostring(d.lnum)),
                 tostring(d.col),
                 (type(d.text) == "string" and string.len(d.text) > 0) and " "
