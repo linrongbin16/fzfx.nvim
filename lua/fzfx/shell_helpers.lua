@@ -260,6 +260,8 @@ local M = {
     GitRootCommand = require("fzfx.git_command_helpers").GitRootCommand,
     GitBranchCommand = require("fzfx.git_command_helpers").GitBranchCommand,
     GitCurrentBranchCommand = require("fzfx.git_command_helpers").GitCurrentBranchCommand,
+    string_find = require("fzfx.utils").string_find,
+    string_rfind = require("fzfx.utils").string_rfind,
 }
 
 return M

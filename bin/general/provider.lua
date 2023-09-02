@@ -177,34 +177,48 @@ then
                 on_exit(1)
                 return
             end
+
             if not data then
+                if data_buffer then
+                    -- foreach the data_buffer and find every line
+                    local i = 1
+                    while i <= #data_buffer do
+                        local newline_pos =
+                            shell_helpers.string_find(data_buffer, "\n", i)
+                        if not newline_pos then
+                            break
+                        end
+                        local line = data_buffer:sub(i, newline_pos)
+                        println(line)
+                        i = newline_pos + 1
+                    end
+                    if i <= #data_buffer then
+                        local line = data_buffer:sub(i, #data_buffer)
+                        println(line)
+                        data_buffer = nil
+                    end
+                end
                 on_exit(0)
                 return
             end
 
             -- append data to data_buffer
             data_buffer = data_buffer and (data_buffer .. data) or data
-
             -- foreach the data_buffer and find every line
             local i = 1
-            local truncated = false
             while i <= #data_buffer do
-                local newline_pos = vim.fn.stridx(data_buffer, "\n", i)
-                if newline_pos <= 0 then
+                local newline_pos =
+                    shell_helpers.string_find(data_buffer, "\n", i)
+                if not newline_pos then
                     break
                 end
-                local line = data_buffer:sub(i, newline_pos - 1)
+                local line = data_buffer:sub(i, newline_pos)
                 println(line)
                 i = newline_pos + 1
-                truncated = true
             end
-
-            -- truncate the printed lines if any
-            if truncated then
-                data_buffer = i <= #data_buffer
-                        and data_buffer:sub(i, #data_buffer)
-                    or nil
-            end
+            -- truncate the printed lines if found any
+            data_buffer = i <= #data_buffer and data_buffer:sub(i, #data_buffer)
+                or nil
         end
 
         local function on_error(err, data)
