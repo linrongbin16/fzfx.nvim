@@ -873,6 +873,7 @@ local Defaults = {
                 provider = {
                     "git",
                     "log",
+                    -- no need to surround two quotes to pretty format
                     "--pretty=" .. default_git_log_pretty,
                     "--date=short",
                     "--color=always",
@@ -908,7 +909,7 @@ local Defaults = {
                         vim.api.nvim_buf_get_name(context.bufnr),
                     }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                provider_type = ProviderTypeEnum.COMMAND,
             }),
         },
         previewers = {
@@ -1011,7 +1012,7 @@ local Defaults = {
                         bufpath,
                     }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                provider_type = ProviderTypeEnum.COMMAND,
             }),
         },
         previewers = {

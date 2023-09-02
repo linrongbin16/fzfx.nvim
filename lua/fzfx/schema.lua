@@ -21,23 +21,16 @@ local Clazz = require("fzfx.clazz").Clazz
 --- @field winnr integer
 --- @field tabnr integer
 --
---- @alias PlainProvider string?
---- @alias CommandProvider fun(query:string?,context:PipelineContext?):string?
+--- @alias PlainProvider string?|string[]?
+--- @alias CommandProvider fun(query:string?,context:PipelineContext?):string?|string[]?
 --- @alias ListProvider fun(query:string?,context:PipelineContext?):string[]?
 --
 --- @alias Provider PlainProvider|CommandProvider|ListProvider
---- @alias ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
+--- @alias ProviderType "plain"|"command"|"list"
 --- @enum ProviderTypeEnum
 local ProviderTypeEnum = {
-    -- we're migrate from sync io.open io.popen to async uv.spawn for better latency IO
-    -- but spawn only accepts command line in list, so introduce "plain_list" and "command_list"
-    -- and deprecate "plain" and "command".
-    --- @deprecated
     PLAIN = "plain",
-    --- @deprecated
     COMMAND = "command",
-    PLAIN_LIST = "plain_list",
-    COMMAND_LIST = "command_list",
     LIST = "list",
 }
 

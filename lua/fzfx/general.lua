@@ -37,20 +37,12 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
     if Clazz:instanceof(provider_configs, ProviderConfig) then
         provider_configs.provider_type = provider_configs.provider_type
-            or (
-                type(provider_configs.provider) == "string"
-                    and ProviderTypeEnum.PLAIN
-                or ProviderTypeEnum.PLAIN_LIST
-            )
+            or ProviderTypeEnum.PLAIN
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
     else
         for _, provider_opts in pairs(provider_configs) do
             provider_opts.provider_type = provider_opts.provider_type
-                or (
-                    type(provider_opts.provider) == "string"
-                        and ProviderTypeEnum.PLAIN
-                    or ProviderTypeEnum.PLAIN_LIST
-                )
+                or ProviderTypeEnum.PLAIN
         end
         provider_configs_map = provider_configs
     end
