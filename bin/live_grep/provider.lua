@@ -9,8 +9,8 @@ local shell_helpers = require("fzfx.shell_helpers")
 
 local provider = _G.arg[1]
 local content = _G.arg[2]
-shell_helpers.log_debug("provider:[%s]", provider)
-shell_helpers.log_debug("DEBUG content:[%s]", content)
+shell_helpers.log_debug("|live_grep.provider| provider:[%s]", provider)
+shell_helpers.log_debug("|live_grep.provider| content:[%s]", content)
 
 if content == nil then
     content = ""
@@ -32,7 +32,7 @@ else
     local query = parsed_query[1]
     cmd = string.format("%s -- %s", provider_cmd, vim.fn.shellescape(query))
 end
-shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
+shell_helpers.log_debug("|live_grep.provider| cmd:%s", vim.inspect(cmd))
 
 local p = io.popen(cmd)
 shell_helpers.log_ensure(

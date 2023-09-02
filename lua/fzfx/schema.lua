@@ -21,16 +21,18 @@ local Clazz = require("fzfx.clazz").Clazz
 --- @field winnr integer
 --- @field tabnr integer
 --
---- @alias PlainProvider string?
---- @alias CommandProvider fun(query:string?,context:PipelineContext?):string?
+--- @alias PlainProvider string?|string[]?
+--- @alias CommandProvider fun(query:string?,context:PipelineContext?):string?|string[]?
 --- @alias ListProvider fun(query:string?,context:PipelineContext?):string[]?
 --
 --- @alias Provider PlainProvider|CommandProvider|ListProvider
---- @alias ProviderType "plain"|"command"|"list"
+--- @alias ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
 --- @enum ProviderTypeEnum
 local ProviderTypeEnum = {
     PLAIN = "plain",
+    PLAIN_LIST = "plain_list",
     COMMAND = "command",
+    COMMAND_LIST = "command_list",
     LIST = "list",
 }
 
