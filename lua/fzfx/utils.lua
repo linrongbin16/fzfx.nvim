@@ -109,38 +109,6 @@ local function string_not_empty(s)
     return type(s) == "string" and string.len(s) > 0
 end
 
--- search string
---- @param s string
---- @param c string
---- @param start integer? by default 1, e.g. from the start
---- @return integer?
-local function string_find(s, c, start)
-    assert(string.len(c) == 1)
-    start = start or 1
-    for i = start, #s do
-        if string.byte(s, i) == string.byte(c) then
-            return i
-        end
-    end
-    return nil
-end
-
--- reverse search string
---- @param s string
---- @param c string
---- @param rstart integer? by default #s, e.g. from the end
---- @return integer?
-local function string_rfind(s, c, rstart)
-    assert(string.len(c) == 1)
-    rstart = rstart or #s
-    for i = rstart, 1, -1 do
-        if string.byte(s, i) == string.byte(c) then
-            return i
-        end
-    end
-    return nil
-end
-
 --- @class ShellOptsContext
 --- @field shell string?
 --- @field shellslash string?
@@ -293,8 +261,6 @@ local M = {
     set_win_option = set_win_option,
     string_empty = string_empty,
     string_not_empty = string_not_empty,
-    string_find = string_find,
-    string_rfind = string_rfind,
     ShellOptsContext = ShellOptsContext,
     shellescape = shellescape,
     WindowOptsContext = WindowOptsContext,

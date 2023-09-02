@@ -262,8 +262,6 @@ local M = {
     GitCurrentBranchCommand = require("fzfx.git_command_helpers").GitCurrentBranchCommand,
     string_empty = require("fzfx.utils").string_empty,
     string_not_empty = require("fzfx.utils").string_not_empty,
-    string_find = require("fzfx.utils").string_find,
-    string_rfind = require("fzfx.utils").string_rfind,
 }
 
 return M

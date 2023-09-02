@@ -147,9 +147,8 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             local i = 1
             local truncated = false
             while i <= #data_buffer do
-                local newline_pos =
-                    shell_helpers.string_find(data_buffer, "\n", i)
-                if not newline_pos then
+                local newline_pos = vim.fn.stridx(data_buffer, "\n", i)
+                if newline_pos <= 0 then
                     break
                 end
                 local line = data_buffer:sub(i, newline_pos)
