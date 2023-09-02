@@ -902,7 +902,6 @@ local Defaults = {
                 --     "git log --pretty=%s --date=short --color=always",
                 --     utils.shellescape(default_git_log_pretty)
                 -- ),
-                provider_type = ProviderTypeEnum.PLAIN_LIST,
             }),
             buffer_commits = ProviderConfig:make({
                 key = "ctrl-u",
