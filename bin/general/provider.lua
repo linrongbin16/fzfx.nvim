@@ -139,32 +139,6 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             on_exit = on_exit,
         })
         vim.fn.jobwait({ jobid })
-
-        -- if metajson.provider_line_type == "file" then
-        --     local p = io.popen(cmd)
-        --     if p then
-        --         for line in p:lines("*line") do
-        --             -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-        --             if string.len(vim.fn.trim(line)) > 0 then
-        --                 local line_with_icon =
-        --                     shell_helpers.render_filepath_line(
-        --                         line,
-        --                         metajson.provider_line_delimiter,
-        --                         metajson.provider_line_pos
-        --                     )
-        --                 io.write(string.format("%s\n", line_with_icon))
-        --             end
-        --         end
-        --         p:close()
-        --     else
-        --         shell_helpers.debug(
-        --             "|provider| error! failed to open pipe on provider cmd! %s",
-        --             vim.inspect(cmd)
-        --         )
-        --     end
-        -- else
-        --     os.execute(cmd)
-        -- end
     end
 elseif
     metajson.provider_type == "plain_list"
@@ -300,35 +274,142 @@ then
         vim.loop.run()
     end
 elseif metajson.provider_type == "list" then
-    local f = io.open(resultfile, "r")
-    if f then
-        if metajson.provider_line_type == "file" then
-            --- @diagnostic disable-next-line: need-check-nil
-            for line in f:lines("*line") do
-                if string.len(vim.fn.trim(line)) > 0 then
-                    local line_with_icon = shell_helpers.render_filepath_line(
-                        line,
-                        metajson.provider_line_delimiter,
-                        metajson.provider_line_pos
+    local fd  =vim.loop.fs_open(
+        resultfile,
+        "r",
+        438)
+            shell_helpers.log_ensure(
+                fd ~= nil,
+                "error! failed to open list provider resultfile (%s)",
+                vim.inspect(resultfile)
+            )
+            local fstat = vim.loop.fs_fstat(fd)
+                    shell_helpers.log_ensure(
+                        fstat ~= nil,
+                        "error! failed to fstat list provider resultfile (%s)",
+                        vim.inspect(resultfile)
                     )
-                    io.write(string.format("%s\n", line_with_icon))
+
+                    local data_buffer = nil
+                    local offset = 0
+
+                    local function on_exit(err)
+                        if err then
+                            shell_helpers.log_debug(
+                                "|provider| list provider exit with resultfile(%s): %s",
+                                vim.inspect(resultfile),
+                                vim.inspect(err)
+                            )
+                            os.exit(130)
+                            return
+                        end
+                        os.exit(0)
+                    end
+
+                    --- @param err string?
+                    --- @param data string?
+                    local function on_output(err, data)
+                        if err then
+                            on_exit(err)
+                            return
+                        end
+                    end
+
+
+        --- @param open_err string?
+        --- @param fd integer
+        function(open_err, fd)
+            vim.loop.fs_fstat(
+                fd,
+                --- @param fstat_err string?
+                --- @param stat table
+                function(fstat_err, stat)
+                    shell_helpers.log_ensure(
+                        not fstat_err,
+                        "error! failed to fstat list provider resultfile (%s): %s",
+                        vim.inspect(resultfile),
+                        vim.inspect(fstat_err)
+                    )
+
+                    local data_buffer = nil
+                    local offset = 0
+
+                    local function on_exit(err)
+                        if err then
+                            shell_helpers.log_debug(
+                                "|provider| list provider exit with resultfile(%s): %s",
+                                vim.inspect(resultfile),
+                                vim.inspect(err)
+                            )
+                            os.exit(130)
+                            return
+                        end
+                        os.exit(0)
+                    end
+
+                    --- @param err string?
+                    --- @param data string?
+                    local function on_output(err, data)
+                        if err then
+                            on_exit(err)
+                            return
+                        end
+                    end
+
+                    vim.loop.fs_read(
+                        fd,
+                        stat.size,
+                        0,
+                        --- @param read_err string?
+                        --- @param data string
+                        function(read_err, data)
+                            assert(not read_err, read_err)
+                            vim.loop.fs_close(fd, function(close_err)
+                                assert(not close_err, close_err)
+                                shell_helpers.log_ensure(
+                                    not close_err,
+                                    "error! failed to close list provider resultfile (%s): %s",
+                                    vim.inspect(resultfile),
+                                    vim.inspect(close_err)
+                                )
+                                return callback(data)
+                            end)
+                        end
+                    )
                 end
-            end
-        else
-            for line in f:lines("*line") do
-                -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-                if string.len(vim.fn.trim(line)) > 0 then
-                    io.write(string.format("%s\n", line))
-                end
-            end
+            )
         end
-        f:close()
-    else
-        shell_helpers.debug(
-            "|provider| error! failed to open file on list provider resultfile! %s",
-            vim.inspect(resultfile)
-        )
-    end
+    )
+
+    -- local f = io.open(resultfile, "r")
+    -- if f then
+    --     if metajson.provider_line_type == "file" then
+    --         --- @diagnostic disable-next-line: need-check-nil
+    --         for line in f:lines("*line") do
+    --             if string.len(vim.fn.trim(line)) > 0 then
+    --                 local line_with_icon = shell_helpers.render_filepath_line(
+    --                     line,
+    --                     metajson.provider_line_delimiter,
+    --                     metajson.provider_line_pos
+    --                 )
+    --                 io.write(string.format("%s\n", line_with_icon))
+    --             end
+    --         end
+    --     else
+    --         for line in f:lines("*line") do
+    --             -- shell_helpers.log_debug("line:%s", vim.inspect(line))
+    --             if string.len(vim.fn.trim(line)) > 0 then
+    --                 io.write(string.format("%s\n", line))
+    --             end
+    --         end
+    --     end
+    --     f:close()
+    -- else
+    --     shell_helpers.debug(
+    --         "|provider| error! failed to open file on list provider resultfile! %s",
+    --         vim.inspect(resultfile)
+    --     )
+    -- end
 else
     shell_helpers.log_throw(
         "|provider| error! unknown provider type:%s",
