@@ -131,7 +131,6 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
                 vim.inspect(name),
                 vim.inspect(data)
             )
-            on_exit(nil, 1, name)
         end
 
         local jobid = vim.fn.jobstart(cmd, {
