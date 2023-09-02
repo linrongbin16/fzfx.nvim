@@ -176,7 +176,7 @@ then
                 if newline_pos <= 0 then
                     break
                 end
-                local line = data_buffer:sub(i, newline_pos)
+                local line = data_buffer:sub(i, newline_pos - 1)
                 println(line)
                 i = newline_pos + 1
                 truncated = true
