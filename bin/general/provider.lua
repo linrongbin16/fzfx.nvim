@@ -127,7 +127,7 @@ then
             os.exit(exitcode)
         end
 
-        local cmd_splits = vim.fn.split(cmd)
+        local cmd_splits = vim.fn.split(cmd, '\n')
         local process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
             args = { unpack(cmd_splits, 2) },
             stdio = { nil, out_pipe, err_pipe },
@@ -182,7 +182,7 @@ then
             -- truncate the printed lines if any
             if truncated then
                 data_buffer = i <= #data_buffer
-                        and data_buffer:sub(i, #data_buffer)
+                    and data_buffer:sub(i, #data_buffer)
                     or nil
             end
         end
