@@ -168,22 +168,14 @@ then
         --- @param err string?
         --- @param data string?
         local function on_output(err, data)
-            shell_helpers.log_debug(
-                "|provider| on_output err:%s, data:%s",
-                vim.inspect(err),
-                vim.inspect(data)
-            )
+            -- shell_helpers.log_debug(
+            --     "|provider| on_output err:%s, data:%s",
+            --     vim.inspect(err),
+            --     vim.inspect(data)
+            -- )
             if err then
                 on_exit(1)
                 return
-            end
-
-            --- @param till_the_end boolean?
-            local function consume(till_the_end)
-                till_the_end = till_the_end or false
-                if not data_buffer then
-                    return
-                end
             end
 
             if not data then
