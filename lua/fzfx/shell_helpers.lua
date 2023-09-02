@@ -243,30 +243,6 @@ local function parse_query(content)
     return { query, option }
 end
 
---- @param s string
---- @param start integer?
---- @return integer?
-local function string_find(s, start)
-    for i = start or 1, #s do
-        if string.byte(s, i) == 10 then
-            return i
-        end
-    end
-    return nil
-end
-
---- @param s string
---- @param start_idx integer?
---- @return integer?
-local function find_last_newline(s, start_idx)
-    for i = #s, 1, -1 do
-        if string.byte(s, i) == 10 then
-            return i
-        end
-    end
-    return nil
-end
-
 -- parse query }
 
 local M = {
@@ -280,8 +256,6 @@ local M = {
     readfile = readfile,
     render_filepath_line = render_filepath_line,
     parse_query = parse_query,
-    find_next_newline = string_find,
-    find_last_newline = find_last_newline,
     Command = require("fzfx.command").Command,
     GitRootCommand = require("fzfx.git_command_helpers").GitRootCommand,
     GitBranchCommand = require("fzfx.git_command_helpers").GitBranchCommand,

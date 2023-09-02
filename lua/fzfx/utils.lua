@@ -118,7 +118,7 @@ local function string_find(s, c, start)
     assert(string.len(c) == 1)
     start = start or 1
     for i = start, #s do
-        if string.byte(s, i) == string.byte(c, 1) then
+        if string.byte(s, i) == string.byte(c) then
             return i
         end
     end
@@ -134,7 +134,7 @@ local function string_rfind(s, c, rstart)
     assert(string.len(c) == 1)
     rstart = rstart or #s
     for i = rstart, 1, -1 do
-        if string.byte(s, i) == string.byte(c, 1) then
+        if string.byte(s, i) == string.byte(c) then
             return i
         end
     end
