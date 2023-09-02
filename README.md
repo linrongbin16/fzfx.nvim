@@ -431,7 +431,7 @@ Especially for git commands:
 </tbody>
 </table>
 
-## 📌 Recommended Key Mappings
+## 📎 Recommended Key Mappings
 
 ### Vimscript
 
