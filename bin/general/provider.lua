@@ -68,13 +68,18 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         --- @type string?
         local prev_line_content = nil
 
+        local process_handler = nil
+        local process_id = nil
+
         local function exit_cb(code, signal)
             out_pipe:shutdown()
             err_pipe:shutdown()
+            vim.loop.close(process_handler)
+            os.exit(0)
         end
 
         local cmd_splits = vim.fn.split(cmd)
-        local process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
+        process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
             args = { unpack(cmd_splits, 2) },
             stdio = { nil, out_pipe, err_pipe },
             verbatim = true,
@@ -132,8 +137,10 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             -- )
             if err then
                 exit_cb(130, 0)
+                return
             end
             if not data then
+                exit_cb(0, 0)
                 return
             end
             if prev_line_content then
@@ -170,8 +177,10 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             )
             if err then
                 exit_cb(130, 0)
+                return
             end
             if not data then
+                exit_cb(0, 0)
                 return
             end
         end
