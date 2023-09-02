@@ -909,7 +909,7 @@ local Defaults = {
                         vim.api.nvim_buf_get_name(context.bufnr),
                     }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
             }),
         },
         previewers = {
@@ -1012,7 +1012,7 @@ local Defaults = {
                         bufpath,
                     }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
             }),
         },
         previewers = {
