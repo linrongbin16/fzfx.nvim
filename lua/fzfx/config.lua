@@ -490,7 +490,9 @@ local Defaults = {
             { "--preview-window", "+{2}-/3" },
         },
         other_opts = {
-            onchange_reload_delay = vim.fn.executable("sleep") > 0
+            onchange_reload_delay = (
+                vim.fn.executable("sleep") > 0 and not constants.is_windows
+            )
                     and "sleep 0.1 && "
                 or nil,
         },
