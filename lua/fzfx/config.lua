@@ -359,10 +359,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle,
-            default_fzf_options.toggle_all,
-            default_fzf_options.preview_half_page_down,
-            default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
             function()
                 return {
@@ -488,10 +484,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle,
-            default_fzf_options.toggle_all,
-            default_fzf_options.preview_half_page_down,
-            default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
             { "--prompt", "Live Grep > " },
             { "--delimiter", ":" },
@@ -605,10 +597,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle,
-            default_fzf_options.toggle_all,
-            default_fzf_options.preview_half_page_down,
-            default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
             {
                 "--prompt",
@@ -673,10 +661,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle,
-            default_fzf_options.toggle_all,
-            default_fzf_options.preview_half_page_down,
-            default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
             function()
                 return {
@@ -790,8 +774,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            default_fzf_options.preview_half_page_down,
-            default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
             {
                 "--prompt",
@@ -936,8 +918,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            default_fzf_options.preview_half_page_down,
-            default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
             {
                 "--prompt",
@@ -1027,8 +1007,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            default_fzf_options.preview_half_page_down,
-            default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
             {
                 "--prompt",
@@ -1166,10 +1144,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle,
-            default_fzf_options.toggle_all,
-            default_fzf_options.preview_half_page_down,
-            default_fzf_options.preview_half_page_up,
             default_fzf_options.toggle_preview,
             { "--delimiter", ":" },
             { "--preview-window", "+{2}-/3" },
@@ -1199,6 +1173,10 @@ local Defaults = {
         "--layout=reverse",
         "--border=rounded",
         "--height=100%",
+        default_fzf_options.toggle,
+        default_fzf_options.toggle_all,
+        default_fzf_options.preview_half_page_down,
+        default_fzf_options.preview_half_page_up,
     },
 
     -- fzf colors
