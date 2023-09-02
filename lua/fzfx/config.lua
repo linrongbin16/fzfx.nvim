@@ -904,13 +904,25 @@ local Defaults = {
                         )
                         return nil
                     end
-                    return string.format(
-                        "git log --pretty=%s --date=short --color=always -- %s",
+                    -- return string.format(
+                    --     "git log --pretty=%s --date=short --color=always -- %s",
+                    --     utils.shellescape(default_git_log_pretty),
+                    --     vim.api.nvim_buf_get_name(context.bufnr)
+                    -- )
+                    return {
+                        "git",
+                        "log",
+                        "--pretty",
                         utils.shellescape(default_git_log_pretty),
-                        vim.api.nvim_buf_get_name(context.bufnr)
-                    )
+                        "--date",
+                        "short",
+                        "--color",
+                        "always",
+                        "--",
+                        vim.api.nvim_buf_get_name(context.bufnr),
+                    }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
             }),
         },
         previewers = {
@@ -1003,12 +1015,20 @@ local Defaults = {
                     end
                     local bufname = vim.api.nvim_buf_get_name(context.bufnr)
                     local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
-                    return string.format(
-                        "git blame --date=short --color-lines %s",
-                        bufpath
-                    )
+                    -- return string.format(
+                    --     "git blame --date=short --color-lines %s",
+                    --     bufpath
+                    -- )
+                    return {
+                        "git",
+                        "blame",
+                        "--date",
+                        "short",
+                        "--color-lines",
+                        bufpath,
+                    }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
             }),
         },
         previewers = {

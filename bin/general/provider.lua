@@ -82,6 +82,28 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
     else
+        local p = io.popen(cmd)
+        if p then
+            for line in p:lines("*line") do
+                -- shell_helpers.log_debug("line:%s", vim.inspect(line))
+                println(line)
+            end
+            p:close()
+        end
+    end
+elseif
+    metajson.provider_type == "plain_list"
+    or metajson.provider_type == "command_list"
+then
+    --- @type string
+    local cmd = shell_helpers.readfile(resultfile)
+    shell_helpers.log_debug(
+        "|provider| plain_list or command_list cmd:[%s]",
+        vim.inspect(cmd)
+    )
+    if cmd == nil or string.len(cmd) == 0 then
+        os.exit(0)
+    else
         local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
         local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
         shell_helpers.log_ensure(

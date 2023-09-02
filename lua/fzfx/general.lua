@@ -91,7 +91,9 @@ function ProviderSwitch:provide(name, query, context)
     )
     log.ensure(
         provider_config.provider_type == ProviderTypeEnum.PLAIN
+            or provider_config.provider_type == ProviderTypeEnum.PLAIN_LIST
             or provider_config.provider_type == ProviderTypeEnum.COMMAND
+            or provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST
             or provider_config.provider_type == ProviderTypeEnum.LIST,
         "invalid provider type in %s! pipeline: %s, provider type: %s",
         vim.inspect(name),
@@ -117,7 +119,8 @@ function ProviderSwitch:provide(name, query, context)
 
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then
         log.ensure(
-            type(provider_config.provider_type) == "string",
+            provider_config.provider == nil
+                or type(provider_config.provider) == "string",
             "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
             vim.inspect(self),
             vim.inspect(provider_config)
@@ -126,6 +129,22 @@ function ProviderSwitch:provide(name, query, context)
             vim.fn.writefile({ "" }, self.resultfile)
         else
             vim.fn.writefile({ provider_config.provider }, self.resultfile)
+        end
+    elseif provider_config.provider_type == ProviderTypeEnum.PLAIN_LIST then
+        log.ensure(
+            provider_config.provider == nil
+                or type(provider_config.provider) == "table",
+            "|fzfx.general - ProviderSwitch:provide| plain_list provider must be string or nil! self:%s, provider:%s",
+            vim.inspect(self),
+            vim.inspect(provider_config)
+        )
+        if provider_config.provider == nil then
+            vim.fn.writefile({ "" }, self.resultfile)
+        else
+            vim.fn.writefile(
+                { vim.fn.json_encode(provider_config.provider) },
+                self.resultfile
+            )
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
         local ok, result = pcall(provider_config.provider, query, context)
@@ -155,6 +174,39 @@ function ProviderSwitch:provide(name, query, context)
                 vim.fn.writefile({ "" }, self.resultfile)
             else
                 vim.fn.writefile({ result }, self.resultfile)
+            end
+        end
+    elseif provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST then
+        local ok, result = pcall(provider_config.provider, query, context)
+        log.debug(
+            "|fzfx.general - ProviderSwitch:provide| pcall command_list provider, ok:%s, result:%s",
+            vim.inspect(ok),
+            vim.inspect(result)
+        )
+        log.ensure(
+            result == nil or type(result) == "table",
+            "|fzfx.general - ProviderSwitch:provide| command_list provider result must be string! self:%s, result:%s",
+            vim.inspect(self),
+            vim.inspect(result)
+        )
+        if not ok then
+            vim.fn.writefile({ "" }, self.resultfile)
+            log.err(
+                "failed to call pipeline %s command_list provider %s! query:%s, context:%s, error:%s",
+                vim.inspect(name),
+                vim.inspect(provider_config),
+                vim.inspect(query),
+                vim.inspect(context),
+                vim.inspect(result)
+            )
+        else
+            if result == nil then
+                vim.fn.writefile({ "" }, self.resultfile)
+            else
+                vim.fn.writefile(
+                    { vim.fn.json_encode(result) },
+                    self.resultfile
+                )
             end
         end
     elseif provider_config.provider_type == ProviderTypeEnum.LIST then
