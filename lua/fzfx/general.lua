@@ -95,6 +95,7 @@ function ProviderSwitch:provide(name, query, context)
     )
     log.ensure(
         provider_config.provider == nil
+            or type(provider_config.provider) == "table"
             or type(provider_config.provider) == "string"
             or type(provider_config.provider) == "function",
         "invalid provider in %s! pipeline: %s, provider: %s",
