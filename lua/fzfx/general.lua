@@ -47,7 +47,7 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
         for _, provider_opts in pairs(provider_configs) do
             provider_opts.provider_type = provider_opts.provider_type
                 or (
-                    type(provider_configs.provider) == "string"
+                    type(provider_opts.provider) == "string"
                         and ProviderTypeEnum.PLAIN
                     or ProviderTypeEnum.PLAIN_LIST
                 )
@@ -81,6 +81,11 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
+    log.debug(
+        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:",
+        vim.inspect(self.pipeline),
+        vim.inspect(provider_config)
+    )
     log.ensure(
         type(provider_config) == "table",
         "invalid provider config in %s! pipeline: %s, provider config: %s",
