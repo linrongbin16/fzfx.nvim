@@ -802,7 +802,7 @@ vim.keymap.set('n', '<space>bpdg', '<cmd>FzfxLspDiagnosticsBP<cr>',
 
 </details>
 
-## ⚙️ Configuration
+## 🔧 Configuration
 
 For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
