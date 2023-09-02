@@ -82,13 +82,30 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
     else
-        local p = io.popen(cmd)
-        if p then
-            for line in p:lines("*line") do
-                -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-                println(line)
+        if metajson.provider_line_type == "file" then
+            local p = io.popen(cmd)
+            if p then
+                for line in p:lines("*line") do
+                    -- shell_helpers.log_debug("line:%s", vim.inspect(line))
+                    if string.len(vim.fn.trim(line)) > 0 then
+                        local line_with_icon =
+                            shell_helpers.render_filepath_line(
+                                line,
+                                metajson.provider_line_delimiter,
+                                metajson.provider_line_pos
+                            )
+                        io.write(string.format("%s\n", line_with_icon))
+                    end
+                end
+                p:close()
+            else
+                shell_helpers.debug(
+                    "|provider| error! failed to open pipe on provider cmd! %s",
+                    vim.inspect(cmd)
+                )
             end
-            p:close()
+        else
+            os.execute(cmd)
         end
     end
 elseif
