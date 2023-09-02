@@ -54,6 +54,24 @@ shell_helpers.log_ensure(
 local metajson = vim.fn.json_decode(metajsonstring) --[[@as ProviderMetaJson]]
 shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metajson))
 
+--- @param line string?
+local function println(line)
+    if type(line) == "string" and string.len(vim.trim(line)) > 0 then
+        line = vim.trim(line)
+        shell_helpers.log_debug("|provider| println line:%s", vim.inspect(line))
+        if metajson.provider_line_type == "file" then
+            local rendered_line = shell_helpers.render_filepath_line(
+                line,
+                metajson.provider_line_delimiter,
+                metajson.provider_line_pos
+            )
+            io.write(string.format("%s\n", rendered_line))
+        else
+            io.write(string.format("%s\n", line))
+        end
+    end
+end
+
 if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     --- @type string
     local cmd = shell_helpers.readfile(resultfile)
@@ -80,11 +98,11 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         --- @type string?
         local data_buffer = nil
 
-        --- @param code integer
-        local function on_exit(code)
+        local function on_exit(exitcode)
             out_pipe:close()
             err_pipe:close()
             vim.loop.stop()
+            os.exit(exitcode)
         end
 
         local cmd_splits = vim.fn.split(cmd)
@@ -105,27 +123,6 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             vim.inspect(process_id)
         )
 
-        --- @param line string?
-        local function println(line)
-            if type(line) == "string" and string.len(vim.trim(line)) > 0 then
-                line = vim.trim(line)
-                shell_helpers.log_debug(
-                    "|provider| println line:%s",
-                    vim.inspect(line)
-                )
-                if metajson.provider_line_type == "file" then
-                    local rendered_line = shell_helpers.render_filepath_line(
-                        line,
-                        metajson.provider_line_delimiter,
-                        metajson.provider_line_pos
-                    )
-                    io.write(string.format("%s\n", rendered_line))
-                else
-                    io.write(string.format("%s\n", line))
-                end
-            end
-        end
-
         --- @param err string?
         --- @param data string?
         local function on_output(err, data)
@@ -135,7 +132,7 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             --     vim.inspect(data)
             -- )
             if err then
-                on_exit(130)
+                on_exit(1)
                 return
             end
             if not data then
@@ -176,7 +173,7 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
                 vim.inspect(data)
             )
             if err then
-                on_exit(130)
+                on_exit(1)
                 return
             end
             if not data then
