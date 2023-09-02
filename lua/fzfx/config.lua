@@ -872,19 +872,17 @@ local Defaults = {
         providers = {
             all_commits = ProviderConfig:make({
                 key = "ctrl-a",
-                provider = {
-                    "git",
-                    "log",
-                    -- no need to surround two quotes to pretty format
-                    -- see: https://github.com/luvit/luv/issues/673
-                    "--pretty=" .. default_git_log_pretty,
-                    "--date=short",
-                    "--color=always",
-                },
-                -- provider = string.format(
-                --     "git log --pretty=%s --date=short --color=always",
-                --     utils.shellescape(default_git_log_pretty)
-                -- ),
+                -- provider = {
+                --     "git",
+                --     "log",
+                --     "--pretty=" .. default_git_log_pretty,
+                --     "--date=short",
+                --     "--color=always",
+                -- },
+                provider = string.format(
+                    "git log --pretty=%s --date=short --color=always",
+                    utils.shellescape(default_git_log_pretty)
+                ),
             }),
             buffer_commits = ProviderConfig:make({
                 key = "ctrl-u",
@@ -914,6 +912,7 @@ local Defaults = {
                         vim.api.nvim_buf_get_name(context.bufnr),
                     }
                 end,
+                -- provider_type = ProviderTypeEnum.COMMAND,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
             }),
         },
@@ -1005,19 +1004,20 @@ local Defaults = {
                     end
                     local bufname = vim.api.nvim_buf_get_name(context.bufnr)
                     local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
-                    -- return string.format(
-                    --     "git blame --date=short --color-lines %s",
-                    --     bufpath
-                    -- )
-                    return {
-                        "git",
-                        "blame",
-                        "--date=short",
-                        "--color-lines",
-                        bufpath,
-                    }
+                    return string.format(
+                        "git blame --date=short --color-lines %s",
+                        bufpath
+                    )
+                    -- return {
+                    --     "git",
+                    --     "blame",
+                    --     "--date=short",
+                    --     "--color-lines",
+                    --     bufpath,
+                    -- }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                provider_type = ProviderTypeEnum.COMMAND,
+                -- provider_type = ProviderTypeEnum.COMMAND_LIST,
             }),
         },
         previewers = {
