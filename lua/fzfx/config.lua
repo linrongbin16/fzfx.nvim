@@ -1032,8 +1032,7 @@ local Defaults = {
                     return {
                         "git",
                         "blame",
-                        "--date",
-                        "short",
+                        "--date=short",
                         "--color-lines",
                         bufpath,
                     }
