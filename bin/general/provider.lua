@@ -285,14 +285,14 @@ then
                 vim.inspect(err),
                 vim.inspect(data)
             )
-            if err then
-                on_exit(1)
-                return
-            end
-            if not data then
-                on_exit(0)
-                return
-            end
+            -- if err then
+            --     on_exit(1)
+            --     return
+            -- end
+            -- if not data then
+            --     on_exit(0)
+            --     return
+            -- end
         end
 
         out_pipe:read_start(on_output)
