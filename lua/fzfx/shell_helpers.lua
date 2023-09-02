@@ -244,10 +244,10 @@ local function parse_query(content)
 end
 
 --- @param s string
---- @param start_idx integer?
+--- @param start integer?
 --- @return integer?
-local function find_next_newline(s, start_idx)
-    for i = start_idx or 1, #s do
+local function string_find(s, start)
+    for i = start or 1, #s do
         if string.byte(s, i) == 10 then
             return i
         end
@@ -269,7 +269,21 @@ end
 
 -- parse query }
 
+--- @param name string
+--- @return nil
+local function setup(name)
+    LoggerContext.name =
+        string.format("[fzfx-shell-helpers%s]", name and ("-" .. name) or "")
+    LoggerContext.filepath = string.format(
+        "%s%s%s",
+        vim.fn.stdpath("data"),
+        PATH_SEPARATOR,
+        string.format("fzfx_shell_helpers%s.log", name and ("-" .. name) or "")
+    )
+end
+
 local M = {
+    setup = setup,
     log_debug = log_debug,
     log_info = log_info,
     log_warn = log_warn,
@@ -280,12 +294,16 @@ local M = {
     readfile = readfile,
     render_filepath_line = render_filepath_line,
     parse_query = parse_query,
-    find_next_newline = find_next_newline,
+    find_next_newline = string_find,
     find_last_newline = find_last_newline,
     Command = require("fzfx.command").Command,
     GitRootCommand = require("fzfx.git_command_helpers").GitRootCommand,
     GitBranchCommand = require("fzfx.git_command_helpers").GitBranchCommand,
     GitCurrentBranchCommand = require("fzfx.git_command_helpers").GitCurrentBranchCommand,
+    string_empty = require("fzfx.utils").string_empty,
+    string_not_empty = require("fzfx.utils").string_not_empty,
+    string_find = require("fzfx.utils").string_find,
+    string_rfind = require("fzfx.utils").string_rfind,
 }
 
 return M

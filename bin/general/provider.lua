@@ -4,20 +4,21 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 local shell_helpers = require("fzfx.shell_helpers")
+shell_helpers.setup("general-provider")
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_SOCKET_ADDRESS
 shell_helpers.log_ensure(
     type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
-    "|provider| error! SOCKET_ADDRESS must not be empty!"
+    "error! SOCKET_ADDRESS must not be empty!"
 )
 local registry_id = _G.arg[1]
 local metafile = _G.arg[2]
 local resultfile = _G.arg[3]
 local query = _G.arg[4]
-shell_helpers.log_debug("|provider| registry_id:[%s]", registry_id)
-shell_helpers.log_debug("|provider| metafile:[%s]", metafile)
-shell_helpers.log_debug("|provider| resultfile:[%s]", resultfile)
-shell_helpers.log_debug("|provider| query:[%s]", query)
+shell_helpers.log_debug("registry_id:[%s]", registry_id)
+shell_helpers.log_debug("metafile:[%s]", metafile)
+shell_helpers.log_debug("resultfile:[%s]", resultfile)
+shell_helpers.log_debug("query:[%s]", query)
 
 local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
 -- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
@@ -47,7 +48,7 @@ vim.fn.chanclose(channel_id)
 local metajsonstring = shell_helpers.readfile(metafile)
 shell_helpers.log_ensure(
     type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
-    "|provider| error! metajson is not string! %s",
+    "error! metajson is not string! %s",
     vim.inspect(metajsonstring)
 )
 --- @type ProviderMetaJson
@@ -63,23 +64,29 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     else
         local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
         local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+        shell_helpers.log_ensure(
+            out_pipe ~= nil,
+            "error! failed to create out pipe with vim.loop.new_pipe"
+        )
+        shell_helpers.log_ensure(
+            err_pipe ~= nil,
+            "error! failed to create err pipe with vim.loop.new_pipe"
+        )
         shell_helpers.log_debug("out_pipe:%s", vim.inspect(out_pipe))
         shell_helpers.log_debug("err_pipe:%s", vim.inspect(err_pipe))
+
         --- @type string?
-        local prev_line_content = nil
+        local data_buffer = nil
 
-        local process_handler = nil
-        local process_id = nil
-
-        local function exit_cb(code, signal)
+        --- @param code integer
+        local function on_exit(code)
             out_pipe:shutdown()
             err_pipe:shutdown()
-            vim.loop.close(process_handler)
-            os.exit(0)
+            os.exit(code)
         end
 
         local cmd_splits = vim.fn.split(cmd)
-        process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
+        local process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
             args = { unpack(cmd_splits, 2) },
             stdio = { nil, out_pipe, err_pipe },
             verbatim = true,
@@ -88,106 +95,91 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             err_pipe:read_stop()
             out_pipe:close()
             err_pipe:close()
-            exit_cb(code, signal)
+            on_exit(code)
         end)
         shell_helpers.log_debug(
-            "process_handler:%s",
-            vim.inspect(process_handler)
+            "process_handler:%s, process_id:%s",
+            vim.inspect(process_handler),
+            vim.inspect(process_id)
         )
-        shell_helpers.log_debug("process_id:%s", vim.inspect(process_id))
 
-        --- @param data string
-        local function process_lines(data)
-            local start_idx = 1
-            repeat
-                local nl_idx = shell_helpers.find_next_newline(data, start_idx)
-                local line = data:sub(start_idx, nl_idx - 1)
-                -- We used to limit lines fed into fzf to 1K for perf reasons
-                -- but it turned out to have some negative consequnces (#580)
-                -- if #line > 1024 then
-                -- line = line:sub(1, 1024)
-                -- io.stderr:write(string.format("[Fzf-lua] long line detected (%db), "
-                --   .. "consider adding '--max-columns=512' to ripgrep options: %s\n",
-                --   #line, line:sub(1,256)))
-                -- end
-                if line and string.len(line) > 0 then
-                    if metajson.provider_line_type == "file" then
-                        if string.len(vim.fn.trim(line)) > 0 then
-                            local rendered_line =
-                                shell_helpers.render_filepath_line(
-                                    line,
-                                    metajson.provider_line_delimiter,
-                                    metajson.provider_line_pos
-                                )
-                            io.write(string.format("%s\n", rendered_line))
-                        end
-                    else
-                        io.write(string.format("%s\n", line))
-                    end
-                end
-                start_idx = nl_idx + 1
-            until start_idx >= #data
-        end
-
-        local read_cb = function(err, data)
-            -- shell_helpers.log_debug(
-            --     "read_cb err:%s, data:%s",
-            --     vim.inspect(err),
-            --     vim.inspect(data)
-            -- )
-            if err then
-                exit_cb(130, 0)
-                return
-            end
-            if not data then
-                exit_cb(0, 0)
-                return
-            end
-            if prev_line_content then
-                -- truncate super long line
-                if #prev_line_content > 4096 then
-                    prev_line_content = prev_line_content:sub(1, 4096)
-                end
-                data = prev_line_content .. data
-                prev_line_content = nil
-            end
-
-            -- data is end with '\n' (10)
-            if string.byte(data, #data) == 10 then
-                process_lines(data)
-            else
-                -- data is not end with '\n' (10)
-                -- find any newlines inside data
-                local nl_index = shell_helpers.find_last_newline(data)
-                if not nl_index then
-                    prev_line_content = data
+        --- @param line string?
+        local function writeline(line)
+            if type(line) == "string" and string.len(vim.trim(line)) > 0 then
+                if metajson.provider_line_type == "file" then
+                    local rendered_line = shell_helpers.render_filepath_line(
+                        line,
+                        metajson.provider_line_delimiter,
+                        metajson.provider_line_pos
+                    )
+                    io.write(string.format("%s\n", rendered_line))
                 else
-                    prev_line_content = data:sub(nl_index + 1)
-                    local stripped_with_newline = data:sub(1, nl_index)
-                    process_lines(stripped_with_newline)
+                    io.write(string.format("%s\n", line))
                 end
             end
         end
 
-        local err_cb = function(err, data)
+        --- @param err string?
+        --- @param data string?
+        local function on_output(err, data)
             shell_helpers.log_debug(
-                "err_cb err:%s, data:%s",
+                "on_output err:%s, data:%s",
                 vim.inspect(err),
                 vim.inspect(data)
             )
             if err then
-                exit_cb(130, 0)
+                on_exit(130)
                 return
             end
             if not data then
-                exit_cb(0, 0)
+                on_exit(0)
+                return
+            end
+
+            -- append data to data_buffer
+            data_buffer = data and data_buffer .. data or data
+
+            -- foreach the data_buffer and find every line
+            local i = 1
+            local truncated = false
+            while i <= #data_buffer do
+                local newline_pos =
+                    shell_helpers.string_find(data_buffer, "\n", i)
+                if not newline_pos then
+                    break
+                end
+                local line = data_buffer:sub(i, newline_pos - 1)
+                writeline(line)
+                i = newline_pos + 1
+                truncated = true
+            end
+
+            -- truncate the printed lines if any
+            if truncated then
+                data_buffer = i <= #data_buffer
+                        and data_buffer:sub(i, #data_buffer)
+                    or nil
+            end
+        end
+
+        local function on_error(err, data)
+            shell_helpers.log_debug(
+                "on_error err:%s, data:%s",
+                vim.inspect(err),
+                vim.inspect(data)
+            )
+            if err then
+                on_exit(130)
+                return
+            end
+            if not data then
+                on_exit(0)
                 return
             end
         end
 
-        out_pipe:read_start(read_cb)
-        err_pipe:read_start(err_cb)
-        vim.loop.run()
+        out_pipe:read_start(on_output)
+        err_pipe:read_start(on_error)
     end
 elseif metajson.provider_type == "list" then
     local f = io.open(resultfile, "r")
