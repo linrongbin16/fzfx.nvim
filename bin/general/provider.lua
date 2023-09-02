@@ -58,7 +58,7 @@ shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metajson))
 local function println(line)
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
         line = vim.trim(line)
-        shell_helpers.log_debug("|provider| println line:%s", vim.inspect(line))
+        -- shell_helpers.log_debug("|provider| println line:%s", vim.inspect(line))
         if metajson.provider_line_type == "file" then
             local rendered_line = shell_helpers.render_filepath_line(
                 line,
@@ -82,31 +82,6 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
     else
-        local data_buffer = { "" }
-
-        --- @param code integer?
-        --- @param event string?
-        local function on_exit(_, code, event)
-            os.exit(code)
-        end
-
-        --- @param chanid integer?
-        --- @param data string[]?
-        --- @param name string?
-        local function on_output(chanid, data, name) end
-
-        --- @param chanid integer?
-        --- @param data string[]?
-        --- @param name string?
-        local function on_error(chanid, data, name) end
-
-        local jobid = vim.fn.jobstart(cmd, {
-            on_stdout = on_output,
-            on_stderr = on_error,
-            on_exit = on_exit,
-        })
-        vim.fn.jobwait({ jobid })
-
         if metajson.provider_line_type == "file" then
             local p = io.popen(cmd)
             if p then
