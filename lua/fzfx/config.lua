@@ -874,6 +874,7 @@ local Defaults = {
                     "git",
                     "log",
                     -- no need to surround two quotes to pretty format
+                    -- see: https://github.com/luvit/luv/issues/673
                     "--pretty=" .. default_git_log_pretty,
                     "--date=short",
                     "--color=always",
@@ -902,6 +903,8 @@ local Defaults = {
                     return {
                         "git",
                         "log",
+                        -- no need to surround two quotes to pretty format
+                        -- see: https://github.com/luvit/luv/issues/673
                         "--pretty=" .. default_git_log_pretty,
                         "--date=short",
                         "--color=always",
