@@ -4,21 +4,20 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 local shell_helpers = require("fzfx.shell_helpers")
-shell_helpers.setup("general-provider")
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_SOCKET_ADDRESS
 shell_helpers.log_ensure(
     type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
-    "error! SOCKET_ADDRESS must not be empty!"
+    "|provider| error! SOCKET_ADDRESS must not be empty!"
 )
 local registry_id = _G.arg[1]
 local metafile = _G.arg[2]
 local resultfile = _G.arg[3]
 local query = _G.arg[4]
-shell_helpers.log_debug("registry_id:[%s]", registry_id)
-shell_helpers.log_debug("metafile:[%s]", metafile)
-shell_helpers.log_debug("resultfile:[%s]", resultfile)
-shell_helpers.log_debug("query:[%s]", query)
+shell_helpers.log_debug("|provider| registry_id:[%s]", registry_id)
+shell_helpers.log_debug("|provider| metafile:[%s]", metafile)
+shell_helpers.log_debug("|provider| resultfile:[%s]", resultfile)
+shell_helpers.log_debug("|provider| query:[%s]", query)
 
 local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
 -- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
@@ -48,17 +47,20 @@ vim.fn.chanclose(channel_id)
 local metajsonstring = shell_helpers.readfile(metafile)
 shell_helpers.log_ensure(
     type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
-    "error! metajson is not string! %s",
+    "|provider| error! metajson is not string! %s",
     vim.inspect(metajsonstring)
 )
 --- @type ProviderMetaJson
 local metajson = vim.fn.json_decode(metajsonstring) --[[@as ProviderMetaJson]]
-shell_helpers.log_debug("metajson:[%s]", vim.inspect(metajson))
+shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metajson))
 
 if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     --- @type string
     local cmd = shell_helpers.readfile(resultfile)
-    shell_helpers.log_debug("cmd:[%s]", vim.inspect(cmd))
+    shell_helpers.log_debug(
+        "|provider| plain or command cmd:[%s]",
+        vim.inspect(cmd)
+    )
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
     else
@@ -66,23 +68,23 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
         shell_helpers.log_ensure(
             out_pipe ~= nil,
-            "error! failed to create out pipe with vim.loop.new_pipe"
+            "|provider| error! failed to create out pipe with vim.loop.new_pipe"
         )
         shell_helpers.log_ensure(
             err_pipe ~= nil,
-            "error! failed to create err pipe with vim.loop.new_pipe"
+            "|provider| error! failed to create err pipe with vim.loop.new_pipe"
         )
-        shell_helpers.log_debug("out_pipe:%s", vim.inspect(out_pipe))
-        shell_helpers.log_debug("err_pipe:%s", vim.inspect(err_pipe))
+        shell_helpers.log_debug("|provider| out_pipe:%s", vim.inspect(out_pipe))
+        shell_helpers.log_debug("|provider| err_pipe:%s", vim.inspect(err_pipe))
 
         --- @type string?
         local data_buffer = nil
 
         --- @param code integer
         local function on_exit(code)
-            out_pipe:shutdown()
-            err_pipe:shutdown()
-            os.exit(code)
+            out_pipe:close()
+            err_pipe:close()
+            vim.loop.stop()
         end
 
         local cmd_splits = vim.fn.split(cmd)
@@ -93,19 +95,24 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         }, function(code, signal)
             out_pipe:read_stop()
             err_pipe:read_stop()
-            out_pipe:close()
-            err_pipe:close()
+            out_pipe:shutdown()
+            err_pipe:shutdown()
             on_exit(code)
         end)
         shell_helpers.log_debug(
-            "process_handler:%s, process_id:%s",
+            "|provider| process_handler:%s, process_id:%s",
             vim.inspect(process_handler),
             vim.inspect(process_id)
         )
 
         --- @param line string?
-        local function writeline(line)
+        local function println(line)
             if type(line) == "string" and string.len(vim.trim(line)) > 0 then
+                line = vim.trim(line)
+                shell_helpers.log_debug(
+                    "|provider| println line:%s",
+                    vim.inspect(line)
+                )
                 if metajson.provider_line_type == "file" then
                     local rendered_line = shell_helpers.render_filepath_line(
                         line,
@@ -122,11 +129,11 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         --- @param err string?
         --- @param data string?
         local function on_output(err, data)
-            shell_helpers.log_debug(
-                "on_output err:%s, data:%s",
-                vim.inspect(err),
-                vim.inspect(data)
-            )
+            -- shell_helpers.log_debug(
+            --     "|provider| on_output err:%s, data:%s",
+            --     vim.inspect(err),
+            --     vim.inspect(data)
+            -- )
             if err then
                 on_exit(130)
                 return
@@ -137,7 +144,7 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             end
 
             -- append data to data_buffer
-            data_buffer = data and data_buffer .. data or data
+            data_buffer = data_buffer and (data_buffer .. data) or data
 
             -- foreach the data_buffer and find every line
             local i = 1
@@ -148,8 +155,8 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
                 if not newline_pos then
                     break
                 end
-                local line = data_buffer:sub(i, newline_pos - 1)
-                writeline(line)
+                local line = data_buffer:sub(i, newline_pos)
+                println(line)
                 i = newline_pos + 1
                 truncated = true
             end
@@ -180,6 +187,7 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
 
         out_pipe:read_start(on_output)
         err_pipe:read_start(on_error)
+        vim.loop.run()
     end
 elseif metajson.provider_type == "list" then
     local f = io.open(resultfile, "r")

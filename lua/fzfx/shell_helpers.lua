@@ -269,21 +269,7 @@ end
 
 -- parse query }
 
---- @param name string
---- @return nil
-local function setup(name)
-    LoggerContext.name =
-        string.format("[fzfx-shell-helpers%s]", name and ("-" .. name) or "")
-    LoggerContext.filepath = string.format(
-        "%s%s%s",
-        vim.fn.stdpath("data"),
-        PATH_SEPARATOR,
-        string.format("fzfx_shell_helpers%s.log", name and ("-" .. name) or "")
-    )
-end
-
 local M = {
-    setup = setup,
     log_debug = log_debug,
     log_info = log_info,
     log_warn = log_warn,
