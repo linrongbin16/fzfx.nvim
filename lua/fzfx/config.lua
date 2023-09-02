@@ -888,10 +888,21 @@ local Defaults = {
         providers = {
             all_commits = ProviderConfig:make({
                 key = "ctrl-a",
-                provider = string.format(
-                    "git log --pretty=%s --date=short --color=always",
-                    utils.shellescape(default_git_log_pretty)
-                ),
+                provider = {
+                    "git",
+                    "log",
+                    "--pretty",
+                    utils.shellescape(default_git_log_pretty),
+                    "--date",
+                    "short",
+                    "--color",
+                    "always",
+                },
+                -- provider = string.format(
+                --     "git log --pretty=%s --date=short --color=always",
+                --     utils.shellescape(default_git_log_pretty)
+                -- ),
+                provider_type = ProviderTypeEnum.PLAIN_LIST,
             }),
             buffer_commits = ProviderConfig:make({
                 key = "ctrl-u",
