@@ -82,7 +82,7 @@ end
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
     log.debug(
-        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:",
+        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s",
         vim.inspect(self.pipeline),
         vim.inspect(provider_config)
     )
@@ -151,13 +151,13 @@ function ProviderSwitch:provide(name, query, context)
             vim.inspect(self),
             vim.inspect(provider_config)
         )
-        if provider_config.provider == nil then
+        if
+            provider_config.provider == nil
+            or #provider_config.provider == 0
+        then
             vim.fn.writefile({ "" }, self.resultfile)
         else
-            vim.fn.writefile(
-                { vim.fn.json_encode(provider_config.provider) },
-                self.resultfile
-            )
+            vim.fn.writefile(provider_config.provider, self.resultfile)
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
         local ok, result = pcall(provider_config.provider, query, context)
@@ -213,13 +213,10 @@ function ProviderSwitch:provide(name, query, context)
                 vim.inspect(result)
             )
         else
-            if result == nil then
+            if result == nil or #result == 0 then
                 vim.fn.writefile({ "" }, self.resultfile)
             else
-                vim.fn.writefile(
-                    { vim.fn.json_encode(result) },
-                    self.resultfile
-                )
+                vim.fn.writefile(result, self.resultfile)
             end
         end
     elseif provider_config.provider_type == ProviderTypeEnum.LIST then
