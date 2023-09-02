@@ -872,19 +872,19 @@ local Defaults = {
         providers = {
             all_commits = ProviderConfig:make({
                 key = "ctrl-a",
-                provider = {
-                    "git",
-                    "log",
-                    -- no need to surround two quotes to pretty format
-                    -- see: https://github.com/luvit/luv/issues/673
-                    "--pretty=" .. default_git_log_pretty,
-                    "--date=short",
-                    "--color=always",
-                },
-                -- provider = string.format(
-                --     "git log --pretty=%s --date=short --color=always",
-                --     utils.shellescape(default_git_log_pretty)
-                -- ),
+                -- provider = {
+                --     "git",
+                --     "log",
+                --     -- no need to surround two quotes to pretty format
+                --     -- see: https://github.com/luvit/luv/issues/673
+                --     "--pretty=" .. default_git_log_pretty,
+                --     "--date=short",
+                --     "--color=always",
+                -- },
+                provider = string.format(
+                    "git log --pretty=%s --date=short --color=always",
+                    utils.shellescape(default_git_log_pretty)
+                ),
             }),
             buffer_commits = ProviderConfig:make({
                 key = "ctrl-u",
@@ -897,24 +897,25 @@ local Defaults = {
                         )
                         return nil
                     end
-                    -- return string.format(
-                    --     "git log --pretty=%s --date=short --color=always -- %s",
-                    --     utils.shellescape(default_git_log_pretty),
-                    --     vim.api.nvim_buf_get_name(context.bufnr)
-                    -- )
-                    return {
-                        "git",
-                        "log",
-                        -- no need to surround two quotes to pretty format
-                        -- see: https://github.com/luvit/luv/issues/673
-                        "--pretty=" .. default_git_log_pretty,
-                        "--date=short",
-                        "--color=always",
-                        "--",
-                        vim.api.nvim_buf_get_name(context.bufnr),
-                    }
+                    return string.format(
+                        "git log --pretty=%s --date=short --color=always -- %s",
+                        utils.shellescape(default_git_log_pretty),
+                        vim.api.nvim_buf_get_name(context.bufnr)
+                    )
+                    -- return {
+                    --     "git",
+                    --     "log",
+                    --     -- no need to surround two quotes to pretty format
+                    --     -- see: https://github.com/luvit/luv/issues/673
+                    --     "--pretty=" .. default_git_log_pretty,
+                    --     "--date=short",
+                    --     "--color=always",
+                    --     "--",
+                    --     vim.api.nvim_buf_get_name(context.bufnr),
+                    -- }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                provider_type = ProviderTypeEnum.COMMAND,
+                -- provider_type = ProviderTypeEnum.COMMAND_LIST,
             }),
         },
         previewers = {
