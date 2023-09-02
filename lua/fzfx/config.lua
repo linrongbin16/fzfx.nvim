@@ -891,12 +891,12 @@ local Defaults = {
                 provider = {
                     "git",
                     "log",
-                    "--pretty",
-                    utils.shellescape(default_git_log_pretty),
-                    "--date",
-                    "short",
-                    "--color",
-                    "always",
+                    string.format(
+                        "--pretty=%s",
+                        utils.shellescape(default_git_log_pretty)
+                    ),
+                    "--date=short",
+                    "--color=always",
                 },
                 -- provider = string.format(
                 --     "git log --pretty=%s --date=short --color=always",
@@ -922,12 +922,12 @@ local Defaults = {
                     return {
                         "git",
                         "log",
-                        "--pretty",
-                        utils.shellescape(default_git_log_pretty),
-                        "--date",
-                        "short",
-                        "--color",
-                        "always",
+                        string.format(
+                            "--pretty=%s",
+                            utils.shellescape(default_git_log_pretty)
+                        ),
+                        "--date=short",
+                        "--color=always",
                         "--",
                         vim.api.nvim_buf_get_name(context.bufnr),
                     }
