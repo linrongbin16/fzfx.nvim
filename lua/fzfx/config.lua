@@ -873,10 +873,7 @@ local Defaults = {
                 provider = {
                     "git",
                     "log",
-                    string.format(
-                        "--pretty=%s",
-                        utils.shellescape(default_git_log_pretty)
-                    ),
+                    "--pretty=" .. default_git_log_pretty,
                     "--date=short",
                     "--color=always",
                 },
@@ -904,10 +901,7 @@ local Defaults = {
                     return {
                         "git",
                         "log",
-                        string.format(
-                            "--pretty=%s",
-                            utils.shellescape(default_git_log_pretty)
-                        ),
+                        "--pretty=" .. default_git_log_pretty,
                         "--date=short",
                         "--color=always",
                         "--",
