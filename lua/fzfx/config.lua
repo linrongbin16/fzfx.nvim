@@ -1006,19 +1006,20 @@ local Defaults = {
                     end
                     local bufname = vim.api.nvim_buf_get_name(context.bufnr)
                     local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
-                    -- return string.format(
-                    --     "git blame --date=short --color-lines %s",
-                    --     bufpath
-                    -- )
-                    return {
-                        "git",
-                        "blame",
-                        "--date=short",
-                        "--color-lines",
-                        bufpath,
-                    }
+                    return string.format(
+                        "git blame --date=short --color-lines %s",
+                        bufpath
+                    )
+                    -- return {
+                    --     "git",
+                    --     "blame",
+                    --     "--date=short",
+                    --     "--color-lines",
+                    --     bufpath,
+                    -- }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                provider_type = ProviderTypeEnum.COMMAND,
+                -- provider_type = ProviderTypeEnum.COMMAND_LIST,
             }),
         },
         previewers = {
