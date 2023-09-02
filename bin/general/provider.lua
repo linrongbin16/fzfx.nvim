@@ -58,7 +58,7 @@ shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metajson))
 local function println(line)
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
         line = vim.trim(line)
-        -- shell_helpers.log_debug("|provider| println line:%s", vim.inspect(line))
+        shell_helpers.log_debug("|provider| println line:%s", vim.inspect(line))
         if metajson.provider_line_type == "file" then
             local rendered_line = shell_helpers.render_filepath_line(
                 line,
@@ -82,6 +82,31 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
     else
+        local data_buffer = { "" }
+
+        --- @param code integer?
+        --- @param event string?
+        local function on_exit(_, code, event)
+            os.exit(code)
+        end
+
+        --- @param chanid integer?
+        --- @param data string[]?
+        --- @param name string?
+        local function on_output(chanid, data, name) end
+
+        --- @param chanid integer?
+        --- @param data string[]?
+        --- @param name string?
+        local function on_error(chanid, data, name) end
+
+        local jobid = vim.fn.jobstart(cmd, {
+            on_stdout = on_output,
+            on_stderr = on_error,
+            on_exit = on_exit,
+        })
+        vim.fn.jobwait({ jobid })
+
         if metajson.provider_line_type == "file" then
             local p = io.popen(cmd)
             if p then
@@ -168,43 +193,65 @@ then
         --- @param err string?
         --- @param data string?
         local function on_output(err, data)
-            -- shell_helpers.log_debug(
-            --     "|provider| on_output err:%s, data:%s",
-            --     vim.inspect(err),
-            --     vim.inspect(data)
-            -- )
+            shell_helpers.log_debug(
+                "|provider| on_output err:%s, data:%s",
+                vim.inspect(err),
+                vim.inspect(data)
+            )
             if err then
                 on_exit(1)
                 return
             end
+
+            --- @param till_the_end boolean?
+            local function consume(till_the_end)
+                till_the_end = till_the_end or false
+                if not data_buffer then
+                    return
+                end
+            end
+
             if not data then
+                if data_buffer then
+                    -- foreach the data_buffer and find every line
+                    local i = 1
+                    while i <= #data_buffer do
+                        local newline_pos =
+                            shell_helpers.string_find(data_buffer, "\n", i)
+                        if not newline_pos then
+                            break
+                        end
+                        local line = data_buffer:sub(i, newline_pos)
+                        println(line)
+                        i = newline_pos + 1
+                    end
+                    if i <= #data_buffer then
+                        local line = data_buffer:sub(i, #data_buffer)
+                        println(line)
+                        data_buffer = nil
+                    end
+                end
                 on_exit(0)
                 return
             end
 
             -- append data to data_buffer
             data_buffer = data_buffer and (data_buffer .. data) or data
-
             -- foreach the data_buffer and find every line
             local i = 1
-            local truncated = false
             while i <= #data_buffer do
-                local newline_pos = vim.fn.stridx(data_buffer, "\n", i)
-                if newline_pos <= 0 then
+                local newline_pos =
+                    shell_helpers.string_find(data_buffer, "\n", i)
+                if not newline_pos then
                     break
                 end
-                local line = data_buffer:sub(i, newline_pos - 1)
+                local line = data_buffer:sub(i, newline_pos)
                 println(line)
                 i = newline_pos + 1
-                truncated = true
             end
-
-            -- truncate the printed lines if any
-            if truncated then
-                data_buffer = i <= #data_buffer
-                        and data_buffer:sub(i, #data_buffer)
-                    or nil
-            end
+            -- truncate the printed lines if found any
+            data_buffer = i <= #data_buffer and data_buffer:sub(i, #data_buffer)
+                or nil
         end
 
         local function on_error(err, data)
