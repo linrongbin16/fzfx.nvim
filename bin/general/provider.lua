@@ -120,14 +120,17 @@ then
         --- @type string?
         local data_buffer = nil
 
-        local function on_exit(exitcode)
+        local function on_exit(code)
             out_pipe:close()
             err_pipe:close()
             vim.loop.stop()
-            os.exit(exitcode)
+            os.exit(code)
         end
 
-        local cmd_splits = vim.fn.split(cmd, '\n')
+        local cmd_splits = vim.fn.json_decode(cmd)
+        if type(cmd_splits) ~= "table" or #cmd_splits == 0 then
+            os.exit(0)
+        end
         local process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
             args = { unpack(cmd_splits, 2) },
             stdio = { nil, out_pipe, err_pipe },
@@ -182,7 +185,7 @@ then
             -- truncate the printed lines if any
             if truncated then
                 data_buffer = i <= #data_buffer
-                    and data_buffer:sub(i, #data_buffer)
+                        and data_buffer:sub(i, #data_buffer)
                     or nil
             end
         end

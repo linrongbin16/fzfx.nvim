@@ -158,7 +158,10 @@ function ProviderSwitch:provide(name, query, context)
         then
             vim.fn.writefile({ "" }, self.resultfile)
         else
-            vim.fn.writefile(provider_config.provider, self.resultfile)
+            vim.fn.writefile(
+                { vim.fn.json_encode(provider_config.provider) },
+                self.resultfile
+            )
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
         local ok, result = pcall(provider_config.provider, query, context)
@@ -217,7 +220,10 @@ function ProviderSwitch:provide(name, query, context)
             if result == nil or #result == 0 then
                 vim.fn.writefile({ "" }, self.resultfile)
             else
-                vim.fn.writefile(result, self.resultfile)
+                vim.fn.writefile(
+                    { vim.fn.json_encode(result) },
+                    self.resultfile
+                )
             end
         end
     elseif provider_config.provider_type == ProviderTypeEnum.LIST then
