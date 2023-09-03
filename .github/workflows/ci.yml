@@ -16,8 +16,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: stevearc/nvim-typecheck-action@v1
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Neovim Typecheck linter
+        uses: stevearc/nvim-typecheck-action@v1
         with:
           path: lua
           level: Information
@@ -25,3 +27,12 @@ jobs:
           neodev-version: stable
           nvim-version: v0.9.1
           luals-version: 3.6.25
+  luacheck:
+    name: Lua check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Luacheck linter
+        uses: lunarmodules/luacheck@v1
