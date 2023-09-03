@@ -2,9 +2,18 @@
 
 # fzfx.nvim
 
-[![Neovim-v0.5](https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg?logo=Neovim&logoColor=green&style=flat-square)](https://github.com/neovim/neovim/releases/tag/v0.5.0)
-[![License](https://img.shields.io/github/license/linrongbin16/lin.nvim?style=flat-square&logo=GitHub&label=License)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
-[![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?logo=lua&logoColor=darkblue&style=flat-square&label=CI)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
+<p align="center">
+<a href="https://github.com/neovim/neovim/releases/stable"><img alt="Neovim-v0.5" src="https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg?logo=Neovim&logoColor=green" /></a>
+<a href="https://github.com/linrongbin16/lin.nvim/search?l=lua"><img alt="Top Language" src="https://img.shields.io/github/languages/top/linrongbin16/lin.nvim?label=Lua&logo=lua&logoColor=darkblue" /></a>
+<a href="https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/linrongbin16/lin.nvim?logo=GNU&label=License" /></a>
+<a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?logo=GitHub&label=Luacheck" /></a>
+</p>
+  
+<!-- 
+[![neovim-v0.5](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)](https://github.com/neovim/neovim/releases/tag/v0.5.0)
+[![license](https://img.shields.io/github/license/linrongbin16/lin.nvim)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
+[![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
+-->
 
 <!-- ![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black) -->
 <!-- ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white) -->
@@ -12,7 +21,11 @@
 
 > E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
 
-This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim). A brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
+
+<!-- > Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes. -->
+
+This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
 
 - [Feature](#-feature)
 - [Requirement](#-requirement)
@@ -51,16 +64,6 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - ...
 
 > Actually all above features are built on an engine that support fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#-configuration) and [Wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
-
-<details>
-<summary><b>Click here to see some demo</b></summary>
-<br/>
-
-- Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes:
-
-  https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
-
-</details>
 
 ## ✅ Requirement
 
