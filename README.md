@@ -4,7 +4,7 @@
 
 [![Neovim-v0.5](https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg?logo=Neovim&logoColor=green&style=flat-square)](https://github.com/neovim/neovim/releases/tag/v0.5.0)
 [![License](https://img.shields.io/github/license/linrongbin16/lin.nvim?style=flat-square&logo=GitHub&label=License)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
-[![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?logo=lua&logoColor=darkblue&style=flat-square&label=CI)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
+[![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?logo=lua&logoColor=white&style=flat-square&label=CI)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
 
 <!-- ![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black) -->
 <!-- ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white) -->
