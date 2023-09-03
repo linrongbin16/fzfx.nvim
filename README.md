@@ -6,12 +6,13 @@
 <a href="https://github.com/neovim/neovim/releases/stable"><img alt="neovim-0.5" src="https://img.shields.io/badge/neovim-v0.5-blueviolet.svg" /></a>
 <a href="https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE"><img alt="license" src="https://img.shields.io/github/license/linrongbin16/lin.nvim" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="license" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml" /></a>
+</p>
+  
 <!-- 
 [![neovim-v0.5](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)](https://github.com/neovim/neovim/releases/tag/v0.5.0)
 [![license](https://img.shields.io/github/license/linrongbin16/lin.nvim)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
 [![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
 -->
-</p>
 
 <!-- ![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black) -->
 <!-- ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white) -->
