@@ -1,4 +1,4 @@
-local log = require("fzfx.log")
+-- local log = require("fzfx.log")
 
 --- @alias AnsiCodeType "black"|"red"|"green"|"yellow"|"blue"|"magenta"|"cyan"
 --- @type table<AnsiCodeType, integer>
