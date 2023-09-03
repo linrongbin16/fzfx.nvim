@@ -8,10 +8,12 @@
 <a href="https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE"><img alt="license" src="https://img.shields.io/github/license/linrongbin16/lin.nvim" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="license" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml" /></a>
 
-
+<!-- 
 [![neovim-v0.5](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)](https://github.com/neovim/neovim/releases/tag/v0.5.0)
 [![license](https://img.shields.io/github/license/linrongbin16/lin.nvim)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
 [![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
+-->
+
 </p>
 
 <!-- ![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black) -->
