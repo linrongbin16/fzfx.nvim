@@ -20,8 +20,6 @@
 
 > E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
 
-
-
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
 
 > Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes.
