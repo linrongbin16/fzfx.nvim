@@ -2,7 +2,7 @@
 
 # fzfx.nvim
 
-[![neovim-v0.5](https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg)](https://github.com/neovim/neovim/releases/tag/v0.5.0)
+[![neovim-v0.5](https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg?lable=neovim-v0.5)](https://github.com/neovim/neovim/releases/tag/v0.5.0)
 [![license](https://img.shields.io/github/license/linrongbin16/lin.nvim)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
 [![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?style=flat-square&label=ci)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
 
