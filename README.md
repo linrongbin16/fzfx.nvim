@@ -19,7 +19,7 @@
 <!-- ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white) -->
 <!-- ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white) -->
 
-> E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
+E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
 
