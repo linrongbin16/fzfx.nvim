@@ -7,10 +7,10 @@ local function normalize(path, backslash)
     backslash = backslash or false
     local result = path
     if string.match(path, [[\\]]) then
-        result, _ = string.gsub(path, [[\\]], [[\]])
+        result = string.gsub(path, [[\\]], [[\]])
     end
     if backslash and string.match(path, [[\]]) then
-        result, _ = string.gsub(path, [[\]], [[/]])
+        result = string.gsub(path, [[\]], [[/]])
     end
     return vim.fn.trim(result)
 end

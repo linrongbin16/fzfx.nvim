@@ -172,17 +172,17 @@ local function render_filepath_line(line, delimiter, pos)
     -- remove ansi color codes
     -- see: https://stackoverflow.com/a/55324681/4438921
     if type(filename) == "string" and string.len(filename) > 0 then
-        if IS_WINDOWS then
-            filename = filename
-                :gsub("\x1b%[%d+m\x1b%[K", "")
-                :gsub("\x1b%[m\x1b%[K", "")
-        end
         filename = filename
-            :gsub("\x1b%[%d+;%d+;%d+;%d+;%d+m", "")
-            :gsub("\x1b%[%d+;%d+;%d+;%d+m", "")
-            :gsub("\x1b%[%d+;%d+;%d+m", "")
-            :gsub("\x1b%[%d+;%d+m", "")
-            :gsub("\x1b%[%d+m", "")
+            :gsub("\x1b%[%d+m\x1b%[K", "")
+            :gsub("\x1b%[m\x1b%[K", "")
+            -- :gsub("\x1b%[%d+;%d+;%d+;%d+;%d+m", "")
+            -- :gsub("\x1b%[%d+;%d+;%d+;%d+m", "")
+            -- :gsub("\x1b%[%d+;%d+;%d+m", "")
+            -- :gsub("\x1b%[%d+;%d+m", "")
+            :gsub(
+                "\x1b%[%d+m",
+                ""
+            )
     end
     local ext = vim.fn.fnamemodify(filename, ":e")
     local icon, icon_color = DEVICONS.get_icon_color(filename, ext)
@@ -192,10 +192,10 @@ local function render_filepath_line(line, delimiter, pos)
     --         vim.inspect(line)
     --     )
     --     log_debug(
-    --         "|fzfx.shell_helpers - render_line_with_icon| ext:%s, icon:%s, color:%s",
+    --         "|fzfx.shell_helpers - render_line_with_icon| ext:%s, icon:%s, icon_color:%s",
     --         vim.inspect(ext),
     --         vim.inspect(icon),
-    --         vim.inspect(color)
+    --         vim.inspect(icon_color)
     --     )
     -- end
     if type(icon) == "string" and string.len(icon) > 0 then

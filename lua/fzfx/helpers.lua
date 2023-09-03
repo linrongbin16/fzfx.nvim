@@ -169,14 +169,12 @@ local function preprocess_fzf_opts(opts)
     end
     local result = {}
     for _, o in ipairs(opts) do
-        if o == nil then
-            -- pass
-        elseif type(o) == "function" then
+        if type(o) == "function" then
             local result_o = o()
             if result_o ~= nil then
                 table.insert(result, result_o)
             end
-        else
+        elseif o ~= nil then
             table.insert(result, o)
         end
     end
