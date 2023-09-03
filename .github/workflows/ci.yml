@@ -1,14 +1,13 @@
 ---
-name: Type check
+name: CI
 on:
   pull_request: ~
   push:
     branches:
       - main
-      - master
 
 jobs:
-  build:
+  typecheck:
     name: Type check
     runs-on: ubuntu-latest
 
