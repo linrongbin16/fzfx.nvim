@@ -186,18 +186,18 @@ local function render_filepath_line(line, delimiter, pos)
     end
     local ext = vim.fn.fnamemodify(filename, ":e")
     local icon, icon_color = DEVICONS.get_icon_color(filename, ext)
-    if DEBUG_ENABLE then
-        -- log_debug(
-        --     "|fzfx.shell_helpers - render_line_with_icon| line:%s",
-        --     vim.inspect(line)
-        -- )
-        -- log_debug(
-        --     "|fzfx.shell_helpers - render_line_with_icon| ext:%s, icon:%s, icon_color:%s",
-        --     vim.inspect(ext),
-        --     vim.inspect(icon),
-        --     vim.inspect(icon_color)
-        -- )
-    end
+    -- if DEBUG_ENABLE then
+    --     log_debug(
+    --         "|fzfx.shell_helpers - render_line_with_icon| line:%s",
+    --         vim.inspect(line)
+    --     )
+    --     log_debug(
+    --         "|fzfx.shell_helpers - render_line_with_icon| ext:%s, icon:%s, icon_color:%s",
+    --         vim.inspect(ext),
+    --         vim.inspect(icon),
+    --         vim.inspect(icon_color)
+    --     )
+    -- end
     if type(icon) == "string" and string.len(icon) > 0 then
         local colorfmt = require("fzfx.color").csi(icon_color, true)
         if colorfmt then
