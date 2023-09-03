@@ -37,4 +37,4 @@ jobs:
       - name: Luacheck linter
         uses: lunarmodules/luacheck@v1
         with:
-            args: lua
+            args: --globals vim lua
