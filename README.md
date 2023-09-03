@@ -5,7 +5,7 @@
 <p align="center">
 <a href="https://github.com/neovim/neovim/releases/stable"><img alt="Neovim-v0.5" src="https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg?logo=Neovim&logoColor=green" /></a>
 <a href="https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/linrongbin16/lin.nvim?logo=GNU&label=License" /></a>
-<a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?logo=GitHub&label=Testing" /></a>
+<a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?logo=GitHub&label=Check" /></a>
 </p>
   
 <!-- 
