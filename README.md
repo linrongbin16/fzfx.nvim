@@ -25,7 +25,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 
 <!-- > Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes. -->
 
-This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim). A brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
+This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
 
 - [Feature](#-feature)
 - [Requirement](#-requirement)
