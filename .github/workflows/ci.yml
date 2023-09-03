@@ -37,4 +37,4 @@ jobs:
       - name: Luacheck linter
         uses: lunarmodules/luacheck@v1
         with:
-            args: lua --no-unused --no-unused-args --max-line-length 200  vim
+            args: lua --no-unused-args --max-line-length 200  vim
