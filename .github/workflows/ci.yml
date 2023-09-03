@@ -1,20 +1,16 @@
----
 name: CI
 on:
   pull_request: ~
   push:
     branches:
       - main
-      
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
-  
 jobs:
   typecheck:
     name: Type check
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -30,11 +26,10 @@ jobs:
   luacheck:
     name: Lua check
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Luacheck linter
         uses: lunarmodules/luacheck@v1
         with:
-            args: lua --no-unused-args --max-line-length 200 --globals vim
+          args: lua --no-unused --no-unused-args --max-line-length 200 --globals vim
