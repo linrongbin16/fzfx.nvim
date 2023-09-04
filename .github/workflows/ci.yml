@@ -62,7 +62,7 @@ jobs:
           echo "ls ."
           ls -l .
           echo "run luacov"
-          luacov
+          luacov -c ./.luacov
           echo "ls ."
           ls -l .
           echo "cat ./luacov.report.html"
