@@ -13,7 +13,7 @@ describe("clazz_spec", function()
     end)
 
     describe("Clazz", function()
-        it("doesnt escape if not needed", function()
+        it("defines an object", function()
             local Clazz = require("fzfx.clazz").Clazz
 
             local clz = Clazz:implement()
