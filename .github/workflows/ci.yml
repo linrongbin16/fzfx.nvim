@@ -61,6 +61,8 @@ jobs:
           vusted --coverage --shuffle ./test
           echo "ls ."
           ls -l .
+          echo "cat ./luacov.report.html"
+          cat ./luacov.report.html
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
