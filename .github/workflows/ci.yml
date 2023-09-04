@@ -44,7 +44,7 @@ jobs:
         id: vim
         with:
           neovim: true
-          version: [stable, nightly]
+          version: nightly
       - name: Install luajit
         uses: leafo/gh-actions-lua@v10
         with:
