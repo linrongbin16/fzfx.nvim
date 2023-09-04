@@ -1,6 +1,0 @@
-modules = {
-  ["fzfx"] = "lua/fzfx.lua",
-  ["fzfx.*"] = "lua",
-  reporter = "html",
-  reportfile = "luacov.report.html"
-}
