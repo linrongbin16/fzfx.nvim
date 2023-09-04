@@ -33,8 +33,8 @@ jobs:
         uses: lunarmodules/luacheck@v1
         with:
           args: lua --config .luacheckrc
-  unit_test_stable:
-    name: Unit test on stable nvim
+  unit_test:
+    name: Unit test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -76,27 +76,3 @@ jobs:
           files: luacov.report.out
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  unit_test_nightly:
-    name: Unit test on nightly nvim
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup neovim
-        uses: rhysd/action-setup-vim@v1
-        id: vim
-        with:
-          neovim: true
-          version: nightly
-      - name: Install luajit
-        uses: leafo/gh-actions-lua@v10
-        with:
-          luaVersion: "luajit-2.1.0-beta3"
-      - name: Install luarocks
-        uses: leafo/gh-actions-luarocks@v4
-      - name: Run test cases
-        shell: bash
-        run: |
-          luarocks install luacheck
-          luarocks install vusted
-          vusted --shuffle ./test
