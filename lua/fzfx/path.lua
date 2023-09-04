@@ -6,13 +6,13 @@ local constants = require("fzfx.constants")
 local function normalize(path, backslash)
     backslash = backslash or false
     local result = path
-    if string.match(path, [[\\]]) then
-        result = string.gsub(path, [[\\]], [[\]])
+    if string.match(result, [[\\]]) then
+        result = string.gsub(result, [[\\]], [[\]])
     end
-    if backslash and string.match(path, [[\]]) then
-        result = string.gsub(path, [[\]], [[/]])
+    if backslash and string.match(result, [[\]]) then
+        result = string.gsub(result, [[\]], [[/]])
     end
-    return vim.fn.trim(result)
+    return vim.trim(result)
 end
 
 local function join(...)

@@ -12,10 +12,9 @@ describe("clazz", function()
         vim.api.nvim_command("cd " .. cwd)
     end)
 
+    local Clazz = require("fzfx.clazz").Clazz
     describe("[Clazz]", function()
         it("defines an empty class", function()
-            local Clazz = require("fzfx.clazz").Clazz
-
             local clz = Clazz:implement()
             assert_true(type(clz) == "table")
             assert_true(clz.__classname == "object")
@@ -25,8 +24,6 @@ describe("clazz", function()
             assert_true(obj.__classname == "object")
         end)
         it("defines a ProviderConfig class", function()
-            local Clazz = require("fzfx.clazz").Clazz
-
             local ProviderConfigClass =
                 Clazz:implement("test.clazz_spec.ProviderConfigClass", {
                     key = nil,

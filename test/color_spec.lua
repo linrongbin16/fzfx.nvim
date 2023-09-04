@@ -12,6 +12,7 @@ describe("color", function()
         vim.api.nvim_command("cd " .. cwd)
     end)
 
+    local color = require("fzfx.color")
     describe("[hlgroup]", function()
         local hlgroups = {
             "Special",
@@ -24,8 +25,7 @@ describe("color", function()
             "String",
         }
 
-        it("retrieve fg colors", function()
-            local color = require("fzfx.color")
+        it("get vim fg colors", function()
             for _, grp in ipairs(hlgroups) do
                 local actual = color.hlgroup("fg", grp)
                 print(
@@ -37,8 +37,7 @@ describe("color", function()
                 end
             end
         end)
-        it("retrieve bg colors", function()
-            local color = require("fzfx.color")
+        it("get vim bg colors", function()
             for _, group in ipairs(hlgroups) do
                 local actual = color.hlgroup("bg", group)
                 print(
@@ -102,7 +101,6 @@ describe("color", function()
         end
 
         it("get fg hlgroup color or fallback to ansi color", function()
-            local color = require("fzfx.color")
             for clr, grp in pairs(ansigroups) do
                 local actual = color.ansi("fg", clr, grp)
                 test_ansi(function()
@@ -117,7 +115,6 @@ describe("color", function()
             end
         end)
         it("get bg hlgroup color or fallback to ansi color", function()
-            local color = require("fzfx.color")
             for clr, grp in ipairs(ansigroups) do
                 local actual = color.hlgroup("bg", clr, grp)
                 test_ansi(function()
