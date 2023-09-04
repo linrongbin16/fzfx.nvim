@@ -1,6 +1,6 @@
 local cwd = vim.fn.getcwd()
 
-describe("clazz_spec", function()
+describe("clazz", function()
     local assert_eq = assert.are.equal
     local assert_neq = assert.are_not.equal
     local assert_true = assert.is_true
@@ -12,7 +12,7 @@ describe("clazz_spec", function()
         vim.api.nvim_command("cd " .. cwd)
     end)
 
-    describe("Clazz", function()
+    describe("[Clazz]", function()
         it("defines an empty class", function()
             local Clazz = require("fzfx.clazz").Clazz
 
