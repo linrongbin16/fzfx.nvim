@@ -59,6 +59,12 @@ jobs:
           luarocks install cluacov
           luarocks install vusted
           vusted --coverage --shuffle ./test
+          echo "ls ."
+          ls -l .
+          echo "ls ./test"
+          ls -l ./test
+          echo "ls ./lua"
+          ls -l ./test
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
