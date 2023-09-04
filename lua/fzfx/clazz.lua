@@ -5,13 +5,13 @@ local Clazz = {
     __classname = "object",
 }
 
---- @param classname string
---- @param body table
+--- @param classname string?
+--- @param body table?
 function Clazz:implement(classname, body)
     local o = vim.tbl_deep_extend("force", vim.deepcopy(Clazz), {
-        __classname = classname,
+        __classname = classname or "object",
     })
-    return vim.tbl_deep_extend("force", vim.deepcopy(o), body or nil)
+    return vim.tbl_deep_extend("force", vim.deepcopy(o), body or {})
 end
 
 --- @param o any?
