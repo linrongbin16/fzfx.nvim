@@ -81,65 +81,64 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     )
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
-    else
-        local data_buffer = { "" }
-
-        --- @param code integer?
-        --- @param event string?
-        local function on_exit(_, code, event)
-            os.exit(code)
-        end
-
-        --- @param chanid integer?
-        --- @param data string[]
-        --- @param name string?
-        local function on_output(chanid, data, name)
-            shell_helpers.log_debug(
-                "|provider| plain|command on_output name:%s, data:%s",
-                vim.inspect(name),
-                vim.inspect(data)
-            )
-            if #data == 1 and string.len(data[1]) == 0 then
-                if #data_buffer > 0 then
-                    for _, line in ipairs(data_buffer) do
-                        println(line)
-                    end
-                end
-                on_exit(nil, 0, name)
-                return
-            end
-
-            data_buffer[#data_buffer] = data_buffer[#data_buffer] .. data[1]
-            vim.list_extend(data_buffer, data, 2)
-            local i = 1
-            -- skip the last item in data_buffer, it could be a partial line
-            while i < #data_buffer do
-                local line = data_buffer[i]
-                println(line)
-                i = i + 1
-            end
-            data_buffer =
-                vim.list_slice(data_buffer, #data_buffer, #data_buffer)
-        end
-
-        --- @param chanid integer?
-        --- @param data string[]?
-        --- @param name string?
-        local function on_error(chanid, data, name)
-            shell_helpers.log_debug(
-                "|provider| plain|command on_error name:%s, data:%s",
-                vim.inspect(name),
-                vim.inspect(data)
-            )
-        end
-
-        local jobid = vim.fn.jobstart(cmd, {
-            on_stdout = on_output,
-            on_stderr = on_error,
-            on_exit = on_exit,
-        })
-        vim.fn.jobwait({ jobid })
+        return
     end
+    local data_buffer = { "" }
+
+    --- @param code integer?
+    --- @param event string?
+    local function on_exit(_, code, event)
+        os.exit(code)
+    end
+
+    --- @param chanid integer?
+    --- @param data string[]
+    --- @param name string?
+    local function on_output(chanid, data, name)
+        shell_helpers.log_debug(
+            "|provider| plain|command on_output name:%s, data:%s",
+            vim.inspect(name),
+            vim.inspect(data)
+        )
+        if #data == 1 and string.len(data[1]) == 0 then
+            if #data_buffer > 0 then
+                for _, line in ipairs(data_buffer) do
+                    println(line)
+                end
+            end
+            on_exit(nil, 0, name)
+            return
+        end
+
+        data_buffer[#data_buffer] = data_buffer[#data_buffer] .. data[1]
+        vim.list_extend(data_buffer, data, 2)
+        local i = 1
+        -- skip the last item in data_buffer, it could be a partial line
+        while i < #data_buffer do
+            local line = data_buffer[i]
+            println(line)
+            i = i + 1
+        end
+        data_buffer = vim.list_slice(data_buffer, #data_buffer, #data_buffer)
+    end
+
+    --- @param chanid integer?
+    --- @param data string[]?
+    --- @param name string?
+    local function on_error(chanid, data, name)
+        shell_helpers.log_debug(
+            "|provider| plain|command on_error name:%s, data:%s",
+            vim.inspect(name),
+            vim.inspect(data)
+        )
+    end
+
+    local jobid = vim.fn.jobstart(cmd, {
+        on_stdout = on_output,
+        on_stderr = on_error,
+        on_exit = on_exit,
+    })
+    vim.fn.jobwait({ jobid })
 elseif
     metajson.provider_type == "plain_list"
     or metajson.provider_type == "command_list"
@@ -152,127 +151,129 @@ then
     )
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
-    else
-        local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
-        local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
-        shell_helpers.log_ensure(
-            out_pipe ~= nil,
-            "|provider| error! failed to create out pipe with vim.loop.new_pipe"
-        )
-        shell_helpers.log_ensure(
-            err_pipe ~= nil,
-            "|provider| error! failed to create err pipe with vim.loop.new_pipe"
-        )
-        shell_helpers.log_debug("|provider| out_pipe:%s", vim.inspect(out_pipe))
-        shell_helpers.log_debug("|provider| err_pipe:%s", vim.inspect(err_pipe))
-
-        --- @type string?
-        local data_buffer = nil
-
-        local function on_exit(code)
-            out_pipe:close()
-            err_pipe:close()
-            vim.loop.stop()
-            os.exit(code)
-        end
-
-        local cmd_splits = vim.fn.json_decode(cmd)
-        if type(cmd_splits) ~= "table" or #cmd_splits == 0 then
-            os.exit(0)
-        end
-        local process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
-            args = { unpack(cmd_splits, 2) },
-            stdio = { nil, out_pipe, err_pipe },
-            -- verbatim = true,
-        }, function(code, signal)
-            out_pipe:read_stop()
-            err_pipe:read_stop()
-            out_pipe:shutdown()
-            err_pipe:shutdown()
-            on_exit(code)
-        end)
-        shell_helpers.log_debug(
-            "|provider| process_handler:%s, process_id:%s",
-            vim.inspect(process_handler),
-            vim.inspect(process_id)
-        )
-
-        --- @param err string?
-        --- @param data string?
-        local function on_output(err, data)
-            -- shell_helpers.log_debug(
-            --     "|provider| plain_list|command_list on_output err:%s, data:%s",
-            --     vim.inspect(err),
-            --     vim.inspect(data)
-            -- )
-            if err then
-                on_exit(1)
-                return
-            end
-
-            if not data then
-                if data_buffer then
-                    -- foreach the data_buffer and find every line
-                    local i = 1
-                    while i <= #data_buffer do
-                        local newline_pos =
-                            shell_helpers.string_find(data_buffer, "\n", i)
-                        if not newline_pos then
-                            break
-                        end
-                        local line = data_buffer:sub(i, newline_pos)
-                        println(line)
-                        i = newline_pos + 1
-                    end
-                    if i <= #data_buffer then
-                        local line = data_buffer:sub(i, #data_buffer)
-                        println(line)
-                        data_buffer = nil
-                    end
-                end
-                on_exit(0)
-                return
-            end
-
-            -- append data to data_buffer
-            data_buffer = data_buffer and (data_buffer .. data) or data
-            -- foreach the data_buffer and find every line
-            local i = 1
-            while i <= #data_buffer do
-                local newline_pos =
-                    shell_helpers.string_find(data_buffer, "\n", i)
-                if not newline_pos then
-                    break
-                end
-                local line = data_buffer:sub(i, newline_pos)
-                println(line)
-                i = newline_pos + 1
-            end
-            -- truncate the printed lines if found any
-            data_buffer = i <= #data_buffer and data_buffer:sub(i, #data_buffer)
-                or nil
-        end
-
-        local function on_error(err, data)
-            shell_helpers.log_debug(
-                "|provider| plain_list|command_list on_error err:%s, data:%s",
-                vim.inspect(err),
-                vim.inspect(data)
-            )
-            -- if err then
-            --     on_exit(1)
-            --     return
-            -- end
-            -- if not data then
-            --     on_exit(0)
-            --     return
-            -- end
-        end
-
-        out_pipe:read_start(on_output)
-        err_pipe:read_start(on_error)
-        vim.loop.run()
+        return
     end
+
+    local cmd_splits = vim.fn.json_decode(cmd)
+    if type(cmd_splits) ~= "table" or #cmd_splits == 0 then
+        os.exit(0)
+        return
+    end
+
+    local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+    local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+    shell_helpers.log_ensure(
+        out_pipe ~= nil,
+        "|provider| error! failed to create out pipe with vim.loop.new_pipe"
+    )
+    shell_helpers.log_ensure(
+        err_pipe ~= nil,
+        "|provider| error! failed to create err pipe with vim.loop.new_pipe"
+    )
+    shell_helpers.log_debug("|provider| out_pipe:%s", vim.inspect(out_pipe))
+    shell_helpers.log_debug("|provider| err_pipe:%s", vim.inspect(err_pipe))
+
+    --- @type string?
+    local data_buffer = nil
+
+    local function on_exit(code)
+        out_pipe:close()
+        err_pipe:close()
+        vim.loop.stop()
+        os.exit(code)
+    end
+
+    local process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
+        args = { unpack(cmd_splits, 2) },
+        stdio = { nil, out_pipe, err_pipe },
+        -- verbatim = true,
+    }, function(code, signal)
+        out_pipe:read_stop()
+        err_pipe:read_stop()
+        out_pipe:shutdown()
+        err_pipe:shutdown()
+        on_exit(code)
+    end)
+    shell_helpers.log_debug(
+        "|provider| process_handler:%s, process_id:%s",
+        vim.inspect(process_handler),
+        vim.inspect(process_id)
+    )
+
+    --- @param err string?
+    --- @param data string?
+    local function on_output(err, data)
+        -- shell_helpers.log_debug(
+        --     "|provider| plain_list|command_list on_output err:%s, data:%s",
+        --     vim.inspect(err),
+        --     vim.inspect(data)
+        -- )
+        if err then
+            on_exit(1)
+            return
+        end
+
+        if not data then
+            if data_buffer then
+                -- foreach the data_buffer and find every line
+                local i = 1
+                while i <= #data_buffer do
+                    local newline_pos =
+                        shell_helpers.string_find(data_buffer, "\n", i)
+                    if not newline_pos then
+                        break
+                    end
+                    local line = data_buffer:sub(i, newline_pos)
+                    println(line)
+                    i = newline_pos + 1
+                end
+                if i <= #data_buffer then
+                    local line = data_buffer:sub(i, #data_buffer)
+                    println(line)
+                    data_buffer = nil
+                end
+            end
+            on_exit(0)
+            return
+        end
+
+        -- append data to data_buffer
+        data_buffer = data_buffer and (data_buffer .. data) or data
+        -- foreach the data_buffer and find every line
+        local i = 1
+        while i <= #data_buffer do
+            local newline_pos = shell_helpers.string_find(data_buffer, "\n", i)
+            if not newline_pos then
+                break
+            end
+            local line = data_buffer:sub(i, newline_pos)
+            println(line)
+            i = newline_pos + 1
+        end
+        -- truncate the printed lines if found any
+        data_buffer = i <= #data_buffer and data_buffer:sub(i, #data_buffer)
+            or nil
+    end
+
+    local function on_error(err, data)
+        shell_helpers.log_debug(
+            "|provider| plain_list|command_list on_error err:%s, data:%s",
+            vim.inspect(err),
+            vim.inspect(data)
+        )
+        -- if err then
+        --     on_exit(1)
+        --     return
+        -- end
+        -- if not data then
+        --     on_exit(0)
+        --     return
+        -- end
+    end
+
+    out_pipe:read_start(on_output)
+    err_pipe:read_start(on_error)
+    vim.loop.run()
 elseif metajson.provider_type == "list" then
     local fd = vim.loop.fs_open(resultfile, "r", 438) --[[@as integer]]
     shell_helpers.log_ensure(
