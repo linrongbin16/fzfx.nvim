@@ -63,6 +63,8 @@ jobs:
           ls -l .
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
+        with:
+          files: luacov.stats.out
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   unit_test_nightly:
