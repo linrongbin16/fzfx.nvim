@@ -274,51 +274,19 @@ then
         vim.loop.run()
     end
 elseif metajson.provider_type == "list" then
-    local fd  =vim.loop.fs_open(
+    local open_result = vim.loop.fs_open(
         resultfile,
         "r",
-        438)
-            shell_helpers.log_ensure(
-                fd ~= nil,
-                "error! failed to open list provider resultfile (%s)",
-                vim.inspect(resultfile)
-            )
-            local fstat = vim.loop.fs_fstat(fd)
-                    shell_helpers.log_ensure(
-                        fstat ~= nil,
-                        "error! failed to fstat list provider resultfile (%s)",
-                        vim.inspect(resultfile)
-                    )
-
-                    local data_buffer = nil
-                    local offset = 0
-
-                    local function on_exit(err)
-                        if err then
-                            shell_helpers.log_debug(
-                                "|provider| list provider exit with resultfile(%s): %s",
-                                vim.inspect(resultfile),
-                                vim.inspect(err)
-                            )
-                            os.exit(130)
-                            return
-                        end
-                        os.exit(0)
-                    end
-
-                    --- @param err string?
-                    --- @param data string?
-                    local function on_output(err, data)
-                        if err then
-                            on_exit(err)
-                            return
-                        end
-                    end
-
-
+        438,
         --- @param open_err string?
         --- @param fd integer
         function(open_err, fd)
+            shell_helpers.log_ensure(
+                not open_err,
+                "|provider| error! failed to fs_open list provider resultfile (%s): %s",
+                vim.inspect(resultfile),
+                vim.inspect(open_err)
+            )
             vim.loop.fs_fstat(
                 fd,
                 --- @param fstat_err string?
@@ -326,59 +294,91 @@ elseif metajson.provider_type == "list" then
                 function(fstat_err, stat)
                     shell_helpers.log_ensure(
                         not fstat_err,
-                        "error! failed to fstat list provider resultfile (%s): %s",
+                        "|provdier| error! failed to fs_fstat list provider resultfile (%s): %s",
                         vim.inspect(resultfile),
                         vim.inspect(fstat_err)
                     )
-
                     local data_buffer = nil
+                    local filesize = stat.size
+                    local batchsize = 4096
                     local offset = 0
 
-                    local function on_exit(err)
-                        if err then
+                    --- @param exit_err string?
+                    local function on_exit(exit_err)
+                        local code = 0
+                        if exit_err then
                             shell_helpers.log_debug(
                                 "|provider| list provider exit with resultfile(%s): %s",
                                 vim.inspect(resultfile),
-                                vim.inspect(err)
+                                vim.inspect(exit_err)
                             )
-                            os.exit(130)
-                            return
+                            code = 130
                         end
-                        os.exit(0)
+                        vim.loop.fs_close(fd, function(close_err)
+                            if close_err then
+                                shell_helpers.log_debug(
+                                    "|provider| error! failed to fs_close(1) list provider resultfile (%s): %s",
+                                    vim.inspect(resultfile),
+                                    vim.inspect(close_err)
+                                )
+                                code = 130
+                            end
+                            os.exit(code)
+                        end)
                     end
 
                     --- @param err string?
                     --- @param data string?
                     local function on_output(err, data)
                         if err then
+                            shell_helpers.log_debug(
+                                "|provider| error! failed to fs_read list provider resultfile (%s): %s",
+                                vim.inspect(resultfile),
+                                vim.inspect(err)
+                            )
                             on_exit(err)
                             return
                         end
+                        if not data then
+                            if data_buffer then
+                            end
+                            on_exit()
+                            return
+                        end
+
+                        -- append data to data_buffer
+                        data_buffer = data_buffer and (data_buffer .. data)
+                            or data
+                        -- foreach the data_buffer and find every line
+                        local i = 1
+                        while i <= #data_buffer do
+                            local newline_pos =
+                                shell_helpers.string_find(data_buffer, "\n", i)
+                            if not newline_pos then
+                                break
+                            end
+                            local line = data_buffer:sub(i, newline_pos)
+                            println(line)
+                            i = newline_pos + 1
+                        end
+                        -- truncate the printed lines if found any
+                        data_buffer = i <= #data_buffer
+                                and data_buffer:sub(i, #data_buffer)
+                            or nil
+
+                        offset = offset + #data
                     end
 
-                    vim.loop.fs_read(
-                        fd,
-                        stat.size,
-                        0,
-                        --- @param read_err string?
-                        --- @param data string
-                        function(read_err, data)
-                            assert(not read_err, read_err)
-                            vim.loop.fs_close(fd, function(close_err)
-                                assert(not close_err, close_err)
-                                shell_helpers.log_ensure(
-                                    not close_err,
-                                    "error! failed to close list provider resultfile (%s): %s",
-                                    vim.inspect(resultfile),
-                                    vim.inspect(close_err)
-                                )
-                                return callback(data)
-                            end)
-                        end
-                    )
+                    vim.loop.fs_read(fd, batchsize, 0, on_output)
                 end
             )
         end
+    )
+    shell_helpers.log_ensure(
+        open_result ~= nil,
+        "|provider| failed to fs_open resultfile(%s): %s",
+        vim.inspect(resultfile),
+        vim.inspect(open_result)
     )
 
     -- local f = io.open(resultfile, "r")
