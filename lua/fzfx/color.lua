@@ -12,11 +12,10 @@ local AnsiCode = {
     cyan = 36,
 }
 
---- @alias VimSyntaxHighlightAttribute "fg"|"bg"
---- @param attr VimSyntaxHighlightAttribute
+--- @param attr "fg"|"bg"
 --- @param group string?
---- @return string|nil
-local function get_color(attr, group)
+--- @return string?
+local function retrieve_vim_color(attr, group)
     if type(group) ~= "string" then
         return nil
     end
@@ -27,7 +26,7 @@ local function get_color(attr, group)
         vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(group)), attr, family)
     if string.find(code, pattern) then
         -- log.debug(
-        --     "|fzfx.color - get_color| attr:%s, group:%s, code:%s",
+        --     "|fzfx.color - retrieve_vim_color| attr:%s, group:%s, code:%s",
         --     vim.inspect(attr),
         --     vim.inspect(group),
         --     vim.inspect(code)
@@ -35,7 +34,7 @@ local function get_color(attr, group)
         return code
     end
     -- log.debug(
-    --     "|fzfx.color - get_color| return nil, attr:%s, group:%s, code:%s",
+    --     "|fzfx.color - retrieve_vim_color| return nil, attr:%s, group:%s, code:%s",
     --     vim.inspect(attr),
     --     vim.inspect(group),
     --     vim.inspect(code)
@@ -79,7 +78,7 @@ end
 --- @return string
 local function ansi(text, name, hl)
     local fgcolor = nil
-    local fg = get_color("fg", hl)
+    local fg = retrieve_vim_color("fg", hl)
     if type(fg) == "string" then
         fgcolor = csi(fg, true)
         -- log.debug(
@@ -103,7 +102,7 @@ local function ansi(text, name, hl)
     end
 
     local finalcolor = nil
-    local bg = get_color("bg", hl)
+    local bg = retrieve_vim_color("bg", hl)
     if type(bg) == "string" then
         local bgcolor = csi(bg, false)
         -- log.debug(
@@ -138,7 +137,7 @@ end
 
 --- @type table<string, function>
 local M = {
-    get_color = get_color,
+    retrieve_vim_color = retrieve_vim_color,
     csi = csi,
     ansi = ansi,
 }
