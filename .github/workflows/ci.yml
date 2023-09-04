@@ -61,6 +61,7 @@ jobs:
           vusted --coverage --shuffle ./test
           echo "ls ."
           ls -l .
+          echo "luacov"
           luacov
           echo "cat ./luacov.report.html"
           cat ./luacov.report.html
