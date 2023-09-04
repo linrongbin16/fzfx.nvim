@@ -72,6 +72,22 @@ local function println(line)
     end
 end
 
+--- @param data_buffer string
+--- @param fn_line_processor fun(line:string?):nil
+local function consume(data_buffer, fn_line_processor)
+    local i = 1
+    while i <= #data_buffer do
+        local newline_pos = shell_helpers.string_find(data_buffer, "\n", i)
+        if not newline_pos then
+            break
+        end
+        local line = data_buffer:sub(i, newline_pos)
+        fn_line_processor(line)
+        i = newline_pos + 1
+    end
+    return i
+end
+
 if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     --- @type string
     local cmd = shell_helpers.readfile(resultfile)
@@ -216,17 +232,7 @@ then
         if not data then
             if data_buffer then
                 -- foreach the data_buffer and find every line
-                local i = 1
-                while i <= #data_buffer do
-                    local newline_pos =
-                        shell_helpers.string_find(data_buffer, "\n", i)
-                    if not newline_pos then
-                        break
-                    end
-                    local line = data_buffer:sub(i, newline_pos)
-                    println(line)
-                    i = newline_pos + 1
-                end
+                local i = consume(data_buffer, println)
                 if i <= #data_buffer then
                     local line = data_buffer:sub(i, #data_buffer)
                     println(line)
@@ -240,16 +246,7 @@ then
         -- append data to data_buffer
         data_buffer = data_buffer and (data_buffer .. data) or data
         -- foreach the data_buffer and find every line
-        local i = 1
-        while i <= #data_buffer do
-            local newline_pos = shell_helpers.string_find(data_buffer, "\n", i)
-            if not newline_pos then
-                break
-            end
-            local line = data_buffer:sub(i, newline_pos)
-            println(line)
-            i = newline_pos + 1
-        end
+        local i = consume(data_buffer, println)
         -- truncate the printed lines if found any
         data_buffer = i <= #data_buffer and data_buffer:sub(i, #data_buffer)
             or nil
@@ -311,17 +308,7 @@ elseif metajson.provider_type == "list" then
                 code = 130
             elseif data_buffer then
                 -- foreach the data_buffer and find every line
-                local i = 1
-                while i <= #data_buffer do
-                    local newline_pos =
-                        shell_helpers.string_find(data_buffer, "\n", i)
-                    if not newline_pos then
-                        break
-                    end
-                    local line = data_buffer:sub(i, newline_pos)
-                    println(line)
-                    i = newline_pos + 1
-                end
+                local i = consume(data_buffer, println)
                 if i <= #data_buffer then
                     local line = data_buffer:sub(i, #data_buffer)
                     println(line)
@@ -334,16 +321,7 @@ elseif metajson.provider_type == "list" then
         -- append data to data_buffer
         data_buffer = data_buffer and (data_buffer .. data) or data --[[@as string]]
         -- foreach the data_buffer and find every line
-        local i = 1
-        while i <= #data_buffer do
-            local newline_pos = shell_helpers.string_find(data_buffer, "\n", i)
-            if not newline_pos then
-                break
-            end
-            local line = data_buffer:sub(i, newline_pos)
-            println(line)
-            i = newline_pos + 1
-        end
+        local i = consume(data_buffer, println)
         -- truncate the printed lines if found any
         data_buffer = i <= #data_buffer and data_buffer:sub(i, #data_buffer)
             or nil
