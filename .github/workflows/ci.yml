@@ -56,7 +56,7 @@ jobs:
         run: |
           luarocks install luacheck
           luarocks install vusted
-          export NVIM_APPNAME=./test/minimal_init.lua
+          export NVIM_APPNAME=$PWD/test/minimal_init.lua
           vusted --shuffle ./test
   unit_test_nightly:
     name: Unit test on nightly nvim
@@ -81,5 +81,5 @@ jobs:
         run: |
           luarocks install luacheck
           luarocks install vusted
-          export NVIM_APPNAME=./test/minimal_termguicolors_init.lua
+          export NVIM_APPNAME=$PWD/test/minimal_termguicolors_init.lua
           vusted --shuffle ./test
