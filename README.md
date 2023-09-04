@@ -839,6 +839,13 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 
 Please open [issue](https://github.com/linrongbin16/fzfx.nvim/issues)/[PR](https://github.com/linrongbin16/fzfx.nvim/pulls) for anything about fzfx.nvim.
 
+To develop on the codebase and make PR, please setup the project with:
+* [luarocks](https://luarocks.org/).
+* [luacheck](https://github.com/mpeterv/luacheck).
+* [luacov](https://github.com/lunarmodules/luacov).
+* [vusted](https://github.com/notomo/vusted).
+* [lua_ls](https://github.com/LuaLS/lua-language-server).
+
 Like fzfx.nvim? Consider
 
 [![Github Sponsor](https://img.shields.io/badge/-Sponsor%20Me%20on%20Github-magenta?logo=github&logoColor=white)](https://github.com/sponsors/linrongbin16)
