@@ -116,7 +116,7 @@ local function generate_fzf_color_opts()
     local builder = {}
     for name, opts in pairs(fzf_colors) do
         for i = 2, #opts do
-            local c = color.get_color(opts[1], opts[i])
+            local c = color.hlcode(opts[1], opts[i])
             if type(c) == "string" and string.len(c) > 0 then
                 table.insert(builder, string.format("%s:%s", name, c))
                 break
