@@ -842,13 +842,13 @@ Please open [issue](https://github.com/linrongbin16/fzfx.nvim/issues)/[PR](https
 To develop on the codebase and make PR, please setup the project with:
 * [lua_ls](https://github.com/LuaLS/lua-language-server).
 
-To run unit tests, please install below toolchains:
+To run unit tests, please first install below dependencies:
 * [luarocks](https://luarocks.org/).
 * [luacheck](https://github.com/mpeterv/luacheck).
 * [luacov](https://github.com/lunarmodules/luacov).
 * [vusted](https://github.com/notomo/vusted).
 
-And test with:
+Then test with:
 ```bash
 vusted --shuffle ./test
 ```
