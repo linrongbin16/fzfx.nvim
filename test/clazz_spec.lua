@@ -13,7 +13,7 @@ describe("clazz_spec", function()
     end)
 
     describe("Clazz", function()
-        it("defines an object", function()
+        it("defines an empty class", function()
             local Clazz = require("fzfx.clazz").Clazz
 
             local clz = Clazz:implement()
@@ -23,6 +23,44 @@ describe("clazz_spec", function()
             assert_true(type(obj) == "table")
             assert_true(Clazz:instanceof(obj, clz))
             assert_true(obj.__classname == "object")
+        end)
+        it("defines a ProviderConfig class", function()
+            local Clazz = require("fzfx.clazz").Clazz
+
+            local ProviderConfigClass =
+                Clazz:implement("test.clazz_spec.ProviderConfigClass", {
+                    key = nil,
+                    provider = nil,
+                    provider_type = nil,
+                    line_type = nil,
+                    line_delimiter = nil,
+                    line_pos = nil,
+                })
+            function ProviderConfigClass:make(opts)
+                return vim.tbl_deep_extend(
+                    "force",
+                    vim.deepcopy(ProviderConfigClass),
+                    opts or {}
+                )
+            end
+            assert_true(type(ProviderConfigClass) == "table")
+            assert_true(
+                ProviderConfigClass.__classname
+                    == "test.clazz_spec.ProviderConfigClass"
+            )
+            local provider = ProviderConfigClass:make({
+                key = "key",
+                provider = "provider",
+                provider_type = "provider_type",
+            })
+            assert_true(type(provider) == "table")
+            assert_true(Clazz:instanceof(provider, ProviderConfigClass))
+            assert_eq(provider.key, "key")
+            assert_eq(provider.provider, "provider")
+            assert_eq(provider.provider_type, "provider_type")
+            assert_eq(provider.line_type, nil)
+            assert_eq(provider.line_delimiter, nil)
+            assert_eq(provider.line_pos, nil)
         end)
     end)
 end)
