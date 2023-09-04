@@ -59,10 +59,13 @@ jobs:
           luarocks install cluacov
           luarocks install vusted
           vusted --coverage --shuffle ./test
+      - name: Generate coverage reports
+        shell: bash
+        run: |
           echo "ls ."
           ls -l .
-          echo "run luacov"
-          luacov luacov.report.out
+          echo "luacov luacov.report.out"
+          luacov
           echo "ls ."
           ls -l .
           echo "cat ./luacov.report.out"
