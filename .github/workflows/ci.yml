@@ -62,11 +62,11 @@ jobs:
           echo "ls ."
           ls -l .
           echo "run luacov"
-          luacov -c=./.luacov
+          luacov luacov.report.out
           echo "ls ."
           ls -l .
-          echo "cat ./luacov.report.html"
-          cat ./luacov.report.html
+          echo "cat ./luacov.report.out"
+          cat ./luacov.report.out
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
