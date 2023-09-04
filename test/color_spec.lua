@@ -101,7 +101,7 @@ describe("color", function()
             end
         end
 
-        it("get hlgroup color or fallback to ansi color", function()
+        it("get fg hlgroup color or fallback to ansi color", function()
             local color = require("fzfx.color")
             for clr, grp in pairs(ansigroups) do
                 local actual = color.ansi("fg", clr, grp)
@@ -116,7 +116,7 @@ describe("color", function()
                 end, actual)
             end
         end)
-        it("retrieve bg colors", function()
+        it("get bg hlgroup color or fallback to ansi color", function()
             local color = require("fzfx.color")
             for clr, grp in ipairs(ansigroups) do
                 local actual = color.hlgroup("bg", clr, grp)
