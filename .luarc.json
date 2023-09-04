@@ -3,7 +3,10 @@
         "vim"
     ],
     "diagnostics.globals": [
-        "MiniTest"
+        "MiniTest",
+        "describe",
+        "before_each",
+        "it"
     ],
     "workspace.checkThirdParty": false
 }
