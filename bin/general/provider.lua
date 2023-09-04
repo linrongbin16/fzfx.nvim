@@ -139,32 +139,6 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
             on_exit = on_exit,
         })
         vim.fn.jobwait({ jobid })
-
-        -- if metajson.provider_line_type == "file" then
-        --     local p = io.popen(cmd)
-        --     if p then
-        --         for line in p:lines("*line") do
-        --             -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-        --             if string.len(vim.fn.trim(line)) > 0 then
-        --                 local line_with_icon =
-        --                     shell_helpers.render_filepath_line(
-        --                         line,
-        --                         metajson.provider_line_delimiter,
-        --                         metajson.provider_line_pos
-        --                     )
-        --                 io.write(string.format("%s\n", line_with_icon))
-        --             end
-        --         end
-        --         p:close()
-        --     else
-        --         shell_helpers.debug(
-        --             "|provider| error! failed to open pipe on provider cmd! %s",
-        --             vim.inspect(cmd)
-        --         )
-        --     end
-        -- else
-        --     os.execute(cmd)
-        -- end
     end
 elseif
     metajson.provider_type == "plain_list"
@@ -300,35 +274,83 @@ then
         vim.loop.run()
     end
 elseif metajson.provider_type == "list" then
-    local f = io.open(resultfile, "r")
-    if f then
-        if metajson.provider_line_type == "file" then
-            --- @diagnostic disable-next-line: need-check-nil
-            for line in f:lines("*line") do
-                if string.len(vim.fn.trim(line)) > 0 then
-                    local line_with_icon = shell_helpers.render_filepath_line(
-                        line,
-                        metajson.provider_line_delimiter,
-                        metajson.provider_line_pos
-                    )
-                    io.write(string.format("%s\n", line_with_icon))
+    local fd = vim.loop.fs_open(resultfile, "r", 438) --[[@as integer]]
+    shell_helpers.log_ensure(
+        type(fd) == "number",
+        "|provider| error! failed to fs_open resultfile: %s",
+        vim.inspect(resultfile)
+    )
+    local stat = vim.loop.fs_fstat(fd) --[[@as table]]
+    shell_helpers.log_ensure(
+        type(stat) == "table",
+        "|provider| error! failed to fs_open list provider resultfile: %s",
+        vim.inspect(resultfile)
+    )
+
+    --- @type string?
+    local data_buffer = nil
+    local filesize = stat.size
+    local batchsize = 4096
+    local offset = 0
+    local code = 0
+
+    while true do
+        local data, --[[@as string?]]
+            read_err,
+            read_name =
+            vim.loop.fs_read(fd, batchsize, offset)
+        if not data then
+            if read_err then
+                shell_helpers.log_err(
+                    "|provider| error! failed to fs_read list provider resultfile (%s): %s, %s",
+                    vim.inspect(resultfile),
+                    vim.inspect(read_err),
+                    vim.inspect(read_name)
+                )
+                code = 130
+            elseif data_buffer then
+                -- foreach the data_buffer and find every line
+                local i = 1
+                while i <= #data_buffer do
+                    local newline_pos =
+                        shell_helpers.string_find(data_buffer, "\n", i)
+                    if not newline_pos then
+                        break
+                    end
+                    local line = data_buffer:sub(i, newline_pos)
+                    println(line)
+                    i = newline_pos + 1
+                end
+                if i <= #data_buffer then
+                    local line = data_buffer:sub(i, #data_buffer)
+                    println(line)
+                    data_buffer = nil
                 end
             end
-        else
-            for line in f:lines("*line") do
-                -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-                if string.len(vim.fn.trim(line)) > 0 then
-                    io.write(string.format("%s\n", line))
-                end
-            end
+            break
         end
-        f:close()
-    else
-        shell_helpers.debug(
-            "|provider| error! failed to open file on list provider resultfile! %s",
-            vim.inspect(resultfile)
-        )
+
+        -- append data to data_buffer
+        data_buffer = data_buffer and (data_buffer .. data) or data --[[@as string]]
+        -- foreach the data_buffer and find every line
+        local i = 1
+        while i <= #data_buffer do
+            local newline_pos = shell_helpers.string_find(data_buffer, "\n", i)
+            if not newline_pos then
+                break
+            end
+            local line = data_buffer:sub(i, newline_pos)
+            println(line)
+            i = newline_pos + 1
+        end
+        -- truncate the printed lines if found any
+        data_buffer = i <= #data_buffer and data_buffer:sub(i, #data_buffer)
+            or nil
+
+        offset = offset + #data
     end
+    vim.loop.fs_close(fd)
+    os.exit(code)
 else
     shell_helpers.log_throw(
         "|provider| error! unknown provider type:%s",
