@@ -64,7 +64,7 @@ jobs:
         run: |
           echo "ls ."
           ls -l .
-          echo "luacov luacov.report.out"
+          echo "run luacov"
           luacov
           echo "ls ."
           ls -l .
