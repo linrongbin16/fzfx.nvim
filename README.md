@@ -839,7 +839,7 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 
 Please open [issue](https://github.com/linrongbin16/fzfx.nvim/issues)/[PR](https://github.com/linrongbin16/fzfx.nvim/pulls) for anything about fzfx.nvim.
 
-To develop on the codebase and make PR, please setup the project with:
+To develop the project and make PR, please setup with:
 * [lua_ls](https://github.com/LuaLS/lua-language-server).
 
 To run unit tests, please first install below dependencies:
