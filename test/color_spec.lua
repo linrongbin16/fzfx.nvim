@@ -8,32 +8,22 @@ describe("color", function()
     local assert_truthy = assert.is.truthy
     local assert_falsy = assert.is.falsy
 
-    local hlgroups = {
-        "Special",
-        "Normal",
-        "LineNr",
-        "TabLine",
-        "Exception",
-        "Comment",
-        "Label",
-        "String",
-    }
-
-    local ansigroups = {
-        black = "Comment",
-        red = "Exception",
-        green = "Label",
-        yellow = "LineNr",
-        blue = "TabLine",
-        magenta = "Special",
-        cyan = "String",
-    }
-
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
     end)
 
     describe("[hlgroup]", function()
+        local hlgroups = {
+            "Special",
+            "Normal",
+            "LineNr",
+            "TabLine",
+            "Exception",
+            "Comment",
+            "Label",
+            "String",
+        }
+
         it("retrieve fg colors", function()
             local color = require("fzfx.color")
             for _, grp in ipairs(hlgroups) do
@@ -67,6 +57,16 @@ describe("color", function()
     end)
 
     describe("[ansi]", function()
+        local ansigroups = {
+            black = "Comment",
+            red = "Exception",
+            green = "Label",
+            yellow = "LineNr",
+            blue = "TabLine",
+            magenta = "Special",
+            cyan = "String",
+        }
+
         -- see: https://stackoverflow.com/a/55324681/4438921
         local function test_ansi(fn_print, result)
             fn_print()
