@@ -15,7 +15,7 @@ local AnsiCode = {
 --- @param attr "fg"|"bg"
 --- @param group string?
 --- @return string?
-local function hlgroup(attr, group)
+local function hlcode(attr, group)
     if type(group) ~= "string" then
         return nil
     end
@@ -78,7 +78,7 @@ end
 --- @return string
 local function ansi(text, name, hl)
     local fgfmt = nil
-    local fgcode = hlgroup("fg", hl)
+    local fgcode = hlcode("fg", hl)
     if type(fgcode) == "string" then
         fgfmt = csi(fgcode, true)
         -- log.debug(
@@ -102,7 +102,7 @@ local function ansi(text, name, hl)
     end
 
     local fmt = nil
-    local bgcode = hlgroup("bg", hl)
+    local bgcode = hlcode("bg", hl)
     if type(bgcode) == "string" then
         local bgcolor = csi(bgcode, false)
         -- log.debug(
@@ -137,7 +137,7 @@ end
 
 --- @type table<string, function>
 local M = {
-    hlgroup = hlgroup,
+    hlcode = hlcode,
     csi = csi,
     ansi = ansi,
 }

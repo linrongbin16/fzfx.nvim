@@ -27,7 +27,7 @@ describe("color", function()
 
         it("get vim fg colors", function()
             for _, grp in ipairs(hlgroups) do
-                local actual = color.hlgroup("fg", grp)
+                local actual = color.hlcode("fg", grp)
                 print(
                     string.format("hlgroup(%s): %s\n", grp, vim.inspect(actual))
                 )
@@ -39,7 +39,7 @@ describe("color", function()
         end)
         it("get vim bg colors", function()
             for _, group in ipairs(hlgroups) do
-                local actual = color.hlgroup("bg", group)
+                local actual = color.hlcode("bg", group)
                 print(
                     string.format(
                         "hlgroup(%s): %s\n",
@@ -116,7 +116,7 @@ describe("color", function()
         end)
         it("get bg hlgroup color or fallback to ansi color", function()
             for clr, grp in ipairs(ansigroups) do
-                local actual = color.hlgroup("bg", clr, grp)
+                local actual = color.ansi("bg", clr, grp)
                 test_ansi(function()
                     print(
                         string.format(
