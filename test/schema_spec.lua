@@ -72,4 +72,34 @@ describe("schema", function()
             assert_eq(command.previewer_type, command_previewer_type)
         end)
     end)
+    describe("[CommandConfig]", function()
+        it("makes a command", function()
+            local command = schema.CommandConfig:make({
+                name = "command",
+                feed = "args",
+                opts = { range = true },
+            })
+            assert_eq(type(command), "table")
+            assert_true(Clazz:instanceof(command, schema.CommandConfig))
+            assert_eq(command.name, "command")
+        end)
+    end)
+    describe("[InteractionConfig]", function()
+        it("makes an interaction", function()
+            local interact = function(line)
+                return "interact"
+            end
+            local interaction = schema.InteractionConfig:make({
+                key = "key",
+                interaction = interact,
+                reload_after_execute = true,
+            })
+            assert_eq(type(interaction), "table")
+            assert_true(Clazz:instanceof(interaction, schema.InteractionConfig))
+            assert_eq(interaction.key, "key")
+            assert_eq(type(interaction.interaction), "function")
+            assert_eq(interaction.interaction(), "interact")
+            assert_eq(interaction.reload_after_execute, true)
+        end)
+    end)
 end)
