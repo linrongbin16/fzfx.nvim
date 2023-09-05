@@ -30,5 +30,23 @@ describe("schema", function()
             assert_eq(plain.provider, plain_provider)
             assert_eq(plain.provider_type, plain_provider_type)
         end)
+        it("makes a command provider", function()
+            local command_key = "command"
+            local command_provider = function()
+                return "ls -la"
+            end
+            local command_provider_type = "command"
+            local command = schema.ProviderConfig:make({
+                key = command_key,
+                provider = command_provider,
+                provider_type = command_provider_type,
+            })
+            assert_eq(type(command), "table")
+            assert_true(Clazz:instanceof(command, schema.ProviderConfig))
+            assert_eq(command.key, command_key)
+            assert_eq(type(command.provider), "function")
+            assert_eq(command.provider(), command_provider())
+            assert_eq(command.provider_type, command_provider_type)
+        end)
     end)
 end)
