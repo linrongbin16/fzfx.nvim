@@ -40,6 +40,9 @@ describe("schema", function()
                 key = command_key,
                 provider = command_provider,
                 provider_type = command_provider_type,
+                line_type = "file",
+                line_delimiter = ":",
+                line_pos = 1,
             })
             assert_eq(type(command), "table")
             assert_true(Clazz:instanceof(command, schema.ProviderConfig))
@@ -47,6 +50,26 @@ describe("schema", function()
             assert_eq(type(command.provider), "function")
             assert_eq(command.provider(), command_provider())
             assert_eq(command.provider_type, command_provider_type)
+            assert_eq(command.line_type, "file")
+            assert_eq(command.line_delimiter, ":")
+            assert_eq(command.line_pos, 1)
+        end)
+    end)
+    describe("[PreviewerConfig]", function()
+        it("makes a command previewer", function()
+            local command_previewer = function(line)
+                return string.format("cat %s", line)
+            end
+            local command_previewer_type = "command"
+            local command = schema.PreviewerConfig:make({
+                previewer = command_previewer,
+                previewer_type = command_previewer_type,
+            })
+            assert_eq(type(command), "table")
+            assert_true(Clazz:instanceof(command, schema.PreviewerConfig))
+            assert_eq(type(command.previewer), "function")
+            assert_eq(command.previewer(), command_previewer())
+            assert_eq(command.previewer_type, command_previewer_type)
         end)
     end)
 end)
