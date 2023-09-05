@@ -72,6 +72,7 @@ describe("path", function()
         it("make shorter path based on home dir", function()
             local expect1 = "~/.config/nvim/lazy/fzfx.nvim/test/path_spec.lua"
             local actual1 = path.shorten(expect1)
+            print(string.format("expect(%s) shorten: %s\n", expect1, actual1))
             assert_eq(type(actual1), "string")
             assert_true(string.len(actual1) < string.len(expect1))
         end)
