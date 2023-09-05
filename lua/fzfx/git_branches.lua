@@ -5,7 +5,7 @@ local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
 local color = require("fzfx.color")
 local server = require("fzfx.server")
-local git_command_helpers = require("fzfx.git_command_helpers")
+local gitcmd = require("fzfx.gitcmd")
 local utils = require("fzfx.utils")
 
 local Context = {
@@ -122,12 +122,11 @@ local function git_branches(query, bang, opts)
             preview_command,
         },
         function()
-            local git_root_cmd = git_command_helpers.GitRootCommand:run()
+            local git_root_cmd = gitcmd.GitRootCmd:run()
             if git_root_cmd:wrong() then
                 return nil
             end
-            local git_current_branch_cmd =
-                git_command_helpers.GitCurrentBranchCommand:run()
+            local git_current_branch_cmd = gitcmd.GitCurrentBranchCmd:run()
             if git_current_branch_cmd:wrong() then
                 return nil
             end

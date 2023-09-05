@@ -1,29 +1,29 @@
 -- Zero Dependency
 
---- @class CommandResult
+--- @class CmdResult
 --- @field stdout string[]?
 --- @field stderr string[]?
 --- @field exitcode integer?
-local CommandResult = {
+local CmdResult = {
     stdout = nil,
     stderr = nil,
     exitcode = nil,
 }
 
-function CommandResult:new()
-    return vim.tbl_deep_extend("force", vim.deepcopy(CommandResult), {
+function CmdResult:new()
+    return vim.tbl_deep_extend("force", vim.deepcopy(CmdResult), {
         stdout = {},
         stderr = {},
         exitcode = nil,
     })
 end
 
---- @class Command
+--- @class Cmd
 --- @field source string|string[]|nil
 --- @field jobid integer?
---- @field result CommandResult?
+--- @field result CmdResult?
 --- @field opts table<string, any>?
-local Command = {
+local Cmd = {
     source = nil,
     jobid = nil,
     result = nil,
@@ -32,8 +32,8 @@ local Command = {
 
 --- @param source string|string[]
 --- @param opts table<string, any>?
---- @return Command
-function Command:run(source, opts)
+--- @return Cmd
+function Cmd:run(source, opts)
     local detach_opt = (
         type(opts) == "table"
         and type(opts.detach) == "boolean"
@@ -41,11 +41,11 @@ function Command:run(source, opts)
     )
             and true
         or false
-    local c = vim.tbl_deep_extend("force", vim.deepcopy(Command), {
+    local c = vim.tbl_deep_extend("force", vim.deepcopy(Cmd), {
         cmd = source,
         detach = detach_opt,
         jobid = nil,
-        result = CommandResult:new(),
+        result = CmdResult:new(),
     })
 
     local function on_stdout(chanid, data, name)
@@ -118,7 +118,7 @@ function Command:run(source, opts)
 end
 
 local M = {
-    Command = Command,
+    Cmd = Cmd,
 }
 
 return M

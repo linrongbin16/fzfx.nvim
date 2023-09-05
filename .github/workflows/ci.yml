@@ -22,7 +22,7 @@ jobs:
           configpath: ".luarc.json"
           neodev-version: stable
           nvim-version: v0.9.1
-          luals-version: 3.6.25
+          luals-version: 3.7.0
   luacheck:
     name: Lua check
     runs-on: ubuntu-latest
