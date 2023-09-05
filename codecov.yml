@@ -1,3 +1,5 @@
 coverage:
-  round: up
-  range: 0..95
+  status:
+    project:
+      default:
+        threshold: 90%
