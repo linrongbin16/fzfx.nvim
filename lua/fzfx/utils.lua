@@ -287,6 +287,7 @@ local M = {
     set_buf_option = set_buf_option,
     is_buf_valid = is_buf_valid,
     set_win_option = set_win_option,
+    get_win_option = get_win_option,
     string_empty = string_empty,
     string_not_empty = string_not_empty,
     string_find = string_find,

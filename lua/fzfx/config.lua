@@ -151,25 +151,29 @@ local function lsp_diagnostics_provider(opts)
         end
     end
     local signs = {
-        ["Error"] = {
+        [1] = {
             severity = 1,
             text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
             texthl = "DiagnosticSignError",
+            textcolor = "red",
         },
-        ["Warn"] = {
+        [2] = {
             severity = 2,
             text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
             texthl = "DiagnosticSignWarn",
+            textcolor = "yellow",
         },
-        ["Info"] = {
+        [3] = {
             severity = 3,
             text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
             texthl = "DiagnosticSignInfo",
+            textcolor = "blue",
         },
-        ["Hint"] = {
+        [4] = {
             severity = 4,
             text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
             texthl = "DiagnosticSignHint",
+            textcolor = "cyan",
         },
     }
     for _, sign_opts in pairs(signs) do
@@ -188,7 +192,7 @@ local function lsp_diagnostics_provider(opts)
         return a.severity < b.severity
     end)
     if utils.list_empty(diag_results) then
-        log.echo(LogLevel.INFO, "no diagnostics found.")
+        log.echo(LogLevel.INFO, "no lsp diagnostics found.")
         return nil
     end
 
@@ -224,15 +228,21 @@ local function lsp_diagnostics_provider(opts)
         if d ~= nil then
             -- it looks like:
             -- `lua/fzfx/config.lua:10:13:local ProviderConfig = require("fzfx.schema").ProviderConfig`
+            local dtext = ""
+            if type(d.text) == "string" and string.len(d.text) > 0 then
+                if type(signs[d.severity]) == "table" then
+                    local sign_def = signs[d.severity]
+                    local icon_color = color[sign_def.textcolor]
+                    dtext = " " .. icon_color(sign_def.text, sign_def.texthl)
+                end
+                dtext = dtext .. " " .. d.text
+            end
             local line = string.format(
-                [[%s:%s:%s:%s%s]],
+                [[%s:%s:%s:%s]],
                 filepath_color(d.filename),
                 color.green_8bit(tostring(d.lnum)),
                 tostring(d.col),
-                (type(d.text) == "string" and string.len(d.text) > 0) and " "
-                    or "",
-                (type(d.text) == "string" and string.len(d.text) > 0) and d.text
-                    or ""
+                dtext
             )
             table.insert(diag_lines, line)
         end
@@ -241,6 +251,48 @@ local function lsp_diagnostics_provider(opts)
 end
 
 -- lsp diagnostics }
+
+-- lsp locations {
+
+local function lsp_locations_context_maker()
+    --- @type PipelineContext
+    local context = {
+        bufnr = vim.api.nvim_get_current_buf(),
+        winnr = vim.api.nvim_get_current_win(),
+        tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+    ---@diagnostic disable-next-line: inject-field
+    context.position_params =
+        vim.lsp.util.make_position_params(context.winnr, nil)
+    return context
+end
+
+--- @alias LspMethod "textDocument/definition"|"textDocument/declaration"|"textDocument/reference"|"textDocument/implementation"
+--- @alias LspLocationOpts {bufnr:integer,winnr:integer,method:LspMethod,timeout:integer?,position_params:any?}
+--- @param opts LspLocationOpts
+--- @return string[]?
+local function lsp_locations_provider(opts)
+    local lsp_results = vim.lsp.buf_request_sync(
+        opts.bufnr,
+        opts.method,
+        opts.position_params,
+        opts.timeout or 5000
+    )
+    if type(lsp_results) ~= "table" then
+        log.echo(LogLevel.ERROR, "no lsp symbol locations found.")
+        return nil
+    end
+    log.debug(
+        "|fzfx.config - lsp_locations_provider| opts:%s, lsp_pos_params:%s lsp_results:%s",
+        vim.inspect(opts),
+        vim.inspect(lsp_pos_params),
+        vim.inspect(lsp_results)
+    )
+    for client_id, lsp_response in pairs(lsp_results) do
+    end
+end
+
+-- lsp locations }
 
 --- @alias Configs table<string, any>
 --- @type Configs
@@ -1176,12 +1228,89 @@ local Defaults = {
             default_fzf_options.toggle_preview,
             { "--delimiter", ":" },
             { "--preview-window", "+{2}-/3" },
-            function()
-                return {
-                    "--prompt",
-                    require("fzfx.path").shorten() .. " > ",
-                }
+            {
+                "--prompt",
+                "Diagnostics > ",
+            },
+        },
+    }),
+
+    -- the 'Lsp Definitions' command
+    --- @type GroupConfig
+    lsp_definitions = GroupConfig:make({
+        commands = {
+            -- normal
+            CommandConfig:make({
+                name = "FzfxLspDefinitions",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    desc = "Search lsp definitions",
+                },
+            }),
+            -- visual
+            CommandConfig:make({
+                name = "FzfxLspDefinitionsV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Search lsp definitions by visual select",
+                },
+            }),
+            -- cword
+            CommandConfig:make({
+                name = "FzfxLspDefinitionsW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp definitions by cursor word",
+                },
+            }),
+            -- put
+            CommandConfig:make({
+                name = "FzfxLspDefinitionsP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp definitions by yank text",
+                },
+            }),
+        },
+        providers = ProviderConfig:make({
+            key = "default",
+            provider = function(query, context)
+                return lsp_locations_provider({
+                    bufnr = context.bufnr,
+                    winnr = context.winnr,
+                    method = "textDocument/definition",
+                })
             end,
+            provider_type = ProviderTypeEnum.LIST,
+            context_maker = lsp_locations_context_maker,
+            line_type = ProviderLineTypeEnum.FILE,
+            line_delimiter = ":",
+            line_pos = 1,
+        }),
+        previewers = PreviewerConfig:make({
+            previewer = make_file_previewer(":", 1, 2),
+            previewer_type = PreviewerTypeEnum.COMMAND,
+        }),
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
+        },
+        fzf_opts = {
+            default_fzf_options.multi,
+            default_fzf_options.toggle_preview,
+            { "--delimiter", ":" },
+            { "--preview-window", "+{2}-/3" },
+            {
+                "--prompt",
+                "Definitions > ",
+            },
         },
     }),
 
