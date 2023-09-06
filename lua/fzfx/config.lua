@@ -252,9 +252,43 @@ end
 
 -- lsp diagnostics }
 
--- lsp locations {
+-- lsp definitions {
 
-local function lsp_locations_context_maker()
+--- @alias LspLocationRangeStart {line:integer,character:integer}
+--- @alias LspLocationRangeEnd {line:integer,character:integer}
+--- @alias LspLocationRange {start:LspLocationRangeStart,end:LspLocationRangeEnd}
+--- @alias LspLocation {uri:string,range:LspLocationRange}
+--- @alias LspLocationLink {originSelectionRange:LspLocationRange,targetUri:string,targetRange:LspLocationRange,targetSelectionRange:LspLocationRange}
+
+--- @param r LspLocationRange?
+--- @return boolean
+local function is_lsp_range(r)
+    return type(r) == "table"
+        and type(r.start) == "table"
+        and type(r.start.line) == "number"
+        and type(r.start.character) == "number"
+        and type(r["end"]) == "table"
+        and type(r["end"].line) == "number"
+        and type(r["end"].character) == "number"
+end
+
+--- @param loc LspLocation|LspLocationLink|nil
+local function is_lsp_location(loc)
+    return type(loc) == "table"
+        and type(loc.uri) == "string"
+        and is_lsp_range(loc.range)
+end
+
+--- @param loc LspLocation|LspLocationLink|nil
+local function is_lsp_locationlink(loc)
+    return type(loc) == "table"
+        and type(loc.targetUri) == "string"
+        and is_lsp_range(loc.originSelectionRange)
+        and is_lsp_range(loc.targetRange)
+        and is_lsp_range(loc.targetSelectionRange)
+end
+
+local function lsp_position_context_maker()
     --- @type PipelineContext
     local context = {
         bufnr = vim.api.nvim_get_current_buf(),
@@ -268,21 +302,28 @@ local function lsp_locations_context_maker()
 end
 
 --- @alias LspMethod "textDocument/definition"|"textDocument/declaration"|"textDocument/reference"|"textDocument/implementation"
---- @alias LspLocationOpts {method:LspMethod,bufnr:integer,timeout:integer?,position_params:any?}
---- @param opts LspLocationOpts
+
+--- @alias LspDefinitionOpts {method:LspMethod,bufnr:integer,timeout:integer?,position_params:any?}
+--- @param opts LspDefinitionOpts
 --- @return string[]?
-local function lsp_locations_provider(opts)
-    local results, err = vim.lsp.buf_request_sync(
+local function lsp_definitions_provider(opts)
+    local lsp_results, lsp_err = vim.lsp.buf_request_sync(
         opts.bufnr,
         opts.method,
         opts.position_params,
         opts.timeout or 5000
     )
-    if err then
-        log.echo(LogLevel.ERROR, err)
+    log.debug(
+        "|fzfx.config - lsp_definitions_provider| opts:%s, lsp_results:%s, lsp_err:%s",
+        vim.inspect(opts),
+        vim.inspect(lsp_results),
+        vim.inspect(lsp_err)
+    )
+    if lsp_err then
+        log.echo(LogLevel.ERROR, lsp_err)
         return nil
     end
-    if type(results) ~= "table" then
+    if type(lsp_results) ~= "table" or #lsp_results == 0 then
         log.echo(
             LogLevel.ERROR,
             "no lsp locations found on %s (%s).",
@@ -291,16 +332,99 @@ local function lsp_locations_provider(opts)
         )
         return nil
     end
-    log.debug(
-        "|fzfx.config - lsp_locations_provider| opts:%s, results:%s",
-        vim.inspect(opts),
-        vim.inspect(results)
-    )
-    for client_id, lsp_response in pairs(results) do
+    local lsp_result1 = lsp_results[1]
+    if type(lsp_result1) ~= "table" or type(lsp_result1.result) ~= "table" then
+        log.echo(
+            LogLevel.ERROR,
+            "no lsp locations found on %s (%s).",
+            vim.inspect(opts.method),
+            vim.inspect(opts.bufnr)
+        )
+        return nil
     end
+    local lsp_defs = lsp_result1.result
+
+    local filepath_color = constants.is_windows and color.cyan_8bit
+        or color.magenta_8bit
+
+    --- @param loc LspLocation
+    local function process_location(loc)
+        if string.len(loc.uri) < 8 then
+            return nil
+        end
+        --- uri: file:///Users/linrongbin16/github/fzfx.nvim/README.md
+        local filename = loc.uri:sub(8, #loc.uri)
+        if vim.fn.filereadable(filename) <= 0 then
+            return nil
+        end
+        local lines = vim.fn.readfile(filename)
+        if type(lines) ~= "table" or #lines < loc.range.start.line + 1 then
+            return nil
+        end
+
+        local line = string.format(
+            [[%s:%s:%s:%s]],
+            filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
+            color.green_8bit(tostring(loc.range.start.line + 1)),
+            tostring(loc.range.start.character + 1),
+            lines[loc.range.start.line + 1]
+        )
+        return line
+    end
+
+    --- @param loc LspLocationLink
+    local function process_locationlink(loc)
+        if string.len(loc.targetUri) < 8 then
+            return nil
+        end
+        --- uri: file:///Users/linrongbin16/github/fzfx.nvim/README.md
+        local filename = loc.targetUri:sub(8, #loc.targetUri)
+        if vim.fn.filereadable(filename) <= 0 then
+            return nil
+        end
+        local lines = vim.fn.readfile(filename)
+        if
+            type(lines) ~= "table"
+            or #lines < loc.targetRange.start.line + 1
+        then
+            return nil
+        end
+        local line = string.format(
+            [[%s:%s:%s:%s]],
+            filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
+            color.green_8bit(tostring(loc.targetRange.start.line + 1)),
+            tostring(loc.targetRange.start.character + 1),
+            lines[loc.targetRange.start.line + 1]
+        )
+        return line
+    end
+
+    --- @param loc LspLocation|LspLocationLink|nil
+    --- @return string?
+    local function preprocess_loc(loc)
+        if is_lsp_location(loc) then
+            return process_location(loc)
+        end
+        if is_lsp_locationlink(loc) then
+            return process_locationlink(loc)
+        end
+        return nil
+    end
+
+    local def_lines = {}
+    if is_lsp_location(lsp_defs) then
+        local line = preprocess_loc(lsp_defs)
+        table.insert(def_lines, line)
+    else
+        for _, def in ipairs(lsp_defs) do
+            local line = preprocess_loc(def)
+            table.insert(def_lines, line)
+        end
+    end
+    return def_lines
 end
 
--- lsp locations }
+-- lsp definitions }
 
 --- @alias Configs table<string, any>
 --- @type Configs
@@ -1257,14 +1381,14 @@ local Defaults = {
         providers = ProviderConfig:make({
             key = "default",
             provider = function(query, context)
-                return lsp_locations_provider({
-                    method = "textDocument/reference",
+                return lsp_definitions_provider({
+                    method = "textDocument/definition",
                     bufnr = context.bufnr,
                     position_params = context.position_params,
                 })
             end,
             provider_type = ProviderTypeEnum.LIST,
-            context_maker = lsp_locations_context_maker,
+            context_maker = lsp_position_context_maker,
             line_type = ProviderLineTypeEnum.FILE,
             line_delimiter = ":",
             line_pos = 1,
