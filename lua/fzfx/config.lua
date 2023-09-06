@@ -383,8 +383,8 @@ local function lsp_definitions_provider(opts)
         local loc_line_2nd = loc_line_start <= loc_line_end
                 and color.red_8bit(loc_line:sub(loc_line_start, loc_line_end))
             or ""
-        local loc_line_3rd = loc_line_end < #loc_line
-                and loc_line:sub(loc_line_end, #loc_line)
+        local loc_line_3rd = loc_line_end + 1 <= #loc_line
+                and loc_line:sub(loc_line_end + 1, #loc_line)
             or ""
         local final_loc_line =
             vim.trim(loc_line_1st .. loc_line_2nd .. loc_line_3rd)
@@ -436,8 +436,8 @@ local function lsp_definitions_provider(opts)
         local loc_line_2nd = loc_line_start < loc_line_end
                 and color.red_8bit(loc_line:sub(loc_line_start, loc_line_end))
             or ""
-        local loc_line_3rd = loc_line_end < #loc_line
-                and loc_line:sub(loc_line_end, #loc_line)
+        local loc_line_3rd = loc_line_end + 1 <= #loc_line
+                and loc_line:sub(loc_line_end + 1, #loc_line)
             or ""
         local final_loc_line = loc_line_1st .. loc_line_2nd .. loc_line_3rd
 
