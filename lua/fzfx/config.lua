@@ -325,7 +325,7 @@ local function lsp_definitions_provider(opts)
     end
     if type(lsp_results) ~= "table" or #lsp_results == 0 then
         log.echo(
-            LogLevel.ERROR,
+            LogLevel.INFO,
             "no lsp locations found on %s (%s).",
             vim.inspect(opts.method),
             vim.inspect(opts.bufnr)
@@ -335,7 +335,7 @@ local function lsp_definitions_provider(opts)
     local lsp_result1 = lsp_results[1]
     if type(lsp_result1) ~= "table" or type(lsp_result1.result) ~= "table" then
         log.echo(
-            LogLevel.ERROR,
+            LogLevel.INFO,
             "no lsp locations found on %s (%s).",
             vim.inspect(opts.method),
             vim.inspect(opts.bufnr)
