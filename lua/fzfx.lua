@@ -55,6 +55,9 @@ local function setup(options)
     -- lsp diagnostics
     general.setup("lsp_diagnostics", configs.lsp_diagnostics)
 
+    -- lsp definitions
+    general.setup("lsp_definitions", configs.lsp_definitions)
+
     -- yank history
     require("fzfx.yank_history").setup()
 

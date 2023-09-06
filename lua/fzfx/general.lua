@@ -1,6 +1,5 @@
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
-local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
 local color = require("fzfx.color")
@@ -12,6 +11,7 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local Clazz = require("fzfx.clazz").Clazz
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
+local CommandConfig = require("fzfx.schema").CommandConfig
 
 local DEFAULT_PIPELINE = "default"
 
@@ -611,7 +611,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local query_command = string.format(
         "%s %s %s %s %s",
-        shell.make_lua_command("general", "provider.lua"),
+        helpers.make_lua_command("general", "provider.lua"),
         provide_rpc_registry_id,
         provider_switch.metafile,
         provider_switch.resultfile,
@@ -619,14 +619,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
     local reload_query_command = string.format(
         "%s %s %s %s {q}",
-        shell.make_lua_command("general", "provider.lua"),
+        helpers.make_lua_command("general", "provider.lua"),
         provide_rpc_registry_id,
         provider_switch.metafile,
         provider_switch.resultfile
     )
     local preview_command = string.format(
         "%s %s %s %s {}",
-        shell.make_lua_command("general", "previewer.lua"),
+        helpers.make_lua_command("general", "previewer.lua"),
         preview_rpc_registry_id,
         previewer_switch.metafile,
         previewer_switch.resultfile
@@ -682,7 +682,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local action_command = string.format(
                 "%s %s {}",
-                shell.make_lua_command("rpc", "client.lua"),
+                helpers.make_lua_command("rpc", "client.lua"),
                 interaction_rpc_registry_id
             )
             local bind_builder = string.format(
@@ -719,7 +719,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local switch_command = string.format(
                 "%s %s",
-                shell.make_lua_command("rpc", "client.lua"),
+                helpers.make_lua_command("rpc", "client.lua"),
                 switch_rpc_registry_id
             )
             local bind_builder = string.format(
@@ -780,17 +780,42 @@ local function setup(name, pipeline_configs)
     --     vim.inspect(pipeline_configs)
     -- )
     -- User commands
-    for _, command_configs in pairs(pipeline_configs.commands) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local query = helpers.get_command_feed(opts, command_configs.feed)
-            return general(
-                name,
-                query,
-                opts.bang,
-                pipeline_configs,
-                command_configs.default_provider
+    if Clazz:instanceof(pipeline_configs.commands, CommandConfig) then
+        vim.api.nvim_create_user_command(
+            pipeline_configs.commands.name,
+            function(opts)
+                local query = helpers.get_command_feed(
+                    opts,
+                    pipeline_configs.commands.feed
+                )
+                return general(
+                    name,
+                    query,
+                    opts.bang,
+                    pipeline_configs,
+                    pipeline_configs.commands.default_provider
+                )
+            end,
+            pipeline_configs.commands.opts
+        )
+    else
+        for _, command_configs in pairs(pipeline_configs.commands) do
+            vim.api.nvim_create_user_command(
+                command_configs.name,
+                function(opts)
+                    local query =
+                        helpers.get_command_feed(opts, command_configs.feed)
+                    return general(
+                        name,
+                        query,
+                        opts.bang,
+                        pipeline_configs,
+                        command_configs.default_provider
+                    )
+                end,
+                command_configs.opts
             )
-        end, command_configs.opts)
+        end
     end
 end
 

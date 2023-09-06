@@ -179,7 +179,7 @@ local function lsp_diagnostics_provider(opts)
     for _, sign_opts in pairs(signs) do
         local sign_def = vim.fn.sign_getdefined(sign_opts.sign)
         if not utils.list_empty(sign_def) then
-            sign_opts.text = vim.fn.trim(sign_def[1].text)
+            sign_opts.text = vim.trim(sign_def[1].text)
             sign_opts.texthl = sign_def[1].texthl
         end
     end
@@ -272,22 +272,31 @@ end
 --- @param opts LspLocationOpts
 --- @return string[]?
 local function lsp_locations_provider(opts)
-    local lsp_results = vim.lsp.buf_request_sync(
+    local results, err = vim.lsp.buf_request_sync(
         opts.bufnr,
         opts.method,
         opts.position_params,
         opts.timeout or 5000
     )
-    if type(lsp_results) ~= "table" then
-        log.echo(LogLevel.ERROR, "no lsp symbol locations found.")
+    if err then
+        log.echo(LogLevel.ERROR, err)
+        return nil
+    end
+    if type(results) ~= "table" then
+        log.echo(
+            LogLevel.ERROR,
+            "no lsp locations found on %s (%s).",
+            vim.inspect(opts.method),
+            vim.inspect(opts.bufnr)
+        )
         return nil
     end
     log.debug(
-        "|fzfx.config - lsp_locations_provider| opts:%s, lsp_results:%s",
+        "|fzfx.config - lsp_locations_provider| opts:%s, results:%s",
         vim.inspect(opts),
-        vim.inspect(lsp_results)
+        vim.inspect(results)
     )
-    for client_id, lsp_response in pairs(lsp_results) do
+    for client_id, lsp_response in pairs(results) do
     end
 end
 
@@ -1237,34 +1246,21 @@ local Defaults = {
     -- the 'Lsp Definitions' command
     --- @type GroupConfig
     lsp_definitions = GroupConfig:make({
-        commands = {
-            -- normal
-            CommandConfig:make({
-                name = "FzfxLspDefinitions",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    desc = "Search lsp definitions",
-                },
-            }),
-            -- visual
-            CommandConfig:make({
-                name = "FzfxLspDefinitionsV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Search lsp definitions by visual select",
-                },
-            }),
-        },
+        commands = CommandConfig:make({
+            name = "FzfxLspDefinitions",
+            feed = CommandFeedEnum.ARGS,
+            opts = {
+                bang = true,
+                desc = "Search lsp definitions",
+            },
+        }),
         providers = ProviderConfig:make({
             key = "default",
             provider = function(query, context)
                 return lsp_locations_provider({
+                    method = "textDocument/reference",
                     bufnr = context.bufnr,
-                    winnr = context.winnr,
-                    method = "textDocument/definition",
+                    position_params = context.position_params,
                 })
             end,
             provider_type = ProviderTypeEnum.LIST,
