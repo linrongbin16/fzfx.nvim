@@ -354,20 +354,47 @@ local function lsp_definitions_provider(opts)
         end
         --- uri: file:///Users/linrongbin16/github/fzfx.nvim/README.md
         local filename = loc.uri:sub(8, #loc.uri)
+        log.debug(
+            "|fzfx.config - lsp_definitions_provider.process_location| loc:%s, filename:%s",
+            vim.inspect(loc),
+            vim.inspect(filename)
+        )
         if vim.fn.filereadable(filename) <= 0 then
             return nil
         end
-        local lines = vim.fn.readfile(filename)
-        if type(lines) ~= "table" or #lines < loc.range.start.line + 1 then
+        local filelines = vim.fn.readfile(filename)
+        if
+            type(filelines) ~= "table"
+            or #filelines < loc.range.start.line + 1
+        then
             return nil
         end
+        local loc_line = filelines[loc.range.start.line + 1]
+        log.debug(
+            "|fzfx.config - lsp_definitions_provider.process_location| loc_line:%s",
+            vim.inspect(loc_line)
+        )
+        local loc_line_start = loc.range.start.character + 1
+        local loc_line_end = loc.range["end"].line ~= loc.range.start.line
+                and #loc_line
+            or loc.range["end"].character
+        local loc_line_1st = loc_line_start <= 1 and ""
+            or loc_line:sub(1, loc_line_start - 1)
+        local loc_line_2nd = loc_line_start <= loc_line_end
+                and color.red_8bit(loc_line:sub(loc_line_start, loc_line_end))
+            or ""
+        local loc_line_3rd = loc_line_end < #loc_line
+                and loc_line:sub(loc_line_end, #loc_line)
+            or ""
+        local final_loc_line =
+            vim.trim(loc_line_1st .. loc_line_2nd .. loc_line_3rd)
 
         local line = string.format(
             [[%s:%s:%s:%s]],
             filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
             color.green_8bit(tostring(loc.range.start.line + 1)),
             tostring(loc.range.start.character + 1),
-            lines[loc.range.start.line + 1]
+            final_loc_line
         )
         return line
     end
@@ -379,22 +406,47 @@ local function lsp_definitions_provider(opts)
         end
         --- uri: file:///Users/linrongbin16/github/fzfx.nvim/README.md
         local filename = loc.targetUri:sub(8, #loc.targetUri)
+        log.debug(
+            "|fzfx.config - lsp_definitions_provider.process_location| loc:%s, filename:%s",
+            vim.inspect(loc),
+            vim.inspect(filename)
+        )
         if vim.fn.filereadable(filename) <= 0 then
             return nil
         end
-        local lines = vim.fn.readfile(filename)
+        local filelines = vim.fn.readfile(filename)
         if
-            type(lines) ~= "table"
-            or #lines < loc.targetRange.start.line + 1
+            type(filelines) ~= "table"
+            or #filelines < loc.targetRange.start.line + 1
         then
             return nil
         end
+        local loc_line = filelines[loc.targetRange.start.line + 1]
+        log.debug(
+            "|fzfx.config - lsp_definitions_provider.process_location| loc_line:%s",
+            vim.inspect(loc_line)
+        )
+        local loc_line_start = loc.targetRange.start.character + 1
+        local loc_line_end = loc.targetRange["end"].line
+                    ~= loc.targetRange.start.line
+                and #loc_line
+            or loc.targetRange["end"].character
+        local loc_line_1st = loc_line_start <= 1 and ""
+            or loc_line:sub(1, loc_line_start - 1)
+        local loc_line_2nd = loc_line_start < loc_line_end
+                and color.red_8bit(loc_line:sub(loc_line_start, loc_line_end))
+            or ""
+        local loc_line_3rd = loc_line_end < #loc_line
+                and loc_line:sub(loc_line_end, #loc_line)
+            or ""
+        local final_loc_line = loc_line_1st .. loc_line_2nd .. loc_line_3rd
+
         local line = string.format(
             [[%s:%s:%s:%s]],
             filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
             color.green_8bit(tostring(loc.targetRange.start.line + 1)),
             tostring(loc.targetRange.start.character + 1),
-            lines[loc.targetRange.start.line + 1]
+            final_loc_line
         )
         return line
     end
@@ -403,10 +455,10 @@ local function lsp_definitions_provider(opts)
     --- @return string?
     local function preprocess_loc(loc)
         if is_lsp_location(loc) then
-            return process_location(loc)
+            return process_location(loc --[[@as LspLocation]])
         end
         if is_lsp_locationlink(loc) then
-            return process_locationlink(loc)
+            return process_locationlink(loc --[[@as LspLocationLink]])
         end
         return nil
     end
