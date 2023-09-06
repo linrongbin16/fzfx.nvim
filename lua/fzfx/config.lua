@@ -268,7 +268,7 @@ local function lsp_locations_context_maker()
 end
 
 --- @alias LspMethod "textDocument/definition"|"textDocument/declaration"|"textDocument/reference"|"textDocument/implementation"
---- @alias LspLocationOpts {bufnr:integer,winnr:integer,method:LspMethod,timeout:integer?,position_params:any?}
+--- @alias LspLocationOpts {method:LspMethod,bufnr:integer,timeout:integer?,position_params:any?}
 --- @param opts LspLocationOpts
 --- @return string[]?
 local function lsp_locations_provider(opts)
@@ -283,9 +283,8 @@ local function lsp_locations_provider(opts)
         return nil
     end
     log.debug(
-        "|fzfx.config - lsp_locations_provider| opts:%s, lsp_pos_params:%s lsp_results:%s",
+        "|fzfx.config - lsp_locations_provider| opts:%s, lsp_results:%s",
         vim.inspect(opts),
-        vim.inspect(lsp_pos_params),
         vim.inspect(lsp_results)
     )
     for client_id, lsp_response in pairs(lsp_results) do
@@ -1245,7 +1244,6 @@ local Defaults = {
                 feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
-                    nargs = "?",
                     desc = "Search lsp definitions",
                 },
             }),
@@ -1257,24 +1255,6 @@ local Defaults = {
                     bang = true,
                     range = true,
                     desc = "Search lsp definitions by visual select",
-                },
-            }),
-            -- cword
-            CommandConfig:make({
-                name = "FzfxLspDefinitionsW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Search lsp definitions by cursor word",
-                },
-            }),
-            -- put
-            CommandConfig:make({
-                name = "FzfxLspDefinitionsP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Search lsp definitions by yank text",
                 },
             }),
         },

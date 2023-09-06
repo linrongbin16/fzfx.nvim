@@ -20,11 +20,13 @@ local DEFAULT_PIPELINE = "default"
 --- @class ProviderSwitch
 --- @field pipeline PipelineName?
 --- @field provider_configs table<PipelineName, ProviderConfig>?
+--- @field provider_contexts table<PipelineName, any?>?
 --- @field metafile string?
 --- @field resultfile string?
 local ProviderSwitch = {
     pipeline = nil,
     provider_configs = nil,
+    provider_contexts = nil,
     metafile = nil,
     resultfile = nil,
 }
@@ -35,6 +37,7 @@ local ProviderSwitch = {
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
+    local provider_contexts_map = {}
     if Clazz:instanceof(provider_configs, ProviderConfig) then
         provider_configs.provider_type = provider_configs.provider_type
             or (
@@ -43,20 +46,29 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
                 or ProviderTypeEnum.PLAIN_LIST
             )
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
+        if type(provider_configs.context_maker) == "function" then
+            provider_contexts_map[DEFAULT_PIPELINE] =
+                provider_configs.context_maker()
+        end
     else
-        for _, provider_opts in pairs(provider_configs) do
+        for provider_name, provider_opts in pairs(provider_configs) do
             provider_opts.provider_type = provider_opts.provider_type
                 or (
                     type(provider_opts.provider) == "string"
                         and ProviderTypeEnum.PLAIN
                     or ProviderTypeEnum.PLAIN_LIST
                 )
+            if type(provider_opts.context_maker) == "function" then
+                provider_contexts_map[provider_name] =
+                    provider_opts.context_maker()
+            end
         end
         provider_configs_map = provider_configs
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
         pipeline = pipeline,
         provider_configs = provider_configs_map,
+        provider_contexts = provider_contexts_map,
         metafile = env.debug_enable() and path.join(
             vim.fn.stdpath("data"),
             "fzfx.nvim",
@@ -81,10 +93,12 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
+    context = self.provider_contexts[self.pipeline] or context
     log.debug(
-        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s",
+        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
         vim.inspect(self.pipeline),
-        vim.inspect(provider_config)
+        vim.inspect(provider_config),
+        vim.inspect(context)
     )
     log.ensure(
         type(provider_config) == "table",
