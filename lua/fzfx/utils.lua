@@ -115,12 +115,15 @@ end
 --- @return integer?
 local function string_find(s, c, start)
     start = start or 1
-    for i = start, #s do
-        if string.byte(s, i) == string.byte(c) then
-            return i
-        end
-    end
-    return nil
+    local pos = vim.fn.stridx(s, c, start - 1)
+    return pos >= 0 and (pos + 1) or nil
+    -- start = start or 1
+    -- for i = start, #s do
+    --     if string.byte(s, i) == string.byte(c) then
+    --         return i
+    --     end
+    -- end
+    -- return nil
 end
 
 --- @param s string
@@ -129,12 +132,15 @@ end
 --- @return integer?
 local function string_rfind(s, c, rstart)
     rstart = rstart or #s
-    for i = rstart, 1, -1 do
-        if string.byte(s, i) == string.byte(c) then
-            return i
-        end
-    end
-    return nil
+    local pos = vim.fn.strridx(s, c, rstart - 1)
+    return pos >= 0 and (pos + 1) or nil
+    -- rstart = rstart or #s
+    -- for i = rstart, 1, -1 do
+    --     if string.byte(s, i) == string.byte(c) then
+    --         return i
+    --     end
+    -- end
+    -- return nil
 end
 
 --- @class ShellOptsContext
