@@ -61,7 +61,7 @@ local function set_buf_option(bufnr, name, value)
     end
 end
 
---- @param bufnr integer
+--- @param bufnr integer?
 --- @return boolean
 local function is_buf_valid(bufnr)
     if bufnr == nil or type(bufnr) ~= "number" then
