@@ -111,11 +111,11 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     --- @param data string[]
     --- @param name string?
     local function on_output(chanid, data, name)
-        shell_helpers.log_debug(
-            "|provider| plain|command on_output name:%s, data:%s",
-            vim.inspect(name),
-            vim.inspect(data)
-        )
+        -- shell_helpers.log_debug(
+        --     "|provider| plain|command on_output name:%s, data:%s",
+        --     vim.inspect(name),
+        --     vim.inspect(data)
+        -- )
         if #data == 1 and string.len(data[1]) == 0 then
             if #data_buffer > 0 then
                 for _, line in ipairs(data_buffer) do
