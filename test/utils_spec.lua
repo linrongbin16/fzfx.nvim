@@ -55,7 +55,7 @@ describe("utils", function()
                 assert_true(k == "a" or k == "b" or k == "c")
             end
         end)
-        it("failed to filter on list", function()
+        it("filtered on list", function()
             local t = { -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6 }
             local actual = utils.tbl_filter(t, function(k, v)
                 return v > 0
@@ -75,6 +75,60 @@ describe("utils", function()
         end)
         it("is false", function()
             assert_false(utils.tbl_empty({ 1, 2, 3 }))
+        end)
+    end)
+    describe("[list_filter]", function()
+        it("filtered by positive number", function()
+            local t = { 1, 2, 3, 4, -1, -2, 0 }
+            local actual = utils.list_filter(t, function(i, v)
+                return v > 0
+            end)
+            assert_eq(type(actual), "table")
+            for k, v in pairs(actual) do
+                assert_true(v > 0)
+            end
+        end)
+        it("filtered by negative number", function()
+            local t = { 1, 2, 3, 4, -1, -2, 0 }
+            local actual = utils.list_filter(t, function(i, v)
+                return v < 0
+            end)
+            assert_eq(type(actual), "table")
+            for k, v in pairs(actual) do
+                assert_true(v < 0)
+            end
+        end)
+        it("filtered by index is 1/2/3", function()
+            local t = { 1, 2, 3, 4, -1, -2, 0 }
+            local actual = utils.list_filter(t, function(i, v)
+                return i == "a" or i == "b" or i == "c"
+            end)
+            assert_eq(type(actual), "table")
+            for k, v in pairs(actual) do
+                assert_true(k == "a" or k == "b" or k == "c")
+            end
+        end)
+        it("filter on table", function()
+            local t = {
+                a = -5,
+                b = -4,
+                c = -3,
+                d = -2,
+                e = -1,
+                f = 0,
+                g = 1,
+                h = 2,
+                i = 3,
+                j = 4,
+                k = 5,
+                l = 6,
+            }
+            local actual = utils.list_filter(t, function(i, v)
+                return v > 0
+            end)
+            print(string.format("filtered list:%s\n", vim.inspect(actual)))
+            assert_eq(type(actual), "table")
+            assert_true(utils.list_empty(actual))
         end)
     end)
 end)

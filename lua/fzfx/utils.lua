@@ -26,9 +26,9 @@ local function list_empty(l)
     return l == nil or #l == 0
 end
 
---- @param f fun(k:any,v:any):boolean
 --- @param l any[]
-local function list_filter(f, l)
+--- @param f fun(k:any,v:any):boolean
+local function list_filter(l, f)
     local result = {}
     for i, v in ipairs(l) do
         if f(i, v) then
