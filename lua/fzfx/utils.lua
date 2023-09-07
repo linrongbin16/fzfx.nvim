@@ -2,15 +2,15 @@
 
 local constants = require("fzfx.constants")
 
---- @param t table
+--- @param t table?
 --- @return boolean
 local function tbl_empty(t)
-    return t == nil or not next(t) --[[@as boolean]]
+    return t == nil or next(t) == nil --[[@as boolean]]
 end
 
---- @param f fun(k:any,v:any):boolean
 --- @param t table
-local function tbl_filter(f, t)
+--- @param f fun(k:any,v:any):boolean
+local function tbl_filter(t, f)
     local result = {}
     for k, v in pairs(t) do
         if f(k, v) then
@@ -20,7 +20,7 @@ local function tbl_filter(f, t)
     return result
 end
 
---- @param l table
+--- @param l table?
 --- @return boolean
 local function list_empty(l)
     return l == nil or #l == 0

@@ -1,3 +1,5 @@
+-- Zero Dependency
+
 local LogHighlights = {
     ERROR = "ErrorMsg",
     WARN = "WarningMsg",

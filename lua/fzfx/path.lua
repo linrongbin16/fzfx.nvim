@@ -1,3 +1,5 @@
+-- Zero Dependency
+
 local constants = require("fzfx.constants")
 
 --- @param path string

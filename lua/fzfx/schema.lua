@@ -1,3 +1,5 @@
+-- Zero Dependency
+
 local Clazz = require("fzfx.clazz").Clazz
 
 -- Schema
