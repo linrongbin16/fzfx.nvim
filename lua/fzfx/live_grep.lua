@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
-local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
@@ -47,7 +46,7 @@ local function live_grep(query, bang, opts)
 
     local initial_command = string.format(
         "%s %s %s",
-        shell.make_lua_command("live_grep", "provider.lua"),
+        helpers.make_lua_command("live_grep", "provider.lua"),
         provider_switch.tempfile,
         query
     )
@@ -59,17 +58,17 @@ local function live_grep(query, bang, opts)
             utils.string_not_empty(onchange_reload_delay)
                     and onchange_reload_delay
                 or "",
-            shell.make_lua_command("live_grep", "provider.lua"),
+            helpers.make_lua_command("live_grep", "provider.lua"),
             provider_switch.tempfile
         )
     )
     local preview_command = string.format(
         "%s {1} {2}",
-        shell.make_lua_command("files", "previewer.lua")
+        helpers.make_lua_command("files", "previewer.lua")
     )
     local call_switch_provider_rpc_command = string.format(
         "%s %s",
-        shell.make_lua_command("rpc", "client.lua"),
+        helpers.make_lua_command("rpc", "client.lua"),
         switch_provider_rpc_callback_id
     )
     log.debug(

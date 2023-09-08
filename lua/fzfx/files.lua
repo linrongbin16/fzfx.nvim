@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
-local shell = require("fzfx.shell")
 local color = require("fzfx.color")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
@@ -48,14 +47,16 @@ local function files(query, bang, opts)
     -- query command, both initial query + reload query
     local query_command = string.format(
         "%s %s",
-        shell.make_lua_command("files", "provider.lua"),
+        helpers.make_lua_command("files", "provider.lua"),
         provider_switch.tempfile
     )
-    local preview_command =
-        string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))
+    local preview_command = string.format(
+        "%s {}",
+        helpers.make_lua_command("files", "previewer.lua")
+    )
     local call_switch_provider_rpc_command = string.format(
         "%s %s",
-        shell.make_lua_command("rpc", "client.lua"),
+        helpers.make_lua_command("rpc", "client.lua"),
         switch_provider_rpc_callback_id
     )
     log.debug(
