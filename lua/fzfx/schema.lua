@@ -1,3 +1,5 @@
+-- Zero Dependency
+
 local Clazz = require("fzfx.clazz").Clazz
 
 -- Schema
@@ -20,6 +22,8 @@ local Clazz = require("fzfx.clazz").Clazz
 --- @field bufnr integer
 --- @field winnr integer
 --- @field tabnr integer
+--
+--- @alias PipelineContextMaker fun():PipelineContext
 --
 --- @alias PlainProvider string?|string[]?
 --- @alias CommandProvider fun(query:string?,context:PipelineContext?):string?|string[]?
@@ -160,6 +164,7 @@ local ProviderLineTypeEnum = {
 --- @field key ActionKey
 --- @field provider Provider
 --- @field provider_type ProviderType? by default "plain"
+--- @field context_maker PipelineContextMaker?
 --- @field line_type ProviderLineType?
 --- @field line_delimiter string?
 --- @field line_pos integer?
@@ -167,6 +172,7 @@ local ProviderConfig = Clazz:implement("fzfx.config.ProviderConfig", {
     key = nil,
     provider = nil,
     provider_type = nil,
+    context_maker = nil,
     line_type = nil,
     line_delimiter = nil,
     line_pos = nil,

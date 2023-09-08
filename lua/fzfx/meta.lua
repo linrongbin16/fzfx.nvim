@@ -1,3 +1,5 @@
+-- Zero Dependency
+
 local schema = require("fzfx.schema")
 
 local M = {

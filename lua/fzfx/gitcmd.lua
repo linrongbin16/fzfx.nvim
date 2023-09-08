@@ -1,3 +1,5 @@
+-- Zero Dependency
+
 local Cmd = require("fzfx.cmd").Cmd
 
 --- @class GitRootCmd

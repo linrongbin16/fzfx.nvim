@@ -1,3 +1,5 @@
+-- Zero Dependency
+
 --- @return boolean
 local function debug_enable()
     return tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"

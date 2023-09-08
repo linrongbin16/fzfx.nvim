@@ -2,15 +2,15 @@
 
 local constants = require("fzfx.constants")
 
---- @param t table
+--- @param t table?
 --- @return boolean
 local function tbl_empty(t)
-    return t == nil or not next(t) --[[@as boolean]]
+    return t == nil or next(t) == nil --[[@as boolean]]
 end
 
---- @param f fun(k:any,v:any):boolean
 --- @param t table
-local function tbl_filter(f, t)
+--- @param f fun(k:any,v:any):boolean
+local function tbl_filter(t, f)
     local result = {}
     for k, v in pairs(t) do
         if f(k, v) then
@@ -20,15 +20,15 @@ local function tbl_filter(f, t)
     return result
 end
 
---- @param l table
+--- @param l table?
 --- @return boolean
 local function list_empty(l)
     return l == nil or #l == 0
 end
 
---- @param f fun(k:any,v:any):boolean
 --- @param l any[]
-local function list_filter(f, l)
+--- @param f fun(k:any,v:any):boolean
+local function list_filter(l, f)
     local result = {}
     for i, v in ipairs(l) do
         if f(i, v) then
@@ -61,7 +61,7 @@ local function set_buf_option(bufnr, name, value)
     end
 end
 
---- @param bufnr integer
+--- @param bufnr integer?
 --- @return boolean
 local function is_buf_valid(bufnr)
     if bufnr == nil or type(bufnr) ~= "number" then
@@ -115,12 +115,15 @@ end
 --- @return integer?
 local function string_find(s, c, start)
     start = start or 1
-    for i = start, #s do
-        if string.byte(s, i) == string.byte(c) then
-            return i
-        end
-    end
-    return nil
+    local pos = vim.fn.stridx(s, c, start - 1)
+    return pos >= 0 and (pos + 1) or nil
+    -- start = start or 1
+    -- for i = start, #s do
+    --     if string.byte(s, i) == string.byte(c) then
+    --         return i
+    --     end
+    -- end
+    -- return nil
 end
 
 --- @param s string
@@ -129,12 +132,15 @@ end
 --- @return integer?
 local function string_rfind(s, c, rstart)
     rstart = rstart or #s
-    for i = rstart, 1, -1 do
-        if string.byte(s, i) == string.byte(c) then
-            return i
-        end
-    end
-    return nil
+    local pos = vim.fn.strridx(s, c, rstart - 1)
+    return pos >= 0 and (pos + 1) or nil
+    -- rstart = rstart or #s
+    -- for i = rstart, 1, -1 do
+    --     if string.byte(s, i) == string.byte(c) then
+    --         return i
+    --     end
+    -- end
+    -- return nil
 end
 
 --- @class ShellOptsContext
@@ -287,6 +293,7 @@ local M = {
     set_buf_option = set_buf_option,
     is_buf_valid = is_buf_valid,
     set_win_option = set_win_option,
+    get_win_option = get_win_option,
     string_empty = string_empty,
     string_not_empty = string_not_empty,
     string_find = string_find,

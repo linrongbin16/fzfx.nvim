@@ -1,6 +1,5 @@
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
-local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
 local color = require("fzfx.color")
@@ -12,6 +11,7 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local Clazz = require("fzfx.clazz").Clazz
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
+local CommandConfig = require("fzfx.schema").CommandConfig
 
 local DEFAULT_PIPELINE = "default"
 
@@ -20,11 +20,13 @@ local DEFAULT_PIPELINE = "default"
 --- @class ProviderSwitch
 --- @field pipeline PipelineName?
 --- @field provider_configs table<PipelineName, ProviderConfig>?
+--- @field provider_contexts table<PipelineName, any?>?
 --- @field metafile string?
 --- @field resultfile string?
 local ProviderSwitch = {
     pipeline = nil,
     provider_configs = nil,
+    provider_contexts = nil,
     metafile = nil,
     resultfile = nil,
 }
@@ -35,6 +37,7 @@ local ProviderSwitch = {
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
+    local provider_contexts_map = {}
     if Clazz:instanceof(provider_configs, ProviderConfig) then
         provider_configs.provider_type = provider_configs.provider_type
             or (
@@ -43,20 +46,29 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
                 or ProviderTypeEnum.PLAIN_LIST
             )
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
+        if type(provider_configs.context_maker) == "function" then
+            provider_contexts_map[DEFAULT_PIPELINE] =
+                provider_configs.context_maker()
+        end
     else
-        for _, provider_opts in pairs(provider_configs) do
+        for provider_name, provider_opts in pairs(provider_configs) do
             provider_opts.provider_type = provider_opts.provider_type
                 or (
                     type(provider_opts.provider) == "string"
                         and ProviderTypeEnum.PLAIN
                     or ProviderTypeEnum.PLAIN_LIST
                 )
+            if type(provider_opts.context_maker) == "function" then
+                provider_contexts_map[provider_name] =
+                    provider_opts.context_maker()
+            end
         end
         provider_configs_map = provider_configs
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
         pipeline = pipeline,
         provider_configs = provider_configs_map,
+        provider_contexts = provider_contexts_map,
         metafile = env.debug_enable() and path.join(
             vim.fn.stdpath("data"),
             "fzfx.nvim",
@@ -81,10 +93,12 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
+    context = self.provider_contexts[self.pipeline] or context
     log.debug(
-        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s",
+        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
         vim.inspect(self.pipeline),
-        vim.inspect(provider_config)
+        vim.inspect(provider_config),
+        vim.inspect(context)
     )
     log.ensure(
         type(provider_config) == "table",
@@ -597,7 +611,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local query_command = string.format(
         "%s %s %s %s %s",
-        shell.make_lua_command("general", "provider.lua"),
+        helpers.make_lua_command("general", "provider.lua"),
         provide_rpc_registry_id,
         provider_switch.metafile,
         provider_switch.resultfile,
@@ -605,14 +619,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
     local reload_query_command = string.format(
         "%s %s %s %s {q}",
-        shell.make_lua_command("general", "provider.lua"),
+        helpers.make_lua_command("general", "provider.lua"),
         provide_rpc_registry_id,
         provider_switch.metafile,
         provider_switch.resultfile
     )
     local preview_command = string.format(
         "%s %s %s %s {}",
-        shell.make_lua_command("general", "previewer.lua"),
+        helpers.make_lua_command("general", "previewer.lua"),
         preview_rpc_registry_id,
         previewer_switch.metafile,
         previewer_switch.resultfile
@@ -668,7 +682,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local action_command = string.format(
                 "%s %s {}",
-                shell.make_lua_command("rpc", "client.lua"),
+                helpers.make_lua_command("rpc", "client.lua"),
                 interaction_rpc_registry_id
             )
             local bind_builder = string.format(
@@ -705,7 +719,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local switch_command = string.format(
                 "%s %s",
-                shell.make_lua_command("rpc", "client.lua"),
+                helpers.make_lua_command("rpc", "client.lua"),
                 switch_rpc_registry_id
             )
             local bind_builder = string.format(
@@ -766,17 +780,42 @@ local function setup(name, pipeline_configs)
     --     vim.inspect(pipeline_configs)
     -- )
     -- User commands
-    for _, command_configs in pairs(pipeline_configs.commands) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            local query = helpers.get_command_feed(opts, command_configs.feed)
-            return general(
-                name,
-                query,
-                opts.bang,
-                pipeline_configs,
-                command_configs.default_provider
+    if Clazz:instanceof(pipeline_configs.commands, CommandConfig) then
+        vim.api.nvim_create_user_command(
+            pipeline_configs.commands.name,
+            function(opts)
+                local query = helpers.get_command_feed(
+                    opts,
+                    pipeline_configs.commands.feed
+                )
+                return general(
+                    name,
+                    query,
+                    opts.bang,
+                    pipeline_configs,
+                    pipeline_configs.commands.default_provider
+                )
+            end,
+            pipeline_configs.commands.opts
+        )
+    else
+        for _, command_configs in pairs(pipeline_configs.commands) do
+            vim.api.nvim_create_user_command(
+                command_configs.name,
+                function(opts)
+                    local query =
+                        helpers.get_command_feed(opts, command_configs.feed)
+                    return general(
+                        name,
+                        query,
+                        opts.bang,
+                        pipeline_configs,
+                        command_configs.default_provider
+                    )
+                end,
+                command_configs.opts
             )
-        end, command_configs.opts)
+        end
     end
 end
 

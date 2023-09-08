@@ -1,6 +1,7 @@
+-- Zero Dependency
+
 --- @class Object
 --- @field __classname string
-
 local Clazz = {
     __classname = "object",
 }

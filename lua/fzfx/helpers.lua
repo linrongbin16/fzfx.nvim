@@ -220,6 +220,48 @@ end
 
 -- fzf opts }
 
+--- @return string|nil
+local function nvim_exec()
+    local exe_list = {}
+    table.insert(exe_list, conf.get_config().env.nvim)
+    table.insert(exe_list, vim.v.argv[1])
+    table.insert(exe_list, vim.env.VIM)
+    table.insert(exe_list, "nvim")
+    for _, e in ipairs(exe_list) do
+        if e ~= nil and vim.fn.executable(e) > 0 then
+            return e
+        end
+    end
+    log.throw("error! failed to found executable 'nvim' on path!")
+    return nil
+end
+
+--- @return string|nil
+local function fzf_exec()
+    local exe_list = {}
+    table.insert(exe_list, conf.get_config().env.fzf)
+    table.insert(exe_list, vim.fn["fzf#exec"]())
+    table.insert(exe_list, "fzf")
+    for _, e in ipairs(exe_list) do
+        if e ~= nil and vim.fn.executable(e) > 0 then
+            return e
+        end
+    end
+    log.throw("error! failed to found executable 'fzf' on path!")
+    return nil
+end
+
+--- @return string
+local function make_lua_command(...)
+    local nvim_path = nvim_exec()
+    local lua_path = path.join(path.base_dir(), "bin", ...)
+    -- log.debug(
+    --     "|fzfx.helpers - make_lua_command| lua_path:%s",
+    --     vim.inspect(lua_path)
+    -- )
+    return string.format("%s -n --clean --headless -l %s", nvim_path, lua_path)
+end
+
 -- provider switch {
 
 --- @class Switch
@@ -268,6 +310,9 @@ local M = {
     preprocess_fzf_opts = preprocess_fzf_opts,
     make_fzf_opts = make_fzf_opts,
     make_fzf_default_opts = make_fzf_default_opts,
+    nvim_exec = nvim_exec,
+    fzf_exec = fzf_exec,
+    make_lua_command = make_lua_command,
     Switch = Switch,
 }
 
