@@ -840,15 +840,18 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 Please open [issue](https://github.com/linrongbin16/fzfx.nvim/issues)/[PR](https://github.com/linrongbin16/fzfx.nvim/pulls) for anything about fzfx.nvim.
 
 To develop the project and make PR, please setup with:
-* [lua_ls](https://github.com/LuaLS/lua-language-server).
+
+- [lua_ls](https://github.com/LuaLS/lua-language-server).
 
 To run unit tests, please first install below dependencies:
-* [luarocks](https://luarocks.org/).
-* [luacheck](https://github.com/mpeterv/luacheck).
-* [luacov](https://github.com/lunarmodules/luacov).
-* [vusted](https://github.com/notomo/vusted).
+
+- [luarocks](https://luarocks.org/).
+- [luacheck](https://github.com/mpeterv/luacheck).
+- [luacov](https://github.com/lunarmodules/luacov).
+- [vusted](https://github.com/notomo/vusted).
 
 Then test with:
+
 ```bash
 vusted --shuffle ./test
 ```
