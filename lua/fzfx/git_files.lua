@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
-local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
 
 --- @param query string
@@ -17,11 +16,13 @@ local function git_files(query, bang, opts)
     vim.fn.writefile({ provider_command }, temp, "b")
     local query_command = string.format(
         "%s %s",
-        shell.make_lua_command("git_files", "provider.lua"),
+        helpers.make_lua_command("git_files", "provider.lua"),
         temp
     )
-    local preview_command =
-        string.format("%s {}", shell.make_lua_command("files", "previewer.lua"))
+    local preview_command = string.format(
+        "%s {}",
+        helpers.make_lua_command("files", "previewer.lua")
+    )
     log.debug(
         "|fzfx.git_files - git_files| query_command:%s, preview_command:%s",
         vim.inspect(query_command),

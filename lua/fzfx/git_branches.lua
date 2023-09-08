@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
-local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
 local color = require("fzfx.color")
 local server = require("fzfx.server")
@@ -53,7 +52,7 @@ local function git_branches(query, bang, opts)
     -- query command, both initial query + reload query
     local query_command = string.format(
         "%s %s",
-        shell.make_lua_command("git_branches", "provider.lua"),
+        helpers.make_lua_command("git_branches", "provider.lua"),
         provider_switch.tempfile
     )
     local git_log_command = git_branches_configs.previewers
@@ -61,12 +60,12 @@ local function git_branches(query, bang, opts)
     vim.fn.writefile({ git_log_command }, temp, "b")
     local preview_command = string.format(
         "%s %s {}",
-        shell.make_lua_command("git_branches", "previewer.lua"),
+        helpers.make_lua_command("git_branches", "previewer.lua"),
         temp
     )
     local call_switch_provider_rpc_command = string.format(
         "%s %s",
-        shell.make_lua_command("rpc", "client.lua"),
+        helpers.make_lua_command("rpc", "client.lua"),
         switch_provider_rpc_callback_id
     )
     log.debug(
