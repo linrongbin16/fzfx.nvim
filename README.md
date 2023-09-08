@@ -432,6 +432,14 @@ Especially for git commands:
     <td>FzfxLspDiagnostics(B)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td>Lsp Definitions</td>
+    <td>FzfxLspDefinitions</td>
+    <td>N</td>
+    <td>Yes</td>
+    <td>Yes</td>
+    <td></td>
+  </tr>
 </tbody>
 </table>
 
@@ -577,6 +585,13 @@ nnoremap <space>bwdg :\<C-U>FzfxLspDiagnosticsBW<CR>
 nnoremap <space>pdg :\<C-U>FzfxLspDiagnosticsP<CR>
 " only current buffer by yank text
 nnoremap <space>bpdg :\<C-U>FzfxLspDiagnosticsBP<CR>
+
+
+" ======== lsp definitions ========
+
+" lsp definitions
+nnoremap gd :\<C-U>FzfxLspDefinitions<CR>
+
 ```
 
 </details>
@@ -774,7 +789,7 @@ vim.keymap.set('n', '<space>pgb',
 
 -- ======== lsp diagnostics ========
 
--- git commits
+-- lsp diagnostics
 vim.keymap.set('n', '<space>dg', '<cmd>FzfxLspDiagnostics<cr>',
         {silent=true, noremap=true, desc="Search lsp diagnostics"})
 -- by visual select
@@ -801,6 +816,12 @@ vim.keymap.set('n', '<space>pdg', '<cmd>FzfxLspDiagnosticsP<cr>',
 -- only current buffer by yank text
 vim.keymap.set('n', '<space>bpdg', '<cmd>FzfxLspDiagnosticsBP<cr>',
         {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer by yank text"})
+
+-- ======== lsp definitions ========
+
+-- lsp definitions
+vim.keymap.set('n', 'gd', '<cmd>FzfxLspDefinitions<cr>',
+        {silent=true, noremap=true, desc="Search lsp definitions"})
 
 ```
 
