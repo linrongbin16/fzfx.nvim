@@ -609,7 +609,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle_preview,
             function()
                 return {
                     "--prompt",
@@ -734,7 +733,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle_preview,
             { "--prompt", "Live Grep > " },
             { "--delimiter", ":" },
             { "--preview-window", "+{2}-/3" },
@@ -849,7 +847,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle_preview,
             {
                 "--prompt",
                 "Buffers > ",
@@ -913,7 +910,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle_preview,
             function()
                 return {
                     "--prompt",
@@ -1026,7 +1022,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            default_fzf_options.toggle_preview,
             {
                 "--prompt",
                 "GBranches > ",
@@ -1189,7 +1184,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            default_fzf_options.toggle_preview,
             {
                 "--prompt",
                 "GCommits > ",
@@ -1286,7 +1280,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            default_fzf_options.toggle_preview,
             {
                 "--prompt",
                 "GBlame > ",
@@ -1423,7 +1416,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle_preview,
             { "--delimiter", ":" },
             { "--preview-window", "+{2}-/3" },
             {
@@ -1470,7 +1462,6 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            default_fzf_options.toggle_preview,
             { "--delimiter", ":" },
             { "--preview-window", "+{2}-/3" },
             {
@@ -1499,6 +1490,7 @@ local Defaults = {
         "--height=100%",
         default_fzf_options.toggle,
         default_fzf_options.toggle_all,
+        default_fzf_options.toggle_preview,
         default_fzf_options.preview_half_page_down,
         default_fzf_options.preview_half_page_up,
     },
