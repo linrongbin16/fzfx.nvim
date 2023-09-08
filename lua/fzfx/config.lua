@@ -735,7 +735,7 @@ local Defaults = {
             default_fzf_options.multi,
             { "--prompt", "Live Grep > " },
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/3" },
+            { "--preview-window", "+{2}-/2" },
         },
         other_opts = {
             onchange_reload_delay = (
@@ -1417,7 +1417,7 @@ local Defaults = {
         fzf_opts = {
             default_fzf_options.multi,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/3" },
+            { "--preview-window", "+{2}-/2" },
             {
                 "--prompt",
                 "Diagnostics > ",
@@ -1463,7 +1463,7 @@ local Defaults = {
         fzf_opts = {
             default_fzf_options.multi,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/3" },
+            { "--preview-window", "+{2}-/2" },
             {
                 "--prompt",
                 "Definitions > ",
