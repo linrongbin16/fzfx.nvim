@@ -26,12 +26,18 @@ local function base_dir()
     return vim.fn["fzfx#nvim#base_dir"]()
 end
 
---- @param path string?
+--- @param p string?
 --- @return string
-local function shorten(path)
-    local dir_path = vim.fn.fnamemodify(path or vim.fn.getcwd(), ":~:.")
+local function shorten(p)
+    local dir_path = vim.fn.fnamemodify(p or vim.fn.getcwd(), ":~:.")
     local shorten_path = vim.fn.pathshorten(dir_path)
     return shorten_path
+end
+
+--- @param p string?
+--- @return string
+local function reduce(p)
+    return vim.fn.fnamemodify(p or vim.fn.getcwd(), ":~:.")
 end
 
 local M = {
@@ -39,6 +45,7 @@ local M = {
     normalize = normalize,
     join = join,
     shorten = shorten,
+    reduce = reduce,
 
     -- plugin dir
     base_dir = base_dir,
