@@ -310,16 +310,6 @@ local function is_lsp_locationlink(loc)
         and is_lsp_range(loc.targetSelectionRange)
 end
 
---- @param uri string?
---- @return string?
-local function lsp_location_uri_to_filename(uri)
-    if type(uri) ~= "string" or string.len(uri) < 8 then
-        return nil
-    end
-    --- uri: file:///Users/linrongbin16/github/fzfx.nvim/README.md
-    return uri:sub(8, #uri)
-end
-
 --- @param line string
 --- @param range LspLocationRange
 --- @param color_renderer fun(text:string):string
@@ -413,13 +403,13 @@ local function lsp_definitions_provider(opts)
 
     --- @param loc LspLocation
     local function process_location(loc)
-        local filename = lsp_location_uri_to_filename(loc.uri)
+        local filename = vim.uri_to_fname(loc.uri)
         log.debug(
             "|fzfx.config - lsp_definitions_provider.process_location| loc:%s, filename:%s",
             vim.inspect(loc),
             vim.inspect(filename)
         )
-        if filename == nil or vim.fn.filereadable(filename) <= 0 then
+        if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
             return nil
         end
         local filelines = vim.fn.readfile(filename)
@@ -451,13 +441,13 @@ local function lsp_definitions_provider(opts)
 
     --- @param loc LspLocationLink
     local function process_locationlink(loc)
-        local filename = lsp_location_uri_to_filename(loc.targetUri)
+        local filename = vim.uri_to_fname(loc.targetUri)
         log.debug(
             "|fzfx.config - lsp_definitions_provider.process_location| loc:%s, filename:%s",
             vim.inspect(loc),
             vim.inspect(filename)
         )
-        if filename == nil or vim.fn.filereadable(filename) <= 0 then
+        if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
             return nil
         end
         local filelines = vim.fn.readfile(filename)
