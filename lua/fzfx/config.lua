@@ -152,25 +152,49 @@ local function lsp_diagnostics_provider(opts)
         [1] = {
             severity = 1,
             text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
-            texthl = "DiagnosticSignError",
+            texthl = vim.fn.hlexists("DiagnosticSignError") > 0
+                    and "DiagnosticSignError"
+                or (
+                    vim.fn.hlexists("LspDiagnosticsSignError") > 0
+                        and "LspDiagnosticsSignError"
+                    or "ErrorMsg"
+                ),
             textcolor = "red",
         },
         [2] = {
             severity = 2,
             text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
-            texthl = "DiagnosticSignWarn",
+            texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0
+                    and "DiagnosticSignWarn"
+                or (
+                    vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
+                        and "LspDiagnosticsSignWarn"
+                    or "WarningMsg"
+                ),
             textcolor = "yellow",
         },
         [3] = {
             severity = 3,
             text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
-            texthl = "DiagnosticSignInfo",
+            texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0
+                    and "DiagnosticSignInfo"
+                or (
+                    vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
+                        and "LspDiagnosticsSignInfo"
+                    or "None"
+                ),
             textcolor = "blue",
         },
         [4] = {
             severity = 4,
             text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
-            texthl = "DiagnosticSignHint",
+            texthl = vim.fn.hlexists("DiagnosticSignHint") > 0
+                    and "DiagnosticSignHint"
+                or (
+                    vim.fn.hlexists("LspDiagnosticsSignHint") > 0
+                        and "LspDiagnosticsSignHint"
+                    or "Comment"
+                ),
             textcolor = "cyan",
         },
     }
