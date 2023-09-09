@@ -61,7 +61,7 @@ require("lazy").setup({
                         -- normal
                         {
                             name = "FzfxGBranches",
-                            feed = CommandFeedEnum.ARGS,
+                            feed = require("fzfx.meta").CommandFeedEnum.ARGS,
                             opts = {
                                 bang = true,
                                 nargs = "?",
@@ -72,7 +72,7 @@ require("lazy").setup({
                         },
                         {
                             name = "FzfxGBranchesR",
-                            feed = CommandFeedEnum.ARGS,
+                            feed = require("fzfx.meta").CommandFeedEnum.ARGS,
                             opts = {
                                 bang = true,
                                 nargs = "?",
@@ -84,7 +84,7 @@ require("lazy").setup({
                         -- visual
                         {
                             name = "FzfxGBranchesV",
-                            feed = CommandFeedEnum.VISUAL,
+                            feed = require("fzfx.meta").CommandFeedEnum.VISUAL,
                             opts = {
                                 bang = true,
                                 range = true,
@@ -94,7 +94,7 @@ require("lazy").setup({
                         },
                         {
                             name = "FzfxGBranchesRV",
-                            feed = CommandFeedEnum.VISUAL,
+                            feed = require("fzfx.meta").CommandFeedEnum.VISUAL,
                             opts = {
                                 bang = true,
                                 range = true,
@@ -105,7 +105,7 @@ require("lazy").setup({
                         -- cword
                         {
                             name = "FzfxGBranchesW",
-                            feed = CommandFeedEnum.CWORD,
+                            feed = require("fzfx.meta").CommandFeedEnum.CWORD,
                             opts = {
                                 bang = true,
                                 desc = "Search local git branches by cursor word",
@@ -114,7 +114,7 @@ require("lazy").setup({
                         },
                         {
                             name = "FzfxGBranchesRW",
-                            feed = CommandFeedEnum.CWORD,
+                            feed = require("fzfx.meta").CommandFeedEnum.CWORD,
                             opts = {
                                 bang = true,
                                 desc = "Search remote git branches by cursor word",
@@ -124,7 +124,7 @@ require("lazy").setup({
                         -- put
                         {
                             name = "FzfxGBranchesP",
-                            feed = CommandFeedEnum.PUT,
+                            feed = require("fzfx.meta").CommandFeedEnum.PUT,
                             opts = {
                                 bang = true,
                                 desc = "Search local git branches by yank text",
@@ -133,7 +133,7 @@ require("lazy").setup({
                         },
                         {
                             name = "FzfxGBranchesRP",
-                            feed = CommandFeedEnum.PUT,
+                            feed = require("fzfx.meta").CommandFeedEnum.PUT,
                             opts = {
                                 bang = true,
                                 desc = "Search remote git branches by yank text",
@@ -149,7 +149,9 @@ require("lazy").setup({
                     -- "git log --graph --color=always --date=relative",
                     previewers = string.format(
                         "git log --pretty=%s --graph --date=short --color=always",
-                        utils.shellescape(default_git_log_pretty)
+                        require("fzfx.utils").shellescape(
+                            default_git_log_pretty
+                        )
                     ),
                     actions = {
                         ["esc"] = require("fzfx.actions").nop,
