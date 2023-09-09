@@ -288,11 +288,12 @@ elseif metajson.provider_type == "list" then
     --- @type string?
     local data_buffer = nil
     local filesize = stat.size
-    local batchsize = 4096
     local offset = 0
     local code = 0
 
-    while true do
+    while offset < filesize do
+        local batchsize = (filesize >= offset + 4096) and 4096
+            or (filesize - offset)
         local data, --[[@as string?]]
             read_err,
             read_name =
@@ -330,6 +331,36 @@ elseif metajson.provider_type == "list" then
     end
     vim.loop.fs_close(fd)
     os.exit(code)
+
+    -- local f = io.open(resultfile, "r")
+    -- if f then
+    --     if metajson.provider_line_type == "file" then
+    --         --- @diagnostic disable-next-line: need-check-nil
+    --         for line in f:lines("*line") do
+    --             if string.len(vim.fn.trim(line)) > 0 then
+    --                 local line_with_icon = shell_helpers.render_filepath_line(
+    --                     line,
+    --                     metajson.provider_line_delimiter,
+    --                     metajson.provider_line_pos
+    --                 )
+    --                 io.write(string.format("%s\n", line_with_icon))
+    --             end
+    --         end
+    --     else
+    --         for line in f:lines("*line") do
+    --             -- shell_helpers.log_debug("line:%s", vim.inspect(line))
+    --             if string.len(vim.fn.trim(line)) > 0 then
+    --                 io.write(string.format("%s\n", line))
+    --             end
+    --         end
+    --     end
+    --     f:close()
+    -- else
+    --     shell_helpers.debug(
+    --         "|provider| error! failed to open file on list provider resultfile! %s",
+    --         vim.inspect(resultfile)
+    --     )
+    -- end
 else
     shell_helpers.log_throw(
         "|provider| error! unknown provider type:%s",
