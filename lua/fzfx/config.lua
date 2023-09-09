@@ -464,11 +464,15 @@ local function lsp_definitions_provider(opts)
     local def_lines = {}
     if is_lsp_location(lsp_defs) then
         local line = process_location(lsp_defs)
-        table.insert(def_lines, line)
+        if type(line) == "string" and string.len(line) > 0 then
+            table.insert(def_lines, line)
+        end
     else
         for _, def in ipairs(lsp_defs) do
             local line = process_location(def)
-            table.insert(def_lines, line)
+            if type(line) == "string" and string.len(line) > 0 then
+                table.insert(def_lines, line)
+            end
         end
     end
     return def_lines
