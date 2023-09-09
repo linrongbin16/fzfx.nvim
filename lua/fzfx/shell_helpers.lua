@@ -257,9 +257,9 @@ local M = {
     render_filepath_line = render_filepath_line,
     parse_query = parse_query,
     Cmd = require("fzfx.cmd").Cmd,
-    GitRootCmd = require("fzfx.gitcmd").GitRootCmd,
-    GitBranchCmd = require("fzfx.gitcmd").GitBranchCmd,
-    GitCurrentBranchCmd = require("fzfx.gitcmd").GitCurrentBranchCmd,
+    GitRootCmd = require("fzfx.cmd").GitRootCmd,
+    GitBranchCmd = require("fzfx.cmd").GitBranchCmd,
+    GitCurrentBranchCmd = require("fzfx.cmd").GitCurrentBranchCmd,
     string_find = require("fzfx.utils").string_find,
     string_rfind = require("fzfx.utils").string_rfind,
 }

@@ -154,13 +154,34 @@ local function setup()
         return
     end
 
-    -- Context
-    Context.local_key =
-        string.lower(git_branches_configs.providers.local_branch[1])
-    Context.remote_key =
-        string.lower(git_branches_configs.providers.remote_branch[1])
-    Context.local_header = color.git_local_branches_header(Context.local_key)
-    Context.remote_header = color.git_remote_branches_header(Context.remote_key)
+    local deprecated = false
+    for provider_name, provider_opts in pairs(git_branches_configs.providers) do
+        if
+            #provider_opts >= 2
+            or type(provider_opts[1]) == "string"
+            or type(provider_opts[2]) == "string"
+        then
+            --- @type ActionKey
+            provider_opts.key = provider_opts[1]
+            --- @type Provider
+            provider_opts.provider = provider_opts[2]
+            deprecated = true
+        end
+    end
+    if type(git_branches_configs.previewers) == "string" then
+        local old_previewer = git_branches_configs.previewers
+        git_branches_configs.previewers = {}
+        for provider_name, _ in pairs(git_branches_configs.providers) do
+            git_branches_configs.previewers[provider_name] = {
+                previewer = function(line)
+                    local commit = vim.fn.split(line)[1]
+                    return string.format("%s %s", old_previewer, commit)
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }
+        end
+        deprecated = true
+    end
 
     -- User commands
     for _, command_configs in pairs(git_branches_configs.commands) do

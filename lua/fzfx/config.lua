@@ -990,15 +990,34 @@ local Defaults = {
             }),
         },
         providers = {
-            -- local_branch = { "ctrl-o", "git branch" },
-            -- remote_branch = { "ctrl-r", "git branch --remotes" },
             local_branch = ProviderConfig:make({
                 key = "ctrl-o",
-                provider = "git branch",
+                provider = function(query, context)
+                    local cmd = require("fzfx.cmd")
+                    local git_root_cmd = cmd.GitRootCmd:run()
+                    if git_root_cmd:wrong() then
+                        return nil
+                    end
+                    local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
+                    if git_current_branch_cmd:wrong() then
+                        return nil
+                    end
+                    local branch_results = {}
+                    table.insert(
+                        branch_results,
+                        string.format("* %s", git_current_branch_cmd:value())
+                    )
+                    local git_branch_cmd = cmd.Cmd:run("git branch")
+                    if git_branch_cmd.result:wrong() then
+                        return nil
+                    end
+                end,
+                provider_type = ProviderTypeEnum.LIST,
             }),
             remote_branch = ProviderConfig:make({
                 key = "ctrl-r",
-                provider = "git branch --remotes",
+                provider = function(query, context) end,
+                provider_type = ProviderTypeEnum.LIST,
             }),
         },
         -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
