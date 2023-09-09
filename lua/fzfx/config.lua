@@ -143,12 +143,10 @@ end
 --- @param opts LspDiagnosticOpts
 --- @return string[]?
 local function lsp_diagnostics_provider(opts)
-    if not constants.has_vim_diagnostics then
-        local active_lsp_clients = vim.lsp.get_active_clients()
-        if utils.list_empty(active_lsp_clients) then
-            log.echo(LogLevel.INFO, "no active lsp clients.")
-            return nil
-        end
+    local active_lsp_clients = vim.lsp.get_active_clients()
+    if utils.list_empty(active_lsp_clients) then
+        log.echo(LogLevel.INFO, "no active lsp clients.")
+        return nil
     end
     local signs = {
         [1] = {
