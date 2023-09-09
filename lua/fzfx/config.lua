@@ -378,7 +378,7 @@ local function lsp_definitions_provider(opts)
         log.echo(LogLevel.ERROR, lsp_err)
         return nil
     end
-    if type(lsp_results) ~= "table" or #lsp_results == 0 then
+    if type(lsp_results) ~= "table" then
         log.echo(
             LogLevel.INFO,
             "no lsp locations found on %s (%s).",
@@ -387,17 +387,6 @@ local function lsp_definitions_provider(opts)
         )
         return nil
     end
-    local lsp_result1 = lsp_results[1]
-    if type(lsp_result1) ~= "table" or type(lsp_result1.result) ~= "table" then
-        log.echo(
-            LogLevel.INFO,
-            "no lsp locations found on %s (%s).",
-            vim.inspect(opts.method),
-            vim.inspect(opts.bufnr)
-        )
-        return nil
-    end
-    local lsp_defs = lsp_result1.result
 
     local filepath_color = constants.is_windows and color.cyan_8bit
         or color.magenta_8bit
@@ -462,15 +451,41 @@ local function lsp_definitions_provider(opts)
     end
 
     local def_lines = {}
-    if is_lsp_location(lsp_defs) then
-        local line = process_location(lsp_defs)
-        table.insert(def_lines, line)
-    else
-        for _, def in ipairs(lsp_defs) do
-            local line = process_location(def)
-            table.insert(def_lines, line)
+
+    for client_id, lsp_result in pairs(lsp_results) do
+        if
+            client_id == nil
+            or type(lsp_result) ~= "table"
+            or type(lsp_result.result) ~= "table"
+        then
+            break
+        end
+        local lsp_defs = lsp_result.result
+        if is_lsp_location(lsp_defs) then
+            local line = process_location(lsp_defs)
+            if type(line) == "string" and string.len(line) > 0 then
+                table.insert(def_lines, line)
+            end
+        else
+            for _, def in ipairs(lsp_defs) do
+                local line = process_location(def)
+                if type(line) == "string" and string.len(line) > 0 then
+                    table.insert(def_lines, line)
+                end
+            end
         end
     end
+
+    if utils.list_empty(def_lines) then
+        log.echo(
+            LogLevel.INFO,
+            "no lsp locations found on %s (%s).",
+            vim.inspect(opts.method),
+            vim.inspect(opts.bufnr)
+        )
+        return nil
+    end
+
     return def_lines
 end
 
