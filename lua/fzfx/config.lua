@@ -143,36 +143,58 @@ end
 --- @param opts LspDiagnosticOpts
 --- @return string[]?
 local function lsp_diagnostics_provider(opts)
-    if not constants.has_vim_diagnostics then
-        local active_lsp_clients = vim.lsp.get_active_clients()
-        if utils.list_empty(active_lsp_clients) then
-            log.echo(LogLevel.INFO, "no active lsp clients.")
-            return nil
-        end
+    local active_lsp_clients = vim.lsp.get_active_clients()
+    if utils.list_empty(active_lsp_clients) then
+        log.echo(LogLevel.INFO, "no active lsp clients.")
+        return nil
     end
     local signs = {
         [1] = {
             severity = 1,
             text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
-            texthl = "DiagnosticSignError",
+            texthl = vim.fn.hlexists("DiagnosticSignError") > 0
+                    and "DiagnosticSignError"
+                or (
+                    vim.fn.hlexists("LspDiagnosticsSignError") > 0
+                        and "LspDiagnosticsSignError"
+                    or "ErrorMsg"
+                ),
             textcolor = "red",
         },
         [2] = {
             severity = 2,
             text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
-            texthl = "DiagnosticSignWarn",
+            texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0
+                    and "DiagnosticSignWarn"
+                or (
+                    vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
+                        and "LspDiagnosticsSignWarn"
+                    or "WarningMsg"
+                ),
             textcolor = "yellow",
         },
         [3] = {
             severity = 3,
             text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
-            texthl = "DiagnosticSignInfo",
+            texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0
+                    and "DiagnosticSignInfo"
+                or (
+                    vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
+                        and "LspDiagnosticsSignInfo"
+                    or "None"
+                ),
             textcolor = "blue",
         },
         [4] = {
             severity = 4,
             text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
-            texthl = "DiagnosticSignHint",
+            texthl = vim.fn.hlexists("DiagnosticSignHint") > 0
+                    and "DiagnosticSignHint"
+                or (
+                    vim.fn.hlexists("LspDiagnosticsSignHint") > 0
+                        and "LspDiagnosticsSignHint"
+                    or "Comment"
+                ),
             textcolor = "cyan",
         },
     }
@@ -288,16 +310,6 @@ local function is_lsp_locationlink(loc)
         and is_lsp_range(loc.targetSelectionRange)
 end
 
---- @param uri string?
---- @return string?
-local function lsp_location_uri_to_filename(uri)
-    if type(uri) ~= "string" or string.len(uri) < 8 then
-        return nil
-    end
-    --- uri: file:///Users/linrongbin16/github/fzfx.nvim/README.md
-    return uri:sub(8, #uri)
-end
-
 --- @param line string
 --- @param range LspLocationRange
 --- @param color_renderer fun(text:string):string
@@ -389,101 +401,72 @@ local function lsp_definitions_provider(opts)
     local filepath_color = constants.is_windows and color.cyan_8bit
         or color.magenta_8bit
 
-    --- @param loc LspLocation
+    --- @param loc LspLocation|LspLocationLink
+    --- @return string?
     local function process_location(loc)
-        local filename = lsp_location_uri_to_filename(loc.uri)
+        --- @type string
+        local filename = nil
+        --- @type LspLocationRange
+        local range = nil
         log.debug(
-            "|fzfx.config - lsp_definitions_provider.process_location| loc:%s, filename:%s",
-            vim.inspect(loc),
-            vim.inspect(filename)
+            "|fzfx.config - lsp_definitions_provider.process_location| loc:%s",
+            vim.inspect(loc)
         )
-        if filename == nil or vim.fn.filereadable(filename) <= 0 then
+        if is_lsp_location(loc) then
+            filename = vim.uri_to_fname(loc.uri)
+            range = loc.range
+            log.debug(
+                "|fzfx.config - lsp_definitions_provider.process_location| location filename:%s, range:%s",
+                vim.inspect(filename),
+                vim.inspect(range)
+            )
+        end
+        if is_lsp_locationlink(loc) then
+            filename = vim.uri_to_fname(loc.targetUri)
+            range = loc.targetRange
+            log.debug(
+                "|fzfx.config - lsp_definitions_provider.process_location| locationlink filename:%s, range:%s",
+                vim.inspect(filename),
+                vim.inspect(range)
+            )
+        end
+        if not is_lsp_range(range) then
+            return nil
+        end
+        if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
             return nil
         end
         local filelines = vim.fn.readfile(filename)
-        if
-            type(filelines) ~= "table"
-            or #filelines < loc.range.start.line + 1
-        then
+        if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
             return nil
         end
         local loc_line = lsp_location_render_line(
-            filelines[loc.range.start.line + 1],
-            loc.range,
+            filelines[range.start.line + 1],
+            range,
             color.red_8bit
         )
         log.debug(
             "|fzfx.config - lsp_definitions_provider.process_location| range:%s, loc_line:%s",
-            vim.inspect(loc.range),
+            vim.inspect(range),
             vim.inspect(loc_line)
         )
         local line = string.format(
             [[%s:%s:%s:%s]],
             filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
-            color.green_8bit(tostring(loc.range.start.line + 1)),
-            tostring(loc.range.start.character + 1),
+            color.green_8bit(tostring(range.start.line + 1)),
+            tostring(range.start.character + 1),
             loc_line
         )
         return line
-    end
-
-    --- @param loc LspLocationLink
-    local function process_locationlink(loc)
-        local filename = lsp_location_uri_to_filename(loc.targetUri)
-        log.debug(
-            "|fzfx.config - lsp_definitions_provider.process_location| loc:%s, filename:%s",
-            vim.inspect(loc),
-            vim.inspect(filename)
-        )
-        if filename == nil or vim.fn.filereadable(filename) <= 0 then
-            return nil
-        end
-        local filelines = vim.fn.readfile(filename)
-        if
-            type(filelines) ~= "table"
-            or #filelines < loc.targetRange.start.line + 1
-        then
-            return nil
-        end
-        local loc_line = lsp_location_render_line(
-            filelines[loc.targetRange.start.line + 1],
-            loc.targetRange,
-            color.red_8bit
-        )
-        log.debug(
-            "|fzfx.config - lsp_definitions_provider.process_locationlink| targetRange:%s, loc_line:%s",
-            vim.inspect(loc.targetRange),
-            vim.inspect(loc_line)
-        )
-        local line = string.format(
-            [[%s:%s:%s:%s]],
-            filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
-            color.green_8bit(tostring(loc.targetRange.start.line + 1)),
-            tostring(loc.targetRange.start.character + 1),
-            loc_line
-        )
-        return line
-    end
-
-    --- @param loc LspLocation|LspLocationLink|nil
-    --- @return string?
-    local function preprocess_loc(loc)
-        if is_lsp_location(loc) then
-            return process_location(loc --[[@as LspLocation]])
-        end
-        if is_lsp_locationlink(loc) then
-            return process_locationlink(loc --[[@as LspLocationLink]])
-        end
-        return nil
     end
 
     local def_lines = {}
     if is_lsp_location(lsp_defs) then
-        local line = preprocess_loc(lsp_defs)
+        local line = process_location(lsp_defs)
         table.insert(def_lines, line)
     else
         for _, def in ipairs(lsp_defs) do
-            local line = preprocess_loc(def)
+            local line = process_location(def)
             table.insert(def_lines, line)
         end
     end

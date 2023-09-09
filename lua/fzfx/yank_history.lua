@@ -181,11 +181,11 @@ local function save_yank()
         vim.bo.filetype,
         vim.api.nvim_buf_get_name(0)
     )
-    log.debug(
-        "|fzfx.yank_history - save_yank| r:%s, y:%s",
-        vim.inspect(r),
-        vim.inspect(y)
-    )
+    -- log.debug(
+    --     "|fzfx.yank_history - save_yank| r:%s, y:%s",
+    --     vim.inspect(r),
+    --     vim.inspect(y)
+    -- )
 
     log.ensure(
         GlobalYankHistory ~= nil,
