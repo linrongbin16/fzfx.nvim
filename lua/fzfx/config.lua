@@ -379,12 +379,7 @@ local function lsp_definitions_provider(opts)
         return nil
     end
     if type(lsp_results) ~= "table" then
-        log.echo(
-            LogLevel.INFO,
-            "no lsp locations found on %s (%s).",
-            vim.inspect(opts.method),
-            vim.inspect(opts.bufnr)
-        )
+        log.echo(LogLevel.INFO, "no lsp definitions found.")
         return nil
     end
 
@@ -477,12 +472,7 @@ local function lsp_definitions_provider(opts)
     end
 
     if utils.list_empty(def_lines) then
-        log.echo(
-            LogLevel.INFO,
-            "no lsp locations found on %s (%s).",
-            vim.inspect(opts.method),
-            vim.inspect(opts.bufnr)
-        )
+        log.echo(LogLevel.INFO, "no lsp definitions found.")
         return nil
     end
 
