@@ -4,6 +4,7 @@ local env = require("fzfx.env")
 local log = require("fzfx.log")
 local LogLevel = require("fzfx.log").LogLevel
 local color = require("fzfx.color")
+local path = require("fzfx.path")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
@@ -413,7 +414,7 @@ local function lsp_definitions_provider(opts)
             vim.inspect(loc)
         )
         if is_lsp_location(loc) then
-            filename = vim.uri_to_fname(loc.uri)
+            filename = path.reduce(vim.uri_to_fname(loc.uri))
             range = loc.range
             log.debug(
                 "|fzfx.config - lsp_definitions_provider.process_location| location filename:%s, range:%s",
@@ -422,7 +423,7 @@ local function lsp_definitions_provider(opts)
             )
         end
         if is_lsp_locationlink(loc) then
-            filename = vim.uri_to_fname(loc.targetUri)
+            filename = path.reduce(vim.uri_to_fname(loc.targetUri))
             range = loc.targetRange
             log.debug(
                 "|fzfx.config - lsp_definitions_provider.process_location| locationlink filename:%s, range:%s",
@@ -595,7 +596,7 @@ local Defaults = {
             function()
                 return {
                     "--prompt",
-                    require("fzfx.path").shorten() .. " > ",
+                    path.shorten() .. " > ",
                 }
             end,
         },
@@ -784,16 +785,10 @@ local Defaults = {
                     local ft = utils.get_buf_option(b, "filetype")
                     return utils.is_buf_valid(b) and not exclude_filetypes[ft]
                 end
-                local function buf_path(b)
-                    return vim.fn.fnamemodify(
-                        vim.api.nvim_buf_get_name(b),
-                        ":~:."
-                    )
-                end
                 local bufnrs_list = vim.api.nvim_list_bufs()
                 local bufpaths_list = {}
                 local current_bufpath = valid_bufnr(context.bufnr)
-                        and buf_path(context.bufnr)
+                        and path.reduce(context.bufnr)
                     or nil
                 if
                     type(current_bufpath) == "string"
@@ -802,7 +797,7 @@ local Defaults = {
                     table.insert(bufpaths_list, current_bufpath)
                 end
                 for _, bn in ipairs(bufnrs_list) do
-                    local bp = buf_path(bn)
+                    local bp = path.reduce(bn)
                     if valid_bufnr(bn) and bp ~= current_bufpath then
                         table.insert(bufpaths_list, bp)
                     end
@@ -896,7 +891,7 @@ local Defaults = {
             function()
                 return {
                     "--prompt",
-                    require("fzfx.path").shorten() .. " > ",
+                    path.shorten() .. " > ",
                 }
             end,
         },
