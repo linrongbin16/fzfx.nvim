@@ -903,10 +903,11 @@ local Defaults = {
     },
 
     -- the 'Git Branches' commands
-    git_branches = {
+    --- @type GroupConfig
+    git_branches = GroupConfig:make({
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxGBranches",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -916,8 +917,8 @@ local Defaults = {
                     desc = "Search local git branches",
                 },
                 default_provider = "local_branch",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGBranchesR",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -927,9 +928,9 @@ local Defaults = {
                     desc = "Search remote git branches",
                 },
                 default_provider = "remote_branch",
-            },
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxGBranchesV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -938,8 +939,8 @@ local Defaults = {
                     desc = "Search local git branches by visual select",
                 },
                 default_provider = "local_branch",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGBranchesRV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -948,9 +949,9 @@ local Defaults = {
                     desc = "Search remote git branches by visual select",
                 },
                 default_provider = "remote_branch",
-            },
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxGBranchesW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -958,8 +959,8 @@ local Defaults = {
                     desc = "Search local git branches by cursor word",
                 },
                 default_provider = "local_branch",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGBranchesRW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -967,9 +968,9 @@ local Defaults = {
                     desc = "Search remote git branches by cursor word",
                 },
                 default_provider = "remote_branch",
-            },
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxGBranchesP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -977,8 +978,8 @@ local Defaults = {
                     desc = "Search local git branches by yank text",
                 },
                 default_provider = "local_branch",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGBranchesRP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -986,18 +987,46 @@ local Defaults = {
                     desc = "Search remote git branches by yank text",
                 },
                 default_provider = "remote_branch",
-            },
+            }),
         },
         providers = {
-            local_branch = { "ctrl-o", "git branch" },
-            remote_branch = { "ctrl-r", "git branch --remotes" },
+            -- local_branch = { "ctrl-o", "git branch" },
+            -- remote_branch = { "ctrl-r", "git branch --remotes" },
+            local_branch = ProviderConfig:make({
+                key = "ctrl-o",
+                provider = "git branch",
+            }),
+            remote_branch = ProviderConfig:make({
+                key = "ctrl-r",
+                provider = "git branch --remotes",
+            }),
         },
         -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
         -- "git log --graph --color=always --date=relative",
-        previewers = string.format(
-            "git log --pretty=%s --graph --date=short --color=always",
-            utils.shellescape(default_git_log_pretty)
-        ),
+        previewers = {
+            local_branch = PreviewerConfig:make({
+                previewer = function(line)
+                    local branch = vim.fn.split(line)[1]
+                    return string.format(
+                        "git log --pretty=%s --graph --date=short --color=always %s",
+                        utils.shellescape(default_git_log_pretty),
+                        branch
+                    )
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+            remote_branch = PreviewerConfig:make({
+                previewer = function(line)
+                    local branch = vim.fn.split(line)[1]
+                    return string.format(
+                        "git log --pretty=%s --graph --date=short --color=always %s",
+                        utils.shellescape(default_git_log_pretty),
+                        branch
+                    )
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").git_checkout,
@@ -1010,7 +1039,7 @@ local Defaults = {
                 "GBranches > ",
             },
         },
-    },
+    }),
 
     -- the 'Git Commits' commands
     --- @type GroupConfig
