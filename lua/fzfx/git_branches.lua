@@ -1,4 +1,5 @@
 local log = require("fzfx.log")
+local LogLevel = require("fzfx.log").LogLevel
 local conf = require("fzfx.config")
 local Popup = require("fzfx.popup").Popup
 local helpers = require("fzfx.helpers")
@@ -186,10 +187,10 @@ local function setup()
         deprecated = true
     end
     general.setup("git_branches", git_branches_configs)
-
     if deprecated then
         local function deprecated_notification()
-            log.warn(
+            log.echo(
+                LogLevel.WARN,
                 "deprecated 'FzfxGBranches' configs, please migrate to latest config schema!"
             )
         end
