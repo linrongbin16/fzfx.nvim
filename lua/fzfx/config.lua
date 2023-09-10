@@ -996,10 +996,18 @@ local Defaults = {
                     local cmd = require("fzfx.cmd")
                     local git_root_cmd = cmd.GitRootCmd:run()
                     if git_root_cmd:wrong() then
+                        log.echo(LogLevel.INFO, "not in git repo.")
                         return nil
                     end
                     local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
                     if git_current_branch_cmd:wrong() then
+                        log.echo(
+                            LogLevel.WARN,
+                            table.concat(
+                                git_current_branch_cmd.result.stderr,
+                                " "
+                            )
+                        )
                         return nil
                     end
                     local branch_results = {}
@@ -1009,6 +1017,13 @@ local Defaults = {
                     )
                     local git_branch_cmd = cmd.Cmd:run("git branch")
                     if git_branch_cmd.result:wrong() then
+                        log.echo(
+                            LogLevel.WARN,
+                            table.concat(
+                                git_current_branch_cmd.result.stderr,
+                                " "
+                            )
+                        )
                         return nil
                     end
                 end,
