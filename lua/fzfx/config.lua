@@ -1020,12 +1020,12 @@ local Defaults = {
                 provider_type = ProviderTypeEnum.LIST,
             }),
         },
-        -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
-        -- "git log --graph --color=always --date=relative",
         previewers = {
             local_branch = PreviewerConfig:make({
                 previewer = function(line)
                     local branch = vim.fn.split(line)[1]
+                    -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
+                    -- "git log --graph --color=always --date=relative",
                     return string.format(
                         "git log --pretty=%s --graph --date=short --color=always %s",
                         utils.shellescape(default_git_log_pretty),
