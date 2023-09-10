@@ -6,6 +6,9 @@ local color = require("fzfx.color")
 local server = require("fzfx.server")
 local gitcmd = require("fzfx.gitcmd")
 local utils = require("fzfx.utils")
+local general = require("fzfx.general")
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 
 local Context = {
     --- @type string?
@@ -182,22 +185,22 @@ local function setup()
         end
         deprecated = true
     end
+    general.setup("git_branches", git_branches_configs)
 
-    -- User commands
-    for _, command_configs in pairs(git_branches_configs.commands) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            -- log.debug(
-            --     "|fzfx.git_branches - setup| command:%s, opts:%s",
-            --     vim.inspect(command_configs.name),
-            --     vim.inspect(opts)
-            -- )
-            local query = helpers.get_command_feed(opts, command_configs.feed)
-            return git_branches(
-                query,
-                opts.bang,
-                { default_provider = command_configs.default_provider }
+    if deprecated then
+        local function deprecated_notification()
+            log.warn(
+                "deprecated 'FzfxGBranches' configs, please migrate to latest config schema!"
             )
-        end, command_configs.opts)
+        end
+        local delay = 3 * 1000
+        vim.defer_fn(deprecated_notification, delay)
+        vim.api.nvim_create_autocmd("VimEnter", {
+            pattern = { "*" },
+            callback = function()
+                vim.defer_fn(deprecated_notification, delay)
+            end,
+        })
     end
 end
 

@@ -69,7 +69,7 @@ local function setup()
     if deprecated then
         local function deprecated_notification()
             log.warn(
-                "deprecated 'FzfxGCommits' previewer configs, please migrate to latest config schema!"
+                "deprecated 'FzfxGCommits' configs, please migrate to latest config schema!"
             )
         end
         local delay = 3 * 1000
