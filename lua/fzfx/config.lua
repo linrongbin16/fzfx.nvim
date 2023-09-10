@@ -1057,6 +1057,20 @@ local Defaults = {
                 "--prompt",
                 "GBranches > ",
             },
+            function()
+                local cmd = require("fzfx.cmd")
+                local git_root_cmd = cmd.GitRootCmd:run()
+                if git_root_cmd:wrong() then
+                    return nil
+                end
+                local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
+                if git_current_branch_cmd:wrong() then
+                    return nil
+                end
+                return utils.string_not_empty(git_current_branch_cmd:value())
+                        and "--header-lines=1"
+                    or nil
+            end,
         },
     }),
 
