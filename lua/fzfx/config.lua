@@ -792,7 +792,9 @@ local Defaults = {
                 local bufnrs_list = vim.api.nvim_list_bufs()
                 local bufpaths_list = {}
                 local current_bufpath = valid_bufnr(context.bufnr)
-                        and path.reduce(context.bufnr)
+                        and path.reduce(
+                            vim.api.nvim_buf_get_name(context.bufnr)
+                        )
                     or nil
                 if
                     type(current_bufpath) == "string"
@@ -801,7 +803,7 @@ local Defaults = {
                     table.insert(bufpaths_list, current_bufpath)
                 end
                 for _, bn in ipairs(bufnrs_list) do
-                    local bp = path.reduce(bn)
+                    local bp = path.reduce(vim.api.nvim_buf_get_name(bn))
                     if valid_bufnr(bn) and bp ~= current_bufpath then
                         table.insert(bufpaths_list, bp)
                     end
