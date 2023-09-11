@@ -137,11 +137,27 @@ local function ansi(text, name, hl)
     return string.format("[%sm%s[0m", fmt, text)
 end
 
+--- @param s string?
+--- @return string?, integer?
+local function erase(s)
+    if type(s) ~= "string" then
+        return s, nil
+    end
+    return s:gsub("\x1b%[%d+m\x1b%[K", "")
+        :gsub("\x1b%[m\x1b%[K", "")
+        :gsub("\x1b%[%d+;%d+;%d+;%d+;%d+m", "")
+        :gsub("\x1b%[%d+;%d+;%d+;%d+m", "")
+        :gsub("\x1b%[%d+;%d+;%d+m", "")
+        :gsub("\x1b%[%d+;%d+m", "")
+        :gsub("\x1b%[%d+m", "")
+end
+
 --- @type table<string, function>
 local M = {
     hlcode = hlcode,
     csi = csi,
     ansi = ansi,
+    erase = erase,
 }
 
 for color, default_hl in pairs({
