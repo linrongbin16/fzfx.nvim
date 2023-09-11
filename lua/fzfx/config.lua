@@ -243,8 +243,6 @@ local function lsp_diagnostics_provider(opts)
     -- simulate rg's filepath color, see:
     -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
     -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-    local filepath_color = constants.is_windows and color.cyan_8bit
-        or color.magenta_8bit
     local diag_lines = {}
     for _, diag in ipairs(diag_results) do
         local d = preprocess_diag_item(diag)
@@ -261,8 +259,8 @@ local function lsp_diagnostics_provider(opts)
                 dtext = dtext .. " " .. d.text
             end
             local line = string.format(
-                [[%s:%s:%s:%s]],
-                filepath_color(d.filename),
+                "%s:%s:%s:%s",
+                d.filename,
                 color.green_8bit(tostring(d.lnum)),
                 tostring(d.col),
                 dtext
@@ -383,9 +381,6 @@ local function lsp_definitions_provider(opts)
         return nil
     end
 
-    local filepath_color = constants.is_windows and color.cyan_8bit
-        or color.magenta_8bit
-
     --- @param loc LspLocation|LspLocationLink
     --- @return string?
     local function process_location(loc)
@@ -436,11 +431,15 @@ local function lsp_definitions_provider(opts)
             vim.inspect(loc_line)
         )
         local line = string.format(
-            [[%s:%s:%s:%s]],
-            filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
+            "%s:%s:%s:%s",
+            vim.fn.fnamemodify(filename, ":~:."),
             color.green_8bit(tostring(range.start.line + 1)),
             tostring(range.start.character + 1),
             loc_line
+        )
+        log.debug(
+            "|fzfx.config - lsp_definitions_provider| line:%s",
+            vim.inspect(line)
         )
         return line
     end

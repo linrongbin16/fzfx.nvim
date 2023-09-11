@@ -172,17 +172,7 @@ local function render_filepath_line(line, delimiter, pos)
     -- remove ansi color codes
     -- see: https://stackoverflow.com/a/55324681/4438921
     if type(filename) == "string" and string.len(filename) > 0 then
-        filename = filename
-            :gsub("\x1b%[%d+m\x1b%[K", "")
-            :gsub("\x1b%[m\x1b%[K", "")
-            -- :gsub("\x1b%[%d+;%d+;%d+;%d+;%d+m", "")
-            -- :gsub("\x1b%[%d+;%d+;%d+;%d+m", "")
-            -- :gsub("\x1b%[%d+;%d+;%d+m", "")
-            -- :gsub("\x1b%[%d+;%d+m", "")
-            :gsub(
-                "\x1b%[%d+m",
-                ""
-            )
+        filename = require("fzfx.color").erase(filename)
     end
     local ext = vim.fn.fnamemodify(filename, ":e")
     local icon, icon_color = DEVICONS.get_icon_color(filename, ext)
