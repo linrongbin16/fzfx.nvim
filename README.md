@@ -45,6 +45,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - [Create your own commands](#create-your-own-commands)
 - [Break Changes](#-break-changes)
 - [Credit](#-credit)
+- [Development](#-development)
 - [Contribute](#-contribute)
 
 ## ✨ Feature
@@ -736,26 +737,25 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
 
-## 🎁 Contribute
-
-Please open [issue](https://github.com/linrongbin16/fzfx.nvim/issues)/[PR](https://github.com/linrongbin16/fzfx.nvim/pulls) for anything about fzfx.nvim.
+## ✏️ Development
 
 To develop the project and make PR, please setup with:
 
 - [lua_ls](https://github.com/LuaLS/lua-language-server).
+- [stylua](https://github.com/JohnnyMorganz/StyLua).
 
-To run unit tests, please first install below dependencies:
+To run unit tests, please install below dependencies:
 
 - [luarocks](https://luarocks.org/).
 - [luacheck](https://github.com/mpeterv/luacheck).
 - [luacov](https://github.com/lunarmodules/luacov).
 - [vusted](https://github.com/notomo/vusted).
 
-Then test with:
+Then test with `vusted --shuffle ./test`.
 
-```bash
-vusted --shuffle ./test
-```
+## 🎁 Contribute
+
+Please open [issue](https://github.com/linrongbin16/fzfx.nvim/issues)/[PR](https://github.com/linrongbin16/fzfx.nvim/pulls) for anything about fzfx.nvim.
 
 Like fzfx.nvim? Consider
 
