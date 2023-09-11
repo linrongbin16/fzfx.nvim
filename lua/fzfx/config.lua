@@ -202,7 +202,7 @@ local function lsp_diagnostics_provider(opts)
     for _, sign_opts in pairs(signs) do
         local sign_def = vim.fn.sign_getdefined(sign_opts.sign)
         if not utils.list_empty(sign_def) then
-            sign_opts.text = vim.trim(sign_def[1].text)
+            sign_opts.text = vim.fn.trim(sign_def[1].text)
             sign_opts.texthl = sign_def[1].texthl
         end
     end
@@ -235,7 +235,7 @@ local function lsp_diagnostics_provider(opts)
             filename = bufpath,
             lnum = row + 1,
             col = col + 1,
-            text = vim.trim(diag.message:gsub("[\n]", "")),
+            text = vim.fn.trim(diag.message:gsub("[\n]", "")),
             severity = diag.severity or 1,
         }
     end
@@ -243,8 +243,6 @@ local function lsp_diagnostics_provider(opts)
     -- simulate rg's filepath color, see:
     -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
     -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-    local filepath_color = constants.is_windows and color.cyan_8bit
-        or color.magenta_8bit
     local diag_lines = {}
     for _, diag in ipairs(diag_results) do
         local d = preprocess_diag_item(diag)
@@ -261,8 +259,8 @@ local function lsp_diagnostics_provider(opts)
                 dtext = dtext .. " " .. d.text
             end
             local line = string.format(
-                [[%s:%s:%s:%s]],
-                filepath_color(d.filename),
+                "%s:%s:%s:%s",
+                d.filename,
                 color.green_8bit(tostring(d.lnum)),
                 tostring(d.col),
                 dtext
@@ -336,7 +334,7 @@ local function lsp_location_render_line(line, range, color_renderer)
     if line_end + 1 <= #line then
         p3 = line:sub(line_end + 1, #line)
     end
-    local result = vim.trim(p1 .. p2 .. p3)
+    local result = vim.fn.trim(p1 .. p2 .. p3)
     return result
 end
 
@@ -379,17 +377,9 @@ local function lsp_definitions_provider(opts)
         return nil
     end
     if type(lsp_results) ~= "table" then
-        log.echo(
-            LogLevel.INFO,
-            "no lsp locations found on %s (%s).",
-            vim.inspect(opts.method),
-            vim.inspect(opts.bufnr)
-        )
+        log.echo(LogLevel.INFO, "no lsp definitions found.")
         return nil
     end
-
-    local filepath_color = constants.is_windows and color.cyan_8bit
-        or color.magenta_8bit
 
     --- @param loc LspLocation|LspLocationLink
     --- @return string?
@@ -441,11 +431,15 @@ local function lsp_definitions_provider(opts)
             vim.inspect(loc_line)
         )
         local line = string.format(
-            [[%s:%s:%s:%s]],
-            filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
+            "%s:%s:%s:%s",
+            vim.fn.fnamemodify(filename, ":~:."),
             color.green_8bit(tostring(range.start.line + 1)),
             tostring(range.start.character + 1),
             loc_line
+        )
+        log.debug(
+            "|fzfx.config - lsp_definitions_provider| line:%s",
+            vim.inspect(line)
         )
         return line
     end
@@ -477,12 +471,7 @@ local function lsp_definitions_provider(opts)
     end
 
     if utils.list_empty(def_lines) then
-        log.echo(
-            LogLevel.INFO,
-            "no lsp locations found on %s (%s).",
-            vim.inspect(opts.method),
-            vim.inspect(opts.bufnr)
-        )
+        log.echo(LogLevel.INFO, "no lsp definitions found.")
         return nil
     end
 
@@ -913,10 +902,11 @@ local Defaults = {
     },
 
     -- the 'Git Branches' commands
-    git_branches = {
+    --- @type GroupConfig
+    git_branches = GroupConfig:make({
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxGBranches",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -926,8 +916,8 @@ local Defaults = {
                     desc = "Search local git branches",
                 },
                 default_provider = "local_branch",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGBranchesR",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -937,9 +927,9 @@ local Defaults = {
                     desc = "Search remote git branches",
                 },
                 default_provider = "remote_branch",
-            },
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxGBranchesV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -948,8 +938,8 @@ local Defaults = {
                     desc = "Search local git branches by visual select",
                 },
                 default_provider = "local_branch",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGBranchesRV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -958,9 +948,9 @@ local Defaults = {
                     desc = "Search remote git branches by visual select",
                 },
                 default_provider = "remote_branch",
-            },
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxGBranchesW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -968,8 +958,8 @@ local Defaults = {
                     desc = "Search local git branches by cursor word",
                 },
                 default_provider = "local_branch",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGBranchesRW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -977,9 +967,9 @@ local Defaults = {
                     desc = "Search remote git branches by cursor word",
                 },
                 default_provider = "remote_branch",
-            },
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxGBranchesP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -987,8 +977,8 @@ local Defaults = {
                     desc = "Search local git branches by yank text",
                 },
                 default_provider = "local_branch",
-            },
-            {
+            }),
+            CommandConfig:make({
                 name = "FzfxGBranchesRP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -996,18 +986,134 @@ local Defaults = {
                     desc = "Search remote git branches by yank text",
                 },
                 default_provider = "remote_branch",
-            },
+            }),
         },
         providers = {
-            local_branch = { "ctrl-o", "git branch" },
-            remote_branch = { "ctrl-r", "git branch --remotes" },
+            local_branch = ProviderConfig:make({
+                key = "ctrl-o",
+                provider = function(query, context)
+                    local cmd = require("fzfx.cmd")
+                    local git_root_cmd = cmd.GitRootCmd:run()
+                    if git_root_cmd:wrong() then
+                        log.echo(LogLevel.INFO, "not in git repo.")
+                        return nil
+                    end
+                    local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
+                    if git_current_branch_cmd:wrong() then
+                        log.echo(
+                            LogLevel.WARN,
+                            table.concat(
+                                git_current_branch_cmd.result.stderr,
+                                " "
+                            )
+                        )
+                        return nil
+                    end
+                    local branch_results = {}
+                    table.insert(
+                        branch_results,
+                        string.format("* %s", git_current_branch_cmd:value())
+                    )
+                    local git_branch_cmd = cmd.Cmd:run("git branch")
+                    if git_branch_cmd.result:wrong() then
+                        log.echo(
+                            LogLevel.WARN,
+                            table.concat(
+                                git_current_branch_cmd.result.stderr,
+                                " "
+                            )
+                        )
+                        return nil
+                    end
+                    for _, line in ipairs(git_branch_cmd.result.stdout) do
+                        if vim.fn.trim(line):sub(1, 1) ~= "*" then
+                            table.insert(
+                                branch_results,
+                                string.format("  %s", vim.fn.trim(line))
+                            )
+                        end
+                    end
+
+                    return branch_results
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            }),
+            remote_branch = ProviderConfig:make({
+                key = "ctrl-r",
+                provider = function(query, context)
+                    local cmd = require("fzfx.cmd")
+                    local git_root_cmd = cmd.GitRootCmd:run()
+                    if git_root_cmd:wrong() then
+                        log.echo(LogLevel.INFO, "not in git repo.")
+                        return nil
+                    end
+                    local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
+                    if git_current_branch_cmd:wrong() then
+                        log.echo(
+                            LogLevel.WARN,
+                            table.concat(
+                                git_current_branch_cmd.result.stderr,
+                                " "
+                            )
+                        )
+                        return nil
+                    end
+                    local branch_results = {}
+                    table.insert(
+                        branch_results,
+                        string.format("* %s", git_current_branch_cmd:value())
+                    )
+                    local git_branch_cmd = cmd.Cmd:run("git branch --remotes")
+                    if git_branch_cmd.result:wrong() then
+                        log.echo(
+                            LogLevel.WARN,
+                            table.concat(
+                                git_current_branch_cmd.result.stderr,
+                                " "
+                            )
+                        )
+                        return nil
+                    end
+                    for _, line in ipairs(git_branch_cmd.result.stdout) do
+                        if vim.fn.trim(line):sub(1, 1) ~= "*" then
+                            table.insert(
+                                branch_results,
+                                string.format("  %s", vim.fn.trim(line))
+                            )
+                        end
+                    end
+
+                    return branch_results
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            }),
         },
-        -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
-        -- "git log --graph --color=always --date=relative",
-        previewers = string.format(
-            "git log --pretty=%s --graph --date=short --color=always",
-            utils.shellescape(default_git_log_pretty)
-        ),
+        previewers = {
+            local_branch = PreviewerConfig:make({
+                previewer = function(line)
+                    local branch = vim.fn.split(line)[1]
+                    -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
+                    -- "git log --graph --color=always --date=relative",
+                    return string.format(
+                        "git log --pretty=%s --graph --date=short --color=always %s",
+                        utils.shellescape(default_git_log_pretty),
+                        branch
+                    )
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+            remote_branch = PreviewerConfig:make({
+                previewer = function(line)
+                    local branch = vim.fn.split(line)[1]
+                    return string.format(
+                        "git log --pretty=%s --graph --date=short --color=always %s",
+                        utils.shellescape(default_git_log_pretty),
+                        branch
+                    )
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").git_checkout,
@@ -1019,8 +1125,22 @@ local Defaults = {
                 "--prompt",
                 "GBranches > ",
             },
+            function()
+                local cmd = require("fzfx.cmd")
+                local git_root_cmd = cmd.GitRootCmd:run()
+                if git_root_cmd:wrong() then
+                    return nil
+                end
+                local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
+                if git_current_branch_cmd:wrong() then
+                    return nil
+                end
+                return utils.string_not_empty(git_current_branch_cmd:value())
+                        and "--header-lines=1"
+                    or nil
+            end,
         },
-    },
+    }),
 
     -- the 'Git Commits' commands
     --- @type GroupConfig

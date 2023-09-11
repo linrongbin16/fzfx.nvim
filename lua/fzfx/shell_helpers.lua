@@ -172,17 +172,7 @@ local function render_filepath_line(line, delimiter, pos)
     -- remove ansi color codes
     -- see: https://stackoverflow.com/a/55324681/4438921
     if type(filename) == "string" and string.len(filename) > 0 then
-        filename = filename
-            :gsub("\x1b%[%d+m\x1b%[K", "")
-            :gsub("\x1b%[m\x1b%[K", "")
-            -- :gsub("\x1b%[%d+;%d+;%d+;%d+;%d+m", "")
-            -- :gsub("\x1b%[%d+;%d+;%d+;%d+m", "")
-            -- :gsub("\x1b%[%d+;%d+;%d+m", "")
-            -- :gsub("\x1b%[%d+;%d+m", "")
-            :gsub(
-                "\x1b%[%d+m",
-                ""
-            )
+        filename = require("fzfx.color").erase(filename)
     end
     local ext = vim.fn.fnamemodify(filename, ":e")
     local icon, icon_color = DEVICONS.get_icon_color(filename, ext)
@@ -257,9 +247,9 @@ local M = {
     render_filepath_line = render_filepath_line,
     parse_query = parse_query,
     Cmd = require("fzfx.cmd").Cmd,
-    GitRootCmd = require("fzfx.gitcmd").GitRootCmd,
-    GitBranchCmd = require("fzfx.gitcmd").GitBranchCmd,
-    GitCurrentBranchCmd = require("fzfx.gitcmd").GitCurrentBranchCmd,
+    GitRootCmd = require("fzfx.cmd").GitRootCmd,
+    GitBranchCmd = require("fzfx.cmd").GitBranchCmd,
+    GitCurrentBranchCmd = require("fzfx.cmd").GitCurrentBranchCmd,
     string_find = require("fzfx.utils").string_find,
     string_rfind = require("fzfx.utils").string_rfind,
 }

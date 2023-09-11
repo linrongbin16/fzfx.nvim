@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local utils = require("fzfx.utils")
-local shell = require("fzfx.shell")
 local helpers = require("fzfx.helpers")
 
 --- @class PopupWindow
@@ -134,8 +133,8 @@ end
 --- @return PopupWindow
 function PopupWindow:new(win_opts)
     -- check executable: nvim, fzf
-    require("fzfx.shell").nvim_exec()
-    require("fzfx.shell").fzf_exec()
+    require("fzfx.helpers").nvim_exec()
+    require("fzfx.helpers").fzf_exec()
 
     -- save current window context
     local window_opts_context = utils.WindowOptsContext:save()
@@ -251,8 +250,12 @@ local function make_fzf_command(fzf_opts, actions, result)
         vim.inspect(final_opts),
         vim.inspect(final_opts_string)
     )
-    local command =
-        string.format("%s %s >%s", shell.fzf_exec(), final_opts_string, result)
+    local command = string.format(
+        "%s %s >%s",
+        helpers.fzf_exec(),
+        final_opts_string,
+        result
+    )
     log.debug(
         "|fzfx.popup - make_fzf_command| command:%s",
         vim.inspect(command)

@@ -457,47 +457,29 @@ Especially for git commands:
 
 " find files
 nnoremap <space>f :\<C-U>FzfxFiles<CR>
-" visual select
+" by visual select
 xnoremap <space>f :\<C-U>FzfxFilesV<CR>
-" unrestricted
-nnoremap <space>uf :\<C-U>FzfxFilesU<CR>
-" unrestricted visual select
-xnoremap <space>uf :\<C-U>FzfxFilesUV<CR>
-
-" cursor word
+" by cursor word
 nnoremap <space>wf :\<C-U>FzfxFilesW<CR>
-" unrestricted cursor word
-nnoremap <space>uwf :\<C-U>FzfxFilesUW<CR>
-" yank text
+" by yank text
 nnoremap <space>pf :\<C-U>FzfxFilesP<CR>
-" unrestricted yank text
-nnoremap <space>upf :\<C-U>FzfxFilesUP<CR>
 
 " ======== live grep ========
 
 " live grep
 nnoremap <space>l :\<C-U>FzfxLiveGrep<CR>
-" visual select
+" by visual select
 xnoremap <space>l :\<C-U>FzfxLiveGrepV<CR>
-" unrestricted
-nnoremap <space>ul :\<C-U>FzfxLiveGrepU<CR>
-" unrestricted visual select
-xnoremap <space>ul :\<C-U>FzfxLiveGrepUV<CR>
-
 " by cursor word
 nnoremap <space>wl :\<C-U>FzfxLiveGrepW<CR>
-" unrestrictly cursor word
-nnoremap <space>uwl :\<C-U>FzfxLiveGrepUW<CR>
 " by yank text
 nnoremap <space>pl :\<C-U>FzfxLiveGrepP<CR>
-" unrestrictly yank text
-nnoremap <space>upl :\<C-U>FzfxLiveGrepUP<CR>
 
 " ======== buffers ========
 
 " buffers
 nnoremap <space>bf :\<C-U>FzfxBuffers<CR>
-" visual select
+" by visual select
 xnoremap <space>bf :\<C-U>FzfxBuffersV<CR>
 " by cursor word
 nnoremap <space>wbf :\<C-U>FzfxBuffersW<CR>
@@ -508,7 +490,7 @@ nnoremap <space>pbf :\<C-U>FzfxBuffersP<CR>
 
 " git files
 nnoremap <space>gf :\<C-U>FzfxGFiles<CR>
-" visual select
+" by visual select
 xnoremap <space>gf :\<C-U>FzfxGFilesV<CR>
 " by cursor word
 nnoremap <space>wgf :\<C-U>FzfxGFilesW<CR>
@@ -521,19 +503,10 @@ nnoremap <space>pgf :\<C-U>FzfxGFilesP<CR>
 nnoremap <space>br :\<C-U>FzfxGBranches<CR>
 " by visual select
 xnoremap <space>br :\<C-U>FzfxGBranchesV<CR>
-" remote branches
-nnoremap <space>rbr :\<C-U>FzfxGBranchesR<CR>
-" remote branches by visual select
-xnoremap <space>rbr :\<C-U>FzfxGBranchesRV<CR>
-
 " by cursor word
 nnoremap <space>wbr :\<C-U>FzfxGBranchesW<CR>
-" remote branches by cursor word
-nnoremap <space>rwbr :\<C-U>FzfxGBranchesRW<CR>
 " by yank text
 nnoremap <space>pbr :\<C-U>FzfxGBranchesP<CR>
-" remote branches by yank text
-nnoremap <space>rpbr :\<C-U>FzfxGBranchesRP<CR>
 
 " ======== git commits ========
 
@@ -541,25 +514,16 @@ nnoremap <space>rpbr :\<C-U>FzfxGBranchesRP<CR>
 nnoremap <space>gc :\<C-U>FzfxGCommits<CR>
 " by visual select
 xnoremap <space>gc :\<C-U>FzfxGCommitsV<CR>
-" only current buffer
-nnoremap <space>bgc :\<C-U>FzfxGCommitsB<CR>
-" only current buffer by visual select
-xnoremap <space>bgc :\<C-U>FzfxGCommitsBV<CR>
-
 " by cursor word
 nnoremap <space>wgc :\<C-U>FzfxGCommitsW<CR>
-" only current buffer by cursor word
-nnoremap <space>bwgc :\<C-U>FzfxGCommitsBW<CR>
 " by yank text
 nnoremap <space>pgc :\<C-U>FzfxGCommitsP<CR>
-" only current buffer by yank text
-nnoremap <space>bpgc :\<C-U>FzfxGCommitsBP<CR>
 
 " ======== git blame ========
 
 " git blame
 nnoremap <space>gb :\<C-U>FzfxGBlame<CR>
-" visual select
+" by visual select
 xnoremap <space>gb :\<C-U>FzfxGBlameV<CR>
 " by cursor word
 nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
@@ -572,19 +536,10 @@ nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
 nnoremap <space>dg :\<C-U>FzfxLspDiagnostics<CR>
 " by visual select
 xnoremap <space>dg :\<C-U>FzfxLspDiagnosticsV<CR>
-" only current buffer
-nnoremap <space>bdg :\<C-U>FzfxLspDiagnosticsB<CR>
-" only current buffer by visual select
-xnoremap <space>bdg :\<C-U>FzfxLspDiagnosticsBV<CR>
-
 " by cursor word
 nnoremap <space>wdg :\<C-U>FzfxLspDiagnosticsW<CR>
-" only current buffer by cursor word
-nnoremap <space>bwdg :\<C-U>FzfxLspDiagnosticsBW<CR>
 " by yank text
 nnoremap <space>pdg :\<C-U>FzfxLspDiagnosticsP<CR>
-" only current buffer by yank text
-nnoremap <space>bpdg :\<C-U>FzfxLspDiagnosticsBP<CR>
 
 
 " ======== lsp definitions ========
@@ -609,30 +564,15 @@ nnoremap gd :\<C-U>FzfxLspDefinitions<CR>
 -- find files
 vim.keymap.set('n', '<space>f', '<cmd>FzfxFiles<cr>',
         {silent=true, noremap=true, desc="Find files"})
--- visual select
+-- by visual select
 vim.keymap.set('x', '<space>f', '<cmd>FzfxFilesV<CR>',
         {silent=true, noremap=true, desc="Find files"})
--- unrestricted
-vim.keymap.set('n', '<space>uf',
-        '<cmd>FzfxFilesU<cr>',
-        {silent=true, noremap=true, desc="Unrestricted find files"})
--- unrestricted visual select
-vim.keymap.set('x', '<space>uf',
-        '<cmd>FzfxFilesUV<CR>',
-        {silent=true, noremap=true, desc="Unrestricted find files"})
-
--- cursor word
+-- by cursor word
 vim.keymap.set('n', '<space>wf', '<cmd>FzfxFilesW<cr>',
         {silent=true, noremap=true, desc="Find files by cursor word"})
--- unrestricted cursor word
-vim.keymap.set('n', '<space>uwf', '<cmd>FzfxFilesUW<cr>',
-        {silent=true, noremap=true, desc="Unrestricted find files by cursor word"})
--- yank text
+-- by yank text
 vim.keymap.set('n', '<space>pf', '<cmd>FzfxFilesP<cr>',
         {silent=true, noremap=true, desc="Find files by yank text"})
--- unrestricted yank text
-vim.keymap.set('n', '<space>uwf', '<cmd>FzfxFilesUP<cr>',
-        {silent=true, noremap=true, desc="Unrestricted find files by yank text"})
 
 -- ======== live grep ========
 
@@ -640,35 +580,18 @@ vim.keymap.set('n', '<space>uwf', '<cmd>FzfxFilesUP<cr>',
 vim.keymap.set('n', '<space>l',
         '<cmd>FzfxLiveGrep<cr>',
         {silent=true, noremap=true, desc="Live grep"})
--- visual select
+-- by visual select
 vim.keymap.set('x', '<space>l',
         "<cmd>FzfxLiveGrepV<cr>",
         {silent=true, noremap=true, desc="Live grep"})
--- unrestricted live grep
-vim.keymap.set('n', '<space>ul',
-        '<cmd>FzfxLiveGrepU<cr>',
-        {silent=true, noremap=true, desc="Unrestricted live grep"})
--- unrestricted visual select
-vim.keymap.set('x', '<space>ul',
-        "<cmd>FzfxLiveGrepUV<cr>",
-        {silent=true, noremap=true, desc="Unrestricted live grep"})
-
--- cursor word
+-- by cursor word
 vim.keymap.set('n', '<space>wl',
         '<cmd>FzfxLiveGrepW<cr>',
         {silent=true, noremap=true, desc="Live grep by cursor word"})
--- unrestricted cursor word
-vim.keymap.set('n', '<space>uwl',
-        '<cmd>FzfxLiveGrepUW<cr>',
-        {silent=true, noremap=true, desc="Unrestricted live grep by cursor word"})
--- yank text
+-- by yank text
 vim.keymap.set('n', '<space>pl',
         '<cmd>FzfxLiveGrepP<cr>',
         {silent=true, noremap=true, desc="Live grep by cursor word"})
--- unrestricted yank text
-vim.keymap.set('n', '<space>upl',
-        '<cmd>FzfxLiveGrepUP<cr>',
-        {silent=true, noremap=true, desc="Unrestricted live grep by yank text"})
 
 -- ======== buffers ========
 
@@ -676,15 +599,15 @@ vim.keymap.set('n', '<space>upl',
 vim.keymap.set('n', '<space>bf',
         '<cmd>FzfxBuffers<cr>',
         {silent=true, noremap=true, desc="Find buffers"})
--- visual select
+-- by visual select
 vim.keymap.set('x', '<space>bf',
         "<cmd>FzfxBuffersV<cr>",
         {silent=true, noremap=true, desc="Find buffers"})
--- cursor word
+-- by cursor word
 vim.keymap.set('n', '<space>wbf',
         '<cmd>FzfxBuffersW<cr>',
         {silent=true, noremap=true, desc="Find buffers by cursor word"})
--- yank text
+-- by yank text
 vim.keymap.set('n', '<space>pbf',
         '<cmd>FzfxBuffersP<cr>',
         {silent=true, noremap=true, desc="Find buffers by yank text"})
@@ -695,15 +618,15 @@ vim.keymap.set('n', '<space>pbf',
 vim.keymap.set('n', '<space>gf',
         '<cmd>FzfxGFiles<cr>',
         {silent=true, noremap=true, desc="Find git files"})
--- visual select
+-- by visual select
 vim.keymap.set('x', '<space>gf',
         "<cmd>FzfxGFilesV<cr>",
         {silent=true, noremap=true, desc="Find git files"})
--- cursor word
+-- by cursor word
 vim.keymap.set('n', '<space>wgf',
         '<cmd>FzfxGFilesW<cr>',
         {silent=true, noremap=true, desc="Find git files by cursor word"})
--- yank text
+-- by yank text
 vim.keymap.set('n', '<space>pgf',
         '<cmd>FzfxGFilesP<cr>',
         {silent=true, noremap=true, desc="Find git files by yank text"})
@@ -716,27 +639,12 @@ vim.keymap.set('n', '<space>br', '<cmd>FzfxGBranches<cr>',
 -- by visual select
 vim.keymap.set('x', '<space>br', '<cmd>FzfxGBranchesV<CR>',
         {silent=true, noremap=true, desc="Search git branches"})
--- remote git branches
-vim.keymap.set('n', '<space>rbr',
-        '<cmd>FzfxGBranchesR<cr>',
-        {silent=true, noremap=true, desc="Search remote git branches"})
--- remote branches by visual select
-vim.keymap.set('x', '<space>ubr',
-        '<cmd>FzfxGBranchesRV<CR>',
-        {silent=true, noremap=true, desc="Search remote git branches"})
-
--- cursor word
+-- by cursor word
 vim.keymap.set('n', '<space>wbr', '<cmd>FzfxGBranchesW<cr>',
         {silent=true, noremap=true, desc="Search git branches by cursor word"})
--- remote branches by cursor word
-vim.keymap.set('n', '<space>rwbr', '<cmd>FzfxGBranchesRW<cr>',
-        {silent=true, noremap=true, desc="Search remote git branches by cursor word"})
--- yank text
+-- by yank text
 vim.keymap.set('n', '<space>pbr', '<cmd>FzfxGBranchesP<cr>',
         {silent=true, noremap=true, desc="Search git branches by yank text"})
--- remote branches by yank text
-vim.keymap.set('n', '<space>rwbr', '<cmd>FzfxGBranchesRP<cr>',
-        {silent=true, noremap=true, desc="Search remote git branches by yank text"})
 
 -- ======== git commits ========
 
@@ -746,27 +654,12 @@ vim.keymap.set('n', '<space>gc', '<cmd>FzfxGCommits<cr>',
 -- by visual select
 vim.keymap.set('x', '<space>gc', '<cmd>FzfxGCommitsV<CR>',
         {silent=true, noremap=true, desc="Search git commits"})
--- only current buffer
-vim.keymap.set('n', '<space>bgc',
-        '<cmd>FzfxGCommitsB<cr>',
-        {silent=true, noremap=true, desc="Search git commits only on current buffer"})
--- only current buffer by visual select
-vim.keymap.set('x', '<space>bgc',
-        '<cmd>FzfxGCommitsBV<CR>',
-        {silent=true, noremap=true, desc="Search git commits only on current buffer"})
-
--- cursor word
+-- by cursor word
 vim.keymap.set('n', '<space>wgc', '<cmd>FzfxGCommitsW<cr>',
         {silent=true, noremap=true, desc="Search git commits by cursor word"})
--- only current buffer by cursor word
-vim.keymap.set('n', '<space>bwgc', '<cmd>FzfxGCommitsBW<cr>',
-        {silent=true, noremap=true, desc="Search git commits only on current buffer by cursor word"})
--- yank text
+-- by yank text
 vim.keymap.set('n', '<space>pgc', '<cmd>FzfxGCommitsP<cr>',
         {silent=true, noremap=true, desc="Search git commits by yank text"})
--- only current buffer by yank text
-vim.keymap.set('n', '<space>bpgc', '<cmd>FzfxGCommitsBP<cr>',
-        {silent=true, noremap=true, desc="Search git commits only on current buffer by yank text"})
 
 -- ======== git blame ========
 
@@ -774,15 +667,15 @@ vim.keymap.set('n', '<space>bpgc', '<cmd>FzfxGCommitsBP<cr>',
 vim.keymap.set('n', '<space>gb',
         '<cmd>FzfxGBlame<cr>',
         {silent=true, noremap=true, desc="Search git blame"})
--- visual select
+-- by visual select
 vim.keymap.set('x', '<space>gb',
         "<cmd>FzfxGBlameV<cr>",
         {silent=true, noremap=true, desc="Search git blame"})
--- cursor word
+-- by cursor word
 vim.keymap.set('n', '<space>wgb',
         '<cmd>FzfxGBlameW<cr>',
         {silent=true, noremap=true, desc="Search git blame by cursor word"})
--- yank text
+-- by yank text
 vim.keymap.set('n', '<space>pgb',
         '<cmd>FzfxGBlameP<cr>',
         {silent=true, noremap=true, desc="Search git blame by yank text"})
@@ -795,27 +688,12 @@ vim.keymap.set('n', '<space>dg', '<cmd>FzfxLspDiagnostics<cr>',
 -- by visual select
 vim.keymap.set('x', '<space>dg', '<cmd>FzfxLspDiagnosticsV<CR>',
         {silent=true, noremap=true, desc="Search lsp diagnostics"})
--- only current buffer
-vim.keymap.set('n', '<space>bdg',
-        '<cmd>FzfxLspDiagnosticsB<cr>',
-        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer"})
--- only current buffer by visual select
-vim.keymap.set('x', '<space>bdg',
-        '<cmd>FzfxLspDiagnosticsBV<CR>',
-        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer"})
-
--- cursor word
+-- by cursor word
 vim.keymap.set('n', '<space>wdg', '<cmd>FzfxLspDiagnosticsW<cr>',
         {silent=true, noremap=true, desc="Search lsp diagnostics by cursor word"})
--- only current buffer by cursor word
-vim.keymap.set('n', '<space>bwdg', '<cmd>FzfxLspDiagnosticsBW<cr>',
-        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer by cursor word"})
--- yank text
+-- by yank text
 vim.keymap.set('n', '<space>pdg', '<cmd>FzfxLspDiagnosticsP<cr>',
         {silent=true, noremap=true, desc="Search lsp diagnostics by yank text"})
--- only current buffer by yank text
-vim.keymap.set('n', '<space>bpdg', '<cmd>FzfxLspDiagnosticsBP<cr>',
-        {silent=true, noremap=true, desc="Search lsp diagnostics only on current buffer by yank text"})
 
 -- ======== lsp definitions ========
 
@@ -850,6 +728,8 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Deprecate 'git_commits' (`FzfxGCommits`) configs, notify user migrate to new schema.
 - 2023-08-30
   - Deprecate 'buffers' (`FzfxBuffers`) configs, notify user migrate to new schema.
+- 2023-09-11
+  - Deprecate 'git_branches' (`FzfxGBranches`) configs, notify user migrate to new schema.
 
 ## 🍀 Credit
 
