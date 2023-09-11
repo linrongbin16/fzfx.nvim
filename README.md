@@ -45,6 +45,7 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
   - [Create your own commands](#create-your-own-commands)
 - [Break Changes](#-break-changes)
 - [Credit](#-credit)
+- [Development](#-development)
 - [Contribute](#-contribute)
 
 ## ✨ Feature
