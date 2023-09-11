@@ -14,7 +14,7 @@ local function normalize(path, backslash)
     if backslash and string.match(result, [[\]]) then
         result = string.gsub(result, [[\]], [[/]])
     end
-    return vim.trim(result)
+    return vim.fn.trim(result)
 end
 
 local function join(...)

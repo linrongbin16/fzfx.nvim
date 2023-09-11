@@ -166,13 +166,13 @@ local function git_checkout(lines)
     end
 
     if type(lines) == "table" and #lines > 0 then
-        local last_line = vim.trim(lines[#lines])
+        local last_line = vim.fn.trim(lines[#lines])
         if type(last_line) == "string" and string.len(last_line) > 0 then
             last_line = remove_prefix(last_line, "origin/")
             local arrow_pos = vim.fn.stridx(last_line, "->")
             if arrow_pos >= 0 then
                 arrow_pos = arrow_pos + 1 + 2
-                last_line = vim.trim(last_line:sub(arrow_pos, #last_line))
+                last_line = vim.fn.trim(last_line:sub(arrow_pos, #last_line))
             end
             last_line = remove_prefix(last_line, "origin/")
             vim.cmd(

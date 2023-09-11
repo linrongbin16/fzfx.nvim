@@ -202,7 +202,7 @@ local function lsp_diagnostics_provider(opts)
     for _, sign_opts in pairs(signs) do
         local sign_def = vim.fn.sign_getdefined(sign_opts.sign)
         if not utils.list_empty(sign_def) then
-            sign_opts.text = vim.trim(sign_def[1].text)
+            sign_opts.text = vim.fn.trim(sign_def[1].text)
             sign_opts.texthl = sign_def[1].texthl
         end
     end
@@ -235,7 +235,7 @@ local function lsp_diagnostics_provider(opts)
             filename = bufpath,
             lnum = row + 1,
             col = col + 1,
-            text = vim.trim(diag.message:gsub("[\n]", "")),
+            text = vim.fn.trim(diag.message:gsub("[\n]", "")),
             severity = diag.severity or 1,
         }
     end
@@ -336,7 +336,7 @@ local function lsp_location_render_line(line, range, color_renderer)
     if line_end + 1 <= #line then
         p3 = line:sub(line_end + 1, #line)
     end
-    local result = vim.trim(p1 .. p2 .. p3)
+    local result = vim.fn.trim(p1 .. p2 .. p3)
     return result
 end
 
@@ -1026,12 +1026,62 @@ local Defaults = {
                         )
                         return nil
                     end
+                    for _, line in ipairs(git_branch_cmd.result.stdout) do
+                        table.insert(
+                            branch_results,
+                            string.format("  %s", vim.fn.trim(line))
+                        )
+                    end
+
+                    return branch_results
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             }),
             remote_branch = ProviderConfig:make({
                 key = "ctrl-r",
-                provider = function(query, context) end,
+                provider = function(query, context)
+                    local cmd = require("fzfx.cmd")
+                    local git_root_cmd = cmd.GitRootCmd:run()
+                    if git_root_cmd:wrong() then
+                        log.echo(LogLevel.INFO, "not in git repo.")
+                        return nil
+                    end
+                    local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
+                    if git_current_branch_cmd:wrong() then
+                        log.echo(
+                            LogLevel.WARN,
+                            table.concat(
+                                git_current_branch_cmd.result.stderr,
+                                " "
+                            )
+                        )
+                        return nil
+                    end
+                    local branch_results = {}
+                    table.insert(
+                        branch_results,
+                        string.format("* %s", git_current_branch_cmd:value())
+                    )
+                    local git_branch_cmd = cmd.Cmd:run("git branch --remotes")
+                    if git_branch_cmd.result:wrong() then
+                        log.echo(
+                            LogLevel.WARN,
+                            table.concat(
+                                git_current_branch_cmd.result.stderr,
+                                " "
+                            )
+                        )
+                        return nil
+                    end
+                    for _, line in ipairs(git_branch_cmd.result.stdout) do
+                        table.insert(
+                            branch_results,
+                            string.format("  %s", vim.fn.trim(line))
+                        )
+                    end
+
+                    return branch_results
+                end,
                 provider_type = ProviderTypeEnum.LIST,
             }),
         },

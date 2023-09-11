@@ -56,8 +56,8 @@ shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metajson))
 
 --- @param line string?
 local function println(line)
-    if type(line) == "string" and string.len(vim.trim(line)) > 0 then
-        line = vim.trim(line)
+    if type(line) == "string" and string.len(vim.fn.trim(line)) > 0 then
+        line = vim.fn.trim(line)
         -- shell_helpers.log_debug("|provider| println line:%s", vim.inspect(line))
         if metajson.provider_line_type == "file" then
             local rendered_line = shell_helpers.render_filepath_line(
