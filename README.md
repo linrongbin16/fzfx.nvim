@@ -737,7 +737,7 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
 
-## 📝 Development
+## ✏️ Development
 
 To develop the project and make PR, please setup with:
 
