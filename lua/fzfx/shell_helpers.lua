@@ -252,6 +252,8 @@ local M = {
     GitCurrentBranchCmd = require("fzfx.cmd").GitCurrentBranchCmd,
     string_find = require("fzfx.utils").string_find,
     string_rfind = require("fzfx.utils").string_rfind,
+    string_ltrim = require("fzfx.utils").string_ltrim,
+    string_rtrim = require("fzfx.utils").string_rtrim,
 }
 
 return M
