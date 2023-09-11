@@ -3,6 +3,7 @@ local LogLevel = require("fzfx.log").LogLevel
 local conf = require("fzfx.config")
 local general = require("fzfx.general")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 
 local function setup()
     local git_branches_configs = conf.get_config().git_branches
@@ -20,7 +21,44 @@ local function setup()
             --- @type ActionKey
             provider_opts.key = provider_opts[1]
             --- @type Provider
-            provider_opts.provider = provider_opts[2]
+            provider_opts.provider = function(query, context)
+                local cmd = require("fzfx.cmd")
+                local git_root_cmd = cmd.GitRootCmd:run()
+                if git_root_cmd:wrong() then
+                    log.echo(LogLevel.INFO, "not in git repo.")
+                    return nil
+                end
+                local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
+                if git_current_branch_cmd:wrong() then
+                    log.echo(
+                        LogLevel.WARN,
+                        table.concat(git_current_branch_cmd.result.stderr, " ")
+                    )
+                    return nil
+                end
+                local branch_results = {}
+                table.insert(
+                    branch_results,
+                    string.format("* %s", git_current_branch_cmd:value())
+                )
+                local git_branch_cmd = cmd.Cmd:run(provider_opts[2])
+                if git_branch_cmd.result:wrong() then
+                    log.echo(
+                        LogLevel.WARN,
+                        table.concat(git_current_branch_cmd.result.stderr, " ")
+                    )
+                    return nil
+                end
+                for _, line in ipairs(git_branch_cmd.result.stdout) do
+                    table.insert(
+                        branch_results,
+                        string.format("  %s", vim.fn.trim(line))
+                    )
+                end
+
+                return branch_results
+            end
+            provider_opts.provider_type = ProviderTypeEnum.LIST
             deprecated = true
         end
     end
