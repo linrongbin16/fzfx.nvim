@@ -744,18 +744,14 @@ To develop the project and make PR, please setup with:
 
 - [lua_ls](https://github.com/LuaLS/lua-language-server).
 
-To run unit tests, please first install below dependencies:
+To run unit tests, please install below dependencies:
 
 - [luarocks](https://luarocks.org/).
 - [luacheck](https://github.com/mpeterv/luacheck).
 - [luacov](https://github.com/lunarmodules/luacov).
 - [vusted](https://github.com/notomo/vusted).
 
-Then test with:
-
-```bash
-vusted --shuffle ./test
-```
+Then test with `vusted --shuffle ./test`
 
 Like fzfx.nvim? Consider
 
