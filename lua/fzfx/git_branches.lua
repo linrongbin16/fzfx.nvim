@@ -50,10 +50,10 @@ local function setup()
                     return nil
                 end
                 for _, line in ipairs(git_branch_cmd.result.stdout) do
-                    if vim.fn.trim(line):sub(1, 1) ~= "*" then
+                    if vim.trim(line):sub(1, 1) ~= "*" then
                         table.insert(
                             branch_results,
-                            string.format("  %s", vim.fn.trim(line))
+                            string.format("  %s", vim.trim(line))
                         )
                     end
                 end

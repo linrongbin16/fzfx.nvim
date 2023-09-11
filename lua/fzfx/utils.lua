@@ -115,15 +115,12 @@ end
 --- @return integer?
 local function string_find(s, c, start)
     start = start or 1
-    local pos = vim.fn.stridx(s, c, start - 1)
-    return pos >= 0 and (pos + 1) or nil
-    -- start = start or 1
-    -- for i = start, #s do
-    --     if string.byte(s, i) == string.byte(c) then
-    --         return i
-    --     end
-    -- end
-    -- return nil
+    for i = start, #s do
+        if string.byte(s, i) == string.byte(c) then
+            return i
+        end
+    end
+    return nil
 end
 
 --- @param s string
@@ -132,15 +129,58 @@ end
 --- @return integer?
 local function string_rfind(s, c, rstart)
     rstart = rstart or #s
-    local pos = vim.fn.strridx(s, c, rstart - 1)
-    return pos >= 0 and (pos + 1) or nil
-    -- rstart = rstart or #s
-    -- for i = rstart, 1, -1 do
-    --     if string.byte(s, i) == string.byte(c) then
-    --         return i
-    --     end
-    -- end
-    -- return nil
+    for i = rstart, 1, -1 do
+        if string.byte(s, i) == string.byte(c) then
+            return i
+        end
+    end
+    return nil
+end
+
+--- @param s string
+--- @param t string?
+--- @return string
+local function string_ltrim(s, t)
+    t = t or "\n\t "
+    local i = 1
+    while i <= #s do
+        local c = string.byte(s, i)
+        local contains = false
+        for j = 1, #t do
+            if string.byte(t, j) == c then
+                contains = true
+                break
+            end
+        end
+        if not contains then
+            break
+        end
+        i = i + 1
+    end
+    return s:sub(i, #s)
+end
+
+--- @param s string
+--- @param t string?
+--- @return string
+local function string_rtrim(s, t)
+    t = t or "\n\t "
+    local i = #s
+    while i >= 1 do
+        local c = string.byte(s, i)
+        local contains = false
+        for j = 1, #t do
+            if string.byte(t, j) == c then
+                contains = true
+                break
+            end
+        end
+        if not contains then
+            break
+        end
+        i = i - 1
+    end
+    return s:sub(1, i)
 end
 
 --- @class ShellOptsContext
@@ -298,6 +338,8 @@ local M = {
     string_not_empty = string_not_empty,
     string_find = string_find,
     string_rfind = string_rfind,
+    string_ltrim = string_ltrim,
+    string_rtrim = string_rtrim,
     ShellOptsContext = ShellOptsContext,
     shellescape = shellescape,
     WindowOptsContext = WindowOptsContext,

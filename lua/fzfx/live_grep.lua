@@ -52,7 +52,7 @@ local function live_grep(query, bang, opts)
     )
     local onchange_reload_delay =
         live_grep_configs.other_opts.onchange_reload_delay
-    local reload_command = vim.fn.trim(
+    local reload_command = vim.trim(
         string.format(
             "%s %s %s {q}",
             utils.string_not_empty(onchange_reload_delay)

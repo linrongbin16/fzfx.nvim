@@ -77,7 +77,7 @@ local default_fzf_options = {
 }
 
 local default_git_log_pretty =
-"%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+    "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
 -- file {
 
@@ -125,8 +125,8 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
                 constants.bat,
                 style,
                 (lineno ~= nil and string.len(lineno) > 0)
-                and string.format("--highlight-line=%s", lineno)
-                or "",
+                        and string.format("--highlight-line=%s", lineno)
+                    or "",
                 filename
             )
         else
@@ -154,10 +154,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 1,
             text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
             texthl = vim.fn.hlexists("DiagnosticSignError") > 0
-                and "DiagnosticSignError"
+                    and "DiagnosticSignError"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignError") > 0
-                    and "LspDiagnosticsSignError"
+                        and "LspDiagnosticsSignError"
                     or "ErrorMsg"
                 ),
             textcolor = "red",
@@ -166,10 +166,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 2,
             text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
             texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0
-                and "DiagnosticSignWarn"
+                    and "DiagnosticSignWarn"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
-                    and "LspDiagnosticsSignWarn"
+                        and "LspDiagnosticsSignWarn"
                     or "WarningMsg"
                 ),
             textcolor = "yellow",
@@ -178,10 +178,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 3,
             text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
             texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0
-                and "DiagnosticSignInfo"
+                    and "DiagnosticSignInfo"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
-                    and "LspDiagnosticsSignInfo"
+                        and "LspDiagnosticsSignInfo"
                     or "None"
                 ),
             textcolor = "blue",
@@ -190,10 +190,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 4,
             text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
             texthl = vim.fn.hlexists("DiagnosticSignHint") > 0
-                and "DiagnosticSignHint"
+                    and "DiagnosticSignHint"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignHint") > 0
-                    and "LspDiagnosticsSignHint"
+                        and "LspDiagnosticsSignHint"
                     or "Comment"
                 ),
             textcolor = "cyan",
@@ -221,23 +221,28 @@ local function lsp_diagnostics_provider(opts)
 
     --- @alias DiagItem {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}
     --- @return DiagItem?
-    local function preprocess_diag_item(diag)
+    local function process_diagnostic_item(diag)
         if not vim.api.nvim_buf_is_valid(diag.bufnr) then
             return nil
         end
-        local bufname = vim.api.nvim_buf_get_name(diag.bufnr)
-        local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
-        local range_start = diag.range and diag.range["start"]
-        local row = diag.lnum or range_start.line
-        local col = diag.col or range_start.character
-        return {
+        log.debug(
+            "|fzfx.config - lsp_diagnostics_provider.process_diagnostic_item| diag-1:%s",
+            vim.inspect(diag)
+        )
+        local result = {
             bufnr = diag.bufnr,
-            filename = bufpath,
-            lnum = row + 1,
-            col = col + 1,
-            text = vim.fn.trim(diag.message:gsub("[\n]", "")),
+            filename = path.reduce(vim.api.nvim_buf_get_name(diag.bufnr)),
+            lnum = diag.lnum + 1,
+            col = diag.col + 1,
+            text = vim.trim(diag.message:gsub("\n", " ")),
             severity = diag.severity or 1,
         }
+        log.debug(
+            "|fzfx.config - lsp_diagnostics_provider.process_diagnostic_item| diag-2:%s, result:%s",
+            vim.inspect(diag),
+            vim.inspect(result)
+        )
+        return result
     end
 
     -- simulate rg's filepath color, see:
@@ -245,10 +250,14 @@ local function lsp_diagnostics_provider(opts)
     -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
     local diag_lines = {}
     for _, diag in ipairs(diag_results) do
-        local d = preprocess_diag_item(diag)
-        if d ~= nil then
+        local d = process_diagnostic_item(diag)
+        if d then
             -- it looks like:
             -- `lua/fzfx/config.lua:10:13:local ProviderConfig = require("fzfx.schema").ProviderConfig`
+            log.debug(
+                "|fzfx.config - lsp_diagnostics_provider| d:%s",
+                vim.inspect(d)
+            )
             local dtext = ""
             if type(d.text) == "string" and string.len(d.text) > 0 then
                 if type(signs[d.severity]) == "table" then
@@ -258,6 +267,11 @@ local function lsp_diagnostics_provider(opts)
                 end
                 dtext = dtext .. " " .. d.text
             end
+            log.debug(
+                "|fzfx.config - lsp_diagnostics_provider| d:%s, dtext:%s",
+                vim.inspect(d),
+                vim.inspect(dtext)
+            )
             local line = string.format(
                 "%s:%s:%s:%s",
                 d.filename,
@@ -574,20 +588,20 @@ local Defaults = {
             restricted = {
                 "ctrl-r",
                 constants.has_fd and default_restricted_fd
-                or (
-                    constants.has_gnu_find
-                    and default_restricted_gnu_find
-                    or default_restricted_find
-                ),
+                    or (
+                        constants.has_gnu_find
+                            and default_restricted_gnu_find
+                        or default_restricted_find
+                    ),
             },
             unrestricted = {
                 "ctrl-u",
                 constants.has_fd and default_unrestricted_fd
-                or (
-                    constants.has_gnu_find
-                    and default_unrestricted_gnu_find
-                    or default_unrestricted_find
-                ),
+                    or (
+                        constants.has_gnu_find
+                            and default_unrestricted_gnu_find
+                        or default_unrestricted_find
+                    ),
             },
         },
         actions = {
@@ -695,20 +709,20 @@ local Defaults = {
             restricted = {
                 "ctrl-r",
                 constants.has_rg and default_restricted_rg
-                or (
-                    constants.has_gnu_grep
-                    and default_restricted_gnu_grep
-                    or default_restricted_grep
-                ),
+                    or (
+                        constants.has_gnu_grep
+                            and default_restricted_gnu_grep
+                        or default_restricted_grep
+                    ),
             },
             unrestricted = {
                 "ctrl-u",
                 constants.has_rg and default_unrestricted_rg
-                or (
-                    constants.has_gnu_grep
-                    and default_unrestricted_gnu_grep
-                    or default_unrestricted_grep
-                ),
+                    or (
+                        constants.has_gnu_grep
+                            and default_unrestricted_gnu_grep
+                        or default_unrestricted_grep
+                    ),
             },
         },
         actions = {
@@ -716,20 +730,20 @@ local Defaults = {
             ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
                 or require("fzfx.actions").edit_grep,
             ["double-click"] = constants.has_rg
-                and require("fzfx.actions").edit_rg
+                    and require("fzfx.actions").edit_rg
                 or require("fzfx.actions").edit_grep,
         },
         fzf_opts = {
             default_fzf_options.multi,
-            { "--prompt",         "Live Grep > " },
-            { "--delimiter",      ":" },
+            { "--prompt", "Live Grep > " },
+            { "--delimiter", ":" },
             { "--preview-window", "+{2}-/2" },
         },
         other_opts = {
             onchange_reload_delay = (
-                    vim.fn.executable("sleep") > 0 and not constants.is_windows
-                )
-                and "sleep 0.1 && "
+                vim.fn.executable("sleep") > 0 and not constants.is_windows
+            )
+                    and "sleep 0.1 && "
                 or nil,
         },
     },
@@ -792,9 +806,9 @@ local Defaults = {
                 local bufnrs_list = vim.api.nvim_list_bufs()
                 local bufpaths_list = {}
                 local current_bufpath = valid_bufnr(context.bufnr)
-                    and path.reduce(
-                        vim.api.nvim_buf_get_name(context.bufnr)
-                    )
+                        and path.reduce(
+                            vim.api.nvim_buf_get_name(context.bufnr)
+                        )
                     or nil
                 if
                     type(current_bufpath) == "string"
@@ -1028,10 +1042,10 @@ local Defaults = {
                         return nil
                     end
                     for _, line in ipairs(git_branch_cmd.result.stdout) do
-                        if vim.fn.trim(line):sub(1, 1) ~= "*" then
+                        if vim.trim(line):sub(1, 1) ~= "*" then
                             table.insert(
                                 branch_results,
-                                string.format("  %s", vim.fn.trim(line))
+                                string.format("  %s", vim.trim(line))
                             )
                         end
                     end
@@ -1077,10 +1091,10 @@ local Defaults = {
                         return nil
                     end
                     for _, line in ipairs(git_branch_cmd.result.stdout) do
-                        if vim.fn.trim(line):sub(1, 1) ~= "*" then
+                        if vim.trim(line):sub(1, 1) ~= "*" then
                             table.insert(
                                 branch_results,
-                                string.format("  %s", vim.fn.trim(line))
+                                string.format("  %s", vim.trim(line))
                             )
                         end
                     end
@@ -1138,7 +1152,7 @@ local Defaults = {
                     return nil
                 end
                 return utils.string_not_empty(git_current_branch_cmd:value())
-                    and "--header-lines=1"
+                        and "--header-lines=1"
                     or nil
             end,
         },
@@ -1504,7 +1518,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            { "--delimiter",      ":" },
+            { "--delimiter", ":" },
             { "--preview-window", "+{2}-/2" },
             {
                 "--prompt",
@@ -1550,7 +1564,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            { "--delimiter",      ":" },
+            { "--delimiter", ":" },
             { "--preview-window", "+{2}-/2" },
             {
                 "--prompt",

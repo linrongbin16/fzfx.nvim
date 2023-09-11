@@ -60,7 +60,7 @@ local function get_visual_lines(mode)
         )
     elseif mode == "V" then
         if #lines == 1 then
-            lines[1] = vim.fn.trim(lines[1])
+            lines[1] = vim.trim(lines[1])
         end
         log.debug(
             "|fzfx.helpers - get_visual_lines| V, lines:%s",

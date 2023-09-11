@@ -140,7 +140,7 @@ local function bdelete(lines)
         for _, line in ipairs(lines) do
             local bufname = env.icon_enable() and vim.fn.split(line)[2] or line
             bufname = path.normalize(bufname)
-            local cmd = vim.fn.trim(string.format([[ bdelete %s ]], bufname))
+            local cmd = vim.trim(string.format([[ bdelete %s ]], bufname))
             log.debug(
                 "|fzfx.actions - bdelete| line:[%s], bufname:[%s], cmd:[%s]",
                 line,
@@ -166,18 +166,16 @@ local function git_checkout(lines)
     end
 
     if type(lines) == "table" and #lines > 0 then
-        local last_line = vim.fn.trim(lines[#lines])
+        local last_line = vim.trim(lines[#lines])
         if type(last_line) == "string" and string.len(last_line) > 0 then
             last_line = remove_prefix(last_line, "origin/")
             local arrow_pos = vim.fn.stridx(last_line, "->")
             if arrow_pos >= 0 then
                 arrow_pos = arrow_pos + 1 + 2
-                last_line = vim.fn.trim(last_line:sub(arrow_pos, #last_line))
+                last_line = vim.trim(last_line:sub(arrow_pos, #last_line))
             end
             last_line = remove_prefix(last_line, "origin/")
-            vim.cmd(
-                vim.fn.trim(string.format([[ !git checkout %s ]], last_line))
-            )
+            vim.cmd(vim.trim(string.format([[ !git checkout %s ]], last_line)))
         end
     end
 end

@@ -160,7 +160,7 @@ function GitRootCmd:value()
         return nil
     end
     return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-            and vim.fn.trim(self.result.stdout[1])
+            and vim.trim(self.result.stdout[1])
         or nil
 end
 
@@ -200,7 +200,7 @@ function GitBranchCmd:current_branch()
     end
     if type(self.result.stdout) == "table" and #self.result.stdout > 0 then
         for _, out in ipairs(self.result.stdout) do
-            local trim_out = vim.fn.trim(out)
+            local trim_out = vim.trim(out)
             if string.len(trim_out) > 0 and trim_out[1] == "*" then
                 return trim_out
             end

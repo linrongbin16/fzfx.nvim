@@ -317,7 +317,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, on_launch_exit)
             vim.inspect(result),
             vim.inspect(result_lines)
         )
-        local action_key = vim.fn.trim(result_lines[1])
+        local action_key = vim.trim(result_lines[1])
         local action_lines = vim.list_slice(result_lines, 2)
         log.debug(
             "|fzfx.popup - Popup:new.on_fzf_exit| action_key:%s, action_lines:%s",

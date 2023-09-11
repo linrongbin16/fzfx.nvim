@@ -117,7 +117,7 @@ local function read_provider_command(provider)
         vim.inspect(provider)
     )
     ---@diagnostic disable-next-line: need-check-nil
-    local cmd = vim.fn.trim(f:read("*a"))
+    local cmd = vim.trim(f:read("*a"))
     ---@diagnostic disable-next-line: need-check-nil
     f:close()
     return cmd
@@ -132,7 +132,7 @@ local function readfile(filename)
         vim.inspect(filename)
     )
     ---@diagnostic disable-next-line: need-check-nil
-    local content = vim.fn.trim(f:read("*a"))
+    local content = vim.trim(f:read("*a"))
     ---@diagnostic disable-next-line: need-check-nil
     f:close()
     return content
@@ -224,10 +224,10 @@ local function parse_query(content)
     end
 
     if flag_pos ~= nil and flag_pos > 0 then
-        query = vim.fn.trim(string.sub(content, 1, flag_pos - 1))
-        option = vim.fn.trim(string.sub(content, flag_pos + 2))
+        query = vim.trim(string.sub(content, 1, flag_pos - 1))
+        option = vim.trim(string.sub(content, flag_pos + 2))
     else
-        query = vim.fn.trim(content)
+        query = vim.trim(content)
     end
 
     return { query, option }

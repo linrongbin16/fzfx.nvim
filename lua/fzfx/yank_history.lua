@@ -27,7 +27,7 @@ local Yank = {
 function Yank:new(regname, regtext, regtype, filename, filetype)
     local yank = vim.tbl_deep_extend("force", vim.deepcopy(Yank), {
         regname = regname,
-        regtext = vim.fn.trim(regtext),
+        regtext = vim.trim(regtext),
         regtype = regtype,
         filename = filename,
         filetype = filetype,

@@ -25,7 +25,7 @@ local function get_windows_pipe_name()
         constants.is_windows,
         "|fzfx.server - get_windows_pipe_name| error! must use this function in Windows!"
     )
-    local result = vim.fn.trim(
+    local result = vim.trim(
         string.format(
             [[ \\.\pipe\nvim-pipe-%d-%d ]],
             vim.fn.getpid(),
