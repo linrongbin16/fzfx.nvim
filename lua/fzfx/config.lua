@@ -202,7 +202,7 @@ local function lsp_diagnostics_provider(opts)
     for _, sign_opts in pairs(signs) do
         local sign_def = vim.fn.sign_getdefined(sign_opts.sign)
         if not utils.list_empty(sign_def) then
-            sign_opts.text = vim.fn.trim(sign_def[1].text)
+            sign_opts.text = sign_def[1].text
             sign_opts.texthl = sign_def[1].texthl
         end
     end
@@ -334,7 +334,7 @@ local function lsp_location_render_line(line, range, color_renderer)
     if line_end + 1 <= #line then
         p3 = line:sub(line_end + 1, #line)
     end
-    local result = vim.fn.trim(p1 .. p2 .. p3)
+    local result = p1 .. p2 .. p3
     return result
 end
 
