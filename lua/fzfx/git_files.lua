@@ -1,53 +1,11 @@
 local log = require("fzfx.log")
+local LogLevel = require("fzfx.log").LogLevel
 local conf = require("fzfx.config")
-local Popup = require("fzfx.popup").Popup
-local helpers = require("fzfx.helpers")
-
---- @param query string
---- @param bang boolean
---- @param opts Configs?
---- @return Popup
-local function git_files(query, bang, opts)
-    local git_files_configs = conf.get_config().git_files
-
-    -- query command, both initial query + reload query
-    local provider_command = git_files_configs.providers
-    local temp = vim.fn.tempname()
-    vim.fn.writefile({ provider_command }, temp, "b")
-    local query_command = string.format(
-        "%s %s",
-        helpers.make_lua_command("git_files", "provider.lua"),
-        temp
-    )
-    local preview_command = string.format(
-        "%s {}",
-        helpers.make_lua_command("files", "previewer.lua")
-    )
-    log.debug(
-        "|fzfx.git_files - git_files| query_command:%s, preview_command:%s",
-        vim.inspect(query_command),
-        vim.inspect(preview_command)
-    )
-
-    local fzf_opts = {
-        { "--query", query },
-        {
-            "--preview",
-            preview_command,
-        },
-    }
-    fzf_opts =
-        vim.list_extend(fzf_opts, vim.deepcopy(git_files_configs.fzf_opts))
-    fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
-    local actions = git_files_configs.actions
-    local p = Popup:new(
-        bang and { height = 1, width = 1, row = 0, col = 0 } or nil,
-        query_command,
-        fzf_opts,
-        actions
-    )
-    return p
-end
+local ProviderConfig = require("fzfx.schema").ProviderConfig
+local PreviewerConfig = require("fzfx.schema").PreviewerConfig
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
+local env = require("fzfx.env")
+local general = require("fzfx.general")
 
 local function setup()
     local git_files_configs = conf.get_config().git_files
@@ -55,17 +13,45 @@ local function setup()
         return
     end
 
-    -- User commands
-    for _, command_configs in pairs(git_files_configs.commands) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            -- log.debug(
-            --     "|fzfx.git_files - setup| command:%s, opts:%s",
-            --     vim.inspect(command_configs.name),
-            --     vim.inspect(opts)
-            -- )
-            local query = helpers.get_command_feed(opts, command_configs.feed)
-            return git_files(query, opts.bang)
-        end, command_configs.opts)
+    local deprecated = false
+    if
+        type(git_files_configs.providers) == "string"
+        ---@diagnostic disable-next-line: param-type-mismatch
+        and string.len(git_files_configs.providers) > 0
+    then
+        git_files_configs.providers = ProviderConfig:make({
+            key = "ctrl-u",
+            provider = git_files_configs.providers,
+        })
+        deprecated = true
+    end
+    if type(git_files_configs.previewers) ~= "table" then
+        git_files_configs.previewers = PreviewerConfig:make({
+            previewer = function(line)
+                local filename = env.icon_enable() and vim.fn.split(line)[2]
+                    or line
+                return string.format("cat %s", filename)
+            end,
+            previewer_type = PreviewerTypeEnum.COMMAND,
+        })
+        deprecated = true
+    end
+    general.setup("git_files", git_files_configs)
+    if deprecated then
+        local function deprecated_notification()
+            log.echo(
+                LogLevel.WARN,
+                "deprecated 'FzfxGFiles' configs, please migrate to latest config schema!"
+            )
+        end
+        local delay = 3 * 1000
+        vim.defer_fn(deprecated_notification, delay)
+        vim.api.nvim_create_autocmd("VimEnter", {
+            pattern = { "*" },
+            callback = function()
+                vim.defer_fn(deprecated_notification, delay)
+            end,
+        })
     end
 end
 
