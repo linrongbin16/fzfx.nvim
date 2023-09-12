@@ -236,6 +236,7 @@ function GitCurrentBranchCmd:value()
 end
 
 local M = {
+    CmdResult = CmdResult,
     Cmd = Cmd,
     GitRootCmd = GitRootCmd,
     GitBranchCmd = GitBranchCmd,
