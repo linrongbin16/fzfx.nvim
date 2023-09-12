@@ -378,7 +378,7 @@ local function lsp_definitions_provider(opts)
         opts.bufnr,
         opts.method,
         opts.position_params,
-        opts.timeout or 5000
+        opts.timeout or 3000
     )
     log.debug(
         "|fzfx.config - lsp_definitions_provider| opts:%s, lsp_results:%s, lsp_err:%s",
