@@ -28,7 +28,12 @@ describe("config", function()
             local actual = require("fzfx.helpers").make_fzf_opts(
                 conf.get_config().fzf_opts
             )
-            print(string.format("default fzf opts:%s", vim.inspect(actual)))
+            print(
+                string.format(
+                    "make fzf opts with default configs:%s\n",
+                    vim.inspect(actual)
+                )
+            )
             assert_eq(type(actual), "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
         end)
