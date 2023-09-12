@@ -3,6 +3,7 @@ local LogLevel = require("fzfx.log").LogLevel
 local conf = require("fzfx.config")
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
+local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local env = require("fzfx.env")
 local general = require("fzfx.general")
@@ -19,21 +20,39 @@ local function setup()
         ---@diagnostic disable-next-line: param-type-mismatch
         and string.len(git_files_configs.providers) > 0
     then
-        git_files_configs.providers = ProviderConfig:make({
-            key = "ctrl-u",
-            provider = git_files_configs.providers,
-        })
+        git_files_configs.providers = {
+            current_folder = ProviderConfig:make({
+                key = "ctrl-u",
+                provider = git_files_configs.providers,
+                line_type = ProviderLineTypeEnum.FILE,
+            }),
+            workspace = ProviderConfig:make({
+                key = "ctrl-w",
+                provider = git_files_configs.providers,
+                line_type = ProviderLineTypeEnum.FILE,
+            }),
+        }
         deprecated = true
     end
-    if type(git_files_configs.previewers) ~= "table" then
-        git_files_configs.previewers = PreviewerConfig:make({
-            previewer = function(line)
-                local filename = env.icon_enable() and vim.fn.split(line)[2]
-                    or line
-                return string.format("cat %s", filename)
-            end,
-            previewer_type = PreviewerTypeEnum.COMMAND,
-        })
+    if git_files_configs.previewers == nil then
+        git_files_configs["previewers"] = {
+            current_folder = PreviewerConfig:make({
+                previewer = function(line)
+                    local filename = env.icon_enable() and vim.fn.split(line)[2]
+                        or line
+                    return string.format("cat %s", filename)
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+            workspace = PreviewerConfig:make({
+                previewer = function(line)
+                    local filename = env.icon_enable() and vim.fn.split(line)[2]
+                        or line
+                    return string.format("cat %s", filename)
+                end,
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+        }
         deprecated = true
     end
     general.setup("git_files", git_files_configs)
