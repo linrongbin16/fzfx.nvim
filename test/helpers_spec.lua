@@ -15,6 +15,12 @@ describe("helpers", function()
     local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
     local helpers = require("fzfx.helpers")
 
+    require("fzfx.config").setup()
+    require("fzfx.log").setup({
+        level = "INFO",
+        console_log = false,
+        file_log = false,
+    })
     describe("[get_command_feed]", function()
         it("get normal args feed", function()
             local expect = "expect"
@@ -37,12 +43,44 @@ describe("helpers", function()
     end)
     describe("[nvim_exec]", function()
         it("get nvim path", function()
-            require("fzfx.config").setup()
             local actual = helpers.nvim_exec()
             print(string.format("nvim_exec: %s\n", vim.inspect(actual)))
             assert_true(type(actual) == "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
             assert_true(vim.fn.executable(actual) > 0)
+        end)
+    end)
+    describe("[preprocess_fzf_opts]", function()
+        it("preprocess nil opts", function()
+            local actual = helpers.preprocess_fzf_opts({
+                "--bind=enter:accept",
+                function()
+                    return nil
+                end,
+            })
+            print(
+                string.format("preprocess nil opts: %s\n", vim.inspect(actual))
+            )
+            assert_true(type(actual) == "table")
+            assert_false(vim.tbl_isempty(actual))
+            assert_eq(#actual, 1)
+        end)
+        it("preprocess string opts", function()
+            local actual = helpers.preprocess_fzf_opts({
+                "--bind=enter:accept",
+                function()
+                    return "--no-multi"
+                end,
+            })
+            print(
+                string.format(
+                    "preprocess string opts: %s\n",
+                    vim.inspect(actual)
+                )
+            )
+            assert_true(type(actual) == "table")
+            assert_false(vim.tbl_isempty(actual))
+            assert_eq(#actual, 2)
         end)
     end)
 end)
