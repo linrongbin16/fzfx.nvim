@@ -277,7 +277,7 @@ local function lsp_diagnostics_provider(opts)
             )
             local line = string.format(
                 "%s:%s:%s:%s",
-                filepath_color(tostring(d.filename)),
+                filepath_color(d.filename),
                 color.ansi_green(tostring(d.lnum)),
                 tostring(d.col),
                 dtext
@@ -452,7 +452,7 @@ local function lsp_definitions_provider(opts)
         )
         local line = string.format(
             "%s:%s:%s:%s",
-            filepath_color(tostring(vim.fn.fnamemodify(filename, ":~:."))),
+            filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
             color.ansi_green(tostring(range.start.line + 1)),
             tostring(range.start.character + 1),
             loc_line
