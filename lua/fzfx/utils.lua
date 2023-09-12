@@ -2,24 +2,6 @@
 
 local constants = require("fzfx.constants")
 
---- @param t table?
---- @return boolean
-local function tbl_empty(t)
-    return t == nil or next(t) == nil --[[@as boolean]]
-end
-
---- @param t table
---- @param f fun(k:any,v:any):boolean
-local function tbl_filter(t, f)
-    local result = {}
-    for k, v in pairs(t) do
-        if f(k, v) then
-            result[k] = v
-        end
-    end
-    return result
-end
-
 --- @param l table?
 --- @return boolean
 local function list_empty(l)
@@ -325,8 +307,6 @@ function WindowOptsContext:restore()
 end
 
 local M = {
-    tbl_empty = tbl_empty,
-    tbl_filter = tbl_filter,
     list_empty = list_empty,
     list_filter = list_filter,
     get_buf_option = get_buf_option,
