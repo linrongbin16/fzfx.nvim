@@ -246,6 +246,7 @@ Commands are named following below rules:
 Especially for git commands:
 
 - The remote git branch variant is named with `R` suffix.
+- The git files in current directory variant is named with `C` suffix.
 
 > Note: command names can be configured, see [Configuration](#-configuration).
 

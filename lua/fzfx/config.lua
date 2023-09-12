@@ -858,10 +858,10 @@ local Defaults = {
     }),
 
     -- the 'Git Files' commands
-    git_files = {
+    git_files = GroupConfig:make({
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxGFiles",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -870,9 +870,19 @@ local Defaults = {
                     complete = "dir",
                     desc = "Find git files",
                 },
-            },
+            }),
+            CommandConfig:make({
+                name = "FzfxGFilesC",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find git files in current directory",
+                },
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxGFilesV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -880,25 +890,50 @@ local Defaults = {
                     range = true,
                     desc = "Find git files by visual select",
                 },
-            },
+            }),
+            CommandConfig:make({
+                name = "FzfxGFilesCV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find git files in current directory by visual select",
+                },
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxGFilesW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find git files by cursor word",
                 },
-            },
+            }),
+            CommandConfig:make({
+                name = "FzfxGFilesCW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find git files in current directory by cursor word",
+                },
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxGFilesP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find git files by yank text",
                 },
-            },
+            }),
+            CommandConfig:make({
+                name = "FzfxGFilesCP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find git files in current directory by yank text",
+                },
+            }),
         },
         providers = "git ls-files",
         actions = {
@@ -915,7 +950,7 @@ local Defaults = {
                 }
             end,
         },
-    },
+    }),
 
     -- the 'Git Branches' commands
     --- @type GroupConfig
