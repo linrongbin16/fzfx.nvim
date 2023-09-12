@@ -275,7 +275,7 @@ local function lsp_diagnostics_provider(opts)
             local line = string.format(
                 "%s:%s:%s:%s",
                 d.filename,
-                color.green_8bit(tostring(d.lnum)),
+                color.ansi_green(tostring(d.lnum)),
                 tostring(d.col),
                 dtext
             )
@@ -437,7 +437,7 @@ local function lsp_definitions_provider(opts)
         local loc_line = lsp_location_render_line(
             filelines[range.start.line + 1],
             range,
-            color.red_8bit
+            color.ansi_red
         )
         log.debug(
             "|fzfx.config - lsp_definitions_provider.process_location| range:%s, loc_line:%s",
@@ -447,7 +447,7 @@ local function lsp_definitions_provider(opts)
         local line = string.format(
             "%s:%s:%s:%s",
             vim.fn.fnamemodify(filename, ":~:."),
-            color.green_8bit(tostring(range.start.line + 1)),
+            color.ansi_green(tostring(range.start.line + 1)),
             tostring(range.start.character + 1),
             loc_line
         )

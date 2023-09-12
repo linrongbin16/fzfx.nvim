@@ -2,8 +2,7 @@
 
 -- local log = require("fzfx.log")
 
---- @alias AnsiCodeType "black"|"red"|"green"|"yellow"|"blue"|"magenta"|"cyan"
---- @type table<AnsiCodeType, integer>
+--- @type table<string, integer>
 local AnsiCode = {
     black = 30,
     red = 31,
@@ -14,9 +13,41 @@ local AnsiCode = {
     cyan = 36,
 }
 
+-- RGB color code: https://www.ditig.com/256-colors-cheat-sheet
+--- @type table<string, string>
+local RgbCode = {
+    Black = "#000000",
+    Grey = "#808080",
+    Silver = "#c0c0c0",
+    Red = "#ff0000",
+    Maroon = "#800000",
+    IndianRed = "#af5f5f",
+    Magenta = "#ff00ff",
+    DarkMagenta = "#870087",
+    Pink = "#ffafd7",
+    LightPink = "#ffafaf",
+    DeepPink = "#ff0087",
+    Purple = "#800080",
+    Green = "#008000",
+    LightGreen = "#87ff87",
+    DarkGreen = "#005f00",
+    Teal = "#008080",
+    Yellow = "#ffff00",
+    Orange = "#ffaf00",
+    Olive = "#808000",
+    GreenYellow = "#afff00",
+    Blue = "#0000ff",
+    DarkBlue = "#000087",
+    SkyBlue = "#87d7ff",
+    DodgerBlue = "#0087ff",
+    SteelBlue = "#5f87af",
+    Cyan = "#00ffff",
+    LightCyan = "#d7ffff",
+}
+
 --- @param attr "fg"|"bg"
 --- @param group string?
---- @return string?
+--- @return string? rbg code (#808080) or ansi code (354)
 local function hlcode(attr, group)
     if type(group) ~= "string" then
         return nil
@@ -44,17 +75,17 @@ local function hlcode(attr, group)
     return nil
 end
 
---- @param color string
+--- @param code string
 --- @param fg boolean
 --- @return string|nil
-local function csi(color, fg)
-    local code = fg and 38 or 48
-    local r, g, b = color:match("#(..)(..)(..)")
+local function csi(code, fg)
+    local control = fg and 38 or 48
+    local r, g, b = code:match("#(..)(..)(..)")
     if r and g and b then
         r = tonumber(r, 16)
         g = tonumber(g, 16)
         b = tonumber(b, 16)
-        local result = string.format("%d;2;%d;%d;%d", code, r, g, b)
+        local result = string.format("%d;2;%d;%d;%d", control, r, g, b)
         -- log.debug(
         --     "|fzfx.color - csi| rgb, color:%s, fg:%s, result:%s",
         --     vim.inspect(color),
@@ -63,7 +94,7 @@ local function csi(color, fg)
         -- )
         return result
     else
-        local result = string.format("%d;5;%s", code, color)
+        local result = string.format("%d;5;%s", control, code)
         -- log.debug(
         --     "|fzfx.color - csi| non-rgb, color:%s, fg:%s, result:%s",
         --     vim.inspect(color),
@@ -93,6 +124,70 @@ local function ansi(text, name, hl)
         -- )
     else
         fgfmt = AnsiCode[name]
+        -- log.debug(
+        --     "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
+        --     vim.inspect(text),
+        --     vim.inspect(name),
+        --     vim.inspect(hl),
+        --     vim.inspect(fg),
+        --     vim.inspect(fgcolor)
+        -- )
+    end
+
+    local fmt = nil
+    local bgcode = hlcode("bg", hl)
+    if type(bgcode) == "string" then
+        local bgcolor = csi(bgcode, false)
+        -- log.debug(
+        --     "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, bg:%s, bgcolor:%s",
+        --     vim.inspect(text),
+        --     vim.inspect(name),
+        --     vim.inspect(hl),
+        --     vim.inspect(bg),
+        --     vim.inspect(bgcolor)
+        -- )
+        fmt = string.format("%s;%s", fgfmt, bgcolor)
+    else
+        -- log.debug(
+        --     "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, bg:%s",
+        --     vim.inspect(text),
+        --     vim.inspect(name),
+        --     vim.inspect(hl),
+        --     vim.inspect(bg)
+        -- )
+        fmt = fgfmt
+    end
+
+    -- log.debug(
+    --     "|fzfx.color - ansi| ansi, finalcolor:%s",
+    --     vim.inspect(text),
+    --     vim.inspect(name),
+    --     vim.inspect(hl),
+    --     vim.inspect(bg)
+    -- )
+    return string.format("[%sm%s[0m", fmt, text)
+end
+
+--- @param text string
+--- @param name string
+--- @param hl string?
+--- @return string
+local function rgb(text, name, hl)
+    local fgfmt = nil
+    local fgcode = hlcode("fg", hl)
+    if type(fgcode) == "string" then
+        fgfmt = csi(fgcode, true)
+        -- log.debug(
+        --     "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
+        --     vim.inspect(text),
+        --     vim.inspect(name),
+        --     vim.inspect(hl),
+        --     vim.inspect(fg),
+        --     vim.inspect(fgcolor)
+        -- )
+    else
+        fgcode = RgbCode[name]
+        fgfmt = csi(fgcode, true)
         -- log.debug(
         --     "|fzfx.color - ansi| ansi, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
         --     vim.inspect(text),
@@ -175,7 +270,7 @@ for color, default_hl in pairs({
     M[color] = function(text, hl)
         return ansi(text, color, hl or default_hl)
     end
-    M[color .. "_8bit"] = function(text)
+    M["ansi_" .. color] = function(text)
         return ansi(text, color, nil)
     end
 end
