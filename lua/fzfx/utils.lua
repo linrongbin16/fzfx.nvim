@@ -2,42 +2,6 @@
 
 local constants = require("fzfx.constants")
 
---- @param t table?
---- @return boolean
-local function tbl_empty(t)
-    return t == nil or next(t) == nil --[[@as boolean]]
-end
-
---- @param t table
---- @param f fun(k:any,v:any):boolean
-local function tbl_filter(t, f)
-    local result = {}
-    for k, v in pairs(t) do
-        if f(k, v) then
-            result[k] = v
-        end
-    end
-    return result
-end
-
---- @param l table?
---- @return boolean
-local function list_empty(l)
-    return l == nil or #l == 0
-end
-
---- @param l any[]
---- @param f fun(k:any,v:any):boolean
-local function list_filter(l, f)
-    local result = {}
-    for i, v in ipairs(l) do
-        if f(i, v) then
-            table.insert(result, v)
-        end
-    end
-    return result
-end
-
 --- @param bufnr integer
 --- @param name string
 --- @return any
@@ -141,7 +105,7 @@ end
 --- @param t string?
 --- @return string
 local function string_ltrim(s, t)
-    t = t or "\n\t "
+    t = t or "\n\t\r "
     local i = 1
     while i <= #s do
         local c = string.byte(s, i)
@@ -164,7 +128,7 @@ end
 --- @param t string?
 --- @return string
 local function string_rtrim(s, t)
-    t = t or "\n\t "
+    t = t or "\n\t\r "
     local i = #s
     while i >= 1 do
         local c = string.byte(s, i)
@@ -325,10 +289,6 @@ function WindowOptsContext:restore()
 end
 
 local M = {
-    tbl_empty = tbl_empty,
-    tbl_filter = tbl_filter,
-    list_empty = list_empty,
-    list_filter = list_filter,
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
     is_buf_valid = is_buf_valid,
