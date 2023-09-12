@@ -2,15 +2,15 @@
 
 -- local log = require("fzfx.log")
 
---- @type table<string, integer>
+--- @type table<string, string>
 local AnsiCode = {
-    black = 30,
-    red = 31,
-    green = 32,
-    yellow = 33,
-    blue = 34,
-    magenta = 35,
-    cyan = 36,
+    black = "0;30",
+    red = "0;31",
+    green = "0;32",
+    yellow = "0;33",
+    blue = "0;34",
+    magenta = "0;35",
+    cyan = "0;36",
 }
 
 -- RGB color code: https://www.ditig.com/256-colors-cheat-sheet
@@ -22,25 +22,25 @@ local RgbCode = {
     Red = "#ff0000",
     Maroon = "#800000",
     IndianRed = "#af5f5f",
+    Green = "#008000",
+    LightGreen = "#87ff87",
+    DarkGreen = "#005f00",
+    Teal = "#008080",
+    GreenYellow = "#afff00",
+    Yellow = "#ffff00",
+    Orange = "#ffaf00",
+    Olive = "#808000",
+    Blue = "#0000ff",
+    DarkBlue = "#000087",
+    SkyBlue = "#87d7ff",
+    DodgerBlue = "#0087ff",
+    SteelBlue = "#5f87af",
     Magenta = "#ff00ff",
     DarkMagenta = "#870087",
     Pink = "#ffafd7",
     LightPink = "#ffafaf",
     DeepPink = "#ff0087",
     Purple = "#800080",
-    Green = "#008000",
-    LightGreen = "#87ff87",
-    DarkGreen = "#005f00",
-    Teal = "#008080",
-    Yellow = "#ffff00",
-    Orange = "#ffaf00",
-    Olive = "#808000",
-    GreenYellow = "#afff00",
-    Blue = "#0000ff",
-    DarkBlue = "#000087",
-    SkyBlue = "#87d7ff",
-    DodgerBlue = "#0087ff",
-    SteelBlue = "#5f87af",
     Cyan = "#00ffff",
     LightCyan = "#d7ffff",
 }
@@ -252,6 +252,7 @@ local M = {
     hlcode = hlcode,
     csi = csi,
     ansi = ansi,
+    rgb = rgb,
     erase = erase,
 }
 
@@ -272,6 +273,46 @@ for color, default_hl in pairs({
     end
     M["ansi_" .. color] = function(text)
         return ansi(text, color, nil)
+    end
+end
+
+for color, default_hl in pairs({
+    Black = "Comment",
+    Grey = "Comment",
+    Silver = "Comment",
+    Red = "Exception",
+    Maroon = "Exception",
+    IndianRed = "Exception",
+    Green = "Label",
+    LightGreen = "Label",
+    DarkGreen = "Label",
+    GreenYellow = "Label",
+    Teal = "Label",
+    Yellow = "LineNr",
+    Orange = "LineNr",
+    Olive = "LineNr",
+    Blue = "TabLine",
+    DarkBlue = "TabLine",
+    SkyBlue = "TabLine",
+    DodgerBlue = "TabLine",
+    SteelBlue = "TabLine",
+    Magenta = "Special",
+    DarkMagenta = "Special",
+    Pink = "Special",
+    LightPink = "Special",
+    DeepPink = "Special",
+    Purple = "Special",
+    Cyan = "String",
+    LightCyan = "String",
+}) do
+    --- @param text string
+    --- @param hl string|nil
+    --- @return string
+    M[color] = function(text, hl)
+        return rgb(text, color, hl or default_hl)
+    end
+    M["Rgb" .. color] = function(text)
+        return rgb(text, color, nil)
     end
 end
 
