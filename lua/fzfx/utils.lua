@@ -123,7 +123,7 @@ end
 --- @param t string?
 --- @return string
 local function string_ltrim(s, t)
-    t = t or "\n\t "
+    t = t or "\n\t\r "
     local i = 1
     while i <= #s do
         local c = string.byte(s, i)
@@ -146,7 +146,7 @@ end
 --- @param t string?
 --- @return string
 local function string_rtrim(s, t)
-    t = t or "\n\t "
+    t = t or "\n\t\r "
     local i = #s
     while i >= 1 do
         local c = string.byte(s, i)
