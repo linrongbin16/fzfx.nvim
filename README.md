@@ -246,6 +246,7 @@ Commands are named following below rules:
 Especially for git commands:
 
 - The remote git branch variant is named with `R` suffix.
+- The git files in current directory variant is named with `C` suffix.
 
 > Note: command names can be configured, see [Configuration](#-configuration).
 
@@ -731,6 +732,8 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Deprecate 'buffers' (`FzfxBuffers`) configs, notify user migrate to new schema.
 - 2023-09-11
   - Deprecate 'git_branches' (`FzfxGBranches`) configs, notify user migrate to new schema.
+- 2023-09-12
+  - Deprecate 'git_files' (`FzfxGFiles`) configs, notify user migrate to new schema.
 
 ## 🍀 Credit
 

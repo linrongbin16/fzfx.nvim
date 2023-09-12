@@ -378,7 +378,7 @@ local function lsp_definitions_provider(opts)
         opts.bufnr,
         opts.method,
         opts.position_params,
-        opts.timeout or 5000
+        opts.timeout or 3000
     )
     log.debug(
         "|fzfx.config - lsp_definitions_provider| opts:%s, lsp_results:%s, lsp_err:%s",
@@ -858,10 +858,10 @@ local Defaults = {
     }),
 
     -- the 'Git Files' commands
-    git_files = {
+    git_files = GroupConfig:make({
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxGFiles",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -870,9 +870,21 @@ local Defaults = {
                     complete = "dir",
                     desc = "Find git files",
                 },
-            },
+                default_provider = "workspace",
+            }),
+            CommandConfig:make({
+                name = "FzfxGFilesC",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find git files in current directory",
+                },
+                default_provider = "current_folder",
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxGFilesV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -880,27 +892,79 @@ local Defaults = {
                     range = true,
                     desc = "Find git files by visual select",
                 },
-            },
+                default_provider = "workspace",
+            }),
+            CommandConfig:make({
+                name = "FzfxGFilesCV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find git files in current directory by visual select",
+                },
+                default_provider = "current_folder",
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxGFilesW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find git files by cursor word",
                 },
-            },
+                default_provider = "workspace",
+            }),
+            CommandConfig:make({
+                name = "FzfxGFilesCW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find git files in current directory by cursor word",
+                },
+                default_provider = "current_folder",
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxGFilesP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find git files by yank text",
                 },
-            },
+                default_provider = "workspace",
+            }),
+            CommandConfig:make({
+                name = "FzfxGFilesCP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find git files in current directory by yank text",
+                },
+                default_provider = "current_folder",
+            }),
         },
-        providers = "git ls-files",
+        providers = {
+            current_folder = ProviderConfig:make({
+                key = "ctrl-u",
+                provider = "git ls-files",
+                line_type = ProviderLineTypeEnum.FILE,
+            }),
+            workspace = ProviderConfig:make({
+                key = "ctrl-w",
+                provider = "git ls-files :/",
+                line_type = ProviderLineTypeEnum.FILE,
+            }),
+        },
+        previewers = {
+            current_folder = PreviewerConfig:make({
+                previewer = make_file_previewer(),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+            workspace = PreviewerConfig:make({
+                previewer = make_file_previewer(),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit,
@@ -915,7 +979,7 @@ local Defaults = {
                 }
             end,
         },
-    },
+    }),
 
     -- the 'Git Branches' commands
     --- @type GroupConfig

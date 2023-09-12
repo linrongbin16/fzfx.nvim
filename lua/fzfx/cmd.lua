@@ -126,20 +126,16 @@ function Cmd:run(source, opts)
     return c
 end
 
+--- @return boolean
+function Cmd:wrong()
+    return self.result:wrong()
+end
+
 --- @class GitRootCmd
 --- @field result CmdResult?
 local GitRootCmd = {
     result = nil,
 }
-
---- @param result CmdResult
-local function cmd_result_wrong(result)
-    return type(result) == "table"
-        and type(result.stderr) == "table"
-        and #result.stderr > 0
-        and type(result.exitcode) == "number"
-        and result.exitcode ~= 0
-end
 
 --- @return GitRootCmd
 function GitRootCmd:run()
@@ -240,6 +236,7 @@ function GitCurrentBranchCmd:value()
 end
 
 local M = {
+    CmdResult = CmdResult,
     Cmd = Cmd,
     GitRootCmd = GitRootCmd,
     GitBranchCmd = GitBranchCmd,
