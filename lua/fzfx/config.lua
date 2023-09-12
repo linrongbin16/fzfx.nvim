@@ -145,7 +145,7 @@ end
 --- @return string[]?
 local function lsp_diagnostics_provider(opts)
     local active_lsp_clients = vim.lsp.get_active_clients()
-    if utils.list_isempty(active_lsp_clients) then
+    if active_lsp_clients == nil or vim.tbl_isempty(active_lsp_clients) then
         log.echo(LogLevel.INFO, "no active lsp clients.")
         return nil
     end
@@ -201,7 +201,7 @@ local function lsp_diagnostics_provider(opts)
     }
     for _, sign_opts in pairs(signs) do
         local sign_def = vim.fn.sign_getdefined(sign_opts.sign)
-        if not utils.list_isempty(sign_def) then
+        if type(sign_def) == "table" and not vim.tbl_isempty(sign_def) then
             sign_opts.text = sign_def[1].text
             sign_opts.texthl = sign_def[1].texthl
         end
@@ -214,7 +214,7 @@ local function lsp_diagnostics_provider(opts)
     table.sort(diag_results, function(a, b)
         return a.severity < b.severity
     end)
-    if utils.list_isempty(diag_results) then
+    if diag_results == nil or vim.tbl_isempty(diag_results) then
         log.echo(LogLevel.INFO, "no lsp diagnostics found.")
         return nil
     end
@@ -484,7 +484,7 @@ local function lsp_definitions_provider(opts)
         end
     end
 
-    if utils.list_isempty(def_lines) then
+    if def_lines == nil or vim.tbl_isempty(def_lines) then
         log.echo(LogLevel.INFO, "no lsp definitions found.")
         return nil
     end

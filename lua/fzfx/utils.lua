@@ -2,24 +2,6 @@
 
 local constants = require("fzfx.constants")
 
---- @param l table?
---- @return boolean
-local function list_isempty(l)
-    return l == nil or #l == 0
-end
-
---- @param l any[]
---- @param f fun(k:any,v:any):boolean
-local function list_filter(l, f)
-    local result = {}
-    for i, v in ipairs(l) do
-        if f(i, v) then
-            table.insert(result, v)
-        end
-    end
-    return result
-end
-
 --- @param bufnr integer
 --- @param name string
 --- @return any
@@ -307,8 +289,6 @@ function WindowOptsContext:restore()
 end
 
 local M = {
-    list_isempty = list_isempty,
-    list_filter = list_filter,
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
     is_buf_valid = is_buf_valid,
