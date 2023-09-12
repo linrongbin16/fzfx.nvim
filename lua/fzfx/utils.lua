@@ -4,7 +4,7 @@ local constants = require("fzfx.constants")
 
 --- @param l table?
 --- @return boolean
-local function list_empty(l)
+local function list_isempty(l)
     return l == nil or #l == 0
 end
 
@@ -307,7 +307,7 @@ function WindowOptsContext:restore()
 end
 
 local M = {
-    list_empty = list_empty,
+    list_isempty = list_isempty,
     list_filter = list_filter,
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,

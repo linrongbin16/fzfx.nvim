@@ -264,7 +264,7 @@ function ProviderSwitch:provide(name, query, context)
                 vim.inspect(self),
                 vim.inspect(result)
             )
-            if utils.list_empty(result) then
+            if utils.list_isempty(result) then
                 vim.fn.writefile({ "" }, self.resultfile)
             else
                 vim.fn.writefile(result, self.resultfile)
