@@ -172,7 +172,7 @@ local function lsp_diagnostics_provider(opts)
                         and "LspDiagnosticsSignWarn"
                     or "WarningMsg"
                 ),
-            textcolor = "yellow",
+            textcolor = "orange",
         },
         [3] = {
             severity = 3,
@@ -184,7 +184,7 @@ local function lsp_diagnostics_provider(opts)
                         and "LspDiagnosticsSignInfo"
                     or "None"
                 ),
-            textcolor = "blue",
+            textcolor = "teal",
         },
         [4] = {
             severity = 4,
@@ -196,7 +196,7 @@ local function lsp_diagnostics_provider(opts)
                         and "LspDiagnosticsSignHint"
                     or "Comment"
                 ),
-            textcolor = "cyan",
+            textcolor = "grey",
         },
     }
     for _, sign_opts in pairs(signs) do
