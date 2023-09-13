@@ -455,12 +455,13 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
                 table.insert(
                     help_builder,
                     color.render(
+                        color.magenta,
+                        "Special",
                         "%s to "
                             .. table.concat(
                                 vim.fn.split(interaction_name, "_"),
                                 " "
                             ),
-                        color.magenta,
                         string.upper(action_key)
                     )
                 )
@@ -476,12 +477,13 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
                     table.insert(
                         help_builder,
                         color.render(
+                            color.magenta,
+                            "Special",
                             "%s to "
                                 .. table.concat(
                                     vim.fn.split(provider_name2, "_"),
                                     " "
                                 ),
-                            color.magenta,
                             string.upper(switch_key2)
                         )
                     )
@@ -495,12 +497,13 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
                     table.insert(
                         help_builder,
                         color.render(
+                            color.magenta,
+                            "Special",
                             "%s to "
                                 .. table.concat(
                                     vim.fn.split(interaction_name, "_"),
                                     " "
                                 ),
-                            color.magenta,
                             string.upper(action_key)
                         )
                     )

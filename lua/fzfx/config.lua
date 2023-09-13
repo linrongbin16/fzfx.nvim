@@ -248,8 +248,7 @@ local function lsp_diagnostics_provider(opts)
     -- simulate rg's filepath color, see:
     -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
     -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-    local filepath_color = constants.is_windows and color.ansi_cyan
-        or color.ansi_magenta
+    local filepath_color = constants.is_windows and color.cyan or color.magenta
 
     local diag_lines = {}
     for _, diag in ipairs(diag_results) do
@@ -278,7 +277,7 @@ local function lsp_diagnostics_provider(opts)
             local line = string.format(
                 "%s:%s:%s:%s",
                 filepath_color(d.filename),
-                color.ansi_green(tostring(d.lnum)),
+                color.green(tostring(d.lnum)),
                 tostring(d.col),
                 dtext
             )
@@ -398,8 +397,7 @@ local function lsp_definitions_provider(opts)
         return nil
     end
 
-    local filepath_color = constants.is_windows and color.ansi_cyan
-        or color.ansi_magenta
+    local filepath_color = constants.is_windows and color.cyan or color.magenta
 
     --- @param loc LspLocation|LspLocationLink
     --- @return string?
@@ -443,7 +441,7 @@ local function lsp_definitions_provider(opts)
         local loc_line = lsp_location_render_line(
             filelines[range.start.line + 1],
             range,
-            color.ansi_red
+            color.red
         )
         log.debug(
             "|fzfx.config - lsp_definitions_provider.process_location| range:%s, loc_line:%s",
@@ -453,7 +451,7 @@ local function lsp_definitions_provider(opts)
         local line = string.format(
             "%s:%s:%s:%s",
             filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
-            color.ansi_green(tostring(range.start.line + 1)),
+            color.green(tostring(range.start.line + 1)),
             tostring(range.start.character + 1),
             loc_line
         )
