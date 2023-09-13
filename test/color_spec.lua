@@ -58,12 +58,23 @@ describe("color", function()
     describe("[ansi]", function()
         local ansigroups = {
             black = "Comment",
+            grey = "Comment",
+            silver = "Comment",
+            white = "Comment",
             red = "Exception",
-            green = "Label",
-            yellow = "LineNr",
-            blue = "TabLine",
             magenta = "Special",
+            fuchsia = "Special",
+            purple = "Special",
+            yellow = "LineNr",
+            orange = "LineNr",
+            olive = "LineNr",
+            green = "Label",
+            lime = "Label",
+            teal = "Label",
             cyan = "String",
+            aqua = "String",
+            blue = "TabLine",
+            navy = "TabLine",
         }
 
         -- see: https://stackoverflow.com/a/55324681/4438921
