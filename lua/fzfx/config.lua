@@ -376,6 +376,29 @@ end
 --- @param opts LspDefinitionOpts
 --- @return string[]?
 local function lsp_definitions_provider(opts)
+    local lsp_clients = vim.lsp.get_active_clients({ bufnr = opts.bufnr })
+    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+        log.echo(LogLevel.INFO, "no active lsp clients.")
+        return nil
+    end
+    log.debug(
+        "|fzfx.config - lsp_definitions_provider| lsp_clients:%s",
+        vim.inspect(lsp_clients)
+    )
+    local method_support = false
+    for _, lsp_client in ipairs(lsp_clients) do
+        if lsp_client.server_capabilities.definitionProvider then
+            method_support = true
+            break
+        end
+    end
+    if not method_support then
+        log.echo(
+            LogLevel.INFO,
+            string.format("method %s not supported.", vim.inspect(opts.method))
+        )
+        return nil
+    end
     local lsp_results, lsp_err = vim.lsp.buf_request_sync(
         opts.bufnr,
         opts.method,
