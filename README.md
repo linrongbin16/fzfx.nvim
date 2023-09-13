@@ -715,7 +715,7 @@ If you have encounter some breaks on configuration, please see [Break Changes](#
 
 ### Create your own commands
 
-To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/c521e3027b26b4ffe1a49a5b1ceba6669ae62b6c/lua/fzfx/schema.lua#L1).
+To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
 ## 💩 Break Changes
 
