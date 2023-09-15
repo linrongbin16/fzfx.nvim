@@ -21,12 +21,15 @@
 
 <!-- > Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes. -->
 
-E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
+<p align="center"> E(x)tended commands missing in <a href="https://github.com/junegunn/fzf.vim">fzf.vim</a>. </p>
 
-This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
+
+> This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
+
+Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more features & use cases.
 
 - [Feature](#-feature)
-  - [Demo](#demo)
 - [Requirement](#-requirement)
   - [Windows](#windows)
   - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
@@ -64,16 +67,6 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - ...
 
 > Actually all above features are built on an engine that support fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#-configuration) and [Wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
-
-### Demo
-
-Search `fzfx` with rg's `-g *ch.lua` option.
-
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
-
-Navigate lsp symbols: definitions, references.
-
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/3933f5f3-f45b-4772-a8e1-6cf8e97ca5be
 
 ## ✅ Requirement
 
