@@ -74,6 +74,7 @@ local default_fzf_options = {
     preview_half_page_down = "--bind=ctrl-f:preview-half-page-down",
     preview_half_page_up = "--bind=ctrl-b:preview-half-page-up",
     no_multi = "--no-multi",
+    lsp_preview_window = { "--preview-window", "left,60%,+{2}-/2" },
 }
 
 local default_git_log_pretty =
@@ -1657,8 +1658,8 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
+            default_fzf_options.lsp_preview_window,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
             {
                 "--prompt",
                 "Definitions > ",
@@ -1704,8 +1705,8 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
+            default_fzf_options.lsp_preview_window,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
             {
                 "--prompt",
                 "TypeDefinitions > ",
@@ -1751,8 +1752,8 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
+            default_fzf_options.lsp_preview_window,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
             {
                 "--prompt",
                 "References > ",
@@ -1798,8 +1799,8 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
+            default_fzf_options.lsp_preview_window,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
             {
                 "--prompt",
                 "Implementations > ",
