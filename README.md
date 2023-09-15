@@ -442,6 +442,30 @@ Especially for git commands:
     <td>Yes</td>
     <td></td>
   </tr>
+  <tr>
+    <td>Lsp Type Definitions</td>
+    <td>FzfxLspTypeDefinitions</td>
+    <td>N</td>
+    <td>Yes</td>
+    <td>Yes</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Lsp References</td>
+    <td>FzfxLspReferences</td>
+    <td>N</td>
+    <td>Yes</td>
+    <td>Yes</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Lsp Implementations</td>
+    <td>FzfxLspImplementations</td>
+    <td>N</td>
+    <td>Yes</td>
+    <td>Yes</td>
+    <td></td>
+  </tr>
 </tbody>
 </table>
 
@@ -544,10 +568,19 @@ nnoremap <space>wdg :\<C-U>FzfxLspDiagnosticsW<CR>
 nnoremap <space>pdg :\<C-U>FzfxLspDiagnosticsP<CR>
 
 
-" ======== lsp definitions ========
+" ======== lsp definitions/type definitions/references/implementations ========
 
 " lsp definitions
 nnoremap gd :\<C-U>FzfxLspDefinitions<CR>
+
+" lsp type definitions
+nnoremap gt :\<C-U>FzfxLspTypeDefinitions<CR>
+
+" lsp references
+nnoremap gr :\<C-U>FzfxLspReferences<CR>
+
+" lsp implementations
+nnoremap gi :\<C-U>FzfxLspImplementations<CR>
 
 ```
 
@@ -697,11 +730,23 @@ vim.keymap.set('n', '<space>wdg', '<cmd>FzfxLspDiagnosticsW<cr>',
 vim.keymap.set('n', '<space>pdg', '<cmd>FzfxLspDiagnosticsP<cr>',
         {silent=true, noremap=true, desc="Search lsp diagnostics by yank text"})
 
--- ======== lsp definitions ========
+-- ======== lsp definitions/type definitions/references/implementations ========
 
 -- lsp definitions
 vim.keymap.set('n', 'gd', '<cmd>FzfxLspDefinitions<cr>',
         {silent=true, noremap=true, desc="Search lsp definitions"})
+
+-- lsp type definitions
+vim.keymap.set('n', 'gt', '<cmd>FzfxLspTypeDefinitions<cr>',
+        {silent=true, noremap=true, desc="Search lsp type definitions"})
+
+-- lsp references
+vim.keymap.set('n', 'gr', '<cmd>FzfxLspReferences<cr>',
+        {silent=true, noremap=true, desc="Search lsp references"})
+
+-- lsp implementations
+vim.keymap.set('n', 'gi', '<cmd>FzfxLspImplementations<cr>',
+        {silent=true, noremap=true, desc="Search lsp implementations"})
 
 ```
 
