@@ -58,6 +58,15 @@ local function setup(options)
     -- lsp definitions
     general.setup("lsp_definitions", configs.lsp_definitions)
 
+    -- lsp type definitions
+    general.setup("lsp_type_definitions", configs.lsp_type_definitions)
+
+    -- lsp references
+    general.setup("lsp_references", configs.lsp_references)
+
+    -- lsp implementations
+    general.setup("lsp_implementations", configs.lsp_implementations)
+
     -- yank history
     require("fzfx.yank_history").setup()
 
