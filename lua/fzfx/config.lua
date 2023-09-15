@@ -1668,7 +1668,7 @@ local Defaults = {
         },
         win_opts = {
             relative = "cursor",
-            height = 0.65,
+            height = 0.45,
             width = 1,
             row = 0,
             col = 0,
@@ -1725,7 +1725,7 @@ local Defaults = {
         },
         win_opts = {
             relative = "cursor",
-            height = 0.65,
+            height = 0.45,
             width = 1,
             row = 0,
             col = 0,
@@ -1782,7 +1782,7 @@ local Defaults = {
         },
         win_opts = {
             relative = "cursor",
-            height = 0.65,
+            height = 0.45,
             width = 1,
             row = 0,
             col = 0,
@@ -1839,7 +1839,7 @@ local Defaults = {
         },
         win_opts = {
             relative = "cursor",
-            height = 0.65,
+            height = 0.45,
             width = 1,
             row = 0,
             col = 0,
