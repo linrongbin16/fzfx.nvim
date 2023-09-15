@@ -24,6 +24,15 @@ E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
 
+> Search `fzfx` with rg's `-g *ch.lua` option.
+
+
+
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/3933f5f3-f45b-4772-a8e1-6cf8e97ca5be
+
+> Navigate lsp symbols: definitions, references.
+
+
 <!-- > Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes. -->
 
 This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
