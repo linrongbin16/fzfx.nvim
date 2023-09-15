@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Neovim Typecheck linter
         uses: stevearc/nvim-typecheck-action@v1
         with:
@@ -26,23 +26,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Luacheck linter
         uses: lunarmodules/luacheck@v1
         with:
           args: lua --config .luacheckrc
   unit_test:
-    name: Unit test
+    name: Unit Test
+    strategy:
+      matrix:
+        nvim_version: [stable, nightly, v0.5.0]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup neovim
         uses: rhysd/action-setup-vim@v1
         id: vim
         with:
           neovim: true
-          version: stable
+          version: ${{ matrix.nvim_version }}
       - name: Install luajit
         uses: leafo/gh-actions-lua@v10
         with:
