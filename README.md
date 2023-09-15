@@ -15,29 +15,18 @@
 [![license](https://img.shields.io/github/license/linrongbin16/lin.nvim)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
 [![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
 -->
-
 <!-- ![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black) -->
 <!-- ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white) -->
 <!-- ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white) -->
 
-E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
-
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
-
-> Search `fzfx` with rg's `-g *ch.lua` option.
-
-
-
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/3933f5f3-f45b-4772-a8e1-6cf8e97ca5be
-
-> Navigate lsp symbols: definitions, references.
-
-
 <!-- > Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes. -->
+
+E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
 
 This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
 
 - [Feature](#-feature)
+  - [Demo](#demo)
 - [Requirement](#-requirement)
   - [Windows](#windows)
   - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
@@ -75,6 +64,16 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - ...
 
 > Actually all above features are built on an engine that support fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#-configuration) and [Wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
+
+### Demo
+
+Search `fzfx` with rg's `-g *ch.lua` option.
+
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
+
+Navigate lsp symbols: definitions, references.
+
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/3933f5f3-f45b-4772-a8e1-6cf8e97ca5be
 
 ## ✅ Requirement
 
