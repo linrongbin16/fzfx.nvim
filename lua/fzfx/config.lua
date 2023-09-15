@@ -1658,7 +1658,7 @@ local Defaults = {
         fzf_opts = {
             default_fzf_options.multi,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
+            { "--preview-window", "left,60%,+{2}-/2" },
             {
                 "--prompt",
                 "Definitions > ",
@@ -1705,7 +1705,7 @@ local Defaults = {
         fzf_opts = {
             default_fzf_options.multi,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
+            { "--preview-window", "left,60%,+{2}-/2" },
             {
                 "--prompt",
                 "TypeDefinitions > ",
@@ -1752,7 +1752,7 @@ local Defaults = {
         fzf_opts = {
             default_fzf_options.multi,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
+            { "--preview-window", "left,60%,+{2}-/2" },
             {
                 "--prompt",
                 "References > ",
@@ -1799,7 +1799,7 @@ local Defaults = {
         fzf_opts = {
             default_fzf_options.multi,
             { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
+            { "--preview-window", "left,60%,+{2}-/2" },
             {
                 "--prompt",
                 "Implementations > ",
