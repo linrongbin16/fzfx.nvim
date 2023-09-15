@@ -15,18 +15,17 @@
 [![license](https://img.shields.io/github/license/linrongbin16/lin.nvim)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
 [![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
 -->
-
 <!-- ![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black) -->
 <!-- ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white) -->
 <!-- ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white) -->
 
-E(x)tended commands missing in [fzf.vim](https://github.com/junegunn/fzf.vim).
+<!-- > Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes. -->
+
+<p align="center"> E(x)tended commands missing in <a href="https://github.com/junegunn/fzf.vim">fzf.vim</a>. </p>
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
 
-<!-- > Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes. -->
-
-This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.vim), a brand new fzf plugin for Neovim, build from scratch, focused on user friendly, customization and performance.
+> Search `fzfx` with rg's `-g *ch.lua` option.
 
 - [Feature](#-feature)
 - [Requirement](#-requirement)
@@ -66,6 +65,8 @@ This is the next generation of [fzfx.vim](https://github.com/linrongbin16/fzfx.v
 - ...
 
 > Actually all above features are built on an engine that support fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#-configuration) and [Wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
+>
+> Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more features & use cases.
 
 ## ✅ Requirement
 

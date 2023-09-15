@@ -14,7 +14,7 @@ local PopupWindow = {
 }
 
 --- @class PopupWindowOpts
---- @field relative "editor"|"win"|nil
+--- @field relative "editor"|"win"|"cursor"|nil
 --- @field width integer|nil
 --- @field height integer|nil
 --- @field row integer|nil
@@ -40,23 +40,33 @@ end
 --- @param win_opts Configs
 --- @return PopupWindowOpts
 local function make_popup_window_opts(win_opts)
-    --- @type integer
-    local columns = vim.o.columns
-    --- @type integer
-    local lines = vim.o.lines
+    --- @type "editor"|"win"|"cursor"
+    local relative = win_opts.relative or "editor"
+
+    local total_width = vim.o.columns
+    local total_height = vim.o.lines
+
+    if relative == "win" then
+        total_width = vim.api.nvim_win_get_width(0)
+        total_height = vim.api.nvim_win_get_height(0)
+    elseif relative == "cursor" then
+        total_width = vim.api.nvim_win_get_width(0)
+        total_height = vim.api.nvim_win_get_height(0)
+    end
+
     --- @type integer
     local width = safe_range(
         3,
         win_opts.width > 1 and win_opts.width
-            or math.floor(columns * win_opts.width),
-        columns
+            or math.floor(total_width * win_opts.width),
+        total_width
     )
     --- @type integer
     local height = safe_range(
         3,
         win_opts.height > 1 and win_opts.height
-            or math.floor(lines * win_opts.height),
-        lines
+            or math.floor(total_height * win_opts.height),
+        total_height
     )
     --- @type integer
     local row = nil
@@ -68,20 +78,28 @@ local function make_popup_window_opts(win_opts)
             "error! invalid option win_opts.row '%s'!",
             vim.inspect(win_opts.row)
         )
-    else
-        local base_row = math.floor((lines - height) * 0.5)
-        if win_opts.row >= 0 then
-            local shift_row = win_opts.row < 1
-                    and math.floor((lines - height) * win_opts.row)
-                or win_opts.row
-            row = safe_range(0, base_row + shift_row, lines - height)
-        else
-            local shift_row = win_opts.row > -1
-                    and math.ceil((lines - height) * win_opts.row)
-                or win_opts.row
-            row = safe_range(0, base_row + shift_row, lines - height)
+    end
+
+    local base_row = math.floor((total_height - height) * 0.5)
+    if relative == "cursor" then
+        --- @type {[1]:integer,[2]:integer}
+        local cursor_pos = vim.api.nvim_win_get_cursor(0)
+        if type(cursor_pos) == "table" and not vim.tbl_isempty(cursor_pos) then
+            base_row = cursor_pos[1]
         end
     end
+    if win_opts.row >= 0 then
+        local shift_row = win_opts.row < 1
+                and math.floor((total_height - height) * win_opts.row)
+            or win_opts.row
+        row = safe_range(0, base_row + shift_row, total_height - height)
+    else
+        local shift_row = win_opts.row > -1
+                and math.ceil((total_height - height) * win_opts.row)
+            or win_opts.row
+        row = safe_range(0, base_row + shift_row, total_height - height)
+    end
+
     --- @type integer
     local col = nil
     if
@@ -92,26 +110,33 @@ local function make_popup_window_opts(win_opts)
             "error! invalid option win_opts.col '%s'!",
             vim.inspect(win_opts.col)
         )
-    else
-        local base_col = math.floor((columns - width) * 0.5)
-        if win_opts.col >= 0 then
-            local shift_col = win_opts.col < 1
-                    and math.floor((columns - width) * win_opts.col)
-                or win_opts.col
-            col = safe_range(0, base_col + shift_col, columns - width)
-        else
-            local shift_col = win_opts.col > -1
-                    and math.ceil((columns - width) * win_opts.col)
-                or win_opts.col
-            col = safe_range(0, base_col + shift_col, columns - width)
+    end
+
+    local base_col = math.floor((total_width - width) * 0.5)
+    if relative == "cursor" then
+        --- @type {row:integer,col:integer}
+        local cursor_pos = vim.api.nvim_win_get_cursor(0)
+        if type(cursor_pos) == "table" and not vim.tbl_isempty(cursor_pos) then
+            base_col = cursor_pos[2]
         end
+    end
+    if win_opts.col >= 0 then
+        local shift_col = win_opts.col < 1
+                and math.floor((total_width - width) * win_opts.col)
+            or win_opts.col
+        col = safe_range(0, base_col + shift_col, total_width - width)
+    else
+        local shift_col = win_opts.col > -1
+                and math.ceil((total_width - width) * win_opts.col)
+            or win_opts.col
+        col = safe_range(0, base_col + shift_col, total_width - width)
     end
 
     --- @type PopupWindowOpts
     local popup_window_opts =
         vim.tbl_deep_extend("force", vim.deepcopy(PopupWindowOpts), {
             anchor = "NW",
-            relative = "editor",
+            relative = relative,
             width = width,
             height = height,
             -- start point on NW
