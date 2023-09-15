@@ -82,10 +82,10 @@ local function make_popup_window_opts(win_opts)
 
     local base_row = math.floor((total_height - height) * 0.5)
     if relative == "cursor" then
-        --- @type {row:integer,col:integer}
+        --- @type {[1]:integer,[2]:integer}
         local cursor_pos = vim.api.nvim_win_get_cursor(0)
         if type(cursor_pos) == "table" and not vim.tbl_isempty(cursor_pos) then
-            base_row = cursor_pos.row
+            base_row = cursor_pos[1]
         end
     end
     if win_opts.row >= 0 then
@@ -117,7 +117,7 @@ local function make_popup_window_opts(win_opts)
         --- @type {row:integer,col:integer}
         local cursor_pos = vim.api.nvim_win_get_cursor(0)
         if type(cursor_pos) == "table" and not vim.tbl_isempty(cursor_pos) then
-            base_col = cursor_pos.col
+            base_col = cursor_pos[2]
         end
     end
     if win_opts.col >= 0 then
