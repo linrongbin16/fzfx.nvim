@@ -370,24 +370,25 @@ local function lsp_position_context_maker()
     return context
 end
 
---- @alias LspMethod "textDocument/definition"|"textDocument/tyep_definition"|"textDocument/reference"|"textDocument/implementation"
+--- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/reference"|"textDocument/implementation"
+--- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referenceProvider"|"implementationProvider"
 
---- @alias LspDefinitionOpts {method:LspMethod,bufnr:integer,timeout:integer?,position_params:any?}
+--- @alias LspDefinitionOpts {method:LspMethod,capability:LspServerCapability,bufnr:integer,timeout:integer?,position_params:any?}
 --- @param opts LspDefinitionOpts
 --- @return string[]?
-local function lsp_definitions_provider(opts)
+local function lsp_locations_provider(opts)
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = opts.bufnr })
     if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
         log.echo(LogLevel.INFO, "no active lsp clients.")
         return nil
     end
     log.debug(
-        "|fzfx.config - lsp_definitions_provider| lsp_clients:%s",
+        "|fzfx.config - lsp_locations_provider| lsp_clients:%s",
         vim.inspect(lsp_clients)
     )
     local method_support = false
     for _, lsp_client in ipairs(lsp_clients) do
-        if lsp_client.server_capabilities.definitionProvider then
+        if lsp_client.server_capabilities[opts.capability] then
             method_support = true
             break
         end
@@ -406,7 +407,7 @@ local function lsp_definitions_provider(opts)
         opts.timeout or 3000
     )
     log.debug(
-        "|fzfx.config - lsp_definitions_provider| opts:%s, lsp_results:%s, lsp_err:%s",
+        "|fzfx.config - lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
         vim.inspect(opts),
         vim.inspect(lsp_results),
         vim.inspect(lsp_err)
@@ -430,14 +431,14 @@ local function lsp_definitions_provider(opts)
         --- @type LspLocationRange
         local range = nil
         log.debug(
-            "|fzfx.config - lsp_definitions_provider.process_location| loc:%s",
+            "|fzfx.config - lsp_locations_provider.process_location| loc:%s",
             vim.inspect(loc)
         )
         if is_lsp_location(loc) then
             filename = path.reduce(vim.uri_to_fname(loc.uri))
             range = loc.range
             log.debug(
-                "|fzfx.config - lsp_definitions_provider.process_location| location filename:%s, range:%s",
+                "|fzfx.config - lsp_locations_provider.process_location| location filename:%s, range:%s",
                 vim.inspect(filename),
                 vim.inspect(range)
             )
@@ -446,7 +447,7 @@ local function lsp_definitions_provider(opts)
             filename = path.reduce(vim.uri_to_fname(loc.targetUri))
             range = loc.targetRange
             log.debug(
-                "|fzfx.config - lsp_definitions_provider.process_location| locationlink filename:%s, range:%s",
+                "|fzfx.config - lsp_locations_provider.process_location| locationlink filename:%s, range:%s",
                 vim.inspect(filename),
                 vim.inspect(range)
             )
@@ -467,7 +468,7 @@ local function lsp_definitions_provider(opts)
             color.red
         )
         log.debug(
-            "|fzfx.config - lsp_definitions_provider.process_location| range:%s, loc_line:%s",
+            "|fzfx.config - lsp_locations_provider.process_location| range:%s, loc_line:%s",
             vim.inspect(range),
             vim.inspect(loc_line)
         )
@@ -479,7 +480,7 @@ local function lsp_definitions_provider(opts)
             loc_line
         )
         log.debug(
-            "|fzfx.config - lsp_definitions_provider| line:%s",
+            "|fzfx.config - lsp_locations_provider| line:%s",
             vim.inspect(line)
         )
         return line
@@ -1632,8 +1633,9 @@ local Defaults = {
         providers = ProviderConfig:make({
             key = "default",
             provider = function(query, context)
-                return lsp_definitions_provider({
+                return lsp_locations_provider({
                     method = "textDocument/definition",
+                    capability = "definitionProvider",
                     bufnr = context.bufnr,
                     position_params = context.position_params,
                 })
@@ -1660,6 +1662,147 @@ local Defaults = {
             {
                 "--prompt",
                 "Definitions > ",
+            },
+        },
+    }),
+
+    -- the 'Lsp Type Definitions' command
+    --- @type GroupConfig
+    lsp_type_definitions = GroupConfig:make({
+        commands = CommandConfig:make({
+            name = "FzfxLspTypeDefinitions",
+            feed = CommandFeedEnum.ARGS,
+            opts = {
+                bang = true,
+                desc = "Search lsp type definitions",
+            },
+        }),
+        providers = ProviderConfig:make({
+            key = "default",
+            provider = function(query, context)
+                return lsp_locations_provider({
+                    method = "textDocument/type_definition",
+                    capability = "typeDefinitionProvider",
+                    bufnr = context.bufnr,
+                    position_params = context.position_params,
+                })
+            end,
+            provider_type = ProviderTypeEnum.LIST,
+            context_maker = lsp_position_context_maker,
+            line_type = ProviderLineTypeEnum.FILE,
+            line_delimiter = ":",
+            line_pos = 1,
+        }),
+        previewers = PreviewerConfig:make({
+            previewer = make_file_previewer(":", 1, 2),
+            previewer_type = PreviewerTypeEnum.COMMAND,
+        }),
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
+        },
+        fzf_opts = {
+            default_fzf_options.multi,
+            { "--delimiter", ":" },
+            { "--preview-window", "+{2}-/2" },
+            {
+                "--prompt",
+                "TypeDefinitions > ",
+            },
+        },
+    }),
+
+    -- the 'Lsp References' command
+    --- @type GroupConfig
+    lsp_references = GroupConfig:make({
+        commands = CommandConfig:make({
+            name = "FzfxLspReferences",
+            feed = CommandFeedEnum.ARGS,
+            opts = {
+                bang = true,
+                desc = "Search lsp references",
+            },
+        }),
+        providers = ProviderConfig:make({
+            key = "default",
+            provider = function(query, context)
+                return lsp_locations_provider({
+                    method = "textDocument/reference",
+                    capability = "referenceProvider",
+                    bufnr = context.bufnr,
+                    position_params = context.position_params,
+                })
+            end,
+            provider_type = ProviderTypeEnum.LIST,
+            context_maker = lsp_position_context_maker,
+            line_type = ProviderLineTypeEnum.FILE,
+            line_delimiter = ":",
+            line_pos = 1,
+        }),
+        previewers = PreviewerConfig:make({
+            previewer = make_file_previewer(":", 1, 2),
+            previewer_type = PreviewerTypeEnum.COMMAND,
+        }),
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
+        },
+        fzf_opts = {
+            default_fzf_options.multi,
+            { "--delimiter", ":" },
+            { "--preview-window", "+{2}-/2" },
+            {
+                "--prompt",
+                "References > ",
+            },
+        },
+    }),
+
+    -- the 'Lsp Implementations' command
+    --- @type GroupConfig
+    lsp_implementations = GroupConfig:make({
+        commands = CommandConfig:make({
+            name = "FzfxLspImplementations",
+            feed = CommandFeedEnum.ARGS,
+            opts = {
+                bang = true,
+                desc = "Search lsp implementations",
+            },
+        }),
+        providers = ProviderConfig:make({
+            key = "default",
+            provider = function(query, context)
+                return lsp_locations_provider({
+                    method = "textDocument/implementation",
+                    capability = "implementationProvider",
+                    bufnr = context.bufnr,
+                    position_params = context.position_params,
+                })
+            end,
+            provider_type = ProviderTypeEnum.LIST,
+            context_maker = lsp_position_context_maker,
+            line_type = ProviderLineTypeEnum.FILE,
+            line_delimiter = ":",
+            line_pos = 1,
+        }),
+        previewers = PreviewerConfig:make({
+            previewer = make_file_previewer(":", 1, 2),
+            previewer_type = PreviewerTypeEnum.COMMAND,
+        }),
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
+        },
+        fzf_opts = {
+            default_fzf_options.multi,
+            { "--delimiter", ":" },
+            { "--preview-window", "+{2}-/2" },
+            {
+                "--prompt",
+                "Implementations > ",
             },
         },
     }),
