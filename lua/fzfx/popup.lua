@@ -14,7 +14,7 @@ local PopupWindow = {
 }
 
 --- @class PopupWindowOpts
---- @field relative "editor"|"win"|nil
+--- @field relative "editor"|"win"|"cursor"|"mouse"|nil
 --- @field width integer|nil
 --- @field height integer|nil
 --- @field row integer|nil
@@ -40,23 +40,27 @@ end
 --- @param win_opts Configs
 --- @return PopupWindowOpts
 local function make_popup_window_opts(win_opts)
-    --- @type integer
-    local columns = vim.o.columns
-    --- @type integer
-    local lines = vim.o.lines
+    --- @type "editor"|"win"|"cursor"|"mouse"
+    local relative = win_opts.relative or "editor"
+
+    local total_width = relative == "editor" and vim.o.columns
+        or vim.api.nvim_win_get_width(0)
+    local total_height = relative == "editor" and vim.o.lines
+        or vim.api.nvim_win_get_height(0)
+
     --- @type integer
     local width = safe_range(
         3,
         win_opts.width > 1 and win_opts.width
-            or math.floor(columns * win_opts.width),
-        columns
+            or math.floor(total_width * win_opts.width),
+        total_width
     )
     --- @type integer
     local height = safe_range(
         3,
         win_opts.height > 1 and win_opts.height
-            or math.floor(lines * win_opts.height),
-        lines
+            or math.floor(total_height * win_opts.height),
+        total_height
     )
     --- @type integer
     local row = nil
@@ -69,17 +73,17 @@ local function make_popup_window_opts(win_opts)
             vim.inspect(win_opts.row)
         )
     else
-        local base_row = math.floor((lines - height) * 0.5)
+        local base_row = math.floor((total_height - height) * 0.5)
         if win_opts.row >= 0 then
             local shift_row = win_opts.row < 1
-                    and math.floor((lines - height) * win_opts.row)
+                    and math.floor((total_height - height) * win_opts.row)
                 or win_opts.row
-            row = safe_range(0, base_row + shift_row, lines - height)
+            row = safe_range(0, base_row + shift_row, total_height - height)
         else
             local shift_row = win_opts.row > -1
-                    and math.ceil((lines - height) * win_opts.row)
+                    and math.ceil((total_height - height) * win_opts.row)
                 or win_opts.row
-            row = safe_range(0, base_row + shift_row, lines - height)
+            row = safe_range(0, base_row + shift_row, total_height - height)
         end
     end
     --- @type integer
@@ -93,17 +97,17 @@ local function make_popup_window_opts(win_opts)
             vim.inspect(win_opts.col)
         )
     else
-        local base_col = math.floor((columns - width) * 0.5)
+        local base_col = math.floor((total_width - width) * 0.5)
         if win_opts.col >= 0 then
             local shift_col = win_opts.col < 1
-                    and math.floor((columns - width) * win_opts.col)
+                    and math.floor((total_width - width) * win_opts.col)
                 or win_opts.col
-            col = safe_range(0, base_col + shift_col, columns - width)
+            col = safe_range(0, base_col + shift_col, total_width - width)
         else
             local shift_col = win_opts.col > -1
-                    and math.ceil((columns - width) * win_opts.col)
+                    and math.ceil((total_width - width) * win_opts.col)
                 or win_opts.col
-            col = safe_range(0, base_col + shift_col, columns - width)
+            col = safe_range(0, base_col + shift_col, total_width - width)
         end
     end
 
@@ -111,7 +115,7 @@ local function make_popup_window_opts(win_opts)
     local popup_window_opts =
         vim.tbl_deep_extend("force", vim.deepcopy(PopupWindowOpts), {
             anchor = "NW",
-            relative = "editor",
+            relative = relative,
             width = width,
             height = height,
             -- start point on NW

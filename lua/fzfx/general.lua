@@ -755,8 +755,26 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
     fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
     local actions = pipeline_configs.actions
+    local win_opts = nil
+    if bang then
+        win_opts = vim.tbl_deep_extend(
+            "force",
+            vim.deepcopy(win_opts or {}),
+            { height = 1, width = 1, row = 0, col = 0 }
+        )
+    end
+    if
+        type(pipeline_configs.win_opts) == "table"
+        and not vim.tbl_isempty(pipeline_configs.win_opts)
+    then
+        win_opts = vim.tbl_deep_extend(
+            "force",
+            vim.deepcopy(win_opts or {}),
+            pipeline_configs.win_opts
+        )
+    end
     local p = Popup:new(
-        bang and { height = 1, width = 1, row = 0, col = 0 } or nil,
+        win_opts or {},
         query_command,
         fzf_opts,
         actions,

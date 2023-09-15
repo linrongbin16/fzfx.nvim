@@ -1665,6 +1665,15 @@ local Defaults = {
                 "Definitions > ",
             },
         },
+        win_opts = {
+            relative = "cursor",
+            height = 0.45,
+            width = 1,
+            row = 0,
+            col = 0,
+            border = "none",
+            zindex = 51,
+        },
     }),
 
     -- the 'Lsp Type Definitions' command
@@ -1711,6 +1720,15 @@ local Defaults = {
                 "--prompt",
                 "TypeDefinitions > ",
             },
+        },
+        win_opts = {
+            relative = "cursor",
+            height = 0.35,
+            width = 1,
+            row = 0,
+            col = 0,
+            border = "none",
+            zindex = 51,
         },
     }),
 
@@ -1759,6 +1777,15 @@ local Defaults = {
                 "References > ",
             },
         },
+        win_opts = {
+            relative = "cursor",
+            height = 0.35,
+            width = 1,
+            row = 0,
+            col = 0,
+            border = "none",
+            zindex = 51,
+        },
     }),
 
     -- the 'Lsp Implementations' command
@@ -1805,6 +1832,15 @@ local Defaults = {
                 "--prompt",
                 "Implementations > ",
             },
+        },
+        win_opts = {
+            relative = "cursor",
+            height = 0.35,
+            width = 1,
+            row = 0,
+            col = 0,
+            border = "none",
+            zindex = 51,
         },
     }),
 
