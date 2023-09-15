@@ -442,6 +442,30 @@ Especially for git commands:
     <td>Yes</td>
     <td></td>
   </tr>
+  <tr>
+    <td>Lsp Type Definitions</td>
+    <td>FzfxLspTypeDefinitions</td>
+    <td>N</td>
+    <td>Yes</td>
+    <td>Yes</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Lsp References</td>
+    <td>FzfxLspReferences</td>
+    <td>N</td>
+    <td>Yes</td>
+    <td>Yes</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Lsp Implementations</td>
+    <td>FzfxLspImplementations</td>
+    <td>N</td>
+    <td>Yes</td>
+    <td>Yes</td>
+    <td></td>
+  </tr>
 </tbody>
 </table>
 

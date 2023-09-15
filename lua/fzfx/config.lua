@@ -370,8 +370,8 @@ local function lsp_position_context_maker()
     return context
 end
 
---- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/reference"|"textDocument/implementation"
---- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referenceProvider"|"implementationProvider"
+--- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"
+--- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"
 
 --- @alias LspDefinitionOpts {method:LspMethod,capability:LspServerCapability,bufnr:integer,timeout:integer?,position_params:any?}
 --- @param opts LspDefinitionOpts
@@ -1728,8 +1728,8 @@ local Defaults = {
             key = "default",
             provider = function(query, context)
                 return lsp_locations_provider({
-                    method = "textDocument/reference",
-                    capability = "referenceProvider",
+                    method = "textDocument/references",
+                    capability = "referencesProvider",
                     bufnr = context.bufnr,
                     position_params = context.position_params,
                 })
