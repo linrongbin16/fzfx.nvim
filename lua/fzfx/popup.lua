@@ -80,10 +80,8 @@ local function make_popup_window_opts(win_opts)
         local first_line = vim.fn.line("w0")
         local last_line = vim.fn.line("w$")
         base_row = cursor_pos[1] - first_line
-        height = utils.number_bound(
-            5,
-            utils.number_bound(last_line - cursor_pos[1], height)
-        )
+        height =
+            utils.number_bound(5, math.min(last_line - cursor_pos[1], height))
         log.debug(
             "|fzfx.popup - make_popup_window_opts| cursor_pos:%s, base_row:%s, first_line:%s, last_line:%s, height:%s",
             vim.inspect(cursor_pos),
