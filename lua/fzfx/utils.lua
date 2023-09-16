@@ -147,6 +147,14 @@ local function string_rtrim(s, t)
     return s:sub(1, i)
 end
 
+--- @param left number?
+--- @param value number
+--- @param right number?
+--- @return number
+local function number_bound(left, value, right)
+    return math.min(math.max(left or -2147483648, value), right or 2147483647)
+end
+
 --- @class ShellOptsContext
 --- @field shell string?
 --- @field shellslash string?
@@ -300,6 +308,7 @@ local M = {
     string_rfind = string_rfind,
     string_ltrim = string_ltrim,
     string_rtrim = string_rtrim,
+    number_bound = number_bound,
     ShellOptsContext = ShellOptsContext,
     shellescape = shellescape,
     WindowOptsContext = WindowOptsContext,
