@@ -46,10 +46,7 @@ local function make_popup_window_opts(win_opts)
     local total_width = vim.o.columns
     local total_height = vim.o.lines
 
-    if relative == "win" then
-        total_width = vim.api.nvim_win_get_width(0)
-        total_height = vim.api.nvim_win_get_height(0)
-    elseif relative == "cursor" then
+    if relative == "win" or relative == "cursor" then
         total_width = vim.api.nvim_win_get_width(0)
         total_height = vim.api.nvim_win_get_height(0)
     end
@@ -84,8 +81,14 @@ local function make_popup_window_opts(win_opts)
     if relative == "cursor" then
         --- @type {[1]:integer,[2]:integer}
         local cursor_pos = vim.api.nvim_win_get_cursor(0)
+        log.debug(
+            "|fzfx.popup - make_popup_window_opts| cursor_pos:%s",
+            vim.inspect(cursor_pos)
+        )
         if type(cursor_pos) == "table" and not vim.tbl_isempty(cursor_pos) then
             base_row = cursor_pos[1]
+            local last_line = vim.fn.line("w$")
+            height = math.max(height, last_line - cursor_pos[1] - 1)
         end
     end
     if win_opts.row >= 0 then
