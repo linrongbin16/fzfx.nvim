@@ -60,7 +60,6 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - Easily switch on multiple data sources:
   - Whether to include hidden/ignored files (unrestricted) or respect them (restricted) when searching files.
   - Local branches or remote branches when searching git branches.
-  - All commits in repo or only on current buffer when searching git commits.
   - All diagnostics in workspace or only in current buffer when searching diagnostics.
 - Maximized configuration.
 - ...
