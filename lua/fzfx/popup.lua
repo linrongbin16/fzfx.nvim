@@ -33,10 +33,6 @@ local PopupWindowOpts = {
     zindex = nil,
 }
 
-local function safe_range(left, value, right)
-    return math.min(math.max(left, value), right)
-end
-
 --- @param win_opts Configs
 --- @return PopupWindowOpts
 local function make_popup_window_opts(win_opts)
@@ -52,14 +48,14 @@ local function make_popup_window_opts(win_opts)
     end
 
     --- @type integer
-    local width = safe_range(
+    local width = utils.number_bound(
         3,
         win_opts.width > 1 and win_opts.width
             or math.floor(total_width * win_opts.width),
         total_width
     )
     --- @type integer
-    local height = safe_range(
+    local height = utils.number_bound(
         3,
         win_opts.height > 1 and win_opts.height
             or math.floor(total_height * win_opts.height),
@@ -84,8 +80,10 @@ local function make_popup_window_opts(win_opts)
         local first_line = vim.fn.line("w0")
         local last_line = vim.fn.line("w$")
         base_row = cursor_pos[1] - first_line
-        height =
-            safe_range(5, math.min(height, last_line - cursor_pos[1]), height)
+        height = utils.number_bound(
+            5,
+            utils.number_bound(last_line - cursor_pos[1], height)
+        )
         log.debug(
             "|fzfx.popup - make_popup_window_opts| cursor_pos:%s, base_row:%s, first_line:%s, last_line:%s, height:%s",
             vim.inspect(cursor_pos),
@@ -99,7 +97,7 @@ local function make_popup_window_opts(win_opts)
         local shift_row = win_opts.row < 1
                 and math.floor((total_height - height) * win_opts.row)
             or win_opts.row
-        row = safe_range(0, base_row + shift_row, total_height - height)
+        row = utils.number_bound(0, base_row + shift_row, total_height - height)
         log.debug(
             "|fzfx.popup - make_popup_window_opts| win_opts:%s, shift_row:%s, row:%s",
             vim.inspect(win_opts),
@@ -110,7 +108,7 @@ local function make_popup_window_opts(win_opts)
         local shift_row = win_opts.row > -1
                 and math.ceil((total_height - height) * win_opts.row)
             or win_opts.row
-        row = safe_range(0, base_row + shift_row, total_height - height)
+        row = utils.number_bound(0, base_row + shift_row, total_height - height)
         log.debug(
             "|fzfx.popup - make_popup_window_opts| win_opts:%s, shift_row:%s, row:%s",
             vim.inspect(win_opts),
@@ -141,12 +139,12 @@ local function make_popup_window_opts(win_opts)
         local shift_col = win_opts.col < 1
                 and math.floor((total_width - width) * win_opts.col)
             or win_opts.col
-        col = safe_range(0, base_col + shift_col, total_width - width)
+        col = utils.number_bound(0, base_col + shift_col, total_width - width)
     else
         local shift_col = win_opts.col > -1
                 and math.ceil((total_width - width) * win_opts.col)
             or win_opts.col
-        col = safe_range(0, base_col + shift_col, total_width - width)
+        col = utils.number_bound(0, base_col + shift_col, total_width - width)
     end
 
     --- @type PopupWindowOpts

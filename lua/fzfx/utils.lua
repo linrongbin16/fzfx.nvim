@@ -147,12 +147,12 @@ local function string_rtrim(s, t)
     return s:sub(1, i)
 end
 
---- @param left number
+--- @param left number?
 --- @param value number
---- @param right number
+--- @param right number?
 --- @return number
 local function number_bound(left, value, right)
-    return math.min(math.max(left, value), right)
+    return math.min(math.max(left or -2147483648, value), right or 2147483647)
 end
 
 --- @class ShellOptsContext
