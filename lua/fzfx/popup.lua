@@ -81,12 +81,15 @@ local function make_popup_window_opts(win_opts)
     if relative == "cursor" then
         --- @type {[1]:integer,[2]:integer}
         local cursor_pos = vim.api.nvim_win_get_cursor(0)
-        base_row = cursor_pos[1]
+        local first_line = vim.fn.line("w0")
         local last_line = vim.fn.line("w$")
-        height = math.max(1, math.min(height, last_line - cursor_pos[1] - 1))
+        base_row = cursor_pos[1] - first_line
+        height = math.max(3, math.min(height, last_line - cursor_pos[1]))
         log.debug(
-            "|fzfx.popup - make_popup_window_opts| cursor_pos:%s, last_line:%s, height:%s",
+            "|fzfx.popup - make_popup_window_opts| cursor_pos:%s, base_row:%s, first_line:%s, last_line:%s, height:%s",
             vim.inspect(cursor_pos),
+            vim.inspect(base_row),
+            vim.inspect(first_line),
             vim.inspect(last_line),
             vim.inspect(height)
         )
@@ -96,11 +99,23 @@ local function make_popup_window_opts(win_opts)
                 and math.floor((total_height - height) * win_opts.row)
             or win_opts.row
         row = safe_range(0, base_row + shift_row, total_height - height)
+        log.debug(
+            "|fzfx.popup - make_popup_window_opts| win_opts:%s, shift_row:%s, row:%s",
+            vim.inspect(win_opts),
+            vim.inspect(shift_row),
+            vim.inspect(row)
+        )
     else
         local shift_row = win_opts.row > -1
                 and math.ceil((total_height - height) * win_opts.row)
             or win_opts.row
         row = safe_range(0, base_row + shift_row, total_height - height)
+        log.debug(
+            "|fzfx.popup - make_popup_window_opts| win_opts:%s, shift_row:%s, row:%s",
+            vim.inspect(win_opts),
+            vim.inspect(shift_row),
+            vim.inspect(row)
+        )
     end
 
     --- @type integer
