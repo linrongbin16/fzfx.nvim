@@ -977,9 +977,13 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
+            "--disabled",
             { "--prompt", "Live Grep > " },
             { "--delimiter", ":" },
             { "--preview-window", "+{2}-/2" },
+        },
+        other_opts = {
+            change_on_reload = true,
         },
     }),
 

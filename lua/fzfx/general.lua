@@ -750,6 +750,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             string.format("start:unbind(%s)", default_provider_key),
         })
     end
+    if
+        type(pipeline_configs.other_opts) == "table"
+        and pipeline_configs.other_opts.change_on_reload
+    then
+        table.insert(fzf_opts, {
+            "--bind",
+            string.format("change:reload:%s", reload_query_command),
+        })
+    end
 
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
