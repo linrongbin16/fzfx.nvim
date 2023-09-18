@@ -1038,8 +1038,6 @@ local Defaults = {
             end,
             provider_type = ProviderTypeEnum.LIST,
             line_type = ProviderLineTypeEnum.FILE,
-            line_delimiter = ":",
-            line_pos = 1,
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(),
