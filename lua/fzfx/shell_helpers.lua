@@ -170,31 +170,11 @@ local function render_filepath_line(line, delimiter, pos)
     else
         filename = line
     end
-    -- if DEBUG_ENABLE then
-    --     log_debug(
-    --         "|fzfx.shell_helpers - render_line_with_icon| line-1:%s",
-    --         vim.inspect(line)
-    --     )
-    --     log_debug(
-    --         "|fzfx.shell_helpers - render_line_with_icon| filename-1:%s",
-    --         vim.inspect(filename)
-    --     )
-    -- end
     -- remove ansi color codes
     -- see: https://stackoverflow.com/a/55324681/4438921
     if type(filename) == "string" and string.len(filename) > 0 then
         filename = require("fzfx.color").erase(filename)
     end
-    -- if DEBUG_ENABLE then
-    --     log_debug(
-    --         "|fzfx.shell_helpers - render_line_with_icon| line-2:%s",
-    --         vim.inspect(line)
-    --     )
-    --     log_debug(
-    --         "|fzfx.shell_helpers - render_line_with_icon| filename-2:%s",
-    --         vim.inspect(filename)
-    --     )
-    -- end
     local ext = vim.fn.fnamemodify(filename, ":e")
     local icon, icon_color = DEVICONS.get_icon_color(filename, ext)
     -- if DEBUG_ENABLE then
