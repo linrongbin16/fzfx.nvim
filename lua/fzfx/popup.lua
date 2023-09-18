@@ -209,7 +209,7 @@ local function make_popup_window_opts(win_opts)
 
     if relative == "cursor" then
         return make_popup_window_opts_relative_to_cursor(win_opts)
-    elseif relative == "editor" or relative == "win then" then
+    elseif relative == "editor" or relative == "win" then
         return make_popup_window_opts_relative_to_center(win_opts)
     else
         log.throw(
