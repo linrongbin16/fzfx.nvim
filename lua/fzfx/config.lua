@@ -139,6 +139,35 @@ end
 
 -- file }
 
+-- live grep {
+
+--- @param content string
+--- @return string[]
+local function parse_query(content)
+    local flag = "--"
+    local flag_pos = nil
+    local query = ""
+    local option = nil
+
+    for i = 1, #content do
+        if i + 1 <= #content and string.sub(content, i, i + 1) == flag then
+            flag_pos = i
+            break
+        end
+    end
+
+    if flag_pos ~= nil and flag_pos > 0 then
+        query = vim.trim(string.sub(content, 1, flag_pos - 1))
+        option = vim.trim(string.sub(content, flag_pos + 2))
+    else
+        query = vim.trim(content)
+    end
+
+    return { query, option }
+end
+
+-- }
+
 -- lsp diagnostics {
 
 --- @alias LspDiagnosticOpts {mode:"buffer_diagnostics"|"workspace_diagnostics",severity:integer?,bufnr:integer?}
@@ -650,11 +679,11 @@ local Defaults = {
     },
 
     -- the 'Live Grep' commands
-    live_grep = {
-        --- @type CommandConfig[]
+    --- @type GroupConfig
+    live_grep = GroupConfig:make({
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxLiveGrep",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -662,9 +691,9 @@ local Defaults = {
                     nargs = "*",
                     desc = "Live grep",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxLiveGrepU",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -672,10 +701,10 @@ local Defaults = {
                     nargs = "*",
                     desc = "Live grep unrestricted",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxLiveGrepV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -683,9 +712,9 @@ local Defaults = {
                     range = true,
                     desc = "Live grep by visual select",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxLiveGrepUV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -693,66 +722,240 @@ local Defaults = {
                     range = true,
                     desc = "Live grep unrestricted by visual select",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxLiveGrepW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Live grep by cursor word",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxLiveGrepUW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Live grep unrestricted by cursor word",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxLiveGrepP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Live grep by yank text",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxLiveGrepUP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Live grep unrestricted by yank text",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
         },
         providers = {
-            restricted = {
-                "ctrl-r",
-                constants.has_rg and default_restricted_rg
-                    or (
-                        constants.has_gnu_grep
-                            and default_restricted_gnu_grep
-                        or default_restricted_grep
-                    ),
-            },
-            unrestricted = {
-                "ctrl-u",
-                constants.has_rg and default_unrestricted_rg
-                    or (
-                        constants.has_gnu_grep
-                            and default_unrestricted_gnu_grep
-                        or default_unrestricted_grep
-                    ),
-            },
+            restricted_mode = ProviderConfig:make({
+                key = "ctrl-r",
+                provider = function(query)
+                    local parsed_query = parse_query(query or "")
+                    local content = parsed_query[1]
+                    local option = parsed_query[2]
+                    local has_gnu_grep = (
+                        (constants.is_windows or constants.is_linux)
+                        and vim.fn.executable("grep") > 0
+                    )
+                        or vim.fn.executable("ggrep") > 0
+
+                    if vim.fn.executable("rg") > 0 then
+                        if
+                            type(option) == "string"
+                            and string.len(option) > 0
+                        then
+                            return string.format(
+                                "rg --column -n --no-heading --color=always -S %s -- %s",
+                                option,
+                                utils.shellescape(content)
+                            )
+                        else
+                            return string.format(
+                                "rg --column -n --no-heading --color=always -S -- %s",
+                                utils.shellescape(content)
+                            )
+                        end
+                    elseif has_gnu_grep then
+                        local gnu_grep = vim.fn.executable("ggrep") > 0
+                                and "ggrep"
+                            or "grep"
+                        if
+                            type(option) == "string"
+                            and string.len(option) > 0
+                        then
+                            return string.format(
+                                "%s --color=always -n -H -r --exclude-dir=%s --exclude=%s %s -- %s",
+                                gnu_grep,
+                                utils.shellescape(
+                                    default_restricted_gnu_grep_exclude_hidden
+                                ),
+                                utils.shellescape(
+                                    default_restricted_gnu_grep_exclude_hidden
+                                ),
+                                option,
+                                utils.shellescape(content)
+                            )
+                        else
+                            return string.format(
+                                "%s --color=always -n -H -r --exclude-dir=%s --exclude=%s -- %s",
+                                gnu_grep,
+                                utils.shellescape(
+                                    default_restricted_gnu_grep_exclude_hidden
+                                ),
+                                utils.shellescape(
+                                    default_restricted_gnu_grep_exclude_hidden
+                                ),
+                                utils.shellescape(content)
+                            )
+                        end
+                    else
+                        if
+                            type(option) == "string"
+                            and string.len(option) > 0
+                        then
+                            return string.format(
+                                "grep --color=always -n -H -r --exclude-dir=%s --exclude=%s %s -- %s",
+                                utils.shellescape(
+                                    default_restricted_grep_exclude_hidden
+                                ),
+                                utils.shellescape(
+                                    default_restricted_grep_exclude_hidden
+                                ),
+                                option,
+                                utils.shellescape(content)
+                            )
+                        else
+                            return string.format(
+                                "grep --color=always -n -H -r --exclude-dir=%s --exclude=%s -- %s",
+                                utils.shellescape(
+                                    default_restricted_grep_exclude_hidden
+                                ),
+                                utils.shellescape(
+                                    default_restricted_grep_exclude_hidden
+                                ),
+                                utils.shellescape(content)
+                            )
+                        end
+                    end
+                end,
+                provider_type = ProviderTypeEnum.COMMAND,
+                line_type = ProviderLineTypeEnum.FILE,
+                line_delimiter = ":",
+                line_pos = 1,
+            }),
+            unrestricted_mode = ProviderConfig:make({
+                key = "ctrl-u",
+                provider = function(query)
+                    local parsed_query = parse_query(query or "")
+                    local content = parsed_query[1]
+                    local option = parsed_query[2]
+                    local has_gnu_grep = (
+                        (constants.is_windows or constants.is_linux)
+                        and vim.fn.executable("grep") > 0
+                    )
+                        or vim.fn.executable("ggrep") > 0
+
+                    if vim.fn.executable("rg") > 0 then
+                        if
+                            type(option) == "string"
+                            and string.len(option) > 0
+                        then
+                            return string.format(
+                                "rg --column -n --no-heading --color=always -S -uu %s -- %s",
+                                option,
+                                utils.shellescape(content)
+                            )
+                        else
+                            return string.format(
+                                "rg --column -n --no-heading --color=always -S -uu -- %s",
+                                utils.shellescape(content)
+                            )
+                        end
+                    elseif has_gnu_grep then
+                        local gnu_grep = vim.fn.executable("ggrep") > 0
+                                and "ggrep"
+                            or "grep"
+                        if
+                            type(option) == "string"
+                            and string.len(option) > 0
+                        then
+                            return string.format(
+                                "%s --color=always -n -H -r %s -- %s",
+                                gnu_grep,
+                                utils.shellescape(
+                                    default_restricted_gnu_grep_exclude_hidden
+                                ),
+                                utils.shellescape(
+                                    default_restricted_gnu_grep_exclude_hidden
+                                ),
+                                option,
+                                utils.shellescape(content)
+                            )
+                        else
+                            return string.format(
+                                "%s --color=always -n -H -r -- %s",
+                                gnu_grep,
+                                utils.shellescape(
+                                    default_restricted_gnu_grep_exclude_hidden
+                                ),
+                                utils.shellescape(
+                                    default_restricted_gnu_grep_exclude_hidden
+                                ),
+                                utils.shellescape(content)
+                            )
+                        end
+                    else
+                        if
+                            type(option) == "string"
+                            and string.len(option) > 0
+                        then
+                            return string.format(
+                                "grep --color=always -n -H -r %s -- %s",
+                                utils.shellescape(
+                                    default_restricted_grep_exclude_hidden
+                                ),
+                                utils.shellescape(
+                                    default_restricted_grep_exclude_hidden
+                                ),
+                                option,
+                                utils.shellescape(content)
+                            )
+                        else
+                            return string.format(
+                                "grep --color=always -n -H -r -- %s",
+                                utils.shellescape(
+                                    default_restricted_grep_exclude_hidden
+                                ),
+                                utils.shellescape(
+                                    default_restricted_grep_exclude_hidden
+                                ),
+                                utils.shellescape(content)
+                            )
+                        end
+                    end
+                end,
+                provider_type = ProviderTypeEnum.COMMAND,
+                line_type = ProviderLineTypeEnum.FILE,
+                line_delimiter = ":",
+                line_pos = 1,
+            }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -775,7 +978,7 @@ local Defaults = {
                     and "sleep 0.1 && "
                 or nil,
         },
-    },
+    }),
 
     -- the 'Buffers' commands
     --- @type GroupConfig
@@ -855,6 +1058,8 @@ local Defaults = {
             end,
             provider_type = ProviderTypeEnum.LIST,
             line_type = ProviderLineTypeEnum.FILE,
+            line_delimiter = ":",
+            line_pos = 1,
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(),
