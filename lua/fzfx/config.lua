@@ -781,16 +781,38 @@ local Defaults = {
                             type(option) == "string"
                             and string.len(option) > 0
                         then
-                            return string.format(
-                                "rg --column -n --no-heading --color=always -S %s -- %s",
-                                option,
-                                utils.shellescape(content)
-                            )
+                            return {
+                                "rg",
+                                "--column",
+                                "-n",
+                                "--no-heading",
+                                "--color=always",
+                                "-S",
+                                vim.fn.split(option),
+                                "--",
+                                content,
+                            }
+                            -- return string.format(
+                            --     "rg --column -n --no-heading --color=always -S %s -- %s",
+                            --     option,
+                            --     content
+                            -- )
                         else
-                            return string.format(
-                                "rg --column -n --no-heading --color=always -S -- %s",
-                                utils.shellescape(content)
-                            )
+                            return {
+                                "rg",
+                                "--column",
+                                "-n",
+                                "--no-heading",
+                                "--color=always",
+                                "-S",
+                                -- vim.fn.split(option),
+                                "--",
+                                content,
+                            }
+                            -- return string.format(
+                            --     "rg --column -n --no-heading --color=always -S -- %s",
+                            --     content
+                            -- )
                         end
                     elseif has_gnu_grep then
                         local gnu_grep = vim.fn.executable("ggrep") > 0
@@ -810,7 +832,7 @@ local Defaults = {
                                     default_restricted_gnu_grep_exclude_hidden
                                 ),
                                 option,
-                                utils.shellescape(content)
+                                content
                             )
                         else
                             return string.format(
@@ -822,7 +844,7 @@ local Defaults = {
                                 utils.shellescape(
                                     default_restricted_gnu_grep_exclude_hidden
                                 ),
-                                utils.shellescape(content)
+                                content
                             )
                         end
                     else
@@ -839,7 +861,7 @@ local Defaults = {
                                     default_restricted_grep_exclude_hidden
                                 ),
                                 option,
-                                utils.shellescape(content)
+                                content
                             )
                         else
                             return string.format(
@@ -850,12 +872,12 @@ local Defaults = {
                                 utils.shellescape(
                                     default_restricted_grep_exclude_hidden
                                 ),
-                                utils.shellescape(content)
+                                content
                             )
                         end
                     end
                 end,
-                provider_type = ProviderTypeEnum.COMMAND,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_type = ProviderLineTypeEnum.FILE,
                 line_delimiter = ":",
                 line_pos = 1,
@@ -983,7 +1005,7 @@ local Defaults = {
             { "--preview-window", "+{2}-/2" },
         },
         other_opts = {
-            change_on_reload = true,
+            reload_on_change = true,
         },
     }),
 

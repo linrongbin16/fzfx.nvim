@@ -752,7 +752,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
     if
         type(pipeline_configs.other_opts) == "table"
-        and pipeline_configs.other_opts.change_on_reload
+        and pipeline_configs.other_opts.reload_on_change
     then
         table.insert(fzf_opts, {
             "--bind",
