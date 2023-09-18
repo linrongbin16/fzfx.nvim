@@ -959,15 +959,11 @@ local Defaults = {
         },
         previewers = {
             restricted_mode = PreviewerConfig:make({
-                previewer = vim.fn.executable("rg") > 0
-                        and make_file_previewer(":", 1, 2)
-                    or make_file_previewer(":", 1),
+                previewer = make_file_previewer(":", 1, 2),
                 previewer_type = PreviewerTypeEnum.COMMAND,
             }),
             unrestricted_mode = PreviewerConfig:make({
-                previewer = vim.fn.executable("rg") > 0
-                        and make_file_previewer(":", 1, 2)
-                    or make_file_previewer(":", 1),
+                previewer = make_file_previewer(":", 1, 2),
                 previewer_type = PreviewerTypeEnum.COMMAND,
             }),
         },
