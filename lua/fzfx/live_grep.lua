@@ -40,6 +40,11 @@ local function setup()
 
     local deprecated = false
     for provider_name, provider_opts in pairs(live_grep_configs.providers) do
+        log.debug(
+            "|fzfx.live_grep - setup| provider_name:%s, provider_opts:%s",
+            vim.inspect(provider_name),
+            vim.inspect(provider_opts)
+        )
         if provider_name == "restricted" or provider_name == "unrestricted" then
             local action_key = provider_opts[1]
             local grep_cmd = provider_opts[2]
@@ -71,6 +76,12 @@ local function setup()
             })
         end
         deprecated = true
+    end
+    if deprecated then
+        for _, command_opts in ipairs(live_grep_configs.commands) do
+            command_opts.default_provider = command_opts.default_provider
+                .. "_mode"
+        end
     end
     general.setup("live_grep", live_grep_configs)
     if deprecated then
