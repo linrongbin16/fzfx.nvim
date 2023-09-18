@@ -33,117 +33,44 @@ local PopupWindowOpts = {
     zindex = nil,
 }
 
+--- @param value number
+--- @param base integer
+--- @param minimal integer?
+--- @return integer
+local function make_popup_window_size(value, base, minimal)
+    minimal = minimal or 3
+    return utils.number_bound(
+        minimal,
+        value > 1 and value or math.floor(base * value),
+        base
+    )
+end
+
 --- @param win_opts Configs
 --- @return PopupWindowOpts
-local function make_popup_window_opts(win_opts)
-    --- @type "editor"|"win"|"cursor"
-    local relative = win_opts.relative or "editor"
+local function make_popup_window_opts_relative_to_cursor(win_opts)
+    --- @type "cursor"
+    local relative = win_opts.relative
+    local total_width = vim.api.nvim_win_get_width(0)
+    local total_height = vim.api.nvim_win_get_height(0)
 
-    local total_width = vim.o.columns
-    local total_height = vim.o.lines
-
-    if relative == "win" or relative == "cursor" then
-        total_width = vim.api.nvim_win_get_width(0)
-        total_height = vim.api.nvim_win_get_height(0)
-    end
-
-    --- @type integer
-    local width = utils.number_bound(
-        3,
-        win_opts.width > 1 and win_opts.width
-            or math.floor(total_width * win_opts.width),
-        total_width
-    )
-    --- @type integer
-    local height = utils.number_bound(
-        3,
-        win_opts.height > 1 and win_opts.height
-            or math.floor(total_height * win_opts.height),
-        total_height
-    )
-    --- @type integer
-    local row = nil
-    if
-        (win_opts.row > -1 and win_opts.row < -0.5)
-        or (win_opts.row > 0.5 and win_opts.row < 1)
-    then
+    local width = make_popup_window_size(win_opts.width, total_width)
+    local height = make_popup_window_size(win_opts.height, total_height)
+    if win_opts.row < 0 then
         log.throw(
-            "error! invalid option win_opts.row '%s'!",
-            vim.inspect(win_opts.row)
+            "error! invalid option (win_opts.row < 0): %s!",
+            vim.inspect(win_opts)
         )
     end
+    local row = win_opts.row
 
-    local base_row = math.floor((total_height - height) * 0.5)
-    if relative == "cursor" then
-        --- @type {[1]:integer,[2]:integer}
-        local cursor_pos = vim.api.nvim_win_get_cursor(0)
-        local first_line = vim.fn.line("w0")
-        local last_line = vim.fn.line("w$")
-        base_row = cursor_pos[1] - first_line
-        height =
-            utils.number_bound(5, math.min(last_line - cursor_pos[1], height))
-        log.debug(
-            "|fzfx.popup - make_popup_window_opts| cursor_pos:%s, base_row:%s, first_line:%s, last_line:%s, height:%s",
-            vim.inspect(cursor_pos),
-            vim.inspect(base_row),
-            vim.inspect(first_line),
-            vim.inspect(last_line),
-            vim.inspect(height)
-        )
-    end
-    if win_opts.row >= 0 then
-        local shift_row = win_opts.row < 1
-                and math.floor((total_height - height) * win_opts.row)
-            or win_opts.row
-        row = utils.number_bound(0, base_row + shift_row, total_height - height)
-        log.debug(
-            "|fzfx.popup - make_popup_window_opts| win_opts:%s, shift_row:%s, row:%s",
-            vim.inspect(win_opts),
-            vim.inspect(shift_row),
-            vim.inspect(row)
-        )
-    else
-        local shift_row = win_opts.row > -1
-                and math.ceil((total_height - height) * win_opts.row)
-            or win_opts.row
-        row = utils.number_bound(0, base_row + shift_row, total_height - height)
-        log.debug(
-            "|fzfx.popup - make_popup_window_opts| win_opts:%s, shift_row:%s, row:%s",
-            vim.inspect(win_opts),
-            vim.inspect(shift_row),
-            vim.inspect(row)
-        )
-    end
-
-    --- @type integer
-    local col = nil
-    if
-        (win_opts.col > -1 and win_opts.col < -0.5)
-        or (win_opts.col > 0.5 and win_opts.col < 1)
-    then
+    if win_opts.col < 0 then
         log.throw(
-            "error! invalid option win_opts.col '%s'!",
-            vim.inspect(win_opts.col)
+            "error! invalid option (win_opts.col < 0): %s!",
+            vim.inspect(win_opts)
         )
     end
-
-    local base_col = math.floor((total_width - width) * 0.5)
-    if relative == "cursor" then
-        --- @type {row:integer,col:integer}
-        local cursor_pos = vim.api.nvim_win_get_cursor(0)
-        base_col = cursor_pos[2]
-    end
-    if win_opts.col >= 0 then
-        local shift_col = win_opts.col < 1
-                and math.floor((total_width - width) * win_opts.col)
-            or win_opts.col
-        col = utils.number_bound(0, base_col + shift_col, total_width - width)
-    else
-        local shift_col = win_opts.col > -1
-                and math.ceil((total_width - width) * win_opts.col)
-            or win_opts.col
-        col = utils.number_bound(0, base_col + shift_col, total_width - width)
-    end
+    local col = win_opts.col
 
     --- @type PopupWindowOpts
     local popup_window_opts =
@@ -160,11 +87,121 @@ local function make_popup_window_opts(win_opts)
             zindex = win_opts.zindex,
         })
     log.debug(
-        "|fzfx.popup - make_popup_window_opts| (origin) win_opts:%s, popup_win_opts:%s",
+        "|fzfx.popup - make_popup_window_opts_relative_to_cursor| (origin) win_opts:%s, popup_win_opts:%s",
         vim.inspect(win_opts),
         vim.inspect(popup_window_opts)
     )
     return popup_window_opts
+end
+
+--- @param total_size integer
+--- @param popup_size integer
+--- @param value number
+local function make_popup_window_center_shift_size(
+    total_size,
+    popup_size,
+    value
+)
+    local base = math.floor((total_size - popup_size) * 0.5)
+    if value >= 0 then
+        local shift = value < 1
+                and math.floor((total_size - popup_size) * value)
+            or value
+        return utils.number_bound(0, base + shift, total_size - popup_size)
+    else
+        local shift = value > -1
+                and math.ceil((total_size - popup_size) * value)
+            or value
+        return utils.number_bound(0, base + shift, total_size - popup_size)
+    end
+end
+
+--- @param win_opts Configs
+--- @return PopupWindowOpts
+local function make_popup_window_opts_relative_to_center(win_opts)
+    --- @type "editor"|"win"
+    local relative = win_opts.relative or "editor"
+
+    local total_width = vim.o.columns
+    local total_height = vim.o.lines
+    if relative == "win" then
+        total_width = vim.api.nvim_win_get_width(0)
+        total_height = vim.api.nvim_win_get_height(0)
+    end
+
+    local width = make_popup_window_size(win_opts.width, total_width)
+    local height = make_popup_window_size(win_opts.height, total_height)
+
+    if
+        (win_opts.row > -1 and win_opts.row < -0.5)
+        or (win_opts.row > 0.5 and win_opts.row < 1)
+    then
+        log.throw(
+            "error! invalid option (win_opts.row): %s!",
+            vim.inspect(win_opts)
+        )
+    end
+    local row =
+        make_popup_window_center_shift_size(total_height, height, win_opts.row)
+    log.debug(
+        "|fzfx.popup - make_popup_window_opts_relative_to_center| row:%s, win_opts:%s, total_height:%s, height:%s",
+        vim.inspect(row),
+        vim.inspect(win_opts),
+        vim.inspect(total_height),
+        vim.inspect(height)
+    )
+
+    if
+        (win_opts.col > -1 and win_opts.col < -0.5)
+        or (win_opts.col > 0.5 and win_opts.col < 1)
+    then
+        log.throw(
+            "error! invalid option (win_opts.col): %s!",
+            vim.inspect(win_opts)
+        )
+    end
+    local col =
+        make_popup_window_center_shift_size(total_width, width, win_opts.col)
+
+    --- @type PopupWindowOpts
+    local popup_window_opts =
+        vim.tbl_deep_extend("force", vim.deepcopy(PopupWindowOpts), {
+            anchor = "NW",
+            relative = relative,
+            width = width,
+            height = height,
+            -- start point on NW
+            row = row,
+            col = col,
+            style = "minimal",
+            border = win_opts.border,
+            zindex = win_opts.zindex,
+        })
+    log.debug(
+        "|fzfx.popup - make_popup_window_opts_relative_to_center| (origin) win_opts:%s, popup_win_opts:%s",
+        vim.inspect(win_opts),
+        vim.inspect(popup_window_opts)
+    )
+    return popup_window_opts
+end
+
+--- @param win_opts Configs
+--- @return PopupWindowOpts
+local function make_popup_window_opts(win_opts)
+    --- @type "editor"|"win"|"cursor"
+    local relative = win_opts.relative or "editor"
+
+    if relative == "cursor" then
+        return make_popup_window_opts_relative_to_cursor(win_opts)
+    elseif relative == "editor" or relative == "win" then
+        return make_popup_window_opts_relative_to_center(win_opts)
+    else
+        log.throw(
+            "error! failed to make popup window opts, unsupport relative value %s.",
+            vim.inspect(relative)
+        )
+        ---@diagnostic disable-next-line: missing-return
+    end
 end
 
 --- @param win_opts PopupWindowOpts?
@@ -427,6 +464,8 @@ function Popup:close()
 end
 
 local M = {
+    make_popup_window_size = make_popup_window_size,
+    make_popup_window_center_shift_size = make_popup_window_center_shift_size,
     Popup = Popup,
 }
 
