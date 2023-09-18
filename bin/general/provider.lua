@@ -59,11 +59,21 @@ local function println(line)
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
         line = shell_helpers.string_rtrim(line)
         shell_helpers.log_debug("|provider| println line:%s", vim.inspect(line))
+        -- shell_helpers.log_debug(
+        --     "|provider| println line type:%s, delimiter:%s, pos:%s",
+        --     vim.inspect(metajson.provider_line_type),
+        --     vim.inspect(metajson.provider_line_delimiter),
+        --     vim.inspect(metajson.provider_line_pos)
+        -- )
         if metajson.provider_line_type == "file" then
             local rendered_line = shell_helpers.render_filepath_line(
                 line,
                 metajson.provider_line_delimiter,
                 metajson.provider_line_pos
+            )
+            shell_helpers.log_debug(
+                "|provider| println rendered_line:%s",
+                vim.inspect(rendered_line)
             )
             io.write(string.format("%s\n", rendered_line))
         else

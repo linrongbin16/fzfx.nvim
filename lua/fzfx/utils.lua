@@ -147,6 +147,35 @@ local function string_rtrim(s, t)
     return s:sub(1, i)
 end
 
+--- @param s string
+--- @param delimiter string?
+--- @return string[]
+local function string_split(s, delimiter)
+    delimiter = delimiter or " \t\n\r"
+
+    --- @param v string
+    --- @return boolean
+    local function delim_contains(v)
+        return string_find(delimiter, v) ~= nil
+    end
+
+    local result = {}
+    local prev = 1
+    local i = 1
+    while i <= #s do
+        local c = s:sub(i, i)
+        if delim_contains(c) then
+            table.insert(result, s:sub(prev, i - 1))
+            prev = i + 1
+        end
+        i = i + 1
+    end
+    if prev <= #s then
+        table.insert(result, s:sub(prev, #s))
+    end
+    return result
+end
+
 --- @param left number?
 --- @param value number
 --- @param right number?
@@ -308,6 +337,7 @@ local M = {
     string_rfind = string_rfind,
     string_ltrim = string_ltrim,
     string_rtrim = string_rtrim,
+    string_split = string_split,
     number_bound = number_bound,
     ShellOptsContext = ShellOptsContext,
     shellescape = shellescape,
