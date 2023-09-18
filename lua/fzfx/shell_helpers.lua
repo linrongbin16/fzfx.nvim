@@ -175,7 +175,8 @@ local function render_filepath_line(line, delimiter, pos)
         --         vim.inspect(pos)
         --     )
         -- end
-        local splits = vim.split(line, delimiter)
+        local splits =
+            vim.split(line, delimiter, { plain = true, trimempty = true })
         -- local splits = require("fzfx.utils").string_split(line, delimiter)
         -- if DEBUG_ENABLE then
         --     log_debug(

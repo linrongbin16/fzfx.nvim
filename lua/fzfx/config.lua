@@ -163,6 +163,24 @@ local function parse_query(content)
     return { query, option }
 end
 
+--- @param option string
+--- @param merged string[]
+--- @return string[]
+local function merge_query_options(merged, option)
+    local option_splits =
+        vim.split(option, " ", { plain = "true", trimempty = true })
+    log.debug(
+        "|fzfx.config - merge_query_options| option_splits:%s",
+        vim.inspect(option_splits)
+    )
+    for _, o in ipairs(option_splits) do
+        if type(o) == "string" and string.len(o) > 0 then
+            table.insert(merged, o)
+        end
+    end
+    return merged
+end
+
 -- }
 
 -- lsp diagnostics {
@@ -786,19 +804,7 @@ local Defaults = {
                                 "--color=always",
                                 "-S",
                             }
-                            local option_splits = vim.fn.split(option)
-                            log.debug(
-                                "|fzfx.config - live_grep.providers.restricted| option_splits:%s",
-                                vim.inspect(option_splits)
-                            )
-                            for _, o in ipairs(option_splits) do
-                                if
-                                    type(o) == "string"
-                                    and string.len(o) > 0
-                                then
-                                    table.insert(args, o)
-                                end
-                            end
+                            args = merge_query_options(args, option)
                             table.insert(args, "--")
                             table.insert(args, content)
                             return args
@@ -808,27 +814,16 @@ local Defaults = {
                             --     content
                             -- )
                         else
-                            -- return {
-                            --     "rg",
-                            --     "--column",
-                            --     "-n",
-                            --     "--no-heading",
-                            --     "--color=always",
-                            --     "-S",
-                            --     "--",
-                            --     content,
-                            -- }
-                            local args = {
+                            return {
                                 "rg",
                                 "--column",
                                 "-n",
                                 "--no-heading",
                                 "--color=always",
                                 "-S",
+                                "--",
+                                content,
                             }
-                            table.insert(args, "--")
-                            table.insert(args, content)
-                            return args
                             -- return string.format(
                             --     "rg --column -n --no-heading --color=always -S -- %s",
                             --     content
@@ -842,58 +837,111 @@ local Defaults = {
                             type(option) == "string"
                             and string.len(option) > 0
                         then
-                            return string.format(
-                                "%s --color=always -n -H -r --exclude-dir=%s --exclude=%s %s -- %s",
+                            local args = {
                                 gnu_grep,
-                                utils.shellescape(
-                                    default_restricted_gnu_grep_exclude_hidden
-                                ),
-                                utils.shellescape(
-                                    default_restricted_gnu_grep_exclude_hidden
-                                ),
-                                option,
-                                content
-                            )
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                                "--exclude-dir="
+                                    .. default_restricted_gnu_grep_exclude_hidden,
+                                "--exclude="
+                                    .. default_restricted_gnu_grep_exclude_hidden,
+                            }
+                            args = merge_query_options(args, option)
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                            -- return string.format(
+                            --     "%s --color=always -n -H -r --exclude-dir=%s --exclude=%s %s -- %s",
+                            --     gnu_grep,
+                            --     utils.shellescape(
+                            --         default_restricted_gnu_grep_exclude_hidden
+                            --     ),
+                            --     utils.shellescape(
+                            --         default_restricted_gnu_grep_exclude_hidden
+                            --     ),
+                            --     option,
+                            --     content
+                            -- )
                         else
-                            return string.format(
-                                "%s --color=always -n -H -r --exclude-dir=%s --exclude=%s -- %s",
+                            return {
                                 gnu_grep,
-                                utils.shellescape(
-                                    default_restricted_gnu_grep_exclude_hidden
-                                ),
-                                utils.shellescape(
-                                    default_restricted_gnu_grep_exclude_hidden
-                                ),
-                                content
-                            )
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                                "--exclude-dir="
+                                    .. default_restricted_gnu_grep_exclude_hidden,
+                                "--exclude="
+                                    .. default_restricted_gnu_grep_exclude_hidden,
+                                "--",
+                                content,
+                            }
+                            -- return string.format(
+                            --     "%s --color=always -n -H -r --exclude-dir=%s --exclude=%s -- %s",
+                            --     gnu_grep,
+                            --     utils.shellescape(
+                            --         default_restricted_gnu_grep_exclude_hidden
+                            --     ),
+                            --     utils.shellescape(
+                            --         default_restricted_gnu_grep_exclude_hidden
+                            --     ),
+                            --     content
+                            -- )
                         end
                     else
                         if
                             type(option) == "string"
                             and string.len(option) > 0
                         then
-                            return string.format(
-                                "grep --color=always -n -H -r --exclude-dir=%s --exclude=%s %s -- %s",
-                                utils.shellescape(
-                                    default_restricted_grep_exclude_hidden
-                                ),
-                                utils.shellescape(
-                                    default_restricted_grep_exclude_hidden
-                                ),
-                                option,
-                                content
-                            )
+                            local args = {
+                                "grep",
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "--exclude-dir="
+                                    .. default_restricted_grep_exclude_hidden,
+                                "--exclude="
+                                    .. default_restricted_grep_exclude_hidden,
+                            }
+                            args = merge_query_options(args, option)
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                            -- return string.format(
+                            --     "grep --color=always -n -H -r --exclude-dir=%s --exclude=%s %s -- %s",
+                            --     utils.shellescape(
+                            --         default_restricted_grep_exclude_hidden
+                            --     ),
+                            --     utils.shellescape(
+                            --         default_restricted_grep_exclude_hidden
+                            --     ),
+                            --     option,
+                            --     content
+                            -- )
                         else
-                            return string.format(
-                                "grep --color=always -n -H -r --exclude-dir=%s --exclude=%s -- %s",
-                                utils.shellescape(
-                                    default_restricted_grep_exclude_hidden
-                                ),
-                                utils.shellescape(
-                                    default_restricted_grep_exclude_hidden
-                                ),
-                                content
-                            )
+                            return {
+                                "grep",
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                                "--exclude-dir="
+                                    .. default_restricted_grep_exclude_hidden,
+                                "--exclude="
+                                    .. default_restricted_grep_exclude_hidden,
+                                "--",
+                                content,
+                            }
+                            -- return string.format(
+                            --     "grep --color=always -n -H -r --exclude-dir=%s --exclude=%s -- %s",
+                            --     utils.shellescape(
+                            --         default_restricted_grep_exclude_hidden
+                            --     ),
+                            --     utils.shellescape(
+                            --         default_restricted_grep_exclude_hidden
+                            --     ),
+                            --     content
+                            -- )
                         end
                     end
                 end,
@@ -919,16 +967,40 @@ local Defaults = {
                             type(option) == "string"
                             and string.len(option) > 0
                         then
-                            return string.format(
-                                "rg --column -n --no-heading --color=always -S -uu %s -- %s",
-                                option,
-                                utils.shellescape(content)
-                            )
+                            local args = {
+                                "rg",
+                                "--column",
+                                "-n",
+                                "--no-heading",
+                                "--color=always",
+                                "-S",
+                                "-uu",
+                            }
+                            args = merge_query_options(args, option)
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                            return args
+                            -- return string.format(
+                            --     "rg --column -n --no-heading --color=always -S -uu %s -- %s",
+                            --     option,
+                            --     utils.shellescape(content)
+                            -- )
                         else
-                            return string.format(
-                                "rg --column -n --no-heading --color=always -S -uu -- %s",
-                                utils.shellescape(content)
-                            )
+                            return {
+                                "rg",
+                                "--column",
+                                "-n",
+                                "--no-heading",
+                                "--color=always",
+                                "-S",
+                                "-uu",
+                                "--",
+                                content,
+                            }
+                            -- return string.format(
+                            --     "rg --column -n --no-heading --color=always -S -uu -- %s",
+                            --     utils.shellescape(content)
+                            -- )
                         end
                     elseif has_gnu_grep then
                         local gnu_grep = vim.fn.executable("ggrep") > 0
@@ -938,62 +1010,100 @@ local Defaults = {
                             type(option) == "string"
                             and string.len(option) > 0
                         then
-                            return string.format(
-                                "%s --color=always -n -H -r %s -- %s",
+                            local args = {
                                 gnu_grep,
-                                utils.shellescape(
-                                    default_restricted_gnu_grep_exclude_hidden
-                                ),
-                                utils.shellescape(
-                                    default_restricted_gnu_grep_exclude_hidden
-                                ),
-                                option,
-                                utils.shellescape(content)
-                            )
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                            }
+                            args = merge_query_options(args, option)
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                            -- return string.format(
+                            --     "%s --color=always -n -H -r %s -- %s",
+                            --     gnu_grep,
+                            --     utils.shellescape(
+                            --         default_restricted_gnu_grep_exclude_hidden
+                            --     ),
+                            --     utils.shellescape(
+                            --         default_restricted_gnu_grep_exclude_hidden
+                            --     ),
+                            --     option,
+                            --     utils.shellescape(content)
+                            -- )
                         else
-                            return string.format(
-                                "%s --color=always -n -H -r -- %s",
+                            return {
                                 gnu_grep,
-                                utils.shellescape(
-                                    default_restricted_gnu_grep_exclude_hidden
-                                ),
-                                utils.shellescape(
-                                    default_restricted_gnu_grep_exclude_hidden
-                                ),
-                                utils.shellescape(content)
-                            )
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                                "--",
+                                content,
+                            }
+                            -- return string.format(
+                            --     "%s --color=always -n -H -r -- %s",
+                            --     gnu_grep,
+                            --     utils.shellescape(
+                            --         default_restricted_gnu_grep_exclude_hidden
+                            --     ),
+                            --     utils.shellescape(
+                            --         default_restricted_gnu_grep_exclude_hidden
+                            --     ),
+                            --     utils.shellescape(content)
+                            -- )
                         end
                     else
                         if
                             type(option) == "string"
                             and string.len(option) > 0
                         then
-                            return string.format(
-                                "grep --color=always -n -H -r %s -- %s",
-                                utils.shellescape(
-                                    default_restricted_grep_exclude_hidden
-                                ),
-                                utils.shellescape(
-                                    default_restricted_grep_exclude_hidden
-                                ),
-                                option,
-                                utils.shellescape(content)
-                            )
+                            local args = {
+                                "grep",
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                            }
+                            args = merge_query_options(args, option)
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                            -- return string.format(
+                            --     "grep --color=always -n -H -r %s -- %s",
+                            --     utils.shellescape(
+                            --         default_restricted_grep_exclude_hidden
+                            --     ),
+                            --     utils.shellescape(
+                            --         default_restricted_grep_exclude_hidden
+                            --     ),
+                            --     option,
+                            --     utils.shellescape(content)
+                            -- )
                         else
-                            return string.format(
-                                "grep --color=always -n -H -r -- %s",
-                                utils.shellescape(
-                                    default_restricted_grep_exclude_hidden
-                                ),
-                                utils.shellescape(
-                                    default_restricted_grep_exclude_hidden
-                                ),
-                                utils.shellescape(content)
-                            )
+                            return {
+                                "grep",
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                                "--",
+                                content,
+                            }
+                            -- return string.format(
+                            --     "grep --color=always -n -H -r -- %s",
+                            --     utils.shellescape(
+                            --         default_restricted_grep_exclude_hidden
+                            --     ),
+                            --     utils.shellescape(
+                            --         default_restricted_grep_exclude_hidden
+                            --     ),
+                            --     utils.shellescape(content)
+                            -- )
                         end
                     end
                 end,
-                provider_type = ProviderTypeEnum.COMMAND,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_type = ProviderLineTypeEnum.FILE,
                 line_delimiter = ":",
                 line_pos = 1,
