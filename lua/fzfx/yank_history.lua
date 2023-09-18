@@ -217,15 +217,7 @@ local function setup()
     )
     vim.api.nvim_create_autocmd("TextYankPost", {
         pattern = { "*" },
-        callback = function()
-            -- local ok, result = pcall(save_yank)
-            -- log.debug(
-            --     "|fzfx.yank_history - setup| ok:%s, result:%s",
-            --     vim.inspect(ok),
-            --     vim.inspect(result)
-            -- )
-            save_yank()
-        end,
+        callback = save_yank,
     })
 end
 
