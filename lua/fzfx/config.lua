@@ -957,6 +957,20 @@ local Defaults = {
                 line_pos = 1,
             }),
         },
+        previewers = {
+            restricted_mode = PreviewerConfig:make({
+                previewer = vim.fn.executable("rg") > 0
+                        and make_file_previewer(":", 1, 2)
+                    or make_file_previewer(":", 1),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+            unrestricted_mode = PreviewerConfig:make({
+                previewer = vim.fn.executable("rg") > 0
+                        and make_file_previewer(":", 1, 2)
+                    or make_file_previewer(":", 1),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
@@ -970,13 +984,6 @@ local Defaults = {
             { "--prompt", "Live Grep > " },
             { "--delimiter", ":" },
             { "--preview-window", "+{2}-/2" },
-        },
-        other_opts = {
-            onchange_reload_delay = (
-                vim.fn.executable("sleep") > 0 and not constants.is_windows
-            )
-                    and "sleep 0.1 && "
-                or nil,
         },
     }),
 
