@@ -58,7 +58,6 @@ require("lazy").setup({
                 },
                 -- the 'Live Grep' commands
                 live_grep = {
-                    --- @type CommandConfig[]
                     commands = {
                         -- normal
                         {
