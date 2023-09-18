@@ -74,8 +74,8 @@ local function setup()
                 line_delimiter = ":",
                 line_pos = 1,
             })
+            deprecated = true
         end
-        deprecated = true
     end
     if deprecated then
         for _, command_opts in ipairs(live_grep_configs.commands) do
