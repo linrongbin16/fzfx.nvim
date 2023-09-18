@@ -1,7 +1,6 @@
 {
     "diagnostics.globals": [
         "vim",
-        "MiniTest",
         "describe",
         "before_each",
         "it"
