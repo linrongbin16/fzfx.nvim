@@ -170,12 +170,13 @@ local function render_filepath_line(line, delimiter, pos)
                 vim.inspect(line)
             )
             log_debug(
-                "|fzfx.shell_helpers - render_line_with_icon| splits-1, delimiter:%s, pos:%s",
+                "|fzfx.shell_helpers - render_line_with_icon| splits-2, delimiter:%s, pos:%s",
                 vim.inspect(delimiter),
                 vim.inspect(pos)
             )
         end
-        local splits = vim.fn.split(line, delimiter)
+        -- local splits = vim.fn.split(line, delimiter)
+        local splits = require("fzfx.utils").string_split(line, delimiter)
         if DEBUG_ENABLE then
             log_debug(
                 "|fzfx.shell_helpers - render_line_with_icon| splits-2:%s",
