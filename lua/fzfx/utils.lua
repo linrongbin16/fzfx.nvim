@@ -149,9 +149,11 @@ end
 
 --- @param s string
 --- @param delimiter string?
+--- @param filter_empty boolean?
 --- @return string[]
-local function string_split(s, delimiter)
+local function string_split(s, delimiter, filter_empty)
     delimiter = delimiter or " \t\n\r"
+    filter_empty = filter_empty ~= nil and filter_empty or true
 
     --- @param v string
     --- @return boolean
@@ -165,13 +167,19 @@ local function string_split(s, delimiter)
     while i <= #s do
         local c = s:sub(i, i)
         if delim_contains(c) then
-            table.insert(result, s:sub(prev, i - 1))
+            local item = s:sub(prev, i - 1)
+            if not filter_empty or string.len(item) > 0 then
+                table.insert(result, item)
+            end
             prev = i + 1
         end
         i = i + 1
     end
     if prev <= #s then
-        table.insert(result, s:sub(prev, #s))
+        local item = s:sub(prev, #s)
+        if not filter_empty or string.len(item) > 0 then
+            table.insert(result, s:sub(prev, #s))
+        end
     end
     return result
 end

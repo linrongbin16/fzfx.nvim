@@ -144,25 +144,22 @@ end
 --- @param content string
 --- @return string[]
 local function parse_query(content)
-    local flag = "--"
-    local flag_pos = nil
     local query = ""
     local option = nil
 
-    for i = 1, #content do
-        if i + 1 <= #content and string.sub(content, i, i + 1) == flag then
-            flag_pos = i
-            break
-        end
-    end
-
+    local flag_pos = utils.string_find(content, "--")
     if flag_pos ~= nil and flag_pos > 0 then
         query = vim.trim(string.sub(content, 1, flag_pos - 1))
         option = vim.trim(string.sub(content, flag_pos + 2))
     else
         query = vim.trim(content)
     end
-
+    -- log.debug(
+    --     "|fzfx.config - parse_query| content:%s, query:%s, option:%s",
+    --     vim.inspect(content),
+    --     vim.inspect(query),
+    --     vim.inspect(option)
+    -- )
     return { query, option }
 end
 
@@ -781,34 +778,57 @@ local Defaults = {
                             type(option) == "string"
                             and string.len(option) > 0
                         then
-                            return {
+                            local args = {
                                 "rg",
                                 "--column",
                                 "-n",
                                 "--no-heading",
                                 "--color=always",
                                 "-S",
-                                vim.fn.split(option),
-                                "--",
-                                content,
                             }
+                            local option_splits = vim.fn.split(option)
+                            log.debug(
+                                "|fzfx.config - live_grep.providers.restricted| option_splits:%s",
+                                vim.inspect(option_splits)
+                            )
+                            for _, o in ipairs(option_splits) do
+                                if
+                                    type(o) == "string"
+                                    and string.len(o) > 0
+                                then
+                                    table.insert(args, o)
+                                end
+                            end
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                            return args
                             -- return string.format(
                             --     "rg --column -n --no-heading --color=always -S %s -- %s",
                             --     option,
                             --     content
                             -- )
                         else
-                            return {
+                            -- return {
+                            --     "rg",
+                            --     "--column",
+                            --     "-n",
+                            --     "--no-heading",
+                            --     "--color=always",
+                            --     "-S",
+                            --     "--",
+                            --     content,
+                            -- }
+                            local args = {
                                 "rg",
                                 "--column",
                                 "-n",
                                 "--no-heading",
                                 "--color=always",
                                 "-S",
-                                -- vim.fn.split(option),
-                                "--",
-                                content,
                             }
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                            return args
                             -- return string.format(
                             --     "rg --column -n --no-heading --color=always -S -- %s",
                             --     content

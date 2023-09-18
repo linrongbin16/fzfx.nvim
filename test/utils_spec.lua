@@ -147,4 +147,22 @@ describe("utils", function()
             ctx:restore()
         end)
     end)
+    describe("[string_split]", function()
+        it("splits rg options-1", function()
+            local actual = utils.string_split("-w -g *.md")
+            local expect = { "-w", "-g", "*.md" }
+            assert_eq(#actual, #expect)
+            for i, v in ipairs(actual) do
+                assert_eq(v, expect[i])
+            end
+        end)
+        it("splits rg options-2", function()
+            local actual = utils.string_split("  -w -g *.md  ")
+            local expect = { "-w", "-g", "*.md" }
+            assert_eq(#actual, #expect)
+            for i, v in ipairs(actual) do
+                assert_eq(v, expect[i])
+            end
+        end)
+    end)
 end)

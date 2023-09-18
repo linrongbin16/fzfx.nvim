@@ -180,10 +180,10 @@ elseif
 then
     --- @type string
     local cmd = shell_helpers.readfile(resultfile)
-    -- shell_helpers.log_debug(
-    --     "|provider| plain_list or command_list cmd:[%s]",
-    --     vim.inspect(cmd)
-    -- )
+    shell_helpers.log_debug(
+        "|provider| plain_list or command_list cmd:[%s]",
+        vim.inspect(cmd)
+    )
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
         return
