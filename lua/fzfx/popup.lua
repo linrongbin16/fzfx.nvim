@@ -33,6 +33,19 @@ local PopupWindowOpts = {
     zindex = nil,
 }
 
+--- @param value number
+--- @param base number
+--- @param minimal number?
+--- @return number
+local function make_popup_window_size(value, base, minimal)
+    minimal = minimal or 3
+    return utils.number_bound(
+        minimal,
+        value > 1 and value or math.floor(base * value),
+        base
+    )
+end
+
 --- @param win_opts Configs
 --- @return PopupWindowOpts
 local function make_popup_window_opts_relative_to_cursor(win_opts)
@@ -480,6 +493,7 @@ function Popup:close()
 end
 
 local M = {
+    make_popup_window_size = make_popup_window_size,
     Popup = Popup,
 }
 
