@@ -58,23 +58,12 @@ shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metajson))
 local function println(line)
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
         line = shell_helpers.string_rtrim(line)
-        -- shell_helpers.log_debug("|provider| println line:%s", vim.inspect(line))
-        -- shell_helpers.log_debug(
-        --     "|provider| println line type:%s, delimiter:%s, pos:%s",
-        --     vim.inspect(metajson.provider_line_type),
-        --     vim.inspect(metajson.provider_line_delimiter),
-        --     vim.inspect(metajson.provider_line_pos)
-        -- )
         if metajson.provider_line_type == "file" then
             local rendered_line = shell_helpers.render_filepath_line(
                 line,
                 metajson.provider_line_delimiter,
                 metajson.provider_line_pos
             )
-            -- shell_helpers.log_debug(
-            --     "|provider| println rendered_line:%s",
-            --     vim.inspect(rendered_line)
-            -- )
             io.write(string.format("%s\n", rendered_line))
         else
             io.write(string.format("%s\n", line))
@@ -109,19 +98,12 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         os.exit(0)
         return
     end
-    -- shell_helpers.log_debug("|provider| plain or command cmd-2")
     local data_buffer = { "" }
 
     --- @param job_id integer?
     --- @param code integer?
     --- @param event string?
     local function on_exit(job_id, code, event)
-        -- shell_helpers.log_debug(
-        --     "|provider| plain|command on_exit job id:%s, code:%s, event:%s",
-        --     vim.inspect(job_id),
-        --     vim.inspect(code),
-        --     vim.inspect(event)
-        -- )
         os.exit(code)
     end
 
@@ -160,14 +142,13 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     --- @param data string[]?
     --- @param name string?
     local function on_error(chanid, data, name)
-        -- shell_helpers.log_debug(
-        --     "|provider| plain|command on_error name:%s, data:%s",
-        --     vim.inspect(name),
-        --     vim.inspect(data)
-        -- )
+        shell_helpers.log_debug(
+            "|provider| plain|command on_error name:%s, data:%s",
+            vim.inspect(name),
+            vim.inspect(data)
+        )
     end
 
-    -- shell_helpers.log_debug("|provider| plain or command cmd-3")
     local jobid = vim.fn.jobstart(cmd, {
         on_stdout = on_output,
         on_stderr = on_error,
