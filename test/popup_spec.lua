@@ -43,4 +43,27 @@ describe("popup", function()
             assert_eq(10, popup.make_popup_window_size(12, 10))
         end)
     end)
+    describe("[make_popup_window_center_shift_size]", function()
+        it("is in range of [0, 1]", function()
+            assert_eq(
+                12,
+                popup.make_popup_window_center_shift_size(50, 30, 0.1)
+            )
+            assert_eq(10, popup.make_popup_window_center_shift_size(50, 30, 0))
+            assert_eq(
+                0,
+                popup.make_popup_window_center_shift_size(50, 25, -0.5)
+            )
+            assert_eq(
+                24,
+                popup.make_popup_window_center_shift_size(50, 25, 0.5)
+            )
+        end)
+        it("is greater than 1", function()
+            assert_eq(12, popup.make_popup_window_center_shift_size(50, 30, 2))
+            assert_eq(10, popup.make_popup_window_center_shift_size(50, 30, 0))
+            assert_eq(0, popup.make_popup_window_center_shift_size(50, 20, -15))
+            assert_eq(30, popup.make_popup_window_center_shift_size(50, 20, 15))
+        end)
+    end)
 end)
