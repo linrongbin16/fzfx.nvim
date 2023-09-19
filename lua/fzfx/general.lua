@@ -36,22 +36,8 @@ local ProviderSwitch = {
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
     if Clazz:instanceof(provider_configs, ProviderConfig) then
-        provider_configs.provider_type = provider_configs.provider_type
-            or (
-                type(provider_configs.provider) == "string"
-                    and ProviderTypeEnum.PLAIN
-                or ProviderTypeEnum.PLAIN_LIST
-            )
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
     else
-        for provider_name, provider_opts in pairs(provider_configs) do
-            provider_opts.provider_type = provider_opts.provider_type
-                or (
-                    type(provider_opts.provider) == "string"
-                        and ProviderTypeEnum.PLAIN
-                    or ProviderTypeEnum.PLAIN_LIST
-                )
-        end
         provider_configs_map = provider_configs
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
@@ -293,19 +279,12 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local previewers_map = {}
     local previewer_types_map = {}
     if Clazz:instanceof(previewer_configs, PreviewerConfig) then
-        local previewer_opts = previewer_configs
-        local previewer = previewer_opts.previewer
-        local previewer_type = previewer_opts.previewer_type
-            or PreviewerTypeEnum.COMMAND
-        previewers_map[DEFAULT_PIPELINE] = previewer
-        previewer_types_map[DEFAULT_PIPELINE] = previewer_type
+        previewers_map[DEFAULT_PIPELINE] = previewer_configs.previewer
+        previewer_types_map[DEFAULT_PIPELINE] = previewer_configs.previewer_type
     else
         for previewer_name, previewer_opts in pairs(previewer_configs) do
-            local previewer = previewer_opts.previewer
-            local previewer_type = previewer_opts.previewer_type
-                or PreviewerTypeEnum.COMMAND
-            previewers_map[previewer_name] = previewer
-            previewer_types_map[previewer_name] = previewer_type
+            previewers_map[previewer_name] = previewer_opts.previewer
+            previewer_types_map[previewer_name] = previewer_opts.previewer_type
         end
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(PreviewerSwitch), {
