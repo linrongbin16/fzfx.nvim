@@ -1883,7 +1883,6 @@ local Defaults = {
             },
         },
         win_opts = {
-
             relative = "cursor",
             height = 0.45,
             width = 1,
