@@ -1182,12 +1182,12 @@ local Defaults = {
         providers = {
             current_folder = ProviderConfig:make({
                 key = "ctrl-u",
-                provider = "git ls-files",
+                provider = { "git", "ls-files" },
                 line_type = ProviderLineTypeEnum.FILE,
             }),
             workspace = ProviderConfig:make({
                 key = "ctrl-w",
-                provider = "git ls-files :/",
+                provider = { "git", "ls-files", ":/" },
                 line_type = ProviderLineTypeEnum.FILE,
             }),
         },
