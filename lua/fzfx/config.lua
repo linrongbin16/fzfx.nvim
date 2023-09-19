@@ -33,10 +33,6 @@ local default_restricted_find = string.format(
 local default_unrestricted_find = [[find -L . -type f]]
 
 -- fd
-local default_restricted_fd =
-    string.format("%s . -cnever -tf -tl -L -i", constants.fd)
-local default_unrestricted_fd =
-    string.format("%s . -cnever -tf -tl -L -i -u", constants.fd)
 
 --- @type table<string, FzfOpt>
 local default_fzf_options = {
@@ -53,7 +49,47 @@ local default_fzf_options = {
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
--- file {
+-- files {
+
+local has_fd = vim.fn.executable("fd") > 0 or vim.fn.executable("fdfind") > 0
+-- fd
+local default_restricted_fd = {
+    vim.fn.executable("fdfind") > 0 and "fdfind" or "fd",
+    ".",
+    "-cnever",
+    "-tf",
+    "-tl",
+    "-L",
+    "-i",
+}
+local default_unrestricted_fd = {
+    vim.fn.executable("fdfind") > 0 and "fdfind" or "fd",
+    ".",
+    "-cnever",
+    "-tf",
+    "-tl",
+    "-L",
+    "-i",
+    "-u",
+}
+-- gnu find
+local default_restricted_find = {
+    vim.fn.executable("gfind") > 0 and "gfind" or "find",
+    "-L",
+    ".",
+    "-type",
+    "f",
+    "-not",
+    "-path",
+    [[*/.*]],
+}
+local default_unrestricted_find = {
+    vim.fn.executable("gfind") > 0 and "gfind" or "find",
+    "-L",
+    ".",
+    "-type",
+    "f",
+}
 
 --- @param delimiter string?
 --- @param filename_pos integer?
@@ -110,7 +146,7 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
     return wrap
 end
 
--- file }
+-- files }
 
 -- live grep {
 
@@ -544,11 +580,11 @@ end
 --- @type Configs
 local Defaults = {
     -- the 'Files' commands
-    files = {
-        --- @type CommandConfig[]
+    --- @type GroupConfig
+    files = GroupConfig:make({
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxFiles",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -557,9 +593,9 @@ local Defaults = {
                     complete = "dir",
                     desc = "Find files",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxFilesU",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -568,10 +604,10 @@ local Defaults = {
                     complete = "dir",
                     desc = "Find files",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxFilesV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -579,9 +615,9 @@ local Defaults = {
                     range = true,
                     desc = "Find files by visual select",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxFilesUV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -589,66 +625,70 @@ local Defaults = {
                     range = true,
                     desc = "Find files unrestricted by visual select",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxFilesW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find files by cursor word",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxFilesUW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find files unrestricted by cursor word",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxFilesP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find files by yank text",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxFilesUP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find files unrestricted by yank text",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
         },
         providers = {
-            restricted = {
-                "ctrl-r",
-                constants.has_fd and default_restricted_fd
-                    or (
-                        constants.has_gnu_find
-                            and default_restricted_gnu_find
-                        or default_restricted_find
-                    ),
-            },
-            unrestricted = {
-                "ctrl-u",
-                constants.has_fd and default_unrestricted_fd
-                    or (
-                        constants.has_gnu_find
-                            and default_unrestricted_gnu_find
-                        or default_unrestricted_find
-                    ),
-            },
+            restricted_mode = ProviderConfig:make({
+                key = "ctrl-r",
+                provider = (vim.fn.executable("fd") > 0 or vim.fn.executable(
+                    "fdfind"
+                ) > 0) and default_restricted_fd or default_restricted_find,
+            }),
+            unrestricted_mode = ProviderConfig:make({
+                key = "ctrl-u",
+                provider = (vim.fn.executable("fd") > 0 or vim.fn.executable(
+                    "fdfind"
+                ) > 0) and default_unrestricted_fd or default_unrestricted_find,
+            }),
+        },
+        previewers = {
+            restricted_mode = PreviewerConfig:make({
+                previewer = make_file_previewer(),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+            unrestricted_mode = PreviewerConfig:make({
+                previewer = make_file_previewer(),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -664,7 +704,7 @@ local Defaults = {
                 }
             end,
         },
-    },
+    }),
 
     -- the 'Live Grep' commands
     --- @type GroupConfig
