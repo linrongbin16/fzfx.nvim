@@ -32,6 +32,7 @@ local default_git_log_pretty =
 -- files {
 
 -- fd
+local has_fd = vim.fn.executable("fdfind") > 0 or vim.fn.executable("fd") > 0
 local default_restricted_fd = {
     vim.fn.executable("fdfind") > 0 and "fdfind" or "fd",
     ".",
@@ -664,16 +665,14 @@ local Defaults = {
         providers = {
             restricted_mode = ProviderConfig:make({
                 key = "ctrl-r",
-                provider = (vim.fn.executable("fd") > 0 or vim.fn.executable(
-                    "fdfind"
-                ) > 0) and default_restricted_fd or default_restricted_find,
+                provider = has_fd and default_restricted_fd
+                    or default_restricted_find,
                 line_type = ProviderLineTypeEnum.FILE,
             }),
             unrestricted_mode = ProviderConfig:make({
                 key = "ctrl-u",
-                provider = (vim.fn.executable("fd") > 0 or vim.fn.executable(
-                    "fdfind"
-                ) > 0) and default_unrestricted_fd or default_unrestricted_find,
+                provider = has_fd and default_unrestricted_fd
+                    or default_unrestricted_find,
                 line_type = ProviderLineTypeEnum.FILE,
             }),
         },
