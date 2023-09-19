@@ -32,6 +32,7 @@ local default_git_log_pretty =
 -- files {
 
 -- fd
+local has_fd = vim.fn.executable("fdfind") > 0 or vim.fn.executable("fd") > 0
 local default_restricted_fd = {
     vim.fn.executable("fdfind") > 0 and "fdfind" or "fd",
     ".",
@@ -51,17 +52,25 @@ local default_unrestricted_fd = {
     "-i",
     "-u",
 }
--- gnu find
-local default_restricted_find = {
-    vim.fn.executable("gfind") > 0 and "gfind" or "find",
-    "-L",
-    ".",
-    "-type",
-    "f",
-    "-not",
-    "-path",
-    [[*/.*]],
-}
+-- find
+local default_restricted_find = constants.is_windows
+        and {
+            vim.fn.executable("gfind") > 0 and "gfind" or "find",
+            "-L",
+            ".",
+            "-type",
+            "f",
+        }
+    or {
+        vim.fn.executable("gfind") > 0 and "gfind" or "find",
+        "-L",
+        ".",
+        "-type",
+        "f",
+        "-not",
+        "-path",
+        [[*/.*]],
+    }
 local default_unrestricted_find = {
     vim.fn.executable("gfind") > 0 and "gfind" or "find",
     "-L",
@@ -109,7 +118,7 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
             then
                 style = vim.env["BAT_STYLE"]
             end
-            local theme = "base16-256"
+            local theme = "base16"
             if
                 type(vim.env["BAT_THEME"]) == "string"
                 and string.len(vim.env["BAT_THEME"]) > 0
@@ -656,16 +665,14 @@ local Defaults = {
         providers = {
             restricted_mode = ProviderConfig:make({
                 key = "ctrl-r",
-                provider = (vim.fn.executable("fd") > 0 or vim.fn.executable(
-                    "fdfind"
-                ) > 0) and default_restricted_fd or default_restricted_find,
+                provider = has_fd and default_restricted_fd
+                    or default_restricted_find,
                 line_type = ProviderLineTypeEnum.FILE,
             }),
             unrestricted_mode = ProviderConfig:make({
                 key = "ctrl-u",
-                provider = (vim.fn.executable("fd") > 0 or vim.fn.executable(
-                    "fdfind"
-                ) > 0) and default_unrestricted_fd or default_unrestricted_find,
+                provider = has_fd and default_unrestricted_fd
+                    or default_unrestricted_find,
                 line_type = ProviderLineTypeEnum.FILE,
             }),
         },
@@ -1174,12 +1181,12 @@ local Defaults = {
         providers = {
             current_folder = ProviderConfig:make({
                 key = "ctrl-u",
-                provider = "git ls-files",
+                provider = { "git", "ls-files" },
                 line_type = ProviderLineTypeEnum.FILE,
             }),
             workspace = ProviderConfig:make({
                 key = "ctrl-w",
-                provider = "git ls-files :/",
+                provider = { "git", "ls-files", ":/" },
                 line_type = ProviderLineTypeEnum.FILE,
             }),
         },
@@ -1534,10 +1541,13 @@ local Defaults = {
         providers = {
             all_commits = ProviderConfig:make({
                 key = "ctrl-a",
-                provider = string.format(
-                    "git log --pretty=%s --date=short --color=always",
-                    utils.shellescape(default_git_log_pretty)
-                ),
+                provider = {
+                    "git",
+                    "log",
+                    "--pretty=" .. default_git_log_pretty,
+                    "--date=short",
+                    "--color=always",
+                },
             }),
             buffer_commits = ProviderConfig:make({
                 key = "ctrl-u",
@@ -1550,13 +1560,22 @@ local Defaults = {
                         )
                         return nil
                     end
-                    return string.format(
-                        "git log --pretty=%s --date=short --color=always -- %s",
-                        utils.shellescape(default_git_log_pretty),
-                        vim.api.nvim_buf_get_name(context.bufnr)
-                    )
+                    -- return string.format(
+                    --     "git log --pretty=%s --date=short --color=always -- %s",
+                    --     utils.shellescape(default_git_log_pretty),
+                    --     vim.api.nvim_buf_get_name(context.bufnr)
+                    -- )
+                    return {
+                        "git",
+                        "log",
+                        "--pretty=" .. default_git_log_pretty,
+                        "--date=short",
+                        "--color=always",
+                        "--",
+                        vim.api.nvim_buf_get_name(context.bufnr),
+                    }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
             }),
         },
         previewers = {
@@ -1644,12 +1663,19 @@ local Defaults = {
                     end
                     local bufname = vim.api.nvim_buf_get_name(context.bufnr)
                     local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
-                    return string.format(
-                        "git blame --date=short --color-lines %s",
-                        bufpath
-                    )
+                    -- return string.format(
+                    --     "git blame --date=short --color-lines %s",
+                    --     bufpath
+                    -- )
+                    return {
+                        "git",
+                        "blame",
+                        "--date=short",
+                        "--color-lines",
+                        bufpath,
+                    }
                 end,
-                provider_type = ProviderTypeEnum.COMMAND,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
             }),
         },
         previewers = {
@@ -1856,7 +1882,6 @@ local Defaults = {
             },
         },
         win_opts = {
-
             relative = "cursor",
             height = 0.45,
             width = 1,
