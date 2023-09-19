@@ -1,148 +1,35 @@
 local log = require("fzfx.log")
+local LogLevel = require("fzfx.log").LogLevel
 local conf = require("fzfx.config")
-local Popup = require("fzfx.popup").Popup
-local color = require("fzfx.color")
-local helpers = require("fzfx.helpers")
-local server = require("fzfx.server")
 local utils = require("fzfx.utils")
+local general = require("fzfx.general")
+local ProviderConfig = require("fzfx.schema").ProviderConfig
+local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
 
-local Context = {
-    --- @type string?
-    rmode_key = nil,
-    --- @type string?
-    umode_key = nil,
-    --- @type string?
-    umode_header = nil,
-    --- @type string?
-    rmode_header = nil,
-}
+--- @param content string
+--- @return string[]
+local function parse_query(content)
+    local flag = "--"
+    local flag_pos = nil
+    local query = ""
+    local option = nil
 
---- @alias LiveGrepOptKey "default_provider"
---- @alias LiveGrepOptValue "restricted"|"unrestricted"
---- @alias LiveGrepOpts table<LiveGrepOptKey, LiveGrepOptValue>
---- @param query string
---- @param bang boolean
---- @param opts LiveGrepOpts
---- @return Popup
-local function live_grep(query, bang, opts)
-    local live_grep_configs = conf.get_config().live_grep
-
-    local provider_switch = helpers.Switch:new(
-        "live_grep_provider",
-        opts.default_provider == "restricted"
-                and live_grep_configs.providers.restricted[2]
-            or live_grep_configs.providers.unrestricted[2],
-        opts.default_provider == "restricted"
-                and live_grep_configs.providers.unrestricted[2]
-            or live_grep_configs.providers.restricted[2]
-    )
-    -- rpc callback
-    local function switch_provider_rpc_callback()
-        log.debug("|fzfx.live_grep - live_grep.switch_provider_rpc_callback|")
-        provider_switch:switch()
-    end
-    local switch_provider_rpc_callback_id =
-        server.get_global_rpc_server():register(switch_provider_rpc_callback)
-
-    local initial_command = string.format(
-        "%s %s %s",
-        helpers.make_lua_command("live_grep", "provider.lua"),
-        provider_switch.tempfile,
-        query
-    )
-    local onchange_reload_delay =
-        live_grep_configs.other_opts.onchange_reload_delay
-    local reload_command = vim.trim(
-        string.format(
-            "%s %s %s {q}",
-            utils.string_not_empty(onchange_reload_delay)
-                    and onchange_reload_delay
-                or "",
-            helpers.make_lua_command("live_grep", "provider.lua"),
-            provider_switch.tempfile
-        )
-    )
-    local preview_command = string.format(
-        "%s {1} {2}",
-        helpers.make_lua_command("files", "previewer.lua")
-    )
-    local call_switch_provider_rpc_command = string.format(
-        "%s %s",
-        helpers.make_lua_command("rpc", "client.lua"),
-        switch_provider_rpc_callback_id
-    )
-    log.debug(
-        "|fzfx.live_grep - live_grep| initial_command:%s, reload_command:%s, preview_command:%s, call_switch_provider_rpc_command:%s",
-        vim.inspect(initial_command),
-        vim.inspect(reload_command),
-        vim.inspect(preview_command),
-        vim.inspect(call_switch_provider_rpc_command)
-    )
-
-    local fzf_opts = {
-        "--disabled",
-        { "--query", query },
-        {
-            "--header",
-            opts.default_provider == "restricted" and Context.umode_header
-                or Context.rmode_header,
-        },
-        {
-            "--bind",
-            string.format(
-                "start:unbind(%s)",
-                opts.default_provider == "restricted" and Context.rmode_key
-                    or Context.umode_key
-            ),
-        },
-        { "--bind", string.format("change:reload:%s", reload_command) },
-        {
-            -- umode action: swap provider, change rmode header, rebind rmode action, reload query
-            "--bind",
-            string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                Context.umode_key,
-                Context.umode_key,
-                call_switch_provider_rpc_command,
-                Context.rmode_header,
-                Context.rmode_key,
-                reload_command
-            ),
-        },
-        {
-            -- rmode action: swap provider, change umode header, rebind umode action, reload query
-            "--bind",
-            string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+rebind(%s)+reload(%s)",
-                Context.rmode_key,
-                Context.rmode_key,
-                call_switch_provider_rpc_command,
-                Context.umode_header,
-                Context.umode_key,
-                reload_command
-            ),
-        },
-        {
-            "--preview",
-            preview_command,
-        },
-    }
-    fzf_opts =
-        vim.list_extend(fzf_opts, vim.deepcopy(live_grep_configs.fzf_opts))
-    fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
-    local actions = live_grep_configs.actions
-    local p = Popup:new(
-        bang and { height = 1, width = 1, row = 0, col = 0 } or nil,
-        initial_command,
-        fzf_opts,
-        actions,
-        function()
-            server
-                .get_global_rpc_server()
-                :unregister(switch_provider_rpc_callback_id)
+    for i = 1, #content do
+        if i + 1 <= #content and string.sub(content, i, i + 1) == flag then
+            flag_pos = i
+            break
         end
-    )
-    return p
+    end
+
+    if flag_pos ~= nil and flag_pos > 0 then
+        query = vim.trim(string.sub(content, 1, flag_pos - 1))
+        option = vim.trim(string.sub(content, flag_pos + 2))
+    else
+        query = vim.trim(content)
+    end
+
+    return { query, option }
 end
 
 local function setup()
@@ -151,28 +38,71 @@ local function setup()
         return
     end
 
-    -- Context
-    Context.rmode_key = string.lower(live_grep_configs.providers.restricted[1])
-    Context.umode_key =
-        string.lower(live_grep_configs.providers.unrestricted[1])
-    Context.rmode_header = color.restricted_mode_header(Context.rmode_key)
-    Context.umode_header = color.unrestricted_mode_header(Context.umode_key)
-
-    -- User commands
-    for _, command_configs in pairs(live_grep_configs.commands) do
-        vim.api.nvim_create_user_command(command_configs.name, function(opts)
-            -- log.debug(
-            --     "|fzfx.live_grep - setup| command_configs:%s, opts:%s",
-            --     vim.inspect(command_configs),
-            --     vim.inspect(opts)
-            -- )
-            local query = helpers.get_command_feed(opts, command_configs.feed)
-            return live_grep(
-                query,
-                opts.bang,
-                { default_provider = command_configs.default_provider }
+    local deprecated = false
+    local new_providers = {}
+    for provider_name, provider_opts in pairs(live_grep_configs.providers) do
+        log.debug(
+            "|fzfx.live_grep - setup| provider_name:%s, provider_opts:%s",
+            vim.inspect(provider_name),
+            vim.inspect(provider_opts)
+        )
+        if provider_name == "restricted" or provider_name == "unrestricted" then
+            local action_key = provider_opts[1]
+            local grep_cmd = provider_opts[2]
+            new_providers[provider_name .. "_mode"] = ProviderConfig:make({
+                key = action_key,
+                provider = function(query)
+                    local parsed_query = parse_query(query or "")
+                    local content = parsed_query[1]
+                    local option = parsed_query[2]
+                    if type(option) == "string" and string.len(option) > 0 then
+                        return string.format(
+                            "%s %s -- %s",
+                            grep_cmd,
+                            option,
+                            utils.shellescape(content)
+                        )
+                    else
+                        return string.format(
+                            "%s -- %s",
+                            grep_cmd,
+                            utils.shellescape(content)
+                        )
+                    end
+                end,
+                provider_type = ProviderTypeEnum.COMMAND,
+                line_type = ProviderLineTypeEnum.FILE,
+                line_delimiter = ":",
+                line_pos = 1,
+            })
+            deprecated = true
+        end
+    end
+    if not vim.tbl_isempty(new_providers) then
+        live_grep_configs.providers = new_providers
+    end
+    if deprecated then
+        for _, command_opts in ipairs(live_grep_configs.commands) do
+            command_opts.default_provider = command_opts.default_provider
+                .. "_mode"
+        end
+    end
+    general.setup("live_grep", live_grep_configs)
+    if deprecated then
+        local function deprecated_notification()
+            log.echo(
+                LogLevel.WARN,
+                "deprecated 'FzfxLiveGrep' configs, please migrate to latest config schema!"
             )
-        end, command_configs.opts)
+        end
+        local delay = 3 * 1000
+        vim.defer_fn(deprecated_notification, delay)
+        vim.api.nvim_create_autocmd("VimEnter", {
+            pattern = { "*" },
+            callback = function()
+                vim.defer_fn(deprecated_notification, delay)
+            end,
+        })
     end
 end
 

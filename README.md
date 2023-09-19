@@ -781,6 +781,8 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Deprecate 'git_branches' (`FzfxGBranches`) configs, notify user migrate to new schema.
 - 2023-09-12
   - Deprecate 'git_files' (`FzfxGFiles`) configs, notify user migrate to new schema.
+- 2023-09-19
+  - Deprecate 'live_grep' (`FzfxLiveGrep`) configs, notify user migrate to new schema.
 
 ## 🍀 Credit
 

@@ -58,7 +58,6 @@ shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metajson))
 local function println(line)
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
         line = shell_helpers.string_rtrim(line)
-        -- shell_helpers.log_debug("|provider| println line:%s", vim.inspect(line))
         if metajson.provider_line_type == "file" then
             local rendered_line = shell_helpers.render_filepath_line(
                 line,
@@ -99,62 +98,89 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         os.exit(0)
         return
     end
-    local data_buffer = { "" }
 
-    --- @param code integer?
-    --- @param event string?
-    local function on_exit(_, code, event)
-        os.exit(code)
-    end
-
-    --- @param chanid integer?
-    --- @param data string[]
-    --- @param name string?
-    local function on_output(chanid, data, name)
-        -- shell_helpers.log_debug(
-        --     "|provider| plain|command on_output name:%s, data:%s",
-        --     vim.inspect(name),
-        --     vim.inspect(data)
-        -- )
-        if #data == 1 and string.len(data[1]) == 0 then
-            if #data_buffer > 0 then
-                for _, line in ipairs(data_buffer) do
-                    println(line)
+    if metajson.provider_line_type == "file" then
+        local p = io.popen(cmd)
+        if p then
+            for line in p:lines("*line") do
+                -- shell_helpers.log_debug("line:%s", vim.inspect(line))
+                if string.len(vim.fn.trim(line)) > 0 then
+                    local line_with_icon = shell_helpers.render_filepath_line(
+                        line,
+                        metajson.provider_line_delimiter,
+                        metajson.provider_line_pos
+                    )
+                    io.write(string.format("%s\n", line_with_icon))
                 end
             end
-            on_exit(nil, 0, name)
-            return
+            p:close()
+        else
+            shell_helpers.debug(
+                "|provider| error! failed to open pipe on provider cmd! %s",
+                vim.inspect(cmd)
+            )
         end
-
-        data_buffer[#data_buffer] = data_buffer[#data_buffer] .. data[1]
-        vim.list_extend(data_buffer, data, 2)
-        local i = 1
-        -- skip the last item in data_buffer, it could be a partial line
-        while i < #data_buffer do
-            local line = data_buffer[i]
-            println(line)
-            i = i + 1
-        end
-        data_buffer = vim.list_slice(data_buffer, #data_buffer, #data_buffer)
+    else
+        os.execute(cmd)
     end
 
-    --- @param chanid integer?
-    --- @param data string[]?
-    --- @param name string?
-    local function on_error(chanid, data, name)
-        shell_helpers.log_debug(
-            "|provider| plain|command on_error name:%s, data:%s",
-            vim.inspect(name),
-            vim.inspect(data)
-        )
-    end
-
-    local jobid = vim.fn.jobstart(cmd, {
-        on_stdout = on_output,
-        on_stderr = on_error,
-        on_exit = on_exit,
-    })
-    vim.fn.jobwait({ jobid })
+    -- local data_buffer = { "" }
+    --
+    -- --- @param job_id integer?
+    -- --- @param code integer?
+    -- --- @param event string?
+    -- local function on_exit(job_id, code, event)
+    --     os.exit(code)
+    -- end
+    --
+    -- --- @param chanid integer?
+    -- --- @param data string[]
+    -- --- @param name string?
+    -- local function on_output(chanid, data, name)
+    --     -- shell_helpers.log_debug(
+    --     --     "|provider| plain|command on_output name:%s, data:%s",
+    --     --     vim.inspect(name),
+    --     --     vim.inspect(data)
+    --     -- )
+    --     if #data == 1 and string.len(data[1]) == 0 then
+    --         if #data_buffer > 0 then
+    --             for _, line in ipairs(data_buffer) do
+    --                 println(line)
+    --             end
+    --         end
+    --         on_exit(nil, 0, name)
+    --         return
+    --     end
+    --
+    --     data_buffer[#data_buffer] = data_buffer[#data_buffer] .. data[1]
+    --     vim.list_extend(data_buffer, data, 2)
+    --     local i = 1
+    --     -- skip the last item in data_buffer, it could be a partial line
+    --     while i < #data_buffer do
+    --         local line = data_buffer[i]
+    --         println(line)
+    --         i = i + 1
+    --     end
+    --     data_buffer = vim.list_slice(data_buffer, #data_buffer, #data_buffer)
+    -- end
+    --
+    -- --- @param chanid integer?
+    -- --- @param data string[]?
+    -- --- @param name string?
+    -- local function on_error(chanid, data, name)
+    --     shell_helpers.log_debug(
+    --         "|provider| plain|command on_error name:%s, data:%s",
+    --         vim.inspect(name),
+    --         vim.inspect(data)
+    --     )
+    -- end
+    --
+    -- local jobid = vim.fn.jobstart(cmd, {
+    --     on_stdout = on_output,
+    --     on_stderr = on_error,
+    --     on_exit = on_exit,
+    -- })
+    -- vim.fn.jobwait({ jobid })
 elseif
     metajson.provider_type == "plain_list"
     or metajson.provider_type == "command_list"

@@ -38,33 +38,6 @@ local default_restricted_fd =
 local default_unrestricted_fd =
     string.format("%s . -cnever -tf -tl -L -i -u", constants.fd)
 
--- gnu grep
-local default_restricted_gnu_grep_exclude_hidden = [[.*]]
-local default_restricted_gnu_grep = string.format(
-    [[%s --color=always -n -H -r --exclude-dir=%s --exclude=%s]],
-    constants.gnu_grep,
-    utils.shellescape(default_restricted_gnu_grep_exclude_hidden),
-    utils.shellescape(default_restricted_gnu_grep_exclude_hidden)
-)
-local default_unrestricted_gnu_grep = [[grep --color=always -n -H -r]]
-
--- grep
-local default_restricted_grep_exclude_hidden = [[./.*]]
-local default_restricted_grep = string.format(
-    [[grep --color=always -n -H -r --exclude-dir=%s --exclude=%s]],
-    utils.shellescape(default_restricted_grep_exclude_hidden),
-    utils.shellescape(default_restricted_grep_exclude_hidden)
-)
-local default_unrestricted_grep = [[grep --color=always -n -H -r]]
-
--- rg
-local default_restricted_rg =
-    string.format("%s --column -n --no-heading --color=always -S", constants.rg)
-local default_unrestricted_rg = string.format(
-    "%s --column -n --no-heading --color=always -S -uu",
-    constants.rg
-)
-
 --- @type table<string, FzfOpt>
 local default_fzf_options = {
     multi = "--multi",
@@ -138,6 +111,50 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
 end
 
 -- file }
+
+-- live grep {
+
+--- @param content string
+--- @return string[]
+local function parse_query(content)
+    local query = ""
+    local option = nil
+
+    local flag_pos = utils.string_find(content, "--")
+    if flag_pos ~= nil and flag_pos > 0 then
+        query = vim.trim(string.sub(content, 1, flag_pos - 1))
+        option = vim.trim(string.sub(content, flag_pos + 2))
+    else
+        query = vim.trim(content)
+    end
+    -- log.debug(
+    --     "|fzfx.config - parse_query| content:%s, query:%s, option:%s",
+    --     vim.inspect(content),
+    --     vim.inspect(query),
+    --     vim.inspect(option)
+    -- )
+    return { query, option }
+end
+
+--- @param option string
+--- @param merged string[]
+--- @return string[]
+local function merge_query_options(merged, option)
+    local option_splits =
+        vim.split(option, " ", { plain = "true", trimempty = true })
+    log.debug(
+        "|fzfx.config - merge_query_options| option_splits:%s",
+        vim.inspect(option_splits)
+    )
+    for _, o in ipairs(option_splits) do
+        if type(o) == "string" and string.len(o) > 0 then
+            table.insert(merged, o)
+        end
+    end
+    return merged
+end
+
+-- }
 
 -- lsp diagnostics {
 
@@ -650,11 +667,11 @@ local Defaults = {
     },
 
     -- the 'Live Grep' commands
-    live_grep = {
-        --- @type CommandConfig[]
+    --- @type GroupConfig
+    live_grep = GroupConfig:make({
         commands = {
             -- normal
-            {
+            CommandConfig:make({
                 name = "FzfxLiveGrep",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -662,9 +679,9 @@ local Defaults = {
                     nargs = "*",
                     desc = "Live grep",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxLiveGrepU",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -672,10 +689,10 @@ local Defaults = {
                     nargs = "*",
                     desc = "Live grep unrestricted",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
             -- visual
-            {
+            CommandConfig:make({
                 name = "FzfxLiveGrepV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -683,9 +700,9 @@ local Defaults = {
                     range = true,
                     desc = "Live grep by visual select",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxLiveGrepUV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -693,66 +710,227 @@ local Defaults = {
                     range = true,
                     desc = "Live grep unrestricted by visual select",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
             -- cword
-            {
+            CommandConfig:make({
                 name = "FzfxLiveGrepW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Live grep by cursor word",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxLiveGrepUW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Live grep unrestricted by cursor word",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
             -- put
-            {
+            CommandConfig:make({
                 name = "FzfxLiveGrepP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Live grep by yank text",
                 },
-                default_provider = "restricted",
-            },
-            {
+                default_provider = "restricted_mode",
+            }),
+            CommandConfig:make({
                 name = "FzfxLiveGrepUP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Live grep unrestricted by yank text",
                 },
-                default_provider = "unrestricted",
-            },
+                default_provider = "unrestricted_mode",
+            }),
         },
         providers = {
-            restricted = {
-                "ctrl-r",
-                constants.has_rg and default_restricted_rg
-                    or (
-                        constants.has_gnu_grep
-                            and default_restricted_gnu_grep
-                        or default_restricted_grep
-                    ),
-            },
-            unrestricted = {
-                "ctrl-u",
-                constants.has_rg and default_unrestricted_rg
-                    or (
-                        constants.has_gnu_grep
-                            and default_unrestricted_gnu_grep
-                        or default_unrestricted_grep
-                    ),
-            },
+            restricted_mode = ProviderConfig:make({
+                key = "ctrl-r",
+                provider = function(query)
+                    local parsed_query = parse_query(query or "")
+                    local content = parsed_query[1]
+                    local option = parsed_query[2]
+                    local has_gnu_grep = (
+                        (constants.is_windows or constants.is_linux)
+                        and vim.fn.executable("grep") > 0
+                    )
+                        or vim.fn.executable("ggrep") > 0
+                    local gnu_grep = vim.fn.executable("ggrep") > 0 and "ggrep"
+                        or "grep"
+
+                    if vim.fn.executable("rg") > 0 then
+                        if
+                            type(option) == "string"
+                            and string.len(option) > 0
+                        then
+                            -- "rg --column -n --no-heading --color=always -S %s -- %s"
+                            local args = {
+                                "rg",
+                                "--column",
+                                "-n",
+                                "--no-heading",
+                                "--color=always",
+                                "-S",
+                            }
+                            args = merge_query_options(args, option)
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                            return args
+                        else
+                            -- "rg --column -n --no-heading --color=always -S -- %s"
+                            return {
+                                "rg",
+                                "--column",
+                                "-n",
+                                "--no-heading",
+                                "--color=always",
+                                "-S",
+                                "--",
+                                content,
+                            }
+                        end
+                    else
+                        local grep_cmd = has_gnu_grep and gnu_grep or "grep"
+                        local exclude_opt = has_gnu_grep and [[.*]] or [[./.*]]
+                        if
+                            type(option) == "string"
+                            and string.len(option) > 0
+                        then
+                            -- "%s --color=always -n -H -r --exclude-dir=%s --exclude=%s %s -- %s"
+                            local args = {
+                                grep_cmd,
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                                "--exclude-dir=" .. exclude_opt,
+                                "--exclude=" .. exclude_opt,
+                            }
+                            args = merge_query_options(args, option)
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                        else
+                            -- "%s --color=always -n -H -r --exclude-dir=%s --exclude=%s -- %s"
+                            return {
+                                grep_cmd,
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                                "--exclude-dir=" .. exclude_opt,
+                                "--exclude=" .. exclude_opt,
+                                "--",
+                                content,
+                            }
+                        end
+                    end
+                end,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                line_type = ProviderLineTypeEnum.FILE,
+                line_delimiter = ":",
+                line_pos = 1,
+            }),
+            unrestricted_mode = ProviderConfig:make({
+                key = "ctrl-u",
+                provider = function(query)
+                    local parsed_query = parse_query(query or "")
+                    local content = parsed_query[1]
+                    local option = parsed_query[2]
+                    local has_gnu_grep = (
+                        (constants.is_windows or constants.is_linux)
+                        and vim.fn.executable("grep") > 0
+                    )
+                        or vim.fn.executable("ggrep") > 0
+                    local gnu_grep = vim.fn.executable("ggrep") > 0 and "ggrep"
+                        or "grep"
+
+                    if vim.fn.executable("rg") > 0 then
+                        if
+                            type(option) == "string"
+                            and string.len(option) > 0
+                        then
+                            -- "rg --column -n --no-heading --color=always -S -uu %s -- %s"
+                            local args = {
+                                "rg",
+                                "--column",
+                                "-n",
+                                "--no-heading",
+                                "--color=always",
+                                "-S",
+                                "-uu",
+                            }
+                            args = merge_query_options(args, option)
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                            return args
+                        else
+                            -- "rg --column -n --no-heading --color=always -S -uu -- %s"
+                            return {
+                                "rg",
+                                "--column",
+                                "-n",
+                                "--no-heading",
+                                "--color=always",
+                                "-S",
+                                "-uu",
+                                "--",
+                                content,
+                            }
+                        end
+                    else
+                        local grep_cmd = has_gnu_grep and gnu_grep or "grep"
+                        if
+                            type(option) == "string"
+                            and string.len(option) > 0
+                        then
+                            -- "%s --color=always -n -H -r %s -- %s"
+                            local args = {
+                                grep_cmd,
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                            }
+                            args = merge_query_options(args, option)
+                            table.insert(args, "--")
+                            table.insert(args, content)
+                        else
+                            -- "%s --color=always -n -H -r -- %s"
+                            return {
+                                grep_cmd,
+                                "--color=always",
+                                "-n",
+                                "-H",
+                                "-r",
+                                "--",
+                                content,
+                            }
+                        end
+                    end
+                end,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                line_type = ProviderLineTypeEnum.FILE,
+                line_delimiter = ":",
+                line_pos = 1,
+            }),
+        },
+        previewers = {
+            restricted_mode = PreviewerConfig:make({
+                previewer = make_file_previewer(":", 1, 2),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
+            unrestricted_mode = PreviewerConfig:make({
+                previewer = make_file_previewer(":", 1, 2),
+                previewer_type = PreviewerTypeEnum.COMMAND,
+            }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -764,18 +942,15 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
+            "--disabled",
             { "--prompt", "Live Grep > " },
             { "--delimiter", ":" },
             { "--preview-window", "+{2}-/2" },
         },
         other_opts = {
-            onchange_reload_delay = (
-                vim.fn.executable("sleep") > 0 and not constants.is_windows
-            )
-                    and "sleep 0.1 && "
-                or nil,
+            reload_on_change = true,
         },
-    },
+    }),
 
     -- the 'Buffers' commands
     --- @type GroupConfig

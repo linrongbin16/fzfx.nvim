@@ -469,6 +469,10 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
         end
         headers_map[provider_name] = help_builder
     else
+        log.debug(
+            "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
+            vim.inspect(provider_configs)
+        )
         for provider_name, provider_opts in pairs(provider_configs) do
             local help_builder = {}
             for provider_name2, provider_opts2 in pairs(provider_configs) do
@@ -748,6 +752,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         table.insert(fzf_opts, {
             "--bind",
             string.format("start:unbind(%s)", default_provider_key),
+        })
+    end
+    if
+        type(pipeline_configs.other_opts) == "table"
+        and pipeline_configs.other_opts.reload_on_change
+    then
+        table.insert(fzf_opts, {
+            "--bind",
+            string.format("change:reload:%s", reload_query_command),
         })
     end
 
