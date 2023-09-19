@@ -14,6 +14,7 @@ describe("general", function()
 
     local general = require("fzfx.general")
     local ProviderConfig = require("fzfx.schema").ProviderConfig
+    local PreviewerConfig = require("fzfx.schema").PreviewerConfig
     describe("[ProviderSwitch:new]", function()
         it("creates single plain provider", function()
             local ps = general.ProviderSwitch:new(
@@ -118,6 +119,57 @@ describe("general", function()
             assert_eq(ps.provider_configs.p2.provider[2], "p21")
             assert_eq(ps.provider_configs.p2.provider[3], "p22")
             assert_eq(ps.provider_configs.p2.provider_type, "plain_list")
+            assert_eq(ps:switch("p2"), nil)
+        end)
+    end)
+    describe("[PreviewerSwitch:new]", function()
+        it("creates single command previewer", function()
+            local ps = general.PreviewerSwitch:new(
+                "single",
+                "pipeline",
+                PreviewerConfig:make({
+                    previewer = function()
+                        return "ls -1"
+                    end,
+                })
+            )
+            assert_eq(type(ps), "table")
+            assert_false(vim.tbl_isempty(ps))
+            assert_eq(type(ps.previewers), "table")
+            assert_false(vim.tbl_isempty(ps.previewers))
+            assert_eq(type(ps.previewers.default), "function")
+            assert_eq(ps.previewers.default(), "ls -1")
+            assert_eq(ps.previewer_types.default, "command")
+            assert_eq(ps:switch("default"), nil)
+        end)
+        it("creates multiple command previewer", function()
+            local ps = general.PreviewerSwitch:new("single", "pipeline", {
+                p1 = PreviewerConfig:make({
+                    previewer = function()
+                        return "p1"
+                    end,
+                }),
+                p2 = PreviewerConfig:make({
+                    previewer = function()
+                        return "p2"
+                    end,
+                }),
+            })
+            assert_eq(type(ps), "table")
+            assert_false(vim.tbl_isempty(ps))
+
+            assert_eq(type(ps.previewers), "table")
+            assert_false(vim.tbl_isempty(ps.previewers))
+            assert_eq(type(ps.previewers.p1), "function")
+            assert_eq(ps.previewers.p1(), "p1")
+            assert_eq(ps.previewer_types.p1, "command")
+            assert_eq(ps:switch("p1"), nil)
+
+            assert_eq(type(ps.previewers), "table")
+            assert_false(vim.tbl_isempty(ps.previewers))
+            assert_eq(type(ps.previewers.p2), "function")
+            assert_eq(ps.previewers.p2(), "p2")
+            assert_eq(ps.previewer_types.p2, "command")
             assert_eq(ps:switch("p2"), nil)
         end)
     end)

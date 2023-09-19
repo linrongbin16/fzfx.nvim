@@ -293,13 +293,12 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local previewers_map = {}
     local previewer_types_map = {}
     if Clazz:instanceof(previewer_configs, PreviewerConfig) then
-        local previewer_name = DEFAULT_PIPELINE
         local previewer_opts = previewer_configs
         local previewer = previewer_opts.previewer
         local previewer_type = previewer_opts.previewer_type
             or PreviewerTypeEnum.COMMAND
-        previewers_map[previewer_name] = previewer
-        previewer_types_map[previewer_name] = previewer_type
+        previewers_map[DEFAULT_PIPELINE] = previewer
+        previewer_types_map[DEFAULT_PIPELINE] = previewer_type
     else
         for previewer_name, previewer_opts in pairs(previewer_configs) do
             local previewer = previewer_opts.previewer
