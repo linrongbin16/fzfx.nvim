@@ -172,28 +172,6 @@ end
 
 -- live grep {
 
---- @param content string
---- @return string[]
-local function parse_query(content)
-    local query = ""
-    local option = nil
-
-    local flag_pos = utils.string_find(content, "--")
-    if flag_pos ~= nil and flag_pos > 0 then
-        query = vim.trim(string.sub(content, 1, flag_pos - 1))
-        option = vim.trim(string.sub(content, flag_pos + 2))
-    else
-        query = vim.trim(content)
-    end
-    -- log.debug(
-    --     "|fzfx.config - parse_query| content:%s, query:%s, option:%s",
-    --     vim.inspect(content),
-    --     vim.inspect(query),
-    --     vim.inspect(option)
-    -- )
-    return { query, option }
-end
-
 --- @param option string
 --- @param merged string[]
 --- @return string[]
@@ -817,7 +795,7 @@ local Defaults = {
             restricted_mode = ProviderConfig:make({
                 key = "ctrl-r",
                 provider = function(query)
-                    local parsed_query = parse_query(query or "")
+                    local parsed_query = utils.parse_flag_query(query or "")
                     local content = parsed_query[1]
                     local option = parsed_query[2]
                     local has_gnu_grep = (
@@ -903,7 +881,7 @@ local Defaults = {
             unrestricted_mode = ProviderConfig:make({
                 key = "ctrl-u",
                 provider = function(query)
-                    local parsed_query = parse_query(query or "")
+                    local parsed_query = utils.parse_flag_query(query or "")
                     local content = parsed_query[1]
                     local option = parsed_query[2]
                     local has_gnu_grep = (

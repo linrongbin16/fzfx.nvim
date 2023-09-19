@@ -7,31 +7,6 @@ local ProviderConfig = require("fzfx.schema").ProviderConfig
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
 
---- @param content string
---- @return string[]
-local function parse_query(content)
-    local flag = "--"
-    local flag_pos = nil
-    local query = ""
-    local option = nil
-
-    for i = 1, #content do
-        if i + 1 <= #content and string.sub(content, i, i + 1) == flag then
-            flag_pos = i
-            break
-        end
-    end
-
-    if flag_pos ~= nil and flag_pos > 0 then
-        query = vim.trim(string.sub(content, 1, flag_pos - 1))
-        option = vim.trim(string.sub(content, flag_pos + 2))
-    else
-        query = vim.trim(content)
-    end
-
-    return { query, option }
-end
-
 local function setup()
     local live_grep_configs = conf.get_config().live_grep
     if not live_grep_configs then
@@ -52,7 +27,7 @@ local function setup()
             new_providers[provider_name .. "_mode"] = ProviderConfig:make({
                 key = action_key,
                 provider = function(query)
-                    local parsed_query = parse_query(query or "")
+                    local parsed_query = utils.parse_flag_query(query or "")
                     local content = parsed_query[1]
                     local option = parsed_query[2]
                     if type(option) == "string" and string.len(option) > 0 then
