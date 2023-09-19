@@ -141,7 +141,7 @@ function ProviderSwitch:provide(name, query, context)
         )
         if
             provider_config.provider == nil
-            or #provider_config.provider == 0
+            or vim.tbl_isempty(provider_config.provider)
         then
             vim.fn.writefile({ "" }, self.resultfile)
         else
@@ -204,7 +204,7 @@ function ProviderSwitch:provide(name, query, context)
                 vim.inspect(result)
             )
         else
-            if result == nil or #result == 0 then
+            if result == nil or vim.tbl_isempty(result) then
                 vim.fn.writefile({ "" }, self.resultfile)
             else
                 vim.fn.writefile(
@@ -324,6 +324,7 @@ function PreviewerSwitch:preview(name, line, context)
     )
     log.ensure(
         previewer_type == PreviewerTypeEnum.COMMAND
+            or previewer_type == PreviewerTypeEnum.COMMAND_LIST
             or previewer_type == PreviewerTypeEnum.LIST,
         "|fzfx.general - PreviewerSwitch:preview| invalid previewer_type! %s",
         vim.inspect(self)
@@ -361,6 +362,39 @@ function PreviewerSwitch:preview(name, line, context)
                 vim.fn.writefile({ "" }, self.resultfile)
             else
                 vim.fn.writefile({ result }, self.resultfile)
+            end
+        end
+    elseif previewer_type == PreviewerTypeEnum.COMMAND_LIST then
+        local ok, result = pcall(previewer, line, context)
+        log.debug(
+            "|fzfx.general - PreviewerSwitch:preview| pcall command_list previewer, ok:%s, result:%s",
+            vim.inspect(ok),
+            vim.inspect(result)
+        )
+        if not ok then
+            vim.fn.writefile({ "" }, self.resultfile)
+            log.err(
+                "failed to call pipeline %s command_list previewer %s! line:%s, context:%s, error:%s",
+                vim.inspect(name),
+                vim.inspect(previewer),
+                vim.inspect(line),
+                vim.inspect(context),
+                vim.inspect(result)
+            )
+        else
+            log.ensure(
+                result == nil or type(result) == "table",
+                "|fzfx.general - PreviewerSwitch:preview| command_list previewer result must be string! self:%s, result:%s",
+                vim.inspect(self),
+                vim.inspect(result)
+            )
+            if result == nil or vim.tbl_isempty(result) then
+                vim.fn.writefile({ "" }, self.resultfile)
+            else
+                vim.fn.writefile(
+                    { vim.fn.json_encode(result) },
+                    self.resultfile
+                )
             end
         end
     elseif previewer_type == PreviewerTypeEnum.LIST then

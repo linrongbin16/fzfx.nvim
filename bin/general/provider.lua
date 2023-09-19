@@ -197,7 +197,7 @@ then
     end
 
     local cmd_splits = vim.fn.json_decode(cmd)
-    if type(cmd_splits) ~= "table" or #cmd_splits == 0 then
+    if type(cmd_splits) ~= "table" or vim.tbl_isempty(cmd_splits) then
         os.exit(0)
         return
     end
