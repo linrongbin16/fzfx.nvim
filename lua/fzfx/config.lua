@@ -27,7 +27,7 @@ local default_fzf_options = {
 }
 
 local default_git_log_pretty =
-"%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+    "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
 -- files {
 
@@ -52,22 +52,24 @@ local default_unrestricted_fd = {
     "-u",
 }
 -- find
-local default_restricted_find = constants.is_windows and {
-    vim.fn.executable("gfind") > 0 and "gfind" or "find",
-    "-L",
-    ".",
-    "-type",
-    "f",
-} or {
-    vim.fn.executable("gfind") > 0 and "gfind" or "find",
-    "-L",
-    ".",
-    "-type",
-    "f",
-    "-not",
-    "-path",
-    [[*/.*]],
-}
+local default_restricted_find = constants.is_windows
+        and {
+            vim.fn.executable("gfind") > 0 and "gfind" or "find",
+            "-L",
+            ".",
+            "-type",
+            "f",
+        }
+    or {
+        vim.fn.executable("gfind") > 0 and "gfind" or "find",
+        "-L",
+        ".",
+        "-type",
+        "f",
+        "-not",
+        "-path",
+        [[*/.*]],
+    }
 local default_unrestricted_find = {
     vim.fn.executable("gfind") > 0 and "gfind" or "find",
     "-L",
@@ -128,8 +130,8 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
                 style,
                 theme,
                 (lineno ~= nil and string.len(lineno) > 0)
-                and string.format("--highlight-line=%s", lineno)
-                or "",
+                        and string.format("--highlight-line=%s", lineno)
+                    or "",
                 filename
             )
         else
@@ -201,10 +203,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 1,
             text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
             texthl = vim.fn.hlexists("DiagnosticSignError") > 0
-                and "DiagnosticSignError"
+                    and "DiagnosticSignError"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignError") > 0
-                    and "LspDiagnosticsSignError"
+                        and "LspDiagnosticsSignError"
                     or "ErrorMsg"
                 ),
             textcolor = "red",
@@ -213,10 +215,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 2,
             text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
             texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0
-                and "DiagnosticSignWarn"
+                    and "DiagnosticSignWarn"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
-                    and "LspDiagnosticsSignWarn"
+                        and "LspDiagnosticsSignWarn"
                     or "WarningMsg"
                 ),
             textcolor = "orange",
@@ -225,10 +227,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 3,
             text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
             texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0
-                and "DiagnosticSignInfo"
+                    and "DiagnosticSignInfo"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
-                    and "LspDiagnosticsSignInfo"
+                        and "LspDiagnosticsSignInfo"
                     or "None"
                 ),
             textcolor = "teal",
@@ -237,10 +239,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 4,
             text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
             texthl = vim.fn.hlexists("DiagnosticSignHint") > 0
-                and "DiagnosticSignHint"
+                    and "DiagnosticSignHint"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignHint") > 0
-                    and "LspDiagnosticsSignHint"
+                        and "LspDiagnosticsSignHint"
                     or "Comment"
                 ),
             textcolor = "grey",
@@ -792,9 +794,9 @@ local Defaults = {
                     local content = parsed_query[1]
                     local option = parsed_query[2]
                     local has_gnu_grep = (
-                            (constants.is_windows or constants.is_linux)
-                            and vim.fn.executable("grep") > 0
-                        )
+                        (constants.is_windows or constants.is_linux)
+                        and vim.fn.executable("grep") > 0
+                    )
                         or vim.fn.executable("ggrep") > 0
                     local gnu_grep = vim.fn.executable("ggrep") > 0 and "ggrep"
                         or "grep"
@@ -878,9 +880,9 @@ local Defaults = {
                     local content = parsed_query[1]
                     local option = parsed_query[2]
                     local has_gnu_grep = (
-                            (constants.is_windows or constants.is_linux)
-                            and vim.fn.executable("grep") > 0
-                        )
+                        (constants.is_windows or constants.is_linux)
+                        and vim.fn.executable("grep") > 0
+                    )
                         or vim.fn.executable("ggrep") > 0
                     local gnu_grep = vim.fn.executable("ggrep") > 0 and "ggrep"
                         or "grep"
@@ -968,14 +970,14 @@ local Defaults = {
             ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
                 or require("fzfx.actions").edit_grep,
             ["double-click"] = constants.has_rg
-                and require("fzfx.actions").edit_rg
+                    and require("fzfx.actions").edit_rg
                 or require("fzfx.actions").edit_grep,
         },
         fzf_opts = {
             default_fzf_options.multi,
             "--disabled",
-            { "--prompt",         "Live Grep > " },
-            { "--delimiter",      ":" },
+            { "--prompt", "Live Grep > " },
+            { "--delimiter", ":" },
             { "--preview-window", "+{2}-/2" },
         },
         other_opts = {
@@ -1041,9 +1043,9 @@ local Defaults = {
                 local bufnrs_list = vim.api.nvim_list_bufs()
                 local bufpaths_list = {}
                 local current_bufpath = valid_bufnr(context.bufnr)
-                    and path.reduce(
-                        vim.api.nvim_buf_get_name(context.bufnr)
-                    )
+                        and path.reduce(
+                            vim.api.nvim_buf_get_name(context.bufnr)
+                        )
                     or nil
                 if
                     type(current_bufpath) == "string"
@@ -1446,7 +1448,7 @@ local Defaults = {
                     return nil
                 end
                 return utils.string_not_empty(git_current_branch_cmd:value())
-                    and "--header-lines=1"
+                        and "--header-lines=1"
                     or nil
             end,
         },
@@ -1807,7 +1809,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            { "--delimiter",      ":" },
+            { "--delimiter", ":" },
             { "--preview-window", "+{2}-/2" },
             {
                 "--prompt",
