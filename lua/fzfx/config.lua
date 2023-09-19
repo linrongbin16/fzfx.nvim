@@ -109,7 +109,7 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
             then
                 style = vim.env["BAT_STYLE"]
             end
-            local theme = "base16-256"
+            local theme = "base16"
             if
                 type(vim.env["BAT_THEME"]) == "string"
                 and string.len(vim.env["BAT_THEME"]) > 0
