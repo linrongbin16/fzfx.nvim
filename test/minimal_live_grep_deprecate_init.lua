@@ -53,7 +53,7 @@ require("lazy").setup({
         config = function()
             require("fzfx").setup({
                 debug = {
-                    enable = false,
+                    enable = true,
                     file_log = true,
                 },
                 -- the 'Live Grep' commands

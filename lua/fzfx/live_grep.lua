@@ -39,6 +39,7 @@ local function setup()
     end
 
     local deprecated = false
+    local new_providers = {}
     for provider_name, provider_opts in pairs(live_grep_configs.providers) do
         log.debug(
             "|fzfx.live_grep - setup| provider_name:%s, provider_opts:%s",
@@ -48,7 +49,7 @@ local function setup()
         if provider_name == "restricted" or provider_name == "unrestricted" then
             local action_key = provider_opts[1]
             local grep_cmd = provider_opts[2]
-            live_grep_configs["restricted_mode"] = ProviderConfig:make({
+            new_providers[provider_name .. "_mode"] = ProviderConfig:make({
                 key = action_key,
                 provider = function(query)
                     local parsed_query = parse_query(query or "")
@@ -76,6 +77,9 @@ local function setup()
             })
             deprecated = true
         end
+    end
+    if not vim.tbl_isempty(new_providers) then
+        live_grep_configs.providers = new_providers
     end
     if deprecated then
         for _, command_opts in ipairs(live_grep_configs.commands) do

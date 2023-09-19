@@ -469,6 +469,10 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
         end
         headers_map[provider_name] = help_builder
     else
+        log.debug(
+            "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
+            vim.inspect(provider_configs)
+        )
         for provider_name, provider_opts in pairs(provider_configs) do
             local help_builder = {}
             for provider_name2, provider_opts2 in pairs(provider_configs) do
