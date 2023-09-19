@@ -55,10 +55,11 @@ local ProviderTypeEnum = {
 --- @alias BuiltinPreviewer fun(line:string?,context:PipelineContext?):table?
 --
 --- @alias Previewer CommandPreviewer|ListPreviewer|BuiltinPreviewer
---- @alias PreviewerType "command"|"list"|"builtin"
+--- @alias PreviewerType "command"|"command_list"|"list"|"builtin"
 --- @enum PreviewerTypeEnum
 local PreviewerTypeEnum = {
     COMMAND = "command",
+    COMMAND_LIST = "command_list",
     LIST = "list",
 }
 
