@@ -114,12 +114,6 @@ end
 
 -- live grep {
 
--- gnu grep
-local gnu_grep_exclude_hidden = [[.*]]
-
--- grep
-local grep_exclude_hidden = [[./.*]]
-
 --- @param content string
 --- @return string[]
 local function parse_query(content)
@@ -805,9 +799,7 @@ local Defaults = {
                         end
                     else
                         local grep_cmd = has_gnu_grep and gnu_grep or "grep"
-                        local exclude_opt = has_gnu_grep
-                                and gnu_grep_exclude_hidden
-                            or grep_exclude_hidden
+                        local exclude_opt = has_gnu_grep and [[.*]] or [[./.*]]
                         if
                             type(option) == "string"
                             and string.len(option) > 0
