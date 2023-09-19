@@ -52,7 +52,7 @@ describe("general", function()
             assert_eq(ps.provider_configs.default.provider[2], "-1")
             assert_eq(ps.provider_configs.default.provider_type, "plain_list")
         end)
-        it("creates multiple providers", function()
+        it("creates multiple plain providers", function()
             local ps = general.ProviderSwitch:new("single", "pipeline", {
                 p1 = ProviderConfig:make({
                     key = "ctrl-p",
@@ -79,6 +79,40 @@ describe("general", function()
             assert_eq(type(ps.provider_configs.p2.provider), "string")
             assert_eq(ps.provider_configs.p2.provider, "p2")
             assert_eq(ps.provider_configs.p2.provider_type, "plain")
+        end)
+        it("creates multiple plain_list providers", function()
+            local ps = general.ProviderSwitch:new("single", "pipeline", {
+                p1 = ProviderConfig:make({
+                    key = "ctrl-p",
+                    provider = { "p1", "p11", "p12" },
+                }),
+                p2 = ProviderConfig:make({
+                    key = "ctrl-q",
+                    provider = { "p2", "p21", "p22" },
+                }),
+            })
+            assert_eq(type(ps), "table")
+            assert_false(vim.tbl_isempty(ps))
+
+            assert_eq(type(ps.provider_configs.p1), "table")
+            assert_false(vim.tbl_isempty(ps.provider_configs.p1))
+            assert_eq(ps.provider_configs.p1.key, "ctrl-p")
+            assert_eq(type(ps.provider_configs.p1.provider), "table")
+            assert_eq(#ps.provider_configs.p1.provider, 3)
+            assert_eq(ps.provider_configs.p1.provider[1], "p1")
+            assert_eq(ps.provider_configs.p1.provider[2], "p11")
+            assert_eq(ps.provider_configs.p1.provider[3], "p12")
+            assert_eq(ps.provider_configs.p1.provider_type, "plain_list")
+
+            assert_eq(type(ps.provider_configs.p2), "table")
+            assert_false(vim.tbl_isempty(ps.provider_configs.p2))
+            assert_eq(ps.provider_configs.p2.key, "ctrl-q")
+            assert_eq(type(ps.provider_configs.p2.provider), "table")
+            assert_eq(#ps.provider_configs.p2.provider, 3)
+            assert_eq(ps.provider_configs.p2.provider[1], "p2")
+            assert_eq(ps.provider_configs.p2.provider[2], "p21")
+            assert_eq(ps.provider_configs.p2.provider[3], "p22")
+            assert_eq(ps.provider_configs.p2.provider_type, "plain_list")
         end)
     end)
 end)
