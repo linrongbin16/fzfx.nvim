@@ -804,7 +804,7 @@ To run unit tests, please install below dependencies:
 - [luacov](https://github.com/lunarmodules/luacov).
 - [vusted](https://github.com/notomo/vusted).
 
-Then test with `vusted --shuffle ./test`.
+Then test with `vusted ./test`.
 
 ## 🎁 Contribute
 

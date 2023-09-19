@@ -192,6 +192,22 @@ local function number_bound(left, value, right)
     return math.min(math.max(left or -2147483648, value), right or 2147483647)
 end
 
+--- @param content string
+--- @return string[]
+local function parse_flag_query(content)
+    local query = ""
+    local option = nil
+
+    local flag_pos = string_find(content, "--")
+    if type(flag_pos) == "number" and flag_pos > 0 then
+        query = vim.trim(string.sub(content, 1, flag_pos - 1))
+        option = vim.trim(string.sub(content, flag_pos + 2))
+    else
+        query = vim.trim(content)
+    end
+    return { query, option }
+end
+
 --- @class ShellOptsContext
 --- @field shell string?
 --- @field shellslash string?
@@ -347,6 +363,7 @@ local M = {
     string_rtrim = string_rtrim,
     string_split = string_split,
     number_bound = number_bound,
+    parse_flag_query = parse_flag_query,
     ShellOptsContext = ShellOptsContext,
     shellescape = shellescape,
     WindowOptsContext = WindowOptsContext,
