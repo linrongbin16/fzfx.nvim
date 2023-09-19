@@ -43,16 +43,8 @@ local Cmd = {
 --- @param opts table<string, any>?
 --- @return Cmd
 function Cmd:run(source, opts)
-    local detach_opt = (
-        type(opts) == "table"
-        and type(opts.detach) == "boolean"
-        and opts.detach
-    )
-            and true
-        or false
     local c = vim.tbl_deep_extend("force", vim.deepcopy(Cmd), {
         cmd = source,
-        detach = detach_opt,
         jobid = nil,
         result = CmdResult:new(),
     })
@@ -120,9 +112,7 @@ function Cmd:run(source, opts)
         stderr_buffered = stderr_buffered_opt,
     })
     c.jobid = jobid
-    if not detach_opt then
-        vim.fn.jobwait({ jobid })
-    end
+    vim.fn.jobwait({ jobid })
     return c
 end
 

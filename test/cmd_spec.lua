@@ -40,6 +40,52 @@ describe("cmd", function()
             assert_false(c:wrong())
             assert_false(c.result:wrong())
         end)
+        it("echo without opts", function()
+            local stdouts = {}
+            local stderrs = {}
+            local code = nil
+            local function on_stdout(chanid, data, name)
+                if type(data) == "table" then
+                    for _, d in ipairs(data) do
+                        if type(d) == "string" and string.len(d) > 0 then
+                            table.insert(stdouts, d)
+                        end
+                    end
+                end
+            end
+
+            local function on_stderr(chanid, data, name)
+                if type(data) == "table" then
+                    for _, d in ipairs(data) do
+                        if type(d) == "string" and string.len(d) > 0 then
+                            table.insert(stderrs, d)
+                        end
+                    end
+                end
+            end
+
+            local function on_exit(jobid2, exitcode, event)
+                code = exitcode
+            end
+
+            local c = Cmd:run("echo 1", {
+                on_stdout = on_stdout,
+                on_stderr = on_stderr,
+                on_exit = on_exit,
+            })
+            assert_eq(type(c), "table")
+            assert_eq(type(c.result), "table")
+            assert_eq(type(c.result.stdout), "table")
+            assert_true(vim.tbl_isempty(c.result.stdout))
+            assert_true(vim.tbl_isempty(c.result.stderr))
+            assert_true(c.result.exitcode == nil)
+            assert_eq(#stdouts, 1)
+            assert_eq(stdouts[1], "1")
+            assert_eq(#stderrs, 0)
+            assert_eq(code, 0)
+            assert_false(c:wrong())
+            assert_false(c.result:wrong())
+        end)
     end)
     local cmd = require("fzfx.cmd")
     describe("[GitRootCmd]", function()
