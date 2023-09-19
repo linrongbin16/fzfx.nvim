@@ -30,6 +30,19 @@ describe("schema", function()
             assert_eq(plain.provider, plain_provider)
             assert_eq(plain.provider_type, plain_provider_type)
         end)
+        it("makes a plain_list provider", function()
+            local plain_key = "plain"
+            local plain_provider = { "ls", "-la" }
+            local plain = schema.ProviderConfig:make({
+                key = plain_key,
+                provider = plain_provider,
+            })
+            assert_eq(type(plain), "table")
+            assert_true(Clazz:instanceof(plain, schema.ProviderConfig))
+            assert_eq(plain.key, plain_key)
+            assert_eq(plain.provider, plain_provider)
+            assert_eq(plain.provider_type, "plain_list")
+        end)
         it("makes a command provider", function()
             local command_key = "command"
             local command_provider = function()
@@ -50,6 +63,33 @@ describe("schema", function()
             assert_eq(type(command.provider), "function")
             assert_eq(command.provider(), command_provider())
             assert_eq(command.provider_type, command_provider_type)
+            assert_eq(command.line_type, "file")
+            assert_eq(command.line_delimiter, ":")
+            assert_eq(command.line_pos, 1)
+        end)
+        it("makes a command_list provider", function()
+            local command_key = "command"
+            local command_provider = function()
+                return { "ls", "-la" }
+            end
+            local command = schema.ProviderConfig:make({
+                key = command_key,
+                provider = command_provider,
+                provider_type = "command_list",
+                line_type = "file",
+                line_delimiter = ":",
+                line_pos = 1,
+            })
+            assert_eq(type(command), "table")
+            assert_true(Clazz:instanceof(command, schema.ProviderConfig))
+            assert_eq(command.key, command_key)
+            assert_eq(type(command.provider), "function")
+            assert_eq(type(command.provider()), "table")
+            assert_false(vim.tbl_isempty(command.provider()))
+            assert_eq(#command.provider(), 2)
+            assert_eq(command.provider()[1], "ls")
+            assert_eq(command.provider()[2], "-la")
+            assert_eq(command.provider_type, "command_list")
             assert_eq(command.line_type, "file")
             assert_eq(command.line_delimiter, ":")
             assert_eq(command.line_pos, 1)

@@ -6,6 +6,7 @@ local LogLevel = require("fzfx.log").LogLevel
 local color = require("fzfx.color")
 local path = require("fzfx.path")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
@@ -82,10 +83,10 @@ local default_unrestricted_find = {
 --- @param delimiter string?
 --- @param filename_pos integer?
 --- @param lineno_pos integer?
---- @return fun(line:string):string
+--- @return fun(line:string):string[]
 local function make_file_previewer(delimiter, filename_pos, lineno_pos)
     --- @param line string
-    --- @return string
+    --- @return string[]
     local function wrap(line)
         log.debug(
             "|fzfx.config - make_file_previewer| delimiter:%s, filename_pos:%s, lineno_pos:%s",
@@ -125,18 +126,43 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
             then
                 theme = vim.env["BAT_THEME"]
             end
-            return string.format(
-                "%s --style=%s --theme=%s --color=always --pager=never %s -- %s",
+            -- return string.format(
+            --     "%s --style=%s --theme=%s --color=always --pager=never %s -- %s",
+            --     constants.bat,
+            --     style,
+            --     theme,
+            --     (lineno ~= nil and string.len(lineno) > 0)
+            --             and string.format("--highlight-line=%s", lineno)
+            --         or "",
+            --     filename
+            -- )
+            if lineno ~= nil and string.len(lineno) > 0 then
+                return {
+                    constants.bat,
+                    "--style=" .. style,
+                    "--theme=" .. theme,
+                    "--color=always",
+                    "--pager=never",
+                    "--highlight-line=" .. lineno,
+                    "--",
+                    filename,
+                }
+            end
+            return {
                 constants.bat,
-                style,
-                theme,
-                (lineno ~= nil and string.len(lineno) > 0)
-                        and string.format("--highlight-line=%s", lineno)
-                    or "",
-                filename
-            )
+                "--style=" .. style,
+                "--theme=" .. theme,
+                "--color=always",
+                "--pager=never",
+                "--",
+                filename,
+            }
         else
-            return string.format("cat %s", filename)
+            -- return string.format("cat %s", filename)
+            return {
+                "cat",
+                filename,
+            }
         end
     end
     return wrap
@@ -679,9 +705,11 @@ local Defaults = {
         previewers = {
             restricted_mode = PreviewerConfig:make({
                 previewer = make_file_previewer(),
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             unrestricted_mode = PreviewerConfig:make({
                 previewer = make_file_previewer(),
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
         actions = {
@@ -959,9 +987,11 @@ local Defaults = {
         previewers = {
             restricted_mode = PreviewerConfig:make({
                 previewer = make_file_previewer(":", 1, 2),
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             unrestricted_mode = PreviewerConfig:make({
                 previewer = make_file_previewer(":", 1, 2),
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
         actions = {
@@ -1065,6 +1095,7 @@ local Defaults = {
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(),
+            previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         interactions = {
             delete_buffer = InteractionConfig:make({
@@ -1193,9 +1224,11 @@ local Defaults = {
         previewers = {
             current_folder = PreviewerConfig:make({
                 previewer = make_file_previewer(),
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             workspace = PreviewerConfig:make({
                 previewer = make_file_previewer(),
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
         actions = {
@@ -1815,9 +1848,11 @@ local Defaults = {
         previewers = {
             workspace_diagnostics = PreviewerConfig:make({
                 previewer = make_file_previewer(":", 1, 2),
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             buffer_diagnostics = PreviewerConfig:make({
                 previewer = make_file_previewer(":", 1, 2),
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
         actions = {
@@ -1865,6 +1900,7 @@ local Defaults = {
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(":", 1, 2),
+            previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -1921,6 +1957,7 @@ local Defaults = {
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(":", 1, 2),
+            previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -1977,6 +2014,7 @@ local Defaults = {
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(":", 1, 2),
+            previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -2033,6 +2071,7 @@ local Defaults = {
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(":", 1, 2),
+            previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
