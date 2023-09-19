@@ -20,13 +20,11 @@ local DEFAULT_PIPELINE = "default"
 --- @class ProviderSwitch
 --- @field pipeline PipelineName?
 --- @field provider_configs table<PipelineName, ProviderConfig>?
---- @field provider_contexts table<PipelineName, any?>?
 --- @field metafile string?
 --- @field resultfile string?
 local ProviderSwitch = {
     pipeline = nil,
     provider_configs = nil,
-    provider_contexts = nil,
     metafile = nil,
     resultfile = nil,
 }
@@ -37,38 +35,14 @@ local ProviderSwitch = {
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
-    local provider_contexts_map = {}
     if Clazz:instanceof(provider_configs, ProviderConfig) then
-        provider_configs.provider_type = provider_configs.provider_type
-            or (
-                type(provider_configs.provider) == "string"
-                    and ProviderTypeEnum.PLAIN
-                or ProviderTypeEnum.PLAIN_LIST
-            )
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
-        if type(provider_configs.context_maker) == "function" then
-            provider_contexts_map[DEFAULT_PIPELINE] =
-                provider_configs.context_maker()
-        end
     else
-        for provider_name, provider_opts in pairs(provider_configs) do
-            provider_opts.provider_type = provider_opts.provider_type
-                or (
-                    type(provider_opts.provider) == "string"
-                        and ProviderTypeEnum.PLAIN
-                    or ProviderTypeEnum.PLAIN_LIST
-                )
-            if type(provider_opts.context_maker) == "function" then
-                provider_contexts_map[provider_name] =
-                    provider_opts.context_maker()
-            end
-        end
         provider_configs_map = provider_configs
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
         pipeline = pipeline,
         provider_configs = provider_configs_map,
-        provider_contexts = provider_contexts_map,
         metafile = env.debug_enable() and path.join(
             vim.fn.stdpath("data"),
             "fzfx.nvim",
@@ -93,7 +67,6 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
-    context = self.provider_contexts[self.pipeline] or context
     log.debug(
         "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
         vim.inspect(self.pipeline),
@@ -306,18 +279,12 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local previewers_map = {}
     local previewer_types_map = {}
     if Clazz:instanceof(previewer_configs, PreviewerConfig) then
-        local previewer_name = DEFAULT_PIPELINE
-        local previewer_opts = previewer_configs
-        local previewer = previewer_opts.previewer
-        local previewer_type = previewer_opts.previewer_type
-        previewers_map[previewer_name] = previewer
-        previewer_types_map[previewer_name] = previewer_type
+        previewers_map[DEFAULT_PIPELINE] = previewer_configs.previewer
+        previewer_types_map[DEFAULT_PIPELINE] = previewer_configs.previewer_type
     else
         for previewer_name, previewer_opts in pairs(previewer_configs) do
-            local previewer = previewer_opts.previewer
-            local previewer_type = previewer_opts.previewer_type
-            previewers_map[previewer_name] = previewer
-            previewer_types_map[previewer_name] = previewer_type
+            previewers_map[previewer_name] = previewer_opts.previewer
+            previewer_types_map[previewer_name] = previewer_opts.previewer_type
         end
     end
     return vim.tbl_deep_extend("force", vim.deepcopy(PreviewerSwitch), {
@@ -557,13 +524,6 @@ end
 --- @param default_pipeline PipelineName?
 --- @return Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
-    --- @type PipelineContext
-    local context = {
-        bufnr = vim.api.nvim_get_current_buf(),
-        winnr = vim.api.nvim_get_current_win(),
-        tabnr = vim.api.nvim_get_current_tabpage(),
-    }
-
     local pipeline_size = get_pipeline_size(pipeline_configs)
 
     local default_provider_key = nil
@@ -601,9 +561,34 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local previewer_switch =
         PreviewerSwitch:new(name, default_pipeline, pipeline_configs.previewers)
 
+    --- @type PipelineContext
+    local default_context = {
+        bufnr = vim.api.nvim_get_current_buf(),
+        winnr = vim.api.nvim_get_current_win(),
+        tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+    local pipeline_contexts_map = {}
+    if Clazz:instanceof(pipeline_configs.providers, ProviderConfig) then
+        if type(pipeline_configs.providers.context_maker) == "function" then
+            pipeline_contexts_map[DEFAULT_PIPELINE] =
+                pipeline_configs.providers.context_maker()
+        end
+    else
+        for provider_name, provider_opts in pairs(pipeline_configs.providers) do
+            if type(provider_opts.context_maker) == "function" then
+                pipeline_contexts_map[provider_name] =
+                    provider_opts.context_maker()
+            end
+        end
+    end
+
     --- @param query_params string
     local function provide_rpc(query_params)
-        provider_switch:provide(name, query_params, context)
+        provider_switch:provide(
+            name,
+            query_params,
+            pipeline_contexts_map[provider_switch.pipeline] or default_context
+        )
     end
 
     --- @param line_params string

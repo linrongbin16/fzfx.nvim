@@ -6,7 +6,6 @@ local LogLevel = require("fzfx.log").LogLevel
 local color = require("fzfx.color")
 local path = require("fzfx.path")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
-local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
@@ -110,10 +109,18 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
             then
                 style = vim.env["BAT_STYLE"]
             end
+            local theme = "base16-256"
+            if
+                type(vim.env["BAT_THEME"]) == "string"
+                and string.len(vim.env["BAT_THEME"]) > 0
+            then
+                theme = vim.env["BAT_THEME"]
+            end
             return string.format(
-                "%s --style=%s --color=always --pager=never %s -- %s",
+                "%s --style=%s --theme=%s --color=always --pager=never %s -- %s",
                 constants.bat,
                 style,
+                theme,
                 (lineno ~= nil and string.len(lineno) > 0)
                         and string.format("--highlight-line=%s", lineno)
                     or "",
@@ -665,11 +672,9 @@ local Defaults = {
         previewers = {
             restricted_mode = PreviewerConfig:make({
                 previewer = make_file_previewer(),
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
             unrestricted_mode = PreviewerConfig:make({
                 previewer = make_file_previewer(),
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
         },
         actions = {
@@ -947,11 +952,9 @@ local Defaults = {
         previewers = {
             restricted_mode = PreviewerConfig:make({
                 previewer = make_file_previewer(":", 1, 2),
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
             unrestricted_mode = PreviewerConfig:make({
                 previewer = make_file_previewer(":", 1, 2),
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
         },
         actions = {
@@ -1055,7 +1058,6 @@ local Defaults = {
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(),
-            previewer_type = PreviewerTypeEnum.COMMAND,
         }),
         interactions = {
             delete_buffer = InteractionConfig:make({
@@ -1184,11 +1186,9 @@ local Defaults = {
         previewers = {
             current_folder = PreviewerConfig:make({
                 previewer = make_file_previewer(),
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
             workspace = PreviewerConfig:make({
                 previewer = make_file_previewer(),
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
         },
         actions = {
@@ -1406,7 +1406,6 @@ local Defaults = {
                         branch
                     )
                 end,
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
             remote_branch = PreviewerConfig:make({
                 previewer = function(line)
@@ -1417,7 +1416,6 @@ local Defaults = {
                         branch
                     )
                 end,
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
         },
         actions = {
@@ -1567,14 +1565,12 @@ local Defaults = {
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
             buffer_commits = PreviewerConfig:make({
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
         },
         actions = {
@@ -1662,7 +1658,6 @@ local Defaults = {
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
         },
         actions = {
@@ -1794,11 +1789,9 @@ local Defaults = {
         previewers = {
             workspace_diagnostics = PreviewerConfig:make({
                 previewer = make_file_previewer(":", 1, 2),
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
             buffer_diagnostics = PreviewerConfig:make({
                 previewer = make_file_previewer(":", 1, 2),
-                previewer_type = PreviewerTypeEnum.COMMAND,
             }),
         },
         actions = {
@@ -1846,7 +1839,6 @@ local Defaults = {
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(":", 1, 2),
-            previewer_type = PreviewerTypeEnum.COMMAND,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -1904,7 +1896,6 @@ local Defaults = {
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(":", 1, 2),
-            previewer_type = PreviewerTypeEnum.COMMAND,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -1961,7 +1952,6 @@ local Defaults = {
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(":", 1, 2),
-            previewer_type = PreviewerTypeEnum.COMMAND,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -2018,7 +2008,6 @@ local Defaults = {
         }),
         previewers = PreviewerConfig:make({
             previewer = make_file_previewer(":", 1, 2),
-            previewer_type = PreviewerTypeEnum.COMMAND,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,

@@ -179,11 +179,14 @@ local ProviderConfig = Clazz:implement("fzfx.config.ProviderConfig", {
 })
 
 function ProviderConfig:make(opts)
-    return vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(ProviderConfig),
-        opts or {}
-    )
+    local p =
+        vim.tbl_deep_extend("force", vim.deepcopy(ProviderConfig), opts or {})
+    p.provider_type = p.provider_type
+        or (
+            type(p.provider) == "string" and ProviderTypeEnum.PLAIN
+            or ProviderTypeEnum.PLAIN_LIST
+        )
+    return p
 end
 
 --- @class PreviewerConfig
@@ -195,11 +198,10 @@ local PreviewerConfig = Clazz:implement("fzfx.config.PreviewerConfig", {
 })
 
 function PreviewerConfig:make(opts)
-    return vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(PreviewerConfig),
-        opts or {}
-    )
+    local p =
+        vim.tbl_deep_extend("force", vim.deepcopy(PreviewerConfig), opts or {})
+    p.previewer_type = p.previewer_type or PreviewerTypeEnum.COMMAND
+    return p
 end
 
 --- @class CommandConfig
