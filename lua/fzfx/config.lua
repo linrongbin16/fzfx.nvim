@@ -15,25 +15,6 @@ local CommandConfig = require("fzfx.schema").CommandConfig
 local InteractionConfig = require("fzfx.schema").InteractionConfig
 local GroupConfig = require("fzfx.schema").GroupConfig
 
--- gnu find
-local default_restricted_gnu_find_exclude_hidden = [[*/.*]]
-local default_restricted_gnu_find = string.format(
-    [[%s -L . -type f -not -path %s]],
-    constants.gnu_find,
-    utils.shellescape(default_restricted_gnu_find_exclude_hidden)
-)
-local default_unrestricted_gnu_find = [[find -L . -type f]]
-
--- find
-local default_restricted_find_exclude_hidden = [[*/.*]]
-local default_restricted_find = string.format(
-    [[find -L . -type f -not -path %s]],
-    utils.shellescape(default_restricted_find_exclude_hidden)
-)
-local default_unrestricted_find = [[find -L . -type f]]
-
--- fd
-
 --- @type table<string, FzfOpt>
 local default_fzf_options = {
     multi = "--multi",
@@ -51,7 +32,6 @@ local default_git_log_pretty =
 
 -- files {
 
-local has_fd = vim.fn.executable("fd") > 0 or vim.fn.executable("fdfind") > 0
 -- fd
 local default_restricted_fd = {
     vim.fn.executable("fdfind") > 0 and "fdfind" or "fd",

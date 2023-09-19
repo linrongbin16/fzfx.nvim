@@ -35,9 +35,22 @@ local default_fzf_options = {
     no_multi = "--no-multi",
 }
 
-local default_restricted_rg = "rg --column -n --no-heading --color=always -S"
-local default_unrestricted_rg =
-    "rg --column -n --no-heading --color=always -S -uu"
+-- fd
+local default_restricted_fd = string.format(
+    [[%s . -cnever -tf -tl -L -i]],
+    vim.fn.executable("fdfind") > 0 and "fdfind" or "fd"
+)
+local default_unrestricted_fd = string.format(
+    [[%s . -cnever -tf -tl -L -i -u]],
+    vim.fn.executable("fdfind") > 0 and "fdfind" or "fd"
+)
+-- find
+local default_restricted_find = string.format(
+    [[%s -L . -type f -not -path %s]],
+    vim.fn.executable("gfind") > 0 and "gfind" or "find",
+    require("fzfx.utils").shellescape([[*/.*]])
+)
+local default_unrestricted_find = [[find -L . -type f]]
 
 require("lazy").setup({
     "folke/tokyonight.nvim",
@@ -56,86 +69,89 @@ require("lazy").setup({
                     enable = true,
                     file_log = true,
                 },
-                -- the 'Live Grep' commands
-                live_grep = {
+                -- the 'Files' commands
+                files = {
+                    --- @type CommandConfig[]
                     commands = {
                         -- normal
                         {
-                            name = "FzfxLiveGrep",
+                            name = "FzfxFiles",
                             feed = require("fzfx.meta").CommandFeedEnum.ARGS,
                             opts = {
                                 bang = true,
-                                nargs = "*",
-                                desc = "Live grep",
+                                nargs = "?",
+                                complete = "dir",
+                                desc = "Find files",
                             },
                             default_provider = "restricted",
                         },
                         {
-                            name = "FzfxLiveGrepU",
+                            name = "FzfxFilesU",
                             feed = require("fzfx.meta").CommandFeedEnum.ARGS,
                             opts = {
                                 bang = true,
-                                nargs = "*",
-                                desc = "Live grep unrestricted",
+                                nargs = "?",
+                                complete = "dir",
+                                desc = "Find files",
                             },
                             default_provider = "unrestricted",
                         },
                         -- visual
                         {
-                            name = "FzfxLiveGrepV",
+                            name = "FzfxFilesV",
                             feed = require("fzfx.meta").CommandFeedEnum.VISUAL,
                             opts = {
                                 bang = true,
                                 range = true,
-                                desc = "Live grep by visual select",
+                                desc = "Find files by visual select",
                             },
                             default_provider = "restricted",
                         },
                         {
-                            name = "FzfxLiveGrepUV",
+                            name = "FzfxFilesUV",
                             feed = require("fzfx.meta").CommandFeedEnum.VISUAL,
                             opts = {
                                 bang = true,
                                 range = true,
-                                desc = "Live grep unrestricted by visual select",
+                                desc = "Find files unrestricted by visual select",
                             },
                             default_provider = "unrestricted",
                         },
                         -- cword
                         {
-                            name = "FzfxLiveGrepW",
+                            name = "FzfxFilesW",
                             feed = require("fzfx.meta").CommandFeedEnum.CWORD,
                             opts = {
                                 bang = true,
-                                desc = "Live grep by cursor word",
+                                desc = "Find files by cursor word",
                             },
                             default_provider = "restricted",
                         },
                         {
-                            name = "FzfxLiveGrepUW",
+                            name = "FzfxFilesUW",
                             feed = require("fzfx.meta").CommandFeedEnum.CWORD,
                             opts = {
                                 bang = true,
-                                desc = "Live grep unrestricted by cursor word",
+                                desc = "Find files unrestricted by cursor word",
                             },
                             default_provider = "unrestricted",
                         },
                         -- put
                         {
-                            name = "FzfxLiveGrepP",
+                            name = "FzfxFilesP",
                             feed = require("fzfx.meta").CommandFeedEnum.PUT,
                             opts = {
                                 bang = true,
-                                desc = "Live grep by yank text",
+                                desc = "Find files by yank text",
                             },
                             default_provider = "restricted",
                         },
                         {
-                            name = "FzfxLiveGrepUP",
+                            name = "FzfxFilesUP",
                             feed = require("fzfx.meta").CommandFeedEnum.PUT,
                             opts = {
                                 bang = true,
-                                desc = "Live grep unrestricted by yank text",
+                                desc = "Find files unrestricted by yank text",
                             },
                             default_provider = "unrestricted",
                         },
@@ -143,31 +159,36 @@ require("lazy").setup({
                     providers = {
                         restricted = {
                             "ctrl-r",
-                            default_restricted_rg,
+                            (
+                                vim.fn.executable("fd") > 0
+                                or vim.fn.executable("fdfind") > 0
+                            )
+                                    and default_restricted_fd
+                                or default_restricted_find,
                         },
                         unrestricted = {
                             "ctrl-u",
-                            default_unrestricted_rg,
+                            (
+                                vim.fn.executable("fd") > 0
+                                or vim.fn.executable("fdfind") > 0
+                            )
+                                    and default_unrestricted_fd
+                                or default_unrestricted_find,
                         },
                     },
                     actions = {
                         ["esc"] = require("fzfx.actions").nop,
-                        ["enter"] = require("fzfx.actions").edit_rg,
-                        ["double-click"] = require("fzfx.actions").edit_rg,
+                        ["enter"] = require("fzfx.actions").edit,
+                        ["double-click"] = require("fzfx.actions").edit,
                     },
                     fzf_opts = {
                         default_fzf_options.multi,
-                        { "--prompt", "Live Grep > " },
-                        { "--delimiter", ":" },
-                        { "--preview-window", "+{2}-/2" },
-                    },
-                    other_opts = {
-                        onchange_reload_delay = (
-                            vim.fn.executable("sleep") > 0
-                            and not require("fzfx.constants").is_windows
-                        )
-                                and "sleep 0.1 && "
-                            or nil,
+                        function()
+                            return {
+                                "--prompt",
+                                require("fzfx.path").shorten() .. " > ",
+                            }
+                        end,
                     },
                 },
             })
