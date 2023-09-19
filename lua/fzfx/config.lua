@@ -109,10 +109,18 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
             then
                 style = vim.env["BAT_STYLE"]
             end
+            local theme = "base16-256"
+            if
+                type(vim.env["BAT_THEME"]) == "string"
+                and string.len(vim.env["BAT_THEME"]) > 0
+            then
+                theme = vim.env["BAT_THEME"]
+            end
             return string.format(
-                "%s --style=%s --color=always --pager=never %s -- %s",
+                "%s --style=%s --theme=%s --color=always --pager=never %s -- %s",
                 constants.bat,
                 style,
+                theme,
                 (lineno ~= nil and string.len(lineno) > 0)
                         and string.format("--highlight-line=%s", lineno)
                     or "",
