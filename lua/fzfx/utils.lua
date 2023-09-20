@@ -1,6 +1,6 @@
 -- Zero Dependency
 
-local constants = require("fzfx.constants")
+local is_windows = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
 
 --- @param bufnr integer
 --- @param name string
@@ -233,7 +233,7 @@ function ShellOptsContext:save()
     local ctx = vim.tbl_deep_extend(
         "force",
         vim.deepcopy(ShellOptsContext),
-        constants.is_windows
+        is_windows
                 and {
                     shell = vim.o.shell,
                     shellslash = vim.o.shellslash,
@@ -260,7 +260,7 @@ function ShellOptsContext:save()
     --     vim.inspect(vim.o.shellxescape)
     -- )
 
-    if constants.is_windows then
+    if is_windows then
         vim.o.shell = "cmd.exe"
         vim.o.shellslash = false
         vim.o.shellcmdflag = "/s /c"
@@ -289,7 +289,7 @@ end
 
 --- @return nil
 function ShellOptsContext:restore()
-    if constants.is_windows then
+    if is_windows then
         vim.o.shell = self.shell
         vim.o.shellslash = self.shellslash
         vim.o.shellcmdflag = self.shellcmdflag
@@ -307,7 +307,7 @@ end
 --- @param special any?
 --- @return string
 local function shellescape(s, special)
-    if constants.is_windows then
+    if is_windows then
         local shellslash = vim.o.shellslash
         vim.o.shellslash = false
         local result = special ~= nil and vim.fn.shellescape(s, special)

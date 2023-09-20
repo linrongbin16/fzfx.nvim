@@ -1,9 +1,50 @@
 local log = require("fzfx.log")
 local env = require("fzfx.env")
 local path = require("fzfx.path")
+local utils = require("fzfx.utils")
 
+--- @param lines string[]
+--- @return nil
 local function nop(lines)
     log.debug("|fzfx.actions - nop| lines:%s", vim.inspect(lines))
+end
+
+--- @param line string
+--- @param delimiter string?
+--- @param pos integer?
+--- @return string
+local function retrieve_filename(line, delimiter, pos)
+    local filename = env.icon_enable()
+            and utils.string_split(line, delimiter)[pos]
+        or line
+    return path.normalize(filename)
+end
+
+--- @param delimiter string?
+--- @param filepos integer?
+--- @return fun(lines:string[]):string[]
+local function make_edit(delimiter, filepos)
+    log.debug(
+        "|fzfx.actions - make_edit| delimiter:%s, filepos:%s",
+        vim.inspect(delimiter),
+        vim.inspect(filepos)
+    )
+
+    --- @param lines string[]
+    --- @return string[]
+    local function impl(lines)
+        local cmd_results = {}
+        for i, line in ipairs(lines) do
+            local filename = retrieve_filename(line, delimiter, filepos)
+            local cmd = string.format("edit %s", vim.fn.expand(filename))
+            table.insert(cmd_results, cmd)
+            log.debug("|fzfx.actions - edit| line[%d] cmd:[%s]", i, cmd)
+            vim.cmd(cmd)
+        end
+        return cmd_results
+    end
+
+    return impl
 end
 
 local function edit(lines)
@@ -190,6 +231,8 @@ end
 
 local M = {
     nop = nop,
+    retrieve_filename = retrieve_filename,
+    make_edit = make_edit,
     edit = edit,
     edit_rg = edit_rg,
     edit_grep = edit_grep,

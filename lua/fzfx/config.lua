@@ -176,8 +176,7 @@ end
 --- @param merged string[]
 --- @return string[]
 local function merge_query_options(merged, option)
-    local option_splits =
-        vim.split(option, " ", { plain = "true", trimempty = true })
+    local option_splits = utils.string_split(option, " ")
     log.debug(
         "|fzfx.config - merge_query_options| option_splits:%s",
         vim.inspect(option_splits)

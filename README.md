@@ -3,7 +3,7 @@
 # fzfx.nvim
 
 <p align="center">
-<a href="https://github.com/neovim/neovim/releases/stable"><img alt="Neovim-v0.5" src="https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg?logo=Neovim&logoColor=green" /></a>
+<a href="https://github.com/neovim/neovim/releases/v0.5.0"><img alt="Neovim-v0.5.0" src="https://img.shields.io/badge/Neovim-v0.5.0-blueviolet.svg?logo=Neovim&logoColor=green" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/search?l=lua"><img alt="Top Language" src="https://img.shields.io/github/languages/top/linrongbin16/fzfx.nvim?label=Lua&logo=lua&logoColor=darkblue" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/linrongbin16/fzfx.nvim?logo=GNU&label=License" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?logo=GitHub&label=Luacheck" /></a>
@@ -36,6 +36,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#-commands)
+  - [Naming Rules](#naming-rules)
   - [Bind Keys](#bind-keys)
 - [Recommended Key Mappings](#-recommended-key-mappings)
   - [Vimscript](#vimscript)
@@ -58,7 +59,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - Search by cursor word.
   - Search by yank text.
 - Easily switch on multiple data sources:
-  - Whether to include hidden/ignored files (unrestricted) or respect them (restricted) when searching files.
+  - Whether to filter hidden/ignored files or include them (unrestricted) when searching files.
   - Local branches or remote branches when searching git branches.
   - All diagnostics in workspace or only in current buffer when searching diagnostics.
   - ...
@@ -71,13 +72,13 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 
 ## ✅ Requirement
 
-- Neovim &ge; 0.5.
+- Neovim &ge; v0.5.0.
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
 - [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
 - [git](https://git-scm.com/) (optional for **git** commands).
-- Neovim &ge; 0.6 (optional for **lsp diagnostics** commands).
+- Neovim &ge; v0.6.0 (optional for **lsp diagnostics** commands).
 
 > Note: `grep`, `find` and `cat` are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install `rg`, `fd` and `bat` should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
 
@@ -235,6 +236,8 @@ require("lazy").setup({
 
 ## 🚀 Commands
 
+### Naming Rules
+
 Commands are named following below rules:
 
 - All commands are named with prefix `Fzfx`.
@@ -243,7 +246,7 @@ Commands are named following below rules:
 - The visual select variant is named with `V` suffix.
 - The cursor word variant is named with `W` suffix.
 - The yank text variant is named with `P` suffix (just like press the `p` key).
-- The current buffer only variant is named with `B` suffix.
+- The only current buffer variant is named with `B` suffix.
 
 Especially for git commands:
 
@@ -254,6 +257,9 @@ Especially for git commands:
 
 ### Bind Keys
 
+- Exit keys (`--expect` option)
+  - `esc`: quit.
+  - `double-click`/`enter`: open/jump to file (behave different on some specific commands).
 - Preview keys
   - `alt-p`: toggle preview.
   - `ctrl-f`: preview half page down.
