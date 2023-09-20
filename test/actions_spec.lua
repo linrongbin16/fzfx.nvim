@@ -128,5 +128,57 @@ describe("actions", function()
                 assert_eq(actual.edit[i], expect)
             end
         end)
+        it("edit file/lineno without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md:12",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:13:",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:13: hello world",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3: ok ok",
+            }
+            local actual = actions.make_edit_vim_commands(lines, ":", 1, 2)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual.edit, 5)
+            for i = 1, 5 do
+                local line = lines[i]
+                local expect = string.format(
+                    "edit %s",
+                    vim.fn.expand(utils.string_split(line, ":")[1])
+                )
+                assert_eq(actual.edit[i], expect)
+            end
+            assert_eq("call setpos('.', [0, 1, 1])", actual.setpos)
+        end)
+        it("edit file/lineno with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md:12",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15:",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:70",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:4:71: ok ko",
+            }
+            local actual = actions.make_edit_vim_commands(lines, ":", 1, 2)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual.edit, 5)
+            for i, line in ipairs(lines) do
+                local expect = string.format(
+                    "edit %s",
+                    vim.fn.expand(
+                        utils.string_split(utils.string_split(line, ":")[1])[2]
+                    )
+                )
+                print(
+                    string.format(
+                        "expect line[%s]:%s\n",
+                        vim.inspect(i),
+                        vim.inspect(expect)
+                    )
+                )
+                assert_eq(actual.edit[i], expect)
+            end
+            assert_eq("call setpos('.', [0, 4, 1])", actual.setpos)
+        end)
     end)
 end)

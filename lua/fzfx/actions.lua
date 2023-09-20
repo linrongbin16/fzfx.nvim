@@ -56,7 +56,7 @@ local function make_edit_vim_commands(
         )
         if row ~= nil then
             if i == #lines then
-                col = col or "0"
+                col = col or "1"
                 local setpos_cmd = string.format(
                     "call setpos('.', [0, %d, %d])",
                     tonumber(row),
@@ -67,7 +67,7 @@ local function make_edit_vim_commands(
                     i,
                     edit_cmd
                 )
-                table.insert(vim_commands.setpos, setpos_cmd)
+                vim_commands.setpos = setpos_cmd
             end
         end
     end
