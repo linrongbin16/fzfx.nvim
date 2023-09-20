@@ -48,7 +48,7 @@ local function _log(level, msg)
         return
     end
 
-    local msg_lines = vim.split(msg, "\n")
+    local msg_lines = require("fzfx.utils").string_split(msg, "\n")
     if LoggerContext.console_log then
         for _, line in ipairs(msg_lines) do
             io.write(string.format("%s %s\n", level, line))
@@ -148,8 +148,7 @@ local function render_filepath_line(line, delimiter, pos)
         and string.len(delimiter) > 0
         and type(pos) == "number"
     then
-        local splits =
-            vim.split(line, delimiter, { plain = true, trimempty = true })
+        local splits = require("fzfx.utils").string_split(line, delimiter)
         filename = splits[pos]
     else
         filename = line

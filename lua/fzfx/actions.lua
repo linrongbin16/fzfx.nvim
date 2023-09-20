@@ -1,6 +1,7 @@
 local log = require("fzfx.log")
 local env = require("fzfx.env")
 local path = require("fzfx.path")
+local utils = require("fzfx.utils")
 
 --- @param lines string[]
 --- @return nil
@@ -14,8 +15,7 @@ end
 --- @return string
 local function retrieve_filename(line, delimiter, pos)
     local filename = env.icon_enable()
-            ---@diagnostic disable-next-line: param-type-mismatch
-            and vim.split(line, delimiter, { plain = true, trimempty = true })[pos]
+            and utils.string_split(line, delimiter)[pos]
         or line
     return path.normalize(filename)
 end

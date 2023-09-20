@@ -69,7 +69,7 @@ local function echo(level, fmt, ...)
         )
     end
     local msg = string.format(fmt, ...)
-    local msg_lines = vim.split(msg, "\n")
+    local msg_lines = require("fzfx.utils").string_split(msg, "\n")
     local msg_chunks = {}
     local level_name = ""
     if level == "ERROR" then
@@ -152,7 +152,7 @@ local function log(level, msg)
         return
     end
 
-    local msg_lines = vim.split(msg, "\n")
+    local msg_lines = require("fzfx.utils").string_split(msg, "\n")
     if Configs.console_log and LogLevelValue[level] >= LogLevelValue.INFO then
         echo(level, msg)
     end
