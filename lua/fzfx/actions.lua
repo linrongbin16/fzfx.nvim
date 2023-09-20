@@ -133,47 +133,7 @@ local function edit_grep(lines)
 end
 
 local function buffer(lines)
-    log.debug("|fzfx.actions - buffer| lines:%s", vim.inspect(lines))
-    for i, line in ipairs(lines) do
-        local filename = env.icon_enable() and vim.fn.split(line)[2] or line
-        filename = path.normalize(filename)
-        local cmd = string.format("buffer %s", vim.fn.expand(filename))
-        log.debug("|fzfx.actions - buffer| line[%d] cmd:[%s]", i, cmd)
-        vim.cmd(cmd)
-    end
-end
-
-local function buffer_rg(lines)
-    log.debug("|fzfx.actions - buffer_rg| lines:%s", vim.inspect(lines))
-    for i, line in ipairs(lines) do
-        local splits = vim.fn.split(line, ":")
-        local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
-            or splits[1]
-        filename = path.normalize(filename)
-        local row = tonumber(splits[2])
-        local col = tonumber(splits[3])
-        local buffer_cmd = string.format("buffer %s", vim.fn.expand(filename))
-        local setpos_cmd =
-            string.format("call setpos('.', [0, %d, %d])", row, col)
-        log.debug(
-            "|fzfx.actions - buffer_rg| line[%d] - splits:%s, filename:%s, row:%d, col:%d",
-            i,
-            vim.inspect(splits),
-            vim.inspect(filename),
-            vim.inspect(row),
-            vim.inspect(col)
-        )
-        log.debug(
-            "|fzfx.actions - buffer_rg| line[%d] - buffer_cmd:[%s], setpos_cmd:[%s]",
-            i,
-            buffer_cmd,
-            setpos_cmd
-        )
-        vim.cmd(buffer_cmd)
-        if i == #lines then
-            vim.cmd(setpos_cmd)
-        end
-    end
+    return make_edit()(lines)
 end
 
 local function bdelete(lines)
@@ -241,7 +201,6 @@ local M = {
     edit_rg = edit_rg,
     edit_grep = edit_grep,
     buffer = buffer,
-    buffer_rg = buffer_rg,
     bdelete = bdelete,
     git_checkout = git_checkout,
     yank_git_commit = yank_git_commit,

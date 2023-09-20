@@ -1083,8 +1083,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").buffer,
-            ["double-click"] = require("fzfx.actions").buffer,
+            ["enter"] = require("fzfx.actions").make_edit(),
+            ["double-click"] = require("fzfx.actions").make_edit(),
         },
         fzf_opts = {
             default_fzf_options.multi,
