@@ -122,12 +122,10 @@ local function edit(lines)
     return make_edit()(lines)
 end
 
---- @deprecated
 local function edit_rg(lines)
     return make_edit(":", 1, 2, 3)(lines)
 end
 
---- @deprecated
 local function edit_grep(lines)
     return make_edit(":", 1, 2)(lines)
 end
