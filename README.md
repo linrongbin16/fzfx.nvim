@@ -36,6 +36,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#-commands)
+  - [Naming Rules](#naming-rules)
   - [Bind Keys](#bind-keys)
 - [Recommended Key Mappings](#-recommended-key-mappings)
   - [Vimscript](#vimscript)
@@ -235,6 +236,8 @@ require("lazy").setup({
 
 ## 🚀 Commands
 
+### Naming Rules
+
 Commands are named following below rules:
 
 - All commands are named with prefix `Fzfx`.
@@ -243,7 +246,7 @@ Commands are named following below rules:
 - The visual select variant is named with `V` suffix.
 - The cursor word variant is named with `W` suffix.
 - The yank text variant is named with `P` suffix (just like press the `p` key).
-- The current buffer only variant is named with `B` suffix.
+- The only current buffer variant is named with `B` suffix.
 
 Especially for git commands:
 
