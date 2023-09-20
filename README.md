@@ -257,6 +257,9 @@ Especially for git commands:
 
 ### Bind Keys
 
+- Exit keys (`--expect` option)
+  - `esc`: no action.
+  - `double-click`/`enter`: open/jump to file (behave different on some specific commands).
 - Preview keys
   - `alt-p`: toggle preview.
   - `ctrl-f`: preview half page down.
