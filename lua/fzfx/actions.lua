@@ -10,38 +10,108 @@ local function nop(lines)
 end
 
 --- @param line string
---- @param delimiter string?
---- @param pos integer?
 --- @return string
-local function retrieve_filename(line, delimiter, pos)
-    local filename = env.icon_enable()
-            and utils.string_split(line, delimiter)[pos]
-        or line
+local function retrieve_filename(line)
+    local filename = env.icon_enable() and utils.string_split(line)[2] or line
     return path.normalize(filename)
 end
 
+--- @alias EditActionVimCommands {edit:string[],setpos:string?}
+--- @param lines string[]
 --- @param delimiter string?
---- @param filepos integer?
+--- @param file_pos integer?
+--- @param lineno_pos integer?
+--- @param colno_pos integer?
+--- @return EditActionVimCommands
+local function make_edit_vim_commands(
+    lines,
+    delimiter,
+    file_pos,
+    lineno_pos,
+    colno_pos
+)
+    local vim_commands = { edit = {}, setpos = nil }
+    for i, line in ipairs(lines) do
+        local filename = nil
+        local row = nil
+        local col = nil
+        if type(delimiter) == "string" and string.len(delimiter) > 0 then
+            local parts = utils.string_split(line, delimiter)
+            filename = retrieve_filename(parts[file_pos])
+            if type(lineno_pos) == "number" then
+                row = parts[lineno_pos]
+            end
+            if type(colno_pos) == "number" then
+                col = parts[colno_pos]
+            end
+        else
+            filename = retrieve_filename(line)
+        end
+        local edit_cmd = string.format("edit %s", vim.fn.expand(filename))
+        table.insert(vim_commands.edit, edit_cmd)
+        log.debug(
+            "|fzfx.actions - make_edit_vim_commands| edit_cmd[%d]:[%s]",
+            i,
+            edit_cmd
+        )
+        if row ~= nil then
+            if i == #lines then
+                col = col or "1"
+                local setpos_cmd = string.format(
+                    "call setpos('.', [0, %d, %d])",
+                    tonumber(row),
+                    tonumber(col)
+                )
+                log.debug(
+                    "|fzfx.actions - make_edit_vim_commands| edit_cmd[%d]:[%s]",
+                    i,
+                    edit_cmd
+                )
+                vim_commands.setpos = setpos_cmd
+            end
+        end
+    end
+    return vim_commands
+end
+
+--- @param delimiter string?
+--- @param file_pos integer?
+--- @param lineno_pos integer?
+--- @param colno_pos integer?
 --- @return fun(lines:string[]):string[]
-local function make_edit(delimiter, filepos)
+local function make_edit(delimiter, file_pos, lineno_pos, colno_pos)
     log.debug(
-        "|fzfx.actions - make_edit| delimiter:%s, filepos:%s",
+        "|fzfx.actions - make_edit| delimiter:%s, file_pos:%s, lineno_pos:%s, colno_pos:%s",
         vim.inspect(delimiter),
-        vim.inspect(filepos)
+        vim.inspect(file_pos),
+        vim.inspect(lineno_pos),
+        vim.inspect(colno_pos)
     )
 
     --- @param lines string[]
-    --- @return string[]
+    --- @return nil
     local function impl(lines)
-        local cmd_results = {}
-        for i, line in ipairs(lines) do
-            local filename = retrieve_filename(line, delimiter, filepos)
-            local cmd = string.format("edit %s", vim.fn.expand(filename))
-            table.insert(cmd_results, cmd)
-            log.debug("|fzfx.actions - edit| line[%d] cmd:[%s]", i, cmd)
-            vim.cmd(cmd)
+        local vim_commands = make_edit_vim_commands(
+            lines,
+            delimiter,
+            file_pos,
+            lineno_pos,
+            colno_pos
+        )
+        for i, edit_cmd in ipairs(vim_commands.edit) do
+            log.debug(
+                "|fzfx.actions - make_edit.impl| edit_cmd[%d]:[%s]",
+                i,
+                edit_cmd
+            )
+            vim.cmd(edit_cmd)
         end
-        return cmd_results
+        if
+            type(vim_commands.setpos) == "string"
+            and string.len(vim_commands.setpos) > 0
+        then
+            vim.cmd(vim_commands.setpos)
+        end
     end
 
     return impl
@@ -233,6 +303,7 @@ local M = {
     nop = nop,
     retrieve_filename = retrieve_filename,
     make_edit = make_edit,
+    make_edit_vim_commands = make_edit_vim_commands,
     edit = edit,
     edit_rg = edit_rg,
     edit_grep = edit_grep,
