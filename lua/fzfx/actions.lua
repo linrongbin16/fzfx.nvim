@@ -117,86 +117,19 @@ local function make_edit(delimiter, file_pos, lineno_pos, colno_pos)
     return impl
 end
 
+--- @deprecated
 local function edit(lines)
-    log.debug("|fzfx.actions - edit| lines:%s", vim.inspect(lines))
-    for i, line in ipairs(lines) do
-        local filename = env.icon_enable() and vim.fn.split(line)[2] or line
-        filename = path.normalize(filename)
-        local cmd = string.format("edit %s", vim.fn.expand(filename))
-        log.debug("|fzfx.actions - edit| line[%d] cmd:[%s]", i, cmd)
-        vim.cmd(cmd)
-    end
+    return make_edit()(lines)
 end
 
+--- @deprecated
 local function edit_rg(lines)
-    log.debug("|fzfx.actions - edit_rg| lines:%s", vim.inspect(lines))
-    for i, line in ipairs(lines) do
-        local splits = vim.fn.split(line, ":")
-        local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
-            or splits[1]
-        log.debug("|fzfx.actions - edit_rg| filename:%s", vim.inspect(filename))
-        filename = path.normalize(filename)
-        local row = tonumber(splits[2])
-        local col = tonumber(splits[3])
-        local edit_cmd = string.format("edit %s", vim.fn.expand(filename))
-        local setpos_cmd =
-            string.format("call setpos('.', [0, %d, %d])", row, col)
-        log.debug(
-            "|fzfx.actions - edit_rg| line[%d] - splits:%s, filename:%s, row:%d, col:%d",
-            i,
-            vim.inspect(splits),
-            vim.inspect(filename),
-            vim.inspect(row),
-            vim.inspect(col)
-        )
-        log.debug(
-            "|fzfx.actions - edit_rg| line[%d] - edit_cmd:[%s], setpos_cmd:[%s]",
-            i,
-            edit_cmd,
-            setpos_cmd
-        )
-        vim.cmd(edit_cmd)
-        if i == #lines then
-            vim.cmd(setpos_cmd)
-        end
-    end
+    return make_edit(":", 1, 2, 3)(lines)
 end
 
+--- @deprecated
 local function edit_grep(lines)
-    log.debug("|fzfx.actions - edit_grep| lines:%s", vim.inspect(lines))
-    for i, line in ipairs(lines) do
-        local splits = vim.fn.split(line, ":")
-        local filename = env.icon_enable() and vim.fn.split(splits[1])[2]
-            or splits[1]
-        log.debug(
-            "|fzfx.actions - edit_grep| filename:%s",
-            vim.inspect(filename)
-        )
-        filename = path.normalize(filename)
-        local row = tonumber(splits[2])
-        local col = 0
-        local edit_cmd = string.format("edit %s", vim.fn.expand(filename))
-        local setpos_cmd =
-            string.format("call setpos('.', [0, %d, %d])", row, col)
-        log.debug(
-            "|fzfx.actions - edit_grep| line[%d] - splits:%s, filename:%s, row:%d, col:%d",
-            i,
-            vim.inspect(splits),
-            vim.inspect(filename),
-            vim.inspect(row),
-            vim.inspect(col)
-        )
-        log.debug(
-            "|fzfx.actions - edit_grep| line[%d] - edit_cmd:[%s], setpos_cmd:[%s]",
-            i,
-            edit_cmd,
-            setpos_cmd
-        )
-        vim.cmd(edit_cmd)
-        if i == #lines then
-            vim.cmd(setpos_cmd)
-        end
-    end
+    return make_edit(":", 1, 2)(lines)
 end
 
 local function buffer(lines)
