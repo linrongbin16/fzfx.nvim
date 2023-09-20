@@ -145,6 +145,9 @@ end
 --- @param msg string
 --- @return nil
 local function log(level, msg)
+    if Configs.level == nil then
+        return
+    end
     if LogLevelValue[level] < LogLevelValue[Configs.level] then
         return
     end
