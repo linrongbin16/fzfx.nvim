@@ -10,24 +10,24 @@ local function nop(lines)
 end
 
 --- @param line string
---- @param delimiter string?
---- @param pos integer?
 --- @return string
-local function retrieve_filename(line, delimiter, pos)
-    local filename = env.icon_enable()
-            and utils.string_split(line, delimiter)[pos]
-        or line
+local function retrieve_filename(line)
+    local filename = env.icon_enable() and utils.string_split(line)[2] or line
     return path.normalize(filename)
 end
 
 --- @param delimiter string?
---- @param filepos integer?
+--- @param file_pos integer?
+--- @param lineno_pos integer?
+--- @param colno_pos integer?
 --- @return fun(lines:string[]):string[]
-local function make_edit(delimiter, filepos)
+local function make_edit(delimiter, file_pos, lineno_pos, colno_pos)
     log.debug(
-        "|fzfx.actions - make_edit| delimiter:%s, filepos:%s",
+        "|fzfx.actions - make_edit| delimiter:%s, file_pos:%s, lineno_pos:%s, colno_pos:%s",
         vim.inspect(delimiter),
-        vim.inspect(filepos)
+        vim.inspect(file_pos),
+        vim.inspect(lineno_pos),
+        vim.inspect(colno_pos)
     )
 
     --- @param lines string[]
@@ -35,11 +35,38 @@ local function make_edit(delimiter, filepos)
     local function impl(lines)
         local cmd_results = {}
         for i, line in ipairs(lines) do
-            local filename = retrieve_filename(line, delimiter, filepos)
-            local cmd = string.format("edit %s", vim.fn.expand(filename))
-            table.insert(cmd_results, cmd)
-            log.debug("|fzfx.actions - edit| line[%d] cmd:[%s]", i, cmd)
-            vim.cmd(cmd)
+            local filename = nil
+            local row = nil
+            local col = nil
+            if type(delimiter) == "string" and string.len(delimiter) > 0 then
+                local parts = utils.string_split(line, delimiter)
+                filename = retrieve_filename(parts[file_pos])
+                if type(lineno_pos) == "number" then
+                    row = parts[lineno_pos]
+                end
+                if type(colno_pos) == "number" then
+                    col = parts[colno_pos]
+                end
+            else
+                filename = retrieve_filename(line)
+            end
+            local edit_cmd = string.format("edit %s", vim.fn.expand(filename))
+            table.insert(cmd_results, edit_cmd)
+            log.debug(
+                "|fzfx.actions - make_edit.impl| edit_cmd[%d]:[%s]",
+                i,
+                edit_cmd
+            )
+            vim.cmd(edit_cmd)
+            if row ~= nil then
+                if i == #lines then
+                    col = col or 0
+                    local setpos_cmd =
+                        string.format("call setpos('.', [0, %d, %d])", row, col)
+                    table.insert(cmd_results, setpos_cmd)
+                    vim.cmd(setpos_cmd)
+                end
+            end
         end
         return cmd_results
     end

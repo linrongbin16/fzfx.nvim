@@ -60,5 +60,24 @@ describe("actions", function()
                 assert_eq(actual[i], expect)
             end
         end)
+        it("edit file with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local edit = actions.make_edit()
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+            }
+            local actual = edit(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, 3)
+            for i, line in ipairs(lines) do
+                local expect = string.format(
+                    "edit %s",
+                    vim.fn.expand(vim.fn.split(line)[2])
+                )
+                assert_eq(actual[i], expect)
+            end
+        end)
     end)
 end)
