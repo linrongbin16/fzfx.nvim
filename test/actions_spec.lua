@@ -34,7 +34,7 @@ describe("actions", function()
         it("retrieve filename with prepend icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
             local input = " ~/github/linrongbin16/fzfx.nvim/README.md"
-            local actual = actions.retrieve_filename(input, " ", 2)
+            local actual = actions.retrieve_filename(input)
             print(
                 string.format(
                     "retrieve filename with prepend icon:%s\n",
