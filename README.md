@@ -789,6 +789,8 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 - 2023-09-19
   - Deprecate 'live_grep' (`FzfxLiveGrep`) configs, notify user migrate to new schema.
   - Deprecate 'files' (`FzfxFiles`) configs, notify user migrate to new schema.
+- 2023-09-20
+  - Break minimal required Neovim version, upgrade to v0.6.0.
 
 ## 🍀 Credit
 
