@@ -95,16 +95,18 @@ end
 
 --- @class GitRootCmd
 --- @field result CmdResult?
-local GitRootCmd = {
-    result = nil,
-}
+local GitRootCmd = {}
 
 --- @return GitRootCmd
 function GitRootCmd:run()
     local cmd = Cmd:run({ "git", "rev-parse", "--show-toplevel" })
-    return vim.tbl_deep_extend("force", vim.deepcopy(GitRootCmd), {
+
+    local o = {
         result = cmd.result,
-    })
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 --- @return boolean
@@ -124,18 +126,20 @@ end
 
 --- @class GitBranchCmd
 --- @field result CmdResult?
-local GitBranchCmd = {
-    result = nil,
-}
+local GitBranchCmd = {}
 
 --- @param remotes boolean?
 --- @return GitBranchCmd
 function GitBranchCmd:run(remotes)
     local cmd = remotes and Cmd:run({ "git", "branch", "--remotes" })
         or Cmd:run({ "git", "branch" })
-    return vim.tbl_deep_extend("force", vim.deepcopy(GitBranchCmd), {
+
+    local o = {
         result = cmd.result,
-    })
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 --- @return boolean
@@ -158,9 +162,9 @@ function GitBranchCmd:current_branch()
     end
     if type(self.result.stdout) == "table" and #self.result.stdout > 0 then
         for _, out in ipairs(self.result.stdout) do
-            local trim_out = vim.trim(out)
-            if string.len(trim_out) > 0 and trim_out[1] == "*" then
-                return trim_out
+            local line = vim.trim(out)
+            if string.len(line) > 0 and line[1] == "*" then
+                return line
             end
         end
     end
@@ -169,17 +173,19 @@ end
 
 --- @class GitCurrentBranchCmd
 --- @field result CmdResult?
-local GitCurrentBranchCmd = {
-    result = nil,
-}
+local GitCurrentBranchCmd = {}
 
 --- @return GitCurrentBranchCmd
 function GitCurrentBranchCmd:run()
     -- git rev-parse --abbrev-ref HEAD
     local cmd = Cmd:run({ "git", "rev-parse", "--abbrev-ref", "HEAD" })
-    return vim.tbl_deep_extend("force", vim.deepcopy(GitCurrentBranchCmd), {
+
+    local o = {
         result = cmd.result,
-    })
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 --- @return boolean
