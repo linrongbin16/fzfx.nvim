@@ -262,49 +262,6 @@ local function make_lua_command(...)
     return string.format("%s -n --clean --headless -l %s", nvim_path, lua_path)
 end
 
--- provider switch {
-
---- @class Switch
---- @field name string|nil
---- @field current string|nil
---- @field next string|nil
---- @field tempfile string|nil
-local Switch = {
-    name = nil,
-    current = nil,
-    next = nil,
-    tempfile = nil,
-}
-
---- @param name string
---- @param current string
---- @param next string
---- @return Switch
-function Switch:new(name, current, next)
-    local switch = vim.tbl_deep_extend("force", vim.deepcopy(Switch), {
-        name = name,
-        current = current,
-        next = next,
-        tempfile = env.debug_enable() and path.join(
-            vim.fn.stdpath("data"),
-            "fzfx.nvim",
-            "switch_" .. name
-        ) or vim.fn.tempname(),
-    })
-    vim.fn.writefile({ switch.current }, switch.tempfile, "b")
-    log.debug("|fzfx.helpers - Switch:new| switch:%s", vim.inspect(switch))
-    return switch
-end
-
-function Switch:switch()
-    local tmp = self.next
-    self.next = self.current
-    self.current = tmp
-    vim.fn.writefile({ self.current }, self.tempfile, "b")
-end
-
--- provider switch }
-
 local M = {
     get_command_feed = get_command_feed,
     preprocess_fzf_opts = preprocess_fzf_opts,
@@ -313,7 +270,6 @@ local M = {
     nvim_exec = nvim_exec,
     fzf_exec = fzf_exec,
     make_lua_command = make_lua_command,
-    Switch = Switch,
 }
 
 return M
