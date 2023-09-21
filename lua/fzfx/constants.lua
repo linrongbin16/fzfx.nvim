@@ -23,16 +23,13 @@ local rg = "rg"
 
 local has_fd = vim.fn.executable("fdfind") > 0 or vim.fn.executable("fd") > 0
 local fd = vim.fn.executable("fdfind") > 0 and "fdfind" or "fd"
+local find = vim.fn.executable("gfind") > 0 and "gfind" or "find"
 
 local has_gnu_grep = (
     (is_windows or is_linux) and vim.fn.executable("grep") > 0
 ) or vim.fn.executable("ggrep") > 0
 local gnu_grep = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
-
-local has_gnu_find = (
-    (is_windows or is_linux) and vim.fn.executable("find") > 0
-) or vim.fn.executable("gfind") > 0
-local gnu_find = vim.fn.executable("gfind") > 0 and "gfind" or "find"
+local grep = "grep"
 
 local M = {
     -- os
@@ -53,12 +50,11 @@ local M = {
 
     has_fd = has_fd,
     fd = fd,
+    find = find,
 
     has_gnu_grep = has_gnu_grep,
     gnu_grep = gnu_grep,
-
-    has_gnu_find = has_gnu_find,
-    gnu_find = gnu_find,
+    grep = grep,
 }
 
 return M

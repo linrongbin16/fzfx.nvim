@@ -9,7 +9,7 @@ local NextRegistryIntegerId = 0
 --- @return RpcRegistryId
 local function next_registry_id()
     -- int32 max: 2147483647
-    if NextRegistryIntegerId > 2000000000 then
+    if NextRegistryIntegerId >= 2147483647 then
         NextRegistryIntegerId = 1
     else
         NextRegistryIntegerId = NextRegistryIntegerId + 1
@@ -159,6 +159,7 @@ end
 local M = {
     setup = setup,
     get_global_rpc_server = get_global_rpc_server,
+    next_registry_id = next_registry_id,
 }
 
 return M
