@@ -20,19 +20,6 @@ describe("log", function()
         file_log = true,
     })
     describe("[log]", function()
-        it("echo", function()
-            log.echo(LogLevel.INFO, "echo without parameters")
-            log.echo(LogLevel.INFO, "echo with 1 parameters: %s", "a")
-            log.echo(LogLevel.INFO, "echo with 2 parameters: %s, %d", "a", 1)
-            log.echo(
-                LogLevel.INFO,
-                "echo with 3 parameters: %s, %d, %f",
-                "a",
-                1,
-                3.12
-            )
-            assert_true(true)
-        end)
         it("debug", function()
             log.debug("debug without parameters")
             log.debug("debug with 1 parameters: %s", "a")
@@ -100,6 +87,18 @@ describe("log", function()
             )
             print(vim.inspect(err4) .. "\n")
             assert_false(ok4)
+        end)
+        it("throw", function()
+            local ok1, msg1 = pcall(log.throw, "throw without params")
+            assert_false(ok1)
+            assert_eq(type(msg1), "string")
+            local ok2, msg2 = pcall(log.throw, "throw with 1 params: %s", "a")
+            assert_false(ok2)
+            assert_eq(type(msg2), "string")
+            local ok3, msg3 =
+                pcall(log.throw, "throw with 2 params: %s, %d", "a", 2)
+            assert_false(ok3)
+            assert_eq(type(msg3), "string")
         end)
     end)
 end)
