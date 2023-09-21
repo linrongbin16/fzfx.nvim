@@ -520,9 +520,13 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
             headers_map[provider_name] = help_builder
         end
     end
-    return vim.tbl_deep_extend("force", vim.deepcopy(HeaderSwitch), {
+
+    local o = {
         headers = headers_map,
-    })
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 --- @param pipeline PipelineName

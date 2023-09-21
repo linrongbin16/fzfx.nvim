@@ -1,6 +1,6 @@
 -- Zero Dependency
 
-local is_windows = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
+local constants = require("fzfx.constants")
 
 --- @param bufnr integer
 --- @param name string
@@ -217,37 +217,27 @@ end
 --- @field shellredir string?
 --- @field shellpipe string?
 --- @field shellxescape string?
-local ShellOptsContext = {
-    shell = nil,
-    shellslash = nil,
-    shellcmdflag = nil,
-    shellxquote = nil,
-    shellquote = nil,
-    shellredir = nil,
-    shellpipe = nil,
-    shellxescape = nil,
-}
+local ShellOptsContext = {}
 
 --- @return ShellOptsContext
 function ShellOptsContext:save()
-    local ctx = vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(ShellOptsContext),
-        is_windows
-                and {
-                    shell = vim.o.shell,
-                    shellslash = vim.o.shellslash,
-                    shellcmdflag = vim.o.shellcmdflag,
-                    shellxquote = vim.o.shellxquote,
-                    shellquote = vim.o.shellquote,
-                    shellredir = vim.o.shellredir,
-                    shellpipe = vim.o.shellpipe,
-                    shellxescape = vim.o.shellxescape,
-                }
-            or {
+    local o = constants.is_windows
+            and {
                 shell = vim.o.shell,
+                shellslash = vim.o.shellslash,
+                shellcmdflag = vim.o.shellcmdflag,
+                shellxquote = vim.o.shellxquote,
+                shellquote = vim.o.shellquote,
+                shellredir = vim.o.shellredir,
+                shellpipe = vim.o.shellpipe,
+                shellxescape = vim.o.shellxescape,
             }
-    )
+        or {
+            shell = vim.o.shell,
+        }
+    setmetatable(o, self)
+    self.__index = self
+
     -- log.debug(
     --     "|fzfx.launch - ShellOptsContext:save| before, shell:%s, shellslash:%s, shellcmdflag:%s, shellxquote:%s, shellquote:%s, shellredir:%s, shellpipe:%s, shellxescape:%s",
     --     vim.inspect(vim.o.shell),
@@ -260,7 +250,7 @@ function ShellOptsContext:save()
     --     vim.inspect(vim.o.shellxescape)
     -- )
 
-    if is_windows then
+    if constants.is_windows then
         vim.o.shell = "cmd.exe"
         vim.o.shellslash = false
         vim.o.shellcmdflag = "/s /c"
@@ -284,12 +274,11 @@ function ShellOptsContext:save()
     --     vim.inspect(vim.o.shellpipe),
     --     vim.inspect(vim.o.shellxescape)
     -- )
-    return ctx
+    return o
 end
 
---- @return nil
 function ShellOptsContext:restore()
-    if is_windows then
+    if constants.is_windows then
         vim.o.shell = self.shell
         vim.o.shellslash = self.shellslash
         vim.o.shellcmdflag = self.shellcmdflag
@@ -307,7 +296,7 @@ end
 --- @param special any?
 --- @return string
 local function shellescape(s, special)
-    if is_windows then
+    if constants.is_windows then
         local shellslash = vim.o.shellslash
         vim.o.shellslash = false
         local result = special ~= nil and vim.fn.shellescape(s, special)
@@ -321,31 +310,34 @@ local function shellescape(s, special)
 end
 
 --- @class WindowOptsContext
---- @class bufnr integer?
---- @class tabnr integer?
---- @class winnr integer?
-local WindowOptsContext = {
-    bufnr = nil,
-    tabnr = nil,
-    winnr = nil,
-}
+--- @class bufnr integer
+--- @class tabnr integer
+--- @class winnr integer
+local WindowOptsContext = {}
 
 --- @return WindowOptsContext
 function WindowOptsContext:save()
-    return vim.tbl_deep_extend("force", vim.deepcopy(WindowOptsContext), {
+    local o = {
         bufnr = vim.api.nvim_get_current_buf(),
         winnr = vim.api.nvim_get_current_win(),
         tabnr = vim.api.nvim_get_current_tabpage(),
-    }) --[[@as WindowOptsContext]]
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 --- @return nil
 function WindowOptsContext:restore()
-    if vim.api.nvim_tabpage_is_valid(self.tabnr) then
-        vim.api.nvim_set_current_tabpage(self.tabnr)
+    if
+        vim.api.nvim_tabpage_is_valid(self.tabnr --[[@as integer]])
+    then
+        vim.api.nvim_set_current_tabpage(self.tabnr --[[@as integer]])
     end
-    if vim.api.nvim_win_is_valid(self.winnr) then
-        vim.api.nvim_set_current_win(self.winnr)
+    if
+        vim.api.nvim_win_is_valid(self.winnr --[[@as integer]])
+    then
+        vim.api.nvim_set_current_win(self.winnr --[[@as integer]])
     end
 end
 
