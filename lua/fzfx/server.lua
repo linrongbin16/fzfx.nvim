@@ -40,12 +40,9 @@ local function get_windows_pipe_name()
 end
 
 --- @class RpcServer
---- @field address string?
+--- @field address string
 --- @field registry table<RpcRegistryId, RpcCallback>
-local RpcServer = {
-    address = nil,
-    registry = {},
-}
+local RpcServer = {}
 
 --- @return RpcServer
 function RpcServer:new()
@@ -65,10 +62,13 @@ function RpcServer:new()
     -- export socket address as environment variable
     vim.env._FZFX_NVIM_SOCKET_ADDRESS = address
 
-    return vim.tbl_deep_extend("force", vim.deepcopy(RpcServer), {
+    local o = {
         address = address,
         registry = {},
-    })
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 --- @return string?

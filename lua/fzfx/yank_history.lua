@@ -3,19 +3,19 @@ local log = require("fzfx.log")
 local env = require("fzfx.env")
 
 --- @class Yank
---- @field regname string|nil
---- @field regtext string|nil
---- @field regtype string|nil
---- @field filetype string|nil
---- @field filename string|nil
---- @field timestamp integer|nil
+--- @field regname string
+--- @field regtext string
+--- @field regtype string
+--- @field filename string
+--- @field filetype string?
+--- @field timestamp integer?
 local Yank = {}
 
 --- @param regname string
 --- @param regtext string
 --- @param regtype string
---- @param filename string|nil
---- @param filetype string|nil
+--- @param filename string?
+--- @param filetype string?
 --- @return Yank
 function Yank:new(regname, regtext, regtype, filename, filetype)
     local o = {
@@ -34,22 +34,20 @@ end
 --- @class YankHistory
 --- @field pos integer
 --- @field queue Yank[]
---- @field maxsize integer?
-local YankHistory = {
-    pos = 0,
-    queue = {},
-    maxsize = nil,
-}
+--- @field maxsize integer
+local YankHistory = {}
 
 --- @param maxsize integer
 --- @return YankHistory
 function YankHistory:new(maxsize)
-    local yhm = vim.tbl_deep_extend(
-        "force",
-        vim.deepcopy(YankHistory),
-        { pos = 0, queue = {}, maxsize = maxsize }
-    )
-    return yhm
+    local o = {
+        pos = 0,
+        queue = {},
+        maxsize = maxsize,
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 --- @param y Yank
