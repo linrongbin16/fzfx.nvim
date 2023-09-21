@@ -12,52 +12,20 @@ describe("clazz", function()
         vim.api.nvim_command("cd " .. cwd)
     end)
 
-    local Clazz = require("fzfx.clazz").Clazz
-    describe("[Clazz]", function()
+    local clazz = require("fzfx.clazz")
+    local ProviderConfig = require("fzfx.schema").ProviderConfig
+    describe("[instanceof]", function()
         it("defines an empty class", function()
-            local clz = Clazz:implement()
-            assert_true(type(clz) == "table")
-            assert_true(clz.__classname == "object")
-            local obj = vim.tbl_deep_extend("force", vim.deepcopy(clz), {})
-            assert_true(type(obj) == "table")
-            assert_true(Clazz:instanceof(obj, clz))
-            assert_true(obj.__classname == "object")
-        end)
-        it("defines a ProviderConfig class", function()
-            local ProviderConfigClass =
-                Clazz:implement("test.clazz_spec.ProviderConfigClass", {
-                    key = nil,
-                    provider = nil,
-                    provider_type = nil,
-                    line_type = nil,
-                    line_delimiter = nil,
-                    line_pos = nil,
-                })
-            function ProviderConfigClass:make(opts)
-                return vim.tbl_deep_extend(
-                    "force",
-                    vim.deepcopy(ProviderConfigClass),
-                    opts or {}
-                )
-            end
-            assert_true(type(ProviderConfigClass) == "table")
-            assert_true(
-                ProviderConfigClass.__classname
-                    == "test.clazz_spec.ProviderConfigClass"
-            )
-            local provider = ProviderConfigClass:make({
-                key = "key",
-                provider = "provider",
-                provider_type = "provider_type",
+            local obj = ProviderConfig:make({
+                key = "a",
+                provider = "ls",
             })
-            assert_true(type(provider) == "table")
-            assert_true(Clazz:instanceof(provider, ProviderConfigClass))
-            assert_eq(provider.key, "key")
-            assert_eq(provider.provider, "provider")
-            assert_eq(provider.provider_type, "provider_type")
-            assert_eq(provider.line_type, nil)
-            assert_eq(provider.line_delimiter, nil)
-            assert_eq(provider.line_pos, nil)
+            local a = {
+                key = "a",
+                provider = "ls",
+            }
+            assert_true(clazz.instanceof(obj, ProviderConfig))
+            assert_false(clazz.instanceof(a, ProviderConfig))
         end)
     end)
 end)

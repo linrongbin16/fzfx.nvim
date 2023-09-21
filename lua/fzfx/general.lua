@@ -8,7 +8,7 @@ local env = require("fzfx.env")
 local path = require("fzfx.path")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
-local Clazz = require("fzfx.clazz").Clazz
+local clazz = require("fzfx.clazz")
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 local CommandConfig = require("fzfx.schema").CommandConfig
@@ -30,7 +30,7 @@ local ProviderSwitch = {}
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
-    if Clazz:instanceof(provider_configs, ProviderConfig) then
+    if clazz.instanceof(provider_configs, ProviderConfig) then
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
     else
         provider_configs_map = provider_configs
@@ -274,7 +274,7 @@ local PreviewerSwitch = {}
 function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local previewers_map = {}
     local previewer_types_map = {}
-    if Clazz:instanceof(previewer_configs, PreviewerConfig) then
+    if clazz.instanceof(previewer_configs, PreviewerConfig) then
         previewers_map[DEFAULT_PIPELINE] = previewer_configs.previewer
         previewer_types_map[DEFAULT_PIPELINE] = previewer_configs.previewer_type
     else
@@ -446,7 +446,7 @@ local HeaderSwitch = {}
 --- @return HeaderSwitch
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
-    if Clazz:instanceof(provider_configs, ProviderConfig) then
+    if clazz.instanceof(provider_configs, ProviderConfig) then
         local help_builder = {}
         local provider_name = DEFAULT_PIPELINE
         if type(interaction_configs) == "table" then
@@ -544,7 +544,7 @@ end
 local function get_pipeline_size(pipeline_configs)
     local n = 0
     if type(pipeline_configs) == "table" then
-        if Clazz:instanceof(pipeline_configs.providers, ProviderConfig) then
+        if clazz.instanceof(pipeline_configs.providers, ProviderConfig) then
             return 1
         end
         for _, _ in pairs(pipeline_configs.providers) do
@@ -567,7 +567,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if default_pipeline == nil then
         local pipeline = nil
         local provider_opts = nil
-        if Clazz:instanceof(pipeline_configs.providers, ProviderConfig) then
+        if clazz.instanceof(pipeline_configs.providers, ProviderConfig) then
             log.debug(
                 "|fzfx.general - general| providers instanceof ProviderConfig, providers:%s, ProviderConfig:%s",
                 vim.inspect(pipeline_configs.providers),
@@ -605,7 +605,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
     local pipeline_contexts_map = {}
-    if Clazz:instanceof(pipeline_configs.providers, ProviderConfig) then
+    if clazz.instanceof(pipeline_configs.providers, ProviderConfig) then
         if type(pipeline_configs.providers.context_maker) == "function" then
             pipeline_contexts_map[DEFAULT_PIPELINE] =
                 pipeline_configs.providers.context_maker()
@@ -836,7 +836,7 @@ local function setup(name, pipeline_configs)
     --     vim.inspect(pipeline_configs)
     -- )
     -- User commands
-    if Clazz:instanceof(pipeline_configs.commands, CommandConfig) then
+    if clazz.instanceof(pipeline_configs.commands, CommandConfig) then
         vim.api.nvim_create_user_command(
             pipeline_configs.commands.name,
             function(opts)
