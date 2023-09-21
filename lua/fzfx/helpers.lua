@@ -1,5 +1,4 @@
 local log = require("fzfx.log")
-local env = require("fzfx.env")
 local path = require("fzfx.path")
 local color = require("fzfx.color")
 local conf = require("fzfx.config")
