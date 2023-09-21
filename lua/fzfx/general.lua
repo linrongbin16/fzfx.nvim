@@ -22,12 +22,7 @@ local DEFAULT_PIPELINE = "default"
 --- @field provider_configs table<PipelineName, ProviderConfig>?
 --- @field metafile string?
 --- @field resultfile string?
-local ProviderSwitch = {
-    pipeline = nil,
-    provider_configs = nil,
-    metafile = nil,
-    resultfile = nil,
-}
+local ProviderSwitch = {}
 
 --- @param name string
 --- @param pipeline PipelineName
@@ -40,7 +35,8 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
     else
         provider_configs_map = provider_configs
     end
-    return vim.tbl_deep_extend("force", vim.deepcopy(ProviderSwitch), {
+
+    local o = {
         pipeline = pipeline,
         provider_configs = provider_configs_map,
         metafile = env.debug_enable() and path.join(
@@ -53,7 +49,10 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
             "fzfx.nvim",
             "provider_switch_resultfile_" .. name
         ) or vim.fn.tempname(),
-    })
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 --- @param next_pipeline PipelineName
@@ -287,7 +286,8 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
             previewer_types_map[previewer_name] = previewer_opts.previewer_type
         end
     end
-    return vim.tbl_deep_extend("force", vim.deepcopy(PreviewerSwitch), {
+
+    local o = {
         pipeline = pipeline,
         previewers = previewers_map,
         previewer_types = previewer_types_map,
@@ -301,7 +301,10 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
             "fzfx.nvim",
             "previewer_switch_resultfile_" .. name
         ) or vim.fn.tempname(),
-    })
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 --- @param next_pipeline PipelineName
