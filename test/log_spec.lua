@@ -13,7 +13,6 @@ describe("log", function()
     end)
 
     local log = require("fzfx.log")
-    local LogLevel = require("fzfx.log").LogLevel
     log.setup({
         level = "DEBUG",
         console_log = true,

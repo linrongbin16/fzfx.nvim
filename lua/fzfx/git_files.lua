@@ -1,5 +1,5 @@
 local notify = require("fzfx.notify")
-local NotifyLevels = require("fzfx.log").NotifyLevels
+local NotifyLevels = require("fzfx.notify").NotifyLevels
 local conf = require("fzfx.config")
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
