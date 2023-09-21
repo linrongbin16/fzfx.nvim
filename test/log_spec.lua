@@ -20,19 +20,6 @@ describe("log", function()
         file_log = true,
     })
     describe("[log]", function()
-        it("echo", function()
-            log.echo(LogLevel.INFO, "echo without parameters")
-            log.echo(LogLevel.INFO, "echo with 1 parameters: %s", "a")
-            log.echo(LogLevel.INFO, "echo with 2 parameters: %s, %d", "a", 1)
-            log.echo(
-                LogLevel.INFO,
-                "echo with 3 parameters: %s, %d, %f",
-                "a",
-                1,
-                3.12
-            )
-            assert_true(true)
-        end)
         it("debug", function()
             log.debug("debug without parameters")
             log.debug("debug with 1 parameters: %s", "a")

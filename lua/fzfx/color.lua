@@ -182,12 +182,14 @@ local M = {
     erase = erase,
 }
 
-for name, code in pairs(AnsiCode) do
-    --- @param text string
-    --- @param hl string?
-    --- @return string
-    M[name] = function(text, hl)
-        return ansi(text, name, hl)
+do
+    for name, code in pairs(AnsiCode) do
+        --- @param text string
+        --- @param hl string?
+        --- @return string
+        M[name] = function(text, hl)
+            return ansi(text, name, hl)
+        end
     end
 end
 

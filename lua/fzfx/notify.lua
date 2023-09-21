@@ -16,6 +16,14 @@ local NotifyLevels = (
         OFF = 5,
     }
 
+local NotifyLevelNames = {}
+
+do
+    for name, value in pairs(NotifyLevels) do
+        NotifyLevelNames[value] = name
+    end
+end
+
 local NotifyHighlights = {
     [1] = "Comment",
     [2] = "None",
@@ -47,6 +55,7 @@ end
 
 local M = {
     NotifyLevels = NotifyLevels,
+    NotifyLevelNames = NotifyLevelNames,
     echo = echo,
 }
 
