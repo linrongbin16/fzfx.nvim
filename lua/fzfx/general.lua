@@ -262,13 +262,7 @@ end
 --- @field previewer_types table<PipelineName, PreviewerType>?
 --- @field metafile string?
 --- @field resultfile string?
-local PreviewerSwitch = {
-    pipeline = nil,
-    previewers = nil,
-    previewer_types = nil,
-    metafile = nil,
-    resultfile = nil,
-}
+local PreviewerSwitch = {}
 
 --- @param name string
 --- @param pipeline PipelineName
@@ -441,9 +435,7 @@ end
 
 --- @class HeaderSwitch
 --- @field headers table<PipelineName, string[]>?
-local HeaderSwitch = {
-    headers = nil,
-}
+local HeaderSwitch = {}
 
 --- @param provider_configs Configs
 --- @param interaction_configs Configs
