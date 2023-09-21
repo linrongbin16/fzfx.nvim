@@ -191,26 +191,6 @@ for name, code in pairs(AnsiCode) do
     end
 end
 
--- for color, default_hl in pairs({
---     black = "Comment",
---     red = "Exception",
---     green = "Label",
---     yellow = "LineNr",
---     blue = "TabLine",
---     magenta = "Special",
---     cyan = "String",
--- }) do
---     --- @param text string
---     --- @param hl string|nil
---     --- @return string
---     M[color] = function(text, hl)
---         return ansi(text, color, hl or default_hl)
---     end
---     M["ansi_" .. color] = function(text)
---         return ansi(text, color, nil)
---     end
--- end
-
 --- @param fmt string
 --- @param renderer fun(text:string,hl:string?):string
 --- @param hl string?
@@ -222,28 +202,6 @@ M.render = function(renderer, hl, fmt, ...)
     end
     ---@diagnostic disable-next-line: deprecated
     return string.format(fmt, unpack(args))
-end
-
---- @param action string
---- @return string
-M.unrestricted_mode_header = function(action)
-    return M.render(
-        M.magenta,
-        "Special",
-        ":: Press %s to unrestricted mode",
-        string.upper(action)
-    )
-end
-
---- @param action string
---- @return string
-M.restricted_mode_header = function(action)
-    return M.render(
-        M.magenta,
-        "Special",
-        ":: Press %s to restricted mode",
-        string.upper(action)
-    )
 end
 
 return M
