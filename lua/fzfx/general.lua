@@ -140,7 +140,7 @@ function ProviderSwitch:provide(name, query, context)
         )
         if
             provider_config.provider == nil
-            or vim.tbl_isempty(provider_config.provider)
+            or vim.tbl_isempty(provider_config.provider --[[@as table]])
         then
             vim.fn.writefile({ "" }, self.resultfile)
         else
@@ -150,7 +150,8 @@ function ProviderSwitch:provide(name, query, context)
             )
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
-        local ok, result = pcall(provider_config.provider, query, context)
+        local ok, result =
+            pcall(provider_config.provider --[[@as function]], query, context)
         log.debug(
             "|fzfx.general - ProviderSwitch:provide| pcall command provider, ok:%s, result:%s",
             vim.inspect(ok),
@@ -180,7 +181,8 @@ function ProviderSwitch:provide(name, query, context)
             end
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST then
-        local ok, result = pcall(provider_config.provider, query, context)
+        local ok, result =
+            pcall(provider_config.provider --[[@as function]], query, context)
         log.debug(
             "|fzfx.general - ProviderSwitch:provide| pcall command_list provider, ok:%s, result:%s",
             vim.inspect(ok),
@@ -213,7 +215,8 @@ function ProviderSwitch:provide(name, query, context)
             end
         end
     elseif provider_config.provider_type == ProviderTypeEnum.LIST then
-        local ok, result = pcall(provider_config.provider, query, context)
+        local ok, result =
+            pcall(provider_config.provider --[[@as function]], query, context)
         log.debug(
             "|fzfx.general - ProviderSwitch:provide| pcall list provider, ok:%s, result:%s",
             vim.inspect(ok),
