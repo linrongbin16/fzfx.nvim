@@ -310,9 +310,9 @@ local function shellescape(s, special)
 end
 
 --- @class WindowOptsContext
---- @class bufnr integer
---- @class tabnr integer
---- @class winnr integer
+--- @field bufnr integer
+--- @field tabnr integer
+--- @field winnr integer
 local WindowOptsContext = {}
 
 --- @return WindowOptsContext
@@ -329,15 +329,11 @@ end
 
 --- @return nil
 function WindowOptsContext:restore()
-    if
-        vim.api.nvim_tabpage_is_valid(self.tabnr --[[@as integer]])
-    then
-        vim.api.nvim_set_current_tabpage(self.tabnr --[[@as integer]])
+    if vim.api.nvim_tabpage_is_valid(self.tabnr) then
+        vim.api.nvim_set_current_tabpage(self.tabnr)
     end
-    if
-        vim.api.nvim_win_is_valid(self.winnr --[[@as integer]])
-    then
-        vim.api.nvim_set_current_win(self.winnr --[[@as integer]])
+    if vim.api.nvim_win_is_valid(self.winnr) then
+        vim.api.nvim_set_current_win(self.winnr)
     end
 end
 
