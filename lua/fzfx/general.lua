@@ -18,10 +18,10 @@ local DEFAULT_PIPELINE = "default"
 -- provider switch {
 
 --- @class ProviderSwitch
---- @field pipeline PipelineName?
---- @field provider_configs table<PipelineName, ProviderConfig>?
---- @field metafile string?
---- @field resultfile string?
+--- @field pipeline PipelineName
+--- @field provider_configs table<PipelineName, ProviderConfig>
+--- @field metafile string
+--- @field resultfile string
 local ProviderSwitch = {}
 
 --- @param name string
@@ -257,11 +257,11 @@ end
 -- previewer switch {
 
 --- @class PreviewerSwitch
---- @field pipeline PipelineName?
---- @field previewers table<PipelineName, Previewer>?
---- @field previewer_types table<PipelineName, PreviewerType>?
---- @field metafile string?
---- @field resultfile string?
+--- @field pipeline PipelineName
+--- @field previewers table<PipelineName, Previewer>
+--- @field previewer_types table<PipelineName, PreviewerType>
+--- @field metafile string
+--- @field resultfile string
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -385,6 +385,7 @@ function PreviewerSwitch:preview(name, line, context)
                 vim.inspect(self),
                 vim.inspect(result)
             )
+            ---@diagnostic disable-next-line: param-type-mismatch
             if result == nil or vim.tbl_isempty(result) then
                 vim.fn.writefile({ "" }, self.resultfile)
             else
@@ -434,7 +435,7 @@ end
 -- header switch {
 
 --- @class HeaderSwitch
---- @field headers table<PipelineName, string[]>?
+--- @field headers table<PipelineName, string[]>
 local HeaderSwitch = {}
 
 --- @param provider_configs Configs
