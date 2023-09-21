@@ -56,14 +56,14 @@ local default_unrestricted_fd = {
 -- find
 local default_restricted_find = constants.is_windows
         and {
-            vim.fn.executable("gfind") > 0 and "gfind" or "find",
+            constants.find,
             "-L",
             ".",
             "-type",
             "f",
         }
     or {
-        vim.fn.executable("gfind") > 0 and "gfind" or "find",
+        constants.find,
         "-L",
         ".",
         "-type",
@@ -73,7 +73,7 @@ local default_restricted_find = constants.is_windows
         [[*/.*]],
     }
 local default_unrestricted_find = {
-    vim.fn.executable("gfind") > 0 and "gfind" or "find",
+    constants.find,
     "-L",
     ".",
     "-type",
@@ -797,13 +797,6 @@ local Defaults = {
                     local parsed_query = utils.parse_flag_query(query or "")
                     local content = parsed_query[1]
                     local option = parsed_query[2]
-                    local has_gnu_grep = (
-                        (constants.is_windows or constants.is_linux)
-                        and vim.fn.executable("grep") > 0
-                    )
-                        or vim.fn.executable("ggrep") > 0
-                    local gnu_grep = vim.fn.executable("ggrep") > 0 and "ggrep"
-                        or "grep"
 
                     if vim.fn.executable("rg") > 0 then
                         if
@@ -837,8 +830,11 @@ local Defaults = {
                             }
                         end
                     else
-                        local grep_cmd = has_gnu_grep and gnu_grep or "grep"
-                        local exclude_opt = has_gnu_grep and [[.*]] or [[./.*]]
+                        local grep_cmd = constants.has_gnu_grep
+                                and constants.gnu_grep
+                            or constants.grep
+                        local exclude_opt = constants.has_gnu_grep and [[.*]]
+                            or [[./.*]]
                         if
                             type(option) == "string"
                             and string.len(option) > 0
@@ -883,13 +879,6 @@ local Defaults = {
                     local parsed_query = utils.parse_flag_query(query or "")
                     local content = parsed_query[1]
                     local option = parsed_query[2]
-                    local has_gnu_grep = (
-                        (constants.is_windows or constants.is_linux)
-                        and vim.fn.executable("grep") > 0
-                    )
-                        or vim.fn.executable("ggrep") > 0
-                    local gnu_grep = vim.fn.executable("ggrep") > 0 and "ggrep"
-                        or "grep"
 
                     if vim.fn.executable("rg") > 0 then
                         if
@@ -925,7 +914,9 @@ local Defaults = {
                             }
                         end
                     else
-                        local grep_cmd = has_gnu_grep and gnu_grep or "grep"
+                        local grep_cmd = constants.has_gnu_grep
+                                and constants.gnu_grep
+                            or constants.grep
                         if
                             type(option) == "string"
                             and string.len(option) > 0

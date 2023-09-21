@@ -214,13 +214,6 @@ function PopupWindow:new(win_opts)
     -- save current window context
     local window_opts_context = utils.WindowOptsContext:save()
 
-    -- local win_stack = get_window_context_stack() --[[@as WindowContextStack]]
-    -- assert(
-    --     win_stack ~= nil,
-    --     "|fzfx.popup - new_popup_window| win_stack cannot be nil"
-    -- )
-    -- win_stack:push()
-
     --- @type integer
     local bufnr = vim.api.nvim_create_buf(false, true)
     -- setlocal bufhidden=wipe nobuflisted
@@ -248,14 +241,14 @@ function PopupWindow:new(win_opts)
     utils.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
     utils.set_win_option(winnr, "colorcolumn", "")
 
-    --- @type PopupWindow
-    local pw = vim.tbl_deep_extend("force", vim.deepcopy(PopupWindow), {
+    local o = {
         window_opts_context = window_opts_context,
         bufnr = bufnr,
         winnr = winnr,
-    })
-
-    return pw
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 function PopupWindow:close()
@@ -448,15 +441,15 @@ function Popup:new(win_opts, source, fzf_opts, actions, on_launch_exit)
 
     vim.cmd([[ startinsert ]])
 
-    --- @type Popup
-    local p = vim.tbl_deep_extend("force", vim.deepcopy(Popup), {
+    local o = {
         popup_window = popup_window,
         source = source,
         jobid = jobid,
         result = result,
-    })
-
-    return p
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 function Popup:close()

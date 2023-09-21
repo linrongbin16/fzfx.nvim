@@ -18,10 +18,10 @@ local DEFAULT_PIPELINE = "default"
 -- provider switch {
 
 --- @class ProviderSwitch
---- @field pipeline PipelineName?
---- @field provider_configs table<PipelineName, ProviderConfig>?
---- @field metafile string?
---- @field resultfile string?
+--- @field pipeline PipelineName
+--- @field provider_configs table<PipelineName, ProviderConfig>
+--- @field metafile string
+--- @field resultfile string
 local ProviderSwitch = {}
 
 --- @param name string
@@ -140,7 +140,7 @@ function ProviderSwitch:provide(name, query, context)
         )
         if
             provider_config.provider == nil
-            or vim.tbl_isempty(provider_config.provider)
+            or vim.tbl_isempty(provider_config.provider --[[@as table]])
         then
             vim.fn.writefile({ "" }, self.resultfile)
         else
@@ -150,7 +150,8 @@ function ProviderSwitch:provide(name, query, context)
             )
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
-        local ok, result = pcall(provider_config.provider, query, context)
+        local ok, result =
+            pcall(provider_config.provider --[[@as function]], query, context)
         log.debug(
             "|fzfx.general - ProviderSwitch:provide| pcall command provider, ok:%s, result:%s",
             vim.inspect(ok),
@@ -180,7 +181,8 @@ function ProviderSwitch:provide(name, query, context)
             end
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST then
-        local ok, result = pcall(provider_config.provider, query, context)
+        local ok, result =
+            pcall(provider_config.provider --[[@as function]], query, context)
         log.debug(
             "|fzfx.general - ProviderSwitch:provide| pcall command_list provider, ok:%s, result:%s",
             vim.inspect(ok),
@@ -213,7 +215,8 @@ function ProviderSwitch:provide(name, query, context)
             end
         end
     elseif provider_config.provider_type == ProviderTypeEnum.LIST then
-        local ok, result = pcall(provider_config.provider, query, context)
+        local ok, result =
+            pcall(provider_config.provider --[[@as function]], query, context)
         log.debug(
             "|fzfx.general - ProviderSwitch:provide| pcall list provider, ok:%s, result:%s",
             vim.inspect(ok),
@@ -257,18 +260,12 @@ end
 -- previewer switch {
 
 --- @class PreviewerSwitch
---- @field pipeline PipelineName?
---- @field previewers table<PipelineName, Previewer>?
---- @field previewer_types table<PipelineName, PreviewerType>?
---- @field metafile string?
---- @field resultfile string?
-local PreviewerSwitch = {
-    pipeline = nil,
-    previewers = nil,
-    previewer_types = nil,
-    metafile = nil,
-    resultfile = nil,
-}
+--- @field pipeline PipelineName
+--- @field previewers table<PipelineName, Previewer>
+--- @field previewer_types table<PipelineName, PreviewerType>
+--- @field metafile string
+--- @field resultfile string
+local PreviewerSwitch = {}
 
 --- @param name string
 --- @param pipeline PipelineName
@@ -391,6 +388,7 @@ function PreviewerSwitch:preview(name, line, context)
                 vim.inspect(self),
                 vim.inspect(result)
             )
+            ---@diagnostic disable-next-line: param-type-mismatch
             if result == nil or vim.tbl_isempty(result) then
                 vim.fn.writefile({ "" }, self.resultfile)
             else
@@ -440,10 +438,8 @@ end
 -- header switch {
 
 --- @class HeaderSwitch
---- @field headers table<PipelineName, string[]>?
-local HeaderSwitch = {
-    headers = nil,
-}
+--- @field headers table<PipelineName, string[]>
+local HeaderSwitch = {}
 
 --- @param provider_configs Configs
 --- @param interaction_configs Configs
