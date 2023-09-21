@@ -9,14 +9,7 @@ local env = require("fzfx.env")
 --- @field filetype string|nil
 --- @field filename string|nil
 --- @field timestamp integer|nil
-local Yank = {
-    regname = nil,
-    regtext = nil,
-    regtype = nil,
-    filetype = nil,
-    filename = nil,
-    timestamp = nil,
-}
+local Yank = {}
 
 --- @param regname string
 --- @param regtext string
@@ -25,15 +18,17 @@ local Yank = {
 --- @param filetype string|nil
 --- @return Yank
 function Yank:new(regname, regtext, regtype, filename, filetype)
-    local yank = vim.tbl_deep_extend("force", vim.deepcopy(Yank), {
+    local o = {
         regname = regname,
         regtext = vim.trim(regtext),
         regtype = regtype,
         filename = filename,
         filetype = filetype,
         timestamp = os.time(),
-    })
-    return yank
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
 --- @class YankHistory
