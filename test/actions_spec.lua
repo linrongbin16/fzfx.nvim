@@ -24,26 +24,6 @@ describe("actions", function()
             assert_true(nop({}) == nil)
         end)
     end)
-    describe("[retrieve_filename]", function()
-        it("retrieve filename without icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-            local expect = "~/github/linrongbin16/fzfx.nvim/README.md"
-            local actual = actions.retrieve_filename(expect)
-            assert_eq(expect, actual)
-        end)
-        it("retrieve filename with prepend icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local input = " ~/github/linrongbin16/fzfx.nvim/README.md"
-            local actual = actions.retrieve_filename(input)
-            print(
-                string.format(
-                    "retrieve filename with prepend icon:%s\n",
-                    vim.inspect(actual)
-                )
-            )
-            assert_eq("~/github/linrongbin16/fzfx.nvim/README.md", actual)
-        end)
-    end)
     describe("[make_edit_vim_commands]", function()
         it("edit file without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil

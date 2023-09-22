@@ -691,8 +691,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(),
-            ["double-click"] = require("fzfx.actions").make_edit(),
+            ["enter"] = require("fzfx.actions").edit,
+            ["double-click"] = require("fzfx.actions").edit,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -964,12 +964,11 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = constants.has_rg
-                    and require("fzfx.actions").make_edit(":", 1, 2, 3)
-                or require("fzfx.actions").make_edit(":", 1, 2),
+            ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
+                or require("fzfx.actions").edit_grep,
             ["double-click"] = constants.has_rg
-                    and require("fzfx.actions").make_edit(":", 1, 2, 3)
-                or require("fzfx.actions").make_edit(":", 1, 2),
+                    and require("fzfx.actions").edit_rg
+                or require("fzfx.actions").edit_grep,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1075,8 +1074,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(),
-            ["double-click"] = require("fzfx.actions").make_edit(),
+            ["enter"] = require("fzfx.actions").edit,
+            ["double-click"] = require("fzfx.actions").edit,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1202,8 +1201,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(),
-            ["double-click"] = require("fzfx.actions").make_edit(),
+            ["enter"] = require("fzfx.actions").edit,
+            ["double-click"] = require("fzfx.actions").edit,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1826,8 +1825,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
-            ["double-click"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1873,8 +1872,8 @@ local Defaults = {
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
-            ["double-click"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1930,8 +1929,8 @@ local Defaults = {
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
-            ["double-click"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1987,8 +1986,8 @@ local Defaults = {
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
-            ["double-click"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -2044,8 +2043,8 @@ local Defaults = {
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
-            ["double-click"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,
