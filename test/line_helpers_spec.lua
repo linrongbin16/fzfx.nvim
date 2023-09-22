@@ -211,4 +211,22 @@ describe("line_helpers", function()
             end
         end)
     end)
+    describe("[PathLine]", function()
+        it("create", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+            }
+            for _, line in ipairs(lines) do
+                local p = line_helpers.PathLine:new(line)
+                assert_eq(type(p), "table")
+                assert_eq(type(p.filename), "string")
+                assert_eq(p.filename, line)
+                assert_true(p.lineno == nil)
+                assert_true(p.column == nil)
+            end
+        end)
+    end)
 end)
