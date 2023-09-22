@@ -43,8 +43,7 @@ vim.rpcrequest(
 )
 vim.fn.chanclose(channel_id)
 
---- @type string
-local metajsonstring = shell_helpers.readfile(metafile)
+local metajsonstring = shell_helpers.readfile(metafile) --[[@as string]]
 shell_helpers.log_ensure(
     type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
     "|provider| error! metajson is not string! %s",
@@ -185,8 +184,7 @@ elseif
     metajson.provider_type == "plain_list"
     or metajson.provider_type == "command_list"
 then
-    --- @type string
-    local cmd = shell_helpers.readfile(resultfile)
+    local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
     shell_helpers.log_debug(
         "|provider| plain_list or command_list cmd:[%s]",
         vim.inspect(cmd)

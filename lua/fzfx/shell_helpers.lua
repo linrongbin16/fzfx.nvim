@@ -98,25 +98,6 @@ end
 
 -- infra utils }
 
--- provider {
-
---- @param filename string
-local function readfile(filename)
-    local f = io.open(filename, "r")
-    log_ensure(
-        f ~= nil,
-        "|fzfx.shell_helpers| error! failed to read file:%s",
-        vim.inspect(filename)
-    )
-    ---@diagnostic disable-next-line: need-check-nil
-    local content = vim.trim(f:read("*a"))
-    ---@diagnostic disable-next-line: need-check-nil
-    f:close()
-    return content
-end
-
--- provider }
-
 -- icon render {
 
 local DEVICONS_PATH = vim.env._FZFX_NVIM_DEVICONS_PATH
@@ -182,7 +163,6 @@ local M = {
     log_err = log_err,
     log_throw = log_throw,
     log_ensure = log_ensure,
-    readfile = readfile,
     render_filepath_line = render_filepath_line,
     Cmd = require("fzfx.cmd").Cmd,
     GitRootCmd = require("fzfx.cmd").GitRootCmd,
@@ -193,6 +173,7 @@ local M = {
     string_ltrim = require("fzfx.utils").string_ltrim,
     string_rtrim = require("fzfx.utils").string_rtrim,
     FileSyncReader = require("fzfx.utils").FileSyncReader,
+    readfile = require("fzfx.utils").readfile,
 }
 
 return M

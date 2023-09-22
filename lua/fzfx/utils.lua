@@ -514,6 +514,13 @@ function FileSyncReader:read()
     return content
 end
 
+--- @param filename string
+--- @return string?
+local function readfile(filename)
+    local reader = FileSyncReader:open(filename)
+    return reader:read()
+end
+
 local M = {
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
@@ -536,6 +543,7 @@ local M = {
     WindowOptsContext = WindowOptsContext,
     FileSyncReaderLineIterator = FileSyncReaderLineIterator,
     FileSyncReader = FileSyncReader,
+    readfile = readfile,
 }
 
 return M
