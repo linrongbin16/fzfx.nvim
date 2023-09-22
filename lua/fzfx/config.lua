@@ -495,7 +495,7 @@ local function lsp_locations_provider(opts)
         if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
             return nil
         end
-        local filelines = vim.fn.readfile(filename)
+        local filelines = utils.readlines(filename)
         if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
             return nil
         end

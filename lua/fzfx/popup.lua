@@ -379,14 +379,14 @@ function Popup:new(win_opts, source, fzf_opts, actions, on_launch_exit)
             "|fzfx.popup - Popup:new.on_fzf_exit| error! result %s must be readable",
             vim.inspect(result)
         )
-        local result_lines = vim.fn.readfile(result)
+        local lines = utils.readlines(result) --[[@as table]]
         log.debug(
             "|fzfx.popup - Popup:new.on_fzf_exit| result:%s, result_lines:%s",
             vim.inspect(result),
-            vim.inspect(result_lines)
+            vim.inspect(lines)
         )
-        local action_key = vim.trim(result_lines[1])
-        local action_lines = vim.list_slice(result_lines, 2)
+        local action_key = vim.trim(lines[1])
+        local action_lines = vim.list_slice(lines, 2)
         log.debug(
             "|fzfx.popup - Popup:new.on_fzf_exit| action_key:%s, action_lines:%s",
             vim.inspect(action_key),
