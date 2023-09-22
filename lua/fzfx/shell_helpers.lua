@@ -63,7 +63,6 @@ local function _log(level, msg)
                 fp:write(
                     string.format(
                         "%s [%s]: %s\n",
-                        LoggerContext.name,
                         os.date("%Y-%m-%d %H:%M:%S"),
                         level,
                         line
