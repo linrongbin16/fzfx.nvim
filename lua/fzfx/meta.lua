@@ -1,12 +1,12 @@
--- Zero Dependency
+-- No Setup Need
 
 local schema = require("fzfx.schema")
 local notify = require("fzfx.notify")
-local NotifyLevels = require("fzfx.notify").NotifyLevels
+local LogLevels = require("fzfx.notify").LogLevels
 
 local function deprecated_notification()
     notify.echo(
-        NotifyLevels.WARN,
+        LogLevels.WARN,
         "deprecated 'fzfx.meta', please migrate to latest config schema!"
     )
 end

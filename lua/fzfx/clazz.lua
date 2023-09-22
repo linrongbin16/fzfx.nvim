@@ -1,4 +1,4 @@
--- Zero Dependency
+-- No Setup Need
 
 local function instanceof(obj, clz)
     return type(obj) == "table"

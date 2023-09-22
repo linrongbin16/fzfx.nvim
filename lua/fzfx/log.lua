@@ -1,11 +1,11 @@
-local NotifyLevels = require("fzfx.notify").NotifyLevels
-local NotifyLevelNames = require("fzfx.notify").NotifyLevelNames
+local LogLevels = require("fzfx.notify").LogLevels
+local LogLevelNames = require("fzfx.notify").LogLevelNames
 local notify = require("fzfx.notify")
 
 --- @type Configs
 local Defaults = {
     --- @type integer
-    level = NotifyLevels.INFO,
+    level = LogLevels.INFO,
     --- @type boolean
     console_log = true,
     --- @type string|nil
@@ -33,7 +33,7 @@ local PathSeparator = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
 local function setup(option)
     Configs = vim.tbl_deep_extend("force", vim.deepcopy(Defaults), option or {})
     if type(Configs.level) == "string" then
-        Configs.level = NotifyLevels[Configs.level]
+        Configs.level = LogLevels[Configs.level]
     end
     if Configs.file_name and string.len(Configs.file_name) > 0 then
         -- For Windows: $env:USERPROFILE\AppData\Local\nvim-data\fzfx.log
@@ -72,7 +72,7 @@ local function log(level, msg)
     end
 
     local msg_lines = require("fzfx.utils").string_split(msg, "\n")
-    if Configs.console_log and level >= NotifyLevels.INFO then
+    if Configs.console_log and level >= LogLevels.INFO then
         notify.echo(level, msg)
     end
     if Configs.file_log then
@@ -83,7 +83,7 @@ local function log(level, msg)
                     string.format(
                         "%s [%s]: %s\n",
                         os.date("%Y-%m-%d %H:%M:%S"),
-                        NotifyLevelNames[level],
+                        LogLevelNames[level],
                         line
                     )
                 )
@@ -94,19 +94,19 @@ local function log(level, msg)
 end
 
 local function debug(fmt, ...)
-    log(NotifyLevels.DEBUG, string.format(fmt, ...))
+    log(LogLevels.DEBUG, string.format(fmt, ...))
 end
 
 local function info(fmt, ...)
-    log(NotifyLevels.INFO, string.format(fmt, ...))
+    log(LogLevels.INFO, string.format(fmt, ...))
 end
 
 local function warn(fmt, ...)
-    log(NotifyLevels.WARN, string.format(fmt, ...))
+    log(LogLevels.WARN, string.format(fmt, ...))
 end
 
 local function err(fmt, ...)
-    log(NotifyLevels.ERROR, string.format(fmt, ...))
+    log(LogLevels.ERROR, string.format(fmt, ...))
 end
 
 local function throw(fmt, ...)

@@ -1,11 +1,12 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
-local NotifyLevels = require("fzfx.notify").NotifyLevels
 local notify = require("fzfx.notify")
+local LogLevels = require("fzfx.notify").LogLevels
 local log = require("fzfx.log")
 local color = require("fzfx.color")
 local path = require("fzfx.path")
+local line_helpers = require("fzfx.line_helpers")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
@@ -98,19 +99,8 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
             "|fzfx.config - make_file_previewer| line:%s",
             vim.inspect(line)
         )
-        local filename = line
-        local lineno = nil
-        if
-            type(delimiter) == "string"
-            and string.len(delimiter) > 0
-            and type(filename_pos) == "number"
-            and filename_pos > 0
-        then
-            local line_splits = vim.fn.split(line, delimiter)
-            filename = line_splits[filename_pos]
-            lineno = line_splits[lineno_pos]
-        end
-        filename = env.icon_enable() and vim.fn.split(filename)[2] or filename
+        local parsed =
+            line_helpers.PathLine:new(line, delimiter, filename_pos, lineno_pos)
         if constants.has_bat then
             local style = "numbers,changes"
             if
@@ -126,47 +116,41 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
             then
                 theme = vim.env["BAT_THEME"]
             end
-            -- return string.format(
-            --     "%s --style=%s --theme=%s --color=always --pager=never %s -- %s",
-            --     constants.bat,
-            --     style,
-            --     theme,
-            --     (lineno ~= nil and string.len(lineno) > 0)
-            --             and string.format("--highlight-line=%s", lineno)
-            --         or "",
-            --     filename
-            -- )
-            if lineno ~= nil and string.len(lineno) > 0 then
-                return {
+            -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
+            return type(parsed.lineno) == "number"
+                    and {
+                        constants.bat,
+                        "--style=" .. style,
+                        "--theme=" .. theme,
+                        "--color=always",
+                        "--pager=never",
+                        "--highlight-line=" .. parsed.lineno,
+                        "--",
+                        parsed.filename,
+                    }
+                or {
                     constants.bat,
                     "--style=" .. style,
                     "--theme=" .. theme,
                     "--color=always",
                     "--pager=never",
-                    "--highlight-line=" .. lineno,
                     "--",
-                    filename,
+                    parsed.filename,
                 }
-            end
-            return {
-                constants.bat,
-                "--style=" .. style,
-                "--theme=" .. theme,
-                "--color=always",
-                "--pager=never",
-                "--",
-                filename,
-            }
         else
-            -- return string.format("cat %s", filename)
+            -- "cat %s"
             return {
                 "cat",
-                filename,
+                parsed.filename,
             }
         end
     end
     return wrap
 end
+
+local file_previewer = make_file_previewer()
+
+local file_previewer_rg = make_file_previewer(":", 1, 2)
 
 -- files }
 
@@ -199,7 +183,7 @@ end
 local function lsp_diagnostics_provider(opts)
     local active_lsp_clients = vim.lsp.get_active_clients()
     if active_lsp_clients == nil or vim.tbl_isempty(active_lsp_clients) then
-        notify.echo(NotifyLevels.INFO, "no active lsp clients.")
+        notify.echo(LogLevels.INFO, "no active lsp clients.")
         return nil
     end
     local signs = {
@@ -268,7 +252,7 @@ local function lsp_diagnostics_provider(opts)
         return a.severity < b.severity
     end)
     if diag_results == nil or vim.tbl_isempty(diag_results) then
-        notify.echo(NotifyLevels.INFO, "no lsp diagnostics found.")
+        notify.echo(LogLevels.INFO, "no lsp diagnostics found.")
         return nil
     end
 
@@ -432,7 +416,7 @@ end
 local function lsp_locations_provider(opts)
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = opts.bufnr })
     if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
-        notify.echo(NotifyLevels.INFO, "no active lsp clients.")
+        notify.echo(LogLevels.INFO, "no active lsp clients.")
         return nil
     end
     log.debug(
@@ -448,7 +432,7 @@ local function lsp_locations_provider(opts)
     end
     if not method_support then
         notify.echo(
-            NotifyLevels.INFO,
+            LogLevels.INFO,
             string.format("method %s not supported.", vim.inspect(opts.method))
         )
         return nil
@@ -466,11 +450,11 @@ local function lsp_locations_provider(opts)
         vim.inspect(lsp_err)
     )
     if lsp_err then
-        notify.echo(NotifyLevels.ERROR, lsp_err)
+        notify.echo(LogLevels.ERROR, lsp_err)
         return nil
     end
     if type(lsp_results) ~= "table" then
-        notify.echo(NotifyLevels.INFO, "no lsp definitions found.")
+        notify.echo(LogLevels.INFO, "no lsp definitions found.")
         return nil
     end
 
@@ -566,7 +550,7 @@ local function lsp_locations_provider(opts)
     end
 
     if def_lines == nil or vim.tbl_isempty(def_lines) then
-        notify.echo(NotifyLevels.INFO, "no lsp definitions found.")
+        notify.echo(LogLevels.INFO, "no lsp definitions found.")
         return nil
     end
 
@@ -681,18 +665,18 @@ local Defaults = {
         },
         previewers = {
             restricted_mode = PreviewerConfig:make({
-                previewer = make_file_previewer(),
+                previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             unrestricted_mode = PreviewerConfig:make({
-                previewer = make_file_previewer(),
+                previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(),
-            ["double-click"] = require("fzfx.actions").make_edit(),
+            ["enter"] = require("fzfx.actions").edit,
+            ["double-click"] = require("fzfx.actions").edit,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -954,22 +938,21 @@ local Defaults = {
         },
         previewers = {
             restricted_mode = PreviewerConfig:make({
-                previewer = make_file_previewer(":", 1, 2),
+                previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             unrestricted_mode = PreviewerConfig:make({
-                previewer = make_file_previewer(":", 1, 2),
+                previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = constants.has_rg
-                    and require("fzfx.actions").make_edit(":", 1, 2, 3)
-                or require("fzfx.actions").make_edit(":", 1, 2),
+            ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
+                or require("fzfx.actions").edit_grep,
             ["double-click"] = constants.has_rg
-                    and require("fzfx.actions").make_edit(":", 1, 2, 3)
-                or require("fzfx.actions").make_edit(":", 1, 2),
+                    and require("fzfx.actions").edit_rg
+                or require("fzfx.actions").edit_grep,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1063,7 +1046,7 @@ local Defaults = {
             line_type = ProviderLineTypeEnum.FILE,
         }),
         previewers = PreviewerConfig:make({
-            previewer = make_file_previewer(),
+            previewer = file_previewer,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         interactions = {
@@ -1075,8 +1058,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(),
-            ["double-click"] = require("fzfx.actions").make_edit(),
+            ["enter"] = require("fzfx.actions").edit,
+            ["double-click"] = require("fzfx.actions").edit,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1192,18 +1175,18 @@ local Defaults = {
         },
         previewers = {
             current_folder = PreviewerConfig:make({
-                previewer = make_file_previewer(),
+                previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             workspace = PreviewerConfig:make({
-                previewer = make_file_previewer(),
+                previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(),
-            ["double-click"] = require("fzfx.actions").make_edit(),
+            ["enter"] = require("fzfx.actions").edit,
+            ["double-click"] = require("fzfx.actions").edit,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1310,13 +1293,13 @@ local Defaults = {
                     local cmd = require("fzfx.cmd")
                     local git_root_cmd = cmd.GitRootCmd:run()
                     if git_root_cmd:wrong() then
-                        notify.echo(NotifyLevels.INFO, "not in git repo.")
+                        notify.echo(LogLevels.INFO, "not in git repo.")
                         return nil
                     end
                     local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
                     if git_current_branch_cmd:wrong() then
                         notify.echo(
-                            NotifyLevels.WARN,
+                            LogLevels.WARN,
                             table.concat(
                                 git_current_branch_cmd.result.stderr,
                                 " "
@@ -1332,7 +1315,7 @@ local Defaults = {
                     local git_branch_cmd = cmd.Cmd:run("git branch")
                     if git_branch_cmd.result:wrong() then
                         notify.echo(
-                            NotifyLevels.WARN,
+                            LogLevels.WARN,
                             table.concat(
                                 git_current_branch_cmd.result.stderr,
                                 " "
@@ -1359,13 +1342,13 @@ local Defaults = {
                     local cmd = require("fzfx.cmd")
                     local git_root_cmd = cmd.GitRootCmd:run()
                     if git_root_cmd:wrong() then
-                        notify.echo(NotifyLevels.INFO, "not in git repo.")
+                        notify.echo(LogLevels.INFO, "not in git repo.")
                         return nil
                     end
                     local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
                     if git_current_branch_cmd:wrong() then
                         notify.echo(
-                            NotifyLevels.WARN,
+                            LogLevels.WARN,
                             table.concat(
                                 git_current_branch_cmd.result.stderr,
                                 " "
@@ -1381,7 +1364,7 @@ local Defaults = {
                     local git_branch_cmd = cmd.Cmd:run("git branch --remotes")
                     if git_branch_cmd.result:wrong() then
                         notify.echo(
-                            NotifyLevels.WARN,
+                            LogLevels.WARN,
                             table.concat(
                                 git_current_branch_cmd.result.stderr,
                                 " "
@@ -1556,7 +1539,7 @@ local Defaults = {
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
                         notify.echo(
-                            NotifyLevels.INFO,
+                            LogLevels.INFO,
                             "no commits found on invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
@@ -1657,7 +1640,7 @@ local Defaults = {
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
                         notify.echo(
-                            NotifyLevels.INFO,
+                            LogLevels.INFO,
                             "no commits found on invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
@@ -1816,18 +1799,18 @@ local Defaults = {
         },
         previewers = {
             workspace_diagnostics = PreviewerConfig:make({
-                previewer = make_file_previewer(":", 1, 2),
+                previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             buffer_diagnostics = PreviewerConfig:make({
-                previewer = make_file_previewer(":", 1, 2),
+                previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
-            ["double-click"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1868,13 +1851,13 @@ local Defaults = {
             line_pos = 1,
         }),
         previewers = PreviewerConfig:make({
-            previewer = make_file_previewer(":", 1, 2),
+            previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
-            ["double-click"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1925,13 +1908,13 @@ local Defaults = {
             line_pos = 1,
         }),
         previewers = PreviewerConfig:make({
-            previewer = make_file_previewer(":", 1, 2),
+            previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
-            ["double-click"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1982,13 +1965,13 @@ local Defaults = {
             line_pos = 1,
         }),
         previewers = PreviewerConfig:make({
-            previewer = make_file_previewer(":", 1, 2),
+            previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
-            ["double-click"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -2039,13 +2022,13 @@ local Defaults = {
             line_pos = 1,
         }),
         previewers = PreviewerConfig:make({
-            previewer = make_file_previewer(":", 1, 2),
+            previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
-            ["double-click"] = require("fzfx.actions").make_edit(":", 1, 2, 3),
+            ["enter"] = require("fzfx.actions").edit_rg,
+            ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,

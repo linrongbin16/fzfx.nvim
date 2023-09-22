@@ -1,4 +1,5 @@
 local log = require("fzfx.log")
+local LogLevels = require("fzfx.notify").LogLevels
 local general = require("fzfx.general")
 
 --- @param options Configs|nil
@@ -9,7 +10,7 @@ local function setup(options)
 
     -- log
     log.setup({
-        level = configs.debug.enable and "DEBUG" or "INFO",
+        level = configs.debug.enable and LogLevels.DEBUG or LogLevels.INFO,
         console_log = configs.debug.console_log,
         file_log = configs.debug.file_log,
     })

@@ -2,44 +2,12 @@ local log = require("fzfx.log")
 local env = require("fzfx.env")
 local path = require("fzfx.path")
 local utils = require("fzfx.utils")
+local line_helpers = require("fzfx.line_helpers")
 
 --- @param lines string[]
 --- @return nil
 local function nop(lines)
     log.debug("|fzfx.actions - nop| lines:%s", vim.inspect(lines))
-end
-
---- @param line string
---- @return string
-local function retrieve_filename(line)
-    local filename = env.icon_enable() and utils.string_split(line)[2] or line
-    return path.normalize(filename)
-end
-
---- @alias FileLineParsedResult {filename:string,lineno:string?,colno:string?}
---- @param line string
---- @param delimiter string?
---- @param file_pos integer?
---- @param lineno_pos integer?
---- @param colno_pos integer?
---- @return FileLineParsedResult
-local function parse_file_line(line, delimiter, file_pos, lineno_pos, colno_pos)
-    local filename = nil
-    local lineno = nil
-    local colno = nil
-    if type(delimiter) == "string" and string.len(delimiter) > 0 then
-        local parts = utils.string_split(line, delimiter)
-        filename = retrieve_filename(parts[file_pos])
-        if type(lineno_pos) == "number" then
-            lineno = parts[lineno_pos]
-        end
-        if type(colno_pos) == "number" then
-            colno = parts[colno_pos]
-        end
-    else
-        filename = retrieve_filename(line)
-    end
-    return { filename = filename, lineno = lineno, colno = colno }
 end
 
 --- @alias EditActionVimCommands {edit:string[],setpos:string?}
@@ -58,8 +26,13 @@ local function make_edit_vim_commands(
 )
     local vim_commands = { edit = {}, setpos = nil }
     for i, line in ipairs(lines) do
-        local parsed =
-            parse_file_line(line, delimiter, file_pos, lineno_pos, colno_pos)
+        local parsed = line_helpers.PathLine:new(
+            line,
+            delimiter,
+            file_pos,
+            lineno_pos,
+            colno_pos
+        )
         local edit_cmd =
             string.format("edit %s", vim.fn.expand(parsed.filename))
         table.insert(vim_commands.edit, edit_cmd)
@@ -70,11 +43,11 @@ local function make_edit_vim_commands(
         )
         if parsed.lineno ~= nil then
             if i == #lines then
-                local colno = parsed.colno or "1"
+                local column = parsed.column or 1
                 local setpos_cmd = string.format(
                     "call setpos('.', [0, %d, %d])",
-                    tonumber(parsed.lineno),
-                    tonumber(colno)
+                    parsed.lineno,
+                    column
                 )
                 log.debug(
                     "|fzfx.actions - make_edit_vim_commands| edit_cmd[%d]:[%s]",
@@ -154,7 +127,7 @@ local function bdelete(lines)
     end
     if type(lines) == "table" and #lines > 0 then
         for _, line in ipairs(lines) do
-            local parsed = parse_file_line(line)
+            local parsed = line_helpers.PathLine:new(line)
             local cmd = string.format("bdelete %s", parsed.filename)
             log.debug(
                 "|fzfx.actions - bdelete| line:[%s], bufname:[%s], cmd:[%s]",
@@ -205,8 +178,6 @@ end
 
 local M = {
     nop = nop,
-    retrieve_filename = retrieve_filename,
-    make_edit = make_edit,
     make_edit_vim_commands = make_edit_vim_commands,
     edit = edit,
     edit_rg = edit_rg,
