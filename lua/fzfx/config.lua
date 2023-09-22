@@ -6,6 +6,7 @@ local LogLevels = require("fzfx.notify").LogLevels
 local log = require("fzfx.log")
 local color = require("fzfx.color")
 local path = require("fzfx.path")
+local line_helpers = require("fzfx.line_helpers")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
@@ -98,19 +99,8 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
             "|fzfx.config - make_file_previewer| line:%s",
             vim.inspect(line)
         )
-        local filename = line
-        local lineno = nil
-        if
-            type(delimiter) == "string"
-            and string.len(delimiter) > 0
-            and type(filename_pos) == "number"
-            and filename_pos > 0
-        then
-            local line_splits = vim.fn.split(line, delimiter)
-            filename = line_splits[filename_pos]
-            lineno = line_splits[lineno_pos]
-        end
-        filename = env.icon_enable() and vim.fn.split(filename)[2] or filename
+        local parsed =
+            line_helpers.PathLine:new(line, delimiter, filename_pos, lineno_pos)
         if constants.has_bat then
             local style = "numbers,changes"
             if
@@ -126,42 +116,32 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
             then
                 theme = vim.env["BAT_THEME"]
             end
-            -- return string.format(
-            --     "%s --style=%s --theme=%s --color=always --pager=never %s -- %s",
-            --     constants.bat,
-            --     style,
-            --     theme,
-            --     (lineno ~= nil and string.len(lineno) > 0)
-            --             and string.format("--highlight-line=%s", lineno)
-            --         or "",
-            --     filename
-            -- )
-            if lineno ~= nil and string.len(lineno) > 0 then
-                return {
+            -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
+            return type(parsed.lineno) == "number"
+                    and {
+                        constants.bat,
+                        "--style=" .. style,
+                        "--theme=" .. theme,
+                        "--color=always",
+                        "--pager=never",
+                        "--highlight-line=" .. parsed.lineno,
+                        "--",
+                        parsed.filename,
+                    }
+                or {
                     constants.bat,
                     "--style=" .. style,
                     "--theme=" .. theme,
                     "--color=always",
                     "--pager=never",
-                    "--highlight-line=" .. lineno,
                     "--",
-                    filename,
+                    parsed.filename,
                 }
-            end
-            return {
-                constants.bat,
-                "--style=" .. style,
-                "--theme=" .. theme,
-                "--color=always",
-                "--pager=never",
-                "--",
-                filename,
-            }
         else
-            -- return string.format("cat %s", filename)
+            -- "cat %s"
             return {
                 "cat",
-                filename,
+                parsed.filename,
             }
         end
     end
