@@ -298,65 +298,21 @@ then
     err_pipe:read_start(on_error)
     vim.loop.run()
 elseif metajson.provider_type == "list" then
-    local fd = vim.loop.fs_open(resultfile, "r", 438) --[[@as integer]]
+    local file_sync_reader = shell_helpers.FileSyncReader:open(resultfile)
+    local line_iterator = file_sync_reader:line_iterator()
+
     shell_helpers.log_ensure(
-        type(fd) == "number",
-        "|provider| error! failed to fs_open resultfile: %s",
-        vim.inspect(resultfile)
-    )
-    local stat = vim.loop.fs_fstat(fd) --[[@as table]]
-    shell_helpers.log_ensure(
-        type(stat) == "table",
-        "|provider| error! failed to fs_open list provider resultfile: %s",
+        line_iterator ~= nil,
+        "|provider| error! failed to open resultfile: %s",
         vim.inspect(resultfile)
     )
 
-    --- @type string?
-    local data_buffer = nil
-    local filesize = stat.size
-    local offset = 0
-    local code = 0
-
-    while offset < filesize do
-        local batchsize = (filesize >= offset + 4096) and 4096
-            or (filesize - offset)
-        local data, --[[@as string?]]
-            read_err,
-            read_name =
-            vim.loop.fs_read(fd, batchsize, offset)
-        if not data then
-            if read_err then
-                shell_helpers.log_err(
-                    "|provider| error! failed to fs_read list provider resultfile (%s): %s, %s",
-                    vim.inspect(resultfile),
-                    vim.inspect(read_err),
-                    vim.inspect(read_name)
-                )
-                code = 130
-            elseif data_buffer then
-                -- foreach the data_buffer and find every line
-                local i = consume(data_buffer, println)
-                if i <= #data_buffer then
-                    local line = data_buffer:sub(i, #data_buffer)
-                    println(line)
-                    data_buffer = nil
-                end
-            end
-            break
-        end
-
-        -- append data to data_buffer
-        data_buffer = data_buffer and (data_buffer .. data) or data --[[@as string]]
-        -- foreach the data_buffer and find every line
-        local i = consume(data_buffer, println)
-        -- truncate the printed lines if found any
-        data_buffer = i <= #data_buffer and data_buffer:sub(i, #data_buffer)
-            or nil
-
-        offset = offset + #data
+    ---@diagnostic disable-next-line: need-check-nil
+    while line_iterator:has_next() do
+        ---@diagnostic disable-next-line: need-check-nil
+        local line = line_iterator:next()
+        println(line)
     end
-    vim.loop.fs_close(fd)
-    os.exit(code)
 else
     shell_helpers.log_throw(
         "|provider| error! unknown provider type:%s",

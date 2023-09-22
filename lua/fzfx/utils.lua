@@ -364,6 +364,7 @@ end
 local FileSyncReader = {}
 
 --- @param filename string
+--- @return FileSyncReader
 function FileSyncReader:open(filename)
     local o = {
         filename = filename,
