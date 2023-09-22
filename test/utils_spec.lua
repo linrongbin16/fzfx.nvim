@@ -234,7 +234,7 @@ describe("utils", function()
     describe("[FileSyncReader]", function()
         it("compares line by line and read all", function()
             local reader = FileSyncReader:open("README.md") --[[@as FileSyncReader]]
-            local content = reader:read_all()
+            local content = reader:read()
             local buffer = nil
             local iter = reader:line_iterator() --[[@as FileSyncReaderLineIterator]]
             assert_eq(type(iter), "table")

@@ -501,7 +501,7 @@ function FileSyncReader:line_iterator()
 end
 
 --- @return string?
-function FileSyncReader:read_all()
+function FileSyncReader:read()
     local f = io.open(self.filename, "r")
     if f == nil then
         return nil
