@@ -187,7 +187,7 @@ describe("utils", function()
             assert_eq(type(iter), "table")
             while iter:has_next() do
                 local line = iter:next() --[[@as string]]
-                print(string.format("[%d]%s\n", i, line))
+                -- print(string.format("[%d]%s\n", i, line))
                 i = i + 1
                 assert_eq(type(line), "string")
                 assert_true(string.len(line) >= 0)
@@ -203,7 +203,7 @@ describe("utils", function()
             assert_eq(type(iter), "table")
             while iter:has_next() do
                 local line = iter:next() --[[@as string]]
-                print(string.format("[%d]%s\n", i, line))
+                -- print(string.format("[%d]%s\n", i, line))
                 i = i + 1
                 assert_eq(type(line), "string")
                 assert_true(string.len(line) >= 0)
@@ -220,7 +220,7 @@ describe("utils", function()
             assert_eq(type(iter), "table")
             while iter:has_next() do
                 local line = iter:next() --[[@as string]]
-                print(string.format("[%d]%s\n", i, line))
+                -- print(string.format("[%d]%s\n", i, line))
                 i = i + 1
                 assert_eq(type(line), "string")
                 assert_true(string.len(line) >= 0)
