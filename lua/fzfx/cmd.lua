@@ -1,4 +1,4 @@
--- Zero Dependency
+-- No Setup Need
 
 --- @class CmdResult
 --- @field stdout string[]?

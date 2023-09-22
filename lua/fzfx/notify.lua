@@ -1,4 +1,4 @@
--- Zero Dependency
+-- No Setup Need
 
 -- see: `lua print(vim.inspect(vim.log.levels))`
 local LogLevels = (

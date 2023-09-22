@@ -1,4 +1,4 @@
--- Zero Dependency
+-- No Setup Need
 
 local schema = require("fzfx.schema")
 local notify = require("fzfx.notify")

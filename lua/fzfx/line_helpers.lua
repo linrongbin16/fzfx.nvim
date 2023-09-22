@@ -1,4 +1,4 @@
--- Zero Dependency
+-- No Setup Need
 
 local env = require("fzfx.env")
 local utils = require("fzfx.utils")
@@ -26,10 +26,10 @@ local function parse_path_line(line, delimiter, file_pos, lineno_pos, colno_pos)
         local parts = utils.string_split(line, delimiter)
         filename = parse_filename(parts[file_pos])
         if type(lineno_pos) == "number" then
-            lineno = parts[lineno_pos]
+            lineno = tonumber(parts[lineno_pos])
         end
         if type(colno_pos) == "number" then
-            column = parts[colno_pos]
+            column = tonumber(parts[colno_pos])
         end
     else
         filename = parse_filename(line)

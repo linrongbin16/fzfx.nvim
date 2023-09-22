@@ -1,4 +1,4 @@
--- Zero Dependency
+-- No Setup Need
 
 -- local log = require("fzfx.log")
 

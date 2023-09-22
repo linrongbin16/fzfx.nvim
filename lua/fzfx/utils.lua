@@ -1,4 +1,4 @@
--- Zero Dependency
+-- No Setup Need
 
 local constants = require("fzfx.constants")
 

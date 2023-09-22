@@ -1,4 +1,4 @@
--- Zero Dependency
+-- No Setup Need
 
 --- @return boolean
 local function debug_enable()
