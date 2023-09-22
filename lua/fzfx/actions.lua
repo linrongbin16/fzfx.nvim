@@ -127,7 +127,7 @@ local function bdelete(lines)
     end
     if type(lines) == "table" and #lines > 0 then
         for _, line in ipairs(lines) do
-            local parsed = parse_file_line(line)
+            local parsed = line_helpers.PathLine:new(line)
             local cmd = string.format("bdelete %s", parsed.filename)
             log.debug(
                 "|fzfx.actions - bdelete| line:[%s], bufname:[%s], cmd:[%s]",
