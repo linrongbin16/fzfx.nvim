@@ -521,6 +521,22 @@ local function readfile(filename)
     return reader:read()
 end
 
+--- @param filename string
+--- @return string[]?
+local function readlines(filename)
+    local reader = FileSyncReader:open(filename)
+    local iter = reader:line_iterator() --[[@as FileSyncReaderLineIterator]]
+    if not iter then
+        return nil
+    end
+    local results = {}
+    while iter:has_next() do
+        table.insert(results, iter:next())
+    end
+    iter:close()
+    return results
+end
+
 local M = {
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
@@ -544,6 +560,7 @@ local M = {
     FileSyncReaderLineIterator = FileSyncReaderLineIterator,
     FileSyncReader = FileSyncReader,
     readfile = readfile,
+    readlines = readlines,
 }
 
 return M

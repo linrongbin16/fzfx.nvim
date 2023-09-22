@@ -300,4 +300,17 @@ describe("utils", function()
             assert_eq(results[2], "-w")
         end)
     end)
+    describe("[readfile/readlines]", function()
+        it("compares lines and all", function()
+            local content = utils.readfile("README.md") --[[@as FileSyncReader]]
+            local lines = utils.readlines("README.md") --[[@as string[]]]
+            local buffer = nil
+            for _, line in ipairs(lines) do
+                assert_eq(type(line), "string")
+                assert_true(string.len(line) >= 0)
+                buffer = buffer and (buffer .. line .. "\n") or (line .. "\n")
+            end
+            assert_eq(utils.string_rtrim(buffer --[[@as string]]), content)
+        end)
+    end)
 end)
