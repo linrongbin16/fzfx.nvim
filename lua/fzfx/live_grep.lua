@@ -1,6 +1,6 @@
 local log = require("fzfx.log")
 local notify = require("fzfx.notify")
-local NotifyLevels = require("fzfx.notify").NotifyLevels
+local LogLevels = require("fzfx.notify").LogLevels
 local conf = require("fzfx.config")
 local utils = require("fzfx.utils")
 local general = require("fzfx.general")
@@ -67,7 +67,7 @@ local function setup()
     if deprecated then
         local function deprecated_notification()
             notify.echo(
-                NotifyLevels.WARN,
+                LogLevels.WARN,
                 "deprecated 'FzfxLiveGrep' configs, please migrate to latest config schema!"
             )
         end

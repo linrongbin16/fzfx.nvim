@@ -1,8 +1,8 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
-local NotifyLevels = require("fzfx.notify").NotifyLevels
 local notify = require("fzfx.notify")
+local LogLevels = require("fzfx.notify").LogLevels
 local log = require("fzfx.log")
 local color = require("fzfx.color")
 local path = require("fzfx.path")
@@ -199,7 +199,7 @@ end
 local function lsp_diagnostics_provider(opts)
     local active_lsp_clients = vim.lsp.get_active_clients()
     if active_lsp_clients == nil or vim.tbl_isempty(active_lsp_clients) then
-        notify.echo(NotifyLevels.INFO, "no active lsp clients.")
+        notify.echo(LogLevels.INFO, "no active lsp clients.")
         return nil
     end
     local signs = {
@@ -268,7 +268,7 @@ local function lsp_diagnostics_provider(opts)
         return a.severity < b.severity
     end)
     if diag_results == nil or vim.tbl_isempty(diag_results) then
-        notify.echo(NotifyLevels.INFO, "no lsp diagnostics found.")
+        notify.echo(LogLevels.INFO, "no lsp diagnostics found.")
         return nil
     end
 
@@ -432,7 +432,7 @@ end
 local function lsp_locations_provider(opts)
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = opts.bufnr })
     if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
-        notify.echo(NotifyLevels.INFO, "no active lsp clients.")
+        notify.echo(LogLevels.INFO, "no active lsp clients.")
         return nil
     end
     log.debug(
@@ -448,7 +448,7 @@ local function lsp_locations_provider(opts)
     end
     if not method_support then
         notify.echo(
-            NotifyLevels.INFO,
+            LogLevels.INFO,
             string.format("method %s not supported.", vim.inspect(opts.method))
         )
         return nil
@@ -466,11 +466,11 @@ local function lsp_locations_provider(opts)
         vim.inspect(lsp_err)
     )
     if lsp_err then
-        notify.echo(NotifyLevels.ERROR, lsp_err)
+        notify.echo(LogLevels.ERROR, lsp_err)
         return nil
     end
     if type(lsp_results) ~= "table" then
-        notify.echo(NotifyLevels.INFO, "no lsp definitions found.")
+        notify.echo(LogLevels.INFO, "no lsp definitions found.")
         return nil
     end
 
@@ -566,7 +566,7 @@ local function lsp_locations_provider(opts)
     end
 
     if def_lines == nil or vim.tbl_isempty(def_lines) then
-        notify.echo(NotifyLevels.INFO, "no lsp definitions found.")
+        notify.echo(LogLevels.INFO, "no lsp definitions found.")
         return nil
     end
 
@@ -1310,13 +1310,13 @@ local Defaults = {
                     local cmd = require("fzfx.cmd")
                     local git_root_cmd = cmd.GitRootCmd:run()
                     if git_root_cmd:wrong() then
-                        notify.echo(NotifyLevels.INFO, "not in git repo.")
+                        notify.echo(LogLevels.INFO, "not in git repo.")
                         return nil
                     end
                     local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
                     if git_current_branch_cmd:wrong() then
                         notify.echo(
-                            NotifyLevels.WARN,
+                            LogLevels.WARN,
                             table.concat(
                                 git_current_branch_cmd.result.stderr,
                                 " "
@@ -1332,7 +1332,7 @@ local Defaults = {
                     local git_branch_cmd = cmd.Cmd:run("git branch")
                     if git_branch_cmd.result:wrong() then
                         notify.echo(
-                            NotifyLevels.WARN,
+                            LogLevels.WARN,
                             table.concat(
                                 git_current_branch_cmd.result.stderr,
                                 " "
@@ -1359,13 +1359,13 @@ local Defaults = {
                     local cmd = require("fzfx.cmd")
                     local git_root_cmd = cmd.GitRootCmd:run()
                     if git_root_cmd:wrong() then
-                        notify.echo(NotifyLevels.INFO, "not in git repo.")
+                        notify.echo(LogLevels.INFO, "not in git repo.")
                         return nil
                     end
                     local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
                     if git_current_branch_cmd:wrong() then
                         notify.echo(
-                            NotifyLevels.WARN,
+                            LogLevels.WARN,
                             table.concat(
                                 git_current_branch_cmd.result.stderr,
                                 " "
@@ -1381,7 +1381,7 @@ local Defaults = {
                     local git_branch_cmd = cmd.Cmd:run("git branch --remotes")
                     if git_branch_cmd.result:wrong() then
                         notify.echo(
-                            NotifyLevels.WARN,
+                            LogLevels.WARN,
                             table.concat(
                                 git_current_branch_cmd.result.stderr,
                                 " "
@@ -1556,7 +1556,7 @@ local Defaults = {
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
                         notify.echo(
-                            NotifyLevels.INFO,
+                            LogLevels.INFO,
                             "no commits found on invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
@@ -1657,7 +1657,7 @@ local Defaults = {
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
                         notify.echo(
-                            NotifyLevels.INFO,
+                            LogLevels.INFO,
                             "no commits found on invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
