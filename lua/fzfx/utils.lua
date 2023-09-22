@@ -186,22 +186,24 @@ end
 
 --- @param s string
 --- @param c string
---- @param start integer?
-local function string_startswith(s, c, start)
-    if string.len(c) > string.len(s) then
+local function string_startswith(s, c)
+    local start_pos = 1
+    local end_pos = #c
+    if start_pos > end_pos then
         return false
     end
-    return s:sub(1, #c) == c
+    return s:sub(start_pos, end_pos) == c
 end
 
 --- @param s string
 --- @param c string
---- @param start integer?
-local function string_endswith(s, c, start)
-    if string.len(c) > string.len(s) then
+local function string_endswith(s, c)
+    local start_pos = #s - #c + 1
+    local end_pos = #s
+    if start_pos > end_pos then
         return false
     end
-    return s:sub(#s - #c + 1, #s) == c
+    return s:sub(start_pos, end_pos) == c
 end
 
 --- @param left number?
