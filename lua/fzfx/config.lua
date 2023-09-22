@@ -148,6 +148,10 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
     return wrap
 end
 
+local file_previewer = make_file_previewer()
+
+local file_previewer_rg = make_file_previewer(":", 1, 2)
+
 -- files }
 
 -- live grep {
@@ -661,11 +665,11 @@ local Defaults = {
         },
         previewers = {
             restricted_mode = PreviewerConfig:make({
-                previewer = make_file_previewer(),
+                previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             unrestricted_mode = PreviewerConfig:make({
-                previewer = make_file_previewer(),
+                previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
@@ -934,11 +938,11 @@ local Defaults = {
         },
         previewers = {
             restricted_mode = PreviewerConfig:make({
-                previewer = make_file_previewer(":", 1, 2),
+                previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             unrestricted_mode = PreviewerConfig:make({
-                previewer = make_file_previewer(":", 1, 2),
+                previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
@@ -1042,7 +1046,7 @@ local Defaults = {
             line_type = ProviderLineTypeEnum.FILE,
         }),
         previewers = PreviewerConfig:make({
-            previewer = make_file_previewer(),
+            previewer = file_previewer,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         interactions = {
@@ -1171,11 +1175,11 @@ local Defaults = {
         },
         previewers = {
             current_folder = PreviewerConfig:make({
-                previewer = make_file_previewer(),
+                previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             workspace = PreviewerConfig:make({
-                previewer = make_file_previewer(),
+                previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
@@ -1795,11 +1799,11 @@ local Defaults = {
         },
         previewers = {
             workspace_diagnostics = PreviewerConfig:make({
-                previewer = make_file_previewer(":", 1, 2),
+                previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             buffer_diagnostics = PreviewerConfig:make({
-                previewer = make_file_previewer(":", 1, 2),
+                previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },
@@ -1847,7 +1851,7 @@ local Defaults = {
             line_pos = 1,
         }),
         previewers = PreviewerConfig:make({
-            previewer = make_file_previewer(":", 1, 2),
+            previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
@@ -1904,7 +1908,7 @@ local Defaults = {
             line_pos = 1,
         }),
         previewers = PreviewerConfig:make({
-            previewer = make_file_previewer(":", 1, 2),
+            previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
@@ -1961,7 +1965,7 @@ local Defaults = {
             line_pos = 1,
         }),
         previewers = PreviewerConfig:make({
-            previewer = make_file_previewer(":", 1, 2),
+            previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
@@ -2018,7 +2022,7 @@ local Defaults = {
             line_pos = 1,
         }),
         previewers = PreviewerConfig:make({
-            previewer = make_file_previewer(":", 1, 2),
+            previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         actions = {
