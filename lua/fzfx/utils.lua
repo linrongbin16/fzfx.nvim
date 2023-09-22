@@ -184,6 +184,26 @@ local function string_split(s, delimiter, filter_empty)
     return result
 end
 
+--- @param s string
+--- @param c string
+--- @param start integer?
+local function string_startswith(s, c, start)
+    if string.len(c) > string.len(s) then
+        return false
+    end
+    return s:sub(1, #c) == c
+end
+
+--- @param s string
+--- @param c string
+--- @param start integer?
+local function string_endswith(s, c, start)
+    if string.len(c) > string.len(s) then
+        return false
+    end
+    return s:sub(#s - #c + 1, #s) == c
+end
+
 --- @param left number?
 --- @param value number
 --- @param right number?
@@ -337,6 +357,160 @@ function WindowOptsContext:restore()
     end
 end
 
+--- @class FileSyncReader
+--- @field filename string
+local FileSyncReader = {}
+
+--- @param filename string
+function FileSyncReader:open(filename)
+    local o = {
+        filename = filename,
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+--- @class FileSyncReaderLineIterator
+--- @field filename string
+--- @field handler integer
+--- @field filesize integer
+--- @field offset integer
+--- @field batchsize integer
+--- @field buffer string?
+local FileSyncReaderLineIterator = {}
+
+--- @param filename string
+--- @param batchsize integer?
+--- @return FileSyncReaderLineIterator?
+function FileSyncReaderLineIterator:make(filename, batchsize)
+    local handler = vim.loop.fs_open(filename, "r", 438) --[[@as integer]]
+    if type(handler) ~= "number" then
+        error(
+            string.format(
+                "|fzfx.utils - FileSyncReaderLineIterator:make| failed to fs_open file: %s",
+                vim.inspect(filename)
+            )
+        )
+        return nil
+    end
+    local fstat = vim.loop.fs_fstat(handler) --[[@as table]]
+    if type(fstat) ~= "table" then
+        error(
+            string.format(
+                "|fzfx.utils - FileSyncReaderLineIterator:make| failed to fs_fstat file: %s",
+                vim.inspect(filename)
+            )
+        )
+        vim.loop.fs_close(handler)
+        return nil
+    end
+
+    local o = {
+        filename = filename,
+        handler = handler,
+        filesize = fstat.size,
+        offset = 0,
+        batchsize = batchsize or 4096,
+        buffer = nil,
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+--- @return integer
+function FileSyncReaderLineIterator:_read_chunk()
+    local chunksize = (self.filesize >= self.offset + self.batchsize)
+            and self.batchsize
+        or (self.filesize - self.offset)
+    if chunksize <= 0 then
+        return 0
+    end
+    local data, --[[@as string?]]
+        read_err,
+        read_name =
+        vim.loop.fs_read(self.handler, chunksize, self.offset)
+    if read_err then
+        error(
+            string.format(
+                "|fzfx.utils - FileSyncReaderLineIterator:_read_chunk| failed to fs_read file: %s, read_error:%s, read_name:%s",
+                vim.inspect(self.filename),
+                vim.inspect(read_err),
+                vim.inspect(read_name)
+            )
+        )
+        return -1
+    end
+    -- append to buffer
+    self.buffer = self.buffer and (self.buffer .. data) or data --[[@as string]]
+    self.offset = self.offset + #data
+    return #data
+end
+
+--- @return boolean
+function FileSyncReaderLineIterator:has_next()
+    self:_read_chunk()
+    return self.buffer ~= nil and string.len(self.buffer) > 0
+end
+
+--- @return string?
+function FileSyncReaderLineIterator:next()
+    --- @return string?
+    local function impl()
+        if self.buffer == nil then
+            return nil
+        end
+        local nextpos = string_find(self.buffer, "\n")
+        if nextpos then
+            local line = self.buffer:sub(1, nextpos - 1)
+            self.buffer = self.buffer:sub(nextpos + 1)
+            return line
+        else
+            return nil
+        end
+    end
+
+    repeat
+        local nextline = impl()
+        if nextline then
+            return nextline
+        end
+    until self:_read_chunk() <= 0
+
+    local nextline = impl()
+    if nextline then
+        return nextline
+    else
+        local buf = self.buffer
+        self.buffer = nil
+        return buf
+    end
+end
+
+function FileSyncReaderLineIterator:close()
+    if self.handler then
+        vim.loop.fs_close(self.handler)
+        self.handler = nil
+    end
+end
+
+--- @return FileSyncReaderLineIterator?
+function FileSyncReader:line_iterator()
+    return FileSyncReaderLineIterator:make(self.filename)
+end
+
+--- @return string?
+function FileSyncReader:read_all()
+    local f = io.open(self.filename, "r")
+    if f == nil then
+        return nil
+    end
+    local content = vim.trim(f:read("*a"))
+    f:close()
+    return content
+end
+
 local M = {
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
@@ -350,11 +524,15 @@ local M = {
     string_ltrim = string_ltrim,
     string_rtrim = string_rtrim,
     string_split = string_split,
+    string_startswith = string_startswith,
+    string_endswith = string_endswith,
     number_bound = number_bound,
     parse_flag_query = parse_flag_query,
     ShellOptsContext = ShellOptsContext,
     shellescape = shellescape,
     WindowOptsContext = WindowOptsContext,
+    FileSyncReaderLineIterator = FileSyncReaderLineIterator,
+    FileSyncReader = FileSyncReader,
 }
 
 return M

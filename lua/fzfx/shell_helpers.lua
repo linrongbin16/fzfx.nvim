@@ -44,7 +44,9 @@ local LoggerContext = {
 --- @param msg string
 --- @return nil
 local function _log(level, msg)
-    if vim.log.levels[level] < vim.log.levels[LoggerContext.level] then
+    local LogLevels = require("fzfx.notify").LogLevels
+
+    if LogLevels[level] < LogLevels[LoggerContext.level] then
         return
     end
 
@@ -60,7 +62,7 @@ local function _log(level, msg)
             for _, line in ipairs(msg_lines) do
                 fp:write(
                     string.format(
-                        "%s %s [%s]: %s\n",
+                        "%s [%s]: %s\n",
                         LoggerContext.name,
                         os.date("%Y-%m-%d %H:%M:%S"),
                         level,
@@ -75,14 +77,6 @@ end
 
 local function log_debug(fmt, ...)
     _log("DEBUG", string.format(fmt, ...))
-end
-
-local function log_info(fmt, ...)
-    _log("INFO", string.format(fmt, ...))
-end
-
-local function log_warn(fmt, ...)
-    _log("WARN", string.format(fmt, ...))
 end
 
 local function log_err(fmt, ...)
@@ -186,8 +180,6 @@ end
 
 local M = {
     log_debug = log_debug,
-    log_info = log_info,
-    log_warn = log_warn,
     log_err = log_err,
     log_throw = log_throw,
     log_ensure = log_ensure,

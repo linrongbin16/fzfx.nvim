@@ -1,12 +1,9 @@
 local cwd = vim.fn.getcwd()
 
 describe("utils", function()
-    local assert_eq = assert.are.equal
-    local assert_neq = assert.are_not.equal
+    local assert_eq = assert.is_equal
     local assert_true = assert.is_true
     local assert_false = assert.is_false
-    local assert_truthy = assert.is.truthy
-    local assert_falsy = assert.is.falsy
 
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
@@ -15,6 +12,9 @@ describe("utils", function()
     local utils = require("fzfx.utils")
     local ShellOptsContext = require("fzfx.utils").ShellOptsContext
     local WindowOptsContext = require("fzfx.utils").WindowOptsContext
+    local FileSyncReaderLineIterator =
+        require("fzfx.utils").FileSyncReaderLineIterator
+    local FileSyncReader = require("fzfx.utils").FileSyncReader
     describe("[get_buf_option/set_buf_option]", function()
         it("get buffer filetype", function()
             local ft = utils.get_buf_option(0, "filetype")
@@ -178,6 +178,74 @@ describe("utils", function()
             assert_false(vim.tbl_isempty(ctx))
             assert_true(ctx.bufnr ~= nil)
             ctx:restore()
+        end)
+    end)
+    describe("[FileSyncReaderLineIterator]", function()
+        it("read README.md with batch=10", function()
+            local i = 1
+            local iter = FileSyncReaderLineIterator:make("README.md", 10) --[[@as FileSyncReaderLineIterator]]
+            assert_eq(type(iter), "table")
+            while iter:has_next() do
+                local line = iter:next() --[[@as string]]
+                print(string.format("[%d]%s\n", i, line))
+                i = i + 1
+                assert_eq(type(line), "string")
+                assert_true(string.len(line) >= 0)
+                if string.len(line) > 0 then
+                    assert_true(line:sub(#line, #line) ~= "\n")
+                end
+            end
+            iter:close()
+        end)
+        it("read lua/fzfx.lua", function()
+            local i = 1
+            local iter = FileSyncReaderLineIterator:make("lua/fzfx.lua", 100) --[[@as FileSyncReaderLineIterator]]
+            assert_eq(type(iter), "table")
+            while iter:has_next() do
+                local line = iter:next() --[[@as string]]
+                print(string.format("[%d]%s\n", i, line))
+                i = i + 1
+                assert_eq(type(line), "string")
+                assert_true(string.len(line) >= 0)
+                if string.len(line) > 0 then
+                    assert_true(line:sub(#line, #line) ~= "\n")
+                end
+            end
+            iter:close()
+        end)
+        it("read test/utils_spec.lua", function()
+            local i = 1
+            local iter =
+                FileSyncReaderLineIterator:make("test/utils_spec.lua", 4096) --[[@as FileSyncReaderLineIterator]]
+            assert_eq(type(iter), "table")
+            while iter:has_next() do
+                local line = iter:next() --[[@as string]]
+                print(string.format("[%d]%s\n", i, line))
+                i = i + 1
+                assert_eq(type(line), "string")
+                assert_true(string.len(line) >= 0)
+                if string.len(line) > 0 then
+                    assert_true(line:sub(#line, #line) ~= "\n")
+                end
+            end
+            iter:close()
+        end)
+    end)
+    describe("[FileSyncReader]", function()
+        it("compares line by line and read all", function()
+            local reader = FileSyncReader:open("README.md") --[[@as FileSyncReader]]
+            local content = reader:read_all()
+            local buffer = nil
+            local iter = reader:line_iterator() --[[@as FileSyncReaderLineIterator]]
+            assert_eq(type(iter), "table")
+            while iter:has_next() do
+                local line = iter:next() --[[@as string]]
+                assert_eq(type(line), "string")
+                assert_true(string.len(line) >= 0)
+                buffer = buffer and (buffer .. line .. "\n") or (line .. "\n")
+            end
+            iter:close()
+            assert_eq(utils.string_rtrim(buffer --[[@as string]]), content)
         end)
     end)
 end)
