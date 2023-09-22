@@ -495,7 +495,20 @@ local function lsp_locations_provider(opts)
         if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
             return nil
         end
-        local filelines = vim.fn.readfile(filename)
+        local filelines = {}
+        local freader = utils.FileSyncReader:open(filename)
+        local line_iter = freader:line_iterator() --[[@as FileSyncReaderLineIterator]]
+        if line_iter == nil then
+            log.err(
+                "|fzfx.config - lsp_locations_provider.process_location| failed to open file: %s",
+                filename
+            )
+            return nil
+        end
+        while line_iter:has_next() do
+            table.insert(filelines, line_iter:next())
+        end
+        line_iter:close()
         if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
             return nil
         end
