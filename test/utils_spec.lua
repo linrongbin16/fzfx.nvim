@@ -196,38 +196,45 @@ describe("utils", function()
                 end
                 iter:close()
             end)
-            it("read lua/fzfx.lua", function()
-                local i = 1
-                local iter = FileLineReader:open("lua/fzfx.lua", batch) --[[@as FileLineReader]]
-                assert_eq(type(iter), "table")
-                while iter:has_next() do
-                    local line = iter:next() --[[@as string]]
-                    -- print(string.format("[%d]%s\n", i, line))
-                    i = i + 1
-                    assert_eq(type(line), "string")
-                    assert_true(string.len(line) >= 0)
-                    if string.len(line) > 0 then
-                        assert_true(line:sub(#line, #line) ~= "\n")
+            it(
+                string.format("read lua/fzfx.lua with batch=%d", batch),
+                function()
+                    local i = 1
+                    local iter = FileLineReader:open("lua/fzfx.lua", batch) --[[@as FileLineReader]]
+                    assert_eq(type(iter), "table")
+                    while iter:has_next() do
+                        local line = iter:next() --[[@as string]]
+                        -- print(string.format("[%d]%s\n", i, line))
+                        i = i + 1
+                        assert_eq(type(line), "string")
+                        assert_true(string.len(line) >= 0)
+                        if string.len(line) > 0 then
+                            assert_true(line:sub(#line, #line) ~= "\n")
+                        end
                     end
+                    iter:close()
                 end
-                iter:close()
-            end)
-            it("read test/utils_spec.lua", function()
-                local i = 1
-                local iter = FileLineReader:open("test/utils_spec.lua", batch) --[[@as FileLineReader]]
-                assert_eq(type(iter), "table")
-                while iter:has_next() do
-                    local line = iter:next() --[[@as string]]
-                    -- print(string.format("[%d]%s\n", i, line))
-                    i = i + 1
-                    assert_eq(type(line), "string")
-                    assert_true(string.len(line) >= 0)
-                    if string.len(line) > 0 then
-                        assert_true(line:sub(#line, #line) ~= "\n")
+            )
+            it(
+                string.format("read test/utils_spec.lua with batch=%d", batch),
+                function()
+                    local i = 1
+                    local iter =
+                        FileLineReader:open("test/utils_spec.lua", batch) --[[@as FileLineReader]]
+                    assert_eq(type(iter), "table")
+                    while iter:has_next() do
+                        local line = iter:next() --[[@as string]]
+                        -- print(string.format("[%d]%s\n", i, line))
+                        i = i + 1
+                        assert_eq(type(line), "string")
+                        assert_true(string.len(line) >= 0)
+                        if string.len(line) > 0 then
+                            assert_true(line:sub(#line, #line) ~= "\n")
+                        end
                     end
+                    iter:close()
                 end
-                iter:close()
-            end)
+            )
             batch = (batch + 11) * 11 + 11
         end
     end)
