@@ -12,9 +12,7 @@ describe("utils", function()
     local utils = require("fzfx.utils")
     local ShellOptsContext = require("fzfx.utils").ShellOptsContext
     local WindowOptsContext = require("fzfx.utils").WindowOptsContext
-    local FileSyncReaderLineIterator =
-        require("fzfx.utils").FileSyncReaderLineIterator
-    local FileSyncReader = require("fzfx.utils").FileSyncReader
+    local FileLineReader = require("fzfx.utils").FileLineReader
     describe("[get_buf_option/set_buf_option]", function()
         it("get buffer filetype", function()
             local ft = utils.get_buf_option(0, "filetype")
@@ -180,71 +178,73 @@ describe("utils", function()
             ctx:restore()
         end)
     end)
-    describe("[FileSyncReaderLineIterator]", function()
-        it("read README.md with batch=10", function()
-            local i = 1
-            local iter = FileSyncReaderLineIterator:make("README.md", 10) --[[@as FileSyncReaderLineIterator]]
-            assert_eq(type(iter), "table")
-            while iter:has_next() do
-                local line = iter:next() --[[@as string]]
-                -- print(string.format("[%d]%s\n", i, line))
-                i = i + 1
-                assert_eq(type(line), "string")
-                assert_true(string.len(line) >= 0)
-                if string.len(line) > 0 then
-                    assert_true(line:sub(#line, #line) ~= "\n")
+    describe("[FileLineReader]", function()
+        for batch=10, 1000 do
+            it(string.format("read README.md with batch=%d", batch), function()
+                local i = 1
+                local iter = FileLineReader:open("README.md", batch) --[[@as FileLineReader]]
+                assert_eq(type(iter), "table")
+                while iter:has_next() do
+                    local line = iter:next() --[[@as string]]
+                    -- print(string.format("[%d]%s\n", i, line))
+                    i = i + 1
+                    assert_eq(type(line), "string")
+                    assert_true(string.len(line) >= 0)
+                    if string.len(line) > 0 then
+                        assert_true(line:sub(#line, #line) ~= "\n")
+                    end
                 end
-            end
-            iter:close()
-        end)
-        it("read lua/fzfx.lua", function()
-            local i = 1
-            local iter = FileSyncReaderLineIterator:make("lua/fzfx.lua", 100) --[[@as FileSyncReaderLineIterator]]
-            assert_eq(type(iter), "table")
-            while iter:has_next() do
-                local line = iter:next() --[[@as string]]
-                -- print(string.format("[%d]%s\n", i, line))
-                i = i + 1
-                assert_eq(type(line), "string")
-                assert_true(string.len(line) >= 0)
-                if string.len(line) > 0 then
-                    assert_true(line:sub(#line, #line) ~= "\n")
+                iter:close()
+            end)
+            it("read lua/fzfx.lua", function()
+                local i = 1
+                local iter = FileLineReader:open("lua/fzfx.lua", batch) --[[@as FileLineReader]]
+                assert_eq(type(iter), "table")
+                while iter:has_next() do
+                    local line = iter:next() --[[@as string]]
+                    -- print(string.format("[%d]%s\n", i, line))
+                    i = i + 1
+                    assert_eq(type(line), "string")
+                    assert_true(string.len(line) >= 0)
+                    if string.len(line) > 0 then
+                        assert_true(line:sub(#line, #line) ~= "\n")
+                    end
                 end
-            end
-            iter:close()
-        end)
-        it("read test/utils_spec.lua", function()
-            local i = 1
-            local iter =
-                FileSyncReaderLineIterator:make("test/utils_spec.lua", 4096) --[[@as FileSyncReaderLineIterator]]
-            assert_eq(type(iter), "table")
-            while iter:has_next() do
-                local line = iter:next() --[[@as string]]
-                -- print(string.format("[%d]%s\n", i, line))
-                i = i + 1
-                assert_eq(type(line), "string")
-                assert_true(string.len(line) >= 0)
-                if string.len(line) > 0 then
-                    assert_true(line:sub(#line, #line) ~= "\n")
+                iter:close()
+            end)
+            it("read test/utils_spec.lua", function()
+                local i = 1
+                local iter =
+                    FileLineReader:open("test/utils_spec.lua", batch) --[[@as FileLineReader]]
+                assert_eq(type(iter), "table")
+                while iter:has_next() do
+                    local line = iter:next() --[[@as string]]
+                    -- print(string.format("[%d]%s\n", i, line))
+                    i = i + 1
+                    assert_eq(type(line), "string")
+                    assert_true(string.len(line) >= 0)
+                    if string.len(line) > 0 then
+                        assert_true(line:sub(#line, #line) ~= "\n")
+                    end
                 end
-            end
-            iter:close()
-        end)
+                iter:close()
+            end)
+            batch = (batch + 3) * 3 + 3
+        end
     end)
-    describe("[FileSyncReader]", function()
+    describe("[readfile]", function()
         it("compares line by line and read all", function()
-            local reader = FileSyncReader:open("README.md") --[[@as FileSyncReader]]
-            local content = reader:read()
+            local content = utils.readfile("README.md")
+            local reader = FileLineReader:open("README.md") --[[@as FileLineReader]]
             local buffer = nil
-            local iter = reader:line_iterator() --[[@as FileSyncReaderLineIterator]]
-            assert_eq(type(iter), "table")
-            while iter:has_next() do
-                local line = iter:next() --[[@as string]]
+            assert_eq(type(reader), "table")
+            while reader:has_next() do
+                local line = reader:next() --[[@as string]]
                 assert_eq(type(line), "string")
                 assert_true(string.len(line) >= 0)
                 buffer = buffer and (buffer .. line .. "\n") or (line .. "\n")
             end
-            iter:close()
+            reader:close()
             assert_eq(utils.string_rtrim(buffer --[[@as string]]), content)
         end)
     end)
@@ -302,7 +302,7 @@ describe("utils", function()
     end)
     describe("[readfile/readlines]", function()
         it("compares lines and all", function()
-            local content = utils.readfile("README.md") --[[@as FileSyncReader]]
+            local content = utils.readfile("README.md")
             local lines = utils.readlines("README.md")
             local buffer = nil
             for _, line in

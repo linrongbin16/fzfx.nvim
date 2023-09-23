@@ -172,7 +172,7 @@ local M = {
     string_rfind = require("fzfx.utils").string_rfind,
     string_ltrim = require("fzfx.utils").string_ltrim,
     string_rtrim = require("fzfx.utils").string_rtrim,
-    FileSyncReader = require("fzfx.utils").FileSyncReader,
+    FileLineReader = require("fzfx.utils").FileLineReader,
     readfile = require("fzfx.utils").readfile,
 }
 

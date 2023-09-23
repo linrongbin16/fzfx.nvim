@@ -296,8 +296,7 @@ then
     err_pipe:read_start(on_error)
     vim.loop.run()
 elseif metajson.provider_type == "list" then
-    local file_sync_reader = shell_helpers.FileSyncReader:open(resultfile)
-    local line_iterator = file_sync_reader:line_iterator() --[[@as FileSyncReaderLineIterator]]
+    local line_iterator = shell_helpers.FileLineReader:open(resultfile) --[[@as FileLineReader ]]
     shell_helpers.log_ensure(
         line_iterator ~= nil,
         "|provider| error! failed to open resultfile: %s",
