@@ -498,7 +498,7 @@ end
 --- @param filename string
 --- @return string[]?
 local function readlines(filename)
-    local reader = FileLineReader:open(filename) --[[@as FileLineReader ]]
+    local reader = FileLineReader:open(filename) --[[@as FileLineReader]]
     if not reader then
         return nil
     end
