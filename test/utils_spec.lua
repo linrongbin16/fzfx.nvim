@@ -179,7 +179,7 @@ describe("utils", function()
         end)
     end)
     describe("[FileLineReader]", function()
-        for batch=10, 1000 do
+        for batch = 10, 1000 do
             it(string.format("read README.md with batch=%d", batch), function()
                 local i = 1
                 local iter = FileLineReader:open("README.md", batch) --[[@as FileLineReader]]
@@ -214,8 +214,7 @@ describe("utils", function()
             end)
             it("read test/utils_spec.lua", function()
                 local i = 1
-                local iter =
-                    FileLineReader:open("test/utils_spec.lua", batch) --[[@as FileLineReader]]
+                local iter = FileLineReader:open("test/utils_spec.lua", batch) --[[@as FileLineReader]]
                 assert_eq(type(iter), "table")
                 while iter:has_next() do
                     local line = iter:next() --[[@as string]]
