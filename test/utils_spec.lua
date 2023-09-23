@@ -228,7 +228,7 @@ describe("utils", function()
                 end
                 iter:close()
             end)
-            batch = (batch + 3) * 3 + 3
+            batch = (batch + 11) * 11 + 11
         end
     end)
     describe("[readfile]", function()
