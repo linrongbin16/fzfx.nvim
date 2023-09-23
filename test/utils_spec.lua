@@ -179,7 +179,8 @@ describe("utils", function()
         end)
     end)
     describe("[FileLineReader]", function()
-        for batch = 10, 1000 do
+        local batch = 10
+        while batch <= 1000 do
             it(string.format("read README.md with batch=%d", batch), function()
                 local i = 1
                 local iter = FileLineReader:open("README.md", batch) --[[@as FileLineReader]]
