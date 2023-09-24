@@ -359,39 +359,24 @@ function WindowOptsContext:restore()
     end
 end
 
---- @class FileSyncReader
---- @field filename string
-local FileSyncReader = {}
-
---- @param filename string
---- @return FileSyncReader
-function FileSyncReader:open(filename)
-    local o = {
-        filename = filename,
-    }
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end
-
---- @class FileSyncReaderLineIterator
+--- @class FileLineReader
 --- @field filename string
 --- @field handler integer
 --- @field filesize integer
 --- @field offset integer
 --- @field batchsize integer
 --- @field buffer string?
-local FileSyncReaderLineIterator = {}
+local FileLineReader = {}
 
 --- @param filename string
 --- @param batchsize integer?
---- @return FileSyncReaderLineIterator?
-function FileSyncReaderLineIterator:make(filename, batchsize)
+--- @return FileLineReader?
+function FileLineReader:open(filename, batchsize)
     local handler = vim.loop.fs_open(filename, "r", 438) --[[@as integer]]
     if type(handler) ~= "number" then
         error(
             string.format(
-                "|fzfx.utils - FileSyncReaderLineIterator:make| failed to fs_open file: %s",
+                "|fzfx.utils - FileLineReader:open| failed to fs_open file: %s",
                 vim.inspect(filename)
             )
         )
@@ -401,7 +386,7 @@ function FileSyncReaderLineIterator:make(filename, batchsize)
     if type(fstat) ~= "table" then
         error(
             string.format(
-                "|fzfx.utils - FileSyncReaderLineIterator:make| failed to fs_fstat file: %s",
+                "|fzfx.utils - FileLineReader:open| failed to fs_fstat file: %s",
                 vim.inspect(filename)
             )
         )
@@ -423,7 +408,7 @@ function FileSyncReaderLineIterator:make(filename, batchsize)
 end
 
 --- @return integer
-function FileSyncReaderLineIterator:_read_chunk()
+function FileLineReader:_read_chunk()
     local chunksize = (self.filesize >= self.offset + self.batchsize)
             and self.batchsize
         or (self.filesize - self.offset)
@@ -437,7 +422,7 @@ function FileSyncReaderLineIterator:_read_chunk()
     if read_err then
         error(
             string.format(
-                "|fzfx.utils - FileSyncReaderLineIterator:_read_chunk| failed to fs_read file: %s, read_error:%s, read_name:%s",
+                "|fzfx.utils - FileLineReader:_read_chunk| failed to fs_read file: %s, read_error:%s, read_name:%s",
                 vim.inspect(self.filename),
                 vim.inspect(read_err),
                 vim.inspect(read_name)
@@ -452,13 +437,13 @@ function FileSyncReaderLineIterator:_read_chunk()
 end
 
 --- @return boolean
-function FileSyncReaderLineIterator:has_next()
+function FileLineReader:has_next()
     self:_read_chunk()
     return self.buffer ~= nil and string.len(self.buffer) > 0
 end
 
 --- @return string?
-function FileSyncReaderLineIterator:next()
+function FileLineReader:next()
     --- @return string?
     local function impl()
         if self.buffer == nil then
@@ -491,21 +476,17 @@ function FileSyncReaderLineIterator:next()
     end
 end
 
-function FileSyncReaderLineIterator:close()
+function FileLineReader:close()
     if self.handler then
         vim.loop.fs_close(self.handler)
         self.handler = nil
     end
 end
 
---- @return FileSyncReaderLineIterator?
-function FileSyncReader:line_iterator()
-    return FileSyncReaderLineIterator:make(self.filename)
-end
-
+--- @param filename string
 --- @return string?
-function FileSyncReader:read()
-    local f = io.open(self.filename, "r")
+local function readfile(filename)
+    local f = io.open(filename, "r")
     if f == nil then
         return nil
     end
@@ -515,25 +496,17 @@ function FileSyncReader:read()
 end
 
 --- @param filename string
---- @return string?
-local function readfile(filename)
-    local reader = FileSyncReader:open(filename)
-    return reader:read()
-end
-
---- @param filename string
 --- @return string[]?
 local function readlines(filename)
-    local reader = FileSyncReader:open(filename)
-    local iter = reader:line_iterator() --[[@as FileSyncReaderLineIterator]]
-    if not iter then
+    local reader = FileLineReader:open(filename) --[[@as FileLineReader]]
+    if not reader then
         return nil
     end
     local results = {}
-    while iter:has_next() do
-        table.insert(results, iter:next())
+    while reader:has_next() do
+        table.insert(results, reader:next())
     end
-    iter:close()
+    reader:close()
     return results
 end
 
@@ -557,8 +530,7 @@ local M = {
     ShellOptsContext = ShellOptsContext,
     shellescape = shellescape,
     WindowOptsContext = WindowOptsContext,
-    FileSyncReaderLineIterator = FileSyncReaderLineIterator,
-    FileSyncReader = FileSyncReader,
+    FileLineReader = FileLineReader,
     readfile = readfile,
     readlines = readlines,
 }
