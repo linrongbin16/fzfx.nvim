@@ -296,18 +296,18 @@ then
     err_pipe:read_start(on_error)
     vim.loop.run()
 elseif metajson.provider_type == "list" then
-    local line_reader = shell_helpers.FileLineReader:open(resultfile) --[[@as FileLineReader ]]
+    local reader = shell_helpers.FileLineReader:open(resultfile) --[[@as FileLineReader ]]
     shell_helpers.log_ensure(
-        line_reader ~= nil,
+        reader ~= nil,
         "|provider| error! failed to open resultfile: %s",
         vim.inspect(resultfile)
     )
 
-    while line_reader:has_next() do
-        local line = line_reader:next()
+    while reader:has_next() do
+        local line = reader:next()
         println(line)
     end
-    line_reader:close()
+    reader:close()
 else
     shell_helpers.log_throw(
         "|provider| error! unknown provider type:%s",
