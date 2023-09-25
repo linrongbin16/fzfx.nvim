@@ -35,7 +35,7 @@ jobs:
     name: Unit Test
     strategy:
       matrix:
-        nvim_version: [stable, nightly, v0.5.1]
+        nvim_version: [stable, nightly, v0.6.0]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
