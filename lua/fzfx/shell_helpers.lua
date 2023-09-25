@@ -112,7 +112,7 @@ end
 --- @param line string
 --- @param delimiter string?
 --- @param pos integer?
-local function render_filepath_line(line, delimiter, pos)
+local function prepend_path_with_icon(line, delimiter, pos)
     if DEVICONS == nil then
         return line
     end
@@ -163,7 +163,7 @@ local M = {
     log_err = log_err,
     log_throw = log_throw,
     log_ensure = log_ensure,
-    render_filepath_line = render_filepath_line,
+    prepend_path_with_icon = prepend_path_with_icon,
     Cmd = require("fzfx.cmd").Cmd,
     GitRootCmd = require("fzfx.cmd").GitRootCmd,
     GitBranchCmd = require("fzfx.cmd").GitBranchCmd,
