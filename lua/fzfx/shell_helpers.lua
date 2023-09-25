@@ -17,7 +17,7 @@ end
 
 --- @type string
 local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
-        and "\\"
+    and "\\"
     or "/"
 
 local DEBUG_ENABLE = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
@@ -168,7 +168,7 @@ local M = {
     GitRootCmd = require("fzfx.cmd").GitRootCmd,
     GitBranchCmd = require("fzfx.cmd").GitBranchCmd,
     GitCurrentBranchCmd = require("fzfx.cmd").GitCurrentBranchCmd,
-    AsyncCmd = require("fzfx.cmd").AsyncCmd,
+    AsyncCmd = require("fzfx.utils").AsyncCmd,
     string_find = require("fzfx.utils").string_find,
     string_rfind = require("fzfx.utils").string_rfind,
     string_ltrim = require("fzfx.utils").string_ltrim,

@@ -244,16 +244,16 @@ local ShellOptsContext = {}
 --- @return ShellOptsContext
 function ShellOptsContext:save()
     local o = constants.is_windows
-            and {
-                shell = vim.o.shell,
-                shellslash = vim.o.shellslash,
-                shellcmdflag = vim.o.shellcmdflag,
-                shellxquote = vim.o.shellxquote,
-                shellquote = vim.o.shellquote,
-                shellredir = vim.o.shellredir,
-                shellpipe = vim.o.shellpipe,
-                shellxescape = vim.o.shellxescape,
-            }
+        and {
+            shell = vim.o.shell,
+            shellslash = vim.o.shellslash,
+            shellcmdflag = vim.o.shellcmdflag,
+            shellxquote = vim.o.shellxquote,
+            shellquote = vim.o.shellquote,
+            shellredir = vim.o.shellredir,
+            shellpipe = vim.o.shellpipe,
+            shellxescape = vim.o.shellxescape,
+        }
         or {
             shell = vim.o.shell,
         }
@@ -410,14 +410,14 @@ end
 --- @return integer
 function FileLineReader:_read_chunk()
     local chunksize = (self.filesize >= self.offset + self.batchsize)
-            and self.batchsize
+        and self.batchsize
         or (self.filesize - self.offset)
     if chunksize <= 0 then
         return 0
     end
     local data, --[[@as string?]]
-        read_err,
-        read_name =
+    read_err,
+    read_name =
         vim.loop.fs_read(self.handler, chunksize, self.offset)
     if read_err then
         error(
@@ -540,6 +540,133 @@ local function writelines(filename, lines)
     return 0
 end
 
+--- @class AsyncCmd
+--- @field cmds string[]
+--- @field fn_out_line fun(line:string):any
+--- @field fn_err_line fun(line:string):any
+--- @field out_pipe uv_pipe_t
+--- @field err_pipe uv_pipe_t
+--- @field out_buffer string?
+--- @field err_buffer string?
+local AsyncCmd = {}
+
+--- @param line string?
+local function print_err_line(line)
+    if type(line) == "string" and string.len(line) > 0 then
+        io.write(string.format("%s\n", line))
+    end
+end
+
+--- @param cmds string[]
+--- @param fn_out_line fun(line:string):any
+--- @param fn_err_line fun(line:string):any
+function AsyncCmd:open(cmds, fn_out_line, fn_err_line)
+    local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    if not out_pipe or not err_pipe then
+        return nil
+    end
+
+    local o = {
+        cmds = cmds,
+        fn_out_line = fn_out_line,
+        fn_err_line = fn_err_line or print_err_line,
+        out_pipe = out_pipe,
+        err_pipe = err_pipe,
+        out_buffer = nil,
+        err_buffer = nil,
+    }
+
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+--- @param buffer string?
+--- @param data string?
+function AsyncCmd:consume(buffer, data)
+    if data then
+        buffer = buffer and (buffer .. data) or data
+    end
+
+    local i = 1
+    while i <= #buffer do
+        local newline_pos = string_find(buffer, "\n", i)
+        if not newline_pos then
+            break
+        end
+        local line = buffer:sub(i, newline_pos - 1)
+        self.fn_out_line(line)
+        i = newline_pos + 1
+    end
+    return i >= #buffer and nil or buffer:sub(i, #buffer)
+end
+
+function AsyncCmd:run()
+    local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
+        args = vim.list_slice(self.cmds, 2),
+        stdio = { nil, self.out_pipe, self.err_pipe },
+    }, function(code, signal)
+        self.out_pipe:read_stop()
+        self.err_pipe:read_stop()
+        self:close()
+    end)
+
+    --- @param err string?
+    --- @param data string?
+    local function on_stdout(err, data)
+        if err then
+            self:close()
+            return
+        end
+
+        if data then
+            self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
+        end
+
+        local i = 1
+        while i <= #self.out_buffer do
+            local newline_pos = string_find(self.out_buffer, "\n", i)
+            if not newline_pos then
+                break
+            end
+            local line = self.out_buffer:sub(i, newline_pos - 1)
+            self.fn_out_line(line)
+            i = newline_pos + 1
+        end
+        self.out_buffer = i >= #self.out_buffer and nil or self.out_buffer:sub(i, #self.out_buffer)
+
+        if not data then
+            if type(self.out_buffer) == "string" and string.len(self.out_buffer) > 0 then
+                self.fn_out_line(self.out_buffer)
+                self.out_buffer = nil
+            end
+            self:close()
+        end
+    end
+
+    local function on_stderr(err, data)
+        self:close()
+    end
+
+    self.out_pipe:read_start(on_stdout)
+    self.err_pipe:read_start(on_stderr)
+    vim.loop.run()
+end
+
+function AsyncCmd:close()
+    self.out_pipe:close(function(close_err)
+        if self.out_pipe:is_closing() and self.err_pipe:is_closing() then
+            vim.loop.stop()
+        end
+    end)
+    self.err_pipe:close(function(close_err)
+        if self.out_pipe:is_closing() and self.err_pipe:is_closing() then
+            vim.loop.stop()
+        end
+    end)
+end
+
 local M = {
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
@@ -565,6 +692,7 @@ local M = {
     readlines = readlines,
     writefile = writefile,
     writelines = writelines,
+    AsyncCmd = AsyncCmd,
 }
 
 return M
