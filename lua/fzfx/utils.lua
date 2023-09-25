@@ -504,7 +504,7 @@ local function readlines(filename)
     end
     local results = {}
     while reader:has_next() do
-        table.insert(results, reader:next())
+        table.insert(results, reader:next() --[[@as string]])
     end
     reader:close()
     return results
@@ -540,6 +540,23 @@ local function writelines(filename, lines)
     return 0
 end
 
+--- @param buffer string
+--- @param fn_line_processor fun(line:string):any
+--- @return integer
+local function consume_line(buffer, fn_line_processor)
+    local i = 1
+    while i <= #buffer do
+        local newline_pos = string_find(buffer, "\n", i)
+        if not newline_pos then
+            break
+        end
+        local line = buffer:sub(i, newline_pos - 1)
+        fn_line_processor(line)
+        i = newline_pos + 1
+    end
+    return i
+end
+
 local M = {
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
@@ -565,6 +582,7 @@ local M = {
     readlines = readlines,
     writefile = writefile,
     writelines = writelines,
+    consume_line = consume_line,
 }
 
 return M
