@@ -196,7 +196,7 @@ then
     end
 
     local process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
-        args = { unpack(cmd_splits, 2) },
+        args = vim.list_slice(cmd_splits, 2),
         stdio = { nil, out_pipe, err_pipe },
         -- verbatim = true,
     }, function(code, signal)
