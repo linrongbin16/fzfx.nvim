@@ -101,20 +101,58 @@ function ProviderSwitch:provide(name, query, context)
         vim.inspect(provider_config)
     )
 
-    --- @class ProviderMetaJson
+    --- @class ProviderMetaOpts
     --- @field pipeline PipelineName
     --- @field provider_type ProviderType
-    --- @field provider_line_type ProviderLineType?
-    --- @field provider_line_delimiter string?
-    --- @field provider_line_pos integer?
+    --- @field prepend_icon_by_ft boolean?
+    --- @field prepend_icon_path_delimiter string?
+    --- @field prepend_icon_path_position integer?
 
-    local metajson = vim.fn.json_encode({
+    --- @type ProviderMetaOpts
+    local meta_opts = {
         pipeline = self.pipeline,
         provider_type = provider_config.provider_type,
-        provider_line_type = provider_config.line_type,
-        provider_line_delimiter = provider_config.line_delimiter,
-        provider_line_pos = provider_config.line_pos,
-    } --[[@as ProviderMetaJson ]])
+    }
+    if
+        type(provider_config.line_type) == "string"
+        and provider_config.line_type == "file"
+    then
+        meta_opts.prepend_icon_by_ft = true
+    elseif
+        type(provider_config.line_opts) == "table"
+        and provider_config.line_opts.prepend_icon_by_ft ~= nil
+    then
+        meta_opts.prepend_icon_by_ft =
+            provider_config.line_opts.prepend_icon_by_ft
+    end
+    if
+        type(provider_config.line_delimiter) == "string"
+        and string.len(provider_config.line_delimiter) > 0
+    then
+        meta_opts.prepend_icon_path_delimiter = provider_config.line_delimiter
+    elseif
+        type(provider_config.line_opts) == "table"
+        and type(provider_config.line_opts.prepend_icon_path_delimiter) == "string"
+        and string.len(
+                provider_config.line_opts.prepend_icon_path_delimiter
+            )
+            > 0
+    then
+        meta_opts.prepend_icon_path_delimiter =
+            provider_config.line_opts.prepend_icon_path_delimiter
+    end
+    if type(provider_config.line_pos) == "number" then
+        meta_opts.prepend_icon_path_position = provider_config.line_pos
+    elseif
+        type(provider_config.line_opts) == "table"
+        and type(provider_config.line_opts.prepend_icon_path_position)
+            == "number"
+    then
+        meta_opts.prepend_icon_path_position =
+            provider_config.line_opts.prepend_icon_path_position
+    end
+
+    local metajson = vim.fn.json_encode(meta_opts) --[[@as string]]
     vim.fn.writefile({ metajson }, self.metafile)
 
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then

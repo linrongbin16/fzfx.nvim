@@ -11,7 +11,6 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local ProviderConfig = require("fzfx.schema").ProviderConfig
-local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 local CommandConfig = require("fzfx.schema").CommandConfig
 local InteractionConfig = require("fzfx.schema").InteractionConfig
@@ -654,13 +653,13 @@ local Defaults = {
                 key = "ctrl-r",
                 provider = constants.has_fd and default_restricted_fd
                     or default_restricted_find,
-                line_type = ProviderLineTypeEnum.FILE,
+                line_opts = { prepend_icon_by_ft = true },
             }),
             unrestricted_mode = ProviderConfig:make({
                 key = "ctrl-u",
                 provider = constants.has_fd and default_unrestricted_fd
                     or default_unrestricted_find,
-                line_type = ProviderLineTypeEnum.FILE,
+                line_opts = { prepend_icon_by_ft = true },
             }),
         },
         previewers = {
@@ -853,9 +852,11 @@ local Defaults = {
                     end
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
-                line_type = ProviderLineTypeEnum.FILE,
-                line_delimiter = ":",
-                line_pos = 1,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
             }),
             unrestricted_mode = ProviderConfig:make({
                 key = "ctrl-u",
@@ -931,9 +932,11 @@ local Defaults = {
                     end
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
-                line_type = ProviderLineTypeEnum.FILE,
-                line_delimiter = ":",
-                line_pos = 1,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
             }),
         },
         previewers = {
@@ -1043,7 +1046,7 @@ local Defaults = {
                 return bufpaths_list
             end,
             provider_type = ProviderTypeEnum.LIST,
-            line_type = ProviderLineTypeEnum.FILE,
+            line_opts = { prepend_icon_by_ft = true },
         }),
         previewers = PreviewerConfig:make({
             previewer = file_previewer,
@@ -1165,12 +1168,12 @@ local Defaults = {
             current_folder = ProviderConfig:make({
                 key = "ctrl-u",
                 provider = { "git", "ls-files" },
-                line_type = ProviderLineTypeEnum.FILE,
+                line_opts = { prepend_icon_by_ft = true },
             }),
             workspace = ProviderConfig:make({
                 key = "ctrl-w",
                 provider = { "git", "ls-files", ":/" },
-                line_type = ProviderLineTypeEnum.FILE,
+                line_opts = { prepend_icon_by_ft = true },
             }),
         },
         previewers = {
@@ -1779,9 +1782,11 @@ local Defaults = {
                     })
                 end,
                 provider_type = ProviderTypeEnum.LIST,
-                line_type = ProviderLineTypeEnum.FILE,
-                line_delimiter = ":",
-                line_pos = 1,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
             }),
             buffer_diagnostics = ProviderConfig:make({
                 key = "ctrl-u",
@@ -1792,9 +1797,11 @@ local Defaults = {
                     })
                 end,
                 provider_type = ProviderTypeEnum.LIST,
-                line_type = ProviderLineTypeEnum.FILE,
-                line_delimiter = ":",
-                line_pos = 1,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
             }),
         },
         previewers = {
@@ -1846,9 +1853,11 @@ local Defaults = {
             end,
             provider_type = ProviderTypeEnum.LIST,
             context_maker = lsp_position_context_maker,
-            line_type = ProviderLineTypeEnum.FILE,
-            line_delimiter = ":",
-            line_pos = 1,
+            line_opts = {
+                prepend_icon_by_ft = true,
+                prepend_icon_path_delimiter = ":",
+                prepend_icon_path_position = 1,
+            },
         }),
         previewers = PreviewerConfig:make({
             previewer = file_previewer_rg,
@@ -1903,9 +1912,11 @@ local Defaults = {
             end,
             provider_type = ProviderTypeEnum.LIST,
             context_maker = lsp_position_context_maker,
-            line_type = ProviderLineTypeEnum.FILE,
-            line_delimiter = ":",
-            line_pos = 1,
+            line_opts = {
+                prepend_icon_by_ft = true,
+                prepend_icon_path_delimiter = ":",
+                prepend_icon_path_position = 1,
+            },
         }),
         previewers = PreviewerConfig:make({
             previewer = file_previewer_rg,
@@ -1960,9 +1971,11 @@ local Defaults = {
             end,
             provider_type = ProviderTypeEnum.LIST,
             context_maker = lsp_position_context_maker,
-            line_type = ProviderLineTypeEnum.FILE,
-            line_delimiter = ":",
-            line_pos = 1,
+            line_opts = {
+                prepend_icon_by_ft = true,
+                prepend_icon_path_delimiter = ":",
+                prepend_icon_path_position = 1,
+            },
         }),
         previewers = PreviewerConfig:make({
             previewer = file_previewer_rg,
@@ -2017,9 +2030,11 @@ local Defaults = {
             end,
             provider_type = ProviderTypeEnum.LIST,
             context_maker = lsp_position_context_maker,
-            line_type = ProviderLineTypeEnum.FILE,
-            line_delimiter = ":",
-            line_pos = 1,
+            line_opts = {
+                prepend_icon_by_ft = true,
+                prepend_icon_path_delimiter = ":",
+                prepend_icon_path_position = 1,
+            },
         }),
         previewers = PreviewerConfig:make({
             previewer = file_previewer_rg,

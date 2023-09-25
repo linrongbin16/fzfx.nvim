@@ -57,11 +57,11 @@ shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metajson))
 local function println(line)
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
         line = shell_helpers.string_rtrim(line)
-        if metajson.provider_line_type == "file" then
+        if metajson.prepend_icon_by_ft then
             local rendered_line = shell_helpers.render_filepath_line(
                 line,
-                metajson.provider_line_delimiter,
-                metajson.provider_line_pos
+                metajson.prepend_icon_path_delimiter,
+                metajson.prepend_icon_path_position
             )
             io.write(string.format("%s\n", rendered_line))
         else
@@ -88,7 +88,7 @@ end
 
 if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     --- @type string
-    local cmd = shell_helpers.readfile(resultfile)
+    local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
     shell_helpers.log_debug(
         "|provider| plain or command cmd:[%s]",
         vim.inspect(cmd)
@@ -98,29 +98,17 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         return
     end
 
-    if metajson.provider_line_type == "file" then
-        local p = io.popen(cmd)
-        if p then
-            for line in p:lines("*line") do
-                -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-                if string.len(vim.fn.trim(line)) > 0 then
-                    local line_with_icon = shell_helpers.render_filepath_line(
-                        line,
-                        metajson.provider_line_delimiter,
-                        metajson.provider_line_pos
-                    )
-                    io.write(string.format("%s\n", line_with_icon))
-                end
-            end
-            p:close()
-        else
-            shell_helpers.debug(
-                "|provider| error! failed to open pipe on provider cmd! %s",
-                vim.inspect(cmd)
-            )
+    local p = io.popen(cmd)
+    if p then
+        for line in p:lines("*line") do
+            println(line)
         end
+        p:close()
     else
-        os.execute(cmd)
+        shell_helpers.debug(
+            "|provider| error! failed to open pipe on provider cmd! %s",
+            vim.inspect(cmd)
+        )
     end
 
     -- local data_buffer = { "" }

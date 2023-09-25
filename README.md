@@ -778,7 +778,7 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
   - Re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 - 2023-08-19
-  - Refactor configs schema for better structure.
+  - Refactor configs schema for general fzf-based searching commands.
 - 2023-08-28
   - Deprecate 'git_commits' (`FzfxGCommits`) configs, notify user migrate to new schema.
 - 2023-08-30

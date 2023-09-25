@@ -159,14 +159,20 @@ local ProviderLineTypeEnum = {
     FILE = "file",
 }
 
+--- @class ProviderConfigLineOpts
+--- @field prepend_icon_by_ft boolean?
+--- @field prepend_icon_path_delimiter string? -- working with `prepend_icon_by_ft=true`
+--- @field prepend_icon_path_position integer? -- working with `prepend_icon_by_ft=true`
+--
 --- @class ProviderConfig
 --- @field key ActionKey
 --- @field provider Provider
 --- @field provider_type ProviderType by default "plain"
 --- @field context_maker PipelineContextMaker?
---- @field line_type ProviderLineType?
---- @field line_delimiter string?
---- @field line_pos integer?
+--- @field line_opts ProviderConfigLineOpts
+--- @field line_type ProviderLineType? --- @deprecated
+--- @field line_delimiter string? --- @deprecated
+--- @field line_pos integer? --- @deprecated
 local ProviderConfig = {}
 
 function ProviderConfig:make(opts)

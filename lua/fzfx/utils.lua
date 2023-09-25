@@ -510,6 +510,36 @@ local function readlines(filename)
     return results
 end
 
+--- @param filename string
+--- @param content string
+--- @return integer
+local function writefile(filename, content)
+    local f = io.open(filename, "w")
+    if not f then
+        return -1
+    end
+    f:write(content)
+    f:close()
+    return 0
+end
+
+--- @param filename string
+--- @param lines string[]
+--- @return integer
+local function writelines(filename, lines)
+    local f = io.open(filename, "w")
+    if not f then
+        return -1
+    end
+    assert(type(lines) == "table")
+    for _, line in ipairs(lines) do
+        assert(type(line) == "string")
+        f:write(line .. "\n")
+    end
+    f:close()
+    return 0
+end
+
 local M = {
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
@@ -533,6 +563,8 @@ local M = {
     FileLineReader = FileLineReader,
     readfile = readfile,
     readlines = readlines,
+    writefile = writefile,
+    writelines = writelines,
 }
 
 return M
