@@ -1,4 +1,6 @@
 local log = require("fzfx.log")
+local notify = require("fzfx.notify")
+local LogLevels = require("fzfx.notify").LogLevels
 local Popup = require("fzfx.popup").Popup
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
@@ -118,6 +120,10 @@ function ProviderSwitch:provide(name, query, context)
         and provider_config.line_type == "file"
     then
         meta_opts.prepend_icon_by_ft = true
+        notify.echo(
+            LogLevels.WARN,
+            "deprecated provider 'line_type' configs, please migrate to latest config schema!"
+        )
     elseif
         type(provider_config.line_opts) == "table"
         and provider_config.line_opts.prepend_icon_by_ft ~= nil
@@ -130,6 +136,10 @@ function ProviderSwitch:provide(name, query, context)
         and string.len(provider_config.line_delimiter) > 0
     then
         meta_opts.prepend_icon_path_delimiter = provider_config.line_delimiter
+        notify.echo(
+            LogLevels.WARN,
+            "deprecated provider 'line_delimiter' configs, please migrate to latest config schema!"
+        )
     elseif
         type(provider_config.line_opts) == "table"
         and type(provider_config.line_opts.prepend_icon_path_delimiter) == "string"
@@ -143,6 +153,10 @@ function ProviderSwitch:provide(name, query, context)
     end
     if type(provider_config.line_pos) == "number" then
         meta_opts.prepend_icon_path_position = provider_config.line_pos
+        notify.echo(
+            LogLevels.WARN,
+            "deprecated provider 'line_pos' configs, please migrate to latest config schema!"
+        )
     elseif
         type(provider_config.line_opts) == "table"
         and type(provider_config.line_opts.prepend_icon_path_position)
