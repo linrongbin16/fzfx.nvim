@@ -263,9 +263,6 @@ function AsyncCmd:run()
         self:close()
     end)
 
-    --- @type string?
-    local buffer = nil
-
     --- @param err string?
     --- @param data string?
     local function on_stdout(err, data)
@@ -277,9 +274,9 @@ function AsyncCmd:run()
         self:consume(data)
 
         if not data then
-            if type(buffer) == "string" and string.len(buffer) > 0 then
-                self.fn_line_consumer(buffer)
-                buffer = nil
+            if type(self.buffer) == "string" and string.len(self.buffer) > 0 then
+                self.fn_line_consumer(self.buffer)
+                self.buffer = nil
             end
             self:close()
         end
