@@ -216,8 +216,8 @@ local AsyncCmd = {}
 --- @param cmds string[]
 --- @param fn_line_consumer fun(line:string):any
 function AsyncCmd:open(cmds, fn_line_consumer)
-    local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
-    local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+    local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     if not out_pipe or not err_pipe then
         return nil
     end
