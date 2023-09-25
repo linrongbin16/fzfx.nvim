@@ -1,4 +1,6 @@
 local log = require("fzfx.log")
+local notify = require("fzfx.notify")
+local LogLevels = require("fzfx.notify").LogLevels
 local Popup = require("fzfx.popup").Popup
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
@@ -101,21 +103,71 @@ function ProviderSwitch:provide(name, query, context)
         vim.inspect(provider_config)
     )
 
-    --- @class ProviderMetaJson
+    --- @class ProviderMetaOpts
     --- @field pipeline PipelineName
     --- @field provider_type ProviderType
-    --- @field provider_line_type ProviderLineType?
-    --- @field provider_line_delimiter string?
-    --- @field provider_line_pos integer?
+    --- @field prepend_icon_by_ft boolean?
+    --- @field prepend_icon_path_delimiter string?
+    --- @field prepend_icon_path_position integer?
 
-    local metajson = vim.fn.json_encode({
+    --- @type ProviderMetaOpts
+    local meta_opts = {
         pipeline = self.pipeline,
         provider_type = provider_config.provider_type,
-        provider_line_type = provider_config.line_type,
-        provider_line_delimiter = provider_config.line_delimiter,
-        provider_line_pos = provider_config.line_pos,
-    } --[[@as ProviderMetaJson ]])
-    vim.fn.writefile({ metajson }, self.metafile)
+    }
+    if
+        type(provider_config.line_type) == "string"
+        and provider_config.line_type == "file"
+    then
+        meta_opts.prepend_icon_by_ft = true
+        notify.echo(
+            LogLevels.WARN,
+            "deprecated provider 'line_type' configs, please migrate to latest config schema!"
+        )
+    elseif
+        type(provider_config.line_opts) == "table"
+        and provider_config.line_opts.prepend_icon_by_ft ~= nil
+    then
+        meta_opts.prepend_icon_by_ft =
+            provider_config.line_opts.prepend_icon_by_ft
+    end
+    if
+        type(provider_config.line_delimiter) == "string"
+        and string.len(provider_config.line_delimiter) > 0
+    then
+        meta_opts.prepend_icon_path_delimiter = provider_config.line_delimiter
+        notify.echo(
+            LogLevels.WARN,
+            "deprecated provider 'line_delimiter' configs, please migrate to latest config schema!"
+        )
+    elseif
+        type(provider_config.line_opts) == "table"
+        and type(provider_config.line_opts.prepend_icon_path_delimiter) == "string"
+        and string.len(
+                provider_config.line_opts.prepend_icon_path_delimiter
+            )
+            > 0
+    then
+        meta_opts.prepend_icon_path_delimiter =
+            provider_config.line_opts.prepend_icon_path_delimiter
+    end
+    if type(provider_config.line_pos) == "number" then
+        meta_opts.prepend_icon_path_position = provider_config.line_pos
+        notify.echo(
+            LogLevels.WARN,
+            "deprecated provider 'line_pos' configs, please migrate to latest config schema!"
+        )
+    elseif
+        type(provider_config.line_opts) == "table"
+        and type(provider_config.line_opts.prepend_icon_path_position)
+            == "number"
+    then
+        meta_opts.prepend_icon_path_position =
+            provider_config.line_opts.prepend_icon_path_position
+    end
+
+    local metajson = vim.fn.json_encode(meta_opts) --[[@as string]]
+    utils.writefile(self.metafile, metajson)
 
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then
         log.ensure(
@@ -126,9 +178,12 @@ function ProviderSwitch:provide(name, query, context)
             vim.inspect(provider_config)
         )
         if provider_config.provider == nil then
-            vim.fn.writefile({ "" }, self.resultfile)
+            utils.writefile(self.resultfile, "")
         else
-            vim.fn.writefile({ provider_config.provider }, self.resultfile)
+            utils.writefile(
+                self.resultfile,
+                provider_config.provider --[[@as string]]
+            )
         end
     elseif provider_config.provider_type == ProviderTypeEnum.PLAIN_LIST then
         log.ensure(
@@ -142,11 +197,11 @@ function ProviderSwitch:provide(name, query, context)
             provider_config.provider == nil
             or vim.tbl_isempty(provider_config.provider --[[@as table]])
         then
-            vim.fn.writefile({ "" }, self.resultfile)
+            utils.writefile(self.resultfile, "")
         else
-            vim.fn.writefile(
-                { vim.fn.json_encode(provider_config.provider) },
-                self.resultfile
+            utils.writefile(
+                self.resultfile,
+                vim.fn.json_encode(provider_config.provider) --[[@as string]]
             )
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
@@ -164,7 +219,7 @@ function ProviderSwitch:provide(name, query, context)
             vim.inspect(result)
         )
         if not ok then
-            vim.fn.writefile({ "" }, self.resultfile)
+            utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
                 vim.inspect(name),
@@ -175,9 +230,9 @@ function ProviderSwitch:provide(name, query, context)
             )
         else
             if result == nil then
-                vim.fn.writefile({ "" }, self.resultfile)
+                utils.writefile(self.resultfile, "")
             else
-                vim.fn.writefile({ result }, self.resultfile)
+                utils.writefile(self.resultfile, result)
             end
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST then
@@ -195,7 +250,7 @@ function ProviderSwitch:provide(name, query, context)
             vim.inspect(result)
         )
         if not ok then
-            vim.fn.writefile({ "" }, self.resultfile)
+            utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s command_list provider %s! query:%s, context:%s, error:%s",
                 vim.inspect(name),
@@ -206,11 +261,11 @@ function ProviderSwitch:provide(name, query, context)
             )
         else
             if result == nil or vim.tbl_isempty(result) then
-                vim.fn.writefile({ "" }, self.resultfile)
+                utils.writefile(self.resultfile, "")
             else
-                vim.fn.writefile(
-                    { vim.fn.json_encode(result) },
-                    self.resultfile
+                utils.writefile(
+                    self.resultfile,
+                    vim.fn.json_encode(result) --[[@as string]]
                 )
             end
         end
@@ -223,7 +278,7 @@ function ProviderSwitch:provide(name, query, context)
             vim.inspect(result)
         )
         if not ok then
-            vim.fn.writefile({ "" }, self.resultfile)
+            utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
                 vim.inspect(name),
@@ -240,9 +295,9 @@ function ProviderSwitch:provide(name, query, context)
                 vim.inspect(result)
             )
             if result == nil or vim.tbl_isempty(result) then
-                vim.fn.writefile({ "" }, self.resultfile)
+                utils.writefile(self.resultfile, "")
             else
-                vim.fn.writefile(result, self.resultfile)
+                utils.writelines(self.resultfile, result)
             end
         end
     else
@@ -333,7 +388,7 @@ function PreviewerSwitch:preview(name, line, context)
         pipeline = self.pipeline,
         previewer_type = previewer_type,
     })
-    vim.fn.writefile({ metajson }, self.metafile)
+    utils.writefile(self.metafile, metajson)
     if previewer_type == PreviewerTypeEnum.COMMAND then
         local ok, result = pcall(previewer, line, context)
         log.debug(
@@ -342,7 +397,7 @@ function PreviewerSwitch:preview(name, line, context)
             vim.inspect(result)
         )
         if not ok then
-            vim.fn.writefile({ "" }, self.resultfile)
+            utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(name),
@@ -359,9 +414,9 @@ function PreviewerSwitch:preview(name, line, context)
                 vim.inspect(result)
             )
             if result == nil then
-                vim.fn.writefile({ "" }, self.resultfile)
+                utils.writefile(self.resultfile, "")
             else
-                vim.fn.writefile({ result }, self.resultfile)
+                utils.writefile(self.resultfile, result --[[@as string]])
             end
         end
     elseif previewer_type == PreviewerTypeEnum.COMMAND_LIST then
@@ -372,7 +427,7 @@ function PreviewerSwitch:preview(name, line, context)
             vim.inspect(result)
         )
         if not ok then
-            vim.fn.writefile({ "" }, self.resultfile)
+            utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s command_list previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(name),
@@ -390,11 +445,11 @@ function PreviewerSwitch:preview(name, line, context)
             )
             ---@diagnostic disable-next-line: param-type-mismatch
             if result == nil or vim.tbl_isempty(result) then
-                vim.fn.writefile({ "" }, self.resultfile)
+                utils.writefile(self.resultfile, "")
             else
-                vim.fn.writefile(
-                    { vim.fn.json_encode(result) },
-                    self.resultfile
+                utils.writefile(
+                    self.resultfile,
+                    vim.fn.json_encode(result) --[[@as string]]
                 )
             end
         end
@@ -406,7 +461,7 @@ function PreviewerSwitch:preview(name, line, context)
             vim.inspect(result)
         )
         if not ok then
-            vim.fn.writefile({ "" }, self.resultfile)
+            utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(name),
@@ -422,7 +477,7 @@ function PreviewerSwitch:preview(name, line, context)
                 vim.inspect(self),
                 vim.inspect(result)
             )
-            vim.fn.writefile(result, self.resultfile)
+            utils.writelines(self.resultfile, result --[[@as table]])
         end
     else
         log.throw(

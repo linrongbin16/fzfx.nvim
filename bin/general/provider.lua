@@ -49,19 +49,19 @@ shell_helpers.log_ensure(
     "|provider| error! metajson is not string! %s",
     vim.inspect(metajsonstring)
 )
---- @type ProviderMetaJson
-local metajson = vim.fn.json_decode(metajsonstring) --[[@as ProviderMetaJson]]
-shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metajson))
+--- @type ProviderMetaOpts
+local metaopts = vim.fn.json_decode(metajsonstring) --[[@as ProviderMetaOpts]]
+shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metaopts))
 
 --- @param line string?
 local function println(line)
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
         line = shell_helpers.string_rtrim(line)
-        if metajson.provider_line_type == "file" then
+        if metaopts.prepend_icon_by_ft then
             local rendered_line = shell_helpers.render_filepath_line(
                 line,
-                metajson.provider_line_delimiter,
-                metajson.provider_line_pos
+                metaopts.prepend_icon_path_delimiter,
+                metaopts.prepend_icon_path_position
             )
             io.write(string.format("%s\n", rendered_line))
         else
@@ -86,9 +86,9 @@ local function consume(data_buffer, fn_line_processor)
     return i
 end
 
-if metajson.provider_type == "plain" or metajson.provider_type == "command" then
+if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
     --- @type string
-    local cmd = shell_helpers.readfile(resultfile)
+    local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
     shell_helpers.log_debug(
         "|provider| plain or command cmd:[%s]",
         vim.inspect(cmd)
@@ -98,29 +98,17 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
         return
     end
 
-    if metajson.provider_line_type == "file" then
-        local p = io.popen(cmd)
-        if p then
-            for line in p:lines("*line") do
-                -- shell_helpers.log_debug("line:%s", vim.inspect(line))
-                if string.len(vim.fn.trim(line)) > 0 then
-                    local line_with_icon = shell_helpers.render_filepath_line(
-                        line,
-                        metajson.provider_line_delimiter,
-                        metajson.provider_line_pos
-                    )
-                    io.write(string.format("%s\n", line_with_icon))
-                end
-            end
-            p:close()
-        else
-            shell_helpers.debug(
-                "|provider| error! failed to open pipe on provider cmd! %s",
-                vim.inspect(cmd)
-            )
+    local p = io.popen(cmd)
+    if p then
+        for line in p:lines("*line") do
+            println(line)
         end
+        p:close()
     else
-        os.execute(cmd)
+        shell_helpers.debug(
+            "|provider| error! failed to open pipe on provider cmd! %s",
+            vim.inspect(cmd)
+        )
     end
 
     -- local data_buffer = { "" }
@@ -181,8 +169,8 @@ if metajson.provider_type == "plain" or metajson.provider_type == "command" then
     -- })
     -- vim.fn.jobwait({ jobid })
 elseif
-    metajson.provider_type == "plain_list"
-    or metajson.provider_type == "command_list"
+    metaopts.provider_type == "plain_list"
+    or metaopts.provider_type == "command_list"
 then
     local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
     shell_helpers.log_debug(
@@ -295,7 +283,7 @@ then
     out_pipe:read_start(on_output)
     err_pipe:read_start(on_error)
     vim.loop.run()
-elseif metajson.provider_type == "list" then
+elseif metaopts.provider_type == "list" then
     local reader = shell_helpers.FileLineReader:open(resultfile) --[[@as FileLineReader ]]
     shell_helpers.log_ensure(
         reader ~= nil,
