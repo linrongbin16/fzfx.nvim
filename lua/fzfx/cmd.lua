@@ -209,7 +209,7 @@ end
 --- @field fn_err_line fun(line:string):any
 --- @field out_pipe uv_pipe_t
 --- @field err_pipe uv_pipe_t
---- @field buffer string?
+--- @field out_buffer string?
 local AsyncCmd = {}
 
 --- @param line string?
@@ -235,7 +235,7 @@ function AsyncCmd:open(cmds, fn_out_line, fn_err_line)
         fn_err_line = fn_err_line or print_err_line,
         out_pipe = out_pipe,
         err_pipe = err_pipe,
-        buffer = nil,
+        out_buffer = nil,
     }
 
     setmetatable(o, self)
@@ -246,21 +246,21 @@ end
 --- @param data string?
 function AsyncCmd:consume(data)
     if data then
-        self.buffer = self.buffer and (self.buffer .. data) or data
+        self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
     end
 
     local utils = require("fzfx.utils")
     local i = 1
-    while i <= #self.buffer do
-        local newline_pos = utils.string_find(self.buffer, "\n", i)
+    while i <= #self.out_buffer do
+        local newline_pos = utils.string_find(self.out_buffer, "\n", i)
         if not newline_pos then
             break
         end
-        local line = self.buffer:sub(i, newline_pos - 1)
+        local line = self.out_buffer:sub(i, newline_pos - 1)
         self.fn_out_line(line)
         i = newline_pos + 1
     end
-    self.buffer = i >= #self.buffer and nil or self.buffer:sub(i, #self.buffer)
+    self.out_buffer = i >= #self.out_buffer and nil or self.out_buffer:sub(i, #self.out_buffer)
 end
 
 function AsyncCmd:run()
@@ -284,9 +284,9 @@ function AsyncCmd:run()
         self:consume(data)
 
         if not data then
-            if type(self.buffer) == "string" and string.len(self.buffer) > 0 then
-                self.fn_out_line(self.buffer)
-                self.buffer = nil
+            if type(self.out_buffer) == "string" and string.len(self.out_buffer) > 0 then
+                self.fn_out_line(self.out_buffer)
+                self.out_buffer = nil
             end
             self:close()
         end
