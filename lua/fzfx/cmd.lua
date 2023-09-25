@@ -205,15 +205,24 @@ end
 
 --- @class AsyncCmd
 --- @field cmds string[]
---- @field fn_line_consumer fun(line:string):any
+--- @field fn_out_line fun(line:string):any
+--- @field fn_err_line fun(line:string):any
 --- @field out_pipe uv_pipe_t
 --- @field err_pipe uv_pipe_t
 --- @field buffer string?
 local AsyncCmd = {}
 
+--- @param line string?
+local function print_err_line(line)
+    if type(line) == "string" and string.len(line) > 0 then
+        io.write(string.format("%s\n", line))
+    end
+end
+
 --- @param cmds string[]
---- @param fn_line_consumer fun(line:string):any
-function AsyncCmd:open(cmds, fn_line_consumer)
+--- @param fn_out_line fun(line:string):any
+--- @param fn_err_line fun(line:string):any
+function AsyncCmd:open(cmds, fn_out_line, fn_err_line)
     local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     if not out_pipe or not err_pipe then
@@ -222,7 +231,8 @@ function AsyncCmd:open(cmds, fn_line_consumer)
 
     local o = {
         cmds = cmds,
-        fn_line_consumer = fn_line_consumer,
+        fn_out_line = fn_out_line,
+        fn_err_line = fn_err_line or print_err_line,
         out_pipe = out_pipe,
         err_pipe = err_pipe,
         buffer = nil,
@@ -247,7 +257,7 @@ function AsyncCmd:consume(data)
             break
         end
         local line = self.buffer:sub(i, newline_pos - 1)
-        self.fn_line_consumer(line)
+        self.fn_out_line(line)
         i = newline_pos + 1
     end
     self.buffer = i >= #self.buffer and nil or self.buffer:sub(i, #self.buffer)
@@ -275,7 +285,7 @@ function AsyncCmd:run()
 
         if not data then
             if type(self.buffer) == "string" and string.len(self.buffer) > 0 then
-                self.fn_line_consumer(self.buffer)
+                self.fn_out_line(self.buffer)
                 self.buffer = nil
             end
             self:close()
