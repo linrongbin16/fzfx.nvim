@@ -120,7 +120,7 @@ function GitRootCmd:value()
         return nil
     end
     return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-            and vim.trim(self.result.stdout[1])
+        and vim.trim(self.result.stdout[1])
         or nil
 end
 
@@ -199,7 +199,7 @@ function GitCurrentBranchCmd:value()
         return nil
     end
     return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-            and self.result.stdout[1]
+        and self.result.stdout[1]
         or nil
 end
 
@@ -295,19 +295,15 @@ function AsyncCmd:run()
 end
 
 function AsyncCmd:close()
-    self.out_pipe:shutdown(function(shutdown_err)
-        self.out_pipe:close(function(close_err)
-            if self.out_pipe:is_closing() and self.err_pipe:is_closing() then
-                vim.loop.stop()
-            end
-        end)
+    self.out_pipe:close(function(close_err)
+        if self.out_pipe:is_closing() and self.err_pipe:is_closing() then
+            vim.loop.stop()
+        end
     end)
-    self.err_pipe:shutdown(function(shutdown_err)
-        self.err_pipe:close(function(close_err)
-            if self.out_pipe:is_closing() and self.err_pipe:is_closing() then
-                vim.loop.stop()
-            end
-        end)
+    self.err_pipe:close(function(close_err)
+        if self.out_pipe:is_closing() and self.err_pipe:is_closing() then
+            vim.loop.stop()
+        end
     end)
 end
 
