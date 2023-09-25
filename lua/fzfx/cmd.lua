@@ -297,12 +297,14 @@ end
 function AsyncCmd:close()
     self.out_pipe:shutdown(function(shutdown_err)
         self.out_pipe:close(function(close_err)
-            vim.loop.stop()
+            if self.out_pipe:is_closing() and self.err_pipe:is_closing() then
+                vim.loop.stop()
+            end
         end)
     end)
     self.err_pipe:shutdown(function(shutdown_err)
         self.err_pipe:close(function(close_err)
-            if self.out_pipe():is_closing() then
+            if self.out_pipe:is_closing() and self.err_pipe:is_closing() then
                 vim.loop.stop()
             end
         end)
