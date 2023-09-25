@@ -71,7 +71,6 @@ local function println(line)
 end
 
 if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
-    --- @type string
     local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
     shell_helpers.log_debug(
         "|provider| plain or command cmd:[%s]",
@@ -82,17 +81,17 @@ if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
     end
 
     local p = io.popen(cmd)
-    if p then
-        for line in p:lines("*line") do
-            println(line)
-        end
-        p:close()
-    else
-        shell_helpers.debug(
-            "|provider| error! failed to open pipe on provider cmd! %s",
-            vim.inspect(cmd)
-        )
+    shell_helpers.log_ensure(
+        p ~= nil,
+        "|provider| error! failed to open pipe on provider cmd! %s",
+        vim.inspect(cmd)
+    )
+    ---@diagnostic disable-next-line: need-check-nil
+    for line in p:lines("*line") do
+        println(line)
     end
+    ---@diagnostic disable-next-line: need-check-nil
+    p:close()
 elseif
     metaopts.provider_type == "plain_list"
     or metaopts.provider_type == "command_list"
