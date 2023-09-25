@@ -58,7 +58,7 @@ local function println(line)
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
         line = shell_helpers.string_rtrim(line)
         if metaopts.prepend_icon_by_ft then
-            local rendered_line = shell_helpers.render_filepath_line(
+            local rendered_line = shell_helpers.prepend_path_with_icon(
                 line,
                 metaopts.prepend_icon_path_delimiter,
                 metaopts.prepend_icon_path_position
