@@ -273,6 +273,7 @@ function AsyncCmd:run()
     end
 
     local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
+        ---@diagnostic disable-next-line: deprecated
         args = { unpack(self.cmds, 2) },
         stdio = { nil, out_pipe, err_pipe },
         -- verbatim = true,
