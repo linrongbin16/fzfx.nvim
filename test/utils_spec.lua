@@ -322,4 +322,26 @@ describe("utils", function()
             assert_eq(utils.string_rtrim(buffer --[[@as string]]), content)
         end)
     end)
+    describe("[writefile/writelines]", function()
+        it("compares lines and all", function()
+            local content = utils.readfile("README.md") --[[@as string]]
+            local lines = utils.readlines("README.md") --[[@as table]]
+
+            utils.writefile("test1-README.md", content)
+            utils.writelines("test2-README.md", lines)
+
+            content = utils.readfile("test1-README.md") --[[@as string]]
+            lines = utils.readlines("test2-README.md") --[[@as table]]
+
+            local buffer = nil
+            for _, line in
+                ipairs(lines --[[@as table]])
+            do
+                assert_eq(type(line), "string")
+                assert_true(string.len(line) >= 0)
+                buffer = buffer and (buffer .. line .. "\n") or (line .. "\n")
+            end
+            assert_eq(utils.string_rtrim(buffer --[[@as string]]), content)
+        end)
+    end)
 end)
