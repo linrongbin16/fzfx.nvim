@@ -245,24 +245,23 @@ function AsyncCmd:open(cmds, fn_out_line, fn_err_line)
     return o
 end
 
---- @param buffer string?
 --- @param data string?
-function AsyncCmd:consume(buffer, data)
+function AsyncCmd:consume(data)
     if data then
-        buffer = buffer and (buffer .. data) or data
+        self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
     end
 
     local i = 1
-    while i <= #buffer do
-        local newline_pos = require('fzfx.utils').string_find(buffer, "\n", i)
+    while i <= #self.out_buffer do
+        local newline_pos = require('fzfx.utils').string_find(self.out_buffer, "\n", i)
         if not newline_pos then
             break
         end
-        local line = buffer:sub(i, newline_pos - 1)
+        local line = self.out_buffer:sub(i, newline_pos - 1)
         self.fn_out_line(line)
         i = newline_pos + 1
     end
-    return i >= #buffer and nil or buffer:sub(i, #buffer)
+    self.out_buffer = i >= #self.out_buffer and nil or self.out_buffer:sub(i, #self.out_buffer)
 end
 
 function AsyncCmd:run()
@@ -283,7 +282,7 @@ function AsyncCmd:run()
             return
         end
 
-        self.out_buffer = self:consume(self.out_buffer, data)
+        self:consume(data)
 
         if not data then
             if type(self.out_buffer) == "string" and string.len(self.out_buffer) > 0 then
