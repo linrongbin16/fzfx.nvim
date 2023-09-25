@@ -203,12 +203,126 @@ function GitCurrentBranchCmd:value()
         or nil
 end
 
+--- @class AsyncCmd
+--- @field fn_line_consumer fun(line:string):any
+--- @field cmds string[]
+--- @field out_pipe uv_pipe_t
+--- @field err_pipe uv_pipe_t
+--- @field buffer string?
+--- @field process_id any
+--- @field process_handler any
+local AsyncCmd = {}
+
+--- @param cmds string[]
+--- @param fn_line_consumer fun(line:string):any
+function AsyncCmd:open(cmds, fn_line_consumer)
+    local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+    local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+    if not out_pipe or not err_pipe then
+        return nil
+    end
+
+    local o = {
+        fn_line_consumer = fn_line_consumer,
+        cmds = cmds,
+        out_pipe = out_pipe,
+        err_pipe = err_pipe,
+        buffer = nil,
+        process_id = nil,
+        process_handler = nil,
+    }
+
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+--- @param data string?
+function AsyncCmd:_consume(data)
+    if data then
+        self.buffer = self.buffer and (self.buffer .. data) or data
+    end
+
+    local utils = require("fzfx.utils")
+    local i = 1
+    while i <= #self.buffer do
+        local newline_pos = utils.string_find(self.buffer, "\n", i)
+        if not newline_pos then
+            break
+        end
+        local line = self.buffer:sub(i, newline_pos - 1)
+        self.fn_line_consumer(line)
+        i = newline_pos + 1
+    end
+    self.buffer = i >= #self.buffer and nil or self.buffer:sub(i, #self.buffer)
+end
+
+function AsyncCmd:_close()
+    self.out_pipe:shutdown()
+    self.err_pipe:shutdown()
+    self.out_pipe:close()
+    self.err_pipe:close()
+    vim.loop.stop()
+end
+
+function AsyncCmd:run()
+    local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+    local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+    if not out_pipe or not err_pipe then
+        return nil
+    end
+
+    local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
+        args = { unpack(self.cmds, 2) },
+        stdio = { nil, out_pipe, err_pipe },
+        -- verbatim = true,
+    }, function(code, signal)
+        out_pipe:read_stop()
+        err_pipe:read_stop()
+        self:_close()
+    end)
+
+    self.process_handler = process_handler
+    self.process_id = process_id
+
+    --- @param err string?
+    --- @param data string?
+    local function on_out(err, data)
+        if err then
+            self:_close()
+            return
+        end
+
+        self:_consume(data)
+
+        if not data then
+            if
+                type(self.buffer) == "string"
+                and string.len(self.buffer) > 0
+            then
+                self.fn_line_consumer(self.buffer)
+                self.buffer = nil
+            end
+            self:_close()
+        end
+    end
+
+    local function on_err(err, data)
+        self:_close()
+    end
+
+    out_pipe:read_start(on_out)
+    err_pipe:read_start(on_err)
+    vim.loop.run()
+end
+
 local M = {
     CmdResult = CmdResult,
     Cmd = Cmd,
     GitRootCmd = GitRootCmd,
     GitBranchCmd = GitBranchCmd,
     GitCurrentBranchCmd = GitCurrentBranchCmd,
+    AsyncCmd = AsyncCmd,
 }
 
 return M

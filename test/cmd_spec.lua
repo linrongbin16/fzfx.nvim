@@ -79,4 +79,40 @@ describe("cmd", function()
             assert_true(string.len(c:value() --[[@as string]]) > 0)
         end)
     end)
+    describe("[AsyncCmd]", function()
+        it("echo simple", function()
+            local function line_consumer(line)
+                assert_eq(type(line), "string")
+                assert_eq(line, "1")
+            end
+            local c = cmd.AsyncCmd:open({ "echo", "1" }, line_consumer) --[[@as AsyncCmd]]
+            c:run()
+        end)
+        it("echo README.md", function()
+            local utils = require("fzfx.utils")
+            local lines = utils.readlines("README.md") --[[@as table]]
+            local i = 1
+            local function line_consumer(line)
+                assert_eq(type(line), "string")
+                local expect = lines[i]
+                assert_eq(expect, line)
+                i = i + 1
+            end
+            local c = cmd.AsyncCmd:open({ "cat", "README.md" }, line_consumer) --[[@as AsyncCmd]]
+            c:run()
+        end)
+        it("echo lua/fzfx/config.lua", function()
+            local utils = require("fzfx.utils")
+            local lines = utils.readlines("README.md") --[[@as table]]
+            local i = 1
+            local function line_consumer(line)
+                assert_eq(type(line), "string")
+                local expect = lines[i]
+                assert_eq(expect, line)
+                i = i + 1
+            end
+            local c = cmd.AsyncCmd:open({ "cat", "README.md" }, line_consumer) --[[@as AsyncCmd]]
+            c:run()
+        end)
+    end)
 end)
