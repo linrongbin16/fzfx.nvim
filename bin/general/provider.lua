@@ -185,9 +185,6 @@ then
     shell_helpers.log_debug("|provider| out_pipe:%s", vim.inspect(out_pipe))
     shell_helpers.log_debug("|provider| err_pipe:%s", vim.inspect(err_pipe))
 
-    --- @type string?
-    local data_buffer = nil
-
     local function on_exit(code)
         out_pipe:close()
         err_pipe:close()
@@ -212,6 +209,9 @@ then
         vim.inspect(process_id)
     )
 
+    --- @type string?
+    local out_buffer = nil
+
     --- @param err string?
     --- @param data string?
     local function on_output(err, data)
@@ -226,13 +226,13 @@ then
         end
 
         if not data then
-            if data_buffer then
+            if out_buffer then
                 -- foreach the data_buffer and find every line
-                local i = shell_helpers.consume_line(data_buffer, println)
-                if i <= #data_buffer then
-                    local line = data_buffer:sub(i, #data_buffer)
+                local i = shell_helpers.consume_line(out_buffer, println)
+                if i <= #out_buffer then
+                    local line = out_buffer:sub(i, #out_buffer)
                     println(line)
-                    data_buffer = nil
+                    out_buffer = nil
                 end
             end
             on_exit(0)
@@ -240,12 +240,11 @@ then
         end
 
         -- append data to data_buffer
-        data_buffer = data_buffer and (data_buffer .. data) or data
+        out_buffer = out_buffer and (out_buffer .. data) or data
         -- foreach the data_buffer and find every line
-        local i = shell_helpers.consume_line(data_buffer, println)
+        local i = shell_helpers.consume_line(out_buffer, println)
         -- truncate the printed lines if found any
-        data_buffer = i <= #data_buffer and data_buffer:sub(i, #data_buffer)
-            or nil
+        out_buffer = i <= #out_buffer and out_buffer:sub(i, #out_buffer) or nil
     end
 
     local function on_error(err, data)
