@@ -253,7 +253,6 @@ function AsyncCmd:consume(data)
     self.buffer = i >= #self.buffer and nil or self.buffer:sub(i, #self.buffer)
 end
 
---- @param opts {detach}
 function AsyncCmd:run()
     local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
         args = vim.list_slice(self.cmds, 2),
