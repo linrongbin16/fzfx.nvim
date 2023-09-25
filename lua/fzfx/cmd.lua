@@ -204,13 +204,11 @@ function GitCurrentBranchCmd:value()
 end
 
 --- @class AsyncCmd
---- @field fn_line_consumer fun(line:string):any
 --- @field cmds string[]
+--- @field fn_line_consumer fun(line:string):any
 --- @field out_pipe uv_pipe_t
 --- @field err_pipe uv_pipe_t
 --- @field buffer string?
---- @field process_id any
---- @field process_handler any
 local AsyncCmd = {}
 
 --- @param cmds string[]
@@ -223,13 +221,11 @@ function AsyncCmd:open(cmds, fn_line_consumer)
     end
 
     local o = {
-        fn_line_consumer = fn_line_consumer,
         cmds = cmds,
+        fn_line_consumer = fn_line_consumer,
         out_pipe = out_pipe,
         err_pipe = err_pipe,
         buffer = nil,
-        process_id = nil,
-        process_handler = nil,
     }
 
     setmetatable(o, self)
@@ -238,7 +234,7 @@ function AsyncCmd:open(cmds, fn_line_consumer)
 end
 
 --- @param data string?
-function AsyncCmd:_consume(data)
+function AsyncCmd:consume(data)
     if data then
         self.buffer = self.buffer and (self.buffer .. data) or data
     end
@@ -257,64 +253,61 @@ function AsyncCmd:_consume(data)
     self.buffer = i >= #self.buffer and nil or self.buffer:sub(i, #self.buffer)
 end
 
-function AsyncCmd:_close()
-    self.out_pipe:shutdown()
-    self.err_pipe:shutdown()
-    self.out_pipe:close()
-    self.err_pipe:close()
-    vim.loop.stop()
-end
-
+--- @param opts {detach}
 function AsyncCmd:run()
-    local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
-    local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
-    if not out_pipe or not err_pipe then
-        return nil
-    end
-
     local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
-        ---@diagnostic disable-next-line: deprecated
-        args = { unpack(self.cmds, 2) },
-        stdio = { nil, out_pipe, err_pipe },
-        -- verbatim = true,
+        args = vim.list_slice(self.cmds, 2),
+        stdio = { nil, self.out_pipe, self.err_pipe },
     }, function(code, signal)
-        out_pipe:read_stop()
-        err_pipe:read_stop()
-        self:_close()
+        self.out_pipe:read_stop()
+        self.err_pipe:read_stop()
+        self:close()
     end)
 
-    self.process_handler = process_handler
-    self.process_id = process_id
+    --- @type string?
+    local buffer = nil
 
     --- @param err string?
     --- @param data string?
-    local function on_out(err, data)
+    local function on_stdout(err, data)
         if err then
-            self:_close()
+            self:close()
             return
         end
 
-        self:_consume(data)
+        self:consume(data)
 
         if not data then
-            if
-                type(self.buffer) == "string"
-                and string.len(self.buffer) > 0
-            then
-                self.fn_line_consumer(self.buffer)
-                self.buffer = nil
+            if type(buffer) == "string" and string.len(buffer) > 0 then
+                self.fn_line_consumer(buffer)
+                buffer = nil
             end
-            self:_close()
+            self:close()
         end
     end
 
-    local function on_err(err, data)
-        self:_close()
+    local function on_stderr(err, data)
+        self:close()
     end
 
-    out_pipe:read_start(on_out)
-    err_pipe:read_start(on_err)
+    self.out_pipe:read_start(on_stdout)
+    self.err_pipe:read_start(on_stderr)
     vim.loop.run()
+end
+
+function AsyncCmd:close()
+    self.out_pipe:shutdown(function(shutdown_err)
+        self.out_pipe:close(function(close_err)
+            vim.loop.stop()
+        end)
+    end)
+    self.err_pipe:shutdown(function(shutdown_err)
+        self.err_pipe:close(function(close_err)
+            if self.out_pipe():is_closing() then
+                vim.loop.stop()
+            end
+        end)
+    end)
 end
 
 local M = {

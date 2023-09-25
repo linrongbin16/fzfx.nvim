@@ -80,39 +80,44 @@ describe("cmd", function()
         end)
     end)
     describe("[AsyncCmd]", function()
-        it("echo simple", function()
+        it("open", function()
             local function line_consumer(line)
                 assert_eq(type(line), "string")
                 assert_eq(line, "1")
             end
             local c = cmd.AsyncCmd:open({ "echo", "1" }, line_consumer) --[[@as AsyncCmd]]
-            c:run()
+            assert_true(c ~= nil)
         end)
         it("echo README.md", function()
             local utils = require("fzfx.utils")
             local lines = utils.readlines("README.md") --[[@as table]]
+            local content = utils.readfile("README.md")
             local i = 1
             local function line_consumer(line)
+                print(string.format("[%d]%s", i, vim.inspect(line)))
                 assert_eq(type(line), "string")
-                local expect = lines[i]
-                assert_eq(expect, line)
+                assert_eq(lines[i], line)
                 i = i + 1
             end
             local c = cmd.AsyncCmd:open({ "cat", "README.md" }, line_consumer) --[[@as AsyncCmd]]
-            c:run()
+            c:consume(content)
         end)
         it("echo lua/fzfx/config.lua", function()
             local utils = require("fzfx.utils")
-            local lines = utils.readlines("README.md") --[[@as table]]
+            local lines = utils.readlines("lua/fzfx/config.lua") --[[@as table]]
+            local content = utils.readfile("lua/fzfx/config.lua")
             local i = 1
             local function line_consumer(line)
+                print(string.format("[%d]%s", i, vim.inspect(line)))
                 assert_eq(type(line), "string")
-                local expect = lines[i]
-                assert_eq(expect, line)
+                assert_eq(lines[i], line)
                 i = i + 1
             end
-            local c = cmd.AsyncCmd:open({ "cat", "README.md" }, line_consumer) --[[@as AsyncCmd]]
-            c:run()
+            local c = cmd.AsyncCmd:open(
+                { "cat", "lua/fzfx/config.lua" },
+                line_consumer
+            ) --[[@as AsyncCmd]]
+            c:consume(content)
         end)
     end)
 end)

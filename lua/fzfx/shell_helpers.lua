@@ -169,6 +169,7 @@ local M = {
     GitBranchCmd = require("fzfx.cmd").GitBranchCmd,
     GitCurrentBranchCmd = require("fzfx.cmd").GitCurrentBranchCmd,
     AsyncCmd = require("fzfx.cmd").AsyncCmd,
+    -- async_cmd = require("fzfx.cmd").async_cmd,
     string_find = require("fzfx.utils").string_find,
     string_rfind = require("fzfx.utils").string_rfind,
     string_ltrim = require("fzfx.utils").string_ltrim,
