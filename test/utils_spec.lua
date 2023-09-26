@@ -351,7 +351,7 @@ describe("utils", function()
 
             local i = 1
             local function process_line(line)
-                print(string.format("[%d]%s", i, line))
+                -- print(string.format("[%d]%s", i, line))
                 assert_eq(type(line), "string")
                 assert_eq(line, lines[i])
                 i = i + 1

@@ -79,4 +79,26 @@ describe("cmd", function()
             assert_true(string.len(c:value() --[[@as string]]) > 0)
         end)
     end)
+    describe("[AsyncCmd]", function()
+        it("consume line", function()
+            local utils = require("fzfx.utils")
+            local content = utils.readfile("README.md") --[[@as string]]
+            local lines = utils.readlines("README.md") --[[@as table]]
+
+            local i = 1
+            local function process_line(line)
+                -- print(string.format("[%d]%s", i, line))
+                assert_eq(type(line), "string")
+                assert_eq(line, lines[i])
+                i = i + 1
+            end
+            local async_cmd =
+                cmd.AsyncCmd:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
+            local pos = async_cmd:consume_line(content, process_line)
+            if pos <= #content then
+                local line = content:sub(pos, #content)
+                process_line(line)
+            end
+        end)
+    end)
 end)
