@@ -504,7 +504,7 @@ local function readlines(filename)
     end
     local results = {}
     while reader:has_next() do
-        table.insert(results, reader:next() --[[@as string]])
+        table.insert(results, reader:next())
     end
     reader:close()
     return results
