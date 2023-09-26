@@ -647,59 +647,6 @@ function AsyncSpawn:start()
         self:on_exit(code, signal)
     end)
 
-    --- @param err string?
-    --- @param data string?
-    local function on_stdout(err, data)
-        if err then
-            self:on_exit(130)
-            return
-        end
-
-        if not data then
-            if self.out_buffer then
-                -- foreach the data_buffer and find every line
-                local i =
-                    self:consume_line(self.out_buffer, self.fn_line_consumer)
-                if i <= #self.out_buffer then
-                    local line = self.out_buffer:sub(i, #self.out_buffer)
-                    self.fn_line_consumer(line)
-                    self.out_buffer = nil
-                end
-            end
-            self:on_exit(0)
-            return
-        end
-
-        -- append data to data_buffer
-        self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
-        -- foreach the data_buffer and find every line
-        local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
-        -- truncate the printed lines if found any
-        self.out_buffer = i <= #self.out_buffer
-                and self.out_buffer:sub(i, #self.out_buffer)
-            or nil
-    end
-
-    local function on_stderr(err, data)
-        -- io.write(
-        --     string.format(
-        --         "err:%s, data:%s\n",
-        --         vim.inspect(err_err),
-        --         vim.inspect(err_data)
-        --     )
-        -- )
-        if err then
-            io.write(
-                string.format(
-                    "err:%s, data:%s",
-                    vim.inspect(err),
-                    vim.inspect(data)
-                )
-            )
-            self:on_exit(130)
-        end
-    end
-
     self.out_pipe:read_start(function(err, data)
         self:on_stdout(err, data)
     end)
