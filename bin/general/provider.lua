@@ -172,18 +172,18 @@ then
         return
     end
 
-    local async_spawn = shell_helpers.AsyncSpawn:open(cmd_splits, println) --[[@as AsyncSpawn]]
+    local async_spawn = shell_helpers.AsyncSpawn:open(cmd_splits, println, {
+        on_exit = function(code, signal)
+            vim.loop.stop()
+            os.exit(code)
+        end,
+    }) --[[@as AsyncSpawn]]
     shell_helpers.log_ensure(
         async_spawn ~= nil,
         "|provider| error! failed to open async command: %s",
         vim.inspect(cmd_splits)
     )
-    async_spawn:start({
-        on_exit = function(code, signal)
-            vim.loop.stop()
-            os.exit(code)
-        end,
-    })
+    async_spawn:start()
     vim.loop.run()
 
     -- local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]

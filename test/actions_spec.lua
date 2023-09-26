@@ -92,7 +92,10 @@ describe("actions", function()
                 local expect = string.format(
                     "edit %s",
                     vim.fn.expand(
-                        utils.string_split(utils.string_split(line, ":")[1])[2]
+                        utils.string_split(
+                            utils.string_split(line, ":")[1],
+                            " "
+                        )[2]
                     )
                 )
                 print(
@@ -143,7 +146,10 @@ describe("actions", function()
                 local expect = string.format(
                     "edit %s",
                     vim.fn.expand(
-                        utils.string_split(utils.string_split(line, ":")[1])[2]
+                        utils.string_split(
+                            utils.string_split(line, ":")[1],
+                            " "
+                        )[2]
                     )
                 )
                 print(
@@ -195,7 +201,10 @@ describe("actions", function()
                 local expect = string.format(
                     "edit %s",
                     vim.fn.expand(
-                        utils.string_split(utils.string_split(line, ":")[1])[2]
+                        utils.string_split(
+                            utils.string_split(line, ":")[1],
+                            " "
+                        )[2]
                     )
                 )
                 print(
