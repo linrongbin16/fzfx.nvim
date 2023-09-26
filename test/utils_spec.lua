@@ -344,8 +344,8 @@ describe("utils", function()
             assert_eq(utils.string_rtrim(buffer --[[@as string]]), content)
         end)
     end)
-    describe("[consume_line]", function()
-        it("consume", function()
+    describe("[AsyncSpawn]", function()
+        it("consume line", function()
             local content = utils.readfile("README.md") --[[@as string]]
             local lines = utils.readlines("README.md") --[[@as table]]
 
@@ -356,7 +356,9 @@ describe("utils", function()
                 assert_eq(line, lines[i])
                 i = i + 1
             end
-            local pos = utils.consume_line(content, process_line)
+            local async_spawn =
+                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+            local pos = async_spawn:consume_line(content, process_line)
             if pos <= #content then
                 local line = content:sub(pos, #content)
                 process_line(line)

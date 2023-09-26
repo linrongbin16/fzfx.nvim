@@ -539,11 +539,41 @@ local function writelines(filename, lines)
     f:close()
     return 0
 end
+--- @alias AsyncSpawnLineConsumer fun(line:string):any
+--- @class AsyncSpawn
+--- @field cmds string[]
+--- @field fn_line_consumer AsyncSpawnLineConsumer
+--- @field out_pipe uv_pipe_t
+--- @field err_pipe uv_pipe_t
+--- @field out_buffer string?
+local AsyncSpawn = {}
+
+--- @param cmds string[]
+--- @param fn_line_consumer AsyncSpawnLineConsumer
+--- @return AsyncSpawn?
+function AsyncSpawn:open(cmds, fn_line_consumer)
+    local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    if not out_pipe or not err_pipe then
+        return nil
+    end
+
+    local o = {
+        cmds = cmds,
+        fn_line_consumer = fn_line_consumer,
+        out_pipe = out_pipe,
+        err_pipe = err_pipe,
+        out_buffer = nil,
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
 
 --- @param buffer string
---- @param fn_line_processor fun(line:string):any
+--- @param fn_line_processor AsyncSpawnLineConsumer
 --- @return integer
-local function consume_line(buffer, fn_line_processor)
+function AsyncSpawn:consume_line(buffer, fn_line_processor)
     local i = 1
     while i <= #buffer do
         local newline_pos = string_find(buffer, "\n", i)
@@ -555,6 +585,93 @@ local function consume_line(buffer, fn_line_processor)
         i = newline_pos + 1
     end
     return i
+end
+
+--- @alias AsyncSpawnRunOptOnExit fun(code:integer?,signal:integer?):any
+--- @alias AsyncSpawnRunOpts {on_exit:AsyncSpawnRunOptOnExit?}
+--- @param opts AsyncSpawnRunOpts?
+function AsyncSpawn:start(opts)
+    --- @param code integer?
+    ---@param signal integer?
+    local function on_exit(code, signal)
+        if not self.out_pipe:is_closing() then
+            self.out_pipe:close()
+        end
+        if not self.err_pipe:is_closing() then
+            self.err_pipe:close()
+        end
+        if type(opts) == "table" and type(opts.on_exit) == "function" then
+            opts.on_exit(code, signal)
+        end
+    end
+
+    local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
+        args = vim.list_slice(self.cmds, 2),
+        stdio = { nil, self.out_pipe, self.err_pipe },
+        -- verbatim = true,
+    }, function(exit_code, exit_signal)
+        self.out_pipe:read_stop()
+        self.err_pipe:read_stop()
+        self.out_pipe:shutdown()
+        self.err_pipe:shutdown()
+        on_exit(exit_code, exit_signal)
+    end)
+
+    --- @param err string?
+    --- @param data string?
+    local function on_stdout(err, data)
+        if err then
+            on_exit(130)
+            return
+        end
+
+        if not data then
+            if self.out_buffer then
+                -- foreach the data_buffer and find every line
+                local i =
+                    self:consume_line(self.out_buffer, self.fn_line_consumer)
+                if i <= #self.out_buffer then
+                    local line = self.out_buffer:sub(i, #self.out_buffer)
+                    self.fn_line_consumer(line)
+                    self.out_buffer = nil
+                end
+            end
+            on_exit(0)
+            return
+        end
+
+        -- append data to data_buffer
+        self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
+        -- foreach the data_buffer and find every line
+        local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
+        -- truncate the printed lines if found any
+        self.out_buffer = i <= #self.out_buffer
+                and self.out_buffer:sub(i, #self.out_buffer)
+            or nil
+    end
+
+    local function on_stderr(err, data)
+        -- io.write(
+        --     string.format(
+        --         "err:%s, data:%s\n",
+        --         vim.inspect(err_err),
+        --         vim.inspect(err_data)
+        --     )
+        -- )
+        if err then
+            io.write(
+                string.format(
+                    "err:%s, data:%s",
+                    vim.inspect(err),
+                    vim.inspect(data)
+                )
+            )
+            on_exit(130)
+        end
+    end
+
+    self.out_pipe:read_start(on_stdout)
+    self.err_pipe:read_start(on_stderr)
 end
 
 local M = {
@@ -582,7 +699,7 @@ local M = {
     readlines = readlines,
     writefile = writefile,
     writelines = writelines,
-    consume_line = consume_line,
+    AsyncSpawn = AsyncSpawn,
 }
 
 return M
