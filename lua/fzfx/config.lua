@@ -560,7 +560,7 @@ end
 
 -- ls {
 
-local function ls_context_maker()
+local function file_explorer_context_maker()
     local temp = vim.fn.tempname()
     utils.writefile(temp, vim.fn.getcwd())
     --- @type PipelineContext
@@ -571,6 +571,56 @@ local function ls_context_maker()
         cwd = temp,
     }
     return context
+end
+
+--- @param delimiter string?
+--- @param filename_pos integer?
+--- @param lineno_pos integer?
+--- @return fun(line:string):string[]|nil
+local function make_directory_previewer(delimiter, filename_pos, lineno_pos)
+    --- @param line string
+    --- @return string[]|nil
+    local function wrap(line)
+        log.debug(
+            "|fzfx.config - make_directory_previewer| delimiter:%s, filename_pos:%s, lineno_pos:%s",
+            vim.inspect(delimiter),
+            vim.inspect(filename_pos),
+            vim.inspect(lineno_pos)
+        )
+        log.debug(
+            "|fzfx.config - make_directory_previewer| line:%s",
+            vim.inspect(line)
+        )
+        local parsed =
+            line_helpers.PathLine:new(line, delimiter, filename_pos, lineno_pos)
+        if constants.has_eza > 0 then
+            return { constants.eza, "--color=always", "-lh", parsed.filename }
+        elseif vim.fn.executable("ls") > 0 then
+            return { "ls", "--color=always", "-lh", parsed.filename }
+        elseif constants.is_windows then
+            return { "dir", parsed.filename }
+        else
+            notify.echo(LogLevels.INFO, "no ls/dir/eza/exa command found.")
+            return nil
+        end
+    end
+    return wrap
+end
+
+local directory_previewer = make_directory_previewer()
+
+--- @param line string
+--- @return string[]|nil
+local function file_explorer_previewer(line)
+    local splits = utils.string_split(line, " ")
+    local p = splits[#splits]
+    if vim.fn.filereadable(p) > 0 then
+        return file_previewer(p)
+    elseif vim.fn.isdirectory(p) > 0 then
+        return directory_previewer(p)
+    else
+        return nil
+    end
 end
 
 -- ls }
@@ -1869,7 +1919,6 @@ local Defaults = {
                 })
             end,
             provider_type = ProviderTypeEnum.LIST,
-            context_maker = lsp_position_context_maker,
             line_opts = {
                 prepend_icon_by_ft = true,
                 prepend_icon_path_delimiter = ":",
@@ -1904,6 +1953,9 @@ local Defaults = {
             border = "none",
             zindex = 51,
         },
+        other_opts = {
+            context_maker = lsp_position_context_maker,
+        },
     }),
 
     -- the 'Lsp Type Definitions' command
@@ -1928,7 +1980,6 @@ local Defaults = {
                 })
             end,
             provider_type = ProviderTypeEnum.LIST,
-            context_maker = lsp_position_context_maker,
             line_opts = {
                 prepend_icon_by_ft = true,
                 prepend_icon_path_delimiter = ":",
@@ -1963,6 +2014,9 @@ local Defaults = {
             border = "none",
             zindex = 51,
         },
+        other_opts = {
+            context_maker = lsp_position_context_maker,
+        },
     }),
 
     -- the 'Lsp References' command
@@ -1987,7 +2041,6 @@ local Defaults = {
                 })
             end,
             provider_type = ProviderTypeEnum.LIST,
-            context_maker = lsp_position_context_maker,
             line_opts = {
                 prepend_icon_by_ft = true,
                 prepend_icon_path_delimiter = ":",
@@ -2022,6 +2075,9 @@ local Defaults = {
             border = "none",
             zindex = 51,
         },
+        other_opts = {
+            context_maker = lsp_position_context_maker,
+        },
     }),
 
     -- the 'Lsp Implementations' command
@@ -2046,7 +2102,6 @@ local Defaults = {
                 })
             end,
             provider_type = ProviderTypeEnum.LIST,
-            context_maker = lsp_position_context_maker,
             line_opts = {
                 prepend_icon_by_ft = true,
                 prepend_icon_path_delimiter = ":",
@@ -2081,6 +2136,9 @@ local Defaults = {
             border = "none",
             zindex = 51,
         },
+        other_opts = {
+            context_maker = lsp_position_context_maker,
+        },
     }),
 
     -- the 'Yank History' commands
@@ -2092,18 +2150,30 @@ local Defaults = {
 
     -- the 'Users' commands
     users = {
-        ls = GroupConfig:make({
-            commands = CommandConfig:make({
-                name = "FzfxLs",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    desc = "Fzfx ls",
-                },
-            }),
+        file_explorer = GroupConfig:make({
+            commands = {
+                CommandConfig:make({
+                    name = "FzfxFileExplorer",
+                    feed = CommandFeedEnum.ARGS,
+                    opts = {
+                        bang = true,
+                        desc = "File explorer filter hidden files (ls -l)",
+                    },
+                    default_provider = "filter_hidden",
+                }),
+                CommandConfig:make({
+                    name = "FzfxFileExplorerU",
+                    feed = CommandFeedEnum.ARGS,
+                    opts = {
+                        bang = true,
+                        desc = "File explorer include hidden files (ls -la)",
+                    },
+                    default_provider = "include_hidden",
+                }),
+            },
             providers = {
                 filter_hidden = ProviderConfig:make({
-                    key = "ctrl-h",
+                    key = "ctrl-i",
                     provider = function(query, context)
                         local cwd = utils.readfile(context.cwd)
                         if vim.fn.executable("eza") > 0 then
@@ -2123,36 +2193,38 @@ local Defaults = {
                         end
                     end,
                     provider_type = ProviderTypeEnum.COMMAND_LIST,
-                    context_maker = ls_context_maker,
                 }),
                 include_hidden = ProviderConfig:make({
                     key = "ctrl-u",
                     provider = function(query, context)
-                        local cwd = utils.readfile(context.cwd)
-                        if vim.fn.executable("eza") > 0 then
-                            return { "eza", "--color=always", "-lha", cwd }
-                        elseif vim.fn.executable("exa") > 0 then
-                            return { "exa", "--color=always", "-lha", cwd }
-                        elseif vim.fn.executable("ls") > 0 then
-                            return { "ls", "--color=always", "-lha", cwd }
-                        elseif constants.is_windows then
-                            return { "dir", cwd }
-                        else
-                            notify.echo(
-                                LogLevels.INFO,
-                                "no ls/dir/eza/exa command found."
-                            )
-                            return nil
-                        end
+                        local cwd = utils.readfile(context.cwd) --[[@as string]]
+                        return directory_previewer(cwd)
                     end,
                     provider_type = ProviderTypeEnum.COMMAND_LIST,
-                    context_maker = ls_context_maker,
                 }),
             },
-            previewers = PreviewerConfig:make({
-                previewer = file_previewer_rg,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
+            previewers = {
+                filter_hidden = PreviewerConfig:make({
+                    previewer = file_explorer_previewer,
+                    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                }),
+                include_hidden = PreviewerConfig:make({
+                    previewer = file_explorer_previewer,
+                    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                }),
+            },
+            interactions = {
+                cd = InteractionConfig:make({
+                    key = "ctrl-l",
+                    interaction = require("fzfx.actions").bdelete,
+                    reload_after_execute = true,
+                }),
+                goto_upper = InteractionConfig:make({
+                    key = "ctrl-h",
+                    interaction = require("fzfx.actions").bdelete,
+                    reload_after_execute = true,
+                }),
+            },
             actions = {
                 ["esc"] = require("fzfx.actions").nop,
                 ["enter"] = require("fzfx.actions").edit_rg,
@@ -2160,13 +2232,16 @@ local Defaults = {
             },
             fzf_opts = {
                 default_fzf_options.multi,
-                default_fzf_options.lsp_preview_window,
-                "--border=none",
-                { "--delimiter", ":" },
                 {
                     "--prompt",
-                    "Implementations > ",
+                    path.shorten() .. " > ",
                 },
+                function()
+                    return constants.has_eza and "--header-lines=1" or nil
+                end,
+            },
+            other_opts = {
+                context_maker = file_explorer_context_maker,
             },
         }),
     },

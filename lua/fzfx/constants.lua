@@ -31,6 +31,9 @@ local has_gnu_grep = (
 local gnu_grep = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
 local grep = "grep"
 
+local has_eza = vim.fn.executable("exa") > 0 or vim.fn.executable("eza") > 0
+local eza = vim.fn.executable("eza") > 0 and "eza" or "exa"
+
 local M = {
     -- os
     is_windows = is_windows,
@@ -55,6 +58,9 @@ local M = {
     has_gnu_grep = has_gnu_grep,
     gnu_grep = gnu_grep,
     grep = grep,
+
+    has_eza = has_eza,
+    eza = eza,
 }
 
 return M

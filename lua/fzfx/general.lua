@@ -654,33 +654,20 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         PreviewerSwitch:new(name, default_pipeline, pipeline_configs.previewers)
 
     --- @type PipelineContext
-    local default_context = {
-        bufnr = vim.api.nvim_get_current_buf(),
-        winnr = vim.api.nvim_get_current_win(),
-        tabnr = vim.api.nvim_get_current_tabpage(),
-    }
-    local pipeline_contexts_map = {}
-    if clazz.instanceof(pipeline_configs.providers, ProviderConfig) then
-        if type(pipeline_configs.providers.context_maker) == "function" then
-            pipeline_contexts_map[DEFAULT_PIPELINE] =
-                pipeline_configs.providers.context_maker()
-        end
-    else
-        for provider_name, provider_opts in pairs(pipeline_configs.providers) do
-            if type(provider_opts.context_maker) == "function" then
-                pipeline_contexts_map[provider_name] =
-                    provider_opts.context_maker()
-            end
-        end
-    end
+    local context = (
+        type(pipeline_configs.other_opts) == "table"
+        and type(pipeline_configs.other_opts.context_maker) == "function"
+    )
+            and pipeline_configs.other_opts.context_maker()
+        or {
+            bufnr = vim.api.nvim_get_current_buf(),
+            winnr = vim.api.nvim_get_current_win(),
+            tabnr = vim.api.nvim_get_current_tabpage(),
+        }
 
     --- @param query_params string
     local function provide_rpc(query_params)
-        provider_switch:provide(
-            name,
-            query_params,
-            pipeline_contexts_map[provider_switch.pipeline] or default_context
-        )
+        provider_switch:provide(name, query_params, context)
     end
 
     --- @param line_params string

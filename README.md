@@ -791,6 +791,7 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Deprecate 'files' (`FzfxFiles`) configs, notify user migrate to new schema.
 - 2023-09-26
   - Break: require minimal Neovim version &ge; v0.6.0.
+  - Break: move option `context_maker` from `providers` to `other_opts`.
 
 ## 🍀 Credit
 
