@@ -9,8 +9,8 @@ describe("shell_helpers", function()
         vim.api.nvim_command("cd " .. cwd)
     end)
 
-    local shell_helpers = require("fzfx.shell_helpers")
     vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+    local shell_helpers = require("fzfx.shell_helpers")
     describe("[is_windows]", function()
         it("is windows", function()
             assert_eq(type(shell_helpers.is_windows), "boolean")
