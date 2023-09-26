@@ -173,6 +173,11 @@ then
     end
 
     local async_cmd = shell_helpers.AsyncCmd:open(cmd_splits, println) --[[@as AsyncCmd]]
+    shell_helpers.log_ensure(
+        async_cmd ~= nil,
+        "|provider| error! failed to open async command: %s",
+        vim.inspect(cmd_splits)
+    )
     async_cmd:start({
         on_exit = function(code, signal)
             vim.loop.stop()
