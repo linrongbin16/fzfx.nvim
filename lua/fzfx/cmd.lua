@@ -120,7 +120,7 @@ function GitRootCmd:value()
         return nil
     end
     return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-            and vim.trim(self.result.stdout[1])
+        and vim.trim(self.result.stdout[1])
         or nil
 end
 
@@ -199,7 +199,7 @@ function GitCurrentBranchCmd:value()
         return nil
     end
     return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-            and self.result.stdout[1]
+        and self.result.stdout[1]
         or nil
 end
 
@@ -255,38 +255,20 @@ end
 --- @alias AsyncCmdRunOpts {on_exit:AsyncCmdRunOptOnExit?}
 --- @param opts AsyncCmdRunOpts?
 function AsyncCmd:start(opts)
-    local user_on_exit_invoked = false
-
     --- @param code integer?
     ---@param signal integer?
     local function on_exit(code, signal)
         if not self.out_pipe:is_closing() then
-            self.out_pipe:close(function(err)
-                if self.err_pipe:is_closing() then
-                    if
-                        type(opts) == "table"
-                        and type(opts.on_exit) == "function"
-                        and not user_on_exit_invoked
-                    then
-                        opts.on_exit(code, signal)
-                        user_on_exit_invoked = true
-                    end
-                end
-            end)
+            self.out_pipe:close()
         end
         if not self.err_pipe:is_closing() then
-            self.err_pipe:close(function(err)
-                if self.out_pipe:is_closing() then
-                    if
-                        type(opts) == "table"
-                        and type(opts.on_exit) == "function"
-                        and not user_on_exit_invoked
-                    then
-                        opts.on_exit(code, signal)
-                        user_on_exit_invoked = true
-                    end
-                end
-            end)
+            self.err_pipe:close()
+        end
+        if
+            type(opts) == "table"
+            and type(opts.on_exit) == "function"
+        then
+            opts.on_exit(code, signal)
         end
     end
 
@@ -297,12 +279,9 @@ function AsyncCmd:start(opts)
     }, function(exit_code, exit_signal)
         self.out_pipe:read_stop()
         self.err_pipe:read_stop()
-        self.out_pipe:shutdown(function(err)
-            on_exit(exit_code, exit_signal)
-        end)
-        self.err_pipe:shutdown(function(err)
-            on_exit(exit_code, exit_signal)
-        end)
+        self.out_pipe:shutdown()
+        self.err_pipe:shutdown()
+        on_exit(exit_code, exit_signal)
     end)
 
     --- @param err string?
@@ -334,7 +313,7 @@ function AsyncCmd:start(opts)
         local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
         -- truncate the printed lines if found any
         self.out_buffer = i <= #self.out_buffer
-                and self.out_buffer:sub(i, #self.out_buffer)
+            and self.out_buffer:sub(i, #self.out_buffer)
             or nil
     end
 
