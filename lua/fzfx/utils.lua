@@ -148,40 +148,17 @@ local function string_rtrim(s, t)
 end
 
 --- @param s string
---- @param delimiter string?
---- @param filter_empty boolean?
+--- @param delimiter string
+--- @param opts {plain:boolean?,trimempty:boolean?}|nil
 --- @return string[]
-local function string_split(s, delimiter, filter_empty)
-    delimiter = delimiter or " \t\n\r"
-    filter_empty = filter_empty ~= nil and filter_empty or true
-
-    --- @param v string
-    --- @return boolean
-    local function delim_contains(v)
-        return string_find(delimiter, v) ~= nil
-    end
-
-    local result = {}
-    local prev = 1
-    local i = 1
-    while i <= #s do
-        local c = s:sub(i, i)
-        if delim_contains(c) then
-            local item = s:sub(prev, i - 1)
-            if not filter_empty or string.len(item) > 0 then
-                table.insert(result, item)
-            end
-            prev = i + 1
-        end
-        i = i + 1
-    end
-    if prev <= #s then
-        local item = s:sub(prev, #s)
-        if not filter_empty or string.len(item) > 0 then
-            table.insert(result, s:sub(prev, #s))
-        end
-    end
-    return result
+local function string_split(s, delimiter, opts)
+    opts = opts or {
+        plain = true,
+        trimempty = true,
+    }
+    opts.plain = opts.plain == nil and true or opts.plain
+    opts.trimempty = opts.trimempty == nil and true or opts.trimempty
+    return vim.split(s, delimiter, opts)
 end
 
 --- @param s string
@@ -540,6 +517,147 @@ local function writelines(filename, lines)
     return 0
 end
 
+--- @alias AsyncSpawnRunOptOnExit fun(code:integer?,signal:integer?):any
+--- @alias AsyncSpawnRunOpts {on_exit:AsyncSpawnRunOptOnExit?}
+--- @alias AsyncSpawnLineConsumer fun(line:string):any
+--- @class AsyncSpawn
+--- @field cmds string[]
+--- @field fn_line_consumer AsyncSpawnLineConsumer
+--- @field out_pipe uv_pipe_t
+--- @field err_pipe uv_pipe_t
+--- @field out_buffer string?
+--- @field opts AsyncSpawnRunOpts?
+local AsyncSpawn = {}
+
+--- @param cmds string[]
+--- @param fn_line_consumer AsyncSpawnLineConsumer
+--- @param opts AsyncSpawnRunOpts?
+--- @return AsyncSpawn?
+function AsyncSpawn:open(cmds, fn_line_consumer, opts)
+    local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    if not out_pipe or not err_pipe then
+        return nil
+    end
+
+    local o = {
+        cmds = cmds,
+        fn_line_consumer = fn_line_consumer,
+        out_pipe = out_pipe,
+        err_pipe = err_pipe,
+        out_buffer = nil,
+        opts = opts,
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+--- @param buffer string
+--- @param fn_line_processor AsyncSpawnLineConsumer
+--- @return integer
+function AsyncSpawn:consume_line(buffer, fn_line_processor)
+    local i = 1
+    while i <= #buffer do
+        local newline_pos = string_find(buffer, "\n", i)
+        if not newline_pos then
+            break
+        end
+        local line = buffer:sub(i, newline_pos - 1)
+        fn_line_processor(line)
+        i = newline_pos + 1
+    end
+    return i
+end
+
+--- @param err string?
+--- @param data string?
+--- @return nil
+function AsyncSpawn:on_stdout(err, data)
+    if err then
+        self:on_exit(130)
+        return
+    end
+
+    if not data then
+        if self.out_buffer then
+            -- foreach the data_buffer and find every line
+            local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
+            if i <= #self.out_buffer then
+                local line = self.out_buffer:sub(i, #self.out_buffer)
+                self.fn_line_consumer(line)
+                self.out_buffer = nil
+            end
+        end
+        self:on_exit(0)
+        return
+    end
+
+    -- append data to data_buffer
+    self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
+    -- foreach the data_buffer and find every line
+    local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
+    -- truncate the printed lines if found any
+    self.out_buffer = i <= #self.out_buffer
+            and self.out_buffer:sub(i, #self.out_buffer)
+        or nil
+end
+
+--- @param err string?
+--- @param data string?
+--- @return nil
+function AsyncSpawn:on_stderr(err, data)
+    if err then
+        io.write(
+            string.format(
+                "err:%s, data:%s",
+                vim.inspect(err),
+                vim.inspect(data)
+            )
+        )
+        self:on_exit(130)
+    end
+end
+
+--- @param code integer?
+--- @param signal integer?
+--- @return nil
+function AsyncSpawn:on_exit(code, signal)
+    if not self.out_pipe:is_closing() then
+        self.out_pipe:close()
+    end
+    if not self.err_pipe:is_closing() then
+        self.err_pipe:close()
+    end
+    if type(self.opts) == "table" and type(self.opts.on_exit) == "function" then
+        self.opts.on_exit(code, signal)
+    end
+end
+
+--- @return uv_process_t?, string|integer
+function AsyncSpawn:start()
+    local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
+        args = vim.list_slice(self.cmds, 2),
+        stdio = { nil, self.out_pipe, self.err_pipe },
+        -- verbatim = true,
+    }, function(code, signal)
+        self.out_pipe:read_stop()
+        self.err_pipe:read_stop()
+        self.out_pipe:shutdown()
+        self.err_pipe:shutdown()
+        self:on_exit(code, signal)
+    end)
+
+    self.out_pipe:read_start(function(err, data)
+        self:on_stdout(err, data)
+    end)
+    self.err_pipe:read_start(function(err, data)
+        self:on_stderr(err, data)
+    end)
+
+    return process_handler, process_id
+end
+
 local M = {
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
@@ -565,6 +683,7 @@ local M = {
     readlines = readlines,
     writefile = writefile,
     writelines = writelines,
+    AsyncSpawn = AsyncSpawn,
 }
 
 return M

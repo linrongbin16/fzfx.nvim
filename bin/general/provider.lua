@@ -70,22 +70,6 @@ local function println(line)
     end
 end
 
---- @param data_buffer string
---- @param fn_line_processor fun(line:string?):nil
-local function consume(data_buffer, fn_line_processor)
-    local i = 1
-    while i <= #data_buffer do
-        local newline_pos = shell_helpers.string_find(data_buffer, "\n", i)
-        if not newline_pos then
-            break
-        end
-        local line = data_buffer:sub(i, newline_pos)
-        fn_line_processor(line)
-        i = newline_pos + 1
-    end
-    return i
-end
-
 if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
     --- @type string
     local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
@@ -188,101 +172,129 @@ then
         return
     end
 
-    local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
-    local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
-    shell_helpers.log_ensure(
-        out_pipe ~= nil,
-        "|provider| error! failed to create out pipe with vim.loop.new_pipe"
-    )
-    shell_helpers.log_ensure(
-        err_pipe ~= nil,
-        "|provider| error! failed to create err pipe with vim.loop.new_pipe"
-    )
-    shell_helpers.log_debug("|provider| out_pipe:%s", vim.inspect(out_pipe))
-    shell_helpers.log_debug("|provider| err_pipe:%s", vim.inspect(err_pipe))
-
-    --- @type string?
-    local data_buffer = nil
-
-    local function on_exit(code)
-        out_pipe:close()
-        err_pipe:close()
-        vim.loop.stop()
-        os.exit(code)
-    end
-
-    local process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
-        args = { unpack(cmd_splits, 2) },
-        stdio = { nil, out_pipe, err_pipe },
-        -- verbatim = true,
-    }, function(code, signal)
-        out_pipe:read_stop()
-        err_pipe:read_stop()
-        out_pipe:shutdown()
-        err_pipe:shutdown()
-        on_exit(code)
-    end)
-    shell_helpers.log_debug(
-        "|provider| process_handler:%s, process_id:%s",
-        vim.inspect(process_handler),
-        vim.inspect(process_id)
-    )
-
-    --- @param err string?
-    --- @param data string?
-    local function on_output(err, data)
-        -- shell_helpers.log_debug(
-        --     "|provider| plain_list|command_list on_output err:%s, data:%s",
-        --     vim.inspect(err),
-        --     vim.inspect(data)
-        -- )
-        if err then
-            on_exit(1)
-            return
-        end
-
-        if not data then
-            if data_buffer then
-                -- foreach the data_buffer and find every line
-                local i = consume(data_buffer, println)
-                if i <= #data_buffer then
-                    local line = data_buffer:sub(i, #data_buffer)
-                    println(line)
-                    data_buffer = nil
+    local process_context = {
+        process_handler = nil,
+        process_id = nil,
+    }
+    local async_spawn = shell_helpers.AsyncSpawn:open(cmd_splits, println, {
+        on_exit = function(code, signal)
+            vim.loop.stop()
+            if shell_helpers.is_windows then
+                if process_context.process_handler then
+                    process_context.process_handler:kill()
+                end
+            else
+                if process_context.process_id then
+                    vim.loop.kill(process_context.process_id --[[@as integer]])
                 end
             end
-            on_exit(0)
-            return
-        end
-
-        -- append data to data_buffer
-        data_buffer = data_buffer and (data_buffer .. data) or data
-        -- foreach the data_buffer and find every line
-        local i = consume(data_buffer, println)
-        -- truncate the printed lines if found any
-        data_buffer = i <= #data_buffer and data_buffer:sub(i, #data_buffer)
-            or nil
-    end
-
-    local function on_error(err, data)
-        shell_helpers.log_debug(
-            "|provider| plain_list|command_list on_error err:%s, data:%s",
-            vim.inspect(err),
-            vim.inspect(data)
-        )
-        -- if err then
-        --     on_exit(1)
-        --     return
-        -- end
-        -- if not data then
-        --     on_exit(0)
-        --     return
-        -- end
-    end
-
-    out_pipe:read_start(on_output)
-    err_pipe:read_start(on_error)
+            os.exit(code)
+        end,
+    }) --[[@as AsyncSpawn]]
+    shell_helpers.log_ensure(
+        async_spawn ~= nil,
+        "|provider| error! failed to open async command: %s",
+        vim.inspect(cmd_splits)
+    )
+    local process_handler, process_id = async_spawn:start()
+    process_context.process_handler = process_handler
+    process_context.process_id = process_id
     vim.loop.run()
+
+    -- local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+    -- local err_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
+    -- shell_helpers.log_ensure(
+    --     out_pipe ~= nil,
+    --     "|provider| error! failed to create out pipe with vim.loop.new_pipe"
+    -- )
+    -- shell_helpers.log_ensure(
+    --     err_pipe ~= nil,
+    --     "|provider| error! failed to create err pipe with vim.loop.new_pipe"
+    -- )
+    -- shell_helpers.log_debug("|provider| out_pipe:%s", vim.inspect(out_pipe))
+    -- shell_helpers.log_debug("|provider| err_pipe:%s", vim.inspect(err_pipe))
+    --
+    -- local function on_exit(code)
+    --     out_pipe:close()
+    --     err_pipe:close()
+    --     vim.loop.stop()
+    --     os.exit(code)
+    -- end
+    --
+    -- local process_handler, process_id = vim.loop.spawn(cmd_splits[1], {
+    --     args = vim.list_slice(cmd_splits, 2),
+    --     stdio = { nil, out_pipe, err_pipe },
+    --     -- verbatim = true,
+    -- }, function(code, signal)
+    --     out_pipe:read_stop()
+    --     err_pipe:read_stop()
+    --     out_pipe:shutdown()
+    --     err_pipe:shutdown()
+    --     on_exit(code)
+    -- end)
+    -- shell_helpers.log_debug(
+    --     "|provider| process_handler:%s, process_id:%s",
+    --     vim.inspect(process_handler),
+    --     vim.inspect(process_id)
+    -- )
+    --
+    -- --- @type string?
+    -- local out_buffer = nil
+    --
+    -- --- @param err string?
+    -- --- @param data string?
+    -- local function on_output(err, data)
+    --     -- shell_helpers.log_debug(
+    --     --     "|provider| plain_list|command_list on_output err:%s, data:%s",
+    --     --     vim.inspect(err),
+    --     --     vim.inspect(data)
+    --     -- )
+    --     if err then
+    --         on_exit(1)
+    --         return
+    --     end
+    --
+    --     if not data then
+    --         if out_buffer then
+    --             -- foreach the data_buffer and find every line
+    --             local i = shell_helpers.consume_line(out_buffer, println)
+    --             if i <= #out_buffer then
+    --                 local line = out_buffer:sub(i, #out_buffer)
+    --                 println(line)
+    --                 out_buffer = nil
+    --             end
+    --         end
+    --         on_exit(0)
+    --         return
+    --     end
+    --
+    --     -- append data to data_buffer
+    --     out_buffer = out_buffer and (out_buffer .. data) or data
+    --     -- foreach the data_buffer and find every line
+    --     local i = shell_helpers.consume_line(out_buffer, println)
+    --     -- truncate the printed lines if found any
+    --     out_buffer = i <= #out_buffer and out_buffer:sub(i, #out_buffer) or nil
+    -- end
+    --
+    -- local function on_error(err, data)
+    --     shell_helpers.log_debug(
+    --         "|provider| plain_list|command_list on_error err:%s, data:%s",
+    --         vim.inspect(err),
+    --         vim.inspect(data)
+    --     )
+    --     -- if err then
+    --     --     on_exit(1)
+    --     --     return
+    --     -- end
+    --     -- if not data then
+    --     --     on_exit(0)
+    --     --     return
+    --     -- end
+    -- end
+    --
+    -- out_pipe:read_start(on_output)
+    -- err_pipe:read_start(on_error)
+    -- vim.loop.run()
 elseif metaopts.provider_type == "list" then
     local reader = shell_helpers.FileLineReader:open(resultfile) --[[@as FileLineReader ]]
     shell_helpers.log_ensure(

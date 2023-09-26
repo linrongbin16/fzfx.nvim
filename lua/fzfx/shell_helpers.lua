@@ -1,8 +1,8 @@
 -- infra utils {
 
-local IS_WINDOWS = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
+local is_windows = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
 
-if IS_WINDOWS then
+if is_windows then
     vim.o.shell = "cmd.exe"
     vim.o.shellslash = false
     vim.o.shellcmdflag = "/s /c"
@@ -159,6 +159,7 @@ end
 -- icon render }
 
 local M = {
+    is_windows = is_windows,
     log_debug = log_debug,
     log_err = log_err,
     log_throw = log_throw,
@@ -174,6 +175,7 @@ local M = {
     string_rtrim = require("fzfx.utils").string_rtrim,
     FileLineReader = require("fzfx.utils").FileLineReader,
     readfile = require("fzfx.utils").readfile,
+    AsyncSpawn = require("fzfx.utils").AsyncSpawn,
 }
 
 return M

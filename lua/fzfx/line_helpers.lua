@@ -7,7 +7,8 @@ local path = require("fzfx.path")
 --- @param line string
 --- @return string
 local function parse_filename(line)
-    local filename = env.icon_enable() and utils.string_split(line)[2] or line
+    local filename = env.icon_enable() and utils.string_split(line, " ")[2]
+        or line
     return path.normalize(filename)
 end
 
