@@ -110,6 +110,35 @@ describe("utils", function()
             assert_eq(utils.string_rtrim("\tasdf\t"), "\tasdf")
         end)
     end)
+    describe("[string_split]", function()
+        it("splits rg options-1", function()
+            local actual = utils.string_split("-w -g *.md", " ")
+            local expect = { "-w", "-g", "*.md" }
+            assert_eq(#actual, #expect)
+            for i, v in ipairs(actual) do
+                assert_eq(v, expect[i])
+            end
+        end)
+        it("splits rg options-2", function()
+            local actual = utils.string_split("  -w -g *.md  ", " ")
+            local expect = { "-w", "-g", "*.md" }
+            assert_eq(#actual, #expect)
+            for i, v in ipairs(actual) do
+                assert_eq(v, expect[i])
+            end
+        end)
+        it("splits rg options-3", function()
+            local actual =
+                utils.string_split("  -w -g *.md  ", " ", { trimempty = false })
+            local expect = { "", "", "-w", "-g", "*.md", "", "" }
+            -- print(string.format("splits rg3, actual:%s", vim.inspect(actual)))
+            -- print(string.format("splits rg3, expect:%s", vim.inspect(expect)))
+            assert_eq(#actual, #expect)
+            for i, v in ipairs(actual) do
+                assert_eq(v, expect[i])
+            end
+        end)
+    end)
     describe("[number_bound]", function()
         it("bound left", function()
             assert_eq(utils.number_bound(1, 1, 2), 1)
@@ -378,46 +407,27 @@ describe("utils", function()
 
             local i = 1
             local function process_line(line)
-                -- print(string.format("[%d]%s", i, line))
+                print(string.format("[%d]%s\n", i, line))
                 assert_eq(type(line), "string")
                 assert_eq(line, lines[i])
                 i = i + 1
             end
             local async_spawn =
                 utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
-            for _, splits in ipairs(utils.string_split(content, "\n")) do
+            local content_splits =
+                utils.string_split(content, "\n", { trimempty = false })
+            for _, splits in ipairs(content_splits) do
                 async_spawn:on_stdout(nil, splits)
+                async_spawn:on_stdout(nil, "\n")
             end
             async_spawn:on_stdout(nil, nil)
         end)
-    end)
-    describe("[string_split]", function()
-        it("splits rg options-1", function()
-            local actual = utils.string_split("-w -g *.md", " ")
-            local expect = { "-w", "-g", "*.md" }
-            assert_eq(#actual, #expect)
-            for i, v in ipairs(actual) do
-                assert_eq(v, expect[i])
-            end
-        end)
-        it("splits rg options-2", function()
-            local actual = utils.string_split("  -w -g *.md  ", " ")
-            local expect = { "-w", "-g", "*.md" }
-            assert_eq(#actual, #expect)
-            for i, v in ipairs(actual) do
-                assert_eq(v, expect[i])
-            end
-        end)
-        it("splits rg options-3", function()
-            local actual =
-                utils.string_split("  -w -g *.md  ", " ", { trimempty = false })
-            local expect = { "", "", "-w", "-g", "*.md", "", "" }
-            print(string.format("splits rg3, actual:%s", vim.inspect(actual)))
-            print(string.format("splits rg3, expect:%s", vim.inspect(expect)))
-            assert_eq(#actual, #expect)
-            for i, v in ipairs(actual) do
-                assert_eq(v, expect[i])
-            end
+        it("stderr", function()
+            local async_spawn = utils.AsyncSpawn:open(
+                { "cat", "README.md" },
+                function() end
+            ) --[[@as AsyncSpawn]]
+            async_spawn:on_stderr(nil, nil)
         end)
     end)
 end)
