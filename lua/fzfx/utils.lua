@@ -634,6 +634,7 @@ function AsyncSpawn:on_exit(code, signal)
     end
 end
 
+--- @return uv_process_t?, string|integer
 function AsyncSpawn:start()
     local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
         args = vim.list_slice(self.cmds, 2),
@@ -653,6 +654,8 @@ function AsyncSpawn:start()
     self.err_pipe:read_start(function(err, data)
         self:on_stderr(err, data)
     end)
+
+    return process_handler, process_id
 end
 
 local M = {

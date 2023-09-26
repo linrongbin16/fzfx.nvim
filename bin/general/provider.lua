@@ -172,9 +172,22 @@ then
         return
     end
 
+    local process_context = {
+        process_handler = nil,
+        process_id = nil,
+    }
     local async_spawn = shell_helpers.AsyncSpawn:open(cmd_splits, println, {
         on_exit = function(code, signal)
             vim.loop.stop()
+            if shell_helpers.is_windows then
+                if process_context.process_handler then
+                    process_context.process_handler:kill()
+                end
+            else
+                if process_context.process_id then
+                    vim.loop.kill(process_context.process_id --[[@as integer]])
+                end
+            end
             os.exit(code)
         end,
     }) --[[@as AsyncSpawn]]
@@ -183,7 +196,9 @@ then
         "|provider| error! failed to open async command: %s",
         vim.inspect(cmd_splits)
     )
-    async_spawn:start()
+    local process_handler, process_id = async_spawn:start()
+    process_context.process_handler = process_handler
+    process_context.process_id = process_id
     vim.loop.run()
 
     -- local out_pipe = vim.loop.new_pipe() --[[@as uv_pipe_t]]
