@@ -59,4 +59,12 @@ describe("shell_helpers", function()
             assert_true(string.len(err --[[@as string]]) > 0)
         end)
     end)
+    describe("[prepend_path_with_icon]", function()
+        it("prepend", function()
+            assert_eq(
+                shell_helpers.prepend_path_with_icon("README.md"),
+                "README.md"
+            )
+        end)
+    end)
 end)
