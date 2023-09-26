@@ -25,12 +25,18 @@ local function parse_path_line(line, delimiter, file_pos, lineno_pos, colno_pos)
     local column = nil
     if type(delimiter) == "string" and string.len(delimiter) > 0 then
         local parts = utils.string_split(line, delimiter)
-        filename = parse_filename(parts[file_pos])
+        filename = parse_filename(
+            parts[file_pos > 0 and file_pos or (#parts + file_pos + 1)]
+        )
         if type(lineno_pos) == "number" then
-            lineno = tonumber(parts[lineno_pos])
+            lineno = tonumber(
+                parts[lineno_pos > 0 and lineno_pos or (#parts + lineno_pos + 1)]
+            )
         end
         if type(colno_pos) == "number" then
-            column = tonumber(parts[colno_pos])
+            column = tonumber(
+                parts[colno_pos > 0 and colno_pos or (#parts + colno_pos + 1)]
+            )
         end
     else
         filename = parse_filename(line)

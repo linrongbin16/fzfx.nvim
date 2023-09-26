@@ -325,7 +325,7 @@ end
 
 -- lsp diagnostics }
 
--- lsp definitions {
+-- lsp locations {
 
 --- @alias LspLocationRangeStart {line:integer,character:integer}
 --- @alias LspLocationRangeEnd {line:integer,character:integer}
@@ -556,7 +556,24 @@ local function lsp_locations_provider(opts)
     return def_lines
 end
 
--- lsp definitions }
+-- lsp locations }
+
+-- ls {
+
+local function ls_context_maker()
+    local temp = vim.fn.tempname()
+    utils.writefile(temp, vim.fn.getcwd())
+    --- @type PipelineContext
+    local context = {
+        bufnr = vim.api.nvim_get_current_buf(),
+        winnr = vim.api.nvim_get_current_win(),
+        tabnr = vim.api.nvim_get_current_tabpage(),
+        cwd = temp,
+    }
+    return context
+end
+
+-- ls }
 
 --- @alias Configs table<string, any>
 --- @type Configs
@@ -2074,7 +2091,85 @@ local Defaults = {
     },
 
     -- the 'Users' commands
-    users = nil,
+    users = {
+        ls = GroupConfig:make({
+            commands = CommandConfig:make({
+                name = "FzfxLs",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    desc = "Fzfx ls",
+                },
+            }),
+            providers = {
+                filter_hidden = ProviderConfig:make({
+                    key = "ctrl-h",
+                    provider = function(query, context)
+                        local cwd = utils.readfile(context.cwd)
+                        if vim.fn.executable("eza") > 0 then
+                            return { "eza", "--color=always", "-lh", cwd }
+                        elseif vim.fn.executable("exa") > 0 then
+                            return { "exa", "--color=always", "-lh", cwd }
+                        elseif vim.fn.executable("ls") > 0 then
+                            return { "ls", "--color=always", "-lh", cwd }
+                        elseif constants.is_windows then
+                            return { "dir", cwd }
+                        else
+                            notify.echo(
+                                LogLevels.INFO,
+                                "no ls/dir/eza/exa command found."
+                            )
+                            return nil
+                        end
+                    end,
+                    provider_type = ProviderTypeEnum.COMMAND_LIST,
+                    context_maker = ls_context_maker,
+                }),
+                include_hidden = ProviderConfig:make({
+                    key = "ctrl-u",
+                    provider = function(query, context)
+                        local cwd = utils.readfile(context.cwd)
+                        if vim.fn.executable("eza") > 0 then
+                            return { "eza", "--color=always", "-lha", cwd }
+                        elseif vim.fn.executable("exa") > 0 then
+                            return { "exa", "--color=always", "-lha", cwd }
+                        elseif vim.fn.executable("ls") > 0 then
+                            return { "ls", "--color=always", "-lha", cwd }
+                        elseif constants.is_windows then
+                            return { "dir", cwd }
+                        else
+                            notify.echo(
+                                LogLevels.INFO,
+                                "no ls/dir/eza/exa command found."
+                            )
+                            return nil
+                        end
+                    end,
+                    provider_type = ProviderTypeEnum.COMMAND_LIST,
+                    context_maker = ls_context_maker,
+                }),
+            },
+            previewers = PreviewerConfig:make({
+                previewer = file_previewer_rg,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            }),
+            actions = {
+                ["esc"] = require("fzfx.actions").nop,
+                ["enter"] = require("fzfx.actions").edit_rg,
+                ["double-click"] = require("fzfx.actions").edit_rg,
+            },
+            fzf_opts = {
+                default_fzf_options.multi,
+                default_fzf_options.lsp_preview_window,
+                "--border=none",
+                { "--delimiter", ":" },
+                {
+                    "--prompt",
+                    "Implementations > ",
+                },
+            },
+        }),
+    },
 
     -- FZF_DEFAULT_OPTS
     fzf_opts = {
