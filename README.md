@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD013 MD034 MD033 -->
 
-<p align="center"><h1>fzfx.nvim</h1></p>
+# fzfx.nvim
 
 <p align="center">
 <a href="https://github.com/neovim/neovim/releases/v0.6.0"><img alt="Neovim-v0.6.0" src="https://img.shields.io/badge/Neovim-v0.6.0-blueviolet.svg?logo=Neovim&logoColor=green" /></a>
