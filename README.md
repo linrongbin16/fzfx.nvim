@@ -793,7 +793,7 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 ## 💩 Break Changes
 
 - 2023-08-17
-  - Re-bind keys 'ctrl-e'/'ctrl-a' to toggle/toggle-all, remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
+  - Re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
   - Re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
   - Re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 - 2023-08-19
