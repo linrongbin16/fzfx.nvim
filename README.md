@@ -80,7 +80,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - [git](https://git-scm.com/) (optional for **git** commands).
 - [eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-> Note: `grep`/`find`/`cat`/etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`/`fd`/`bat`/etc should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
+> Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
 
 ### Windows
 
