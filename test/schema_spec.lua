@@ -50,9 +50,11 @@ describe("schema", function()
                 key = command_key,
                 provider = command_provider,
                 provider_type = command_provider_type,
-                line_type = "file",
-                line_delimiter = ":",
-                line_pos = 1,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
             })
             assert_eq(type(command), "table")
             assert_true(clazz.instanceof(command, schema.ProviderConfig))
@@ -60,9 +62,10 @@ describe("schema", function()
             assert_eq(type(command.provider), "function")
             assert_eq(command.provider(), command_provider())
             assert_eq(command.provider_type, command_provider_type)
-            assert_eq(command.line_type, "file")
-            assert_eq(command.line_delimiter, ":")
-            assert_eq(command.line_pos, 1)
+            assert_eq(type(command.line_opts), "table")
+            assert_true(command.line_opts.prepend_icon_by_ft)
+            assert_eq(command.line_opts.prepend_icon_path_delimiter, ":")
+            assert_eq(command.line_opts.prepend_icon_path_position, 1)
         end)
         it("makes a command_list provider", function()
             local command_key = "command"
@@ -73,9 +76,11 @@ describe("schema", function()
                 key = command_key,
                 provider = command_provider,
                 provider_type = "command_list",
-                line_type = "file",
-                line_delimiter = ":",
-                line_pos = 1,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
             })
             assert_eq(type(command), "table")
             assert_true(clazz.instanceof(command, schema.ProviderConfig))
@@ -87,9 +92,10 @@ describe("schema", function()
             assert_eq(command.provider()[1], "ls")
             assert_eq(command.provider()[2], "-la")
             assert_eq(command.provider_type, "command_list")
-            assert_eq(command.line_type, "file")
-            assert_eq(command.line_delimiter, ":")
-            assert_eq(command.line_pos, 1)
+            assert_eq(type(command.line_opts), "table")
+            assert_true(command.line_opts.prepend_icon_by_ft)
+            assert_eq(command.line_opts.prepend_icon_path_delimiter, ":")
+            assert_eq(command.line_opts.prepend_icon_path_position, 1)
         end)
     end)
     describe("[PreviewerConfig]", function()
