@@ -2280,7 +2280,9 @@ local Defaults = {
                 path.shorten() .. " > ",
             },
             function()
-                return constants.has_eza and "--header-lines=1" or nil
+                return (constants.has_eza or vim.fn.executable("ls") > 0)
+                        and "--header-lines=1"
+                    or nil
             end,
         },
         other_opts = {
