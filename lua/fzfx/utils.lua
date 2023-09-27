@@ -221,16 +221,16 @@ local ShellOptsContext = {}
 --- @return ShellOptsContext
 function ShellOptsContext:save()
     local o = constants.is_windows
-            and {
-                shell = vim.o.shell,
-                shellslash = vim.o.shellslash,
-                shellcmdflag = vim.o.shellcmdflag,
-                shellxquote = vim.o.shellxquote,
-                shellquote = vim.o.shellquote,
-                shellredir = vim.o.shellredir,
-                shellpipe = vim.o.shellpipe,
-                shellxescape = vim.o.shellxescape,
-            }
+        and {
+            shell = vim.o.shell,
+            shellslash = vim.o.shellslash,
+            shellcmdflag = vim.o.shellcmdflag,
+            shellxquote = vim.o.shellxquote,
+            shellquote = vim.o.shellquote,
+            shellredir = vim.o.shellredir,
+            shellpipe = vim.o.shellpipe,
+            shellxescape = vim.o.shellxescape,
+        }
         or {
             shell = vim.o.shell,
         }
@@ -387,14 +387,14 @@ end
 --- @return integer
 function FileLineReader:_read_chunk()
     local chunksize = (self.filesize >= self.offset + self.batchsize)
-            and self.batchsize
+        and self.batchsize
         or (self.filesize - self.offset)
     if chunksize <= 0 then
         return 0
     end
     local data, --[[@as string?]]
-        read_err,
-        read_name =
+    read_err,
+    read_name =
         vim.loop.fs_read(self.handler, chunksize, self.offset)
     if read_err then
         error(
@@ -617,7 +617,7 @@ function AsyncSpawn:on_stdout(err, data)
     local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
     -- truncate the printed lines if found any
     self.out_buffer = i <= #self.out_buffer
-            and self.out_buffer:sub(i, #self.out_buffer)
+        and self.out_buffer:sub(i, #self.out_buffer)
         or nil
 end
 
@@ -641,6 +641,7 @@ function AsyncSpawn:run()
     local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
         args = vim.list_slice(self.cmds, 2),
         stdio = { nil, self.out_pipe, self.err_pipe },
+        hide = true,
         -- verbatim = true,
     }, function(code, signal)
         self.out_pipe:read_stop()
