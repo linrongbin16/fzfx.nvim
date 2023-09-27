@@ -9,9 +9,13 @@ describe("general", function()
         vim.api.nvim_command("cd " .. cwd)
     end)
 
+    vim.env._FZFX_NVIM_DEBUG_ENABLE = 1
     local general = require("fzfx.general")
     local ProviderConfig = require("fzfx.schema").ProviderConfig
     local PreviewerConfig = require("fzfx.schema").PreviewerConfig
+    local utils = require("fzfx.utils")
+    local path = require("fzfx.path")
+    local schema = require("fzfx.schema")
     describe("[ProviderSwitch:new]", function()
         it("creates single plain provider", function()
             local ps = general.ProviderSwitch:new(
@@ -117,6 +121,138 @@ describe("general", function()
             assert_eq(ps.provider_configs.p2.provider[3], "p22")
             assert_eq(ps.provider_configs.p2.provider_type, "plain_list")
             assert_eq(ps:switch("p2"), nil)
+        end)
+    end)
+    describe("[PreviewerSwitch:provide]", function()
+        it("is a plain/plain_list provider", function()
+            local ps = general.ProviderSwitch:new("plain_test", "p1", {
+                p1 = ProviderConfig:make({
+                    key = "ctrl-p",
+                    provider = "ls -lh",
+                }),
+                p2 = ProviderConfig:make({
+                    key = "ctrl-q",
+                    provider = { "ls", "-lha", "~" },
+                }),
+            })
+            ps:provide("p1", "hello", {})
+            local meta1 = utils.readfile(
+                path.join(
+                    vim.fn.stdpath("data"),
+                    "fzfx.nvim",
+                    "provider_switch_metafile_plain_test"
+                )
+            )
+            local result1 = utils.readfile(
+                path.join(
+                    vim.fn.stdpath("data"),
+                    "fzfx.nvim",
+                    "provider_switch_resultfile_plain_test"
+                )
+            )
+            print(string.format("metafile:%s\n", meta1))
+            local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
+            assert_eq(type(metajson1), "table")
+            assert_eq(metajson1.pipeline, "p1")
+            assert_eq(metajson1.provider_type, "plain")
+            print(string.format("resultfile:%s\n", result1))
+            assert_eq(result1, "ls -lh")
+            ps:switch("p2")
+            ps:provide("p2", "world", {})
+            local meta2 = utils.readfile(
+                path.join(
+                    vim.fn.stdpath("data"),
+                    "fzfx.nvim",
+                    "provider_switch_metafile_plain_test"
+                )
+            )
+            local result2 = utils.readfile(
+                path.join(
+                    vim.fn.stdpath("data"),
+                    "fzfx.nvim",
+                    "provider_switch_resultfile_plain_test"
+                )
+            )
+            print(string.format("metafile:%s\n", meta2))
+            local metajson2 = vim.fn.json_decode(meta2) --[[@as table]]
+            assert_eq(type(metajson2), "table")
+            assert_eq(metajson2.pipeline, "p2")
+            assert_eq(metajson2.provider_type, "plain_list")
+            print(string.format("resultfile:%s\n", result2))
+            local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
+            assert_eq(type(resultjson2), "table")
+            assert_eq(#resultjson2, 3)
+            assert_eq(resultjson2[1], "ls")
+            assert_eq(resultjson2[2], "-lha")
+            assert_eq(resultjson2[3], "~")
+        end)
+        it("is a command/command_list provider", function()
+            local ps = general.ProviderSwitch:new("command_test", "p1", {
+                p1 = ProviderConfig:make({
+                    key = "ctrl-p",
+                    provider = function()
+                        return "ls -lh"
+                    end,
+                    provider_type = schema.ProviderTypeEnum.COMMAND,
+                }),
+                p2 = ProviderConfig:make({
+                    key = "ctrl-q",
+                    provider = function()
+                        return { "ls", "-lha", "~" }
+                    end,
+                    provider_type = schema.ProviderTypeEnum.COMMAND_LIST,
+                }),
+            })
+            ps:provide("p1", "hello", {})
+            local meta1 = utils.readfile(
+                path.join(
+                    vim.fn.stdpath("data"),
+                    "fzfx.nvim",
+                    "provider_switch_metafile_command_test"
+                )
+            )
+            local result1 = utils.readfile(
+                path.join(
+                    vim.fn.stdpath("data"),
+                    "fzfx.nvim",
+                    "provider_switch_resultfile_command_test"
+                )
+            )
+            print(string.format("metafile:%s\n", meta1))
+            local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
+            assert_eq(type(metajson1), "table")
+            assert_eq(metajson1.pipeline, "p1")
+            assert_eq(metajson1.provider_type, "command")
+            print(string.format("resultfile:%s\n", result1))
+            assert_eq(result1, "ls -lh")
+            ps:switch("p2")
+            ps:provide("p2", "world", {})
+            local meta2 = utils.readfile(
+                path.join(
+                    vim.fn.stdpath("data"),
+                    "fzfx.nvim",
+                    "provider_switch_metafile_command_test"
+                )
+            )
+            local result2 = utils.readfile(
+                path.join(
+                    vim.fn.stdpath("data"),
+                    "fzfx.nvim",
+                    "provider_switch_resultfile_command_test"
+                )
+            )
+            print(string.format("metafile:%s\n", meta2))
+            local metajson2 = vim.fn.json_decode(meta2) --[[@as table]]
+            assert_eq(type(metajson2), "table")
+            assert_eq(metajson2.pipeline, "p2")
+            assert_eq(metajson2.provider_type, "command_list")
+            print(string.format("resultfile:%s\n", result2))
+            local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
+            assert_eq(type(resultjson2), "table")
+            assert_eq(#resultjson2, 3)
+            assert_eq(resultjson2[1], "ls")
+            assert_eq(resultjson2[2], "-lha")
+            assert_eq(resultjson2[3], "~")
         end)
     end)
     describe("[PreviewerSwitch:new]", function()
