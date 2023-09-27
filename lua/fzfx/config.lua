@@ -2246,13 +2246,23 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = function(lines)
+            ["enter"] = function(lines, context)
+                local cwd = utils.readfile(context.cwd) --[[@as string]]
+                local full_lines = {}
+                for _, line in ipairs(lines) do
+                    table.insert(full_lines, path.join(cwd, line))
+                end
                 local edit_file = require("fzfx.actions").make_edit(" ", -1)
-                return edit_file(lines)
+                return edit_file(full_lines)
             end,
-            ["double-click"] = function(lines)
+            ["double-click"] = function(lines, context)
+                local cwd = utils.readfile(context.cwd) --[[@as string]]
+                local full_lines = {}
+                for _, line in ipairs(lines) do
+                    table.insert(full_lines, path.join(cwd, line))
+                end
                 local edit_file = require("fzfx.actions").make_edit(" ", -1)
-                return edit_file(lines)
+                return edit_file(full_lines)
             end,
         },
         fzf_opts = {

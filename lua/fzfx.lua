@@ -32,6 +32,9 @@ local function setup(options)
     -- rpc server
     require("fzfx.server").setup()
 
+    -- yank history
+    require("fzfx.yank_history").setup()
+
     -- files
     require("fzfx.files").setup()
 
@@ -68,8 +71,8 @@ local function setup(options)
     -- lsp implementations
     general.setup("lsp_implementations", configs.lsp_implementations)
 
-    -- yank history
-    require("fzfx.yank_history").setup()
+    -- file explorer
+    general.setup("file_explorer", configs.file_explorer)
 
     -- users commands
     if type(configs.users) == "table" then
