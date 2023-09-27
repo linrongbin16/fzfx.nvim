@@ -337,9 +337,10 @@ end
 --- @param source string
 --- @param fzf_opts Configs
 --- @param actions Configs
+--- @param context PipelineContext
 --- @param on_launch_exit OnPopupExit|nil
 --- @return Popup
-function Popup:new(win_opts, source, fzf_opts, actions, on_launch_exit)
+function Popup:new(win_opts, source, fzf_opts, actions, context, on_launch_exit)
     local result = vim.fn.tempname()
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
     local popup_window = PopupWindow:new(win_opts)
@@ -402,7 +403,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, on_launch_exit)
                     vim.inspect(action_callback)
                 )
             else
-                action_callback(action_lines)
+                action_callback(action_lines, context)
             end
         else
             log.err("unknown action key: %s", vim.inspect(action_key))

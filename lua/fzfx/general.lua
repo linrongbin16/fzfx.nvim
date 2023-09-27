@@ -863,6 +863,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         query_command,
         fzf_opts,
         actions,
+        context,
         function()
             server.get_global_rpc_server():unregister(provide_rpc_registry_id)
             server.get_global_rpc_server():unregister(preview_rpc_registry_id)
