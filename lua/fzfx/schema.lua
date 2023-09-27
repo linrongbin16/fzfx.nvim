@@ -20,6 +20,7 @@
 --- @field bufnr integer
 --- @field winnr integer
 --- @field tabnr integer
+--- ...
 --
 --- @alias PipelineContextMaker fun():PipelineContext
 --
@@ -168,11 +169,7 @@ local ProviderLineTypeEnum = {
 --- @field key ActionKey
 --- @field provider Provider
 --- @field provider_type ProviderType by default "plain"
---- @field context_maker PipelineContextMaker?
 --- @field line_opts ProviderConfigLineOpts
---- @field line_type ProviderLineType? --- @deprecated, use line_opts
---- @field line_delimiter string? --- @deprecated, use line_opts
---- @field line_pos integer? --- @deprecated, use line_opts
 local ProviderConfig = {}
 
 function ProviderConfig:make(opts)
