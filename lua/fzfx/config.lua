@@ -558,7 +558,7 @@ end
 
 -- lsp locations }
 
--- ls {
+-- file explorer {
 
 local function file_explorer_context_maker()
     local temp = vim.fn.tempname()
@@ -626,7 +626,31 @@ local function file_explorer_previewer(line, context)
     end
 end
 
--- ls }
+--- @param lines string[]
+--- @param context PipelineContext
+--- @return any
+local function edit_file_explorer(lines, context)
+    ---@diagnostic disable-next-line: undefined-field
+    local cwd = utils.readfile(context.cwd) --[[@as string]]
+    log.debug(
+        "|fzfx.config - file_explorer.actions| cwd:%s, lines:%s",
+        vim.inspect(cwd),
+        vim.inspect(lines)
+    )
+    local full_lines = {}
+    for _, line in ipairs(lines) do
+        local splits = utils.string_split(line, " ")
+        local p = splits[#splits]
+        table.insert(full_lines, path.join(cwd, p))
+    end
+    log.debug(
+        "|fzfx.config - file_explorer.actions| full_lines:%s",
+        vim.inspect(full_lines)
+    )
+    return require("fzfx.actions").edit(lines)
+end
+
+-- file explorer }
 
 --- @alias Configs table<string, any>
 --- @type Configs
@@ -2246,24 +2270,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = function(lines, context)
-                local cwd = utils.readfile(context.cwd) --[[@as string]]
-                local full_lines = {}
-                for _, line in ipairs(lines) do
-                    table.insert(full_lines, path.join(cwd, line))
-                end
-                local edit_file = require("fzfx.actions").make_edit(" ", -1)
-                return edit_file(full_lines)
-            end,
-            ["double-click"] = function(lines, context)
-                local cwd = utils.readfile(context.cwd) --[[@as string]]
-                local full_lines = {}
-                for _, line in ipairs(lines) do
-                    table.insert(full_lines, path.join(cwd, line))
-                end
-                local edit_file = require("fzfx.actions").make_edit(" ", -1)
-                return edit_file(full_lines)
-            end,
+            ["enter"] = edit_file_explorer,
+            ["double-click"] = edit_file_explorer,
         },
         fzf_opts = {
             default_fzf_options.multi,
