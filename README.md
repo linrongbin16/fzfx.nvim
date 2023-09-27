@@ -78,8 +78,9 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
 - [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
 - [git](https://git-scm.com/) (optional for **git** commands).
+- [eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-> Note: `grep`, `find` and `cat` are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install `rg`, `fd` and `bat` should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
+> Note: `grep`/`find`/`cat`/etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`/`fd`/`bat`/etc should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
 
 ### Windows
 
@@ -277,7 +278,7 @@ Especially for git commands:
     <th>Mode</th>
     <th>Multi Key?</th>
     <th>Preview Key?</th>
-    <th>Special Feature</th>
+    <th>Hints</th>
   </tr>
 </thead>
 <tbody>
@@ -472,6 +473,18 @@ Especially for git commands:
     <td>Yes</td>
     <td>Yes</td>
     <td></td>
+  </tr>
+  <tr>
+    <td rowspan="2">File Explorer</td>
+    <td>FzfxFileExplorer</td>
+    <td>N</td>
+    <td rowspan="2">Yes</td>
+    <td rowspan="2">Yes</td>
+    <td rowspan="2"></td>
+  </tr>
+  <tr>
+    <td>FzfxFileExplorerU</td>
+    <td>N</td>
   </tr>
 </tbody>
 </table>
