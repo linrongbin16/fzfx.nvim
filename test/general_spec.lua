@@ -7,9 +7,9 @@ describe("general", function()
 
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
+        vim.env._FZFX_NVIM_DEBUG_ENABLE = 1
     end)
 
-    vim.env._FZFX_NVIM_DEBUG_ENABLE = 1
     local general = require("fzfx.general")
     local ProviderConfig = require("fzfx.schema").ProviderConfig
     local PreviewerConfig = require("fzfx.schema").PreviewerConfig
