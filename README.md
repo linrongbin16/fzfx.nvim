@@ -813,6 +813,7 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Minor break: drop support for Neovim v0.5.0, require minimal Neovim version &ge; v0.6.0.
 - 2023-09-27
   - Minor break: move 'context_maker' option from 'providers' to 'other_opts' (in group config).
+  - Minor break: drop support for 'line_type'/'line_delimiter'/'line_pos' option (in provider config).
 
 ## 🍀 Credit
 
