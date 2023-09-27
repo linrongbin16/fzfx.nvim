@@ -7,8 +7,13 @@ local path = require("fzfx.path")
 --- @param line string
 --- @return string
 local function parse_filename(line)
-    local filename = env.icon_enable() and utils.string_split(line, " ")[2]
-        or line
+    local filename = nil
+    if env.icon_enable() then
+        local splits = utils.string_split(line, " ")
+        filename = splits[#splits]
+    else
+        filename = line
+    end
     return path.normalize(filename)
 end
 

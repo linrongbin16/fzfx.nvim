@@ -593,7 +593,7 @@ local function make_directory_previewer(delimiter, filename_pos, lineno_pos)
         )
         local parsed =
             line_helpers.PathLine:new(line, delimiter, filename_pos, lineno_pos)
-        if constants.has_eza > 0 then
+        if constants.has_eza then
             return { constants.eza, "--color=always", "-lh", parsed.filename }
         elseif vim.fn.executable("ls") > 0 then
             return { "ls", "--color=always", "-lh", parsed.filename }
@@ -2216,19 +2216,35 @@ local Defaults = {
             interactions = {
                 cd = InteractionConfig:make({
                     key = "ctrl-l",
-                    interaction = require("fzfx.actions").bdelete,
+                    interaction = function(line, context)
+                        local splits = utils.string_split(line, " ")
+                        local sub = splits[#splits]
+                        local cwd = utils.readfile(context.cwd) --[[@as string]]
+                        local target = path.join(cwd, sub)
+                        utils.writefile(context.cwd, target)
+                    end,
                     reload_after_execute = true,
                 }),
                 goto_upper = InteractionConfig:make({
                     key = "ctrl-h",
-                    interaction = require("fzfx.actions").bdelete,
+                    interaction = function(line, context)
+                        local cwd = utils.readfile(context.cwd) --[[@as string]]
+                        local target = vim.fn.fnamemodify(cwd, ":h")
+                        utils.writefile(context.cwd, target)
+                    end,
                     reload_after_execute = true,
                 }),
             },
             actions = {
                 ["esc"] = require("fzfx.actions").nop,
-                ["enter"] = require("fzfx.actions").edit_rg,
-                ["double-click"] = require("fzfx.actions").edit_rg,
+                ["enter"] = function(lines)
+                    local edit_file = require("fzfx.actions").make_edit(" ", -1)
+                    return edit_file(lines)
+                end,
+                ["double-click"] = function(lines)
+                    local edit_file = require("fzfx.actions").make_edit(" ", -1)
+                    return edit_file(lines)
+                end,
             },
             fzf_opts = {
                 default_fzf_options.multi,
