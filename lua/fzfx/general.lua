@@ -609,6 +609,15 @@ local function get_pipeline_size(pipeline_configs)
     return n
 end
 
+--- @return PipelineContext
+local function default_context_maker()
+    return {
+        bufnr = vim.api.nvim_get_current_buf(),
+        winnr = vim.api.nvim_get_current_win(),
+        tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+end
+
 --- @param name string
 --- @param query string
 --- @param bang boolean
@@ -654,38 +663,24 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         PreviewerSwitch:new(name, default_pipeline, pipeline_configs.previewers)
 
     --- @type PipelineContext
-    local default_context = {
-        bufnr = vim.api.nvim_get_current_buf(),
-        winnr = vim.api.nvim_get_current_win(),
-        tabnr = vim.api.nvim_get_current_tabpage(),
-    }
-    local pipeline_contexts_map = {}
-    if clazz.instanceof(pipeline_configs.providers, ProviderConfig) then
-        if type(pipeline_configs.providers.context_maker) == "function" then
-            pipeline_contexts_map[DEFAULT_PIPELINE] =
-                pipeline_configs.providers.context_maker()
-        end
-    else
-        for provider_name, provider_opts in pairs(pipeline_configs.providers) do
-            if type(provider_opts.context_maker) == "function" then
-                pipeline_contexts_map[provider_name] =
-                    provider_opts.context_maker()
-            end
-        end
-    end
+
+    local context_maker = (
+        type(pipeline_configs.other_opts) == "table"
+        and type(pipeline_configs.other_opts.context_maker) == "function"
+    )
+            and pipeline_configs.other_opts.context_maker
+        or default_context_maker
+
+    local context = context_maker()
 
     --- @param query_params string
     local function provide_rpc(query_params)
-        provider_switch:provide(
-            name,
-            query_params,
-            pipeline_contexts_map[provider_switch.pipeline] or default_context
-        )
+        provider_switch:provide(name, query_params, context)
     end
 
     --- @param line_params string
     local function preview_rpc(line_params)
-        previewer_switch:preview(name, line_params)
+        previewer_switch:preview(name, line_params, context)
     end
 
     local provide_rpc_registry_id =
@@ -754,7 +749,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     "|fzfx.general - general.interaction_rpc| line_params:%s",
                     vim.inspect(line_params)
                 )
-                action(line_params)
+                action(line_params, context)
             end
 
             local interaction_rpc_registry_id =
@@ -776,7 +771,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             )
             if interaction_opts.reload_after_execute then
                 bind_builder = bind_builder
-                    .. string.format("+reload(%s)", reload_query_command)
+                    .. string.format(
+                        "+reload(%s)+refresh-preview",
+                        reload_query_command
+                    )
             end
             table.insert(fzf_opts, {
                 "--bind",
@@ -868,6 +866,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         query_command,
         fzf_opts,
         actions,
+        context,
         function()
             server.get_global_rpc_server():unregister(provide_rpc_registry_id)
             server.get_global_rpc_server():unregister(preview_rpc_registry_id)

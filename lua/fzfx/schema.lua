@@ -110,8 +110,8 @@ local CommandFeedEnum = {
 --- @alias ActionKey string
 --- @alias ActionHelp string
 --
---- @alias Interaction fun(line:string?):any
---- @alias Action fun(line:string[]|nil):any
+--- @alias Interaction fun(line:string?,context:PipelineContext):any
+--- @alias Action fun(line:string[]|nil,context:PipelineContext):any
 
 -- ========== Pipeline ==========
 --
@@ -170,9 +170,9 @@ local ProviderLineTypeEnum = {
 --- @field provider_type ProviderType by default "plain"
 --- @field context_maker PipelineContextMaker?
 --- @field line_opts ProviderConfigLineOpts
---- @field line_type ProviderLineType? --- @deprecated
---- @field line_delimiter string? --- @deprecated
---- @field line_pos integer? --- @deprecated
+--- @field line_type ProviderLineType? --- @deprecated, use line_opts
+--- @field line_delimiter string? --- @deprecated, use line_opts
+--- @field line_pos integer? --- @deprecated, use line_opts
 local ProviderConfig = {}
 
 function ProviderConfig:make(opts)

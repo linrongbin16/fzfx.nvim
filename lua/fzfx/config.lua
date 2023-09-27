@@ -325,7 +325,7 @@ end
 
 -- lsp diagnostics }
 
--- lsp definitions {
+-- lsp locations {
 
 --- @alias LspLocationRangeStart {line:integer,character:integer}
 --- @alias LspLocationRangeEnd {line:integer,character:integer}
@@ -556,7 +556,101 @@ local function lsp_locations_provider(opts)
     return def_lines
 end
 
--- lsp definitions }
+-- lsp locations }
+
+-- file explorer {
+
+local function file_explorer_context_maker()
+    local temp = vim.fn.tempname()
+    utils.writefile(temp, vim.fn.getcwd())
+    --- @type PipelineContext
+    local context = {
+        bufnr = vim.api.nvim_get_current_buf(),
+        winnr = vim.api.nvim_get_current_win(),
+        tabnr = vim.api.nvim_get_current_tabpage(),
+        cwd = temp,
+    }
+    return context
+end
+
+--- @param delimiter string?
+--- @param filename_pos integer?
+--- @param lineno_pos integer?
+--- @return fun(line:string):string[]|nil
+local function make_directory_previewer(delimiter, filename_pos, lineno_pos)
+    --- @param line string
+    --- @return string[]|nil
+    local function wrap(line)
+        log.debug(
+            "|fzfx.config - make_directory_previewer| delimiter:%s, filename_pos:%s, lineno_pos:%s",
+            vim.inspect(delimiter),
+            vim.inspect(filename_pos),
+            vim.inspect(lineno_pos)
+        )
+        log.debug(
+            "|fzfx.config - make_directory_previewer| line:%s",
+            vim.inspect(line)
+        )
+        local parsed =
+            line_helpers.PathLine:new(line, delimiter, filename_pos, lineno_pos)
+        if constants.has_eza then
+            return { constants.eza, "--color=always", "-lha", parsed.filename }
+        elseif vim.fn.executable("ls") > 0 then
+            return { "ls", "--color=always", "-lha", parsed.filename }
+        elseif constants.is_windows then
+            return { "dir", parsed.filename }
+        else
+            notify.echo(LogLevels.INFO, "no ls/dir/eza/exa command found.")
+            return nil
+        end
+    end
+    return wrap
+end
+
+local directory_previewer = make_directory_previewer()
+
+--- @param line string
+--- @param context PipelineContext
+--- @return string[]|nil
+local function file_explorer_previewer(line, context)
+    ---@diagnostic disable-next-line: undefined-field
+    local cwd = utils.readfile(context.cwd)
+    local splits = utils.string_split(line, " ")
+    local p = path.join(cwd, splits[#splits])
+    if vim.fn.filereadable(p) > 0 then
+        return file_previewer(p)
+    elseif vim.fn.isdirectory(p) > 0 then
+        return directory_previewer(p)
+    else
+        return nil
+    end
+end
+
+--- @param lines string[]
+--- @param context PipelineContext
+--- @return any
+local function edit_file_explorer(lines, context)
+    ---@diagnostic disable-next-line: undefined-field
+    local cwd = utils.readfile(context.cwd) --[[@as string]]
+    log.debug(
+        "|fzfx.config - file_explorer.actions| cwd:%s, lines:%s",
+        vim.inspect(cwd),
+        vim.inspect(lines)
+    )
+    local full_lines = {}
+    for _, line in ipairs(lines) do
+        local splits = utils.string_split(line, " ")
+        local p = splits[#splits]
+        table.insert(full_lines, path.join(cwd, p))
+    end
+    log.debug(
+        "|fzfx.config - file_explorer.actions| full_lines:%s",
+        vim.inspect(full_lines)
+    )
+    return require("fzfx.actions").edit(full_lines)
+end
+
+-- file explorer }
 
 --- @alias Configs table<string, any>
 --- @type Configs
@@ -1852,7 +1946,6 @@ local Defaults = {
                 })
             end,
             provider_type = ProviderTypeEnum.LIST,
-            context_maker = lsp_position_context_maker,
             line_opts = {
                 prepend_icon_by_ft = true,
                 prepend_icon_path_delimiter = ":",
@@ -1887,6 +1980,9 @@ local Defaults = {
             border = "none",
             zindex = 51,
         },
+        other_opts = {
+            context_maker = lsp_position_context_maker,
+        },
     }),
 
     -- the 'Lsp Type Definitions' command
@@ -1911,7 +2007,6 @@ local Defaults = {
                 })
             end,
             provider_type = ProviderTypeEnum.LIST,
-            context_maker = lsp_position_context_maker,
             line_opts = {
                 prepend_icon_by_ft = true,
                 prepend_icon_path_delimiter = ":",
@@ -1946,6 +2041,9 @@ local Defaults = {
             border = "none",
             zindex = 51,
         },
+        other_opts = {
+            context_maker = lsp_position_context_maker,
+        },
     }),
 
     -- the 'Lsp References' command
@@ -1970,7 +2068,6 @@ local Defaults = {
                 })
             end,
             provider_type = ProviderTypeEnum.LIST,
-            context_maker = lsp_position_context_maker,
             line_opts = {
                 prepend_icon_by_ft = true,
                 prepend_icon_path_delimiter = ":",
@@ -2005,6 +2102,9 @@ local Defaults = {
             border = "none",
             zindex = 51,
         },
+        other_opts = {
+            context_maker = lsp_position_context_maker,
+        },
     }),
 
     -- the 'Lsp Implementations' command
@@ -2029,7 +2129,6 @@ local Defaults = {
                 })
             end,
             provider_type = ProviderTypeEnum.LIST,
-            context_maker = lsp_position_context_maker,
             line_opts = {
                 prepend_icon_by_ft = true,
                 prepend_icon_path_delimiter = ":",
@@ -2063,6 +2162,129 @@ local Defaults = {
             col = 0,
             border = "none",
             zindex = 51,
+        },
+        other_opts = {
+            context_maker = lsp_position_context_maker,
+        },
+    }),
+
+    -- the 'File Explorer' commands
+    file_explorer = GroupConfig:make({
+        commands = {
+            CommandConfig:make({
+                name = "FzfxFileExplorer",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    desc = "File explorer filter hidden files (ls -l)",
+                },
+                default_provider = "filter_hidden",
+            }),
+            CommandConfig:make({
+                name = "FzfxFileExplorerU",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    desc = "File explorer include hidden files (ls -la)",
+                },
+                default_provider = "include_hidden",
+            }),
+        },
+        providers = {
+            filter_hidden = ProviderConfig:make({
+                key = "ctrl-i",
+                provider = function(query, context)
+                    local cwd = utils.readfile(context.cwd)
+                    if vim.fn.executable("eza") > 0 then
+                        return { "eza", "--color=always", "-lh", cwd }
+                    elseif vim.fn.executable("exa") > 0 then
+                        return { "exa", "--color=always", "-lh", cwd }
+                    elseif vim.fn.executable("ls") > 0 then
+                        return { "ls", "--color=always", "-lh", cwd }
+                    elseif constants.is_windows then
+                        return { "dir", cwd }
+                    else
+                        notify.echo(
+                            LogLevels.INFO,
+                            "no ls/dir/eza/exa command found."
+                        )
+                        return nil
+                    end
+                end,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
+            }),
+            include_hidden = ProviderConfig:make({
+                key = "ctrl-u",
+                provider = function(query, context)
+                    local cwd = utils.readfile(context.cwd)
+                    if vim.fn.executable("eza") > 0 then
+                        return { "eza", "--color=always", "-lha", cwd }
+                    elseif vim.fn.executable("exa") > 0 then
+                        return { "exa", "--color=always", "-lha", cwd }
+                    elseif vim.fn.executable("ls") > 0 then
+                        return { "ls", "--color=always", "-lha", cwd }
+                    elseif constants.is_windows then
+                        return { "dir", cwd }
+                    else
+                        notify.echo(
+                            LogLevels.INFO,
+                            "no ls/dir/eza/exa command found."
+                        )
+                        return nil
+                    end
+                end,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
+            }),
+        },
+        previewers = {
+            filter_hidden = PreviewerConfig:make({
+                previewer = file_explorer_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            }),
+            include_hidden = PreviewerConfig:make({
+                previewer = file_explorer_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            }),
+        },
+        interactions = {
+            cd = InteractionConfig:make({
+                key = "ctrl-l",
+                interaction = function(line, context)
+                    local splits = utils.string_split(line, " ")
+                    local sub = splits[#splits]
+                    local cwd = utils.readfile(context.cwd) --[[@as string]]
+                    local target = path.join(cwd, sub)
+                    utils.writefile(context.cwd, target)
+                end,
+                reload_after_execute = true,
+            }),
+            upper = InteractionConfig:make({
+                key = "ctrl-h",
+                interaction = function(line, context)
+                    local cwd = utils.readfile(context.cwd) --[[@as string]]
+                    local target = vim.fn.fnamemodify(cwd, ":h")
+                    utils.writefile(context.cwd, target)
+                end,
+                reload_after_execute = true,
+            }),
+        },
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = edit_file_explorer,
+            ["double-click"] = edit_file_explorer,
+        },
+        fzf_opts = {
+            default_fzf_options.multi,
+            {
+                "--prompt",
+                path.shorten() .. " > ",
+            },
+            function()
+                return constants.has_eza and "--header-lines=1" or nil
+            end,
+        },
+        other_opts = {
+            context_maker = file_explorer_context_maker,
         },
     }),
 

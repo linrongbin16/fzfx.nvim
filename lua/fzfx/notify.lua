@@ -1,20 +1,14 @@
 -- No Setup Need
 
 -- see: `lua print(vim.inspect(vim.log.levels))`
-local LogLevels = (
-    vim.fn.has("nvim-0.7") > 0
-    and type(vim.log) == "table"
-    and type(vim.log.levels) == "table"
-)
-        and vim.log.levels
-    or {
-        TRACE = 0,
-        DEBUG = 1,
-        INFO = 2,
-        WARN = 3,
-        ERROR = 4,
-        OFF = 5,
-    }
+local LogLevels = {
+    TRACE = 0,
+    DEBUG = 1,
+    INFO = 2,
+    WARN = 3,
+    ERROR = 4,
+    OFF = 5,
+}
 
 local LogLevelNames = {}
 

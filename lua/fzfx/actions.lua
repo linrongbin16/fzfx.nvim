@@ -179,6 +179,7 @@ end
 local M = {
     nop = nop,
     make_edit_vim_commands = make_edit_vim_commands,
+    make_edit = make_edit,
     edit = edit,
     edit_rg = edit_rg,
     edit_grep = edit_grep,

@@ -66,7 +66,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - Maximized configuration.
 - ...
 
-> Actually all above features are built on an engine that support fully dynamic runtime & pipeline control, it allows you to do almost anything you want, please see [Configuration](#-configuration) and [Wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
+> All above features are built on a fully dynamic engine, which allows you to do almost anything you want, please see [Configuration](#-configuration) and [Wiki](https://github.com/linrongbin16/fzfx.nvim/wiki).
 >
 > Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more features & use cases.
 
@@ -78,8 +78,9 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
 - [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
 - [git](https://git-scm.com/) (optional for **git** commands).
+- [eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-> Note: `grep`, `find` and `cat` are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install `rg`, `fd` and `bat` should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
+> Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
 
 ### Windows
 
@@ -277,7 +278,7 @@ Especially for git commands:
     <th>Mode</th>
     <th>Multi Key?</th>
     <th>Preview Key?</th>
-    <th>Special Feature</th>
+    <th>Hints</th>
   </tr>
 </thead>
 <tbody>
@@ -473,6 +474,18 @@ Especially for git commands:
     <td>Yes</td>
     <td></td>
   </tr>
+  <tr>
+    <td rowspan="2">File Explorer</td>
+    <td>FzfxFileExplorer</td>
+    <td>N</td>
+    <td rowspan="2">Yes</td>
+    <td rowspan="2">Yes</td>
+    <td rowspan="2"></td>
+  </tr>
+  <tr>
+    <td>FzfxFileExplorerU</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
@@ -574,7 +587,6 @@ nnoremap <space>wdg :\<C-U>FzfxLspDiagnosticsW<CR>
 " by yank text
 nnoremap <space>pdg :\<C-U>FzfxLspDiagnosticsP<CR>
 
-
 " ======== lsp definitions/type definitions/references/implementations ========
 
 " lsp definitions
@@ -589,6 +601,10 @@ nnoremap gr :\<C-U>FzfxLspReferences<CR>
 " lsp implementations
 nnoremap gi :\<C-U>FzfxLspImplementations<CR>
 
+" ======== file explorer ========
+
+" file explorer
+nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 ```
 
 </details>
@@ -741,20 +757,25 @@ vim.keymap.set('n', '<space>pdg', '<cmd>FzfxLspDiagnosticsP<cr>',
 
 -- lsp definitions
 vim.keymap.set('n', 'gd', '<cmd>FzfxLspDefinitions<cr>',
-        {silent=true, noremap=true, desc="Search lsp definitions"})
+        {silent=true, noremap=true, desc="Goto lsp definitions"})
 
 -- lsp type definitions
 vim.keymap.set('n', 'gt', '<cmd>FzfxLspTypeDefinitions<cr>',
-        {silent=true, noremap=true, desc="Search lsp type definitions"})
+        {silent=true, noremap=true, desc="Goto lsp type definitions"})
 
 -- lsp references
 vim.keymap.set('n', 'gr', '<cmd>FzfxLspReferences<cr>',
-        {silent=true, noremap=true, desc="Search lsp references"})
+        {silent=true, noremap=true, desc="Goto lsp references"})
 
 -- lsp implementations
 vim.keymap.set('n', 'gi', '<cmd>FzfxLspImplementations<cr>',
-        {silent=true, noremap=true, desc="Search lsp implementations"})
+        {silent=true, noremap=true, desc="Goto lsp implementations"})
 
+-- ======== file explorer ========
+
+-- file explorer
+vim.keymap.set('n', '<space>xp', '<cmd>FzfxFileExplorer<cr>',
+        {silent=true, noremap=true, desc="File explorer"})
 ```
 
 </details>
@@ -772,8 +793,7 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 ## 💩 Break Changes
 
 - 2023-08-17
-  - Re-bind keys 'ctrl-e'(select), 'ctrl-a'(select-all) to 'toggle', 'toggle-all'.
-  - Remove default bind keys 'ctrl-d'(deselect), 'alt-a'(deselect-all).
+  - Re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
   - Re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
   - Re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 - 2023-08-19
@@ -790,7 +810,9 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Deprecate 'live_grep' (`FzfxLiveGrep`) configs, notify user migrate to new schema.
   - Deprecate 'files' (`FzfxFiles`) configs, notify user migrate to new schema.
 - 2023-09-26
-  - Break: require minimal Neovim version &ge; v0.6.0.
+  - Minor break: drop support for Neovim v0.5.0, require minimal Neovim version &ge; v0.6.0.
+- 2023-09-27
+  - Minor break: move 'context_maker' option from 'providers' to 'other_opts' (in group config).
 
 ## 🍀 Credit
 
