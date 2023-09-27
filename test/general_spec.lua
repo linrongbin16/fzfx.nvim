@@ -135,6 +135,9 @@ describe("general", function()
                     provider = { "ls", "-lha", "~" },
                 }),
             })
+            print(
+                string.format("GITHUB_ACTIONS:%s", os.getenv("GITHUB_ACTIONS"))
+            )
             assert_eq(ps:provide("p1", "hello", {}), "plain")
             -- local meta1 = utils.readfile(
             --     path.join(
