@@ -790,9 +790,9 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Deprecate 'live_grep' (`FzfxLiveGrep`) configs, notify user migrate to new schema.
   - Deprecate 'files' (`FzfxFiles`) configs, notify user migrate to new schema.
 - 2023-09-26
-  - Break: drop support for Neovim v0.5.0, require minimal Neovim version &ge; v0.6.0.
+  - Minor break: drop support for Neovim v0.5.0, require minimal Neovim version &ge; v0.6.0.
 - 2023-09-27
-  - Break: move `context_maker` option from `providers` to `other_opts` (in group config).
+  - Minor break: move `context_maker` option from `providers` to `other_opts` (in group config).
 
 ## 🍀 Credit
 
