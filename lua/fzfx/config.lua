@@ -573,6 +573,45 @@ local function file_explorer_context_maker()
     return context
 end
 
+--- @param ls_args "-lh"|"-lha"
+--- @return fun(query:string,context:PipelineContext):string?
+local function make_file_explorer_provider(ls_args)
+    --- @param query string
+    --- @param context PipelineContext
+    --- @return string?
+    local function wrap(query, context)
+        ---@diagnostic disable-next-line: undefined-field
+        local cwd = utils.readfile(context.cwd)
+        if constants.has_eza then
+            return vim.fn.executable("echo") > 0
+                    and string.format(
+                        "echo %s && %s --color=always -lh %s",
+                        cwd,
+                        constants.eza,
+                        cwd
+                    )
+                or string.format("%s --color=always -lh %s", constants.eza, cwd)
+        elseif vim.fn.executable("ls") > 0 then
+            return vim.fn.executable("echo") > 0
+                    and string.format(
+                        "echo %s && ls --color=always -lh %s",
+                        cwd,
+                        cwd
+                    )
+                or string.format("ls --color=always -lh %s", cwd)
+        elseif constants.is_windows then
+            return vim.fn.executable("echo") > 0
+                    and string.format("echo %s && dir %s", cwd, cwd)
+                or string.format("dir %s", cwd)
+        else
+            notify.echo(LogLevels.INFO, "no ls/dir/eza/exa command found.")
+            return nil
+        end
+    end
+
+    return wrap
+end
+
 --- @param delimiter string?
 --- @param filename_pos integer?
 --- @param lineno_pos integer?
@@ -2253,47 +2292,13 @@ local Defaults = {
         providers = {
             filter_hidden = ProviderConfig:make({
                 key = "ctrl-i",
-                provider = function(query, context)
-                    local cwd = utils.readfile(context.cwd)
-                    if vim.fn.executable("eza") > 0 then
-                        return { "eza", "--color=always", "-lh", cwd }
-                    elseif vim.fn.executable("exa") > 0 then
-                        return { "exa", "--color=always", "-lh", cwd }
-                    elseif vim.fn.executable("ls") > 0 then
-                        return { "ls", "--color=always", "-lh", cwd }
-                    elseif constants.is_windows then
-                        return { "dir", cwd }
-                    else
-                        notify.echo(
-                            LogLevels.INFO,
-                            "no ls/dir/eza/exa command found."
-                        )
-                        return nil
-                    end
-                end,
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                provider = make_file_explorer_provider("-lh"),
+                provider_type = ProviderTypeEnum.COMMAND,
             }),
             include_hidden = ProviderConfig:make({
                 key = "ctrl-u",
-                provider = function(query, context)
-                    local cwd = utils.readfile(context.cwd)
-                    if vim.fn.executable("eza") > 0 then
-                        return { "eza", "--color=always", "-lha", cwd }
-                    elseif vim.fn.executable("exa") > 0 then
-                        return { "exa", "--color=always", "-lha", cwd }
-                    elseif vim.fn.executable("ls") > 0 then
-                        return { "ls", "--color=always", "-lha", cwd }
-                    elseif constants.is_windows then
-                        return { "dir", cwd }
-                    else
-                        notify.echo(
-                            LogLevels.INFO,
-                            "no ls/dir/eza/exa command found."
-                        )
-                        return nil
-                    end
-                end,
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                provider = make_file_explorer_provider("-lha"),
+                provider_type = ProviderTypeEnum.COMMAND,
             }),
         },
         previewers = {
@@ -2340,9 +2345,14 @@ local Defaults = {
                 path.shorten() .. " > ",
             },
             function()
-                return (constants.has_eza or vim.fn.executable("ls") > 0)
-                        and "--header-lines=1"
-                    or nil
+                local n = 0
+                if constants.has_eza or vim.fn.executable("ls") > 0 then
+                    n = n + 1
+                end
+                if vim.fn.executable("echo") > 0 then
+                    n = n + 1
+                end
+                return n > 0 and string.format("--header-lines=%d", n) or nil
             end,
         },
         other_opts = {
