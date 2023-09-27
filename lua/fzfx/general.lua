@@ -609,6 +609,15 @@ local function get_pipeline_size(pipeline_configs)
     return n
 end
 
+--- @return PipelineContext
+local function default_context_maker()
+    return {
+        bufnr = vim.api.nvim_get_current_buf(),
+        winnr = vim.api.nvim_get_current_win(),
+        tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+end
+
 --- @param name string
 --- @param query string
 --- @param bang boolean
@@ -654,16 +663,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         PreviewerSwitch:new(name, default_pipeline, pipeline_configs.previewers)
 
     --- @type PipelineContext
-    local context = (
+
+    local context_maker = (
         type(pipeline_configs.other_opts) == "table"
         and type(pipeline_configs.other_opts.context_maker) == "function"
     )
-            and pipeline_configs.other_opts.context_maker()
-        or {
-            bufnr = vim.api.nvim_get_current_buf(),
-            winnr = vim.api.nvim_get_current_win(),
-            tabnr = vim.api.nvim_get_current_tabpage(),
-        }
+            and pipeline_configs.other_opts.context_maker
+        or default_context_maker
+
+    local context = context_maker()
 
     --- @param query_params string
     local function provide_rpc(query_params)
