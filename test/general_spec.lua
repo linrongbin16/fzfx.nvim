@@ -10,6 +10,7 @@ describe("general", function()
         vim.env._FZFX_NVIM_DEBUG_ENABLE = 1
     end)
 
+    local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
     local general = require("fzfx.general")
     local ProviderConfig = require("fzfx.schema").ProviderConfig
     local PreviewerConfig = require("fzfx.schema").PreviewerConfig
@@ -139,55 +140,59 @@ describe("general", function()
                 string.format("GITHUB_ACTIONS:%s", os.getenv("GITHUB_ACTIONS"))
             )
             assert_eq(ps:provide("p1", "hello", {}), "plain")
-            -- local meta1 = utils.readfile(
-            --     path.join(
-            --         vim.fn.stdpath("data"),
-            --         "fzfx.nvim",
-            --         "provider_switch_metafile_plain_test"
-            --     )
-            -- )
-            -- local result1 = utils.readfile(
-            --     path.join(
-            --         vim.fn.stdpath("data"),
-            --         "fzfx.nvim",
-            --         "provider_switch_resultfile_plain_test"
-            --     )
-            -- )
-            -- print(string.format("metafile:%s\n", meta1))
-            -- local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
-            -- assert_eq(type(metajson1), "table")
-            -- assert_eq(metajson1.pipeline, "p1")
-            -- assert_eq(metajson1.provider_type, "plain")
-            -- print(string.format("resultfile:%s\n", result1))
-            -- assert_eq(result1, "ls -lh")
+            if not github_actions then
+                local meta1 = utils.readfile(
+                    path.join(
+                        vim.fn.stdpath("data"),
+                        "fzfx.nvim",
+                        "provider_switch_metafile_plain_test"
+                    )
+                )
+                local result1 = utils.readfile(
+                    path.join(
+                        vim.fn.stdpath("data"),
+                        "fzfx.nvim",
+                        "provider_switch_resultfile_plain_test"
+                    )
+                )
+                print(string.format("metafile:%s\n", meta1))
+                local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
+                assert_eq(type(metajson1), "table")
+                assert_eq(metajson1.pipeline, "p1")
+                assert_eq(metajson1.provider_type, "plain")
+                print(string.format("resultfile:%s\n", result1))
+                assert_eq(result1, "ls -lh")
+            end
             ps:switch("p2")
             assert_eq(ps:provide("p2", "world", {}), "plain_list")
-            -- local meta2 = utils.readfile(
-            --     path.join(
-            --         vim.fn.stdpath("data"),
-            --         "fzfx.nvim",
-            --         "provider_switch_metafile_plain_test"
-            --     )
-            -- )
-            -- local result2 = utils.readfile(
-            --     path.join(
-            --         vim.fn.stdpath("data"),
-            --         "fzfx.nvim",
-            --         "provider_switch_resultfile_plain_test"
-            --     )
-            -- )
-            -- print(string.format("metafile:%s\n", meta2))
-            -- local metajson2 = vim.fn.json_decode(meta2) --[[@as table]]
-            -- assert_eq(type(metajson2), "table")
-            -- assert_eq(metajson2.pipeline, "p2")
-            -- assert_eq(metajson2.provider_type, "plain_list")
-            -- print(string.format("resultfile:%s\n", result2))
-            -- local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
-            -- assert_eq(type(resultjson2), "table")
-            -- assert_eq(#resultjson2, 3)
-            -- assert_eq(resultjson2[1], "ls")
-            -- assert_eq(resultjson2[2], "-lha")
-            -- assert_eq(resultjson2[3], "~")
+            if not github_actions then
+                local meta2 = utils.readfile(
+                    path.join(
+                        vim.fn.stdpath("data"),
+                        "fzfx.nvim",
+                        "provider_switch_metafile_plain_test"
+                    )
+                )
+                local result2 = utils.readfile(
+                    path.join(
+                        vim.fn.stdpath("data"),
+                        "fzfx.nvim",
+                        "provider_switch_resultfile_plain_test"
+                    )
+                )
+                print(string.format("metafile:%s\n", meta2))
+                local metajson2 = vim.fn.json_decode(meta2) --[[@as table]]
+                assert_eq(type(metajson2), "table")
+                assert_eq(metajson2.pipeline, "p2")
+                assert_eq(metajson2.provider_type, "plain_list")
+                print(string.format("resultfile:%s\n", result2))
+                local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
+                assert_eq(type(resultjson2), "table")
+                assert_eq(#resultjson2, 3)
+                assert_eq(resultjson2[1], "ls")
+                assert_eq(resultjson2[2], "-lha")
+                assert_eq(resultjson2[3], "~")
+            end
         end)
         it("is a command/command_list provider", function()
             local ps = general.ProviderSwitch:new("command_test", "p1", {
@@ -207,55 +212,59 @@ describe("general", function()
                 }),
             })
             assert_eq(ps:provide("p1", "hello", {}), "command")
-            -- local meta1 = utils.readfile(
-            --     path.join(
-            --         vim.fn.stdpath("data"),
-            --         "fzfx.nvim",
-            --         "provider_switch_metafile_command_test"
-            --     )
-            -- )
-            -- local result1 = utils.readfile(
-            --     path.join(
-            --         vim.fn.stdpath("data"),
-            --         "fzfx.nvim",
-            --         "provider_switch_resultfile_command_test"
-            --     )
-            -- )
-            -- print(string.format("metafile:%s\n", meta1))
-            -- local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
-            -- assert_eq(type(metajson1), "table")
-            -- assert_eq(metajson1.pipeline, "p1")
-            -- assert_eq(metajson1.provider_type, "command")
-            -- print(string.format("resultfile:%s\n", result1))
-            -- assert_eq(result1, "ls -lh")
+            if not github_actions then
+                local meta1 = utils.readfile(
+                    path.join(
+                        vim.fn.stdpath("data"),
+                        "fzfx.nvim",
+                        "provider_switch_metafile_command_test"
+                    )
+                )
+                local result1 = utils.readfile(
+                    path.join(
+                        vim.fn.stdpath("data"),
+                        "fzfx.nvim",
+                        "provider_switch_resultfile_command_test"
+                    )
+                )
+                print(string.format("metafile:%s\n", meta1))
+                local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
+                assert_eq(type(metajson1), "table")
+                assert_eq(metajson1.pipeline, "p1")
+                assert_eq(metajson1.provider_type, "command")
+                print(string.format("resultfile:%s\n", result1))
+                assert_eq(result1, "ls -lh")
+            end
             ps:switch("p2")
             assert_eq(ps:provide("p2", "world", {}), "command_list")
-            -- local meta2 = utils.readfile(
-            --     path.join(
-            --         vim.fn.stdpath("data"),
-            --         "fzfx.nvim",
-            --         "provider_switch_metafile_command_test"
-            --     )
-            -- )
-            -- local result2 = utils.readfile(
-            --     path.join(
-            --         vim.fn.stdpath("data"),
-            --         "fzfx.nvim",
-            --         "provider_switch_resultfile_command_test"
-            --     )
-            -- )
-            -- print(string.format("metafile:%s\n", meta2))
-            -- local metajson2 = vim.fn.json_decode(meta2) --[[@as table]]
-            -- assert_eq(type(metajson2), "table")
-            -- assert_eq(metajson2.pipeline, "p2")
-            -- assert_eq(metajson2.provider_type, "command_list")
-            -- print(string.format("resultfile:%s\n", result2))
-            -- local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
-            -- assert_eq(type(resultjson2), "table")
-            -- assert_eq(#resultjson2, 3)
-            -- assert_eq(resultjson2[1], "ls")
-            -- assert_eq(resultjson2[2], "-lha")
-            -- assert_eq(resultjson2[3], "~")
+            if not github_actions then
+                local meta2 = utils.readfile(
+                    path.join(
+                        vim.fn.stdpath("data"),
+                        "fzfx.nvim",
+                        "provider_switch_metafile_command_test"
+                    )
+                )
+                local result2 = utils.readfile(
+                    path.join(
+                        vim.fn.stdpath("data"),
+                        "fzfx.nvim",
+                        "provider_switch_resultfile_command_test"
+                    )
+                )
+                print(string.format("metafile:%s\n", meta2))
+                local metajson2 = vim.fn.json_decode(meta2) --[[@as table]]
+                assert_eq(type(metajson2), "table")
+                assert_eq(metajson2.pipeline, "p2")
+                assert_eq(metajson2.provider_type, "command_list")
+                print(string.format("resultfile:%s\n", result2))
+                local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
+                assert_eq(type(resultjson2), "table")
+                assert_eq(#resultjson2, 3)
+                assert_eq(resultjson2[1], "ls")
+                assert_eq(resultjson2[2], "-lha")
+                assert_eq(resultjson2[3], "~")
+            end
         end)
     end)
     describe("[PreviewerSwitch:new]", function()
