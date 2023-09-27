@@ -587,7 +587,6 @@ nnoremap <space>wdg :\<C-U>FzfxLspDiagnosticsW<CR>
 " by yank text
 nnoremap <space>pdg :\<C-U>FzfxLspDiagnosticsP<CR>
 
-
 " ======== lsp definitions/type definitions/references/implementations ========
 
 " lsp definitions
@@ -602,6 +601,10 @@ nnoremap gr :\<C-U>FzfxLspReferences<CR>
 " lsp implementations
 nnoremap gi :\<C-U>FzfxLspImplementations<CR>
 
+" ======== file explorer ========
+
+" file explorer
+nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 ```
 
 </details>
@@ -754,20 +757,25 @@ vim.keymap.set('n', '<space>pdg', '<cmd>FzfxLspDiagnosticsP<cr>',
 
 -- lsp definitions
 vim.keymap.set('n', 'gd', '<cmd>FzfxLspDefinitions<cr>',
-        {silent=true, noremap=true, desc="Search lsp definitions"})
+        {silent=true, noremap=true, desc="Goto lsp definitions"})
 
 -- lsp type definitions
 vim.keymap.set('n', 'gt', '<cmd>FzfxLspTypeDefinitions<cr>',
-        {silent=true, noremap=true, desc="Search lsp type definitions"})
+        {silent=true, noremap=true, desc="Goto lsp type definitions"})
 
 -- lsp references
 vim.keymap.set('n', 'gr', '<cmd>FzfxLspReferences<cr>',
-        {silent=true, noremap=true, desc="Search lsp references"})
+        {silent=true, noremap=true, desc="Goto lsp references"})
 
 -- lsp implementations
 vim.keymap.set('n', 'gi', '<cmd>FzfxLspImplementations<cr>',
-        {silent=true, noremap=true, desc="Search lsp implementations"})
+        {silent=true, noremap=true, desc="Goto lsp implementations"})
 
+-- ======== file explorer ========
+
+-- file explorer
+vim.keymap.set('n', '<space>xp', '<cmd>FzfxFileExplorer<cr>',
+        {silent=true, noremap=true, desc="File explorer"})
 ```
 
 </details>
