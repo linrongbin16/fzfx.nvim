@@ -680,7 +680,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     --- @param line_params string
     local function preview_rpc(line_params)
-        previewer_switch:preview(name, line_params)
+        previewer_switch:preview(name, line_params, context)
     end
 
     local provide_rpc_registry_id =

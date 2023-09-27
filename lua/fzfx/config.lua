@@ -610,10 +610,13 @@ end
 local directory_previewer = make_directory_previewer()
 
 --- @param line string
+--- @param context PipelineContext
 --- @return string[]|nil
-local function file_explorer_previewer(line)
+local function file_explorer_previewer(line, context)
+    ---@diagnostic disable-next-line: undefined-field
+    local cwd = utils.readfile(context.cwd)
     local splits = utils.string_split(line, " ")
-    local p = splits[#splits]
+    local p = path.join(cwd, splits[#splits])
     if vim.fn.filereadable(p) > 0 then
         return file_previewer(p)
     elseif vim.fn.isdirectory(p) > 0 then
@@ -2225,7 +2228,7 @@ local Defaults = {
                     end,
                     reload_after_execute = true,
                 }),
-                goto_upper = InteractionConfig:make({
+                upper = InteractionConfig:make({
                     key = "ctrl-h",
                     interaction = function(line, context)
                         local cwd = utils.readfile(context.cwd) --[[@as string]]
