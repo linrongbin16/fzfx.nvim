@@ -2176,7 +2176,9 @@ local Defaults = {
                 feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
-                    desc = "File explorer filter hidden files (ls -l)",
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "File explorer (ls -l)",
                 },
                 default_provider = "filter_hidden",
             }),
@@ -2185,7 +2187,65 @@ local Defaults = {
                 feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
-                    desc = "File explorer include hidden files (ls -la)",
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "File explorer (ls -la)",
+                },
+                default_provider = "include_hidden",
+            }),
+            CommandConfig:make({
+                name = "FzfxFileExplorerV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "File explorer (ls -l) by visual select",
+                },
+                default_provider = "filter_hidden",
+            }),
+            CommandConfig:make({
+                name = "FzfxFileExplorerUV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "File explorer (ls -la) by visual select",
+                },
+                default_provider = "include_hidden",
+            }),
+            CommandConfig:make({
+                name = "FzfxFileExplorerW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "File explorer (ls -l) by cursor word",
+                },
+                default_provider = "filter_hidden",
+            }),
+            CommandConfig:make({
+                name = "FzfxFileExplorerUW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "File explorer (ls -la) by cursor word",
+                },
+                default_provider = "include_hidden",
+            }),
+            CommandConfig:make({
+                name = "FzfxFileExplorerP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "File explorer (ls -l) by yank text",
+                },
+                default_provider = "filter_hidden",
+            }),
+            CommandConfig:make({
+                name = "FzfxFileExplorerUP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "File explorer (ls -la) by yank text",
                 },
                 default_provider = "include_hidden",
             }),
