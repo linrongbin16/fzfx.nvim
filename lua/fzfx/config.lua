@@ -2200,8 +2200,22 @@ local Defaults = {
                 include_hidden = ProviderConfig:make({
                     key = "ctrl-u",
                     provider = function(query, context)
-                        local cwd = utils.readfile(context.cwd) --[[@as string]]
-                        return directory_previewer(cwd)
+                        local cwd = utils.readfile(context.cwd)
+                        if vim.fn.executable("eza") > 0 then
+                            return { "eza", "--color=always", "-lha", cwd }
+                        elseif vim.fn.executable("exa") > 0 then
+                            return { "exa", "--color=always", "-lha", cwd }
+                        elseif vim.fn.executable("ls") > 0 then
+                            return { "ls", "--color=always", "-lha", cwd }
+                        elseif constants.is_windows then
+                            return { "dir", cwd }
+                        else
+                            notify.echo(
+                                LogLevels.INFO,
+                                "no ls/dir/eza/exa command found."
+                            )
+                            return nil
+                        end
                     end,
                     provider_type = ProviderTypeEnum.COMMAND_LIST,
                 }),
