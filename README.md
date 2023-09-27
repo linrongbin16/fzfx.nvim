@@ -793,22 +793,22 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 ## 💩 Break Changes
 
 - 2023-08-17
-  - Re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
-  - Re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
-  - Re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
+  - Breaks: re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
+  - Breaks: re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
+  - Breaks: re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 - 2023-08-19
-  - Refactor configs schema for general fzf-based searching commands.
+  - Breaks: refactor configs schema for general fzf-based searching commands.
 - 2023-08-28
-  - Deprecate 'git_commits' (`FzfxGCommits`) configs, notify user migrate to new schema.
+  - Deprecate: migrate 'git_commits' (`FzfxGCommits`) configs, notify user migrate to new schema.
 - 2023-08-30
-  - Deprecate 'buffers' (`FzfxBuffers`) configs, notify user migrate to new schema.
+  - Deprecate: migrate 'buffers' (`FzfxBuffers`) configs, notify user migrate to new schema.
 - 2023-09-11
-  - Deprecate 'git_branches' (`FzfxGBranches`) configs, notify user migrate to new schema.
+  - Deprecate: migrate 'git_branches' (`FzfxGBranches`) configs, notify user migrate to new schema.
 - 2023-09-12
-  - Deprecate 'git_files' (`FzfxGFiles`) configs, notify user migrate to new schema.
+  - Deprecate: migrate 'git_files' (`FzfxGFiles`) configs, notify user migrate to new schema.
 - 2023-09-19
-  - Deprecate 'live_grep' (`FzfxLiveGrep`) configs, notify user migrate to new schema.
-  - Deprecate 'files' (`FzfxFiles`) configs, notify user migrate to new schema.
+  - Deprecate: migrate 'live_grep' (`FzfxLiveGrep`) configs, notify user migrate to new schema.
+  - Deprecate: migrate 'files' (`FzfxFiles`) configs, notify user migrate to new schema.
 - 2023-09-26
   - Minor break: drop support for Neovim v0.5.0, require minimal Neovim version &ge; v0.6.0.
 - 2023-09-27
