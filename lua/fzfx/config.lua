@@ -647,7 +647,7 @@ local function edit_file_explorer(lines, context)
         "|fzfx.config - file_explorer.actions| full_lines:%s",
         vim.inspect(full_lines)
     )
-    return require("fzfx.actions").edit(lines)
+    return require("fzfx.actions").edit(full_lines)
 end
 
 -- file explorer }
