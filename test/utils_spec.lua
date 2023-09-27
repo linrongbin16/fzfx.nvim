@@ -407,7 +407,7 @@ describe("utils", function()
 
             local i = 1
             local function process_line(line)
-                print(string.format("[%d]%s\n", i, line))
+                -- print(string.format("[%d]%s\n", i, line))
                 assert_eq(type(line), "string")
                 assert_eq(line, lines[i])
                 i = i + 1
@@ -428,6 +428,38 @@ describe("utils", function()
                 function() end
             ) --[[@as AsyncSpawn]]
             async_spawn:on_stderr(nil, nil)
+        end)
+        it("iterate on README.md", function()
+            local lines = utils.readlines("README.md") --[[@as table]]
+
+            local i = 1
+            local function process_line(line)
+                print(string.format("[%d]%s\n", i, line))
+                assert_eq(type(line), "string")
+                assert_eq(lines[i], line)
+                i = i + 1
+            end
+
+            local async_spawn =
+                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+            async_spawn:run()
+        end)
+        it("iterate on lua/fzfx/config.lua", function()
+            local lines = utils.readlines("lua/fzfx/config.lua") --[[@as table]]
+
+            local i = 1
+            local function process_line(line)
+                print(string.format("[%d]%s\n", i, line))
+                assert_eq(type(line), "string")
+                assert_eq(lines[i], line)
+                i = i + 1
+            end
+
+            local async_spawn = utils.AsyncSpawn:open(
+                { "cat", "lua/fzfx/config.lua" },
+                process_line
+            ) --[[@as AsyncSpawn]]
+            async_spawn:run()
         end)
     end)
 end)

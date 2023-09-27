@@ -114,34 +114,13 @@ then
         return
     end
 
-    local process_context = {
-        process_handler = nil,
-        process_id = nil,
-    }
-    local async_spawn = shell_helpers.AsyncSpawn:open(cmd_splits, println, {
-        on_exit = function(code, signal)
-            vim.loop.stop()
-            if shell_helpers.is_windows then
-                if process_context.process_handler then
-                    process_context.process_handler:kill()
-                end
-            else
-                if process_context.process_id then
-                    vim.loop.kill(process_context.process_id --[[@as integer]])
-                end
-            end
-            os.exit(code)
-        end,
-    }) --[[@as AsyncSpawn]]
+    local async_spawn = shell_helpers.AsyncSpawn:open(cmd_splits, println) --[[@as AsyncSpawn]]
     shell_helpers.log_ensure(
         async_spawn ~= nil,
         "|provider| error! failed to open async command: %s",
         vim.inspect(cmd_splits)
     )
-    local process_handler, process_id = async_spawn:start()
-    process_context.process_handler = process_handler
-    process_context.process_id = process_id
-    vim.loop.run()
+    async_spawn:run()
 elseif metaopts.provider_type == "list" then
     local reader = shell_helpers.FileLineReader:open(resultfile) --[[@as FileLineReader ]]
     shell_helpers.log_ensure(

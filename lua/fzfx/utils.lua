@@ -526,6 +526,8 @@ end
 --- @field out_pipe uv_pipe_t
 --- @field err_pipe uv_pipe_t
 --- @field out_buffer string?
+--- @field process_handler uv_process_t?
+--- @field process_id integer|string|nil
 --- @field opts AsyncSpawnRunOpts?
 local AsyncSpawn = {}
 
@@ -546,6 +548,8 @@ function AsyncSpawn:open(cmds, fn_line_consumer, opts)
         out_pipe = out_pipe,
         err_pipe = err_pipe,
         out_buffer = nil,
+        process_handler = nil,
+        process_id = nil,
         opts = opts,
     }
     setmetatable(o, self)
@@ -568,6 +572,20 @@ function AsyncSpawn:consume_line(buffer, fn_line_processor)
         i = newline_pos + 1
     end
     return i
+end
+
+--- @param code integer?
+--- @param signal integer?
+--- @return nil
+function AsyncSpawn:on_exit(code, signal)
+    if self.process_handler and not self.process_handler:is_closing() then
+        self.process_handler:close(function(err)
+            vim.loop.stop()
+        end)
+    end
+    if type(self.opts) == "table" and type(self.opts.on_exit) == "function" then
+        self.opts.on_exit(code, signal)
+    end
 end
 
 --- @param err string?
@@ -619,23 +637,7 @@ function AsyncSpawn:on_stderr(err, data)
     end
 end
 
---- @param code integer?
---- @param signal integer?
---- @return nil
-function AsyncSpawn:on_exit(code, signal)
-    if not self.out_pipe:is_closing() then
-        self.out_pipe:close()
-    end
-    if not self.err_pipe:is_closing() then
-        self.err_pipe:close()
-    end
-    if type(self.opts) == "table" and type(self.opts.on_exit) == "function" then
-        self.opts.on_exit(code, signal)
-    end
-end
-
---- @return uv_process_t?, string|integer
-function AsyncSpawn:start()
+function AsyncSpawn:run()
     local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
         args = vim.list_slice(self.cmds, 2),
         stdio = { nil, self.out_pipe, self.err_pipe },
@@ -648,14 +650,16 @@ function AsyncSpawn:start()
         self:on_exit(code, signal)
     end)
 
+    self.process_handler = process_handler
+    self.process_id = process_id
+
     self.out_pipe:read_start(function(err, data)
         self:on_stdout(err, data)
     end)
     self.err_pipe:read_start(function(err, data)
         self:on_stderr(err, data)
     end)
-
-    return process_handler, process_id
+    vim.loop.run()
 end
 
 local M = {
