@@ -789,11 +789,11 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 ## 💩 Break Changes
 
 - 2023-08-17
-  - Breaks: re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
-  - Breaks: re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
-  - Breaks: re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
+  - Break: re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
+  - Break: re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
+  - Break: re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 - 2023-08-19
-  - Breaks: refactor configs schema for general fzf-based searching commands.
+  - Break: refactor configs schema for general fzf-based searching commands.
 - 2023-08-28
   - Deprecate: migrate 'git_commits' (`FzfxGCommits`) configs to new schema.
 - 2023-08-30
