@@ -50,19 +50,12 @@ end
 
 --- @type Configs
 local Defaults = {
-    --- @type integer
     level = LogLevels.INFO,
-    --- @type boolean
     console_log = true,
-    --- @type string|nil
     name = "[fzfx]",
-    --- @type boolean
     file_log = false,
-    --- @type string|nil
     file_name = "fzfx.log",
-    --- @type string|nil
     file_dir = vim.fn.stdpath("data"),
-    --- @type string|nil
     file_path = nil,
 }
 
