@@ -445,6 +445,64 @@ describe("utils", function()
             end
             async_spawn:on_stdout(nil, nil)
         end)
+        for delimiter_i = 0, 25 do
+            -- lower case: a
+            local lower_char = string.char(97 + delimiter_i)
+            it(string.format("stdout on %s", lower_char), function()
+                local content = utils.readfile("README.md") --[[@as string]]
+                local lines = utils.readlines("README.md") --[[@as table]]
+
+                local i = 1
+                local function process_line(line)
+                    -- print(string.format("[%d]%s\n", i, line))
+                    assert_eq(type(line), "string")
+                    assert_eq(line, lines[i])
+                    i = i + 1
+                end
+                local async_spawn =
+                    utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                local content_splits = utils.string_split(
+                    content,
+                    lower_char,
+                    { trimempty = false }
+                )
+                for i, splits in ipairs(content_splits) do
+                    async_spawn:on_stdout(nil, splits)
+                    if i < #content_splits then
+                        async_spawn:on_stdout(nil, lower_char)
+                    end
+                end
+                async_spawn:on_stdout(nil, nil)
+            end)
+            -- upper case: A
+            local upper_char = string.char(65 + delimiter_i)
+            it(string.format("stdout on %s", upper_char), function()
+                local content = utils.readfile("README.md") --[[@as string]]
+                local lines = utils.readlines("README.md") --[[@as table]]
+
+                local i = 1
+                local function process_line(line)
+                    -- print(string.format("[%d]%s\n", i, line))
+                    assert_eq(type(line), "string")
+                    assert_eq(line, lines[i])
+                    i = i + 1
+                end
+                local async_spawn =
+                    utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                local content_splits = utils.string_split(
+                    content,
+                    upper_char,
+                    { trimempty = false }
+                )
+                for i, splits in ipairs(content_splits) do
+                    async_spawn:on_stdout(nil, splits)
+                    if i < #content_splits then
+                        async_spawn:on_stdout(nil, upper_char)
+                    end
+                end
+                async_spawn:on_stdout(nil, nil)
+            end)
+        end
         it("stderr", function()
             local async_spawn = utils.AsyncSpawn:open(
                 { "cat", "README.md" },
