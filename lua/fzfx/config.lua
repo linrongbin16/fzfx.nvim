@@ -647,11 +647,11 @@ local function make_directory_previewer(delimiter, filename_pos, lineno_pos)
         local parsed =
             line_helpers.PathLine:new(line, delimiter, filename_pos, lineno_pos)
         if constants.has_eza then
-            return { constants.eza, "--color=always", "-lha", parsed.filename }
+            return { constants.eza, "--color=always", "-lha", "--", parsed.filename }
         elseif vim.fn.executable("ls") > 0 then
-            return { "ls", "--color=always", "-lha", parsed.filename }
+            return { "ls", "--color=always", "-lha", "--", parsed.filename }
         elseif constants.is_windows then
-            return { "dir", parsed.filename }
+            return { "dir", "--", parsed.filename }
         else
             notify.echo(LogLevels.INFO, "no ls/dir/eza/exa command found.")
             return nil
