@@ -443,47 +443,43 @@ Especially for git commands:
     <td>N</td>
   </tr>
   <tr>
-    <td>Lsp Definitions</td>
+    <td rowspan="4">Lsp Symbols</td>
     <td>FzfxLspDefinitions</td>
     <td>N</td>
-    <td>Yes</td>
-    <td>Yes</td>
-    <td></td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4"></td>
   </tr>
   <tr>
-    <td>Lsp Type Definitions</td>
     <td>FzfxLspTypeDefinitions</td>
     <td>N</td>
-    <td>Yes</td>
-    <td>Yes</td>
-    <td></td>
   </tr>
   <tr>
-    <td>Lsp References</td>
     <td>FzfxLspReferences</td>
     <td>N</td>
-    <td>Yes</td>
-    <td>Yes</td>
-    <td></td>
   </tr>
   <tr>
-    <td>Lsp Implementations</td>
     <td>FzfxLspImplementations</td>
     <td>N</td>
-    <td>Yes</td>
-    <td>Yes</td>
-    <td></td>
   </tr>
   <tr>
-    <td rowspan="2">File Explorer</td>
-    <td>FzfxFileExplorer</td>
+    <td rowspan="4">File Explorer</td>
+    <td>FzfxFileExplorer(U)</td>
     <td>N</td>
-    <td rowspan="2">Yes</td>
-    <td rowspan="2">Yes</td>
-    <td rowspan="2"></td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4"></td>
   </tr>
   <tr>
-    <td>FzfxFileExplorerU</td>
+    <td>FzfxFileExplorer(U)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxFileExplorer(U)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxFileExplorer(U)P</td>
     <td>N</td>
   </tr>
 </tbody>
@@ -793,11 +789,11 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 ## 💩 Break Changes
 
 - 2023-08-17
-  - Breaks: re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
-  - Breaks: re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
-  - Breaks: re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
+  - Break: re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
+  - Break: re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
+  - Break: re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 - 2023-08-19
-  - Breaks: refactor configs schema for general fzf-based searching commands.
+  - Break: refactor configs schema for general fzf-based searching commands.
 - 2023-08-28
   - Deprecate: migrate 'git_commits' (`FzfxGCommits`) configs to new schema.
 - 2023-08-30
