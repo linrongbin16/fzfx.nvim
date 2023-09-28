@@ -581,12 +581,12 @@ local function make_file_explorer_provider(ls_args)
     --- @return string?
     local function wrap(query, context)
         ---@diagnostic disable-next-line: undefined-field
-        local cwd = utils.readfile(context.cwd)
+        local cwd = vim.fn.fnamemodify(utils.readfile(context.cwd), ":~")
         if constants.has_eza then
             return vim.fn.executable("echo") > 0
                     and string.format(
                         "echo %s && %s --color=always %s %s",
-                        cwd,
+                        utils.shellescape(cwd --[[@as string]]),
                         constants.eza,
                         ls_args,
                         cwd
@@ -601,14 +601,18 @@ local function make_file_explorer_provider(ls_args)
             return vim.fn.executable("echo") > 0
                     and string.format(
                         "echo %s && ls --color=always %s %s",
-                        cwd,
+                        utils.shellescape(cwd --[[@as string]]),
                         ls_args,
                         cwd
                     )
                 or string.format("ls --color=always %s %s", ls_args, cwd)
         elseif constants.is_windows then
             return vim.fn.executable("echo") > 0
-                    and string.format("echo %s && dir %s", cwd, cwd)
+                    and string.format(
+                        "echo %s && dir %s",
+                        utils.shellescape(cwd --[[@as string]]),
+                        cwd
+                    )
                 or string.format("dir %s", cwd)
         else
             notify.echo(LogLevels.INFO, "no ls/dir/eza/exa command found.")

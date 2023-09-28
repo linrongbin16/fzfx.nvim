@@ -747,10 +747,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             )
             if interaction_opts.reload_after_execute then
                 bind_builder = bind_builder
-                    .. string.format(
-                        "+reload(%s)+refresh-preview",
-                        reload_query_command
-                    )
+                    .. string.format("+reload(%s)", reload_query_command)
             end
             table.insert(fzf_opts, {
                 "--bind",
