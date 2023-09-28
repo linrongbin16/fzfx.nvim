@@ -416,9 +416,11 @@ describe("utils", function()
                 utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
             local content_splits =
                 utils.string_split(content, "\n", { trimempty = false })
-            for _, splits in ipairs(content_splits) do
+            for j, splits in ipairs(content_splits) do
                 async_spawn:on_stdout(nil, splits)
-                async_spawn:on_stdout(nil, "\n")
+                if j < #content_splits then
+                    async_spawn:on_stdout(nil, "\n")
+                end
             end
             async_spawn:on_stdout(nil, nil)
         end)
@@ -437,9 +439,9 @@ describe("utils", function()
                 utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
             local content_splits =
                 utils.string_split(content, " ", { trimempty = false })
-            for i, splits in ipairs(content_splits) do
+            for j, splits in ipairs(content_splits) do
                 async_spawn:on_stdout(nil, splits)
-                if i < #content_splits then
+                if j < #content_splits then
                     async_spawn:on_stdout(nil, " ")
                 end
             end
@@ -466,9 +468,9 @@ describe("utils", function()
                     lower_char,
                     { trimempty = false }
                 )
-                for i, splits in ipairs(content_splits) do
+                for j, splits in ipairs(content_splits) do
                     async_spawn:on_stdout(nil, splits)
-                    if i < #content_splits then
+                    if j < #content_splits then
                         async_spawn:on_stdout(nil, lower_char)
                     end
                 end
@@ -494,9 +496,9 @@ describe("utils", function()
                     upper_char,
                     { trimempty = false }
                 )
-                for i, splits in ipairs(content_splits) do
+                for j, splits in ipairs(content_splits) do
                     async_spawn:on_stdout(nil, splits)
-                    if i < #content_splits then
+                    if j < #content_splits then
                         async_spawn:on_stdout(nil, upper_char)
                     end
                 end
