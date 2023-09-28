@@ -1,5 +1,5 @@
-local notify = require("fzfx.notify")
-local LogLevels = require("fzfx.notify").LogLevels
+local log = require("fzfx.log")
+local LogLevels = require("fzfx.log").LogLevels
 local conf = require("fzfx.config")
 local general = require("fzfx.general")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
@@ -25,12 +25,12 @@ local function setup()
                 local cmd = require("fzfx.cmd")
                 local git_root_cmd = cmd.GitRootCmd:run()
                 if git_root_cmd:wrong() then
-                    notify.echo(LogLevels.INFO, "not in git repo.")
+                    log.echo(LogLevels.INFO, "not in git repo.")
                     return nil
                 end
                 local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
                 if git_current_branch_cmd:wrong() then
-                    notify.echo(
+                    log.echo(
                         LogLevels.WARN,
                         table.concat(git_current_branch_cmd.result.stderr, " ")
                     )
@@ -43,7 +43,7 @@ local function setup()
                 )
                 local git_branch_cmd = cmd.Cmd:run(provider_opts[2])
                 if git_branch_cmd.result:wrong() then
-                    notify.echo(
+                    log.echo(
                         LogLevels.WARN,
                         table.concat(git_current_branch_cmd.result.stderr, " ")
                     )
@@ -81,7 +81,7 @@ local function setup()
     general.setup("git_branches", git_branches_configs)
     if deprecated then
         local function deprecated_notification()
-            notify.echo(
+            log.echo(
                 LogLevels.WARN,
                 "deprecated 'FzfxGBranches' configs, please migrate to latest config schema!"
             )

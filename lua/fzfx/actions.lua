@@ -1,7 +1,4 @@
 local log = require("fzfx.log")
-local env = require("fzfx.env")
-local path = require("fzfx.path")
-local utils = require("fzfx.utils")
 local line_helpers = require("fzfx.line_helpers")
 
 --- @param lines string[]

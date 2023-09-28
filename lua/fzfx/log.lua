@@ -1,22 +1,61 @@
-local LogLevels = require("fzfx.notify").LogLevels
-local LogLevelNames = require("fzfx.notify").LogLevelNames
-local notify = require("fzfx.notify")
+local utils = require("fzfx.utils")
+
+-- see: `lua print(vim.inspect(vim.log.levels))`
+local LogLevels = {
+    TRACE = 0,
+    DEBUG = 1,
+    INFO = 2,
+    WARN = 3,
+    ERROR = 4,
+    OFF = 5,
+}
+
+local LogLevelNames = {
+    [0] = "TRACE",
+    [1] = "DEBUG",
+    [2] = "INFO",
+    [3] = "WARN",
+    [4] = "ERROR",
+    [5] = "OFF",
+}
+
+local LogHighlights = {
+    [1] = "Comment",
+    [2] = "None",
+    [3] = "WarningMsg",
+    [4] = "ErrorMsg",
+}
+
+--- @param level integer
+--- @param fmt string
+--- @param ... any?
+local function echo(level, fmt, ...)
+    local msg = string.format(fmt, ...)
+    local msg_lines = utils.string_split(msg, "\n")
+    local msg_chunks = {}
+    local prefix = ""
+    if level == LogLevels.ERROR then
+        prefix = "error! "
+    elseif level == LogLevels.WARN then
+        prefix = "warning! "
+    end
+    for _, line in ipairs(msg_lines) do
+        table.insert(msg_chunks, {
+            string.format("[fzfx] %s%s", prefix, line),
+            LogHighlights[level],
+        })
+    end
+    vim.api.nvim_echo(msg_chunks, false, {})
+end
 
 --- @type Configs
 local Defaults = {
-    --- @type integer
     level = LogLevels.INFO,
-    --- @type boolean
     console_log = true,
-    --- @type string|nil
     name = "[fzfx]",
-    --- @type boolean
     file_log = false,
-    --- @type string|nil
     file_name = "fzfx.log",
-    --- @type string|nil
     file_dir = vim.fn.stdpath("data"),
-    --- @type string|nil
     file_path = nil,
 }
 
@@ -71,9 +110,9 @@ local function log(level, msg)
         return
     end
 
-    local msg_lines = require("fzfx.utils").string_split(msg, "\n")
+    local msg_lines = utils.string_split(msg, "\n")
     if Configs.console_log and level >= LogLevels.INFO then
-        notify.echo(level, msg)
+        echo(level, msg)
     end
     if Configs.file_log then
         local fp = io.open(Configs.file_path, "a")
@@ -125,6 +164,9 @@ end
 
 local M = {
     setup = setup,
+    LogLevels = LogLevels,
+    LogLevelNames = LogLevelNames,
+    echo = echo,
     throw = throw,
     ensure = ensure,
     err = err,

@@ -10,6 +10,8 @@ describe("log", function()
     end)
 
     local log = require("fzfx.log")
+    local LogLevels = require("fzfx.log").LogLevels
+    local LogLevelNames = require("fzfx.log").LogLevelNames
     log.setup({
         level = "DEBUG",
         console_log = true,
@@ -95,6 +97,74 @@ describe("log", function()
                 pcall(log.throw, "throw with 2 params: %s, %d", "a", 2)
             assert_false(ok3)
             assert_eq(type(msg3), "string")
+        end)
+    end)
+    describe("[LogLevels]", function()
+        it("check levels", function()
+            for k, v in pairs(LogLevels) do
+                assert_eq(type(k), "string")
+                assert_eq(type(v), "number")
+            end
+        end)
+        it("check level names", function()
+            for v, k in pairs(LogLevelNames) do
+                assert_eq(type(k), "string")
+                assert_eq(type(v), "number")
+            end
+        end)
+    end)
+    describe("[echo]", function()
+        it("info", function()
+            log.echo(LogLevels.INFO, "echo without parameters")
+            log.echo(LogLevels.INFO, "echo with 1 parameters: %s", "a")
+            log.echo(LogLevels.INFO, "echo with 2 parameters: %s, %d", "a", 1)
+            log.echo(
+                LogLevels.INFO,
+                "echo with 3 parameters: %s, %d, %f",
+                "a",
+                1,
+                3.12
+            )
+            assert_true(true)
+        end)
+        it("debug", function()
+            log.echo(LogLevels.DEBUG, "echo without parameters")
+            log.echo(LogLevels.DEBUG, "echo with 1 parameters: %s", "a")
+            log.echo(LogLevels.DEBUG, "echo with 2 parameters: %s, %d", "a", 1)
+            log.echo(
+                LogLevels.DEBUG,
+                "echo with 3 parameters: %s, %d, %f",
+                "a",
+                1,
+                3.12
+            )
+            assert_true(true)
+        end)
+        it("warn", function()
+            log.echo(LogLevels.WARN, "echo without parameters")
+            log.echo(LogLevels.WARN, "echo with 1 parameters: %s", "a")
+            log.echo(LogLevels.WARN, "echo with 2 parameters: %s, %d", "a", 1)
+            log.echo(
+                LogLevels.WARN,
+                "echo with 3 parameters: %s, %d, %f",
+                "a",
+                1,
+                3.12
+            )
+            assert_true(true)
+        end)
+        it("err", function()
+            log.echo(LogLevels.ERROR, "echo without parameters")
+            log.echo(LogLevels.ERROR, "echo with 1 parameters: %s", "a")
+            log.echo(LogLevels.ERROR, "echo with 2 parameters: %s, %d", "a", 1)
+            log.echo(
+                LogLevels.ERROR,
+                "echo with 3 parameters: %s, %d, %f",
+                "a",
+                1,
+                3.12
+            )
+            assert_true(true)
         end)
     end)
 end)

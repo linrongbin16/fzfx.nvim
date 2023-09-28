@@ -44,7 +44,7 @@ local LoggerContext = {
 --- @param msg string
 --- @return nil
 local function _log(level, msg)
-    local LogLevels = require("fzfx.notify").LogLevels
+    local LogLevels = require("fzfx.log").LogLevels
 
     if LogLevels[level] < LogLevels[LoggerContext.level] then
         return
