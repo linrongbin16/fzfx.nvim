@@ -364,4 +364,60 @@ describe("general", function()
             assert_true(actual)
         end)
     end)
+    describe("[make_help_doc]", function()
+        it("make1", function()
+            local action_configs = {
+                action1 = {
+                    key = "ctrl-l",
+                },
+                upper = {
+                    key = "ctrl-u",
+                },
+            }
+            local actual = general.make_help_doc(action_configs, {})
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, 2)
+            assert_true(
+                utils.string_find(actual[1], "to action1")
+                    > utils.string_find(actual[1], "CTRL-L")
+            )
+            assert_true(utils.string_endswith(actual[1], "to action1"))
+            assert_true(
+                utils.string_find(actual[2], "to upper")
+                    > utils.string_find(actual[2], "CTRL-U")
+            )
+            assert_true(utils.string_endswith(actual[2], "to upper"))
+        end)
+        it("make2", function()
+            local action_configs = {
+                action1 = {
+                    key = "ctrl-l",
+                },
+                upper = {
+                    key = "ctrl-u",
+                },
+                goto_inter = {
+                    key = "alt-p",
+                },
+            }
+            local actual = general.make_help_doc(action_configs, {})
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, 3)
+            assert_true(
+                utils.string_find(actual[1], "to action1")
+                    > utils.string_find(actual[1], "CTRL-L")
+            )
+            assert_true(utils.string_endswith(actual[1], "to action1"))
+            assert_true(
+                utils.string_find(actual[2], "to goto inter")
+                    > utils.string_find(actual[2], "ALT-P")
+            )
+            assert_true(utils.string_endswith(actual[2], "to goto inter"))
+            assert_true(
+                utils.string_find(actual[3], "to upper")
+                    > utils.string_find(actual[3], "CTRL-U")
+            )
+            assert_true(utils.string_endswith(actual[3], "to upper"))
+        end)
+    end)
 end)
