@@ -472,33 +472,45 @@ end
 --- @field headers table<PipelineName, string[]>
 local HeaderSwitch = {}
 
+--- @param interaction_configs Configs?
+--- @param builder string[]|nil
+--- @return string[]
+local function make_help_doc(interaction_configs, builder)
+    builder = builder or {}
+    if type(interaction_configs) == "table" then
+        local interaction_names = {}
+        for interaction_name, interaction_opts in pairs(interaction_configs) do
+            table.insert(interaction_names, interaction_name)
+        end
+        table.sort(interaction_names)
+        for _, interaction_name in ipairs(interaction_names) do
+            local interaction_opts = interaction_configs[interaction_name]
+            local action_key = interaction_opts.key
+            table.insert(
+                builder,
+                color.render(
+                    color.magenta,
+                    "Special",
+                    "%s to "
+                        .. table.concat(
+                            vim.fn.split(interaction_name, "_"),
+                            " "
+                        ),
+                    string.upper(action_key)
+                )
+            )
+        end
+    end
+    return builder
+end
+
 --- @param provider_configs Configs
 --- @param interaction_configs Configs
 --- @return HeaderSwitch
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
     if clazz.instanceof(provider_configs, ProviderConfig) then
-        local help_builder = {}
-        local provider_name = DEFAULT_PIPELINE
-        if type(interaction_configs) == "table" then
-            for interaction_name, interaction_opts in pairs(interaction_configs) do
-                local action_key = interaction_opts.key
-                table.insert(
-                    help_builder,
-                    color.render(
-                        color.magenta,
-                        "Special",
-                        "%s to "
-                            .. table.concat(
-                                vim.fn.split(interaction_name, "_"),
-                                " "
-                            ),
-                        string.upper(action_key)
-                    )
-                )
-            end
-        end
-        headers_map[provider_name] = help_builder
+        headers_map[DEFAULT_PIPELINE] = make_help_doc(interaction_configs)
     else
         log.debug(
             "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
@@ -524,27 +536,8 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
                     )
                 end
             end
-            if type(interaction_configs) == "table" then
-                for interaction_name, interaction_opts in
-                    pairs(interaction_configs)
-                do
-                    local action_key = interaction_opts.key
-                    table.insert(
-                        help_builder,
-                        color.render(
-                            color.magenta,
-                            "Special",
-                            "%s to "
-                                .. table.concat(
-                                    vim.fn.split(interaction_name, "_"),
-                                    " "
-                                ),
-                            string.upper(action_key)
-                        )
-                    )
-                end
-            end
-            headers_map[provider_name] = help_builder
+            headers_map[provider_name] =
+                make_help_doc(interaction_configs, help_builder)
         end
     end
 
