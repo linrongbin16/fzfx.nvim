@@ -38,6 +38,12 @@ describe("line_helpers", function()
             local actual = line_helpers.parse_filename(input)
             print(
                 string.format(
+                    "line_helpers.parse_filename1:%s",
+                    vim.inspect(actual)
+                )
+            )
+            print(
+                string.format(
                     "parse filename with prepend icon:%s\n",
                     vim.inspect(actual)
                 )
@@ -48,6 +54,12 @@ describe("line_helpers", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
             local input = " ~/github/lin rongbin/fzfx.nvim/README.md"
             local actual = line_helpers.parse_filename(input)
+            print(
+                string.format(
+                    "line_helpers.parse_filename2:%s",
+                    vim.inspect(actual)
+                )
+            )
             print(
                 string.format(
                     "parse filename with prepend icon:%s\n",
