@@ -48,16 +48,14 @@ vim.rpcrequest(
 )
 vim.fn.chanclose(channel_id)
 
---- @type string
-local metajsonstring = shell_helpers.readfile(metafile)
+local metajsonstring = shell_helpers.readfile(metafile) --[[@as string]]
 shell_helpers.log_ensure(
     type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
     "|fzfx.bin.general.previewer| error! metajson is not string! %s",
     vim.inspect(metajsonstring)
 )
---- @type {previewer_type:PreviewerType}
-local metajson = vim.fn.json_decode(metajsonstring) --[[@as {previewer_type:PreviewerType}]]
-shell_helpers.log_debug("metajson:[%s]", vim.inspect(metajson))
+local metaopts = vim.fn.json_decode(metajsonstring) --[[@as PreviewerMetaOpts]]
+shell_helpers.log_debug("metajson:[%s]", vim.inspect(metaopts))
 
 --- @param l string?
 local function println(l)
@@ -83,7 +81,7 @@ local function consume(data_buffer, fn_line_processor)
     return i
 end
 
-if metajson.previewer_type == "command" then
+if metaopts.previewer_type == "command" then
     local cmd = shell_helpers.readfile(resultfile)
     shell_helpers.log_debug("cmd:[%s]", vim.inspect(cmd))
     if cmd == nil or string.len(cmd) == 0 then
@@ -91,7 +89,7 @@ if metajson.previewer_type == "command" then
     else
         os.execute(cmd)
     end
-elseif metajson.previewer_type == "command_list" then
+elseif metaopts.previewer_type == "command_list" then
     local cmd = shell_helpers.readfile(resultfile)
     shell_helpers.log_debug("cmd:[%s]", vim.inspect(cmd))
     if cmd == nil or string.len(cmd) == 0 then
@@ -111,7 +109,7 @@ elseif metajson.previewer_type == "command_list" then
         vim.inspect(cmd_splits)
     )
     async_spawn:run()
-elseif metajson.previewer_type == "list" then
+elseif metaopts.previewer_type == "list" then
     local f = io.open(resultfile, "r")
     shell_helpers.log_ensure(
         f ~= nil,
