@@ -99,7 +99,7 @@ describe("log", function()
             assert_eq(type(msg3), "string")
         end)
     end)
-    describe("[NotifyLevels]", function()
+    describe("[LogLevels]", function()
         it("check levels", function()
             for k, v in pairs(LogLevels) do
                 assert_eq(type(k), "string")
