@@ -903,6 +903,9 @@ local M = {
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,
     HeaderSwitch = HeaderSwitch,
+    render_help = render_help,
+    skip_help = skip_help,
+    make_help_doc = make_help_doc,
 }
 
 return M
