@@ -1,6 +1,5 @@
 local log = require("fzfx.log")
-local notify = require("fzfx.notify")
-local LogLevels = require("fzfx.notify").LogLevels
+local LogLevels = require("fzfx.log").LogLevels
 local Popup = require("fzfx.popup").Popup
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")

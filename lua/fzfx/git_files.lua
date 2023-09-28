@@ -1,5 +1,5 @@
-local notify = require("fzfx.notify")
-local LogLevels = require("fzfx.notify").LogLevels
+local log = require("fzfx.log")
+local LogLevels = require("fzfx.log").LogLevels
 local conf = require("fzfx.config")
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
@@ -58,7 +58,7 @@ local function setup()
     general.setup("git_files", git_files_configs)
     if deprecated then
         local function deprecated_notification()
-            notify.echo(
+            log.echo(
                 LogLevels.WARN,
                 "deprecated 'FzfxGFiles' configs, please migrate to latest config schema!"
             )
