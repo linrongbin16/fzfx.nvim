@@ -1,13 +1,9 @@
 -- No Setup Need
 
---- @type boolean
 local is_windows = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
---- @type boolean
 local is_macos = vim.fn.has("mac") > 0
---- @type boolean
 local is_bsd = vim.fn.has("bsd") > 0
 -- we just think others are linux
---- @type boolean
 local is_linux = not is_windows
     and not is_macos
     and not is_bsd
