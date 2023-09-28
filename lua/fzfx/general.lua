@@ -472,33 +472,50 @@ end
 --- @field headers table<PipelineName, string[]>
 local HeaderSwitch = {}
 
---- @param interaction_configs Configs?
---- @param builder string[]|nil
---- @return string[]
-local function make_help_doc(interaction_configs, builder)
-    builder = builder or {}
-    if type(interaction_configs) == "table" then
-        local interaction_names = {}
-        for interaction_name, interaction_opts in pairs(interaction_configs) do
-            table.insert(interaction_names, interaction_name)
+--- @param name string
+--- @param action string
+--- @return string
+local function render_help(name, action)
+    return color.render(
+        color.magenta,
+        "Special",
+        "%s to " .. table.concat(utils.string_split(name, "_"), " "),
+        string.upper(action)
+    )
+end
+
+--- @param excludes string[]|nil
+--- @param s string
+--- @return boolean
+local function skip_help(excludes, s)
+    if type(excludes) ~= "table" then
+        return false
+    end
+    for _, e in ipairs(excludes) do
+        if e == s then
+            return true
         end
-        table.sort(interaction_names)
-        for _, interaction_name in ipairs(interaction_names) do
-            local interaction_opts = interaction_configs[interaction_name]
-            local action_key = interaction_opts.key
-            table.insert(
-                builder,
-                color.render(
-                    color.magenta,
-                    "Special",
-                    "%s to "
-                        .. table.concat(
-                            vim.fn.split(interaction_name, "_"),
-                            " "
-                        ),
-                    string.upper(action_key)
-                )
-            )
+    end
+    return false
+end
+
+--- @param action_configs Configs?
+--- @param builder string[]
+--- @param excludes string[]|nil
+--- @return string[]
+local function make_help_doc(action_configs, builder, excludes)
+    if type(action_configs) == "table" then
+        local action_names = {}
+        for name, opts in pairs(action_configs) do
+            if not skip_help(excludes, name) then
+                table.insert(action_names, name)
+            end
+        end
+        table.sort(action_names)
+        for _, name in ipairs(action_names) do
+            local opts = action_configs[name]
+            local act = opts.key
+            table.insert(builder, render_help(name, act))
         end
     end
     return builder
@@ -510,32 +527,18 @@ end
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
     if clazz.instanceof(provider_configs, ProviderConfig) then
-        headers_map[DEFAULT_PIPELINE] = make_help_doc(interaction_configs)
+        headers_map[DEFAULT_PIPELINE] = make_help_doc(interaction_configs, {})
     else
         log.debug(
             "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
             vim.inspect(provider_configs)
         )
         for provider_name, provider_opts in pairs(provider_configs) do
-            local help_builder = {}
-            for provider_name2, provider_opts2 in pairs(provider_configs) do
-                local switch_key2 = string.lower(provider_opts2.key)
-                if provider_name2 ~= provider_name then
-                    table.insert(
-                        help_builder,
-                        color.render(
-                            color.magenta,
-                            "Special",
-                            "%s to "
-                                .. table.concat(
-                                    vim.fn.split(provider_name2, "_"),
-                                    " "
-                                ),
-                            string.upper(switch_key2)
-                        )
-                    )
-                end
-            end
+            local help_builder = make_help_doc(
+                provider_configs,
+                {},
+                { provider_name }
+            )
             headers_map[provider_name] =
                 make_help_doc(interaction_configs, help_builder)
         end
