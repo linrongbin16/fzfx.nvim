@@ -65,22 +65,6 @@ local function println(l)
     end
 end
 
---- @param data_buffer string
---- @param fn_line_processor fun(l:string?):nil
-local function consume(data_buffer, fn_line_processor)
-    local i = 1
-    while i <= #data_buffer do
-        local newline_pos = shell_helpers.string_find(data_buffer, "\n", i)
-        if not newline_pos then
-            break
-        end
-        local line = data_buffer:sub(i, newline_pos)
-        fn_line_processor(line)
-        i = newline_pos + 1
-    end
-    return i
-end
-
 if metaopts.previewer_type == "command" then
     local cmd = shell_helpers.readfile(resultfile)
     shell_helpers.log_debug("cmd:[%s]", vim.inspect(cmd))
