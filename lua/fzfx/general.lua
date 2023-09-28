@@ -111,7 +111,7 @@ function ProviderSwitch:provide(name, query, context)
     --- @field prepend_icon_path_position integer?
 
     --- @type ProviderMetaOpts
-    local meta_opts = {
+    local metaopts = {
         pipeline = self.pipeline,
         provider_type = provider_config.provider_type,
     }
@@ -119,7 +119,7 @@ function ProviderSwitch:provide(name, query, context)
         type(provider_config.line_opts) == "table"
         and provider_config.line_opts.prepend_icon_by_ft ~= nil
     then
-        meta_opts.prepend_icon_by_ft =
+        metaopts.prepend_icon_by_ft =
             provider_config.line_opts.prepend_icon_by_ft
     end
     if
@@ -130,7 +130,7 @@ function ProviderSwitch:provide(name, query, context)
             )
             > 0
     then
-        meta_opts.prepend_icon_path_delimiter =
+        metaopts.prepend_icon_path_delimiter =
             provider_config.line_opts.prepend_icon_path_delimiter
     end
     if
@@ -138,11 +138,11 @@ function ProviderSwitch:provide(name, query, context)
         and type(provider_config.line_opts.prepend_icon_path_position)
             == "number"
     then
-        meta_opts.prepend_icon_path_position =
+        metaopts.prepend_icon_path_position =
             provider_config.line_opts.prepend_icon_path_position
     end
 
-    local metajson = vim.fn.json_encode(meta_opts) --[[@as string]]
+    local metajson = vim.fn.json_encode(metaopts) --[[@as string]]
     utils.writefile(self.metafile, metajson)
 
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then
@@ -360,10 +360,16 @@ function PreviewerSwitch:preview(name, line, context)
         "|fzfx.general - PreviewerSwitch:preview| invalid previewer_type! %s",
         vim.inspect(self)
     )
-    local metajson = vim.fn.json_encode({
+
+    --- @class PreviewerMetaOpts
+    --- @field pipeline PipelineName
+    --- @field previewer_type PreviewerType
+    local metaopts = {
         pipeline = self.pipeline,
         previewer_type = previewer_type,
-    })
+    }
+
+    local metajson = vim.fn.json_encode(metaopts)
     utils.writefile(self.metafile, metajson)
     if previewer_type == PreviewerTypeEnum.COMMAND then
         local ok, result = pcall(previewer, line, context)
@@ -472,79 +478,75 @@ end
 --- @field headers table<PipelineName, string[]>
 local HeaderSwitch = {}
 
+--- @param name string
+--- @param action string
+--- @return string
+local function render_help(name, action)
+    return color.render(
+        color.magenta,
+        "Special",
+        "%s to " .. table.concat(utils.string_split(name, "_"), " "),
+        string.upper(action)
+    )
+end
+
+--- @param excludes string[]|nil
+--- @param s string
+--- @return boolean
+local function skip_help(excludes, s)
+    if type(excludes) ~= "table" then
+        return false
+    end
+    for _, e in ipairs(excludes) do
+        if e == s then
+            return true
+        end
+    end
+    return false
+end
+
+--- @param action_configs Configs?
+--- @param builder string[]
+--- @param excludes string[]|nil
+--- @return string[]
+local function make_help_doc(action_configs, builder, excludes)
+    if type(action_configs) == "table" then
+        local action_names = {}
+        for name, opts in pairs(action_configs) do
+            if not skip_help(excludes, name) then
+                table.insert(action_names, name)
+            end
+        end
+        table.sort(action_names)
+        for _, name in ipairs(action_names) do
+            local opts = action_configs[name]
+            local act = opts.key
+            table.insert(builder, render_help(name, act))
+        end
+    end
+    return builder
+end
+
 --- @param provider_configs Configs
 --- @param interaction_configs Configs
 --- @return HeaderSwitch
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
     if clazz.instanceof(provider_configs, ProviderConfig) then
-        local help_builder = {}
-        local provider_name = DEFAULT_PIPELINE
-        if type(interaction_configs) == "table" then
-            for interaction_name, interaction_opts in pairs(interaction_configs) do
-                local action_key = interaction_opts.key
-                table.insert(
-                    help_builder,
-                    color.render(
-                        color.magenta,
-                        "Special",
-                        "%s to "
-                            .. table.concat(
-                                vim.fn.split(interaction_name, "_"),
-                                " "
-                            ),
-                        string.upper(action_key)
-                    )
-                )
-            end
-        end
-        headers_map[provider_name] = help_builder
+        headers_map[DEFAULT_PIPELINE] = make_help_doc(interaction_configs, {})
     else
         log.debug(
             "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
             vim.inspect(provider_configs)
         )
         for provider_name, provider_opts in pairs(provider_configs) do
-            local help_builder = {}
-            for provider_name2, provider_opts2 in pairs(provider_configs) do
-                local switch_key2 = string.lower(provider_opts2.key)
-                if provider_name2 ~= provider_name then
-                    table.insert(
-                        help_builder,
-                        color.render(
-                            color.magenta,
-                            "Special",
-                            "%s to "
-                                .. table.concat(
-                                    vim.fn.split(provider_name2, "_"),
-                                    " "
-                                ),
-                            string.upper(switch_key2)
-                        )
-                    )
-                end
-            end
-            if type(interaction_configs) == "table" then
-                for interaction_name, interaction_opts in
-                    pairs(interaction_configs)
-                do
-                    local action_key = interaction_opts.key
-                    table.insert(
-                        help_builder,
-                        color.render(
-                            color.magenta,
-                            "Special",
-                            "%s to "
-                                .. table.concat(
-                                    vim.fn.split(interaction_name, "_"),
-                                    " "
-                                ),
-                            string.upper(action_key)
-                        )
-                    )
-                end
-            end
-            headers_map[provider_name] = help_builder
+            local help_builder = make_help_doc(
+                provider_configs,
+                {},
+                { provider_name }
+            )
+            headers_map[provider_name] =
+                make_help_doc(interaction_configs, help_builder)
         end
     end
 
@@ -747,10 +749,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             )
             if interaction_opts.reload_after_execute then
                 bind_builder = bind_builder
-                    .. string.format(
-                        "+reload(%s)+refresh-preview",
-                        reload_query_command
-                    )
+                    .. string.format("+reload(%s)", reload_query_command)
             end
             table.insert(fzf_opts, {
                 "--bind",
@@ -910,6 +909,9 @@ local M = {
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,
     HeaderSwitch = HeaderSwitch,
+    render_help = render_help,
+    skip_help = skip_help,
+    make_help_doc = make_help_doc,
 }
 
 return M

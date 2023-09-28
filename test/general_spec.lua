@@ -318,4 +318,106 @@ describe("general", function()
             assert_eq(ps:switch("p2"), nil)
         end)
     end)
+    describe("[render_help]", function()
+        it("renders1", function()
+            local actual = general.render_help("doc1", "bs")
+            print(string.format("render help1:%s\n", actual))
+            assert_true(actual:gmatch("to doc1") ~= nil)
+            assert_true(actual:gmatch("BS") ~= nil)
+            assert_true(
+                utils.string_find(actual, "to doc1")
+                    > utils.string_find(actual, "BS")
+            )
+        end)
+        it("renders2", function()
+            local actual = general.render_help("do_it", "ctrl")
+            print(string.format("render help2:%s\n", actual))
+            assert_true(actual:gmatch("to do it") ~= nil)
+            assert_true(actual:gmatch("CTRL") ~= nil)
+            assert_true(
+                utils.string_find(actual, "to do it")
+                    > utils.string_find(actual, "CTRL")
+            )
+        end)
+        it("renders3", function()
+            local actual = general.render_help("ok_ok", "alt")
+            print(string.format("render help3:%s\n", actual))
+            assert_true(actual:gmatch("to ok ok") ~= nil)
+            assert_true(actual:gmatch("ALT") ~= nil)
+            assert_true(
+                utils.string_find(actual, "to ok ok")
+                    > utils.string_find(actual, "ALT")
+            )
+        end)
+    end)
+    describe("[skip_help]", function()
+        it("skip1", function()
+            local actual = general.skip_help(nil, "bs")
+            assert_false(actual)
+        end)
+        it("skip2", function()
+            local actual = general.skip_help({}, "bs")
+            assert_false(actual)
+        end)
+        it("skip3", function()
+            local actual = general.skip_help({ "bs" }, "bs")
+            assert_true(actual)
+        end)
+    end)
+    describe("[make_help_doc]", function()
+        it("make1", function()
+            local action_configs = {
+                action1 = {
+                    key = "ctrl-l",
+                },
+                upper = {
+                    key = "ctrl-u",
+                },
+            }
+            local actual = general.make_help_doc(action_configs, {})
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, 2)
+            assert_true(
+                utils.string_find(actual[1], "to action1")
+                    > utils.string_find(actual[1], "CTRL-L")
+            )
+            assert_true(utils.string_endswith(actual[1], "to action1"))
+            assert_true(
+                utils.string_find(actual[2], "to upper")
+                    > utils.string_find(actual[2], "CTRL-U")
+            )
+            assert_true(utils.string_endswith(actual[2], "to upper"))
+        end)
+        it("make2", function()
+            local action_configs = {
+                action1 = {
+                    key = "ctrl-l",
+                },
+                upper = {
+                    key = "ctrl-u",
+                },
+                goto_inter = {
+                    key = "alt-p",
+                },
+            }
+            local actual = general.make_help_doc(action_configs, {})
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, 3)
+            assert_true(
+                utils.string_find(actual[1], "to action1")
+                    > utils.string_find(actual[1], "CTRL-L")
+            )
+            assert_true(utils.string_endswith(actual[1], "to action1"))
+            assert_true(
+                utils.string_find(actual[2], "to goto inter")
+                    > utils.string_find(actual[2], "ALT-P")
+            )
+            assert_true(utils.string_endswith(actual[2], "to goto inter"))
+            assert_true(
+                utils.string_find(actual[3], "to upper")
+                    > utils.string_find(actual[3], "CTRL-U")
+            )
+            assert_true(utils.string_endswith(actual[3], "to upper"))
+        end)
+    end)
 end)
