@@ -443,47 +443,43 @@ Especially for git commands:
     <td>N</td>
   </tr>
   <tr>
-    <td>Lsp Definitions</td>
+    <td rowspan="4">Lsp Symbols</td>
     <td>FzfxLspDefinitions</td>
     <td>N</td>
-    <td>Yes</td>
-    <td>Yes</td>
-    <td></td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4"></td>
   </tr>
   <tr>
-    <td>Lsp Type Definitions</td>
     <td>FzfxLspTypeDefinitions</td>
     <td>N</td>
-    <td>Yes</td>
-    <td>Yes</td>
-    <td></td>
   </tr>
   <tr>
-    <td>Lsp References</td>
     <td>FzfxLspReferences</td>
     <td>N</td>
-    <td>Yes</td>
-    <td>Yes</td>
-    <td></td>
   </tr>
   <tr>
-    <td>Lsp Implementations</td>
     <td>FzfxLspImplementations</td>
     <td>N</td>
-    <td>Yes</td>
-    <td>Yes</td>
-    <td></td>
   </tr>
   <tr>
-    <td rowspan="2">File Explorer</td>
-    <td>FzfxFileExplorer</td>
+    <td rowspan="4">File Explorer</td>
+    <td>FzfxFileExplorer(U)</td>
     <td>N</td>
-    <td rowspan="2">Yes</td>
-    <td rowspan="2">Yes</td>
-    <td rowspan="2"></td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4"></td>
   </tr>
   <tr>
-    <td>FzfxFileExplorerU</td>
+    <td>FzfxFileExplorer(U)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxFileExplorer(U)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxFileExplorer(U)P</td>
     <td>N</td>
   </tr>
 </tbody>
