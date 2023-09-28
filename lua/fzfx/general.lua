@@ -111,7 +111,7 @@ function ProviderSwitch:provide(name, query, context)
     --- @field prepend_icon_path_position integer?
 
     --- @type ProviderMetaOpts
-    local meta_opts = {
+    local metaopts = {
         pipeline = self.pipeline,
         provider_type = provider_config.provider_type,
     }
@@ -119,7 +119,7 @@ function ProviderSwitch:provide(name, query, context)
         type(provider_config.line_opts) == "table"
         and provider_config.line_opts.prepend_icon_by_ft ~= nil
     then
-        meta_opts.prepend_icon_by_ft =
+        metaopts.prepend_icon_by_ft =
             provider_config.line_opts.prepend_icon_by_ft
     end
     if
@@ -130,7 +130,7 @@ function ProviderSwitch:provide(name, query, context)
             )
             > 0
     then
-        meta_opts.prepend_icon_path_delimiter =
+        metaopts.prepend_icon_path_delimiter =
             provider_config.line_opts.prepend_icon_path_delimiter
     end
     if
@@ -138,11 +138,11 @@ function ProviderSwitch:provide(name, query, context)
         and type(provider_config.line_opts.prepend_icon_path_position)
             == "number"
     then
-        meta_opts.prepend_icon_path_position =
+        metaopts.prepend_icon_path_position =
             provider_config.line_opts.prepend_icon_path_position
     end
 
-    local metajson = vim.fn.json_encode(meta_opts) --[[@as string]]
+    local metajson = vim.fn.json_encode(metaopts) --[[@as string]]
     utils.writefile(self.metafile, metajson)
 
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then
@@ -360,10 +360,16 @@ function PreviewerSwitch:preview(name, line, context)
         "|fzfx.general - PreviewerSwitch:preview| invalid previewer_type! %s",
         vim.inspect(self)
     )
-    local metajson = vim.fn.json_encode({
+
+    --- @class PreviewerMetaOpts
+    --- @field pipeline PipelineName
+    --- @field previewer_type PreviewerType
+    local metaopts = {
         pipeline = self.pipeline,
         previewer_type = previewer_type,
-    })
+    }
+
+    local metajson = vim.fn.json_encode(metaopts)
     utils.writefile(self.metafile, metajson)
     if previewer_type == PreviewerTypeEnum.COMMAND then
         local ok, result = pcall(previewer, line, context)
