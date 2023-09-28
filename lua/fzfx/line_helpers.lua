@@ -9,8 +9,12 @@ local path = require("fzfx.path")
 local function parse_filename(line)
     local filename = nil
     if env.icon_enable() then
-        local splits = utils.string_split(line, " ")
-        filename = splits[#splits]
+        local first_space_pos = utils.string_find(line, " ")
+        if not first_space_pos then
+            filename = line
+        else
+            filename = line:sub(first_space_pos + 1, #line)
+        end
     else
         filename = line
     end
