@@ -583,7 +583,7 @@ nnoremap <space>wdg :\<C-U>FzfxLspDiagnosticsW<CR>
 " by yank text
 nnoremap <space>pdg :\<C-U>FzfxLspDiagnosticsP<CR>
 
-" ======== lsp definitions/type definitions/references/implementations ========
+" ======== lsp symbols ========
 
 " lsp definitions
 nnoremap gd :\<C-U>FzfxLspDefinitions<CR>
@@ -749,7 +749,7 @@ vim.keymap.set('n', '<space>wdg', '<cmd>FzfxLspDiagnosticsW<cr>',
 vim.keymap.set('n', '<space>pdg', '<cmd>FzfxLspDiagnosticsP<cr>',
         {silent=true, noremap=true, desc="Search lsp diagnostics by yank text"})
 
--- ======== lsp definitions/type definitions/references/implementations ========
+-- ======== lsp symbols ========
 
 -- lsp definitions
 vim.keymap.set('n', 'gd', '<cmd>FzfxLspDefinitions<cr>',
