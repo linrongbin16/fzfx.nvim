@@ -29,7 +29,7 @@ local default_fzf_options = {
 }
 
 local default_git_log_pretty =
-    "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+"%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
 -- files {
 
@@ -55,13 +55,13 @@ local default_unrestricted_fd = {
 }
 -- find
 local default_restricted_find = constants.is_windows
-        and {
-            constants.find,
-            "-L",
-            ".",
-            "-type",
-            "f",
-        }
+    and {
+        constants.find,
+        "-L",
+        ".",
+        "-type",
+        "f",
+    }
     or {
         constants.find,
         "-L",
@@ -117,16 +117,16 @@ local function make_file_previewer(delimiter, filename_pos, lineno_pos)
             end
             -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
             return type(parsed.lineno) == "number"
-                    and {
-                        constants.bat,
-                        "--style=" .. style,
-                        "--theme=" .. theme,
-                        "--color=always",
-                        "--pager=never",
-                        "--highlight-line=" .. parsed.lineno,
-                        "--",
-                        parsed.filename,
-                    }
+                and {
+                    constants.bat,
+                    "--style=" .. style,
+                    "--theme=" .. theme,
+                    "--color=always",
+                    "--pager=never",
+                    "--highlight-line=" .. parsed.lineno,
+                    "--",
+                    parsed.filename,
+                }
                 or {
                     constants.bat,
                     "--style=" .. style,
@@ -190,10 +190,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 1,
             text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
             texthl = vim.fn.hlexists("DiagnosticSignError") > 0
-                    and "DiagnosticSignError"
+                and "DiagnosticSignError"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignError") > 0
-                        and "LspDiagnosticsSignError"
+                    and "LspDiagnosticsSignError"
                     or "ErrorMsg"
                 ),
             textcolor = "red",
@@ -202,10 +202,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 2,
             text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
             texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0
-                    and "DiagnosticSignWarn"
+                and "DiagnosticSignWarn"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
-                        and "LspDiagnosticsSignWarn"
+                    and "LspDiagnosticsSignWarn"
                     or "WarningMsg"
                 ),
             textcolor = "orange",
@@ -214,10 +214,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 3,
             text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
             texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0
-                    and "DiagnosticSignInfo"
+                and "DiagnosticSignInfo"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
-                        and "LspDiagnosticsSignInfo"
+                    and "LspDiagnosticsSignInfo"
                     or "None"
                 ),
             textcolor = "teal",
@@ -226,10 +226,10 @@ local function lsp_diagnostics_provider(opts)
             severity = 4,
             text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
             texthl = vim.fn.hlexists("DiagnosticSignHint") > 0
-                    and "DiagnosticSignHint"
+                and "DiagnosticSignHint"
                 or (
                     vim.fn.hlexists("LspDiagnosticsSignHint") > 0
-                        and "LspDiagnosticsSignHint"
+                    and "LspDiagnosticsSignHint"
                     or "Comment"
                 ),
             textcolor = "grey",
@@ -581,16 +581,19 @@ local function make_file_explorer_provider(ls_args)
     --- @return string?
     local function wrap(query, context)
         ---@diagnostic disable-next-line: undefined-field
-        local cwd = vim.fn.fnamemodify(utils.readfile(context.cwd), ":~")
+        local cwd = utils.readfile(context.cwd)
+        if not constants.is_windows then
+            cwd = vim.fn.fnamemodify(cwd, ":~")
+        end
         if constants.has_eza then
             return vim.fn.executable("echo") > 0
-                    and string.format(
-                        "echo %s && %s --color=always %s %s",
-                        utils.shellescape(cwd --[[@as string]]),
-                        constants.eza,
-                        ls_args,
-                        cwd
-                    )
+                and string.format(
+                    "echo %s && %s --color=always %s %s",
+                    cwd,
+                    constants.eza,
+                    ls_args,
+                    cwd
+                )
                 or string.format(
                     "%s --color=always %s %s",
                     constants.eza,
@@ -599,20 +602,20 @@ local function make_file_explorer_provider(ls_args)
                 )
         elseif vim.fn.executable("ls") > 0 then
             return vim.fn.executable("echo") > 0
-                    and string.format(
-                        "echo %s && ls --color=always %s %s",
-                        utils.shellescape(cwd --[[@as string]]),
-                        ls_args,
-                        cwd
-                    )
+                and string.format(
+                    "echo %s && ls --color=always %s %s",
+                    cwd,
+                    ls_args,
+                    cwd
+                )
                 or string.format("ls --color=always %s %s", ls_args, cwd)
         elseif constants.is_windows then
             return vim.fn.executable("echo") > 0
-                    and string.format(
-                        "echo %s && dir %s",
-                        utils.shellescape(cwd --[[@as string]]),
-                        cwd
-                    )
+                and string.format(
+                    "echo %s && dir %s",
+                    cwd,
+                    cwd
+                )
                 or string.format("dir %s", cwd)
         else
             notify.echo(LogLevels.INFO, "no ls/dir/eza/exa command found.")
@@ -958,7 +961,7 @@ local Defaults = {
                         end
                     else
                         local grep_cmd = constants.has_gnu_grep
-                                and constants.gnu_grep
+                            and constants.gnu_grep
                             or constants.grep
                         local exclude_opt = constants.has_gnu_grep and [[.*]]
                             or [[./.*]]
@@ -1044,7 +1047,7 @@ local Defaults = {
                         end
                     else
                         local grep_cmd = constants.has_gnu_grep
-                                and constants.gnu_grep
+                            and constants.gnu_grep
                             or constants.grep
                         if
                             type(option) == "string"
@@ -1098,14 +1101,14 @@ local Defaults = {
             ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
                 or require("fzfx.actions").edit_grep,
             ["double-click"] = constants.has_rg
-                    and require("fzfx.actions").edit_rg
+                and require("fzfx.actions").edit_rg
                 or require("fzfx.actions").edit_grep,
         },
         fzf_opts = {
             default_fzf_options.multi,
             "--disabled",
-            { "--prompt", "Live Grep > " },
-            { "--delimiter", ":" },
+            { "--prompt",         "Live Grep > " },
+            { "--delimiter",      ":" },
             { "--preview-window", "+{2}-/2" },
         },
         other_opts = {
@@ -1171,9 +1174,9 @@ local Defaults = {
                 local bufnrs_list = vim.api.nvim_list_bufs()
                 local bufpaths_list = {}
                 local current_bufpath = valid_bufnr(context.bufnr)
-                        and path.reduce(
-                            vim.api.nvim_buf_get_name(context.bufnr)
-                        )
+                    and path.reduce(
+                        vim.api.nvim_buf_get_name(context.bufnr)
+                    )
                     or nil
                 if
                     type(current_bufpath) == "string"
@@ -1579,7 +1582,7 @@ local Defaults = {
                     return nil
                 end
                 return utils.string_not_empty(git_current_branch_cmd:value())
-                        and "--header-lines=1"
+                    and "--header-lines=1"
                     or nil
             end,
         },
@@ -1965,7 +1968,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            { "--delimiter", ":" },
+            { "--delimiter",      ":" },
             { "--preview-window", "+{2}-/2" },
             {
                 "--prompt",
