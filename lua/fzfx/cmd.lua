@@ -120,7 +120,7 @@ function GitRootCmd:value()
         return nil
     end
     return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-            and vim.trim(self.result.stdout[1])
+        and vim.trim(self.result.stdout[1])
         or nil
 end
 
@@ -199,7 +199,7 @@ function GitCurrentBranchCmd:value()
         return nil
     end
     return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-            and self.result.stdout[1]
+        and self.result.stdout[1]
         or nil
 end
 
