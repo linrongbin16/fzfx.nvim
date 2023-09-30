@@ -9,17 +9,6 @@
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?logo=GitHub&label=Luacheck" /></a>
 <a href="https://app.codecov.io/github/linrongbin16/fzfx.nvim"><img alt="codecov" src="https://img.shields.io/codecov/c/github/linrongbin16/fzfx.nvim?logo=codecov&logoColor=magenta&label=Codecov" /></a>
 </p>
-  
-<!-- 
-[![neovim-v0.6](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)](https://github.com/neovim/neovim/releases/tag/v0.6.0)
-[![license](https://img.shields.io/github/license/linrongbin16/lin.nvim)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
-[![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
--->
-<!-- ![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black) -->
-<!-- ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white) -->
-<!-- ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white) -->
-
-<!-- > Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes. -->
 
 <p align="center"> E(x)tended commands missing in <a href="https://github.com/junegunn/fzf.vim">fzf.vim</a>. </p>
 
@@ -820,13 +809,13 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 
 To develop the project and make PR, please setup with:
 
-- [lua_ls](https://github.com/LuaLS/lua-language-server).
+- [lua-language-server](https://github.com/LuaLS/lua-language-server).
 - [stylua](https://github.com/JohnnyMorganz/StyLua).
+- [luarocks](https://luarocks.org/).
+- [luacheck](https://github.com/mpeterv/luacheck).
 
 To run unit tests, please install below dependencies:
 
-- [luarocks](https://luarocks.org/).
-- [luacheck](https://github.com/mpeterv/luacheck).
 - [luacov](https://github.com/lunarmodules/luacov).
 - [vusted](https://github.com/notomo/vusted).
 
