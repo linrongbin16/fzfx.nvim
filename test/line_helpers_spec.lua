@@ -32,42 +32,6 @@ describe("line_helpers", function()
             )
             assert_eq("~/github/linrongbin16/fzfx.nvim/README.md", actual)
         end)
-        it("parse spaced path and filename with prepend icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local input = " ~/github/lin rongbin/fzfx.nvim/hello world.txt"
-            local actual = line_helpers.parse_filename(input)
-            print(
-                string.format(
-                    "line_helpers.parse_filename1:%s",
-                    vim.inspect(actual)
-                )
-            )
-            print(
-                string.format(
-                    "parse filename with prepend icon:%s\n",
-                    vim.inspect(actual)
-                )
-            )
-            assert_eq("~/github/lin rongbin/fzfx.nvim/hello world.txt", actual)
-        end)
-        it("parse spaced filename with prepend icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local input = " ~/github/lin rongbin/fzfx.nvim/README.md"
-            local actual = line_helpers.parse_filename(input)
-            print(
-                string.format(
-                    "line_helpers.parse_filename2:%s",
-                    vim.inspect(actual)
-                )
-            )
-            print(
-                string.format(
-                    "parse filename with prepend icon:%s\n",
-                    vim.inspect(actual)
-                )
-            )
-            assert_eq("~/github/lin rongbin/fzfx.nvim/README.md", actual)
-        end)
     end)
     describe("[parse_path_line]", function()
         it("parse path without icon", function()

@@ -1,5 +1,0 @@
-print('hello world.lua')
-print('hello world.lua')
-print('hello world.lua')
-print('hello world.lua')
-print('hello world.lua')
