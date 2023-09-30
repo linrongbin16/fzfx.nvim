@@ -12,29 +12,31 @@ describe("line_helpers", function()
     local line_helpers = require("fzfx.line_helpers")
     local utils = require("fzfx.utils")
     local DEVICONS_PATH =
-        "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
-    describe("[parse_filename]", function()
+    "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
+    describe("[parse_find]", function()
         it("parse filename without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
             local expect = "~/github/linrongbin16/fzfx.nvim/README.md"
-            local actual = line_helpers.parse_filename(expect)
-            assert_eq(expect, actual)
+            local actual1 = line_helpers.parse_find(expect)
+            assert_eq(expect, actual1)
+            local actual2 = line_helpers.parse_find(expect, { no_icon = true })
+            assert_eq(expect, actual2)
         end)
         it("parse filename with prepend icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
             local input = " ~/github/linrongbin16/fzfx.nvim/README.md"
-            local actual = line_helpers.parse_filename(input)
+            local actual = line_helpers.parse_find(input)
             print(
                 string.format(
-                    "parse filename with prepend icon:%s\n",
+                    "parse find with icon:%s\n",
                     vim.inspect(actual)
                 )
             )
             assert_eq("~/github/linrongbin16/fzfx.nvim/README.md", actual)
         end)
     end)
-    describe("[parse_path_line]", function()
-        it("parse path without icon", function()
+    describe("[parse_grep]", function()
+        it("parse grep without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
             local lines = {
                 "~/github/linrongbin16/fzfx.nvim/README.md",
@@ -42,7 +44,7 @@ describe("line_helpers", function()
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
             }
             for _, line in ipairs(lines) do
-                local actual = line_helpers.parse_path_line(line)
+                local actual = line_helpers.parse_grep(line)
                 assert_eq(type(actual), "table")
                 assert_eq(type(actual.filename), "string")
                 assert_true(actual.lineno == nil)
@@ -50,23 +52,7 @@ describe("line_helpers", function()
                 assert_eq(actual.filename, line)
             end
         end)
-        it("parse path with prepend icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local lines = {
-                " ~/github/linrongbin16/fzfx.nvim/README.md",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
-            }
-            for _, line in ipairs(lines) do
-                local actual = line_helpers.parse_path_line(line)
-                assert_eq(type(actual), "table")
-                assert_eq(type(actual.filename), "string")
-                assert_true(actual.lineno == nil)
-                assert_true(actual.column == nil)
-                assert_eq(actual.filename, utils.string_split(line, " ")[2])
-            end
-        end)
-        it("parse path with delimiter, without icon", function()
+        it("parse grep with lineno, without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
             local lines = {
                 "~/github/linrongbin16/fzfx.nvim/README.md:12",
@@ -76,15 +62,18 @@ describe("line_helpers", function()
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3: ok ok",
             }
             for _, line in ipairs(lines) do
-                local actual = line_helpers.parse_path_line(line, ":", 1)
+                local actual = line_helpers.parse_grep(line)
                 assert_eq(type(actual), "table")
                 assert_eq(type(actual.filename), "string")
-                assert_true(actual.lineno == nil)
-                assert_true(actual.column == nil)
                 assert_eq(actual.filename, utils.string_split(line, ":")[1])
+                assert_eq(tostring(actual.lineno), utils.string_split(line, ":")[2])
+                assert_true(actual.column == nil or
+                    (type(actual.column) == "number" and tostring(actual.column) == utils.string_split(line, ":")[3]))
+                local actual1 = line_helpers.parse_grep(line, { no_icon = true })
+                assert_eq(actual.filename, actual1.filename)
             end
         end)
-        it("parse path with delimiter, with prepend icon", function()
+        it("parse path with lineno, with prepend icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
             local lines = {
                 " ~/github/linrongbin16/fzfx.nvim/README.md:12",
@@ -94,65 +83,20 @@ describe("line_helpers", function()
                 "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:4:71: ok ko",
             }
             for _, line in ipairs(lines) do
-                local actual = line_helpers.parse_path_line(line, ":", 1)
+                local actual = line_helpers.parse_grep(line)
                 assert_eq(type(actual), "table")
                 assert_eq(type(actual.filename), "string")
-                assert_true(actual.lineno == nil)
-                assert_true(actual.column == nil)
                 assert_eq(
                     actual.filename,
                     utils.string_split(utils.string_split(line, ":")[1], " ")[2]
                 )
-            end
-        end)
-        it("parse path/lineno without icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-            local lines = {
-                "~/github/linrongbin16/fzfx.nvim/README.md:12",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:13:",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:13: hello world",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3: ok ok",
-            }
-            for _, line in ipairs(lines) do
-                local actual = line_helpers.parse_path_line(line, ":", 1, 2)
-                assert_eq(type(actual), "table")
-                assert_eq(type(actual.filename), "string")
                 assert_eq(type(actual.lineno), "number")
-                assert_true(actual.column == nil)
-                assert_eq(actual.filename, utils.string_split(line, ":")[1])
-                assert_eq(
-                    tostring(actual.lineno),
-                    utils.string_split(line, ":")[2]
-                )
+                assert_eq(tostring(actual.lineno), utils.string_split(line, ":")[2])
+                assert_true(actual.column == nil or
+                    (type(actual.column) == "number" and tostring(actual.column) == utils.string_split(line, ":")[3]))
             end
         end)
-        it("parse path/lineno with prepend icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local lines = {
-                " ~/github/linrongbin16/fzfx.nvim/README.md:12",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15:",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:70",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:4:71: ok ko",
-            }
-            for _, line in ipairs(lines) do
-                local actual = line_helpers.parse_path_line(line, ":", 1, 2)
-                assert_eq(type(actual), "table")
-                assert_eq(type(actual.filename), "string")
-                assert_eq(type(actual.lineno), "number")
-                assert_true(actual.column == nil)
-                assert_eq(
-                    actual.filename,
-                    utils.string_split(utils.string_split(line, ":")[1], " ")[2]
-                )
-                assert_eq(
-                    tostring(actual.lineno),
-                    utils.string_split(line, ":")[2]
-                )
-            end
-        end)
-        it("parse path/lineno/col without icon", function()
+        it("parse path with lineno/column, without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
             local lines = {
                 "~/github/linrongbin16/fzfx.nvim/README.md:12:30",
@@ -162,7 +106,7 @@ describe("line_helpers", function()
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3: ok ok",
             }
             for _, line in ipairs(lines) do
-                local actual = line_helpers.parse_path_line(line, ":", 1, 2, 3)
+                local actual = line_helpers.parse_grep(line)
                 assert_eq(type(actual), "table")
                 assert_eq(type(actual.filename), "string")
                 assert_eq(type(actual.lineno), "number")
@@ -176,9 +120,11 @@ describe("line_helpers", function()
                     tostring(actual.column),
                     utils.string_split(line, ":")[3]
                 )
+                local actual1 = line_helpers.parse_grep(line, { no_icon = true })
+                assert_eq(actual.filename, actual1.filename)
             end
         end)
-        it("edit file/lineno/col with prepend icon", function()
+        it("parse grep with lineno/column, with icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
             local lines = {
                 " ~/github/linrongbin16/fzfx.nvim/README.md:12:30",
@@ -188,7 +134,7 @@ describe("line_helpers", function()
                 "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:4:71: ok ko",
             }
             for _, line in ipairs(lines) do
-                local actual = line_helpers.parse_path_line(line, ":", 1, 2, 3)
+                local actual = line_helpers.parse_grep(line)
                 assert_eq(type(actual), "table")
                 assert_eq(type(actual.filename), "string")
                 assert_eq(type(actual.lineno), "number")
@@ -205,24 +151,6 @@ describe("line_helpers", function()
                     tostring(actual.column),
                     utils.string_split(line, ":")[3]
                 )
-            end
-        end)
-    end)
-    describe("[PathLine]", function()
-        it("create", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-            local lines = {
-                "~/github/linrongbin16/fzfx.nvim/README.md",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
-            }
-            for _, line in ipairs(lines) do
-                local p = line_helpers.PathLine:new(line)
-                assert_eq(type(p), "table")
-                assert_eq(type(p.filename), "string")
-                assert_eq(p.filename, line)
-                assert_true(p.lineno == nil)
-                assert_true(p.column == nil)
             end
         end)
     end)

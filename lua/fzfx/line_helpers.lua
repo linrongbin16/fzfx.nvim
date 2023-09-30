@@ -4,6 +4,42 @@ local env = require("fzfx.env")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 
+-- parse lines from fd, find, etc.
+--- @param line string
+--- @param opts {no_icon:boolean?}?
+--- @return string
+local function parse_find(line, opts)
+    local filepath = nil
+    if (type(opts) == "table" and opts.no_icon) or not env.icon_enable() then
+        filepath = line
+    else
+        local first_icon_pos = utils.string_find(line, ' ')
+        assert(type(first_icon_pos) == "number")
+        filepath = line:sub(first_icon_pos + 1)
+    end
+    return path.normalize(filepath)
+end
+
+-- parse lines from rg, grep, etc.
+--- @param line string
+--- @param opts {no_icon:boolean?,delimiter:string?,filename_pos:integer?,lineno_pos:integer?,column_pos:integer?}?
+--- @return {filename:string,lineno:integer,column:integer?}
+local function parse_grep(line, opts)
+    local delimiter = (type(opts) == "table" and type(opts.delimiter) == "string" and string.len(opts.delimiter) > 0) and
+        opts.delimiter or ":"
+    local filename_pos = (type(opts) == "table" and type(opts.filename_pos) == "number") and
+        opts.filename_pos or 1
+    local lineno_pos = (type(opts) == "table" and type(opts.lineno_pos) == "number") and
+        opts.lineno_pos or 2
+    local column_pos = (type(opts) == "table" and type(opts.column_pos) == "number") and
+        opts.column_pos or 3
+    local splits = utils.string_split(line, delimiter)
+    local filename = parse_find(splits[filename_pos], opts)
+    local lineno = tonumber(splits[lineno_pos])
+    local column = #splits >= column_pos and tonumber(splits[column_pos]) or nil
+    return { filename = filename, lineno = lineno, column = column }
+end
+
 --- @param line string
 --- @return string
 local function parse_filename(line)
@@ -77,6 +113,8 @@ function PathLine:new(line, delimiter, file_pos, lineno_pos, colno_pos)
 end
 
 local M = {
+    parse_find = parse_find,
+    parse_grep = parse_grep,
     parse_filename = parse_filename,
     parse_path_line = parse_path_line,
     PathLine = PathLine,
