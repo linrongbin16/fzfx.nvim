@@ -191,6 +191,18 @@ local function number_bound(left, value, right)
     return math.min(math.max(left or -2147483648, value), right or 2147483647)
 end
 
+-- list index `i` can be positive or negative. `n` is the length of list.
+-- if i > 0, i is in range [1,n].
+-- if i < 0, i is in range [-1,-n], -1 maps to last position (e.g. n), -n maps to first position (e.g. 1).
+--- @param n integer
+--- @param i integer
+--- @return integer
+local function list_index(n, i)
+    assert(n > 0)
+    assert((i >= 1 and i <= n) or (i <= -1 and i >= -n))
+    return i > 0 and i or (n + i + 1)
+end
+
 --- @param content string
 --- @return string[]
 local function parse_flag_query(content)
@@ -221,16 +233,16 @@ local ShellOptsContext = {}
 --- @return ShellOptsContext
 function ShellOptsContext:save()
     local o = constants.is_windows
-            and {
-                shell = vim.o.shell,
-                shellslash = vim.o.shellslash,
-                shellcmdflag = vim.o.shellcmdflag,
-                shellxquote = vim.o.shellxquote,
-                shellquote = vim.o.shellquote,
-                shellredir = vim.o.shellredir,
-                shellpipe = vim.o.shellpipe,
-                shellxescape = vim.o.shellxescape,
-            }
+        and {
+            shell = vim.o.shell,
+            shellslash = vim.o.shellslash,
+            shellcmdflag = vim.o.shellcmdflag,
+            shellxquote = vim.o.shellxquote,
+            shellquote = vim.o.shellquote,
+            shellredir = vim.o.shellredir,
+            shellpipe = vim.o.shellpipe,
+            shellxescape = vim.o.shellxescape,
+        }
         or {
             shell = vim.o.shell,
         }
@@ -387,14 +399,14 @@ end
 --- @return integer
 function FileLineReader:_read_chunk()
     local chunksize = (self.filesize >= self.offset + self.batchsize)
-            and self.batchsize
+        and self.batchsize
         or (self.filesize - self.offset)
     if chunksize <= 0 then
         return 0
     end
     local data, --[[@as string?]]
-        read_err,
-        read_name =
+    read_err,
+    read_name =
         vim.loop.fs_read(self.handler, chunksize, self.offset)
     if read_err then
         error(
@@ -621,7 +633,7 @@ function AsyncSpawn:on_stdout(err, data)
     local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
     -- truncate the printed lines if found any
     self.out_buffer = i <= #self.out_buffer
-            and self.out_buffer:sub(i, #self.out_buffer)
+        and self.out_buffer:sub(i, #self.out_buffer)
         or nil
 end
 
@@ -683,6 +695,7 @@ local M = {
     string_startswith = string_startswith,
     string_endswith = string_endswith,
     number_bound = number_bound,
+    list_index = list_index,
     parse_flag_query = parse_flag_query,
     ShellOptsContext = ShellOptsContext,
     shellescape = shellescape,

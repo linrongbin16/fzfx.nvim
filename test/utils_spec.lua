@@ -324,7 +324,7 @@ describe("utils", function()
             local lines = utils.readlines("README.md")
             local buffer = nil
             for _, line in
-                ipairs(lines --[[@as table]])
+            ipairs(lines --[[@as table]])
             do
                 assert_eq(type(line), "string")
                 assert_true(string.len(line) >= 0)
@@ -346,7 +346,7 @@ describe("utils", function()
 
             local buffer = nil
             for _, line in
-                ipairs(lines --[[@as table]])
+            ipairs(lines --[[@as table]])
             do
                 assert_eq(type(line), "string")
                 assert_true(string.len(line) >= 0)
@@ -543,6 +543,22 @@ describe("utils", function()
                 process_line
             ) --[[@as AsyncSpawn]]
             async_spawn:run()
+        end)
+    end)
+    describe("[list_index]", function()
+        it("positive", function()
+            for i = 1, 10 do
+                assert_eq(utils.list_index(10, i), i)
+            end
+        end)
+        it("negative", function()
+            for i = -1, -10, -1 do
+                assert_eq(utils.list_index(10, i), 10 + i + 1)
+            end
+            assert_eq(utils.list_index(10, -1), 10)
+            assert_eq(utils.list_index(10, -10), 1)
+            assert_eq(utils.list_index(10, -3), 8)
+            assert_eq(utils.list_index(10, -5), 6)
         end)
     end)
 end)
