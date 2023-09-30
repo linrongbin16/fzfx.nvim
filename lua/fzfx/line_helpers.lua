@@ -9,7 +9,7 @@ local path = require("fzfx.path")
 local function parse_filename(line)
     local filename = nil
     if env.icon_enable() then
-        local first_space_pos = utils.string_find(line, " ")
+        local first_space_pos = utils.string_find(line, " ") --[[@as integer]]
         assert(type(first_space_pos) == "number")
         filename = line:sub(first_space_pos + 1, #line)
     else
