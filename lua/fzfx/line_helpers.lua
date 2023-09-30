@@ -10,11 +10,8 @@ local function parse_filename(line)
     local filename = nil
     if env.icon_enable() then
         local first_space_pos = utils.string_find(line, " ")
-        if not first_space_pos then
-            filename = line
-        else
-            filename = line:sub(first_space_pos + 1, #line)
-        end
+        assert(type(first_space_pos) == "number")
+        filename = line:sub(first_space_pos + 1, #line)
     else
         filename = line
     end
