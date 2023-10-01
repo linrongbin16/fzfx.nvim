@@ -161,7 +161,6 @@ local function merge_query_options(merged, option)
     return merged
 end
 
-
 --- @param line string
 --- @return string[]
 local function file_previewer_rg(line)
@@ -169,7 +168,6 @@ local function file_previewer_rg(line)
     local impl = make_file_previewer(parsed.filename, parsed.lineno)
     return impl()
 end
-
 
 -- }
 
@@ -608,12 +606,8 @@ local function make_file_explorer_provider(ls_args)
                     cwd
                 )
                 or string.format("ls --color=always %s %s", ls_args, cwd)
-        elseif constants.is_windows then
-            return vim.fn.executable("echo") > 0
-                and string.format("echo %s && dir %s", cwd, cwd)
-                or string.format("dir %s", cwd)
         else
-            log.echo(LogLevels.INFO, "no ls/dir/eza/exa command found.")
+            log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
             return nil
         end
     end
