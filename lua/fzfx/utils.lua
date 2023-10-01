@@ -594,9 +594,29 @@ end
 --- @param signal integer?
 --- @return nil
 function AsyncSpawn:on_exit(code, signal)
-    if self.process_handler and not self.process_handler:is_closing() then
+    local close_cb_count = 0
+    if not self.out_pipe:is_closing() then
+        self.out_pipe:close(function(err)
+            close_cb_count = close_cb_count + 1
+            if close_cb_count == 3 then
+                vim.loop.stop()
+            end
+        end)
+    end
+    if not self.err_pipe:is_closing() then
+        self.err_pipe:close(function(err)
+            close_cb_count = close_cb_count + 1
+            if close_cb_count == 3 then
+                vim.loop.stop()
+            end
+        end)
+    end
+    if not self.process_handler:is_closing() then
         self.process_handler:close(function(err)
-            vim.loop.stop()
+            close_cb_count = close_cb_count + 1
+            if close_cb_count == 3 then
+                vim.loop.stop()
+            end
         end)
     end
     -- if type(self.opts) == "table" and type(self.opts.on_exit) == "function" then
