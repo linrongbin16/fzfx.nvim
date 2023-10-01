@@ -597,7 +597,7 @@ local function make_file_explorer_provider(ls_args)
                     ls_args,
                     cwd
                 )
-        elseif vim.fn.executable('ls') > 0 then
+        elseif vim.fn.executable("ls") > 0 then
             return vim.fn.executable("echo") > 0
                 and string.format(
                     "echo %s && ls --color=always %s %s",
