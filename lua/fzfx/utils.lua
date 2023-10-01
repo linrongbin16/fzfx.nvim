@@ -595,28 +595,28 @@ end
 --- @return nil
 function AsyncSpawn:on_exit(code, signal)
     local close_cb_count = 0
-    if not self.out_pipe:is_closing() then
-        self.out_pipe:close(function(err)
-            close_cb_count = close_cb_count + 1
-            if close_cb_count == 3 then
-                vim.loop.stop()
-            end
-        end)
-    end
-    if not self.err_pipe:is_closing() then
-        self.err_pipe:close(function(err)
-            close_cb_count = close_cb_count + 1
-            if close_cb_count == 3 then
-                vim.loop.stop()
-            end
-        end)
-    end
+    -- if not self.out_pipe:is_closing() then
+    --     self.out_pipe:close(function(err)
+    --         close_cb_count = close_cb_count + 1
+    --         if close_cb_count == 3 then
+    --             vim.loop.stop()
+    --         end
+    --     end)
+    -- end
+    -- if not self.err_pipe:is_closing() then
+    --     self.err_pipe:close(function(err)
+    --         close_cb_count = close_cb_count + 1
+    --         if close_cb_count == 3 then
+    --             vim.loop.stop()
+    --         end
+    --     end)
+    -- end
     if self.process_handler and not self.process_handler:is_closing() then
         self.process_handler:close(function(err)
-            close_cb_count = close_cb_count + 1
-            if close_cb_count == 3 then
-                vim.loop.stop()
-            end
+            -- close_cb_count = close_cb_count + 1
+            -- if close_cb_count == 3 then
+            vim.loop.stop()
+            -- end
         end)
     end
     -- if type(self.opts) == "table" and type(self.opts.on_exit) == "function" then
@@ -682,8 +682,8 @@ function AsyncSpawn:run()
     }, function(code, signal)
         self.out_pipe:read_stop()
         self.err_pipe:read_stop()
-        self.out_pipe:shutdown()
-        self.err_pipe:shutdown()
+        -- self.out_pipe:shutdown()
+        -- self.err_pipe:shutdown()
         self:on_exit(code, signal)
     end)
 

@@ -82,9 +82,9 @@ function ProviderSwitch:provide(name, query, context)
     )
     log.ensure(
         provider_config.provider == nil
-            or type(provider_config.provider) == "table"
-            or type(provider_config.provider) == "string"
-            or type(provider_config.provider) == "function",
+        or type(provider_config.provider) == "table"
+        or type(provider_config.provider) == "string"
+        or type(provider_config.provider) == "function",
         "invalid provider in %s! pipeline: %s, provider: %s",
         vim.inspect(name),
         vim.inspect(self.pipeline),
@@ -92,10 +92,10 @@ function ProviderSwitch:provide(name, query, context)
     )
     log.ensure(
         provider_config.provider_type == ProviderTypeEnum.PLAIN
-            or provider_config.provider_type == ProviderTypeEnum.PLAIN_LIST
-            or provider_config.provider_type == ProviderTypeEnum.COMMAND
-            or provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST
-            or provider_config.provider_type == ProviderTypeEnum.LIST,
+        or provider_config.provider_type == ProviderTypeEnum.PLAIN_LIST
+        or provider_config.provider_type == ProviderTypeEnum.COMMAND
+        or provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST
+        or provider_config.provider_type == ProviderTypeEnum.LIST,
         "invalid provider type in %s! pipeline: %s, provider type: %s",
         vim.inspect(name),
         vim.inspect(self.pipeline),
@@ -125,9 +125,9 @@ function ProviderSwitch:provide(name, query, context)
         type(provider_config.line_opts) == "table"
         and type(provider_config.line_opts.prepend_icon_path_delimiter) == "string"
         and string.len(
-                provider_config.line_opts.prepend_icon_path_delimiter
-            )
-            > 0
+            provider_config.line_opts.prepend_icon_path_delimiter
+        )
+        > 0
     then
         metaopts.prepend_icon_path_delimiter =
             provider_config.line_opts.prepend_icon_path_delimiter
@@ -135,7 +135,7 @@ function ProviderSwitch:provide(name, query, context)
     if
         type(provider_config.line_opts) == "table"
         and type(provider_config.line_opts.prepend_icon_path_position)
-            == "number"
+        == "number"
     then
         metaopts.prepend_icon_path_position =
             provider_config.line_opts.prepend_icon_path_position
@@ -147,7 +147,7 @@ function ProviderSwitch:provide(name, query, context)
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then
         log.ensure(
             provider_config.provider == nil
-                or type(provider_config.provider) == "string",
+            or type(provider_config.provider) == "string",
             "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
             vim.inspect(self),
             vim.inspect(provider_config)
@@ -163,7 +163,7 @@ function ProviderSwitch:provide(name, query, context)
     elseif provider_config.provider_type == ProviderTypeEnum.PLAIN_LIST then
         log.ensure(
             provider_config.provider == nil
-                or type(provider_config.provider) == "table",
+            or type(provider_config.provider) == "table",
             "|fzfx.general - ProviderSwitch:provide| plain_list provider must be string or nil! self:%s, provider:%s",
             vim.inspect(self),
             vim.inspect(provider_config)
@@ -354,8 +354,8 @@ function PreviewerSwitch:preview(name, line, context)
     )
     log.ensure(
         previewer_type == PreviewerTypeEnum.COMMAND
-            or previewer_type == PreviewerTypeEnum.COMMAND_LIST
-            or previewer_type == PreviewerTypeEnum.LIST,
+        or previewer_type == PreviewerTypeEnum.COMMAND_LIST
+        or previewer_type == PreviewerTypeEnum.LIST,
         "|fzfx.general - PreviewerSwitch:preview| invalid previewer_type! %s",
         vim.inspect(self)
     )
@@ -642,10 +642,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     --- @type PipelineContext
 
     local context_maker = (
-        type(pipeline_configs.other_opts) == "table"
-        and type(pipeline_configs.other_opts.context_maker) == "function"
-    )
-            and pipeline_configs.other_opts.context_maker
+            type(pipeline_configs.other_opts) == "table"
+            and type(pipeline_configs.other_opts.context_maker) == "function"
+        )
+        and pipeline_configs.other_opts.context_maker
         or default_context_maker
 
     local context = context_maker()
@@ -779,7 +779,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 switch_rpc_registry_id
             )
             local bind_builder = string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+reload(%s)",
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+clear-screen+reload(%s)",
                 switch_key,
                 switch_key,
                 switch_command,
