@@ -779,7 +779,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 switch_rpc_registry_id
             )
             local bind_builder = string.format(
-                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+clear-screen+reload(%s)",
+                "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+reload(%s)",
                 switch_key,
                 switch_key,
                 switch_command,
