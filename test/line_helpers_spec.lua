@@ -12,7 +12,7 @@ describe("line_helpers", function()
     local line_helpers = require("fzfx.line_helpers")
     local utils = require("fzfx.utils")
     local DEVICONS_PATH =
-        "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
+    "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
     describe("[parse_find]", function()
         it("parse filename without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
@@ -69,11 +69,11 @@ describe("line_helpers", function()
                 )
                 assert_true(
                     actual.column == nil
-                        or (
-                            type(actual.column) == "number"
-                            and tostring(actual.column)
-                                == utils.string_split(line, ":")[3]
-                        )
+                    or (
+                        type(actual.column) == "number"
+                        and tostring(actual.column)
+                        == utils.string_split(line, ":")[3]
+                    )
                 )
                 local actual1 =
                     line_helpers.parse_grep(line, { no_icon = true })
@@ -104,11 +104,11 @@ describe("line_helpers", function()
                 )
                 assert_true(
                     actual.column == nil
-                        or (
-                            type(actual.column) == "number"
-                            and tostring(actual.column)
-                                == utils.string_split(line, ":")[3]
-                        )
+                    or (
+                        type(actual.column) == "number"
+                        and tostring(actual.column)
+                        == utils.string_split(line, ":")[3]
+                    )
                 )
             end
         end)
@@ -180,12 +180,16 @@ describe("line_helpers", function()
                 "-rw-r--r--   1 linrongbin Administrators  585 Jul 22 14:26 init.vim",
             }
             local actual1 = line_helpers.parse_ls(lines[1], 8)
+            print(string.format("parse ls-1:%s\n", vim.inspect(actual1)))
             assert_eq("LICENSE", actual1)
             local actual2 = line_helpers.parse_ls(lines[2], 8)
+            print(string.format("parse ls-2:%s\n", vim.inspect(actual2)))
             assert_eq("README.md", actual2)
             local actual3 = line_helpers.parse_ls(lines[3], 8)
+            print(string.format("parse ls-3:%s\n", vim.inspect(actual3)))
             assert_eq("deps", actual3)
             local actual4 = line_helpers.parse_ls(lines[4], 8)
+            print(string.format("parse ls-4:%s\n", vim.inspect(actual4)))
             assert_eq("init.vim", actual4)
         end)
     end)

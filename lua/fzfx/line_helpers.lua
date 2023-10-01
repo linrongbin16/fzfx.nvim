@@ -26,26 +26,26 @@ end
 --- @return {filename:string,lineno:integer,column:integer?}
 local function parse_grep(line, opts)
     local delimiter = (
-        type(opts) == "table"
-        and type(opts.delimiter) == "string"
-        and string.len(opts.delimiter) > 0
-    )
-            and opts.delimiter
+            type(opts) == "table"
+            and type(opts.delimiter) == "string"
+            and string.len(opts.delimiter) > 0
+        )
+        and opts.delimiter
         or ":"
     local filename_pos = (
-        type(opts) == "table" and type(opts.filename_pos) == "number"
-    )
-            and opts.filename_pos
+            type(opts) == "table" and type(opts.filename_pos) == "number"
+        )
+        and opts.filename_pos
         or 1
     local lineno_pos = (
-        type(opts) == "table" and type(opts.lineno_pos) == "number"
-    )
-            and opts.lineno_pos
+            type(opts) == "table" and type(opts.lineno_pos) == "number"
+        )
+        and opts.lineno_pos
         or 2
     local column_pos = (
-        type(opts) == "table" and type(opts.column_pos) == "number"
-    )
-            and opts.column_pos
+            type(opts) == "table" and type(opts.column_pos) == "number"
+        )
+        and opts.column_pos
         or 3
     local splits = utils.string_split(line, delimiter)
     local filename = parse_find(splits[filename_pos], opts)
@@ -88,8 +88,12 @@ local function parse_ls(line, start_pos)
     for i = 1, start_pos do
         pos = utils.string_find(line, " ", pos) --[[@as integer]]
         assert(type(pos) == "number")
+        while pos + 1 <= #line and string.byte(line, pos + 1) == string.byte(' ') do
+            pos = pos + 1
+        end
+        pos = pos + 1
     end
-    return line:sub(pos + 1)
+    return line:sub(pos)
 end
 
 --- @param line string
