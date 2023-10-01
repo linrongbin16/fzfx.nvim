@@ -233,16 +233,16 @@ local ShellOptsContext = {}
 --- @return ShellOptsContext
 function ShellOptsContext:save()
     local o = constants.is_windows
-        and {
-            shell = vim.o.shell,
-            shellslash = vim.o.shellslash,
-            shellcmdflag = vim.o.shellcmdflag,
-            shellxquote = vim.o.shellxquote,
-            shellquote = vim.o.shellquote,
-            shellredir = vim.o.shellredir,
-            shellpipe = vim.o.shellpipe,
-            shellxescape = vim.o.shellxescape,
-        }
+            and {
+                shell = vim.o.shell,
+                shellslash = vim.o.shellslash,
+                shellcmdflag = vim.o.shellcmdflag,
+                shellxquote = vim.o.shellxquote,
+                shellquote = vim.o.shellquote,
+                shellredir = vim.o.shellredir,
+                shellpipe = vim.o.shellpipe,
+                shellxescape = vim.o.shellxescape,
+            }
         or {
             shell = vim.o.shell,
         }
@@ -399,14 +399,14 @@ end
 --- @return integer
 function FileLineReader:_read_chunk()
     local chunksize = (self.filesize >= self.offset + self.batchsize)
-        and self.batchsize
+            and self.batchsize
         or (self.filesize - self.offset)
     if chunksize <= 0 then
         return 0
     end
     local data, --[[@as string?]]
-    read_err,
-    read_name =
+        read_err,
+        read_name =
         vim.loop.fs_read(self.handler, chunksize, self.offset)
     if read_err then
         error(
@@ -566,7 +566,7 @@ function AsyncSpawn:open(cmds, fn_line_consumer, opts)
         out_buffer = nil,
         process_handler = nil,
         process_id = nil,
-        opts = opts,
+        -- opts = opts,
     }
     setmetatable(o, self)
     self.__index = self
@@ -599,9 +599,9 @@ function AsyncSpawn:on_exit(code, signal)
             vim.loop.stop()
         end)
     end
-    if type(self.opts) == "table" and type(self.opts.on_exit) == "function" then
-        self.opts.on_exit(code, signal)
-    end
+    -- if type(self.opts) == "table" and type(self.opts.on_exit) == "function" then
+    --     self.opts.on_exit(code, signal)
+    -- end
 end
 
 --- @param err string?
@@ -633,7 +633,7 @@ function AsyncSpawn:on_stdout(err, data)
     local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
     -- truncate the printed lines if found any
     self.out_buffer = i <= #self.out_buffer
-        and self.out_buffer:sub(i, #self.out_buffer)
+            and self.out_buffer:sub(i, #self.out_buffer)
         or nil
 end
 
