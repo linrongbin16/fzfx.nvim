@@ -178,6 +178,7 @@ describe("line_helpers", function()
                 "-rw-r--r--   1 linrongbin Administrators 6.2K Sep 28 22:26 README.md",
                 "drwxr-xr-x   2 linrongbin Administrators 4.0K Sep 30 21:55 deps",
                 "-rw-r--r--   1 linrongbin Administrators  585 Jul 22 14:26 init.vim",
+                "-rw-r--r--   1 linrongbin Administrators  585 Jul 22 14:26 'hello world.txt'",
             }
             local actual1 = line_helpers.parse_ls(lines[1], 8)
             print(string.format("parse ls-1:%s\n", vim.inspect(actual1)))
@@ -191,6 +192,9 @@ describe("line_helpers", function()
             local actual4 = line_helpers.parse_ls(lines[4], 8)
             print(string.format("parse ls-4:%s\n", vim.inspect(actual4)))
             assert_eq("init.vim", actual4)
+            local actual5 = line_helpers.parse_ls(lines[5], 8)
+            print(string.format("parse ls-5:%s\n", vim.inspect(actual5)))
+            assert_eq("'hello world.txt'", actual5)
         end)
     end)
 end)
