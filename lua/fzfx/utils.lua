@@ -611,7 +611,7 @@ function AsyncSpawn:on_exit(code, signal)
             end
         end)
     end
-    if not self.process_handler:is_closing() then
+    if self.process_handler and not self.process_handler:is_closing() then
         self.process_handler:close(function(err)
             close_cb_count = close_cb_count + 1
             if close_cb_count == 3 then
