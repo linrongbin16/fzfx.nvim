@@ -196,5 +196,33 @@ describe("line_helpers", function()
             print(string.format("parse ls-5:%s\n", vim.inspect(actual5)))
             assert_eq("'hello world.txt'", actual5)
         end)
+        it("parse eza -lh", function()
+            local lines = {
+                'drwxrwxr-x     - linrongbin 30 Sep 22:31  deps',
+                '.rw-rw-r--   562 linrongbin  4 Aug 21:55  init.vim',
+                '.rw-rw-r--  6.2k linrongbin 30 Sep 22:31  install.ps1',
+                '.rwxrwxr-x  5.2k linrongbin 28 Sep 22:56  install.sh',
+                'drwxrwxr-x     - linrongbin 30 Sep 10:13  lazy',
+                ".rw-rw-r--  9.2k linrongbin  1 Oct 14:25  'lazy lock.json'",
+            }
+            local actual1 = line_helpers.parse_ls(lines[1], 6)
+            print(string.format("parse eza-1:%s\n", vim.inspect(actual1)))
+            assert_eq("deps", actual1)
+            local actual2 = line_helpers.parse_ls(lines[2], 6)
+            print(string.format("parse eza-2:%s\n", vim.inspect(actual2)))
+            assert_eq("init.vim", actual2)
+            local actual3 = line_helpers.parse_ls(lines[3], 6)
+            print(string.format("parse eza-3:%s\n", vim.inspect(actual3)))
+            assert_eq("install.ps1", actual3)
+            local actual4 = line_helpers.parse_ls(lines[4], 6)
+            print(string.format("parse eza-4:%s\n", vim.inspect(actual4)))
+            assert_eq("install.sh", actual4)
+            local actual5 = line_helpers.parse_ls(lines[5], 6)
+            print(string.format("parse eza-5:%s\n", vim.inspect(actual5)))
+            assert_eq("lazy", actual5)
+            local actual6 = line_helpers.parse_ls(lines[6], 6)
+            print(string.format("parse eza-6:%s\n", vim.inspect(actual6)))
+            assert_eq("'lazy lock.json'", actual6)
+        end)
     end)
 end)
