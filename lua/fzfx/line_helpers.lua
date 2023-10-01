@@ -9,15 +9,15 @@ local path = require("fzfx.path")
 --- @param opts {no_icon:boolean?}?
 --- @return string
 local function parse_find(line, opts)
-    local filepath = nil
+    local filename = nil
     if (type(opts) == "table" and opts.no_icon) or not env.icon_enable() then
-        filepath = line
+        filename = line
     else
-        local first_icon_pos = utils.string_find(line, ' ')
+        local first_icon_pos = utils.string_find(line, " ")
         assert(type(first_icon_pos) == "number")
-        filepath = line:sub(first_icon_pos + 1)
+        filename = line:sub(first_icon_pos + 1)
     end
-    return path.normalize(filepath)
+    return path.normalize(filename)
 end
 
 -- parse lines from rg, grep, etc.
@@ -25,19 +25,71 @@ end
 --- @param opts {no_icon:boolean?,delimiter:string?,filename_pos:integer?,lineno_pos:integer?,column_pos:integer?}?
 --- @return {filename:string,lineno:integer,column:integer?}
 local function parse_grep(line, opts)
-    local delimiter = (type(opts) == "table" and type(opts.delimiter) == "string" and string.len(opts.delimiter) > 0) and
-        opts.delimiter or ":"
-    local filename_pos = (type(opts) == "table" and type(opts.filename_pos) == "number") and
-        opts.filename_pos or 1
-    local lineno_pos = (type(opts) == "table" and type(opts.lineno_pos) == "number") and
-        opts.lineno_pos or 2
-    local column_pos = (type(opts) == "table" and type(opts.column_pos) == "number") and
-        opts.column_pos or 3
+    local delimiter = (
+        type(opts) == "table"
+        and type(opts.delimiter) == "string"
+        and string.len(opts.delimiter) > 0
+    )
+            and opts.delimiter
+        or ":"
+    local filename_pos = (
+        type(opts) == "table" and type(opts.filename_pos) == "number"
+    )
+            and opts.filename_pos
+        or 1
+    local lineno_pos = (
+        type(opts) == "table" and type(opts.lineno_pos) == "number"
+    )
+            and opts.lineno_pos
+        or 2
+    local column_pos = (
+        type(opts) == "table" and type(opts.column_pos) == "number"
+    )
+            and opts.column_pos
+        or 3
     local splits = utils.string_split(line, delimiter)
     local filename = parse_find(splits[filename_pos], opts)
     local lineno = tonumber(splits[lineno_pos])
     local column = #splits >= column_pos and tonumber(splits[column_pos]) or nil
     return { filename = filename, lineno = lineno, column = column }
+end
+
+-- parse lines from ls, eza, exa, etc.
+--
+-- The `ls -lh` output looks like:
+--
+-- ```
+-- total 91K
+-- -rw-r--r--   1 linrongbin Administrators 1.1K Jul  9 14:35 LICENSE
+-- -rw-r--r--   1 linrongbin Administrators 6.2K Sep 28 22:26 README.md
+-- drwxr-xr-x   2 linrongbin Administrators 4.0K Sep 30 21:55 deps
+-- -rw-r--r--   1 linrongbin Administrators  585 Jul 22 14:26 init.vim
+-- ```
+--
+-- The file name starts from the 8th space.
+--
+-- The `eza -lh` (`exa -lh`) output looks like:
+--
+-- ```
+-- Mode  Size Date Modified Name
+-- d----    - 30 Sep 21:55  deps
+-- -a---  585 22 Jul 14:26  init.vim
+-- -a--- 6.4k 30 Sep 21:55  install.ps1
+-- -a--- 5.3k 23 Sep 13:43  install.sh
+-- ```
+--
+-- So file name starts from the 5th space.
+--
+--- @param line string
+--- @param start_pos integer
+--- @return string
+local function parse_ls(line, start_pos)
+    local pos = 1
+    for i = 1, start_pos do
+        pos = utils.string_find(line, " ", pos) --[[@as integer]]
+        assert(type(pos) == "number")
+    end
+    return line:sub(pos + 1)
 end
 
 --- @param line string
@@ -115,6 +167,7 @@ end
 local M = {
     parse_find = parse_find,
     parse_grep = parse_grep,
+    parse_ls = parse_ls,
     parse_filename = parse_filename,
     parse_path_line = parse_path_line,
     PathLine = PathLine,

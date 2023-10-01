@@ -12,7 +12,7 @@ describe("line_helpers", function()
     local line_helpers = require("fzfx.line_helpers")
     local utils = require("fzfx.utils")
     local DEVICONS_PATH =
-    "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
+        "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
     describe("[parse_find]", function()
         it("parse filename without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
@@ -27,10 +27,7 @@ describe("line_helpers", function()
             local input = " ~/github/linrongbin16/fzfx.nvim/README.md"
             local actual = line_helpers.parse_find(input)
             print(
-                string.format(
-                    "parse find with icon:%s\n",
-                    vim.inspect(actual)
-                )
+                string.format("parse find with icon:%s\n", vim.inspect(actual))
             )
             assert_eq("~/github/linrongbin16/fzfx.nvim/README.md", actual)
         end)
@@ -66,10 +63,20 @@ describe("line_helpers", function()
                 assert_eq(type(actual), "table")
                 assert_eq(type(actual.filename), "string")
                 assert_eq(actual.filename, utils.string_split(line, ":")[1])
-                assert_eq(tostring(actual.lineno), utils.string_split(line, ":")[2])
-                assert_true(actual.column == nil or
-                    (type(actual.column) == "number" and tostring(actual.column) == utils.string_split(line, ":")[3]))
-                local actual1 = line_helpers.parse_grep(line, { no_icon = true })
+                assert_eq(
+                    tostring(actual.lineno),
+                    utils.string_split(line, ":")[2]
+                )
+                assert_true(
+                    actual.column == nil
+                        or (
+                            type(actual.column) == "number"
+                            and tostring(actual.column)
+                                == utils.string_split(line, ":")[3]
+                        )
+                )
+                local actual1 =
+                    line_helpers.parse_grep(line, { no_icon = true })
                 assert_eq(actual.filename, actual1.filename)
             end
         end)
@@ -91,9 +98,18 @@ describe("line_helpers", function()
                     utils.string_split(utils.string_split(line, ":")[1], " ")[2]
                 )
                 assert_eq(type(actual.lineno), "number")
-                assert_eq(tostring(actual.lineno), utils.string_split(line, ":")[2])
-                assert_true(actual.column == nil or
-                    (type(actual.column) == "number" and tostring(actual.column) == utils.string_split(line, ":")[3]))
+                assert_eq(
+                    tostring(actual.lineno),
+                    utils.string_split(line, ":")[2]
+                )
+                assert_true(
+                    actual.column == nil
+                        or (
+                            type(actual.column) == "number"
+                            and tostring(actual.column)
+                                == utils.string_split(line, ":")[3]
+                        )
+                )
             end
         end)
         it("parse path with lineno/column, without icon", function()
@@ -120,7 +136,8 @@ describe("line_helpers", function()
                     tostring(actual.column),
                     utils.string_split(line, ":")[3]
                 )
-                local actual1 = line_helpers.parse_grep(line, { no_icon = true })
+                local actual1 =
+                    line_helpers.parse_grep(line, { no_icon = true })
                 assert_eq(actual.filename, actual1.filename)
             end
         end)
@@ -152,6 +169,25 @@ describe("line_helpers", function()
                     utils.string_split(line, ":")[3]
                 )
             end
+        end)
+    end)
+    describe("[parse_ls]", function()
+        it("parse filename without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local expect = "~/github/linrongbin16/fzfx.nvim/README.md"
+            local actual1 = line_helpers.parse_find(expect)
+            assert_eq(expect, actual1)
+            local actual2 = line_helpers.parse_find(expect, { no_icon = true })
+            assert_eq(expect, actual2)
+        end)
+        it("parse filename with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local input = " ~/github/linrongbin16/fzfx.nvim/README.md"
+            local actual = line_helpers.parse_find(input)
+            print(
+                string.format("parse find with icon:%s\n", vim.inspect(actual))
+            )
+            assert_eq("~/github/linrongbin16/fzfx.nvim/README.md", actual)
         end)
     end)
 end)
