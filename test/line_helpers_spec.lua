@@ -172,22 +172,21 @@ describe("line_helpers", function()
         end)
     end)
     describe("[parse_ls]", function()
-        it("parse filename without icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-            local expect = "~/github/linrongbin16/fzfx.nvim/README.md"
-            local actual1 = line_helpers.parse_find(expect)
-            assert_eq(expect, actual1)
-            local actual2 = line_helpers.parse_find(expect, { no_icon = true })
-            assert_eq(expect, actual2)
-        end)
-        it("parse filename with prepend icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local input = " ~/github/linrongbin16/fzfx.nvim/README.md"
-            local actual = line_helpers.parse_find(input)
-            print(
-                string.format("parse find with icon:%s\n", vim.inspect(actual))
-            )
-            assert_eq("~/github/linrongbin16/fzfx.nvim/README.md", actual)
+        it("parse ls -lh", function()
+            local lines = {
+                "-rw-r--r--   1 linrongbin Administrators 1.1K Jul  9 14:35 LICENSE",
+                "-rw-r--r--   1 linrongbin Administrators 6.2K Sep 28 22:26 README.md",
+                "drwxr-xr-x   2 linrongbin Administrators 4.0K Sep 30 21:55 deps",
+                "-rw-r--r--   1 linrongbin Administrators  585 Jul 22 14:26 init.vim",
+            }
+            local actual1 = line_helpers.parse_ls(lines[1], 8)
+            assert_eq("LICENSE", actual1)
+            local actual2 = line_helpers.parse_ls(lines[2], 8)
+            assert_eq("README.md", actual2)
+            local actual3 = line_helpers.parse_ls(lines[3], 8)
+            assert_eq("deps", actual3)
+            local actual4 = line_helpers.parse_ls(lines[4], 8)
+            assert_eq("init.vim", actual4)
         end)
     end)
 end)
