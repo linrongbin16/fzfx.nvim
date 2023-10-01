@@ -672,7 +672,9 @@ local function file_explorer_previewer(line, context)
     local splits = utils.string_split(line, " ")
     local p = path.join(cwd, splits[#splits])
     if vim.fn.filereadable(p) > 0 then
-        return file_previewer(p)
+        local filename = line_helpers.parse_find(p, { no_icon = true })
+        local impl = make_file_previewer(filename)
+        return impl()
     elseif vim.fn.isdirectory(p) > 0 then
         return directory_previewer(p)
     else
