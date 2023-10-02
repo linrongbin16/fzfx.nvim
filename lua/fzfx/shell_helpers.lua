@@ -176,6 +176,7 @@ local M = {
     FileLineReader = require("fzfx.utils").FileLineReader,
     readfile = require("fzfx.utils").readfile,
     AsyncSpawn = require("fzfx.utils").AsyncSpawn,
+    AsyncCmd = require("fzfx.cmd").AsyncCmd,
 }
 
 return M
