@@ -424,31 +424,31 @@ function AsyncCmd:_on_stderr(err, data)
         self.err_pipe:close()
     end
 
-    if data then
-        -- append data to buffer
-        self.err_buffer = self.err_buffer and (self.err_buffer .. data) or data
-        self.err_buffer = self.err_buffer:gsub("\r\n", "\n")
-
-        -- foreach the buffer and find every line
-        local pos =
-            self:_consume_line(self.err_buffer, self.fn_err_line_processor)
-        -- truncate the printed lines if found any
-        self.err_buffer = pos <= #self.err_buffer and self.err_buffer:sub(pos)
-            or nil
-    else
-        if self.err_buffer then
-            -- foreach the buffer and find every line
-            local i =
-                self:_consume_line(self.err_buffer, self.fn_err_line_processor)
-            if i <= #self.err_buffer then
-                local line = self.err_buffer:sub(i, #self.err_buffer)
-                self.fn_err_line_processor(line)
-                self.err_buffer = nil
-            end
-        end
-        self.err_pipe:read_stop()
-        self.err_pipe:close()
-    end
+    -- if data then
+    --     -- append data to buffer
+    --     self.err_buffer = self.err_buffer and (self.err_buffer .. data) or data
+    --     self.err_buffer = self.err_buffer:gsub("\r\n", "\n")
+    --
+    --     -- foreach the buffer and find every line
+    --     local pos =
+    --         self:_consume_line(self.err_buffer, self.fn_err_line_processor)
+    --     -- truncate the printed lines if found any
+    --     self.err_buffer = pos <= #self.err_buffer and self.err_buffer:sub(pos)
+    --         or nil
+    -- else
+    --     if self.err_buffer then
+    --         -- foreach the buffer and find every line
+    --         local i =
+    --             self:_consume_line(self.err_buffer, self.fn_err_line_processor)
+    --         if i <= #self.err_buffer then
+    --             local line = self.err_buffer:sub(i, #self.err_buffer)
+    --             self.fn_err_line_processor(line)
+    --             self.err_buffer = nil
+    --         end
+    --     end
+    --     self.err_pipe:read_stop()
+    --     self.err_pipe:close()
+    -- end
 end
 
 local M = {
