@@ -122,7 +122,7 @@ then
     -- )
     -- async_spawn:run()
 
-    local async_cmd = shell_helpers.AsyncCmd:run(cmd_splits, println) --[[@as AsyncCmd]]
+    local async_cmd = shell_helpers.AsyncCmd:run(cmd_splits, println)
     async_cmd:wait()
 elseif metaopts.provider_type == "list" then
     local reader = shell_helpers.FileLineReader:open(resultfile) --[[@as FileLineReader ]]

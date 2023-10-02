@@ -94,7 +94,7 @@ elseif metaopts.previewer_type == "command_list" then
     -- )
     -- async_spawn:run()
 
-    local async_cmd = shell_helpers.AsyncCmd:run(cmd_splits, println) --[[@as AsyncCmd]]
+    local async_cmd = shell_helpers.AsyncCmd:run(cmd_splits, println)
     async_cmd:wait()
 elseif metaopts.previewer_type == "list" then
     local f = io.open(resultfile, "r")
