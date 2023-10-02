@@ -86,13 +86,16 @@ elseif metaopts.previewer_type == "command_list" then
         return
     end
 
-    local async_spawn = shell_helpers.AsyncSpawn:open(cmd_splits, println) --[[@as AsyncSpawn]]
-    shell_helpers.log_ensure(
-        async_spawn ~= nil,
-        "|provider| error! failed to open async command: %s",
-        vim.inspect(cmd_splits)
-    )
-    async_spawn:run()
+    -- local async_spawn = shell_helpers.AsyncSpawn:open(cmd_splits, println) --[[@as AsyncSpawn]]
+    -- shell_helpers.log_ensure(
+    --     async_spawn ~= nil,
+    --     "|provider| error! failed to open async command: %s",
+    --     vim.inspect(cmd_splits)
+    -- )
+    -- async_spawn:run()
+
+    local async_cmd = shell_helpers.AsyncCmd:run(cmd_splits, println) --[[@as AsyncCmd]]
+    async_cmd:wait()
 elseif metaopts.previewer_type == "list" then
     local f = io.open(resultfile, "r")
     shell_helpers.log_ensure(
