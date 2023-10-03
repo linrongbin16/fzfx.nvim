@@ -324,7 +324,7 @@ describe("utils", function()
             local lines = utils.readlines("README.md")
             local buffer = nil
             for _, line in
-            ipairs(lines --[[@as table]])
+                ipairs(lines --[[@as table]])
             do
                 assert_eq(type(line), "string")
                 assert_true(string.len(line) >= 0)
@@ -346,7 +346,7 @@ describe("utils", function()
 
             local buffer = nil
             for _, line in
-            ipairs(lines --[[@as table]])
+                ipairs(lines --[[@as table]])
             do
                 assert_eq(type(line), "string")
                 assert_true(string.len(line) >= 0)
@@ -360,7 +360,7 @@ describe("utils", function()
             local async_spawn = utils.AsyncSpawn:open(
                 { "cat", "README.md" },
                 function(line) end
-            ) --[[@as AsyncSpawn]]
+            ) --[[@as AsyncCmd]]
             assert_eq(type(async_spawn), "table")
             assert_eq(type(async_spawn.cmds), "table")
             assert_eq(#async_spawn.cmds, 2)
@@ -381,7 +381,7 @@ describe("utils", function()
                 i = i + 1
             end
             local async_spawn =
-                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
             local pos = async_spawn:consume_line(content, process_line)
             if pos <= #content then
                 local line = content:sub(pos, #content)
@@ -398,7 +398,7 @@ describe("utils", function()
                         assert_eq(signal, 0)
                     end,
                 }
-            ) --[[@as AsyncSpawn]]
+            ) --[[@as AsyncCmd]]
             async_spawn:on_exit(0, 0)
         end)
         it("stdout on newline", function()
@@ -413,7 +413,7 @@ describe("utils", function()
                 i = i + 1
             end
             local async_spawn =
-                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
             local content_splits =
                 utils.string_split(content, "\n", { trimempty = false })
             for j, splits in ipairs(content_splits) do
@@ -436,7 +436,7 @@ describe("utils", function()
                 i = i + 1
             end
             local async_spawn =
-                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
             local content_splits =
                 utils.string_split(content, " ", { trimempty = false })
             for j, splits in ipairs(content_splits) do
@@ -462,7 +462,7 @@ describe("utils", function()
                     i = i + 1
                 end
                 local async_spawn =
-                    utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                    utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
                 local content_splits = utils.string_split(
                     content,
                     lower_char,
@@ -490,7 +490,7 @@ describe("utils", function()
                     i = i + 1
                 end
                 local async_spawn =
-                    utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                    utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
                 local content_splits = utils.string_split(
                     content,
                     upper_char,
@@ -509,7 +509,7 @@ describe("utils", function()
             local async_spawn = utils.AsyncSpawn:open(
                 { "cat", "README.md" },
                 function() end
-            ) --[[@as AsyncSpawn]]
+            ) --[[@as AsyncCmd]]
             async_spawn:on_stderr(nil, nil)
         end)
         it("iterate on README.md", function()
@@ -524,7 +524,7 @@ describe("utils", function()
             end
 
             local async_spawn =
-                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
             async_spawn:run()
         end)
         it("iterate on lua/fzfx/config.lua", function()
@@ -541,7 +541,7 @@ describe("utils", function()
             local async_spawn = utils.AsyncSpawn:open(
                 { "cat", "lua/fzfx/config.lua" },
                 process_line
-            ) --[[@as AsyncSpawn]]
+            ) --[[@as AsyncCmd]]
             async_spawn:run()
         end)
     end)

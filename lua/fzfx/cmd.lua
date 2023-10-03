@@ -1,9 +1,12 @@
 -- No Setup Need
 
+local utils = require("fzfx.utils")
+
 --- @class CmdResult
 --- @field stdout string[]?
 --- @field stderr string[]?
---- @field exitcode integer?
+--- @field code integer|string|nil
+--- @field signal integer|string|nil
 local CmdResult = {}
 
 --- @return CmdResult
@@ -11,19 +14,172 @@ function CmdResult:new()
     local o = {
         stdout = {},
         stderr = {},
-        exitcode = nil,
+        code = nil,
+        signal = nil,
     }
     setmetatable(o, self)
     self.__index = self
     return o
 end
 
+--- @alias AsyncCmdLineProcessor fun(line:string):any
+--- @class AsyncCmd
+--- @field cmd string[]
+--- @field fn_out_line_processor AsyncCmdLineProcessor
+--- @field fn_err_line_processor AsyncCmdLineProcessor
+--- @field out_pipe uv_pipe_t
+--- @field err_pipe uv_pipe_t
+--- @field out_buffer string?
+--- @field err_buffer string?
+--- @field handle uv_process_t?
+--- @field pid integer|string|nil
+--- @field result CmdResult?
+local AsyncCmd = {}
+
+--- @param line string
+local function default_err_line_processor(line)
+    if type(line) == "string" then
+        io.write(vim.trim(line) .. "\n")
+    end
+end
+
+--- @param cmd string[]
+--- @param fn_out_line_processor AsyncCmdLineProcessor
+--- @param fn_err_line_processor AsyncCmdLineProcessor?
+--- @return AsyncCmd?
+function AsyncCmd:open(cmd, fn_out_line_processor, fn_err_line_processor)
+    local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    if not out_pipe or not err_pipe then
+        return nil
+    end
+
+    local o = {
+        cmd = cmd,
+        fn_out_line_processor = fn_out_line_processor,
+        fn_err_line_processor = fn_err_line_processor
+            or default_err_line_processor,
+        out_pipe = out_pipe,
+        err_pipe = err_pipe,
+        out_buffer = nil,
+        err_buffer = nil,
+        handle = nil,
+        pid = nil,
+        result = nil,
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+--- @param buffer string
+--- @param fn_line_processor AsyncCmdLineProcessor
+--- @return integer
+function AsyncCmd:_consume_line(buffer, fn_line_processor)
+    local i = 1
+    while i <= #buffer do
+        local newline_pos = utils.string_find(buffer, "\n", i)
+        if not newline_pos then
+            break
+        end
+        local line = buffer:sub(i, newline_pos - 1)
+        fn_line_processor(line)
+        i = newline_pos + 1
+    end
+    return i
+end
+
+--- @param code integer?
+--- @param signal integer?
+--- @return nil
+function AsyncCmd:on_exit(code, signal)
+    if self.handle and not self.handle:is_closing() then
+        self.handle:close(function()
+            vim.loop.stop()
+        end)
+    end
+end
+
+--- @param err string?
+--- @param data string?
+--- @return nil
+function AsyncCmd:on_stdout(err, data)
+    if err then
+        self:on_exit(130)
+        return
+    end
+
+    if not data then
+        if self.out_buffer then
+            -- foreach the data_buffer and find every line
+            local i =
+                self:_consume_line(self.out_buffer, self.fn_out_line_processor)
+            if i <= #self.out_buffer then
+                local line = self.out_buffer:sub(i, #self.out_buffer)
+                self.fn_out_line_processor(line)
+                self.out_buffer = nil
+            end
+        end
+        self.out_pipe:close()
+        self:on_exit(0)
+        return
+    end
+
+    -- append data to data_buffer
+    self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
+    -- foreach the data_buffer and find every line
+    local i = self:_consume_line(self.out_buffer, self.fn_out_line_processor)
+    -- truncate the printed lines if found any
+    self.out_buffer = i <= #self.out_buffer
+            and self.out_buffer:sub(i, #self.out_buffer)
+        or nil
+end
+
+--- @param err string?
+--- @param data string?
+--- @return nil
+function AsyncCmd:on_stderr(err, data)
+    if err then
+        io.write(
+            string.format(
+                "err:%s, data:%s",
+                vim.inspect(err),
+                vim.inspect(data)
+            )
+        )
+        self.err_pipe:close()
+        self:on_exit(130)
+    end
+end
+
+function AsyncCmd:run()
+    local process_handler, process_id = vim.loop.spawn(self.cmd[1], {
+        args = vim.list_slice(self.cmd, 2),
+        stdio = { nil, self.out_pipe, self.err_pipe },
+        hide = true,
+        -- verbatim = true,
+    }, function(code, signal)
+        self:on_exit(code, signal)
+    end)
+
+    self.handle = process_handler
+    self.pid = process_id
+
+    self.out_pipe:read_start(function(err, data)
+        self:on_stdout(err, data)
+    end)
+    self.err_pipe:read_start(function(err, data)
+        self:on_stderr(err, data)
+    end)
+    vim.loop.run()
+end
+
 --- @return boolean
 function CmdResult:wrong()
     return type(self.stderr) == "table"
         and #self.stderr > 0
-        and type(self.exitcode) == "number"
-        and self.exitcode ~= 0
+        and type(self.code) == "number"
+        and self.code ~= 0
 end
 
 --- @class Cmd
@@ -65,7 +221,7 @@ function Cmd:run(source, opts)
     end
 
     local function on_exit(jobid2, exitcode, event)
-        result.exitcode = exitcode
+        result.code = exitcode
     end
 
     local jobid = vim.fn.jobstart(source, {
@@ -120,7 +276,7 @@ function GitRootCmd:value()
         return nil
     end
     return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-        and vim.trim(self.result.stdout[1])
+            and vim.trim(self.result.stdout[1])
         or nil
 end
 
@@ -199,11 +355,12 @@ function GitCurrentBranchCmd:value()
         return nil
     end
     return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-        and self.result.stdout[1]
+            and self.result.stdout[1]
         or nil
 end
 
 local M = {
+    AsyncCmd = AsyncCmd,
     CmdResult = CmdResult,
     Cmd = Cmd,
     GitRootCmd = GitRootCmd,
