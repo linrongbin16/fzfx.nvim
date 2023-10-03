@@ -233,16 +233,16 @@ local ShellOptsContext = {}
 --- @return ShellOptsContext
 function ShellOptsContext:save()
     local o = constants.is_windows
-        and {
-            shell = vim.o.shell,
-            shellslash = vim.o.shellslash,
-            shellcmdflag = vim.o.shellcmdflag,
-            shellxquote = vim.o.shellxquote,
-            shellquote = vim.o.shellquote,
-            shellredir = vim.o.shellredir,
-            shellpipe = vim.o.shellpipe,
-            shellxescape = vim.o.shellxescape,
-        }
+            and {
+                shell = vim.o.shell,
+                shellslash = vim.o.shellslash,
+                shellcmdflag = vim.o.shellcmdflag,
+                shellxquote = vim.o.shellxquote,
+                shellquote = vim.o.shellquote,
+                shellredir = vim.o.shellredir,
+                shellpipe = vim.o.shellpipe,
+                shellxescape = vim.o.shellxescape,
+            }
         or {
             shell = vim.o.shell,
         }
@@ -399,14 +399,14 @@ end
 --- @return integer
 function FileLineReader:_read_chunk()
     local chunksize = (self.filesize >= self.offset + self.batchsize)
-        and self.batchsize
+            and self.batchsize
         or (self.filesize - self.offset)
     if chunksize <= 0 then
         return 0
     end
     local data, --[[@as string?]]
-    read_err,
-    read_name =
+        read_err,
+        read_name =
         vim.loop.fs_read(self.handler, chunksize, self.offset)
     if read_err then
         error(
@@ -533,8 +533,6 @@ local function writelines(filename, lines)
     return 0
 end
 
---- @alias AsyncSpawnRunOptOnExit fun(code:integer?,signal:integer?):any
---- @alias AsyncSpawnRunOpts {on_exit:AsyncSpawnRunOptOnExit?}
 --- @alias AsyncSpawnLineConsumer fun(line:string):any
 --- @class AsyncSpawn
 --- @field cmds string[]
@@ -544,14 +542,12 @@ end
 --- @field out_buffer string?
 --- @field process_handler uv_process_t?
 --- @field process_id integer|string|nil
---- @field opts AsyncSpawnRunOpts?
 local AsyncSpawn = {}
 
 --- @param cmds string[]
 --- @param fn_line_consumer AsyncSpawnLineConsumer
---- @param opts AsyncSpawnRunOpts?
 --- @return AsyncSpawn?
-function AsyncSpawn:open(cmds, fn_line_consumer, opts)
+function AsyncSpawn:open(cmds, fn_line_consumer)
     local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     if not out_pipe or not err_pipe then
@@ -566,7 +562,6 @@ function AsyncSpawn:open(cmds, fn_line_consumer, opts)
         out_buffer = nil,
         process_handler = nil,
         process_id = nil,
-        opts = opts,
     }
     setmetatable(o, self)
     self.__index = self
@@ -595,12 +590,9 @@ end
 --- @return nil
 function AsyncSpawn:on_exit(code, signal)
     if self.process_handler and not self.process_handler:is_closing() then
-        self.process_handler:close(function(err)
+        self.process_handler:close(function()
             vim.loop.stop()
         end)
-    end
-    if type(self.opts) == "table" and type(self.opts.on_exit) == "function" then
-        self.opts.on_exit(code, signal)
     end
 end
 
@@ -623,6 +615,7 @@ function AsyncSpawn:on_stdout(err, data)
                 self.out_buffer = nil
             end
         end
+        self.out_pipe:close()
         self:on_exit(0)
         return
     end
@@ -633,7 +626,7 @@ function AsyncSpawn:on_stdout(err, data)
     local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
     -- truncate the printed lines if found any
     self.out_buffer = i <= #self.out_buffer
-        and self.out_buffer:sub(i, #self.out_buffer)
+            and self.out_buffer:sub(i, #self.out_buffer)
         or nil
 end
 
@@ -649,6 +642,7 @@ function AsyncSpawn:on_stderr(err, data)
                 vim.inspect(data)
             )
         )
+        self.err_pipe:close()
         self:on_exit(130)
     end
 end
@@ -660,10 +654,6 @@ function AsyncSpawn:run()
         hide = true,
         -- verbatim = true,
     }, function(code, signal)
-        self.out_pipe:read_stop()
-        self.err_pipe:read_stop()
-        self.out_pipe:shutdown()
-        self.err_pipe:shutdown()
         self:on_exit(code, signal)
     end)
 
