@@ -45,7 +45,12 @@ local LogDefaults = {
     console_log = true,
     file_log = DEBUG_ENABLE and true or false,
     file_name = "fzfx_shell_helpers.log",
-    file_path = nil,
+    file_path = string.format(
+        "%s%s%s",
+        vim.fn.stdpath("data"),
+        PATH_SEPARATOR,
+        "fzfx_shell_helpers.log"
+    ),
 }
 local LogConfigs = {}
 
