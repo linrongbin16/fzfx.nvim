@@ -65,6 +65,13 @@ local function println(l)
     end
 end
 
+--- @param l string?
+local function print_err(l)
+    if type(l) == "string" then
+        io.write(string.format("%s\n", l))
+    end
+end
+
 if metaopts.previewer_type == "command" then
     local cmd = shell_helpers.readfile(resultfile)
     shell_helpers.log_debug("cmd:[%s]", vim.inspect(cmd))
@@ -86,7 +93,8 @@ elseif metaopts.previewer_type == "command_list" then
         return
     end
 
-    local async_cmd = shell_helpers.AsyncCmd:open(cmd_splits, println) --[[@as AsyncCmd]]
+    local async_cmd =
+        shell_helpers.AsyncCmd:open(cmd_splits, println, print_err) --[[@as AsyncCmd]]
     shell_helpers.log_ensure(
         async_cmd ~= nil,
         "|previewer| error! failed to open async command: %s",

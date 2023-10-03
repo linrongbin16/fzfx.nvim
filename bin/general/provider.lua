@@ -70,6 +70,13 @@ local function println(line)
     end
 end
 
+--- @param line string?
+local function print_err(line)
+    if type(line) == "string" then
+        io.write(string.format("%s\n", line))
+    end
+end
+
 if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
     --- @type string
     local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
@@ -114,7 +121,8 @@ then
         return
     end
 
-    local async_cmd = shell_helpers.AsyncCmd:open(cmd_splits, println) --[[@as AsyncCmd]]
+    local async_cmd =
+        shell_helpers.AsyncCmd:open(cmd_splits, println, print_err) --[[@as AsyncCmd]]
     shell_helpers.log_ensure(
         async_cmd ~= nil,
         "|provider| error! failed to open async command: %s",
