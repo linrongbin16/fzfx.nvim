@@ -82,17 +82,17 @@ describe("cmd", function()
     end)
     describe("[AsyncCmd]", function()
         it("open", function()
-            local async_spawn = cmd.AsyncCmd:open(
+            local async_cmd = cmd.AsyncCmd:open(
                 { "cat", "README.md" },
                 function(line) end
             ) --[[@as AsyncCmd]]
-            assert_eq(type(async_spawn), "table")
-            assert_eq(type(async_spawn.cmd), "table")
-            assert_eq(#async_spawn.cmd, 2)
-            assert_eq(async_spawn.cmd[1], "cat")
-            assert_eq(async_spawn.cmd[2], "README.md")
-            assert_eq(type(async_spawn.out_pipe), "userdata")
-            assert_eq(type(async_spawn.err_pipe), "userdata")
+            assert_eq(type(async_cmd), "table")
+            assert_eq(type(async_cmd.cmd), "table")
+            assert_eq(#async_cmd.cmd, 2)
+            assert_eq(async_cmd.cmd[1], "cat")
+            assert_eq(async_cmd.cmd[2], "README.md")
+            assert_eq(type(async_cmd.out_pipe), "userdata")
+            assert_eq(type(async_cmd.err_pipe), "userdata")
         end)
         it("consume line", function()
             local content = utils.readfile("README.md") --[[@as string]]
@@ -105,16 +105,16 @@ describe("cmd", function()
                 assert_eq(line, lines[i])
                 i = i + 1
             end
-            local async_spawn =
+            local async_cmd =
                 cmd.AsyncCmd:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
-            local pos = async_spawn:consume_line(content, process_line)
+            local pos = async_cmd:_consume_line(content, process_line)
             if pos <= #content then
                 local line = content:sub(pos, #content)
                 process_line(line)
             end
         end)
         it("exit", function()
-            local async_spawn = cmd.AsyncCmd:open(
+            local async_cmd = cmd.AsyncCmd:open(
                 { "cat", "README.md" },
                 function(line) end,
                 {
@@ -124,7 +124,7 @@ describe("cmd", function()
                     end,
                 }
             ) --[[@as AsyncCmd]]
-            async_spawn:on_exit(0, 0)
+            async_cmd:on_exit(0, 0)
         end)
         it("stdout on newline", function()
             local content = utils.readfile("README.md") --[[@as string]]
@@ -137,17 +137,17 @@ describe("cmd", function()
                 assert_eq(line, lines[i])
                 i = i + 1
             end
-            local async_spawn =
+            local async_cmd =
                 cmd.AsyncCmd:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
             local content_splits =
                 utils.string_split(content, "\n", { trimempty = false })
             for j, splits in ipairs(content_splits) do
-                async_spawn:on_stdout(nil, splits)
+                async_cmd:on_stdout(nil, splits)
                 if j < #content_splits then
-                    async_spawn:on_stdout(nil, "\n")
+                    async_cmd:on_stdout(nil, "\n")
                 end
             end
-            async_spawn:on_stdout(nil, nil)
+            async_cmd:on_stdout(nil, nil)
         end)
         it("stdout on whitespace", function()
             local content = utils.readfile("README.md") --[[@as string]]
@@ -160,17 +160,17 @@ describe("cmd", function()
                 assert_eq(line, lines[i])
                 i = i + 1
             end
-            local async_spawn =
+            local async_cmd =
                 cmd.AsyncCmd:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
             local content_splits =
                 utils.string_split(content, " ", { trimempty = false })
             for j, splits in ipairs(content_splits) do
-                async_spawn:on_stdout(nil, splits)
+                async_cmd:on_stdout(nil, splits)
                 if j < #content_splits then
-                    async_spawn:on_stdout(nil, " ")
+                    async_cmd:on_stdout(nil, " ")
                 end
             end
-            async_spawn:on_stdout(nil, nil)
+            async_cmd:on_stdout(nil, nil)
         end)
         for delimiter_i = 0, 25 do
             -- lower case: a
@@ -186,7 +186,7 @@ describe("cmd", function()
                     assert_eq(line, lines[i])
                     i = i + 1
                 end
-                local async_spawn =
+                local async_cmd =
                     cmd.AsyncCmd:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
                 local content_splits = utils.string_split(
                     content,
@@ -194,12 +194,12 @@ describe("cmd", function()
                     { trimempty = false }
                 )
                 for j, splits in ipairs(content_splits) do
-                    async_spawn:on_stdout(nil, splits)
+                    async_cmd:on_stdout(nil, splits)
                     if j < #content_splits then
-                        async_spawn:on_stdout(nil, lower_char)
+                        async_cmd:on_stdout(nil, lower_char)
                     end
                 end
-                async_spawn:on_stdout(nil, nil)
+                async_cmd:on_stdout(nil, nil)
             end)
             -- upper case: A
             local upper_char = string.char(65 + delimiter_i)
@@ -214,7 +214,7 @@ describe("cmd", function()
                     assert_eq(line, lines[i])
                     i = i + 1
                 end
-                local async_spawn =
+                local async_cmd =
                     cmd.AsyncCmd:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
                 local content_splits = utils.string_split(
                     content,
@@ -222,20 +222,20 @@ describe("cmd", function()
                     { trimempty = false }
                 )
                 for j, splits in ipairs(content_splits) do
-                    async_spawn:on_stdout(nil, splits)
+                    async_cmd:on_stdout(nil, splits)
                     if j < #content_splits then
-                        async_spawn:on_stdout(nil, upper_char)
+                        async_cmd:on_stdout(nil, upper_char)
                     end
                 end
-                async_spawn:on_stdout(nil, nil)
+                async_cmd:on_stdout(nil, nil)
             end)
         end
         it("stderr", function()
-            local async_spawn = cmd.AsyncCmd:open(
+            local async_cmd = cmd.AsyncCmd:open(
                 { "cat", "README.md" },
                 function() end
             ) --[[@as AsyncCmd]]
-            async_spawn:on_stderr(nil, nil)
+            async_cmd:on_stderr(nil, nil)
         end)
         it("iterate on README.md", function()
             local lines = utils.readlines("README.md") --[[@as table]]
@@ -248,9 +248,9 @@ describe("cmd", function()
                 i = i + 1
             end
 
-            local async_spawn =
+            local async_cmd =
                 cmd.AsyncCmd:open({ "cat", "README.md" }, process_line) --[[@as AsyncCmd]]
-            async_spawn:run()
+            async_cmd:run()
         end)
         it("iterate on lua/fzfx/config.lua", function()
             local lines = utils.readlines("lua/fzfx/config.lua") --[[@as table]]
@@ -263,11 +263,11 @@ describe("cmd", function()
                 i = i + 1
             end
 
-            local async_spawn = cmd.AsyncCmd:open(
+            local async_cmd = cmd.AsyncCmd:open(
                 { "cat", "lua/fzfx/config.lua" },
                 process_line
             ) --[[@as AsyncCmd]]
-            async_spawn:run()
+            async_cmd:run()
         end)
     end)
 end)
