@@ -15,23 +15,36 @@ else
     vim.o.shell = "sh"
 end
 
---- @type string
 local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
         and "\\"
     or "/"
 
 local DEBUG_ENABLE = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 
-local LoggerContext = {
-    --- @type "DEBUG"|"INFO"|"WARN"|"ERROR"
-    level = DEBUG_ENABLE and "DEBUG" or "INFO",
-    --- @type boolean
+-- see: `lua print(vim.inspect(vim.log.levels))`
+local LogLevels = {
+    TRACE = 0,
+    DEBUG = 1,
+    INFO = 2,
+    WARN = 3,
+    ERROR = 4,
+    OFF = 5,
+}
+
+local LogLevelNames = {
+    [0] = "TRACE",
+    [1] = "DEBUG",
+    [2] = "INFO",
+    [3] = "WARN",
+    [4] = "ERROR",
+    [5] = "OFF",
+}
+
+local LogDefaults = {
+    level = DEBUG_ENABLE and LogLevels.DEBUG or LogLevels.INFO,
     console_log = true,
-    --- @type string|nil
-    name = "[fzfx-shell-helpers]",
-    --- @type boolean
     file_log = DEBUG_ENABLE and true or false,
-    --- @type string|nil
+    file_name = "fzfx_shell_helpers.log",
     file_path = string.format(
         "%s%s%s",
         vim.fn.stdpath("data"),
@@ -39,32 +52,45 @@ local LoggerContext = {
         "fzfx_shell_helpers.log"
     ),
 }
+local LogConfigs = {}
 
---- @param level "DEBUG"|"INFO"|"WARN"|"ERROR"
+--- @param option Configs
+local function log_setup(option)
+    LogConfigs =
+        vim.tbl_deep_extend("force", vim.deepcopy(LogDefaults), option or {})
+    if LogConfigs.file_name and string.len(LogConfigs.file_name) > 0 then
+        LogConfigs.file_path = string.format(
+            "%s%s%s",
+            vim.fn.stdpath("data"),
+            PATH_SEPARATOR,
+            LogConfigs.file_name
+        )
+    end
+end
+
+--- @param level integer
 --- @param msg string
 --- @return nil
 local function _log(level, msg)
-    local LogLevels = require("fzfx.log").LogLevels
-
-    if LogLevels[level] < LogLevels[LoggerContext.level] then
+    if level < LogConfigs.level then
         return
     end
 
     local msg_lines = require("fzfx.utils").string_split(msg, "\n")
-    if LoggerContext.console_log then
+    if LogConfigs.console_log then
         for _, line in ipairs(msg_lines) do
-            io.write(string.format("%s %s\n", level, line))
+            io.write(string.format("%s %s\n", LogLevelNames[level], line))
         end
     end
-    if LoggerContext.file_log then
-        local fp = io.open(LoggerContext.file_path, "a")
+    if LogConfigs.file_log then
+        local fp = io.open(LogConfigs.file_path, "a")
         if fp then
             for _, line in ipairs(msg_lines) do
                 fp:write(
                     string.format(
                         "%s [%s]: %s\n",
                         os.date("%Y-%m-%d %H:%M:%S"),
-                        level,
+                        LogLevelNames[level],
                         line
                     )
                 )
@@ -75,11 +101,11 @@ local function _log(level, msg)
 end
 
 local function log_debug(fmt, ...)
-    _log("DEBUG", string.format(fmt, ...))
+    _log(LogLevels.DEBUG, string.format(fmt, ...))
 end
 
 local function log_err(fmt, ...)
-    _log("ERROR", string.format(fmt, ...))
+    _log(LogLevels.ERROR, string.format(fmt, ...))
 end
 
 local function log_throw(fmt, ...)
@@ -160,6 +186,7 @@ end
 
 local M = {
     is_windows = is_windows,
+    log_setup = log_setup,
     log_debug = log_debug,
     log_err = log_err,
     log_throw = log_throw,
@@ -169,13 +196,13 @@ local M = {
     GitRootCmd = require("fzfx.cmd").GitRootCmd,
     GitBranchCmd = require("fzfx.cmd").GitBranchCmd,
     GitCurrentBranchCmd = require("fzfx.cmd").GitCurrentBranchCmd,
+    AsyncCmd = require("fzfx.cmd").AsyncCmd,
     string_find = require("fzfx.utils").string_find,
     string_rfind = require("fzfx.utils").string_rfind,
     string_ltrim = require("fzfx.utils").string_ltrim,
     string_rtrim = require("fzfx.utils").string_rtrim,
     FileLineReader = require("fzfx.utils").FileLineReader,
     readfile = require("fzfx.utils").readfile,
-    AsyncSpawn = require("fzfx.utils").AsyncSpawn,
 }
 
 return M

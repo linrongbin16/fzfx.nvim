@@ -4,20 +4,21 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 local shell_helpers = require("fzfx.shell_helpers")
+shell_helpers.log_setup({ file_name = "fzfx_bin_provider.log" })
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_SOCKET_ADDRESS
 shell_helpers.log_ensure(
     type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
-    "|provider| error! SOCKET_ADDRESS must not be empty!"
+    "error! SOCKET_ADDRESS must not be empty!"
 )
 local registry_id = _G.arg[1]
 local metafile = _G.arg[2]
 local resultfile = _G.arg[3]
 local query = _G.arg[4]
-shell_helpers.log_debug("|provider| registry_id:[%s]", registry_id)
-shell_helpers.log_debug("|provider| metafile:[%s]", metafile)
-shell_helpers.log_debug("|provider| resultfile:[%s]", resultfile)
-shell_helpers.log_debug("|provider| query:[%s]", query)
+shell_helpers.log_debug("registry_id:[%s]", registry_id)
+shell_helpers.log_debug("metafile:[%s]", metafile)
+shell_helpers.log_debug("resultfile:[%s]", resultfile)
+shell_helpers.log_debug("query:[%s]", query)
 
 local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
 -- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
@@ -46,12 +47,12 @@ vim.fn.chanclose(channel_id)
 local metajsonstring = shell_helpers.readfile(metafile) --[[@as string]]
 shell_helpers.log_ensure(
     type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
-    "|provider| error! metajson is not string! %s",
+    "error! metajson is not string! %s",
     vim.inspect(metajsonstring)
 )
 --- @type ProviderMetaOpts
 local metaopts = vim.fn.json_decode(metajsonstring) --[[@as ProviderMetaOpts]]
-shell_helpers.log_debug("|provider| metajson:[%s]", vim.inspect(metaopts))
+shell_helpers.log_debug("metajson:[%s]", vim.inspect(metaopts))
 
 --- @param line string?
 local function println(line)
@@ -70,13 +71,17 @@ local function println(line)
     end
 end
 
+--- @param line string?
+local function print_err(line)
+    if type(line) == "string" then
+        io.write(string.format("%s\n", line))
+    end
+end
+
 if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
     --- @type string
     local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
-    shell_helpers.log_debug(
-        "|provider| plain or command cmd:[%s]",
-        vim.inspect(cmd)
-    )
+    shell_helpers.log_debug("plain/command cmd:[%s]", vim.inspect(cmd))
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
         return
@@ -85,7 +90,7 @@ if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
     local p = io.popen(cmd)
     shell_helpers.log_ensure(
         p ~= nil,
-        "|provider| error! failed to open pipe on provider cmd! %s",
+        "error! failed to open pipe on provider cmd! %s",
         vim.inspect(cmd)
     )
     ---@diagnostic disable-next-line: need-check-nil
@@ -100,7 +105,7 @@ elseif
 then
     local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
     shell_helpers.log_debug(
-        "|provider| plain_list or command_list cmd:[%s]",
+        "plain_list or command_list cmd:[%s]",
         vim.inspect(cmd)
     )
     if cmd == nil or string.len(cmd) == 0 then
@@ -114,18 +119,19 @@ then
         return
     end
 
-    local async_spawn = shell_helpers.AsyncSpawn:open(cmd_splits, println) --[[@as AsyncSpawn]]
+    local async_cmd =
+        shell_helpers.AsyncCmd:open(cmd_splits, println, print_err) --[[@as AsyncCmd]]
     shell_helpers.log_ensure(
-        async_spawn ~= nil,
-        "|provider| error! failed to open async command: %s",
+        async_cmd ~= nil,
+        "error! failed to open async command: %s",
         vim.inspect(cmd_splits)
     )
-    async_spawn:run()
+    async_cmd:run()
 elseif metaopts.provider_type == "list" then
     local reader = shell_helpers.FileLineReader:open(resultfile) --[[@as FileLineReader ]]
     shell_helpers.log_ensure(
         reader ~= nil,
-        "|provider| error! failed to open resultfile: %s",
+        "error! failed to open resultfile: %s",
         vim.inspect(resultfile)
     )
 
@@ -136,7 +142,7 @@ elseif metaopts.provider_type == "list" then
     reader:close()
 else
     shell_helpers.log_throw(
-        "|provider| error! unknown provider type:%s",
+        "error! unknown provider type:%s",
         vim.inspect(metajsonstring)
     )
 end

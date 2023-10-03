@@ -11,6 +11,7 @@ describe("shell_helpers", function()
 
     vim.env._FZFX_NVIM_DEVICONS_PATH = nil
     local shell_helpers = require("fzfx.shell_helpers")
+    shell_helpers.log_setup({})
     describe("[is_windows]", function()
         it("is windows", function()
             assert_eq(type(shell_helpers.is_windows), "boolean")
@@ -18,6 +19,7 @@ describe("shell_helpers", function()
     end)
     describe("[log]", function()
         it("debug", function()
+            shell_helpers.log_setup({})
             assert_true(shell_helpers.log_debug("logs without params") == nil)
             assert_true(
                 shell_helpers.log_debug("logs with params 1, %d", 1) == nil
@@ -28,6 +30,7 @@ describe("shell_helpers", function()
             )
         end)
         it("err", function()
+            shell_helpers.log_setup({})
             assert_true(shell_helpers.log_err("logs without params") == nil)
             assert_true(
                 shell_helpers.log_err("logs with params 1, %d", 1) == nil
@@ -38,6 +41,7 @@ describe("shell_helpers", function()
             )
         end)
         it("ensure", function()
+            shell_helpers.log_setup({})
             assert_true(
                 shell_helpers.log_ensure(true, "logs without params") == nil
             )
@@ -52,6 +56,7 @@ describe("shell_helpers", function()
             assert_true(string.len(err --[[@as string]]) > 0)
         end)
         it("throw", function()
+            shell_helpers.log_setup({})
             local ok, err =
                 pcall(shell_helpers.log_throw, "logs with params 1, %d", 1)
             assert_false(ok)
