@@ -52,6 +52,7 @@ end
 local Defaults = {
     level = LogLevels.INFO,
     console_log = true,
+    name = "[fzfx]",
     file_log = false,
     file_name = "fzfx.log",
     file_dir = vim.fn.stdpath("data"),
@@ -67,6 +68,7 @@ local PathSeparator = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
     or "/"
 
 --- @param option Configs
+--- @return nil
 local function setup(option)
     Configs = vim.tbl_deep_extend("force", vim.deepcopy(Defaults), option or {})
     if type(Configs.level) == "string" then
@@ -86,6 +88,8 @@ local function setup(option)
             Configs.file_path = Configs.file_name
         end
     end
+    assert(type(Configs.name) == "string")
+    assert(string.len(Configs.name) > 0)
     assert(type(Configs.level) == "number")
     if Configs.file_log then
         assert(type(Configs.file_path) == "string")
