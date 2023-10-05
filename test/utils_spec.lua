@@ -324,7 +324,7 @@ describe("utils", function()
             local lines = utils.readlines("README.md")
             local buffer = nil
             for _, line in
-            ipairs(lines --[[@as table]])
+                ipairs(lines --[[@as table]])
             do
                 assert_eq(type(line), "string")
                 assert_true(string.len(line) >= 0)
@@ -346,7 +346,7 @@ describe("utils", function()
 
             local buffer = nil
             for _, line in
-            ipairs(lines --[[@as table]])
+                ipairs(lines --[[@as table]])
             do
                 assert_eq(type(line), "string")
                 assert_true(string.len(line) >= 0)
