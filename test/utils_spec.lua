@@ -359,7 +359,7 @@ describe("utils", function()
         it("open", function()
             local async_spawn = utils.AsyncSpawn:make(
                 { "cat", "README.md" },
-                function(line) end
+                function() end
             ) --[[@as AsyncSpawn]]
             assert_eq(type(async_spawn), "table")
             assert_eq(type(async_spawn.cmds), "table")
@@ -410,6 +410,7 @@ describe("utils", function()
                 end
             end
             async_spawn:_on_stdout(nil, nil)
+            assert_true(async_spawn.out_pipe:is_closing())
         end)
         it("stdout on whitespace", function()
             local content = utils.readfile("README.md") --[[@as string]]
@@ -433,6 +434,7 @@ describe("utils", function()
                 end
             end
             async_spawn:_on_stdout(nil, nil)
+            assert_true(async_spawn.out_pipe:is_closing())
         end)
         for delimiter_i = 0, 25 do
             -- lower case: a
@@ -462,6 +464,7 @@ describe("utils", function()
                     end
                 end
                 async_spawn:_on_stdout(nil, nil)
+                assert_true(async_spawn.out_pipe:is_closing())
             end)
             -- upper case: A
             local upper_char = string.char(65 + delimiter_i)
@@ -490,6 +493,7 @@ describe("utils", function()
                     end
                 end
                 async_spawn:_on_stdout(nil, nil)
+                assert_true(async_spawn.out_pipe:is_closing())
             end)
         end
         it("stderr", function()
@@ -498,6 +502,7 @@ describe("utils", function()
                 function() end
             ) --[[@as AsyncSpawn]]
             async_spawn:_on_stderr(nil, nil)
+            assert_true(async_spawn.err_pipe:is_closing())
         end)
         it("iterate on README.md", function()
             local lines = utils.readlines("README.md") --[[@as table]]
@@ -534,11 +539,12 @@ describe("utils", function()
         it("close handle", function()
             local async_spawn = utils.AsyncSpawn:make(
                 { "cat", "lua/fzfx/config.lua" },
-                function(line) end
+                function() end
             ) --[[@as AsyncSpawn]]
             async_spawn:run()
+            assert_true(async_spawn.process_handle ~= nil)
             async_spawn:_close_handle(async_spawn.process_handle)
-            assert_true(async_spawn._close_count >= 1)
+            assert_true(async_spawn.process_handle:is_closing())
         end)
     end)
     describe("[list_index]", function()
