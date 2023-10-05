@@ -548,11 +548,11 @@ end
 local AsyncSpawn = {}
 
 --- @param line string
-local function default_stderr_line_consumer(line)
-    if type(line) == "string" then
-        io.write(string.format("AsyncSpawn:_on_stderr:%s", vim.inspect(line)))
-        error(string.format("AsyncSpawn:_on_stderr:%s", vim.inspect(line)))
-    end
+local function dummy_stderr_line_consumer(line)
+    -- if type(line) == "string" then
+    --     io.write(string.format("AsyncSpawn:_on_stderr:%s", vim.inspect(line)))
+    --     error(string.format("AsyncSpawn:_on_stderr:%s", vim.inspect(line)))
+    -- end
 end
 
 --- @param cmds string[]
@@ -570,7 +570,7 @@ function AsyncSpawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer)
         cmds = cmds,
         fn_out_line_consumer = fn_out_line_consumer,
         fn_err_line_consumer = fn_err_line_consumer
-            or default_stderr_line_consumer,
+            or dummy_stderr_line_consumer,
         out_pipe = out_pipe,
         err_pipe = err_pipe,
         out_buffer = nil,
