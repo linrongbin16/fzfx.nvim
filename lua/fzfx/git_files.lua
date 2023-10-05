@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
 local conf = require("fzfx.config")
-local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
@@ -21,16 +20,16 @@ local function setup()
         and string.len(git_files_configs.providers) > 0
     then
         git_files_configs.providers = {
-            current_folder = ProviderConfig:make({
+            current_folder = {
                 key = "ctrl-u",
                 provider = git_files_configs.providers,
                 line_type = ProviderLineTypeEnum.FILE,
-            }),
-            workspace = ProviderConfig:make({
+            },
+            workspace = {
                 key = "ctrl-w",
                 provider = git_files_configs.providers,
                 line_type = ProviderLineTypeEnum.FILE,
-            }),
+            },
         }
         deprecated = true
     end

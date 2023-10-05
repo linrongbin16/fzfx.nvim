@@ -170,19 +170,6 @@ local ProviderLineTypeEnum = {
 --- @field provider Provider
 --- @field provider_type ProviderType by default "plain"
 --- @field line_opts ProviderConfigLineOpts
-local ProviderConfig = {}
-
-function ProviderConfig:make(opts)
-    local o = opts or {}
-    o.provider_type = o.provider_type
-        or (
-            type(o.provider) == "string" and ProviderTypeEnum.PLAIN
-            or ProviderTypeEnum.PLAIN_LIST
-        )
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end
 
 --- @class PreviewerConfig
 --- @field previewer Previewer
@@ -227,9 +214,9 @@ function InteractionConfig:make(opts)
 end
 
 --- @class GroupConfig
---- @field commands CommandConfig|CommandConfig[]
---- @field providers ProviderConfig|table<PipelineName, ProviderConfig>
---- @field previewers PreviewerConfig|table<PipelineName, PreviewerConfig>
+--- @field commands CommandConfig[]
+--- @field providers table<PipelineName, ProviderConfig>
+--- @field previewers table<PipelineName, PreviewerConfig>
 --- @field interactions table<InteractionName, InteractionConfig>?
 --- @field actions table<ActionKey, Action>
 --- @field fzf_opts FzfOpt[]?
@@ -246,7 +233,6 @@ local M = {
     ProviderTypeEnum = ProviderTypeEnum,
     PreviewerTypeEnum = PreviewerTypeEnum,
     CommandFeedEnum = CommandFeedEnum,
-    ProviderConfig = ProviderConfig,
     ProviderLineTypeEnum = ProviderLineTypeEnum,
     PreviewerConfig = PreviewerConfig,
     CommandConfig = CommandConfig,

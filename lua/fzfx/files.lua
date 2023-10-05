@@ -2,7 +2,6 @@ local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
 local conf = require("fzfx.config")
 local general = require("fzfx.general")
-local ProviderConfig = require("fzfx.schema").ProviderConfig
 local ProviderLineTypeEnum = require("fzfx.schema").ProviderLineTypeEnum
 
 local function setup()
@@ -22,11 +21,11 @@ local function setup()
         if provider_name == "restricted" or provider_name == "unrestricted" then
             local action_key = provider_opts[1]
             local grep_cmd = provider_opts[2]
-            new_providers[provider_name .. "_mode"] = ProviderConfig:make({
+            new_providers[provider_name .. "_mode"] = {
                 key = action_key,
                 provider = grep_cmd,
                 line_type = ProviderLineTypeEnum.FILE,
-            })
+            }
             deprecated = true
         end
     end

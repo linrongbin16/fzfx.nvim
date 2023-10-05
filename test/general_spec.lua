@@ -12,39 +12,34 @@ describe("general", function()
 
     local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
     local general = require("fzfx.general")
-    local ProviderConfig = require("fzfx.schema").ProviderConfig
     local PreviewerConfig = require("fzfx.schema").PreviewerConfig
     local utils = require("fzfx.utils")
     local path = require("fzfx.path")
     local schema = require("fzfx.schema")
     describe("[ProviderSwitch:new]", function()
         it("creates single plain provider", function()
-            local ps = general.ProviderSwitch:new(
-                "single",
-                "pipeline",
-                ProviderConfig:make({
-                    key = "ctrl-k",
+            local ps = general.ProviderSwitch:new("single", "pipeline", {
+                default = {
+                    key = "default",
                     provider = "ls -1",
-                })
-            )
+                },
+            })
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
             assert_eq(type(ps.provider_configs.default), "table")
             assert_false(vim.tbl_isempty(ps.provider_configs.default))
-            assert_eq(ps.provider_configs.default.key, "ctrl-k")
+            assert_eq(ps.provider_configs.default.key, "default")
             assert_eq(ps.provider_configs.default.provider, "ls -1")
             assert_eq(ps.provider_configs.default.provider_type, "plain")
             assert_eq(ps:switch("default"), nil)
         end)
         it("creates single plain_list provider", function()
-            local ps = general.ProviderSwitch:new(
-                "single",
-                "pipeline",
-                ProviderConfig:make({
+            local ps = general.ProviderSwitch:new("single", "pipeline", {
+                default = {
                     key = "ctrl-k",
                     provider = { "ls", "-1" },
-                })
-            )
+                },
+            })
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
             assert_eq(type(ps.provider_configs.default), "table")
@@ -59,14 +54,14 @@ describe("general", function()
         end)
         it("creates multiple plain providers", function()
             local ps = general.ProviderSwitch:new("single", "pipeline", {
-                p1 = ProviderConfig:make({
+                p1 = {
                     key = "ctrl-p",
                     provider = "p1",
-                }),
-                p2 = ProviderConfig:make({
+                },
+                p2 = {
                     key = "ctrl-q",
                     provider = "p2",
-                }),
+                },
             })
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
@@ -89,14 +84,14 @@ describe("general", function()
         end)
         it("creates multiple plain_list providers", function()
             local ps = general.ProviderSwitch:new("single", "pipeline", {
-                p1 = ProviderConfig:make({
+                p1 = {
                     key = "ctrl-p",
                     provider = { "p1", "p11", "p12" },
-                }),
-                p2 = ProviderConfig:make({
+                },
+                p2 = {
                     key = "ctrl-q",
                     provider = { "p2", "p21", "p22" },
-                }),
+                },
             })
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
@@ -127,14 +122,14 @@ describe("general", function()
     describe("[PreviewerSwitch:provide]", function()
         it("is a plain/plain_list provider", function()
             local ps = general.ProviderSwitch:new("plain_test", "p1", {
-                p1 = ProviderConfig:make({
+                p1 = {
                     key = "ctrl-p",
                     provider = "ls -lh",
-                }),
-                p2 = ProviderConfig:make({
+                },
+                p2 = {
                     key = "ctrl-q",
                     provider = { "ls", "-lha", "~" },
-                }),
+                },
             })
             print(
                 string.format("GITHUB_ACTIONS:%s", os.getenv("GITHUB_ACTIONS"))
@@ -196,20 +191,20 @@ describe("general", function()
         end)
         it("is a command/command_list provider", function()
             local ps = general.ProviderSwitch:new("command_test", "p1", {
-                p1 = ProviderConfig:make({
+                p1 = {
                     key = "ctrl-p",
                     provider = function()
                         return "ls -lh"
                     end,
                     provider_type = schema.ProviderTypeEnum.COMMAND,
-                }),
-                p2 = ProviderConfig:make({
+                },
+                p2 = {
                     key = "ctrl-q",
                     provider = function()
                         return { "ls", "-lha", "~" }
                     end,
                     provider_type = schema.ProviderTypeEnum.COMMAND_LIST,
-                }),
+                },
             })
             assert_eq(ps:provide("p1", "hello", {}), "command")
             if not github_actions then

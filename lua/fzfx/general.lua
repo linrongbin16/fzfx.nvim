@@ -10,7 +10,6 @@ local path = require("fzfx.path")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local clazz = require("fzfx.clazz")
-local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 local CommandConfig = require("fzfx.schema").CommandConfig
 
@@ -30,12 +29,7 @@ local ProviderSwitch = {}
 --- @param provider_configs Configs
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
-    local provider_configs_map = {}
-    if clazz.instanceof(provider_configs, ProviderConfig) then
-        provider_configs_map[DEFAULT_PIPELINE] = provider_configs
-    else
-        provider_configs_map = provider_configs
-    end
+    local provider_configs_map = provider_configs
 
     local o = {
         pipeline = pipeline,
@@ -531,22 +525,18 @@ end
 --- @return HeaderSwitch
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
-    if clazz.instanceof(provider_configs, ProviderConfig) then
-        headers_map[DEFAULT_PIPELINE] = make_help_doc(interaction_configs, {})
-    else
-        log.debug(
-            "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
-            vim.inspect(provider_configs)
+    log.debug(
+        "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
+        vim.inspect(provider_configs)
+    )
+    for provider_name, provider_opts in pairs(provider_configs) do
+        local help_builder = make_help_doc(
+            provider_configs,
+            {},
+            { provider_name }
         )
-        for provider_name, provider_opts in pairs(provider_configs) do
-            local help_builder = make_help_doc(
-                provider_configs,
-                {},
-                { provider_name }
-            )
-            headers_map[provider_name] =
-                make_help_doc(interaction_configs, help_builder)
-        end
+        headers_map[provider_name] =
+            make_help_doc(interaction_configs, help_builder)
     end
 
     local o = {
@@ -576,9 +566,6 @@ end
 local function get_pipeline_size(pipeline_configs)
     local n = 0
     if type(pipeline_configs) == "table" then
-        if clazz.instanceof(pipeline_configs.providers, ProviderConfig) then
-            return 1
-        end
         for _, _ in pairs(pipeline_configs.providers) do
             n = n + 1
         end
@@ -606,24 +593,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local default_provider_key = nil
     if default_pipeline == nil then
-        local pipeline = nil
-        local provider_opts = nil
-        if clazz.instanceof(pipeline_configs.providers, ProviderConfig) then
-            log.debug(
-                "|fzfx.general - general| providers instanceof ProviderConfig, providers:%s, ProviderConfig:%s",
-                vim.inspect(pipeline_configs.providers),
-                vim.inspect(ProviderConfig)
-            )
-            pipeline = DEFAULT_PIPELINE
-            provider_opts = pipeline_configs.providers
-        else
-            log.debug(
-                "|fzfx.general - general| providers not instanceof ProviderConfig, providers:%s, ProviderConfig:%s",
-                vim.inspect(pipeline_configs.providers),
-                vim.inspect(ProviderConfig)
-            )
-            pipeline, provider_opts = next(pipeline_configs.providers)
-        end
+        log.debug(
+            "|fzfx.general - general| providers:%s",
+            vim.inspect(pipeline_configs.providers)
+        )
+        local pipeline, provider_opts = next(pipeline_configs.providers)
         default_pipeline = pipeline
         default_provider_key = provider_opts.key
     else

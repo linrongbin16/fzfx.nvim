@@ -9,7 +9,6 @@ local line_helpers = require("fzfx.line_helpers")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 local CommandConfig = require("fzfx.schema").CommandConfig
 local InteractionConfig = require("fzfx.schema").InteractionConfig
@@ -288,7 +287,7 @@ local function lsp_diagnostics_provider(opts)
         local d = process_diagnostic_item(diag)
         if d then
             -- it looks like:
-            -- `lua/fzfx/config.lua:10:13:local ProviderConfig = require("fzfx.schema").ProviderConfig`
+            -- `lua/fzfx/config.lua:10:13: Unused local `query`.
             log.debug(
                 "|fzfx.config - lsp_diagnostics_provider| d:%s",
                 vim.inspect(d)
@@ -793,18 +792,18 @@ local Defaults = {
             }),
         },
         providers = {
-            restricted_mode = ProviderConfig:make({
+            restricted_mode = {
                 key = "ctrl-r",
                 provider = constants.has_fd and default_restricted_fd
                     or default_restricted_find,
                 line_opts = { prepend_icon_by_ft = true },
-            }),
-            unrestricted_mode = ProviderConfig:make({
+            },
+            unrestricted_mode = {
                 key = "ctrl-u",
                 provider = constants.has_fd and default_unrestricted_fd
                     or default_unrestricted_find,
                 line_opts = { prepend_icon_by_ft = true },
-            }),
+            },
         },
         previewers = {
             restricted_mode = PreviewerConfig:make({
@@ -918,7 +917,7 @@ local Defaults = {
             }),
         },
         providers = {
-            restricted_mode = ProviderConfig:make({
+            restricted_mode = {
                 key = "ctrl-r",
                 provider = function(query)
                     local parsed_query = utils.parse_flag_query(query or "")
@@ -1001,8 +1000,8 @@ local Defaults = {
                     prepend_icon_path_delimiter = ":",
                     prepend_icon_path_position = 1,
                 },
-            }),
-            unrestricted_mode = ProviderConfig:make({
+            },
+            unrestricted_mode = {
                 key = "ctrl-u",
                 provider = function(query)
                     local parsed_query = utils.parse_flag_query(query or "")
@@ -1081,7 +1080,7 @@ local Defaults = {
                     prepend_icon_path_delimiter = ":",
                     prepend_icon_path_position = 1,
                 },
-            }),
+            },
         },
         previewers = {
             restricted_mode = PreviewerConfig:make({
@@ -1157,41 +1156,44 @@ local Defaults = {
                 },
             }),
         },
-        providers = ProviderConfig:make({
-            key = "default",
-            provider = function(query, context)
-                local function valid_bufnr(b)
-                    local exclude_filetypes = {
-                        ["qf"] = true,
-                        ["neo-tree"] = true,
-                    }
-                    local ft = utils.get_buf_option(b, "filetype")
-                    return utils.is_buf_valid(b) and not exclude_filetypes[ft]
-                end
-                local bufnrs_list = vim.api.nvim_list_bufs()
-                local bufpaths_list = {}
-                local current_bufpath = valid_bufnr(context.bufnr)
-                        and path.reduce(
-                            vim.api.nvim_buf_get_name(context.bufnr)
-                        )
-                    or nil
-                if
-                    type(current_bufpath) == "string"
-                    and string.len(current_bufpath) > 0
-                then
-                    table.insert(bufpaths_list, current_bufpath)
-                end
-                for _, bn in ipairs(bufnrs_list) do
-                    local bp = path.reduce(vim.api.nvim_buf_get_name(bn))
-                    if valid_bufnr(bn) and bp ~= current_bufpath then
-                        table.insert(bufpaths_list, bp)
+        providers = {
+            default = {
+                key = "default",
+                provider = function(query, context)
+                    local function valid_bufnr(b)
+                        local exclude_filetypes = {
+                            ["qf"] = true,
+                            ["neo-tree"] = true,
+                        }
+                        local ft = utils.get_buf_option(b, "filetype")
+                        return utils.is_buf_valid(b)
+                            and not exclude_filetypes[ft]
                     end
-                end
-                return bufpaths_list
-            end,
-            provider_type = ProviderTypeEnum.LIST,
-            line_opts = { prepend_icon_by_ft = true },
-        }),
+                    local bufnrs_list = vim.api.nvim_list_bufs()
+                    local bufpaths_list = {}
+                    local current_bufpath = valid_bufnr(context.bufnr)
+                            and path.reduce(
+                                vim.api.nvim_buf_get_name(context.bufnr)
+                            )
+                        or nil
+                    if
+                        type(current_bufpath) == "string"
+                        and string.len(current_bufpath) > 0
+                    then
+                        table.insert(bufpaths_list, current_bufpath)
+                    end
+                    for _, bn in ipairs(bufnrs_list) do
+                        local bp = path.reduce(vim.api.nvim_buf_get_name(bn))
+                        if valid_bufnr(bn) and bp ~= current_bufpath then
+                            table.insert(bufpaths_list, bp)
+                        end
+                    end
+                    return bufpaths_list
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+                line_opts = { prepend_icon_by_ft = true },
+            },
+        },
         previewers = PreviewerConfig:make({
             previewer = file_previewer,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
@@ -1309,16 +1311,16 @@ local Defaults = {
             }),
         },
         providers = {
-            current_folder = ProviderConfig:make({
+            current_folder = {
                 key = "ctrl-u",
                 provider = { "git", "ls-files" },
                 line_opts = { prepend_icon_by_ft = true },
-            }),
-            workspace = ProviderConfig:make({
+            },
+            workspace = {
                 key = "ctrl-w",
                 provider = { "git", "ls-files", ":/" },
                 line_opts = { prepend_icon_by_ft = true },
-            }),
+            },
         },
         previewers = {
             current_folder = PreviewerConfig:make({
@@ -1434,7 +1436,7 @@ local Defaults = {
             }),
         },
         providers = {
-            local_branch = ProviderConfig:make({
+            local_branch = {
                 key = "ctrl-o",
                 provider = function(query, context)
                     local cmd = require("fzfx.cmd")
@@ -1482,8 +1484,8 @@ local Defaults = {
                     return branch_results
                 end,
                 provider_type = ProviderTypeEnum.LIST,
-            }),
-            remote_branch = ProviderConfig:make({
+            },
+            remote_branch = {
                 key = "ctrl-r",
                 provider = function(query, context)
                     local cmd = require("fzfx.cmd")
@@ -1531,7 +1533,7 @@ local Defaults = {
                     return branch_results
                 end,
                 provider_type = ProviderTypeEnum.LIST,
-            }),
+            },
         },
         previewers = {
             local_branch = PreviewerConfig:make({
@@ -1671,7 +1673,7 @@ local Defaults = {
             }),
         },
         providers = {
-            all_commits = ProviderConfig:make({
+            all_commits = {
                 key = "ctrl-a",
                 provider = {
                     "git",
@@ -1680,8 +1682,8 @@ local Defaults = {
                     "--date=short",
                     "--color=always",
                 },
-            }),
-            buffer_commits = ProviderConfig:make({
+            },
+            buffer_commits = {
                 key = "ctrl-u",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
@@ -1708,7 +1710,7 @@ local Defaults = {
                     }
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
-            }),
+            },
         },
         previewers = {
             all_commits = PreviewerConfig:make({
@@ -1782,7 +1784,7 @@ local Defaults = {
             }),
         },
         providers = {
-            default = ProviderConfig:make({
+            default = {
                 key = "default",
                 provider = function(query, context)
                     if not utils.is_buf_valid(context.bufnr) then
@@ -1808,7 +1810,7 @@ local Defaults = {
                     }
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
-            }),
+            },
         },
         previewers = {
             default = PreviewerConfig:make({
@@ -1918,7 +1920,7 @@ local Defaults = {
             }),
         },
         providers = {
-            workspace_diagnostics = ProviderConfig:make({
+            workspace_diagnostics = {
                 key = "ctrl-w",
                 provider = function(query, context)
                     return lsp_diagnostics_provider({
@@ -1931,8 +1933,8 @@ local Defaults = {
                     prepend_icon_path_delimiter = ":",
                     prepend_icon_path_position = 1,
                 },
-            }),
-            buffer_diagnostics = ProviderConfig:make({
+            },
+            buffer_diagnostics = {
                 key = "ctrl-u",
                 provider = function(query, context)
                     return lsp_diagnostics_provider({
@@ -1946,7 +1948,7 @@ local Defaults = {
                     prepend_icon_path_delimiter = ":",
                     prepend_icon_path_position = 1,
                 },
-            }),
+            },
         },
         previewers = {
             workspace_diagnostics = PreviewerConfig:make({
@@ -1985,23 +1987,25 @@ local Defaults = {
                 desc = "Search lsp definitions",
             },
         }),
-        providers = ProviderConfig:make({
-            key = "default",
-            provider = function(query, context)
-                return lsp_locations_provider({
-                    method = "textDocument/definition",
-                    capability = "definitionProvider",
-                    bufnr = context.bufnr,
-                    position_params = context.position_params,
-                })
-            end,
-            provider_type = ProviderTypeEnum.LIST,
-            line_opts = {
-                prepend_icon_by_ft = true,
-                prepend_icon_path_delimiter = ":",
-                prepend_icon_path_position = 1,
+        providers = {
+            default = {
+                key = "default",
+                provider = function(query, context)
+                    return lsp_locations_provider({
+                        method = "textDocument/definition",
+                        capability = "definitionProvider",
+                        bufnr = context.bufnr,
+                        position_params = context.position_params,
+                    })
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
             },
-        }),
+        },
         previewers = PreviewerConfig:make({
             previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
@@ -2046,23 +2050,25 @@ local Defaults = {
                 desc = "Search lsp type definitions",
             },
         }),
-        providers = ProviderConfig:make({
-            key = "default",
-            provider = function(query, context)
-                return lsp_locations_provider({
-                    method = "textDocument/type_definition",
-                    capability = "typeDefinitionProvider",
-                    bufnr = context.bufnr,
-                    position_params = context.position_params,
-                })
-            end,
-            provider_type = ProviderTypeEnum.LIST,
-            line_opts = {
-                prepend_icon_by_ft = true,
-                prepend_icon_path_delimiter = ":",
-                prepend_icon_path_position = 1,
+        providers = {
+            default = {
+                key = "default",
+                provider = function(query, context)
+                    return lsp_locations_provider({
+                        method = "textDocument/type_definition",
+                        capability = "typeDefinitionProvider",
+                        bufnr = context.bufnr,
+                        position_params = context.position_params,
+                    })
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
             },
-        }),
+        },
         previewers = PreviewerConfig:make({
             previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
@@ -2107,23 +2113,25 @@ local Defaults = {
                 desc = "Search lsp references",
             },
         }),
-        providers = ProviderConfig:make({
-            key = "default",
-            provider = function(query, context)
-                return lsp_locations_provider({
-                    method = "textDocument/references",
-                    capability = "referencesProvider",
-                    bufnr = context.bufnr,
-                    position_params = context.position_params,
-                })
-            end,
-            provider_type = ProviderTypeEnum.LIST,
-            line_opts = {
-                prepend_icon_by_ft = true,
-                prepend_icon_path_delimiter = ":",
-                prepend_icon_path_position = 1,
+        providers = {
+            default = {
+                key = "default",
+                provider = function(query, context)
+                    return lsp_locations_provider({
+                        method = "textDocument/references",
+                        capability = "referencesProvider",
+                        bufnr = context.bufnr,
+                        position_params = context.position_params,
+                    })
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
             },
-        }),
+        },
         previewers = PreviewerConfig:make({
             previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
@@ -2168,23 +2176,25 @@ local Defaults = {
                 desc = "Search lsp implementations",
             },
         }),
-        providers = ProviderConfig:make({
-            key = "default",
-            provider = function(query, context)
-                return lsp_locations_provider({
-                    method = "textDocument/implementation",
-                    capability = "implementationProvider",
-                    bufnr = context.bufnr,
-                    position_params = context.position_params,
-                })
-            end,
-            provider_type = ProviderTypeEnum.LIST,
-            line_opts = {
-                prepend_icon_by_ft = true,
-                prepend_icon_path_delimiter = ":",
-                prepend_icon_path_position = 1,
+        providers = {
+            default = {
+                key = "default",
+                provider = function(query, context)
+                    return lsp_locations_provider({
+                        method = "textDocument/implementation",
+                        capability = "implementationProvider",
+                        bufnr = context.bufnr,
+                        position_params = context.position_params,
+                    })
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
             },
-        }),
+        },
         previewers = PreviewerConfig:make({
             previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
@@ -2301,16 +2311,16 @@ local Defaults = {
             }),
         },
         providers = {
-            filter_hidden = ProviderConfig:make({
+            filter_hidden = {
                 key = "ctrl-i",
                 provider = make_file_explorer_provider("-lh"),
                 provider_type = ProviderTypeEnum.COMMAND,
-            }),
-            include_hidden = ProviderConfig:make({
+            },
+            include_hidden = {
                 key = "ctrl-u",
                 provider = make_file_explorer_provider("-lha"),
                 provider_type = ProviderTypeEnum.COMMAND,
-            }),
+            },
         },
         previewers = {
             filter_hidden = PreviewerConfig:make({
