@@ -544,12 +544,22 @@ end
 --- @field err_buffer string?
 --- @field process_handler uv_process_t?
 --- @field process_id integer|string|nil
+--- @field close_callbacks integer
 local AsyncSpawn = {}
+
+--- @param line string
+local function default_stderr_line_consumer(line)
+    if type(line) == "string" then
+        io.write(string.format("AsyncSpawn:_on_stderr:%s", vim.inspect(line)))
+        error(string.format("AsyncSpawn:_on_stderr:%s", vim.inspect(line)))
+    end
+end
 
 --- @param cmds string[]
 --- @param fn_out_line_consumer AsyncSpawnLineConsumer
+--- @param fn_err_line_consumer AsyncSpawnLineConsumer?
 --- @return AsyncSpawn?
-function AsyncSpawn:make(cmds, fn_out_line_consumer)
+function AsyncSpawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer)
     local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     if not out_pipe or not err_pipe then
@@ -559,13 +569,15 @@ function AsyncSpawn:make(cmds, fn_out_line_consumer)
     local o = {
         cmds = cmds,
         fn_out_line_consumer = fn_out_line_consumer,
-        fn_err_line_consumer = nil,
+        fn_err_line_consumer = fn_err_line_consumer
+            or default_stderr_line_consumer,
         out_pipe = out_pipe,
         err_pipe = err_pipe,
         out_buffer = nil,
         err_buffer = nil,
         process_handler = nil,
         process_id = nil,
+        close_callbacks = 0,
     }
     setmetatable(o, self)
     self.__index = self
@@ -591,12 +603,10 @@ end
 
 --- @param code integer?
 --- @param signal integer?
---- @return nil
 function AsyncSpawn:_on_exit(code, signal)
-    if self.process_handler and not self.process_handler:is_closing() then
-        self.process_handler:close(function()
-            vim.loop.stop()
-        end)
+    self.close_callbacks = self.close_callbacks + 1
+    if self.close_callbacks == 3 then
+        vim.loop.stop()
     end
 end
 
@@ -605,7 +615,12 @@ end
 --- @return nil
 function AsyncSpawn:_on_stdout(err, data)
     if err then
-        self:_on_exit(130)
+        self.out_pipe:read_stop()
+        if not self.out_pipe:is_closing() then
+            self.out_pipe:close(function()
+                self:_on_exit(130)
+            end)
+        end
         return
     end
 
@@ -629,8 +644,12 @@ function AsyncSpawn:_on_stdout(err, data)
                 self.out_buffer = nil
             end
         end
-        self.out_pipe:close()
-        self:_on_exit(0)
+        self.out_pipe:read_stop()
+        if not self.out_pipe:is_closing() then
+            self.out_pipe:close(function()
+                self:_on_exit(130)
+            end)
+        end
     end
 end
 
@@ -641,13 +660,53 @@ function AsyncSpawn:_on_stderr(err, data)
     if err then
         io.write(
             string.format(
-                "err:%s, data:%s",
+                "AsyncSpawn:_on_stderr, err:%s, data:%s",
                 vim.inspect(err),
                 vim.inspect(data)
             )
         )
-        self.err_pipe:close()
-        self:_on_exit(130)
+        error(
+            string.format(
+                "AsyncSpawn:_on_stderr, err:%s, data:%s",
+                vim.inspect(err),
+                vim.inspect(data)
+            )
+        )
+        self.err_pipe:read_stop()
+        if not self.err_pipe:is_closing() then
+            self.err_pipe:close(function()
+                self:_on_exit(130)
+            end)
+        end
+        return
+    end
+
+    if data then
+        -- append data to data_buffer
+        self.err_buffer = self.err_buffer and (self.err_buffer .. data) or data
+        -- foreach the data_buffer and find every line
+        local i = self:_consume_line(self.err_buffer, self.fn_err_line_consumer)
+        -- truncate the printed lines if found any
+        self.err_buffer = i <= #self.err_buffer
+                and self.err_buffer:sub(i, #self.err_buffer)
+            or nil
+    else
+        if self.err_buffer then
+            -- foreach the data_buffer and find every line
+            local i =
+                self:_consume_line(self.err_buffer, self.fn_err_line_consumer)
+            if i <= #self.err_buffer then
+                local line = self.err_buffer:sub(i, #self.err_buffer)
+                self.fn_err_line_consumer(line)
+                self.err_buffer = nil
+            end
+        end
+        self.err_pipe:read_stop()
+        if not self.err_pipe:is_closing() then
+            self.err_pipe:close(function()
+                self:_on_exit(130)
+            end)
+        end
     end
 end
 
@@ -658,7 +717,11 @@ function AsyncSpawn:run()
         hide = true,
         -- verbatim = true,
     }, function(code, signal)
-        self:_on_exit(code, signal)
+        if self.process_handler and not self.process_handler:is_closing() then
+            self.process_handler:close(function()
+                self:_on_exit(code, signal)
+            end)
+        end
     end)
 
     self.process_handler = process_handler
