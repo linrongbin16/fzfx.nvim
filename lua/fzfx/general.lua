@@ -1,5 +1,4 @@
 local log = require("fzfx.log")
-local LogLevels = require("fzfx.log").LogLevels
 local Popup = require("fzfx.popup").Popup
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
@@ -29,11 +28,24 @@ local ProviderSwitch = {}
 --- @param provider_configs Configs
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
-    local provider_configs_map = provider_configs
+    log.ensure(
+        type(provider_configs) == "table",
+        "error! invalid option 'providers' (%s), it must be a lua table: %s",
+        vim.inspect(name),
+        vim.inspect(provider_configs)
+    )
+    for provider_name, provider_opts in pairs(provider_configs) do
+        provider_opts.provider_type = provider_opts.provider_type
+            or (
+                type(provider_opts.provider) == "string"
+                    and ProviderTypeEnum.PLAIN
+                or ProviderTypeEnum.PLAIN_LIST
+            )
+    end
 
     local o = {
         pipeline = pipeline,
-        provider_configs = provider_configs_map,
+        provider_configs = provider_configs,
         metafile = env.debug_enable() and path.join(
             vim.fn.stdpath("data"),
             "fzfx.nvim",
