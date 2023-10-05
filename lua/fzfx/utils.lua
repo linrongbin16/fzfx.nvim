@@ -542,7 +542,7 @@ end
 --- @field err_pipe uv_pipe_t
 --- @field out_buffer string?
 --- @field err_buffer string?
---- @field process_handler uv_process_t?
+--- @field process_handle uv_process_t?
 --- @field process_id integer|string|nil
 --- @field close_callbacks integer
 local AsyncSpawn = {}
@@ -575,7 +575,7 @@ function AsyncSpawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer)
         err_pipe = err_pipe,
         out_buffer = nil,
         err_buffer = nil,
-        process_handler = nil,
+        process_handle = nil,
         process_id = nil,
         close_callbacks = 0,
     }
@@ -601,12 +601,15 @@ function AsyncSpawn:_consume_line(buffer, fn_line_processor)
     return i
 end
 
---- @param code integer?
---- @param signal integer?
-function AsyncSpawn:_on_exit(code, signal)
-    self.close_callbacks = self.close_callbacks + 1
-    if self.close_callbacks == 3 then
-        vim.loop.stop()
+--- @param handle uv_handle_t
+function AsyncSpawn:_close_handle(handle)
+    if handle and not handle:is_closing() then
+        handle:close(function()
+            self.close_callbacks = self.close_callbacks + 1
+            if self.close_callbacks >= 3 then
+                vim.loop.stop()
+            end
+        end)
     end
 end
 
@@ -616,11 +619,7 @@ end
 function AsyncSpawn:_on_stdout(err, data)
     if err then
         self.out_pipe:read_stop()
-        if not self.out_pipe:is_closing() then
-            self.out_pipe:close(function()
-                self:_on_exit(130)
-            end)
-        end
+        self:_close_handle(self.out_pipe)
         return
     end
 
@@ -645,11 +644,7 @@ function AsyncSpawn:_on_stdout(err, data)
             end
         end
         self.out_pipe:read_stop()
-        if not self.out_pipe:is_closing() then
-            self.out_pipe:close(function()
-                self:_on_exit(130)
-            end)
-        end
+        self:_close_handle(self.out_pipe)
     end
 end
 
@@ -673,11 +668,7 @@ function AsyncSpawn:_on_stderr(err, data)
             )
         )
         self.err_pipe:read_stop()
-        if not self.err_pipe:is_closing() then
-            self.err_pipe:close(function()
-                self:_on_exit(130)
-            end)
-        end
+        self:_close_handle(self.err_pipe)
         return
     end
 
@@ -702,30 +693,19 @@ function AsyncSpawn:_on_stderr(err, data)
             end
         end
         self.err_pipe:read_stop()
-        if not self.err_pipe:is_closing() then
-            self.err_pipe:close(function()
-                self:_on_exit(130)
-            end)
-        end
+        self:_close_handle(self.err_pipe)
     end
 end
 
 function AsyncSpawn:run()
-    local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
+    self.process_handle, self.process_id = vim.loop.spawn(self.cmds[1], {
         args = vim.list_slice(self.cmds, 2),
         stdio = { nil, self.out_pipe, self.err_pipe },
         hide = true,
         -- verbatim = true,
     }, function(code, signal)
-        if self.process_handler and not self.process_handler:is_closing() then
-            self.process_handler:close(function()
-                self:_on_exit(code, signal)
-            end)
-        end
+        self:_close_handle(self.process_handle)
     end)
-
-    self.process_handler = process_handler
-    self.process_id = process_id
 
     self.out_pipe:read_start(function(err, data)
         self:_on_stdout(err, data)
