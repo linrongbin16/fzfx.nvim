@@ -536,7 +536,8 @@ end
 --- @alias AsyncSpawnLineConsumer fun(line:string):any
 --- @class AsyncSpawn
 --- @field cmds string[]
---- @field fn_line_consumer AsyncSpawnLineConsumer
+--- @field fn_out_line_consumer AsyncSpawnLineConsumer
+--- @field fn_err_line_consumer AsyncSpawnLineConsumer
 --- @field out_pipe uv_pipe_t
 --- @field err_pipe uv_pipe_t
 --- @field out_buffer string?
@@ -546,9 +547,9 @@ end
 local AsyncSpawn = {}
 
 --- @param cmds string[]
---- @param fn_line_consumer AsyncSpawnLineConsumer
+--- @param fn_out_line_consumer AsyncSpawnLineConsumer
 --- @return AsyncSpawn?
-function AsyncSpawn:make(cmds, fn_line_consumer)
+function AsyncSpawn:make(cmds, fn_out_line_consumer)
     local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     if not out_pipe or not err_pipe then
@@ -557,7 +558,8 @@ function AsyncSpawn:make(cmds, fn_line_consumer)
 
     local o = {
         cmds = cmds,
-        fn_line_consumer = fn_line_consumer,
+        fn_out_line_consumer = fn_out_line_consumer,
+        fn_err_line_consumer = nil,
         out_pipe = out_pipe,
         err_pipe = err_pipe,
         out_buffer = nil,
@@ -610,10 +612,11 @@ function AsyncSpawn:_on_stdout(err, data)
     if not data then
         if self.out_buffer then
             -- foreach the data_buffer and find every line
-            local i = self:_consume_line(self.out_buffer, self.fn_line_consumer)
+            local i =
+                self:_consume_line(self.out_buffer, self.fn_out_line_consumer)
             if i <= #self.out_buffer then
                 local line = self.out_buffer:sub(i, #self.out_buffer)
-                self.fn_line_consumer(line)
+                self.fn_out_line_consumer(line)
                 self.out_buffer = nil
             end
         end
@@ -625,7 +628,7 @@ function AsyncSpawn:_on_stdout(err, data)
     -- append data to data_buffer
     self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
     -- foreach the data_buffer and find every line
-    local i = self:_consume_line(self.out_buffer, self.fn_line_consumer)
+    local i = self:_consume_line(self.out_buffer, self.fn_out_line_consumer)
     -- truncate the printed lines if found any
     self.out_buffer = i <= #self.out_buffer
             and self.out_buffer:sub(i, #self.out_buffer)
