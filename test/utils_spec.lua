@@ -388,19 +388,6 @@ describe("utils", function()
                 process_line(line)
             end
         end)
-        it("exit", function()
-            local async_spawn = utils.AsyncSpawn:make(
-                { "cat", "README.md" },
-                function(line) end,
-                {
-                    on_exit = function(code, signal)
-                        assert_eq(code, 0)
-                        assert_eq(signal, 0)
-                    end,
-                }
-            ) --[[@as AsyncSpawn]]
-            async_spawn:_on_exit(0, 0)
-        end)
         it("stdout on newline", function()
             local content = utils.readfile("README.md") --[[@as string]]
             local lines = utils.readlines("README.md") --[[@as table]]
@@ -543,6 +530,15 @@ describe("utils", function()
                 process_line
             ) --[[@as AsyncSpawn]]
             async_spawn:run()
+        end)
+        it("close handle", function()
+            local async_spawn = utils.AsyncSpawn:make(
+                { "cat", "lua/fzfx/config.lua" },
+                function(line) end
+            ) --[[@as AsyncSpawn]]
+            async_spawn:run()
+            async_spawn:_close_handle(async_spawn.process_handle)
+            assert_eq(async_spawn.close_callbacks, 3)
         end)
     end)
     describe("[list_index]", function()
