@@ -536,18 +536,30 @@ end
 --- @alias AsyncSpawnLineConsumer fun(line:string):any
 --- @class AsyncSpawn
 --- @field cmds string[]
---- @field fn_line_consumer AsyncSpawnLineConsumer
+--- @field fn_out_line_consumer AsyncSpawnLineConsumer
+--- @field fn_err_line_consumer AsyncSpawnLineConsumer
 --- @field out_pipe uv_pipe_t
 --- @field err_pipe uv_pipe_t
 --- @field out_buffer string?
---- @field process_handler uv_process_t?
+--- @field err_buffer string?
+--- @field process_handle uv_process_t?
 --- @field process_id integer|string|nil
+--- @field _close_count integer
 local AsyncSpawn = {}
 
+--- @param line string
+local function dummy_stderr_line_consumer(line)
+    -- if type(line) == "string" then
+    --     io.write(string.format("AsyncSpawn:_on_stderr:%s", vim.inspect(line)))
+    --     error(string.format("AsyncSpawn:_on_stderr:%s", vim.inspect(line)))
+    -- end
+end
+
 --- @param cmds string[]
---- @param fn_line_consumer AsyncSpawnLineConsumer
+--- @param fn_out_line_consumer AsyncSpawnLineConsumer
+--- @param fn_err_line_consumer AsyncSpawnLineConsumer?
 --- @return AsyncSpawn?
-function AsyncSpawn:open(cmds, fn_line_consumer)
+function AsyncSpawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer)
     local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     if not out_pipe or not err_pipe then
@@ -556,12 +568,16 @@ function AsyncSpawn:open(cmds, fn_line_consumer)
 
     local o = {
         cmds = cmds,
-        fn_line_consumer = fn_line_consumer,
+        fn_out_line_consumer = fn_out_line_consumer,
+        fn_err_line_consumer = fn_err_line_consumer
+            or dummy_stderr_line_consumer,
         out_pipe = out_pipe,
         err_pipe = err_pipe,
         out_buffer = nil,
-        process_handler = nil,
+        err_buffer = nil,
+        process_handle = nil,
         process_id = nil,
+        _close_count = 0,
     }
     setmetatable(o, self)
     self.__index = self
@@ -571,7 +587,7 @@ end
 --- @param buffer string
 --- @param fn_line_processor AsyncSpawnLineConsumer
 --- @return integer
-function AsyncSpawn:consume_line(buffer, fn_line_processor)
+function AsyncSpawn:_consume_line(buffer, fn_line_processor)
     local i = 1
     while i <= #buffer do
         local newline_pos = string_find(buffer, "\n", i)
@@ -585,13 +601,14 @@ function AsyncSpawn:consume_line(buffer, fn_line_processor)
     return i
 end
 
---- @param code integer?
---- @param signal integer?
---- @return nil
-function AsyncSpawn:on_exit(code, signal)
-    if self.process_handler and not self.process_handler:is_closing() then
-        self.process_handler:close(function()
-            vim.loop.stop()
+--- @param handle uv_handle_t
+function AsyncSpawn:_close_handle(handle)
+    if handle and not handle:is_closing() then
+        handle:close(function()
+            self._close_count = self._close_count + 1
+            if self._close_count >= 3 then
+                vim.loop.stop()
+            end
         end)
     end
 end
@@ -599,72 +616,102 @@ end
 --- @param err string?
 --- @param data string?
 --- @return nil
-function AsyncSpawn:on_stdout(err, data)
+function AsyncSpawn:_on_stdout(err, data)
     if err then
-        self:on_exit(130)
+        self.out_pipe:read_stop()
+        self:_close_handle(self.out_pipe)
         return
     end
 
-    if not data then
+    if data then
+        -- append data to data_buffer
+        self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
+        -- foreach the data_buffer and find every line
+        local i = self:_consume_line(self.out_buffer, self.fn_out_line_consumer)
+        -- truncate the printed lines if found any
+        self.out_buffer = i <= #self.out_buffer
+                and self.out_buffer:sub(i, #self.out_buffer)
+            or nil
+    else
         if self.out_buffer then
             -- foreach the data_buffer and find every line
-            local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
+            local i =
+                self:_consume_line(self.out_buffer, self.fn_out_line_consumer)
             if i <= #self.out_buffer then
                 local line = self.out_buffer:sub(i, #self.out_buffer)
-                self.fn_line_consumer(line)
+                self.fn_out_line_consumer(line)
                 self.out_buffer = nil
             end
         end
-        self.out_pipe:close()
-        self:on_exit(0)
-        return
+        self.out_pipe:read_stop()
+        self:_close_handle(self.out_pipe)
     end
-
-    -- append data to data_buffer
-    self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
-    -- foreach the data_buffer and find every line
-    local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
-    -- truncate the printed lines if found any
-    self.out_buffer = i <= #self.out_buffer
-            and self.out_buffer:sub(i, #self.out_buffer)
-        or nil
 end
 
 --- @param err string?
 --- @param data string?
 --- @return nil
-function AsyncSpawn:on_stderr(err, data)
+function AsyncSpawn:_on_stderr(err, data)
     if err then
         io.write(
             string.format(
-                "err:%s, data:%s",
+                "AsyncSpawn:_on_stderr, err:%s, data:%s",
                 vim.inspect(err),
                 vim.inspect(data)
             )
         )
-        self.err_pipe:close()
-        self:on_exit(130)
+        error(
+            string.format(
+                "AsyncSpawn:_on_stderr, err:%s, data:%s",
+                vim.inspect(err),
+                vim.inspect(data)
+            )
+        )
+        self.err_pipe:read_stop()
+        self:_close_handle(self.err_pipe)
+        return
+    end
+
+    if data then
+        -- append data to data_buffer
+        self.err_buffer = self.err_buffer and (self.err_buffer .. data) or data
+        -- foreach the data_buffer and find every line
+        local i = self:_consume_line(self.err_buffer, self.fn_err_line_consumer)
+        -- truncate the printed lines if found any
+        self.err_buffer = i <= #self.err_buffer
+                and self.err_buffer:sub(i, #self.err_buffer)
+            or nil
+    else
+        if self.err_buffer then
+            -- foreach the data_buffer and find every line
+            local i =
+                self:_consume_line(self.err_buffer, self.fn_err_line_consumer)
+            if i <= #self.err_buffer then
+                local line = self.err_buffer:sub(i, #self.err_buffer)
+                self.fn_err_line_consumer(line)
+                self.err_buffer = nil
+            end
+        end
+        self.err_pipe:read_stop()
+        self:_close_handle(self.err_pipe)
     end
 end
 
 function AsyncSpawn:run()
-    local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
+    self.process_handle, self.process_id = vim.loop.spawn(self.cmds[1], {
         args = vim.list_slice(self.cmds, 2),
         stdio = { nil, self.out_pipe, self.err_pipe },
         hide = true,
         -- verbatim = true,
     }, function(code, signal)
-        self:on_exit(code, signal)
+        self:_close_handle(self.process_handle)
     end)
-
-    self.process_handler = process_handler
-    self.process_id = process_id
 
     self.out_pipe:read_start(function(err, data)
-        self:on_stdout(err, data)
+        self:_on_stdout(err, data)
     end)
     self.err_pipe:read_start(function(err, data)
-        self:on_stderr(err, data)
+        self:_on_stderr(err, data)
     end)
     vim.loop.run()
 end
