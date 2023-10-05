@@ -609,7 +609,16 @@ function AsyncSpawn:_on_stdout(err, data)
         return
     end
 
-    if not data then
+    if data then
+        -- append data to data_buffer
+        self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
+        -- foreach the data_buffer and find every line
+        local i = self:_consume_line(self.out_buffer, self.fn_out_line_consumer)
+        -- truncate the printed lines if found any
+        self.out_buffer = i <= #self.out_buffer
+                and self.out_buffer:sub(i, #self.out_buffer)
+            or nil
+    else
         if self.out_buffer then
             -- foreach the data_buffer and find every line
             local i =
@@ -622,17 +631,7 @@ function AsyncSpawn:_on_stdout(err, data)
         end
         self.out_pipe:close()
         self:_on_exit(0)
-        return
     end
-
-    -- append data to data_buffer
-    self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
-    -- foreach the data_buffer and find every line
-    local i = self:_consume_line(self.out_buffer, self.fn_out_line_consumer)
-    -- truncate the printed lines if found any
-    self.out_buffer = i <= #self.out_buffer
-            and self.out_buffer:sub(i, #self.out_buffer)
-        or nil
 end
 
 --- @param err string?
