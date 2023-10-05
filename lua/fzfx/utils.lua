@@ -544,7 +544,7 @@ end
 --- @field err_buffer string?
 --- @field process_handle uv_process_t?
 --- @field process_id integer|string|nil
---- @field close_callbacks integer
+--- @field _close_count integer
 local AsyncSpawn = {}
 
 --- @param line string
@@ -577,7 +577,7 @@ function AsyncSpawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer)
         err_buffer = nil,
         process_handle = nil,
         process_id = nil,
-        close_callbacks = 0,
+        _close_count = 0,
     }
     setmetatable(o, self)
     self.__index = self
@@ -605,8 +605,8 @@ end
 function AsyncSpawn:_close_handle(handle)
     if handle and not handle:is_closing() then
         handle:close(function()
-            self.close_callbacks = self.close_callbacks + 1
-            if self.close_callbacks >= 3 then
+            self._close_count = self._close_count + 1
+            if self._close_count >= 3 then
                 vim.loop.stop()
             end
         end)

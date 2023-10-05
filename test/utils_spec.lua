@@ -538,7 +538,7 @@ describe("utils", function()
             ) --[[@as AsyncSpawn]]
             async_spawn:run()
             async_spawn:_close_handle(async_spawn.process_handle)
-            assert_eq(async_spawn.close_callbacks, 3)
+            assert_eq(async_spawn._close_count, 3)
         end)
     end)
     describe("[list_index]", function()
