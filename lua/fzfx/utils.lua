@@ -535,7 +535,7 @@ end
 
 --- @alias AsyncSpawnLineConsumer fun(line:string):any
 --- @class AsyncSpawn
---- @field cmd string[]
+--- @field cmds string[]
 --- @field fn_line_consumer AsyncSpawnLineConsumer
 --- @field out_pipe uv_pipe_t
 --- @field err_pipe uv_pipe_t
@@ -544,10 +544,10 @@ end
 --- @field process_id integer|string|nil
 local AsyncSpawn = {}
 
---- @param cmd string[]
+--- @param cmds string[]
 --- @param fn_line_consumer AsyncSpawnLineConsumer
 --- @return AsyncSpawn?
-function AsyncSpawn:open(cmd, fn_line_consumer)
+function AsyncSpawn:open(cmds, fn_line_consumer)
     local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     if not out_pipe or not err_pipe then
@@ -555,7 +555,7 @@ function AsyncSpawn:open(cmd, fn_line_consumer)
     end
 
     local o = {
-        cmd = cmd,
+        cmds = cmds,
         fn_line_consumer = fn_line_consumer,
         out_pipe = out_pipe,
         err_pipe = err_pipe,
@@ -648,8 +648,8 @@ function AsyncSpawn:on_stderr(err, data)
 end
 
 function AsyncSpawn:run()
-    local process_handler, process_id = vim.loop.spawn(self.cmd[1], {
-        args = vim.list_slice(self.cmd, 2),
+    local process_handler, process_id = vim.loop.spawn(self.cmds[1], {
+        args = vim.list_slice(self.cmds, 2),
         stdio = { nil, self.out_pipe, self.err_pipe },
         hide = true,
         -- verbatim = true,
