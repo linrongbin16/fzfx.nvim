@@ -28,10 +28,10 @@
 - [ ] FzfxGCommits
   - [ ] It can use `CTRL-U`/`CTRL-A` to switch between git repo commits/current buffer commits.
   - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - [ ] It can use `ESC` to quit, `ENTER` to open file.
+  - [ ] It can use `ESC` to quit, `ENTER` to copy commit hash.
 - [ ] FzfxGBlame
   - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - [ ] It can use `ESC` to quit, `ENTER` to open file.
+  - [ ] It can use `ESC` to quit, `ENTER` to copy commit hash.
 - [ ] FzfxLspDiagnostics
   - [ ] It can use `CTRL-U`/`CTRL-W` to switch between workspace/current buffer diagnostics.
   - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
