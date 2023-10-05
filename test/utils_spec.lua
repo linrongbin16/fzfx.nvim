@@ -382,7 +382,7 @@ describe("utils", function()
             end
             local async_spawn =
                 utils.AsyncSpawn:make({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
-            local pos = async_spawn:consume_line(content, process_line)
+            local pos = async_spawn:_consume_line(content, process_line)
             if pos <= #content then
                 local line = content:sub(pos, #content)
                 process_line(line)
@@ -399,7 +399,7 @@ describe("utils", function()
                     end,
                 }
             ) --[[@as AsyncSpawn]]
-            async_spawn:on_exit(0, 0)
+            async_spawn:_on_exit(0, 0)
         end)
         it("stdout on newline", function()
             local content = utils.readfile("README.md") --[[@as string]]
@@ -417,12 +417,12 @@ describe("utils", function()
             local content_splits =
                 utils.string_split(content, "\n", { trimempty = false })
             for j, splits in ipairs(content_splits) do
-                async_spawn:on_stdout(nil, splits)
+                async_spawn:_on_stdout(nil, splits)
                 if j < #content_splits then
-                    async_spawn:on_stdout(nil, "\n")
+                    async_spawn:_on_stdout(nil, "\n")
                 end
             end
-            async_spawn:on_stdout(nil, nil)
+            async_spawn:_on_stdout(nil, nil)
         end)
         it("stdout on whitespace", function()
             local content = utils.readfile("README.md") --[[@as string]]
@@ -440,12 +440,12 @@ describe("utils", function()
             local content_splits =
                 utils.string_split(content, " ", { trimempty = false })
             for j, splits in ipairs(content_splits) do
-                async_spawn:on_stdout(nil, splits)
+                async_spawn:_on_stdout(nil, splits)
                 if j < #content_splits then
-                    async_spawn:on_stdout(nil, " ")
+                    async_spawn:_on_stdout(nil, " ")
                 end
             end
-            async_spawn:on_stdout(nil, nil)
+            async_spawn:_on_stdout(nil, nil)
         end)
         for delimiter_i = 0, 25 do
             -- lower case: a
@@ -469,12 +469,12 @@ describe("utils", function()
                     { trimempty = false }
                 )
                 for j, splits in ipairs(content_splits) do
-                    async_spawn:on_stdout(nil, splits)
+                    async_spawn:_on_stdout(nil, splits)
                     if j < #content_splits then
-                        async_spawn:on_stdout(nil, lower_char)
+                        async_spawn:_on_stdout(nil, lower_char)
                     end
                 end
-                async_spawn:on_stdout(nil, nil)
+                async_spawn:_on_stdout(nil, nil)
             end)
             -- upper case: A
             local upper_char = string.char(65 + delimiter_i)
@@ -497,12 +497,12 @@ describe("utils", function()
                     { trimempty = false }
                 )
                 for j, splits in ipairs(content_splits) do
-                    async_spawn:on_stdout(nil, splits)
+                    async_spawn:_on_stdout(nil, splits)
                     if j < #content_splits then
-                        async_spawn:on_stdout(nil, upper_char)
+                        async_spawn:_on_stdout(nil, upper_char)
                     end
                 end
-                async_spawn:on_stdout(nil, nil)
+                async_spawn:_on_stdout(nil, nil)
             end)
         end
         it("stderr", function()
@@ -510,7 +510,7 @@ describe("utils", function()
                 { "cat", "README.md" },
                 function() end
             ) --[[@as AsyncSpawn]]
-            async_spawn:on_stderr(nil, nil)
+            async_spawn:_on_stderr(nil, nil)
         end)
         it("iterate on README.md", function()
             local lines = utils.readlines("README.md") --[[@as table]]

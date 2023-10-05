@@ -573,7 +573,7 @@ end
 --- @param buffer string
 --- @param fn_line_processor AsyncSpawnLineConsumer
 --- @return integer
-function AsyncSpawn:consume_line(buffer, fn_line_processor)
+function AsyncSpawn:_consume_line(buffer, fn_line_processor)
     local i = 1
     while i <= #buffer do
         local newline_pos = string_find(buffer, "\n", i)
@@ -590,7 +590,7 @@ end
 --- @param code integer?
 --- @param signal integer?
 --- @return nil
-function AsyncSpawn:on_exit(code, signal)
+function AsyncSpawn:_on_exit(code, signal)
     if self.process_handler and not self.process_handler:is_closing() then
         self.process_handler:close(function()
             vim.loop.stop()
@@ -601,16 +601,16 @@ end
 --- @param err string?
 --- @param data string?
 --- @return nil
-function AsyncSpawn:on_stdout(err, data)
+function AsyncSpawn:_on_stdout(err, data)
     if err then
-        self:on_exit(130)
+        self:_on_exit(130)
         return
     end
 
     if not data then
         if self.out_buffer then
             -- foreach the data_buffer and find every line
-            local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
+            local i = self:_consume_line(self.out_buffer, self.fn_line_consumer)
             if i <= #self.out_buffer then
                 local line = self.out_buffer:sub(i, #self.out_buffer)
                 self.fn_line_consumer(line)
@@ -618,14 +618,14 @@ function AsyncSpawn:on_stdout(err, data)
             end
         end
         self.out_pipe:close()
-        self:on_exit(0)
+        self:_on_exit(0)
         return
     end
 
     -- append data to data_buffer
     self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
     -- foreach the data_buffer and find every line
-    local i = self:consume_line(self.out_buffer, self.fn_line_consumer)
+    local i = self:_consume_line(self.out_buffer, self.fn_line_consumer)
     -- truncate the printed lines if found any
     self.out_buffer = i <= #self.out_buffer
             and self.out_buffer:sub(i, #self.out_buffer)
@@ -635,7 +635,7 @@ end
 --- @param err string?
 --- @param data string?
 --- @return nil
-function AsyncSpawn:on_stderr(err, data)
+function AsyncSpawn:_on_stderr(err, data)
     if err then
         io.write(
             string.format(
@@ -645,7 +645,7 @@ function AsyncSpawn:on_stderr(err, data)
             )
         )
         self.err_pipe:close()
-        self:on_exit(130)
+        self:_on_exit(130)
     end
 end
 
@@ -656,17 +656,17 @@ function AsyncSpawn:run()
         hide = true,
         -- verbatim = true,
     }, function(code, signal)
-        self:on_exit(code, signal)
+        self:_on_exit(code, signal)
     end)
 
     self.process_handler = process_handler
     self.process_id = process_id
 
     self.out_pipe:read_start(function(err, data)
-        self:on_stdout(err, data)
+        self:_on_stdout(err, data)
     end)
     self.err_pipe:read_start(function(err, data)
-        self:on_stderr(err, data)
+        self:_on_stderr(err, data)
     end)
     vim.loop.run()
 end
