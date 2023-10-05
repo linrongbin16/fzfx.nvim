@@ -540,6 +540,7 @@ end
 --- @field out_pipe uv_pipe_t
 --- @field err_pipe uv_pipe_t
 --- @field out_buffer string?
+--- @field err_buffer string?
 --- @field process_handler uv_process_t?
 --- @field process_id integer|string|nil
 local AsyncSpawn = {}
@@ -547,7 +548,7 @@ local AsyncSpawn = {}
 --- @param cmds string[]
 --- @param fn_line_consumer AsyncSpawnLineConsumer
 --- @return AsyncSpawn?
-function AsyncSpawn:open(cmds, fn_line_consumer)
+function AsyncSpawn:make(cmds, fn_line_consumer)
     local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     if not out_pipe or not err_pipe then
@@ -560,6 +561,7 @@ function AsyncSpawn:open(cmds, fn_line_consumer)
         out_pipe = out_pipe,
         err_pipe = err_pipe,
         out_buffer = nil,
+        err_buffer = nil,
         process_handler = nil,
         process_id = nil,
     }

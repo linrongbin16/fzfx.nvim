@@ -114,7 +114,7 @@ then
         return
     end
 
-    local async_spawn = shell_helpers.AsyncSpawn:open(cmd_splits, println) --[[@as AsyncSpawn]]
+    local async_spawn = shell_helpers.AsyncSpawn:make(cmd_splits, println) --[[@as AsyncSpawn]]
     shell_helpers.log_ensure(
         async_spawn ~= nil,
         "|provider| error! failed to open async command: %s",

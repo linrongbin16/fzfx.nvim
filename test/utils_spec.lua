@@ -357,7 +357,7 @@ describe("utils", function()
     end)
     describe("[AsyncSpawn]", function()
         it("open", function()
-            local async_spawn = utils.AsyncSpawn:open(
+            local async_spawn = utils.AsyncSpawn:make(
                 { "cat", "README.md" },
                 function(line) end
             ) --[[@as AsyncSpawn]]
@@ -381,7 +381,7 @@ describe("utils", function()
                 i = i + 1
             end
             local async_spawn =
-                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                utils.AsyncSpawn:make({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
             local pos = async_spawn:consume_line(content, process_line)
             if pos <= #content then
                 local line = content:sub(pos, #content)
@@ -389,7 +389,7 @@ describe("utils", function()
             end
         end)
         it("exit", function()
-            local async_spawn = utils.AsyncSpawn:open(
+            local async_spawn = utils.AsyncSpawn:make(
                 { "cat", "README.md" },
                 function(line) end,
                 {
@@ -413,7 +413,7 @@ describe("utils", function()
                 i = i + 1
             end
             local async_spawn =
-                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                utils.AsyncSpawn:make({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
             local content_splits =
                 utils.string_split(content, "\n", { trimempty = false })
             for j, splits in ipairs(content_splits) do
@@ -436,7 +436,7 @@ describe("utils", function()
                 i = i + 1
             end
             local async_spawn =
-                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                utils.AsyncSpawn:make({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
             local content_splits =
                 utils.string_split(content, " ", { trimempty = false })
             for j, splits in ipairs(content_splits) do
@@ -462,7 +462,7 @@ describe("utils", function()
                     i = i + 1
                 end
                 local async_spawn =
-                    utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                    utils.AsyncSpawn:make({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
                 local content_splits = utils.string_split(
                     content,
                     lower_char,
@@ -490,7 +490,7 @@ describe("utils", function()
                     i = i + 1
                 end
                 local async_spawn =
-                    utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                    utils.AsyncSpawn:make({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
                 local content_splits = utils.string_split(
                     content,
                     upper_char,
@@ -506,7 +506,7 @@ describe("utils", function()
             end)
         end
         it("stderr", function()
-            local async_spawn = utils.AsyncSpawn:open(
+            local async_spawn = utils.AsyncSpawn:make(
                 { "cat", "README.md" },
                 function() end
             ) --[[@as AsyncSpawn]]
@@ -524,7 +524,7 @@ describe("utils", function()
             end
 
             local async_spawn =
-                utils.AsyncSpawn:open({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
+                utils.AsyncSpawn:make({ "cat", "README.md" }, process_line) --[[@as AsyncSpawn]]
             async_spawn:run()
         end)
         it("iterate on lua/fzfx/config.lua", function()
@@ -538,7 +538,7 @@ describe("utils", function()
                 i = i + 1
             end
 
-            local async_spawn = utils.AsyncSpawn:open(
+            local async_spawn = utils.AsyncSpawn:make(
                 { "cat", "lua/fzfx/config.lua" },
                 process_line
             ) --[[@as AsyncSpawn]]
