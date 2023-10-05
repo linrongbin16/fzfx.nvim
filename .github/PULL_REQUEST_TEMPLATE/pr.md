@@ -3,8 +3,7 @@
 ## Platform
 
 - [ ] windows
-- [ ] macOS
-- [ ] ubuntu
+- [ ] macOS/ubuntu
 
 ## Commands
 
