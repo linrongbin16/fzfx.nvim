@@ -810,6 +810,8 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 - 2023-09-27
   - Minor break: move 'context_maker' option from 'providers' to 'other_opts' (in group config).
   - Minor break: drop support for 'line_type'/'line_delimiter'/'line_pos' option (in provider config).
+- 2023-10-05
+  - Minor break: drop support for 'ProviderConfig', use pure lua table instead.
 
 ## 🍀 Credit
 
