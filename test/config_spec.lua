@@ -35,4 +35,28 @@ describe("config", function()
             assert_true(string.len(actual --[[@as string]]) > 0)
         end)
     end)
+    describe("[get_defaults]", function()
+        it("get defaults", function()
+            assert_eq(type(conf.get_defaults()), "table")
+            assert_false(vim.tbl_isempty(conf.get_defaults()))
+            assert_eq(type(conf.get_defaults().live_grep), "table")
+            assert_eq(type(conf.get_defaults().debug), "table")
+            assert_eq(type(conf.get_defaults().debug.enable), "boolean")
+            assert_false(conf.get_defaults().debug.enable)
+            assert_eq(type(conf.get_defaults().popup), "table")
+            assert_eq(type(conf.get_defaults().icons), "table")
+            assert_eq(type(conf.get_defaults().fzf_opts), "table")
+            local actual = require("fzfx.helpers").make_fzf_opts(
+                conf.get_defaults().fzf_opts
+            )
+            print(
+                string.format(
+                    "make fzf opts with default configs:%s\n",
+                    vim.inspect(actual)
+                )
+            )
+            assert_eq(type(actual), "string")
+            assert_true(string.len(actual --[[@as string]]) > 0)
+        end)
+    end)
 end)
