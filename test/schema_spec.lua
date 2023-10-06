@@ -145,18 +145,4 @@ describe("schema", function()
             assert_eq(interaction.reload_after_execute, true)
         end)
     end)
-    describe("[GroupConfig]", function()
-        it("makes a group", function()
-            local group = schema.GroupConfig:make({
-                commands = "commands",
-                providers = "providers",
-                previewers = "previewers",
-            })
-            assert_eq(type(group), "table")
-            assert_true(clazz.instanceof(group, schema.GroupConfig))
-            assert_eq(group.commands, "commands")
-            assert_eq(group.providers, "providers")
-            assert_eq(group.previewers, "previewers")
-        end)
-    end)
 end)

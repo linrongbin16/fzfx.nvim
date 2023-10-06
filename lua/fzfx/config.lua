@@ -13,7 +13,6 @@ local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 local CommandConfig = require("fzfx.schema").CommandConfig
 local InteractionConfig = require("fzfx.schema").InteractionConfig
-local GroupConfig = require("fzfx.schema").GroupConfig
 
 --- @type table<string, FzfOpt>
 local default_fzf_options = {
@@ -707,7 +706,7 @@ end
 local Defaults = {
     -- the 'Files' commands
     --- @type GroupConfig
-    files = GroupConfig:make({
+    files = {
         commands = {
             -- normal
             CommandConfig:make({
@@ -830,11 +829,11 @@ local Defaults = {
                 }
             end,
         },
-    }),
+    },
 
     -- the 'Live Grep' commands
     --- @type GroupConfig
-    live_grep = GroupConfig:make({
+    live_grep = {
         commands = {
             -- normal
             CommandConfig:make({
@@ -1111,11 +1110,11 @@ local Defaults = {
         other_opts = {
             reload_on_change = true,
         },
-    }),
+    },
 
     -- the 'Buffers' commands
     --- @type GroupConfig
-    buffers = GroupConfig:make({
+    buffers = {
         commands = {
             -- normal
             CommandConfig:make({
@@ -1220,10 +1219,11 @@ local Defaults = {
                     or nil
             end,
         },
-    }),
+    },
 
     -- the 'Git Files' commands
-    git_files = GroupConfig:make({
+    --- @type GroupConfig
+    git_files = {
         commands = {
             -- normal
             CommandConfig:make({
@@ -1344,11 +1344,11 @@ local Defaults = {
                 }
             end,
         },
-    }),
+    },
 
     -- the 'Git Branches' commands
     --- @type GroupConfig
-    git_branches = GroupConfig:make({
+    git_branches = {
         commands = {
             -- normal
             CommandConfig:make({
@@ -1583,11 +1583,11 @@ local Defaults = {
                     or nil
             end,
         },
-    }),
+    },
 
     -- the 'Git Commits' commands
     --- @type GroupConfig
-    git_commits = GroupConfig:make({
+    git_commits = {
         commands = {
             -- normal
             CommandConfig:make({
@@ -1736,11 +1736,11 @@ local Defaults = {
                 "GCommits > ",
             },
         },
-    }),
+    },
 
     -- the 'Git Blame' command
     --- @type GroupConfig
-    git_blame = GroupConfig:make({
+    git_blame = {
         commands = {
             -- normal
             CommandConfig:make({
@@ -1830,11 +1830,11 @@ local Defaults = {
                 "GBlame > ",
             },
         },
-    }),
+    },
 
     -- the 'Lsp Diagnostics' command
     --- @type GroupConfig
-    lsp_diagnostics = GroupConfig:make({
+    lsp_diagnostics = {
         commands = {
             -- normal
             CommandConfig:make({
@@ -1972,11 +1972,11 @@ local Defaults = {
                 "Diagnostics > ",
             },
         },
-    }),
+    },
 
     -- the 'Lsp Definitions' command
     --- @type GroupConfig
-    lsp_definitions = GroupConfig:make({
+    lsp_definitions = {
         commands = CommandConfig:make({
             name = "FzfxLspDefinitions",
             feed = CommandFeedEnum.ARGS,
@@ -2033,11 +2033,11 @@ local Defaults = {
         other_opts = {
             context_maker = lsp_position_context_maker,
         },
-    }),
+    },
 
     -- the 'Lsp Type Definitions' command
     --- @type GroupConfig
-    lsp_type_definitions = GroupConfig:make({
+    lsp_type_definitions = {
         commands = CommandConfig:make({
             name = "FzfxLspTypeDefinitions",
             feed = CommandFeedEnum.ARGS,
@@ -2094,11 +2094,11 @@ local Defaults = {
         other_opts = {
             context_maker = lsp_position_context_maker,
         },
-    }),
+    },
 
     -- the 'Lsp References' command
     --- @type GroupConfig
-    lsp_references = GroupConfig:make({
+    lsp_references = {
         commands = CommandConfig:make({
             name = "FzfxLspReferences",
             feed = CommandFeedEnum.ARGS,
@@ -2155,11 +2155,11 @@ local Defaults = {
         other_opts = {
             context_maker = lsp_position_context_maker,
         },
-    }),
+    },
 
     -- the 'Lsp Implementations' command
     --- @type GroupConfig
-    lsp_implementations = GroupConfig:make({
+    lsp_implementations = {
         commands = CommandConfig:make({
             name = "FzfxLspImplementations",
             feed = CommandFeedEnum.ARGS,
@@ -2216,10 +2216,11 @@ local Defaults = {
         other_opts = {
             context_maker = lsp_position_context_maker,
         },
-    }),
+    },
 
     -- the 'File Explorer' commands
-    file_explorer = GroupConfig:make({
+    --- @type GroupConfig
+    file_explorer = {
         commands = {
             CommandConfig:make({
                 name = "FzfxFileExplorer",
@@ -2379,7 +2380,7 @@ local Defaults = {
         other_opts = {
             context_maker = file_explorer_context_maker,
         },
-    }),
+    },
 
     -- the 'Yank History' commands
     yank_history = {
