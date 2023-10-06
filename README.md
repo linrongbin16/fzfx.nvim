@@ -3,23 +3,12 @@
 # fzfx.nvim
 
 <p align="center">
-<a href="https://github.com/neovim/neovim/releases/v0.6.0"><img alt="Neovim-v0.6.0" src="https://img.shields.io/badge/Neovim-v0.6.0-blueviolet.svg?logo=Neovim&logoColor=green" /></a>
+<a href="https://github.com/neovim/neovim/releases/v0.7.0"><img alt="Neovim-v0.7.0" src="https://img.shields.io/badge/Neovim-v0.7.0-blueviolet.svg?logo=Neovim&logoColor=green" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/search?l=lua"><img alt="Top Language" src="https://img.shields.io/github/languages/top/linrongbin16/fzfx.nvim?label=Lua&logo=lua&logoColor=darkblue" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/linrongbin16/fzfx.nvim?logo=GNU&label=License" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?logo=GitHub&label=Luacheck" /></a>
 <a href="https://app.codecov.io/github/linrongbin16/fzfx.nvim"><img alt="codecov" src="https://img.shields.io/codecov/c/github/linrongbin16/fzfx.nvim?logo=codecov&logoColor=magenta&label=Codecov" /></a>
 </p>
-  
-<!-- 
-[![neovim-v0.6](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)](https://github.com/neovim/neovim/releases/tag/v0.6.0)
-[![license](https://img.shields.io/github/license/linrongbin16/lin.nvim)](https://github.com/linrongbin16/lin.nvim/blob/main/LICENSE)
-[![ci.yml](https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml)](https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml)
--->
-<!-- ![Linux](https://img.shields.io/badge/Linux-%23.svg?style=flat-square&logo=linux&color=FCC624&logoColor=black) -->
-<!-- ![macOS](https://img.shields.io/badge/macOS-%23.svg?style=flat-square&logo=apple&color=000000&logoColor=white) -->
-<!-- ![Windows](https://img.shields.io/badge/Windows-%23.svg?style=flat-square&logo=windows&color=0078D6&logoColor=white) -->
-
-<!-- > Search `fzfx` with rg's `-g *ch.lua` option on specific filetypes. -->
 
 <p align="center"> E(x)tended commands missing in <a href="https://github.com/junegunn/fzf.vim">fzf.vim</a>. </p>
 
@@ -72,7 +61,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 
 ## ✅ Requirement
 
-- Neovim &ge; v0.6.0.
+- Neovim &ge; v0.7.0.
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
@@ -810,6 +799,8 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 - 2023-09-27
   - Minor break: move 'context_maker' option from 'providers' to 'other_opts' (in group config).
   - Minor break: drop support for 'line_type'/'line_delimiter'/'line_pos' option (in provider config).
+- 2023-10-06
+  - Minor break: drop support for Neovim v0.6.0, require minimal Neovim version &ge; v0.7.0.
 
 ## 🍀 Credit
 

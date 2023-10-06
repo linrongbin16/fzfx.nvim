@@ -12,7 +12,9 @@ describe("deprecated", function()
     local deprecated = require("fzfx.deprecated")
     describe("[notify]", function()
         it("notify without parameters", function()
-            deprecated.notify("notify without parameters")
+            deprecated.notify(
+                "deprecated 'GroupConfig', please use pure lua table!"
+            )
             assert_true(true)
         end)
         it("notify with parameters", function()
