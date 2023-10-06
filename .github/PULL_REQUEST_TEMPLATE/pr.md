@@ -4,7 +4,7 @@
 
 - [ ] windows
 - [ ] macOS
-- [ ] ubuntu
+- [ ] linux (ubuntu/fedora/manjaro/opensuse/etc)
 
 ## Commands
 
@@ -37,7 +37,7 @@
   - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
   - [ ] It can use `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxLspDefinitions, FzfxLspTypeDefinitions, FzfxLspReferences, FzfxLspImplementations
-  - [ ] It can go to definitions/references (this is the most 2 easiest use case when developing this lua plugin with lua\_ls).
+  - [ ] It can go to definitions/references (this is the most 2 easiest use case when developing this lua plugin with lua_ls).
   - [ ] It can use `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxFileExplorer
   - [ ] It can use `CTRL-U`/`CTRL-I` to switch between filter/include hidden files mode.
