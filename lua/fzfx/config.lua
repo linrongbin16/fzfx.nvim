@@ -2567,9 +2567,15 @@ local function get_config()
     return Configs
 end
 
+--- @return Configs
+local function get_defaults()
+    return Defaults
+end
+
 local M = {
     setup = setup,
     get_config = get_config,
+    get_defaults = get_defaults,
 }
 
 return M

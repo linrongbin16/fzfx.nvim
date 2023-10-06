@@ -44,6 +44,7 @@ require("lazy").setup({
                 -- the 'Live Grep' commands
                 live_grep = {
                     fzf_opts = {
+                        "--disabled",
                         { "--prompt", "Live Grep > " },
                         { "--delimiter", ":" },
                         { "--preview-window", "top,75%,+{2}-/2" },
