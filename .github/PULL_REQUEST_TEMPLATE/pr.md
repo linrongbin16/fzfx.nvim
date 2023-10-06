@@ -3,8 +3,7 @@
 ## Platform
 
 - [ ] windows
-- [ ] macOS
-- [ ] linux (ubuntu/fedora/manjaro/opensuse/etc)
+- [ ] macOS/linux
 
 ## Tasks
 
