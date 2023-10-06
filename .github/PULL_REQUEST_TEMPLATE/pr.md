@@ -6,7 +6,7 @@
 - [ ] macOS
 - [ ] linux (ubuntu/fedora/manjaro/opensuse/etc)
 
-## Commands
+## Tasks
 
 - [ ] FzfxFiles
   - [ ] It can use `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
