@@ -233,6 +233,18 @@ end
 --- @field interactions table<InteractionName, InteractionConfig>?
 --- @field actions table<ActionKey, Action>
 --- @field fzf_opts FzfOpt[]?
+local GroupConfig = {}
+
+function GroupConfig:make(opts)
+    require("fzfx.deprecated").notify(
+        "deprecated 'GroupConfig', please use pure lua table!"
+    )
+
+    local o = opts or {}
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
 
 local M = {
     ProviderTypeEnum = ProviderTypeEnum,
@@ -243,6 +255,7 @@ local M = {
     PreviewerConfig = PreviewerConfig,
     CommandConfig = CommandConfig,
     InteractionConfig = InteractionConfig,
+    GroupConfig = GroupConfig,
 }
 
 return M
