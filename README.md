@@ -795,12 +795,12 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Deprecate: migrate 'live_grep' (`FzfxLiveGrep`) configs to new schema.
   - Deprecate: migrate 'files' (`FzfxFiles`) configs new schema.
 - 2023-09-26
-  - Minor break: drop support for Neovim v0.5.0, require minimal Neovim version &ge; v0.6.0.
+  - Break: drop support for Neovim v0.5.0, require minimal version &ge; v0.6.0.
 - 2023-09-27
   - Minor break: move 'context_maker' option from 'providers' to 'other_opts' (in group config).
   - Minor break: drop support for 'line_type'/'line_delimiter'/'line_pos' option (in provider config).
 - 2023-10-06
-  - Minor break: drop support for Neovim v0.6.0, require minimal Neovim version &ge; v0.7.0.
+  - Break: drop support for Neovim v0.6.0, require minimal version &ge; v0.7.0.
 
 ## 🍀 Credit
 
