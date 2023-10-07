@@ -1,0 +1,26 @@
+ OpenPR:
+on:
+  pull_request: ~
+  push:
+    branches:
+      - main
+jobs:
+  pr_comment:
+    name: PR comment
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Content
+      run: |
+        echo "::set-env name=body::$(<./github/PULL_REQUEST_TEMPLATE/pr.md)"   # set it as env
+    - name: PR Comment
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.issues.createComment({
+            issue_number: ${{ github.event.number }},
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '${{env.body}}'   # use '${{env.xxx}}' as the parameter
+          })
