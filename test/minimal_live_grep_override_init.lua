@@ -42,14 +42,14 @@ require("lazy").setup({
                     file_log = true,
                 },
                 -- the 'Live Grep' commands
-                live_grep = {
+                live_grep = require('fzfx.schema').GroupConfig:make({
                     fzf_opts = {
                         "--disabled",
                         { "--prompt", "Live Grep > " },
                         { "--delimiter", ":" },
                         { "--preview-window", "top,75%,+{2}-/2" },
                     },
-                },
+                }),
             })
         end,
         dependencies = {
