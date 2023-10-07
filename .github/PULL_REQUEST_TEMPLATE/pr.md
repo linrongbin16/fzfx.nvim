@@ -3,7 +3,8 @@
 ## Platform
 
 - [ ] windows
-- [ ] macOS/linux
+- [ ] macOS
+- [ ] linux
 
 ## Tasks
 
