@@ -46,9 +46,8 @@ local default_unrestricted_fd = string.format(
 )
 -- find
 local default_restricted_find = string.format(
-    [[%s -L . -type f -not -path %s]],
-    vim.fn.executable("gfind") > 0 and "gfind" or "find",
-    require("fzfx.utils").shellescape([[*/.*]])
+    [[%s -L . -type f]],
+    vim.fn.executable("gfind") > 0 and "gfind" or "find"
 )
 local default_unrestricted_find = [[find -L . -type f]]
 
