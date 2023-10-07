@@ -19,5 +19,5 @@ jobs:
               repo: context.repo.repo,
               body: body,
               commit_id: process.env.GITHUB_SHA,
-              path: ""
+              path: "README.md"
             })
