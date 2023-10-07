@@ -65,5 +65,3 @@ jobs:
             1. [ ] Press `CTRL-U`/`CTRL-I` to switch between filter/include hidden files mode.
             2. [ ] Press `CTRL-L`/`CTRL-H` to cd into folder and cd upper folder.
             3. [ ] Press `ESC` to quit, `ENTER` to open file.
-
-
