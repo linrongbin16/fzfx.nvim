@@ -1,7 +1,6 @@
 name: PR
 on:
-  pull_request:
-    - main
+  pull_request: main
 jobs:
   pr_comment:
     name: PR comment
