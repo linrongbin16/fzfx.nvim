@@ -13,11 +13,9 @@ jobs:
         with:
           script: |
             const body = `# Regression test`;
-            await github.rest.pulls.createReviewComment({
-              pull_number: context.issue.number,
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: body,
-              commit_id: process.env.GITHUB_SHA,
-              path: "README.md"
+              body: '👋 Thanks for reporting!'
             })
