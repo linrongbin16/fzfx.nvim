@@ -14,11 +14,9 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          const creator = context.payload.sender.login
           await github.rest.pulls.createReviewComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
             pull_number: context.issue.number,
-            body: `Hi ${{creator}}, thanks to your contribute, while please check below tasks:
-                   ${{env.body}}`
+            body: '${{env.body}}'
           })
