@@ -17,7 +17,7 @@ local function parse_find(line, opts)
         assert(type(first_icon_pos) == "number")
         filename = line:sub(first_icon_pos + 1)
     end
-    return path.normalize(filename)
+    return vim.fn.expand(path.normalize(filename))
 end
 
 -- parse lines from rg, grep, etc.
@@ -96,7 +96,7 @@ local function parse_ls(line, start_pos)
         end
         pos = pos + 1
     end
-    return line:sub(pos)
+    return vim.fn.expand(path.normalize(line:sub(pos)))
 end
 
 --- @param line string
