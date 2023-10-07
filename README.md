@@ -799,8 +799,9 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 - 2023-09-27
   - Minor break: move 'context_maker' option from 'providers' to 'other_opts' (in group config).
   - Minor break: drop support for 'line_type'/'line_delimiter'/'line_pos' option (in provider config).
-- 2023-10-06
+- 2023-10-07
   - Break: drop support for Neovim v0.6.0, require minimal version &ge; v0.7.0.
+  - Deprecate: migrate 'GroupConfig' class to pure lua table.
 
 ## 🍀 Credit
 
@@ -813,12 +814,11 @@ To develop the project and make PR, please setup with:
 
 - [lua_ls](https://github.com/LuaLS/lua-language-server).
 - [stylua](https://github.com/JohnnyMorganz/StyLua).
+- [luarocks](https://luarocks.org/).
+- [luacheck](https://github.com/mpeterv/luacheck).
 
 To run unit tests, please install below dependencies:
 
-- [luarocks](https://luarocks.org/).
-- [luacheck](https://github.com/mpeterv/luacheck).
-- [luacov](https://github.com/lunarmodules/luacov).
 - [vusted](https://github.com/notomo/vusted).
 
 Then test with `vusted ./test`.
