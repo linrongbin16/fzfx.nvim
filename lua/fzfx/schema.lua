@@ -236,6 +236,10 @@ end
 local GroupConfig = {}
 
 function GroupConfig:make(opts)
+    require("fzfx.deprecated").notify(
+        "deprecated 'GroupConfig', please use pure lua table!"
+    )
+
     local o = opts or {}
     setmetatable(o, self)
     self.__index = self

@@ -3,43 +3,42 @@
 ## Platform
 
 - [ ] windows
-- [ ] macOS
-- [ ] ubuntu
+- [ ] macOS/linux
 
-## Commands
+## Tasks
 
 - [ ] FzfxFiles
-  - [ ] It can use `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
-  - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - [ ] It can use `ESC` to quit, `ENTER` to open file.
+  - [ ] Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxLiveGrep
-  - [ ] It can use `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
-  - [ ] It can use `-w` to match word only, use `-g *.lua` to search only lua files.
-  - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - [ ] It can use `ESC` to quit, `ENTER` to open file.
+  - [ ] Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
+  - [ ] Use `-w` to match word only, use `-g *.lua` to search only lua files.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxBuffers
-  - [ ] It can use `CTRL-D` to delete buffers.
-  - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - [ ] It can use `ESC` to quit, `ENTER` to open file.
+  - [ ] Press `CTRL-D` to delete buffers.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxGFiles
-  - [ ] It can use `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
-  - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - [ ] It can use `ESC` to quit, `ENTER` to open file.
+  - [ ] Press `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxGCommits
-  - [ ] It can use `CTRL-U`/`CTRL-A` to switch between git repo commits/current buffer commits.
-  - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - [ ] It can use `ESC` to quit, `ENTER` to copy commit hash.
+  - [ ] Press `CTRL-U`/`CTRL-A` to switch between git repo commits/current buffer commits.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to copy commit hash.
 - [ ] FzfxGBlame
-  - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - [ ] It can use `ESC` to quit, `ENTER` to copy commit hash.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to copy commit hash.
 - [ ] FzfxLspDiagnostics
-  - [ ] It can use `CTRL-U`/`CTRL-W` to switch between workspace/current buffer diagnostics.
-  - [ ] It can use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - [ ] It can use `ESC` to quit, `ENTER` to open file.
+  - [ ] Press `CTRL-U`/`CTRL-W` to switch between workspace/current buffer diagnostics.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxLspDefinitions, FzfxLspTypeDefinitions, FzfxLspReferences, FzfxLspImplementations
-  - [ ] It can go to definitions/references (this is the most 2 easiest use case when developing this lua plugin with lua\_ls).
-  - [ ] It can use `ESC` to quit, `ENTER` to open file.
+  - [ ] Go to definitions/references (this is the most 2 easiest use case when developing this lua plugin with lua_ls).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxFileExplorer
-  - [ ] It can use `CTRL-U`/`CTRL-I` to switch between filter/include hidden files mode.
-  - [ ] It can use `CTRL-L`/`CTRL-H` to cd into folder and cd upper folder.
-  - [ ] It can use `ESC` to quit, `ENTER` to open file.
+  - [ ] Press `CTRL-U`/`CTRL-I` to switch between filter/include hidden files mode.
+  - [ ] Press `CTRL-L`/`CTRL-H` to cd into folder and cd upper folder.
+  - [ ] Press `ESC` to quit, `ENTER` to open file.

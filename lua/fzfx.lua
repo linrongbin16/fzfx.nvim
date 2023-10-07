@@ -2,11 +2,12 @@ local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
 local general = require("fzfx.general")
 
---- @param options Configs|nil
+--- @param options Configs?
 --- @return nil
 local function setup(options)
     -- configs
     local configs = require("fzfx.config").setup(options)
+    local defaults = require("fzfx.config").get_defaults()
 
     -- log
     log.setup({
@@ -14,6 +15,9 @@ local function setup(options)
         console_log = configs.debug.console_log,
         file_log = configs.debug.file_log,
     })
+
+    log.debug("|fzfx - setup| Defaults:\n%s", vim.inspect(defaults))
+    log.debug("|fzfx - setup| Configs:\n%s", vim.inspect(configs))
 
     -- cache
     if vim.fn.filereadable(configs.cache.dir) > 0 then
