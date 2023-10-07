@@ -14,7 +14,8 @@ jobs:
     - name: Generate coverage reports
       shell: bash
       run: |
-        echo "ls ."
+          echo "ls -lh ."
+          ls -lh .
     - name: PR Comment
       uses: thollander/actions-comment-pull-request@v2
       with:
