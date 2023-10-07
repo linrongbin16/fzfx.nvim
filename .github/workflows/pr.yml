@@ -11,13 +11,13 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - name: Generate coverage reports
+    - name: ls -lha
       shell: bash
       run: |
-          echo "ls -lh ."
-          ls -lh .
+          echo "ls -lha ."
+          ls -lha .
     - name: PR Comment
       uses: thollander/actions-comment-pull-request@v2
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        filePath: .github/PULL_REQUEST_TEMPLATE/pr.md
+        filePath: pr-template.md
