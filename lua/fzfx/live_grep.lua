@@ -65,7 +65,7 @@ local function setup()
     general.setup("live_grep", live_grep_configs)
     if deprecated then
         require("fzfx.deprecated").notify(
-            "deprecated 'FzfxLiveGrep' configs, please migrate to latest config schema!"
+            "deprecated 'FzfxLiveGrep' configs, please migrate to new config schema!"
         )
     end
 end

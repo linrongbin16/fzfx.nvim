@@ -81,7 +81,7 @@ local function setup()
     general.setup("git_branches", git_branches_configs)
     if deprecated then
         require("fzfx.deprecated").notify(
-            "deprecated 'FzfxGBranches' configs, please migrate to latest config schema!"
+            "deprecated 'FzfxGBranches' configs, please migrate to new config schema!"
         )
     end
 end

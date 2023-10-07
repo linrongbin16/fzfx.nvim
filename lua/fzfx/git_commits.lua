@@ -68,7 +68,7 @@ local function setup()
     general.setup("git_commits", git_commits_configs)
     if deprecated then
         require("fzfx.deprecated").notify(
-            "deprecated 'FzfxGCommits' configs, please migrate to latest config schema!"
+            "deprecated 'FzfxGCommits' configs, please migrate to new config schema!"
         )
     end
 end

@@ -41,20 +41,9 @@ local function setup()
     end
     general.setup("files", files_configs)
     if deprecated then
-        local function deprecated_notification()
-            log.echo(
-                LogLevels.WARN,
-                "deprecated 'FzfxFiles' configs, please migrate to latest config schema!"
-            )
-        end
-        local delay = 3 * 1000
-        vim.defer_fn(deprecated_notification, delay)
-        vim.api.nvim_create_autocmd("VimEnter", {
-            pattern = { "*" },
-            callback = function()
-                vim.defer_fn(deprecated_notification, delay)
-            end,
-        })
+        require("fzfx.deprecated").notify(
+            "deprecated 'FzfxFiles' configs, please migrate to new config schema!"
+        )
     end
 end
 
