@@ -19,5 +19,5 @@ jobs:
     - name: PR Comment
       uses: thollander/actions-comment-pull-request@v2
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         filePath: .github/PULL_REQUEST_TEMPLATE/pr.md
