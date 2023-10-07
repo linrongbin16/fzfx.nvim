@@ -42,7 +42,7 @@ require("lazy").setup({
                     file_log = true,
                 },
                 -- the 'Live Grep' commands
-                live_grep = require('fzfx.schema').GroupConfig:make({
+                live_grep = require("fzfx.schema").GroupConfig:make({
                     fzf_opts = {
                         "--disabled",
                         { "--prompt", "Live Grep > " },
