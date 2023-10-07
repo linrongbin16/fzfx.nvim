@@ -1,5 +1,7 @@
 name: PR
-on: pull_request_target
+on:
+  pull_request:
+    - main
 jobs:
   pr_comment:
     name: PR comment
