@@ -1,4 +1,4 @@
- OpenPR:
+name: PR
 on:
   pull_request: main
 jobs:
