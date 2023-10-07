@@ -814,12 +814,11 @@ To develop the project and make PR, please setup with:
 
 - [lua_ls](https://github.com/LuaLS/lua-language-server).
 - [stylua](https://github.com/JohnnyMorganz/StyLua).
+- [luarocks](https://luarocks.org/).
+- [luacheck](https://github.com/mpeterv/luacheck).
 
 To run unit tests, please install below dependencies:
 
-- [luarocks](https://luarocks.org/).
-- [luacheck](https://github.com/mpeterv/luacheck).
-- [luacov](https://github.com/lunarmodules/luacov).
 - [vusted](https://github.com/notomo/vusted).
 
 Then test with `vusted ./test`.
