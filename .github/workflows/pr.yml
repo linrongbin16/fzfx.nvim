@@ -9,18 +9,9 @@ jobs:
     name: PR comment
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup Content
-      run: |
-        echo "::set-env name=body::$(<./github/PULL_REQUEST_TEMPLATE/pr.md)"   # set it as env
+    - name: Checkout
+      uses: actions/checkout@v4
     - name: PR Comment
-      uses: actions/github-script@v6
+      uses: thollander/actions-comment-pull-request@v2
       with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          await github.rest.pulls.createReviewComment({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.issue.number,
-            body: '${{env.body}}'
-          })
+        filePath: .github/PULL_REQUEST_TEMPLATE/pr.md
