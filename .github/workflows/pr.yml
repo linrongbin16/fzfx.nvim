@@ -1,6 +1,5 @@
 name: PR
-on:
-  pull_request: main
+on: pull_request_target
 jobs:
   pr_comment:
     name: PR comment
@@ -15,9 +14,56 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          github.issues.createComment({
-            issue_number: ${{ github.event.number }},
+          const creator = context.payload.sender.login
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: '${{env.body}}'   # use '${{env.xxx}}' as the parameter
+            body: `Hi ${creator}, thanks to your contribute, while please check below tasks.
+
+# Regresion test
+
+## Platform
+
+- [ ] windows
+- [ ] macOS/linux
+
+## Tasks
+
+- [ ] FzfxFiles
+  - [ ] Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxLiveGrep
+  - [ ] Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
+  - [ ] Use `-w` to match word only, use `-g *.lua` to search only lua files.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxBuffers
+  - [ ] Press `CTRL-D` to delete buffers.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxGFiles
+  - [ ] Press `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxGCommits
+  - [ ] Press `CTRL-U`/`CTRL-A` to switch between git repo commits/current buffer commits.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to copy commit hash.
+- [ ] FzfxGBlame
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to copy commit hash.
+- [ ] FzfxLspDiagnostics
+  - [ ] Press `CTRL-U`/`CTRL-W` to switch between workspace/current buffer diagnostics.
+  - [ ] Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxLspDefinitions, FzfxLspTypeDefinitions, FzfxLspReferences, FzfxLspImplementations
+  - [ ] Go to definitions/references (this is the most 2 easiest use case when developing this lua plugin with lua_ls).
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxFileExplorer
+  - [ ] Press `CTRL-U`/`CTRL-I` to switch between filter/include hidden files mode.
+  - [ ] Press `CTRL-L`/`CTRL-H` to cd into folder and cd upper folder.
+  - [ ] Press `ESC` to quit, `ENTER` to open file.
+`
           })
