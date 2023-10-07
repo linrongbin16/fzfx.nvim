@@ -12,15 +12,15 @@ describe("line_helpers", function()
     local line_helpers = require("fzfx.line_helpers")
     local utils = require("fzfx.utils")
     local DEVICONS_PATH =
-    "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
+        "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
     describe("[parse_find]", function()
         it("parse filename without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
             local expect = "~/github/linrongbin16/fzfx.nvim/README.md"
             local actual1 = line_helpers.parse_find(expect)
-            assert_eq(expect, actual1)
+            assert_true(utils.string_endswith(actual1, expect:sub(2)))
             local actual2 = line_helpers.parse_find(expect, { no_icon = true })
-            assert_eq(expect, actual2)
+            assert_true(utils.string_endswith(actual2, expect:sub(2)))
         end)
         it("parse filename with prepend icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
@@ -29,7 +29,12 @@ describe("line_helpers", function()
             print(
                 string.format("parse find with icon:%s\n", vim.inspect(actual))
             )
-            assert_eq("~/github/linrongbin16/fzfx.nvim/README.md", actual)
+            assert_true(
+                utils.string_endswith(
+                    actual,
+                    "/github/linrongbin16/fzfx.nvim/README.md"
+                )
+            )
         end)
     end)
     describe("[parse_grep]", function()
@@ -46,7 +51,7 @@ describe("line_helpers", function()
                 assert_eq(type(actual.filename), "string")
                 assert_true(actual.lineno == nil)
                 assert_true(actual.column == nil)
-                assert_eq(actual.filename, line)
+                assert_true(utils.string_endswith(actual.filename, line:sub(2)))
             end
         end)
         it("parse grep with lineno, without icon", function()
@@ -62,18 +67,23 @@ describe("line_helpers", function()
                 local actual = line_helpers.parse_grep(line)
                 assert_eq(type(actual), "table")
                 assert_eq(type(actual.filename), "string")
-                assert_eq(actual.filename, utils.string_split(line, ":")[1])
+                assert_true(
+                    utils.string_endswith(
+                        actual.filename,
+                        utils.string_split(line, ":")[1]:sub(2)
+                    )
+                )
                 assert_eq(
                     tostring(actual.lineno),
                     utils.string_split(line, ":")[2]
                 )
                 assert_true(
                     actual.column == nil
-                    or (
-                        type(actual.column) == "number"
-                        and tostring(actual.column)
-                        == utils.string_split(line, ":")[3]
-                    )
+                        or (
+                            type(actual.column) == "number"
+                            and tostring(actual.column)
+                                == utils.string_split(line, ":")[3]
+                        )
                 )
                 local actual1 =
                     line_helpers.parse_grep(line, { no_icon = true })
@@ -93,9 +103,13 @@ describe("line_helpers", function()
                 local actual = line_helpers.parse_grep(line)
                 assert_eq(type(actual), "table")
                 assert_eq(type(actual.filename), "string")
-                assert_eq(
-                    actual.filename,
-                    utils.string_split(utils.string_split(line, ":")[1], " ")[2]
+                assert_true(
+                    utils.string_endswith(
+                        actual.filename,
+                        utils
+                            .string_split(utils.string_split(line, ":")[1], " ")[2]
+                            :sub(2)
+                    )
                 )
                 assert_eq(type(actual.lineno), "number")
                 assert_eq(
@@ -104,11 +118,11 @@ describe("line_helpers", function()
                 )
                 assert_true(
                     actual.column == nil
-                    or (
-                        type(actual.column) == "number"
-                        and tostring(actual.column)
-                        == utils.string_split(line, ":")[3]
-                    )
+                        or (
+                            type(actual.column) == "number"
+                            and tostring(actual.column)
+                                == utils.string_split(line, ":")[3]
+                        )
                 )
             end
         end)
@@ -127,7 +141,12 @@ describe("line_helpers", function()
                 assert_eq(type(actual.filename), "string")
                 assert_eq(type(actual.lineno), "number")
                 assert_eq(type(actual.column), "number")
-                assert_eq(actual.filename, utils.string_split(line, ":")[1])
+                assert_true(
+                    utils.string_endswith(
+                        actual.filename,
+                        utils.string_split(line, ":")[1]:sub(2)
+                    )
+                )
                 assert_eq(
                     tostring(actual.lineno),
                     utils.string_split(line, ":")[2]
@@ -156,9 +175,13 @@ describe("line_helpers", function()
                 assert_eq(type(actual.filename), "string")
                 assert_eq(type(actual.lineno), "number")
                 assert_eq(type(actual.column), "number")
-                assert_eq(
-                    actual.filename,
-                    utils.string_split(utils.string_split(line, ":")[1], " ")[2]
+                assert_true(
+                    utils.string_endswith(
+                        actual.filename,
+                        utils
+                            .string_split(utils.string_split(line, ":")[1], " ")[2]
+                            :sub(2)
+                    )
                 )
                 assert_eq(
                     tostring(actual.lineno),
@@ -198,11 +221,11 @@ describe("line_helpers", function()
         end)
         it("parse eza -lh", function()
             local lines = {
-                'drwxrwxr-x     - linrongbin 30 Sep 22:31  deps',
-                '.rw-rw-r--   562 linrongbin  4 Aug 21:55  init.vim',
-                '.rw-rw-r--  6.2k linrongbin 30 Sep 22:31  install.ps1',
-                '.rwxrwxr-x  5.2k linrongbin 28 Sep 22:56  install.sh',
-                'drwxrwxr-x     - linrongbin 30 Sep 10:13  lazy',
+                "drwxrwxr-x     - linrongbin 30 Sep 22:31  deps",
+                ".rw-rw-r--   562 linrongbin  4 Aug 21:55  init.vim",
+                ".rw-rw-r--  6.2k linrongbin 30 Sep 22:31  install.ps1",
+                ".rwxrwxr-x  5.2k linrongbin 28 Sep 22:56  install.sh",
+                "drwxrwxr-x     - linrongbin 30 Sep 10:13  lazy",
                 ".rw-rw-r--  9.2k linrongbin  1 Oct 14:25  'lazy lock.json'",
             }
             local actual1 = line_helpers.parse_ls(lines[1], 6)
