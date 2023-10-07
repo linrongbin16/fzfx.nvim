@@ -1,0 +1,25 @@
+name: PR
+on:
+  pull_request: ~
+  push:
+    branches:
+      - main
+jobs:
+  pr_comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const name = '${{ github.workflow }}';
+            const url = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            const success = '${{ job.status }}' === 'success';
+            const body = `# Regression test`;
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            })
