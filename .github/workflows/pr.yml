@@ -11,6 +11,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Generate coverage reports
+      shell: bash
+      run: |
+        echo "ls ."
     - name: PR Comment
       uses: thollander/actions-comment-pull-request@v2
       with:
