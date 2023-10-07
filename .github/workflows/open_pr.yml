@@ -1,9 +1,6 @@
  OpenPR:
 on:
-  pull_request: ~
-  push:
-    branches:
-      - main
+  pull_request: main
 jobs:
   pr_comment:
     name: PR comment
