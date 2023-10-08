@@ -1,14 +1,14 @@
 Hi, thanks to your contribute, while please finish below tasks:
 
-## Regresion test
+# Regresion test
 
-### Platform
+## Platform
 
 - [ ] windows
 - [ ] macOS
 - [ ] linux
 
-### Tasks
+## Tasks
 
 - [ ] FzfxFiles
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
