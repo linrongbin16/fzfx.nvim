@@ -12,7 +12,6 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 local CommandConfig = require("fzfx.schema").CommandConfig
-local InteractionConfig = require("fzfx.schema").InteractionConfig
 
 --- @type table<string, FzfOpt>
 local default_fzf_options = {
@@ -1196,11 +1195,11 @@ local Defaults = {
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         interactions = {
-            delete_buffer = InteractionConfig:make({
+            delete_buffer = {
                 key = "ctrl-d",
                 interaction = require("fzfx.actions").bdelete,
                 reload_after_execute = true,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -2324,7 +2323,7 @@ local Defaults = {
             }),
         },
         interactions = {
-            cd = InteractionConfig:make({
+            cd = {
                 key = "ctrl-i",
                 interaction = function(line, context)
                     local splits = utils.string_split(line, " ")
@@ -2336,8 +2335,8 @@ local Defaults = {
                     end
                 end,
                 reload_after_execute = true,
-            }),
-            upper = InteractionConfig:make({
+            },
+            upper = {
                 key = "bs",
                 interaction = function(line, context)
                     local cwd = utils.readfile(context.cwd) --[[@as string]]
@@ -2353,7 +2352,7 @@ local Defaults = {
                     end
                 end,
                 reload_after_execute = true,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,

@@ -1,7 +1,6 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local general = require("fzfx.general")
-local InteractionConfig = require("fzfx.schema").InteractionConfig
 
 local function setup()
     local buffers_configs = conf.get_config().buffers
@@ -23,11 +22,11 @@ local function setup()
         and buffers_configs.interactions["delete_buffer"] == nil
     then
         local new_interactions = {}
-        new_interactions["delete_buffer"] = InteractionConfig:make({
+        new_interactions["delete_buffer"] = {
             key = buffers_configs.interactions[1],
             interaction = buffers_configs.interactions[2],
             reload_after_execute = true,
-        })
+        }
         buffers_configs.interactions = new_interactions
         deprecated = true
     end
