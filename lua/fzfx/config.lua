@@ -79,7 +79,7 @@ local default_unrestricted_find = {
 
 --- @param filename string
 --- @param lineno integer?
---- @return string[]
+--- @return fun():string[]
 local function make_file_previewer(filename, lineno)
     --- @return string[]
     local function wrap()
