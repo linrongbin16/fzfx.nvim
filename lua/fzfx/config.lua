@@ -2303,7 +2303,7 @@ local Defaults = {
         },
         providers = {
             filter_hidden = ProviderConfig:make({
-                key = "ctrl-i",
+                key = "ctrl-r",
                 provider = make_file_explorer_provider("-lh"),
                 provider_type = ProviderTypeEnum.COMMAND,
             }),
@@ -2325,7 +2325,7 @@ local Defaults = {
         },
         interactions = {
             cd = InteractionConfig:make({
-                key = "ctrl-l",
+                key = "ctrl-i",
                 interaction = function(line, context)
                     local splits = utils.string_split(line, " ")
                     local sub = splits[#splits]
@@ -2338,7 +2338,7 @@ local Defaults = {
                 reload_after_execute = true,
             }),
             upper = InteractionConfig:make({
-                key = "ctrl-h",
+                key = "bs",
                 interaction = function(line, context)
                     local cwd = utils.readfile(context.cwd) --[[@as string]]
                     local target = vim.fn.fnamemodify(cwd, ":h")
