@@ -220,6 +220,10 @@ end
 local InteractionConfig = {}
 
 function InteractionConfig:make(opts)
+    require("fzfx.deprecated").notify(
+        "deprecated 'InteractionConfig', please use lua table!"
+    )
+
     local o = opts or {}
     setmetatable(o, self)
     self.__index = self
@@ -237,7 +241,7 @@ local GroupConfig = {}
 
 function GroupConfig:make(opts)
     require("fzfx.deprecated").notify(
-        "deprecated 'GroupConfig', please use pure lua table!"
+        "deprecated 'GroupConfig', please use lua table!"
     )
 
     local o = opts or {}

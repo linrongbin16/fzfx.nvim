@@ -54,3 +54,10 @@ Hi, thanks to your contribute, while please finish below tasks:
   - Press `CTRL-U`/`CTRL-I` to switch between filter/include hidden files mode.
   - Press `CTRL-L`/`CTRL-H` to cd into folder and cd upper folder.
   - Press `ESC` to quit, `ENTER` to open file.
+- [ ] Backward Compatible
+  - Open with `nvim -u ./test/minimal_buffers_deprecate_init.lua` and test `FzfxBuffers`.
+  - Open with `nvim -u ./test/minimal_files_deprecate_init.lua` and test `FzfxFiles`.
+  - Open with `nvim -u ./test/minimal_git_branches_deprecate_init.lua` and test `FzfxGBranches`.
+  - Open with `nvim -u ./test/minimal_git_commits_deprecate_init.lua` and test `FzfxGCommits`.
+  - Open with `nvim -u ./test/minimal_git_files_deprecate_init.lua` and test `FzfxGFiles`.
+  - Open with `nvim -u ./test/minimal_live_grep_deprecate_init.lua` and test `FzfxLiveGrep`.

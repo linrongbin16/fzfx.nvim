@@ -12,7 +12,6 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 local CommandConfig = require("fzfx.schema").CommandConfig
-local InteractionConfig = require("fzfx.schema").InteractionConfig
 
 --- @type table<string, FzfOpt>
 local default_fzf_options = {
@@ -1196,11 +1195,11 @@ local Defaults = {
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         }),
         interactions = {
-            delete_buffer = InteractionConfig:make({
+            delete_buffer = {
                 key = "ctrl-d",
                 interaction = require("fzfx.actions").bdelete,
                 reload_after_execute = true,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -2324,8 +2323,10 @@ local Defaults = {
             }),
         },
         interactions = {
-            cd = InteractionConfig:make({
-                key = "ctrl-i",
+            cd = {
+                key = "alt-right",
+                --- @param line string
+                --- @param context {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
                 interaction = function(line, context)
                     local splits = utils.string_split(line, " ")
                     local sub = splits[#splits]
@@ -2336,9 +2337,11 @@ local Defaults = {
                     end
                 end,
                 reload_after_execute = true,
-            }),
-            upper = InteractionConfig:make({
-                key = "bs",
+            },
+            upper = {
+                key = "alt-left",
+                --- @param line string
+                --- @param context {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
                 interaction = function(line, context)
                     local cwd = utils.readfile(context.cwd) --[[@as string]]
                     local target = vim.fn.fnamemodify(cwd, ":h")
@@ -2353,7 +2356,7 @@ local Defaults = {
                     end
                 end,
                 reload_after_execute = true,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
