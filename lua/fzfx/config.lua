@@ -79,7 +79,7 @@ local default_unrestricted_find = {
 
 --- @param filename string
 --- @param lineno integer?
---- @return string[]
+--- @return fun():string[]
 local function make_file_previewer(filename, lineno)
     --- @return string[]
     local function wrap()
@@ -726,17 +726,22 @@ local function make_file_explorer_previewer()
     end
 
     if constants.has_eza then
-        local ok, start_pos = parse_eza_columns()
-        log.echo(
-            LogLevels.INFO,
-            "|make_file_explorer_previewer| ok:%s, start_pos:%s",
-            vim.inspect(ok),
-            vim.inspect(start_pos)
-        )
+        local ok, start_pos_or_err = parse_eza_columns()
+        -- log.echo(
+        --     LogLevels.INFO,
+        --     "|make_file_explorer_previewer| ok:%s, start_pos:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(start_pos)
+        -- )
         if ok then
-            parse_ls_start_pos = start_pos --[[@as integer]]
+            parse_ls_start_pos = start_pos_or_err --[[@as integer]]
         else
-            log.err(LogLevels.WARN, "failed to run '%s -lh'!", constants.eza)
+            log.echo(
+                LogLevels.WARN,
+                "failed to run '%s -lh'! %s",
+                constants.eza,
+                start_pos_or_err
+            )
         end
     end
 
