@@ -809,9 +809,9 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Minor break: move 'context_maker' option from 'providers' to 'other_opts' (in group config).
   - Minor break: drop support for 'line_type'/'line_delimiter'/'line_pos' option (in provider config).
 - 2023-10-07
-  - Deprecate: use lua table instead of 'GroupConfig' class.
+  - Deprecate: migrate 'GroupConfig' class to lua table.
 - 2023-10-08
-  - Deprecate: use lua table instead of 'InteractionConfig' class.
+  - Deprecate: migrate 'InteractionConfig' class to lua table.
 
 ## 🍀 Credit
 
