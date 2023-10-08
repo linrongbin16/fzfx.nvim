@@ -767,7 +767,15 @@ vim.keymap.set('n', '<space>xp', '<cmd>FzfxFileExplorer<cr>',
 
 ## 🔧 Configuration
 
-For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
+To configure options, please use:
+
+```lua
+require('fzfx').setup(option)
+```
+
+The `option` is an optional lua table that override the default options.
+
+For complete options and defaults, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
