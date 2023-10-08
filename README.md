@@ -769,6 +769,8 @@ vim.keymap.set('n', '<space>xp', '<cmd>FzfxFileExplorer<cr>',
 
 For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
+For advanced configurations, please check [wiki - Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
+
 If you have encounter some breaks on configuration, please see [Break Changes](#-break-changes).
 
 ### Create your own commands
