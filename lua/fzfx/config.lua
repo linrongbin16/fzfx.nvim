@@ -704,6 +704,7 @@ local function make_file_explorer_previewer()
             return false, nil
         end
         local eza_header_words = {
+            "Mode",
             "Permissions",
             "Size",
             "User",
