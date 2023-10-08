@@ -2325,7 +2325,7 @@ local Defaults = {
         },
         interactions = {
             cd = {
-                key = "alt-right",
+                key = "alt-l",
                 --- @param line string
                 --- @param context FileExplorerPipelineContext
                 interaction = function(line, context)
@@ -2340,7 +2340,7 @@ local Defaults = {
                 reload_after_execute = true,
             },
             upper = {
-                key = "alt-left",
+                key = "alt-h",
                 --- @param line string
                 --- @param context FileExplorerPipelineContext
                 interaction = function(line, context)
