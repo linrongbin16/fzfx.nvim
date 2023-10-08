@@ -78,23 +78,26 @@ end
 --- @param start integer?
 --- @return integer?
 local function string_find(s, c, start)
+    -- start = start or 1
+    -- local result = vim.fn.stridx(s, c, start - 1)
+    -- return result >= 0 and (result + 1) or nil
+
     start = start or 1
     for i = start, #s do
-        if string.byte(s, i) == string.byte(c) then
-            return i
+        local match = true
+        for j = 1, #c do
+            if i + j - 1 > #s then
+                match = false
+                break
+            end
+            local a = string.byte(s, i + j - 1)
+            local b = string.byte(c, j)
+            if a ~= b then
+                match = false
+                break
+            end
         end
-    end
-    return nil
-end
-
---- @param s string
---- @param c string
---- @param rstart integer?
---- @return integer?
-local function string_rfind(s, c, rstart)
-    rstart = rstart or #s
-    for i = rstart, 1, -1 do
-        if string.byte(s, i) == string.byte(c) then
+        if match then
             return i
         end
     end
@@ -725,7 +728,6 @@ local M = {
     string_empty = string_empty,
     string_not_empty = string_not_empty,
     string_find = string_find,
-    string_rfind = string_rfind,
     string_ltrim = string_ltrim,
     string_rtrim = string_rtrim,
     string_split = string_split,

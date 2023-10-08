@@ -40,12 +40,19 @@ local function reduce(p)
     return vim.fn.fnamemodify(p or vim.fn.getcwd(), ":~:.")
 end
 
+--- @param p string?
+--- @return string
+local function reduce2home(p)
+    return vim.fn.fnamemodify(p or vim.fn.getcwd(), ":~")
+end
+
 local M = {
     -- path
     normalize = normalize,
     join = join,
     shorten = shorten,
     reduce = reduce,
+    reduce2home = reduce2home,
 
     -- plugin dir
     base_dir = base_dir,

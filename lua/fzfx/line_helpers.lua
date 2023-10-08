@@ -96,7 +96,7 @@ local function parse_ls(line, start_pos)
         end
         pos = pos + 1
     end
-    return vim.fn.expand(path.normalize(line:sub(pos)))
+    return vim.fn.expand(path.normalize(vim.trim(line:sub(pos))))
 end
 
 --- @param line string
