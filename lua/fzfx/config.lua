@@ -727,16 +727,16 @@ local function make_file_explorer_previewer()
 
     if constants.has_eza then
         local ok, start_pos = parse_eza_columns()
-        log.echo(
-            LogLevels.INFO,
-            "|make_file_explorer_previewer| ok:%s, start_pos:%s",
-            vim.inspect(ok),
-            vim.inspect(start_pos)
-        )
+        -- log.echo(
+        --     LogLevels.INFO,
+        --     "|make_file_explorer_previewer| ok:%s, start_pos:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(start_pos)
+        -- )
         if ok then
             parse_ls_start_pos = start_pos --[[@as integer]]
         else
-            log.err(LogLevels.WARN, "failed to run '%s -lh'!", constants.eza)
+            log.echo(LogLevels.WARN, "failed to run '%s -lh'!", constants.eza)
         end
     end
 
