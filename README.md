@@ -769,6 +769,8 @@ vim.keymap.set('n', '<space>xp', '<cmd>FzfxFileExplorer<cr>',
 
 For complete options and default configurations, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
+For advanced configurations, please check [wiki - Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
+
 If you have encounter some breaks on configuration, please see [Break Changes](#-break-changes).
 
 ### Create your own commands
@@ -779,7 +781,6 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 
 - 2023-08-17
   - Break: re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
-  - Break: re-bind key 'ctrl-x' (delete buffer) on `FzfxBuffers` to 'ctrl-d'.
   - Break: re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 - 2023-08-19
   - Break: refactor configs schema for general fzf-based searching commands.
