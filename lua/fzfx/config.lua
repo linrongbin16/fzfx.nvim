@@ -613,59 +613,53 @@ local function make_file_explorer_provider(ls_args)
     return wrap
 end
 
---- @param delimiter string?
---- @param filename_pos integer?
---- @param lineno_pos integer?
---- @return fun(line:string):string[]|nil
-local function make_directory_previewer(delimiter, filename_pos, lineno_pos)
-    --- @param line string
-    --- @return string[]|nil
-    local function wrap(line)
-        log.debug(
-            "|fzfx.config - make_directory_previewer| delimiter:%s, filename_pos:%s, lineno_pos:%s",
-            vim.inspect(delimiter),
-            vim.inspect(filename_pos),
-            vim.inspect(lineno_pos)
-        )
-        log.debug(
-            "|fzfx.config - make_directory_previewer| line:%s",
-            vim.inspect(line)
-        )
-        local parsed =
-            line_helpers.PathLine:new(line, delimiter, filename_pos, lineno_pos)
-        if constants.has_eza then
-            return {
-                constants.eza,
-                "--color=always",
-                "-lha",
-                "--",
-                parsed.filename,
-            }
-        elseif vim.fn.executable("ls") > 0 then
-            return { "ls", "--color=always", "-lha", "--", parsed.filename }
-        elseif constants.is_windows then
-            return { "dir", "--", parsed.filename }
-        else
-            log.echo(LogLevels.INFO, "no ls/dir/eza/exa command found.")
-            return nil
-        end
+--- @param filename string
+--- @return string[]|nil
+local function directory_previewer(filename)
+    if constants.has_eza then
+        return {
+            constants.eza,
+            "--color=always",
+            "-lha",
+            "--",
+            filename,
+        }
+    elseif vim.fn.executable("ls") > 0 then
+        return { "ls", "--color=always", "-lha", "--", filename }
+    else
+        log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
+        return nil
     end
-    return wrap
 end
 
-local directory_previewer = make_directory_previewer()
-
 --- @param line string
---- @param context PipelineContext
+--- @param context FileExplorerPipelineContext
 --- @return string[]|nil
 local function file_explorer_previewer(line, context)
-    ---@diagnostic disable-next-line: undefined-field
     local cwd = utils.readfile(context.cwd)
-    local splits = utils.string_split(line, " ")
-    local p = path.join(cwd, splits[#splits])
+    local target = constants.has_eza and line_helpers.parse_ls(line, 6)
+        or line_helpers.parse_ls(line, 8)
+    if
+        (
+            utils.string_startswith(target, "'")
+            and utils.string_endswith(target, "'")
+        )
+        or (
+            utils.string_startswith(target, '"')
+            and utils.string_endswith(target, '"')
+        )
+    then
+        target = target:sub(2, #target - 1)
+    end
+    local p = path.join(cwd, target)
+    log.debug(
+        "|fzfx.config - file_explorer_previewer| cwd:%s, target:%s, p:%s",
+        vim.inspect(cwd),
+        vim.inspect(target),
+        vim.inspect(p)
+    )
     if vim.fn.filereadable(p) > 0 then
-        local filename = line_helpers.parse_find(p, { no_icon = true })
-        local impl = make_file_previewer(filename)
+        local impl = make_file_previewer(p)
         return impl()
     elseif vim.fn.isdirectory(p) > 0 then
         return directory_previewer(p)
