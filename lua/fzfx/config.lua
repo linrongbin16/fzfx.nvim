@@ -79,7 +79,7 @@ local default_unrestricted_find = {
 
 --- @param filename string
 --- @param lineno integer?
---- @return fun():string[]
+--- @return string[]
 local function make_file_previewer(filename, lineno)
     --- @return string[]
     local function wrap()
@@ -632,41 +632,157 @@ local function directory_previewer(filename)
     end
 end
 
---- @param line string
---- @param context FileExplorerPipelineContext
---- @return string[]|nil
-local function file_explorer_previewer(line, context)
-    line = vim.trim(line)
-    local cwd = utils.readfile(context.cwd)
-    local target = constants.has_eza and line_helpers.parse_ls(line, 5)
-        or line_helpers.parse_ls(line, 7)
-    if
-        (
-            utils.string_startswith(target, "'")
-            and utils.string_endswith(target, "'")
-        )
-        or (
-            utils.string_startswith(target, '"')
-            and utils.string_endswith(target, '"')
-        )
-    then
-        target = target:sub(2, #target - 1)
+--- @return fun(line:string,context:FileExplorerPipelineContext):string[]|nil
+local function make_file_explorer_previewer()
+    -- The `eza -lh` (`exa -lh`) in windows output looks like:
+    --
+    -- ```
+    -- Mode  Size Date Modified Name
+    -- d----    - 30 Sep 21:55  deps
+    -- -a---  585 22 Jul 14:26  init.vim
+    -- -a--- 6.4k 30 Sep 21:55  install.ps1
+    -- -a--- 5.3k 23 Sep 13:43  install.sh
+    -- ```
+    --
+    -- So file name starts from the 5th space.
+    --
+    -- While in macOS it looks like:
+    --
+    -- ```
+    -- Permissions Size User Date Modified Name
+    -- drwxr-xr-x     - linrongbin 28 Aug 12:39  autoload
+    -- drwxr-xr-x     - linrongbin 22 Sep 10:11  bin
+    -- .rw-r--r--   120 linrongbin  5 Sep 14:14  codecov.yml
+    -- .rw-r--r--  1.1k linrongbin 28 Aug 12:39  LICENSE
+    -- drwxr-xr-x     - linrongbin  8 Oct 09:14  lua
+    -- .rw-r--r--   28k linrongbin  8 Oct 11:37  README.md
+    -- drwxr-xr-x     - linrongbin  8 Oct 11:44  test
+    -- .rw-r--r--   28k linrongbin  8 Oct 12:10  test1-README.md
+    -- .rw-r--r--   28k linrongbin  8 Oct 12:10  test2-README.md
+    -- ```
+    --
+    -- File name starts from the 6th space.
+    --
+    -- You can see in different platform, there will be different fields: 'Permission', 'User', 'Mode'.
+    --
+    -- While the `ls -lh` in both windows and macOS always looks like the same:
+    --
+    -- windows:
+    -- ```
+    -- total 31K
+    -- -rwxrwxrwx 1 somebody somegroup  150 Aug  3 21:29 .editorconfig
+    -- drwxrwxrwx 1 somebody somegroup    0 Oct  8 12:02 .github
+    -- -rwxrwxrwx 1 somebody somegroup  363 Aug 30 15:51 .gitignore
+    -- -rwxrwxrwx 1 somebody somegroup  124 Sep 18 23:56 .luacheckrc
+    -- -rwxrwxrwx 1 somebody somegroup   68 Sep 11 21:58 .luacov
+    -- ```
+    --
+    -- macOS:
+    -- ```
+    -- total 184
+    -- -rw-r--r--   1 rlin  staff   1.0K Aug 28 12:39 LICENSE
+    -- -rw-r--r--   1 rlin  staff    27K Oct  8 11:37 README.md
+    -- drwxr-xr-x   3 rlin  staff    96B Aug 28 12:39 autoload
+    -- drwxr-xr-x   4 rlin  staff   128B Sep 22 10:11 bin
+    -- -rw-r--r--   1 rlin  staff   120B Sep  5 14:14 codecov.yml
+    -- ```
+    --
+    -- File name alawys starts from the 8th space for `ls -lh`.
+
+    local parse_ls_start_pos = 8
+    local run_eza_failed = false
+
+    --- @return boolean, integer?
+    local function parse_eza_columns()
+        local cmd = require("fzfx.cmd")
+        local run_cmd = cmd.Cmd:run({ constants.eza, "-lh" })
+        if run_cmd:wrong() then
+            return false, nil
+        end
+        local header = run_cmd.result.stdout[1]
+        if type(header) ~= "string" or string.len(header) == 0 then
+            return false, nil
+        end
+        local eza_header_words = {
+            "Permissions",
+            "Size",
+            "User",
+            "Date Modified",
+            "Name",
+        }
+        local columns = 0
+        for _, hword in ipairs(eza_header_words) do
+            if utils.string_find(header, hword) ~= nil then
+                -- log.echo(
+                --     LogLevels.INFO,
+                --     "|parse_eza_columns| search hword:%s",
+                --     vim.inspect(hword)
+                -- )
+                columns = columns + 1
+            end
+        end
+        return true, columns + 1
     end
-    local p = path.join(cwd, target)
-    log.debug(
-        "|fzfx.config - file_explorer_previewer| cwd:%s, target:%s, p:%s",
-        vim.inspect(cwd),
-        vim.inspect(target),
-        vim.inspect(p)
-    )
-    if vim.fn.filereadable(p) > 0 then
-        local impl = make_file_previewer(p)
-        return impl()
-    elseif vim.fn.isdirectory(p) > 0 then
-        return directory_previewer(p)
-    else
-        return nil
+
+    if constants.has_eza then
+        local ok, start_pos = parse_eza_columns()
+        log.echo(
+            LogLevels.INFO,
+            "|make_file_explorer_previewer| ok:%s, start_pos:%s",
+            vim.inspect(ok),
+            vim.inspect(start_pos)
+        )
+        if ok then
+            parse_ls_start_pos = start_pos --[[@as integer]]
+        else
+            log.err(LogLevels.WARN, "failed to run '%s -lh'!", constants.eza)
+        end
     end
+
+    --- @param line string
+    --- @param context FileExplorerPipelineContext
+    --- @return string[]|nil
+    local function impl(line, context)
+        if run_eza_failed then
+            log.echo(LogLevels.INFO, "failed to run 'eza -lh'.")
+            return nil
+        end
+        log.debug(
+            "|fzfx.config - make_file_explorer_previewer.impl| parse_ls_start_pos:%s",
+            vim.inspect(parse_ls_start_pos)
+        )
+        line = vim.trim(line)
+        local cwd = utils.readfile(context.cwd)
+        local target = line_helpers.parse_ls(line, parse_ls_start_pos)
+        if
+            (
+                utils.string_startswith(target, "'")
+                and utils.string_endswith(target, "'")
+            )
+            or (
+                utils.string_startswith(target, '"')
+                and utils.string_endswith(target, '"')
+            )
+        then
+            target = target:sub(2, #target - 1)
+        end
+        local p = path.join(cwd, target)
+        log.debug(
+            "|fzfx.config - make_file_explorer_previewer| cwd:%s, target:%s, p:%s",
+            vim.inspect(cwd),
+            vim.inspect(target),
+            vim.inspect(p)
+        )
+        if vim.fn.filereadable(p) > 0 then
+            local preview = make_file_previewer(p)
+            return preview()
+        elseif vim.fn.isdirectory(p) > 0 then
+            return directory_previewer(p)
+        else
+            return nil
+        end
+    end
+    return impl
 end
 
 --- @param lines string[]
@@ -2309,11 +2425,11 @@ local Defaults = {
         },
         previewers = {
             filter_hidden = PreviewerConfig:make({
-                previewer = file_explorer_previewer,
+                previewer = make_file_explorer_previewer(),
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
             include_hidden = PreviewerConfig:make({
-                previewer = file_explorer_previewer,
+                previewer = make_file_explorer_previewer(),
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             }),
         },

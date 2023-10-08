@@ -80,7 +80,17 @@ end
 local function string_find(s, c, start)
     start = start or 1
     for i = start, #s do
-        if string.byte(s, i) == string.byte(c) then
+        local match = true
+        for j = 1, #c do
+            if
+                i + j - 1 > #c
+                or string.byte(s, i + j - 1) ~= string.byte(c, j)
+            then
+                match = false
+                break
+            end
+        end
+        if match then
             return i
         end
     end
