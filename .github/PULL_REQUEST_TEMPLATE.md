@@ -51,8 +51,8 @@ Thanks to your contribute, while please finish below tasks:
   - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxFileExplorer
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
-  - Press `CTRL-U`/`CTRL-I` to switch between filter/include hidden files mode.
-  - Press `CTRL-L`/`CTRL-H` to cd into folder and cd upper folder.
+  - Press `CTRL-U`/`CTRL-R` to switch between filter/include hidden files mode.
+  - Press `ALT-L`/`ALT-H` to cd into folder and cd upper folder.
   - Press `ESC` to quit, `ENTER` to open file.
 - [ ] Backward Compatible
   - Open with `nvim -u ./test/minimal_buffers_deprecate_init.lua` and test `FzfxBuffers`.
