@@ -825,7 +825,7 @@ local Defaults = {
     files = {
         commands = {
             -- normal
-            CommandConfig:make({
+            {
                 name = "FzfxFiles",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -835,8 +835,8 @@ local Defaults = {
                     desc = "Find files",
                 },
                 default_provider = "restricted_mode",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFilesU",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -846,9 +846,9 @@ local Defaults = {
                     desc = "Find files",
                 },
                 default_provider = "unrestricted_mode",
-            }),
+            },
             -- visual
-            CommandConfig:make({
+            {
                 name = "FzfxFilesV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -857,8 +857,8 @@ local Defaults = {
                     desc = "Find files by visual select",
                 },
                 default_provider = "restricted_mode",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFilesUV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -867,9 +867,9 @@ local Defaults = {
                     desc = "Find files unrestricted by visual select",
                 },
                 default_provider = "unrestricted_mode",
-            }),
+            },
             -- cword
-            CommandConfig:make({
+            {
                 name = "FzfxFilesW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -877,8 +877,8 @@ local Defaults = {
                     desc = "Find files by cursor word",
                 },
                 default_provider = "restricted_mode",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFilesUW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -886,9 +886,9 @@ local Defaults = {
                     desc = "Find files unrestricted by cursor word",
                 },
                 default_provider = "unrestricted_mode",
-            }),
+            },
             -- put
-            CommandConfig:make({
+            {
                 name = "FzfxFilesP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -896,8 +896,8 @@ local Defaults = {
                     desc = "Find files by yank text",
                 },
                 default_provider = "restricted_mode",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFilesUP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -905,7 +905,7 @@ local Defaults = {
                     desc = "Find files unrestricted by yank text",
                 },
                 default_provider = "unrestricted_mode",
-            }),
+            },
         },
         providers = {
             restricted_mode = ProviderConfig:make({
@@ -952,7 +952,7 @@ local Defaults = {
     live_grep = {
         commands = {
             -- normal
-            CommandConfig:make({
+            {
                 name = "FzfxLiveGrep",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -961,8 +961,8 @@ local Defaults = {
                     desc = "Live grep",
                 },
                 default_provider = "restricted_mode",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxLiveGrepU",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -971,9 +971,9 @@ local Defaults = {
                     desc = "Live grep unrestricted",
                 },
                 default_provider = "unrestricted_mode",
-            }),
+            },
             -- visual
-            CommandConfig:make({
+            {
                 name = "FzfxLiveGrepV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -982,8 +982,8 @@ local Defaults = {
                     desc = "Live grep by visual select",
                 },
                 default_provider = "restricted_mode",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxLiveGrepUV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -992,9 +992,9 @@ local Defaults = {
                     desc = "Live grep unrestricted by visual select",
                 },
                 default_provider = "unrestricted_mode",
-            }),
+            },
             -- cword
-            CommandConfig:make({
+            {
                 name = "FzfxLiveGrepW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -1002,8 +1002,8 @@ local Defaults = {
                     desc = "Live grep by cursor word",
                 },
                 default_provider = "restricted_mode",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxLiveGrepUW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -1011,9 +1011,9 @@ local Defaults = {
                     desc = "Live grep unrestricted by cursor word",
                 },
                 default_provider = "unrestricted_mode",
-            }),
+            },
             -- put
-            CommandConfig:make({
+            {
                 name = "FzfxLiveGrepP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -1021,8 +1021,8 @@ local Defaults = {
                     desc = "Live grep by yank text",
                 },
                 default_provider = "restricted_mode",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxLiveGrepUP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -1030,7 +1030,7 @@ local Defaults = {
                     desc = "Live grep unrestricted by yank text",
                 },
                 default_provider = "unrestricted_mode",
-            }),
+            },
         },
         providers = {
             restricted_mode = ProviderConfig:make({
@@ -1233,7 +1233,7 @@ local Defaults = {
     buffers = {
         commands = {
             -- normal
-            CommandConfig:make({
+            {
                 name = "FzfxBuffers",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -1242,9 +1242,9 @@ local Defaults = {
                     complete = "file",
                     desc = "Find buffers",
                 },
-            }),
+            },
             -- visual
-            CommandConfig:make({
+            {
                 name = "FzfxBuffersV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -1252,25 +1252,25 @@ local Defaults = {
                     range = true,
                     desc = "Find buffers by visual select",
                 },
-            }),
+            },
             -- cword
-            CommandConfig:make({
+            {
                 name = "FzfxBuffersW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Find buffers by cursor word",
                 },
-            }),
+            },
             -- put
-            CommandConfig:make({
+            {
                 name = "FzfxBuffersP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Find buffers by yank text",
                 },
-            }),
+            },
         },
         providers = ProviderConfig:make({
             key = "default",
@@ -1342,7 +1342,7 @@ local Defaults = {
     git_files = {
         commands = {
             -- normal
-            CommandConfig:make({
+            {
                 name = "FzfxGFiles",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -1352,8 +1352,8 @@ local Defaults = {
                     desc = "Find git files",
                 },
                 default_provider = "workspace",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGFilesC",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -1363,9 +1363,9 @@ local Defaults = {
                     desc = "Find git files in current directory",
                 },
                 default_provider = "current_folder",
-            }),
+            },
             -- visual
-            CommandConfig:make({
+            {
                 name = "FzfxGFilesV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -1374,8 +1374,8 @@ local Defaults = {
                     desc = "Find git files by visual select",
                 },
                 default_provider = "workspace",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGFilesCV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -1384,9 +1384,9 @@ local Defaults = {
                     desc = "Find git files in current directory by visual select",
                 },
                 default_provider = "current_folder",
-            }),
+            },
             -- cword
-            CommandConfig:make({
+            {
                 name = "FzfxGFilesW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -1394,8 +1394,8 @@ local Defaults = {
                     desc = "Find git files by cursor word",
                 },
                 default_provider = "workspace",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGFilesCW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -1403,9 +1403,9 @@ local Defaults = {
                     desc = "Find git files in current directory by cursor word",
                 },
                 default_provider = "current_folder",
-            }),
+            },
             -- put
-            CommandConfig:make({
+            {
                 name = "FzfxGFilesP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -1413,8 +1413,8 @@ local Defaults = {
                     desc = "Find git files by yank text",
                 },
                 default_provider = "workspace",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGFilesCP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -1422,7 +1422,7 @@ local Defaults = {
                     desc = "Find git files in current directory by yank text",
                 },
                 default_provider = "current_folder",
-            }),
+            },
         },
         providers = {
             current_folder = ProviderConfig:make({
@@ -1467,7 +1467,7 @@ local Defaults = {
     git_branches = {
         commands = {
             -- normal
-            CommandConfig:make({
+            {
                 name = "FzfxGBranches",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -1477,8 +1477,8 @@ local Defaults = {
                     desc = "Search local git branches",
                 },
                 default_provider = "local_branch",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGBranchesR",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -1488,9 +1488,9 @@ local Defaults = {
                     desc = "Search remote git branches",
                 },
                 default_provider = "remote_branch",
-            }),
+            },
             -- visual
-            CommandConfig:make({
+            {
                 name = "FzfxGBranchesV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -1499,8 +1499,8 @@ local Defaults = {
                     desc = "Search local git branches by visual select",
                 },
                 default_provider = "local_branch",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGBranchesRV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -1509,9 +1509,9 @@ local Defaults = {
                     desc = "Search remote git branches by visual select",
                 },
                 default_provider = "remote_branch",
-            }),
+            },
             -- cword
-            CommandConfig:make({
+            {
                 name = "FzfxGBranchesW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -1519,8 +1519,8 @@ local Defaults = {
                     desc = "Search local git branches by cursor word",
                 },
                 default_provider = "local_branch",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGBranchesRW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -1528,9 +1528,9 @@ local Defaults = {
                     desc = "Search remote git branches by cursor word",
                 },
                 default_provider = "remote_branch",
-            }),
+            },
             -- put
-            CommandConfig:make({
+            {
                 name = "FzfxGBranchesP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -1538,8 +1538,8 @@ local Defaults = {
                     desc = "Search local git branches by yank text",
                 },
                 default_provider = "local_branch",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGBranchesRP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -1547,7 +1547,7 @@ local Defaults = {
                     desc = "Search remote git branches by yank text",
                 },
                 default_provider = "remote_branch",
-            }),
+            },
         },
         providers = {
             local_branch = ProviderConfig:make({
@@ -1706,7 +1706,7 @@ local Defaults = {
     git_commits = {
         commands = {
             -- normal
-            CommandConfig:make({
+            {
                 name = "FzfxGCommits",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -1715,8 +1715,8 @@ local Defaults = {
                     desc = "Search git commits",
                 },
                 default_provider = "all_commits",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGCommitsB",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -1725,9 +1725,9 @@ local Defaults = {
                     desc = "Search git commits only on current buffer",
                 },
                 default_provider = "buffer_commits",
-            }),
+            },
             -- visual
-            CommandConfig:make({
+            {
                 name = "FzfxGCommitsV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -1736,8 +1736,8 @@ local Defaults = {
                     desc = "Search git commits by visual select",
                 },
                 default_provider = "all_commits",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGCommitsBV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -1746,9 +1746,9 @@ local Defaults = {
                     desc = "Search git commits only on current buffer by visual select",
                 },
                 default_provider = "buffer_commits",
-            }),
+            },
             -- cword
-            CommandConfig:make({
+            {
                 name = "FzfxGCommitsW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -1756,8 +1756,8 @@ local Defaults = {
                     desc = "Search git commits by cursor word",
                 },
                 default_provider = "all_commits",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGCommitsBW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -1765,9 +1765,9 @@ local Defaults = {
                     desc = "Search git commits only on current buffer by cursor word",
                 },
                 default_provider = "buffer_commits",
-            }),
+            },
             -- put
-            CommandConfig:make({
+            {
                 name = "FzfxGCommitsP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -1775,8 +1775,8 @@ local Defaults = {
                     desc = "Search git commits by yank text",
                 },
                 default_provider = "all_commits",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxGCommitsBP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -1784,7 +1784,7 @@ local Defaults = {
                     desc = "Search git commits only on current buffer by yank text",
                 },
                 default_provider = "buffer_commits",
-            }),
+            },
         },
         providers = {
             all_commits = ProviderConfig:make({
@@ -1859,7 +1859,7 @@ local Defaults = {
     git_blame = {
         commands = {
             -- normal
-            CommandConfig:make({
+            {
                 name = "FzfxGBlame",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -1867,9 +1867,9 @@ local Defaults = {
                     nargs = "?",
                     desc = "Search git commits",
                 },
-            }),
+            },
             -- visual
-            CommandConfig:make({
+            {
                 name = "FzfxGBlameV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -1877,25 +1877,25 @@ local Defaults = {
                     range = true,
                     desc = "Search git commits by visual select",
                 },
-            }),
+            },
             -- cword
-            CommandConfig:make({
+            {
                 name = "FzfxGBlameW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
                     desc = "Search git commits by cursor word",
                 },
-            }),
+            },
             -- put
-            CommandConfig:make({
+            {
                 name = "FzfxGBlameP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
                     desc = "Search git commits by yank text",
                 },
-            }),
+            },
         },
         providers = {
             default = ProviderConfig:make({
@@ -1953,7 +1953,7 @@ local Defaults = {
     lsp_diagnostics = {
         commands = {
             -- normal
-            CommandConfig:make({
+            {
                 name = "FzfxLspDiagnostics",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -1962,8 +1962,8 @@ local Defaults = {
                     desc = "Search lsp diagnostics on workspace",
                 },
                 default_provider = "workspace_diagnostics",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxLspDiagnosticsB",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -1972,9 +1972,9 @@ local Defaults = {
                     desc = "Search lsp diagnostics on current buffer",
                 },
                 default_provider = "buffer_diagnostics",
-            }),
+            },
             -- visual
-            CommandConfig:make({
+            {
                 name = "FzfxLspDiagnosticsV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -1983,8 +1983,8 @@ local Defaults = {
                     desc = "Search lsp diagnostics on workspace by visual select",
                 },
                 default_provider = "workspace_diagnostics",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxLspDiagnosticsBV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -1993,9 +1993,9 @@ local Defaults = {
                     desc = "Search lsp diagnostics on current buffer by visual select",
                 },
                 default_provider = "buffer_diagnostics",
-            }),
+            },
             -- cword
-            CommandConfig:make({
+            {
                 name = "FzfxLspDiagnosticsW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -2003,8 +2003,8 @@ local Defaults = {
                     desc = "Search lsp diagnostics on workspace by cursor word",
                 },
                 default_provider = "workspace_diagnostics",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxLspDiagnosticsBW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -2012,9 +2012,9 @@ local Defaults = {
                     desc = "Search lsp diagnostics on current buffer by cursor word",
                 },
                 default_provider = "buffer_diagnostics",
-            }),
+            },
             -- put
-            CommandConfig:make({
+            {
                 name = "FzfxLspDiagnosticsP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -2022,8 +2022,8 @@ local Defaults = {
                     desc = "Search lsp diagnostics on workspace by yank text",
                 },
                 default_provider = "workspace_diagnostics",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxLspDiagnosticsBP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -2031,7 +2031,7 @@ local Defaults = {
                     desc = "Search lsp diagnostics on current buffer by yank text",
                 },
                 default_provider = "buffer_diagnostics",
-            }),
+            },
         },
         providers = {
             workspace_diagnostics = ProviderConfig:make({
@@ -2338,7 +2338,7 @@ local Defaults = {
     --- @type GroupConfig
     file_explorer = {
         commands = {
-            CommandConfig:make({
+            {
                 name = "FzfxFileExplorer",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -2348,8 +2348,8 @@ local Defaults = {
                     desc = "File explorer (ls -l)",
                 },
                 default_provider = "filter_hidden",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFileExplorerU",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
@@ -2359,8 +2359,8 @@ local Defaults = {
                     desc = "File explorer (ls -la)",
                 },
                 default_provider = "include_hidden",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFileExplorerV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -2369,8 +2369,8 @@ local Defaults = {
                     desc = "File explorer (ls -l) by visual select",
                 },
                 default_provider = "filter_hidden",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFileExplorerUV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
@@ -2379,8 +2379,8 @@ local Defaults = {
                     desc = "File explorer (ls -la) by visual select",
                 },
                 default_provider = "include_hidden",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFileExplorerW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -2388,8 +2388,8 @@ local Defaults = {
                     desc = "File explorer (ls -l) by cursor word",
                 },
                 default_provider = "filter_hidden",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFileExplorerUW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
@@ -2397,8 +2397,8 @@ local Defaults = {
                     desc = "File explorer (ls -la) by cursor word",
                 },
                 default_provider = "include_hidden",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFileExplorerP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -2406,8 +2406,8 @@ local Defaults = {
                     desc = "File explorer (ls -l) by yank text",
                 },
                 default_provider = "filter_hidden",
-            }),
-            CommandConfig:make({
+            },
+            {
                 name = "FzfxFileExplorerUP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
@@ -2415,7 +2415,7 @@ local Defaults = {
                     desc = "File explorer (ls -la) by yank text",
                 },
                 default_provider = "include_hidden",
-            }),
+            },
         },
         providers = {
             filter_hidden = ProviderConfig:make({
