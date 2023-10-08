@@ -2324,7 +2324,7 @@ local Defaults = {
         },
         interactions = {
             cd = {
-                key = "shift-right",
+                key = "alt-right",
                 interaction = function(line, context)
                     local splits = utils.string_split(line, " ")
                     local sub = splits[#splits]
@@ -2337,7 +2337,7 @@ local Defaults = {
                 reload_after_execute = true,
             },
             upper = {
-                key = "shift-left",
+                key = "alt-left",
                 interaction = function(line, context)
                     local cwd = utils.readfile(context.cwd) --[[@as string]]
                     local target = vim.fn.fnamemodify(cwd, ":h")
