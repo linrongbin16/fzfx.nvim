@@ -105,20 +105,6 @@ local function string_find(s, c, start)
 end
 
 --- @param s string
---- @param c string
---- @param rstart integer?
---- @return integer?
-local function string_rfind(s, c, rstart)
-    rstart = rstart or #s
-    for i = rstart, 1, -1 do
-        if string.byte(s, i) == string.byte(c) then
-            return i
-        end
-    end
-    return nil
-end
-
---- @param s string
 --- @param t string?
 --- @return string
 local function string_ltrim(s, t)
@@ -742,7 +728,6 @@ local M = {
     string_empty = string_empty,
     string_not_empty = string_not_empty,
     string_find = string_find,
-    string_rfind = string_rfind,
     string_ltrim = string_ltrim,
     string_rtrim = string_rtrim,
     string_split = string_split,
