@@ -573,13 +573,12 @@ end
 --- @return fun(query:string,context:PipelineContext):string?
 local function make_file_explorer_provider(ls_args)
     --- @param query string
-    --- @param context PipelineContext
+    --- @param context FileExplorerPipelineContext
     --- @return string?
     local function wrap(query, context)
-        ---@diagnostic disable-next-line: undefined-field
         local cwd = utils.readfile(context.cwd)
         if not constants.is_windows then
-            cwd = vim.fn.fnamemodify(cwd, ":~")
+            cwd = path.reduce2home(cwd)
         end
         if constants.has_eza then
             return vim.fn.executable("echo") > 0
