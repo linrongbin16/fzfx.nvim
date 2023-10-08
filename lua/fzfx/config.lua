@@ -555,10 +555,11 @@ end
 
 -- file explorer {
 
+--- @alias FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
+--- @return FileExplorerPipelineContext
 local function file_explorer_context_maker()
     local temp = vim.fn.tempname()
     utils.writefile(temp, vim.fn.getcwd())
-    --- @type PipelineContext
     local context = {
         bufnr = vim.api.nvim_get_current_buf(),
         winnr = vim.api.nvim_get_current_win(),
@@ -2326,7 +2327,7 @@ local Defaults = {
             cd = {
                 key = "alt-right",
                 --- @param line string
-                --- @param context {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
+                --- @param context FileExplorerPipelineContext
                 interaction = function(line, context)
                     local splits = utils.string_split(line, " ")
                     local sub = splits[#splits]
@@ -2341,7 +2342,7 @@ local Defaults = {
             upper = {
                 key = "alt-left",
                 --- @param line string
-                --- @param context {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
+                --- @param context FileExplorerPipelineContext
                 interaction = function(line, context)
                     local cwd = utils.readfile(context.cwd) --[[@as string]]
                     local target = vim.fn.fnamemodify(cwd, ":h")
