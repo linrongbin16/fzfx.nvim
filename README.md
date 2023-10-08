@@ -779,7 +779,7 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
 
 - 2023-08-17
   - Break: re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
-  - Break: re-bind key 'ctrl-x' (delete buffer on `FzfxBuffers`) to 'ctrl-d'.
+  - Break: re-bind key 'ctrl-x' (delete buffer) on `FzfxBuffers` to 'ctrl-d'.
   - Break: re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
 - 2023-08-19
   - Break: refactor configs schema for general fzf-based searching commands.
@@ -800,7 +800,7 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Minor break: move 'context_maker' option from 'providers' to 'other_opts' (in group config).
   - Minor break: drop support for 'line_type'/'line_delimiter'/'line_pos' option (in provider config).
 - 2023-10-07
-  - Deprecate: migrate 'GroupConfig' class to pure lua table.
+  - Deprecate: migrate 'GroupConfig' class to lua table.
 
 ## 🍀 Credit
 
