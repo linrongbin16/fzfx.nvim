@@ -636,9 +636,10 @@ end
 --- @param context FileExplorerPipelineContext
 --- @return string[]|nil
 local function file_explorer_previewer(line, context)
+    line = vim.trim(line)
     local cwd = utils.readfile(context.cwd)
-    local target = constants.has_eza and line_helpers.parse_ls(line, 6)
-        or line_helpers.parse_ls(line, 8)
+    local target = constants.has_eza and line_helpers.parse_ls(line, 5)
+        or line_helpers.parse_ls(line, 7)
     if
         (
             utils.string_startswith(target, "'")
