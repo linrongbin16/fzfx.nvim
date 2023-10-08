@@ -333,22 +333,22 @@ Especially for git commands:
   </tr>
   <tr>
     <td rowspan="4">Git Files</td>
-    <td>FzfxGFiles</td>
+    <td>FzfxGFiles(C)</td>
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4"></td>
   </tr>
   <tr>
-    <td>FzfxGFilesV</td>
+    <td>FzfxGFiles(C)V</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGFilesW</td>
+    <td>FzfxGFiles(C)W</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGFilesP</td>
+    <td>FzfxGFiles(C)P</td>
     <td>N</td>
   </tr>
   <tr>
