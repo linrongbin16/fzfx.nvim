@@ -1,4 +1,4 @@
-Hi, thanks to your contribute, while please finish below tasks:
+Thanks to your contribute, while please finish below tasks:
 
 # Regresion test
 
