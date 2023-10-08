@@ -810,6 +810,8 @@ To create your own commands, please see [A General Schema for Creating FZF Comma
   - Minor break: drop support for 'line_type'/'line_delimiter'/'line_pos' option (in provider config).
 - 2023-10-07
   - Deprecate: migrate 'GroupConfig' class to lua table.
+- 2023-10-08
+  - Deprecate: migrate 'InteractionConfig' class to lua table.
 
 ## 🍀 Credit
 
