@@ -144,6 +144,7 @@
 
 * lower minimal required version v0.6 ([#245](https://github.com/linrongbin16/fzfx.nvim/issues/245)) ([89eb334](https://github.com/linrongbin16/fzfx.nvim/commit/89eb334df7920a75386b659cd007a3ec5ea6fe13))
 
+
 ### Break Changes
 
 * 2023-08-17
