@@ -264,5 +264,31 @@ describe("actions", function()
                 assert_eq(actual.edit[i], expect)
             end
         end)
+        it("run edit file command without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "README.md",
+                "lua/fzfx.lua",
+                "lua/fzfx/config.lua",
+                "lua/fzfx/test/goodbye world/goodbye.lua",
+                "lua/fzfx/test/goodbye world/world.txt",
+                "lua/fzfx/test/hello world.txt",
+            }
+            actions.edit_find(lines)
+            assert_true(true)
+        end)
+        it("run edit file command with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " README.md",
+                "󰢱 lua/fzfx.lua",
+                "󰢱 lua/fzfx/config.lua",
+                "󰢱 lua/fzfx/test/goodbye world/goodbye.lua",
+                "󰢱 lua/fzfx/test/goodbye world/world.txt",
+                "󰢱 lua/fzfx/test/hello world.txt",
+            }
+            actions.edit_find(lines)
+            assert_true(true)
+        end)
     end)
 end)
