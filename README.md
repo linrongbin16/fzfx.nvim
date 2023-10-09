@@ -32,7 +32,6 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [Lua](#lua)
 - [Configuration](#-configuration)
   - [Create your own commands](#create-your-own-commands)
-- [Break Changes](#-break-changes)
 - [Credit](#-credit)
 - [Development](#-development)
 - [Contribute](#-contribute)
@@ -779,39 +778,11 @@ For complete options and defaults, please check [config.lua](https://github.com/
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
-If you have encounter some breaks on configuration, please see [Break Changes](#-break-changes).
+If you have encounter some breaks on configuration, please see [CHANGELOG](https://github.com/linrongbin16/fzfx.nvim/blob/main/CHANGELOG.md).
 
 ### Create your own commands
 
 To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
-
-## 💩 Break Changes
-
-- 2023-08-17
-  - Break: re-bind keys 'ctrl-e', 'ctrl-a' to 'toggle', 'toggle-all', remove 'ctrl-d'(deselect), 'alt-a'(deselect-all).
-  - Break: re-bind key 'ctrl-l' (toggle-preview) to 'alt-p'.
-- 2023-08-19
-  - Break: refactor configs schema for general fzf-based searching commands.
-- 2023-08-28
-  - Deprecate: migrate 'git_commits' (`FzfxGCommits`) configs to new schema.
-- 2023-08-30
-  - Deprecate: migrate 'buffers' (`FzfxBuffers`) configs to new schema.
-- 2023-09-11
-  - Deprecate: migrate 'git_branches' (`FzfxGBranches`) configs to new schema.
-- 2023-09-12
-  - Deprecate: migrate 'git_files' (`FzfxGFiles`) configs to new schema.
-- 2023-09-19
-  - Deprecate: migrate 'live_grep' (`FzfxLiveGrep`) configs to new schema.
-  - Deprecate: migrate 'files' (`FzfxFiles`) configs new schema.
-- 2023-09-26
-  - Break: drop support for Neovim v0.5.0, require minimal version &ge; v0.6.0.
-- 2023-09-27
-  - Minor break: move 'context_maker' option from 'providers' to 'other_opts' (in group config).
-  - Minor break: drop support for 'line_type'/'line_delimiter'/'line_pos' option (in provider config).
-- 2023-10-07
-  - Deprecate: migrate 'GroupConfig' class to lua table.
-- 2023-10-08
-  - Deprecate: migrate 'InteractionConfig' class to lua table.
 
 ## 🍀 Credit
 
