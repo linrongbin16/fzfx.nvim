@@ -86,13 +86,11 @@ Install with the below 3 options:
 
   <img alt="install-windows-git1.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git1.png" width="70%" />
 
-- In **Adjusting your PATH environment**, select **Use Git and optional Unix tools
-  from the Command Prompt**.
+- In **Adjusting your PATH environment**, select **Use Git and optional Unix tools from the Command Prompt**.
 
   <img alt="install-windows-git2.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git2.png" width="70%" />
 
-- In **Configuring the terminal emulator to use with Git Bash**, select **Use Windows's
-  default console window**.
+- In **Configuring the terminal emulator to use with Git Bash**, select **Use Windows's default console window**.
 
   <img alt="install-windows-git3.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git3.png" width="70%" />
 
@@ -213,7 +211,7 @@ require("lazy").setup({
     { "junegunn/fzf", build = ":call fzf#install()" },
     {
         "linrongbin16/fzfx.nvim",
-        dependencies = { "junegunn/fzf" },
+        dependencies = { "junegunn/fzf", "nvim-tree/nvim-web-devicons" },
         config = function()
             require("fzfx").setup()
         end
