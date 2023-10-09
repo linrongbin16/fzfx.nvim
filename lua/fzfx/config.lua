@@ -791,11 +791,11 @@ local function make_file_explorer_previewer()
 end
 
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context FileExplorerPipelineContext
 --- @return any
 local function edit_file_explorer(lines, context)
     ---@diagnostic disable-next-line: undefined-field
-    local cwd = utils.readfile(context.cwd) --[[@as string]]
+    local cwd = utils.readfile(context.cwd)
     log.debug(
         "|fzfx.config - file_explorer.actions| cwd:%s, lines:%s",
         vim.inspect(cwd),
