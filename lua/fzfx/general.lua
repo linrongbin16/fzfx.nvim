@@ -12,9 +12,23 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local clazz = require("fzfx.clazz")
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
-local CommandConfig = require("fzfx.schema").CommandConfig
 
 local DEFAULT_PIPELINE = "default"
+
+-- config class detect {
+
+--- @param cfg Configs
+--- @return boolean
+local function is_command_config(cfg)
+    return type(cfg) == "table"
+        and type(cfg.name) == "string"
+        and string.len(cfg.name) > 0
+        and type(cfg.feed) == "string"
+        and string.len(cfg.feed) > 0
+        and type(cfg.opts) == "table"
+end
+
+-- config class detect }
 
 -- provider switch {
 
@@ -864,7 +878,7 @@ local function setup(name, pipeline_configs)
     --     vim.inspect(pipeline_configs)
     -- )
     -- User commands
-    if clazz.instanceof(pipeline_configs.commands, CommandConfig) then
+    if is_command_config(pipeline_configs.commands) then
         vim.api.nvim_create_user_command(
             pipeline_configs.commands.name,
             function(opts)

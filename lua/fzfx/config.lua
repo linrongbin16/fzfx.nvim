@@ -11,7 +11,6 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
-local CommandConfig = require("fzfx.schema").CommandConfig
 
 --- @type table<string, FzfOpt>
 local default_fzf_options = {
@@ -2093,14 +2092,14 @@ local Defaults = {
     -- the 'Lsp Definitions' command
     --- @type GroupConfig
     lsp_definitions = {
-        commands = CommandConfig:make({
+        commands = {
             name = "FzfxLspDefinitions",
             feed = CommandFeedEnum.ARGS,
             opts = {
                 bang = true,
                 desc = "Search lsp definitions",
             },
-        }),
+        },
         providers = ProviderConfig:make({
             key = "default",
             provider = function(query, context)
@@ -2154,14 +2153,14 @@ local Defaults = {
     -- the 'Lsp Type Definitions' command
     --- @type GroupConfig
     lsp_type_definitions = {
-        commands = CommandConfig:make({
+        commands = {
             name = "FzfxLspTypeDefinitions",
             feed = CommandFeedEnum.ARGS,
             opts = {
                 bang = true,
                 desc = "Search lsp type definitions",
             },
-        }),
+        },
         providers = ProviderConfig:make({
             key = "default",
             provider = function(query, context)
@@ -2215,14 +2214,14 @@ local Defaults = {
     -- the 'Lsp References' command
     --- @type GroupConfig
     lsp_references = {
-        commands = CommandConfig:make({
+        commands = {
             name = "FzfxLspReferences",
             feed = CommandFeedEnum.ARGS,
             opts = {
                 bang = true,
                 desc = "Search lsp references",
             },
-        }),
+        },
         providers = ProviderConfig:make({
             key = "default",
             provider = function(query, context)
@@ -2276,14 +2275,14 @@ local Defaults = {
     -- the 'Lsp Implementations' command
     --- @type GroupConfig
     lsp_implementations = {
-        commands = CommandConfig:make({
+        commands = {
             name = "FzfxLspImplementations",
             feed = CommandFeedEnum.ARGS,
             opts = {
                 bang = true,
                 desc = "Search lsp implementations",
             },
-        }),
+        },
         providers = ProviderConfig:make({
             key = "default",
             provider = function(query, context)

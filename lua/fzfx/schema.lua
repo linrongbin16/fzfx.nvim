@@ -205,6 +205,10 @@ end
 local CommandConfig = {}
 
 function CommandConfig:make(opts)
+    require("fzfx.deprecated").notify(
+        "deprecated 'CommandConfig', please use lua table!"
+    )
+
     local o = opts or {}
     setmetatable(o, self)
     self.__index = self
