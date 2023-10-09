@@ -101,9 +101,49 @@ local function make_edit(delimiter, file_pos, lineno_pos, colno_pos)
     return impl
 end
 
+--- @alias EditFindVimCommands {edit:string[]}
+--- @param lines string[]
+--- @param opts {no_icon:boolean?}?
+--- @return EditFindVimCommands
+local function make_edit_find_commands(lines, opts)
+    local results = { edit = {} }
+    for i, line in ipairs(lines) do
+        local filename = line_helpers.parse_find(line, opts)
+        local edit_command = string.format("edit %s", filename)
+        table.insert(results.edit, edit_command)
+    end
+    return results
+end
+
+-- Run 'edit' vim command on fd/find results.
+--- @param lines string[]
+local function edit_find(lines)
+    local vim_commands = make_edit_find_commands(lines)
+    for i, edit_command in ipairs(vim_commands.edit) do
+        log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
+        vim.cmd(edit_command)
+    end
+end
+
+-- Run 'edit' vim command on buffers results.
+--- @param lines string[]
+local function edit_buffers(lines)
+    return edit_find(lines)
+end
+
+-- Run 'edit' vim command on git files results.
+--- @param lines string[]
+local function edit_git_files(lines)
+    return edit_find(lines)
+end
+
 --- @deprecated
+--- @param lines string[]
 local function edit(lines)
-    return make_edit()(lines)
+    require("fzfx.deprecated").notify(
+        "deprecated 'actions.edit', please use 'actions.edit_find'!"
+    )
+    return edit_find(lines)
 end
 
 local function edit_rg(lines)
@@ -112,6 +152,16 @@ end
 
 local function edit_grep(lines)
     return make_edit(":", 1, 2)(lines)
+end
+
+-- Run 'edit' vim command on eza/exa/ls results.
+--- @param lines string[]
+local function edit_ls(lines)
+    local vim_commands = make_edit_find_commands(lines, { no_icon = true })
+    for i, edit_command in ipairs(vim_commands.edit) do
+        log.debug("|fzfx.actions - edit_ls| [%d]:[%s]", i, edit_command)
+        vim.cmd(edit_command)
+    end
 end
 
 local function buffer(lines)
@@ -177,7 +227,12 @@ local M = {
     nop = nop,
     make_edit_vim_commands = make_edit_vim_commands,
     make_edit = make_edit,
+    make_edit_find_commands = make_edit_find_commands,
     edit = edit,
+    edit_find = edit_find,
+    edit_buffers = edit_buffers,
+    edit_git_files = edit_git_files,
+    edit_ls = edit_ls,
     edit_rg = edit_rg,
     edit_grep = edit_grep,
     buffer = buffer,

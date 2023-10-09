@@ -1,5 +1,4 @@
 local log = require("fzfx.log")
-local LogLevels = require("fzfx.log").LogLevels
 local conf = require("fzfx.config")
 local utils = require("fzfx.utils")
 local general = require("fzfx.general")
