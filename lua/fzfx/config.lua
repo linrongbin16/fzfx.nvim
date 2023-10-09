@@ -2659,12 +2659,7 @@ local Defaults = {
     },
 
     cache = {
-        --- @type string
-        dir = string.format(
-            "%s%sfzfx.nvim",
-            vim.fn.stdpath("data"),
-            constants.path_separator
-        ),
+        dir = path.join(vim.fn.stdpath("data"), "fzfx.nvim"),
     },
 
     -- debug
