@@ -285,7 +285,7 @@ local function lsp_diagnostics_provider(opts)
         local d = process_diagnostic_item(diag)
         if d then
             -- it looks like:
-            -- `lua/fzfx/config.lua:10:13:local ProviderConfig = require("fzfx.schema").ProviderConfig`
+            -- `lua/fzfx/config.lua:10:13: Unused local `query`.
             log.debug(
                 "|fzfx.config - lsp_diagnostics_provider| d:%s",
                 vim.inspect(d)
