@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/linrongbin16/fzfx.nvim/compare/v1.0.0...v1.0.1) (2023-10-09)
+
+
+### Bug Fixes
+
+* edit files actions on path containing whitespaces for fd/find/eza/ls results ([#258](https://github.com/linrongbin16/fzfx.nvim/issues/258)) ([2a2c1a9](https://github.com/linrongbin16/fzfx.nvim/commit/2a2c1a93f840d58310fcbfbafd6da0643f300778))
+
 ## 1.0.0 (2023-10-09)
 
 
@@ -172,4 +179,3 @@
   * Deprecate: migrate 'GroupConfig' class to lua table.
 * 2023-10-08
   - Deprecate: migrate 'InteractionConfig' class to lua table.
-
