@@ -204,7 +204,12 @@ end
 --- @field default_provider PipelineName?
 local CommandConfig = {}
 
+--- @deprecated
 function CommandConfig:make(opts)
+    require("fzfx.deprecated").notify(
+        "deprecated 'CommandConfig', please use lua table!"
+    )
+
     local o = opts or {}
     setmetatable(o, self)
     self.__index = self
@@ -219,6 +224,7 @@ end
 --- @field reload_after_execute boolean?
 local InteractionConfig = {}
 
+--- @deprecated
 function InteractionConfig:make(opts)
     require("fzfx.deprecated").notify(
         "deprecated 'InteractionConfig', please use lua table!"
@@ -239,6 +245,7 @@ end
 --- @field fzf_opts FzfOpt[]?
 local GroupConfig = {}
 
+--- @deprecated
 function GroupConfig:make(opts)
     require("fzfx.deprecated").notify(
         "deprecated 'GroupConfig', please use lua table!"
