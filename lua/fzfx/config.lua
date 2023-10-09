@@ -719,12 +719,12 @@ local function parse_eza_columns()
             columns = columns + 1
         end
     end
-    return true, columns + 1
+    return true, columns
 end
 
 do
     if constants.has_eza then
-        local ok, start_pos_or_err = parse_eza_columns()
+        local ok, eza_columns_or_err = parse_eza_columns()
         -- log.echo(
         --     LogLevels.INFO,
         --     "|make_file_explorer_previewer| ok:%s, start_pos:%s",
@@ -732,14 +732,15 @@ do
         --     vim.inspect(start_pos)
         -- )
         if ok then
-            file_explorer_parse_ls_start_pos = start_pos_or_err --[[@as integer]]
+            file_explorer_parse_ls_start_pos = eza_columns_or_err --[[@as integer]]
+                + 1
         else
             file_explorer_run_eza_failed = true
             log.echo(
                 LogLevels.WARN,
                 "failed to run '%s -lh'! %s",
                 constants.eza,
-                start_pos_or_err
+                eza_columns_or_err
             )
         end
     end
