@@ -101,9 +101,34 @@ local function make_edit(delimiter, file_pos, lineno_pos, colno_pos)
     return impl
 end
 
+--- @alias EditFindVimCommands {edit:string[]}
+--- @param lines string[]
+--- @return EditFindVimCommands
+local function make_edit_find_commands(lines)
+    local results = { edit = {} }
+    for i, line in ipairs(lines) do
+        local filename = line_helpers.parse_find(line)
+        local edit = string.format("edit %s", filename)
+        table.insert(results.edit, edit)
+    end
+    return results
+end
+
+-- Run 'edit' vim command on fd/find result lines.
+-- This will open files in nvim, or navigate to files that already opened.
+--- @param lines string[]
+local function edit_find(lines)
+    local vim_commands = make_edit_find_commands(lines)
+    for i, edit_command in ipairs(vim_commands.edit) do
+        log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
+        vim.cmd(edit_command)
+    end
+end
+
 --- @deprecated
+--- @param lines string[]
 local function edit(lines)
-    return make_edit()(lines)
+    return edit_find(lines)
 end
 
 local function edit_rg(lines)
@@ -177,7 +202,9 @@ local M = {
     nop = nop,
     make_edit_vim_commands = make_edit_vim_commands,
     make_edit = make_edit,
+    make_edit_find_commands = make_edit_find_commands,
     edit = edit,
+    edit_find = edit_find,
     edit_rg = edit_rg,
     edit_grep = edit_grep,
     buffer = buffer,
