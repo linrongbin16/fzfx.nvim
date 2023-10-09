@@ -88,7 +88,7 @@ jobs:
           version: latest
           args: --config-path .stylua.toml --color always --check .
   release:
-    name: release
+    name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - typecheck
@@ -106,11 +106,8 @@ jobs:
       - uses: rickstaa/action-create-tag@v1
       - name: tag stable versions
         if: ${{ steps.release.outputs.release_created }}
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
-          git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/google-github-actions/release-please-action.git"
-          git tag -d stable || true
-          git push origin :stable || true
-          git tag -a stable -m "Last Stable Release"
-          git push origin stable
+        with:
+          tag: stable
+          message: "Current stable release: ${{ steps.release.outputs.tag_name }}"
+          tag_exists_error: false
+          force_push_tag: true
