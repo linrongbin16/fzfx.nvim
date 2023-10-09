@@ -1,5 +1,4 @@
 local log = require("fzfx.log")
-local LogLevels = require("fzfx.log").LogLevels
 local Popup = require("fzfx.popup").Popup
 local helpers = require("fzfx.helpers")
 local server = require("fzfx.server")
@@ -12,6 +11,7 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local clazz = require("fzfx.clazz")
 local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
+local conf = require("fzfx.config")
 
 local DEFAULT_PIPELINE = "default"
 
@@ -55,13 +55,11 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
         pipeline = pipeline,
         provider_configs = provider_configs_map,
         metafile = env.debug_enable() and path.join(
-            vim.fn.stdpath("data"),
-            "fzfx.nvim",
+            conf.get_config().cache.dir,
             "provider_switch_metafile_" .. name
         ) or vim.fn.tempname(),
         resultfile = env.debug_enable() and path.join(
-            vim.fn.stdpath("data"),
-            "fzfx.nvim",
+            conf.get_config().cache.dir,
             "provider_switch_resultfile_" .. name
         ) or vim.fn.tempname(),
     }
@@ -333,13 +331,11 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         previewers = previewers_map,
         previewer_types = previewer_types_map,
         metafile = env.debug_enable() and path.join(
-            vim.fn.stdpath("data"),
-            "fzfx.nvim",
+            conf.get_config().cache.dir,
             "previewer_switch_metafile_" .. name
         ) or vim.fn.tempname(),
         resultfile = env.debug_enable() and path.join(
-            vim.fn.stdpath("data"),
-            "fzfx.nvim",
+            conf.get_config().cache.dir,
             "previewer_switch_resultfile_" .. name
         ) or vim.fn.tempname(),
     }

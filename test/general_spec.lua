@@ -17,6 +17,8 @@ describe("general", function()
     local utils = require("fzfx.utils")
     local path = require("fzfx.path")
     local schema = require("fzfx.schema")
+    local conf = require("fzfx.config")
+    conf.setup()
     describe("[ProviderSwitch:new]", function()
         it("creates single plain provider", function()
             local ps = general.ProviderSwitch:new(
