@@ -935,8 +935,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit,
-            ["double-click"] = require("fzfx.actions").edit,
+            ["enter"] = require("fzfx.actions").edit_find,
+            ["double-click"] = require("fzfx.actions").edit_find,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1322,8 +1322,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit,
-            ["double-click"] = require("fzfx.actions").edit,
+            ["enter"] = require("fzfx.actions").edit_buffers,
+            ["double-click"] = require("fzfx.actions").edit_buffers,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1450,8 +1450,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit,
-            ["double-click"] = require("fzfx.actions").edit,
+            ["enter"] = require("fzfx.actions").edit_git_files,
+            ["double-click"] = require("fzfx.actions").edit_git_files,
         },
         fzf_opts = {
             default_fzf_options.multi,

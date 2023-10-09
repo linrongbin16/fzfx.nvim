@@ -125,6 +125,18 @@ local function edit_find(lines)
     end
 end
 
+-- Run 'edit' vim command on buffers results.
+--- @param lines string[]
+local function edit_buffers(lines)
+    return edit_find(lines)
+end
+
+-- Run 'edit' vim command on git files results.
+--- @param lines string[]
+local function edit_git_files(lines)
+    return edit_find(lines)
+end
+
 --- @deprecated
 --- @param lines string[]
 local function edit(lines)
@@ -215,6 +227,8 @@ local M = {
     make_edit_find_commands = make_edit_find_commands,
     edit = edit,
     edit_find = edit_find,
+    edit_buffers = edit_buffers,
+    edit_git_files = edit_git_files,
     edit_ls = edit_ls,
     edit_rg = edit_rg,
     edit_grep = edit_grep,
