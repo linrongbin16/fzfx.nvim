@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/linrongbin16/fzfx.nvim/compare/v1.0.1...v1.0.2) (2023-10-09)
+
+
+### Bug Fixes
+
+* **config:** use cache.dir instead of hard coding ([#260](https://github.com/linrongbin16/fzfx.nvim/issues/260)) ([6bf24d1](https://github.com/linrongbin16/fzfx.nvim/commit/6bf24d1b81b29c5f37cfebfcf38c83213146d8af))
+
 ## [1.0.1](https://github.com/linrongbin16/fzfx.nvim/compare/v1.0.0...v1.0.1) (2023-10-09)
 
 
