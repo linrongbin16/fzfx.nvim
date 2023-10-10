@@ -31,14 +31,12 @@ local function edit_find(lines)
     end
 end
 
--- Run 'edit' vim command on buffers results.
---- @param lines string[]
+--- @deprecated
 local function edit_buffers(lines)
     return edit_find(lines)
 end
 
--- Run 'edit' vim command on git files results.
---- @param lines string[]
+--- @deprecated
 local function edit_git_files(lines)
     return edit_find(lines)
 end
@@ -52,14 +50,14 @@ local function edit(lines)
     return edit_find(lines)
 end
 
---- @alias EditGrepVimCommands {edit:string[], setpos:string?}
+--- @alias EditRgVimCommands {edit:string[], setpos:string?}
 --- @param lines string[]
---- @param opts {no_icon:boolean?,delimiter:string?,filename_pos:integer?,lineno_pos:integer?,column_pos:integer?}?
---- @return EditGrepVimCommands
-local function make_edit_grep_commands(lines, opts)
+--- @param opts {no_icon:boolean?}?
+--- @return EditRgVimCommands
+local function make_edit_rg_commands(lines, opts)
     local results = { edit = {}, setpos = nil }
     for i, line in ipairs(lines) do
-        local parsed = line_helpers.parse_grep(line, opts)
+        local parsed = line_helpers.parse_rg(line, opts)
         local edit_command = string.format("edit %s", parsed.filename)
         table.insert(results.edit, edit_command)
         if parsed.lineno ~= nil then
@@ -77,6 +75,45 @@ local function make_edit_grep_commands(lines, opts)
     return results
 end
 
+--- @param lines string[]
+local function edit_rg(lines)
+    local vim_commands = make_edit_rg_commands(lines)
+    for i, edit_command in ipairs(vim_commands.edit) do
+        log.debug("|fzfx.actions - edit_rg| edit[%d]:[%s]", i, edit_command)
+        vim.cmd(edit_command)
+    end
+    if vim_commands.setpos then
+        log.debug("|fzfx.actions - edit_rg| setpos:[%s]", vim_commands.setpos)
+        vim.cmd(vim_commands.setpos)
+    end
+end
+
+--- @alias EditGrepVimCommands {edit:string[], setpos:string?}
+--- @param lines string[]
+--- @param opts {no_icon:boolean?}?
+--- @return EditGrepVimCommands
+local function make_edit_grep_commands(lines, opts)
+    local results = { edit = {}, setpos = nil }
+    for i, line in ipairs(lines) do
+        local parsed = line_helpers.parse_grep(line, opts)
+        local edit_command = string.format("edit %s", parsed.filename)
+        table.insert(results.edit, edit_command)
+        if parsed.lineno ~= nil then
+            if i == #lines then
+                local column = 1
+                local setpos_cmd = string.format(
+                    "call setpos('.', [0, %d, %d])",
+                    parsed.lineno,
+                    column
+                )
+                results.setpos = setpos_cmd
+            end
+        end
+    end
+    return results
+end
+
+--- @param lines string[]
 local function edit_grep(lines)
     local vim_commands = make_edit_grep_commands(lines)
     for i, edit_command in ipairs(vim_commands.edit) do
@@ -87,11 +124,6 @@ local function edit_grep(lines)
         log.debug("|fzfx.actions - edit_grep| setpos:[%s]", vim_commands.setpos)
         vim.cmd(vim_commands.setpos)
     end
-end
-
---- @deprecated
-local function edit_rg(lines)
-    return edit_grep(lines)
 end
 
 -- Run 'edit' vim command on eza/exa/ls results.
@@ -168,6 +200,7 @@ local M = {
     nop = nop,
     make_edit_find_commands = make_edit_find_commands,
     make_edit_grep_commands = make_edit_grep_commands,
+    make_edit_rg_commands = make_edit_rg_commands,
     edit = edit,
     edit_find = edit_find,
     edit_buffers = edit_buffers,

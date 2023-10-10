@@ -629,61 +629,6 @@ local function directory_previewer(filename)
     end
 end
 
--- The `eza -lh` (`exa -lh`) in windows output looks like:
---
--- ```
--- Mode  Size Date Modified Name
--- d----    - 30 Sep 21:55  deps
--- -a---  585 22 Jul 14:26  init.vim
--- -a--- 6.4k 30 Sep 21:55  install.ps1
--- -a--- 5.3k 23 Sep 13:43  install.sh
--- ```
---
--- So file name starts from the 5th space.
---
--- While in macOS it looks like:
---
--- ```
--- Permissions Size User Date Modified Name
--- drwxr-xr-x     - linrongbin 28 Aug 12:39  autoload
--- drwxr-xr-x     - linrongbin 22 Sep 10:11  bin
--- .rw-r--r--   120 linrongbin  5 Sep 14:14  codecov.yml
--- .rw-r--r--  1.1k linrongbin 28 Aug 12:39  LICENSE
--- drwxr-xr-x     - linrongbin  8 Oct 09:14  lua
--- .rw-r--r--   28k linrongbin  8 Oct 11:37  README.md
--- drwxr-xr-x     - linrongbin  8 Oct 11:44  test
--- .rw-r--r--   28k linrongbin  8 Oct 12:10  test1-README.md
--- .rw-r--r--   28k linrongbin  8 Oct 12:10  test2-README.md
--- ```
---
--- File name starts from the 6th space.
---
--- You can see in different platform, there will be different fields: 'Permission', 'User', 'Mode'.
---
--- While the `ls -lh` in both windows and macOS always looks like the same:
---
--- windows:
--- ```
--- total 31K
--- -rwxrwxrwx 1 somebody somegroup  150 Aug  3 21:29 .editorconfig
--- drwxrwxrwx 1 somebody somegroup    0 Oct  8 12:02 .github
--- -rwxrwxrwx 1 somebody somegroup  363 Aug 30 15:51 .gitignore
--- -rwxrwxrwx 1 somebody somegroup  124 Sep 18 23:56 .luacheckrc
--- -rwxrwxrwx 1 somebody somegroup   68 Sep 11 21:58 .luacov
--- ```
---
--- macOS:
--- ```
--- total 184
--- -rw-r--r--   1 rlin  staff   1.0K Aug 28 12:39 LICENSE
--- -rw-r--r--   1 rlin  staff    27K Oct  8 11:37 README.md
--- drwxr-xr-x   3 rlin  staff    96B Aug 28 12:39 autoload
--- drwxr-xr-x   4 rlin  staff   128B Sep 22 10:11 bin
--- -rw-r--r--   1 rlin  staff   120B Sep  5 14:14 codecov.yml
--- ```
---
--- File name alawys starts from the 8th space for `ls -lh`.
-
 local file_explorer_parse_ls_start_pos = 8
 local file_explorer_run_eza_failed = false
 
@@ -1318,8 +1263,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_buffers,
-            ["double-click"] = require("fzfx.actions").edit_buffers,
+            ["enter"] = require("fzfx.actions").edit_find,
+            ["double-click"] = require("fzfx.actions").edit_find,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1446,8 +1391,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_git_files,
-            ["double-click"] = require("fzfx.actions").edit_git_files,
+            ["enter"] = require("fzfx.actions").edit_find,
+            ["double-click"] = require("fzfx.actions").edit_find,
         },
         fzf_opts = {
             default_fzf_options.multi,
