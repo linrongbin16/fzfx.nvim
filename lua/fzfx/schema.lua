@@ -172,7 +172,11 @@ local ProviderLineTypeEnum = {
 --- @field line_opts ProviderConfigLineOpts
 local ProviderConfig = {}
 
+--- @deprecated
 function ProviderConfig:make(opts)
+    require("fzfx.deprecated").notify(
+        "deprecated 'schema.ProviderConfig', please use lua table!"
+    )
     local o = opts or {}
     o.provider_type = o.provider_type
         or (
@@ -207,7 +211,7 @@ local CommandConfig = {}
 --- @deprecated
 function CommandConfig:make(opts)
     require("fzfx.deprecated").notify(
-        "deprecated 'CommandConfig', please use lua table!"
+        "deprecated 'schema.CommandConfig', please use lua table!"
     )
 
     local o = opts or {}
@@ -227,7 +231,7 @@ local InteractionConfig = {}
 --- @deprecated
 function InteractionConfig:make(opts)
     require("fzfx.deprecated").notify(
-        "deprecated 'InteractionConfig', please use lua table!"
+        "deprecated 'schema.InteractionConfig', please use lua table!"
     )
 
     local o = opts or {}
@@ -248,7 +252,7 @@ local GroupConfig = {}
 --- @deprecated
 function GroupConfig:make(opts)
     require("fzfx.deprecated").notify(
-        "deprecated 'GroupConfig', please use lua table!"
+        "deprecated 'schema.GroupConfig', please use lua table!"
     )
 
     local o = opts or {}

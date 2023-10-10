@@ -422,4 +422,32 @@ describe("general", function()
             assert_true(utils.string_endswith(actual[3], "to upper"))
         end)
     end)
+    describe("[is_command_config]", function()
+        it("is command config", function()
+            local obj = schema.CommandConfig:make({
+                name = "FzfxLiveGrep",
+                feed = "args",
+                opts = {
+                    nargs = "?",
+                },
+            })
+            assert_true(general.is_command_config(obj))
+            local obj2 = {
+                name = "FzfxLiveGrep",
+                feed = "args",
+                opts = {
+                    nargs = "?",
+                },
+            }
+            assert_true(general.is_command_config(obj2))
+        end)
+        it("is not command config", function()
+            local obj1 = schema.CommandConfig:make({})
+            assert_false(general.is_command_config(obj1))
+            local obj2 = {
+                key = "FzfxLiveGrep",
+            }
+            assert_false(general.is_command_config(obj2))
+        end)
+    end)
 end)
