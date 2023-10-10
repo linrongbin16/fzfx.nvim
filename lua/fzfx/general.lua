@@ -16,7 +16,7 @@ local DEFAULT_PIPELINE = "default"
 
 -- config class detect {
 
---- @param cfg Configs
+--- @param cfg Configs?
 --- @return boolean
 local function is_command_config(cfg)
     return type(cfg) == "table"
@@ -27,7 +27,7 @@ local function is_command_config(cfg)
         and type(cfg.opts) == "table"
 end
 
---- @param cfg Configs
+--- @param cfg Configs?
 --- @return boolean
 local function is_provider_config(cfg)
     return type(cfg) == "table"
@@ -37,6 +37,20 @@ local function is_provider_config(cfg)
             (type(cfg.provider) == "string" and string.len(cfg.provider) > 0)
             or (type(cfg.provider) == "table" and #cfg.provider > 0)
             or type(cfg.provider) == "function"
+        )
+end
+
+--- @param cfg Configs?
+--- @return boolean
+local function is_previewer_config(cfg)
+    return type(cfg) == "table"
+        and type(cfg.previewer) == "function"
+        and (
+            cfg.previewer_type == nil
+            or (
+                type(cfg.previewer_type) == "string"
+                and string.len(cfg.previewer_type) > 0
+            )
         )
 end
 
@@ -951,6 +965,7 @@ local M = {
     setup = setup,
     is_command_config = is_command_config,
     is_provider_config = is_provider_config,
+    is_previewer_config = is_previewer_config,
     make_cache_filename = make_cache_filename,
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,

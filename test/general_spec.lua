@@ -591,4 +591,42 @@ describe("general", function()
             )
         end)
     end)
+    describe("[is_previewer_config]", function()
+        it("is previewer config", function()
+            local p1 = schema.PreviewerConfig:make({
+                previewer = function()
+                    return "ls -lh"
+                end,
+            })
+            local p2 = schema.PreviewerConfig:make({
+                previewer = function()
+                    return { "ls", "-lh", "~" }
+                end,
+                previewer_type = "command_list",
+            })
+            assert_true(general.is_previewer_config(p1))
+            assert_true(general.is_previewer_config(p2))
+            local p4 = {
+                previewer = function()
+                    return "ls -lh"
+                end,
+            }
+            local p5 = {
+                previewer = function()
+                    return { "ls", "-lh" }
+                end,
+                previewer_type = "command_list",
+            }
+            assert_true(general.is_previewer_config(p4))
+            assert_true(general.is_previewer_config(p5))
+        end)
+        it("is not previewer config", function()
+            local p1 = schema.PreviewerConfig:make({})
+            assert_false(general.is_previewer_config(p1))
+            local p2 = {
+                name = "FzfxLiveGrep",
+            }
+            assert_false(general.is_previewer_config(p2))
+        end)
+    end)
 end)
