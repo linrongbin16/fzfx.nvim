@@ -174,9 +174,6 @@ local ProviderConfig = {}
 
 --- @deprecated
 function ProviderConfig:make(opts)
-    require("fzfx.deprecated").notify(
-        "deprecated 'schema.ProviderConfig', please use lua table!"
-    )
     local o = opts or {}
     o.provider_type = o.provider_type
         or (
