@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v1.0.2...v1.1.0) (2023-10-10)
+
+
+### Features
+
+* **schema:** add 'PreviewerConfig' detection ([#266](https://github.com/linrongbin16/fzfx.nvim/issues/266)) ([2bdcef7](https://github.com/linrongbin16/fzfx.nvim/commit/2bdcef7f82a55327851b6d3ecb5e48c53f08a691))
+
+
+### Bug Fixes
+
+* **push:** revert direct push to main branch ([9eac0c0](https://github.com/linrongbin16/fzfx.nvim/commit/9eac0c072ca161a0d58cf50e7aed6090486c7e9a))
+
 ## [1.0.2](https://github.com/linrongbin16/fzfx.nvim/compare/v1.0.1...v1.0.2) (2023-10-09)
 
 
