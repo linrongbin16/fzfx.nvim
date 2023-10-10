@@ -9,7 +9,6 @@ local path = require("fzfx.path")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local clazz = require("fzfx.clazz")
-local ProviderConfig = require("fzfx.schema").ProviderConfig
 local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 local conf = require("fzfx.config")
 
@@ -41,9 +40,34 @@ local function is_provider_config(cfg)
         )
 end
 
+--- @param provider_config ProviderConfig
+--- @return ProviderConfig
+local function try_set_default_provider_type(provider_config)
+    provider_config.provider_type = provider_config.provider_type
+        or (
+            type(provider_config.provider) == "string"
+                and ProviderTypeEnum.PLAIN
+            or ProviderTypeEnum.PLAIN_LIST
+        )
+    return provider_config
+end
+
 -- config class detect }
 
 -- provider switch {
+
+--- @param ... string
+--- @return string
+local function make_cache_filename(...)
+    if env.debug_enable() then
+        return path.join(
+            conf.get_config().cache.dir,
+            table.concat({ ... }, "_")
+        )
+    else
+        return vim.fn.tempname()
+    end
+end
 
 --- @class ProviderSwitch
 --- @field pipeline PipelineName
@@ -58,23 +82,28 @@ local ProviderSwitch = {}
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
-    if clazz.instanceof(provider_configs, ProviderConfig) then
+    if is_provider_config(provider_configs) then
+        provider_configs = try_set_default_provider_type(provider_configs)
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
     else
-        provider_configs_map = provider_configs
+        for provider_name, provider_opts in pairs(provider_configs) do
+            log.ensure(
+                is_provider_config(provider_opts),
+                "error! %s (%s) is not a valid provider! %s",
+                vim.inspect(provider_name),
+                vim.inspect(name),
+                vim.inspect(provider_opts)
+            )
+            provider_configs_map[provider_name] =
+                try_set_default_provider_type(provider_opts)
+        end
     end
 
     local o = {
         pipeline = pipeline,
         provider_configs = provider_configs_map,
-        metafile = env.debug_enable() and path.join(
-            conf.get_config().cache.dir,
-            "provider_switch_metafile_" .. name
-        ) or vim.fn.tempname(),
-        resultfile = env.debug_enable() and path.join(
-            conf.get_config().cache.dir,
-            "provider_switch_resultfile_" .. name
-        ) or vim.fn.tempname(),
+        metafile = make_cache_filename("provider", "metafile", name),
+        resultfile = make_cache_filename("provider", "resultfile", name),
     }
     setmetatable(o, self)
     self.__index = self
@@ -343,14 +372,8 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         pipeline = pipeline,
         previewers = previewers_map,
         previewer_types = previewer_types_map,
-        metafile = env.debug_enable() and path.join(
-            conf.get_config().cache.dir,
-            "previewer_switch_metafile_" .. name
-        ) or vim.fn.tempname(),
-        resultfile = env.debug_enable() and path.join(
-            conf.get_config().cache.dir,
-            "previewer_switch_resultfile_" .. name
-        ) or vim.fn.tempname(),
+        metafile = make_cache_filename("previewer", "metafile", name),
+        resultfile = make_cache_filename("previewer", "resultfile", name),
     }
     setmetatable(o, self)
     self.__index = self
@@ -554,7 +577,7 @@ end
 --- @return HeaderSwitch
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
-    if clazz.instanceof(provider_configs, ProviderConfig) then
+    if is_provider_config(provider_configs) then
         headers_map[DEFAULT_PIPELINE] = make_help_doc(interaction_configs, {})
     else
         log.debug(
@@ -599,7 +622,7 @@ end
 local function get_pipeline_size(pipeline_configs)
     local n = 0
     if type(pipeline_configs) == "table" then
-        if clazz.instanceof(pipeline_configs.providers, ProviderConfig) then
+        if is_provider_config(pipeline_configs.providers) then
             return 1
         end
         for _, _ in pairs(pipeline_configs.providers) do
@@ -631,19 +654,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if default_pipeline == nil then
         local pipeline = nil
         local provider_opts = nil
-        if clazz.instanceof(pipeline_configs.providers, ProviderConfig) then
+        if is_provider_config(pipeline_configs.providers) then
             log.debug(
-                "|fzfx.general - general| providers instanceof ProviderConfig, providers:%s, ProviderConfig:%s",
-                vim.inspect(pipeline_configs.providers),
-                vim.inspect(ProviderConfig)
+                "|fzfx.general - general| providers is single config: %s",
+                vim.inspect(pipeline_configs.providers)
             )
             pipeline = DEFAULT_PIPELINE
             provider_opts = pipeline_configs.providers
         else
             log.debug(
-                "|fzfx.general - general| providers not instanceof ProviderConfig, providers:%s, ProviderConfig:%s",
-                vim.inspect(pipeline_configs.providers),
-                vim.inspect(ProviderConfig)
+                "|fzfx.general - general| providers is multiple configs: %s",
+                vim.inspect(pipeline_configs.providers)
             )
             pipeline, provider_opts = next(pipeline_configs.providers)
         end
@@ -930,6 +951,7 @@ local M = {
     setup = setup,
     is_command_config = is_command_config,
     is_provider_config = is_provider_config,
+    make_cache_filename = make_cache_filename,
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,
     HeaderSwitch = HeaderSwitch,

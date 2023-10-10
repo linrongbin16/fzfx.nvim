@@ -21,11 +21,13 @@ local function setup()
         and string.len(git_files_configs.providers) > 0
     then
         git_files_configs.providers = {
+            ---@diagnostic disable-next-line: deprecated
             current_folder = ProviderConfig:make({
                 key = "ctrl-u",
                 provider = git_files_configs.providers,
                 line_type = ProviderLineTypeEnum.FILE,
             }),
+            ---@diagnostic disable-next-line: deprecated
             workspace = ProviderConfig:make({
                 key = "ctrl-w",
                 provider = git_files_configs.providers,

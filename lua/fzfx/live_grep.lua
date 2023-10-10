@@ -23,6 +23,7 @@ local function setup()
         if provider_name == "restricted" or provider_name == "unrestricted" then
             local action_key = provider_opts[1]
             local grep_cmd = provider_opts[2]
+            ---@diagnostic disable-next-line: deprecated
             new_providers[provider_name .. "_mode"] = ProviderConfig:make({
                 key = action_key,
                 provider = function(query)
