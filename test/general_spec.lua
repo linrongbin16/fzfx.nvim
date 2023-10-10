@@ -604,8 +604,15 @@ describe("general", function()
                 end,
                 previewer_type = "command_list",
             })
+            local p3 = schema.PreviewerConfig:make({
+                previewer = function()
+                    return "ls -lh"
+                end,
+                previewer_type = "command",
+            })
             assert_true(general.is_previewer_config(p1))
             assert_true(general.is_previewer_config(p2))
+            assert_true(general.is_previewer_config(p3))
             local p4 = {
                 previewer = function()
                     return "ls -lh"
