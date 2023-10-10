@@ -8,6 +8,7 @@ describe("actions", function()
     before_each(function()
         require("fzfx.config").setup()
         vim.api.nvim_command("cd " .. cwd)
+        vim.opt.swapfile = false
     end)
 
     local DEVICONS_PATH =

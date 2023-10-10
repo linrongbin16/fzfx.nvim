@@ -28,6 +28,19 @@ local function is_command_config(cfg)
         and type(cfg.opts) == "table"
 end
 
+--- @param cfg Configs
+--- @return boolean
+local function is_provider_config(cfg)
+    return type(cfg) == "table"
+        and type(cfg.key) == "string"
+        and string.len(cfg.key) > 0
+        and (
+            (type(cfg.provider) == "string" and string.len(cfg.provider) > 0)
+            or (type(cfg.provider) == "table" and #cfg.provider > 0)
+            or type(cfg.provider) == "function"
+        )
+end
+
 -- config class detect }
 
 -- provider switch {
@@ -915,6 +928,8 @@ end
 
 local M = {
     setup = setup,
+    is_command_config = is_command_config,
+    is_provider_config = is_provider_config,
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,
     HeaderSwitch = HeaderSwitch,
