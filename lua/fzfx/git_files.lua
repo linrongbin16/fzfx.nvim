@@ -38,6 +38,7 @@ local function setup()
     end
     if git_files_configs.previewers == nil then
         git_files_configs["previewers"] = {
+            ---@diagnostic disable-next-line: deprecated
             current_folder = PreviewerConfig:make({
                 previewer = function(line)
                     local filename = env.icon_enable() and vim.fn.split(line)[2]
@@ -46,6 +47,7 @@ local function setup()
                 end,
                 previewer_type = PreviewerTypeEnum.COMMAND,
             }),
+            ---@diagnostic disable-next-line: deprecated
             workspace = PreviewerConfig:make({
                 previewer = function(line)
                     local filename = env.icon_enable() and vim.fn.split(line)[2]
