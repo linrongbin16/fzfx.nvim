@@ -84,11 +84,7 @@ local function edit_grep(lines)
         vim.cmd(edit_command)
     end
     if vim_commands.setpos then
-        log.debug(
-            "|fzfx.actions - edit_grep| setpos:[%s]",
-            i,
-            vim_commands.setpos
-        )
+        log.debug("|fzfx.actions - edit_grep| setpos:[%s]", vim_commands.setpos)
         vim.cmd(vim_commands.setpos)
     end
 end
