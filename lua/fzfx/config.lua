@@ -383,14 +383,14 @@ local function lsp_location_render_line(line, range, color_renderer)
     return result
 end
 
+--- @alias LspLocationPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,position_params:any}
+--- @return LspLocationPipelineContext
 local function lsp_position_context_maker()
-    --- @type PipelineContext
     local context = {
         bufnr = vim.api.nvim_get_current_buf(),
         winnr = vim.api.nvim_get_current_win(),
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
-    ---@diagnostic disable-next-line: inject-field
     context.position_params =
         vim.lsp.util.make_position_params(context.winnr, nil)
     context.position_params.context = {
@@ -2105,6 +2105,8 @@ local Defaults = {
         },
         providers = {
             key = "default",
+            --- @param query string
+            --- @param context LspLocationPipelineContext
             provider = function(query, context)
                 return lsp_locations_provider({
                     method = "textDocument/definition",
@@ -2166,6 +2168,8 @@ local Defaults = {
         },
         providers = {
             key = "default",
+            --- @param query string
+            --- @param context LspLocationPipelineContext
             provider = function(query, context)
                 return lsp_locations_provider({
                     method = "textDocument/type_definition",
@@ -2227,6 +2231,8 @@ local Defaults = {
         },
         providers = {
             key = "default",
+            --- @param query string
+            --- @param context LspLocationPipelineContext
             provider = function(query, context)
                 return lsp_locations_provider({
                     method = "textDocument/references",
@@ -2288,6 +2294,8 @@ local Defaults = {
         },
         providers = {
             key = "default",
+            --- @param query string
+            --- @param context LspLocationPipelineContext
             provider = function(query, context)
                 return lsp_locations_provider({
                     method = "textDocument/implementation",
