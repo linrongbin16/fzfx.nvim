@@ -172,7 +172,6 @@ local ProviderLineTypeEnum = {
 --- @field line_opts ProviderConfigLineOpts
 local ProviderConfig = {}
 
---- @deprecated
 function ProviderConfig:make(opts)
     local o = opts or {}
     o.provider_type = o.provider_type
