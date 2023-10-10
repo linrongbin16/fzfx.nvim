@@ -168,15 +168,11 @@ local ProviderLineTypeEnum = {
 --- @class ProviderConfig
 --- @field key ActionKey
 --- @field provider Provider
---- @field provider_type ProviderType? by default "plain"
---- @field line_opts ProviderConfigLineOpts?
+--- @field provider_type ProviderType by default "plain"
+--- @field line_opts ProviderConfigLineOpts
 local ProviderConfig = {}
 
---- @deprecated
 function ProviderConfig:make(opts)
-    require("fzfx.deprecated").notify(
-        "deprecated 'schema.ProviderConfig', please use lua table!"
-    )
     local o = opts or {}
     o.provider_type = o.provider_type
         or (
