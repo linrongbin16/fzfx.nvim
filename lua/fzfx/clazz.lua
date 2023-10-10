@@ -1,5 +1,6 @@
 -- No Setup Need
 
+--- @deprecated
 local function instanceof(obj, clz)
     return type(obj) == "table"
         and type(clz) == "table"
