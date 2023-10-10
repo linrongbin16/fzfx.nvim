@@ -19,10 +19,25 @@ describe("general", function()
     local schema = require("fzfx.schema")
     local conf = require("fzfx.config")
     conf.setup()
+
+    local function get_provider_metafile(name)
+        return path.join(
+            conf.get_config().cache.dir,
+            "provider_metafile_" .. name
+        )
+    end
+
+    local function get_provider_resultfile(name)
+        return path.join(
+            conf.get_config().cache.dir,
+            "provider_resultfile_" .. name
+        )
+    end
+
     describe("[ProviderSwitch:new]", function()
         it("creates single plain provider", function()
             local ps = general.ProviderSwitch:new(
-                "single",
+                "single_test",
                 "pipeline",
                 ProviderConfig:make({
                     key = "ctrl-k",
@@ -37,14 +52,28 @@ describe("general", function()
             assert_eq(ps.provider_configs.default.provider, "ls -1")
             assert_eq(ps.provider_configs.default.provider_type, "plain")
             assert_eq(ps:switch("default"), nil)
+            assert_eq(ps:provide("default", "hello", {}), "plain")
+            if not github_actions then
+                local meta1 =
+                    utils.readfile(get_provider_metafile("single_test"))
+                local result1 =
+                    utils.readfile(get_provider_resultfile("single_test"))
+                print(string.format("metafile1:%s\n", meta1))
+                local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
+                assert_eq(type(metajson1), "table")
+                assert_eq(metajson1.pipeline, "default")
+                assert_eq(metajson1.provider_type, "plain")
+                print(string.format("resultfile1:%s\n", result1))
+                assert_eq(result1, "ls -1")
+            end
         end)
         it("creates single plain_list provider", function()
             local ps = general.ProviderSwitch:new(
-                "single",
+                "single_plain_list_test",
                 "pipeline",
                 ProviderConfig:make({
                     key = "ctrl-k",
-                    provider = { "ls", "-1" },
+                    provider = { "ls", "-lh", "~" },
                 })
             )
             assert_eq(type(ps), "table")
@@ -53,21 +82,43 @@ describe("general", function()
             assert_false(vim.tbl_isempty(ps.provider_configs.default))
             assert_eq(ps.provider_configs.default.key, "ctrl-k")
             assert_eq(type(ps.provider_configs.default.provider), "table")
-            assert_eq(#ps.provider_configs.default.provider, 2)
+            assert_eq(#ps.provider_configs.default.provider, 3)
             assert_eq(ps.provider_configs.default.provider[1], "ls")
-            assert_eq(ps.provider_configs.default.provider[2], "-1")
+            assert_eq(ps.provider_configs.default.provider[2], "-lh")
+            assert_eq(ps.provider_configs.default.provider[3], "~")
             assert_eq(ps.provider_configs.default.provider_type, "plain_list")
             assert_eq(ps:switch("default"), nil)
+            assert_eq(ps:provide("default", "hello", {}), "plain_list")
+            if not github_actions then
+                local meta2 = utils.readfile(
+                    get_provider_metafile("single_plain_list_test")
+                )
+                local result2 = utils.readfile(
+                    get_provider_resultfile("single_plain_list_test")
+                )
+                print(string.format("metafile2:%s\n", meta2))
+                local metajson1 = vim.fn.json_decode(meta2) --[[@as table]]
+                assert_eq(type(metajson1), "table")
+                assert_eq(metajson1.pipeline, "default")
+                assert_eq(metajson1.provider_type, "plain_list")
+                print(string.format("resultfile2:%s\n", result2))
+                local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
+                assert_eq(type(resultjson2), "table")
+                assert_eq(#resultjson2, 3)
+                assert_eq(resultjson2[1], "ls")
+                assert_eq(resultjson2[2], "-lh")
+                assert_eq(resultjson2[3], "~")
+            end
         end)
         it("creates multiple plain providers", function()
-            local ps = general.ProviderSwitch:new("single", "pipeline", {
+            local ps = general.ProviderSwitch:new("multiple_test", "pipeline", {
                 p1 = ProviderConfig:make({
                     key = "ctrl-p",
                     provider = "p1",
                 }),
                 p2 = ProviderConfig:make({
                     key = "ctrl-q",
-                    provider = "p2",
+                    provider = { "p2", "p3", "p4" },
                 }),
             })
             assert_eq(type(ps), "table")
@@ -80,114 +131,121 @@ describe("general", function()
             assert_eq(ps.provider_configs.p1.provider, "p1")
             assert_eq(ps.provider_configs.p1.provider_type, "plain")
             assert_eq(ps:switch("p1"), nil)
-
-            assert_eq(type(ps.provider_configs.p2), "table")
-            assert_false(vim.tbl_isempty(ps.provider_configs.p2))
-            assert_eq(ps.provider_configs.p2.key, "ctrl-q")
-            assert_eq(type(ps.provider_configs.p2.provider), "string")
-            assert_eq(ps.provider_configs.p2.provider, "p2")
-            assert_eq(ps.provider_configs.p2.provider_type, "plain")
-            assert_eq(ps:switch("p2"), nil)
-        end)
-        it("creates multiple plain_list providers", function()
-            local ps = general.ProviderSwitch:new("single", "pipeline", {
-                p1 = ProviderConfig:make({
-                    key = "ctrl-p",
-                    provider = { "p1", "p11", "p12" },
-                }),
-                p2 = ProviderConfig:make({
-                    key = "ctrl-q",
-                    provider = { "p2", "p21", "p22" },
-                }),
-            })
-            assert_eq(type(ps), "table")
-            assert_false(vim.tbl_isempty(ps))
-
-            assert_eq(type(ps.provider_configs.p1), "table")
-            assert_false(vim.tbl_isempty(ps.provider_configs.p1))
-            assert_eq(ps.provider_configs.p1.key, "ctrl-p")
-            assert_eq(type(ps.provider_configs.p1.provider), "table")
-            assert_eq(#ps.provider_configs.p1.provider, 3)
-            assert_eq(ps.provider_configs.p1.provider[1], "p1")
-            assert_eq(ps.provider_configs.p1.provider[2], "p11")
-            assert_eq(ps.provider_configs.p1.provider[3], "p12")
-            assert_eq(ps.provider_configs.p1.provider_type, "plain_list")
-            assert_eq(ps:switch("p1"), nil)
+            assert_eq(ps:provide("p1", "hello", {}), "plain")
+            if not github_actions then
+                local meta3 =
+                    utils.readfile(get_provider_metafile("multiple_test"))
+                local result3 =
+                    utils.readfile(get_provider_resultfile("multiple_test"))
+                print(string.format("metafile3:%s\n", meta3))
+                local metajson1 = vim.fn.json_decode(meta3) --[[@as table]]
+                assert_eq(type(metajson1), "table")
+                assert_eq(metajson1.pipeline, "p1")
+                assert_eq(metajson1.provider_type, "plain")
+                print(string.format("resultfile3:%s\n", result3))
+                assert_eq(result3, "p1")
+            end
 
             assert_eq(type(ps.provider_configs.p2), "table")
             assert_false(vim.tbl_isempty(ps.provider_configs.p2))
             assert_eq(ps.provider_configs.p2.key, "ctrl-q")
             assert_eq(type(ps.provider_configs.p2.provider), "table")
+            assert_eq(type(ps.provider_configs.p2.provider), "table")
             assert_eq(#ps.provider_configs.p2.provider, 3)
             assert_eq(ps.provider_configs.p2.provider[1], "p2")
-            assert_eq(ps.provider_configs.p2.provider[2], "p21")
-            assert_eq(ps.provider_configs.p2.provider[3], "p22")
+            assert_eq(ps.provider_configs.p2.provider[2], "p3")
+            assert_eq(ps.provider_configs.p2.provider[3], "p4")
             assert_eq(ps.provider_configs.p2.provider_type, "plain_list")
             assert_eq(ps:switch("p2"), nil)
+            assert_eq(ps:provide("p2", "hello", {}), "plain_list")
+            if not github_actions then
+                local meta4 =
+                    utils.readfile(get_provider_metafile("multiple_test"))
+                local result4 =
+                    utils.readfile(get_provider_resultfile("multiple_test"))
+                print(string.format("metafile4:%s\n", meta4))
+                local metajson1 = vim.fn.json_decode(meta4) --[[@as table]]
+                assert_eq(type(metajson1), "table")
+                assert_eq(metajson1.pipeline, "p2")
+                assert_eq(metajson1.provider_type, "plain_list")
+                print(string.format("resultfile4:%s\n", result4))
+                local resultjson4 = vim.fn.json_decode(result4) --[[@as table]]
+                assert_eq(type(resultjson4), "table")
+                assert_eq(#resultjson4, 3)
+                assert_eq(resultjson4[1], "p2")
+                assert_eq(resultjson4[2], "p3")
+                assert_eq(resultjson4[3], "p4")
+            end
         end)
     end)
     describe("[PreviewerSwitch:provide]", function()
         it("is a plain/plain_list provider", function()
-            local ps = general.ProviderSwitch:new("plain_test", "p1", {
-                p1 = ProviderConfig:make({
-                    key = "ctrl-p",
-                    provider = "ls -lh",
+            local ps = general.PreviewerSwitch:new("plain_test", "p1", {
+                p1 = PreviewerConfig:make({
+                    previewer = function()
+                        return "ls -lh"
+                    end,
                 }),
-                p2 = ProviderConfig:make({
-                    key = "ctrl-q",
-                    provider = { "ls", "-lha", "~" },
+                p2 = PreviewerConfig:make({
+                    previewer = function()
+                        return { "ls", "-lha", "~" }
+                    end,
+                    previewer_type = "command_list",
                 }),
             })
             print(
-                string.format("GITHUB_ACTIONS:%s", os.getenv("GITHUB_ACTIONS"))
+                string.format(
+                    "GITHUB_ACTIONS:%s\n",
+                    os.getenv("GITHUB_ACTIONS")
+                )
             )
-            assert_eq(ps:provide("p1", "hello", {}), "plain")
+            assert_eq(ps:preview("p1", "hello", {}), "command")
             if not github_actions then
                 local meta1 = utils.readfile(
                     path.join(
                         vim.fn.stdpath("data"),
                         "fzfx.nvim",
-                        "provider_switch_metafile_plain_test"
+                        "previewer_metafile_plain_test"
                     )
                 )
                 local result1 = utils.readfile(
                     path.join(
                         vim.fn.stdpath("data"),
                         "fzfx.nvim",
-                        "provider_switch_resultfile_plain_test"
+                        "previewer_resultfile_plain_test"
                     )
                 )
-                print(string.format("metafile:%s\n", meta1))
+                print(string.format("metafile1:%s\n", meta1))
                 local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
                 assert_eq(type(metajson1), "table")
                 assert_eq(metajson1.pipeline, "p1")
-                assert_eq(metajson1.provider_type, "plain")
-                print(string.format("resultfile:%s\n", result1))
+                assert_eq(metajson1.previewer_type, "command")
+                print(string.format("resultfile1:%s\n", result1))
                 assert_eq(result1, "ls -lh")
             end
             ps:switch("p2")
-            assert_eq(ps:provide("p2", "world", {}), "plain_list")
+            assert_eq(ps:preview("p2", "world", {}), "command_list")
             if not github_actions then
                 local meta2 = utils.readfile(
                     path.join(
                         vim.fn.stdpath("data"),
                         "fzfx.nvim",
-                        "provider_switch_metafile_plain_test"
+                        "previewer_metafile_plain_test"
                     )
                 )
                 local result2 = utils.readfile(
                     path.join(
                         vim.fn.stdpath("data"),
                         "fzfx.nvim",
-                        "provider_switch_resultfile_plain_test"
+                        "previewer_resultfile_plain_test"
                     )
                 )
-                print(string.format("metafile:%s\n", meta2))
+                print(string.format("metafile2:%s\n", meta2))
                 local metajson2 = vim.fn.json_decode(meta2) --[[@as table]]
                 assert_eq(type(metajson2), "table")
                 assert_eq(metajson2.pipeline, "p2")
-                assert_eq(metajson2.provider_type, "plain_list")
-                print(string.format("resultfile:%s\n", result2))
+                assert_eq(metajson2.previewer_type, "command_list")
+                print(string.format("resultfile2:%s\n", result2))
                 local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
                 assert_eq(type(resultjson2), "table")
                 assert_eq(#resultjson2, 3)
@@ -197,68 +255,66 @@ describe("general", function()
             end
         end)
         it("is a command/command_list provider", function()
-            local ps = general.ProviderSwitch:new("command_test", "p1", {
-                p1 = ProviderConfig:make({
-                    key = "ctrl-p",
-                    provider = function()
+            local ps = general.PreviewerSwitch:new("command_test", "p1", {
+                p1 = PreviewerConfig:make({
+                    previewer = function()
                         return "ls -lh"
                     end,
-                    provider_type = schema.ProviderTypeEnum.COMMAND,
+                    previewer_type = schema.ProviderTypeEnum.COMMAND,
                 }),
-                p2 = ProviderConfig:make({
-                    key = "ctrl-q",
-                    provider = function()
+                p2 = PreviewerConfig:make({
+                    previewer = function()
                         return { "ls", "-lha", "~" }
                     end,
-                    provider_type = schema.ProviderTypeEnum.COMMAND_LIST,
+                    previewer_type = schema.ProviderTypeEnum.COMMAND_LIST,
                 }),
             })
-            assert_eq(ps:provide("p1", "hello", {}), "command")
+            assert_eq(ps:preview("p1", "hello", {}), "command")
             if not github_actions then
                 local meta1 = utils.readfile(
                     path.join(
                         vim.fn.stdpath("data"),
                         "fzfx.nvim",
-                        "provider_switch_metafile_command_test"
+                        "previewer_metafile_command_test"
                     )
                 )
                 local result1 = utils.readfile(
                     path.join(
                         vim.fn.stdpath("data"),
                         "fzfx.nvim",
-                        "provider_switch_resultfile_command_test"
+                        "previewer_resultfile_command_test"
                     )
                 )
                 print(string.format("metafile:%s\n", meta1))
                 local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
                 assert_eq(type(metajson1), "table")
                 assert_eq(metajson1.pipeline, "p1")
-                assert_eq(metajson1.provider_type, "command")
+                assert_eq(metajson1.previewer_type, "command")
                 print(string.format("resultfile:%s\n", result1))
                 assert_eq(result1, "ls -lh")
             end
             ps:switch("p2")
-            assert_eq(ps:provide("p2", "world", {}), "command_list")
+            assert_eq(ps:preview("p2", "world", {}), "command_list")
             if not github_actions then
                 local meta2 = utils.readfile(
                     path.join(
                         vim.fn.stdpath("data"),
                         "fzfx.nvim",
-                        "provider_switch_metafile_command_test"
+                        "previewer_metafile_command_test"
                     )
                 )
                 local result2 = utils.readfile(
                     path.join(
                         vim.fn.stdpath("data"),
                         "fzfx.nvim",
-                        "provider_switch_resultfile_command_test"
+                        "previewer_resultfile_command_test"
                     )
                 )
                 print(string.format("metafile:%s\n", meta2))
                 local metajson2 = vim.fn.json_decode(meta2) --[[@as table]]
                 assert_eq(type(metajson2), "table")
                 assert_eq(metajson2.pipeline, "p2")
-                assert_eq(metajson2.provider_type, "command_list")
+                assert_eq(metajson2.previewer_type, "command_list")
                 print(string.format("resultfile:%s\n", result2))
                 local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
                 assert_eq(type(resultjson2), "table")
@@ -494,6 +550,45 @@ describe("general", function()
                 name = "FzfxLiveGrep",
             }
             assert_false(general.is_provider_config(p2))
+        end)
+    end)
+    describe("[make_cache_filename]", function()
+        it("is debug mode", function()
+            vim.env._FZFX_NVIM_DEBUG_ENABLE = 1
+            assert_eq(
+                general.make_cache_filename(
+                    "provider",
+                    "switch",
+                    "meta",
+                    "live_grep"
+                ),
+                path.join(
+                    conf.get_config().cache.dir,
+                    "provider_switch_meta_live_grep"
+                )
+            )
+        end)
+        it("is not debug mode", function()
+            vim.env._FZFX_NVIM_DEBUG_ENABLE = 0
+            local actual = general.make_cache_filename(
+                "provider",
+                "switch",
+                "meta",
+                "live_grep"
+            )
+            print(
+                string.format(
+                    "make cache filename (non-debug):%s",
+                    vim.inspect(actual)
+                )
+            )
+            assert_true(
+                actual
+                    ~= path.join(
+                        vim.fn.stdpath("data"),
+                        "provider_switch_meta_live_grep"
+                    )
+            )
         end)
     end)
 end)
