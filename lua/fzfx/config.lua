@@ -9,7 +9,6 @@ local line_helpers = require("fzfx.line_helpers")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-local PreviewerConfig = require("fzfx.schema").PreviewerConfig
 
 --- @type table<string, FzfOpt>
 local default_fzf_options = {
@@ -924,14 +923,14 @@ local Defaults = {
             },
         },
         previewers = {
-            restricted_mode = PreviewerConfig:make({
+            restricted_mode = {
                 previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
-            unrestricted_mode = PreviewerConfig:make({
+            },
+            unrestricted_mode = {
                 previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -1201,14 +1200,14 @@ local Defaults = {
             },
         },
         previewers = {
-            restricted_mode = PreviewerConfig:make({
+            restricted_mode = {
                 previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
-            unrestricted_mode = PreviewerConfig:make({
+            },
+            unrestricted_mode = {
                 previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -1309,10 +1308,10 @@ local Defaults = {
             provider_type = ProviderTypeEnum.LIST,
             line_opts = { prepend_icon_by_ft = true },
         },
-        previewers = PreviewerConfig:make({
+        previewers = {
             previewer = file_previewer,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        }),
+        },
         interactions = {
             delete_buffer = {
                 key = "ctrl-d",
@@ -1439,14 +1438,14 @@ local Defaults = {
             },
         },
         previewers = {
-            current_folder = PreviewerConfig:make({
+            current_folder = {
                 previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
-            workspace = PreviewerConfig:make({
+            },
+            workspace = {
                 previewer = file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -1652,7 +1651,7 @@ local Defaults = {
             },
         },
         previewers = {
-            local_branch = PreviewerConfig:make({
+            local_branch = {
                 previewer = function(line)
                     local branch = vim.fn.split(line)[1]
                     -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
@@ -1663,8 +1662,8 @@ local Defaults = {
                         branch
                     )
                 end,
-            }),
-            remote_branch = PreviewerConfig:make({
+            },
+            remote_branch = {
                 previewer = function(line)
                     local branch = vim.fn.split(line)[1]
                     return string.format(
@@ -1673,7 +1672,7 @@ local Defaults = {
                         branch
                     )
                 end,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -1829,18 +1828,18 @@ local Defaults = {
             },
         },
         previewers = {
-            all_commits = PreviewerConfig:make({
+            all_commits = {
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
-            }),
-            buffer_commits = PreviewerConfig:make({
+            },
+            buffer_commits = {
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -1929,12 +1928,12 @@ local Defaults = {
             },
         },
         previewers = {
-            default = PreviewerConfig:make({
+            default = {
                 previewer = function(line)
                     local commit = vim.fn.split(line)[1]
                     return string.format("git show --color=always %s", commit)
                 end,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -2067,14 +2066,14 @@ local Defaults = {
             },
         },
         previewers = {
-            workspace_diagnostics = PreviewerConfig:make({
+            workspace_diagnostics = {
                 previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
-            buffer_diagnostics = PreviewerConfig:make({
+            },
+            buffer_diagnostics = {
                 previewer = file_previewer_rg,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
+            },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -2122,10 +2121,10 @@ local Defaults = {
                 prepend_icon_path_position = 1,
             },
         },
-        previewers = PreviewerConfig:make({
+        previewers = {
             previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        }),
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_rg,
@@ -2185,10 +2184,10 @@ local Defaults = {
                 prepend_icon_path_position = 1,
             },
         },
-        previewers = PreviewerConfig:make({
+        previewers = {
             previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        }),
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_rg,
@@ -2248,10 +2247,10 @@ local Defaults = {
                 prepend_icon_path_position = 1,
             },
         },
-        previewers = PreviewerConfig:make({
+        previewers = {
             previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        }),
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_rg,
@@ -2311,10 +2310,10 @@ local Defaults = {
                 prepend_icon_path_position = 1,
             },
         },
-        previewers = PreviewerConfig:make({
+        previewers = {
             previewer = file_previewer_rg,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        }),
+        },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_rg,
@@ -2440,14 +2439,14 @@ local Defaults = {
             },
         },
         previewers = {
-            filter_hidden = PreviewerConfig:make({
+            filter_hidden = {
                 previewer = make_file_explorer_previewer(),
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
-            include_hidden = PreviewerConfig:make({
+            },
+            include_hidden = {
                 previewer = make_file_explorer_previewer(),
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            }),
+            },
         },
         interactions = {
             cd = {

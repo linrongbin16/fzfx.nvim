@@ -8,67 +8,29 @@ local env = require("fzfx.env")
 local path = require("fzfx.path")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
-local clazz = require("fzfx.clazz")
-local PreviewerConfig = require("fzfx.schema").PreviewerConfig
+local schema = require("fzfx.schema")
 local conf = require("fzfx.config")
 
 local DEFAULT_PIPELINE = "default"
 
--- config class detect {
-
---- @param cfg Configs?
---- @return boolean
-local function is_command_config(cfg)
-    return type(cfg) == "table"
-        and type(cfg.name) == "string"
-        and string.len(cfg.name) > 0
-        and type(cfg.feed) == "string"
-        and string.len(cfg.feed) > 0
-        and type(cfg.opts) == "table"
-end
-
---- @param cfg Configs?
---- @return boolean
-local function is_provider_config(cfg)
-    return type(cfg) == "table"
-        and type(cfg.key) == "string"
-        and string.len(cfg.key) > 0
-        and (
-            (type(cfg.provider) == "string" and string.len(cfg.provider) > 0)
-            or (type(cfg.provider) == "table" and #cfg.provider > 0)
-            or type(cfg.provider) == "function"
-        )
-end
-
---- @param cfg Configs?
---- @return boolean
-local function is_previewer_config(cfg)
-    return type(cfg) == "table"
-        and type(cfg.previewer) == "function"
-        and (
-            cfg.previewer_type == nil
-            or (
-                type(cfg.previewer_type) == "string"
-                and string.len(cfg.previewer_type) > 0
-            )
-        )
-end
+-- provider switch {
 
 --- @param provider_config ProviderConfig
---- @return ProviderConfig
-local function try_set_default_provider_type(provider_config)
-    provider_config.provider_type = provider_config.provider_type
+--- @return ProviderType
+local function get_provider_type_or_default(provider_config)
+    return provider_config.provider_type
         or (
             type(provider_config.provider) == "string"
                 and ProviderTypeEnum.PLAIN
             or ProviderTypeEnum.PLAIN_LIST
         )
-    return provider_config
 end
 
--- config class detect }
-
--- provider switch {
+--- @param previewer_config PreviewerConfig
+--- @return PreviewerType
+local function get_previewer_type_or_default(previewer_config)
+    return previewer_config.previewer_type or PreviewerTypeEnum.COMMAND
+end
 
 --- @param ... string
 --- @return string
@@ -96,20 +58,22 @@ local ProviderSwitch = {}
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
-    if is_provider_config(provider_configs) then
-        provider_configs = try_set_default_provider_type(provider_configs)
+    if schema.is_provider_config(provider_configs) then
+        provider_configs.provider_type =
+            schema.get_provider_type_or_default(provider_configs)
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
     else
         for provider_name, provider_opts in pairs(provider_configs) do
             log.ensure(
-                is_provider_config(provider_opts),
+                schema.is_provider_config(provider_opts),
                 "error! %s (%s) is not a valid provider! %s",
                 vim.inspect(provider_name),
                 vim.inspect(name),
                 vim.inspect(provider_opts)
             )
-            provider_configs_map[provider_name] =
-                try_set_default_provider_type(provider_opts)
+            provider_opts.provider_type =
+                schema.get_provider_type_or_default(provider_opts)
+            provider_configs_map[provider_name] = provider_opts
         end
     end
 
@@ -372,13 +336,15 @@ local PreviewerSwitch = {}
 function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local previewers_map = {}
     local previewer_types_map = {}
-    if clazz.instanceof(previewer_configs, PreviewerConfig) then
+    if schema.is_previewer_config(previewer_configs) then
         previewers_map[DEFAULT_PIPELINE] = previewer_configs.previewer
-        previewer_types_map[DEFAULT_PIPELINE] = previewer_configs.previewer_type
+        previewer_types_map[DEFAULT_PIPELINE] =
+            schema.get_previewer_type_or_default(previewer_configs)
     else
         for previewer_name, previewer_opts in pairs(previewer_configs) do
             previewers_map[previewer_name] = previewer_opts.previewer
-            previewer_types_map[previewer_name] = previewer_opts.previewer_type
+            previewer_types_map[previewer_name] =
+                schema.get_previewer_type_or_default(previewer_opts)
         end
     end
 
@@ -591,7 +557,7 @@ end
 --- @return HeaderSwitch
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
-    if is_provider_config(provider_configs) then
+    if schema.is_provider_config(provider_configs) then
         headers_map[DEFAULT_PIPELINE] = make_help_doc(interaction_configs, {})
     else
         log.debug(
@@ -636,7 +602,7 @@ end
 local function get_pipeline_size(pipeline_configs)
     local n = 0
     if type(pipeline_configs) == "table" then
-        if is_provider_config(pipeline_configs.providers) then
+        if schema.is_provider_config(pipeline_configs.providers) then
             return 1
         end
         for _, _ in pairs(pipeline_configs.providers) do
@@ -668,7 +634,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if default_pipeline == nil then
         local pipeline = nil
         local provider_opts = nil
-        if is_provider_config(pipeline_configs.providers) then
+        if schema.is_provider_config(pipeline_configs.providers) then
             log.debug(
                 "|fzfx.general - general| providers is single config: %s",
                 vim.inspect(pipeline_configs.providers)
@@ -922,7 +888,7 @@ local function setup(name, pipeline_configs)
     --     vim.inspect(pipeline_configs)
     -- )
     -- User commands
-    if is_command_config(pipeline_configs.commands) then
+    if schema.is_command_config(pipeline_configs.commands) then
         vim.api.nvim_create_user_command(
             pipeline_configs.commands.name,
             function(opts)
@@ -963,9 +929,6 @@ end
 
 local M = {
     setup = setup,
-    is_command_config = is_command_config,
-    is_provider_config = is_provider_config,
-    is_previewer_config = is_previewer_config,
     make_cache_filename = make_cache_filename,
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,

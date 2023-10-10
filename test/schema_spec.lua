@@ -159,4 +159,234 @@ describe("schema", function()
             assert_eq(group.previewers, "previewers")
         end)
     end)
+    describe("[is_command_config]", function()
+        it("is command config", function()
+            local obj = schema.CommandConfig:make({
+                name = "FzfxLiveGrep",
+                feed = "args",
+                opts = {
+                    nargs = "?",
+                },
+            })
+            assert_true(schema.is_command_config(obj))
+            local obj2 = {
+                name = "FzfxLiveGrep",
+                feed = "args",
+                opts = {
+                    nargs = "?",
+                },
+            }
+            assert_true(schema.is_command_config(obj2))
+        end)
+        it("is not command config", function()
+            local obj1 = schema.CommandConfig:make({})
+            assert_false(schema.is_command_config(obj1))
+            local obj2 = {
+                key = "FzfxLiveGrep",
+            }
+            assert_false(schema.is_command_config(obj2))
+        end)
+    end)
+    describe("[is_provider_config]", function()
+        it("is provider config", function()
+            local p1 = schema.ProviderConfig:make({
+                key = "ctrl-l",
+                provider = "ls -lh",
+            })
+            local p2 = schema.ProviderConfig:make({
+                key = "ctrl-g",
+                provider = { "ls", "-lh" },
+            })
+            local p3 = schema.ProviderConfig:make({
+                key = "ctrl-k",
+                provider = function()
+                    return { "ls", "-lh" }
+                end,
+            })
+            assert_true(schema.is_provider_config(p1))
+            assert_true(schema.is_provider_config(p2))
+            assert_true(schema.is_provider_config(p3))
+            local p4 = {
+                key = "ctrl-l",
+                provider = "ls -lh",
+            }
+            local p5 = {
+                key = "ctrl-g",
+                provider = { "ls", "-lh" },
+            }
+            local p6 = {
+                key = "ctrl-k",
+                provider = function()
+                    return { "ls", "-lh" }
+                end,
+            }
+            assert_true(schema.is_provider_config(p4))
+            assert_true(schema.is_provider_config(p5))
+            assert_true(schema.is_provider_config(p6))
+        end)
+        it("is not provider config", function()
+            local p1 = schema.ProviderConfig:make({})
+            assert_false(schema.is_provider_config(p1))
+            local p2 = {
+                name = "FzfxLiveGrep",
+            }
+            assert_false(schema.is_provider_config(p2))
+        end)
+    end)
+    describe("[is_previewer_config]", function()
+        it("is previewer config", function()
+            local p1 = schema.PreviewerConfig:make({
+                previewer = function()
+                    return "ls -lh"
+                end,
+            })
+            local p2 = schema.PreviewerConfig:make({
+                previewer = function()
+                    return { "ls", "-lh", "~" }
+                end,
+                previewer_type = "command_list",
+            })
+            local p3 = schema.PreviewerConfig:make({
+                previewer = function()
+                    return "ls -lh"
+                end,
+                previewer_type = "command",
+            })
+            assert_true(schema.is_previewer_config(p1))
+            assert_true(schema.is_previewer_config(p2))
+            assert_true(schema.is_previewer_config(p3))
+            local p4 = {
+                previewer = function()
+                    return "ls -lh"
+                end,
+            }
+            local p5 = {
+                previewer = function()
+                    return { "ls", "-lh" }
+                end,
+                previewer_type = "command_list",
+            }
+            assert_true(schema.is_previewer_config(p4))
+            assert_true(schema.is_previewer_config(p5))
+        end)
+        it("is not previewer config", function()
+            local p1 = schema.PreviewerConfig:make({})
+            assert_false(schema.is_previewer_config(p1))
+            local p2 = {
+                name = "FzfxLiveGrep",
+            }
+            assert_false(schema.is_previewer_config(p2))
+        end)
+    end)
+    describe("[get_provider_type_or_default]", function()
+        it("fallback to default", function()
+            assert_eq(
+                schema.get_provider_type_or_default({
+                    key = "p1",
+                    provider = "ls",
+                }),
+                "plain"
+            )
+            assert_eq(
+                schema.get_provider_type_or_default({
+                    key = "p2",
+                    provider = { "ls" },
+                }),
+                "plain_list"
+            )
+        end)
+        it("use existed", function()
+            assert_eq(
+                schema.get_provider_type_or_default({
+                    key = "p1",
+                    provider = "ls",
+                    provider_type = "plain",
+                }),
+                "plain"
+            )
+            assert_eq(
+                schema.get_provider_type_or_default({
+                    key = "p2",
+                    provider = { "ls" },
+                    provider_type = "plain_list",
+                }),
+                "plain_list"
+            )
+            assert_eq(
+                schema.get_provider_type_or_default({
+                    key = "p3",
+                    provider = "ls",
+                    provider_type = "plain_list",
+                }),
+                "plain_list"
+            )
+            assert_eq(
+                schema.get_provider_type_or_default({
+                    key = "p4",
+                    provider = { "ls" },
+                    provider_type = "plain",
+                }),
+                "plain"
+            )
+        end)
+    end)
+    describe("[get_previewer_type_or_default]", function()
+        it("fallback to default", function()
+            assert_eq(
+                schema.get_previewer_type_or_default({
+                    previewer = function()
+                        return "ls"
+                    end,
+                }),
+                "command"
+            )
+            assert_eq(
+                schema.get_previewer_type_or_default({
+                    key = "p2",
+                    previewer = function()
+                        return { "ls" }
+                    end,
+                }),
+                "command"
+            )
+        end)
+        it("use existed", function()
+            assert_eq(
+                schema.get_previewer_type_or_default({
+                    previewer = function()
+                        return "ls"
+                    end,
+                    previewer_type = "command",
+                }),
+                "command"
+            )
+            assert_eq(
+                schema.get_previewer_type_or_default({
+                    previewer = function()
+                        return { "ls" }
+                    end,
+                    previewer_type = "command_list",
+                }),
+                "command_list"
+            )
+            assert_eq(
+                schema.get_previewer_type_or_default({
+                    previewer = function()
+                        return "ls"
+                    end,
+                    previewer_type = "command_list",
+                }),
+                "command_list"
+            )
+            assert_eq(
+                schema.get_previewer_type_or_default({
+                    previewer = function()
+                        return { "ls" }
+                    end,
+                    previewer_type = "command",
+                }),
+                "command"
+            )
+        end)
+    end)
 end)

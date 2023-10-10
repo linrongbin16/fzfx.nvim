@@ -1,4 +1,4 @@
 modules = {
-  ["fzfx"] = "lua/fzfx.lua",
-  ["fzfx.*"] = "lua"
+    ["fzfx"] = "lua/fzfx.lua",
+    ["fzfx.*"] = "lua",
 }

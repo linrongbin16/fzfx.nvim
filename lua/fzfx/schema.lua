@@ -190,9 +190,10 @@ end
 
 --- @class PreviewerConfig
 --- @field previewer Previewer
---- @field previewer_type PreviewerType
+--- @field previewer_type PreviewerType?
 local PreviewerConfig = {}
 
+--- @deprecated
 function PreviewerConfig:make(opts)
     local o = opts or {}
     o.previewer_type = o.previewer_type or PreviewerTypeEnum.COMMAND
@@ -261,6 +262,61 @@ function GroupConfig:make(opts)
     return o
 end
 
+--- @param cfg Configs?
+--- @return boolean
+local function is_command_config(cfg)
+    return type(cfg) == "table"
+        and type(cfg.name) == "string"
+        and string.len(cfg.name) > 0
+        and type(cfg.feed) == "string"
+        and string.len(cfg.feed) > 0
+        and type(cfg.opts) == "table"
+end
+
+--- @param cfg Configs?
+--- @return boolean
+local function is_provider_config(cfg)
+    return type(cfg) == "table"
+        and type(cfg.key) == "string"
+        and string.len(cfg.key) > 0
+        and (
+            (type(cfg.provider) == "string" and string.len(cfg.provider) > 0)
+            or (type(cfg.provider) == "table" and #cfg.provider > 0)
+            or type(cfg.provider) == "function"
+        )
+end
+
+--- @param cfg Configs?
+--- @return boolean
+local function is_previewer_config(cfg)
+    return type(cfg) == "table"
+        and type(cfg.previewer) == "function"
+        and (
+            cfg.previewer_type == nil
+            or (
+                type(cfg.previewer_type) == "string"
+                and string.len(cfg.previewer_type) > 0
+            )
+        )
+end
+
+--- @param provider_config ProviderConfig
+--- @return ProviderType
+local function get_provider_type_or_default(provider_config)
+    return provider_config.provider_type
+        or (
+            type(provider_config.provider) == "string"
+                and ProviderTypeEnum.PLAIN
+            or ProviderTypeEnum.PLAIN_LIST
+        )
+end
+
+--- @param previewer_config PreviewerConfig
+--- @return PreviewerType
+local function get_previewer_type_or_default(previewer_config)
+    return previewer_config.previewer_type or PreviewerTypeEnum.COMMAND
+end
+
 local M = {
     ProviderTypeEnum = ProviderTypeEnum,
     PreviewerTypeEnum = PreviewerTypeEnum,
@@ -271,6 +327,11 @@ local M = {
     CommandConfig = CommandConfig,
     InteractionConfig = InteractionConfig,
     GroupConfig = GroupConfig,
+    is_command_config = is_command_config,
+    is_provider_config = is_provider_config,
+    is_previewer_config = is_previewer_config,
+    get_provider_type_or_default = get_provider_type_or_default,
+    get_previewer_type_or_default = get_previewer_type_or_default,
 }
 
 return M
