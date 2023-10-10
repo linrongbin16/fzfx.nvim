@@ -195,6 +195,9 @@ local PreviewerConfig = {}
 
 --- @deprecated
 function PreviewerConfig:make(opts)
+    require("fzfx.deprecated").notify(
+        "deprecated 'schema.PreviewerConfig', please use lua table!"
+    )
     local o = opts or {}
     o.previewer_type = o.previewer_type or PreviewerTypeEnum.COMMAND
     setmetatable(o, self)
@@ -321,12 +324,15 @@ local M = {
     ProviderTypeEnum = ProviderTypeEnum,
     PreviewerTypeEnum = PreviewerTypeEnum,
     CommandFeedEnum = CommandFeedEnum,
+
+    -- @deprecated
     ProviderConfig = ProviderConfig,
     ProviderLineTypeEnum = ProviderLineTypeEnum,
     PreviewerConfig = PreviewerConfig,
     CommandConfig = CommandConfig,
     InteractionConfig = InteractionConfig,
     GroupConfig = GroupConfig,
+
     is_command_config = is_command_config,
     is_provider_config = is_provider_config,
     is_previewer_config = is_previewer_config,
