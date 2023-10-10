@@ -190,7 +190,7 @@ end
 
 --- @class PreviewerConfig
 --- @field previewer Previewer
---- @field previewer_type PreviewerType
+--- @field previewer_type PreviewerType?
 local PreviewerConfig = {}
 
 function PreviewerConfig:make(opts)

@@ -54,21 +54,26 @@ local function is_previewer_config(cfg)
         )
 end
 
+-- config class detect }
+
+-- provider switch {
+
 --- @param provider_config ProviderConfig
---- @return ProviderConfig
-local function try_set_default_provider_type(provider_config)
-    provider_config.provider_type = provider_config.provider_type
+--- @return ProviderType
+local function get_provider_type_or_default(provider_config)
+    return provider_config.provider_type
         or (
             type(provider_config.provider) == "string"
                 and ProviderTypeEnum.PLAIN
             or ProviderTypeEnum.PLAIN_LIST
         )
-    return provider_config
 end
 
--- config class detect }
-
--- provider switch {
+--- @param previewer_config PreviewerConfig
+--- @return PreviewerType
+local function get_previewer_type_or_default(previewer_config)
+    return previewer_config.previewer_type or PreviewerTypeEnum.COMMAND
+end
 
 --- @param ... string
 --- @return string
@@ -97,7 +102,8 @@ local ProviderSwitch = {}
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
     if is_provider_config(provider_configs) then
-        provider_configs = try_set_default_provider_type(provider_configs)
+        provider_configs.provider_type =
+            get_provider_type_or_default(provider_configs)
         provider_configs_map[DEFAULT_PIPELINE] = provider_configs
     else
         for provider_name, provider_opts in pairs(provider_configs) do
@@ -108,8 +114,9 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
                 vim.inspect(name),
                 vim.inspect(provider_opts)
             )
-            provider_configs_map[provider_name] =
-                try_set_default_provider_type(provider_opts)
+            provider_opts.provider_type =
+                get_provider_type_or_default(provider_opts)
+            provider_configs_map[provider_name] = provider_opts
         end
     end
 
@@ -372,13 +379,15 @@ local PreviewerSwitch = {}
 function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local previewers_map = {}
     local previewer_types_map = {}
-    if clazz.instanceof(previewer_configs, PreviewerConfig) then
+    if is_previewer_config(previewer_configs) then
         previewers_map[DEFAULT_PIPELINE] = previewer_configs.previewer
-        previewer_types_map[DEFAULT_PIPELINE] = previewer_configs.previewer_type
+        previewer_types_map[DEFAULT_PIPELINE] =
+            get_previewer_type_or_default(previewer_configs)
     else
         for previewer_name, previewer_opts in pairs(previewer_configs) do
             previewers_map[previewer_name] = previewer_opts.previewer
-            previewer_types_map[previewer_name] = previewer_opts.previewer_type
+            previewer_types_map[previewer_name] =
+                get_previewer_type_or_default(previewer_opts)
         end
     end
 
@@ -966,6 +975,8 @@ local M = {
     is_command_config = is_command_config,
     is_provider_config = is_provider_config,
     is_previewer_config = is_previewer_config,
+    get_provider_type_or_default = get_provider_type_or_default,
+    get_previewer_type_or_default = get_previewer_type_or_default,
     make_cache_filename = make_cache_filename,
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,

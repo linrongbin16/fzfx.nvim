@@ -636,4 +636,115 @@ describe("general", function()
             assert_false(general.is_previewer_config(p2))
         end)
     end)
+    describe("[get_provider_type_or_default]", function()
+        it("fallback to default", function()
+            assert_eq(
+                general.get_provider_type_or_default({
+                    key = "p1",
+                    provider = "ls",
+                }),
+                "plain"
+            )
+            assert_eq(
+                general.get_provider_type_or_default({
+                    key = "p2",
+                    provider = { "ls" },
+                }),
+                "plain_list"
+            )
+        end)
+        it("use existed", function()
+            assert_eq(
+                general.get_provider_type_or_default({
+                    key = "p1",
+                    provider = "ls",
+                    provider_type = "plain",
+                }),
+                "plain"
+            )
+            assert_eq(
+                general.get_provider_type_or_default({
+                    key = "p2",
+                    provider = { "ls" },
+                    provider_type = "plain_list",
+                }),
+                "plain_list"
+            )
+            assert_eq(
+                general.get_provider_type_or_default({
+                    key = "p3",
+                    provider = "ls",
+                    provider_type = "plain_list",
+                }),
+                "plain_list"
+            )
+            assert_eq(
+                general.get_provider_type_or_default({
+                    key = "p4",
+                    provider = { "ls" },
+                    provider_type = "plain",
+                }),
+                "plain"
+            )
+        end)
+    end)
+    describe("[get_previewer_type_or_default]", function()
+        it("fallback to default", function()
+            assert_eq(
+                general.get_previewer_type_or_default({
+                    previewer = function()
+                        return "ls"
+                    end,
+                }),
+                "command"
+            )
+            assert_eq(
+                general.get_previewer_type_or_default({
+                    key = "p2",
+                    previewer = function()
+                        return { "ls" }
+                    end,
+                }),
+                "command"
+            )
+        end)
+        it("use existed", function()
+            assert_eq(
+                general.get_previewer_type_or_default({
+                    previewer = function()
+                        return "ls"
+                    end,
+                    previewer_type = "command",
+                }),
+                "command"
+            )
+            assert_eq(
+                general.get_previewer_type_or_default({
+                    previewer = function()
+                        return { "ls" }
+                    end,
+                    previewer_type = "command_list",
+                }),
+                "command_list"
+            )
+            assert_eq(
+                general.get_previewer_type_or_default({
+                    previewer = function()
+                        return "ls"
+                    end,
+                    previewer_type = "command_list",
+                }),
+                "command_list"
+            )
+            assert_eq(
+                general.get_previewer_type_or_default({
+                    previewer = function()
+                        return { "ls" }
+                    end,
+                    previewer_type = "command",
+                }),
+                "command"
+            )
+        end)
+    end)
 end)
