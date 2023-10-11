@@ -659,23 +659,19 @@ local function make_filename_by_file_explorer_context(line, context)
     return p
 end
 
---- @return fun(line:string,context:FileExplorerPipelineContext):string[]|nil
-local function make_file_explorer_previewer()
-    --- @param line string
-    --- @param context FileExplorerPipelineContext
-    --- @return string[]|nil
-    local function impl(line, context)
-        local p = make_filename_by_file_explorer_context(line, context)
-        if vim.fn.filereadable(p) > 0 then
-            local preview = make_file_previewer(p)
-            return preview()
-        elseif vim.fn.isdirectory(p) > 0 then
-            return directory_previewer(p)
-        else
-            return nil
-        end
+--- @param line string
+--- @param context FileExplorerPipelineContext
+--- @return string[]|nil
+local function file_explorer_previewer(line, context)
+    local p = make_filename_by_file_explorer_context(line, context)
+    if vim.fn.filereadable(p) > 0 then
+        local preview = make_file_previewer(p)
+        return preview()
+    elseif vim.fn.isdirectory(p) > 0 then
+        return directory_previewer(p)
+    else
+        return nil
     end
-    return impl
 end
 
 --- @param lines string[]
@@ -2318,11 +2314,11 @@ local Defaults = {
         },
         previewers = {
             filter_hidden = {
-                previewer = make_file_explorer_previewer(),
+                previewer = file_explorer_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             include_hidden = {
-                previewer = make_file_explorer_previewer(),
+                previewer = file_explorer_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
         },
