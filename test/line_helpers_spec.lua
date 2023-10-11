@@ -10,31 +10,46 @@ describe("line_helpers", function()
     end)
 
     local line_helpers = require("fzfx.line_helpers")
+    local path = require("fzfx.path")
     local utils = require("fzfx.utils")
     local DEVICONS_PATH =
         "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
     describe("[parse_find]", function()
         it("parse filename without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-            local expect = "~/github/linrongbin16/fzfx.nvim/README.md"
-            local actual1 = line_helpers.parse_find(expect)
-            assert_true(utils.string_endswith(actual1, expect:sub(2)))
-            local actual2 = line_helpers.parse_find(expect, { no_icon = true })
-            assert_true(utils.string_endswith(actual2, expect:sub(2)))
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md",
+                "~/github/linrongbin16/fzfx.nvim/LICENSE",
+                "~/github/linrongbin16/fzfx.nvim/codecov.yml",
+                "~/github/linrongbin16/fzfx.nvim/test/hello world.txt",
+                "~/github/linrongbin16/fzfx.nvim/test/goodbye world/goodbye.lua",
+            }
+            for i, line in ipairs(lines) do
+                local expect = path.normalize(vim.fn.expand(line))
+                local actual1 = line_helpers.parse_find(expect)
+                assert_eq(expect, actual1)
+                local actual2 =
+                    line_helpers.parse_find(expect, { no_icon = true })
+                assert_eq(expect, actual2)
+            end
         end)
         it("parse filename with prepend icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local input = " ~/github/linrongbin16/fzfx.nvim/README.md"
-            local actual = line_helpers.parse_find(input)
-            print(
-                string.format("parse find with icon:%s\n", vim.inspect(actual))
-            )
-            assert_true(
-                utils.string_endswith(
-                    actual,
-                    "/github/linrongbin16/fzfx.nvim/README.md"
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua/test/hello world.txt",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/world.txt",
+            }
+            for i, line in ipairs(lines) do
+                local first_space_pos = utils.string_find(line, " ")
+                local expect = path.normalize(
+                    vim.fn.expand(vim.trim(line:sub(first_space_pos + 1)))
                 )
-            )
+                local actual = line_helpers.parse_find(line)
+                assert_eq(expect, actual)
+            end
         end)
     end)
     describe("[parse_grep]", function()
