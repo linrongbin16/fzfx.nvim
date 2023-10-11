@@ -18,7 +18,6 @@ jobs:
       - uses:  ytanikin/PRConventionalCommits@1.1.0
         with:
           task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert"]'
-          add_label: 'false'
   luacheck:
     name: Lua check
     runs-on: ubuntu-latest
