@@ -1,6 +1,6 @@
 # Regresion test
 
-## Platform
+## Platforms
 
 - [ ] windows
 - [ ] macOS
