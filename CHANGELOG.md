@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v1.0.2...v1.1.0) (2023-10-11)
+
+
+### Features
+
+* **schema:** add 'PreviewerConfig' detection ([#266](https://github.com/linrongbin16/fzfx.nvim/issues/266)) ([2bdcef7](https://github.com/linrongbin16/fzfx.nvim/commit/2bdcef7f82a55327851b6d3ecb5e48c53f08a691))
+
+
+### Bug Fixes
+
+* **actions:** edit rg/grep results that contains whitespaces on filename ([#272](https://github.com/linrongbin16/fzfx.nvim/issues/272)) ([a202d1f](https://github.com/linrongbin16/fzfx.nvim/commit/a202d1f2b850271d5ff680a3ce85fbff42efba85))
+* **push:** revert direct push to main branch ([9eac0c0](https://github.com/linrongbin16/fzfx.nvim/commit/9eac0c072ca161a0d58cf50e7aed6090486c7e9a))
+
+
+### Performance Improvements
+
+* **schema:** deprecate 'ProviderConfig' & 'PreviewerConfig' ([#268](https://github.com/linrongbin16/fzfx.nvim/issues/268)) ([3c2e32c](https://github.com/linrongbin16/fzfx.nvim/commit/3c2e32c0a97614a34d80b0d0392a0d377b3ead84))
+* **schema:** deprecate note on 'PreviewerConfig' ([#270](https://github.com/linrongbin16/fzfx.nvim/issues/270)) ([6552efe](https://github.com/linrongbin16/fzfx.nvim/commit/6552efe8253a2b5ae467efc61df811f60a88141c))
+
 ## [1.0.2](https://github.com/linrongbin16/fzfx.nvim/compare/v1.0.1...v1.0.2) (2023-10-09)
 
 
