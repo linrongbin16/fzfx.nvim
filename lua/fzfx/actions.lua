@@ -8,10 +8,11 @@ local function nop(lines)
 end
 
 --- @alias EditFindVimCommands {edit:string[]}
+--- @package
 --- @param lines string[]
 --- @param opts {no_icon:boolean?}?
 --- @return EditFindVimCommands
-local function make_edit_find_commands(lines, opts)
+local function _make_edit_find_commands(lines, opts)
     local results = { edit = {} }
     for i, line in ipairs(lines) do
         local filename = line_helpers.parse_find(line, opts)
@@ -24,7 +25,7 @@ end
 -- Run 'edit' vim command on fd/find results.
 --- @param lines string[]
 local function edit_find(lines)
-    local vim_commands = make_edit_find_commands(lines)
+    local vim_commands = _make_edit_find_commands(lines)
     for i, edit_command in ipairs(vim_commands.edit) do
         log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
         vim.cmd(edit_command)
@@ -42,7 +43,6 @@ local function edit_git_files(lines)
 end
 
 --- @deprecated
---- @param lines string[]
 local function edit(lines)
     require("fzfx.deprecated").notify(
         "deprecated 'actions.edit', please use 'actions.edit_find'!"
@@ -51,10 +51,11 @@ local function edit(lines)
 end
 
 --- @alias EditRgVimCommands {edit:string[], setpos:string?}
+--- @package
 --- @param lines string[]
 --- @param opts {no_icon:boolean?}?
 --- @return EditRgVimCommands
-local function make_edit_rg_commands(lines, opts)
+local function _make_edit_rg_commands(lines, opts)
     local results = { edit = {}, setpos = nil }
     for i, line in ipairs(lines) do
         local parsed = line_helpers.parse_rg(line, opts)
@@ -77,7 +78,7 @@ end
 
 --- @param lines string[]
 local function edit_rg(lines)
-    local vim_commands = make_edit_rg_commands(lines)
+    local vim_commands = _make_edit_rg_commands(lines)
     for i, edit_command in ipairs(vim_commands.edit) do
         log.debug("|fzfx.actions - edit_rg| edit[%d]:[%s]", i, edit_command)
         vim.cmd(edit_command)
@@ -89,10 +90,11 @@ local function edit_rg(lines)
 end
 
 --- @alias EditGrepVimCommands {edit:string[], setpos:string?}
+--- @package
 --- @param lines string[]
 --- @param opts {no_icon:boolean?}?
 --- @return EditGrepVimCommands
-local function make_edit_grep_commands(lines, opts)
+local function _make_edit_grep_commands(lines, opts)
     local results = { edit = {}, setpos = nil }
     for i, line in ipairs(lines) do
         local parsed = line_helpers.parse_grep(line, opts)
@@ -115,7 +117,7 @@ end
 
 --- @param lines string[]
 local function edit_grep(lines)
-    local vim_commands = make_edit_grep_commands(lines)
+    local vim_commands = _make_edit_grep_commands(lines)
     for i, edit_command in ipairs(vim_commands.edit) do
         log.debug("|fzfx.actions - edit_grep| edit[%d]:[%s]", i, edit_command)
         vim.cmd(edit_command)
@@ -129,7 +131,7 @@ end
 -- Run 'edit' vim command on eza/exa/ls results.
 --- @param lines string[]
 local function edit_ls(lines)
-    local vim_commands = make_edit_find_commands(lines, { no_icon = true })
+    local vim_commands = _make_edit_find_commands(lines, { no_icon = true })
     for i, edit_command in ipairs(vim_commands.edit) do
         log.debug("|fzfx.actions - edit_ls| [%d]:[%s]", i, edit_command)
         vim.cmd(edit_command)
@@ -198,9 +200,9 @@ end
 
 local M = {
     nop = nop,
-    make_edit_find_commands = make_edit_find_commands,
-    make_edit_grep_commands = make_edit_grep_commands,
-    make_edit_rg_commands = make_edit_rg_commands,
+    make_edit_find_commands = _make_edit_find_commands,
+    make_edit_grep_commands = _make_edit_grep_commands,
+    make_edit_rg_commands = _make_edit_rg_commands,
     edit = edit,
     edit_find = edit_find,
     edit_buffers = edit_buffers,
