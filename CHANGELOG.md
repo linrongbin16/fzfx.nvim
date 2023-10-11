@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v1.1.0...v1.1.1) (2023-10-11)
+
+
+### Bug Fixes
+
+* **actions:** 'bdelete' filename containing whitespaces ([#277](https://github.com/linrongbin16/fzfx.nvim/issues/277)) ([d3faf5a](https://github.com/linrongbin16/fzfx.nvim/commit/d3faf5a24177e57f19fbd056bcb940d614405a2d))
+
 ## [1.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v1.0.2...v1.1.0) (2023-10-11)
 
 
