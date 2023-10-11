@@ -112,7 +112,7 @@ end
 --- @param lines string[]
 local function edit_grep(lines)
     local vim_commands = _make_edit_grep_commands(lines)
-    for i, vim_command in ipairs(vim_commands.edit) do
+    for i, vim_command in ipairs(vim_commands) do
         log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, vim_command)
         vim.cmd(vim_command)
     end
