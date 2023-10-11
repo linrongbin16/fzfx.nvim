@@ -3,19 +3,9 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - autoload
-      - bin
-      - lua
-      - test
   push:
     branches:
       - main
-    paths:
-      - autoload
-      - bin
-      - lua
-      - test
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
