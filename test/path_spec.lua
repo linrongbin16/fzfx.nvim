@@ -29,7 +29,7 @@ describe("path", function()
             assert_eq(actual1, expect1)
             local actual2 = path.normalize(
                 [[C:\Users\linrongbin\github\linrongbin16\fzfx.nvim\lua\tests]],
-                true
+                { transform_backslash = true }
             )
             local expect2 =
                 [[C:/Users/linrongbin/github/linrongbin16/fzfx.nvim/lua/tests]]
@@ -42,7 +42,7 @@ describe("path", function()
             assert_eq(actual3, expect3)
             local actual4 = path.normalize(
                 [[C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\lua\\tests\\test_path.lua]],
-                true
+                { transform_backslash = true }
             )
             local expect4 =
                 [[C:/Users/linrongbin/github/linrongbin16/fzfx.nvim/lua/tests/test_path.lua]]

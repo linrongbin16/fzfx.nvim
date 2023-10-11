@@ -23,204 +23,6 @@ describe("actions", function()
             assert_true(nop({}) == nil)
         end)
     end)
-    describe("[make_edit_vim_commands]", function()
-        it("edit file without icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-            local lines = {
-                "~/github/linrongbin16/fzfx.nvim/README.md",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
-            }
-            local actual = actions.make_edit_vim_commands(lines)
-            assert_eq(type(actual), "table")
-            assert_eq(#actual.edit, 3)
-            for i, line in ipairs(lines) do
-                local expect = string.format("edit %s", vim.fn.expand(line))
-                assert_eq(actual.edit[i], expect)
-            end
-        end)
-        it("edit file with prepend icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local lines = {
-                " ~/github/linrongbin16/fzfx.nvim/README.md",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
-            }
-            local actual = actions.make_edit_vim_commands(lines)
-            assert_eq(type(actual), "table")
-            assert_eq(#actual.edit, 3)
-            for i, line in ipairs(lines) do
-                local expect = string.format(
-                    "edit %s",
-                    vim.fn.expand(vim.fn.split(line)[2])
-                )
-                assert_eq(actual.edit[i], expect)
-            end
-        end)
-        it("edit file with delimiter, without icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-            local lines = {
-                "~/github/linrongbin16/fzfx.nvim/README.md:12",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:13:",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:13: hello world",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3: ok ok",
-            }
-            local actual = actions.make_edit_vim_commands(lines, ":", 1)
-            assert_eq(type(actual), "table")
-            assert_eq(#actual.edit, 5)
-            for i = 1, 5 do
-                local line = lines[i]
-                local expect = string.format(
-                    "edit %s",
-                    vim.fn.expand(utils.string_split(line, ":")[1])
-                )
-                assert_eq(actual.edit[i], expect)
-            end
-        end)
-        it("edit file with delimiter, with prepend icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local lines = {
-                " ~/github/linrongbin16/fzfx.nvim/README.md:12",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15:",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:70",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:4:71: ok ko",
-            }
-            local actual = actions.make_edit_vim_commands(lines, ":", 1)
-            assert_eq(type(actual), "table")
-            assert_eq(#actual.edit, 5)
-            for i, line in ipairs(lines) do
-                local expect = string.format(
-                    "edit %s",
-                    vim.fn.expand(
-                        utils.string_split(
-                            utils.string_split(line, ":")[1],
-                            " "
-                        )[2]
-                    )
-                )
-                print(
-                    string.format(
-                        "expect line[%s]:%s\n",
-                        vim.inspect(i),
-                        vim.inspect(expect)
-                    )
-                )
-                assert_eq(actual.edit[i], expect)
-            end
-        end)
-        it("edit file/lineno without icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-            local lines = {
-                "~/github/linrongbin16/fzfx.nvim/README.md:12",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:13:",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:13: hello world",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3: ok ok",
-            }
-            local actual = actions.make_edit_vim_commands(lines, ":", 1, 2)
-            assert_eq(type(actual), "table")
-            assert_eq(#actual.edit, 5)
-            for i = 1, 5 do
-                local line = lines[i]
-                local expect = string.format(
-                    "edit %s",
-                    vim.fn.expand(utils.string_split(line, ":")[1])
-                )
-                assert_eq(actual.edit[i], expect)
-            end
-            assert_eq("call setpos('.', [0, 1, 1])", actual.setpos)
-        end)
-        it("edit file/lineno with prepend icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local lines = {
-                " ~/github/linrongbin16/fzfx.nvim/README.md:12",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15:",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:70",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:4:71: ok ko",
-            }
-            local actual = actions.make_edit_vim_commands(lines, ":", 1, 2)
-            assert_eq(type(actual), "table")
-            assert_eq(#actual.edit, 5)
-            for i, line in ipairs(lines) do
-                local expect = string.format(
-                    "edit %s",
-                    vim.fn.expand(
-                        utils.string_split(
-                            utils.string_split(line, ":")[1],
-                            " "
-                        )[2]
-                    )
-                )
-                print(
-                    string.format(
-                        "expect line[%s]:%s\n",
-                        vim.inspect(i),
-                        vim.inspect(expect)
-                    )
-                )
-                assert_eq(actual.edit[i], expect)
-            end
-            assert_eq("call setpos('.', [0, 4, 1])", actual.setpos)
-        end)
-        it("edit file/lineno/col without icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-            local lines = {
-                "~/github/linrongbin16/fzfx.nvim/README.md:12:30",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:13:1:",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:13:2: hello world",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3: ok ok",
-            }
-            local actual = actions.make_edit_vim_commands(lines, ":", 1, 2, 3)
-            assert_eq(type(actual), "table")
-            assert_eq(#actual.edit, 5)
-            for i = 1, 5 do
-                local line = lines[i]
-                local expect = string.format(
-                    "edit %s",
-                    vim.fn.expand(utils.string_split(line, ":")[1])
-                )
-                assert_eq(actual.edit[i], expect)
-            end
-            assert_eq("call setpos('.', [0, 1, 3])", actual.setpos)
-        end)
-        it("edit file/lineno/col with prepend icon", function()
-            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
-            local lines = {
-                " ~/github/linrongbin16/fzfx.nvim/README.md:12:30",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15:98",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:15:82:",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:70",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:4:71: ok ko",
-            }
-            local actual = actions.make_edit_vim_commands(lines, ":", 1, 2, 3)
-            assert_eq(type(actual), "table")
-            assert_eq(#actual.edit, 5)
-            for i, line in ipairs(lines) do
-                local expect = string.format(
-                    "edit %s",
-                    vim.fn.expand(
-                        utils.string_split(
-                            utils.string_split(line, ":")[1],
-                            " "
-                        )[2]
-                    )
-                )
-                print(
-                    string.format(
-                        "expect line[%s]:%s\n",
-                        vim.inspect(i),
-                        vim.inspect(expect)
-                    )
-                )
-                assert_eq(actual.edit[i], expect)
-            end
-            assert_eq("call setpos('.', [0, 4, 71])", actual.setpos)
-        end)
-    end)
     describe("[make_edit_find_commands]", function()
         it("edit file without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
@@ -264,6 +66,156 @@ describe("actions", function()
                 )
                 assert_eq(actual.edit[i], expect)
             end
+        end)
+        it("run edit file command without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "README.md:17",
+                "lua/fzfx.lua:30:17",
+                "lua/fzfx/config.lua:37:hello world",
+                "lua/fzfx/test/goodbye world/goodbye.lua",
+                "lua/fzfx/test/goodbye world/world.txt",
+                "lua/fzfx/test/hello world.txt",
+            }
+            actions.edit_find(lines)
+            assert_true(true)
+        end)
+        it("run edit file command with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " README.md",
+                "󰢱 lua/fzfx.lua",
+                "󰢱 lua/fzfx/config.lua",
+                "󰢱 lua/fzfx/test/goodbye world/goodbye.lua",
+                "󰢱 lua/fzfx/test/goodbye world/world.txt",
+                "󰢱 lua/fzfx/test/hello world.txt",
+            }
+            actions.edit_find(lines)
+            assert_true(true)
+        end)
+    end)
+    describe("[make_edit_grep_commands]", function()
+        it("edit file without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:1",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:hello world",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:9129",
+            }
+            local actual = actions.make_edit_grep_commands(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(type(actual.edit), "table")
+            assert_eq(#actual.edit, 5)
+            for i, line in ipairs(lines) do
+                local expect = string.format(
+                    "edit %s",
+                    vim.fn.expand(
+                        path.normalize(utils.string_split(line, ":")[1])
+                    )
+                )
+                assert_eq(actual.edit[i], expect)
+            end
+            assert_eq(actual.setpos, "call setpos('.', [0, 81, 1])")
+        end)
+        it("edit file with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
+            }
+            local actual = actions.make_edit_grep_commands(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(type(actual.edit), "table")
+            assert_eq(#actual.edit, 5)
+            for i, line in ipairs(lines) do
+                local first_space_pos = utils.string_find(line, " ")
+                local expect = string.format(
+                    "edit %s",
+                    vim.fn.expand(path.normalize(line:sub(first_space_pos + 1)))
+                )
+                assert_eq(actual.edit[i], expect)
+            end
+            assert_true(actual.setpos == nil)
+        end)
+        it("run edit file command without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "README.md",
+                "lua/fzfx.lua",
+                "lua/fzfx/config.lua",
+                "lua/fzfx/test/goodbye world/goodbye.lua",
+                "lua/fzfx/test/goodbye world/world.txt",
+                "lua/fzfx/test/hello world.txt",
+            }
+            actions.edit_find(lines)
+            assert_true(true)
+        end)
+        it("run edit file command with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " README.md",
+                "󰢱 lua/fzfx.lua",
+                "󰢱 lua/fzfx/config.lua",
+                "󰢱 lua/fzfx/test/goodbye world/goodbye.lua",
+                "󰢱 lua/fzfx/test/goodbye world/world.txt",
+                "󰢱 lua/fzfx/test/hello world.txt",
+            }
+            actions.edit_find(lines)
+            assert_true(true)
+        end)
+    end)
+    describe("[make_edit_rg_commands]", function()
+        it("edit file without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:1",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:hello world",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:71:9129",
+            }
+            local actual = actions.make_edit_rg_commands(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(type(actual.edit), "table")
+            assert_eq(#actual.edit, 5)
+            for i, line in ipairs(lines) do
+                local expect = string.format(
+                    "edit %s",
+                    vim.fn.expand(
+                        path.normalize(utils.string_split(line, ":")[1])
+                    )
+                )
+                assert_eq(actual.edit[i], expect)
+            end
+            assert_eq(actual.setpos, "call setpos('.', [0, 81, 71])")
+        end)
+        it("edit file with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
+            }
+            local actual = actions.make_edit_rg_commands(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(type(actual.edit), "table")
+            assert_eq(#actual.edit, 5)
+            for i, line in ipairs(lines) do
+                local first_space_pos = utils.string_find(line, " ")
+                local expect = string.format(
+                    "edit %s",
+                    vim.fn.expand(path.normalize(line:sub(first_space_pos + 1)))
+                )
+                assert_eq(actual.edit[i], expect)
+            end
+            assert_true(actual.setpos == nil)
         end)
         it("run edit file command without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil

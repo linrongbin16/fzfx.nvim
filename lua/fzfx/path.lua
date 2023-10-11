@@ -3,15 +3,17 @@
 local constants = require("fzfx.constants")
 
 --- @param path string
---- @param backslash boolean?
+--- @param opts {transform_backslash:boolean?}?
 --- @return string
-local function normalize(path, backslash)
-    backslash = backslash or false
+local function normalize(path, opts)
+    opts = opts or {}
+    opts.transform_backslash = opts.transform_backslash or false
+
     local result = path
     if string.match(result, [[\\]]) then
         result = string.gsub(result, [[\\]], [[\]])
     end
-    if backslash and string.match(result, [[\]]) then
+    if opts.transform_backslash and string.match(result, [[\]]) then
         result = string.gsub(result, [[\]], [[/]])
     end
     return vim.trim(result)

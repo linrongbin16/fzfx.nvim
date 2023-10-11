@@ -8,8 +8,8 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  typecheck:
-    name: Type check
+  luacheck:
+    name: Lua check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,12 +21,12 @@ jobs:
           level: Information
           configpath: ".luarc.json"
           neodev-version: stable
-  luacheck:
-    name: Lua check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Stylua
+        uses: JohnnyMorganz/stylua-action@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --config-path .stylua.toml --color always --check .
       - name: Luacheck linter
         uses: lunarmodules/luacheck@v1
         with:
@@ -77,24 +77,12 @@ jobs:
           files: luacov.report.out
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  code_format:
-    name: Code format
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: JohnnyMorganz/stylua-action@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: latest
-          args: --config-path .stylua.toml --color always --check .
   release:
     name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
-      - typecheck
       - luacheck
       - unit_test
-      - code_format
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
