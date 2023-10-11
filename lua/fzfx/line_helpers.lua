@@ -40,7 +40,7 @@ local function parse_rg(line, opts)
     local splits = utils.string_split(line, ":")
     local filename = parse_find(splits[1], opts)
     local lineno = tonumber(splits[2])
-    local column = tonumber(splits[3])
+    local column = #splits >= 3 and tonumber(splits[3]) or nil
     return { filename = filename, lineno = lineno, column = column }
 end
 
