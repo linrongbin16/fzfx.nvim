@@ -12,14 +12,14 @@
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - Press `ESC` to quit, `ENTER` to open file.
+  - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
   - Both `fd` and `find` works.
 - [ ] FzfxLiveGrep
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
   - Use `-w` to match word only, use `-g *.lua` to search only lua files.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - Press `ESC` to quit, `ENTER` to open file.
+  - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files when searching `hello` and `goodbye` words.
   - Both `rg` and `grep` works.
 - [ ] FzfxBuffers
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
@@ -53,7 +53,7 @@
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between filter/include hidden files mode.
   - Press `ALT-L`/`ALT-H` to cd into folder and cd upper folder.
-  - Press `ESC` to quit, `ENTER` to open file.
+  - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
   - Both `eza` and `ls` works.
 - [ ] Backward Compatible
   - Open with `nvim -u ./test/minimal_buffers_deprecate_init.lua` and test `FzfxBuffers`.
