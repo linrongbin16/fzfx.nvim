@@ -574,33 +574,34 @@ local function make_file_explorer_provider(ls_args)
     --- @return string?
     local function wrap(query, context)
         local cwd = utils.readfile(context.cwd)
-        if not constants.is_windows then
-            cwd = path.reduce2home(cwd)
-        end
         if constants.has_eza then
             return vim.fn.executable("echo") > 0
                     and string.format(
-                        "echo %s && %s --color=always %s %s",
-                        cwd,
+                        "echo %s && %s --color=always %s -- %s",
+                        utils.shellescape(cwd --[[@as string]]),
                         constants.eza,
                         ls_args,
-                        cwd
+                        utils.shellescape(cwd --[[@as string]])
                     )
                 or string.format(
-                    "%s --color=always %s %s",
+                    "%s --color=always %s -- %s",
                     constants.eza,
                     ls_args,
-                    cwd
+                    utils.shellescape(cwd --[[@as string]])
                 )
         elseif vim.fn.executable("ls") > 0 then
             return vim.fn.executable("echo") > 0
                     and string.format(
                         "echo %s && ls --color=always %s %s",
-                        cwd,
+                        utils.shellescape(cwd --[[@as string]]),
                         ls_args,
-                        cwd
+                        utils.shellescape(cwd --[[@as string]])
                     )
-                or string.format("ls --color=always %s %s", ls_args, cwd)
+                or string.format(
+                    "ls --color=always %s %s",
+                    ls_args,
+                    utils.shellescape(cwd --[[@as string]])
+                )
         else
             log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
             return nil
@@ -2328,10 +2329,8 @@ local Defaults = {
                 --- @param line string
                 --- @param context FileExplorerPipelineContext
                 interaction = function(line, context)
-                    local splits = utils.string_split(line, " ")
-                    local sub = splits[#splits]
-                    local cwd = utils.readfile(context.cwd) --[[@as string]]
-                    local target = path.join(cwd, sub)
+                    local target =
+                        make_filename_by_file_explorer_context(line, context)
                     if vim.fn.isdirectory(target) > 0 then
                         utils.writefile(context.cwd, target)
                     end
