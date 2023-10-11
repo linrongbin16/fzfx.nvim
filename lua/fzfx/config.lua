@@ -158,7 +158,7 @@ end
 
 --- @param line string
 --- @return string[]
-local function file_previewer_rg(line)
+local function file_previewer_grep(line)
     local parsed = line_helpers.parse_grep(line)
     local impl = make_file_previewer(parsed.filename, parsed.lineno)
     return impl()
@@ -1079,11 +1079,11 @@ local Defaults = {
         },
         previewers = {
             restricted_mode = {
-                previewer = file_previewer_rg,
+                previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             unrestricted_mode = {
-                previewer = file_previewer_rg,
+                previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
         },
@@ -1945,11 +1945,11 @@ local Defaults = {
         },
         previewers = {
             workspace_diagnostics = {
-                previewer = file_previewer_rg,
+                previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             buffer_diagnostics = {
-                previewer = file_previewer_rg,
+                previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
         },
@@ -2000,7 +2000,7 @@ local Defaults = {
             },
         },
         previewers = {
-            previewer = file_previewer_rg,
+            previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         },
         actions = {
@@ -2063,7 +2063,7 @@ local Defaults = {
             },
         },
         previewers = {
-            previewer = file_previewer_rg,
+            previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         },
         actions = {
@@ -2126,7 +2126,7 @@ local Defaults = {
             },
         },
         previewers = {
-            previewer = file_previewer_rg,
+            previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         },
         actions = {
@@ -2189,7 +2189,7 @@ local Defaults = {
             },
         },
         previewers = {
-            previewer = file_previewer_rg,
+            previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         },
         actions = {
