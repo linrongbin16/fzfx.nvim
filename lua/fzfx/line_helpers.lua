@@ -6,6 +6,7 @@ local utils = require("fzfx.utils")
 local path = require("fzfx.path")
 
 -- parse lines from fd/find.
+-- also support buffers, git files.
 --- @param line string
 --- @param opts {no_icon:boolean?}?
 --- @return string
