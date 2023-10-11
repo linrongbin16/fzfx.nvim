@@ -1,4 +1,5 @@
 local log = require("fzfx.log")
+local path = require("fzfx.path")
 local line_helpers = require("fzfx.line_helpers")
 
 --- @param lines string[]
@@ -7,17 +8,16 @@ local function nop(lines)
     log.debug("|fzfx.actions - nop| lines:%s", vim.inspect(lines))
 end
 
---- @alias EditFindVimCommands {edit:string[]}
 --- @package
 --- @param lines string[]
 --- @param opts {no_icon:boolean?}?
---- @return EditFindVimCommands
+--- @return string[]
 local function _make_edit_find_commands(lines, opts)
-    local results = { edit = {} }
+    local results = {}
     for i, line in ipairs(lines) do
         local filename = line_helpers.parse_find(line, opts)
         local edit_command = string.format("edit %s", filename)
-        table.insert(results.edit, edit_command)
+        table.insert(results, edit_command)
     end
     return results
 end
@@ -25,8 +25,8 @@ end
 -- Run 'edit' vim command on fd/find results.
 --- @param lines string[]
 local function edit_find(lines)
-    local vim_commands = _make_edit_find_commands(lines)
-    for i, edit_command in ipairs(vim_commands.edit) do
+    local edit_commands = _make_edit_find_commands(lines)
+    for i, edit_command in ipairs(edit_commands) do
         log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
         vim.cmd(edit_command)
     end
@@ -50,26 +50,25 @@ local function edit(lines)
     return edit_find(lines)
 end
 
---- @alias EditRgVimCommands {edit:string[], setpos:string?}
 --- @package
 --- @param lines string[]
 --- @param opts {no_icon:boolean?}?
---- @return EditRgVimCommands
+--- @return string[]
 local function _make_edit_rg_commands(lines, opts)
-    local results = { edit = {}, setpos = nil }
+    local results = {}
     for i, line in ipairs(lines) do
         local parsed = line_helpers.parse_rg(line, opts)
         local edit_command = string.format("edit %s", parsed.filename)
-        table.insert(results.edit, edit_command)
+        table.insert(results, edit_command)
         if parsed.lineno ~= nil then
             if i == #lines then
                 local column = parsed.column or 1
-                local setpos_cmd = string.format(
+                local setpos_command = string.format(
                     "call setpos('.', [0, %d, %d])",
                     parsed.lineno,
                     column
                 )
-                results.setpos = setpos_cmd
+                table.insert(results, setpos_command)
             end
         end
     end
@@ -79,36 +78,31 @@ end
 --- @param lines string[]
 local function edit_rg(lines)
     local vim_commands = _make_edit_rg_commands(lines)
-    for i, edit_command in ipairs(vim_commands.edit) do
-        log.debug("|fzfx.actions - edit_rg| edit[%d]:[%s]", i, edit_command)
-        vim.cmd(edit_command)
-    end
-    if vim_commands.setpos then
-        log.debug("|fzfx.actions - edit_rg| setpos:[%s]", vim_commands.setpos)
-        vim.cmd(vim_commands.setpos)
+    for i, vim_command in ipairs(vim_commands) do
+        log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, vim_command)
+        vim.cmd(vim_command)
     end
 end
 
---- @alias EditGrepVimCommands {edit:string[], setpos:string?}
 --- @package
 --- @param lines string[]
 --- @param opts {no_icon:boolean?}?
---- @return EditGrepVimCommands
+--- @return string[]
 local function _make_edit_grep_commands(lines, opts)
-    local results = { edit = {}, setpos = nil }
+    local results = {}
     for i, line in ipairs(lines) do
         local parsed = line_helpers.parse_grep(line, opts)
         local edit_command = string.format("edit %s", parsed.filename)
-        table.insert(results.edit, edit_command)
+        table.insert(results, edit_command)
         if parsed.lineno ~= nil then
             if i == #lines then
                 local column = 1
-                local setpos_cmd = string.format(
+                local setpos_command = string.format(
                     "call setpos('.', [0, %d, %d])",
                     parsed.lineno,
                     column
                 )
-                results.setpos = setpos_cmd
+                table.insert(results, setpos_command)
             end
         end
     end
@@ -118,21 +112,17 @@ end
 --- @param lines string[]
 local function edit_grep(lines)
     local vim_commands = _make_edit_grep_commands(lines)
-    for i, edit_command in ipairs(vim_commands.edit) do
-        log.debug("|fzfx.actions - edit_grep| edit[%d]:[%s]", i, edit_command)
-        vim.cmd(edit_command)
-    end
-    if vim_commands.setpos then
-        log.debug("|fzfx.actions - edit_grep| setpos:[%s]", vim_commands.setpos)
-        vim.cmd(vim_commands.setpos)
+    for i, vim_command in ipairs(vim_commands) do
+        log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, vim_command)
+        vim.cmd(vim_command)
     end
 end
 
 -- Run 'edit' vim command on eza/exa/ls results.
 --- @param lines string[]
 local function edit_ls(lines)
-    local vim_commands = _make_edit_find_commands(lines, { no_icon = true })
-    for i, edit_command in ipairs(vim_commands.edit) do
+    local edit_commands = _make_edit_find_commands(lines, { no_icon = true })
+    for i, edit_command in ipairs(edit_commands) do
         log.debug("|fzfx.actions - edit_ls| [%d]:[%s]", i, edit_command)
         vim.cmd(edit_command)
     end
@@ -143,21 +133,25 @@ local function buffer(lines)
     return edit_find(lines)
 end
 
-local function bdelete(lines)
-    if type(lines) == "string" then
-        lines = { lines }
+--- @param line string?
+local function bdelete(line)
+    local list_bufnrs = vim.api.nvim_list_bufs()
+    local list_bufpaths = {}
+    for _, bufnr in ipairs(list_bufnrs) do
+        local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
+        list_bufpaths[bufpath] = bufnr
     end
-    if type(lines) == "table" and #lines > 0 then
-        for _, line in ipairs(lines) do
-            local parsed = line_helpers.PathLine:new(line)
-            local cmd = string.format("bdelete %s", parsed.filename)
-            log.debug(
-                "|fzfx.actions - bdelete| line:[%s], bufname:[%s], cmd:[%s]",
-                line,
-                parsed.filename,
-                cmd
-            )
-            vim.cmd(cmd)
+    log.debug(
+        "|fzfx.actions - bdelete| list_bufpaths:%s",
+        vim.inspect(list_bufpaths)
+    )
+    log.debug("|fzfx.actions - bdelete| line:%s", vim.inspect(line))
+    if type(line) == "string" and string.len(line) > 0 then
+        local bufpath = line_helpers.parse_find(line)
+        log.debug("|fzfx.actions - bdelete| bufpath:%s", vim.inspect(bufpath))
+        local bufnr = list_bufpaths[bufpath]
+        if type(bufnr) == "number" then
+            vim.api.nvim_buf_delete(bufnr, {})
         end
     end
 end
@@ -200,9 +194,9 @@ end
 
 local M = {
     nop = nop,
-    make_edit_find_commands = _make_edit_find_commands,
-    make_edit_grep_commands = _make_edit_grep_commands,
-    make_edit_rg_commands = _make_edit_rg_commands,
+    _make_edit_find_commands = _make_edit_find_commands,
+    _make_edit_grep_commands = _make_edit_grep_commands,
+    _make_edit_rg_commands = _make_edit_rg_commands,
     edit = edit,
     edit_find = edit_find,
     edit_buffers = edit_buffers,

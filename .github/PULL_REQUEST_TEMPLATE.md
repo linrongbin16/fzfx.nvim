@@ -19,11 +19,11 @@
   - Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
   - Use `-w` to match word only, use `-g *.lua` to search only lua files.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files when searching `hello` and `goodbye` words.
+  - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
   - Both `rg` and `grep` works.
 - [ ] FzfxBuffers
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
-  - Press `CTRL-D` to delete buffers.
+  - Press `CTRL-D` to delete buffers, and delete the `test/hello world.txt`, `test/goodbye world/goodbye.lua` buffers.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxGFiles
@@ -31,6 +31,11 @@
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxGBranches
+  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-R`/`CTRL-O` to switch between local/remote branches.
+  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Press `ESC` to quit, `ENTER` to checkout branch.
 - [ ] FzfxGCommits
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-A` to switch between git repo commits/current buffer commits.
