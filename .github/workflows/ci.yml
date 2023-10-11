@@ -10,15 +10,20 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  pr_conventional_commit:
+    name: PR Conventional Commit
+    if: ${{ github.ref != 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses:  ytanikin/PRConventionalCommits@1.1.0
+        with:
+          task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert"]'
   luacheck:
     name: Lua check
     runs-on: ubuntu-latest
     steps:
-      - name: PR Conventional Commit
-        uses:  ytanikin/PRConventionalCommits@1.1.0
-        with:
-          task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert"]'
-          add_label: 'false'
       - name: Checkout
         uses: actions/checkout@v4
       - name: LuaLs Annotation Typecheck
