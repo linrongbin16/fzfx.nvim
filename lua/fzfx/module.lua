@@ -35,7 +35,13 @@ local function search_vim_plugin_path(plugin)
         -- log.debug("|fzfx.module - search_vim_plugin_path| p[%d]:%s", i, p)
         if
             type(p) == "string"
-            and string.match(require("fzfx.path").normalize(p, true), plugin)
+            and string.match(
+                require("fzfx.path").normalize(
+                    p,
+                    { transform_backslash = true }
+                ),
+                plugin
+            )
         then
             return p
         end
