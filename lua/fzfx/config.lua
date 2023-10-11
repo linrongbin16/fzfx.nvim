@@ -629,73 +629,14 @@ local function directory_previewer(filename)
     end
 end
 
-local file_explorer_parse_ls_start_pos = 8
-local file_explorer_run_eza_failed = false
-
---- @return boolean, integer?
-local function parse_eza_columns()
-    local cmd = require("fzfx.cmd")
-    local run_cmd = cmd.Cmd:run({ constants.eza, "-lh" })
-    if run_cmd:wrong() then
-        return false, nil
-    end
-    local header = run_cmd.result.stdout[1]
-    if type(header) ~= "string" or string.len(header) == 0 then
-        return false, nil
-    end
-    local eza_header_words = {
-        "Mode",
-        "Permissions",
-        "Size",
-        "User",
-        "Date Modified",
-        "Name",
-    }
-    local columns = 0
-    for _, hword in ipairs(eza_header_words) do
-        if utils.string_find(header, hword) ~= nil then
-            -- log.echo(
-            --     LogLevels.INFO,
-            --     "|parse_eza_columns| search hword:%s",
-            --     vim.inspect(hword)
-            -- )
-            columns = columns + 1
-        end
-    end
-    return true, columns
-end
-
-do
-    if constants.has_eza then
-        local ok, eza_columns_or_err = parse_eza_columns()
-        -- log.echo(
-        --     LogLevels.INFO,
-        --     "|make_file_explorer_previewer| ok:%s, start_pos:%s",
-        --     vim.inspect(ok),
-        --     vim.inspect(start_pos)
-        -- )
-        if ok then
-            file_explorer_parse_ls_start_pos = eza_columns_or_err --[[@as integer]]
-                + 1
-        else
-            file_explorer_run_eza_failed = true
-            log.echo(
-                LogLevels.WARN,
-                "failed to run '%s -lh'! %s",
-                constants.eza,
-                eza_columns_or_err
-            )
-        end
-    end
-end
-
 --- @param line string
 --- @param context FileExplorerPipelineContext
 --- @return string
 local function make_filename_by_file_explorer_context(line, context)
     line = vim.trim(line)
     local cwd = utils.readfile(context.cwd)
-    local target = line_helpers.parse_ls(line, file_explorer_parse_ls_start_pos)
+    local target = constants.has_eza and line_helpers.parse_eza(line)
+        or line_helpers.parse_ls(line)
     if
         (
             utils.string_startswith(target, "'")
@@ -724,14 +665,6 @@ local function make_file_explorer_previewer()
     --- @param context FileExplorerPipelineContext
     --- @return string[]|nil
     local function impl(line, context)
-        if file_explorer_run_eza_failed then
-            log.echo(LogLevels.INFO, "failed to run '%s -lh'.", constants.eza)
-            return nil
-        end
-        log.debug(
-            "|fzfx.config - make_file_explorer_previewer.impl| parse_ls_start_pos:%s",
-            vim.inspect(file_explorer_parse_ls_start_pos)
-        )
         local p = make_filename_by_file_explorer_context(line, context)
         if vim.fn.filereadable(p) > 0 then
             local preview = make_file_previewer(p)
