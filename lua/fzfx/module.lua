@@ -1,18 +1,20 @@
 local log = require("fzfx.log")
 
---- @return string|nil
+--- @param plugin string
+--- @param path string
+--- @return string?
 local function search_module_path(plugin, path)
-    local plugin_ok, plugin_module = pcall(require, plugin)
-    if not plugin_ok then
+    local ok, module_path_or_err = pcall(require, plugin)
+    if not ok then
         log.debug(
             "|fzfx.module - search_module_path| failed to load lua module %s: %s",
             vim.inspect(plugin),
-            vim.inspect(plugin_module)
+            vim.inspect(module_path_or_err)
         )
         return nil
     end
-    local rtp = vim.api.nvim_list_runtime_paths()
-    for i, p in ipairs(rtp) do
+    local runtime_paths = vim.api.nvim_list_runtime_paths()
+    for i, p in ipairs(runtime_paths) do
         -- log.debug("|fzfx.module - search_module_path| p[%d]:%s", i, p)
         if type(p) == "string" and string.match(p, path) then
             return p
@@ -21,38 +23,38 @@ local function search_module_path(plugin, path)
     log.debug(
         "|fzfx.module - search_module_path| failed to find lua module %s on runtimepath: %s",
         vim.inspect(plugin),
-        vim.inspect(rtp)
+        vim.inspect(runtime_paths)
     )
     return nil
 end
 
 --- @return string|nil
-local function search_vim_plugin_path(plugin)
-    local rtp = type(vim.o.runtimepath) == "string"
-            and vim.fn.split(vim.o.runtimepath, ",")
-        or {}
-    for i, p in ipairs(rtp) do
-        -- log.debug("|fzfx.module - search_vim_plugin_path| p[%d]:%s", i, p)
-        if
-            type(p) == "string"
-            and string.match(
-                require("fzfx.path").normalize(
-                    p,
-                    { transform_backslash = true }
-                ),
-                plugin
-            )
-        then
-            return p
-        end
-    end
-    log.debug(
-        "|fzfx.module - search_vim_plugin_path| failed to find vim plugin %s on runtimepath: %s",
-        vim.inspect(plugin),
-        vim.inspect(rtp)
-    )
-    return nil
-end
+-- local function search_vim_plugin_path(plugin)
+--     local rtp = type(vim.o.runtimepath) == "string"
+--             and vim.fn.split(vim.o.runtimepath, ",")
+--         or {}
+--     for i, p in ipairs(rtp) do
+--         -- log.debug("|fzfx.module - search_vim_plugin_path| p[%d]:%s", i, p)
+--         if
+--             type(p) == "string"
+--             and string.match(
+--                 require("fzfx.path").normalize(
+--                     p,
+--                     { transform_backslash = true }
+--                 ),
+--                 plugin
+--             )
+--         then
+--             return p
+--         end
+--     end
+--     log.debug(
+--         "|fzfx.module - search_vim_plugin_path| failed to find vim plugin %s on runtimepath: %s",
+--         vim.inspect(plugin),
+--         vim.inspect(rtp)
+--     )
+--     return nil
+-- end
 
 --- @param configs Configs
 local function setup(configs)
