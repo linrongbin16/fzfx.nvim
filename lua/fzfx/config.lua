@@ -194,17 +194,11 @@ local function make_grep_command(query, opts)
 
     local args = nil
     if opts.command == "rg" then
-        if opts.unrestricted then
-            args = vim.deepcopy(default_unrestricted_rg)
-        else
-            args = vim.deepcopy(default_restricted_rg)
-        end
+        args = opts.unrestricted and vim.deepcopy(default_unrestricted_rg)
+            or vim.deepcopy(default_restricted_rg)
     elseif opts.command == "grep" then
-        if opts.unrestricted then
-            args = vim.deepcopy(default_unrestricted_grep)
-        else
-            args = vim.deepcopy(default_restricted_grep)
-        end
+        args = opts.unrestricted and vim.deepcopy(default_unrestricted_grep)
+            or vim.deepcopy(default_restricted_grep)
     else
         log.echo(LogLevels.INFO, "no rg/grep command found.")
         return nil
