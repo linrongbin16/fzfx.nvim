@@ -28,6 +28,7 @@ local default_git_log_pretty =
 -- files {
 
 -- fd
+-- "fd . -cnever -tf -tl -L -i"
 local default_restricted_fd = {
     constants.fd,
     ".",
@@ -37,6 +38,7 @@ local default_restricted_fd = {
     "-L",
     "-i",
 }
+-- "fd . -cnever -tf -tl -L -i -u"
 local default_unrestricted_fd = {
     constants.fd,
     ".",
@@ -48,6 +50,7 @@ local default_unrestricted_fd = {
     "-u",
 }
 -- find
+-- 'find -L . -type f -not -path "*/.*"'
 local default_restricted_find = constants.is_windows
         and {
             constants.find,
@@ -66,6 +69,7 @@ local default_restricted_find = constants.is_windows
         "-path",
         [[*/.*]],
     }
+-- "find -L . -type f"
 local default_unrestricted_find = {
     constants.find,
     "-L",
@@ -139,21 +143,77 @@ end
 
 -- live grep {
 
---- @param option string
---- @param merged string[]
---- @return string[]
-local function merge_query_options(merged, option)
-    local option_splits = utils.string_split(option, " ")
-    log.debug(
-        "|fzfx.config - merge_query_options| option_splits:%s",
-        vim.inspect(option_splits)
-    )
-    for _, o in ipairs(option_splits) do
-        if type(o) == "string" and string.len(o) > 0 then
-            table.insert(merged, o)
+-- rg
+-- "rg --column -n --no-heading --color=always -S"
+local default_restricted_rg = {
+    "rg",
+    "--column",
+    "-n",
+    "--no-heading",
+    "--color=always",
+    "-S",
+}
+-- "rg --column -n --no-heading --color=always -S -uu"
+local default_unrestricted_rg = {
+    "rg",
+    "--column",
+    "-n",
+    "--no-heading",
+    "--color=always",
+    "-S",
+    "-uu",
+}
+
+-- grep
+-- "grep --color=always -n -H -r --exclude-dir='.*' --exclude='.*'"
+local default_restricted_grep = {
+    constants.grep,
+    "--color=always",
+    "-n",
+    "-H",
+    "-r",
+    "--exclude-dir=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]]),
+    "--exclude=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]]),
+}
+-- "grep --color=always -n -H -r"
+local default_unrestricted_grep = {
+    constants.grep,
+    "--color=always",
+    "-n",
+    "-H",
+    "-r",
+}
+
+--- @param query string
+--- @param unrestricted boolean
+--- @return string[]|nil
+local function live_grep_provider(query, unrestricted)
+    local parsed_query = utils.parse_flag_query(query or "")
+    local content = parsed_query[1]
+    local option = parsed_query[2]
+
+    local args = nil
+    if vim.fn.executable("rg") > 0 then
+        args = unrestricted and vim.deepcopy(default_unrestricted_rg)
+            or vim.deepcopy(default_restricted_rg)
+    elseif vim.fn.executable("grep") > 0 or vim.fn.executable("ggrep") > 0 then
+        args = unrestricted and vim.deepcopy(default_unrestricted_grep)
+            or vim.deepcopy(default_restricted_grep)
+    else
+        log.echo(LogLevels.INFO, "no rg/grep command found.")
+        return nil
+    end
+    if type(option) == "string" and string.len(option) > 0 then
+        local option_splits = utils.string_split(option, " ")
+        for _, o in ipairs(option_splits) do
+            if type(o) == "string" and string.len(o) > 0 then
+                table.insert(args, o)
+            end
         end
     end
-    return merged
+    table.insert(args, "--")
+    table.insert(args, content)
+    return args
 end
 
 --- @param line string
@@ -912,79 +972,7 @@ local Defaults = {
             restricted_mode = {
                 key = "ctrl-r",
                 provider = function(query)
-                    local parsed_query = utils.parse_flag_query(query or "")
-                    local content = parsed_query[1]
-                    local option = parsed_query[2]
-
-                    if vim.fn.executable("rg") > 0 then
-                        if
-                            type(option) == "string"
-                            and string.len(option) > 0
-                        then
-                            -- "rg --column -n --no-heading --color=always -S %s -- %s"
-                            local args = {
-                                "rg",
-                                "--column",
-                                "-n",
-                                "--no-heading",
-                                "--color=always",
-                                "-S",
-                            }
-                            args = merge_query_options(args, option)
-                            table.insert(args, "--")
-                            table.insert(args, content)
-                            return args
-                        else
-                            -- "rg --column -n --no-heading --color=always -S -- %s"
-                            return {
-                                "rg",
-                                "--column",
-                                "-n",
-                                "--no-heading",
-                                "--color=always",
-                                "-S",
-                                "--",
-                                content,
-                            }
-                        end
-                    else
-                        local grep_cmd = constants.has_gnu_grep
-                                and constants.gnu_grep
-                            or constants.grep
-                        local exclude_opt = constants.has_gnu_grep and [[.*]]
-                            or [[./.*]]
-                        if
-                            type(option) == "string"
-                            and string.len(option) > 0
-                        then
-                            -- "%s --color=always -n -H -r --exclude-dir=%s --exclude=%s %s -- %s"
-                            local args = {
-                                grep_cmd,
-                                "--color=always",
-                                "-n",
-                                "-H",
-                                "-r",
-                                "--exclude-dir=" .. exclude_opt,
-                                "--exclude=" .. exclude_opt,
-                            }
-                            args = merge_query_options(args, option)
-                            table.insert(args, "--")
-                            table.insert(args, content)
-                        else
-                            -- "%s --color=always -n -H -r --exclude-dir=%s --exclude=%s -- %s"
-                            return {
-                                grep_cmd,
-                                "--color=always",
-                                "-n",
-                                "-H",
-                                "-r",
-                                "--exclude-dir=" .. exclude_opt,
-                                "--exclude=" .. exclude_opt,
-                                "--",
-                                content,
-                            }
-                        end
-                    end
+                    return live_grep_provider(query, false)
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
@@ -996,75 +984,7 @@ local Defaults = {
             unrestricted_mode = {
                 key = "ctrl-u",
                 provider = function(query)
-                    local parsed_query = utils.parse_flag_query(query or "")
-                    local content = parsed_query[1]
-                    local option = parsed_query[2]
-
-                    if vim.fn.executable("rg") > 0 then
-                        if
-                            type(option) == "string"
-                            and string.len(option) > 0
-                        then
-                            -- "rg --column -n --no-heading --color=always -S -uu %s -- %s"
-                            local args = {
-                                "rg",
-                                "--column",
-                                "-n",
-                                "--no-heading",
-                                "--color=always",
-                                "-S",
-                                "-uu",
-                            }
-                            args = merge_query_options(args, option)
-                            table.insert(args, "--")
-                            table.insert(args, content)
-                            return args
-                        else
-                            -- "rg --column -n --no-heading --color=always -S -uu -- %s"
-                            return {
-                                "rg",
-                                "--column",
-                                "-n",
-                                "--no-heading",
-                                "--color=always",
-                                "-S",
-                                "-uu",
-                                "--",
-                                content,
-                            }
-                        end
-                    else
-                        local grep_cmd = constants.has_gnu_grep
-                                and constants.gnu_grep
-                            or constants.grep
-                        if
-                            type(option) == "string"
-                            and string.len(option) > 0
-                        then
-                            -- "%s --color=always -n -H -r %s -- %s"
-                            local args = {
-                                grep_cmd,
-                                "--color=always",
-                                "-n",
-                                "-H",
-                                "-r",
-                            }
-                            args = merge_query_options(args, option)
-                            table.insert(args, "--")
-                            table.insert(args, content)
-                        else
-                            -- "%s --color=always -n -H -r -- %s"
-                            return {
-                                grep_cmd,
-                                "--color=always",
-                                "-n",
-                                "-H",
-                                "-r",
-                                "--",
-                                content,
-                            }
-                        end
-                    end
+                    return live_grep_provider(query, true)
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
