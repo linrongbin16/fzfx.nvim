@@ -185,7 +185,7 @@ local default_unrestricted_grep = {
 }
 
 --- @param query string
---- @param unrestricted:boolean
+--- @param unrestricted boolean
 --- @return string[]|nil
 local function make_grep_command(query, unrestricted)
     local parsed_query = utils.parse_flag_query(query or "")
