@@ -165,7 +165,7 @@ local default_unrestricted_rg = {
 }
 
 -- grep
--- "grep --color=always -n -H -r --exclude-dir='./.*' --exclude='./.*'"
+-- "grep --color=always -n -H -r --exclude-dir='.*' --exclude='.*'"
 local default_restricted_grep = {
     constants.grep,
     "--color=always",
