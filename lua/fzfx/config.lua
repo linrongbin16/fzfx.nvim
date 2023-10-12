@@ -187,7 +187,7 @@ local default_unrestricted_grep = {
 --- @param query string
 --- @param unrestricted boolean
 --- @return string[]|nil
-local function make_grep_command(query, unrestricted)
+local function live_grep_provider(query, unrestricted)
     local parsed_query = utils.parse_flag_query(query or "")
     local content = parsed_query[1]
     local option = parsed_query[2]
@@ -972,7 +972,7 @@ local Defaults = {
             restricted_mode = {
                 key = "ctrl-r",
                 provider = function(query)
-                    return make_grep_command(query, false)
+                    return live_grep_provider(query, false)
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
@@ -984,7 +984,7 @@ local Defaults = {
             unrestricted_mode = {
                 key = "ctrl-u",
                 provider = function(query)
-                    return make_grep_command(query, true)
+                    return live_grep_provider(query, true)
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
