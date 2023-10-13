@@ -234,11 +234,6 @@ Commands are named following below rules:
 - The yank text variant is named with `P` suffix (just like press the `p` key).
 - The only current buffer variant is named with `B` suffix.
 
-Especially for git commands:
-
-- The remote git branch variant is named with `R` suffix.
-- The git files in current directory variant is named with `C` suffix.
-
 > Note: command names can be configured, see [Configuration](#-configuration).
 
 ### Bind Keys
@@ -334,7 +329,7 @@ Especially for git commands:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
+    <td rowspan="4">1. Current directory git files variant is named with `C` suffix<br></td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -354,7 +349,7 @@ Especially for git commands:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to checkout branch</td>
+    <td rowspan="4">1. Remote git branch variant is named with 'R' suffix<br>2. Use `enter` to checkout branch</td>
   </tr>
   <tr>
     <td>FzfxGBranches(R)V</td>

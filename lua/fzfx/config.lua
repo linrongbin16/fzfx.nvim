@@ -1744,6 +1744,144 @@ local Defaults = {
         },
     },
 
+    -- the 'Vim Commands' commands
+    --- @type GroupConfig
+    commands = {
+        commands = {
+            -- normal
+            {
+                name = "FzfxCommands",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find nvim commands",
+                },
+                default_provider = "all_commands",
+            },
+            {
+                name = "FzfxCommandsB",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find nvim builtin commands",
+                },
+                default_provider = "builtin_commands",
+            },
+            {
+                name = "FzfxCommandsU",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find nvim user commands",
+                },
+                default_provider = "user_commands",
+            },
+            -- visual
+            {
+                name = "FzfxFilesV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find files by visual select",
+                },
+                default_provider = "restricted_mode",
+            },
+            {
+                name = "FzfxFilesUV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find files unrestricted by visual select",
+                },
+                default_provider = "unrestricted_mode",
+            },
+            -- cword
+            {
+                name = "FzfxFilesW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find files by cursor word",
+                },
+                default_provider = "restricted_mode",
+            },
+            {
+                name = "FzfxFilesUW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find files unrestricted by cursor word",
+                },
+                default_provider = "unrestricted_mode",
+            },
+            -- put
+            {
+                name = "FzfxFilesP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find files by yank text",
+                },
+                default_provider = "restricted_mode",
+            },
+            {
+                name = "FzfxFilesUP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find files unrestricted by yank text",
+                },
+                default_provider = "unrestricted_mode",
+            },
+        },
+        providers = {
+            restricted_mode = {
+                key = "ctrl-r",
+                provider = constants.has_fd and default_restricted_fd
+                    or default_restricted_find,
+                line_opts = { prepend_icon_by_ft = true },
+            },
+            unrestricted_mode = {
+                key = "ctrl-u",
+                provider = constants.has_fd and default_unrestricted_fd
+                    or default_unrestricted_find,
+                line_opts = { prepend_icon_by_ft = true },
+            },
+        },
+        previewers = {
+            restricted_mode = {
+                previewer = file_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+            unrestricted_mode = {
+                previewer = file_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+        },
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").edit_find,
+            ["double-click"] = require("fzfx.actions").edit_find,
+        },
+        fzf_opts = {
+            default_fzf_options.multi,
+            function()
+                return {
+                    "--prompt",
+                    path.shorten() .. " > ",
+                }
+            end,
+        },
+    },
+
     -- the 'Lsp Diagnostics' command
     --- @type GroupConfig
     lsp_diagnostics = {
