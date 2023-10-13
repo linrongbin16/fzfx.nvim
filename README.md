@@ -243,7 +243,7 @@ Especially for git commands:
 
 ### Bind Keys
 
-- Exit keys (`--expect` option)
+- Exit keys (fzf `--expect` option)
   - `esc`: quit.
   - `double-click`/`enter`: open/jump to file (behave different on some specific commands).
 - Preview keys
