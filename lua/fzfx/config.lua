@@ -226,6 +226,47 @@ end
 
 -- }
 
+-- vim commands {
+
+--- @alias VimCommand {name:string,mode:string,opts:Options?,filename:string?,lineno:integer?}
+--- @return VimCommand[]
+local function get_vim_builtin_commands()
+    ---@diagnostic disable-next-line: param-type-mismatch
+    local help_docs = vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
+    log.debug(
+        "|fzfx.config - get_vim_builtin_commands| helpdocs:%s",
+        vim.inspect(help_docs)
+    )
+    if type(help_docs) ~= "table" or vim.tbl_isempty(help_docs) then
+        log.echo(LogLevels.INFO, "no builtin index.txt found.")
+        return {}
+    end
+    local results = {}
+    local existed_command_names = {}
+    for _, help_doc in ipairs(help_docs) do
+        for line in utils.readlines(help_doc) do
+            if
+                not utils.string_startswith(line, " ")
+                and not utils.string_startswith(line, "\t")
+                and not utils.string_startswith(line, "\n")
+                and not utils.string_startswith(line, "\r\n")
+                and not utils.string_startswith(line, "\r")
+            then
+            end
+        end
+    end
+end
+
+--- @return VimCommand[]
+local function get_all_vim_user_commands() end
+
+--- @return VimCommand[]
+local function get_buffer_only_vim_user_commands() end
+
+local function vim_builtin_commands_provider() end
+
+-- vim commands }
+
 -- lsp diagnostics {
 
 --- @alias LspDiagnosticOpts {mode:"buffer_diagnostics"|"workspace_diagnostics",severity:integer?,bufnr:integer?}
@@ -1518,7 +1559,7 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    desc = "Search git commits only on current buffer",
+                    desc = "Search git commits on current buffer",
                 },
                 default_provider = "buffer_commits",
             },
@@ -1539,7 +1580,7 @@ local Defaults = {
                 opts = {
                     bang = true,
                     range = true,
-                    desc = "Search git commits only on current buffer by visual select",
+                    desc = "Search git commits on current buffer by visual select",
                 },
                 default_provider = "buffer_commits",
             },
@@ -1558,7 +1599,7 @@ local Defaults = {
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
-                    desc = "Search git commits only on current buffer by cursor word",
+                    desc = "Search git commits on current buffer by cursor word",
                 },
                 default_provider = "buffer_commits",
             },
@@ -1577,7 +1618,7 @@ local Defaults = {
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
-                    desc = "Search git commits only on current buffer by yank text",
+                    desc = "Search git commits on current buffer by yank text",
                 },
                 default_provider = "buffer_commits",
             },
@@ -1756,7 +1797,7 @@ local Defaults = {
                     bang = true,
                     nargs = "?",
                     complete = "dir",
-                    desc = "Find nvim commands",
+                    desc = "Find vim commands",
                 },
                 default_provider = "all_commands",
             },
@@ -1767,89 +1808,78 @@ local Defaults = {
                     bang = true,
                     nargs = "?",
                     complete = "dir",
-                    desc = "Find nvim builtin commands",
+                    desc = "Find vim commands on current buffer",
                 },
-                default_provider = "builtin_commands",
-            },
-            {
-                name = "FzfxCommandsU",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "Find nvim user commands",
-                },
-                default_provider = "user_commands",
+                default_provider = "buffer_commands",
             },
             -- visual
             {
-                name = "FzfxFilesV",
+                name = "FzfxCommandsV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
-                    desc = "Find files by visual select",
+                    desc = "Find vim commands by visual select",
                 },
-                default_provider = "restricted_mode",
+                default_provider = "all_commands",
             },
             {
-                name = "FzfxFilesUV",
+                name = "FzfxCommandsBV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
-                    desc = "Find files unrestricted by visual select",
+                    desc = "Find vim commands on current buffer by visual select",
                 },
-                default_provider = "unrestricted_mode",
+                default_provider = "buffer_commands",
             },
             -- cword
             {
-                name = "FzfxFilesW",
+                name = "FzfxCommandsW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
-                    desc = "Find files by cursor word",
+                    desc = "Find vim commands by cursor word",
                 },
-                default_provider = "restricted_mode",
+                default_provider = "all_commands",
             },
             {
-                name = "FzfxFilesUW",
+                name = "FzfxCommandsBW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
-                    desc = "Find files unrestricted by cursor word",
+                    desc = "Find vim commands on current buffer by cursor word",
                 },
-                default_provider = "unrestricted_mode",
+                default_provider = "buffer_commands",
             },
             -- put
             {
-                name = "FzfxFilesP",
+                name = "FzfxCommandsP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
-                    desc = "Find files by yank text",
+                    desc = "Find vim commands by yank text",
                 },
-                default_provider = "restricted_mode",
+                default_provider = "all_commands",
             },
             {
-                name = "FzfxFilesUP",
+                name = "FzfxCommandsBP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
-                    desc = "Find files unrestricted by yank text",
+                    desc = "Find vim commands on current buffer by yank text",
                 },
-                default_provider = "unrestricted_mode",
+                default_provider = "buffer_commands",
             },
         },
         providers = {
-            restricted_mode = {
-                key = "ctrl-r",
+            all_commands = {
+                key = "ctrl-a",
                 provider = constants.has_fd and default_restricted_fd
                     or default_restricted_find,
                 line_opts = { prepend_icon_by_ft = true },
             },
-            unrestricted_mode = {
+            buffer_commands = {
                 key = "ctrl-u",
                 provider = constants.has_fd and default_unrestricted_fd
                     or default_unrestricted_find,
