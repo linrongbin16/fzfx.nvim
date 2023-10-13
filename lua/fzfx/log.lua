@@ -48,7 +48,7 @@ local function echo(level, fmt, ...)
     vim.api.nvim_echo(msg_chunks, false, {})
 end
 
---- @type Configs
+--- @type Options
 local Defaults = {
     level = LogLevels.INFO,
     console_log = true,
@@ -59,7 +59,7 @@ local Defaults = {
     file_path = nil,
 }
 
---- @type Configs
+--- @type Options
 local Configs = {}
 
 --- @type string
@@ -67,7 +67,7 @@ local PathSeparator = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
         and "\\"
     or "/"
 
---- @param option Configs
+--- @param option Options
 --- @return nil
 local function setup(option)
     Configs = vim.tbl_deep_extend("force", vim.deepcopy(Defaults), option or {})

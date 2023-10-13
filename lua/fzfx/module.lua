@@ -56,7 +56,7 @@ end
 --     return nil
 -- end
 
---- @param configs Configs
+--- @param configs Options
 local function setup(configs)
     -- debug
     vim.env._FZFX_NVIM_DEBUG_ENABLE = configs.debug.enable and 1 or 0

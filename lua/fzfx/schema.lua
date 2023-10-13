@@ -265,7 +265,7 @@ function GroupConfig:make(opts)
     return o
 end
 
---- @param cfg Configs?
+--- @param cfg Options?
 --- @return boolean
 local function is_command_config(cfg)
     return type(cfg) == "table"
@@ -276,7 +276,7 @@ local function is_command_config(cfg)
         and type(cfg.opts) == "table"
 end
 
---- @param cfg Configs?
+--- @param cfg Options?
 --- @return boolean
 local function is_provider_config(cfg)
     return type(cfg) == "table"
@@ -289,7 +289,7 @@ local function is_provider_config(cfg)
         )
 end
 
---- @param cfg Configs?
+--- @param cfg Options?
 --- @return boolean
 local function is_previewer_config(cfg)
     return type(cfg) == "table"

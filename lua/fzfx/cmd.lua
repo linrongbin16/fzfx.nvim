@@ -3,7 +3,7 @@
 --- @class CmdResult
 --- @field stdout string[]?
 --- @field stderr string[]?
---- @field exitcode integer?
+--- @field code integer?
 local CmdResult = {}
 
 --- @return CmdResult
@@ -11,7 +11,7 @@ function CmdResult:new()
     local o = {
         stdout = {},
         stderr = {},
-        exitcode = nil,
+        code = nil,
     }
     setmetatable(o, self)
     self.__index = self
@@ -22,8 +22,8 @@ end
 function CmdResult:wrong()
     return type(self.stderr) == "table"
         and #self.stderr > 0
-        and type(self.exitcode) == "number"
-        and self.exitcode ~= 0
+        and type(self.code) == "number"
+        and self.code ~= 0
 end
 
 --- @class Cmd
@@ -39,7 +39,7 @@ local Cmd = {
 }
 
 --- @param source string|string[]
---- @param opts table<string, any>?
+--- @param opts Options?
 --- @return Cmd
 function Cmd:run(source, opts)
     local result = CmdResult:new()
@@ -64,8 +64,8 @@ function Cmd:run(source, opts)
         end
     end
 
-    local function on_exit(jobid2, exitcode, event)
-        result.exitcode = exitcode
+    local function on_exit(jobid2, code, event)
+        result.code = code
     end
 
     local jobid = vim.fn.jobstart(source, {
