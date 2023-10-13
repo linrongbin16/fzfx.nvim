@@ -2,7 +2,7 @@ local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
 local general = require("fzfx.general")
 
---- @param options Configs?
+--- @param options Options?
 --- @return nil
 local function setup(options)
     -- configs

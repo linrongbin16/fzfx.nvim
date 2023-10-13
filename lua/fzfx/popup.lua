@@ -46,7 +46,7 @@ local function make_popup_window_size(value, base, minimal)
     )
 end
 
---- @param win_opts Configs
+--- @param win_opts Options
 --- @return PopupWindowOpts
 local function make_popup_window_opts_relative_to_cursor(win_opts)
     --- @type "cursor"
@@ -116,7 +116,7 @@ local function make_popup_window_center_shift_size(
     end
 end
 
---- @param win_opts Configs
+--- @param win_opts Options
 --- @return PopupWindowOpts
 local function make_popup_window_opts_relative_to_center(win_opts)
     --- @type "editor"|"win"
@@ -185,7 +185,7 @@ local function make_popup_window_opts_relative_to_center(win_opts)
     return popup_window_opts
 end
 
---- @param win_opts Configs
+--- @param win_opts Options
 --- @return PopupWindowOpts
 local function make_popup_window_opts(win_opts)
     --- @type "editor"|"win"|"cursor"
@@ -306,8 +306,8 @@ local function merge_fzf_opts(fzf_opts, actions)
     return merged_opts
 end
 
---- @param fzf_opts Configs
---- @param actions Configs
+--- @param fzf_opts Options
+--- @param actions Options
 --- @param result string
 --- @return string
 local function make_fzf_command(fzf_opts, actions, result)
@@ -335,8 +335,8 @@ end
 
 --- @param win_opts PopupWindowOpts?
 --- @param source string
---- @param fzf_opts Configs
---- @param actions Configs
+--- @param fzf_opts Options
+--- @param actions Options
 --- @param context PipelineContext
 --- @param on_launch_exit OnPopupExit|nil
 --- @return Popup

@@ -753,8 +753,8 @@ end
 
 -- file explorer }
 
---- @alias Configs table<string, any>
---- @type Configs
+--- @alias Options table<string, any>
+--- @type Options
 local Defaults = {
     -- the 'Files' commands
     --- @type GroupConfig
@@ -2469,22 +2469,22 @@ local Defaults = {
     },
 }
 
---- @type Configs
+--- @type Options
 local Configs = {}
 
---- @param options Configs|nil
---- @return Configs
+--- @param options Options|nil
+--- @return Options
 local function setup(options)
     Configs = vim.tbl_deep_extend("force", Defaults, options or {})
     return Configs
 end
 
---- @return Configs
+--- @return Options
 local function get_config()
     return Configs
 end
 
---- @return Configs
+--- @return Options
 local function get_defaults()
     return Defaults
 end

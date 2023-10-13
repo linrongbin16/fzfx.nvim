@@ -81,7 +81,7 @@ end
 
 -- visual select }
 
---- @param opts Configs
+--- @param opts Options
 --- @param feed_type "args"|"visual"|"cword"|"put"
 --- @return string
 local function get_command_feed(opts, feed_type)

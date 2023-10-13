@@ -54,7 +54,7 @@ local ProviderSwitch = {}
 
 --- @param name string
 --- @param pipeline PipelineName
---- @param provider_configs Configs
+--- @param provider_configs Options
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
     local provider_configs_map = {}
@@ -331,7 +331,7 @@ local PreviewerSwitch = {}
 
 --- @param name string
 --- @param pipeline PipelineName
---- @param previewer_configs Configs
+--- @param previewer_configs Options
 --- @return PreviewerSwitch
 function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local previewers_map = {}
@@ -530,7 +530,7 @@ local function skip_help(excludes, s)
     return false
 end
 
---- @param action_configs Configs?
+--- @param action_configs Options?
 --- @param builder string[]
 --- @param excludes string[]|nil
 --- @return string[]
@@ -552,8 +552,8 @@ local function make_help_doc(action_configs, builder, excludes)
     return builder
 end
 
---- @param provider_configs Configs
---- @param interaction_configs Configs
+--- @param provider_configs Options
+--- @param interaction_configs Options
 --- @return HeaderSwitch
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
@@ -598,7 +598,7 @@ end
 
 -- header switch }
 
---- @param pipeline_configs Configs
+--- @param pipeline_configs Options
 local function get_pipeline_size(pipeline_configs)
     local n = 0
     if type(pipeline_configs) == "table" then
@@ -624,7 +624,7 @@ end
 --- @param name string
 --- @param query string
 --- @param bang boolean
---- @param pipeline_configs Configs
+--- @param pipeline_configs Options
 --- @param default_pipeline PipelineName?
 --- @return Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
@@ -877,7 +877,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 end
 
 --- @param name string
---- @param pipeline_configs Configs?
+--- @param pipeline_configs Options?
 local function setup(name, pipeline_configs)
     if not pipeline_configs then
         return
