@@ -245,13 +245,7 @@ local function get_vim_builtin_commands()
     local existed_command_names = {}
     for _, help_doc in ipairs(help_docs) do
         for line in utils.readlines(help_doc) do
-            if
-                not utils.string_startswith(line, " ")
-                and not utils.string_startswith(line, "\t")
-                and not utils.string_startswith(line, "\n")
-                and not utils.string_startswith(line, "\r\n")
-                and not utils.string_startswith(line, "\r")
-            then
+            if utils.string_startswith(line, ":") and line[2] then
             end
         end
     end

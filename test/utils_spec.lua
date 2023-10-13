@@ -573,4 +573,73 @@ describe("utils", function()
             assert_eq(utils.list_index(10, -5), 6)
         end)
     end)
+    describe("[string_isxxx]", function()
+        local function contains_char(s, c)
+            assert(string.len(s) > 0)
+            assert(string.len(c) == 1)
+            for i = 1, #s do
+                if string.byte(s, i) == string.byte(c, 1) then
+                    return true
+                end
+            end
+            return false
+        end
+
+        it("isspace", function()
+            local whitespaces = "\r\n \t"
+            for i = 1, 255 do
+                if contains_char(whitespaces, string.char(i)) then
+                    assert_true(utils.string_isspace(string.char(i)))
+                else
+                    assert_false(utils.string_isspace(string.char(i)))
+                end
+            end
+        end)
+        it("isalpha", function()
+            local a = "a"
+            local z = "z"
+            local A = "A"
+            local Z = "Z"
+            for i = 1, 255 do
+                if
+                    (i >= string.byte(a) and i <= string.byte(z))
+                    or (i >= string.byte(A) and i <= string.byte(Z))
+                then
+                    assert_true(utils.string_isalpha(string.char(i)))
+                else
+                    assert_false(utils.string_isalpha(string.char(i)))
+                end
+            end
+        end)
+        it("isdigit", function()
+            local _0 = "0"
+            local _9 = "9"
+            for i = 1, 255 do
+                if i >= string.byte(_0) and i <= string.byte(_9) then
+                    assert_true(utils.string_isdigit(string.char(i)))
+                else
+                    assert_false(utils.string_isdigit(string.char(i)))
+                end
+            end
+        end)
+        it("isalnum", function()
+            local a = "a"
+            local z = "z"
+            local A = "A"
+            local Z = "Z"
+            local _0 = "0"
+            local _9 = "9"
+            for i = 1, 255 do
+                if
+                    (i >= string.byte(a) and i <= string.byte(z))
+                    or (i >= string.byte(A) and i <= string.byte(Z))
+                    or (i >= string.byte(_0) and i <= string.byte(_9))
+                then
+                    assert_true(utils.string_isalnum(string.char(i)))
+                else
+                    assert_false(utils.string_isalnum(string.char(i)))
+                end
+            end
+        end)
+    end)
 end)

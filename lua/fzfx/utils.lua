@@ -186,6 +186,55 @@ local function string_endswith(s, c)
     return s:sub(start_pos, end_pos) == c
 end
 
+--- @param s string
+--- @return boolean
+local function string_isspace(s)
+    assert(string.len(s) == 1)
+    return s:match("%s") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_isalnum(s)
+    assert(string.len(s) == 1)
+    return s:match("%w") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_isdigit(s)
+    assert(string.len(s) == 1)
+    return s:match("%d") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_ishex(s)
+    assert(string.len(s) == 1)
+    return s:match("%x") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_isalpha(s)
+    assert(string.len(s) == 1)
+    return s:match("%a") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_islower(s)
+    assert(string.len(s) == 1)
+    return s:match("%l") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_isupper(s)
+    assert(string.len(s) == 1)
+    return s:match("%u") ~= nil
+end
+
 --- @param left number?
 --- @param value number
 --- @param right number?
@@ -736,6 +785,13 @@ local M = {
     string_split = string_split,
     string_startswith = string_startswith,
     string_endswith = string_endswith,
+    string_isspace = string_isspace,
+    string_isalnum = string_isalnum,
+    string_isdigit = string_isdigit,
+    string_ishex = string_ishex,
+    string_isalpha = string_isalpha,
+    string_islower = string_islower,
+    string_isupper = string_isupper,
     number_bound = number_bound,
     list_index = list_index,
     parse_flag_query = parse_flag_query,
