@@ -4,6 +4,7 @@
 --- @field stdout string[]?
 --- @field stderr string[]?
 --- @field code integer?
+--- @field signal integer?
 local CmdResult = {}
 
 --- @return CmdResult
@@ -12,6 +13,7 @@ function CmdResult:new()
         stdout = {},
         stderr = {},
         code = nil,
+        signal = nil,
     }
     setmetatable(o, self)
     self.__index = self
@@ -27,61 +29,38 @@ function CmdResult:wrong()
 end
 
 --- @class Cmd
---- @field source string|string[]|nil
---- @field jobid integer?
+--- @field source string[]
 --- @field result CmdResult?
---- @field opts table<string, any>?
-local Cmd = {
-    source = nil,
-    jobid = nil,
-    result = nil,
-    opts = nil,
-}
+local Cmd = {}
 
---- @param source string|string[]
---- @param opts Options?
+--- @param source string[]
 --- @return Cmd
-function Cmd:run(source, opts)
+function Cmd:run(source)
     local result = CmdResult:new()
 
-    local function on_stdout(chanid, data, name)
-        if type(data) == "table" then
-            for _, d in ipairs(data) do
-                if type(d) == "string" and string.len(d) > 0 then
-                    table.insert(result.stdout, d)
-                end
+    local async_cmd = require("fzfx.utils").AsyncSpawn:make(
+        source,
+        function(line)
+            if type(line) == "string" then
+                table.insert(result.stdout, line)
+            end
+        end,
+        function(line)
+            if type(line) == "string" then
+                table.insert(result.stderr, line)
             end
         end
-    end
+    ) --[[@as AsyncSpawn]]
+    async_cmd:run()
 
-    local function on_stderr(chanid, data, name)
-        if type(data) == "table" then
-            for _, d in ipairs(data) do
-                if type(d) == "string" and string.len(d) > 0 then
-                    table.insert(result.stderr, d)
-                end
-            end
-        end
+    if type(async_cmd.result) == "table" then
+        result.code = async_cmd.result.code
+        result.signal = async_cmd.result.signal
     end
-
-    local function on_exit(jobid2, code, event)
-        result.code = code
-    end
-
-    local jobid = vim.fn.jobstart(source, {
-        on_stdout = on_stdout,
-        on_stderr = on_stderr,
-        on_exit = on_exit,
-        stdout_buffered = true,
-        stderr_buffered = true,
-    })
-    vim.fn.jobwait({ jobid })
 
     local o = {
         source = source,
-        jobid = jobid,
         result = result,
-        opts = opts,
     }
     setmetatable(o, self)
     self.__index = self

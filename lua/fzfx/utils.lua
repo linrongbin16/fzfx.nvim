@@ -548,6 +548,7 @@ end
 --- @field process_handle uv_process_t?
 --- @field process_id integer|string|nil
 --- @field _close_count integer
+--- @field result {code:integer?,signal:integer?}?
 local AsyncSpawn = {}
 
 --- @param line string
@@ -581,6 +582,7 @@ function AsyncSpawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer)
         process_handle = nil,
         process_id = nil,
         _close_count = 0,
+        result = nil,
     }
     setmetatable(o, self)
     self.__index = self
@@ -707,6 +709,7 @@ function AsyncSpawn:run()
         hide = true,
         -- verbatim = true,
     }, function(code, signal)
+        self.result = { code = code, signal = signal }
         self:_close_handle(self.process_handle)
     end)
 

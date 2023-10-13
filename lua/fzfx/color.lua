@@ -4,7 +4,7 @@
 
 --- @param code string
 --- @param fg boolean
---- @return string|nil
+--- @return string
 local function csi(code, fg)
     local control = fg and 38 or 48
     local r, g, b = code:match("#(..)(..)(..)")
@@ -36,39 +36,28 @@ end
 --- @type table<string, string>
 local AnsiCode = {
     black = "0;30",
-    ---@diagnostic disable-next-line: assign-type-mismatch
     grey = csi("#808080", true),
-    ---@diagnostic disable-next-line: assign-type-mismatch
     silver = csi("#c0c0c0", true),
-    ---@diagnostic disable-next-line: assign-type-mismatch
     white = csi("#ffffff", true),
     red = "0;31",
     magenta = "0;35",
-    ---@diagnostic disable-next-line: assign-type-mismatch
     fuchsia = csi("#FF00FF", true),
-    ---@diagnostic disable-next-line: assign-type-mismatch
     purple = csi("#800080", true),
     yellow = "0;33",
-    ---@diagnostic disable-next-line: assign-type-mismatch
     orange = csi("#FFA500", true),
-    ---@diagnostic disable-next-line: assign-type-mismatch
     olive = csi("#808000", true),
     green = "0;32",
-    ---@diagnostic disable-next-line: assign-type-mismatch
     lime = csi("#00FF00", true),
-    ---@diagnostic disable-next-line: assign-type-mismatch
     teal = csi("#008080", true),
     cyan = "0;36",
-    ---@diagnostic disable-next-line: assign-type-mismatch
     aqua = csi("#00FFFF", true),
     blue = "0;34",
-    ---@diagnostic disable-next-line: assign-type-mismatch
     navy = csi("#000080", true),
 }
 
 --- @param attr "fg"|"bg"
 --- @param group string?
---- @return string? rbg code (#808080) or ansi code (354)
+--- @return string? rbg code, e.g., #808080
 local function hlcode(attr, group)
     if type(group) ~= "string" then
         return nil
@@ -160,21 +149,21 @@ local function ansi(text, name, hl)
 end
 
 --- @param s string?
---- @return string?, integer?
+--- @return string?
 local function erase(s)
     if type(s) ~= "string" then
-        return s, nil
+        return s
     end
-    return s:gsub("\x1b%[%d+m\x1b%[K", "")
+    local result, pos = s:gsub("\x1b%[%d+m\x1b%[K", "")
         :gsub("\x1b%[m\x1b%[K", "")
         :gsub("\x1b%[%d+;%d+;%d+;%d+;%d+m", "")
         :gsub("\x1b%[%d+;%d+;%d+;%d+m", "")
         :gsub("\x1b%[%d+;%d+;%d+m", "")
         :gsub("\x1b%[%d+;%d+m", "")
         :gsub("\x1b%[%d+m", "")
+    return result
 end
 
---- @type table<string, function>
 local M = {
     hlcode = hlcode,
     csi = csi,
@@ -193,8 +182,9 @@ do
     end
 end
 
+--- @alias ColorRenderer fun(text:string,hl:string?):string
 --- @param fmt string
---- @param renderer fun(text:string,hl:string?):string
+--- @param renderer ColorRenderer
 --- @param hl string?
 --- @return string
 M.render = function(renderer, hl, fmt, ...)
