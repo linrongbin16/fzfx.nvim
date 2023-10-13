@@ -38,7 +38,7 @@ local Cmd = {}
 function Cmd:run(source)
     local result = CmdResult:new()
 
-    local async_spawn = require("fzfx.utils").AsyncSpawn:make(
+    local async_cmd = require("fzfx.utils").AsyncSpawn:make(
         source,
         function(line)
             if type(line) == "string" then
@@ -51,11 +51,11 @@ function Cmd:run(source)
             end
         end
     ) --[[@as AsyncSpawn]]
-    async_spawn:run()
+    async_cmd:run()
 
-    if type(async_spawn.result) == "table" then
-        result.code = async_spawn.result.code
-        result.signal = async_spawn.result.signal
+    if type(async_cmd.result) == "table" then
+        result.code = async_cmd.result.code
+        result.signal = async_cmd.result.signal
     end
 
     local o = {
