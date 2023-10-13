@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/linrongbin16/fzfx.nvim/compare/v1.1.1...v1.1.2) (2023-10-13)
+
+
+### Performance Improvements
+
+* **cmd:** migrate from jobstart to uv.spawn ([#285](https://github.com/linrongbin16/fzfx.nvim/issues/285)) ([fd570b0](https://github.com/linrongbin16/fzfx.nvim/commit/fd570b097f60777bb00d767d1109639fefb37aaa))
+
 ## [1.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v1.1.0...v1.1.1) (2023-10-11)
 
 
