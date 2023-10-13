@@ -1371,7 +1371,7 @@ local Defaults = {
                         branch_results,
                         string.format("* %s", git_current_branch_cmd:value())
                     )
-                    local git_branch_cmd = cmd.Cmd:run("git branch")
+                    local git_branch_cmd = cmd.GitBranchCmd:run()
                     if git_branch_cmd.result:wrong() then
                         log.echo(
                             LogLevels.WARN,
@@ -1420,7 +1420,7 @@ local Defaults = {
                         branch_results,
                         string.format("* %s", git_current_branch_cmd:value())
                     )
-                    local git_branch_cmd = cmd.Cmd:run("git branch --remotes")
+                    local git_branch_cmd = cmd.GitBranchCmd:run(true)
                     if git_branch_cmd.result:wrong() then
                         log.echo(
                             LogLevels.WARN,

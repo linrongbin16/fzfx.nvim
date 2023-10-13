@@ -4,6 +4,7 @@ local conf = require("fzfx.config")
 local general = require("fzfx.general")
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+local utils = require("fzfx.utils")
 
 local function setup()
     local git_branches_configs = conf.get_config().git_branches
@@ -41,7 +42,8 @@ local function setup()
                     branch_results,
                     string.format("* %s", git_current_branch_cmd:value())
                 )
-                local git_branch_cmd = cmd.Cmd:run(provider_opts[2])
+                local git_branch_cmd =
+                    cmd.Cmd:run(utils.string_split(provider_opts[2], " "))
                 if git_branch_cmd.result:wrong() then
                     log.echo(
                         LogLevels.WARN,
