@@ -1,3 +1,5 @@
+-- No Setup Need
+
 local function notify(fmt, ...)
     local msg = string.format(fmt, ...)
 
