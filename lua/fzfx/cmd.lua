@@ -38,30 +38,25 @@ local Cmd = {}
 function Cmd:run(source)
     local result = CmdResult:new()
 
-    --- @param line string
-    local function on_stdout(line)
-        if type(line) == "string" then
-            table.insert(result.stdout, line)
+    local async_spawn = require("fzfx.utils").AsyncSpawn:make(
+        source,
+        function(line)
+            if type(line) == "string" then
+                table.insert(result.stdout, line)
+            end
+        end,
+        function(line)
+            if type(line) == "string" then
+                table.insert(result.stderr, line)
+            end
         end
-    end
-
-    --- @param line string
-    local function on_stderr(line)
-        if type(line) == "string" then
-            table.insert(result.stderr, line)
-        end
-    end
-
-    local async_spawn =
-        require("fzfx.utils").AsyncSpawn:make(source, on_stdout, on_stderr) --[[@as AsyncSpawn]]
+    ) --[[@as AsyncSpawn]]
     async_spawn:run()
 
-    result.code = type(async_spawn.result) == "table"
-            and async_spawn.result.code
-        or nil
-    result.signal = type(async_spawn.result) == "table"
-            and async_spawn.result.signal
-        or nil
+    if type(async_spawn.result) == "table" then
+        result.code = async_spawn.result.code
+        result.signal = async_spawn.result.signal
+    end
 
     local o = {
         source = source,
