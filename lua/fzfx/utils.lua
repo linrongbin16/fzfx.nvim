@@ -722,6 +722,11 @@ function AsyncSpawn:run()
         self:_on_stderr(err, data)
     end)
     vim.loop.run()
+
+    local max_timeout = 2 ^ 31
+    vim.wait(max_timeout, function()
+        return self._close_count == 3
+    end)
 end
 
 local M = {
