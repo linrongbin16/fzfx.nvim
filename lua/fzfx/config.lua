@@ -230,7 +230,7 @@ end
 
 --- @param line string
 --- @return VimCommand
-local function parse_ex_command(line)
+local function parse_help_doc_line(line)
     local first_space_pos = utils.string_find(line, "\t")
         or utils.string_find(line, " ")
     local name = vim.trim(line:sub(1, first_space_pos - 1))
@@ -251,15 +251,79 @@ local function parse_ex_command(line)
     return { name = name, abbr = abbr }
 end
 
+--- @param header string
+--- @return {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
+local function parse_ex_command_output_header(header)
+    local name_pos = utils.string_find(header, "Name")
+    local args_pos = utils.string_find(header, "Args")
+    local address_pos = utils.string_find(header, "Address")
+    local complete_pos = utils.string_find(header, "Complete")
+    local definition_pos = utils.string_find(header, "Definition")
+    return {
+        name_pos = name_pos,
+        args_pos = args_pos,
+        address_pos = address_pos,
+        complete_pos = complete_pos,
+        definition_pos = definition_pos,
+    }
+end
+
+--- @param opts_output string
+--- @return VimCommandOptions
+local function parse_ex_command_output_opts(opts_output)
+    local operator_map = {
+        ["!"] = "bang",
+        ["|"] = "bar",
+        ["*"] = "nargs",
+        ["?"] = "nargs",
+        ["0"] = "nargs",
+        ["1"] = "nargs",
+        ['"'] = "nargs",
+    }
+    local parsed_opts = {}
+    for i = 1, #opts_output do
+        local c = opts_output[i]
+        if operator_map[c] then
+            parsed_opts[operator_map[c]] = c
+        end
+    end
+    return parsed_opts
+end
+
+--- @return table<string, VimCommand>
+local function parse_ex_command_output()
+    local tmpfile = vim.fn.tempname()
+    vim.cmd(string.format(
+        [[
+    redir! > %s
+    silent command
+    redir END
+    ]],
+        tmpfile
+    ))
+    local outputs = {}
+    local command_outputs = utils.readlines(tmpfile) --[[@as table]]
+    local parsed_header = parse_ex_command_output_header(command_outputs[1])
+    for i = 2, #command_outputs do
+        local line = command_outputs[i]
+        local opts_content = vim.trim(line:sub(1, parsed_header.name_pos - 1))
+    end
+end
+
+--- @param line string
+--- @return VimCommand
+local function parse_nvim_get_commands(line) end
+
 --- @alias VimCommandLocation {filename:string,lineno:integer}
---- @alias VimCommandOptions {mode:string,desc:string,bang:boolean?,bar:boolean?}
+--- @alias VimCommandOptions {mode:string,desc:string,bang:boolean?,bar:boolean?,nargs:string?}
 --- @alias VimCommand {name:string,abbr:string?,loc:VimCommandLocation?,opts:VimCommandOptions}
+--- @param bufnr integer?
 --- @return VimCommand[]
-local function get_vim_ex_commands()
+local function get_vim_commands(bufnr)
     ---@diagnostic disable-next-line: param-type-mismatch
     local help_docs = vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
     log.debug(
-        "|fzfx.config - get_vim_ex_commands| helpdocs:%s",
+        "|fzfx.config - get_vim_commands| helpdocs:%s",
         vim.inspect(help_docs)
     )
     if type(help_docs) ~= "table" or vim.tbl_isempty(help_docs) then
@@ -267,7 +331,8 @@ local function get_vim_ex_commands()
         return {}
     end
     local results = {}
-    local existed_command_names = {}
+    local ex_command_results = {}
+    local existed_ex_command_names = {}
     for _, help_doc in ipairs(help_docs) do
         local lines = utils.readlines(help_doc) --[[@as table]]
         for i = 1, #lines do
@@ -276,40 +341,64 @@ local function get_vim_ex_commands()
                 utils.string_startswith(line, ":")
                 and not utils.string_isspace(line[2])
             then
-                local command_loc = parse_ex_command(line)
+                local command_loc = parse_help_doc_line(line)
                 command_loc.loc = {
                     filename = help_doc,
                     lineno = i,
                 }
-                if not existed_command_names[command_loc.name] then
-                    existed_command_names[command_loc.name] = true
-                    table.insert(results, command_loc)
+                if not existed_ex_command_names[command_loc.name] then
+                    existed_ex_command_names[command_loc.name] = true
+                    table.insert(ex_command_results, command_loc)
                 end
             end
             i = i + 1
         end
     end
-    return results
-end
+    log.debug(
+        "|fzfx.config - get_vim_commands| ex commands:%s",
+        vim.inspect(ex_command_results)
+    )
 
---- @param bufnr integer?
---- @return VimCommand[]
-local function get_vim_user_commands(bufnr)
-    local commands_list = bufnr
+    local tmpfile = vim.fn.tempname()
+    vim.cmd(string.format(
+        [[
+    redir! > %s
+    silent command
+    redir END
+    ]],
+        tmpfile
+    ))
+    local file_user_commands = utils.readlines(tmpfile)
+    local user_commands = bufnr
             and vim.api.nvim_buf_get_commands(bufnr, { builtin = false })
         or vim.api.nvim_get_commands({ builtin = false })
+    local user_command_results = {}
+    local existed_user_command_names = {}
+    for name, opts in pairs(user_commands) do
+        if not existed_user_command_names[name] then
+            existed_user_command_names[name] = true
+            local command_loc = {
+                name = name,
+                opts = {
+                    bang = opts.bang,
+                    bar = opts.bar,
+                    nargs = opts.nargs,
+                },
+            }
+        end
+    end
+
     log.debug(
-        "|fzfx.config - get_vim_user_commands| commands_list:%s",
-        vim.inspect(commands_list)
+        "|fzfx.config - get_vim_commands| user commands:%s",
+        vim.inspect(user_commands)
     )
-    local results = {}
+    return results
 end
 
 --- @param bufnr integer?
 --- @return string[]|nil
 local function vim_commands_provider(bufnr)
-    local ex_commands = get_vim_ex_commands()
-    local user_commands = get_vim_user_commands(bufnr)
+    local commands_list = get_vim_commands()
     return nil
 end
 
