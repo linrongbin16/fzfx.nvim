@@ -192,6 +192,50 @@ local function yank_git_commit(lines)
     end
 end
 
+--- @param lines string[]
+local function setqflist_find(lines)
+    --- @type {filename:string,lnum:integer,col:integer}
+    local locations = {}
+    for i, line in ipairs(lines) do
+        local filename = line_helpers.parse_find(line)
+        table.insert(locations, { filename = filename, lnum = 1, col = 1 })
+    end
+    vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = locations,
+    })
+end
+
+--- @param lines string[]
+local function setqflist_rg(lines)
+    --- @type {filename:string,lnum:integer,col:integer}
+    local locations = {}
+    for i, line in ipairs(lines) do
+        local parsed = line_helpers.parse_rg(line)
+        table.insert(locations, {
+            filename = parsed.filename,
+            lnum = parsed.lineno,
+            col = parsed.column,
+        })
+    end
+    vim.fn.setqflist(locations, " ")
+end
+
+--- @param lines string[]
+local function setqflist_grep(lines)
+    --- @type {filename:string,lnum:integer,col:integer}
+    local locations = {}
+    for i, line in ipairs(lines) do
+        local parsed = line_helpers.parse_grep(line)
+        table.insert(locations, {
+            filename = parsed.filename,
+            lnum = parsed.lineno,
+            col = 1,
+        })
+    end
+    vim.fn.setqflist(locations, " ")
+end
+
 local M = {
     nop = nop,
     _make_edit_find_commands = _make_edit_find_commands,
@@ -208,6 +252,9 @@ local M = {
     bdelete = bdelete,
     git_checkout = git_checkout,
     yank_git_commit = yank_git_commit,
+    setqflist_find = setqflist_find,
+    setqflist_rg = setqflist_rg,
+    setqflist_grep = setqflist_grep,
 }
 
 return M
