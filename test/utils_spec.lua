@@ -585,12 +585,32 @@ describe("utils", function()
             return false
         end
 
+        local function contains_code(s, c)
+            for _, i in ipairs(s) do
+                if i == c then
+                    return true
+                end
+            end
+            return false
+        end
+
         it("isspace", function()
             local whitespaces = "\r\n \t"
+            local char_codes = { 11, 12 }
             for i = 1, 255 do
-                if contains_char(whitespaces, string.char(i)) then
+                if
+                    contains_char(whitespaces, string.char(i))
+                    or contains_code(char_codes, i)
+                then
                     assert_true(utils.string_isspace(string.char(i)))
                 else
+                    print(
+                        string.format(
+                            "isspace: %d: %s\n",
+                            i,
+                            vim.inspect(utils.string_isspace(string.char(i)))
+                        )
+                    )
                     assert_false(utils.string_isspace(string.char(i)))
                 end
             end
@@ -638,6 +658,54 @@ describe("utils", function()
                     assert_true(utils.string_isalnum(string.char(i)))
                 else
                     assert_false(utils.string_isalnum(string.char(i)))
+                end
+            end
+        end)
+        it("ishex", function()
+            local a = "a"
+            local f = "f"
+            local A = "A"
+            local F = "F"
+            local _0 = "0"
+            local _9 = "9"
+            for i = 1, 255 do
+                if
+                    (i >= string.byte(a) and i <= string.byte(f))
+                    or (i >= string.byte(A) and i <= string.byte(F))
+                    or (i >= string.byte(_0) and i <= string.byte(_9))
+                then
+                    assert_true(utils.string_ishex(string.char(i)))
+                else
+                    print(
+                        string.format(
+                            "ishex, %d:%s\n",
+                            i,
+                            vim.inspect(utils.string_ishex(string.char(i)))
+                        )
+                    )
+                    assert_false(utils.string_ishex(string.char(i)))
+                end
+            end
+        end)
+        it("islower", function()
+            local a = "a"
+            local z = "z"
+            for i = 1, 255 do
+                if i >= string.byte(a) and i <= string.byte(z) then
+                    assert_true(utils.string_islower(string.char(i)))
+                else
+                    assert_false(utils.string_islower(string.char(i)))
+                end
+            end
+        end)
+        it("isupper", function()
+            local A = "A"
+            local Z = "Z"
+            for i = 1, 255 do
+                if i >= string.byte(A) and i <= string.byte(Z) then
+                    assert_true(utils.string_isupper(string.char(i)))
+                else
+                    assert_false(utils.string_isupper(string.char(i)))
                 end
             end
         end)

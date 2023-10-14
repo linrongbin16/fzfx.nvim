@@ -244,7 +244,9 @@ local function get_vim_builtin_commands()
     local results = {}
     local existed_command_names = {}
     for _, help_doc in ipairs(help_docs) do
-        for line in utils.readlines(help_doc) do
+        local lines = utils.readlines(help_doc) --[[@as table]]
+        for i = 1, #lines do
+            local line = lines[i]
             if utils.string_startswith(line, ":") and line[2] then
             end
         end
