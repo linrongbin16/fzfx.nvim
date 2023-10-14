@@ -228,13 +228,38 @@ end
 
 -- vim commands {
 
---- @alias VimCommand {name:string,mode:string,opts:Options?,filename:string?,lineno:integer?}
+--- @param line string
+--- @return VimCommand
+local function parse_ex_command(line)
+    local first_space_pos = utils.string_find(line, "\t")
+        or utils.string_find(line, " ")
+    local name = vim.trim(line:sub(1, first_space_pos - 1))
+    if utils.string_startswith(name, ":") then
+        name = name:sub(2)
+    end
+    while line[first_space_pos] == " " or line[first_space_pos] == "\t" do
+        first_space_pos = first_space_pos + 1
+    end
+    local second_space_pos = utils.string_find(line, "\t", first_space_pos)
+        or utils.string_find(line, " ", first_space_pos)
+    local abbr = vim.trim(
+        line:sub(first_space_pos --[[@as integer]], second_space_pos - 1)
+    )
+    if utils.string_startswith(abbr, ":") then
+        abbr = abbr:sub(2)
+    end
+    return { name = name, abbr = abbr }
+end
+
+--- @alias VimCommandLocation {filename:string,lineno:integer}
+--- @alias VimCommandOptions {mode:string,desc:string,bang:boolean?,bar:boolean?}
+--- @alias VimCommand {name:string,abbr:string?,loc:VimCommandLocation?,opts:VimCommandOptions}
 --- @return VimCommand[]
-local function get_vim_builtin_commands()
+local function get_vim_ex_commands()
     ---@diagnostic disable-next-line: param-type-mismatch
     local help_docs = vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
     log.debug(
-        "|fzfx.config - get_vim_builtin_commands| helpdocs:%s",
+        "|fzfx.config - get_vim_ex_commands| helpdocs:%s",
         vim.inspect(help_docs)
     )
     if type(help_docs) ~= "table" or vim.tbl_isempty(help_docs) then
@@ -247,19 +272,46 @@ local function get_vim_builtin_commands()
         local lines = utils.readlines(help_doc) --[[@as table]]
         for i = 1, #lines do
             local line = lines[i]
-            if utils.string_startswith(line, ":") and line[2] then
+            if
+                utils.string_startswith(line, ":")
+                and not utils.string_isspace(line[2])
+            then
+                local command_loc = parse_ex_command(line)
+                command_loc.loc = {
+                    filename = help_doc,
+                    lineno = i,
+                }
+                if not existed_command_names[command_loc.name] then
+                    existed_command_names[command_loc.name] = true
+                    table.insert(results, command_loc)
+                end
             end
+            i = i + 1
         end
     end
+    return results
 end
 
+--- @param bufnr integer?
 --- @return VimCommand[]
-local function get_all_vim_user_commands() end
+local function get_vim_user_commands(bufnr)
+    local commands_list = bufnr
+            and vim.api.nvim_buf_get_commands(bufnr, { builtin = false })
+        or vim.api.nvim_get_commands({ builtin = false })
+    log.debug(
+        "|fzfx.config - get_vim_user_commands| commands_list:%s",
+        vim.inspect(commands_list)
+    )
+    local results = {}
+end
 
---- @return VimCommand[]
-local function get_buffer_only_vim_user_commands() end
-
-local function vim_builtin_commands_provider() end
+--- @param bufnr integer?
+--- @return string[]|nil
+local function vim_commands_provider(bufnr)
+    local ex_commands = get_vim_ex_commands()
+    local user_commands = get_vim_user_commands(bufnr)
+    return nil
+end
 
 -- vim commands }
 
@@ -912,10 +964,7 @@ local Defaults = {
         fzf_opts = {
             default_fzf_options.multi,
             function()
-                return {
-                    "--prompt",
-                    path.shorten() .. " > ",
-                }
+                return { "--prompt", path.shorten() .. " > " }
             end,
         },
     },
@@ -1158,10 +1207,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            {
-                "--prompt",
-                "Buffers > ",
-            },
+            { "--prompt", "Buffers > " },
             function()
                 local current_bufnr = vim.api.nvim_get_current_buf()
                 return utils.is_buf_valid(current_bufnr) and "--header-lines=1"
@@ -1287,10 +1333,7 @@ local Defaults = {
         fzf_opts = {
             default_fzf_options.multi,
             function()
-                return {
-                    "--prompt",
-                    path.shorten() .. " > ",
-                }
+                return { "--prompt", path.shorten() .. " > " }
             end,
         },
     },
@@ -1513,10 +1556,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            {
-                "--prompt",
-                "GBranches > ",
-            },
+            { "--prompt", "GBranches > " },
             function()
                 local cmd = require("fzfx.cmd")
                 local git_root_cmd = cmd.GitRootCmd:run()
@@ -1680,10 +1720,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            {
-                "--prompt",
-                "GCommits > ",
-            },
+            { "--prompt", "GCommits > " },
         },
     },
 
@@ -1774,10 +1811,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            {
-                "--prompt",
-                "GBlame > ",
-            },
+            { "--prompt", "GBlame > " },
         },
     },
 
@@ -1871,15 +1905,17 @@ local Defaults = {
         providers = {
             all_commands = {
                 key = "ctrl-a",
-                provider = constants.has_fd and default_restricted_fd
-                    or default_restricted_find,
-                line_opts = { prepend_icon_by_ft = true },
+                provider = function(query, context)
+                    return vim_commands_provider()
+                end,
+                provider_type = ProviderTypeEnum.LIST,
             },
             buffer_commands = {
                 key = "ctrl-u",
-                provider = constants.has_fd and default_unrestricted_fd
-                    or default_unrestricted_find,
-                line_opts = { prepend_icon_by_ft = true },
+                provider = function(query, context)
+                    return vim_commands_provider(context.bufnr)
+                end,
+                provider_type = ProviderTypeEnum.LIST,
             },
         },
         previewers = {
@@ -1899,12 +1935,8 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            function()
-                return {
-                    "--prompt",
-                    path.shorten() .. " > ",
-                }
-            end,
+            { "--prompt", "Commands > " },
+            { "--preview-window", "+{2}-/2" },
         },
     },
 
@@ -2043,10 +2075,7 @@ local Defaults = {
             default_fzf_options.multi,
             { "--delimiter", ":" },
             { "--preview-window", "+{2}-/2" },
-            {
-                "--prompt",
-                "Diagnostics > ",
-            },
+            { "--prompt", "Diagnostics > " },
         },
     },
 
@@ -2094,10 +2123,7 @@ local Defaults = {
             default_fzf_options.lsp_preview_window,
             "--border=none",
             { "--delimiter", ":" },
-            {
-                "--prompt",
-                "Definitions > ",
-            },
+            { "--prompt", "Definitions > " },
         },
         win_opts = {
             relative = "cursor",
@@ -2157,10 +2183,7 @@ local Defaults = {
             default_fzf_options.lsp_preview_window,
             "--border=none",
             { "--delimiter", ":" },
-            {
-                "--prompt",
-                "TypeDefinitions > ",
-            },
+            { "--prompt", "TypeDefinitions > " },
         },
         win_opts = {
             relative = "cursor",
@@ -2220,10 +2243,7 @@ local Defaults = {
             default_fzf_options.lsp_preview_window,
             "--border=none",
             { "--delimiter", ":" },
-            {
-                "--prompt",
-                "References > ",
-            },
+            { "--prompt", "References > " },
         },
         win_opts = {
             relative = "cursor",
@@ -2283,10 +2303,7 @@ local Defaults = {
             default_fzf_options.lsp_preview_window,
             "--border=none",
             { "--delimiter", ":" },
-            {
-                "--prompt",
-                "Implementations > ",
-            },
+            { "--prompt", "Implementations > " },
         },
         win_opts = {
             relative = "cursor",
@@ -2448,10 +2465,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            {
-                "--prompt",
-                path.shorten() .. " > ",
-            },
+            { "--prompt", path.shorten() .. " > " },
             function()
                 local n = 0
                 if constants.has_eza or vim.fn.executable("ls") > 0 then
