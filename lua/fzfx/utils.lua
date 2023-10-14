@@ -631,6 +631,7 @@ function AsyncSpawn:_on_stdout(err, data)
     if data then
         -- append data to data_buffer
         self.out_buffer = self.out_buffer and (self.out_buffer .. data) or data
+        self.out_buffer = self.out_buffer:gsub("\r\n", "\n")
         -- foreach the data_buffer and find every line
         local i = self:_consume_line(self.out_buffer, self.fn_out_line_consumer)
         -- truncate the printed lines if found any
@@ -680,6 +681,7 @@ function AsyncSpawn:_on_stderr(err, data)
     if data then
         -- append data to data_buffer
         self.err_buffer = self.err_buffer and (self.err_buffer .. data) or data
+        self.err_buffer = self.err_buffer:gsub("\r\n", "\n")
         -- foreach the data_buffer and find every line
         local i = self:_consume_line(self.err_buffer, self.fn_err_line_consumer)
         -- truncate the printed lines if found any
@@ -720,6 +722,11 @@ function AsyncSpawn:run()
         self:_on_stderr(err, data)
     end)
     vim.loop.run()
+
+    local max_timeout = 2 ^ 31
+    vim.wait(max_timeout, function()
+        return self._close_count == 3
+    end)
 end
 
 local M = {
