@@ -78,6 +78,25 @@ local default_unrestricted_find = {
     "f",
 }
 
+--- @return string, string
+local function default_bat_style_and_theme()
+    local style = "numbers,changes"
+    if
+        type(vim.env["BAT_STYLE"]) == "string"
+        and string.len(vim.env["BAT_STYLE"]) > 0
+    then
+        style = vim.env["BAT_STYLE"]
+    end
+    local theme = "base16"
+    if
+        type(vim.env["BAT_THEME"]) == "string"
+        and string.len(vim.env["BAT_THEME"]) > 0
+    then
+        theme = vim.env["BAT_THEME"]
+    end
+    return style, theme
+end
+
 --- @param filename string
 --- @param lineno integer?
 --- @return fun():string[]
@@ -85,20 +104,7 @@ local function make_file_previewer(filename, lineno)
     --- @return string[]
     local function wrap()
         if constants.has_bat then
-            local style = "numbers,changes"
-            if
-                type(vim.env["BAT_STYLE"]) == "string"
-                and string.len(vim.env["BAT_STYLE"]) > 0
-            then
-                style = vim.env["BAT_STYLE"]
-            end
-            local theme = "base16"
-            if
-                type(vim.env["BAT_THEME"]) == "string"
-                and string.len(vim.env["BAT_THEME"]) > 0
-            then
-                theme = vim.env["BAT_THEME"]
-            end
+            local style, theme = default_bat_style_and_theme()
             -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
             return type(lineno) == "number"
                     and {
@@ -229,33 +235,23 @@ end
 -- vim commands {
 
 --- @param line string
---- @return VimCommand
-local function parse_vim_command_help_doc_line(line)
+--- @return string
+local function parse_vim_ex_command_name(line)
     local first_space_pos = utils.string_find(line, "\t")
     local name = vim.trim(line:sub(1, first_space_pos - 1))
     if utils.string_startswith(name, ":") then
         name = name:sub(2)
     end
-    while line[first_space_pos] == " " or line[first_space_pos] == "\t" do
-        first_space_pos = first_space_pos + 1
-    end
-    local second_space_pos = utils.string_find(line, "\t", first_space_pos)
-    local abbr = vim.trim(
-        line:sub(first_space_pos --[[@as integer]], second_space_pos - 1)
-    )
-    if utils.string_startswith(abbr, ":") then
-        abbr = abbr:sub(2)
-    end
-    return { name = name, abbr = abbr }
+    return name
 end
 
---- @return VimCommand
-local function parse_vim_command_help_doc()
+--- @return table<string, VimCommand>
+local function get_vim_ex_commands()
     ---@diagnostic disable-next-line: param-type-mismatch
     local help_docs_list =
         vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
     log.debug(
-        "|fzfx.config - parse_vim_command_help_doc| help docs:%s",
+        "|fzfx.config - get_vim_ex_commands| help docs:%s",
         vim.inspect(help_docs_list)
     )
     if type(help_docs_list) ~= "table" or vim.tbl_isempty(help_docs_list) then
@@ -263,7 +259,6 @@ local function parse_vim_command_help_doc()
         return {}
     end
     local results = {}
-    local existed_names = {}
     for _, help_doc in ipairs(help_docs_list) do
         local lines = utils.readlines(help_doc) --[[@as table]]
         for i = 1, #lines do
@@ -272,21 +267,20 @@ local function parse_vim_command_help_doc()
                 utils.string_startswith(line, ":")
                 and not utils.string_isspace(line[2])
             then
-                local parsed = parse_vim_command_help_doc_line(line)
-                parsed.loc = {
-                    filename = help_doc,
-                    lineno = i,
+                local name = parse_vim_ex_command_name(line)
+                results[name] = {
+                    name = name,
+                    loc = {
+                        help_doc,
+                        lineno = i,
+                    },
                 }
-                if not existed_names[parsed.name] then
-                    existed_names[parsed.name] = true
-                    table.insert(results, parsed)
-                end
             end
             i = i + 1
         end
     end
     log.debug(
-        "|fzfx.config - parse_vim_command_help_doc| results:%s",
+        "|fzfx.config - get_vim_ex_commands| results:%s",
         vim.inspect(results)
     )
     return results
@@ -328,8 +322,19 @@ local function parse_ex_command_output_lua_function_definition(line, start_pos)
     else
         start_pos = utils.string_find(line, lua_flag, start_pos) --[[@as integer]]
     end
-    local location_content = line:sub(start_pos + string.len(lua_flag))
-    local first_colon_pos = utils.string_find(location_content, ":")
+    if start_pos == nil then
+        return nil
+    end
+    local first_colon_pos = utils.string_find(line, ":", start_pos)
+    local content = vim.trim(line:sub(first_colon_pos + 1))
+    if content[#content] == ">" then
+        content = line:sub(1, #content - 1)
+    end
+    local content_splits = utils.string_split(content, ":")
+    return {
+        filename = vim.fn.expand(content_splits[1]),
+        lineno = tonumber(content_splits[2]),
+    }
 end
 
 --- @alias VimExCommandOutputHeader {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
@@ -384,7 +389,7 @@ end
 --!   FzfxFileExplorerUW 0                       <Lua 840: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
 --                                               File explorer (ls -la) by cursor word
 --```
---- @return table<string, VimCommand>
+--- @return table<string, {filename:string,lineno:integer}>
 local function parse_ex_command_output()
     local tmpfile = vim.fn.tempname()
     vim.cmd(string.format(
@@ -400,122 +405,282 @@ local function parse_ex_command_output()
     local command_outputs = utils.readlines(tmpfile) --[[@as table]]
     local found_command_output_header = false
     --- @type VimExCommandOutputHeader
-    local header_parsed = nil
+    local parsed_header = nil
 
     for i = 1, #command_outputs do
         local line = command_outputs[i]
 
         if found_command_output_header then
             -- parse command name, e.g., FzfxCommands, etc.
-            local idx = header_parsed.name_pos
+            local idx = parsed_header.name_pos
             while idx <= #line and not utils.string_isspace(line[idx]) do
                 idx = idx + 1
             end
             while idx <= #line and utils.string_isspace(line[idx]) do
                 idx = idx + 1
             end
-            local name = vim.trim(line:sub(header_parsed.name_pos, idx - 1))
+            local name = vim.trim(line:sub(parsed_header.name_pos, idx - 1))
 
-            idx = math.max(header_parsed.definition_pos, idx)
+            idx = math.max(parsed_header.definition_pos, idx)
+            local parsed_line =
+                parse_ex_command_output_lua_function_definition(line, idx)
+            if parsed_line then
+                results[name] = {
+                    filename = parsed_line.filename,
+                    lineno = parsed_line.lineno,
+                }
+            end
         end
 
         if is_ex_command_output_header(line) then
             found_command_output_header = true
-            header_parsed = parse_ex_command_output_header(line)
-        end
-    end
-end
-
---- @param line string
---- @return VimCommand
-local function parse_nvim_get_commands(line) end
-
---- @alias VimCommandLocation {filename:string,lineno:integer}
---- @alias VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,desc:string?}
---- @alias VimCommand {name:string,abbr:string?,loc:VimCommandLocation?,opts:VimCommandOptions}
---- @param bufnr integer?
---- @return VimCommand[]
-local function get_vim_commands(bufnr)
-    ---@diagnostic disable-next-line: param-type-mismatch
-    local help_docs = vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
-    log.debug(
-        "|fzfx.config - get_vim_commands| helpdocs:%s",
-        vim.inspect(help_docs)
-    )
-    if type(help_docs) ~= "table" or vim.tbl_isempty(help_docs) then
-        log.echo(LogLevels.INFO, "no builtin index.txt found.")
-        return {}
-    end
-    local results = {}
-    local ex_command_results = {}
-    local existed_ex_command_names = {}
-    for _, help_doc in ipairs(help_docs) do
-        local lines = utils.readlines(help_doc) --[[@as table]]
-        for i = 1, #lines do
-            local line = lines[i]
-            if
-                utils.string_startswith(line, ":")
-                and not utils.string_isspace(line[2])
-            then
-                local command_loc = parse_vim_command_help_doc_line(line)
-                command_loc.loc = {
-                    filename = help_doc,
-                    lineno = i,
-                }
-                if not existed_ex_command_names[command_loc.name] then
-                    existed_ex_command_names[command_loc.name] = true
-                    table.insert(ex_command_results, command_loc)
-                end
-            end
-            i = i + 1
-        end
-    end
-    log.debug(
-        "|fzfx.config - get_vim_commands| ex commands:%s",
-        vim.inspect(ex_command_results)
-    )
-
-    local tmpfile = vim.fn.tempname()
-    vim.cmd(string.format(
-        [[
-    redir! > %s
-    silent command
-    redir END
-    ]],
-        tmpfile
-    ))
-    local file_user_commands = utils.readlines(tmpfile)
-    local user_commands = bufnr
-            and vim.api.nvim_buf_get_commands(bufnr, { builtin = false })
-        or vim.api.nvim_get_commands({ builtin = false })
-    local user_command_results = {}
-    local existed_user_command_names = {}
-    for name, opts in pairs(user_commands) do
-        if not existed_user_command_names[name] then
-            existed_user_command_names[name] = true
-            local command_loc = {
-                name = name,
-                opts = {
-                    bang = opts.bang,
-                    bar = opts.bar,
-                    nargs = opts.nargs,
-                },
-            }
+            parsed_header = parse_ex_command_output_header(line)
         end
     end
 
-    log.debug(
-        "|fzfx.config - get_vim_commands| user commands:%s",
-        vim.inspect(user_commands)
-    )
     return results
 end
 
 --- @param bufnr integer?
---- @return string[]|nil
+--- @return table<string, VimCommand>
+local function get_vim_user_commands(bufnr)
+    local parsed_ex_commands = parse_ex_command_output()
+    local user_commands = bufnr
+            and vim.api.nvim_buf_get_commands(bufnr, { builtin = false })
+        or vim.api.nvim_get_commands({ builtin = false })
+
+    log.debug(
+        "|fzfx.config - parse_vim_user_commands| user commands:%s",
+        vim.inspect(user_commands)
+    )
+
+    local results = {}
+    for name, opts in pairs(user_commands) do
+        results[name] = {
+            name = opts.name,
+            opts = {
+                bang = opts.bang,
+                bar = opts.bar,
+                range = opts.range,
+                complete = opts.complete,
+                complete_arg = opts.complete_arg,
+                desc = opts.definition,
+                nargs = opts.nargs,
+            },
+        }
+        local parsed = parsed_ex_commands[name]
+        if parsed then
+            results[name].loc = {
+                filename = parsed.filename,
+                lineno = parsed.lineno,
+            }
+        end
+    end
+    return results
+end
+
+--- @param commands VimCommand[]
+--- @return string[]
+local function render_vim_commands(commands)
+    local Columns = {
+        NAME = "Name",
+        BANG = "Bang",
+        BAR = "Bar",
+        NARGS = "Nargs",
+        RANGE = "Range",
+        COMPLETE = "Complete",
+    }
+
+    --- @param r VimCommand
+    --- @return string
+    local function rendered_name(r)
+        return r.name
+    end
+
+    --- @param r VimCommand
+    --- @return string
+    local function rendered_opts(r)
+        local bang = (type(r.opts) == "table" and r.opts.bang) and "Y" or "N"
+        local bar = (type(r.opts) == "table" and r.opts.bar) and "Y" or "N"
+        local nargs = (type(r.opts) == "table" and r.opts.nargs)
+                and r.opts.nargs
+            or "N/A"
+        local range = (type(r.opts) == "table" and r.opts.range)
+                and r.opts.range
+            or "N/A"
+        local complete = (type(r.opts) == "table" and r.opts.complete)
+                and r.opts.complete
+            or "N/A"
+        return string.format(
+            "%s|%s|%s|%s|%s",
+            bang,
+            bar,
+            nargs,
+            range,
+            complete
+        )
+    end
+
+    --- @param r VimCommand
+    --- @return string
+    local function rendered_desc_or_loc(r)
+        if
+            type(r.loc) == "table"
+            and type(r.loc.filename) == "string"
+            and type(r.loc.lineno) == "number"
+        then
+            return string.format(
+                "<lua:%s:%d>",
+                path.reduce(r.loc.filename),
+                r.loc.lineno
+            )
+        else
+            return (type(r.opts) == "table" and type(r.opts.desc) == "string")
+                    and string.format("<desc:%s>", r.opts.desc)
+                or ""
+        end
+    end
+
+    local NAME = "Name"
+    local OPTS = "Bang|Bar|Nargs|Range|Complete"
+    local DESC_OR_LOC = "Desc/Location"
+
+    local max_name = string.len(NAME)
+    local max_opts = string.len(OPTS)
+    for _, c in ipairs(commands) do
+        max_name = math.max(max_name, string.len(rendered_name(c)))
+        max_opts = math.max(max_opts, string.len(rendered_opts(c)))
+    end
+
+    local results = {}
+    local formatter = string.format("%%%ds  %%%d%s  %%s", max_name, max_opts)
+    local header = string.format(formatter, NAME, OPTS, DESC_OR_LOC)
+    table.insert(results, header)
+    log.debug(
+        "|fzfx.config - render_vim_commands| formatter:%s, header:%s",
+        vim.inspect(formatter),
+        vim.inspect(header)
+    )
+    for i, c in ipairs(commands) do
+        local rendered = string.format(
+            formatter,
+            rendered_name(c),
+            rendered_opts(c),
+            rendered_desc_or_loc(c)
+        )
+        log.debug(
+            "|fzfx.config - render_vim_commands| rendered[%d]:%s",
+            i,
+            vim.inspect(rendered)
+        )
+        table.insert(results, rendered)
+    end
+    return results
+end
+
+--- @alias VimCommandLocation {filename:string,lineno:integer}
+--- @alias VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,range:string?,complete:string?,complete_arg:string?,desc:string?}
+--- @alias VimCommand {name:string,loc:VimCommandLocation?,opts:VimCommandOptions}
+--- @param bufnr integer?
+--- @return VimCommand[]
+local function get_vim_commands(bufnr)
+    local results = {}
+    local ex_commands = get_vim_ex_commands()
+    local user_commands = get_vim_user_commands(bufnr)
+    for _, c in pairs(ex_commands) do
+        table.insert(results, c)
+    end
+    for _, c in pairs(user_commands) do
+        table.insert(results, c)
+    end
+    table.sort(results, function(a, b)
+        return a.name < b.name
+    end)
+
+    return results
+end
+
+--- @param bufnr integer?
+--- @return string[]
 local function vim_commands_provider(bufnr)
-    local commands_list = get_vim_commands()
-    return nil
+    local commands = get_vim_commands(bufnr)
+    return render_vim_commands(commands)
+end
+
+--- @param filename string
+--- @param lineno integer
+--- @return string[]
+local function vim_command_lua_function_previewer(filename, lineno)
+    local height = vim.api.nvim_win_get_height(0)
+    if constants.has_bat then
+        local style, theme = default_bat_style_and_theme()
+        -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
+        return {
+            constants.bat,
+            "--style=" .. style,
+            "--theme=" .. theme,
+            "--color=always",
+            "--pager=never",
+            "--highlight-line=" .. lineno,
+            "--line-range",
+            string.format(
+                "%d:",
+                math.max(lineno - math.min(math.floor(height / 3), 1), 1)
+            ),
+            "--",
+            filename,
+        }
+    else
+        -- "cat %s"
+        return {
+            "cat",
+            filename,
+        }
+    end
+end
+
+--- @param line string
+--- @return string[]|nil
+local function vim_command_previewer(line)
+    local first_space_pos = utils.string_find(line, " ") --[[@as integer]]
+    while first_space_pos <= #line and line[first_space_pos] == " " do
+        first_space_pos = first_space_pos + 1
+    end
+    local second_space_pos = utils.string_find(line, " ", first_space_pos) --[[@as integer]]
+    while second_space_pos <= #line and line[second_space_pos] == " " do
+        second_space_pos = second_space_pos + 1
+    end
+    if second_space_pos > #line then
+        return nil
+    end
+    local desc_or_loc = vim.trim(line:sub(second_space_pos))
+    if
+        string.len(desc_or_loc) > string.len("<lua:")
+        and desc_or_loc:sub(1, 5) == "<lua:"
+    then
+        desc_or_loc = desc_or_loc:sub(6)
+        if desc_or_loc[#desc_or_loc] == ">" then
+            desc_or_loc = desc_or_loc:sub(1, #desc_or_loc - 1)
+        end
+        local splits = utils.string_split(desc_or_loc, ":")
+        return vim_command_lua_function_previewer(
+            splits[1],
+            tonumber(splits[2])
+        )
+    elseif
+        vim.fn.executable("echo") > 0
+        and string.len(desc_or_loc) > string.len("<desc:")
+        and desc_or_loc:sub(1, 6) == "<desc:"
+    then
+        local desc = desc_or_loc:sub(7)
+        if desc[#desc] == ">" then
+            desc = desc:sub(1, #desc - 1)
+        end
+        return { "echo", desc }
+    else
+        log.echo(LogLevels.INFO, "no echo command found.")
+        return nil
+    end
 end
 
 -- vim commands }
@@ -2125,11 +2290,11 @@ local Defaults = {
         },
         previewers = {
             restricted_mode = {
-                previewer = file_previewer,
+                previewer = vim_command_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             unrestricted_mode = {
-                previewer = file_previewer,
+                previewer = vim_command_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
         },
@@ -2141,7 +2306,6 @@ local Defaults = {
         fzf_opts = {
             default_fzf_options.multi,
             { "--prompt", "Commands > " },
-            { "--preview-window", "+{2}-/2" },
         },
     },
 
