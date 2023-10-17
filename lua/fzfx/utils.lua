@@ -74,10 +74,10 @@ local function string_not_empty(s)
 end
 
 --- @param s string
---- @param c string
+--- @param t string
 --- @param start integer?
 --- @return integer?
-local function string_find(s, c, start)
+local function string_find(s, t, start)
     -- start = start or 1
     -- local result = vim.fn.stridx(s, c, start - 1)
     -- return result >= 0 and (result + 1) or nil
@@ -85,13 +85,44 @@ local function string_find(s, c, start)
     start = start or 1
     for i = start, #s do
         local match = true
-        for j = 1, #c do
+        for j = 1, #t do
             if i + j - 1 > #s then
                 match = false
                 break
             end
             local a = string.byte(s, i + j - 1)
-            local b = string.byte(c, j)
+            local b = string.byte(t, j)
+            if a ~= b then
+                match = false
+                break
+            end
+        end
+        if match then
+            return i
+        end
+    end
+    return nil
+end
+
+--- @param s string
+--- @param t string
+--- @param rstart integer?
+--- @return integer?
+local function string_rfind(s, t, rstart)
+    -- rstart = rstart or 1
+    -- local result = vim.fn.strridx(s, c, rstart - 1)
+    -- return result >= 0 and (result + 1) or nil
+
+    rstart = rstart or #s
+    for i = rstart, 1, -1 do
+        local match = true
+        for j = 1, #t do
+            if i + j - 1 > #s then
+                match = false
+                break
+            end
+            local a = string.byte(s, i + j - 1)
+            local b = string.byte(t, j)
             if a ~= b then
                 match = false
                 break
@@ -787,6 +818,7 @@ local M = {
     string_empty = string_empty,
     string_not_empty = string_not_empty,
     string_find = string_find,
+    string_rfind = string_rfind,
     string_ltrim = string_ltrim,
     string_rtrim = string_rtrim,
     string_split = string_split,

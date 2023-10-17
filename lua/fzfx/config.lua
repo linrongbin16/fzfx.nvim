@@ -230,9 +230,8 @@ end
 
 --- @param line string
 --- @return VimCommand
-local function parse_help_doc_line(line)
+local function parse_vim_command_help_doc_line(line)
     local first_space_pos = utils.string_find(line, "\t")
-        or utils.string_find(line, " ")
     local name = vim.trim(line:sub(1, first_space_pos - 1))
     if utils.string_startswith(name, ":") then
         name = name:sub(2)
@@ -241,7 +240,6 @@ local function parse_help_doc_line(line)
         first_space_pos = first_space_pos + 1
     end
     local second_space_pos = utils.string_find(line, "\t", first_space_pos)
-        or utils.string_find(line, " ", first_space_pos)
     local abbr = vim.trim(
         line:sub(first_space_pos --[[@as integer]], second_space_pos - 1)
     )
@@ -251,8 +249,92 @@ local function parse_help_doc_line(line)
     return { name = name, abbr = abbr }
 end
 
+--- @return VimCommand
+local function parse_vim_command_help_doc()
+    ---@diagnostic disable-next-line: param-type-mismatch
+    local help_docs_list =
+        vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
+    log.debug(
+        "|fzfx.config - parse_vim_command_help_doc| help docs:%s",
+        vim.inspect(help_docs_list)
+    )
+    if type(help_docs_list) ~= "table" or vim.tbl_isempty(help_docs_list) then
+        log.echo(LogLevels.INFO, "no 'doc/index.txt' found.")
+        return {}
+    end
+    local results = {}
+    local existed_names = {}
+    for _, help_doc in ipairs(help_docs_list) do
+        local lines = utils.readlines(help_doc) --[[@as table]]
+        for i = 1, #lines do
+            local line = lines[i]
+            if
+                utils.string_startswith(line, ":")
+                and not utils.string_isspace(line[2])
+            then
+                local parsed = parse_vim_command_help_doc_line(line)
+                parsed.loc = {
+                    filename = help_doc,
+                    lineno = i,
+                }
+                if not existed_names[parsed.name] then
+                    existed_names[parsed.name] = true
+                    table.insert(results, parsed)
+                end
+            end
+            i = i + 1
+        end
+    end
+    log.debug(
+        "|fzfx.config - parse_vim_command_help_doc| results:%s",
+        vim.inspect(results)
+    )
+    return results
+end
+
 --- @param header string
---- @return {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
+--- @return boolean
+local function is_ex_command_output_header(header)
+    local name_pos = utils.string_find(header, "Name")
+    local args_pos = utils.string_find(header, "Args")
+    local address_pos = utils.string_find(header, "Address")
+    local complete_pos = utils.string_find(header, "Complete")
+    local definition_pos = utils.string_find(header, "Definition")
+    return type(name_pos) == "number"
+        and type(args_pos) == "number"
+        and type(address_pos) == "number"
+        and type(complete_pos) == "number"
+        and type(definition_pos) == "number"
+        and name_pos < args_pos
+        and args_pos < address_pos
+        and address_pos < complete_pos
+        and complete_pos < definition_pos
+end
+
+--- @param line string
+--- @param start_pos integer
+--- @return {filename:string,lineno:integer}?
+local function parse_ex_command_output_lua_function_definition(line, start_pos)
+    local lua_flag = "<Lua "
+    local lua_function_flag = "<Lua function>"
+    local lua_function_pos =
+        utils.string_find(line, lua_function_flag, start_pos)
+    if lua_function_flag then
+        start_pos = utils.string_find(
+            line,
+            lua_flag,
+            lua_function_pos + string.len(lua_function_flag)
+        ) --[[@as integer]]
+    else
+        start_pos = utils.string_find(line, lua_flag, start_pos) --[[@as integer]]
+    end
+    local location_content = line:sub(start_pos + string.len(lua_flag))
+    local first_colon_pos = utils.string_find(location_content, ":")
+end
+
+--- @alias VimExCommandOutputHeader {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
+--- @param header string
+--- @return VimExCommandOutputHeader
 local function parse_ex_command_output_header(header)
     local name_pos = utils.string_find(header, "Name")
     local args_pos = utils.string_find(header, "Args")
@@ -268,28 +350,40 @@ local function parse_ex_command_output_header(header)
     }
 end
 
---- @param opts_output string
---- @return VimCommandOptions
-local function parse_ex_command_output_opts(opts_output)
-    local operator_map = {
-        ["!"] = "bang",
-        ["|"] = "bar",
-        ["*"] = "nargs",
-        ["?"] = "nargs",
-        ["0"] = "nargs",
-        ["1"] = "nargs",
-        ['"'] = "nargs",
-    }
-    local parsed_opts = {}
-    for i = 1, #opts_output do
-        local c = opts_output[i]
-        if operator_map[c] then
-            parsed_opts[operator_map[c]] = c
-        end
-    end
-    return parsed_opts
-end
-
+-- the ':command' output looks like:
+--
+--```
+--    Name              Args Address Complete    Definition
+--    Barbecue          ?            <Lua function> <Lua 437: ~/.config/nvim/lazy/barbecue/lua/barbecue.lua:18>
+--                                               Run subcommands through this general command
+--!   Bdelete           ?            buffer      :call s:bdelete("bdelete", <q-bang>, <q-args>)
+--    BufferLineCloseLeft 0                      <Lua 329: ~/.config/nvim/lazy/bufferline.nvim/lua/bufferline.lua:226>
+--    BufferLineCloseRight 0                     <Lua 328: ~/.config/nvim/lazy/bufferline.nvim/lua/bufferline.lua:225>
+--!   Bwipeout          ?            buffer      :call s:bdelete("bwipeout", <q-bang>, <q-args>)
+--    DoMatchParen      0                        call matchup#matchparen#toggle(1)
+--!|  Explore           *    0c ?    dir         call netrw#Explore(<count>,0,0+<bang>0,<q-args>)
+--!   FZF               *            dir         call s:cmd(<bang>0, <f-args>)
+--!   FzfxBuffers       ?            file        <Lua 744: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
+--                                               Find buffers
+--!   FzfxBuffersP      0                        <Lua 742: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
+--                                               Find buffers by yank text
+--!   FzfxBuffersV      0    .                   <Lua 358: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
+--                                               Find buffers by visual select
+--!   FzfxBuffersW      0                        <Lua 861: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
+--                                               Find buffers by cursor word
+--!   FzfxFileExplorer  ?            dir         <Lua 845: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
+--                                               File explorer (ls -l)
+--!   FzfxFileExplorerP 0                        <Lua 839: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
+--                                               File explorer (ls -l) by yank text
+--!   FzfxFileExplorerU ?            dir         <Lua 844: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
+--                                               File explorer (ls -la)
+--!   FzfxFileExplorerUP 0                       <Lua 838: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
+--                                               File explorer (ls -la) by yank text
+--!   FzfxFileExplorerUV 0   .                   <Lua 842: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
+--                                               File explorer (ls -la) by visual select
+--!   FzfxFileExplorerUW 0                       <Lua 840: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
+--                                               File explorer (ls -la) by cursor word
+--```
 --- @return table<string, VimCommand>
 local function parse_ex_command_output()
     local tmpfile = vim.fn.tempname()
@@ -301,12 +395,34 @@ local function parse_ex_command_output()
     ]],
         tmpfile
     ))
-    local outputs = {}
+
+    local results = {}
     local command_outputs = utils.readlines(tmpfile) --[[@as table]]
-    local parsed_header = parse_ex_command_output_header(command_outputs[1])
-    for i = 2, #command_outputs do
+    local found_command_output_header = false
+    --- @type VimExCommandOutputHeader
+    local header_parsed = nil
+
+    for i = 1, #command_outputs do
         local line = command_outputs[i]
-        local opts_content = vim.trim(line:sub(1, parsed_header.name_pos - 1))
+
+        if found_command_output_header then
+            -- parse command name, e.g., FzfxCommands, etc.
+            local idx = header_parsed.name_pos
+            while idx <= #line and not utils.string_isspace(line[idx]) do
+                idx = idx + 1
+            end
+            while idx <= #line and utils.string_isspace(line[idx]) do
+                idx = idx + 1
+            end
+            local name = vim.trim(line:sub(header_parsed.name_pos, idx - 1))
+
+            idx = math.max(header_parsed.definition_pos, idx)
+        end
+
+        if is_ex_command_output_header(line) then
+            found_command_output_header = true
+            header_parsed = parse_ex_command_output_header(line)
+        end
     end
 end
 
@@ -315,7 +431,7 @@ end
 local function parse_nvim_get_commands(line) end
 
 --- @alias VimCommandLocation {filename:string,lineno:integer}
---- @alias VimCommandOptions {mode:string,desc:string,bang:boolean?,bar:boolean?,nargs:string?}
+--- @alias VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,desc:string?}
 --- @alias VimCommand {name:string,abbr:string?,loc:VimCommandLocation?,opts:VimCommandOptions}
 --- @param bufnr integer?
 --- @return VimCommand[]
@@ -341,7 +457,7 @@ local function get_vim_commands(bufnr)
                 utils.string_startswith(line, ":")
                 and not utils.string_isspace(line[2])
             then
-                local command_loc = parse_help_doc_line(line)
+                local command_loc = parse_vim_command_help_doc_line(line)
                 command_loc.loc = {
                     filename = help_doc,
                     lineno = i,
