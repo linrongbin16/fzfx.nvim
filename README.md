@@ -329,7 +329,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Current directory git files variant is named with `C` suffix<br></td>
+    <td rowspan="4">1. Git files in current directory variant is named with `C` suffix<br></td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -401,6 +401,26 @@ Commands are named following below rules:
   </tr>
   <tr>
     <td>FzfxGBlameP</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td rowspan="4">Vim Commands</td>
+    <td>FzfxCommands(E/U)</td>
+    <td>N</td>
+    <td rowspan="4">No</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Vim ex(builtin) commands variant is named with 'E' suffix<br>2. Vim user commands variant is named with 'U' suffix<br>3. Use `enter` to input vim command</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)P</td>
     <td>N</td>
   </tr>
   <tr>
