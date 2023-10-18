@@ -242,4 +242,12 @@ describe("actions", function()
             assert_true(true)
         end)
     end)
+    describe("[feed_vim_command]", function()
+        it("feedkeys", function()
+            local actual = actions.feed_vim_command({
+                ":FzfxCommands    Y | N | N/A  ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:215",
+            })
+            assert_true(actual == nil)
+        end)
+    end)
 end)

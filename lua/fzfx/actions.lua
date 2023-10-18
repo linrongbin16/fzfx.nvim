@@ -194,7 +194,7 @@ local function yank_git_commit(lines)
 end
 
 --- @param lines string[]
-local function input_vim_command(lines)
+local function feed_vim_command(lines)
     for _, line in ipairs(lines) do
         for i = 1, #line do
             local c = line:sub(i, i)
@@ -226,7 +226,7 @@ local M = {
     bdelete = bdelete,
     git_checkout = git_checkout,
     yank_git_commit = yank_git_commit,
-    input_vim_command = input_vim_command,
+    feed_vim_command = feed_vim_command,
 }
 
 return M
