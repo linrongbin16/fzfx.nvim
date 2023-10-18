@@ -199,7 +199,7 @@ local function input_vim_command(lines)
         for i = 1, #line do
             local c = line:sub(i, i)
             if utils.string_isspace(c) then
-                local input = vim.trim(line:sub(1, c - 1))
+                local input = vim.trim(line:sub(1, i - 1))
                 if not utils.string_startswith(input, ":") then
                     input = ":" .. input
                 end
