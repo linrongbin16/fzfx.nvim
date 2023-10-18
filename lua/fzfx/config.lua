@@ -2378,6 +2378,7 @@ local Defaults = {
         fzf_opts = {
             default_fzf_options.multi,
             "--header-lines=1",
+            { "--preview-window", "~1" },
             { "--prompt", "Commands > " },
         },
         other_opts = {
