@@ -193,48 +193,77 @@ local function yank_git_commit(lines)
 end
 
 --- @param lines string[]
-local function setqflist_find(lines)
-    --- @type {filename:string,lnum:integer,col:integer}
-    local locations = {}
-    for i, line in ipairs(lines) do
+--- @return {filename:string,lnum:integer,col:integer}[]
+local function _make_setqflist_find_items(lines)
+    local qflist = {}
+    for _, line in ipairs(lines) do
         local filename = line_helpers.parse_find(line)
-        table.insert(locations, { filename = filename, lnum = 1, col = 1 })
+        table.insert(qflist, { filename = filename, lnum = 1, col = 1 })
     end
+    return qflist
+end
+
+--- @param lines string[]
+local function setqflist_find(lines)
+    local qflist = _make_setqflist_find_items(lines)
     vim.cmd([[ :copen ]])
     vim.fn.setqflist({}, " ", {
         nr = "$",
-        items = locations,
+        items = qflist,
     })
+end
+
+--- @param lines string[]
+--- @return {filename:string,lnum:integer,col:integer,text:string}[]
+local function _make_setqflist_rg_items(lines)
+    local qflist = {}
+    for _, line in ipairs(lines) do
+        local parsed = line_helpers.parse_rg(line)
+        table.insert(qflist, {
+            filename = parsed.filename,
+            lnum = parsed.lineno,
+            col = parsed.column,
+            text = parsed.text,
+        })
+    end
+    return qflist
 end
 
 --- @param lines string[]
 local function setqflist_rg(lines)
     --- @type {filename:string,lnum:integer,col:integer}
-    local locations = {}
-    for i, line in ipairs(lines) do
-        local parsed = line_helpers.parse_rg(line)
-        table.insert(locations, {
+    local qflist = _make_setqflist_rg_items(lines)
+    vim.cmd([[ :copen ]])
+    vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qflist,
+    })
+end
+
+--- @param lines string[]
+--- @return {filename:string,lnum:integer,col:integer,text:string}[]
+local function _make_setqflist_grep_items(lines)
+    local qflist = {}
+    for _, line in ipairs(lines) do
+        local parsed = line_helpers.parse_grep(line)
+        table.insert(qflist, {
             filename = parsed.filename,
             lnum = parsed.lineno,
-            col = parsed.column,
+            col = 1,
+            text = parsed.text,
         })
     end
-    vim.fn.setqflist(locations, " ")
+    return qflist
 end
 
 --- @param lines string[]
 local function setqflist_grep(lines)
-    --- @type {filename:string,lnum:integer,col:integer}
-    local locations = {}
-    for i, line in ipairs(lines) do
-        local parsed = line_helpers.parse_grep(line)
-        table.insert(locations, {
-            filename = parsed.filename,
-            lnum = parsed.lineno,
-            col = 1,
-        })
-    end
-    vim.fn.setqflist(locations, " ")
+    local qflist = _make_setqflist_grep_items(lines)
+    vim.cmd([[ :copen ]])
+    vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qflist,
+    })
 end
 
 local M = {
@@ -242,6 +271,9 @@ local M = {
     _make_edit_find_commands = _make_edit_find_commands,
     _make_edit_grep_commands = _make_edit_grep_commands,
     _make_edit_rg_commands = _make_edit_rg_commands,
+    _make_setqflist_find_items = _make_setqflist_find_items,
+    _make_setqflist_rg_items = _make_setqflist_rg_items,
+    _make_setqflist_grep_items = _make_setqflist_grep_items,
     edit = edit,
     edit_find = edit_find,
     edit_buffers = edit_buffers,

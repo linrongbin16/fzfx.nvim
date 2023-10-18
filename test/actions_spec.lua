@@ -16,6 +16,7 @@ describe("actions", function()
     local actions = require("fzfx.actions")
     local utils = require("fzfx.utils")
     local path = require("fzfx.path")
+    local line_helpers = require("fzfx.line_helpers")
     describe("[nop]", function()
         it("do nothing", function()
             local nop = actions.nop
@@ -240,6 +241,142 @@ describe("actions", function()
             }
             actions.edit_find(lines)
             assert_true(true)
+        end)
+    end)
+    describe("[_make_setqflist_find_items]", function()
+        it("set files without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
+            }
+            local actual = actions._make_setqflist_find_items(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, #lines)
+            for i, act in ipairs(actual) do
+                local line = lines[i]
+                local expect = line_helpers.parse_find(line)
+                assert_eq(type(act), "table")
+                assert_eq(act.filename, expect)
+                assert_eq(act.lnum, 1)
+                assert_eq(act.col, 1)
+            end
+        end)
+        it("set files with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
+            }
+            local actual = actions._make_setqflist_find_items(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, #lines)
+            for i, act in ipairs(actual) do
+                local line = lines[i]
+                local expect = line_helpers.parse_find(line)
+                assert_eq(type(act), "table")
+                assert_eq(act.filename, expect)
+                assert_eq(act.lnum, 1)
+                assert_eq(act.col, 1)
+            end
+        end)
+    end)
+    describe("[_make_setqflist_rg_items]", function()
+        it("set rg results without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10:83: ok ok",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81:3: local query = 'hello'",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4:1: print('goodbye world')",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3:10: hello world",
+            }
+            local actual = actions._make_setqflist_rg_items(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, #lines)
+            for i, act in ipairs(actual) do
+                local line = lines[i]
+                local expect = line_helpers.parse_rg(line)
+                assert_eq(type(act), "table")
+                assert_eq(act.filename, expect.filename)
+                assert_eq(act.lnum, expect.lineno)
+                assert_eq(act.col, expect.column)
+                assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
+            end
+        end)
+        it("set rg results with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10:83: ok ok",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81:3: local query = 'hello'",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4:1: print('goodbye world')",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3:10: hello world",
+            }
+            local actual = actions._make_setqflist_rg_items(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, #lines)
+            for i, act in ipairs(actual) do
+                local line = lines[i]
+                local expect = line_helpers.parse_rg(line)
+                assert_eq(type(act), "table")
+                assert_eq(act.filename, expect.filename)
+                assert_eq(act.lnum, expect.lineno)
+                assert_eq(act.col, expect.column)
+                assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
+            end
+        end)
+    end)
+    describe("[_make_setqflist_grep_items]", function()
+        it("set grep results without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10:83: ok ok",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81:3: local query = 'hello'",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4:1: print('goodbye world')",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3:10: hello world",
+            }
+            local actual = actions._make_setqflist_grep_items(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, #lines)
+            for i, act in ipairs(actual) do
+                local line = lines[i]
+                local expect = line_helpers.parse_grep(line)
+                assert_eq(type(act), "table")
+                assert_eq(act.filename, expect.filename)
+                assert_eq(act.lnum, expect.lineno)
+                assert_eq(act.col, 1)
+                assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
+            end
+        end)
+        it("set grep results with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10:83: ok ok",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81:3: local query = 'hello'",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4:1: print('goodbye world')",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3:10: hello world",
+            }
+            local actual = actions._make_setqflist_grep_items(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, #lines)
+            for i, act in ipairs(actual) do
+                local line = lines[i]
+                local expect = line_helpers.parse_grep(line)
+                assert_eq(type(act), "table")
+                assert_eq(act.filename, expect.filename)
+                assert_eq(act.lnum, expect.lineno)
+                assert_eq(act.col, 1)
+                assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
+            end
         end)
     end)
 end)
