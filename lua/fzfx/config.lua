@@ -871,6 +871,7 @@ local Defaults = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_find,
             ["double-click"] = require("fzfx.actions").edit_find,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
         },
         fzf_opts = {
             default_fzf_options.multi,

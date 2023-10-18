@@ -200,6 +200,7 @@ local function setqflist_find(lines)
         local filename = line_helpers.parse_find(line)
         table.insert(locations, { filename = filename, lnum = 1, col = 1 })
     end
+    vim.cmd([[ :copen ]])
     vim.fn.setqflist({}, " ", {
         nr = "$",
         items = locations,
