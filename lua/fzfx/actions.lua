@@ -200,10 +200,10 @@ local function input_vim_command(lines)
             local c = line:sub(i, i)
             if utils.string_isspace(c) then
                 local input = vim.trim(line:sub(1, i - 1))
-                if not utils.string_startswith(input, ":") then
-                    input = ":" .. input
+                if utils.string_startswith(input, ":") then
+                    input = input:sub(2)
                 end
-                vim.cmd(string.format([[%s ]], input))
+                vim.cmd(string.format([[ call feedkeys(':%s', 'n') ]], input))
                 return
             end
         end
