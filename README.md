@@ -573,6 +573,11 @@ nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
 " by yank text
 nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
 
+" ======== vim commands ========
+
+" vim commands
+nnoremap <space>cm :\<C-U>FzfxCommands<CR>
+
 " ======== lsp diagnostics ========
 
 " lsp diagnostics
@@ -734,6 +739,12 @@ vim.keymap.set('n', '<space>wgb',
 vim.keymap.set('n', '<space>pgb',
         '<cmd>FzfxGBlameP<cr>',
         {silent=true, noremap=true, desc="Search git blame by yank text"})
+
+-- ======== vim commands ========
+
+-- vim commands
+vim.keymap.set('n', '<space>cm', '<cmd>FzfxCommands<cr>',
+        {silent=true, noremap=true, desc="Search vim commands"})
 
 -- ======== lsp diagnostics ========
 
