@@ -564,14 +564,10 @@ local function render_vim_commands_columns_status(commands)
 end
 
 --- @param commands VimCommand[]
---- @param max_command_name_len integer
---- @param max_command_opts_len integer
+--- @param name_col_width integer
+--- @param opts_col_width integer
 --- @return string[]
-local function render_vim_commands(
-    commands,
-    max_command_name_len,
-    max_command_opts_len
-)
+local function render_vim_commands(commands, name_col_width, opts_col_width)
     --- @param r VimCommand
     --- @return string
     local function rendered_desc_or_loc(r)
@@ -598,11 +594,11 @@ local function render_vim_commands(
 
     local results = {}
     local formatter = "%-"
-        .. tostring(max_command_name_len)
+        .. tostring(name_col_width)
         .. "s"
         .. " "
         .. "%-"
-        .. tostring(max_command_opts_len)
+        .. tostring(opts_col_width)
         .. "s %s"
     local header = string.format(formatter, NAME, OPTS, DESC_OR_LOC)
     table.insert(results, header)
@@ -658,7 +654,8 @@ local function get_vim_commands(bufnr)
     return results
 end
 
---- @alias VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,max_command_name_len:integer,max_command_opts_len:integer}
+--- @alias VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_col_width:integer,opts_col_width:integer}
+--- @return VimCommandsPipelineContext
 local function vim_commands_context_maker()
     local ctx = {
         bufnr = vim.api.nvim_get_current_buf(),
@@ -666,21 +663,18 @@ local function vim_commands_context_maker()
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
     local commands = get_vim_commands()
-    local max_name, max_opts = render_vim_commands_columns_status(commands)
-    ctx.max_command_name_len = max_name
-    ctx.max_command_opts_len = max_opts
+    local name_col_width, opts_col_width =
+        render_vim_commands_columns_status(commands)
+    ctx.name_col_width = name_col_width
+    ctx.opts_col_width = opts_col_width
     return ctx
 end
 
---- @param ctx {bufnr:integer,max_command_name_len:integer,max_command_opts_len:integer}
+--- @param ctx {bufnr:integer,name_col_width:integer,opts_col_width:integer}
 --- @return string[]
 local function vim_commands_provider(ctx)
     local commands = get_vim_commands(ctx.bufnr)
-    return render_vim_commands(
-        commands,
-        ctx.max_command_name_len,
-        ctx.max_command_opts_len
-    )
+    return render_vim_commands(commands, ctx.name_col_width, ctx.opts_col_width)
 end
 
 --- @param filename string
@@ -716,28 +710,29 @@ local function vim_command_lua_function_previewer(filename, lineno)
 end
 
 --- @param line string
+--- @param context VimCommandsPipelineContext
 --- @return string[]|nil
-local function vim_commands_previewer(line)
-    local first_space_pos = utils.string_find(line, " ") --[[@as integer]]
-    while first_space_pos <= #line and line[first_space_pos] == " " do
-        first_space_pos = first_space_pos + 1
-    end
-    local second_space_pos = utils.string_find(line, " ", first_space_pos) --[[@as integer]]
-    while second_space_pos <= #line and line[second_space_pos] == " " do
-        second_space_pos = second_space_pos + 1
-    end
-    if second_space_pos > #line then
-        return nil
-    end
-    local desc_or_loc = vim.trim(line:sub(second_space_pos))
+local function vim_commands_previewer(line, context)
+    log.debug(
+        "|fzfx.config - vim_commands_previewer| line:%s, context:%s",
+        vim.inspect(line),
+        vim.inspect(context)
+    )
+    local desc_or_loc = vim.trim(
+        line:sub(context.name_col_width + 1 + context.opts_col_width + 1)
+    )
     if
         string.len(desc_or_loc) > 0
         and not utils.string_startswith(desc_or_loc, '"')
         and not utils.string_endswith(desc_or_loc, '"')
     then
+        log.debug(
+            "|fzfx.config - vim_commands_previewer| loc:%s",
+            vim.inspect(desc_or_loc)
+        )
         local splits = utils.string_split(desc_or_loc, ":")
         return vim_command_lua_function_previewer(
-            splits[1],
+            vim.fn.expand(path.normalize(splits[1])),
             tonumber(splits[2]) --[[@as integer]]
         )
     elseif
@@ -746,6 +741,10 @@ local function vim_commands_previewer(line)
         and utils.string_startswith(desc_or_loc, '"')
         and utils.string_endswith(desc_or_loc, '"')
     then
+        log.debug(
+            "|fzfx.config - vim_commands_previewer| desc:%s",
+            vim.inspect(desc_or_loc)
+        )
         return { "echo", desc_or_loc }
     else
         log.echo(LogLevels.INFO, "no echo command found.")
@@ -2349,8 +2348,8 @@ local Defaults = {
                 --- @param context VimCommandsPipelineContext
                 provider = function(query, context)
                     return vim_commands_provider({
-                        max_commands_name_len = context.max_command_name_len,
-                        max_commands_opts_len = context.max_command_opts_len,
+                        name_col_width = context.name_col_width,
+                        opts_col_width = context.opts_col_width,
                     })
                 end,
                 provider_type = ProviderTypeEnum.LIST,
@@ -2361,8 +2360,8 @@ local Defaults = {
                 --- @param context VimCommandsPipelineContext
                 provider = function(query, context)
                     return vim_commands_provider({
-                        max_commands_name_len = context.max_command_name_len,
-                        max_commands_opts_len = context.max_command_opts_len,
+                        name_col_width = context.name_col_width,
+                        opts_col_width = context.opts_col_width,
                         bufnr = context.bufnr,
                     })
                 end,
