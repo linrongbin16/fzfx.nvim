@@ -564,10 +564,10 @@ local function render_vim_commands_columns_status(commands)
 end
 
 --- @param commands VimCommand[]
---- @param name_col_width integer
---- @param opts_col_width integer
+--- @param name_width integer
+--- @param opts_width integer
 --- @return string[]
-local function render_vim_commands(commands, name_col_width, opts_col_width)
+local function render_vim_commands(commands, name_width, opts_width)
     --- @param r VimCommand
     --- @return string
     local function rendered_desc_or_loc(r)
@@ -594,11 +594,11 @@ local function render_vim_commands(commands, name_col_width, opts_col_width)
 
     local results = {}
     local formatter = "%-"
-        .. tostring(name_col_width)
+        .. tostring(name_width)
         .. "s"
         .. " "
         .. "%-"
-        .. tostring(opts_col_width)
+        .. tostring(opts_width)
         .. "s %s"
     local header = string.format(formatter, NAME, OPTS, DESC_OR_LOC)
     table.insert(results, header)
@@ -654,7 +654,7 @@ local function get_vim_commands(bufnr)
     return results
 end
 
---- @alias VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_col_width:integer,opts_col_width:integer}
+--- @alias VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
 --- @return VimCommandsPipelineContext
 local function vim_commands_context_maker()
     local ctx = {
@@ -663,18 +663,17 @@ local function vim_commands_context_maker()
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
     local commands = get_vim_commands()
-    local name_col_width, opts_col_width =
-        render_vim_commands_columns_status(commands)
-    ctx.name_col_width = name_col_width
-    ctx.opts_col_width = opts_col_width
+    local name_width, opts_width = render_vim_commands_columns_status(commands)
+    ctx.name_width = name_width
+    ctx.opts_width = opts_width
     return ctx
 end
 
---- @param ctx {bufnr:integer,name_col_width:integer,opts_col_width:integer}
+--- @param ctx {bufnr:integer,name_width:integer,opts_width:integer}
 --- @return string[]
 local function vim_commands_provider(ctx)
     local commands = get_vim_commands(ctx.bufnr)
-    return render_vim_commands(commands, ctx.name_col_width, ctx.opts_col_width)
+    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param filename string
@@ -718,29 +717,22 @@ local function vim_commands_previewer(line, context)
         vim.inspect(line),
         vim.inspect(context)
     )
-    local desc_or_loc = vim.trim(
-        line:sub(context.name_col_width + 1 + context.opts_col_width + 1)
-    )
+    local desc_or_loc = line_helpers.parse_vim_commands(line, context)
     if
-        string.len(desc_or_loc) > 0
-        and not utils.string_startswith(desc_or_loc, '"')
-        and not utils.string_endswith(desc_or_loc, '"')
+        type(desc_or_loc) == "table"
+        and type(desc_or_loc.filename) == "string"
+        and string.len(desc_or_loc.filename) > 0
+        and type(desc_or_loc.lineno) == "number"
     then
         log.debug(
             "|fzfx.config - vim_commands_previewer| loc:%s",
             vim.inspect(desc_or_loc)
         )
-        local splits = utils.string_split(desc_or_loc, ":")
         return vim_command_lua_function_previewer(
-            vim.fn.expand(path.normalize(splits[1])),
-            tonumber(splits[2]) --[[@as integer]]
+            desc_or_loc.filename,
+            desc_or_loc.lineno
         )
-    elseif
-        vim.fn.executable("echo") > 0
-        and string.len(desc_or_loc) > 0
-        and utils.string_startswith(desc_or_loc, '"')
-        and utils.string_endswith(desc_or_loc, '"')
-    then
+    elseif vim.fn.executable("echo") > 0 and type(desc_or_loc) == "string" then
         log.debug(
             "|fzfx.config - vim_commands_previewer| desc:%s",
             vim.inspect(desc_or_loc)
@@ -2348,8 +2340,8 @@ local Defaults = {
                 --- @param context VimCommandsPipelineContext
                 provider = function(query, context)
                     return vim_commands_provider({
-                        name_col_width = context.name_col_width,
-                        opts_col_width = context.opts_col_width,
+                        name_width = context.name_width,
+                        opts_width = context.opts_width,
                     })
                 end,
                 provider_type = ProviderTypeEnum.LIST,
@@ -2360,8 +2352,8 @@ local Defaults = {
                 --- @param context VimCommandsPipelineContext
                 provider = function(query, context)
                     return vim_commands_provider({
-                        name_col_width = context.name_col_width,
-                        opts_col_width = context.opts_col_width,
+                        name_width = context.name_width,
+                        opts_width = context.opts_width,
                         bufnr = context.bufnr,
                     })
                 end,

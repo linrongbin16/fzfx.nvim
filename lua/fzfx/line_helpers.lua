@@ -126,6 +126,26 @@ end
 local parse_ls = make_parse_ls(8)
 local parse_eza = constants.is_windows and make_parse_ls(5) or make_parse_ls(6)
 
+--- @param line string
+--- @param context VimCommandsPipelineContext
+--- @return {filename:string,lineno:integer}|string
+local function parse_vim_commands(line, context)
+    local desc_or_loc =
+        vim.trim(line:sub(context.name_width + 1 + context.opts_width + 1))
+    if
+        string.len(desc_or_loc) > 0
+        and not utils.string_startswith(desc_or_loc, '"')
+        and not utils.string_endswith(desc_or_loc, '"')
+    then
+        local splits = utils.string_split(desc_or_loc, ":")
+        local filename = vim.fn.expand(path.normalize(splits[1]))
+        local lineno = tonumber(splits[2])
+        return { filename = filename, lineno = lineno }
+    else
+        return desc_or_loc
+    end
+end
+
 local M = {
     parse_find = parse_find,
     parse_grep = parse_grep,
@@ -133,6 +153,7 @@ local M = {
     make_parse_ls = make_parse_ls,
     parse_ls = parse_ls,
     parse_eza = parse_eza,
+    parse_vim_commands = parse_vim_commands,
 }
 
 return M
