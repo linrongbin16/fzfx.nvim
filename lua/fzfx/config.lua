@@ -237,18 +237,14 @@ end
 --- @param line string
 --- @return string
 local function parse_vim_ex_command_name(line)
-    local first_space_pos = utils.string_find(line, "\t")
-    local name = vim.trim(line:sub(1, first_space_pos - 1))
-    if utils.string_startswith(name, ":") then
-        name = name:sub(2)
-    end
-    return name
+    local name_stop_pos = utils.string_find(line, "|", 3)
+    return vim.trim(line:sub(2, name_stop_pos - 1))
 end
 
 --- @return table<string, VimCommand>
 local function get_vim_ex_commands()
-    ---@diagnostic disable-next-line: param-type-mismatch
     local help_docs_list =
+        ---@diagnostic disable-next-line: param-type-mismatch
         vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
     log.debug(
         "|fzfx.config - get_vim_ex_commands| help docs:%s",
@@ -263,21 +259,17 @@ local function get_vim_ex_commands()
         local lines = utils.readlines(help_doc) --[[@as table]]
         for i = 1, #lines do
             local line = lines[i]
-            -- log.debug(
-            --     "|fzfx.config - get_vim_ex_commands| line[%d]:%s",
-            --     i,
-            --     vim.inspect(line)
-            -- )
-            if
-                utils.string_startswith(line, ":")
-                and string.len(line) >= 2
-                and not utils.string_isspace(line:sub(2, 2))
-            then
+            if utils.string_startswith(line, "|:") then
+                log.debug(
+                    "|fzfx.config - get_vim_ex_commands| line[%d]:%s",
+                    i,
+                    vim.inspect(line)
+                )
                 local name = parse_vim_ex_command_name(line)
                 results[name] = {
                     name = name,
                     loc = {
-                        help_doc,
+                        filename = help_doc,
                         lineno = i,
                     },
                 }
@@ -482,13 +474,10 @@ local function parse_ex_command_output()
     return results
 end
 
---- @param bufnr integer?
 --- @return table<string, VimCommand>
-local function get_vim_user_commands(bufnr)
+local function get_vim_user_commands()
     local parsed_ex_commands = parse_ex_command_output()
-    local user_commands = bufnr
-            and vim.api.nvim_buf_get_commands(bufnr, { builtin = false })
-        or vim.api.nvim_get_commands({ builtin = false })
+    local user_commands = vim.api.nvim_get_commands({ builtin = false })
 
     log.debug(
         "|fzfx.config - get_vim_user_commands| user commands:%s",
@@ -627,16 +616,17 @@ end
 --- @alias VimCommandLocation {filename:string,lineno:integer}
 --- @alias VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,range:string?,complete:string?,complete_arg:string?,desc:string?}
 --- @alias VimCommand {name:string,loc:VimCommandLocation?,opts:VimCommandOptions}
---- @param bufnr integer?
+--- @param no_ex_commands boolean?
+--- @param no_user_commands boolean?
 --- @return VimCommand[]
-local function get_vim_commands(bufnr)
+local function get_vim_commands(no_ex_commands, no_user_commands)
     local results = {}
-    local ex_commands = get_vim_ex_commands()
+    local ex_commands = no_ex_commands and {} or get_vim_ex_commands()
     log.debug(
         "|fzfx.config - get_vim_commands| ex commands:%s",
         vim.inspect(ex_commands)
     )
-    local user_commands = get_vim_user_commands(bufnr)
+    local user_commands = no_user_commands and {} or get_vim_user_commands()
     log.debug(
         "|fzfx.config - get_vim_commands| user commands:%s",
         vim.inspect(user_commands)
@@ -669,10 +659,24 @@ local function vim_commands_context_maker()
     return ctx
 end
 
---- @param ctx {bufnr:integer,name_width:integer,opts_width:integer}
+--- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_commands_provider(ctx)
-    local commands = get_vim_commands(ctx.bufnr)
+    local commands = get_vim_commands()
+    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+end
+
+--- @param ctx VimCommandsPipelineContext
+--- @return string[]
+local function vim_ex_commands_provider(ctx)
+    local commands = get_vim_commands(nil, true)
+    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+end
+
+--- @param ctx VimCommandsPipelineContext
+--- @return string[]
+local function vim_user_commands_provider(ctx)
+    local commands = get_vim_commands(true)
     return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
@@ -2263,15 +2267,26 @@ local Defaults = {
                 default_provider = "all_commands",
             },
             {
-                name = "FzfxCommandsB",
+                name = "FzfxCommandsE",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
                     complete = "dir",
-                    desc = "Find vim commands on current buffer",
+                    desc = "Find vim ex(builtin) commands",
                 },
-                default_provider = "buffer_commands",
+                default_provider = "ex_commands",
+            },
+            {
+                name = "FzfxCommandsU",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find vim user commands",
+                },
+                default_provider = "user_commands",
             },
             -- visual
             {
@@ -2285,14 +2300,24 @@ local Defaults = {
                 default_provider = "all_commands",
             },
             {
-                name = "FzfxCommandsBV",
+                name = "FzfxCommandsEV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
-                    desc = "Find vim commands on current buffer by visual select",
+                    desc = "Find vim ex(builtin) commands by visual select",
                 },
-                default_provider = "buffer_commands",
+                default_provider = "ex_commands",
+            },
+            {
+                name = "FzfxCommandsUV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find vim user commands by visual select",
+                },
+                default_provider = "uesr_commands",
             },
             -- cword
             {
@@ -2305,13 +2330,22 @@ local Defaults = {
                 default_provider = "all_commands",
             },
             {
-                name = "FzfxCommandsBW",
+                name = "FzfxCommandsEW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
-                    desc = "Find vim commands on current buffer by cursor word",
+                    desc = "Find vim ex(builtin) commands by cursor word",
                 },
-                default_provider = "buffer_commands",
+                default_provider = "ex_commands",
+            },
+            {
+                name = "FzfxCommandsUW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find vim user commands by cursor word",
+                },
+                default_provider = "user_commands",
             },
             -- put
             {
@@ -2324,13 +2358,22 @@ local Defaults = {
                 default_provider = "all_commands",
             },
             {
-                name = "FzfxCommandsBP",
+                name = "FzfxCommandsEP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
-                    desc = "Find vim commands on current buffer by yank text",
+                    desc = "Find vim ex(builtin) commands by yank text",
                 },
-                default_provider = "buffer_commands",
+                default_provider = "ex_commands",
+            },
+            {
+                name = "FzfxCommandsUP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find vim user commands by yank text",
+                },
+                default_provider = "user_commands",
             },
         },
         providers = {
@@ -2339,23 +2382,25 @@ local Defaults = {
                 --- @param query string
                 --- @param context VimCommandsPipelineContext
                 provider = function(query, context)
-                    return vim_commands_provider({
-                        name_width = context.name_width,
-                        opts_width = context.opts_width,
-                    })
+                    return vim_commands_provider(context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
-            buffer_commands = {
+            ex_commands = {
+                key = "ctrl-e",
+                --- @param query string
+                --- @param context VimCommandsPipelineContext
+                provider = function(query, context)
+                    return vim_ex_commands_provider(context)
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            },
+            user_commands = {
                 key = "ctrl-u",
                 --- @param query string
                 --- @param context VimCommandsPipelineContext
                 provider = function(query, context)
-                    return vim_commands_provider({
-                        name_width = context.name_width,
-                        opts_width = context.opts_width,
-                        bufnr = context.bufnr,
-                    })
+                    return vim_user_commands_provider(context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
@@ -2365,7 +2410,11 @@ local Defaults = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
-            buffer_commands = {
+            ex_commands = {
+                previewer = vim_commands_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+            user_commands = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
