@@ -235,4 +235,77 @@ describe("line_helpers", function()
             end
         end)
     end)
+    describe("[parse_vim_commands]", function()
+        local VIM_COMMANDS_HEADER =
+            "Name              Bang|Bar|Nargs|Range|Complete         Desc/Location"
+        local CONTEXT = {
+            name_width = 17,
+            opts_width = 37,
+        }
+
+        it("parse ex commands with locations", function()
+            local lines = {
+                ":                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1121",
+                ":!                N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1122",
+                ":Next             N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124",
+            }
+            for _, line in ipairs(lines) do
+                local last_space = utils.string_rfind(line, " ")
+                local expect_splits =
+                    utils.string_split(line:sub(last_space + 1), ":")
+                local actual = line_helpers.parse_vim_commands(line, CONTEXT)
+                assert_eq(type(actual), "table")
+                assert_eq(
+                    actual.filename,
+                    vim.fn.expand(path.normalize(expect_splits[1]))
+                )
+                assert_eq(actual.lineno, tonumber(expect_splits[2]))
+            end
+        end)
+        it("parse ex commands with description", function()
+            local lines = {
+                ':bdelete          N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
+            }
+            for _, line in ipairs(lines) do
+                local double_quote_before_last =
+                    utils.string_rfind(line, '"', #line - 1)
+                local expect = vim.trim(line:sub(double_quote_before_last))
+                local actual = line_helpers.parse_vim_commands(line, CONTEXT)
+                assert_eq(type(actual), "string")
+                assert_eq(actual, expect)
+            end
+        end)
+        it("parse user commands with location", function()
+            local lines = {
+                "FzfxCommands      Y   |Y  |N/A  |N/A  |N/A              ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:120",
+                "FzfxFiles         Y   |Y  |N/A  |N/A  |N/A              ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:120",
+                "Barbecue          Y   |Y  |N/A  |N/A  |N/A              ~/.config/nvim/lazy/barbecue/lua/barbecue.lua:73",
+            }
+            for _, line in ipairs(lines) do
+                local last_space = utils.string_rfind(line, " ")
+                local expect_splits =
+                    utils.string_split(line:sub(last_space + 1), ":")
+                local actual = line_helpers.parse_vim_commands(line, CONTEXT)
+                assert_eq(type(actual), "table")
+                assert_eq(
+                    actual.filename,
+                    vim.fn.expand(path.normalize(expect_splits[1]))
+                )
+                assert_eq(actual.lineno, tonumber(expect_splits[2]))
+            end
+        end)
+        it("parse user commands with description", function()
+            local lines = {
+                'Bdelete           N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
+            }
+            for _, line in ipairs(lines) do
+                local double_quote_before_last =
+                    utils.string_rfind(line, '"', #line - 1)
+                local expect = vim.trim(line:sub(double_quote_before_last))
+                local actual = line_helpers.parse_vim_commands(line, CONTEXT)
+                assert_eq(type(actual), "string")
+                assert_eq(actual, expect)
+            end
+        end)
+    end)
 end)
