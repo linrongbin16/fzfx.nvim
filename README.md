@@ -289,7 +289,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `--` to pass raw options to search command (grep, rg)</td>
+    <td rowspan="4">1. Use `--` to pass raw options to search command (grep/rg).</td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(U)V</td>
@@ -329,7 +329,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Git files in current directory variant is named with `C` suffix<br></td>
+    <td rowspan="4">1. Git files in current directory variant is named with `C` suffix.</td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -349,7 +349,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Remote git branch variant is named with 'R' suffix<br>2. Use `enter` to checkout branch</td>
+    <td rowspan="4">1. Remote git branch variant is named with 'R' suffix.<br>2. Use `enter` to checkout branch.</td>
   </tr>
   <tr>
     <td>FzfxGBranches(R)V</td>
@@ -369,7 +369,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to copy commit SHA</td>
+    <td rowspan="4">1. Use `enter` to copy git commit SHA.</td>
   </tr>
   <tr>
     <td>FzfxGCommits(B)V</td>
@@ -389,7 +389,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to copy commit SHA</td>
+    <td rowspan="4">1. Use `enter` to copy commit SHA.</td>
   </tr>
   <tr>
     <td>FzfxGBlameV</td>
@@ -409,7 +409,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Vim ex(builtin) commands variant is named with 'E' suffix<br>2. Vim user commands variant is named with 'U' suffix<br>3. Use `enter` to input vim command</td>
+    <td rowspan="4">1. Vim ex(builtin) commands variant is named with 'E' suffix.<br>2. Vim user commands variant is named with 'U' suffix.<br>3. Use `enter` to input vim command.</td>
   </tr>
   <tr>
     <td>FzfxCommands(E/U)V</td>
