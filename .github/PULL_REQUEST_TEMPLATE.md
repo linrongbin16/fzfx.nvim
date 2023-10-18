@@ -45,6 +45,11 @@
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to copy commit hash.
+- [ ] FzfxCommands
+  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-U`/`CTRL-E`/`CTRL-A` to switch between user/ex/all vim commands.
+  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Press `ESC` to quit, `ENTER` to feed vim command.
 - [ ] FzfxLspDiagnostics
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current buffer diagnostics.
