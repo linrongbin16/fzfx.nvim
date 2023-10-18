@@ -2421,11 +2421,11 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_find,
-            ["double-click"] = require("fzfx.actions").edit_find,
+            ["enter"] = require("fzfx.actions").input_vim_command,
+            ["double-click"] = require("fzfx.actions").input_vim_command,
         },
         fzf_opts = {
-            default_fzf_options.multi,
+            default_fzf_options.no_multi,
             "--header-lines=1",
             { "--preview-window", "~1" },
             { "--prompt", "Commands > " },
