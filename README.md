@@ -16,6 +16,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 
 > Search `fzfx` with rg's `-g *ch.lua` option.
 
+## Table of contents
+
 - [Feature](#-feature)
 - [Requirement](#-requirement)
   - [Windows](#windows)
@@ -234,11 +236,6 @@ Commands are named following below rules:
 - The yank text variant is named with `P` suffix (just like press the `p` key).
 - The only current buffer variant is named with `B` suffix.
 
-Especially for git commands:
-
-- The remote git branch variant is named with `R` suffix.
-- The git files in current directory variant is named with `C` suffix.
-
 > Note: command names can be configured, see [Configuration](#-configuration).
 
 ### Bind Keys
@@ -294,7 +291,7 @@ Especially for git commands:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `--` to pass raw options to search command (grep, rg)</td>
+    <td rowspan="4">1. Use `--` to pass raw options to search command (grep/rg).</td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(U)V</td>
@@ -334,7 +331,7 @@ Especially for git commands:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
+    <td rowspan="4">1. Git files in current directory variant is named with `C` suffix.</td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -354,7 +351,7 @@ Especially for git commands:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to checkout branch</td>
+    <td rowspan="4">1. Remote git branch variant is named with 'R' suffix.<br>2. Use `enter` to checkout branch.</td>
   </tr>
   <tr>
     <td>FzfxGBranches(R)V</td>
@@ -374,7 +371,7 @@ Especially for git commands:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to copy commit SHA</td>
+    <td rowspan="4">1. Use `enter` to copy git commit SHA.</td>
   </tr>
   <tr>
     <td>FzfxGCommits(B)V</td>
@@ -394,7 +391,7 @@ Especially for git commands:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to copy commit SHA</td>
+    <td rowspan="4">1. Use `enter` to copy commit SHA.</td>
   </tr>
   <tr>
     <td>FzfxGBlameV</td>
@@ -406,6 +403,26 @@ Especially for git commands:
   </tr>
   <tr>
     <td>FzfxGBlameP</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td rowspan="4">Vim Commands</td>
+    <td>FzfxCommands(E/U)</td>
+    <td>N</td>
+    <td rowspan="4">No</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Vim ex(builtin) commands variant is named with 'E' suffix.<br>2. Vim user commands variant is named with 'U' suffix.<br>3. Use `enter` to input vim command.</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)P</td>
     <td>N</td>
   </tr>
   <tr>
@@ -557,6 +574,11 @@ xnoremap <space>gb :\<C-U>FzfxGBlameV<CR>
 nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
 " by yank text
 nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
+
+" ======== vim commands ========
+
+" vim commands
+nnoremap <space>cm :\<C-U>FzfxCommands<CR>
 
 " ======== lsp diagnostics ========
 
@@ -719,6 +741,12 @@ vim.keymap.set('n', '<space>wgb',
 vim.keymap.set('n', '<space>pgb',
         '<cmd>FzfxGBlameP<cr>',
         {silent=true, noremap=true, desc="Search git blame by yank text"})
+
+-- ======== vim commands ========
+
+-- vim commands
+vim.keymap.set('n', '<space>cm', '<cmd>FzfxCommands<cr>',
+        {silent=true, noremap=true, desc="Search vim commands"})
 
 -- ======== lsp diagnostics ========
 

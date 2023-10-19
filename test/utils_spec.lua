@@ -102,6 +102,45 @@ describe("utils", function()
             assert_eq(utils.string_find("--", "---", 1), nil)
         end)
     end)
+    describe("[string_rfind]", function()
+        it("found", function()
+            assert_eq(utils.string_rfind("abcdefg", "a"), 1)
+            assert_eq(utils.string_rfind("abcdefg", "a", 1), 1)
+            assert_eq(utils.string_rfind("abcdefg", "a", 7), 1)
+            assert_eq(utils.string_rfind("abcdefg", "a", 2), 1)
+            assert_eq(utils.string_rfind("abcdefg", "g"), 7)
+            assert_eq(utils.string_rfind("abcdefg", "g", 7), 7)
+            assert_eq(utils.string_rfind("fzfx -- -w -g *.lua", "--"), 6)
+            assert_eq(utils.string_rfind("fzfx -- -w -g *.lua", "--", 6), 6)
+            assert_eq(utils.string_rfind("fzfx -- -w -g *.lua", "--", 7), 6)
+            assert_eq(utils.string_rfind("fzfx -- -w -g *.lua", "--", 8), 6)
+            assert_eq(utils.string_rfind("fzfx -w -- -g *.lua", "--"), 9)
+            assert_eq(utils.string_rfind("fzfx -w -- -g *.lua", "--", 10), 9)
+            assert_eq(utils.string_rfind("fzfx -w -- -g *.lua", "--", 9), 9)
+            assert_eq(utils.string_rfind("fzfx -w -- -g *.lua", "--", 10), 9)
+            assert_eq(utils.string_rfind("fzfx -w -- -g *.lua", "--", 11), 9)
+            assert_eq(utils.string_rfind("fzfx -w ---g *.lua", "--", 9), 9)
+            assert_eq(utils.string_rfind("fzfx -w ---g *.lua", "--", 10), 10)
+            assert_eq(utils.string_rfind("fzfx -w ---g *.lua", "--", 11), 10)
+        end)
+        it("not found", function()
+            assert_eq(utils.string_rfind("abcdefg", "a", 0), nil)
+            assert_eq(utils.string_rfind("abcdefg", "a", -1), nil)
+            assert_eq(utils.string_rfind("abcdefg", "g", 6), nil)
+            assert_eq(utils.string_rfind("abcdefg", "g", 5), nil)
+            assert_eq(utils.string_rfind("fzfx -- -w -g *.lua", "--", 5), nil)
+            assert_eq(utils.string_rfind("fzfx -- -w -g *.lua", "--", 4), nil)
+            assert_eq(utils.string_rfind("fzfx -- -w -g *.lua", "--", 1), nil)
+            assert_eq(utils.string_rfind("fzfx -w -- -g *.lua", "--", 8), nil)
+            assert_eq(utils.string_rfind("fzfx -w -- -g *.lua", "--", 7), nil)
+            assert_eq(utils.string_rfind("fzfx -w ---g *.lua", "--", 8), nil)
+            assert_eq(utils.string_rfind("fzfx -w ---g *.lua", "--", 7), nil)
+            assert_eq(utils.string_rfind("", "--"), nil)
+            assert_eq(utils.string_rfind("", "--", 1), nil)
+            assert_eq(utils.string_rfind("-", "--"), nil)
+            assert_eq(utils.string_rfind("--", "---", 1), nil)
+        end)
+    end)
     describe("[string_ltrim/string_rtrim]", function()
         it("trim left", function()
             assert_eq(utils.string_ltrim("asdf"), "asdf")
@@ -571,6 +610,143 @@ describe("utils", function()
             assert_eq(utils.list_index(10, -10), 1)
             assert_eq(utils.list_index(10, -3), 8)
             assert_eq(utils.list_index(10, -5), 6)
+        end)
+    end)
+    describe("[string_isxxx]", function()
+        local function contains_char(s, c)
+            assert(string.len(s) > 0)
+            assert(string.len(c) == 1)
+            for i = 1, #s do
+                if string.byte(s, i) == string.byte(c, 1) then
+                    return true
+                end
+            end
+            return false
+        end
+
+        local function contains_code(s, c)
+            for _, i in ipairs(s) do
+                if i == c then
+                    return true
+                end
+            end
+            return false
+        end
+
+        it("isspace", function()
+            local whitespaces = "\r\n \t"
+            local char_codes = { 11, 12 }
+            for i = 1, 255 do
+                if
+                    contains_char(whitespaces, string.char(i))
+                    or contains_code(char_codes, i)
+                then
+                    assert_true(utils.string_isspace(string.char(i)))
+                else
+                    print(
+                        string.format(
+                            "isspace: %d: %s\n",
+                            i,
+                            vim.inspect(utils.string_isspace(string.char(i)))
+                        )
+                    )
+                    assert_false(utils.string_isspace(string.char(i)))
+                end
+            end
+        end)
+        it("isalpha", function()
+            local a = "a"
+            local z = "z"
+            local A = "A"
+            local Z = "Z"
+            for i = 1, 255 do
+                if
+                    (i >= string.byte(a) and i <= string.byte(z))
+                    or (i >= string.byte(A) and i <= string.byte(Z))
+                then
+                    assert_true(utils.string_isalpha(string.char(i)))
+                else
+                    assert_false(utils.string_isalpha(string.char(i)))
+                end
+            end
+        end)
+        it("isdigit", function()
+            local _0 = "0"
+            local _9 = "9"
+            for i = 1, 255 do
+                if i >= string.byte(_0) and i <= string.byte(_9) then
+                    assert_true(utils.string_isdigit(string.char(i)))
+                else
+                    assert_false(utils.string_isdigit(string.char(i)))
+                end
+            end
+        end)
+        it("isalnum", function()
+            local a = "a"
+            local z = "z"
+            local A = "A"
+            local Z = "Z"
+            local _0 = "0"
+            local _9 = "9"
+            for i = 1, 255 do
+                if
+                    (i >= string.byte(a) and i <= string.byte(z))
+                    or (i >= string.byte(A) and i <= string.byte(Z))
+                    or (i >= string.byte(_0) and i <= string.byte(_9))
+                then
+                    assert_true(utils.string_isalnum(string.char(i)))
+                else
+                    assert_false(utils.string_isalnum(string.char(i)))
+                end
+            end
+        end)
+        it("ishex", function()
+            local a = "a"
+            local f = "f"
+            local A = "A"
+            local F = "F"
+            local _0 = "0"
+            local _9 = "9"
+            for i = 1, 255 do
+                if
+                    (i >= string.byte(a) and i <= string.byte(f))
+                    or (i >= string.byte(A) and i <= string.byte(F))
+                    or (i >= string.byte(_0) and i <= string.byte(_9))
+                then
+                    assert_true(utils.string_ishex(string.char(i)))
+                else
+                    print(
+                        string.format(
+                            "ishex, %d:%s\n",
+                            i,
+                            vim.inspect(utils.string_ishex(string.char(i)))
+                        )
+                    )
+                    assert_false(utils.string_ishex(string.char(i)))
+                end
+            end
+        end)
+        it("islower", function()
+            local a = "a"
+            local z = "z"
+            for i = 1, 255 do
+                if i >= string.byte(a) and i <= string.byte(z) then
+                    assert_true(utils.string_islower(string.char(i)))
+                else
+                    assert_false(utils.string_islower(string.char(i)))
+                end
+            end
+        end)
+        it("isupper", function()
+            local A = "A"
+            local Z = "Z"
+            for i = 1, 255 do
+                if i >= string.byte(A) and i <= string.byte(Z) then
+                    assert_true(utils.string_isupper(string.char(i)))
+                else
+                    assert_false(utils.string_isupper(string.char(i)))
+                end
+            end
         end)
     end)
 end)

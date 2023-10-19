@@ -1,6 +1,7 @@
 local log = require("fzfx.log")
 local path = require("fzfx.path")
 local line_helpers = require("fzfx.line_helpers")
+local utils = require("fzfx.utils")
 
 --- @param lines string[]
 --- @return nil
@@ -266,6 +267,22 @@ local function setqflist_grep(lines)
     })
 end
 
+local function feed_vim_command(lines)
+    for _, line in ipairs(lines) do
+        for i = 1, #line do
+            local c = line:sub(i, i)
+            if utils.string_isspace(c) then
+                local input = vim.trim(line:sub(1, i - 1))
+                if utils.string_startswith(input, ":") then
+                    input = input:sub(2)
+                end
+                vim.cmd(string.format([[ call feedkeys(':%s', 'n') ]], input))
+                return
+            end
+        end
+    end
+end
+
 local M = {
     nop = nop,
     _make_edit_find_commands = _make_edit_find_commands,
@@ -285,6 +302,7 @@ local M = {
     bdelete = bdelete,
     git_checkout = git_checkout,
     yank_git_commit = yank_git_commit,
+    feed_vim_command = feed_vim_command,
     setqflist_find = setqflist_find,
     setqflist_rg = setqflist_rg,
     setqflist_grep = setqflist_grep,

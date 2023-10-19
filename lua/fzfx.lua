@@ -59,6 +59,9 @@ local function setup(options)
     -- git blame
     general.setup("git_blame", configs.git_blame)
 
+    -- vim commands
+    general.setup("commands", configs.commands)
+
     -- lsp diagnostics
     general.setup("lsp_diagnostics", configs.lsp_diagnostics)
 

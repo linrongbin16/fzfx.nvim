@@ -337,11 +337,11 @@ describe("actions", function()
         it("set grep results without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
             local lines = {
-                "~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10:83: ok ok",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81:3: local query = 'hello'",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4:1: print('goodbye world')",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3:10: hello world",
+                "~/github/linrongbin16/fzfx.nvim/README.md:1:hello world",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10: ok ok",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81: local query = 'hello'",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4: print('goodbye world')",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3: hello world",
             }
             local actual = actions._make_setqflist_grep_items(lines)
             assert_eq(type(actual), "table")
@@ -359,11 +359,11 @@ describe("actions", function()
         it("set grep results with prepend icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
             local lines = {
-                " ~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10:83: ok ok",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81:3: local query = 'hello'",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4:1: print('goodbye world')",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3:10: hello world",
+                " ~/github/linrongbin16/fzfx.nvim/README.md:1:hello world",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10: ok ok",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81: local query = 'hello'",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4: print('goodbye world')",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3: hello world",
             }
             local actual = actions._make_setqflist_grep_items(lines)
             assert_eq(type(actual), "table")
@@ -377,6 +377,14 @@ describe("actions", function()
                 assert_eq(act.col, 1)
                 assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
             end
+        end)
+    end)
+    describe("[feed_vim_command]", function()
+        it("feedkeys", function()
+            local actual = actions.feed_vim_command({
+                ":FzfxCommands    Y | N | N/A  ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:215",
+            })
+            assert_true(actual == nil)
         end)
     end)
 end)

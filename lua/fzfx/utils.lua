@@ -74,10 +74,10 @@ local function string_not_empty(s)
 end
 
 --- @param s string
---- @param c string
+--- @param t string
 --- @param start integer?
 --- @return integer?
-local function string_find(s, c, start)
+local function string_find(s, t, start)
     -- start = start or 1
     -- local result = vim.fn.stridx(s, c, start - 1)
     -- return result >= 0 and (result + 1) or nil
@@ -85,13 +85,44 @@ local function string_find(s, c, start)
     start = start or 1
     for i = start, #s do
         local match = true
-        for j = 1, #c do
+        for j = 1, #t do
             if i + j - 1 > #s then
                 match = false
                 break
             end
             local a = string.byte(s, i + j - 1)
-            local b = string.byte(c, j)
+            local b = string.byte(t, j)
+            if a ~= b then
+                match = false
+                break
+            end
+        end
+        if match then
+            return i
+        end
+    end
+    return nil
+end
+
+--- @param s string
+--- @param t string
+--- @param rstart integer?
+--- @return integer?
+local function string_rfind(s, t, rstart)
+    -- rstart = rstart or 1
+    -- local result = vim.fn.strridx(s, c, rstart - 1)
+    -- return result >= 0 and (result + 1) or nil
+
+    rstart = rstart or #s
+    for i = rstart, 1, -1 do
+        local match = true
+        for j = 1, #t do
+            if i + j - 1 > #s then
+                match = false
+                break
+            end
+            local a = string.byte(s, i + j - 1)
+            local b = string.byte(t, j)
             if a ~= b then
                 match = false
                 break
@@ -184,6 +215,55 @@ local function string_endswith(s, c)
         return false
     end
     return s:sub(start_pos, end_pos) == c
+end
+
+--- @param s string
+--- @return boolean
+local function string_isspace(s)
+    assert(string.len(s) == 1)
+    return s:match("%s") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_isalnum(s)
+    assert(string.len(s) == 1)
+    return s:match("%w") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_isdigit(s)
+    assert(string.len(s) == 1)
+    return s:match("%d") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_ishex(s)
+    assert(string.len(s) == 1)
+    return s:match("%x") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_isalpha(s)
+    assert(string.len(s) == 1)
+    return s:match("%a") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_islower(s)
+    assert(string.len(s) == 1)
+    return s:match("%l") ~= nil
+end
+
+--- @param s string
+--- @return boolean
+local function string_isupper(s)
+    assert(string.len(s) == 1)
+    return s:match("%u") ~= nil
 end
 
 --- @param left number?
@@ -738,11 +818,19 @@ local M = {
     string_empty = string_empty,
     string_not_empty = string_not_empty,
     string_find = string_find,
+    string_rfind = string_rfind,
     string_ltrim = string_ltrim,
     string_rtrim = string_rtrim,
     string_split = string_split,
     string_startswith = string_startswith,
     string_endswith = string_endswith,
+    string_isspace = string_isspace,
+    string_isalnum = string_isalnum,
+    string_isdigit = string_isdigit,
+    string_ishex = string_ishex,
+    string_isalpha = string_isalpha,
+    string_islower = string_islower,
+    string_isupper = string_isupper,
     number_bound = number_bound,
     list_index = list_index,
     parse_flag_query = parse_flag_query,
