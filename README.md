@@ -441,7 +441,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Remote git branch variant is named with 'R' suffix.
+- Remote git branch variant is named with `R` suffix.
 
 ### Git Commits
 
