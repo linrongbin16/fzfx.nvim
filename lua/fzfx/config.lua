@@ -1534,6 +1534,9 @@ local Defaults = {
             ["double-click"] = constants.has_rg
                     and require("fzfx.actions").edit_rg
                 or require("fzfx.actions").edit_grep,
+            ["ctrl-q"] = constants.has_rg
+                    and require("fzfx.actions").setqflist_rg
+                or require("fzfx.actions").setqflist_grep,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1641,6 +1644,7 @@ local Defaults = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_find,
             ["double-click"] = require("fzfx.actions").edit_find,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1766,6 +1770,7 @@ local Defaults = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_find,
             ["double-click"] = require("fzfx.actions").edit_find,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -2567,6 +2572,7 @@ local Defaults = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_rg,
             ["double-click"] = require("fzfx.actions").edit_rg,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,
