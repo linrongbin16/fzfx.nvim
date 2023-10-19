@@ -271,7 +271,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxFiles(U)V</td>
@@ -291,7 +291,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `--` to pass raw options to search command (grep/rg).</td>
+    <td rowspan="4">1. Use `--` to pass raw options to search command (grep/rg).<br>2. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(U)V</td>
@@ -311,7 +311,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxBuffersV</td>
@@ -331,7 +331,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Git files in current directory variant is named with `C` suffix.</td>
+    <td rowspan="4">1. Git files in current directory variant is named with `C` suffix.<br>2. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -431,7 +431,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxLspDiagnostics(B)V</td>
