@@ -269,7 +269,7 @@ local function get_vim_ex_commands()
                 results[name] = {
                     name = name,
                     loc = {
-                        filename = help_doc,
+                        filename = path.reduce2home(help_doc),
                         lineno = i,
                     },
                 }
@@ -716,12 +716,13 @@ end
 --- @param context VimCommandsPipelineContext
 --- @return string[]|nil
 local function vim_commands_previewer(line, context)
-    log.debug(
-        "|fzfx.config - vim_commands_previewer| line:%s, context:%s",
-        vim.inspect(line),
-        vim.inspect(context)
-    )
     local desc_or_loc = line_helpers.parse_vim_commands(line, context)
+    log.debug(
+        "|fzfx.config - vim_commands_previewer| line:%s, context:%s, desc_or_loc:%s",
+        vim.inspect(line),
+        vim.inspect(context),
+        vim.inspect(desc_or_loc)
+    )
     if
         type(desc_or_loc) == "table"
         and type(desc_or_loc.filename) == "string"

@@ -130,16 +130,35 @@ local parse_eza = constants.is_windows and make_parse_ls(5) or make_parse_ls(6)
 --- @param context VimCommandsPipelineContext
 --- @return {filename:string,lineno:integer}|string
 local function parse_vim_commands(line, context)
+    -- local log = require("fzfx.log")
+
     local desc_or_loc =
-        vim.trim(line:sub(context.name_width + 1 + context.opts_width + 1))
+        vim.trim(line:sub(context.name_width + 1 + context.opts_width + 1 + 1))
+    -- log.debug(
+    --     "|fzfx.line_helpers - parse_vim_commands| desc_or_loc:%s",
+    --     vim.inspect(desc_or_loc)
+    -- )
     if
         string.len(desc_or_loc) > 0
         and not utils.string_startswith(desc_or_loc, '"')
         and not utils.string_endswith(desc_or_loc, '"')
     then
-        local splits = utils.string_split(desc_or_loc, ":")
+        local split_pos = utils.string_rfind(desc_or_loc, ":")
+        local splits = {
+            desc_or_loc:sub(1, split_pos - 1),
+            desc_or_loc:sub(split_pos + 1),
+        }
+        -- log.debug(
+        --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
+        --     vim.inspect(splits)
+        -- )
         local filename = vim.fn.expand(path.normalize(splits[1]))
         local lineno = tonumber(splits[2])
+        -- log.debug(
+        --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
+        --     vim.inspect(filename),
+        --     vim.inspect(lineno)
+        -- )
         return { filename = filename, lineno = lineno }
     else
         return desc_or_loc
