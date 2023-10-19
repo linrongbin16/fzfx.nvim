@@ -487,7 +487,7 @@ local function get_vim_user_commands()
     local results = {}
     for name, opts in pairs(user_commands) do
         results[name] = {
-            name = opts.name,
+            name = string.format(":%s", opts.name),
             opts = {
                 bang = opts.bang,
                 bar = opts.bar,
