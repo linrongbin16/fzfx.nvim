@@ -403,7 +403,15 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_launch_exit)
                     vim.inspect(action_callback)
                 )
             else
-                action_callback(action_lines, context)
+                local ok, cb_err = pcall(action_callback, action_lines, context)
+                if not ok then
+                    log.throw(
+                        "error! failed to run action on callback(%s) with lines(%s)! %s",
+                        vim.inspect(action_callback),
+                        vim.inspect(action_lines),
+                        vim.inspect(cb_err)
+                    )
+                end
             end
         else
             log.err("unknown action key: %s", vim.inspect(action_key))
