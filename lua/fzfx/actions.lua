@@ -158,32 +158,53 @@ local function bdelete(line)
     end
 end
 
-local function git_checkout(lines)
-    log.debug("|fzfx.actions - git_checkout| lines:%s", vim.inspect(lines))
+--- @param lines string[]
+--- @return string
+local function _make_git_checkout_command(lines)
+    log.debug(
+        "|fzfx.actions - _make_git_checkout_command| lines:%s",
+        vim.inspect(lines)
+    )
 
-    --- @param l string
-    ---@param p string
-    local function remove_prefix(l, p)
-        local n = #p
-        if string.len(l) > n and l:sub(1, n) == p then
-            return l:sub(n + 1, #l)
-        end
-        return l
+    --- @param s string
+    --- @param t string
+    --- @return string
+    local function _try_remove_prefix(s, t)
+        return utils.string_startswith(s, t) and s:sub(#t + 1) or s
     end
 
     if type(lines) == "table" and #lines > 0 then
-        local last_line = vim.trim(lines[#lines])
-        if type(last_line) == "string" and string.len(last_line) > 0 then
-            last_line = remove_prefix(last_line, "origin/")
-            local arrow_pos = vim.fn.stridx(last_line, "->")
-            if arrow_pos >= 0 then
+        local line = vim.trim(lines[#lines])
+        if type(line) == "string" and string.len(line) > 0 then
+            -- `git branch -a` output looks like:
+            --   main
+            -- * my-plugin-dev
+            --   remotes/origin/HEAD -> origin/main
+            --   remotes/origin/main
+            --   remotes/origin/my-plugin-dev
+            line = _try_remove_prefix(line, "remotes/origin/")
+
+            -- `git branch -r` output looks like:
+            -- origin/HEAD -> origin/main
+            -- origin/main
+            -- origin/my-plugin-dev
+            line = _try_remove_prefix(line, "origin/")
+            local arrow_pos = utils.string_find(line, "->")
+            if type(arrow_pos) == "number" and arrow_pos >= 0 then
                 arrow_pos = arrow_pos + 1 + 2
-                last_line = vim.trim(last_line:sub(arrow_pos, #last_line))
+                line = vim.trim(line:sub(arrow_pos))
             end
-            last_line = remove_prefix(last_line, "origin/")
-            vim.cmd(vim.trim(string.format([[ !git checkout %s ]], last_line)))
+            line = _try_remove_prefix(line, "origin/")
+
+            return vim.trim(string.format([[ !git checkout %s ]], line))
         end
     end
+end
+
+--- @param lines string[]
+local function git_checkout(lines)
+    local checkout_command = _make_git_checkout_command(lines)
+    vim.cmd(checkout_command)
 end
 
 local function yank_git_commit(lines)
@@ -288,9 +309,6 @@ local M = {
     _make_edit_find_commands = _make_edit_find_commands,
     _make_edit_grep_commands = _make_edit_grep_commands,
     _make_edit_rg_commands = _make_edit_rg_commands,
-    _make_setqflist_find_items = _make_setqflist_find_items,
-    _make_setqflist_rg_items = _make_setqflist_rg_items,
-    _make_setqflist_grep_items = _make_setqflist_grep_items,
     edit = edit,
     edit_find = edit_find,
     edit_buffers = edit_buffers,
@@ -300,9 +318,13 @@ local M = {
     edit_grep = edit_grep,
     buffer = buffer,
     bdelete = bdelete,
+    _make_git_checkout_command = _make_git_checkout_command,
     git_checkout = git_checkout,
     yank_git_commit = yank_git_commit,
     feed_vim_command = feed_vim_command,
+    _make_setqflist_find_items = _make_setqflist_find_items,
+    _make_setqflist_rg_items = _make_setqflist_rg_items,
+    _make_setqflist_grep_items = _make_setqflist_grep_items,
     setqflist_find = setqflist_find,
     setqflist_rg = setqflist_rg,
     setqflist_grep = setqflist_grep,

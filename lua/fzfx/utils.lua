@@ -79,7 +79,7 @@ end
 --- @return integer?
 local function string_find(s, t, start)
     -- start = start or 1
-    -- local result = vim.fn.stridx(s, c, start - 1)
+    -- local result = vim.fn.stridx(s, t, start - 1)
     -- return result >= 0 and (result + 1) or nil
 
     start = start or 1
@@ -110,7 +110,7 @@ end
 --- @return integer?
 local function string_rfind(s, t, rstart)
     -- rstart = rstart or 1
-    -- local result = vim.fn.strridx(s, c, rstart - 1)
+    -- local result = vim.fn.strridx(s, t, rstart - 1)
     -- return result >= 0 and (result + 1) or nil
 
     rstart = rstart or #s
@@ -196,25 +196,25 @@ local function string_split(s, delimiter, opts)
 end
 
 --- @param s string
---- @param c string
-local function string_startswith(s, c)
+--- @param t string
+local function string_startswith(s, t)
     local start_pos = 1
-    local end_pos = #c
+    local end_pos = #t
     if start_pos > end_pos then
         return false
     end
-    return s:sub(start_pos, end_pos) == c
+    return s:sub(start_pos, end_pos) == t
 end
 
 --- @param s string
---- @param c string
-local function string_endswith(s, c)
-    local start_pos = #s - #c + 1
+--- @param t string
+local function string_endswith(s, t)
+    local start_pos = #s - #t + 1
     local end_pos = #s
     if start_pos > end_pos then
         return false
     end
-    return s:sub(start_pos, end_pos) == c
+    return s:sub(start_pos, end_pos) == t
 end
 
 --- @param s string

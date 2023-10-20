@@ -387,4 +387,88 @@ describe("actions", function()
             assert_true(actual == nil)
         end)
     end)
+    describe("[_make_git_checkout_command]", function()
+        it("checkout local git branch", function()
+            local lines = {
+                "main",
+                "master",
+                "my-plugin-dev",
+                "test-config1",
+            }
+            for _, line in ipairs(lines) do
+                assert_eq(
+                    string.format("!git checkout %s", line),
+                    actions._make_git_checkout_command({ line })
+                )
+            end
+        end)
+        it("checkout remote git branch", function()
+            local lines = {
+                "origin/HEAD -> origin/main",
+                "origin/main",
+                "origin/my-plugin-dev",
+                "origin/ci-fix-create-tags",
+                "origin/ci-verbose",
+                "origin/docs-table",
+                "origin/feat-setqflist",
+                "origin/feat-vim-commands",
+                "origin/main",
+                "origin/release-please--branches--main--components--fzfx.nvim",
+            }
+            for i, line in ipairs(lines) do
+                if utils.string_find(line, "origin/main") then
+                    local actual = actions._make_git_checkout_command({ line })
+                    print(
+                        string.format("git checkout remote[%d]:%s\n", i, actual)
+                    )
+                    assert_eq(string.format("!git checkout main"), actual)
+                else
+                    assert_eq(
+                        string.format(
+                            "!git checkout %s",
+                            line:sub(string.len("origin/") + 1)
+                        ),
+                        actions._make_git_checkout_command({ line })
+                    )
+                end
+            end
+        end)
+        it("checkout all git branch", function()
+            local lines = {
+                "main",
+                "my-plugin-dev",
+                "remotes/origin/HEAD -> origin/main",
+                "remotes/origin/main",
+                "remotes/origin/my-plugin-dev",
+                "remotes/origin/ci-fix-create-tags",
+                "remotes/origin/ci-verbose",
+            }
+            for i, line in ipairs(lines) do
+                if utils.string_find(line, "main") then
+                    assert_eq(
+                        string.format("!git checkout main"),
+                        actions._make_git_checkout_command({ line })
+                    )
+                else
+                    local actual = actions._make_git_checkout_command({ line })
+                    print(string.format("git checkout all[%d]:%s\n", i, actual))
+                    local split_pos = utils.string_find(line, "remotes/origin/")
+                    if split_pos then
+                        assert_eq(
+                            string.format(
+                                "!git checkout %s",
+                                line:sub(string.len("remotes/origin/") + 1)
+                            ),
+                            actual
+                        )
+                    else
+                        assert_eq(
+                            string.format("!git checkout %s", line),
+                            actual
+                        )
+                    end
+                end
+            end
+        end)
+    end)
 end)
