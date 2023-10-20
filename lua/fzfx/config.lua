@@ -1927,7 +1927,6 @@ local Defaults = {
                             )
                         end
                     end
-
                     return branch_results
                 end,
                 provider_type = ProviderTypeEnum.LIST,
@@ -1976,7 +1975,6 @@ local Defaults = {
                             )
                         end
                     end
-
                     return branch_results
                 end,
                 provider_type = ProviderTypeEnum.LIST,
