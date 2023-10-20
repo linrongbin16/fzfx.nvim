@@ -264,14 +264,14 @@ Commands are named following below rules:
 
 ### Files
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -299,14 +299,14 @@ Commands are named following below rules:
 
 ### Live Grep
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -336,14 +336,14 @@ Commands are named following below rules:
 
 ### Buffers
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -371,14 +371,14 @@ Commands are named following below rules:
 
 ### Git Files
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -408,14 +408,14 @@ Commands are named following below rules:
 
 ### Git Branches
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -445,14 +445,14 @@ Commands are named following below rules:
 
 ### Git Commits
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -480,14 +480,14 @@ Commands are named following below rules:
 
 ### Git Blame
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -515,14 +515,14 @@ Commands are named following below rules:
 
 ### (Vim) Commands
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -553,14 +553,14 @@ Commands are named following below rules:
 
 ### Lsp Diagnostics
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -588,14 +588,14 @@ Commands are named following below rules:
 
 ### Lsp Symbols
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -623,14 +623,14 @@ Commands are named following below rules:
 
 ### File Explorer
 
-<table>
+<table style="width: 100%">
 <thead>
   <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th style="width: 25%">Command</th>
+    <th style="width: 8%">Mode</th>
+    <th style="width: 8%">Multi Keys</th>
+    <th style="width: 8%">Preview Keys</th>
+    <th style="width: 51%">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
