@@ -159,7 +159,7 @@ local function bdelete(line)
 end
 
 --- @param lines string[]
---- @return string
+--- @return string?
 local function _make_git_checkout_command(lines)
     log.debug(
         "|fzfx.actions - _make_git_checkout_command| lines:%s",
@@ -203,7 +203,7 @@ end
 
 --- @param lines string[]
 local function git_checkout(lines)
-    local checkout_command = _make_git_checkout_command(lines)
+    local checkout_command = _make_git_checkout_command(lines) --[[@as string]]
     vim.cmd(checkout_command)
 end
 
