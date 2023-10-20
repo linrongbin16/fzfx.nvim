@@ -134,6 +134,7 @@ local function buffer(lines)
     return edit_find(lines)
 end
 
+--- @deprecated
 --- @param line string?
 local function bdelete(line)
     local list_bufnrs = vim.api.nvim_list_bufs()
@@ -204,9 +205,8 @@ local function _make_setqflist_find_items(lines)
     return qflist
 end
 
---- @param lines string|string[]
+--- @param lines string[]
 local function setqflist_find(lines)
-    lines = type(lines) == "string" and { lines } or lines
     local qflist = _make_setqflist_find_items(lines --[[@as table]])
     vim.cmd([[ :copen ]])
     vim.fn.setqflist({}, " ", {
@@ -233,7 +233,6 @@ end
 
 --- @param lines string[]
 local function setqflist_rg(lines)
-    lines = type(lines) == "string" and { lines } or lines
     local qflist = _make_setqflist_rg_items(lines)
     vim.cmd([[ :copen ]])
     vim.fn.setqflist({}, " ", {
@@ -260,7 +259,6 @@ end
 
 --- @param lines string[]
 local function setqflist_grep(lines)
-    lines = type(lines) == "string" and { lines } or lines
     local qflist = _make_setqflist_grep_items(lines)
     vim.cmd([[ :copen ]])
     vim.fn.setqflist({}, " ", {

@@ -1636,7 +1636,22 @@ local Defaults = {
         interactions = {
             delete_buffer = {
                 key = "ctrl-d",
-                interaction = require("fzfx.actions").bdelete,
+                interaction = function(line)
+                    local list_bufnrs = vim.api.nvim_list_bufs()
+                    local list_bufpaths = {}
+                    for _, bufnr in ipairs(list_bufnrs) do
+                        local bufpath =
+                            path.reduce(vim.api.nvim_buf_get_name(bufnr))
+                        list_bufpaths[bufpath] = bufnr
+                    end
+                    if type(line) == "string" and string.len(line) > 0 then
+                        local bufpath = line_helpers.parse_find(line)
+                        local bufnr = list_bufpaths[bufpath]
+                        if type(bufnr) == "number" then
+                            vim.api.nvim_buf_delete(bufnr, {})
+                        end
+                    end
+                end,
                 reload_after_execute = true,
             },
         },
