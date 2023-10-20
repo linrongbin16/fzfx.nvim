@@ -383,23 +383,23 @@ Commands are named following below rules:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGFiles(C)</td>
-    <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
+    <td width="30%">FzfxGFiles(C)</td>
+    <td width="8%">N</td>
+    <td width="8%" rowspan="4">Yes</td>
+    <td width="8%" rowspan="4">Yes</td>
+    <td width="46%" rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)V</td>
-    <td>V</td>
+    <td width="30%">FzfxGFiles(C)V</td>
+    <td width="8%">V</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)W</td>
-    <td>N</td>
+    <td width="30%">FzfxGFiles(C)W</td>
+    <td width="8%">N</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)P</td>
-    <td>N</td>
+    <td width="30%">FzfxGFiles(C)P</td>
+    <td width="8%">N</td>
   </tr>
 </tbody>
 </table>
