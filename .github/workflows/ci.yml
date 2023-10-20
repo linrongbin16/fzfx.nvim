@@ -103,7 +103,7 @@ jobs:
           release-type: simple
           package-name: fzfx.nvim
           command: github-release
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Create tags
         if: ${{ steps.release.outputs.release_created }}
         run: |
