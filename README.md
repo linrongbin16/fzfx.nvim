@@ -1,11 +1,5 @@
 <!-- markdownlint-disable MD013 MD034 MD033 -->
 
-<style>
-    table {
-        width: 100%;
-    }
-</style>
-
 # fzfx.nvim
 
 <p align="center">
@@ -270,14 +264,14 @@ Commands are named following below rules:
 
 ### Files
 
-<table style="width: 100%;">
+<table style="width: 100% !important;">
 <thead>
   <tr>
-    <th style="width: 25%;">Command</th>
-    <th style="width: 8%;">Mode</th>
-    <th style="width: 8%;">Multi Keys</th>
-    <th style="width: 8%;">Preview Keys</th>
-    <th style="width: 51%">Exit Keys</th>
+    <th style="width: 30 !important;">Command</th>
+    <th style="width: 8% !important;">Mode</th>
+    <th style="width: 8% !important;">Multi Keys</th>
+    <th style="width: 8% !important;">Preview Keys</th>
+    <th style="width: 46 !important;">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
@@ -629,14 +623,14 @@ Commands are named following below rules:
 
 ### File Explorer
 
-<table style="width: 100%;">
+<table style="width: 100% !important;">
 <thead>
   <tr>
-    <th style="width: 25%">Command</th>
-    <th style="width: 8%">Mode</th>
-    <th style="width: 8%">Multi Keys</th>
-    <th style="width: 8%">Preview Keys</th>
-    <th style="width: 51%">Exit Keys</th>
+    <th style="width: 30 !important;">Command</th>
+    <th style="width: 8% !important;">Mode</th>
+    <th style="width: 8% !important;">Multi Keys</th>
+    <th style="width: 8% !important;">Preview Keys</th>
+    <th style="width: 46 !important;">Exit Keys</th>
   </tr>
 </thead>
 <tbody>
