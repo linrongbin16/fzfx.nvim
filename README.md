@@ -371,8 +371,8 @@ Commands are named following below rules:
 
 ### Git Files
 
-<table style="width: 100%">
-<thead style="width: 100%">
+<table style="width: 100% !important">
+<thead style="width: 100% !important">
   <tr>
     <th width="30%">Command</th>
     <th width="8%">Mode</th>
@@ -381,7 +381,7 @@ Commands are named following below rules:
     <th width="46%">Exit Keys</th>
   </tr>
 </thead>
-<tbody style="width: 100%">
+<tbody style="width: 100% !important">
   <tr>
     <td width="30%">FzfxGFiles(C)</td>
     <td width="8%">N</td>
@@ -398,8 +398,8 @@ Commands are named following below rules:
     <td width="8%">N</td>
   </tr>
   <tr>
-    <td style="width: 30%">FzfxGFiles(C)P</td>
-    <td style="width: 8%">N</td>
+    <td style="width: 30% !important">FzfxGFiles(C)P</td>
+    <td style="width: 8% !important">N</td>
   </tr>
 </tbody>
 </table>
