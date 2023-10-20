@@ -305,7 +305,7 @@ Commands are named following below rules:
 
 ### Live Grep
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <thead>
   <tr>
     <th style="width: 25%">Command</th>
@@ -342,7 +342,7 @@ Commands are named following below rules:
 
 ### Buffers
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <thead>
   <tr>
     <th style="width: 25%">Command</th>
@@ -377,7 +377,7 @@ Commands are named following below rules:
 
 ### Git Files
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <thead>
   <tr>
     <th style="width: 25%">Command</th>
@@ -414,7 +414,7 @@ Commands are named following below rules:
 
 ### Git Branches
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <thead>
   <tr>
     <th style="width: 25%">Command</th>
@@ -451,7 +451,7 @@ Commands are named following below rules:
 
 ### Git Commits
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <thead>
   <tr>
     <th style="width: 25%">Command</th>
@@ -486,7 +486,7 @@ Commands are named following below rules:
 
 ### Git Blame
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <thead>
   <tr>
     <th style="width: 25%">Command</th>
@@ -521,7 +521,7 @@ Commands are named following below rules:
 
 ### (Vim) Commands
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <thead>
   <tr>
     <th style="width: 25%">Command</th>
@@ -559,7 +559,7 @@ Commands are named following below rules:
 
 ### Lsp Diagnostics
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <thead>
   <tr>
     <th style="width: 25%">Command</th>
@@ -594,7 +594,7 @@ Commands are named following below rules:
 
 ### Lsp Symbols
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <thead>
   <tr>
     <th style="width: 25%">Command</th>
@@ -629,7 +629,7 @@ Commands are named following below rules:
 
 ### File Explorer
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <thead>
   <tr>
     <th style="width: 25%">Command</th>
