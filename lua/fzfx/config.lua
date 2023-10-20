@@ -1396,6 +1396,7 @@ local Defaults = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_find,
             ["double-click"] = require("fzfx.actions").edit_find,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1533,6 +1534,9 @@ local Defaults = {
             ["double-click"] = constants.has_rg
                     and require("fzfx.actions").edit_rg
                 or require("fzfx.actions").edit_grep,
+            ["ctrl-q"] = constants.has_rg
+                    and require("fzfx.actions").setqflist_rg
+                or require("fzfx.actions").setqflist_grep,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1632,7 +1636,22 @@ local Defaults = {
         interactions = {
             delete_buffer = {
                 key = "ctrl-d",
-                interaction = require("fzfx.actions").bdelete,
+                interaction = function(line)
+                    local list_bufnrs = vim.api.nvim_list_bufs()
+                    local list_bufpaths = {}
+                    for _, bufnr in ipairs(list_bufnrs) do
+                        local bufpath =
+                            path.reduce(vim.api.nvim_buf_get_name(bufnr))
+                        list_bufpaths[bufpath] = bufnr
+                    end
+                    if type(line) == "string" and string.len(line) > 0 then
+                        local bufpath = line_helpers.parse_find(line)
+                        local bufnr = list_bufpaths[bufpath]
+                        if type(bufnr) == "number" then
+                            vim.api.nvim_buf_delete(bufnr, {})
+                        end
+                    end
+                end,
                 reload_after_execute = true,
             },
         },
@@ -1640,6 +1659,7 @@ local Defaults = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_find,
             ["double-click"] = require("fzfx.actions").edit_find,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -1765,6 +1785,7 @@ local Defaults = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_find,
             ["double-click"] = require("fzfx.actions").edit_find,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -2566,6 +2587,7 @@ local Defaults = {
             ["esc"] = require("fzfx.actions").nop,
             ["enter"] = require("fzfx.actions").edit_rg,
             ["double-click"] = require("fzfx.actions").edit_rg,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_rg,
         },
         fzf_opts = {
             default_fzf_options.multi,

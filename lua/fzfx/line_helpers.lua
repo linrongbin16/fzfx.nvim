@@ -25,24 +25,26 @@ end
 -- parse lines from grep.
 --- @param line string
 --- @param opts {no_icon:boolean?}?
---- @return {filename:string,lineno:integer}
+--- @return {filename:string,lineno:integer,text:string}
 local function parse_grep(line, opts)
     local splits = utils.string_split(line, ":")
     local filename = parse_find(splits[1], opts)
     local lineno = tonumber(splits[2])
-    return { filename = filename, lineno = lineno }
+    local text = #splits >= 3 and splits[3] or ""
+    return { filename = filename, lineno = lineno, text = text }
 end
 
 -- parse lines from rg.
 --- @param line string
 --- @param opts {no_icon:boolean?}?
---- @return {filename:string,lineno:integer,column:integer}
+--- @return {filename:string,lineno:integer,column:integer,text:string}
 local function parse_rg(line, opts)
     local splits = utils.string_split(line, ":")
     local filename = parse_find(splits[1], opts)
     local lineno = tonumber(splits[2])
-    local column = #splits >= 3 and tonumber(splits[3]) or nil
-    return { filename = filename, lineno = lineno, column = column }
+    local column = tonumber(splits[3])
+    local text = #splits >= 4 and splits[4] or ""
+    return { filename = filename, lineno = lineno, column = column, text = text }
 end
 
 -- parse lines from ls/eza/exa.

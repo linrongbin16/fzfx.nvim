@@ -27,8 +27,17 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#-commands)
-  - [Naming Rules](#naming-rules)
-  - [Bind Keys](#bind-keys)
+  - [Files](#files)
+  - [Live Grep](#live-grep)
+  - [Buffers](#buffers)
+  - [Git Files](#git-files)
+  - [Git Branches](#git-branches)
+  - [Git Commits](#git-commits)
+  - [Git Blame](#git-blame)
+  - [(Vim) Commands](#vim-commands)
+  - [Lsp Diagnostics](#lsp-diagnostics)
+  - [Lsp Symbols](#lsp-symbols)
+  - [File Explorer](#file-explorer)
 - [Recommended Key Mappings](#-recommended-key-mappings)
   - [Vimscript](#vimscript)
   - [Lua](#lua)
@@ -253,25 +262,25 @@ Commands are named following below rules:
 
 > Note: builtin keys can be configured, see [Configuration](#-configuration).
 
+### Files
+
 <table>
 <thead>
   <tr>
-    <th>Group</th>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Key?</th>
-    <th>Preview Key?</th>
-    <th>Hints</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
   </tr>
 </thead>
 <tbody>
   <tr>
-    <td rowspan="4">Files</td>
     <td>FzfxFiles(U)</td>
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxFiles(U)V</td>
@@ -285,13 +294,28 @@ Commands are named following below rules:
     <td>FzfxFiles(U)P</td>
     <td>N</td>
   </tr>
+</tbody>
+</table>
+
+### Live Grep
+
+<table>
+<thead>
   <tr>
-    <td rowspan="4">Live Grep</td>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
     <td>FzfxLiveGrep(U)</td>
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `--` to pass raw options to search command (grep/rg).</td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.<br></td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(U)V</td>
@@ -305,13 +329,30 @@ Commands are named following below rules:
     <td>FzfxLiveGrep(U)P</td>
     <td>N</td>
   </tr>
+</tbody>
+</table>
+
+- Use `--` to pass raw options to search command (grep/rg).
+
+### Buffers
+
+<table>
+<thead>
   <tr>
-    <td rowspan="4">Buffers</td>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
     <td>FzfxBuffers</td>
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxBuffersV</td>
@@ -325,13 +366,28 @@ Commands are named following below rules:
     <td>FzfxBuffersP</td>
     <td>N</td>
   </tr>
+</tbody>
+</table>
+
+### Git Files
+
+<table>
+<thead>
   <tr>
-    <td rowspan="4">Git Files</td>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
     <td>FzfxGFiles(C)</td>
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Git files in current directory variant is named with `C` suffix.</td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -345,13 +401,30 @@ Commands are named following below rules:
     <td>FzfxGFiles(C)P</td>
     <td>N</td>
   </tr>
+</tbody>
+</table>
+
+- Git files in current directory variant is named with `C` suffix.
+
+### Git Branches
+
+<table>
+<thead>
   <tr>
-    <td rowspan="4">Git Branches</td>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
     <td>FzfxGBranches(R)</td>
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Remote git branch variant is named with 'R' suffix.<br>2. Use `enter` to checkout branch.</td>
+    <td rowspan="4">1. Use `enter` to checkout branch.</td>
   </tr>
   <tr>
     <td>FzfxGBranches(R)V</td>
@@ -365,8 +438,25 @@ Commands are named following below rules:
     <td>FzfxGBranches(R)P</td>
     <td>N</td>
   </tr>
+</tbody>
+</table>
+
+- Remote git branch variant is named with `R` suffix.
+
+### Git Commits
+
+<table>
+<thead>
   <tr>
-    <td rowspan="4">Git Commits</td>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
     <td>FzfxGCommits(B)</td>
     <td>N</td>
     <td rowspan="4">No</td>
@@ -385,8 +475,23 @@ Commands are named following below rules:
     <td>FzfxGCommits(B)P</td>
     <td>N</td>
   </tr>
+</tbody>
+</table>
+
+### Git Blame
+
+<table>
+<thead>
   <tr>
-    <td rowspan="4">Git Blame</td>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
     <td>FzfxGBlame</td>
     <td>N</td>
     <td rowspan="4">No</td>
@@ -405,13 +510,28 @@ Commands are named following below rules:
     <td>FzfxGBlameP</td>
     <td>N</td>
   </tr>
+</tbody>
+</table>
+
+### (Vim) Commands
+
+<table>
+<thead>
   <tr>
-    <td rowspan="4">Vim Commands</td>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
     <td>FzfxCommands(E/U)</td>
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Vim ex(builtin) commands variant is named with 'E' suffix.<br>2. Vim user commands variant is named with 'U' suffix.<br>3. Use `enter` to input vim command.</td>
+    <td rowspan="4">1. Use `enter` to input vim command.</td>
   </tr>
   <tr>
     <td>FzfxCommands(E/U)V</td>
@@ -425,13 +545,31 @@ Commands are named following below rules:
     <td>FzfxCommands(E/U)P</td>
     <td>N</td>
   </tr>
+</tbody>
+</table>
+
+- Vim ex(builtin) commands variant is named with 'E' suffix.
+- Vim user commands variant is named with 'U' suffix.
+
+### Lsp Diagnostics
+
+<table>
+<thead>
   <tr>
-    <td rowspan="4">Lsp Diagnostics</td>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
     <td>FzfxLspDiagnostics(B)</td>
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxLspDiagnostics(B)V</td>
@@ -445,8 +583,23 @@ Commands are named following below rules:
     <td>FzfxLspDiagnostics(B)P</td>
     <td>N</td>
   </tr>
+</tbody>
+</table>
+
+### Lsp Symbols
+
+<table>
+<thead>
   <tr>
-    <td rowspan="4">Lsp Symbols</td>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
     <td>FzfxLspDefinitions</td>
     <td>N</td>
     <td rowspan="4">Yes</td>
@@ -465,8 +618,23 @@ Commands are named following below rules:
     <td>FzfxLspImplementations</td>
     <td>N</td>
   </tr>
+</tbody>
+</table>
+
+### File Explorer
+
+<table>
+<thead>
   <tr>
-    <td rowspan="4">File Explorer</td>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
     <td>FzfxFileExplorer(U)</td>
     <td>N</td>
     <td rowspan="4">Yes</td>

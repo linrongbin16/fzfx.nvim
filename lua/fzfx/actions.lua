@@ -134,6 +134,7 @@ local function buffer(lines)
     return edit_find(lines)
 end
 
+--- @deprecated
 --- @param line string?
 local function bdelete(line)
     local list_bufnrs = vim.api.nvim_list_bufs()
@@ -194,6 +195,78 @@ local function yank_git_commit(lines)
 end
 
 --- @param lines string[]
+--- @return {filename:string,lnum:integer,col:integer}[]
+local function _make_setqflist_find_items(lines)
+    local qflist = {}
+    for _, line in ipairs(lines) do
+        local filename = line_helpers.parse_find(line)
+        table.insert(qflist, { filename = filename, lnum = 1, col = 1 })
+    end
+    return qflist
+end
+
+--- @param lines string[]
+local function setqflist_find(lines)
+    local qflist = _make_setqflist_find_items(lines --[[@as table]])
+    vim.cmd([[ :copen ]])
+    vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qflist,
+    })
+end
+
+--- @param lines string[]
+--- @return {filename:string,lnum:integer,col:integer,text:string}[]
+local function _make_setqflist_rg_items(lines)
+    local qflist = {}
+    for _, line in ipairs(lines) do
+        local parsed = line_helpers.parse_rg(line)
+        table.insert(qflist, {
+            filename = parsed.filename,
+            lnum = parsed.lineno,
+            col = parsed.column,
+            text = parsed.text,
+        })
+    end
+    return qflist
+end
+
+--- @param lines string[]
+local function setqflist_rg(lines)
+    local qflist = _make_setqflist_rg_items(lines)
+    vim.cmd([[ :copen ]])
+    vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qflist,
+    })
+end
+
+--- @param lines string[]
+--- @return {filename:string,lnum:integer,col:integer,text:string}[]
+local function _make_setqflist_grep_items(lines)
+    local qflist = {}
+    for _, line in ipairs(lines) do
+        local parsed = line_helpers.parse_grep(line)
+        table.insert(qflist, {
+            filename = parsed.filename,
+            lnum = parsed.lineno,
+            col = 1,
+            text = parsed.text,
+        })
+    end
+    return qflist
+end
+
+--- @param lines string[]
+local function setqflist_grep(lines)
+    local qflist = _make_setqflist_grep_items(lines)
+    vim.cmd([[ :copen ]])
+    vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qflist,
+    })
+end
+
 local function feed_vim_command(lines)
     for _, line in ipairs(lines) do
         for i = 1, #line do
@@ -215,6 +288,9 @@ local M = {
     _make_edit_find_commands = _make_edit_find_commands,
     _make_edit_grep_commands = _make_edit_grep_commands,
     _make_edit_rg_commands = _make_edit_rg_commands,
+    _make_setqflist_find_items = _make_setqflist_find_items,
+    _make_setqflist_rg_items = _make_setqflist_rg_items,
+    _make_setqflist_grep_items = _make_setqflist_grep_items,
     edit = edit,
     edit_find = edit_find,
     edit_buffers = edit_buffers,
@@ -227,6 +303,9 @@ local M = {
     git_checkout = git_checkout,
     yank_git_commit = yank_git_commit,
     feed_vim_command = feed_vim_command,
+    setqflist_find = setqflist_find,
+    setqflist_rg = setqflist_rg,
+    setqflist_grep = setqflist_grep,
 }
 
 return M
