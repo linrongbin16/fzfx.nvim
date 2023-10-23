@@ -17,15 +17,11 @@ if #_G.arg >= 2 then
 end
 shell_helpers.log_debug("SOCKET_ADDRESS:%s", vim.inspect(SOCKET_ADDRESS))
 shell_helpers.log_debug("registry_id:%s", vim.inspect(registry_id))
-shell_helpers.log_debug("params:%s", vim.inspect(params))
+shell_helpers.log_debug("params:%s",                    vim.inspect(params))
 
 local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
 shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
-shell_helpers.log_ensure(
-    channel_id > 0,
-    "|fzfx.bin.rpc.client| error! failed to connect socket on SOCKET_ADDRESS:%s",
-    vim.inspect(SOCKET_ADDRESS)
-)
+shell_helpers.log_ensure( channel_id > 0, "|fzfx.bin.rpc.client| error! failed to connect socket on SOCKET_ADDRESS:%s", vim.inspect(SOCKET_ADDRESS))
 vim.rpcrequest(
     channel_id,
     "nvim_exec_lua",
