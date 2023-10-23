@@ -33,16 +33,21 @@ jobs:
           level: Information
           configpath: ".luarc.json"
           neodev-version: stable
+      - name: Luacheck
+        uses: lunarmodules/luacheck@v1
+        with:
+          args: lua --config .luacheckrc
       - name: Stylua
         uses: JohnnyMorganz/stylua-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
-          args: --config-path .stylua.toml --color always --check .
-      - name: Luacheck
-        uses: lunarmodules/luacheck@v1
+          args: --config-path .stylua.toml --color always ./
+      - name: Format with stylua
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          args: lua --config .luacheckrc
+          commit_message: "chore(pr): format with stylua"
   unit_test:
     name: Unit Test
     strategy:
