@@ -36,7 +36,7 @@ local function setup(name)
         "%s%s%s",
         vim.fn.stdpath("data"),
         PATH_SEPARATOR,
-        string.format("fzfx_shell_helpers_%s.log", name)
+        string.format("fzfx_bin_%s.log", name)
     )
 end
 
