@@ -34,9 +34,9 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [Git Branches](#git-branches)
   - [Git Commits](#git-commits)
   - [Git Blame](#git-blame)
-  - [(Vim) Commands](#vim-commands)
   - [Lsp Diagnostics](#lsp-diagnostics)
   - [Lsp Symbols](#lsp-symbols)
+  - [(Vim) Commands](#vim-commands)
   - [File Explorer](#file-explorer)
 - [Recommended Key Mappings](#-recommended-key-mappings)
   - [Vimscript](#vimscript)
@@ -513,44 +513,6 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### (Vim) Commands
-
-<table>
-<thead>
-  <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>FzfxCommands(E/U)</td>
-    <td>N</td>
-    <td rowspan="4">No</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to input vim command.</td>
-  </tr>
-  <tr>
-    <td>FzfxCommands(E/U)V</td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td>FzfxCommands(E/U)W</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxCommands(E/U)P</td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-- Vim ex(builtin) commands variant is named with 'E' suffix.
-- Vim user commands variant is named with 'U' suffix.
-
 ### Lsp Diagnostics
 
 <table>
@@ -620,6 +582,44 @@ Commands are named following below rules:
   </tr>
 </tbody>
 </table>
+
+### (Vim) Commands
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Exit Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxCommands(E/U)</td>
+    <td>N</td>
+    <td rowspan="4">No</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `enter` to input vim command.</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)P</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+- Vim ex(builtin) commands variant is named with 'E' suffix.
+- Vim user commands variant is named with 'U' suffix.
 
 ### File Explorer
 
