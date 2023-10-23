@@ -30,8 +30,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [Files & Buffers](#files--buffers)
   - [Grep](#grep)
   - [Git](#git)
-  - [Diagnostics](#diagnostics)
-  - [Lsp Symbols](#lsp-symbols)
+  - [Lsp & Diagnostics](#lsp--diagnostics)
   - [Vim](#vim)
   - [File Explorer](#file-explorer)
 - [Recommended Key Mappings](#-recommended-key-mappings)
@@ -509,42 +508,9 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Diagnostics
+### Lsp & Diagnostics
 
-<table>
-<thead>
-  <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Hint</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>FzfxLspDiagnostics(B)</td>
-    <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
-  </tr>
-  <tr>
-    <td>FzfxLspDiagnostics(B)V</td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td>FzfxLspDiagnostics(B)W</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLspDiagnostics(B)P</td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-### Lsp Symbols
+- Symbols
 
 <table>
 <thead>
@@ -574,6 +540,41 @@ Commands are named following below rules:
   </tr>
   <tr>
     <td>FzfxLspImplementations</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+- Diagnostics
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Hint</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxLspDiagnostics(B)</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)P</td>
     <td>N</td>
   </tr>
 </tbody>
