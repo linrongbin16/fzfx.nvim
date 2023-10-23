@@ -27,16 +27,12 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#-commands)
-  - [Files](#files)
-  - [Live Grep](#live-grep)
-  - [Buffers](#buffers)
-  - [Git Files](#git-files)
-  - [Git Branches](#git-branches)
-  - [Git Commits](#git-commits)
-  - [Git Blame](#git-blame)
-  - [Lsp Diagnostics](#lsp-diagnostics)
+  - [Files & Buffers](#files--buffers)
+  - [Grep](#grep)
+  - [Git](#git)
+  - [Diagnostics](#diagnostics)
   - [Lsp Symbols](#lsp-symbols)
-  - [(Vim) Commands](#vim-commands)
+  - [Vim](#vim)
   - [File Explorer](#file-explorer)
 - [Recommended Key Mappings](#-recommended-key-mappings)
   - [Vimscript](#vimscript)
@@ -262,7 +258,9 @@ Commands are named following below rules:
 
 > Note: builtin keys can be configured, see [Configuration](#-configuration).
 
-### Files
+### Files & Buffers
+
+- Files
 
 <table>
 <thead>
@@ -271,7 +269,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -297,7 +295,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Live Grep
+- Buffers
 
 <table>
 <thead>
@@ -306,44 +304,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>FzfxLiveGrep(U)</td>
-    <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.<br></td>
-  </tr>
-  <tr>
-    <td>FzfxLiveGrep(U)V</td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td>FzfxLiveGrep(U)W</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLiveGrep(U)P</td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-- Use `--` to pass raw options to search command (grep/rg).
-
-### Buffers
-
-<table>
-<thead>
-  <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -369,7 +330,9 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Git Files
+### Grep
+
+- Live Grep
 
 <table>
 <thead>
@@ -378,7 +341,44 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxLiveGrep(U)</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.<br>2. Use `--` to pass raw options to search command (grep/rg).</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(U)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(U)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(U)P</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+### Git
+
+- Git Files
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -387,7 +387,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.<br>2. Git files in current directory variant is named with `C` suffix.</td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -404,9 +404,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git files in current directory variant is named with `C` suffix.
-
-### Git Branches
+- Git Branches
 
 <table>
 <thead>
@@ -415,7 +413,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -424,7 +422,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to checkout branch.</td>
+    <td rowspan="4">1. Use `enter` to checkout branch.<br>2. Remote git branch variant is named with `R` suffix.</td>
   </tr>
   <tr>
     <td>FzfxGBranches(R)V</td>
@@ -441,9 +439,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Remote git branch variant is named with `R` suffix.
-
-### Git Commits
+- Git Commits
 
 <table>
 <thead>
@@ -452,7 +448,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -478,7 +474,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Git Blame
+- Git Blame
 
 <table>
 <thead>
@@ -487,7 +483,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -513,7 +509,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Lsp Diagnostics
+### Diagnostics
 
 <table>
 <thead>
@@ -522,7 +518,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -557,7 +553,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -583,7 +579,9 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### (Vim) Commands
+### Vim
+
+- Commands
 
 <table>
 <thead>
@@ -592,7 +590,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -601,7 +599,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to input vim command.</td>
+    <td rowspan="4">1. Use `enter` to input vim command.<br>2. Ex(builtin) commands variant is named with 'E' suffix.<br>3. User commands variant is named with 'U' suffix.</td>
   </tr>
   <tr>
     <td>FzfxCommands(E/U)V</td>
@@ -618,9 +616,6 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Vim ex(builtin) commands variant is named with 'E' suffix.
-- Vim user commands variant is named with 'U' suffix.
-
 ### File Explorer
 
 <table>
@@ -630,7 +625,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
