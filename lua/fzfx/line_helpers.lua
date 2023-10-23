@@ -167,79 +167,10 @@ local function parse_vim_command(line, context)
     end
 end
 
--- the ':verbose map' output looks like:
---
---```
---n  K           *@<Cmd>lua vim.lsp.buf.hover()<CR>
---                Show hover
---                Last set from Lua
---n  [w          *@<Lua 1213: ~/.config/nvim/lua/builtin/lsp.lua:60>
---                Previous diagnostic warning
---                Last set from Lua
---n  [e          *@<Lua 1211: ~/.config/nvim/lua/builtin/lsp.lua:60>
---                 Previous diagnostic error
---                 Last set from Lua
---n  [d          *@<Lua 1209: ~/.config/nvim/lua/builtin/lsp.lua:60>
---                 Previous diagnostic item
---                 Last set from Lua
---x  \ca         *@<Cmd>lua vim.lsp.buf.range_code_action()<CR>
---                 Code actions
---n  <CR>        *@<Lua 961: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
---                 Last set from Lua
---n  <Esc>       *@<Lua 998: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
---                 Last set from Lua
---n  .           *@<Lua 977: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
---                 Last set from Lua
---n  <           *@<Lua 987: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
---                 Last set from Lua
---```
 --- @param line string
+--- @param context VimKeyMapsPipelineContext
 --- @return {lhs:string,filename:string?,lineno:integer?}
-local function parse_vim_keymap(line)
-    local first_space_pos = 1
-    while
-        first_space_pos <= #line
-        and not utils.string_isspace(line:sub(first_space_pos, first_space_pos))
-    do
-        first_space_pos = first_space_pos + 1
-    end
-    -- local mode = vim.trim(line:sub(1, first_space_pos - 1))
-    while
-        first_space_pos <= #line
-        and utils.string_isspace(line:sub(first_space_pos, first_space_pos))
-    do
-        first_space_pos = first_space_pos + 1
-    end
-    local second_space_pos = first_space_pos
-    while
-        second_space_pos <= #line
-        and not utils.string_isspace(
-            line:sub(second_space_pos, second_space_pos)
-        )
-    do
-        second_space_pos = second_space_pos + 1
-    end
-    local lhs = vim.trim(line:sub(first_space_pos, second_space_pos - 1))
-    local result = { lhs = lhs }
-
-    local rhs_or_location = vim.trim(line:sub(second_space_pos))
-    local lua_definition_pos = utils.string_find(rhs_or_location, "<Lua ")
-
-    if lua_definition_pos and utils.string_endswith(rhs_or_location, ">") then
-        local first_colon_pos = utils.string_find(
-            rhs_or_location,
-            ":",
-            lua_definition_pos + string.len("<Lua ")
-        ) --[[@as integer]]
-        local last_colon_pos = utils.string_rfind(rhs_or_location, ":") --[[@as integer]]
-        local filename =
-            rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
-        local lineno = rhs_or_location:sub(last_colon_pos + 1)
-        result.filename = vim.fn.expand(path.normalize(filename))
-        result.lineno = tonumber(lineno)
-    end
-    return result
-end
+local function parse_vim_keymap(line, context) end
 
 local M = {
     parse_find = parse_find,

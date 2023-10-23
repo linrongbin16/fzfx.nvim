@@ -1155,9 +1155,84 @@ end
 --                 Last set from Lua
 --x  \ca         *@<Cmd>lua vim.lsp.buf.range_code_action()<CR>
 --                 Code actions
+--n  <CR>        *@<Lua 961: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+--                 Last set from Lua
+--n  <Esc>       *@<Lua 998: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+--                 Last set from Lua
+--n  .           *@<Lua 977: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+--                 Last set from Lua
+--n  <           *@<Lua 987: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+--                 Last set from Lua
 --```
---- @return table<string, VimKeyMap>
-local function parse_ex_map_output()
+--- @param line string
+--- @return {lhs:string,filename:string?,lineno:integer?}
+local function parse_ex_map_output_line(line)
+    local first_space_pos = 1
+    while
+        first_space_pos <= #line
+        and not utils.string_isspace(line:sub(first_space_pos, first_space_pos))
+    do
+        first_space_pos = first_space_pos + 1
+    end
+    -- local mode = vim.trim(line:sub(1, first_space_pos - 1))
+    while
+        first_space_pos <= #line
+        and utils.string_isspace(line:sub(first_space_pos, first_space_pos))
+    do
+        first_space_pos = first_space_pos + 1
+    end
+    local second_space_pos = first_space_pos
+    while
+        second_space_pos <= #line
+        and not utils.string_isspace(
+            line:sub(second_space_pos, second_space_pos)
+        )
+    do
+        second_space_pos = second_space_pos + 1
+    end
+    local lhs = vim.trim(line:sub(first_space_pos, second_space_pos - 1))
+    local result = { lhs = lhs }
+
+    local rhs_or_location = vim.trim(line:sub(second_space_pos))
+    local lua_definition_pos = utils.string_find(rhs_or_location, "<Lua ")
+
+    if lua_definition_pos and utils.string_endswith(rhs_or_location, ">") then
+        local first_colon_pos = utils.string_find(
+            rhs_or_location,
+            ":",
+            lua_definition_pos + string.len("<Lua ")
+        ) --[[@as integer]]
+        local last_colon_pos = utils.string_rfind(rhs_or_location, ":") --[[@as integer]]
+        local filename =
+            rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
+        local lineno = rhs_or_location:sub(last_colon_pos + 1)
+        result.filename = vim.fn.expand(path.normalize(filename))
+        result.lineno = tonumber(lineno)
+    end
+    return result
+end
+
+-- the ':verbose map' output looks like:
+--
+--```
+--n  K           *@<Cmd>lua vim.lsp.buf.hover()<CR>
+--                Show hover
+--                Last set from Lua
+--n  [w          *@<Lua 1213: ~/.config/nvim/lua/builtin/lsp.lua:60>
+--                Previous diagnostic warning
+--                Last set from Lua
+--n  [e          *@<Lua 1211: ~/.config/nvim/lua/builtin/lsp.lua:60>
+--                 Previous diagnostic error
+--                 Last set from Lua
+--n  [d          *@<Lua 1209: ~/.config/nvim/lua/builtin/lsp.lua:60>
+--                 Previous diagnostic item
+--                 Last set from Lua
+--x  \ca         *@<Cmd>lua vim.lsp.buf.range_code_action()<CR>
+--                 Code actions
+--```
+--- @alias VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
+--- @return VimKeyMap[]
+local function get_vim_keymaps()
     local tmpfile = vim.fn.tempname()
     vim.cmd(string.format(
         [[
@@ -1168,27 +1243,27 @@ local function parse_ex_map_output()
         tmpfile
     ))
 
-    local results = {}
-    local map_outputs = utils.readlines(tmpfile) --[[@as table]]
+    local keys_output_map = {}
+    local map_output_lines = utils.readlines(tmpfile) --[[@as table]]
 
-    for i = 1, #map_outputs do
-        local line = map_outputs[i]
+    for i = 1, #map_output_lines do
+        local line = map_output_lines[i]
         if type(line) == "string" and string.len(vim.trim(line)) > 0 then
             if utils.string_isalpha(line:sub(1, 1)) then
-                local parsed = line_helpers.parse_vim_keymap(line)
-                results[parsed.lhs] = parsed
+                local parsed = parse_ex_map_output_line(line)
+                keys_output_map[parsed.lhs] = parsed
             end
         end
     end
-    local maps_list = vim.api.nvim_get_keymap("niovsx")
-    local key_maps = {}
-    for _, km in ipairs(maps_list) do
-        if not key_maps[km.lhs] then
-            key_maps[km.lhs] = km
+    local api_keys_list = vim.api.nvim_get_keymap("niovsx")
+    local api_keys_map = {}
+    for _, km in ipairs(api_keys_list) do
+        if not api_keys_map[km.lhs] then
+            api_keys_map[km.lhs] = km
         end
     end
-    for lhs, km in pairs(results) do
-        local km2 = key_maps[lhs]
+    for lhs, km in pairs(keys_output_map) do
+        local km2 = api_keys_map[lhs]
         if km2 then
             km.rhs = km2.rhs
             km.mode = km2.mode
@@ -1198,6 +1273,14 @@ local function parse_ex_map_output()
             km.desc = km2.desc
         end
     end
+
+    local results = {}
+    for _, r in pairs(keys_output_map) do
+        table.insert(results, r)
+    end
+    table.sort(results, function(a, b)
+        return a.lhs < b.lhs
+    end)
     return results
 end
 
@@ -1208,8 +1291,20 @@ local function render_vim_keymaps_column_opts(rendered)
     local noremap = rendered.noremap and "Y" or "N"
     local nowait = rendered.nowait and "Y" or "N"
     local silent = rendered.silent and "Y" or "N"
+    local desc = (
+        type(rendered.desc) == "string" and string.len(rendered.desc) > 0
+    )
+            and rendered.desc
+        or "N/A"
 
-    return string.format("%-4s|%-7s|%-6s|%-6s", mode, noremap, nowait, silent)
+    return string.format(
+        "%-4s|%-7s|%-6s|%-6s|%s",
+        mode,
+        noremap,
+        nowait,
+        silent,
+        desc
+    )
 end
 
 --- @param keys VimKeyMap[]
@@ -1217,7 +1312,7 @@ end
 local function render_vim_keymaps_columns_status(keys)
     local LHS = "Lhs"
     local RHS = "Rhs"
-    local OPTS = "Mode|Noremap|Nowait|Silent"
+    local OPTS = "Mode|Noremap|Nowait|Silent|Desc"
     local max_lhs = string.len(LHS)
     local max_rhs = string.len(RHS)
     local max_opts = string.len(OPTS)
@@ -1231,36 +1326,27 @@ local function render_vim_keymaps_columns_status(keys)
     return max_lhs, max_rhs, max_opts
 end
 
---- @param commands VimKeyMap[]
+--- @param keymaps VimKeyMap[]
 --- @param lhs_width integer
 --- @param rhs_width integer
 --- @param opts_width integer
 --- @return string[]
-local function render_vim_commands(commands, lhs_width, rhs_width, opts_width)
+local function render_vim_keymaps(keymaps, lhs_width, rhs_width, opts_width)
     --- @param r VimKeyMap
-    --- @return string
-    local function rendered_desc_or_loc(r)
-        if
-            type(r.loc) == "table"
-            and type(r.loc.filename) == "string"
-            and type(r.loc.lineno) == "number"
-        then
-            return string.format(
-                "%s:%d",
-                path.reduce(r.loc.filename),
-                r.loc.lineno
-            )
-        else
-            return (type(r.opts) == "table" and type(r.opts.desc) == "string")
-                    and string.format('"%s"', r.opts.desc)
-                or ""
-        end
+    --- @return string?
+    local function rendered_location(r)
+        return (
+            type(r) == "table"
+            and type(r.filename) == "string"
+            and type(r.lineno) == "number"
+        )
+                and string.format("%s:%d", path.reduce(r.filename), r.lineno)
+            or nil
     end
 
     local LHS = "Lhs"
     local RHS = "Rhs"
-    local OPTS = "Mode|Noremap|Nowait|Silent"
-    local DESC = "Desc"
+    local OPTS = "Mode|Noremap|Nowait|Silent|Desc"
     local LOC = "Location"
 
     local results = {}
@@ -1273,23 +1359,23 @@ local function render_vim_commands(commands, lhs_width, rhs_width, opts_width)
         .. "%-"
         .. tostring(opts_width)
         .. "s %s"
-    local header = string.format(formatter, LHS, OPTS, DESC, LOC)
+    local header = string.format(formatter, LHS, RHS, OPTS, LOC)
     table.insert(results, header)
     log.debug(
-        "|fzfx.config - render_vim_commands| formatter:%s, header:%s",
+        "|fzfx.config - render_vim_keymaps| formatter:%s, header:%s",
         vim.inspect(formatter),
         vim.inspect(header)
     )
-    for i, c in ipairs(commands) do
+    for i, c in ipairs(keymaps) do
         local rendered = string.format(
             formatter,
             c.lhs,
             c.rhs,
             render_vim_keymaps_column_opts(c),
-            rendered_desc_or_loc(c)
+            rendered_location(c)
         )
         log.debug(
-            "|fzfx.config - render_vim_commands| rendered[%d]:%s",
+            "|fzfx.config - render_vim_keymaps| rendered[%d]:%s",
             i,
             vim.inspect(rendered)
         )
@@ -1298,21 +1384,7 @@ local function render_vim_commands(commands, lhs_width, rhs_width, opts_width)
     return results
 end
 
---- @alias VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
---- @return VimKeyMap[]
-local function get_vim_keymaps()
-    local results = parse_ex_map_output()
-    log.debug(
-        "|fzfx.config - get_vim_keymaps| results:%s",
-        vim.inspect(results)
-    )
-    table.sort(results, function(a, b)
-        return a.lhs < b.lhs
-    end)
-    return results
-end
-
---- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,lhs_width:integer,rhs_width:integer,opts_width:integer, desc_width:integer}
+--- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,lhs_width:integer,rhs_width:integer,opts_width:integer}
 --- @return VimKeyMapsPipelineContext
 local function vim_keymaps_context_maker()
     local ctx = {
@@ -1320,9 +1392,9 @@ local function vim_keymaps_context_maker()
         winnr = vim.api.nvim_get_current_win(),
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
-    local commands = get_vim_keymaps()
+    local keys = get_vim_keymaps()
     local lhs_width, rhs_width, opts_width =
-        render_vim_keymaps_columns_status(commands)
+        render_vim_keymaps_columns_status(keys)
     ctx.lhs_width = lhs_width
     ctx.rhs_width = rhs_width
     ctx.opts_width = opts_width
@@ -1332,9 +1404,9 @@ end
 --- @param ctx VimKeyMapsPipelineContext
 --- @return string[]
 local function vim_keymaps_provider(ctx)
-    local commands = get_vim_keymaps()
-    return render_vim_commands(
-        commands,
+    local keys = get_vim_keymaps()
+    return render_vim_keymaps(
+        keys,
         ctx.lhs_width,
         ctx.rhs_width,
         ctx.opts_width
@@ -1344,7 +1416,7 @@ end
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
-local function vim_commands_lua_function_previewer(filename, lineno)
+local function vim_keymaps_lua_function_previewer(filename, lineno)
     local height = vim.api.nvim_win_get_height(0)
     if constants.has_bat then
         local style, theme = default_bat_style_and_theme()
@@ -1376,10 +1448,10 @@ end
 --- @param line string
 --- @param context VimKeyMapsPipelineContext
 --- @return string[]|nil
-local function vim_commands_previewer(line, context)
-    local desc_or_loc = line_helpers.parse_vim_command(line, context)
+local function vim_keymaps_previewer(line, context)
+    local desc_or_loc = line_helpers.parse_vim_keymap(line, context)
     log.debug(
-        "|fzfx.config - vim_commands_previewer| line:%s, context:%s, desc_or_loc:%s",
+        "|fzfx.config - vim_keymaps_previewer| line:%s, context:%s, desc_or_loc:%s",
         vim.inspect(line),
         vim.inspect(context),
         vim.inspect(desc_or_loc)
@@ -1391,16 +1463,16 @@ local function vim_commands_previewer(line, context)
         and type(desc_or_loc.lineno) == "number"
     then
         log.debug(
-            "|fzfx.config - vim_commands_previewer| loc:%s",
+            "|fzfx.config - vim_keymaps_previewer| loc:%s",
             vim.inspect(desc_or_loc)
         )
-        return vim_commands_lua_function_previewer(
+        return vim_keymaps_lua_function_previewer(
             desc_or_loc.filename,
             desc_or_loc.lineno
         )
     elseif vim.fn.executable("echo") > 0 and type(desc_or_loc) == "string" then
         log.debug(
-            "|fzfx.config - vim_commands_previewer| desc:%s",
+            "|fzfx.config - vim_keymaps_previewer| desc:%s",
             vim.inspect(desc_or_loc)
         )
         return { "echo", desc_or_loc }
