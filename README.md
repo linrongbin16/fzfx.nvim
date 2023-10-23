@@ -511,6 +511,8 @@ Commands are named following below rules:
 
 ### Diagnostics
 
+- Diagnostics
+
 <table>
 <thead>
   <tr>
@@ -545,6 +547,8 @@ Commands are named following below rules:
 </table>
 
 ### Lsp Symbols
+
+- Lsp Symbols
 
 <table>
 <thead>
@@ -617,6 +621,8 @@ Commands are named following below rules:
 </table>
 
 ### File Explorer
+
+- File Explorer
 
 <table>
 <thead>
