@@ -11,11 +11,7 @@ describe("shell_helpers", function()
 
     vim.env._FZFX_NVIM_DEVICONS_PATH = nil
     local shell_helpers = require("fzfx.shell_helpers")
-    describe("[is_windows]", function()
-        it("is windows", function()
-            assert_eq(type(shell_helpers.is_windows), "boolean")
-        end)
-    end)
+    shell_helpers.setup("test")
     describe("[log]", function()
         it("debug", function()
             assert_true(shell_helpers.log_debug("logs without params") == nil)

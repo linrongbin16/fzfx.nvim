@@ -23,37 +23,35 @@ local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
 local DEBUG_ENABLE = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 
 local LoggerContext = {
-    --- @type "DEBUG"|"INFO"|"WARN"|"ERROR"
-    level = DEBUG_ENABLE and "DEBUG" or "INFO",
-    --- @type boolean
-    console_log = true,
-    --- @type string|nil
-    name = "[fzfx-shell-helpers]",
-    --- @type boolean
+    level = DEBUG_ENABLE and require("fzfx.log").LogLevels.DEBUG
+        or require("fzfx.log").LogLevels.INFO,
+    console_log = DEBUG_ENABLE and true or false,
     file_log = DEBUG_ENABLE and true or false,
-    --- @type string|nil
-    file_path = string.format(
+    file_path = nil,
+}
+
+--- @param name string
+local function setup(name)
+    LoggerContext.file_path = string.format(
         "%s%s%s",
         vim.fn.stdpath("data"),
         PATH_SEPARATOR,
-        "fzfx_shell_helpers.log"
-    ),
-}
+        string.format("fzfx_bin_%s.log", name)
+    )
+end
 
---- @param level "DEBUG"|"INFO"|"WARN"|"ERROR"
+--- @param level integer
 --- @param msg string
---- @return nil
 local function _log(level, msg)
-    local LogLevels = require("fzfx.log").LogLevels
-
-    if LogLevels[level] < LogLevels[LoggerContext.level] then
+    local LogLevelNames = require("fzfx.log").LogLevelNames
+    if level < LoggerContext.level then
         return
     end
 
     local msg_lines = require("fzfx.utils").string_split(msg, "\n")
     if LoggerContext.console_log then
         for _, line in ipairs(msg_lines) do
-            io.write(string.format("%s %s\n", level, line))
+            io.write(string.format("%s %s\n", LogLevelNames[level], line))
         end
     end
     if LoggerContext.file_log then
@@ -64,7 +62,7 @@ local function _log(level, msg)
                     string.format(
                         "%s [%s]: %s\n",
                         os.date("%Y-%m-%d %H:%M:%S"),
-                        level,
+                        LogLevelNames[level],
                         line
                     )
                 )
@@ -75,11 +73,13 @@ local function _log(level, msg)
 end
 
 local function log_debug(fmt, ...)
-    _log("DEBUG", string.format(fmt, ...))
+    local LogLevels = require("fzfx.log").LogLevels
+    _log(LogLevels.DEBUG, string.format(fmt, ...))
 end
 
 local function log_err(fmt, ...)
-    _log("ERROR", string.format(fmt, ...))
+    local LogLevels = require("fzfx.log").LogLevels
+    _log(LogLevels.ERROR, string.format(fmt, ...))
 end
 
 local function log_throw(fmt, ...)
@@ -87,11 +87,11 @@ local function log_throw(fmt, ...)
     error(string.format(fmt, ...))
 end
 
---- @param condition boolean
+--- @param cond boolean
 --- @param fmt string
 --- @param ... any[]|any
-local function log_ensure(condition, fmt, ...)
-    if not condition then
+local function log_ensure(cond, fmt, ...)
+    if not cond then
         log_throw(fmt, ...)
     end
 end
@@ -159,7 +159,7 @@ end
 -- icon render }
 
 local M = {
-    is_windows = is_windows,
+    setup = setup,
     log_debug = log_debug,
     log_err = log_err,
     log_throw = log_throw,
