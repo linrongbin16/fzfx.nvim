@@ -6,11 +6,12 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 local shell_helpers = require("fzfx.shell_helpers")
+shell_helpers.setup("previewer")
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_SOCKET_ADDRESS
 shell_helpers.log_ensure(
     type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
-    "|fzfx.bin.general.previewer| error! SOCKET_ADDRESS must not be empty!"
+    "SOCKET_ADDRESS must not be empty!"
 )
 local registry_id = _G.arg[1]
 local metafile = _G.arg[2]
@@ -28,7 +29,7 @@ local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
 -- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
 -- shell_helpers.log_ensure(
 --     channel_id > 0,
---     "|fzfx.bin.buffers.provider| error! failed to connect socket on SOCKET_ADDRESS:%s",
+--     "failed to connect socket on SOCKET_ADDRESS:%s",
 --     vim.inspect(SOCKET_ADDRESS)
 -- )
 vim.rpcrequest(
@@ -51,11 +52,11 @@ vim.fn.chanclose(channel_id)
 local metajsonstring = shell_helpers.readfile(metafile) --[[@as string]]
 shell_helpers.log_ensure(
     type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
-    "|fzfx.bin.general.previewer| error! metajson is not string! %s",
+    "metajsonstring is not string! %s",
     vim.inspect(metajsonstring)
 )
 local metaopts = vim.fn.json_decode(metajsonstring) --[[@as PreviewerMetaOpts]]
-shell_helpers.log_debug("metajson:[%s]", vim.inspect(metaopts))
+shell_helpers.log_debug("metaopts:[%s]", vim.inspect(metaopts))
 
 --- @param l string?
 local function println(l)
@@ -67,7 +68,7 @@ end
 
 if metaopts.previewer_type == "command" then
     local cmd = shell_helpers.readfile(resultfile)
-    shell_helpers.log_debug("cmd:[%s]", vim.inspect(cmd))
+    shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
     else
@@ -75,7 +76,7 @@ if metaopts.previewer_type == "command" then
     end
 elseif metaopts.previewer_type == "command_list" then
     local cmd = shell_helpers.readfile(resultfile)
-    shell_helpers.log_debug("cmd:[%s]", vim.inspect(cmd))
+    shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
     if cmd == nil or string.len(cmd) == 0 then
         os.exit(0)
         return
@@ -89,7 +90,7 @@ elseif metaopts.previewer_type == "command_list" then
     local async_spawn = shell_helpers.AsyncSpawn:make(cmd_splits, println) --[[@as AsyncSpawn]]
     shell_helpers.log_ensure(
         async_spawn ~= nil,
-        "|provider| error! failed to open async command: %s",
+        "failed to open async command: %s",
         vim.inspect(cmd_splits)
     )
     async_spawn:run()
@@ -97,7 +98,7 @@ elseif metaopts.previewer_type == "list" then
     local f = io.open(resultfile, "r")
     shell_helpers.log_ensure(
         f ~= nil,
-        "error! failed to open file on resultfile! %s",
+        "failed to open file on resultfile! %s",
         vim.inspect(resultfile)
     )
     --- @diagnostic disable-next-line: need-check-nil
@@ -109,7 +110,7 @@ elseif metaopts.previewer_type == "list" then
     f:close()
 else
     shell_helpers.log_throw(
-        "|fzfx.bin.general.previewer| error! unknown previewer type:%s",
+        "unknown previewer type:%s",
         vim.inspect(metajsonstring)
     )
 end
