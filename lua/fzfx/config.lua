@@ -1144,8 +1144,8 @@ local function parse_vim_ex_command_name(line)
     return vim.trim(line:sub(2, name_stop_pos - 1))
 end
 
---- @return table<string, VimCommand>
-local function get_vim_ex_commands()
+--- @return table<string, VimKeyMap>
+local function get_vim_maps()
     local help_docs_list =
         ---@diagnostic disable-next-line: param-type-mismatch
         vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
@@ -1185,25 +1185,6 @@ local function get_vim_ex_commands()
         vim.inspect(results)
     )
     return results
-end
-
---- @param header string
---- @return boolean
-local function is_ex_command_output_header(header)
-    local name_pos = utils.string_find(header, "Name")
-    local args_pos = utils.string_find(header, "Args")
-    local address_pos = utils.string_find(header, "Address")
-    local complete_pos = utils.string_find(header, "Complete")
-    local definition_pos = utils.string_find(header, "Definition")
-    return type(name_pos) == "number"
-        and type(args_pos) == "number"
-        and type(address_pos) == "number"
-        and type(complete_pos) == "number"
-        and type(definition_pos) == "number"
-        and name_pos < args_pos
-        and args_pos < address_pos
-        and address_pos < complete_pos
-        and complete_pos < definition_pos
 end
 
 --- @param line string
@@ -1272,112 +1253,154 @@ end
 -- the ':command' output looks like:
 --
 --```
---    Name              Args Address Complete    Definition
---    Barbecue          ?            <Lua function> <Lua 437: ~/.config/nvim/lazy/barbecue/lua/barbecue.lua:18>
---                                               Run subcommands through this general command
---!   Bdelete           ?            buffer      :call s:bdelete("bdelete", <q-bang>, <q-args>)
---    BufferLineCloseLeft 0                      <Lua 329: ~/.config/nvim/lazy/bufferline.nvim/lua/bufferline.lua:226>
---    BufferLineCloseRight 0                     <Lua 328: ~/.config/nvim/lazy/bufferline.nvim/lua/bufferline.lua:225>
---!   Bwipeout          ?            buffer      :call s:bdelete("bwipeout", <q-bang>, <q-args>)
---    DoMatchParen      0                        call matchup#matchparen#toggle(1)
---!|  Explore           *    0c ?    dir         call netrw#Explore(<count>,0,0+<bang>0,<q-args>)
---!   FZF               *            dir         call s:cmd(<bang>0, <f-args>)
---!   FzfxBuffers       ?            file        <Lua 744: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
---                                               Find buffers
---!   FzfxBuffersP      0                        <Lua 742: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
---                                               Find buffers by yank text
---!   FzfxBuffersV      0    .                   <Lua 358: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
---                                               Find buffers by visual select
---!   FzfxBuffersW      0                        <Lua 861: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
---                                               Find buffers by cursor word
---!   FzfxFileExplorer  ?            dir         <Lua 845: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
---                                               File explorer (ls -l)
---!   FzfxFileExplorerP 0                        <Lua 839: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
---                                               File explorer (ls -l) by yank text
---!   FzfxFileExplorerU ?            dir         <Lua 844: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
---                                               File explorer (ls -la)
---!   FzfxFileExplorerUP 0                       <Lua 838: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
---                                               File explorer (ls -la) by yank text
---!   FzfxFileExplorerUV 0   .                   <Lua 842: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
---                                               File explorer (ls -la) by visual select
---!   FzfxFileExplorerUW 0                       <Lua 840: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>
---                                               File explorer (ls -la) by cursor word
+--n  K           *@<Cmd>lua vim.lsp.buf.hover()<CR>
+--                Show hover
+--                Last set from Lua
+--n  [w          *@<Lua 1213: ~/.config/nvim/lua/builtin/lsp.lua:60>
+--                Previous diagnostic warning
+--                Last set from Lua
+--n  [e          *@<Lua 1211: ~/.config/nvim/lua/builtin/lsp.lua:60>
+--                 Previous diagnostic error
+--                 Last set from Lua
+--n  [d          *@<Lua 1209: ~/.config/nvim/lua/builtin/lsp.lua:60>
+--                 Previous diagnostic item
+--                 Last set from Lua
+--x  \ca         *@<Cmd>lua vim.lsp.buf.range_code_action()<CR>
+--                 Code actions
 --```
---- @return table<string, {filename:string,lineno:integer}>
-local function parse_ex_command_output()
+--- @return table<string, VimKeyMap>
+local function parse_ex_map_output()
     local tmpfile = vim.fn.tempname()
     vim.cmd(string.format(
         [[
     redir! > %s
-    silent command
+    silent execute 'verbose map'
     redir END
     ]],
         tmpfile
     ))
 
     local results = {}
-    local command_outputs = utils.readlines(tmpfile) --[[@as table]]
-    local found_command_output_header = false
-    --- @type VimExCommandOutputHeader
-    local parsed_header = nil
+    local map_outputs = utils.readlines(tmpfile) --[[@as table]]
 
-    for i = 1, #command_outputs do
-        local line = command_outputs[i]
+    local is_parsing = false
+    local last_key = nil
 
-        if found_command_output_header then
-            -- parse command name, e.g., FzfxCommands, etc.
-            local idx = parsed_header.name_pos
-            log.debug(
-                "|fzfx.config - parse_ex_command_output| line[%d]:%s(%d)",
-                i,
-                vim.inspect(line),
-                idx
-            )
-            while
-                idx <= #line and not utils.string_isspace(line:sub(idx, idx))
-            do
-                -- log.debug(
-                --     "|fzfx.config - parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
-                --     idx,
-                --     vim.inspect(line:sub(idx, idx)),
-                --     vim.inspect(string.len(line:sub(idx, idx)))
-                -- )
-                -- log.debug(
-                --     "|fzfx.config - parse_ex_command_output| parse non-spaces, isspace:%s",
-                --     vim.inspect(utils.string_isspace(line:sub(idx, idx)))
-                -- )
-                if utils.string_isspace(line:sub(idx, idx)) then
-                    break
+    for i = 1, #map_outputs do
+        local line = map_outputs[i]
+        if type(line) ~= "string" or string.len(vim.trim(line)) == 0 then
+            i = i + 1
+        else
+            if utils.string_isalpha(line:sub(1, 1)) then
+                is_parsing = true
+                local first_space_pos = 1
+                while
+                    first_space_pos <= #line
+                    and not utils.string_isspace(
+                        line:sub(first_space_pos, first_space_pos)
+                    )
+                do
+                    first_space_pos = first_space_pos + 1
                 end
-                idx = idx + 1
+                local mode = vim.trim(line:sub(1, first_space_pos - 1))
+                while
+                    first_space_pos <= #line
+                    and utils.string_isspace(
+                        line:sub(first_space_pos, first_space_pos)
+                    )
+                do
+                    first_space_pos = first_space_pos + 1
+                end
+                local second_space_pos = first_space_pos
+                while
+                    second_space_pos <= #line
+                    and not utils.string_isspace(
+                        line:sub(second_space_pos, second_space_pos)
+                    )
+                do
+                    second_space_pos = second_space_pos + 1
+                end
+                local lhs =
+                    vim.trim(line:sub(first_space_pos, second_space_pos - 1))
+                local desc = vim.trim(line:sub(second_space_pos))
+                if
+                    utils.string_startswith(desc, [[*@]])
+                    or (
+                        string.len(desc) >= 2
+                        and utils.string_isspace(desc:sub(2, 2))
+                    )
+                then
+                    desc = desc:sub(3)
+                end
+                local key = { lhs = lhs }
+                if
+                    utils.string_startswith(desc, "<Lua ")
+                    and utils.string_endswith(desc, ">")
+                then
+                    desc = desc:sub(string.len("<Lua ") + 1, #desc - 1)
+                    local first_colon_pos = utils.string_find(desc, ":") --[[@as integer]]
+                    local last_colon_pos = utils.string_rfind(desc, ":") --[[@as integer]]
+                    local filename =
+                        desc:sub(first_colon_pos + 1, last_colon_pos - 1)
+                    local lineno = desc:sub(last_colon_pos + 1)
+                    key.filename = vim.fn.expand(path.normalize(filename))
+                    key.lineno = tonumber(lineno)
+                end
+                results[key.lhs] = key
+                last_key = key
+            elseif is_parsing then
+                local LAST_SET_FROM = "\tLast set from "
+                local LINE = " line "
+                local LAST_SET_FROM_LUA = "\tLast set from Lua"
+                local last_set_from_pos = utils.string_find(line, LAST_SET_FROM)
+                local line_pos = utils.string_rfind(line, LINE)
+                local last_set_from_lua_pos =
+                    utils.string_find(line, LAST_SET_FROM_LUA)
+                if
+                    last_set_from_pos
+                    and line_pos
+                    and not last_set_from_lua_pos
+                    and type(last_key) == "table"
+                    and not last_key.filename
+                    and not last_key.lineno
+                then
+                    local filename = vim.trim(
+                        line:sub(
+                            last_set_from_pos + string.len(LAST_SET_FROM) + 1,
+                            line_pos - 1
+                        )
+                    )
+                    local lineno =
+                        vim.trim(line:sub(line_pos + string.len(LINE) + 1))
+                    results[last_key.lhs].filename =
+                        vim.fn.expand(path.normalize(filename))
+                    results[last_key.lhs].lineno = tonumber(lineno)
+                end
             end
-            local name = vim.trim(line:sub(parsed_header.name_pos, idx))
-
-            idx = math.max(parsed_header.definition_pos, idx)
-            local parsed_line =
-                parse_ex_command_output_lua_function_definition(line, idx)
-            if parsed_line then
-                results[name] = {
-                    filename = parsed_line.filename,
-                    lineno = parsed_line.lineno,
-                }
-            end
-        end
-
-        if is_ex_command_output_header(line) then
-            found_command_output_header = true
-            parsed_header = parse_ex_command_output_header(line)
-            log.debug(
-                "|fzfx.config - parse_ex_command_output| parsed header:%s",
-                vim.inspect(parsed_header)
-            )
         end
     end
-
+    local maps_list = vim.api.nvim_get_keymap("niovsx")
+    local key_maps = {}
+    for _, km in ipairs(maps_list) do
+        if not key_maps[km.lhs] then
+            key_maps[km.lhs] = km
+        end
+    end
+    for lhs, km in pairs(results) do
+        local km2 = key_maps[lhs]
+        if km2 then
+            km.rhs = km2.rhs
+            km.mode = km2.mode
+            km.noremap = km2.noremap
+            km.nowait = km2.nowait
+            km.silent = km2.silent
+            km.desc = km2.desc
+        end
+    end
     return results
 end
 
---- @return table<string, VimCommand>
+--- @return table<string, VimKeyMap>
 local function get_vim_user_commands()
     local parsed_ex_commands = parse_ex_command_output()
     local user_commands = vim.api.nvim_get_commands({ builtin = false })
@@ -1412,7 +1435,7 @@ local function get_vim_user_commands()
     return results
 end
 
---- @param rendered VimCommand
+--- @param rendered VimKeyMap
 --- @return string
 local function render_vim_commands_column_opts(rendered)
     local bang = (type(rendered.opts) == "table" and rendered.opts.bang) and "Y"
@@ -1439,7 +1462,7 @@ local function render_vim_commands_column_opts(rendered)
     )
 end
 
---- @param commands VimCommand[]
+--- @param commands VimKeyMap[]
 --- @return integer,integer
 local function render_vim_commands_columns_status(commands)
     local NAME = "Name"
@@ -1455,12 +1478,12 @@ local function render_vim_commands_columns_status(commands)
     return max_name, max_opts
 end
 
---- @param commands VimCommand[]
+--- @param commands VimKeyMap[]
 --- @param name_width integer
 --- @param opts_width integer
 --- @return string[]
 local function render_vim_commands(commands, name_width, opts_width)
-    --- @param r VimCommand
+    --- @param r VimKeyMap
     --- @return string
     local function rendered_desc_or_loc(r)
         if
@@ -1516,70 +1539,39 @@ local function render_vim_commands(commands, name_width, opts_width)
     return results
 end
 
---- @alias VimCommandLocation {filename:string,lineno:integer}
---- @alias VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,range:string?,complete:string?,complete_arg:string?,desc:string?}
---- @alias VimCommand {name:string,loc:VimCommandLocation?,opts:VimCommandOptions}
---- @param no_ex_commands boolean?
---- @param no_user_commands boolean?
---- @return VimCommand[]
-local function get_vim_commands(no_ex_commands, no_user_commands)
-    local results = {}
-    local ex_commands = no_ex_commands and {} or get_vim_ex_commands()
+--- @alias VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
+--- @return VimKeyMap[]
+local function get_vim_keymaps()
+    local results = parse_ex_map_output()
     log.debug(
-        "|fzfx.config - get_vim_commands| ex commands:%s",
-        vim.inspect(ex_commands)
+        "|fzfx.config - get_vim_keymaps| results:%s",
+        vim.inspect(results)
     )
-    local user_commands = no_user_commands and {} or get_vim_user_commands()
-    log.debug(
-        "|fzfx.config - get_vim_commands| user commands:%s",
-        vim.inspect(user_commands)
-    )
-    for _, c in pairs(ex_commands) do
-        table.insert(results, c)
-    end
-    for _, c in pairs(user_commands) do
-        table.insert(results, c)
-    end
     table.sort(results, function(a, b)
-        return a.name < b.name
+        return a.lhs < b.lhs
     end)
-
     return results
 end
 
---- @alias VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
---- @return VimCommandsPipelineContext
-local function vim_commands_context_maker()
+--- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
+--- @return VimKeyMapsPipelineContext
+local function vim_keymaps_context_maker()
     local ctx = {
         bufnr = vim.api.nvim_get_current_buf(),
         winnr = vim.api.nvim_get_current_win(),
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
-    local commands = get_vim_commands()
+    local commands = get_vim_keymaps()
     local name_width, opts_width = render_vim_commands_columns_status(commands)
     ctx.name_width = name_width
     ctx.opts_width = opts_width
     return ctx
 end
 
---- @param ctx VimCommandsPipelineContext
+--- @param ctx VimKeyMapsPipelineContext
 --- @return string[]
-local function vim_commands_provider(ctx)
-    local commands = get_vim_commands()
-    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
-end
-
---- @param ctx VimCommandsPipelineContext
---- @return string[]
-local function vim_ex_commands_provider(ctx)
-    local commands = get_vim_commands(nil, true)
-    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
-end
-
---- @param ctx VimCommandsPipelineContext
---- @return string[]
-local function vim_user_commands_provider(ctx)
-    local commands = get_vim_commands(true)
+local function vim_keymaps_provider(ctx)
+    local commands = get_vim_keymaps()
     return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
@@ -1616,7 +1608,7 @@ local function vim_commands_lua_function_previewer(filename, lineno)
 end
 
 --- @param line string
---- @param context VimCommandsPipelineContext
+--- @param context VimKeyMapsPipelineContext
 --- @return string[]|nil
 local function vim_commands_previewer(line, context)
     local desc_or_loc = line_helpers.parse_vim_commands(line, context)
