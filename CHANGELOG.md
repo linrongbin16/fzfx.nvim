@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/linrongbin16/fzfx.nvim/compare/v1.2.0...v1.3.0) (2023-10-23)
+
+
+### Features
+
+* **logs:** split shell command provider/previewer logs ([#303](https://github.com/linrongbin16/fzfx.nvim/issues/303)) ([5ed1bcd](https://github.com/linrongbin16/fzfx.nvim/commit/5ed1bcd6728000c7ec692e99603ae69ab82a2edd))
+
 ## [1.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v1.1.1...v1.2.0) (2023-10-20)
 
 
