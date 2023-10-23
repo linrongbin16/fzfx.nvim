@@ -253,7 +253,7 @@ describe("line_helpers", function()
                 local last_space = utils.string_rfind(line, " ")
                 local expect_splits =
                     utils.string_split(line:sub(last_space + 1), ":")
-                local actual = line_helpers.parse_vim_commands(line, CONTEXT)
+                local actual = line_helpers.parse_vim_command(line, CONTEXT)
                 assert_eq(type(actual), "table")
                 assert_eq(
                     actual.filename,
@@ -270,7 +270,7 @@ describe("line_helpers", function()
                 local double_quote_before_last =
                     utils.string_rfind(line, '"', #line - 1)
                 local expect = vim.trim(line:sub(double_quote_before_last))
-                local actual = line_helpers.parse_vim_commands(line, CONTEXT)
+                local actual = line_helpers.parse_vim_command(line, CONTEXT)
                 assert_eq(type(actual), "string")
                 assert_eq(actual, expect)
             end
@@ -285,7 +285,7 @@ describe("line_helpers", function()
                 local last_space = utils.string_rfind(line, " ")
                 local expect_splits =
                     utils.string_split(line:sub(last_space + 1), ":")
-                local actual = line_helpers.parse_vim_commands(line, CONTEXT)
+                local actual = line_helpers.parse_vim_command(line, CONTEXT)
                 assert_eq(type(actual), "table")
                 assert_eq(
                     actual.filename,
@@ -302,7 +302,7 @@ describe("line_helpers", function()
                 local double_quote_before_last =
                     utils.string_rfind(line, '"', #line - 1)
                 local expect = vim.trim(line:sub(double_quote_before_last))
-                local actual = line_helpers.parse_vim_commands(line, CONTEXT)
+                local actual = line_helpers.parse_vim_command(line, CONTEXT)
                 assert_eq(type(actual), "string")
                 assert_eq(actual, expect)
             end
