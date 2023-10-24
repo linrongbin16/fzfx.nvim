@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/linrongbin16/fzfx.nvim/compare/v1.4.0...v1.5.0) (2023-10-24)
+
+
+### Features
+
+* **keymaps:** add 'FzfxKeyMaps' to search vim keymaps ([#306](https://github.com/linrongbin16/fzfx.nvim/issues/306)) ([f43e70f](https://github.com/linrongbin16/fzfx.nvim/commit/f43e70f3ba7ab1132dfd65fbcf71db6bfc11912b))
+
 ## [1.4.0](https://github.com/linrongbin16/fzfx.nvim/compare/v1.3.0...v1.4.0) (2023-10-23)
 
 
