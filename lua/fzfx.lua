@@ -77,6 +77,9 @@ local function setup(options)
     -- vim commands
     general.setup("commands", configs.commands)
 
+    -- vim keymaps
+    general.setup("keymaps", configs.keymaps)
+
     -- file explorer
     general.setup("file_explorer", configs.file_explorer)
 
