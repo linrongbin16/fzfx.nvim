@@ -3104,8 +3104,8 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").feed_vim_command,
-            ["double-click"] = require("fzfx.actions").feed_vim_command,
+            ["enter"] = require("fzfx.actions").feed_vim_key,
+            ["double-click"] = require("fzfx.actions").feed_vim_key,
         },
         fzf_opts = {
             default_fzf_options.no_multi,
