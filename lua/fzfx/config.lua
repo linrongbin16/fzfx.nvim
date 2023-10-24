@@ -554,10 +554,9 @@ end
 
 --- @param commands VimCommand[]
 --- @param lhs_width integer
---- @param rhs_width integer
 --- @param opts_width integer
 --- @return string[]
-local function render_vim_commands(commands, lhs_width, rhs_width, opts_width)
+local function render_vim_commands(commands, lhs_width, opts_width)
     --- @param r VimCommand
     --- @return string
     local function rendered_desc_or_loc(r)
@@ -1316,89 +1315,80 @@ local function get_vim_keymaps()
     table.sort(results, function(a, b)
         return a.lhs < b.lhs
     end)
-    log.debug(
-        "|fzfx.config - get_vim_keymaps| results:%s",
-        vim.inspect(results)
-    )
+    -- log.debug(
+    --     "|fzfx.config - get_vim_keymaps| results:%s",
+    --     vim.inspect(results)
+    -- )
     return results
 end
 
 --- @param rendered VimKeyMap
 --- @return string
 local function render_vim_keymaps_column_opts(rendered)
-    local mode = rendered.mode
+    local mode = rendered.mode or ""
     local noremap = rendered.noremap and "Y" or "N"
     local nowait = rendered.nowait and "Y" or "N"
     local silent = rendered.silent and "Y" or "N"
-    local desc = (
-        type(rendered.desc) == "string" and string.len(rendered.desc) > 0
-    )
-            and rendered.desc
-        or "N/A"
-
-    return string.format(
-        "%-4s|%-7s|%-6s|%-6s|%s",
-        mode,
-        noremap,
-        nowait,
-        silent,
-        desc
-    )
+    return string.format("%-4s|%-7s|%-6s|%-6s", mode, noremap, nowait, silent)
 end
 
 --- @param keys VimKeyMap[]
---- @return integer,integer,integer
+--- @return integer,integer
 local function render_vim_keymaps_columns_status(keys)
     local LHS = "Lhs"
-    local RHS = "Rhs"
-    local OPTS = "Mode|Noremap|Nowait|Silent|Desc"
+    local OPTS = "Mode|Noremap|Nowait|Silent"
     local max_lhs = string.len(LHS)
-    local max_rhs = string.len(RHS)
     local max_opts = string.len(OPTS)
     for _, k in ipairs(keys) do
         max_lhs = math.max(max_lhs, string.len(k.lhs))
-        max_rhs = math.max(max_rhs, string.len(k.rhs))
         max_opts =
             math.max(max_opts, string.len(render_vim_keymaps_column_opts(k)))
     end
-
-    return max_lhs, max_rhs, max_opts
+    log.debug(
+        "|fzfx.config - render_vim_keymaps_columns_status| lhs:%s, opts:%s",
+        vim.inspect(max_lhs),
+        vim.inspect(max_opts)
+    )
+    return max_lhs, max_opts
 end
 
 --- @param keymaps VimKeyMap[]
 --- @param lhs_width integer
---- @param rhs_width integer
 --- @param opts_width integer
 --- @return string[]
-local function render_vim_keymaps(keymaps, lhs_width, rhs_width, opts_width)
+local function render_vim_keymaps(keymaps, lhs_width, opts_width)
     --- @param r VimKeyMap
     --- @return string?
-    local function rendered_location(r)
-        return (
+    local function rendered_rhs_or_loc(r)
+        if
             type(r) == "table"
             and type(r.filename) == "string"
+            and string.len(r.filename) > 0
             and type(r.lineno) == "number"
-        )
-                and string.format("%s:%d", path.reduce(r.filename), r.lineno)
-            or nil
+            and r.lineno >= 0
+        then
+            return string.format("%s:%d", path.reduce(r.filename), r.lineno)
+        elseif type(r.rhs) == "string" and string.len(r.rhs) > 0 then
+            return string.format('"%s"', r.rhs)
+        elseif type(r.desc) == "string" and string.len(r.desc) > 0 then
+            return string.format('"%s"', r.desc)
+        else
+            return ""
+        end
     end
 
     local LHS = "Lhs"
-    local RHS = "Rhs"
-    local OPTS = "Mode|Noremap|Nowait|Silent|Desc"
-    local LOC = "Location"
+    local OPTS = "Mode|Noremap|Nowait|Silent"
+    local RHS_OR_LOC = "Rhs/Location"
 
     local results = {}
     local formatter = "%-"
         .. tostring(lhs_width)
         .. "s"
         .. " %-"
-        .. tostring(rhs_width)
-        .. "s"
-        .. "%-"
         .. tostring(opts_width)
         .. "s %s"
-    local header = string.format(formatter, LHS, RHS, OPTS, LOC)
+    local header = string.format(formatter, LHS, OPTS, RHS_OR_LOC)
     table.insert(results, header)
     log.debug(
         "|fzfx.config - render_vim_keymaps| formatter:%s, header:%s",
@@ -1411,7 +1401,7 @@ local function render_vim_keymaps(keymaps, lhs_width, rhs_width, opts_width)
             c.lhs,
             c.rhs,
             render_vim_keymaps_column_opts(c),
-            rendered_location(c)
+            rendered_rhs_or_loc(c)
         )
         log.debug(
             "|fzfx.config - render_vim_keymaps| rendered[%d]:%s",
@@ -1423,7 +1413,7 @@ local function render_vim_keymaps(keymaps, lhs_width, rhs_width, opts_width)
     return results
 end
 
---- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,lhs_width:integer,rhs_width:integer,opts_width:integer}
+--- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,lhs_width:integer,opts_width:integer}
 --- @return VimKeyMapsPipelineContext
 local function vim_keymaps_context_maker()
     local ctx = {
@@ -1432,10 +1422,8 @@ local function vim_keymaps_context_maker()
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
     local keys = get_vim_keymaps()
-    local lhs_width, rhs_width, opts_width =
-        render_vim_keymaps_columns_status(keys)
+    local lhs_width, opts_width = render_vim_keymaps_columns_status(keys)
     ctx.lhs_width = lhs_width
-    ctx.rhs_width = rhs_width
     ctx.opts_width = opts_width
     return ctx
 end
@@ -1457,12 +1445,7 @@ local function vim_keymaps_provider(mode, ctx)
             end
         end
     end
-    return render_vim_keymaps(
-        filtered_keys,
-        ctx.lhs_width,
-        ctx.rhs_width,
-        ctx.opts_width
-    )
+    return render_vim_keymaps(filtered_keys, ctx.lhs_width, ctx.opts_width)
 end
 
 --- @param filename string
