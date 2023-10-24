@@ -331,7 +331,7 @@ Commands are named following below rules:
 
 ### Grep
 
-#### Live Grep
+- Live Grep
 
 <table>
 <thead>
@@ -368,7 +368,7 @@ Commands are named following below rules:
 
 ### Git
 
-#### Git Files
+- Git Files
 
 <table>
 <thead>
@@ -403,7 +403,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-#### Git Branches
+- Git Branches
 
 <table>
 <thead>
@@ -438,7 +438,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-#### Git Commits
+- Git Commits
 
 <table>
 <thead>
@@ -473,7 +473,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-#### Git Blame
+- Git Blame
 
 <table>
 <thead>
@@ -510,7 +510,7 @@ Commands are named following below rules:
 
 ### Lsp & Diagnostics
 
-#### Lsp
+- Lsp
 
 <table>
 <thead>
@@ -545,7 +545,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-#### Diagnostics
+- Diagnostics
 
 <table>
 <thead>
@@ -582,7 +582,7 @@ Commands are named following below rules:
 
 ### Vim
 
-#### Commands
+- Commands
 
 <table>
 <thead>
@@ -612,6 +612,41 @@ Commands are named following below rules:
   </tr>
   <tr>
     <td>FzfxCommands(E/U)P</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+- Key Maps
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Hint</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxKeMaps(N/I/V)</td>
+    <td>N</td>
+    <td rowspan="4">No</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `enter` to feed vim key.<br>2. Normal mode variant is named with 'N' suffix.<br>3. Insert mode variant is named with 'I' suffix.<br>4. Visual mode variant is named with 'V' suffix.</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(N/I/V)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(N/I/V)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(N/I/V)P</td>
     <td>N</td>
   </tr>
 </tbody>
@@ -739,11 +774,6 @@ nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
 " by yank text
 nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
 
-" ======== vim commands ========
-
-" vim commands
-nnoremap <space>cm :\<C-U>FzfxCommands<CR>
-
 " ======== lsp diagnostics ========
 
 " lsp diagnostics
@@ -768,6 +798,16 @@ nnoremap gr :\<C-U>FzfxLspReferences<CR>
 
 " lsp implementations
 nnoremap gi :\<C-U>FzfxLspImplementations<CR>
+
+" ======== vim commands ========
+
+" vim commands
+nnoremap <space>cm :\<C-U>FzfxCommands<CR>
+
+" ======== vim key maps ========
+
+" vim key maps
+nnoremap <space>km :\<C-U>FzfxKeyMaps<CR>
 
 " ======== file explorer ========
 
@@ -906,12 +946,6 @@ vim.keymap.set('n', '<space>pgb',
         '<cmd>FzfxGBlameP<cr>',
         {silent=true, noremap=true, desc="Search git blame by yank text"})
 
--- ======== vim commands ========
-
--- vim commands
-vim.keymap.set('n', '<space>cm', '<cmd>FzfxCommands<cr>',
-        {silent=true, noremap=true, desc="Search vim commands"})
-
 -- ======== lsp diagnostics ========
 
 -- lsp diagnostics
@@ -944,6 +978,18 @@ vim.keymap.set('n', 'gr', '<cmd>FzfxLspReferences<cr>',
 -- lsp implementations
 vim.keymap.set('n', 'gi', '<cmd>FzfxLspImplementations<cr>',
         {silent=true, noremap=true, desc="Goto lsp implementations"})
+
+-- ======== vim commands ========
+
+-- vim commands
+vim.keymap.set('n', '<space>cm', '<cmd>FzfxCommands<cr>',
+        {silent=true, noremap=true, desc="Search vim commands"})
+
+-- ======== vim key maps ========
+
+-- vim key maps
+vim.keymap.set('n', '<space>km', '<cmd>FzfxKeyMaps<cr>',
+        {silent=true, noremap=true, desc="Search vim keymaps"})
 
 -- ======== file explorer ========
 
