@@ -1165,7 +1165,7 @@ end
 --                 Last set from Lua
 --```
 --- @param line string
---- @return {lhs:string,filename:string?,lineno:integer?}
+--- @return VimKeyMap
 local function parse_ex_map_output_line(line)
     local first_space_pos = 1
     while
@@ -1192,7 +1192,6 @@ local function parse_ex_map_output_line(line)
     end
     local lhs = vim.trim(line:sub(first_space_pos, second_space_pos - 1))
     local result = { lhs = lhs }
-
     local rhs_or_location = vim.trim(line:sub(second_space_pos))
     local lua_definition_pos = utils.string_find(rhs_or_location, "<Lua ")
 
@@ -1260,21 +1259,50 @@ local function get_vim_keymaps()
         vim.inspect(keys_output_map)
     )
     local api_keys_list = vim.api.nvim_get_keymap("niovsx")
+    log.debug(
+        "|fzfx.config - get_vim_keymaps| api_keys_list:%s",
+        vim.inspect(api_keys_list)
+    )
     local api_keys_map = {}
     for _, km in ipairs(api_keys_list) do
         if not api_keys_map[km.lhs] then
             api_keys_map[km.lhs] = km
         end
     end
+
+    local function get_boolean(v, default_value)
+        if type(v) == "number" then
+            return v > 0
+        elseif type(v) == "boolean" then
+            return v
+        else
+            return default_value
+        end
+    end
+    local function get_string(v, default_value)
+        if type(v) == "string" and string.len(v) > 0 then
+            return v
+        else
+            return default_value
+        end
+    end
+
     for lhs, km in pairs(keys_output_map) do
         local km2 = api_keys_map[lhs]
         if km2 then
-            km.rhs = km2.rhs or ""
-            km.mode = km2.mode
-            km.noremap = km2.noremap
-            km.nowait = km2.nowait
-            km.silent = km2.silent
-            km.desc = km2.desc
+            km.rhs = get_string(km2.rhs, "")
+            km.mode = get_string(km2.mode, "")
+            km.noremap = get_boolean(km2.noremap, false)
+            km.nowait = get_boolean(km2.nowait, false)
+            km.silent = get_boolean(km2.silent, false)
+            km.desc = get_string(km2.desc, "")
+        else
+            km.rhs = get_string(km.rhs, "")
+            km.mode = get_string(km.mode, "")
+            km.noremap = get_boolean(km.noremap, false) or km2.noremap
+            km.nowait = get_boolean(km.nowait, false)
+            km.silent = get_boolean(km.silent, false)
+            km.desc = get_string(km.desc, "")
         end
     end
     log.debug(
