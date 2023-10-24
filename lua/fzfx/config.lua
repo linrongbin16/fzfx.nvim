@@ -2816,29 +2816,40 @@ local Defaults = {
                     complete = "mapping",
                     desc = "Find vim keymaps",
                 },
-                default_provider = "all_commands",
+                default_provider = "all_mode",
             },
             {
-                name = "FzfxKeyMapsE",
+                name = "FzfxKeyMapsN",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
                     complete = "mapping",
-                    desc = "Find vim ex(builtin) commands",
+                    desc = "Find vim normal(n) mode keymaps ",
                 },
-                default_provider = "ex_commands",
+                default_provider = "n_mode",
             },
             {
-                name = "FzfxKeyMapsU",
+                name = "FzfxKeyMapsI",
                 feed = CommandFeedEnum.ARGS,
                 opts = {
                     bang = true,
                     nargs = "?",
                     complete = "mapping",
-                    desc = "Find vim user commands",
+                    desc = "Find vim insert(i) mode keymaps ",
                 },
-                default_provider = "user_commands",
+                default_provider = "i_mode",
+            },
+            {
+                name = "FzfxKeyMapsV",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "mapping",
+                    desc = "Find vim visual(v/s/x) mode keymaps ",
+                },
+                default_provider = "v_mode",
             },
             -- visual
             {
@@ -2847,29 +2858,39 @@ local Defaults = {
                 opts = {
                     bang = true,
                     range = true,
-                    desc = "Find vim commands by visual select",
+                    desc = "Find vim keymaps by visual select",
                 },
-                default_provider = "all_commands",
+                default_provider = "all_mode",
             },
             {
-                name = "FzfxKeyMapsEV",
+                name = "FzfxKeyMapsNV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
-                    desc = "Find vim ex(builtin) commands by visual select",
+                    desc = "Find vim normal(n) mode keymaps by visual select",
                 },
-                default_provider = "ex_commands",
+                default_provider = "n_mode",
             },
             {
-                name = "FzfxKeyMapsUV",
+                name = "FzfxKeyMapsIV",
                 feed = CommandFeedEnum.VISUAL,
                 opts = {
                     bang = true,
                     range = true,
-                    desc = "Find vim user commands by visual select",
+                    desc = "Find vim insert(i) mode keymaps by visual select",
                 },
-                default_provider = "uesr_commands",
+                default_provider = "i_mode",
+            },
+            {
+                name = "FzfxKeyMapsVV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find vim visual(v/s/x) mode keymaps by visual select",
+                },
+                default_provider = "v_mode",
             },
             -- cword
             {
@@ -2877,27 +2898,36 @@ local Defaults = {
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
-                    desc = "Find vim commands by cursor word",
+                    desc = "Find vim keymaps by cursor word",
                 },
-                default_provider = "all_commands",
+                default_provider = "all_mode",
             },
             {
-                name = "FzfxKeyMapsEW",
+                name = "FzfxKeyMapsNW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
-                    desc = "Find vim ex(builtin) commands by cursor word",
+                    desc = "Find vim normal(n) mode keymaps by cursor word",
                 },
-                default_provider = "ex_commands",
+                default_provider = "n_mode",
             },
             {
-                name = "FzfxKeyMapsUW",
+                name = "FzfxKeyMapsIW",
                 feed = CommandFeedEnum.CWORD,
                 opts = {
                     bang = true,
-                    desc = "Find vim user commands by cursor word",
+                    desc = "Find vim insert(i) mode keymaps by cursor word",
                 },
-                default_provider = "user_commands",
+                default_provider = "i_mode",
+            },
+            {
+                name = "FzfxKeyMapsVW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find vim visual(v/s/x) mode keymaps by cursor word",
+                },
+                default_provider = "v_mode",
             },
             -- put
             {
@@ -2905,31 +2935,40 @@ local Defaults = {
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
-                    desc = "Find vim commands by yank text",
+                    desc = "Find vim keymaps by yank text",
                 },
-                default_provider = "all_commands",
+                default_provider = "all_mode",
             },
             {
-                name = "FzfxKeyMapsEP",
+                name = "FzfxKeyMapsNP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
-                    desc = "Find vim ex(builtin) commands by yank text",
+                    desc = "Find vim normal(n) mode keymaps by yank text",
                 },
-                default_provider = "ex_commands",
+                default_provider = "n_mode",
             },
             {
-                name = "FzfxKeyMapsUP",
+                name = "FzfxKeyMapsIP",
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
-                    desc = "Find vim user commands by yank text",
+                    desc = "Find vim insert(i) mode keymaps by yank text",
                 },
-                default_provider = "user_commands",
+                default_provider = "i_mode",
+            },
+            {
+                name = "FzfxKeyMapsVP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find vim visual(v/s/x) mode keymaps by yank text",
+                },
+                default_provider = "v_mode",
             },
         },
         providers = {
-            all_commands = {
+            all_mode = {
                 key = "ctrl-a",
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
@@ -2938,35 +2977,48 @@ local Defaults = {
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
-            ex_commands = {
-                key = "ctrl-e",
+            n_mode = {
+                key = "ctrl-m",
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
-                    return vim_ex_commands_provider(context)
+                    return vim_commands_provider(context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
-            user_commands = {
-                key = "ctrl-u",
+            i_mode = {
+                key = "ctrl-i",
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
-                    return vim_user_commands_provider(context)
+                    return vim_commands_provider(context)
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            },
+            v_mode = {
+                key = "ctrl-v",
+                --- @param query string
+                --- @param context VimKeyMapsPipelineContext
+                provider = function(query, context)
+                    return vim_commands_provider(context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
         },
         previewers = {
-            all_commands = {
+            all_mode = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
-            ex_commands = {
+            n_mode = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
-            user_commands = {
+            i_mode = {
+                previewer = vim_commands_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+            v_mode = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
@@ -2983,7 +3035,7 @@ local Defaults = {
             { "--prompt", "KeyMaps > " },
         },
         other_opts = {
-            context_maker = vim_commands_context_maker,
+            context_maker = vim_keymaps_context_maker,
         },
     },
 
