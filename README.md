@@ -510,7 +510,7 @@ Commands are named following below rules:
 
 ### Lsp & Diagnostics
 
-- Symbols
+- Lsp
 
 <table>
 <thead>
