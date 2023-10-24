@@ -46,9 +46,6 @@ end
 
 --- @deprecated
 local function edit(lines)
-    require("fzfx.deprecated").notify(
-        "deprecated 'actions.edit', please use 'actions.edit_find'!"
-    )
     return edit_find(lines)
 end
 
