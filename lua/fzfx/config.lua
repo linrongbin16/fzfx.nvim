@@ -1399,7 +1399,6 @@ local function render_vim_keymaps(keymaps, lhs_width, opts_width)
         local rendered = string.format(
             formatter,
             c.lhs,
-            c.rhs,
             render_vim_keymaps_column_opts(c),
             rendered_rhs_or_loc(c)
         )
