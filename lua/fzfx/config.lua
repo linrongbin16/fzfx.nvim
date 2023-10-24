@@ -2973,7 +2973,7 @@ local Defaults = {
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
-                    return vim_commands_provider(context)
+                    return vim_keymaps_provider(context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
@@ -2982,7 +2982,7 @@ local Defaults = {
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
-                    return vim_commands_provider(context)
+                    return vim_keymaps_provider(context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
@@ -2991,7 +2991,7 @@ local Defaults = {
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
-                    return vim_commands_provider(context)
+                    return vim_keymaps_provider(context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
@@ -3000,26 +3000,26 @@ local Defaults = {
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
-                    return vim_commands_provider(context)
+                    return vim_keymaps_provider(context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
         },
         previewers = {
             all_mode = {
-                previewer = vim_commands_previewer,
+                previewer = vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             n_mode = {
-                previewer = vim_commands_previewer,
+                previewer = vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             i_mode = {
-                previewer = vim_commands_previewer,
+                previewer = vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             v_mode = {
-                previewer = vim_commands_previewer,
+                previewer = vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
         },
