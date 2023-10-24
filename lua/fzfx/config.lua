@@ -238,7 +238,7 @@ end
 --- @return string
 local function parse_vim_ex_command_name(line)
     local name_stop_pos = utils.string_find(line, "|", 3)
-    return vim.trim(line:sub(2, name_stop_pos - 1))
+    return vim.trim(line:sub(3, name_stop_pos - 1))
 end
 
 --- @return table<string, VimCommand>
@@ -266,13 +266,15 @@ local function get_vim_ex_commands()
                     vim.inspect(line)
                 )
                 local name = parse_vim_ex_command_name(line)
-                results[name] = {
-                    name = name,
-                    loc = {
-                        filename = path.reduce2home(help_doc),
-                        lineno = i,
-                    },
-                }
+                if type(name) == "string" and string.len(name) > 0 then
+                    results[name] = {
+                        name = name,
+                        loc = {
+                            filename = path.reduce2home(help_doc),
+                            lineno = i,
+                        },
+                    }
+                end
             end
             i = i + 1
         end
@@ -487,7 +489,7 @@ local function get_vim_user_commands()
     local results = {}
     for name, opts in pairs(user_commands) do
         results[name] = {
-            name = string.format(":%s", opts.name),
+            name = opts.name,
             opts = {
                 bang = opts.bang,
                 bar = opts.bar,
@@ -523,7 +525,7 @@ local function render_vim_commands_column_opts(rendered)
             and rendered.opts.range
         or "N/A"
     local complete = (type(rendered.opts) == "table" and rendered.opts.complete)
-            and rendered.opts.complete
+            and (rendered.opts.complete == "<Lua function>" and "<Lua>" or rendered.opts.complete)
         or "N/A"
 
     return string.format(
@@ -1162,6 +1164,14 @@ end
 --                 Last set from Lua
 --n  <           *@<Lua 987: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
 --                 Last set from Lua
+--v  <BS>        * d
+--                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 24
+--x  <Plug>NetrwBrowseXVis * :<C-U>call netrw#BrowseXVis()<CR>
+--                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 90
+--n  <Plug>NetrwBrowseX * :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))<CR>
+--                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 84
+--n  <C-L>       * :nohlsearch<C-R>=has('diff')?'|diffupdate':''<CR><CR><C-L>
+--                 Last set from ~/.config/nvim/lua/builtin/options.vim line 50
 --```
 --- @param line string
 --- @return VimKeyMap
@@ -1217,24 +1227,6 @@ local function parse_ex_map_output_line(line)
     return result
 end
 
--- the ':verbose map' output looks like:
---
---```
---n  K           *@<Cmd>lua vim.lsp.buf.hover()<CR>
---                Show hover
---                Last set from Lua
---n  [w          *@<Lua 1213: ~/.config/nvim/lua/builtin/lsp.lua:60>
---                Previous diagnostic warning
---                Last set from Lua
---n  [e          *@<Lua 1211: ~/.config/nvim/lua/builtin/lsp.lua:60>
---                 Previous diagnostic error
---                 Last set from Lua
---n  [d          *@<Lua 1209: ~/.config/nvim/lua/builtin/lsp.lua:60>
---                 Previous diagnostic item
---                 Last set from Lua
---x  \ca         *@<Cmd>lua vim.lsp.buf.range_code_action()<CR>
---                 Code actions
---```
 --- @alias VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
 --- @return VimKeyMap[]
 local function get_vim_keymaps()
@@ -1251,12 +1243,32 @@ local function get_vim_keymaps()
     local keys_output_map = {}
     local map_output_lines = utils.readlines(tmpfile) --[[@as table]]
 
+    local LAST_SET_FROM = "\tLast set from "
+    local LAST_SET_FROM_LUA = "\tLast set from Lua"
+    local LINE = " line "
+    local last_lhs = nil
     for i = 1, #map_output_lines do
         local line = map_output_lines[i]
         if type(line) == "string" and string.len(vim.trim(line)) > 0 then
             if utils.string_isalpha(line:sub(1, 1)) then
                 local parsed = parse_ex_map_output_line(line)
                 keys_output_map[parsed.lhs] = parsed
+                last_lhs = parsed.lhs
+            elseif
+                utils.string_startswith(line, LAST_SET_FROM)
+                and utils.string_rfind(line, LINE)
+                and not utils.string_startswith(line, LAST_SET_FROM_LUA)
+                and last_lhs
+            then
+                local line_pos = utils.string_rfind(line, LINE)
+                local filename = vim.trim(
+                    line:sub(string.len(LAST_SET_FROM) + 1, line_pos - 1)
+                )
+                local lineno =
+                    vim.trim(line:sub(line_pos + string.len(LINE) + 1))
+                keys_output_map[last_lhs].filename =
+                    vim.fn.expand(path.normalize(filename))
+                keys_output_map[last_lhs].lineno = tonumber(filename)
             end
         end
     end
@@ -1293,16 +1305,17 @@ local function get_vim_keymaps()
         end
     end
 
-    local function get_key_def(keys, lhs)
-        if keys[lhs] then
-            return keys[lhs]
+    local function get_key_def(keys, left)
+        if keys[left] then
+            return keys[left]
         end
         if
-            utils.string_startswith(lhs, "<Space>")
-            or utils.string_startswith(lhs, "<space>")
+            utils.string_startswith(left, "<Space>")
+            or utils.string_startswith(left, "<space>")
         then
-            return keys[" " .. lhs:sub(string.len("<Space>") + 1)]
+            return keys[" " .. left:sub(string.len("<Space>") + 1)]
         end
+        return nil
     end
 
     for lhs, km in pairs(keys_output_map) do
@@ -1458,7 +1471,20 @@ local function vim_keymaps_provider(mode, ctx)
         for _, k in ipairs(keys) do
             if k.mode == mode then
                 table.insert(filtered_keys, k)
-            elseif mode == "v" and (k.mode == "s" or k.mode == "x") then
+            elseif
+                mode == "v"
+                and (
+                    utils.string_find(k.mode, "v")
+                    or utils.string_find(k.mode, "s")
+                    or utils.string_find(k.mode, "x")
+                )
+            then
+                table.insert(filtered_keys, k)
+            elseif mode == "n" and utils.string_find(k.mode, "n") then
+                table.insert(filtered_keys, k)
+            elseif mode == "i" and utils.string_find(k.mode, "i") then
+                table.insert(filtered_keys, k)
+            elseif string.len(k.mode) == 0 then
                 table.insert(filtered_keys, k)
             end
         end
@@ -3031,7 +3057,7 @@ local Defaults = {
                 provider_type = ProviderTypeEnum.LIST,
             },
             n_mode = {
-                key = "ctrl-m",
+                key = "ctrl-o",
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
@@ -3085,7 +3111,7 @@ local Defaults = {
             default_fzf_options.no_multi,
             "--header-lines=1",
             { "--preview-window", "~1" },
-            { "--prompt", "KeyMaps > " },
+            { "--prompt", "Key Maps > " },
         },
         other_opts = {
             context_maker = vim_keymaps_context_maker,
