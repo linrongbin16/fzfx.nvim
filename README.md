@@ -259,7 +259,7 @@ Commands are named following below rules:
 
 ### Files & Buffers
 
-- Files
+#### Files
 
 <table>
 <thead>
@@ -294,7 +294,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Buffers
+#### Buffers
 
 <table>
 <thead>
@@ -331,7 +331,7 @@ Commands are named following below rules:
 
 ### Grep
 
-- Live Grep
+#### Live Grep
 
 <table>
 <thead>
@@ -368,7 +368,7 @@ Commands are named following below rules:
 
 ### Git
 
-- Git Files
+#### Git Files
 
 <table>
 <thead>
@@ -403,7 +403,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Branches
+#### Git Branches
 
 <table>
 <thead>
@@ -438,7 +438,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Commits
+#### Git Commits
 
 <table>
 <thead>
@@ -473,7 +473,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Blame
+#### Git Blame
 
 <table>
 <thead>
@@ -510,7 +510,7 @@ Commands are named following below rules:
 
 ### Lsp & Diagnostics
 
-- Lsp
+#### Lsp
 
 <table>
 <thead>
@@ -528,27 +528,24 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td>1. The `textDocument.definition` method.</td>
+    <td rowspan="4"></td>
   </tr>
   <tr>
     <td>FzfxLspTypeDefinitions</td>
     <td>N</td>
-    <td>1. The `textDocument.typeDefinition` method.</td>
   </tr>
   <tr>
     <td>FzfxLspReferences</td>
     <td>N</td>
-    <td>1. The `textDocument.references` method.</td>
   </tr>
   <tr>
     <td>FzfxLspImplementations</td>
     <td>N</td>
-    <td>1. The `textDocument.implementation` method.</td>
   </tr>
 </tbody>
 </table>
 
-- Diagnostics
+#### Diagnostics
 
 <table>
 <thead>
@@ -585,7 +582,7 @@ Commands are named following below rules:
 
 ### Vim
 
-- Commands
+#### Commands
 
 <table>
 <thead>
