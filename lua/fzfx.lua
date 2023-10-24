@@ -38,46 +38,28 @@ local function setup(options)
     -- yank history
     require("fzfx.yank_history").setup()
 
-    -- files
-    require("fzfx.files").setup()
+    -- files & buffers
+    general.setup("files", configs.files)
+    general.setup("buffers", configs.buffers)
 
-    -- live_grep
-    require("fzfx.live_grep").setup()
+    -- grep
+    general.setup("live_grep", configs.live_grep)
 
-    -- buffers
-    require("fzfx.buffers").setup()
-
-    -- git files
-    require("fzfx.git_files").setup()
-
-    -- git branches
-    require("fzfx.git_branches").setup()
-
-    -- git commits
-    require("fzfx.git_commits").setup()
-
-    -- git blame
+    -- git
+    general.setup("git_files", configs.git_files)
+    general.setup("git_branches", configs.git_branches)
+    general.setup("git_commits", configs.git_commits)
     general.setup("git_blame", configs.git_blame)
 
-    -- lsp diagnostics
+    -- lsp & diagnostics
     general.setup("lsp_diagnostics", configs.lsp_diagnostics)
-
-    -- lsp definitions
     general.setup("lsp_definitions", configs.lsp_definitions)
-
-    -- lsp type definitions
     general.setup("lsp_type_definitions", configs.lsp_type_definitions)
-
-    -- lsp references
     general.setup("lsp_references", configs.lsp_references)
-
-    -- lsp implementations
     general.setup("lsp_implementations", configs.lsp_implementations)
 
-    -- vim commands
+    -- vim
     general.setup("vim_commands", configs.commands or configs.vim_commands)
-
-    -- vim keymaps
     general.setup("vim_keymaps", configs.vim_keymaps)
 
     -- file explorer
