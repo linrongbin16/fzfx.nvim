@@ -1276,7 +1276,7 @@ local function get_vim_keymaps()
     --     "|fzfx.config - get_vim_keymaps| keys_output_map1:%s",
     --     vim.inspect(keys_output_map)
     -- )
-    local api_keys_list = vim.api.nvim_get_keymap("niovsx")
+    local api_keys_list = vim.api.nvim_get_keymap("")
     -- log.debug(
     --     "|fzfx.config - get_vim_keymaps| api_keys_list:%s",
     --     vim.inspect(api_keys_list)
@@ -1484,7 +1484,7 @@ local function vim_keymaps_provider(mode, ctx)
                 table.insert(filtered_keys, k)
             elseif mode == "i" and utils.string_find(k.mode, "i") then
                 table.insert(filtered_keys, k)
-            elseif string.len(k.mode) == 0 then
+            elseif mode == "n" and string.len(k.mode) == 0 then
                 table.insert(filtered_keys, k)
             end
         end
