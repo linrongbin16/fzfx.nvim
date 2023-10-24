@@ -635,18 +635,18 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to feed vim key.<br>2. Normal mode variant is named with 'N' suffix.<br>3. Insert mode variant is named with 'I' suffix.<br>4. Visual mode variant is named with 'V' suffix.</td>
+    <td rowspan="4">1. Use `enter` to execute vim key.<br>2. Normal mode variant is named with 'N' suffix.<br>3. Insert mode variant is named with 'I' suffix.<br>4. Visual/select mode variant is named with 'V' suffix.</td>
   </tr>
   <tr>
-    <td>FzfxCommands(N/I/V)V</td>
+    <td>FzfxKeyMaps(N/I/V)V</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxCommands(N/I/V)W</td>
+    <td>FzfxKeyMaps(N/I/V)W</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxCommands(N/I/V)P</td>
+    <td>FzfxKeyMaps(N/I/V)P</td>
     <td>N</td>
   </tr>
 </tbody>
