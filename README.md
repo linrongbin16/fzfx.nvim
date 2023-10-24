@@ -528,22 +528,22 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td>1. Request the `textDocument.definition` method.</td>
+    <td>1. The `textDocument.definition` method.</td>
   </tr>
   <tr>
     <td>FzfxLspTypeDefinitions</td>
     <td>N</td>
-    <td>1. Request the `textDocument.typeDefinition` method.</td>
+    <td>1. The `textDocument.typeDefinition` method.</td>
   </tr>
   <tr>
     <td>FzfxLspReferences</td>
     <td>N</td>
-    <td>1. Request the `textDocument.references` method.</td>
+    <td>1. The `textDocument.references` method.</td>
   </tr>
   <tr>
     <td>FzfxLspImplementations</td>
     <td>N</td>
-    <td>1. Request the `textDocument.implementation` method.</td>
+    <td>1. The `textDocument.implementation` method.</td>
   </tr>
 </tbody>
 </table>
