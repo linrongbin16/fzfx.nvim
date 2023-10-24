@@ -169,8 +169,41 @@ end
 
 --- @param line string
 --- @param context VimKeyMapsPipelineContext
---- @return {lhs:string,filename:string?,lineno:integer?}
-local function parse_vim_keymap(line, context) end
+--- @return {filename:string?,lineno:integer?}|string
+local function parse_vim_keymap(line, context)
+    -- local log = require("fzfx.log")
+    local rhs_or_loc =
+        vim.trim(line:sub(context.lhs_width + 1 + context.opts_width + 1 + 1))
+    -- log.debug(
+    --     "|fzfx.line_helpers - parse_vim_commands| desc_or_loc:%s",
+    --     vim.inspect(desc_or_loc)
+    -- )
+    if
+        string.len(rhs_or_loc) > 0
+        and not utils.string_startswith(rhs_or_loc, '"')
+        and not utils.string_endswith(rhs_or_loc, '"')
+    then
+        local split_pos = utils.string_rfind(rhs_or_loc, ":")
+        local splits = {
+            rhs_or_loc:sub(1, split_pos - 1),
+            rhs_or_loc:sub(split_pos + 1),
+        }
+        -- log.debug(
+        --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
+        --     vim.inspect(splits)
+        -- )
+        local filename = vim.fn.expand(path.normalize(splits[1]))
+        local lineno = tonumber(splits[2])
+        -- log.debug(
+        --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
+        --     vim.inspect(filename),
+        --     vim.inspect(lineno)
+        -- )
+        return { filename = filename, lineno = lineno }
+    else
+        return rhs_or_loc
+    end
+end
 
 local M = {
     parse_find = parse_find,
