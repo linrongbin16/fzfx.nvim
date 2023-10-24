@@ -349,7 +349,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.<br>2. Use `--` to pass raw options to search command (grep/rg).</td>
+    <td rowspan="4">1. Use `--` to pass raw options to search command (grep/rg).<br>2. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(U)V</td>
@@ -386,7 +386,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.<br>2. Git files in current directory variant is named with `C` suffix.</td>
+    <td rowspan="4">1. Git files in current directory variant is named with `C` suffix.<br>2. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -528,19 +528,22 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
+    <td>1. Request the `textDocument.definition` method.</td>
   </tr>
   <tr>
     <td>FzfxLspTypeDefinitions</td>
     <td>N</td>
+    <td>1. Request the `textDocument.typeDefinition` method.</td>
   </tr>
   <tr>
     <td>FzfxLspReferences</td>
     <td>N</td>
+    <td>1. Request the `textDocument.references` method.</td>
   </tr>
   <tr>
     <td>FzfxLspImplementations</td>
     <td>N</td>
+    <td>1. Request the `textDocument.implementation` method.</td>
   </tr>
 </tbody>
 </table>
