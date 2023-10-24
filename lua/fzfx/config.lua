@@ -1254,15 +1254,15 @@ local function get_vim_keymaps()
             end
         end
     end
-    log.debug(
-        "|fzfx.config - get_vim_keymaps| keys_output_map1:%s",
-        vim.inspect(keys_output_map)
-    )
+    -- log.debug(
+    --     "|fzfx.config - get_vim_keymaps| keys_output_map1:%s",
+    --     vim.inspect(keys_output_map)
+    -- )
     local api_keys_list = vim.api.nvim_get_keymap("niovsx")
-    log.debug(
-        "|fzfx.config - get_vim_keymaps| api_keys_list:%s",
-        vim.inspect(api_keys_list)
-    )
+    -- log.debug(
+    --     "|fzfx.config - get_vim_keymaps| api_keys_list:%s",
+    --     vim.inspect(api_keys_list)
+    -- )
     local api_keys_map = {}
     for _, km in ipairs(api_keys_list) do
         if not api_keys_map[km.lhs] then
@@ -1305,10 +1305,10 @@ local function get_vim_keymaps()
             km.desc = get_string(km.desc, "")
         end
     end
-    log.debug(
-        "|fzfx.config - get_vim_keymaps| keys_output_map2:%s",
-        vim.inspect(keys_output_map)
-    )
+    -- log.debug(
+    --     "|fzfx.config - get_vim_keymaps| keys_output_map2:%s",
+    --     vim.inspect(keys_output_map)
+    -- )
     local results = {}
     for _, r in pairs(keys_output_map) do
         table.insert(results, r)
@@ -1357,7 +1357,7 @@ local function render_vim_keymaps_columns_status(keys)
     local max_opts = string.len(OPTS)
     for _, k in ipairs(keys) do
         max_lhs = math.max(max_lhs, string.len(k.lhs))
-        max_lhs = math.max(max_rhs, string.len(k.rhs))
+        max_rhs = math.max(max_rhs, string.len(k.rhs))
         max_opts =
             math.max(max_opts, string.len(render_vim_keymaps_column_opts(k)))
     end
@@ -3025,7 +3025,7 @@ local Defaults = {
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
-                    return vim_keymaps_provider(context)
+                    return vim_keymaps_provider("all", context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
@@ -3034,7 +3034,7 @@ local Defaults = {
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
-                    return vim_keymaps_provider(context)
+                    return vim_keymaps_provider("n", context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
@@ -3043,7 +3043,7 @@ local Defaults = {
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
-                    return vim_keymaps_provider(context)
+                    return vim_keymaps_provider("i", context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
@@ -3052,7 +3052,7 @@ local Defaults = {
                 --- @param query string
                 --- @param context VimKeyMapsPipelineContext
                 provider = function(query, context)
-                    return vim_keymaps_provider(context)
+                    return vim_keymaps_provider("v", context)
                 end,
                 provider_type = ProviderTypeEnum.LIST,
             },
