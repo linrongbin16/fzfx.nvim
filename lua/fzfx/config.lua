@@ -2155,7 +2155,6 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    complete = "dir",
                     desc = "Search local git branches",
                 },
                 default_provider = "local_branch",
@@ -2166,7 +2165,6 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    complete = "dir",
                     desc = "Search remote git branches",
                 },
                 default_provider = "remote_branch",
@@ -2630,7 +2628,7 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    complete = "dir",
+                    complete = "command",
                     desc = "Find vim commands",
                 },
                 default_provider = "all_commands",
@@ -2641,7 +2639,7 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    complete = "dir",
+                    complete = "command",
                     desc = "Find vim ex(builtin) commands",
                 },
                 default_provider = "ex_commands",
@@ -2652,7 +2650,7 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    complete = "dir",
+                    complete = "command",
                     desc = "Find vim user commands",
                 },
                 default_provider = "user_commands",
@@ -2798,6 +2796,191 @@ local Defaults = {
             "--header-lines=1",
             { "--preview-window", "~1" },
             { "--prompt", "Commands > " },
+        },
+        other_opts = {
+            context_maker = vim_commands_context_maker,
+        },
+    },
+
+    -- the 'Vim KeyMaps' commands
+    --- @type GroupConfig
+    keymaps = {
+        commands = {
+            -- normal
+            {
+                name = "FzfxKeyMaps",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "mapping",
+                    desc = "Find vim keymaps",
+                },
+                default_provider = "all_commands",
+            },
+            {
+                name = "FzfxKeyMapsE",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "mapping",
+                    desc = "Find vim ex(builtin) commands",
+                },
+                default_provider = "ex_commands",
+            },
+            {
+                name = "FzfxKeyMapsU",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "mapping",
+                    desc = "Find vim user commands",
+                },
+                default_provider = "user_commands",
+            },
+            -- visual
+            {
+                name = "FzfxKeyMapsV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find vim commands by visual select",
+                },
+                default_provider = "all_commands",
+            },
+            {
+                name = "FzfxKeyMapsEV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find vim ex(builtin) commands by visual select",
+                },
+                default_provider = "ex_commands",
+            },
+            {
+                name = "FzfxKeyMapsUV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find vim user commands by visual select",
+                },
+                default_provider = "uesr_commands",
+            },
+            -- cword
+            {
+                name = "FzfxKeyMapsW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find vim commands by cursor word",
+                },
+                default_provider = "all_commands",
+            },
+            {
+                name = "FzfxKeyMapsEW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find vim ex(builtin) commands by cursor word",
+                },
+                default_provider = "ex_commands",
+            },
+            {
+                name = "FzfxKeyMapsUW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find vim user commands by cursor word",
+                },
+                default_provider = "user_commands",
+            },
+            -- put
+            {
+                name = "FzfxKeyMapsP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find vim commands by yank text",
+                },
+                default_provider = "all_commands",
+            },
+            {
+                name = "FzfxKeyMapsEP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find vim ex(builtin) commands by yank text",
+                },
+                default_provider = "ex_commands",
+            },
+            {
+                name = "FzfxKeyMapsUP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find vim user commands by yank text",
+                },
+                default_provider = "user_commands",
+            },
+        },
+        providers = {
+            all_commands = {
+                key = "ctrl-a",
+                --- @param query string
+                --- @param context VimKeyMapsPipelineContext
+                provider = function(query, context)
+                    return vim_commands_provider(context)
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            },
+            ex_commands = {
+                key = "ctrl-e",
+                --- @param query string
+                --- @param context VimKeyMapsPipelineContext
+                provider = function(query, context)
+                    return vim_ex_commands_provider(context)
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            },
+            user_commands = {
+                key = "ctrl-u",
+                --- @param query string
+                --- @param context VimKeyMapsPipelineContext
+                provider = function(query, context)
+                    return vim_user_commands_provider(context)
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            },
+        },
+        previewers = {
+            all_commands = {
+                previewer = vim_commands_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+            ex_commands = {
+                previewer = vim_commands_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+            user_commands = {
+                previewer = vim_commands_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+        },
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").feed_vim_command,
+            ["double-click"] = require("fzfx.actions").feed_vim_command,
+        },
+        fzf_opts = {
+            default_fzf_options.no_multi,
+            "--header-lines=1",
+            { "--preview-window", "~1" },
+            { "--prompt", "KeyMaps > " },
         },
         other_opts = {
             context_maker = vim_commands_context_maker,

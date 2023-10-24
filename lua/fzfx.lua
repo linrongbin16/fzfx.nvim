@@ -95,8 +95,15 @@ local function setup(options)
     end
 end
 
+--- @param name string
+--- @param configs Options
+local function register(name, configs)
+    general.setup(name, configs)
+end
+
 local M = {
     setup = setup,
+    register = register,
 }
 
 return M
