@@ -27,16 +27,11 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#-commands)
-  - [Files](#files)
-  - [Live Grep](#live-grep)
-  - [Buffers](#buffers)
-  - [Git Files](#git-files)
-  - [Git Branches](#git-branches)
-  - [Git Commits](#git-commits)
-  - [Git Blame](#git-blame)
-  - [(Vim) Commands](#vim-commands)
-  - [Lsp Diagnostics](#lsp-diagnostics)
-  - [Lsp Symbols](#lsp-symbols)
+  - [Files & Buffers](#files--buffers)
+  - [Grep](#grep)
+  - [Git](#git)
+  - [Lsp & Diagnostics](#lsp--diagnostics)
+  - [Vim](#vim)
   - [File Explorer](#file-explorer)
 - [Recommended Key Mappings](#-recommended-key-mappings)
   - [Vimscript](#vimscript)
@@ -262,7 +257,9 @@ Commands are named following below rules:
 
 > Note: builtin keys can be configured, see [Configuration](#-configuration).
 
-### Files
+### Files & Buffers
+
+#### Files
 
 <table>
 <thead>
@@ -271,7 +268,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -297,7 +294,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Live Grep
+#### Buffers
 
 <table>
 <thead>
@@ -306,44 +303,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>FzfxLiveGrep(U)</td>
-    <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.<br></td>
-  </tr>
-  <tr>
-    <td>FzfxLiveGrep(U)V</td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td>FzfxLiveGrep(U)W</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLiveGrep(U)P</td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-- Use `--` to pass raw options to search command (grep/rg).
-
-### Buffers
-
-<table>
-<thead>
-  <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -369,7 +329,9 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Git Files
+### Grep
+
+- Live Grep
 
 <table>
 <thead>
@@ -378,7 +340,44 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxLiveGrep(U)</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `--` to pass raw options to search command (grep/rg).<br>2. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(U)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(U)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(U)P</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+### Git
+
+- Git Files
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -387,7 +386,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
+    <td rowspan="4">1. Git files in current directory variant is named with `C` suffix.<br>2. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -404,9 +403,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git files in current directory variant is named with `C` suffix.
-
-### Git Branches
+- Git Branches
 
 <table>
 <thead>
@@ -415,7 +412,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -424,7 +421,7 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to checkout branch.</td>
+    <td rowspan="4">1. Use `enter` to checkout branch.<br>2. Remote git branch variant is named with `R` suffix.</td>
   </tr>
   <tr>
     <td>FzfxGBranches(R)V</td>
@@ -441,9 +438,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Remote git branch variant is named with `R` suffix.
-
-### Git Commits
+- Git Commits
 
 <table>
 <thead>
@@ -452,7 +447,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -478,7 +473,7 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Git Blame
+- Git Blame
 
 <table>
 <thead>
@@ -487,7 +482,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -513,7 +508,9 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### (Vim) Commands
+### Lsp & Diagnostics
+
+- Lsp
 
 <table>
 <thead>
@@ -522,80 +519,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>FzfxCommands(E/U)</td>
-    <td>N</td>
-    <td rowspan="4">No</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to input vim command.</td>
-  </tr>
-  <tr>
-    <td>FzfxCommands(E/U)V</td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td>FzfxCommands(E/U)W</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxCommands(E/U)P</td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-- Vim ex(builtin) commands variant is named with 'E' suffix.
-- Vim user commands variant is named with 'U' suffix.
-
-### Lsp Diagnostics
-
-<table>
-<thead>
-  <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>FzfxLspDiagnostics(B)</td>
-    <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
-  </tr>
-  <tr>
-    <td>FzfxLspDiagnostics(B)V</td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td>FzfxLspDiagnostics(B)W</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLspDiagnostics(B)P</td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-### Lsp Symbols
-
-<table>
-<thead>
-  <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Multi Keys</th>
-    <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -621,6 +545,113 @@ Commands are named following below rules:
 </tbody>
 </table>
 
+- Diagnostics
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Hint</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxLspDiagnostics(B)</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)P</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+### Vim
+
+- Commands
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Hint</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxCommands(E/U)</td>
+    <td>N</td>
+    <td rowspan="4">No</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `enter` to input vim command.<br>2. Ex(builtin) commands variant is named with 'E' suffix.<br>3. User commands variant is named with 'U' suffix.</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxCommands(E/U)P</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+- Key Maps
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Multi Keys</th>
+    <th>Preview Keys</th>
+    <th>Hint</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxKeMaps(N/I/V)</td>
+    <td>N</td>
+    <td rowspan="4">No</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">1. Use `enter` to execute vim key.<br>2. Normal mode variant is named with 'N' suffix.<br>3. Insert mode variant is named with 'I' suffix.<br>4. Visual/select mode variant is named with 'V' suffix.</td>
+  </tr>
+  <tr>
+    <td>FzfxKeyMaps(N/I/V)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxKeyMaps(N/I/V)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxKeyMaps(N/I/V)P</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
 ### File Explorer
 
 <table>
@@ -630,7 +661,7 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Exit Keys</th>
+    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -743,11 +774,6 @@ nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
 " by yank text
 nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
 
-" ======== vim commands ========
-
-" vim commands
-nnoremap <space>cm :\<C-U>FzfxCommands<CR>
-
 " ======== lsp diagnostics ========
 
 " lsp diagnostics
@@ -772,6 +798,16 @@ nnoremap gr :\<C-U>FzfxLspReferences<CR>
 
 " lsp implementations
 nnoremap gi :\<C-U>FzfxLspImplementations<CR>
+
+" ======== vim commands ========
+
+" vim commands
+nnoremap <space>cm :\<C-U>FzfxCommands<CR>
+
+" ======== vim key maps ========
+
+" vim key maps
+nnoremap <space>km :\<C-U>FzfxKeyMaps<CR>
 
 " ======== file explorer ========
 
@@ -910,12 +946,6 @@ vim.keymap.set('n', '<space>pgb',
         '<cmd>FzfxGBlameP<cr>',
         {silent=true, noremap=true, desc="Search git blame by yank text"})
 
--- ======== vim commands ========
-
--- vim commands
-vim.keymap.set('n', '<space>cm', '<cmd>FzfxCommands<cr>',
-        {silent=true, noremap=true, desc="Search vim commands"})
-
 -- ======== lsp diagnostics ========
 
 -- lsp diagnostics
@@ -948,6 +978,18 @@ vim.keymap.set('n', 'gr', '<cmd>FzfxLspReferences<cr>',
 -- lsp implementations
 vim.keymap.set('n', 'gi', '<cmd>FzfxLspImplementations<cr>',
         {silent=true, noremap=true, desc="Goto lsp implementations"})
+
+-- ======== vim commands ========
+
+-- vim commands
+vim.keymap.set('n', '<space>cm', '<cmd>FzfxCommands<cr>',
+        {silent=true, noremap=true, desc="Search vim commands"})
+
+-- ======== vim key maps ========
+
+-- vim key maps
+vim.keymap.set('n', '<space>km', '<cmd>FzfxKeyMaps<cr>',
+        {silent=true, noremap=true, desc="Search vim keymaps"})
 
 -- ======== file explorer ========
 

@@ -59,9 +59,6 @@ local function setup(options)
     -- git blame
     general.setup("git_blame", configs.git_blame)
 
-    -- vim commands
-    general.setup("commands", configs.commands)
-
     -- lsp diagnostics
     general.setup("lsp_diagnostics", configs.lsp_diagnostics)
 
@@ -76,6 +73,12 @@ local function setup(options)
 
     -- lsp implementations
     general.setup("lsp_implementations", configs.lsp_implementations)
+
+    -- vim commands
+    general.setup("vim_commands", configs.commands or configs.vim_commands)
+
+    -- vim keymaps
+    general.setup("vim_keymaps", configs.vim_keymaps)
 
     -- file explorer
     general.setup("file_explorer", configs.file_explorer)
@@ -95,8 +98,15 @@ local function setup(options)
     end
 end
 
+--- @param name string
+--- @param configs Options
+local function register(name, configs)
+    general.setup(name, configs)
+end
+
 local M = {
     setup = setup,
+    register = register,
 }
 
 return M

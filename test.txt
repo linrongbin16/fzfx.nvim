@@ -1,0 +1,1258 @@
+
+
+
+n  <CR>        *@<Lua 961: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  <Esc>       *@<Lua 998: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  .           *@<Lua 977: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  <           *@<Lua 987: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  >           *@<Lua 982: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  ?           *@<Lua 958: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  A           *@<Lua 970: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+v  D           *@<Lua 967: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:849>
+	Last set from Lua
+n  D           *@<Lua 966: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  E           *@<Lua 978: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  H           *@<Lua 972: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  R           *@<Lua 965: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  W           *@<Lua 994: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  [g          *@<Lua 979: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  [c          *@<Lua 956: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  \,          *@<Cmd>vertical resize -10<CR>
+	Last set from Lua
+n  \.          *@<Cmd>vertical resize +10<CR>
+	Last set from Lua
+n  ]g          *@<Lua 991: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  ]c          *@<Lua 957: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  a           *@<Lua 993: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  c           *@<Lua 996: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  d           *@<Lua 955: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  f           *@<Lua 969: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  h           *@<Lua 1000: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  i           *@<Lua 990: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  l           *@<Lua 980: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  m           *@<Lua 963: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  on          *@<Lua 997: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  ot          *@<Lua 992: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  oc          *@<Lua 989: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  od          *@<Lua 988: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  og          *@<Lua 986: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  om          *@<Lua 981: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  os          *@<Lua 976: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  o           *@<Lua 975: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  p           *@<Lua 999: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  q           *@<Lua 973: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  r           *@<Lua 983: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+v  x           *@<Lua 985: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:849>
+	Last set from Lua
+n  x           *@<Lua 984: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+v  y           *@<Lua 296: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:849>
+	Last set from Lua
+n  y           *@<Lua 297: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  <C-F>       *@<Lua 995: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  <BS>        *@<Lua 974: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  <C-]>       *@<Lua 971: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  <2-LeftMouse> *@<Lua 968: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  <C-L>       *@<Lua 964: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  <C-W>s      *@<Lua 962: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  <C-W>v      *@<Lua 960: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+n  <C-W>t      *@<Lua 959: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+	Last set from Lua
+s  <Tab>       * <Lua 1326: ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127>
+                 cmp.utils.keymap.set_map
+	Last set from Lua
+s  <CR>        * <Lua 1304: ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127>
+                 cmp.utils.keymap.set_map
+	Last set from Lua
+x  <Space>dg   * <Lua 165: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Search lsp diagnostics
+	Last set from Lua
+n  <Space>dg   * <Lua 164: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Search lsp diagnostics
+	Last set from Lua
+n  <Space>cm   * <Lua 163: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Search vim commands
+	Last set from Lua
+n  <Space>gc   * <Lua 162: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Search git commits
+	Last set from Lua
+n  <Space>br   * <Lua 161: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Search git branches
+	Last set from Lua
+n  <Space>gf   * <Lua 160: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Search git files
+	Last set from Lua
+n  <Space>xp   * <Lua 159: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 File Explorer
+	Last set from Lua
+n  <Space>pl   * <Lua 158: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Live grep by yank text
+	Last set from Lua
+n  <Space>wl   * <Lua 157: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Live grep by cursor word
+	Last set from Lua
+x  <Space>l    * <Lua 156: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Live grep
+	Last set from Lua
+n  <Space>l    * <Lua 155: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Live grep
+	Last set from Lua
+x  <Space>bf   * <Lua 154: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Search buffers
+	Last set from Lua
+n  <Space>bf   * <Lua 153: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Search buffers
+	Last set from Lua
+n  <Space>pf   * <Lua 152: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Find files by yank text
+	Last set from Lua
+n  <Space>wf   * <Lua 151: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Find files by cursor word
+	Last set from Lua
+x  <Space>f    * <Lua 150: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Find files
+	Last set from Lua
+n  <Space>f    * <Lua 149: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Find files
+	Last set from Lua
+x  #           * y?\V<C-R>"<CR>
+                 Nvim builtin
+	Last set from Lua
+o  %             <Ignore><Plug>(matchup-%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 183
+x  %             <Plug>(matchup-%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  %             <Plug>(matchup-%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  &           * :&&<CR>
+                 Nvim builtin
+	Last set from Lua
+x  *           * y/\V<C-R>"<CR>
+                 Nvim builtin
+	Last set from Lua
+x  P           * <Plug>(YankyPutBefore)
+                 Put before cursor (yanky)
+	Last set from Lua
+n  P           * <Plug>(YankyPutBefore)
+                 Put before cursor (yanky)
+	Last set from Lua
+x  S           * <Plug>(nvim-surround-visual)
+                 Add a surrounding pair around a visual selection
+	Last set from Lua
+n  Y           * y$
+                 Nvim builtin
+	Last set from Lua
+o  [%            <Plug>(matchup-[%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+x  [%            <Plug>(matchup-[%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  [%            <Plug>(matchup-[%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  [c          * <Plug>(GitGutterPrevHunk)
+                 Go to previous git hunk
+	Last set from Lua
+n  [b          * <Lua 235: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to previous buffer
+	Last set from Lua
+n  [u          * <Lua 116: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Previous url
+	Last set from Lua line 14
+n  \mk         * <Plug>MarkSet
+                 Toggle highlighting mark
+	Last set from Lua
+n  \mN         * <Plug>MarkSearchPrev
+                 Previous highlighting mark
+	Last set from Lua
+n  \mn         * <Plug>MarkSearchNext
+                 Next highlighting mark
+	Last set from Lua
+n  \mK         * <Plug>MarkAllClear
+                 Clear all highlighting marks
+	Last set from Lua
+x  \mk         * <Plug>MarkIWhiteSet
+                 Toggle highlighting mark
+	Last set from Lua
+n  \sw         * :ClangdSwitchSourceHeader<CR>
+                 Switch between c/c++ header and source
+	Last set from Lua
+n  \gb         * <Cmd>GitBlameToggle<CR>
+                 Toggle git blame
+	Last set from Lua
+n  \cf         * <Cmd>lua require('conform').format({ timeout_ms = 2000, lsp_fallback = true })<CR>
+                 Code format
+	Last set from Lua
+x  \cf         * <Cmd>lua require('conform').format({ timeout_ms = 2000, lsp_fallback = true })<CR>
+                 Code format
+	Last set from Lua
+n  \yh         * <Lua 206: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Yank ring history
+	Last set from Lua
+n  \ms         * :Mason<CR>
+                 Open Mason
+	Last set from Lua
+n  \vs         * :Vista!!<CR>
+                 Toggle vista structure outlines
+	Last set from Lua
+x  \j          * <Cmd>HopLineAC<CR>
+                 Jump to below lines
+	Last set from Lua
+n  \j          * <Cmd>HopLineAC<CR>
+                 Jump to below lines
+	Last set from Lua
+x  \S          * <Cmd>HopChar2BC<CR>
+                 Jump backward by {char}{char}
+	Last set from Lua
+n  \S          * <Cmd>HopChar2BC<CR>
+                 Jump backward by {char}{char}
+	Last set from Lua
+x  \s          * <Cmd>HopChar2AC<CR>
+                 Jump forward by {char}{char}
+	Last set from Lua
+n  \s          * <Cmd>HopChar2AC<CR>
+                 Jump forward by {char}{char}
+	Last set from Lua
+n  \f          * <Cmd>HopChar1AC<CR>
+                 Jump forward by {char}
+	Last set from Lua
+n  \F          * <Cmd>HopChar1BC<CR>
+                 Jump backward by {char}
+	Last set from Lua
+x  \f          * <Cmd>HopChar1AC<CR>
+                 Jump forward by {char}
+	Last set from Lua
+x  \F          * <Cmd>HopChar1BC<CR>
+                 Jump backward by {char}
+	Last set from Lua
+x  \k          * <Cmd>HopLineBC<CR>
+                 Jump to above lines
+	Last set from Lua
+n  \k          * <Cmd>HopLineBC<CR>
+                 Jump to above lines
+	Last set from Lua
+n  \nt         * <Cmd>Neotree toggle reveal<CR>
+                 Toggle neo-tree file explorer
+	Last set from Lua
+n  \bD         * <Lua 179: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Close buffer forcibly!
+	Last set from Lua
+n  \bd         * <Lua 176: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Close buffer
+	Last set from Lua
+n  \8          * <Lua 234: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to buffer-8
+	Last set from Lua
+n  \7          * <Lua 233: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to buffer-7
+	Last set from Lua
+n  \,          * <Lua 232: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Move buffer to previous
+	Last set from Lua
+n  \.          * <Lua 231: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Move buffer to next
+	Last set from Lua
+n  \6          * <Lua 230: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to buffer-6
+	Last set from Lua
+n  \3          * <Lua 229: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to buffer-3
+	Last set from Lua
+n  \5          * <Lua 228: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to buffer-5
+	Last set from Lua
+n  \4          * <Lua 227: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to buffer-4
+	Last set from Lua
+n  \2          * <Lua 226: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to buffer-2
+	Last set from Lua
+n  \9          * <Lua 225: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to buffer-9
+	Last set from Lua
+n  \1          * <Lua 224: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to buffer-1
+	Last set from Lua
+n  \0          * <Lua 221: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to the last buffer
+	Last set from Lua
+n  \pp         * :r /Users/rlin/.config/nvim/.copypaste<CR>
+                 Paste from cache
+	Last set from Lua line 18
+x  \yy         * :w! /Users/rlin/.config/nvim/.copypaste<CR>
+                 Copy visual selected to cache
+	Last set from Lua line 18
+x  \zz         * @=((foldclosed(line('.')) < 0) ? 'zc':'zo')<CR>
+                 Toggle folding
+	Last set from Lua line 18
+n  \zz         * @=((foldclosed(line('.')) < 0) ? 'zc':'zo')<CR>
+                 Toggle folding
+	Last set from Lua line 18
+x  \qA         * :qall!<CR>
+                 :qall!
+	Last set from Lua line 18
+n  \qA         * :qall!<CR>
+                 :qall!
+	Last set from Lua line 18
+x  \qa         * :qall<CR>
+                 :qall
+	Last set from Lua line 18
+n  \qa         * :qall<CR>
+                 :qall
+	Last set from Lua line 18
+x  \qT         * :quit!<CR>
+                 :quit!
+	Last set from Lua line 18
+n  \qT         * :quit!<CR>
+                 :quit!
+	Last set from Lua line 18
+x  \qt         * :quit<CR>
+                 :quit
+	Last set from Lua line 18
+n  \qt         * :quit<CR>
+                 :quit
+	Last set from Lua line 18
+x  \ww         * :noa w<CR>
+                 Save file without formatting
+	Last set from Lua line 18
+n  \ww         * :noa w<CR>
+                 Save file without formatting
+	Last set from Lua line 18
+n  \lz         * :Lazy<CR>
+                 Open Lazy
+	Last set from Lua line 14
+n  \ol         * <Lua 236: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Open oil file manager
+	Last set from Lua line 14
+x  \gl         * <Lua 219: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Copy git link to clipboard
+	Last set from Lua line 14
+n  \gl         * <Lua 218: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Copy git link to clipboard
+	Last set from Lua line 14
+x  \gL         * <Lua 217: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Open git link in browser
+	Last set from Lua line 14
+n  \gL         * <Lua 213: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Open git link in browser
+	Last set from Lua line 14
+n  \lg         * <Lua 133: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Open lazygit in terminal
+	Last set from Lua line 14
+n  \wk         * <Lua 131: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Open WhichKey
+	Last set from Lua line 14
+n  \mp         * <Lua 119: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Markdown preview
+	Last set from Lua line 14
+n  \tb         * <Lua 118: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Toggle trouble (diagnostics)
+	Last set from Lua line 14
+n  \up         * <Lua 117: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 View plugin urls
+	Last set from Lua line 14
+n  \ub         * <Lua 111: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 View buffer urls
+	Last set from Lua line 14
+o  ]%            <Plug>(matchup-]%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+x  ]%            <Plug>(matchup-]%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  ]%            <Plug>(matchup-]%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  ]c          * <Plug>(GitGutterNextHunk)
+                 Go to next git hunk
+	Last set from Lua
+n  ]b          * <Lua 223: ~/.config/nvim/lua/builtin/utils/keymap.lua:35>
+                 Go to next buffer
+	Last set from Lua
+n  ]u          * <Lua 110: ~/.config/nvim/lazy/lazy.nvim/lua/lazy/core/handler/keys.lua:107>
+                 Next url
+	Last set from Lua line 14
+o  a%            <Plug>(matchup-a%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+x  a%            <Plug>(matchup-a%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  cS          * <Plug>(nvim-surround-change-line)
+                 Change a surrounding pair, putting replacements on new lines
+	Last set from Lua
+n  cs          * <Plug>(nvim-surround-change)
+                 Change a surrounding pair
+	Last set from Lua
+n  ds          * <Plug>(nvim-surround-delete)
+                 Delete a surrounding pair
+	Last set from Lua
+o  g%            <Ignore><Plug>(matchup-g%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 183
+x  g%            <Plug>(matchup-g%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  g%            <Plug>(matchup-g%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  gcA         * <Lua 884: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/api.lua:218>
+                 Comment insert end of line
+	Last set from Lua
+n  gcO         * <Lua 883: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/api.lua:179>
+                 Comment insert above
+	Last set from Lua
+n  gco         * <Lua 882: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/api.lua:182>
+                 Comment insert below
+	Last set from Lua
+x  gb          * <Plug>(comment_toggle_blockwise_visual)
+                 Comment toggle blockwise (visual)
+	Last set from Lua
+x  gc          * <Plug>(comment_toggle_linewise_visual)
+                 Comment toggle linewise (visual)
+	Last set from Lua
+n  gbc         * <Lua 881: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/init.lua:107>
+                 Comment toggle current block
+	Last set from Lua
+n  gcc         * <Lua 880: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/init.lua:103>
+                 Comment toggle current line
+	Last set from Lua
+n  gb          * <Plug>(comment_toggle_blockwise)
+                 Comment toggle blockwise
+	Last set from Lua
+n  gc          * <Plug>(comment_toggle_linewise)
+                 Comment toggle linewise
+	Last set from Lua
+n  gP          * <Plug>(YankyGPutBefore)
+                 Put before cursor and leave the cursor after (yanky)
+	Last set from Lua
+x  gP          * <Plug>(YankyGPutBefore)
+                 Put before cursor and leave the cursor after (yanky)
+	Last set from Lua
+x  gp          * <Plug>(YankyGPutAfter)
+                 Put after cursor and leave the cursor after (yanky)
+	Last set from Lua
+n  gp          * <Plug>(YankyGPutAfter)
+                 Put after cursor and leave the cursor after (yanky)
+	Last set from Lua
+x  gS          * <Plug>(nvim-surround-visual-line)
+                 Add a surrounding pair around a visual selection, on new lines
+	Last set from Lua
+x  gx            <Plug>NetrwBrowseXVis
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 88
+n  gx            <Plug>NetrwBrowseX
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 82
+o  i%            <Plug>(matchup-i%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+x  i%            <Plug>(matchup-i%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  p           * <Plug>(YankyPutAfter)
+                 Put after cursor (yanky)
+	Last set from Lua
+x  p           * <Plug>(YankyPutAfter)
+                 Put after cursor (yanky)
+	Last set from Lua
+x  y           * <Plug>(YankyYank)
+                 Yank (yanky)
+	Last set from Lua
+n  y           * <Plug>(YankyYank)
+                 Yank (yanky)
+	Last set from Lua
+n  ySS         * <Plug>(nvim-surround-normal-cur-line)
+                 Add a surrounding pair around the current line, on new lines (normal mode)
+	Last set from Lua
+n  yS          * <Plug>(nvim-surround-normal-line)
+                 Add a surrounding pair around a motion, on new lines (normal mode)
+	Last set from Lua
+n  yss         * <Plug>(nvim-surround-normal-cur)
+                 Add a surrounding pair around the current line (normal mode)
+	Last set from Lua
+n  ys          * <Plug>(nvim-surround-normal)
+                 Add a surrounding pair around a motion (normal mode)
+	Last set from Lua
+o  z%            <Plug>(matchup-z%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+x  z%            <Plug>(matchup-z%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  z%            <Plug>(matchup-z%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+s  <C-B>       * <Lua 145: ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127>
+                 cmp.utils.keymap.set_map
+	Last set from Lua
+s  <C-F>       * <Lua 1323: ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127>
+                 cmp.utils.keymap.set_map
+	Last set from Lua
+n  <Plug>MarkSearchGroup9Prev * :<C-U>if ! mark#SearchGroupMark(9, v:count1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup9Next * :<C-U>if ! mark#SearchGroupMark(9, v:count1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup8Prev * :<C-U>if ! mark#SearchGroupMark(8, v:count1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup8Next * :<C-U>if ! mark#SearchGroupMark(8, v:count1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup7Prev * :<C-U>if ! mark#SearchGroupMark(7, v:count1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup7Next * :<C-U>if ! mark#SearchGroupMark(7, v:count1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup6Prev * :<C-U>if ! mark#SearchGroupMark(6, v:count1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup6Next * :<C-U>if ! mark#SearchGroupMark(6, v:count1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup5Prev * :<C-U>if ! mark#SearchGroupMark(5, v:count1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup5Next * :<C-U>if ! mark#SearchGroupMark(5, v:count1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup4Prev * :<C-U>if ! mark#SearchGroupMark(4, v:count1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup4Next * :<C-U>if ! mark#SearchGroupMark(4, v:count1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup3Prev * :<C-U>if ! mark#SearchGroupMark(3, v:count1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup3Next * :<C-U>if ! mark#SearchGroupMark(3, v:count1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup2Prev * :<C-U>if ! mark#SearchGroupMark(2, v:count1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup2Next * :<C-U>if ! mark#SearchGroupMark(2, v:count1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup1Prev * :<C-U>if ! mark#SearchGroupMark(1, v:count1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchGroup1Next * :<C-U>if ! mark#SearchGroupMark(1, v:count1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 249
+n  <Plug>MarkSearchCascadePrevNoStop * :<C-U>if ! mark#cascade#Next(v:count1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 243
+n  <Plug>MarkSearchCascadeNextNoStop * :<C-U>if ! mark#cascade#Next(v:count1, 0, 0)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 242
+n  <Plug>MarkSearchCascadeStartNoStop * :<C-U>if ! mark#cascade#Start(v:count, 0)|execute "normal! \<C-\>\<C-n>\<Esc>"   |echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 241
+n  <Plug>MarkSearchCascadePrevWithStop * :<C-U>if ! mark#cascade#Next(v:count1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 240
+n  <Plug>MarkSearchCascadeNextWithStop * :<C-U>if ! mark#cascade#Next(v:count1, 1, 0)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 239
+n  <Plug>MarkSearchCascadeStartWithStop * :<C-U>if ! mark#cascade#Start(v:count, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"   |echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 238
+n  <Plug>MarkSearchUsedGroupPrev * :<C-U>if ! mark#SearchNextGroup(v:count1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 237
+n  <Plug>MarkSearchUsedGroupNext * :<C-U>if ! mark#SearchNextGroup(v:count1, 0)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 236
+n  <Plug>MarkSearchGroupPrev * :<C-U>if ! mark#SearchGroupMark(v:count, 1, 1, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 235
+n  <Plug>MarkSearchGroupNext * :<C-U>if ! mark#SearchGroupMark(v:count, 1, 0, 1)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 234
+n  <Plug>MarkSearchAnyOrDefaultPrev * :<C-U>if mark#IsEnabled() && mark#GetCount() > 0|if ! mark#SearchAnyMark(1)|echoerr ingo#err#Get()|endif|else|execute 'normal!' v:count1 . 'Nzv'|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 233
+n  <Plug>MarkSearchAnyOrDefaultNext * :<C-U>if mark#IsEnabled() && mark#GetCount() > 0|if ! mark#SearchAnyMark(0)|echoerr ingo#err#Get()|endif|else|execute 'normal!' v:count1 . 'nzv'|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 232
+n  <Plug>MarkSearchOrAnyPrev * :<C-U>if ! mark#SearchNext(1,'mark#SearchAnyMark')|execute 'normal!' v:count1 . '#zv'|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 231
+n  <Plug>MarkSearchOrAnyNext * :<C-U>if ! mark#SearchNext(0,'mark#SearchAnyMark')|execute 'normal!' v:count1 . '*zv'|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 230
+n  <Plug>MarkSearchOrCurPrev * :<C-U>if ! mark#SearchNext(1,'mark#SearchCurrentMark')|execute 'normal!' v:count1 . '#zv'|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 229
+n  <Plug>MarkSearchOrCurNext * :<C-U>if ! mark#SearchNext(0,'mark#SearchCurrentMark')|execute 'normal!' v:count1 . '*zv'|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 228
+n  <Plug>MarkSearchPrev * :<C-U>if ! mark#SearchNext(1)|execute 'normal!' v:count1 . '#zv'|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 227
+n  <Plug>MarkSearchNext * :<C-U>if ! mark#SearchNext(0)|execute 'normal!' v:count1 . '*zv'|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 226
+n  <Plug>MarkSearchAnyPrev * :<C-U>if ! mark#SearchAnyMark(1)|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 223
+n  <Plug>MarkSearchAnyNext * :<C-U>if ! mark#SearchAnyMark(0)|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 222
+n  <Plug>MarkSearchCurrentPrev * :<C-U>if ! mark#SearchCurrentMark(1)|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 221
+n  <Plug>MarkSearchCurrentNext * :<C-U>if ! mark#SearchCurrentMark(0)|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 220
+n  <Plug>MarkToggle * :<C-U>call mark#Toggle()<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 218
+n  <Plug>MarkConfirmAllClear * :<C-U>if confirm('Really delete all marks? This cannot be undone.', "&Yes\n&No") == 1|call mark#ClearAll()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 217
+n  <Plug>MarkAllClear * :<C-U>call mark#ClearAll()<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 216
+n  <Plug>MarkClear * :<C-U>if ! mark#Clear(v:count)|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 215
+v  <Plug>MarkRegex * :<C-U>if ! mark#MarkRegex(v:count, mark#GetVisualSelectionAsRegexp())|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 214
+n  <Plug>MarkRegex * :<C-U>if ! mark#MarkRegex(v:count, '')|execute "normal! \<C-\>\<C-n>\<Esc>"|echoerr ingo#err#Get()|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 213
+v  <Plug>MarkIWhiteSet * :<C-U>if ! mark#DoMark(v:count, mark#GetVisualSelectionAsLiteralWhitespaceIndifferentPattern())[0]|execute "normal! \<C-\>\<C-n>\<Esc>"|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 212
+v  <Plug>MarkSet * :<C-U>if ! mark#DoMark(v:count, mark#GetVisualSelectionAsLiteralPattern())[0]|execute "normal! \<C-\>\<C-n>\<Esc>"|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 211
+n  <Plug>MarkSet * :<C-U>if ! mark#MarkCurrentWord(v:count)|execute "normal! \<C-\>\<C-n>\<Esc>"|endif<CR>
+	Last set from ~/.config/nvim/lazy/vim-mark/plugin/mark.vim line 210
+o  <Plug>(fzf-maps-o) * <C-C>:<C-U>call fzf#vim#maps('o', 0)<CR>
+	Last set from ~/.config/nvim/lazy/fzf.vim/plugin/fzf.vim line 159
+x  <Plug>(fzf-maps-x) * :<C-U>call fzf#vim#maps('x', 0)<CR>
+	Last set from ~/.config/nvim/lazy/fzf.vim/plugin/fzf.vim line 158
+n  <Plug>(fzf-maps-n) * :<C-U>call fzf#vim#maps('n', 0)<CR>
+	Last set from ~/.config/nvim/lazy/fzf.vim/plugin/fzf.vim line 156
+n  <2-LeftMouse>   <Plug>(matchup-double-click)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 176
+n  <Plug>(matchup-reload) * :<C-U>MatchupReload<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 351
+n  <Plug>(matchup-double-click) * :<C-U>call matchup#text_obj#double_click()<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 341
+o  <Plug>(matchup-a%) * :<C-U>call matchup#text_obj#delimited(0, 0, 'delim_all')<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 338
+o  <Plug>(matchup-i%) * :<C-U>call matchup#text_obj#delimited(1, 0, 'delim_all')<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 337
+x  <Plug>(matchup-a%) * :<C-U>call matchup#text_obj#delimited(0, 1, 'delim_all')<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 336
+x  <Plug>(matchup-i%) * :<C-U>call matchup#text_obj#delimited(1, 1, 'delim_all')<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 335
+o  <Plug>(matchup-Z%) * :<C-U>call matchup#motion#op('Z%')<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 304
+x  <Plug>(matchup-Z%)   <SNR>63_(matchup-Z%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 303
+x  <SNR>63_(matchup-Z%) * :<C-U>call matchup#motion#jump_inside_prev(1)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 301
+n  <Plug>(matchup-Z%) * :<C-U>call matchup#motion#jump_inside_prev(0)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 298
+o  <Plug>(matchup-z%) * :<C-U>call matchup#motion#op('z%')<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 294
+x  <Plug>(matchup-z%)   <SNR>63_(matchup-z%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 293
+x  <SNR>63_(matchup-z%) * :<C-U>call matchup#motion#jump_inside(1)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 291
+n  <Plug>(matchup-z%) * :<C-U>call matchup#motion#jump_inside(0)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 288
+o  <Plug>(matchup-[%) * :<C-U>call matchup#motion#op('[%')<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 284
+o  <Plug>(matchup-]%) * :<C-U>call matchup#motion#op(']%')<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 282
+x  <Plug>(matchup-[%)   <SNR>63_(matchup-[%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 281
+x  <Plug>(matchup-]%)   <SNR>63_(matchup-]%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 280
+x  <SNR>63_(matchup-[%) * :<C-U>call matchup#motion#find_unmatched(1, 0)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 278
+x  <SNR>63_(matchup-]%) * :<C-U>call matchup#motion#find_unmatched(1, 1)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 276
+n  <Plug>(matchup-[%) * :<C-U>call matchup#motion#find_unmatched(0, 0)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 273
+n  <Plug>(matchup-]%) * :<C-U>call matchup#motion#find_unmatched(0, 1)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 271
+o  <Plug>(matchup-g%) * :<C-U>call matchup#motion#op('g%')<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 267
+x  <Plug>(matchup-g%)   <SNR>63_(matchup-g%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 266
+x  <SNR>63_(matchup-g%) * :<C-U>call matchup#motion#find_matching_pair(1, 0)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 264
+o  <Plug>(matchup-%) * :<C-U>call matchup#motion#op('%')<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 261
+x  <Plug>(matchup-%)   <SNR>63_(matchup-%)
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 260
+x  <SNR>63_(matchup-%) * :<C-U>call matchup#motion#find_matching_pair(1, 1)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 258
+n  <Plug>(matchup-g%) * :<C-U>call matchup#motion#find_matching_pair(0, 0)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 254
+n  <Plug>(matchup-%) * :<C-U>call matchup#motion#find_matching_pair(0, 1)<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 252
+n  <SNR>63_(wise) * empty(g:v_motion_force) ? 'v' : g:v_motion_force
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup.vim line 248
+n  <Plug>(matchup-hi-surround) * :<C-U>call matchup#matchparen#highlight_surrounding()<CR>
+	Last set from ~/.config/nvim/lazy/vim-matchup/autoload/matchup/matchparen.vim line 17
+x  <Plug>(comment_toggle_blockwise_visual) * <Esc><Cmd>lua require("Comment.api").locked("toggle.blockwise")(vim.fn.visualmode())<CR>
+                 Comment toggle blockwise (visual)
+	Last set from Lua
+x  <Plug>(comment_toggle_linewise_visual) * <Esc><Cmd>lua require("Comment.api").locked("toggle.linewise")(vim.fn.visualmode())<CR>
+                 Comment toggle linewise (visual)
+	Last set from Lua
+n  <Plug>(comment_toggle_blockwise_count) * <Lua 877: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/api.lua:246>
+                 Comment toggle blockwise with count
+	Last set from Lua
+n  <Plug>(comment_toggle_linewise_count) * <Lua 876: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/api.lua:246>
+                 Comment toggle linewise with count
+	Last set from Lua
+n  <Plug>(comment_toggle_blockwise_current) * <Lua 875: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/api.lua:246>
+                 Comment toggle current block
+	Last set from Lua
+n  <Plug>(comment_toggle_linewise_current) * <Lua 874: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/api.lua:246>
+                 Comment toggle current line
+	Last set from Lua
+n  <Plug>(comment_toggle_blockwise) * <Lua 873: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/api.lua:246>
+                 Comment toggle blockwise
+	Last set from Lua
+n  <Plug>(comment_toggle_linewise) * <Lua 872: ~/.config/nvim/lazy/Comment.nvim/lua/Comment/api.lua:246>
+                 Comment toggle linewise
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeFilterJoined) * <Lua 853: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeFilterJoined) * <Lua 852: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeFilter) * <Lua 851: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeFilter) * <Lua 850: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeShiftLeftJoined) * <Lua 849: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeShiftLeftJoined) * <Lua 848: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeShiftLeft) * <Lua 847: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeShiftLeft) * <Lua 846: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeShiftRightJoined) * <Lua 845: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeShiftRightJoined) * <Lua 844: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeShiftRight) * <Lua 843: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeShiftRight) * <Lua 842: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeBlockwiseJoined) * <Lua 841: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:364>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeBlockwiseJoined) * <Lua 840: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:360>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeBlockwise) * <Lua 839: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:356>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeBlockwise) * <Lua 838: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:352>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeCharwiseJoined) * <Lua 837: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:348>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeCharwiseJoined) * <Lua 836: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:344>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeCharwise) * <Lua 835: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:340>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeCharwise) * <Lua 834: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:336>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeLinewiseJoined) * <Lua 833: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:332>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeLinewiseJoined) * <Lua 832: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:328>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeLinewise) * <Lua 831: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:324>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeLinewise) * <Lua 830: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:320>
+	Last set from Lua
+x  <Plug>(YankyGPutBeforeJoined) * <Lua 829: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:316>
+	Last set from Lua
+n  <Plug>(YankyGPutBeforeJoined) * <Lua 828: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:312>
+	Last set from Lua
+x  <Plug>(YankyGPutBefore) * <Lua 827: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:308>
+	Last set from Lua
+n  <Plug>(YankyGPutBefore) * <Lua 826: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:304>
+	Last set from Lua
+x  <Plug>(YankyPutAfterFilterJoined) * <Lua 825: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutAfterFilterJoined) * <Lua 824: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutAfterFilter) * <Lua 823: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutAfterFilter) * <Lua 822: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutAfterShiftLeftJoined) * <Lua 821: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutAfterShiftLeftJoined) * <Lua 820: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutAfterShiftLeft) * <Lua 819: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutAfterShiftLeft) * <Lua 818: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutAfterShiftRightJoined) * <Lua 817: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutAfterShiftRightJoined) * <Lua 816: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutAfterShiftRight) * <Lua 815: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutAfterShiftRight) * <Lua 814: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutAfterBlockwiseJoined) * <Lua 813: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:364>
+	Last set from Lua
+n  <Plug>(YankyPutAfterBlockwiseJoined) * <Lua 812: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:360>
+	Last set from Lua
+x  <Plug>(YankyPutAfterBlockwise) * <Lua 811: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:356>
+	Last set from Lua
+n  <Plug>(YankyPutAfterBlockwise) * <Lua 810: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:352>
+	Last set from Lua
+x  <Plug>(YankyPutAfterCharwiseJoined) * <Lua 809: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:348>
+	Last set from Lua
+n  <Plug>(YankyPutAfterCharwiseJoined) * <Lua 808: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:344>
+	Last set from Lua
+x  <Plug>(YankyPutAfterCharwise) * <Lua 807: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:340>
+	Last set from Lua
+n  <Plug>(YankyPutAfterCharwise) * <Lua 806: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:336>
+	Last set from Lua
+x  <Plug>(YankyPutAfterLinewiseJoined) * <Lua 805: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:332>
+	Last set from Lua
+n  <Plug>(YankyPutAfterLinewiseJoined) * <Lua 804: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:328>
+	Last set from Lua
+x  <Plug>(YankyPutAfterLinewise) * <Lua 803: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:324>
+	Last set from Lua
+n  <Plug>(YankyPutAfterLinewise) * <Lua 802: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:320>
+	Last set from Lua
+x  <Plug>(YankyPutAfterJoined) * <Lua 801: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:316>
+	Last set from Lua
+n  <Plug>(YankyPutAfterJoined) * <Lua 800: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:312>
+	Last set from Lua
+x  <Plug>(YankyPutAfter) * <Lua 799: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:308>
+	Last set from Lua
+n  <Plug>(YankyPutAfter) * <Lua 798: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:304>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeFilterJoined) * <Lua 797: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeFilterJoined) * <Lua 796: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeFilter) * <Lua 795: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeFilter) * <Lua 794: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeShiftLeftJoined) * <Lua 793: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeShiftLeftJoined) * <Lua 792: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeShiftLeft) * <Lua 791: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeShiftLeft) * <Lua 790: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeShiftRightJoined) * <Lua 789: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeShiftRightJoined) * <Lua 788: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeShiftRight) * <Lua 787: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeShiftRight) * <Lua 786: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeBlockwiseJoined) * <Lua 785: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:364>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeBlockwiseJoined) * <Lua 784: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:360>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeBlockwise) * <Lua 783: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:356>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeBlockwise) * <Lua 782: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:352>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeCharwiseJoined) * <Lua 781: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:348>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeCharwiseJoined) * <Lua 780: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:344>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeCharwise) * <Lua 779: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:340>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeCharwise) * <Lua 778: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:336>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeLinewiseJoined) * <Lua 777: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:332>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeLinewiseJoined) * <Lua 776: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:328>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeLinewise) * <Lua 775: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:324>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeLinewise) * <Lua 774: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:320>
+	Last set from Lua
+x  <Plug>(YankyPutBeforeJoined) * <Lua 773: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:316>
+	Last set from Lua
+n  <Plug>(YankyPutBeforeJoined) * <Lua 772: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:312>
+	Last set from Lua
+x  <Plug>(YankyPutBefore) * <Lua 771: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:308>
+	Last set from Lua
+n  <Plug>(YankyPutBefore) * <Lua 770: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:304>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeFilterJoined) * <Lua 769: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeFilterJoined) * <Lua 768: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeFilter) * <Lua 767: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeFilter) * <Lua 766: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeShiftLeftJoined) * <Lua 765: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeShiftLeftJoined) * <Lua 764: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeShiftLeft) * <Lua 763: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeShiftLeft) * <Lua 762: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeShiftRightJoined) * <Lua 761: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeShiftRightJoined) * <Lua 760: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeShiftRight) * <Lua 759: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeShiftRight) * <Lua 758: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeBlockwiseJoined) * <Lua 757: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:364>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeBlockwiseJoined) * <Lua 756: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:360>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeBlockwise) * <Lua 755: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:356>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeBlockwise) * <Lua 754: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:352>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeCharwiseJoined) * <Lua 753: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:348>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeCharwiseJoined) * <Lua 752: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:344>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeCharwise) * <Lua 751: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:340>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeCharwise) * <Lua 750: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:336>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeLinewiseJoined) * <Lua 749: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:332>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeLinewiseJoined) * <Lua 748: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:328>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeLinewise) * <Lua 747: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:324>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeLinewise) * <Lua 746: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:320>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBeforeJoined) * <Lua 745: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:316>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBeforeJoined) * <Lua 744: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:312>
+	Last set from Lua
+x  <Plug>(YankyPutIndentBefore) * <Lua 743: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:308>
+	Last set from Lua
+n  <Plug>(YankyPutIndentBefore) * <Lua 742: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:304>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterFilterJoined) * <Lua 741: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterFilterJoined) * <Lua 740: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterFilter) * <Lua 739: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterFilter) * <Lua 738: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterShiftLeftJoined) * <Lua 737: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterShiftLeftJoined) * <Lua 736: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterShiftLeft) * <Lua 735: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterShiftLeft) * <Lua 734: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterShiftRightJoined) * <Lua 733: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterShiftRightJoined) * <Lua 732: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterShiftRight) * <Lua 731: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterShiftRight) * <Lua 730: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterBlockwiseJoined) * <Lua 729: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:364>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterBlockwiseJoined) * <Lua 728: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:360>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterBlockwise) * <Lua 727: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:356>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterBlockwise) * <Lua 726: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:352>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterCharwiseJoined) * <Lua 725: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:348>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterCharwiseJoined) * <Lua 724: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:344>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterCharwise) * <Lua 723: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:340>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterCharwise) * <Lua 722: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:336>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterLinewiseJoined) * <Lua 721: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:332>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterLinewiseJoined) * <Lua 720: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:328>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterLinewise) * <Lua 719: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:324>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterLinewise) * <Lua 718: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:320>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfterJoined) * <Lua 717: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:316>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfterJoined) * <Lua 716: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:312>
+	Last set from Lua
+x  <Plug>(YankyPutIndentAfter) * <Lua 715: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:308>
+	Last set from Lua
+n  <Plug>(YankyPutIndentAfter) * <Lua 714: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:304>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterFilterJoined) * <Lua 713: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterFilterJoined) * <Lua 712: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterFilter) * <Lua 711: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterFilter) * <Lua 710: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterShiftLeftJoined) * <Lua 709: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterShiftLeftJoined) * <Lua 708: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterShiftLeft) * <Lua 707: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterShiftLeft) * <Lua 706: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterShiftRightJoined) * <Lua 705: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:385>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterShiftRightJoined) * <Lua 704: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:377>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterShiftRight) * <Lua 703: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:373>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterShiftRight) * <Lua 702: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterBlockwiseJoined) * <Lua 701: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:364>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterBlockwiseJoined) * <Lua 700: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:360>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterBlockwise) * <Lua 699: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:356>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterBlockwise) * <Lua 698: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:352>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterCharwiseJoined) * <Lua 697: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:348>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterCharwiseJoined) * <Lua 696: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:344>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterCharwise) * <Lua 695: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:340>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterCharwise) * <Lua 694: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:336>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterLinewiseJoined) * <Lua 693: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:332>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterLinewiseJoined) * <Lua 692: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:328>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterLinewise) * <Lua 676: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:324>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterLinewise) * <Lua 198: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:320>
+	Last set from Lua
+x  <Plug>(YankyGPutAfterJoined) * <Lua 199: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:316>
+	Last set from Lua
+n  <Plug>(YankyGPutAfterJoined) * <Lua 200: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:312>
+	Last set from Lua
+x  <Plug>(YankyGPutAfter) * <Lua 201: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:308>
+	Last set from Lua
+n  <Plug>(YankyGPutAfter) * <Lua 202: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:304>
+	Last set from Lua
+x  <Plug>(YankyYank) * <Lua 203: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:272>
+	Last set from Lua
+n  <Plug>(YankyYank) * <Lua 204: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:272>
+	Last set from Lua
+n  <Plug>(YankyCycleBackward) * <Lua 205: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:290>
+	Last set from Lua
+n  <Plug>(YankyCycleForward) * <Lua 207: ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:286>
+	Last set from Lua
+x  <M-i>       * <Lua 581: ~/.config/nvim/lazy/vim-illuminate/lua/illuminate.lua:292>
+	Last set from Lua line 45
+o  <M-i>       * <Lua 580: ~/.config/nvim/lazy/vim-illuminate/lua/illuminate.lua:292>
+	Last set from Lua line 45
+n  <M-p>       * <Lua 579: ~/.config/nvim/lazy/vim-illuminate/lua/illuminate.lua:285>
+                 Move to previous reference
+	Last set from Lua line 45
+n  <M-n>       * <Lua 563: ~/.config/nvim/lazy/vim-illuminate/lua/illuminate.lua:278>
+                 Move to next reference
+	Last set from Lua line 45
+n  <Plug>(nvim-surround-change-line) * <Lua 554: ~/.config/nvim/lazy/nvim-surround/lua/nvim-surround/config.lua:723>
+                 Change a surrounding pair, putting replacements on new lines
+	Last set from Lua
+n  <Plug>(nvim-surround-change) * <Lua 553: ~/.config/nvim/lazy/nvim-surround/lua/nvim-surround/config.lua:710>
+                 Change a surrounding pair
+	Last set from Lua
+n  <Plug>(nvim-surround-delete) * <Lua 552: ~/.config/nvim/lazy/nvim-surround/lua/nvim-surround/init.lua:152>
+                 Delete a surrounding pair
+	Last set from Lua
+x  <Plug>(nvim-surround-visual-line) * <Esc><Cmd>lua require'nvim-surround'.visual_surround({ line_mode = true })<CR>
+                 Add a surrounding pair around a visual selection, on new lines
+	Last set from Lua
+x  <Plug>(nvim-surround-visual) * <Esc><Cmd>lua require'nvim-surround'.visual_surround({ line_mode = false })<CR>
+                 Add a surrounding pair around a visual selection
+	Last set from Lua
+n  <Plug>(nvim-surround-normal-cur-line) * <Lua 551: ~/.config/nvim/lazy/nvim-surround/lua/nvim-surround/config.lua:666>
+                 Add a surrounding pair around the current line, on new lines (normal mode)
+	Last set from Lua
+n  <Plug>(nvim-surround-normal-line) * <Lua 550: ~/.config/nvim/lazy/nvim-surround/lua/nvim-surround/config.lua:653>
+                 Add a surrounding pair around a motion, on new lines (normal mode)
+	Last set from Lua
+n  <Plug>(nvim-surround-normal-cur) * <Lua 549: ~/.config/nvim/lazy/nvim-surround/lua/nvim-surround/config.lua:640>
+                 Add a surrounding pair around the current line (normal mode)
+	Last set from Lua
+n  <Plug>(nvim-surround-normal) * <Lua 548: ~/.config/nvim/lazy/nvim-surround/lua/nvim-surround/config.lua:627>
+                 Add a surrounding pair around a motion (normal mode)
+	Last set from Lua
+s  <Plug>luasnip-jump-prev * <Lua 487: ~/.config/nvim/lazy/LuaSnip/plugin/luasnip.lua:57>
+	Last set from Lua
+s  <Plug>luasnip-jump-next * <Lua 486: ~/.config/nvim/lazy/LuaSnip/plugin/luasnip.lua:54>
+	Last set from Lua
+s  <Plug>luasnip-prev-choice * <Lua 485: ~/.config/nvim/lazy/LuaSnip/plugin/luasnip.lua:51>
+	Last set from Lua
+s  <Plug>luasnip-next-choice * <Lua 484: ~/.config/nvim/lazy/LuaSnip/plugin/luasnip.lua:48>
+	Last set from Lua
+s  <Plug>luasnip-expand-snippet * <Lua 483: ~/.config/nvim/lazy/LuaSnip/plugin/luasnip.lua:45>
+	Last set from Lua
+s  <Plug>luasnip-expand-or-jump * <Lua 482: ~/.config/nvim/lazy/LuaSnip/plugin/luasnip.lua:42>
+	Last set from Lua
+   <Plug>luasnip-expand-repeat * <Lua 480: ~/.config/nvim/lazy/LuaSnip/plugin/luasnip.lua:35>
+	Last set from Lua
+n  <Plug>luasnip-delete-check * <Lua 478: ~/.config/nvim/lazy/LuaSnip/plugin/luasnip.lua:28>
+	Last set from Lua
+n  <Plug>GitGutterPreviewHunk * :call gitgutter#utility#warn('Please change your map <Plug>GitGutterPreviewHunk to <Plug>(GitGutterPreviewHunk)')<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 232
+n  <Plug>(GitGutterPreviewHunk) * :GitGutterPreviewHunk<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 231
+n  <Plug>GitGutterUndoHunk * :call gitgutter#utility#warn('Please change your map <Plug>GitGutterUndoHunk to <Plug>(GitGutterUndoHunk)')<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 230
+n  <Plug>(GitGutterUndoHunk) * :GitGutterUndoHunk<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 229
+n  <Plug>GitGutterStageHunk * :call gitgutter#utility#warn('Please change your map <Plug>GitGutterStageHunk to <Plug>(GitGutterStageHunk)')<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 228
+n  <Plug>(GitGutterStageHunk) * :GitGutterStageHunk<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 227
+x  <Plug>GitGutterStageHunk * :call gitgutter#utility#warn('Please change your map <Plug>GitGutterStageHunk to <Plug>(GitGutterStageHunk)')<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 226
+x  <Plug>(GitGutterStageHunk) * :GitGutterStageHunk<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 225
+n  <Plug>GitGutterPrevHunk * &diff ? '[c' : ":\<C-U>call gitgutter#utility#warn('Please change your map \<Plug>GitGutterPrevHunk to \<Plug>(GitGutterPrevHunk)')\<CR>"
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 223
+n  <Plug>(GitGutterPrevHunk) * &diff ? '[c' : ":\<C-U>execute v:count1 . 'GitGutterPrevHunk'\<CR>"
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 222
+n  <Plug>GitGutterNextHunk * &diff ? ']c' : ":\<C-U>call gitgutter#utility#warn('Please change your map \<Plug>GitGutterNextHunk to \<Plug>(GitGutterNextHunk)')\<CR>"
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 221
+n  <Plug>(GitGutterNextHunk) * &diff ? ']c' : ":\<C-U>execute v:count1 . 'GitGutterNextHunk'\<CR>"
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 220
+x  <Plug>(GitGutterTextObjectOuterVisual) * :<C-U>call gitgutter#hunk#text_object(0)<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 176
+x  <Plug>(GitGutterTextObjectInnerVisual) * :<C-U>call gitgutter#hunk#text_object(1)<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 175
+o  <Plug>(GitGutterTextObjectOuterPending) * :<C-U>call gitgutter#hunk#text_object(0)<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 174
+o  <Plug>(GitGutterTextObjectInnerPending) * :<C-U>call gitgutter#hunk#text_object(1)<CR>
+	Last set from ~/.config/nvim/lazy/vim-gitgutter/plugin/gitgutter.vim line 173
+n  <Plug>PlenaryTestFile * :lua require('plenary.test_harness').test_file(vim.fn.expand("%:p"))<CR>
+	Last set from ~/.config/nvim/lazy/plenary.nvim/plugin/plenary.vim line 9
+n  <Plug>(fzf-normal) * <Nop>
+	Last set from ~/.config/nvim/lazy/fzf/plugin/fzf.vim line 849
+n  <Plug>(fzf-insert) * i
+	Last set from ~/.config/nvim/lazy/fzf/plugin/fzf.vim line 848
+o  <D-g>         <Esc><D-g>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 75
+v  <D-g>         <Esc><D-g>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 72
+n  <D-g>       * n
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 71
+o  <D-f>         <Esc><D-f>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 69
+v  <D-f>         <Esc><D-f>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 66
+n  <D-f>       * /
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 65
+o  <D-a>         <Esc><D-a>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 63
+v  <D-a>         <Esc><D-a>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 60
+n  <D-a>       * :if &slm != ""|exe ":norm gggH<C-O>G"| else|exe ":norm ggVG"|endif<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 59
+v  <D-v>       & "-c<Esc>:call paste#Paste()<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 56
+n  <D-v>       * "+gP
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 54
+v  <D-c>       * "+y
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 50
+v  <D-x>       * "+x
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 48
+o  <D-z>         <Esc><D-z>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 46
+v  <D-z>         <Esc><D-z>gv
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 43
+n  <D-z>       * u
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 42
+o  <S-D-s>       <Esc><D-s>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 39
+v  <S-D-s>       <Esc><D-s>gv
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 36
+n  <S-D-s>     * :browse confirm saveas<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 35
+o  <D-s>         <Esc><D-s>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 33
+v  <D-s>         <Esc><D-s>gv
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 30
+n  <D-s>       * :if expand("%") == ""|browse confirm w| else|confirm w|endif<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 29
+o  <D-w>         <Esc><D-w>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 27
+v  <D-w>         <Esc><D-w>gv
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 24
+n  <D-w>       * :if winheight(2) < 0 | confirm enew | else | confirm close | endif<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 23
+o  <D-o>         <Esc><D-o>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 21
+v  <D-o>         <Esc><D-o>gv
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 18
+n  <D-o>       * :browse confirm e<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 17
+o  <D-n>         <Esc><D-n>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 15
+v  <D-n>         <Esc><D-n>gv
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 12
+n  <D-n>       * :confirm enew<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/macmap.vim line 11
+o  <C-F4>      * <C-C><C-W>c
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 105
+nv <C-F4>      * <C-W>c
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 102
+o  <C-Tab>     * <C-C><C-W>w
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 99
+nv <C-Tab>     * <C-W>w
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 96
+x  <C-A>       * <C-C>ggVG
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 93
+s  <C-A>       * <C-C>gggH<C-O>G
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 92
+o  <C-A>       * <C-C>gggH<C-O>G
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 91
+n  <C-A>       * gggH<C-O>G
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 88
+   <C-Y>       * <C-R>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 77
+   <C-Z>       * u
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 73
+v  <C-S>       * <C-C>:update<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 63
+no <C-S>       * :update<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 62
+   <C-Q>       * <C-V>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 58
+v  <S-Insert>    <C-V>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 55
+v  <C-V>       & "-c<Esc>:call paste#Paste()<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 51
+no <S-Insert>    "+gP
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 37
+no <C-V>         "+gP
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 36
+v  <C-Insert>  * "+y
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 33
+v  <C-C>       * "+y
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 32
+v  <S-Del>     * "+x
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 29
+v  <C-X>       * "+x
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 28
+v  <BS>        * d
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 24
+x  <Plug>NetrwBrowseXVis * :<C-U>call netrw#BrowseXVis()<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 90
+n  <Plug>NetrwBrowseX * :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))<CR>
+	Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 84
+n  <C-L>       * :nohlsearch<C-R>=has('diff')?'|diffupdate':''<CR><CR><C-L>
+	Last set from ~/.config/nvim/lua/builtin/options.vim line 50

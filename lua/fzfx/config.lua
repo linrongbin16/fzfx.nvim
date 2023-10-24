@@ -238,7 +238,7 @@ end
 --- @return string
 local function parse_vim_ex_command_name(line)
     local name_stop_pos = utils.string_find(line, "|", 3)
-    return vim.trim(line:sub(2, name_stop_pos - 1))
+    return vim.trim(line:sub(3, name_stop_pos - 1))
 end
 
 --- @return table<string, VimCommand>
@@ -266,13 +266,15 @@ local function get_vim_ex_commands()
                     vim.inspect(line)
                 )
                 local name = parse_vim_ex_command_name(line)
-                results[name] = {
-                    name = name,
-                    loc = {
-                        filename = path.reduce2home(help_doc),
-                        lineno = i,
-                    },
-                }
+                if type(name) == "string" and string.len(name) > 0 then
+                    results[name] = {
+                        name = name,
+                        loc = {
+                            filename = path.reduce2home(help_doc),
+                            lineno = i,
+                        },
+                    }
+                end
             end
             i = i + 1
         end
@@ -487,7 +489,7 @@ local function get_vim_user_commands()
     local results = {}
     for name, opts in pairs(user_commands) do
         results[name] = {
-            name = string.format(":%s", opts.name),
+            name = opts.name,
             opts = {
                 bang = opts.bang,
                 bar = opts.bar,
@@ -523,7 +525,7 @@ local function render_vim_commands_column_opts(rendered)
             and rendered.opts.range
         or "N/A"
     local complete = (type(rendered.opts) == "table" and rendered.opts.complete)
-            and rendered.opts.complete
+            and (rendered.opts.complete == "<Lua function>" and "<Lua>" or rendered.opts.complete)
         or "N/A"
 
     return string.format(
@@ -716,7 +718,7 @@ end
 --- @param context VimCommandsPipelineContext
 --- @return string[]|nil
 local function vim_commands_previewer(line, context)
-    local desc_or_loc = line_helpers.parse_vim_commands(line, context)
+    local desc_or_loc = line_helpers.parse_vim_command(line, context)
     log.debug(
         "|fzfx.config - vim_commands_previewer| line:%s, context:%s, desc_or_loc:%s",
         vim.inspect(line),
@@ -1134,6 +1136,432 @@ local function lsp_locations_provider(opts)
 end
 
 -- lsp locations }
+
+-- vim keymaps {
+
+-- the ':verbose map' output looks like:
+--
+--```
+--n  K           *@<Cmd>lua vim.lsp.buf.hover()<CR>
+--                Show hover
+--                Last set from Lua
+--n  [w          *@<Lua 1213: ~/.config/nvim/lua/builtin/lsp.lua:60>
+--                Previous diagnostic warning
+--                Last set from Lua
+--n  [e          *@<Lua 1211: ~/.config/nvim/lua/builtin/lsp.lua:60>
+--                 Previous diagnostic error
+--                 Last set from Lua
+--n  [d          *@<Lua 1209: ~/.config/nvim/lua/builtin/lsp.lua:60>
+--                 Previous diagnostic item
+--                 Last set from Lua
+--x  \ca         *@<Cmd>lua vim.lsp.buf.range_code_action()<CR>
+--                 Code actions
+--n  <CR>        *@<Lua 961: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+--                 Last set from Lua
+--n  <Esc>       *@<Lua 998: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+--                 Last set from Lua
+--n  .           *@<Lua 977: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+--                 Last set from Lua
+--n  <           *@<Lua 987: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
+--                 Last set from Lua
+--v  <BS>        * d
+--                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 24
+--x  <Plug>NetrwBrowseXVis * :<C-U>call netrw#BrowseXVis()<CR>
+--                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 90
+--n  <Plug>NetrwBrowseX * :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))<CR>
+--                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 84
+--n  <C-L>       * :nohlsearch<C-R>=has('diff')?'|diffupdate':''<CR><CR><C-L>
+--                 Last set from ~/.config/nvim/lua/builtin/options.vim line 50
+--```
+--- @param line string
+--- @return VimKeyMap
+local function parse_ex_map_output_line(line)
+    local first_space_pos = 1
+    while
+        first_space_pos <= #line
+        and not utils.string_isspace(line:sub(first_space_pos, first_space_pos))
+    do
+        first_space_pos = first_space_pos + 1
+    end
+    -- local mode = vim.trim(line:sub(1, first_space_pos - 1))
+    while
+        first_space_pos <= #line
+        and utils.string_isspace(line:sub(first_space_pos, first_space_pos))
+    do
+        first_space_pos = first_space_pos + 1
+    end
+    local second_space_pos = first_space_pos
+    while
+        second_space_pos <= #line
+        and not utils.string_isspace(
+            line:sub(second_space_pos, second_space_pos)
+        )
+    do
+        second_space_pos = second_space_pos + 1
+    end
+    local lhs = vim.trim(line:sub(first_space_pos, second_space_pos - 1))
+    local result = { lhs = lhs }
+    local rhs_or_location = vim.trim(line:sub(second_space_pos))
+    local lua_definition_pos = utils.string_find(rhs_or_location, "<Lua ")
+
+    if lua_definition_pos and utils.string_endswith(rhs_or_location, ">") then
+        local first_colon_pos = utils.string_find(
+            rhs_or_location,
+            ":",
+            lua_definition_pos + string.len("<Lua ")
+        ) --[[@as integer]]
+        local last_colon_pos = utils.string_rfind(rhs_or_location, ":") --[[@as integer]]
+        local filename =
+            rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
+        local lineno =
+            rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
+        log.debug(
+            "|fzfx.config - parse_ex_map_output_line| lhs:%s, filename:%s, lineno:%s",
+            vim.inspect(lhs),
+            vim.inspect(filename),
+            vim.inspect(lineno)
+        )
+        result.filename = vim.fn.expand(path.normalize(filename))
+        result.lineno = tonumber(lineno)
+    end
+    return result
+end
+
+--- @alias VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
+--- @return VimKeyMap[]
+local function get_vim_keymaps()
+    local tmpfile = vim.fn.tempname()
+    vim.cmd(string.format(
+        [[
+    redir! > %s
+    silent execute 'verbose map'
+    redir END
+    ]],
+        tmpfile
+    ))
+
+    local keys_output_map = {}
+    local map_output_lines = utils.readlines(tmpfile) --[[@as table]]
+
+    local LAST_SET_FROM = "\tLast set from "
+    local LAST_SET_FROM_LUA = "\tLast set from Lua"
+    local LINE = " line "
+    local last_lhs = nil
+    for i = 1, #map_output_lines do
+        local line = map_output_lines[i]
+        if type(line) == "string" and string.len(vim.trim(line)) > 0 then
+            if utils.string_isalpha(line:sub(1, 1)) then
+                local parsed = parse_ex_map_output_line(line)
+                keys_output_map[parsed.lhs] = parsed
+                last_lhs = parsed.lhs
+            elseif
+                utils.string_startswith(line, LAST_SET_FROM)
+                and utils.string_rfind(line, LINE)
+                and not utils.string_startswith(line, LAST_SET_FROM_LUA)
+                and last_lhs
+            then
+                local line_pos = utils.string_rfind(line, LINE)
+                local filename = vim.trim(
+                    line:sub(string.len(LAST_SET_FROM) + 1, line_pos - 1)
+                )
+                local lineno =
+                    vim.trim(line:sub(line_pos + string.len(LINE) + 1))
+                keys_output_map[last_lhs].filename =
+                    vim.fn.expand(path.normalize(filename))
+                keys_output_map[last_lhs].lineno = tonumber(filename)
+            end
+        end
+    end
+    -- log.debug(
+    --     "|fzfx.config - get_vim_keymaps| keys_output_map1:%s",
+    --     vim.inspect(keys_output_map)
+    -- )
+    local api_keys_list = vim.api.nvim_get_keymap("")
+    -- log.debug(
+    --     "|fzfx.config - get_vim_keymaps| api_keys_list:%s",
+    --     vim.inspect(api_keys_list)
+    -- )
+    local api_keys_map = {}
+    for _, km in ipairs(api_keys_list) do
+        if not api_keys_map[km.lhs] then
+            api_keys_map[km.lhs] = km
+        end
+    end
+
+    local function get_boolean(v, default_value)
+        if type(v) == "number" then
+            return v > 0
+        elseif type(v) == "boolean" then
+            return v
+        else
+            return default_value
+        end
+    end
+    local function get_string(v, default_value)
+        if type(v) == "string" and string.len(v) > 0 then
+            return v
+        else
+            return default_value
+        end
+    end
+
+    local function get_key_def(keys, left)
+        if keys[left] then
+            return keys[left]
+        end
+        if
+            utils.string_startswith(left, "<Space>")
+            or utils.string_startswith(left, "<space>")
+        then
+            return keys[" " .. left:sub(string.len("<Space>") + 1)]
+        end
+        return nil
+    end
+
+    for lhs, km in pairs(keys_output_map) do
+        local km2 = get_key_def(api_keys_map, lhs)
+        if km2 then
+            km.rhs = get_string(km2.rhs, "")
+            km.mode = get_string(km2.mode, "")
+            km.noremap = get_boolean(km2.noremap, false)
+            km.nowait = get_boolean(km2.nowait, false)
+            km.silent = get_boolean(km2.silent, false)
+            km.desc = get_string(km2.desc, "")
+        else
+            km.rhs = get_string(km.rhs, "")
+            km.mode = get_string(km.mode, "")
+            km.noremap = get_boolean(km.noremap, false)
+            km.nowait = get_boolean(km.nowait, false)
+            km.silent = get_boolean(km.silent, false)
+            km.desc = get_string(km.desc, "")
+        end
+    end
+    log.debug(
+        "|fzfx.config - get_vim_keymaps| keys_output_map2:%s",
+        vim.inspect(keys_output_map)
+    )
+    local results = {}
+    for _, r in pairs(keys_output_map) do
+        table.insert(results, r)
+    end
+    table.sort(results, function(a, b)
+        return a.lhs < b.lhs
+    end)
+    log.debug(
+        "|fzfx.config - get_vim_keymaps| results:%s",
+        vim.inspect(results)
+    )
+    return results
+end
+
+--- @param rendered VimKeyMap
+--- @return string
+local function render_vim_keymaps_column_opts(rendered)
+    local mode = rendered.mode or ""
+    local noremap = rendered.noremap and "Y" or "N"
+    local nowait = rendered.nowait and "Y" or "N"
+    local silent = rendered.silent and "Y" or "N"
+    return string.format("%-4s|%-7s|%-6s|%-6s", mode, noremap, nowait, silent)
+end
+
+--- @param keys VimKeyMap[]
+--- @return integer,integer
+local function render_vim_keymaps_columns_status(keys)
+    local KEY = "Key"
+    local OPTS = "Mode|Noremap|Nowait|Silent"
+    local max_key = string.len(KEY)
+    local max_opts = string.len(OPTS)
+    for _, k in ipairs(keys) do
+        max_key = math.max(max_key, string.len(k.lhs))
+        max_opts =
+            math.max(max_opts, string.len(render_vim_keymaps_column_opts(k)))
+    end
+    log.debug(
+        "|fzfx.config - render_vim_keymaps_columns_status| lhs:%s, opts:%s",
+        vim.inspect(max_key),
+        vim.inspect(max_opts)
+    )
+    return max_key, max_opts
+end
+
+--- @param keymaps VimKeyMap[]
+--- @param key_width integer
+--- @param opts_width integer
+--- @return string[]
+local function render_vim_keymaps(keymaps, key_width, opts_width)
+    --- @param r VimKeyMap
+    --- @return string?
+    local function rendered_def_or_loc(r)
+        if
+            type(r) == "table"
+            and type(r.filename) == "string"
+            and string.len(r.filename) > 0
+            and type(r.lineno) == "number"
+            and r.lineno >= 0
+        then
+            return string.format("%s:%d", path.reduce(r.filename), r.lineno)
+        elseif type(r.rhs) == "string" and string.len(r.rhs) > 0 then
+            return string.format('"%s"', r.rhs)
+        elseif type(r.desc) == "string" and string.len(r.desc) > 0 then
+            return string.format('"%s"', r.desc)
+        else
+            return ""
+        end
+    end
+
+    local KEY = "Key"
+    local OPTS = "Mode|Noremap|Nowait|Silent"
+    local DEF_OR_LOC = "Definition/Location"
+
+    local results = {}
+    local formatter = "%-"
+        .. tostring(key_width)
+        .. "s"
+        .. " %-"
+        .. tostring(opts_width)
+        .. "s %s"
+    local header = string.format(formatter, KEY, OPTS, DEF_OR_LOC)
+    table.insert(results, header)
+    log.debug(
+        "|fzfx.config - render_vim_keymaps| formatter:%s, header:%s",
+        vim.inspect(formatter),
+        vim.inspect(header)
+    )
+    for i, c in ipairs(keymaps) do
+        local rendered = string.format(
+            formatter,
+            c.lhs,
+            render_vim_keymaps_column_opts(c),
+            rendered_def_or_loc(c)
+        )
+        log.debug(
+            "|fzfx.config - render_vim_keymaps| rendered[%d]:%s",
+            i,
+            vim.inspect(rendered)
+        )
+        table.insert(results, rendered)
+    end
+    return results
+end
+
+--- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
+--- @return VimKeyMapsPipelineContext
+local function vim_keymaps_context_maker()
+    local ctx = {
+        bufnr = vim.api.nvim_get_current_buf(),
+        winnr = vim.api.nvim_get_current_win(),
+        tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+    local keys = get_vim_keymaps()
+    local key_width, opts_width = render_vim_keymaps_columns_status(keys)
+    ctx.key_width = key_width
+    ctx.opts_width = opts_width
+    return ctx
+end
+
+--- @param mode "n"|"i"|"v"|"all"
+--- @param ctx VimKeyMapsPipelineContext
+--- @return string[]
+local function vim_keymaps_provider(mode, ctx)
+    local keys = get_vim_keymaps()
+    local filtered_keys = {}
+    if mode == "all" then
+        filtered_keys = keys
+    else
+        for _, k in ipairs(keys) do
+            if k.mode == mode then
+                table.insert(filtered_keys, k)
+            elseif
+                mode == "v"
+                and (
+                    utils.string_find(k.mode, "v")
+                    or utils.string_find(k.mode, "s")
+                    or utils.string_find(k.mode, "x")
+                )
+            then
+                table.insert(filtered_keys, k)
+            elseif mode == "n" and utils.string_find(k.mode, "n") then
+                table.insert(filtered_keys, k)
+            elseif mode == "i" and utils.string_find(k.mode, "i") then
+                table.insert(filtered_keys, k)
+            elseif mode == "n" and string.len(k.mode) == 0 then
+                table.insert(filtered_keys, k)
+            end
+        end
+    end
+    return render_vim_keymaps(filtered_keys, ctx.key_width, ctx.opts_width)
+end
+
+--- @param filename string
+--- @param lineno integer
+--- @return string[]
+local function vim_keymaps_lua_function_previewer(filename, lineno)
+    local height = vim.api.nvim_win_get_height(0)
+    if constants.has_bat then
+        local style, theme = default_bat_style_and_theme()
+        -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
+        return {
+            constants.bat,
+            "--style=" .. style,
+            "--theme=" .. theme,
+            "--color=always",
+            "--pager=never",
+            "--highlight-line=" .. lineno,
+            "--line-range",
+            string.format(
+                "%d:",
+                math.max(lineno - math.max(math.floor(height / 2), 1), 1)
+            ),
+            "--",
+            filename,
+        }
+    else
+        -- "cat %s"
+        return {
+            "cat",
+            filename,
+        }
+    end
+end
+
+--- @param line string
+--- @param context VimKeyMapsPipelineContext
+--- @return string[]|nil
+local function vim_keymaps_previewer(line, context)
+    local def_or_loc = line_helpers.parse_vim_keymap(line, context)
+    log.debug(
+        "|fzfx.config - vim_keymaps_previewer| line:%s, context:%s, desc_or_loc:%s",
+        vim.inspect(line),
+        vim.inspect(context),
+        vim.inspect(def_or_loc)
+    )
+    if
+        type(def_or_loc) == "table"
+        and type(def_or_loc.filename) == "string"
+        and string.len(def_or_loc.filename) > 0
+        and type(def_or_loc.lineno) == "number"
+    then
+        log.debug(
+            "|fzfx.config - vim_keymaps_previewer| loc:%s",
+            vim.inspect(def_or_loc)
+        )
+        return vim_keymaps_lua_function_previewer(
+            def_or_loc.filename,
+            def_or_loc.lineno
+        )
+    elseif vim.fn.executable("echo") > 0 and type(def_or_loc) == "string" then
+        log.debug(
+            "|fzfx.config - vim_keymaps_previewer| desc:%s",
+            vim.inspect(def_or_loc)
+        )
+        return { "echo", def_or_loc }
+    else
+        log.echo(LogLevels.INFO, "no echo command found.")
+        return nil
+    end
+end
+
+-- vim keymaps }
 
 -- file explorer {
 
@@ -1806,7 +2234,6 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    complete = "dir",
                     desc = "Search local git branches",
                 },
                 default_provider = "local_branch",
@@ -1817,7 +2244,6 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    complete = "dir",
                     desc = "Search remote git branches",
                 },
                 default_provider = "remote_branch",
@@ -2272,7 +2698,7 @@ local Defaults = {
 
     -- the 'Vim Commands' commands
     --- @type GroupConfig
-    commands = {
+    vim_commands = {
         commands = {
             -- normal
             {
@@ -2281,7 +2707,7 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    complete = "dir",
+                    complete = "command",
                     desc = "Find vim commands",
                 },
                 default_provider = "all_commands",
@@ -2292,7 +2718,7 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    complete = "dir",
+                    complete = "command",
                     desc = "Find vim ex(builtin) commands",
                 },
                 default_provider = "ex_commands",
@@ -2303,7 +2729,7 @@ local Defaults = {
                 opts = {
                     bang = true,
                     nargs = "?",
-                    complete = "dir",
+                    complete = "command",
                     desc = "Find vim user commands",
                 },
                 default_provider = "user_commands",
@@ -2452,6 +2878,243 @@ local Defaults = {
         },
         other_opts = {
             context_maker = vim_commands_context_maker,
+        },
+    },
+
+    -- the 'Vim KeyMaps' commands
+    --- @type GroupConfig
+    vim_keymaps = {
+        commands = {
+            -- normal
+            {
+                name = "FzfxKeyMaps",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "mapping",
+                    desc = "Find vim keymaps",
+                },
+                default_provider = "all_mode",
+            },
+            {
+                name = "FzfxKeyMapsN",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "mapping",
+                    desc = "Find vim normal(n) mode keymaps ",
+                },
+                default_provider = "n_mode",
+            },
+            {
+                name = "FzfxKeyMapsI",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "mapping",
+                    desc = "Find vim insert(i) mode keymaps ",
+                },
+                default_provider = "i_mode",
+            },
+            {
+                name = "FzfxKeyMapsV",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "mapping",
+                    desc = "Find vim visual(v/s/x) mode keymaps ",
+                },
+                default_provider = "v_mode",
+            },
+            -- visual
+            {
+                name = "FzfxKeyMapsV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find vim keymaps by visual select",
+                },
+                default_provider = "all_mode",
+            },
+            {
+                name = "FzfxKeyMapsNV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find vim normal(n) mode keymaps by visual select",
+                },
+                default_provider = "n_mode",
+            },
+            {
+                name = "FzfxKeyMapsIV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find vim insert(i) mode keymaps by visual select",
+                },
+                default_provider = "i_mode",
+            },
+            {
+                name = "FzfxKeyMapsVV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find vim visual(v/s/x) mode keymaps by visual select",
+                },
+                default_provider = "v_mode",
+            },
+            -- cword
+            {
+                name = "FzfxKeyMapsW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find vim keymaps by cursor word",
+                },
+                default_provider = "all_mode",
+            },
+            {
+                name = "FzfxKeyMapsNW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find vim normal(n) mode keymaps by cursor word",
+                },
+                default_provider = "n_mode",
+            },
+            {
+                name = "FzfxKeyMapsIW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find vim insert(i) mode keymaps by cursor word",
+                },
+                default_provider = "i_mode",
+            },
+            {
+                name = "FzfxKeyMapsVW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find vim visual(v/s/x) mode keymaps by cursor word",
+                },
+                default_provider = "v_mode",
+            },
+            -- put
+            {
+                name = "FzfxKeyMapsP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find vim keymaps by yank text",
+                },
+                default_provider = "all_mode",
+            },
+            {
+                name = "FzfxKeyMapsNP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find vim normal(n) mode keymaps by yank text",
+                },
+                default_provider = "n_mode",
+            },
+            {
+                name = "FzfxKeyMapsIP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find vim insert(i) mode keymaps by yank text",
+                },
+                default_provider = "i_mode",
+            },
+            {
+                name = "FzfxKeyMapsVP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find vim visual(v/s/x) mode keymaps by yank text",
+                },
+                default_provider = "v_mode",
+            },
+        },
+        providers = {
+            all_mode = {
+                key = "ctrl-a",
+                --- @param query string
+                --- @param context VimKeyMapsPipelineContext
+                provider = function(query, context)
+                    return vim_keymaps_provider("all", context)
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            },
+            n_mode = {
+                key = "ctrl-o",
+                --- @param query string
+                --- @param context VimKeyMapsPipelineContext
+                provider = function(query, context)
+                    return vim_keymaps_provider("n", context)
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            },
+            i_mode = {
+                key = "ctrl-i",
+                --- @param query string
+                --- @param context VimKeyMapsPipelineContext
+                provider = function(query, context)
+                    return vim_keymaps_provider("i", context)
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            },
+            v_mode = {
+                key = "ctrl-v",
+                --- @param query string
+                --- @param context VimKeyMapsPipelineContext
+                provider = function(query, context)
+                    return vim_keymaps_provider("v", context)
+                end,
+                provider_type = ProviderTypeEnum.LIST,
+            },
+        },
+        previewers = {
+            all_mode = {
+                previewer = vim_keymaps_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+            n_mode = {
+                previewer = vim_keymaps_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+            i_mode = {
+                previewer = vim_keymaps_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+            v_mode = {
+                previewer = vim_keymaps_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+        },
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").feed_vim_key,
+            ["double-click"] = require("fzfx.actions").feed_vim_key,
+        },
+        fzf_opts = {
+            default_fzf_options.no_multi,
+            "--header-lines=1",
+            { "--preview-window", "~1" },
+            { "--prompt", "Key Maps > " },
+        },
+        other_opts = {
+            context_maker = vim_keymaps_context_maker,
         },
     },
 

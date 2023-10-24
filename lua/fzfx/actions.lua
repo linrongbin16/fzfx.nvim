@@ -1,4 +1,5 @@
 local log = require("fzfx.log")
+local LogLevels = require("fzfx.log").LogLevels
 local path = require("fzfx.path")
 local line_helpers = require("fzfx.line_helpers")
 local utils = require("fzfx.utils")
@@ -288,19 +289,38 @@ local function setqflist_grep(lines)
     })
 end
 
+--- @param lines string[]
 local function feed_vim_command(lines)
-    for _, line in ipairs(lines) do
-        for i = 1, #line do
-            local c = line:sub(i, i)
-            if utils.string_isspace(c) then
-                local input = vim.trim(line:sub(1, i - 1))
-                if utils.string_startswith(input, ":") then
-                    input = input:sub(2)
-                end
-                vim.cmd(string.format([[ call feedkeys(':%s', 'n') ]], input))
-                return
-            end
+    local line = lines[#lines]
+    local space_pos = utils.string_find(line, " ")
+    local input = vim.trim(line:sub(1, space_pos - 1))
+    vim.fn.feedkeys(string.format(":%s", input), "n")
+end
+
+--- @param lines string[]
+local function feed_vim_key(lines)
+    local line = lines[#lines]
+    local space_pos = utils.string_find(line, " ") --[[@as integer]]
+    local input = vim.trim(line:sub(1, space_pos - 1))
+    local bar_pos = utils.string_find(line, "|", space_pos)
+    local mode = vim.trim(line:sub(space_pos, bar_pos - 1))
+    if utils.string_find(mode, "n") then
+        mode = "n"
+        if utils.string_startswith(input:lower(), "<plug>") then
+            vim.cmd(string.format([[ execute "normal \%s" ]], input))
+        elseif
+            utils.string_startswith(input, "<")
+            and type(utils.string_rfind(input, ">")) == "number"
+            and utils.string_rfind(input, ">") > 1
+        then
+            local tcodes =
+                vim.api.nvim_replace_termcodes(input, true, false, true)
+            vim.fn.feedkeys(tcodes, "n")
+        else
+            vim.fn.feedkeys(input, "n")
         end
+    else
+        log.echo(LogLevels.INFO, "%s mode %s not support.", mode, input)
     end
 end
 
@@ -322,6 +342,7 @@ local M = {
     git_checkout = git_checkout,
     yank_git_commit = yank_git_commit,
     feed_vim_command = feed_vim_command,
+    feed_vim_key = feed_vim_key,
     _make_setqflist_find_items = _make_setqflist_find_items,
     _make_setqflist_rg_items = _make_setqflist_rg_items,
     _make_setqflist_grep_items = _make_setqflist_grep_items,
