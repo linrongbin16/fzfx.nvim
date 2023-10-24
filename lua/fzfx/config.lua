@@ -1203,7 +1203,14 @@ local function parse_ex_map_output_line(line)
         local last_colon_pos = utils.string_rfind(rhs_or_location, ":") --[[@as integer]]
         local filename =
             rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
-        local lineno = rhs_or_location:sub(last_colon_pos + 1)
+        local lineno =
+            rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
+        log.debug(
+            "|fzfx.config - parse_ex_map_output_line| lhs:%s, filename:%s, lineno:%s",
+            vim.inspect(lhs),
+            vim.inspect(filename),
+            vim.inspect(lineno)
+        )
         result.filename = vim.fn.expand(path.normalize(filename))
         result.lineno = tonumber(lineno)
     end
@@ -1286,8 +1293,20 @@ local function get_vim_keymaps()
         end
     end
 
+    local function get_key_def(keys, lhs)
+        if keys[lhs] then
+            return keys[lhs]
+        end
+        if
+            utils.string_startswith(lhs, "<Space>")
+            or utils.string_startswith(lhs, "<space>")
+        then
+            return keys[" " .. lhs:sub(string.len("<Space>") + 1)]
+        end
+    end
+
     for lhs, km in pairs(keys_output_map) do
-        local km2 = api_keys_map[lhs]
+        local km2 = get_key_def(api_keys_map, lhs)
         if km2 then
             km.rhs = get_string(km2.rhs, "")
             km.mode = get_string(km2.mode, "")
@@ -1304,10 +1323,10 @@ local function get_vim_keymaps()
             km.desc = get_string(km.desc, "")
         end
     end
-    -- log.debug(
-    --     "|fzfx.config - get_vim_keymaps| keys_output_map2:%s",
-    --     vim.inspect(keys_output_map)
-    -- )
+    log.debug(
+        "|fzfx.config - get_vim_keymaps| keys_output_map2:%s",
+        vim.inspect(keys_output_map)
+    )
     local results = {}
     for _, r in pairs(keys_output_map) do
         table.insert(results, r)
@@ -1315,10 +1334,10 @@ local function get_vim_keymaps()
     table.sort(results, function(a, b)
         return a.lhs < b.lhs
     end)
-    -- log.debug(
-    --     "|fzfx.config - get_vim_keymaps| results:%s",
-    --     vim.inspect(results)
-    -- )
+    log.debug(
+        "|fzfx.config - get_vim_keymaps| results:%s",
+        vim.inspect(results)
+    )
     return results
 end
 

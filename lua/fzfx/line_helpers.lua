@@ -163,7 +163,7 @@ local function parse_vim_command(line, context)
         -- )
         return { filename = filename, lineno = lineno }
     else
-        return desc_or_loc
+        return desc_or_loc:sub(2, #desc_or_loc - 1)
     end
 end
 
@@ -201,7 +201,7 @@ local function parse_vim_keymap(line, context)
         -- )
         return { filename = filename, lineno = lineno }
     else
-        return rhs_or_loc
+        return rhs_or_loc:sub(2, #rhs_or_loc - 1)
     end
 end
 
