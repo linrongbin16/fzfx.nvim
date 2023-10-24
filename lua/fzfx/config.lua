@@ -1299,7 +1299,7 @@ local function get_vim_keymaps()
         else
             km.rhs = get_string(km.rhs, "")
             km.mode = get_string(km.mode, "")
-            km.noremap = get_boolean(km.noremap, false) or km2.noremap
+            km.noremap = get_boolean(km.noremap, false)
             km.nowait = get_boolean(km.nowait, false)
             km.silent = get_boolean(km.silent, false)
             km.desc = get_string(km.desc, "")
