@@ -173,7 +173,7 @@ end
 local function parse_vim_keymap(line, context)
     -- local log = require("fzfx.log")
     local rhs_or_loc =
-        vim.trim(line:sub(context.lhs_width + 1 + context.opts_width + 1 + 1))
+        vim.trim(line:sub(context.key_width + 1 + context.opts_width + 1 + 1))
     -- log.debug(
     --     "|fzfx.line_helpers - parse_vim_commands| desc_or_loc:%s",
     --     vim.inspect(desc_or_loc)

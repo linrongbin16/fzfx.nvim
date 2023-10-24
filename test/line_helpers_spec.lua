@@ -269,7 +269,8 @@ describe("line_helpers", function()
             for _, line in ipairs(lines) do
                 local double_quote_before_last =
                     utils.string_rfind(line, '"', #line - 1)
-                local expect = vim.trim(line:sub(double_quote_before_last))
+                local expect =
+                    vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
                 local actual = line_helpers.parse_vim_command(line, CONTEXT)
                 assert_eq(type(actual), "string")
                 assert_eq(actual, expect)
@@ -301,8 +302,52 @@ describe("line_helpers", function()
             for _, line in ipairs(lines) do
                 local double_quote_before_last =
                     utils.string_rfind(line, '"', #line - 1)
-                local expect = vim.trim(line:sub(double_quote_before_last))
+                local expect =
+                    vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
                 local actual = line_helpers.parse_vim_command(line, CONTEXT)
+                assert_eq(type(actual), "string")
+                assert_eq(actual, expect)
+            end
+        end)
+    end)
+    describe("[parse_vim_keymap]", function()
+        local VIM_COMMANDS_HEADER =
+            "Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Location"
+        local CONTEXT = {
+            key_width = 44,
+            opts_width = 26,
+        }
+        it("parse ex map with locations", function()
+            local lines = {
+                "<C-F>                                            |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127",
+                "<CR>                                             |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127",
+                "<Plug>(YankyGPutAfterShiftRight)             n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369",
+            }
+            for _, line in ipairs(lines) do
+                local last_space = utils.string_rfind(line, " ")
+                local expect_splits =
+                    utils.string_split(line:sub(last_space + 1), ":")
+                local actual = line_helpers.parse_vim_keymap(line, CONTEXT)
+                assert_eq(type(actual), "table")
+                assert_eq(
+                    actual.filename,
+                    vim.fn.expand(path.normalize(expect_splits[1]))
+                )
+                assert_eq(actual.lineno, tonumber(expect_splits[2]))
+            end
+        end)
+        it("parse ex commands with definition", function()
+            local lines = {
+                '%                                            n   |N      |N     |Y      "<Plug>(matchup-%)"',
+                '&                                            n   |Y      |N     |N      ":&&<CR>"',
+                '<2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"',
+            }
+            for _, line in ipairs(lines) do
+                local double_quote_before_last =
+                    utils.string_rfind(line, '"', #line - 1)
+                local expect =
+                    vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
+                local actual = line_helpers.parse_vim_keymap(line, CONTEXT)
                 assert_eq(type(actual), "string")
                 assert_eq(actual, expect)
             end

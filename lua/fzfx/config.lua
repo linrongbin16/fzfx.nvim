@@ -553,10 +553,10 @@ local function render_vim_commands_columns_status(commands)
 end
 
 --- @param commands VimCommand[]
---- @param lhs_width integer
+--- @param name_width integer
 --- @param opts_width integer
 --- @return string[]
-local function render_vim_commands(commands, lhs_width, opts_width)
+local function render_vim_commands(commands, name_width, opts_width)
     --- @param r VimCommand
     --- @return string
     local function rendered_desc_or_loc(r)
@@ -583,7 +583,7 @@ local function render_vim_commands(commands, lhs_width, opts_width)
 
     local results = {}
     local formatter = "%-"
-        .. tostring(lhs_width)
+        .. tostring(name_width)
         .. "s"
         .. " "
         .. "%-"
@@ -1354,31 +1354,31 @@ end
 --- @param keys VimKeyMap[]
 --- @return integer,integer
 local function render_vim_keymaps_columns_status(keys)
-    local LHS = "Lhs"
+    local KEY = "Key"
     local OPTS = "Mode|Noremap|Nowait|Silent"
-    local max_lhs = string.len(LHS)
+    local max_key = string.len(KEY)
     local max_opts = string.len(OPTS)
     for _, k in ipairs(keys) do
-        max_lhs = math.max(max_lhs, string.len(k.lhs))
+        max_key = math.max(max_key, string.len(k.lhs))
         max_opts =
             math.max(max_opts, string.len(render_vim_keymaps_column_opts(k)))
     end
     log.debug(
         "|fzfx.config - render_vim_keymaps_columns_status| lhs:%s, opts:%s",
-        vim.inspect(max_lhs),
+        vim.inspect(max_key),
         vim.inspect(max_opts)
     )
-    return max_lhs, max_opts
+    return max_key, max_opts
 end
 
 --- @param keymaps VimKeyMap[]
---- @param lhs_width integer
+--- @param key_width integer
 --- @param opts_width integer
 --- @return string[]
-local function render_vim_keymaps(keymaps, lhs_width, opts_width)
+local function render_vim_keymaps(keymaps, key_width, opts_width)
     --- @param r VimKeyMap
     --- @return string?
-    local function rendered_rhs_or_loc(r)
+    local function rendered_def_or_loc(r)
         if
             type(r) == "table"
             and type(r.filename) == "string"
@@ -1396,18 +1396,18 @@ local function render_vim_keymaps(keymaps, lhs_width, opts_width)
         end
     end
 
-    local LHS = "Lhs"
+    local KEY = "Key"
     local OPTS = "Mode|Noremap|Nowait|Silent"
-    local RHS_OR_LOC = "Rhs/Location"
+    local DEF_OR_LOC = "Definition/Location"
 
     local results = {}
     local formatter = "%-"
-        .. tostring(lhs_width)
+        .. tostring(key_width)
         .. "s"
         .. " %-"
         .. tostring(opts_width)
         .. "s %s"
-    local header = string.format(formatter, LHS, OPTS, RHS_OR_LOC)
+    local header = string.format(formatter, KEY, OPTS, DEF_OR_LOC)
     table.insert(results, header)
     log.debug(
         "|fzfx.config - render_vim_keymaps| formatter:%s, header:%s",
@@ -1419,7 +1419,7 @@ local function render_vim_keymaps(keymaps, lhs_width, opts_width)
             formatter,
             c.lhs,
             render_vim_keymaps_column_opts(c),
-            rendered_rhs_or_loc(c)
+            rendered_def_or_loc(c)
         )
         log.debug(
             "|fzfx.config - render_vim_keymaps| rendered[%d]:%s",
@@ -1431,7 +1431,7 @@ local function render_vim_keymaps(keymaps, lhs_width, opts_width)
     return results
 end
 
---- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,lhs_width:integer,opts_width:integer}
+--- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
 --- @return VimKeyMapsPipelineContext
 local function vim_keymaps_context_maker()
     local ctx = {
@@ -1440,8 +1440,8 @@ local function vim_keymaps_context_maker()
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
     local keys = get_vim_keymaps()
-    local lhs_width, opts_width = render_vim_keymaps_columns_status(keys)
-    ctx.lhs_width = lhs_width
+    local key_width, opts_width = render_vim_keymaps_columns_status(keys)
+    ctx.key_width = key_width
     ctx.opts_width = opts_width
     return ctx
 end
@@ -1463,7 +1463,7 @@ local function vim_keymaps_provider(mode, ctx)
             end
         end
     end
-    return render_vim_keymaps(filtered_keys, ctx.lhs_width, ctx.opts_width)
+    return render_vim_keymaps(filtered_keys, ctx.key_width, ctx.opts_width)
 end
 
 --- @param filename string
@@ -1502,33 +1502,33 @@ end
 --- @param context VimKeyMapsPipelineContext
 --- @return string[]|nil
 local function vim_keymaps_previewer(line, context)
-    local desc_or_loc = line_helpers.parse_vim_keymap(line, context)
+    local def_or_loc = line_helpers.parse_vim_keymap(line, context)
     log.debug(
         "|fzfx.config - vim_keymaps_previewer| line:%s, context:%s, desc_or_loc:%s",
         vim.inspect(line),
         vim.inspect(context),
-        vim.inspect(desc_or_loc)
+        vim.inspect(def_or_loc)
     )
     if
-        type(desc_or_loc) == "table"
-        and type(desc_or_loc.filename) == "string"
-        and string.len(desc_or_loc.filename) > 0
-        and type(desc_or_loc.lineno) == "number"
+        type(def_or_loc) == "table"
+        and type(def_or_loc.filename) == "string"
+        and string.len(def_or_loc.filename) > 0
+        and type(def_or_loc.lineno) == "number"
     then
         log.debug(
             "|fzfx.config - vim_keymaps_previewer| loc:%s",
-            vim.inspect(desc_or_loc)
+            vim.inspect(def_or_loc)
         )
         return vim_keymaps_lua_function_previewer(
-            desc_or_loc.filename,
-            desc_or_loc.lineno
+            def_or_loc.filename,
+            def_or_loc.lineno
         )
-    elseif vim.fn.executable("echo") > 0 and type(desc_or_loc) == "string" then
+    elseif vim.fn.executable("echo") > 0 and type(def_or_loc) == "string" then
         log.debug(
             "|fzfx.config - vim_keymaps_previewer| desc:%s",
-            vim.inspect(desc_or_loc)
+            vim.inspect(def_or_loc)
         )
-        return { "echo", desc_or_loc }
+        return { "echo", def_or_loc }
     else
         log.echo(LogLevels.INFO, "no echo command found.")
         return nil
