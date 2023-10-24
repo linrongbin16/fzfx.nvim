@@ -75,10 +75,10 @@ local function setup(options)
     general.setup("lsp_implementations", configs.lsp_implementations)
 
     -- vim commands
-    general.setup("commands", configs.commands)
+    general.setup("vim_commands", configs.commands or configs.vim_commands)
 
     -- vim keymaps
-    general.setup("keymaps", configs.keymaps)
+    general.setup("vim_keymaps", configs.vim_keymaps)
 
     -- file explorer
     general.setup("file_explorer", configs.file_explorer)

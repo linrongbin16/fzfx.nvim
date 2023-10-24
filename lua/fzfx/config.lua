@@ -1255,6 +1255,7 @@ local function get_vim_keymaps()
             end
         end
     end
+    log.debug("|fzfx.config - get_vim_keymaps|")
     local api_keys_list = vim.api.nvim_get_keymap("niovsx")
     local api_keys_map = {}
     for _, km in ipairs(api_keys_list) do
@@ -2619,7 +2620,7 @@ local Defaults = {
 
     -- the 'Vim Commands' commands
     --- @type GroupConfig
-    commands = {
+    vim_commands = {
         commands = {
             -- normal
             {
@@ -2804,7 +2805,7 @@ local Defaults = {
 
     -- the 'Vim KeyMaps' commands
     --- @type GroupConfig
-    keymaps = {
+    vim_keymaps = {
         commands = {
             -- normal
             {
