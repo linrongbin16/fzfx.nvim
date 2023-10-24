@@ -1255,7 +1255,10 @@ local function get_vim_keymaps()
             end
         end
     end
-    log.debug("|fzfx.config - get_vim_keymaps|")
+    log.debug(
+        "|fzfx.config - get_vim_keymaps| keys_output_map1:%s",
+        vim.inspect(keys_output_map)
+    )
     local api_keys_list = vim.api.nvim_get_keymap("niovsx")
     local api_keys_map = {}
     for _, km in ipairs(api_keys_list) do
@@ -1266,7 +1269,7 @@ local function get_vim_keymaps()
     for lhs, km in pairs(keys_output_map) do
         local km2 = api_keys_map[lhs]
         if km2 then
-            km.rhs = km2.rhs
+            km.rhs = km2.rhs or ""
             km.mode = km2.mode
             km.noremap = km2.noremap
             km.nowait = km2.nowait
@@ -1274,7 +1277,10 @@ local function get_vim_keymaps()
             km.desc = km2.desc
         end
     end
-
+    log.debug(
+        "|fzfx.config - get_vim_keymaps| keys_output_map2:%s",
+        vim.inspect(keys_output_map)
+    )
     local results = {}
     for _, r in pairs(keys_output_map) do
         table.insert(results, r)
@@ -1282,6 +1288,10 @@ local function get_vim_keymaps()
     table.sort(results, function(a, b)
         return a.lhs < b.lhs
     end)
+    log.debug(
+        "|fzfx.config - get_vim_keymaps| results:%s",
+        vim.inspect(results)
+    )
     return results
 end
 
@@ -1319,7 +1329,7 @@ local function render_vim_keymaps_columns_status(keys)
     local max_opts = string.len(OPTS)
     for _, k in ipairs(keys) do
         max_lhs = math.max(max_lhs, string.len(k.lhs))
-        max_lhs = math.max(max_lhs, string.len(k.rhs))
+        max_lhs = math.max(max_rhs, string.len(k.rhs))
         max_opts =
             math.max(max_opts, string.len(render_vim_keymaps_column_opts(k)))
     end
@@ -1402,12 +1412,25 @@ local function vim_keymaps_context_maker()
     return ctx
 end
 
+--- @param mode "n"|"i"|"v"|"all"
 --- @param ctx VimKeyMapsPipelineContext
 --- @return string[]
-local function vim_keymaps_provider(ctx)
+local function vim_keymaps_provider(mode, ctx)
     local keys = get_vim_keymaps()
+    local filtered_keys = {}
+    if mode == "all" then
+        filtered_keys = keys
+    else
+        for _, k in ipairs(keys) do
+            if k.mode == mode then
+                table.insert(filtered_keys, k)
+            elseif mode == "v" and (k.mode == "s" or k.mode == "x") then
+                table.insert(filtered_keys, k)
+            end
+        end
+    end
     return render_vim_keymaps(
-        keys,
+        filtered_keys,
         ctx.lhs_width,
         ctx.rhs_width,
         ctx.opts_width
