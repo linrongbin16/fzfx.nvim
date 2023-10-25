@@ -257,7 +257,9 @@ Commands are named following below rules:
 
 ### Files & Buffers
 
-#### Files
+- Files
+
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 
 <table>
 <thead>
@@ -266,7 +268,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -275,7 +276,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxFiles(U)V</td>
@@ -292,7 +292,9 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-#### Buffers
+- Buffers
+
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 
 <table>
 <thead>
@@ -301,7 +303,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -310,7 +311,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxBuffersV</td>
@@ -331,6 +331,9 @@ Commands are named following below rules:
 
 - Live Grep
 
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. Use `--` to pass raw options to search command (grep/rg).
+
 <table>
 <thead>
   <tr>
@@ -338,7 +341,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -347,7 +349,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `--` to pass raw options to search command (grep/rg).<br>2. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(U)V</td>
@@ -368,6 +369,9 @@ Commands are named following below rules:
 
 - Git Files
 
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. Current directory variant is named with `C` suffix.
+
 <table>
 <thead>
   <tr>
@@ -375,7 +379,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -384,7 +387,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Git files in current directory variant is named with `C` suffix.<br>2. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -403,6 +405,9 @@ Commands are named following below rules:
 
 - Git Branches
 
+> 1. Use `enter` to checkout branch.
+> 2. Remote branch variant is named with `R` suffix.
+
 <table>
 <thead>
   <tr>
@@ -410,7 +415,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -419,7 +423,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to checkout branch.<br>2. Remote git branch variant is named with `R` suffix.</td>
   </tr>
   <tr>
     <td>FzfxGBranches(R)V</td>
@@ -438,6 +441,8 @@ Commands are named following below rules:
 
 - Git Commits
 
+> 1. Use `enter` to copy git commit SHA.
+
 <table>
 <thead>
   <tr>
@@ -445,7 +450,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -454,7 +458,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to copy git commit SHA.</td>
   </tr>
   <tr>
     <td>FzfxGCommits(B)V</td>
@@ -473,6 +476,8 @@ Commands are named following below rules:
 
 - Git Blame
 
+> 1. Use `enter` to copy git commit SHA.
+
 <table>
 <thead>
   <tr>
@@ -480,7 +485,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -489,7 +493,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to copy commit SHA.</td>
   </tr>
   <tr>
     <td>FzfxGBlameV</td>
@@ -517,7 +520,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -526,7 +528,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
   </tr>
   <tr>
     <td>FzfxLspTypeDefinitions</td>
@@ -545,6 +546,8 @@ Commands are named following below rules:
 
 - Diagnostics
 
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+
 <table>
 <thead>
   <tr>
@@ -552,7 +555,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -561,7 +563,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `ctrl-q` to send selected lines to quickfix window and quit.</td>
   </tr>
   <tr>
     <td>FzfxLspDiagnostics(B)V</td>
@@ -582,6 +583,10 @@ Commands are named following below rules:
 
 - Commands
 
+> 1. Use `enter` to input vim command.
+> 2. Ex(builtin) commands variant is named with 'E' suffix.
+> 3. User commands variant is named with 'U' suffix.
+
 <table>
 <thead>
   <tr>
@@ -589,7 +594,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -598,7 +602,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to input vim command.<br>2. Ex(builtin) commands variant is named with 'E' suffix.<br>3. User commands variant is named with 'U' suffix.</td>
   </tr>
   <tr>
     <td>FzfxCommands(E/U)V</td>
@@ -616,6 +619,11 @@ Commands are named following below rules:
 </table>
 
 - Key Maps
+
+> 1. Use `enter` to execute vim key.
+> 2. Normal mode variant is named with 'N' suffix.
+> 3. Insert mode variant is named with 'I' suffix.
+> 4. Visual(select) mode variant is named with 'V' suffix.
 
 <table>
 <thead>
