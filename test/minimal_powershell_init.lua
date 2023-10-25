@@ -29,10 +29,6 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local opts = {
-    defaults = { lazy = false },
-}
-
 require("lazy").setup({
     "folke/tokyonight.nvim",
     "nvim-tree/nvim-web-devicons",
@@ -41,9 +37,9 @@ require("lazy").setup({
         build = ":call fzf#install()",
     },
     {
-        "linrongbin16/fzfx.nvim",
-        dev = true,
+        -- "linrongbin16/fzfx.nvim",
         dir = "~/github/linrongbin16/fzfx.nvim",
+        dev = true,
         opts = {
             env = {
                 nvim = "nvim",
@@ -60,7 +56,7 @@ require("lazy").setup({
             "junegunn/fzf",
         },
     },
-}, opts)
+}, { dev = { path = "~/github/linrongbin16" }, defaults = { lazy = false } })
 
 require("lazy").sync({ wait = true, show = false })
 

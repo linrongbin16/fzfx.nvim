@@ -6,7 +6,6 @@ local general = require("fzfx.general")
 local function setup(options)
     -- configs
     local configs = require("fzfx.config").setup(options)
-    local defaults = require("fzfx.config").get_defaults()
 
     -- log
     log.setup({
@@ -15,7 +14,12 @@ local function setup(options)
         file_log = configs.debug.file_log,
     })
 
-    log.debug("|fzfx - setup| Defaults:\n%s", vim.inspect(defaults))
+    if configs.debug.enable then
+        log.debug(
+            "|fzfx - setup| Defaults:\n%s",
+            vim.inspect(require("fzfx.config").get_defaults())
+        )
+    end
     log.debug("|fzfx - setup| Configs:\n%s", vim.inspect(configs))
 
     -- cache
