@@ -195,12 +195,7 @@ return require('packer').startup(function(use)
   use { "nvim-tree/nvim-web-devicons" }
 
   -- mandatory
-  use {
-    "junegunn/fzf",
-    run = function()
-      vim.fn["fzf#install"] ()
-    end 
-  }
+  use { "junegunn/fzf", run = function() vim.fn["fzf#install"] () end }
   use {
     "linrongbin16/fzfx.nvim",
     config = function()
@@ -219,12 +214,7 @@ require("lazy").setup({
   { "nvim-tree/nvim-web-devicons" },
 
   -- mandatory
-  {
-    "junegunn/fzf",
-    build = function()
-      vim.fn["fzf#install"]()
-    end
-  },
+  { "junegunn/fzf", build = function() vim.fn["fzf#install"]() end },
   {
     "linrongbin16/fzfx.nvim",
     dependencies = { "junegunn/fzf", "nvim-tree/nvim-web-devicons" },
