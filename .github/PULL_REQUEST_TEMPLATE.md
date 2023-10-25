@@ -45,11 +45,6 @@
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to copy commit hash.
-- [ ] FzfxCommands
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
-  - Press `CTRL-U`/`CTRL-E`/`CTRL-A` to switch between user/ex/all vim commands.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - Press `ESC` to quit, `ENTER` to feed vim command.
 - [ ] FzfxLspDiagnostics
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current buffer diagnostics.
@@ -59,6 +54,16 @@
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Go to definitions/references (this is the most 2 easiest use case when developing this lua plugin with lua_ls).
   - Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxCommands
+  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-U`/`CTRL-E`/`CTRL-A` to switch between user/ex/all vim commands.
+  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Press `ESC` to quit, `ENTER` to feed vim command.
+- [ ] FzfxKeyMaps
+  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-O`/`CTRL-I`/`CTRL-A`/`CTRL-V` to switch between normal/insert/visual/all vim key mappings.
+  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Press `ESC` to quit, `ENTER` to feed vim keys.
 - [ ] FzfxFileExplorer
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between filter/include hidden files mode.
