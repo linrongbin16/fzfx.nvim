@@ -153,12 +153,6 @@ local CommandFeedEnum = {
 -- ========== Config ==========
 --
 -- Utility for easier writing 'fzfx.config'.
---
---- @alias ProviderLineType "file"
---- @enum ProviderLineTypeEnum
-local ProviderLineTypeEnum = {
-    FILE = "file",
-}
 
 --- @class ProviderConfigLineOpts
 --- @field prepend_icon_by_ft boolean?
@@ -170,59 +164,16 @@ local ProviderLineTypeEnum = {
 --- @field provider Provider
 --- @field provider_type ProviderType? by default "plain"
 --- @field line_opts ProviderConfigLineOpts?
-local ProviderConfig = {}
-
---- @deprecated
-function ProviderConfig:make(opts)
-    require("fzfx.deprecated").notify(
-        "deprecated 'schema.ProviderConfig', please use lua table!"
-    )
-    local o = opts or {}
-    o.provider_type = o.provider_type
-        or (
-            type(o.provider) == "string" and ProviderTypeEnum.PLAIN
-            or ProviderTypeEnum.PLAIN_LIST
-        )
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end
 
 --- @class PreviewerConfig
 --- @field previewer Previewer
 --- @field previewer_type PreviewerType?
-local PreviewerConfig = {}
-
---- @deprecated
-function PreviewerConfig:make(opts)
-    require("fzfx.deprecated").notify(
-        "deprecated 'schema.PreviewerConfig', please use lua table!"
-    )
-    local o = opts or {}
-    o.previewer_type = o.previewer_type or PreviewerTypeEnum.COMMAND
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end
 
 --- @class CommandConfig
 --- @field name string
 --- @field feed CommandFeed
 --- @field opts CommandOpt
 --- @field default_provider PipelineName?
-local CommandConfig = {}
-
---- @deprecated
-function CommandConfig:make(opts)
-    require("fzfx.deprecated").notify(
-        "deprecated 'schema.CommandConfig', please use lua table!"
-    )
-
-    local o = opts or {}
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end
 
 --- @alias InteractionName string
 --
@@ -230,19 +181,6 @@ end
 --- @field key ActionKey
 --- @field interaction Interaction
 --- @field reload_after_execute boolean?
-local InteractionConfig = {}
-
---- @deprecated
-function InteractionConfig:make(opts)
-    require("fzfx.deprecated").notify(
-        "deprecated 'schema.InteractionConfig', please use lua table!"
-    )
-
-    local o = opts or {}
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end
 
 --- @class GroupConfig
 --- @field commands CommandConfig|CommandConfig[]
@@ -251,21 +189,8 @@ end
 --- @field interactions table<InteractionName, InteractionConfig>?
 --- @field actions table<ActionKey, Action>
 --- @field fzf_opts FzfOpt[]?
-local GroupConfig = {}
 
---- @deprecated
-function GroupConfig:make(opts)
-    require("fzfx.deprecated").notify(
-        "deprecated 'schema.GroupConfig', please use lua table!"
-    )
-
-    local o = opts or {}
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end
-
---- @param cfg Options?
+--- @param cfg CommandConfig?
 --- @return boolean
 local function is_command_config(cfg)
     return type(cfg) == "table"
@@ -276,20 +201,23 @@ local function is_command_config(cfg)
         and type(cfg.opts) == "table"
 end
 
---- @param cfg Options?
+--- @param cfg ProviderConfig?
 --- @return boolean
 local function is_provider_config(cfg)
     return type(cfg) == "table"
         and type(cfg.key) == "string"
         and string.len(cfg.key) > 0
         and (
-            (type(cfg.provider) == "string" and string.len(cfg.provider) > 0)
+            (
+                type(cfg.provider) == "string"
+                and string.len(cfg.provider --[[@as string]]) > 0
+            )
             or (type(cfg.provider) == "table" and #cfg.provider > 0)
             or type(cfg.provider) == "function"
         )
 end
 
---- @param cfg Options?
+--- @param cfg PreviewerConfig?
 --- @return boolean
 local function is_previewer_config(cfg)
     return type(cfg) == "table"
@@ -324,14 +252,6 @@ local M = {
     ProviderTypeEnum = ProviderTypeEnum,
     PreviewerTypeEnum = PreviewerTypeEnum,
     CommandFeedEnum = CommandFeedEnum,
-
-    -- @deprecated
-    ProviderConfig = ProviderConfig,
-    ProviderLineTypeEnum = ProviderLineTypeEnum,
-    PreviewerConfig = PreviewerConfig,
-    CommandConfig = CommandConfig,
-    InteractionConfig = InteractionConfig,
-    GroupConfig = GroupConfig,
 
     is_command_config = is_command_config,
     is_provider_config = is_provider_config,

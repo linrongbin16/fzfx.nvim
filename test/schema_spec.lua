@@ -10,19 +10,18 @@ describe("schema", function()
     end)
 
     local schema = require("fzfx.schema")
-    local clazz = require("fzfx.clazz")
     describe("[ProviderConfig]", function()
         it("makes a plain provider", function()
             local plain_key = "plain"
             local plain_provider = "ls -la"
             local plain_provider_type = "plain"
-            local plain = schema.ProviderConfig:make({
+            local plain = {
                 key = plain_key,
                 provider = plain_provider,
                 provider_type = plain_provider_type,
-            })
+            }
             assert_eq(type(plain), "table")
-            assert_true(clazz.instanceof(plain, schema.ProviderConfig))
+            assert_true(schema.is_provider_config(plain))
             assert_eq(plain.key, plain_key)
             assert_eq(plain.provider, plain_provider)
             assert_eq(plain.provider_type, plain_provider_type)
@@ -30,15 +29,16 @@ describe("schema", function()
         it("makes a plain_list provider", function()
             local plain_key = "plain"
             local plain_provider = { "ls", "-la" }
-            local plain = schema.ProviderConfig:make({
+            local plain = {
                 key = plain_key,
                 provider = plain_provider,
-            })
+            }
             assert_eq(type(plain), "table")
-            assert_true(clazz.instanceof(plain, schema.ProviderConfig))
+            assert_true(schema.is_provider_config(plain))
             assert_eq(plain.key, plain_key)
             assert_eq(plain.provider, plain_provider)
-            assert_eq(plain.provider_type, "plain_list")
+            assert_true(plain.provider_type == nil)
+            assert_eq(schema.get_provider_type_or_default(plain), "plain_list")
         end)
         it("makes a command provider", function()
             local command_key = "command"
@@ -46,7 +46,7 @@ describe("schema", function()
                 return "ls -la"
             end
             local command_provider_type = "command"
-            local command = schema.ProviderConfig:make({
+            local command = {
                 key = command_key,
                 provider = command_provider,
                 provider_type = command_provider_type,
@@ -55,13 +55,17 @@ describe("schema", function()
                     prepend_icon_path_delimiter = ":",
                     prepend_icon_path_position = 1,
                 },
-            })
+            }
             assert_eq(type(command), "table")
-            assert_true(clazz.instanceof(command, schema.ProviderConfig))
+            assert_true(schema.is_provider_config(command))
             assert_eq(command.key, command_key)
             assert_eq(type(command.provider), "function")
             assert_eq(command.provider(), command_provider())
             assert_eq(command.provider_type, command_provider_type)
+            assert_eq(
+                schema.get_provider_type_or_default(command),
+                command_provider_type
+            )
             assert_eq(type(command.line_opts), "table")
             assert_true(command.line_opts.prepend_icon_by_ft)
             assert_eq(command.line_opts.prepend_icon_path_delimiter, ":")
@@ -72,7 +76,7 @@ describe("schema", function()
             local command_provider = function()
                 return { "ls", "-la" }
             end
-            local command = schema.ProviderConfig:make({
+            local command = {
                 key = command_key,
                 provider = command_provider,
                 provider_type = "command_list",
@@ -81,9 +85,9 @@ describe("schema", function()
                     prepend_icon_path_delimiter = ":",
                     prepend_icon_path_position = 1,
                 },
-            })
+            }
             assert_eq(type(command), "table")
-            assert_true(clazz.instanceof(command, schema.ProviderConfig))
+            assert_true(schema.is_provider_config(command))
             assert_eq(command.key, command_key)
             assert_eq(type(command.provider), "function")
             assert_eq(type(command.provider()), "table")
@@ -104,70 +108,42 @@ describe("schema", function()
                 return string.format("cat %s", line)
             end
             local command_previewer_type = "command"
-            local command = schema.PreviewerConfig:make({
+            local command = {
                 previewer = command_previewer,
                 previewer_type = command_previewer_type,
-            })
+            }
             assert_eq(type(command), "table")
-            assert_true(clazz.instanceof(command, schema.PreviewerConfig))
+            assert_true(schema.is_previewer_config(command))
             assert_eq(type(command.previewer), "function")
             assert_eq(command.previewer(), command_previewer())
             assert_eq(command.previewer_type, command_previewer_type)
+            assert_eq(
+                schema.get_previewer_type_or_default(command),
+                command_previewer_type
+            )
         end)
     end)
     describe("[CommandConfig]", function()
         it("makes a command", function()
-            local command = schema.CommandConfig:make({
+            local command = {
                 name = "command",
                 feed = "args",
                 opts = { range = true },
-            })
+            }
             assert_eq(type(command), "table")
-            assert_true(clazz.instanceof(command, schema.CommandConfig))
+            assert_true(schema.is_command_config(command))
             assert_eq(command.name, "command")
-        end)
-    end)
-    describe("[InteractionConfig]", function()
-        it("makes an interaction", function()
-            local interact = function(line)
-                return "interact"
-            end
-            local interaction = schema.InteractionConfig:make({
-                key = "key",
-                interaction = interact,
-                reload_after_execute = true,
-            })
-            assert_eq(type(interaction), "table")
-            assert_true(clazz.instanceof(interaction, schema.InteractionConfig))
-            assert_eq(interaction.key, "key")
-            assert_eq(type(interaction.interaction), "function")
-            assert_eq(interaction.interaction(), "interact")
-            assert_eq(interaction.reload_after_execute, true)
-        end)
-    end)
-    describe("[GroupConfig]", function()
-        it("makes a group", function()
-            local group = schema.GroupConfig:make({
-                commands = "commands",
-                providers = "providers",
-                previewers = "previewers",
-            })
-            assert_eq(type(group), "table")
-            assert_true(clazz.instanceof(group, schema.GroupConfig))
-            assert_eq(group.commands, "commands")
-            assert_eq(group.providers, "providers")
-            assert_eq(group.previewers, "previewers")
         end)
     end)
     describe("[is_command_config]", function()
         it("is command config", function()
-            local obj = schema.CommandConfig:make({
+            local obj = {
                 name = "FzfxLiveGrep",
                 feed = "args",
                 opts = {
                     nargs = "?",
                 },
-            })
+            }
             assert_true(schema.is_command_config(obj))
             local obj2 = {
                 name = "FzfxLiveGrep",
@@ -179,7 +155,7 @@ describe("schema", function()
             assert_true(schema.is_command_config(obj2))
         end)
         it("is not command config", function()
-            local obj1 = schema.CommandConfig:make({})
+            local obj1 = {}
             assert_false(schema.is_command_config(obj1))
             local obj2 = {
                 key = "FzfxLiveGrep",
@@ -189,20 +165,20 @@ describe("schema", function()
     end)
     describe("[is_provider_config]", function()
         it("is provider config", function()
-            local p1 = schema.ProviderConfig:make({
+            local p1 = {
                 key = "ctrl-l",
                 provider = "ls -lh",
-            })
-            local p2 = schema.ProviderConfig:make({
+            }
+            local p2 = {
                 key = "ctrl-g",
                 provider = { "ls", "-lh" },
-            })
-            local p3 = schema.ProviderConfig:make({
+            }
+            local p3 = {
                 key = "ctrl-k",
                 provider = function()
                     return { "ls", "-lh" }
                 end,
-            })
+            }
             assert_true(schema.is_provider_config(p1))
             assert_true(schema.is_provider_config(p2))
             assert_true(schema.is_provider_config(p3))
@@ -225,7 +201,7 @@ describe("schema", function()
             assert_true(schema.is_provider_config(p6))
         end)
         it("is not provider config", function()
-            local p1 = schema.ProviderConfig:make({})
+            local p1 = {}
             assert_false(schema.is_provider_config(p1))
             local p2 = {
                 name = "FzfxLiveGrep",
@@ -235,23 +211,23 @@ describe("schema", function()
     end)
     describe("[is_previewer_config]", function()
         it("is previewer config", function()
-            local p1 = schema.PreviewerConfig:make({
+            local p1 = {
                 previewer = function()
                     return "ls -lh"
                 end,
-            })
-            local p2 = schema.PreviewerConfig:make({
+            }
+            local p2 = {
                 previewer = function()
                     return { "ls", "-lh", "~" }
                 end,
                 previewer_type = "command_list",
-            })
-            local p3 = schema.PreviewerConfig:make({
+            }
+            local p3 = {
                 previewer = function()
                     return "ls -lh"
                 end,
                 previewer_type = "command",
-            })
+            }
             assert_true(schema.is_previewer_config(p1))
             assert_true(schema.is_previewer_config(p2))
             assert_true(schema.is_previewer_config(p3))
@@ -270,7 +246,7 @@ describe("schema", function()
             assert_true(schema.is_previewer_config(p5))
         end)
         it("is not previewer config", function()
-            local p1 = schema.PreviewerConfig:make({})
+            local p1 = {}
             assert_false(schema.is_previewer_config(p1))
             local p2 = {
                 name = "FzfxLiveGrep",

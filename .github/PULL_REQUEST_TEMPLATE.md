@@ -45,11 +45,6 @@
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to copy commit hash.
-- [ ] FzfxCommands
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
-  - Press `CTRL-U`/`CTRL-E`/`CTRL-A` to switch between user/ex/all vim commands.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
-  - Press `ESC` to quit, `ENTER` to feed vim command.
 - [ ] FzfxLspDiagnostics
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current buffer diagnostics.
@@ -59,16 +54,19 @@
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Go to definitions/references (this is the most 2 easiest use case when developing this lua plugin with lua_ls).
   - Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxCommands
+  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-U`/`CTRL-E`/`CTRL-A` to switch between user/ex/all vim commands.
+  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Press `ESC` to quit, `ENTER` to feed vim command.
+- [ ] FzfxKeyMaps
+  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-O`/`CTRL-I`/`CTRL-A`/`CTRL-V` to switch between normal/insert/visual/all vim key mappings.
+  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Press `ESC` to quit, `ENTER` to feed vim keys.
 - [ ] FzfxFileExplorer
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between filter/include hidden files mode.
   - Press `ALT-L`/`ALT-H` to cd into folder and cd upper folder.
   - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
   - Both `eza` and `ls` works.
-- [ ] Backward Compatible
-  - Open with `nvim -u ./test/minimal_buffers_deprecate_init.lua` and test `FzfxBuffers`.
-  - Open with `nvim -u ./test/minimal_files_deprecate_init.lua` and test `FzfxFiles`.
-  - Open with `nvim -u ./test/minimal_git_branches_deprecate_init.lua` and test `FzfxGBranches`.
-  - Open with `nvim -u ./test/minimal_git_commits_deprecate_init.lua` and test `FzfxGCommits`.
-  - Open with `nvim -u ./test/minimal_git_files_deprecate_init.lua` and test `FzfxGFiles`.
-  - Open with `nvim -u ./test/minimal_live_grep_deprecate_init.lua` and test `FzfxLiveGrep`.

@@ -12,8 +12,6 @@ describe("general", function()
 
     local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
     local general = require("fzfx.general")
-    local ProviderConfig = require("fzfx.schema").ProviderConfig
-    local PreviewerConfig = require("fzfx.schema").PreviewerConfig
     local utils = require("fzfx.utils")
     local path = require("fzfx.path")
     local schema = require("fzfx.schema")
@@ -36,14 +34,10 @@ describe("general", function()
 
     describe("[ProviderSwitch:new]", function()
         it("creates single plain provider", function()
-            local ps = general.ProviderSwitch:new(
-                "single_test",
-                "pipeline",
-                ProviderConfig:make({
-                    key = "ctrl-k",
-                    provider = "ls -1",
-                })
-            )
+            local ps = general.ProviderSwitch:new("single_test", "pipeline", {
+                key = "ctrl-k",
+                provider = "ls -1",
+            })
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
             assert_eq(type(ps.provider_configs.default), "table")
@@ -71,10 +65,10 @@ describe("general", function()
             local ps = general.ProviderSwitch:new(
                 "single_plain_list_test",
                 "pipeline",
-                ProviderConfig:make({
+                {
                     key = "ctrl-k",
                     provider = { "ls", "-lh", "~" },
-                })
+                }
             )
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
@@ -112,14 +106,14 @@ describe("general", function()
         end)
         it("creates multiple plain providers", function()
             local ps = general.ProviderSwitch:new("multiple_test", "pipeline", {
-                p1 = ProviderConfig:make({
+                p1 = {
                     key = "ctrl-p",
                     provider = "p1",
-                }),
-                p2 = ProviderConfig:make({
+                },
+                p2 = {
                     key = "ctrl-q",
                     provider = { "p2", "p3", "p4" },
-                }),
+                },
             })
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
@@ -181,17 +175,17 @@ describe("general", function()
     describe("[PreviewerSwitch:provide]", function()
         it("is a plain/plain_list provider", function()
             local ps = general.PreviewerSwitch:new("plain_test", "p1", {
-                p1 = PreviewerConfig:make({
+                p1 = {
                     previewer = function()
                         return "ls -lh"
                     end,
-                }),
-                p2 = PreviewerConfig:make({
+                },
+                p2 = {
                     previewer = function()
                         return { "ls", "-lha", "~" }
                     end,
                     previewer_type = "command_list",
-                }),
+                },
             })
             print(
                 string.format(
@@ -256,18 +250,18 @@ describe("general", function()
         end)
         it("is a command/command_list provider", function()
             local ps = general.PreviewerSwitch:new("command_test", "p1", {
-                p1 = PreviewerConfig:make({
+                p1 = {
                     previewer = function()
                         return "ls -lh"
                     end,
                     previewer_type = schema.ProviderTypeEnum.COMMAND,
-                }),
-                p2 = PreviewerConfig:make({
+                },
+                p2 = {
                     previewer = function()
                         return { "ls", "-lha", "~" }
                     end,
                     previewer_type = schema.ProviderTypeEnum.COMMAND_LIST,
-                }),
+                },
             })
             assert_eq(ps:preview("p1", "hello", {}), "command")
             if not github_actions then
@@ -327,15 +321,11 @@ describe("general", function()
     end)
     describe("[PreviewerSwitch:new]", function()
         it("creates single command previewer", function()
-            local ps = general.PreviewerSwitch:new(
-                "single",
-                "pipeline",
-                PreviewerConfig:make({
-                    previewer = function()
-                        return "ls -1"
-                    end,
-                })
-            )
+            local ps = general.PreviewerSwitch:new("single", "pipeline", {
+                previewer = function()
+                    return "ls -1"
+                end,
+            })
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
             assert_eq(type(ps.previewers), "table")
@@ -347,16 +337,16 @@ describe("general", function()
         end)
         it("creates multiple command previewer", function()
             local ps = general.PreviewerSwitch:new("single", "pipeline", {
-                p1 = PreviewerConfig:make({
+                p1 = {
                     previewer = function()
                         return "p1"
                     end,
-                }),
-                p2 = PreviewerConfig:make({
+                },
+                p2 = {
                     previewer = function()
                         return "p2"
                     end,
-                }),
+                },
             })
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
