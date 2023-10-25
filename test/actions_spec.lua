@@ -379,12 +379,64 @@ describe("actions", function()
             end
         end)
     end)
-    describe("[feed_vim_command]", function()
+    describe("[_make_feed_vim_command_params]", function()
         it("feedkeys", function()
-            local actual = actions.feed_vim_command({
-                ":FzfxCommands    Y | N | N/A  ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:215",
+            local actual = actions._make_feed_vim_command_params({
+                "FzfxCommands    Y | N | N/A  ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:215",
             })
-            assert_true(actual == nil)
+            print(string.format("feed vim command:%s\n", vim.inspect(actual)))
+            -- assert_true(actual == nil)
+        end)
+    end)
+    describe("[_make_feed_vim_key_params]", function()
+        it("feed normal key", function()
+            local feedtype, input, mode = actions._make_feed_vim_key_params({
+                '<C-Tab>                                      n   |Y      |N     |N      "<C-C><C-W>w"',
+            })
+            print(
+                string.format(
+                    "feed normal key:%s, %s, %s\n",
+                    vim.inspect(feedtype),
+                    vim.inspect(input),
+                    vim.inspect(mode)
+                )
+            )
+            assert_eq(feedtype, "feedkeys")
+            assert_eq(type(input), "string")
+            assert_true(string.len(input --[[@as string]]) > 0)
+            assert_eq(mode, "n")
+        end)
+        it("feed operator-pending key", function()
+            local feedtype, input, mode = actions._make_feed_vim_key_params({
+                '<C-Tab>                                      o   |Y      |N     |N      "<C-C><C-W>w"',
+            })
+            print(
+                string.format(
+                    "feed operator-pending key:%s, %s, %s\n",
+                    vim.inspect(feedtype),
+                    vim.inspect(input),
+                    vim.inspect(mode)
+                )
+            )
+            assert_true(feedtype == nil)
+            assert_true(input == nil)
+            assert_true(mode == nil)
+        end)
+        it("feed <plug>", function()
+            local feedtype, input, mode = actions._make_feed_vim_key_params({
+                "<Plug>(YankyCycleBackward)                   n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:290",
+            })
+            print(
+                string.format(
+                    "feed <plug> key:%s, %s, %s\n",
+                    vim.inspect(feedtype),
+                    vim.inspect(input),
+                    vim.inspect(mode)
+                )
+            )
+            assert_eq(feedtype, "cmd")
+            assert_eq(type(input), "string")
+            assert_true(utils.string_startswith(input, [[execute "normal \]]))
         end)
     end)
     describe("[_make_git_checkout_command]", function()

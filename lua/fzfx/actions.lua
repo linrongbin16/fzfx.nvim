@@ -286,16 +286,26 @@ local function setqflist_grep(lines)
     })
 end
 
+--- @package
 --- @param lines string[]
-local function feed_vim_command(lines)
+--- @return string, string
+local function _make_feed_vim_command_params(lines)
     local line = lines[#lines]
     local space_pos = utils.string_find(line, " ")
     local input = vim.trim(line:sub(1, space_pos - 1))
-    vim.fn.feedkeys(string.format(":%s", input), "n")
+    return string.format([[:%s]], input), "n"
 end
 
 --- @param lines string[]
-local function feed_vim_key(lines)
+local function feed_vim_command(lines)
+    local input, mode = _make_feed_vim_command_params(lines)
+    vim.fn.feedkeys(input, mode)
+end
+
+--- @package
+--- @param lines string[]
+--- @return "cmd"|"feedkeys"|nil, string?, string?
+local function _make_feed_vim_key_params(lines)
     local line = lines[#lines]
     local space_pos = utils.string_find(line, " ") --[[@as integer]]
     local input = vim.trim(line:sub(1, space_pos - 1))
@@ -304,7 +314,7 @@ local function feed_vim_key(lines)
     if utils.string_find(mode, "n") then
         mode = "n"
         if utils.string_startswith(input:lower(), "<plug>") then
-            vim.cmd(string.format([[ execute "normal \%s" ]], input))
+            return "cmd", string.format([[execute "normal \%s"]], input), nil
         elseif
             utils.string_startswith(input, "<")
             and type(utils.string_rfind(input, ">")) == "number"
@@ -312,12 +322,27 @@ local function feed_vim_key(lines)
         then
             local tcodes =
                 vim.api.nvim_replace_termcodes(input, true, false, true)
-            vim.fn.feedkeys(tcodes, "n")
+            return "feedkeys", tcodes, "n"
         else
-            vim.fn.feedkeys(input, "n")
+            return "feedkeys", input, "n"
         end
     else
         log.echo(LogLevels.INFO, "%s mode %s not support.", mode, input)
+        return nil, nil, nil
+    end
+end
+
+--- @param lines string[]
+local function feed_vim_key(lines)
+    local feedtype, input, mode = _make_feed_vim_key_params(lines)
+    if feedtype == "cmd" and type(input) == "string" then
+        vim.cmd(input)
+    elseif
+        feedtype == "feedkeys"
+        and type(input) == "string"
+        and type(mode) == "string"
+    then
+        vim.fn.feedkeys(input, mode)
     end
 end
 
@@ -338,6 +363,8 @@ local M = {
     _make_git_checkout_command = _make_git_checkout_command,
     git_checkout = git_checkout,
     yank_git_commit = yank_git_commit,
+    _make_feed_vim_command_params = _make_feed_vim_command_params,
+    _make_feed_vim_key_params = _make_feed_vim_key_params,
     feed_vim_command = feed_vim_command,
     feed_vim_key = feed_vim_key,
     _make_setqflist_find_items = _make_setqflist_find_items,
