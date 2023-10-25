@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v1.5.0...v2.0.0) (2023-10-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **drop:** drop deprecated! ([#308](https://github.com/linrongbin16/fzfx.nvim/issues/308))
+
+### Performance Improvements
+
+* **drop:** drop deprecated! ([#308](https://github.com/linrongbin16/fzfx.nvim/issues/308)) ([545d137](https://github.com/linrongbin16/fzfx.nvim/commit/545d137de12872bf48f3061e59262e5c969abb2d))
+
 ## [1.5.0](https://github.com/linrongbin16/fzfx.nvim/compare/v1.4.0...v1.5.0) (2023-10-24)
 
 
