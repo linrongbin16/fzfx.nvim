@@ -30,7 +30,9 @@ require("lazy").setup({
         build = ":call fzf#install()",
     },
     {
-        "linrongbin16/fzfx.nvim",
+        -- "linrongbin16/fzfx.nvim",
+        dir = "~/github/linrongbin16/fzfx.nvim",
+        dev = true,
         opts = {},
         dependencies = {
             "folke/tokyonight.nvim",
@@ -38,7 +40,7 @@ require("lazy").setup({
             "junegunn/fzf",
         },
     },
-}, opts)
+}, { dev = { path = "~/github/linrongbin16" }, defaults = { lazy = false } })
 
 require("lazy").sync({ wait = true, show = false })
 

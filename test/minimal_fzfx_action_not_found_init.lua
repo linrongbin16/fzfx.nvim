@@ -405,8 +405,9 @@ M.keys = {
 
 require("lazy").setup({
     {
-        "linrongbin16/fzfx.nvim",
-        -- dir = "~/.local/share/nvim/site/pack/plugins/start/fzfx.nvim",
+        -- "linrongbin16/fzfx.nvim",
+        dir = "~/github/linrongbin16/fzfx.nvim",
+        dev = true,
         keys = M.keys,
         config = function()
             M.config()
@@ -416,4 +417,4 @@ require("lazy").setup({
             "junegunn/fzf",
         },
     },
-})
+}, { dev = { path = "~/github/linrongbin16" } })
