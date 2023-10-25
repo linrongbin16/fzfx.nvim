@@ -15,23 +15,6 @@ local DEFAULT_PIPELINE = "default"
 
 -- provider switch {
 
---- @param provider_config ProviderConfig
---- @return ProviderType
-local function get_provider_type_or_default(provider_config)
-    return provider_config.provider_type
-        or (
-            type(provider_config.provider) == "string"
-                and ProviderTypeEnum.PLAIN
-            or ProviderTypeEnum.PLAIN_LIST
-        )
-end
-
---- @param previewer_config PreviewerConfig
---- @return PreviewerType
-local function get_previewer_type_or_default(previewer_config)
-    return previewer_config.previewer_type or PreviewerTypeEnum.COMMAND
-end
-
 --- @param ... string
 --- @return string
 local function make_cache_filename(...)
