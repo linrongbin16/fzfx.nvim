@@ -1,4 +1,4 @@
-local log = require("fzfx.log")
+-- local log = require("fzfx.log")
 local server = require("fzfx.server")
 
 --- @param registry_id RpcRegistryId
