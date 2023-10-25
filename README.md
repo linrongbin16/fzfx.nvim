@@ -190,17 +190,19 @@ lua require('fzfx').setup()
 
 ```lua
 return require('packer').startup(function(use)
-    -- optional for icons
-    use { "nvim-tree/nvim-web-devicons" }
 
-    -- mandatory
-    use { "junegunn/fzf", run = ":call fzf#install()" }
-    use {
-        "linrongbin16/fzfx.nvim",
-        config = function()
-            require("fzfx").setup()
-        end
-    }
+  -- optional for icons
+  use { "nvim-tree/nvim-web-devicons" }
+
+  -- mandatory
+  use { "junegunn/fzf", run = ":call fzf#install()" }
+  use {
+    "linrongbin16/fzfx.nvim",
+    config = function()
+      require("fzfx").setup()
+    end
+  }
+
 end)
 ```
 
@@ -208,18 +210,20 @@ end)
 
 ```lua
 require("lazy").setup({
-    -- optional for icons
-    { "nvim-tree/nvim-web-devicons" },
+  -- optional for icons
+  { "nvim-tree/nvim-web-devicons" },
 
-    -- mandatory
-    { "junegunn/fzf", build = ":call fzf#install()" },
-    {
-        "linrongbin16/fzfx.nvim",
-        dependencies = { "junegunn/fzf", "nvim-tree/nvim-web-devicons" },
-        config = function()
-            require("fzfx").setup()
-        end
-    },
+  -- mandatory
+  {
+    "junegunn/fzf", build = function() vim.fn["fzf#install"]() end
+  },
+  {
+    "linrongbin16/fzfx.nvim",
+    dependencies = { "junegunn/fzf", "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("fzfx").setup()
+    end
+  },
 
 })
 ```
