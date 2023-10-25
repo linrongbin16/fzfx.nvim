@@ -195,7 +195,7 @@ return require('packer').startup(function(use)
   use { "nvim-tree/nvim-web-devicons" }
 
   -- mandatory
-  use { "junegunn/fzf", run = ":call fzf#install()" }
+  use { "junegunn/fzf", run = function() vim.fn["fzf#install"]() end }
   use {
     "linrongbin16/fzfx.nvim",
     config = function()
