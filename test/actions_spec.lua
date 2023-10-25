@@ -523,4 +523,21 @@ describe("actions", function()
             end
         end)
     end)
+    describe("[_make_yank_git_commit_command]", function()
+        it("yank git commits", function()
+            local lines = {
+                "3c2e32c 2023-10-10 linrongbin16 perf(schema): deprecate 'ProviderConfig' & 'PreviewerConfig' (#268)",
+                "2bdcef7 2023-10-10 linrongbin16 feat(schema): add 'PreviewerConfig' detection (#266)",
+                "5cabd9b 2023-10-10 linrongbin16 refactor(schema): deprecate 'ProviderConfig' (#264)",
+                "9eac0c0 2023-10-10 linrongbin16 fix(push): revert direct push to main branch",
+                "78a195a 2023-10-10 linrongbin16 refactor(schema): deprecate 'ProviderConfig'",
+            }
+            for _, line in ipairs(lines) do
+                assert_eq(
+                    string.format("let @+ = '%s'", line:sub(1, 7)),
+                    actions._make_yank_git_commit_command({ line })
+                )
+            end
+        end)
+    end)
 end)

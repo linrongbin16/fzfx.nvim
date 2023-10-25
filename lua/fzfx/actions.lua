@@ -205,11 +205,26 @@ local function git_checkout(lines)
     vim.cmd(checkout_command)
 end
 
-local function yank_git_commit(lines)
+--- @param lines string[]
+--- @return string?
+local function _make_yank_git_commit_command(lines)
     if type(lines) == "table" and #lines > 0 then
         local line = lines[#lines]
-        local git_commit = vim.fn.split(line)[1]
-        vim.api.nvim_command("let @+ = '" .. git_commit .. "'")
+        local space_pos = utils.string_find(line, " ")
+        if not space_pos then
+            return nil
+        end
+        local git_commit = line:sub(1, space_pos - 1)
+        return string.format("let @+ = '%s'", git_commit)
+    end
+    return nil
+end
+
+--- @param lines string[]
+local function yank_git_commit(lines)
+    local yank_command = _make_yank_git_commit_command(lines)
+    if yank_command then
+        vim.api.nvim_command(yank_command)
     end
 end
 
@@ -362,6 +377,7 @@ local M = {
     bdelete = bdelete,
     _make_git_checkout_command = _make_git_checkout_command,
     git_checkout = git_checkout,
+    _make_yank_git_commit_command = _make_yank_git_commit_command,
     yank_git_commit = yank_git_commit,
     _make_feed_vim_command_params = _make_feed_vim_command_params,
     _make_feed_vim_key_params = _make_feed_vim_key_params,
