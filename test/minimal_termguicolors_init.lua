@@ -31,8 +31,6 @@ require("lazy").setup({
     },
     {
         "linrongbin16/fzfx.nvim",
-        dev = true,
-        dir = "~/github/linrongbin16/fzfx.nvim",
         opts = {},
         dependencies = {
             "folke/tokyonight.nvim",
