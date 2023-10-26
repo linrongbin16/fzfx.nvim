@@ -77,7 +77,7 @@ end
 --- @param maxsize integer
 --- @param size integer
 --- @param offset number
-local function _make_window_center_shift_size(maxsize, size, offset)
+local function _make_window_center_shift(maxsize, size, offset)
     local base = math.floor((maxsize - size) * 0.5)
     if offset >= 0 then
         local shift = offset < 1 and math.floor((maxsize - size) * offset)
@@ -115,7 +115,7 @@ local function _make_center_window_config(opts)
             vim.inspect(opts)
         )
     end
-    local row = _make_window_center_shift_size(total_height, height, opts.row)
+    local row = _make_window_center_shift(total_height, height, opts.row)
     log.debug(
         "|fzfx.popup - make_popup_window_opts_relative_to_center| row:%s, win_opts:%s, total_height:%s, height:%s",
         vim.inspect(row),
@@ -133,7 +133,7 @@ local function _make_center_window_config(opts)
             vim.inspect(opts)
         )
     end
-    local col = _make_window_center_shift_size(total_width, width, opts.col)
+    local col = _make_window_center_shift(total_width, width, opts.col)
 
     --- @type PopupWindowConfig
     local pw_config = {
@@ -473,7 +473,7 @@ end
 
 local M = {
     _make_window_size = _make_window_size,
-    _make_window_center_shift_size = _make_window_center_shift_size,
+    _make_window_center_shift = _make_window_center_shift,
     _make_cursor_window_config = _make_cursor_window_config,
     _make_center_window_config = _make_center_window_config,
     Popup = Popup,
