@@ -8,9 +8,10 @@ local cache = require("fzfx.cache")
 
 -- visual select {
 
+--- @package
 --- @param mode string
 --- @return string
-local function get_visual_lines(mode)
+local function _get_visual_lines(mode)
     local start_pos = vim.fn.getpos("'<")
     local end_pos = vim.fn.getpos("'>")
     local line_start = start_pos[2]
@@ -22,13 +23,13 @@ local function get_visual_lines(mode)
     column_start = math.min(column_start, column_end)
     column_end = math.max(column_start, column_end)
     log.debug(
-        "|fzfx.fzf_helpers - get_visual_lines| mode:%s, start_pos:%s, end_pos:%s",
+        "|fzfx.fzf_helpers - _get_visual_lines| mode:%s, start_pos:%s, end_pos:%s",
         vim.inspect(mode),
         vim.inspect(start_pos),
         vim.inspect(end_pos)
     )
     log.debug(
-        "|fzfx.fzf_helpers - get_visual_lines| line_start:%s, line_end:%s, column_start:%s, column_end:%s",
+        "|fzfx.fzf_helpers - _get_visual_lines| line_start:%s, line_end:%s, column_start:%s, column_end:%s",
         vim.inspect(line_start),
         vim.inspect(line_end),
         vim.inspect(column_start),
@@ -37,7 +38,7 @@ local function get_visual_lines(mode)
 
     local lines = vim.api.nvim_buf_get_lines(0, line_start - 1, line_end, false)
     if #lines == 0 then
-        log.debug("|fzfx.fzf_helpers - get_visual_lines| empty lines")
+        log.debug("|fzfx.fzf_helpers - _get_visual_lines| empty lines")
         return ""
     end
 
@@ -45,7 +46,7 @@ local function get_visual_lines(mode)
     local cursor_line = cursor_pos[2]
     local cursor_column = cursor_pos[3]
     log.debug(
-        "|fzfx.fzf_helpers - get_visual_lines| cursor_pos:%s, cursor_line:%s, cursor_column:%s",
+        "|fzfx.fzf_helpers - _get_visual_lines| cursor_pos:%s, cursor_line:%s, cursor_column:%s",
         vim.inspect(cursor_pos),
         vim.inspect(cursor_line),
         vim.inspect(cursor_column)
@@ -55,7 +56,7 @@ local function get_visual_lines(mode)
         lines[#lines] = string.sub(lines[#lines], 1, column_end - offset + 1)
         lines[1] = string.sub(lines[1], column_start)
         log.debug(
-            "|fzfx.fzf_helpers - get_visual_lines| v or \\22, lines:%s",
+            "|fzfx.fzf_helpers - _get_visual_lines| v or \\22, lines:%s",
             vim.inspect(lines)
         )
     elseif mode == "V" then
@@ -63,19 +64,20 @@ local function get_visual_lines(mode)
             lines[1] = vim.trim(lines[1])
         end
         log.debug(
-            "|fzfx.fzf_helpers - get_visual_lines| V, lines:%s",
+            "|fzfx.fzf_helpers - _get_visual_lines| V, lines:%s",
             vim.inspect(lines)
         )
     end
     return table.concat(lines, "\n")
 end
 
+--- @package
 --- @return string
-local function visual_select()
+local function _visual_select()
     vim.cmd([[ execute "normal! \<ESC>" ]])
     local mode = vim.fn.visualmode()
     if mode == "v" or mode == "V" or mode == "\22" then
-        return get_visual_lines(mode)
+        return _get_visual_lines(mode)
     end
     return ""
 end
@@ -90,7 +92,7 @@ local function get_command_feed(opts, feed_type)
     if feed_type == "args" then
         return opts.args
     elseif feed_type == "visual" then
-        return visual_select()
+        return _visual_select()
     elseif feed_type == "cword" then
         return vim.fn.expand("<cword>")
     elseif feed_type == "put" then
@@ -289,6 +291,8 @@ local function setup()
 end
 
 local M = {
+    _get_visual_lines = _get_visual_lines,
+    _visual_select = _visual_select,
     get_command_feed = get_command_feed,
     preprocess_fzf_opts = preprocess_fzf_opts,
     make_fzf_opts = make_fzf_opts,

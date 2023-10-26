@@ -7,6 +7,7 @@ describe("helpers", function()
 
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
+        vim.opt.swapfile = false
     end)
 
     local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
@@ -39,6 +40,34 @@ describe("helpers", function()
             assert_eq(type(actual), "string")
         end)
     end)
+    describe("[_get_visual_lines]", function()
+        it("is v mode", function()
+            vim.cmd([[
+            edit README.md
+            call feedkeys('V', 'n')
+            ]])
+            -- vim.fn.feedkeys("V", "n")
+            local actual = fzf_helpers._get_visual_lines("V")
+            print(
+                string.format("get visual lines(V):%s\n", vim.inspect(actual))
+            )
+            assert_eq(type(actual), "string")
+        end)
+        it("is V mode", function()
+            vim.cmd([[
+            edit README.md
+            call feedkeys('v', 'n')
+            call feedkeys('l', 'x')
+            call feedkeys('l', 'x')
+            ]])
+            -- vim.fn.feedkeys("vll", "n")
+            local actual = fzf_helpers._get_visual_lines("v")
+            print(
+                string.format("get visual lines(v):%s\n", vim.inspect(actual))
+            )
+            assert_eq(type(actual), "string")
+        end)
+    end)
     describe("[nvim_exec]", function()
         it("get nvim path", function()
             local actual = fzf_helpers.nvim_exec()
@@ -46,6 +75,19 @@ describe("helpers", function()
             assert_true(type(actual) == "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
             assert_true(vim.fn.executable(actual) > 0)
+        end)
+    end)
+    describe("[fzf_exec]", function()
+        it("get fzf path", function()
+            local ok, err = pcall(fzf_helpers.fzf_exec)
+            print(
+                string.format(
+                    "fzf_exec: %s, %s\n",
+                    vim.inspect(ok),
+                    vim.inspect(err)
+                )
+            )
+            assert_true(ok ~= nil)
         end)
     end)
     describe("[preprocess_fzf_opts]", function()
