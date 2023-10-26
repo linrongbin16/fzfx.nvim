@@ -11,10 +11,8 @@ describe("helpers", function()
     end)
 
     require("fzfx.config").setup()
-    require("fzfx.module").setup()
     local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
     local fzf_helpers = require("fzfx.fzf_helpers")
-    local utils = require("fzfx.utils")
 
     require("fzfx.log").setup({
         level = "INFO",
@@ -173,15 +171,6 @@ describe("helpers", function()
             assert_true(string.len(actual --[[@as string]]) > 0)
             assert_true(actual:gmatch("general") ~= nil)
             assert_true(actual:gmatch("provider") ~= nil)
-        end)
-    end)
-    describe("[plugin_home_dir]", function()
-        it("make path with slash", function()
-            local actual = require("fzfx.module").plugin_home_dir()
-            print(string.format("plugin home dir: %s\n", actual))
-            assert_eq(type(actual), "string")
-            assert_eq(type(utils.string_find(actual, "fzfx.nvim")), "number")
-            assert_true(utils.string_find(actual, "fzfx.nvim") > 0)
         end)
     end)
 end)

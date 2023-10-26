@@ -57,11 +57,6 @@ end
 --     return nil
 -- end
 
---- @return string
-local function plugin_home_dir()
-    return vim.env._FZFX_NVIM_SELF_PATH --[[@as string]]
-end
-
 local function setup()
     local configs = conf.get_config()
 
@@ -112,7 +107,6 @@ end
 
 local M = {
     setup = setup,
-    plugin_home_dir = plugin_home_dir,
 }
 
 return M

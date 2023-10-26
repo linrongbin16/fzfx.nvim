@@ -23,6 +23,11 @@ local function join(...)
     return table.concat({ ... }, constants.path_separator)
 end
 
+--- @return string
+local function base_dir()
+    return vim.fn["fzfx#nvim#base_dir"]()
+end
+
 --- @param p string?
 --- @return string
 local function shorten(p)
@@ -44,11 +49,15 @@ local function reduce2home(p)
 end
 
 local M = {
+    -- path
     normalize = normalize,
     join = join,
     shorten = shorten,
     reduce = reduce,
     reduce2home = reduce2home,
+
+    -- plugin dir
+    base_dir = base_dir,
 }
 
 return M

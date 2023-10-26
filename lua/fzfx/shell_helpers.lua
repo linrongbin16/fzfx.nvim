@@ -20,7 +20,7 @@ local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
         and "\\"
     or "/"
 
-local DEBUG_ENABLE = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE) == "1"
+local DEBUG_ENABLE = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE):lower() == "1"
 
 local LoggerContext = {
     level = DEBUG_ENABLE and require("fzfx.log").LogLevels.DEBUG
