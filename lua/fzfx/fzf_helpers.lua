@@ -276,7 +276,7 @@ local function make_lua_command(...)
 end
 
 local function setup()
-    vim.api.nvim_create_autocmd("WinResized", {
+    vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
         pattern = { "*" },
         callback = function()
             make_fzf_default_opts(true)
