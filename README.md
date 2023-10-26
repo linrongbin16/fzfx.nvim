@@ -632,9 +632,9 @@ Commands are named following below rules:
 - Key Maps
 
 > 1. Use `enter` to execute vim key.
-> 2. Normal mode variant is named with 'N' suffix.
-> 3. Insert mode variant is named with 'I' suffix.
-> 4. Visual(select) mode variant is named with 'V' suffix.
+> 2. Normal mode variant is named with `N` suffix.
+> 3. Insert mode variant is named with `I` suffix.
+> 4. Visual(select) mode variant is named with `V` suffix.
 
 <table>
 <thead>
@@ -643,7 +643,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -652,7 +651,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">No</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4">1. Use `enter` to execute vim key.<br>2. Normal mode variant is named with 'N' suffix.<br>3. Insert mode variant is named with 'I' suffix.<br>4. Visual/select mode variant is named with 'V' suffix.</td>
   </tr>
   <tr>
     <td>FzfxKeyMaps(N/I/V)V</td>
@@ -669,7 +667,9 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### File Explorer
+### Misc
+
+- File Explorer
 
 <table>
 <thead>
@@ -678,7 +678,6 @@ Commands are named following below rules:
     <th>Mode</th>
     <th>Multi Keys</th>
     <th>Preview Keys</th>
-    <th>Hint</th>
   </tr>
 </thead>
 <tbody>
@@ -687,7 +686,6 @@ Commands are named following below rules:
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
-    <td rowspan="4"></td>
   </tr>
   <tr>
     <td>FzfxFileExplorer(U)V</td>
