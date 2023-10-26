@@ -13,23 +13,13 @@ local fzf_helpers = require("fzfx.fzf_helpers")
 --- @field style "minimal"|nil
 --- @field border "none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil
 --- @field zindex integer?
-local PopupWindowConfig = {
-    anchor = nil,
-    relative = nil,
-    width = nil,
-    height = nil,
-    row = nil,
-    col = nil,
-    style = nil,
-    border = nil,
-    zindex = nil,
-}
 
+--- @package
 --- @param value number
 --- @param base integer
 --- @param minimal integer?
 --- @return integer
-local function make_popup_window_size(value, base, minimal)
+local function _make_window_size(value, base, minimal)
     minimal = minimal or 3
     return utils.number_bound(
         minimal,
@@ -38,31 +28,31 @@ local function make_popup_window_size(value, base, minimal)
     )
 end
 
---- @param win_opts Options
+--- @param opts Options
 --- @return PopupWindowConfig
-local function make_popup_window_config_relative_to_cursor(win_opts)
+local function _make_window_config_for_cursor_anchor(opts)
     --- @type "cursor"
-    local relative = win_opts.relative
+    local relative = opts.relative
     local total_width = vim.api.nvim_win_get_width(0)
     local total_height = vim.api.nvim_win_get_height(0)
 
-    local width = make_popup_window_size(win_opts.width, total_width)
-    local height = make_popup_window_size(win_opts.height, total_height)
-    if win_opts.row < 0 then
+    local width = _make_window_size(opts.width, total_width)
+    local height = _make_window_size(opts.height, total_height)
+    if opts.row < 0 then
         log.throw(
             "error! invalid option (win_opts.row < 0): %s!",
-            vim.inspect(win_opts)
+            vim.inspect(opts)
         )
     end
-    local row = win_opts.row
+    local row = opts.row
 
-    if win_opts.col < 0 then
+    if opts.col < 0 then
         log.throw(
             "error! invalid option (win_opts.col < 0): %s!",
-            vim.inspect(win_opts)
+            vim.inspect(opts)
         )
     end
-    local col = win_opts.col
+    local col = opts.col
 
     --- @type PopupWindowConfig
     local pw_config = {
@@ -73,44 +63,38 @@ local function make_popup_window_config_relative_to_cursor(win_opts)
         row = row,
         col = col,
         style = "minimal",
-        border = win_opts.border,
-        zindex = win_opts.zindex,
+        border = opts.border,
+        zindex = opts.zindex,
     }
     log.debug(
         "|fzfx.popup - make_popup_window_opts_relative_to_cursor| (origin) win_opts:%s, pw_config:%s",
-        vim.inspect(win_opts),
+        vim.inspect(opts),
         vim.inspect(pw_config)
     )
     return pw_config
 end
 
---- @param total_size integer
---- @param popup_size integer
---- @param value number
-local function make_popup_window_center_shift_size(
-    total_size,
-    popup_size,
-    value
-)
-    local base = math.floor((total_size - popup_size) * 0.5)
-    if value >= 0 then
-        local shift = value < 1
-                and math.floor((total_size - popup_size) * value)
-            or value
-        return utils.number_bound(0, base + shift, total_size - popup_size)
+--- @param maxsize integer
+--- @param size integer
+--- @param offset number
+local function _make_window_center_shift_size(maxsize, size, offset)
+    local base = math.floor((maxsize - size) * 0.5)
+    if offset >= 0 then
+        local shift = offset < 1 and math.floor((maxsize - size) * offset)
+            or offset
+        return utils.number_bound(0, base + shift, maxsize - size)
     else
-        local shift = value > -1
-                and math.ceil((total_size - popup_size) * value)
-            or value
-        return utils.number_bound(0, base + shift, total_size - popup_size)
+        local shift = offset > -1 and math.ceil((maxsize - size) * offset)
+            or offset
+        return utils.number_bound(0, base + shift, maxsize - size)
     end
 end
 
---- @param win_opts Options
+--- @param opts Options
 --- @return PopupWindowConfig
-local function make_popup_window_config_relative_to_center(win_opts)
+local function _make_window_config_for_center_anchor(opts)
     --- @type "editor"|"win"
-    local relative = win_opts.relative or "editor"
+    local relative = opts.relative or "editor"
 
     local total_width = vim.o.columns
     local total_height = vim.o.lines
@@ -119,39 +103,37 @@ local function make_popup_window_config_relative_to_center(win_opts)
         total_height = vim.api.nvim_win_get_height(0)
     end
 
-    local width = make_popup_window_size(win_opts.width, total_width)
-    local height = make_popup_window_size(win_opts.height, total_height)
+    local width = _make_window_size(opts.width, total_width)
+    local height = _make_window_size(opts.height, total_height)
 
     if
-        (win_opts.row > -1 and win_opts.row < -0.5)
-        or (win_opts.row > 0.5 and win_opts.row < 1)
+        (opts.row > -1 and opts.row < -0.5)
+        or (opts.row > 0.5 and opts.row < 1)
     then
         log.throw(
             "error! invalid option (win_opts.row): %s!",
-            vim.inspect(win_opts)
+            vim.inspect(opts)
         )
     end
-    local row =
-        make_popup_window_center_shift_size(total_height, height, win_opts.row)
+    local row = _make_window_center_shift_size(total_height, height, opts.row)
     log.debug(
         "|fzfx.popup - make_popup_window_opts_relative_to_center| row:%s, win_opts:%s, total_height:%s, height:%s",
         vim.inspect(row),
-        vim.inspect(win_opts),
+        vim.inspect(opts),
         vim.inspect(total_height),
         vim.inspect(height)
     )
 
     if
-        (win_opts.col > -1 and win_opts.col < -0.5)
-        or (win_opts.col > 0.5 and win_opts.col < 1)
+        (opts.col > -1 and opts.col < -0.5)
+        or (opts.col > 0.5 and opts.col < 1)
     then
         log.throw(
             "error! invalid option (win_opts.col): %s!",
-            vim.inspect(win_opts)
+            vim.inspect(opts)
         )
     end
-    local col =
-        make_popup_window_center_shift_size(total_width, width, win_opts.col)
+    local col = _make_window_center_shift_size(total_width, width, opts.col)
 
     --- @type PopupWindowConfig
     local pw_config = {
@@ -162,12 +144,12 @@ local function make_popup_window_config_relative_to_center(win_opts)
         row = row,
         col = col,
         style = "minimal",
-        border = win_opts.border,
-        zindex = win_opts.zindex,
+        border = opts.border,
+        zindex = opts.zindex,
     }
     log.debug(
         "|fzfx.popup - make_popup_window_opts_relative_to_center| (origin) win_opts:%s, pw_config:%s",
-        vim.inspect(win_opts),
+        vim.inspect(opts),
         vim.inspect(pw_config)
     )
     return pw_config
@@ -180,9 +162,9 @@ local function make_popup_window_config(win_opts)
     local relative = win_opts.relative or "editor"
 
     if relative == "cursor" then
-        return make_popup_window_config_relative_to_cursor(win_opts)
+        return _make_window_config_for_cursor_anchor(win_opts)
     elseif relative == "editor" or relative == "win" then
-        return make_popup_window_config_relative_to_center(win_opts)
+        return _make_window_config_for_center_anchor(win_opts)
     else
         log.throw(
             "error! failed to make popup window opts, unsupport relative value %s.",
@@ -279,16 +261,11 @@ function PopupWindow:resize()
 end
 
 --- @class Popup
---- @field popup_window PopupWindowConfig?
+--- @field popup_window PopupWindow?
 --- @field source string|string[]|nil
 --- @field jobid integer|nil
 --- @field result string|nil
-local Popup = {
-    popup_window = nil,
-    source = nil,
-    jobid = nil,
-    result = nil,
-}
+local Popup = {}
 
 --- @param actions table<string, any>
 --- @return string[][]
@@ -343,14 +320,14 @@ local function make_fzf_command(fzf_opts, actions, result)
 end
 
 --- @alias OnPopupExit fun(launch:Popup):nil
---- @param win_opts PopupWindowConfig?
+--- @param win_opts Options?
 --- @param source string
 --- @param fzf_opts Options
 --- @param actions Options
 --- @param context PipelineContext
---- @param on_launch_exit OnPopupExit?
+--- @param on_popup_exit OnPopupExit?
 --- @return Popup
-function Popup:new(win_opts, source, fzf_opts, actions, context, on_launch_exit)
+function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
     local result = vim.fn.tempname()
     local fzf_command = make_fzf_command(fzf_opts, actions, result)
     local popup_window = PopupWindow:new(win_opts)
@@ -426,8 +403,8 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_launch_exit)
         else
             log.err("unknown action key: %s", vim.inspect(action_key))
         end
-        if type(on_launch_exit) == "function" then
-            on_launch_exit(self)
+        if type(on_popup_exit) == "function" then
+            on_popup_exit(self)
         end
     end
 
@@ -495,8 +472,10 @@ local function setup()
 end
 
 local M = {
-    make_popup_window_size = make_popup_window_size,
-    make_popup_window_center_shift_size = make_popup_window_center_shift_size,
+    _make_window_size = _make_window_size,
+    _make_window_center_shift_size = _make_window_center_shift_size,
+    _make_window_config_for_cursor_anchor = _make_window_config_for_cursor_anchor,
+    _make_window_config_for_center_anchor = _make_window_config_for_center_anchor,
     Popup = Popup,
     setup = setup,
 }
