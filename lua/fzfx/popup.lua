@@ -3,7 +3,8 @@ local conf = require("fzfx.config")
 local utils = require("fzfx.utils")
 local fzf_helpers = require("fzfx.fzf_helpers")
 
---- @class PopupWindowOpts
+--- @class PopupWindowConfig
+--- @field anchor "NW"|nil
 --- @field relative "editor"|"win"|"cursor"|nil
 --- @field width integer?
 --- @field height integer?
@@ -12,7 +13,8 @@ local fzf_helpers = require("fzfx.fzf_helpers")
 --- @field style "minimal"|nil
 --- @field border "none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil
 --- @field zindex integer?
-local PopupWindowOpts = {
+local PopupWindowConfig = {
+    anchor = nil,
     relative = nil,
     width = nil,
     height = nil,
@@ -37,8 +39,8 @@ local function make_popup_window_size(value, base, minimal)
 end
 
 --- @param win_opts Options
---- @return PopupWindowOpts
-local function make_popup_window_opts_relative_to_cursor(win_opts)
+--- @return PopupWindowConfig
+local function make_popup_window_config_relative_to_cursor(win_opts)
     --- @type "cursor"
     local relative = win_opts.relative
     local total_width = vim.api.nvim_win_get_width(0)
@@ -62,26 +64,24 @@ local function make_popup_window_opts_relative_to_cursor(win_opts)
     end
     local col = win_opts.col
 
-    --- @type PopupWindowOpts
-    local popup_window_opts =
-        vim.tbl_deep_extend("force", vim.deepcopy(PopupWindowOpts), {
-            anchor = "NW",
-            relative = relative,
-            width = width,
-            height = height,
-            -- start point on NW
-            row = row,
-            col = col,
-            style = "minimal",
-            border = win_opts.border,
-            zindex = win_opts.zindex,
-        })
+    --- @type PopupWindowConfig
+    local pw_config = {
+        anchor = "NW",
+        relative = relative,
+        width = width,
+        height = height,
+        row = row,
+        col = col,
+        style = "minimal",
+        border = win_opts.border,
+        zindex = win_opts.zindex,
+    }
     log.debug(
-        "|fzfx.popup - make_popup_window_opts_relative_to_cursor| (origin) win_opts:%s, popup_win_opts:%s",
+        "|fzfx.popup - make_popup_window_opts_relative_to_cursor| (origin) win_opts:%s, pw_config:%s",
         vim.inspect(win_opts),
-        vim.inspect(popup_window_opts)
+        vim.inspect(pw_config)
     )
-    return popup_window_opts
+    return pw_config
 end
 
 --- @param total_size integer
@@ -107,8 +107,8 @@ local function make_popup_window_center_shift_size(
 end
 
 --- @param win_opts Options
---- @return PopupWindowOpts
-local function make_popup_window_opts_relative_to_center(win_opts)
+--- @return PopupWindowConfig
+local function make_popup_window_config_relative_to_center(win_opts)
     --- @type "editor"|"win"
     local relative = win_opts.relative or "editor"
 
@@ -153,38 +153,36 @@ local function make_popup_window_opts_relative_to_center(win_opts)
     local col =
         make_popup_window_center_shift_size(total_width, width, win_opts.col)
 
-    --- @type PopupWindowOpts
-    local popup_window_opts =
-        vim.tbl_deep_extend("force", vim.deepcopy(PopupWindowOpts), {
-            anchor = "NW",
-            relative = relative,
-            width = width,
-            height = height,
-            -- start point on NW
-            row = row,
-            col = col,
-            style = "minimal",
-            border = win_opts.border,
-            zindex = win_opts.zindex,
-        })
+    --- @type PopupWindowConfig
+    local pw_config = {
+        anchor = "NW",
+        relative = relative,
+        width = width,
+        height = height,
+        row = row,
+        col = col,
+        style = "minimal",
+        border = win_opts.border,
+        zindex = win_opts.zindex,
+    }
     log.debug(
-        "|fzfx.popup - make_popup_window_opts_relative_to_center| (origin) win_opts:%s, popup_win_opts:%s",
+        "|fzfx.popup - make_popup_window_opts_relative_to_center| (origin) win_opts:%s, pw_config:%s",
         vim.inspect(win_opts),
-        vim.inspect(popup_window_opts)
+        vim.inspect(pw_config)
     )
-    return popup_window_opts
+    return pw_config
 end
 
 --- @param win_opts Options
---- @return PopupWindowOpts
-local function make_popup_window_opts(win_opts)
+--- @return PopupWindowConfig
+local function make_popup_window_config(win_opts)
     --- @type "editor"|"win"|"cursor"
     local relative = win_opts.relative or "editor"
 
     if relative == "cursor" then
-        return make_popup_window_opts_relative_to_cursor(win_opts)
+        return make_popup_window_config_relative_to_cursor(win_opts)
     elseif relative == "editor" or relative == "win" then
-        return make_popup_window_opts_relative_to_center(win_opts)
+        return make_popup_window_config_relative_to_center(win_opts)
     else
         log.throw(
             "error! failed to make popup window opts, unsupport relative value %s.",
@@ -201,10 +199,10 @@ local GlobalPopupWindowInstances = {}
 --- @field window_opts_context WindowOptsContext?
 --- @field bufnr integer?
 --- @field winnr integer?
---- @field window_config Options
+--- @field saved_win_opts Options
 local PopupWindow = {}
 
---- @param win_opts PopupWindowOpts?
+--- @param win_opts Options?
 --- @return PopupWindow
 function PopupWindow:new(win_opts)
     -- check executable: nvim, fzf
@@ -227,10 +225,10 @@ function PopupWindow:new(win_opts)
         vim.deepcopy(conf.get_config().popup.win_opts),
         vim.deepcopy(win_opts) or {}
     )
-    local popup_opts = make_popup_window_opts(merged_win_opts)
+    local popup_window_config = make_popup_window_config(merged_win_opts)
 
     --- @type integer
-    local winnr = vim.api.nvim_open_win(bufnr, true, popup_opts)
+    local winnr = vim.api.nvim_open_win(bufnr, true, popup_window_config)
 
     --- setlocal nospell nonumber
     --- set winhighlight='Pmenu:,Normal:Normal'
@@ -244,7 +242,7 @@ function PopupWindow:new(win_opts)
         window_opts_context = window_opts_context,
         bufnr = bufnr,
         winnr = winnr,
-        window_config = merged_win_opts,
+        saved_win_opts = merged_win_opts,
     }
     setmetatable(o, self)
     self.__index = self
@@ -275,12 +273,13 @@ function PopupWindow:close()
 end
 
 function PopupWindow:resize()
-    local new_popup_opts = make_popup_window_opts(self.window_config)
-    vim.api.nvim_win_set_config(self.winnr, new_popup_opts)
+    local new_popup_window_config =
+        make_popup_window_config(self.saved_win_opts)
+    vim.api.nvim_win_set_config(self.winnr, new_popup_window_config)
 end
 
 --- @class Popup
---- @field popup_window PopupWindowOpts?
+--- @field popup_window PopupWindowConfig?
 --- @field source string|string[]|nil
 --- @field jobid integer|nil
 --- @field result string|nil
@@ -344,7 +343,7 @@ local function make_fzf_command(fzf_opts, actions, result)
 end
 
 --- @alias OnPopupExit fun(launch:Popup):nil
---- @param win_opts PopupWindowOpts?
+--- @param win_opts PopupWindowConfig?
 --- @param source string
 --- @param fzf_opts Options
 --- @param actions Options
