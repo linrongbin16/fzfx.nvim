@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v2.1.0...v2.1.1) (2023-10-26)
+
+
+### Performance Improvements
+
+* **module:** use self module path and drop 'fzfx#nvim#base_dir' ([f4061b4](https://github.com/linrongbin16/fzfx.nvim/commit/f4061b4ad1990dd124743af6f108cfc18a5a3883))
+
 ## [2.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.0.0...v2.1.0) (2023-10-26)
 
 
