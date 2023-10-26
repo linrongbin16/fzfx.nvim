@@ -203,8 +203,7 @@ local function get_global_yank_history()
     return YankHistoryInstance
 end
 
---- @param augroup any
-local function setup(augroup)
+local function setup()
     YankHistoryInstance = YankHistory:new(
         env.debug_enable() and 5
             or conf.get_config().yank_history.other_opts.maxsize
