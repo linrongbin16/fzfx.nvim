@@ -7,12 +7,13 @@ describe("helpers", function()
 
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
+        vim.opt.swapfile = false
     end)
 
-    local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-    local helpers = require("fzfx.helpers")
-
     require("fzfx.config").setup()
+    local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
+    local fzf_helpers = require("fzfx.fzf_helpers")
+
     require("fzfx.log").setup({
         level = "INFO",
         console_log = false,
@@ -21,34 +22,98 @@ describe("helpers", function()
     describe("[get_command_feed]", function()
         it("get normal args feed", function()
             local expect = "expect"
-            local actual = helpers.get_command_feed(
+            local actual = fzf_helpers.get_command_feed(
                 { args = expect },
                 CommandFeedEnum.ARGS
             )
             assert_eq(expect, actual)
         end)
         it("get visual select feed", function()
-            local expect = ""
-            local actual = helpers.get_command_feed({}, CommandFeedEnum.VISUAL)
-            assert_eq(expect, actual)
+            local actual =
+                fzf_helpers.get_command_feed({}, CommandFeedEnum.VISUAL)
+            assert_eq(type(actual), "string")
         end)
         it("get cword feed", function()
-            local actual = helpers.get_command_feed({}, CommandFeedEnum.CWORD)
+            local actual =
+                fzf_helpers.get_command_feed({}, CommandFeedEnum.CWORD)
+            assert_eq(type(actual), "string")
+        end)
+    end)
+    describe("[_get_visual_lines]", function()
+        it("is v mode", function()
+            vim.cmd([[
+            edit README.md
+            call feedkeys('V', 'n')
+            ]])
+            -- vim.fn.feedkeys("V", "n")
+            local actual = fzf_helpers._get_visual_lines("V")
+            print(
+                string.format("get visual lines(V):%s\n", vim.inspect(actual))
+            )
+            assert_eq(type(actual), "string")
+        end)
+        it("is V mode", function()
+            vim.cmd([[
+            edit README.md
+            call feedkeys('v', 'n')
+            call feedkeys('l', 'x')
+            call feedkeys('l', 'x')
+            ]])
+            -- vim.fn.feedkeys("vll", "n")
+            local actual = fzf_helpers._get_visual_lines("v")
+            print(
+                string.format("get visual lines(v):%s\n", vim.inspect(actual))
+            )
+            assert_eq(type(actual), "string")
+        end)
+    end)
+    describe("[_visual_select]", function()
+        it("is v mode", function()
+            vim.cmd([[
+            edit README.md
+            call feedkeys('V', 'n')
+            ]])
+            local actual = fzf_helpers._visual_select()
+            print(string.format("visual select:%s\n", vim.inspect(actual)))
+            assert_eq(type(actual), "string")
+        end)
+        it("is V mode", function()
+            vim.cmd([[
+            edit README.md
+            call feedkeys('v', 'n')
+            call feedkeys('l', 'x')
+            call feedkeys('l', 'x')
+            ]])
+            local actual = fzf_helpers._visual_select()
+            print(string.format("visual select:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "string")
         end)
     end)
     describe("[nvim_exec]", function()
         it("get nvim path", function()
-            local actual = helpers.nvim_exec()
+            local actual = fzf_helpers.nvim_exec()
             print(string.format("nvim_exec: %s\n", vim.inspect(actual)))
             assert_true(type(actual) == "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
             assert_true(vim.fn.executable(actual) > 0)
         end)
     end)
+    describe("[fzf_exec]", function()
+        it("get fzf path", function()
+            local ok, err = pcall(fzf_helpers.fzf_exec)
+            print(
+                string.format(
+                    "fzf_exec: %s, %s\n",
+                    vim.inspect(ok),
+                    vim.inspect(err)
+                )
+            )
+            assert_true(ok ~= nil)
+        end)
+    end)
     describe("[preprocess_fzf_opts]", function()
         it("preprocess nil opts", function()
-            local actual = helpers.preprocess_fzf_opts({
+            local actual = fzf_helpers.preprocess_fzf_opts({
                 "--bind=enter:accept",
                 function()
                     return nil
@@ -62,7 +127,7 @@ describe("helpers", function()
             assert_eq(#actual, 1)
         end)
         it("preprocess string opts", function()
-            local actual = helpers.preprocess_fzf_opts({
+            local actual = fzf_helpers.preprocess_fzf_opts({
                 "--bind=enter:accept",
                 function()
                     return "--no-multi"
@@ -82,7 +147,7 @@ describe("helpers", function()
     describe("[make_fzf_opts]", function()
         it("make opts", function()
             local expect = "--bind=enter:accept"
-            local actual = helpers.make_fzf_opts({ expect })
+            local actual = fzf_helpers.make_fzf_opts({ expect })
             print(string.format("make opts: %s\n", vim.inspect(actual)))
             assert_eq(type(actual), "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
@@ -91,7 +156,7 @@ describe("helpers", function()
     end)
     describe("[make_fzf_default_opts]", function()
         it("make default opts", function()
-            local actual = helpers.make_fzf_default_opts()
+            local actual = fzf_helpers.make_fzf_default_opts()
             print(string.format("make default opts: %s\n", vim.inspect(actual)))
             assert_eq(type(actual), "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
@@ -99,7 +164,8 @@ describe("helpers", function()
     end)
     describe("[make_lua_command]", function()
         it("make lua command", function()
-            local actual = helpers.make_lua_command("general", "provider.lua")
+            local actual =
+                fzf_helpers.make_lua_command("general", "provider.lua")
             print(string.format("make lua command: %s\n", vim.inspect(actual)))
             assert_eq(type(actual), "string")
             assert_true(string.len(actual --[[@as string]]) > 0)

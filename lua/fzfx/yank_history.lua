@@ -153,7 +153,7 @@ function YankHistory:get(pos)
 end
 
 --- @type YankHistory?
-local GlobalYankHistory = nil
+local YankHistoryInstance = nil
 
 --- @return table
 local function get_register_info(regname)
@@ -181,30 +181,30 @@ local function save_yank()
     -- )
 
     log.ensure(
-        GlobalYankHistory ~= nil,
-        "|fzfx.yank_history - save_yank| error! GlobalYankHistoryManager must not be nil!"
+        YankHistoryInstance ~= nil,
+        "|fzfx.yank_history - save_yank| error! YankHistoryInstance must not be nil!"
     )
     ---@diagnostic disable-next-line: need-check-nil
-    return GlobalYankHistory:push(y)
+    return YankHistoryInstance:push(y)
 end
 
 --- @return Yank?
 local function get_yank()
     log.ensure(
-        GlobalYankHistory ~= nil,
-        "|fzfx.yank_history - get_yank| error! GlobalYankHistory must not be nil!"
+        YankHistoryInstance ~= nil,
+        "|fzfx.yank_history - get_yank| error! YankHistoryInstance must not be nil!"
     )
     ---@diagnostic disable-next-line: need-check-nil
-    return GlobalYankHistory:get()
+    return YankHistoryInstance:get()
 end
 
 --- @return YankHistory?
 local function get_global_yank_history()
-    return GlobalYankHistory
+    return YankHistoryInstance
 end
 
 local function setup()
-    GlobalYankHistory = YankHistory:new(
+    YankHistoryInstance = YankHistory:new(
         env.debug_enable() and 5
             or conf.get_config().yank_history.other_opts.maxsize
     )

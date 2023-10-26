@@ -33,13 +33,19 @@ local function setup(options)
     end
 
     -- lua module environment
-    require("fzfx.module").setup(configs)
+    require("fzfx.module").setup()
 
     -- rpc server
     require("fzfx.server").setup()
 
     -- yank history
     require("fzfx.yank_history").setup()
+
+    -- fzf helpers
+    require("fzfx.fzf_helpers").setup()
+
+    -- popup
+    require("fzfx.popup").setup()
 
     -- files & buffers
     general.setup("files", configs.files)

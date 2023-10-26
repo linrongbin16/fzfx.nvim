@@ -10,6 +10,7 @@ describe("config", function()
     end)
 
     local conf = require("fzfx.config")
+    local fzf_helpers = require("fzfx.fzf_helpers")
     describe("[setup]", function()
         it("setup with default configs", function()
             conf.setup()
@@ -22,9 +23,7 @@ describe("config", function()
             assert_eq(type(conf.get_config().popup), "table")
             assert_eq(type(conf.get_config().icons), "table")
             assert_eq(type(conf.get_config().fzf_opts), "table")
-            local actual = require("fzfx.helpers").make_fzf_opts(
-                conf.get_config().fzf_opts
-            )
+            local actual = fzf_helpers.make_fzf_opts(conf.get_config().fzf_opts)
             print(
                 string.format(
                     "make fzf opts with default configs:%s\n",
@@ -46,9 +45,8 @@ describe("config", function()
             assert_eq(type(conf.get_defaults().popup), "table")
             assert_eq(type(conf.get_defaults().icons), "table")
             assert_eq(type(conf.get_defaults().fzf_opts), "table")
-            local actual = require("fzfx.helpers").make_fzf_opts(
-                conf.get_defaults().fzf_opts
-            )
+            local actual =
+                fzf_helpers.make_fzf_opts(conf.get_defaults().fzf_opts)
             print(
                 string.format(
                     "make fzf opts with default configs:%s\n",

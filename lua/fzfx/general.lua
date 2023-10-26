@@ -1,6 +1,6 @@
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
-local helpers = require("fzfx.helpers")
+local fzf_helpers = require("fzfx.fzf_helpers")
 local server = require("fzfx.server")
 local color = require("fzfx.color")
 local utils = require("fzfx.utils")
@@ -674,7 +674,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local query_command = string.format(
         "%s %s %s %s %s",
-        helpers.make_lua_command("general", "provider.lua"),
+        fzf_helpers.make_lua_command("general", "provider.lua"),
         provide_rpc_registry_id,
         provider_switch.metafile,
         provider_switch.resultfile,
@@ -682,14 +682,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
     local reload_query_command = string.format(
         "%s %s %s %s {q}",
-        helpers.make_lua_command("general", "provider.lua"),
+        fzf_helpers.make_lua_command("general", "provider.lua"),
         provide_rpc_registry_id,
         provider_switch.metafile,
         provider_switch.resultfile
     )
     local preview_command = string.format(
         "%s %s %s %s {}",
-        helpers.make_lua_command("general", "previewer.lua"),
+        fzf_helpers.make_lua_command("general", "previewer.lua"),
         preview_rpc_registry_id,
         previewer_switch.metafile,
         previewer_switch.resultfile
@@ -745,7 +745,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local action_command = string.format(
                 "%s %s {}",
-                helpers.make_lua_command("rpc", "client.lua"),
+                fzf_helpers.make_lua_command("rpc", "client.lua"),
                 interaction_rpc_registry_id
             )
             local bind_builder = string.format(
@@ -782,7 +782,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local switch_command = string.format(
                 "%s %s",
-                helpers.make_lua_command("rpc", "client.lua"),
+                fzf_helpers.make_lua_command("rpc", "client.lua"),
                 switch_rpc_registry_id
             )
             local bind_builder = string.format(
@@ -822,7 +822,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
-    fzf_opts = helpers.preprocess_fzf_opts(fzf_opts)
+    fzf_opts = fzf_helpers.preprocess_fzf_opts(fzf_opts)
     local actions = pipeline_configs.actions
     local win_opts = nil
     if
@@ -875,7 +875,7 @@ local function setup(name, pipeline_configs)
         vim.api.nvim_create_user_command(
             pipeline_configs.commands.name,
             function(opts)
-                local query = helpers.get_command_feed(
+                local query = fzf_helpers.get_command_feed(
                     opts,
                     pipeline_configs.commands.feed
                 )
@@ -895,7 +895,7 @@ local function setup(name, pipeline_configs)
                 command_configs.name,
                 function(opts)
                     local query =
-                        helpers.get_command_feed(opts, command_configs.feed)
+                        fzf_helpers.get_command_feed(opts, command_configs.feed)
                     return general(
                         name,
                         query,

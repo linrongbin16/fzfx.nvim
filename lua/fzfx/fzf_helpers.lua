@@ -7,9 +7,10 @@ local utils = require("fzfx.utils")
 
 -- visual select {
 
+--- @package
 --- @param mode string
 --- @return string
-local function get_visual_lines(mode)
+local function _get_visual_lines(mode)
     local start_pos = vim.fn.getpos("'<")
     local end_pos = vim.fn.getpos("'>")
     local line_start = start_pos[2]
@@ -21,13 +22,13 @@ local function get_visual_lines(mode)
     column_start = math.min(column_start, column_end)
     column_end = math.max(column_start, column_end)
     log.debug(
-        "|fzfx.helpers - get_visual_lines| mode:%s, start_pos:%s, end_pos:%s",
+        "|fzfx.fzf_helpers - _get_visual_lines| mode:%s, start_pos:%s, end_pos:%s",
         vim.inspect(mode),
         vim.inspect(start_pos),
         vim.inspect(end_pos)
     )
     log.debug(
-        "|fzfx.helper - get_visual_lines| line_start:%s, line_end:%s, column_start:%s, column_end:%s",
+        "|fzfx.fzf_helpers - _get_visual_lines| line_start:%s, line_end:%s, column_start:%s, column_end:%s",
         vim.inspect(line_start),
         vim.inspect(line_end),
         vim.inspect(column_start),
@@ -36,7 +37,7 @@ local function get_visual_lines(mode)
 
     local lines = vim.api.nvim_buf_get_lines(0, line_start - 1, line_end, false)
     if #lines == 0 then
-        log.debug("|fzfx.helpers - get_visual_lines| empty lines")
+        log.debug("|fzfx.fzf_helpers - _get_visual_lines| empty lines")
         return ""
     end
 
@@ -44,7 +45,7 @@ local function get_visual_lines(mode)
     local cursor_line = cursor_pos[2]
     local cursor_column = cursor_pos[3]
     log.debug(
-        "|fzfx.helpers - get_visual_lines| cursor_pos:%s, cursor_line:%s, cursor_column:%s",
+        "|fzfx.fzf_helpers - _get_visual_lines| cursor_pos:%s, cursor_line:%s, cursor_column:%s",
         vim.inspect(cursor_pos),
         vim.inspect(cursor_line),
         vim.inspect(cursor_column)
@@ -54,7 +55,7 @@ local function get_visual_lines(mode)
         lines[#lines] = string.sub(lines[#lines], 1, column_end - offset + 1)
         lines[1] = string.sub(lines[1], column_start)
         log.debug(
-            "|fzfx.helpers - get_visual_lines| v or \\22, lines:%s",
+            "|fzfx.fzf_helpers - _get_visual_lines| v or \\22, lines:%s",
             vim.inspect(lines)
         )
     elseif mode == "V" then
@@ -62,19 +63,20 @@ local function get_visual_lines(mode)
             lines[1] = vim.trim(lines[1])
         end
         log.debug(
-            "|fzfx.helpers - get_visual_lines| V, lines:%s",
+            "|fzfx.fzf_helpers - _get_visual_lines| V, lines:%s",
             vim.inspect(lines)
         )
     end
     return table.concat(lines, "\n")
 end
 
+--- @package
 --- @return string
-local function visual_select()
+local function _visual_select()
     vim.cmd([[ execute "normal! \<ESC>" ]])
     local mode = vim.fn.visualmode()
     if mode == "v" or mode == "V" or mode == "\22" then
-        return get_visual_lines(mode)
+        return _get_visual_lines(mode)
     end
     return ""
 end
@@ -89,7 +91,7 @@ local function get_command_feed(opts, feed_type)
     if feed_type == "args" then
         return opts.args
     elseif feed_type == "visual" then
-        return visual_select()
+        return _visual_select()
     elseif feed_type == "cword" then
         return vim.fn.expand("<cword>")
     elseif feed_type == "put" then
@@ -97,7 +99,7 @@ local function get_command_feed(opts, feed_type)
         return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
     else
         log.throw(
-            "|fzfx.helpers - get_command_feed| error! invalid command feed type! %s",
+            "|fzfx.fzf_helpers - get_command_feed| error! invalid command feed type! %s",
             vim.inspect(feed_type)
         )
         return ""
@@ -123,7 +125,7 @@ local function generate_fzf_color_opts()
         end
     end
     log.debug(
-        "|fzfx.helpers - make_fzf_color_opts| builder:%s",
+        "|fzfx.fzf_helpers - make_fzf_color_opts| builder:%s",
         vim.inspect(builder)
     )
     return { { "--color", table.concat(builder, ",") } }
@@ -153,7 +155,7 @@ local function append_fzf_opt(opts, o)
         table.insert(opts, string.format("%s %s", k, utils.shellescape(v)))
     else
         log.throw(
-            "|fzfx.helpers - append_fzf_opt| invalid fzf opt: %s",
+            "|fzfx.fzf_helpers - append_fzf_opt| invalid fzf opt: %s",
             vim.inspect(o)
         )
     end
@@ -193,8 +195,11 @@ local function make_fzf_opts(opts)
     return table.concat(result, " ")
 end
 
+--- @type string?
+local CACHED_FZF_DEFAULT_OPTS = nil
+
 --- @return string?
-local function make_fzf_default_opts()
+local function make_fzf_default_opts_impl()
     local opts = conf.get_config().fzf_opts
     local result = {}
     if type(opts) == "table" and #opts > 0 then
@@ -214,7 +219,22 @@ local function make_fzf_default_opts()
             append_fzf_opt(result, o)
         end
     end
+    log.debug(
+        "|fzfx.fzf_helpers - make_fzf_default_opts_impl| result:%s",
+        vim.inspect(result)
+    )
     return table.concat(result, " ")
+end
+
+--- @param ignore_cache boolean?
+--- @return string?
+local function make_fzf_default_opts(ignore_cache)
+    if not ignore_cache and type(CACHED_FZF_DEFAULT_OPTS) == "string" then
+        return CACHED_FZF_DEFAULT_OPTS
+    end
+    local opts = make_fzf_default_opts_impl()
+    CACHED_FZF_DEFAULT_OPTS = opts
+    return opts
 end
 
 -- fzf opts }
@@ -255,13 +275,32 @@ local function make_lua_command(...)
     local nvim_path = nvim_exec()
     local lua_path = path.join(path.base_dir(), "bin", ...)
     -- log.debug(
-    --     "|fzfx.helpers - make_lua_command| lua_path:%s",
+    --     "|fzfx.fzf_helpers - make_lua_command| lua_path:%s",
     --     vim.inspect(lua_path)
     -- )
     return string.format("%s -n --clean --headless -l %s", nvim_path, lua_path)
 end
 
+local function setup()
+    local recalculating = false
+    vim.api.nvim_create_autocmd("ColorScheme", {
+        pattern = { "*" },
+        callback = function()
+            if recalculating then
+                return
+            end
+            recalculating = true
+            make_fzf_default_opts(true)
+            vim.schedule(function()
+                recalculating = false
+            end)
+        end,
+    })
+end
+
 local M = {
+    _get_visual_lines = _get_visual_lines,
+    _visual_select = _visual_select,
     get_command_feed = get_command_feed,
     preprocess_fzf_opts = preprocess_fzf_opts,
     make_fzf_opts = make_fzf_opts,
@@ -269,6 +308,7 @@ local M = {
     nvim_exec = nvim_exec,
     fzf_exec = fzf_exec,
     make_lua_command = make_lua_command,
+    setup = setup,
 }
 
 return M
