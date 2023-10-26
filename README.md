@@ -3,7 +3,7 @@
 # fzfx.nvim
 
 <p align="center">
-<a href="https://github.com/neovim/neovim/releases/v0.6.0"><img alt="Neovim-v0.6.0" src="https://img.shields.io/badge/Neovim-v0.6.0-blueviolet.svg?logo=Neovim&logoColor=green" /></a>
+<a href="https://github.com/neovim/neovim/releases/v0.7.0"><img alt="Neovim-v0.7.0" src="https://img.shields.io/badge/Neovim-v0.7.0-blueviolet.svg?logo=Neovim&logoColor=green" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/search?l=lua"><img alt="Top Language" src="https://img.shields.io/github/languages/top/linrongbin16/fzfx.nvim?label=Lua&logo=lua&logoColor=darkblue" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/linrongbin16/fzfx.nvim?logo=GNU&label=License" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?logo=GitHub&label=Luacheck" /></a>
@@ -64,7 +64,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 
 ## ✅ Requirement
 
-- Neovim &ge; v0.6.0.
+- Neovim &ge; v0.7.0.
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
@@ -189,18 +189,23 @@ lua require('fzfx').setup()
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
-return require('packer').startup(function(use)
-    -- optional for icons
-    use { "nvim-tree/nvim-web-devicons" }
+return require("packer").startup(function(use)
+  -- optional for icons
+  use({ "nvim-tree/nvim-web-devicons" })
 
-    -- mandatory
-    use { "junegunn/fzf", run = ":call fzf#install()" }
-    use {
-        "linrongbin16/fzfx.nvim",
-        config = function()
-            require("fzfx").setup()
-        end
-    }
+  -- mandatory
+  use({
+    "junegunn/fzf",
+    run = function()
+      vim.fn["fzf#install"]()
+    end,
+  })
+  use({
+    "linrongbin16/fzfx.nvim",
+    config = function()
+      require("fzfx").setup()
+    end,
+  })
 end)
 ```
 
@@ -208,18 +213,19 @@ end)
 
 ```lua
 require("lazy").setup({
-    -- optional for icons
-    { "nvim-tree/nvim-web-devicons" },
 
-    -- mandatory
-    { "junegunn/fzf", build = ":call fzf#install()" },
-    {
-        "linrongbin16/fzfx.nvim",
-        dependencies = { "junegunn/fzf", "nvim-tree/nvim-web-devicons" },
-        config = function()
-            require("fzfx").setup()
-        end
-    },
+  -- optional for icons
+  { "nvim-tree/nvim-web-devicons" },
+
+  -- mandatory
+  { "junegunn/fzf", build = ":call fzf#install()" },
+  {
+    "linrongbin16/fzfx.nvim",
+    dependencies = { "junegunn/fzf", "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("fzfx").setup()
+    end,
+  },
 
 })
 ```
