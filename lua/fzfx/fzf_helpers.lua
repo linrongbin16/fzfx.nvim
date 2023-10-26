@@ -283,10 +283,18 @@ end
 
 --- @param augroup any
 local function setup(augroup)
+    local recalculating = false
     vim.api.nvim_create_autocmd("ColorScheme", {
         pattern = { "*" },
         callback = function()
+            if recalculating then
+                return
+            end
+            recalculating = true
             make_fzf_default_opts(true)
+            vim.schedule(function()
+                recalculating = false
+            end)
         end,
     })
 end

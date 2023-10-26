@@ -32,8 +32,6 @@ local function setup(options)
         vim.fn.mkdir(configs.cache.dir, "p")
     end
 
-    require("fzfx.event").setup()
-
     -- lua module environment
     require("fzfx.module").setup()
 
