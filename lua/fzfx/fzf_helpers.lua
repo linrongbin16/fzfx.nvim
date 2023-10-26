@@ -280,7 +280,7 @@ local function make_lua_command(...)
 end
 
 local function setup()
-    vim.api.nvim_create_autocmd({ "WinResized", "VimResized", "ColorScheme" }, {
+    vim.api.nvim_create_autocmd("ColorScheme", {
         pattern = { "*" },
         callback = function()
             make_fzf_default_opts(true)
