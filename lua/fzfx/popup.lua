@@ -182,7 +182,6 @@ local PopupWindowInstances = {}
 --- @field bufnr integer?
 --- @field winnr integer?
 --- @field saved_win_opts Options
---- @field _resizing boolean
 local PopupWindow = {}
 
 --- @param win_opts Options?
@@ -226,7 +225,6 @@ function PopupWindow:new(win_opts)
         bufnr = bufnr,
         winnr = winnr,
         saved_win_opts = merged_win_opts,
-        _resizing = false,
     }
     setmetatable(o, self)
     self.__index = self
@@ -257,14 +255,8 @@ function PopupWindow:close()
 end
 
 function PopupWindow:resize()
-    if self._resizing then
-        return
-    end
     local new_popup_window_config = _make_window_config(self.saved_win_opts)
     vim.api.nvim_win_set_config(self.winnr, new_popup_window_config)
-    vim.schedule(function()
-        self._resizing = false
-    end)
 end
 
 --- @class Popup
