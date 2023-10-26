@@ -238,10 +238,10 @@ local function live_grep_provider(query, context, opts)
                 type(current_bufpath) == "string"
                 and string.len(current_bufpath) > 0
             then
-                args = vim.deepcopy(default_unrestricted_rg)
-                -- add specific rg option '--fixed-strings' to treat the '-g' as a specific filename
+                args = vim.deepcopy(default_unrestricted_grep)
+                -- add specific rg option '--fixed-strings' to treat the '--include' as a specific filename
                 table.insert(args, "-F")
-                table.insert(args, "-g")
+                table.insert(args, "--include")
                 table.insert(args, current_bufpath)
             else
                 log.echo(
