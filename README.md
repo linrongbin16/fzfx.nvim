@@ -218,12 +218,7 @@ require("lazy").setup({
   { "nvim-tree/nvim-web-devicons" },
 
   -- mandatory
-  {
-    "junegunn/fzf",
-    build = function()
-      vim.fn["fzf#install"]()
-    end,
-  },
+  { "junegunn/fzf", build = ":call fzf#install()" },
   {
     "linrongbin16/fzfx.nvim",
     dependencies = { "junegunn/fzf", "nvim-tree/nvim-web-devicons" },
