@@ -217,6 +217,10 @@ local function make_fzf_default_opts_impl()
             append_fzf_opt(result, o)
         end
     end
+    log.debug(
+        "|fzfx.fzf_helpers - make_fzf_default_opts_impl| result:%s",
+        vim.inspect(result)
+    )
     return table.concat(result, " ")
 end
 
@@ -276,7 +280,7 @@ local function make_lua_command(...)
 end
 
 local function setup()
-    vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
+    vim.api.nvim_create_autocmd({ "WinResized", "VimResized", "ColorScheme" }, {
         pattern = { "*" },
         callback = function()
             make_fzf_default_opts(true)
