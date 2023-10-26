@@ -185,6 +185,7 @@ local PopupWindowInstances = {}
 --- @field _resizing boolean
 local PopupWindow = {}
 
+--- @package
 --- @param win_opts Options?
 --- @return PopupWindow
 function PopupWindow:new(win_opts)
@@ -460,6 +461,11 @@ function Popup:close()
     log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 end
 
+--- @return table<integer, PopupWindow>
+local function _get_all_popup_window_instances()
+    return PopupWindowInstances
+end
+
 local function resize_all_popup_window_instances()
     log.debug(
         "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
@@ -472,8 +478,7 @@ local function resize_all_popup_window_instances()
     end
 end
 
---- @param augroup any
-local function setup(augroup)
+local function setup()
     vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
         pattern = { "*" },
         callback = resize_all_popup_window_instances,
@@ -486,6 +491,7 @@ local M = {
     _make_cursor_window_config = _make_cursor_window_config,
     _make_center_window_config = _make_center_window_config,
     _make_window_config = _make_window_config,
+    _get_all_popup_window_instances = _get_all_popup_window_instances,
     Popup = Popup,
     setup = setup,
 }

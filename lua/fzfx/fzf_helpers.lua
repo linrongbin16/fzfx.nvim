@@ -281,8 +281,7 @@ local function make_lua_command(...)
     return string.format("%s -n --clean --headless -l %s", nvim_path, lua_path)
 end
 
---- @param augroup any
-local function setup(augroup)
+local function setup()
     local recalculating = false
     vim.api.nvim_create_autocmd("ColorScheme", {
         pattern = { "*" },
