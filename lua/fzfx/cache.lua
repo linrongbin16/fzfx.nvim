@@ -17,7 +17,7 @@ local function has(key)
 end
 
 --- @param key string
---- @param default_value any
+--- @param default_value any?
 local function get(key, default_value)
     return has(key) and Cache[key] or default_value
 end

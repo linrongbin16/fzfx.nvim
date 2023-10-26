@@ -4,6 +4,7 @@ local color = require("fzfx.color")
 local conf = require("fzfx.config")
 local yank_history = require("fzfx.yank_history")
 local utils = require("fzfx.utils")
+local cache = require("fzfx.cache")
 
 -- visual select {
 
@@ -193,8 +194,10 @@ local function make_fzf_opts(opts)
     return table.concat(result, " ")
 end
 
+local CACHED_FZF_DEFAULT_OPTS = "CACHED_FZF_DEFAULT_OPTS"
+
 --- @return string?
-local function make_fzf_default_opts()
+local function make_fzf_default_opts_impl()
     local opts = conf.get_config().fzf_opts
     local result = {}
     if type(opts) == "table" and #opts > 0 then
@@ -215,6 +218,17 @@ local function make_fzf_default_opts()
         end
     end
     return table.concat(result, " ")
+end
+
+--- @param ignore_cache boolean?
+--- @return string?
+local function make_fzf_default_opts(ignore_cache)
+    if not ignore_cache and cache.has(CACHED_FZF_DEFAULT_OPTS) then
+        return cache.get(CACHED_FZF_DEFAULT_OPTS)
+    end
+    local opts = make_fzf_default_opts_impl()
+    cache.put(CACHED_FZF_DEFAULT_OPTS, opts)
+    return opts
 end
 
 -- fzf opts }
@@ -261,6 +275,15 @@ local function make_lua_command(...)
     return string.format("%s -n --clean --headless -l %s", nvim_path, lua_path)
 end
 
+local function setup()
+    vim.api.nvim_create_autocmd("WinResized", {
+        pattern = { "*" },
+        callback = function()
+            make_fzf_default_opts(true)
+        end,
+    })
+end
+
 local M = {
     get_command_feed = get_command_feed,
     preprocess_fzf_opts = preprocess_fzf_opts,
@@ -269,6 +292,7 @@ local M = {
     nvim_exec = nvim_exec,
     fzf_exec = fzf_exec,
     make_lua_command = make_lua_command,
+    setup = setup,
 }
 
 return M
