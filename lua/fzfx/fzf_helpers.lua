@@ -4,7 +4,6 @@ local color = require("fzfx.color")
 local conf = require("fzfx.config")
 local yank_history = require("fzfx.yank_history")
 local utils = require("fzfx.utils")
-local cache = require("fzfx.cache")
 
 -- visual select {
 
@@ -196,7 +195,8 @@ local function make_fzf_opts(opts)
     return table.concat(result, " ")
 end
 
-local CACHED_FZF_DEFAULT_OPTS = "CACHED_FZF_DEFAULT_OPTS"
+--- @type string?
+local CACHED_FZF_DEFAULT_OPTS = nil
 
 --- @return string?
 local function make_fzf_default_opts_impl()
@@ -229,11 +229,11 @@ end
 --- @param ignore_cache boolean?
 --- @return string?
 local function make_fzf_default_opts(ignore_cache)
-    if not ignore_cache and cache.has(CACHED_FZF_DEFAULT_OPTS) then
-        return cache.get(CACHED_FZF_DEFAULT_OPTS)
+    if not ignore_cache and type(CACHED_FZF_DEFAULT_OPTS) == "string" then
+        return CACHED_FZF_DEFAULT_OPTS
     end
     local opts = make_fzf_default_opts_impl()
-    cache.put(CACHED_FZF_DEFAULT_OPTS, opts)
+    CACHED_FZF_DEFAULT_OPTS = opts
     return opts
 end
 
