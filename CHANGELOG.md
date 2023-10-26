@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.0.0...v2.1.0) (2023-10-26)
+
+
+### Features
+
+* **popup:** realtime resize popup window ([#322](https://github.com/linrongbin16/fzfx.nvim/issues/322)) ([a463689](https://github.com/linrongbin16/fzfx.nvim/commit/a46368989249a83c5810152f0a88041a18321939))
+
+
+### Bug Fixes
+
+* **required:** set minimal required Neovim version to 0.7 ([#320](https://github.com/linrongbin16/fzfx.nvim/issues/320)) ([3b36751](https://github.com/linrongbin16/fzfx.nvim/commit/3b36751c449ef9c5ce68dcd6f2dbd62c0e2f0151))
+
+
+### Performance Improvements
+
+* **test:** improve test coverage ([#316](https://github.com/linrongbin16/fzfx.nvim/issues/316)) ([29ebe78](https://github.com/linrongbin16/fzfx.nvim/commit/29ebe785ce481f3c75f763979831d831e70d50d1))
+
 ## [2.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v1.5.0...v2.0.0) (2023-10-25)
 
 
