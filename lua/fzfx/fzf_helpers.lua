@@ -281,14 +281,11 @@ local function make_lua_command(...)
     return string.format("%s -n --clean --headless -l %s", nvim_path, lua_path)
 end
 
-local function setup()
-    local default_fzf_opts_augroup = vim.api.nvim_create_augroup(
-        "_FzfxDefaultFzfOptsAuGroup",
-        { clear = true }
-    )
+--- @param augroup any
+local function setup(augroup)
     local recalculating = false
     vim.api.nvim_create_autocmd("ColorScheme", {
-        group = default_fzf_opts_augroup,
+        group = augroup,
         pattern = { "*" },
         callback = function()
             if recalculating then

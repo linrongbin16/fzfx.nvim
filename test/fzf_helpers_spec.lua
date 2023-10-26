@@ -10,10 +10,10 @@ describe("helpers", function()
         vim.opt.swapfile = false
     end)
 
+    require("fzfx.config").setup()
     local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
     local fzf_helpers = require("fzfx.fzf_helpers")
 
-    require("fzfx.config").setup()
     require("fzfx.log").setup({
         level = "INFO",
         console_log = false,

@@ -7,6 +7,10 @@ local function setup(options)
     -- configs
     local configs = require("fzfx.config").setup(options)
 
+    -- augroup
+    local augroup =
+        vim.api.nvim_create_augroup(configs.event.augroup, { clear = true })
+
     -- log
     log.setup({
         level = configs.debug.enable and LogLevels.DEBUG or LogLevels.INFO,
@@ -32,20 +36,22 @@ local function setup(options)
         vim.fn.mkdir(configs.cache.dir, "p")
     end
 
+    require("fzfx.event").setup()
+
     -- lua module environment
-    require("fzfx.module").setup(configs)
+    require("fzfx.module").setup()
 
     -- rpc server
     require("fzfx.server").setup()
 
     -- yank history
-    require("fzfx.yank_history").setup()
+    require("fzfx.yank_history").setup(augroup)
 
     -- fzf helpers
-    require("fzfx.fzf_helpers").setup()
+    require("fzfx.fzf_helpers").setup(augroup)
 
     -- popup
-    require("fzfx.popup").setup()
+    require("fzfx.popup").setup(augroup)
 
     -- files & buffers
     general.setup("files", configs.files)

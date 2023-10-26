@@ -175,13 +175,14 @@ local function _make_window_config(win_opts)
 end
 
 --- @type table<integer, PopupWindow>
-local GlobalPopupWindowInstances = {}
+local PopupWindowInstances = {}
 
 --- @class PopupWindow
 --- @field window_opts_context WindowOptsContext?
 --- @field bufnr integer?
 --- @field winnr integer?
 --- @field saved_win_opts Options
+--- @field _resizing boolean
 local PopupWindow = {}
 
 --- @param win_opts Options?
@@ -225,11 +226,12 @@ function PopupWindow:new(win_opts)
         bufnr = bufnr,
         winnr = winnr,
         saved_win_opts = merged_win_opts,
+        _resizing = false,
     }
     setmetatable(o, self)
     self.__index = self
 
-    GlobalPopupWindowInstances[winnr] = o
+    PopupWindowInstances[winnr] = o
     return o
 end
 
@@ -248,15 +250,21 @@ function PopupWindow:close()
     ---@diagnostic disable-next-line: undefined-field
     self.window_opts_context:restore()
 
-    local instance = GlobalPopupWindowInstances[self.winnr]
+    local instance = PopupWindowInstances[self.winnr]
     if instance then
-        GlobalPopupWindowInstances[self.winnr] = nil
+        PopupWindowInstances[self.winnr] = nil
     end
 end
 
 function PopupWindow:resize()
+    if self._resizing then
+        return
+    end
     local new_popup_window_config = _make_window_config(self.saved_win_opts)
     vim.api.nvim_win_set_config(self.winnr, new_popup_window_config)
+    vim.schedule(function()
+        self._resizing = false
+    end)
 end
 
 --- @class Popup
@@ -453,18 +461,20 @@ end
 
 local function resize_all_popup_window_instances()
     log.debug(
-        "|fzfx.popup - resize_all_popup_window_instances| global instances:%s",
-        vim.inspect(GlobalPopupWindowInstances)
+        "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
+        vim.inspect(PopupWindowInstances)
     )
-    for winnr, popup_win in pairs(GlobalPopupWindowInstances) do
-        if winnr and popup_win then
-            popup_win:resize()
+    for winnr, instance in pairs(PopupWindowInstances) do
+        if winnr and instance then
+            instance:resize()
         end
     end
 end
 
-local function setup()
+--- @param augroup any
+local function setup(augroup)
     vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
+        group = augroup,
         pattern = { "*" },
         callback = resize_all_popup_window_instances,
     })

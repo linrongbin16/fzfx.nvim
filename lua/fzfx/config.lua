@@ -3818,6 +3818,10 @@ local Defaults = {
         dir = path.join(vim.fn.stdpath("data"), "fzfx.nvim"),
     },
 
+    event = {
+        augroup = "_FzfxNvimAuGroup",
+    },
+
     -- debug
     debug = {
         enable = false,
