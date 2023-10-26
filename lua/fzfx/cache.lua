@@ -1,3 +1,5 @@
+-- No Setup Need
+
 --- @type table<string, any>
 local Cache = {}
 
