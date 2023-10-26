@@ -456,9 +456,9 @@ local function resize_all_popup_window_instances()
         "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
         vim.inspect(PopupWindowInstances)
     )
-    for winnr, instance in pairs(PopupWindowInstances) do
-        if winnr and instance then
-            instance:resize()
+    for winnr, popup_win in pairs(PopupWindowInstances) do
+        if winnr and popup_win then
+            popup_win:resize()
         end
     end
 end
@@ -466,7 +466,6 @@ end
 --- @param augroup any
 local function setup(augroup)
     vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
-        group = augroup,
         pattern = { "*" },
         callback = resize_all_popup_window_instances,
     })

@@ -210,7 +210,6 @@ local function setup(augroup)
             or conf.get_config().yank_history.other_opts.maxsize
     )
     vim.api.nvim_create_autocmd("TextYankPost", {
-        group = augroup,
         pattern = { "*" },
         callback = save_yank,
     })

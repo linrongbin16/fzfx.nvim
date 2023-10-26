@@ -284,7 +284,6 @@ end
 --- @param augroup any
 local function setup(augroup)
     vim.api.nvim_create_autocmd("ColorScheme", {
-        group = augroup,
         pattern = { "*" },
         callback = function()
             make_fzf_default_opts(true)
