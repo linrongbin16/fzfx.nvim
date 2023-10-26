@@ -157,7 +157,7 @@ end
 
 --- @param win_opts Options
 --- @return PopupWindowConfig
-local function make_popup_window_config(win_opts)
+local function _make_window_config(win_opts)
     --- @type "editor"|"win"|"cursor"
     local relative = win_opts.relative or "editor"
 
@@ -207,7 +207,7 @@ function PopupWindow:new(win_opts)
         vim.deepcopy(conf.get_config().popup.win_opts),
         vim.deepcopy(win_opts) or {}
     )
-    local popup_window_config = make_popup_window_config(merged_win_opts)
+    local popup_window_config = _make_window_config(merged_win_opts)
 
     --- @type integer
     local winnr = vim.api.nvim_open_win(bufnr, true, popup_window_config)
@@ -255,8 +255,7 @@ function PopupWindow:close()
 end
 
 function PopupWindow:resize()
-    local new_popup_window_config =
-        make_popup_window_config(self.saved_win_opts)
+    local new_popup_window_config = _make_window_config(self.saved_win_opts)
     vim.api.nvim_win_set_config(self.winnr, new_popup_window_config)
 end
 
@@ -476,6 +475,7 @@ local M = {
     _make_window_center_shift = _make_window_center_shift,
     _make_cursor_window_config = _make_cursor_window_config,
     _make_center_window_config = _make_center_window_config,
+    _make_window_config = _make_window_config,
     Popup = Popup,
     setup = setup,
 }

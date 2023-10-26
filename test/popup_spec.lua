@@ -127,4 +127,36 @@ describe("popup", function()
             assert_eq(actual.col, expect_col)
         end)
     end)
+    describe("[_make_window_config]", function()
+        local WIN_OPTS = {
+            height = 0.85,
+            width = 0.85,
+            row = 0,
+            col = 0,
+            border = "none",
+            zindex = 51,
+        }
+        it("makes center config", function()
+            local actual1 = popup._make_window_config(WIN_OPTS)
+            local actual2 = popup._make_center_window_config(WIN_OPTS)
+            print(
+                string.format("make window config:%s\n", vim.inspect(actual1))
+            )
+            assert_eq(actual1.anchor, "NW")
+            assert_eq(actual1.border, WIN_OPTS.border)
+            assert_eq(actual1.zindex, WIN_OPTS.zindex)
+            assert_eq(type(actual1.height), "number")
+            assert_eq(type(actual2.height), "number")
+            assert_eq(actual1.height, actual2.height)
+            assert_eq(type(actual1.width), "number")
+            assert_eq(type(actual2.width), "number")
+            assert_eq(actual1.width, actual2.width)
+            assert_eq(type(actual1.row), "number")
+            assert_eq(type(actual2.row), "number")
+            assert_eq(actual1.row, actual2.row)
+            assert_eq(type(actual1.col), "number")
+            assert_eq(type(actual2.col), "number")
+            assert_eq(actual1.col, actual2.col)
+        end)
+    end)
 end)
