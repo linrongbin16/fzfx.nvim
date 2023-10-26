@@ -41,6 +41,12 @@ local function setup(options)
     -- yank history
     require("fzfx.yank_history").setup()
 
+    -- fzf helpers
+    require("fzfx.fzf_helpers").setup()
+
+    -- popup
+    require("fzfx.popup").setup()
+
     -- files & buffers
     general.setup("files", configs.files)
     general.setup("buffers", configs.buffers)

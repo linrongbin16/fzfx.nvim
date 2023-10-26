@@ -3,25 +3,15 @@ local conf = require("fzfx.config")
 local utils = require("fzfx.utils")
 local fzf_helpers = require("fzfx.fzf_helpers")
 
---- @class PopupWindow
---- @field window_opts_context WindowOptsContext?
---- @field bufnr integer|nil
---- @field winnr integer|nil
-local PopupWindow = {
-    window_opts_context = nil,
-    bufnr = nil,
-    winnr = nil,
-}
-
 --- @class PopupWindowOpts
 --- @field relative "editor"|"win"|"cursor"|nil
---- @field width integer|nil
---- @field height integer|nil
---- @field row integer|nil
---- @field col integer|nil
+--- @field width integer?
+--- @field height integer?
+--- @field row integer?
+--- @field col integer?
 --- @field style "minimal"|nil
 --- @field border "none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil
---- @field zindex integer|nil
+--- @field zindex integer?
 local PopupWindowOpts = {
     relative = nil,
     width = nil,
@@ -204,6 +194,16 @@ local function make_popup_window_opts(win_opts)
     end
 end
 
+--- @type table<integer, PopupWindow>
+local GlobalPopupWindowInstances = {}
+
+--- @class PopupWindow
+--- @field window_opts_context WindowOptsContext?
+--- @field bufnr integer?
+--- @field winnr integer?
+--- @field window_config Options
+local PopupWindow = {}
+
 --- @param win_opts PopupWindowOpts?
 --- @return PopupWindow
 function PopupWindow:new(win_opts)
@@ -222,7 +222,6 @@ function PopupWindow:new(win_opts)
     utils.set_buf_option(bufnr, "buflisted", false)
     utils.set_buf_option(bufnr, "filetype", "fzf")
 
-    --- @type PopupWindowOpts
     local merged_win_opts = vim.tbl_deep_extend(
         "force",
         vim.deepcopy(conf.get_config().popup.win_opts),
@@ -245,9 +244,12 @@ function PopupWindow:new(win_opts)
         window_opts_context = window_opts_context,
         bufnr = bufnr,
         winnr = winnr,
+        window_config = merged_win_opts,
     }
     setmetatable(o, self)
     self.__index = self
+
+    GlobalPopupWindowInstances[winnr] = o
     return o
 end
 
@@ -265,6 +267,16 @@ function PopupWindow:close()
 
     ---@diagnostic disable-next-line: undefined-field
     self.window_opts_context:restore()
+
+    local instance = GlobalPopupWindowInstances[self.winnr]
+    if instance then
+        GlobalPopupWindowInstances[self.winnr] = nil
+    end
+end
+
+function PopupWindow:resize()
+    local new_popup_opts = make_popup_window_opts(self.window_config)
+    vim.api.nvim_win_set_config(self.winnr, new_popup_opts)
 end
 
 --- @class Popup
@@ -332,13 +344,12 @@ local function make_fzf_command(fzf_opts, actions, result)
 end
 
 --- @alias OnPopupExit fun(launch:Popup):nil
-
 --- @param win_opts PopupWindowOpts?
 --- @param source string
 --- @param fzf_opts Options
 --- @param actions Options
 --- @param context PipelineContext
---- @param on_launch_exit OnPopupExit|nil
+--- @param on_launch_exit OnPopupExit?
 --- @return Popup
 function Popup:new(win_opts, source, fzf_opts, actions, context, on_launch_exit)
     local result = vim.fn.tempname()
@@ -465,10 +476,30 @@ function Popup:close()
     log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 end
 
+local function resize_all_popup_window_instances()
+    log.debug(
+        "|fzfx.popup - resize_all_popup_window_instances| global instances:%s",
+        vim.inspect(GlobalPopupWindowInstances)
+    )
+    for winnr, popup_win in pairs(GlobalPopupWindowInstances) do
+        if winnr and popup_win then
+            popup_win:resize()
+        end
+    end
+end
+
+local function setup()
+    vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
+        pattern = { "*" },
+        callback = resize_all_popup_window_instances,
+    })
+end
+
 local M = {
     make_popup_window_size = make_popup_window_size,
     make_popup_window_center_shift_size = make_popup_window_center_shift_size,
     Popup = Popup,
+    setup = setup,
 }
 
 return M
