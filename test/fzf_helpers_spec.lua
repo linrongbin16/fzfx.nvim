@@ -10,7 +10,7 @@ describe("helpers", function()
     end)
 
     local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-    local helpers = require("fzfx.helpers")
+    local fzf_helpers = require("fzfx.fzf_helpers")
 
     require("fzfx.config").setup()
     require("fzfx.log").setup({
@@ -21,7 +21,7 @@ describe("helpers", function()
     describe("[get_command_feed]", function()
         it("get normal args feed", function()
             local expect = "expect"
-            local actual = helpers.get_command_feed(
+            local actual = fzf_helpers.get_command_feed(
                 { args = expect },
                 CommandFeedEnum.ARGS
             )
@@ -29,17 +29,19 @@ describe("helpers", function()
         end)
         it("get visual select feed", function()
             local expect = ""
-            local actual = helpers.get_command_feed({}, CommandFeedEnum.VISUAL)
+            local actual =
+                fzf_helpers.get_command_feed({}, CommandFeedEnum.VISUAL)
             assert_eq(expect, actual)
         end)
         it("get cword feed", function()
-            local actual = helpers.get_command_feed({}, CommandFeedEnum.CWORD)
+            local actual =
+                fzf_helpers.get_command_feed({}, CommandFeedEnum.CWORD)
             assert_eq(type(actual), "string")
         end)
     end)
     describe("[nvim_exec]", function()
         it("get nvim path", function()
-            local actual = helpers.nvim_exec()
+            local actual = fzf_helpers.nvim_exec()
             print(string.format("nvim_exec: %s\n", vim.inspect(actual)))
             assert_true(type(actual) == "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
@@ -48,7 +50,7 @@ describe("helpers", function()
     end)
     describe("[preprocess_fzf_opts]", function()
         it("preprocess nil opts", function()
-            local actual = helpers.preprocess_fzf_opts({
+            local actual = fzf_helpers.preprocess_fzf_opts({
                 "--bind=enter:accept",
                 function()
                     return nil
@@ -62,7 +64,7 @@ describe("helpers", function()
             assert_eq(#actual, 1)
         end)
         it("preprocess string opts", function()
-            local actual = helpers.preprocess_fzf_opts({
+            local actual = fzf_helpers.preprocess_fzf_opts({
                 "--bind=enter:accept",
                 function()
                     return "--no-multi"
@@ -82,7 +84,7 @@ describe("helpers", function()
     describe("[make_fzf_opts]", function()
         it("make opts", function()
             local expect = "--bind=enter:accept"
-            local actual = helpers.make_fzf_opts({ expect })
+            local actual = fzf_helpers.make_fzf_opts({ expect })
             print(string.format("make opts: %s\n", vim.inspect(actual)))
             assert_eq(type(actual), "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
@@ -91,7 +93,7 @@ describe("helpers", function()
     end)
     describe("[make_fzf_default_opts]", function()
         it("make default opts", function()
-            local actual = helpers.make_fzf_default_opts()
+            local actual = fzf_helpers.make_fzf_default_opts()
             print(string.format("make default opts: %s\n", vim.inspect(actual)))
             assert_eq(type(actual), "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
@@ -99,7 +101,8 @@ describe("helpers", function()
     end)
     describe("[make_lua_command]", function()
         it("make lua command", function()
-            local actual = helpers.make_lua_command("general", "provider.lua")
+            local actual =
+                fzf_helpers.make_lua_command("general", "provider.lua")
             print(string.format("make lua command: %s\n", vim.inspect(actual)))
             assert_eq(type(actual), "string")
             assert_true(string.len(actual --[[@as string]]) > 0)

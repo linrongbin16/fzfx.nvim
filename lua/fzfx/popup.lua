@@ -1,7 +1,7 @@
 local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local utils = require("fzfx.utils")
-local helpers = require("fzfx.helpers")
+local fzf_helpers = require("fzfx.fzf_helpers")
 
 --- @class PopupWindow
 --- @field window_opts_context WindowOptsContext?
@@ -208,8 +208,8 @@ end
 --- @return PopupWindow
 function PopupWindow:new(win_opts)
     -- check executable: nvim, fzf
-    require("fzfx.helpers").nvim_exec()
-    require("fzfx.helpers").fzf_exec()
+    fzf_helpers.nvim_exec()
+    fzf_helpers.fzf_exec()
 
     -- save current window context
     local window_opts_context = utils.WindowOptsContext:save()
@@ -312,7 +312,7 @@ end
 --- @return string
 local function make_fzf_command(fzf_opts, actions, result)
     local final_opts = merge_fzf_opts(fzf_opts, actions)
-    local final_opts_string = helpers.make_fzf_opts(final_opts)
+    local final_opts_string = fzf_helpers.make_fzf_opts(final_opts)
     log.debug(
         "|fzfx.popup - make_fzf_command| final_opts:%s, builder:%s",
         vim.inspect(final_opts),
@@ -320,7 +320,7 @@ local function make_fzf_command(fzf_opts, actions, result)
     )
     local command = string.format(
         "%s %s >%s",
-        helpers.fzf_exec(),
+        fzf_helpers.fzf_exec(),
         final_opts_string,
         result
     )
@@ -425,7 +425,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_launch_exit)
     local shell_opts_context = utils.ShellOptsContext:save()
     local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
     local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
-    vim.env.FZF_DEFAULT_OPTS = helpers.make_fzf_default_opts()
+    vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()
     vim.env.FZF_DEFAULT_COMMAND = source
     log.debug(
         "|fzfx.popup - Popup:new| $FZF_DEFAULT_OPTS:%s",
