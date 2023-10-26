@@ -55,7 +55,7 @@ describe("popup", function()
             assert_eq(30, popup._make_window_center_shift_size(50, 20, 15))
         end)
     end)
-    describe("[_make_window_config_for_cursor_anchor]", function()
+    describe("[_make_cursor_window_config]", function()
         local WIN_OPTS = {
             height = 0.85,
             width = 0.85,
@@ -65,13 +65,33 @@ describe("popup", function()
             zindex = 51,
         }
         it("makes cursor config", function()
-            local actual = popup._make_window_config_for_cursor_anchor(WIN_OPTS)
-            print(
-                string.format(
-                    "make config for cursor:%s\n",
-                    vim.inspect(actual)
-                )
-            )
+            local actual = popup._make_cursor_window_config(WIN_OPTS)
+            print(string.format("make cursor config:%s\n", vim.inspect(actual)))
+            assert_eq(actual.anchor, "NW")
+            assert_eq(actual.border, WIN_OPTS.border)
+            assert_eq(actual.zindex, WIN_OPTS.zindex)
+            assert_eq(type(actual.height), "number")
+            assert_true(actual.height >= 0)
+            assert_eq(type(actual.width), "number")
+            assert_true(actual.width >= 0)
+            assert_eq(type(actual.row), "number")
+            assert_true(actual.row >= 0)
+            assert_eq(type(actual.col), "number")
+            assert_true(actual.col >= 0)
+        end)
+    end)
+    describe("[_make_center_window_config]", function()
+        local WIN_OPTS = {
+            height = 0.85,
+            width = 0.85,
+            row = 0,
+            col = 0,
+            border = "none",
+            zindex = 51,
+        }
+        it("makes center config", function()
+            local actual = popup._make_center_window_config(WIN_OPTS)
+            print(string.format("make center config:%s\n", vim.inspect(actual)))
             assert_eq(actual.anchor, "NW")
             assert_eq(actual.border, WIN_OPTS.border)
             assert_eq(actual.zindex, WIN_OPTS.zindex)

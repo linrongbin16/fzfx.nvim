@@ -30,7 +30,7 @@ end
 
 --- @param opts Options
 --- @return PopupWindowConfig
-local function _make_window_config_for_cursor_anchor(opts)
+local function _make_cursor_window_config(opts)
     --- @type "cursor"
     local relative = opts.relative
     local total_width = vim.api.nvim_win_get_width(0)
@@ -92,7 +92,7 @@ end
 
 --- @param opts Options
 --- @return PopupWindowConfig
-local function _make_window_config_for_center_anchor(opts)
+local function _make_center_window_config(opts)
     --- @type "editor"|"win"
     local relative = opts.relative or "editor"
 
@@ -162,9 +162,9 @@ local function make_popup_window_config(win_opts)
     local relative = win_opts.relative or "editor"
 
     if relative == "cursor" then
-        return _make_window_config_for_cursor_anchor(win_opts)
+        return _make_cursor_window_config(win_opts)
     elseif relative == "editor" or relative == "win" then
-        return _make_window_config_for_center_anchor(win_opts)
+        return _make_center_window_config(win_opts)
     else
         log.throw(
             "error! failed to make popup window opts, unsupport relative value %s.",
@@ -474,8 +474,8 @@ end
 local M = {
     _make_window_size = _make_window_size,
     _make_window_center_shift_size = _make_window_center_shift_size,
-    _make_window_config_for_cursor_anchor = _make_window_config_for_cursor_anchor,
-    _make_window_config_for_center_anchor = _make_window_config_for_center_anchor,
+    _make_cursor_window_config = _make_cursor_window_config,
+    _make_center_window_config = _make_center_window_config,
     Popup = Popup,
     setup = setup,
 }
