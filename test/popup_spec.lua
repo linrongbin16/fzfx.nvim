@@ -14,7 +14,9 @@ describe("popup", function()
     end)
 
     require("fzfx.config").setup()
+    local fzf_helpers = require("fzfx.fzf_helpers")
     local popup = require("fzfx.popup")
+    local utils = require("fzfx.utils")
     describe("[_make_window_size]", function()
         it("is in range of [0, 1]", function()
             assert_eq(5, popup._make_window_size(0.5, 10))
@@ -248,6 +250,42 @@ describe("popup", function()
                 assert_eq(a[1], "--expect")
                 assert_true(a[2] == "ctrl-d" or a[2] == "ctrl-r")
             end
+        end)
+    end)
+    describe("[_merge_fzf_actions]", function()
+        it("merge fzf actions", function()
+            local input = {
+                ["ctrl-d"] = function(lines) end,
+                ["ctrl-r"] = function(lines) end,
+            }
+            local actual = popup._merge_fzf_actions({}, input)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, 2)
+            for _, a in ipairs(actual) do
+                assert_eq(a[1], "--expect")
+                assert_true(a[2] == "ctrl-d" or a[2] == "ctrl-r")
+            end
+            local actual2 = popup._make_expect_keys(input)
+            assert_true(vim.deep_equal(actual, actual2))
+        end)
+    end)
+    describe("[_make_fzf_command]", function()
+        it("merge fzf command", function()
+            local input = {
+                ["ctrl-d"] = function(lines) end,
+                ["ctrl-r"] = function(lines) end,
+            }
+            local tmpname = vim.fn.tempname()
+            local fzfopts = fzf_helpers.make_fzf_default_opts()
+            local actual = popup._make_fzf_command({ fzfopts }, input, tmpname)
+            print(string.format("make fzf command:%s\n", vim.inspect(actual)))
+            assert_eq(type(actual), "string")
+            assert_true(string.len(actual) > 0)
+            assert_true(utils.string_startswith(actual, "fzf "))
+            assert_eq(utils.string_find(actual, fzfopts), 5)
+            assert_true(
+                utils.string_find(actual, "--expect") > string.len(fzfopts)
+            )
         end)
     end)
 end)
