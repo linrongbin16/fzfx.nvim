@@ -278,7 +278,7 @@ local Popup = {}
 
 --- @param actions table<string, any>
 --- @return string[][]
-local function make_expect_keys(actions)
+local function _make_expect_keys(actions)
     local expect_keys = {}
     if type(actions) == "table" then
         for name, _ in pairs(actions) do
@@ -292,7 +292,7 @@ end
 --- @param actions table<string, any>
 --- @return string[]
 local function merge_fzf_opts(fzf_opts, actions)
-    local expect_keys = make_expect_keys(actions)
+    local expect_keys = _make_expect_keys(actions)
     local merged_opts = vim.list_extend(vim.deepcopy(fzf_opts), expect_keys)
     log.debug(
         "|fzfx.popup - merge_fzf_opts| fzf_opts:%s, actions:%s, merged_opts:%s",
@@ -507,6 +507,7 @@ local M = {
     _get_all_popup_window_instances = _get_all_popup_window_instances,
     _remove_all_popup_window_instances = _remove_all_popup_window_instances,
     _count_all_popup_window_instances = _count_all_popup_window_instances,
+    _make_expect_keys = _make_expect_keys,
     PopupWindow = PopupWindow,
     Popup = Popup,
     setup = setup,
