@@ -8,6 +8,9 @@ describe("helpers", function()
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
         vim.opt.swapfile = false
+        vim.fn["fzf#exec"] = function()
+            return "fzf"
+        end
     end)
 
     require("fzfx.config").setup()
