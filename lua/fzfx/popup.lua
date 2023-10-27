@@ -278,7 +278,7 @@ local Popup = {}
 
 --- @param actions table<string, any>
 --- @return string[][]
-local function make_expect_keys(actions)
+local function _make_expect_keys(actions)
     local expect_keys = {}
     if type(actions) == "table" then
         for name, _ in pairs(actions) do
@@ -291,11 +291,11 @@ end
 --- @param fzf_opts string[]|string[][]
 --- @param actions table<string, any>
 --- @return string[]
-local function merge_fzf_opts(fzf_opts, actions)
-    local expect_keys = make_expect_keys(actions)
+local function _merge_fzf_actions(fzf_opts, actions)
+    local expect_keys = _make_expect_keys(actions)
     local merged_opts = vim.list_extend(vim.deepcopy(fzf_opts), expect_keys)
     log.debug(
-        "|fzfx.popup - merge_fzf_opts| fzf_opts:%s, actions:%s, merged_opts:%s",
+        "|fzfx.popup - _merge_fzf_actions| fzf_opts:%s, actions:%s, merged_opts:%s",
         vim.inspect(fzf_opts),
         vim.inspect(actions),
         vim.inspect(merged_opts)
@@ -307,11 +307,11 @@ end
 --- @param actions Options
 --- @param result string
 --- @return string
-local function make_fzf_command(fzf_opts, actions, result)
-    local final_opts = merge_fzf_opts(fzf_opts, actions)
+local function _make_fzf_command(fzf_opts, actions, result)
+    local final_opts = _merge_fzf_actions(fzf_opts, actions)
     local final_opts_string = fzf_helpers.make_fzf_opts(final_opts)
     log.debug(
-        "|fzfx.popup - make_fzf_command| final_opts:%s, builder:%s",
+        "|fzfx.popup - _make_fzf_command| final_opts:%s, builder:%s",
         vim.inspect(final_opts),
         vim.inspect(final_opts_string)
     )
@@ -322,7 +322,7 @@ local function make_fzf_command(fzf_opts, actions, result)
         result
     )
     log.debug(
-        "|fzfx.popup - make_fzf_command| command:%s",
+        "|fzfx.popup - _make_fzf_command| command:%s",
         vim.inspect(command)
     )
     return command
@@ -338,7 +338,7 @@ end
 --- @return Popup
 function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
     local result = vim.fn.tempname()
-    local fzf_command = make_fzf_command(fzf_opts, actions, result)
+    local fzf_command = _make_fzf_command(fzf_opts, actions, result)
     local popup_window = PopupWindow:new(win_opts)
 
     local function on_fzf_exit(jobid2, exitcode, event)
@@ -466,6 +466,19 @@ local function _get_all_popup_window_instances()
     return PopupWindowInstances
 end
 
+local function _remove_all_popup_window_instances()
+    PopupWindowInstances = {}
+end
+
+--- @return integer
+local function _count_all_popup_window_instances()
+    local n = 0
+    for _, p in pairs(PopupWindowInstances) do
+        n = n + 1
+    end
+    return n
+end
+
 local function resize_all_popup_window_instances()
     log.debug(
         "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
@@ -492,6 +505,12 @@ local M = {
     _make_center_window_config = _make_center_window_config,
     _make_window_config = _make_window_config,
     _get_all_popup_window_instances = _get_all_popup_window_instances,
+    _remove_all_popup_window_instances = _remove_all_popup_window_instances,
+    _count_all_popup_window_instances = _count_all_popup_window_instances,
+    _make_expect_keys = _make_expect_keys,
+    _merge_fzf_actions = _merge_fzf_actions,
+    _make_fzf_command = _make_fzf_command,
+    PopupWindow = PopupWindow,
     Popup = Popup,
     setup = setup,
 }
