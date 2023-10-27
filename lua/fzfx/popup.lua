@@ -466,6 +466,10 @@ local function _get_all_popup_window_instances()
     return PopupWindowInstances
 end
 
+local function _remove_all_popup_window_instances()
+    PopupWindowInstances = {}
+end
+
 local function resize_all_popup_window_instances()
     log.debug(
         "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
@@ -492,6 +496,7 @@ local M = {
     _make_center_window_config = _make_center_window_config,
     _make_window_config = _make_window_config,
     _get_all_popup_window_instances = _get_all_popup_window_instances,
+    _remove_all_popup_window_instances = _remove_all_popup_window_instances,
     PopupWindow = PopupWindow,
     Popup = Popup,
     setup = setup,
