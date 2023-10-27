@@ -1111,7 +1111,8 @@ local Defaults = {
       -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
       --    e.g. popup height = h * lines, width = w * columns.
       --
-      -- 2. if h/w > 1, evaluate as absolute height and width, directly pass to vim.api.nvim_open_win.
+      -- 2. if h/w > 1, evaluate as absolute height and width,
+      --    directly pass to vim.api.nvim_open_win.
       --
       height = 0.85,
       width = 0.85,
@@ -1123,15 +1124,18 @@ local Defaults = {
       --  - win
       --  - cursor
       --
-      -- when relative is 'editor' or 'win', the anchor is the center position, not default 'NW' (north west).
-      -- because 'NW' is a little bit complicated for users to calculate the position, usually we just put the popup window in the center of editor.
+      -- when relative is 'editor' or 'win', the anchor is the center position,
+      -- not default 'NW' (north west).
+      -- because 'NW' is a little bit complicated for users to calculate the position,
+      -- usually we just put the popup window in the center of editor.
       --
       -- 1. if -0.5 <= r/c <= 0.5, evaluate proportionally according to editor's lines and columns.
       --    e.g. shift rows = r * lines, shift columns = c * columns.
       --
       -- 2. if r/c <= -1 or r/c >= 1, evaluate as absolute rows/columns to be shift.
-      --    e.g. you can easily set 'row = -vim.o.cmdheight' to move popup window to up 1~2 lines (based on your 'cmdheight' option).
-      --    this is especially useful when popup window is too big and conflicts with command/status line at bottom.
+      --    e.g. you can easily set 'row = -vim.o.cmdheight' to move popup window up 1~2 lines
+      --    (based on your 'cmdheight' option).
+      --    this is especially useful when popup window is too big and conflicts with status line at bottom.
       --
       -- 3. r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
       --
@@ -1149,11 +1153,11 @@ local Defaults = {
 
   -- environment variables
   env = {
-    -- fzfx.nvim use `vim.env.VIM` (e.g., `/usr/local/bin/nvim`) as the lua script interpreter by default,
+    -- by default use `vim.env.VIM` (e.g., `/usr/local/bin/nvim`) as the lua script interpreter,
     -- but you can overwrite by set below option.
     nvim = nil,
 
-    -- fzfx.nvim use `vim.fn['fzf#exec']` function to locate the fzf binary path by default,
+    -- by default use `vim.fn['fzf#exec']` function as the fzf binary,
     -- but you can overwrite by set below option.
     fzf = nil,
   },
