@@ -50,7 +50,6 @@ local RpcServer = {}
 
 --- @return RpcServer
 function RpcServer:new()
-    --- @type string
     local address = constants.is_windows
             and vim.fn.serverstart(get_windows_pipe_name())
         or vim.fn.serverstart() --[[@as string]]
