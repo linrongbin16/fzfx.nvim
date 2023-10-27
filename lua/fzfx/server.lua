@@ -25,11 +25,15 @@ local function get_windows_pipe_name()
         constants.is_windows,
         "|fzfx.server - get_windows_pipe_name| error! must use this function in Windows!"
     )
+    local secs, ms = vim.loop.gettimeofday()
+    local randint = math.random(1, 100000)
     local result = vim.trim(
         string.format(
-            [[ \\.\pipe\nvim-pipe-%d-%d ]],
+            [[ \\.\pipe\nvim-pipe-%d-%d-%d-%d ]],
             vim.fn.getpid(),
-            os.time()
+            secs,
+            ms,
+            randint
         )
     )
     log.debug(
@@ -140,27 +144,33 @@ function RpcServer:get(registry_id)
 end
 
 --- @type RpcServer?
-local GlobalRpcServer = nil
+local RpcServerInstance = nil
 
 --- @return RpcServer
-local function get_global_rpc_server()
-    return GlobalRpcServer --[[@as RpcServer]]
+local function get_rpc_server()
+    return RpcServerInstance --[[@as RpcServer]]
+end
+
+--- @return string
+local function _get_rpc_server_socket_address()
+    return vim.env._FZFX_NVIM_SOCKET_ADDRESS --[[@as string]]
 end
 
 local function setup()
-    GlobalRpcServer = RpcServer:new()
+    RpcServerInstance = RpcServer:new()
     log.debug(
-        "|fzfx.server - setup| GlobalRpcServer:%s",
-        vim.inspect(GlobalRpcServer)
+        "|fzfx.server - setup| RpcServerInstance:%s",
+        vim.inspect(RpcServerInstance)
     )
-    return GlobalRpcServer
+    return RpcServerInstance
 end
 
 local M = {
     setup = setup,
-    get_global_rpc_server = get_global_rpc_server,
+    get_rpc_server = get_rpc_server,
     next_registry_id = next_registry_id,
     get_windows_pipe_name = get_windows_pipe_name,
+    _get_rpc_server_socket_address = _get_rpc_server_socket_address,
 }
 
 return M
