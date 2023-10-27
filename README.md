@@ -1192,7 +1192,7 @@ It consists of following components:
 3. Multiple previewers that can preview content for the fzf command, as content in the right side.
 4. Interactions that allow user press key and invoke callback function on current line, without exiting fzf popup.
 5. Actions that allow user press key and exit fzf popup, and invoke callback function with selected lines.
-6. Optional 'fzf\_opts' or 'win\_opts' that overwrite the default options.
+6. Optional 'fzf\_opts', 'win\_opts' and 'other\_opts' that overwrite the default options.
 
 ```lua
 {
