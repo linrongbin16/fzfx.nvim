@@ -12,7 +12,6 @@ describe("yank_history", function()
 
     require("fzfx.config").setup()
     local yank_history = require("fzfx.yank_history")
-    yank_history.setup()
     describe("[Yank]", function()
         it("creates", function()
             local yk = yank_history.Yank:new(
@@ -79,6 +78,79 @@ describe("yank_history", function()
                 yk:push(i)
                 assert_eq(yk:get(), i)
             end
+            local p = yk:begin()
+            print(
+                string.format(
+                    "|yank_history_spec| begin, p:%s\n",
+                    vim.inspect(p)
+                )
+            )
+            while p do
+                local actual = yk:get(p)
+                print(
+                    string.format(
+                        "|yank_history_spec| get, p:%s, actual:%s\n",
+                        vim.inspect(p),
+                        vim.inspect(actual)
+                    )
+                )
+                assert_eq(actual, p + 40)
+                p = yk:next(p)
+                print(
+                    string.format(
+                        "|yank_history_spec| next, p:%s\n",
+                        vim.inspect(p)
+                    )
+                )
+            end
+            p = yk:rbegin()
+            print(
+                string.format(
+                    "|yank_history_spec| rbegin, p:%s, yk:%s\n",
+                    vim.inspect(p),
+                    vim.inspect(yk)
+                )
+            )
+            while p do
+                local actual = yk:get(p)
+                print(
+                    string.format(
+                        "|yank_history_spec| rget, p:%s, actual:%s, yk:%s\n",
+                        vim.inspect(p),
+                        vim.inspect(actual),
+                        vim.inspect(yk)
+                    )
+                )
+                assert_eq(actual, p + 40)
+                p = yk:rnext(p)
+                print(
+                    string.format(
+                        "|yank_history_spec| rnext, p:%s, yk:%s\n",
+                        vim.inspect(p),
+                        vim.inspect(yk)
+                    )
+                )
+            end
+        end)
+    end)
+    describe("[setup]", function()
+        it("setup", function()
+            yank_history.setup()
+            assert_eq(type(yank_history._get_yank_history_instance()), "table")
+        end)
+    end)
+    describe("[_get_register_info]", function()
+        it("_get_register_info", function()
+            vim.cmd([[
+            edit README.md
+            call feedkeys('V', 'n')
+            ]])
+            local actual = yank_history._get_register_info("+")
+            print(string.format("register info:%s\n", vim.inspect(actual)))
+            assert_eq(actual.regname, "+")
+            assert_eq(type(actual.regtext), "string")
+            assert_true(string.len(actual.regtext) > 0)
+            assert_eq(actual.regtype:lower(), "v")
         end)
     end)
 end)
