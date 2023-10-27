@@ -239,7 +239,7 @@ end
 
 -- fzf opts }
 
---- @return string|nil
+--- @return string?
 local function nvim_exec()
     local exe_list = {}
     table.insert(exe_list, conf.get_config().env.nvim)
@@ -255,7 +255,7 @@ local function nvim_exec()
     return nil
 end
 
---- @return string|nil
+--- @return string?
 local function fzf_exec()
     local exe_list = {}
     table.insert(exe_list, conf.get_config().env.fzf)
