@@ -70,14 +70,14 @@ end
 -- from oldest to newest
 -- usage:
 -- ```lua
---  local p = yank_history:start_pos()
+--  local p = yank_history:begin()
 --  while p ~= nil then
 --    local yank = yank_history:get(p)
---    p = yank_history:next_pos()
+--    p = yank_history:next(p)
 --  end
 -- ```
 --- @return integer?
-function YankHistory:start_pos()
+function YankHistory:begin()
     if #self.queue == 0 or self.pos == 0 then
         return nil
     end
@@ -91,7 +91,7 @@ end
 -- from oldest to newest
 --- @param pos integer
 --- @return integer?
-function YankHistory:next_pos(pos)
+function YankHistory:next(pos)
     if #self.queue == 0 or pos == 0 then
         return nil
     end
@@ -108,14 +108,14 @@ end
 -- from newest to oldest
 -- usage:
 -- ```lua
---  local p = yank_history:rstart_pos()
+--  local p = yank_history:rbegin()
 --  while p ~= nil then
 --    local yank = yank_history:get(p)
---    p = yank_history:rnext_pos()
+--    p = yank_history:rnext()
 --  end
 -- ```
 --- @return integer?
-function YankHistory:rstart_pos()
+function YankHistory:rbegin()
     if #self.queue == 0 or self.pos == 0 then
         return nil
     end
@@ -125,7 +125,7 @@ end
 -- from newest to oldest
 --- @param pos integer
 --- @return integer?
-function YankHistory:rnext_pos(pos)
+function YankHistory:rnext(pos)
     if #self.queue == 0 or pos == 0 then
         return nil
     end
@@ -205,7 +205,7 @@ end
 
 local function setup()
     YankHistoryInstance = YankHistory:new(
-        env.debug_enable() and 5
+        env.debug_enable() and 10
             or conf.get_config().yank_history.other_opts.maxsize
     )
     vim.api.nvim_create_autocmd("TextYankPost", {
@@ -217,6 +217,8 @@ end
 local M = {
     setup = setup,
     get_yank = get_yank,
+    Yank = Yank,
+    YankHistory = YankHistory,
 }
 
 return M
