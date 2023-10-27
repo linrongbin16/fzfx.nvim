@@ -19,7 +19,7 @@ end
 
 --- @alias RpcCallback fun(params:any):string?
 
---- @return string|nil
+--- @return string?
 local function get_windows_pipe_name()
     log.ensure(
         constants.is_windows,
@@ -142,6 +142,11 @@ end
 --- @type RpcServer?
 local GlobalRpcServer = nil
 
+--- @return RpcServer
+local function get_global_rpc_server()
+    return GlobalRpcServer --[[@as RpcServer]]
+end
+
 local function setup()
     GlobalRpcServer = RpcServer:new()
     log.debug(
@@ -151,15 +156,11 @@ local function setup()
     return GlobalRpcServer
 end
 
---- @return RpcServer
-local function get_global_rpc_server()
-    return GlobalRpcServer --[[@as RpcServer]]
-end
-
 local M = {
     setup = setup,
     get_global_rpc_server = get_global_rpc_server,
     next_registry_id = next_registry_id,
+    get_windows_pipe_name = get_windows_pipe_name,
 }
 
 return M
