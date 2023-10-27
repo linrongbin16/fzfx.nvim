@@ -1187,12 +1187,12 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 
 It consists of following components:
 
-1. A list of commands that can feed with different types of input arguments, binding with a provider.
-2. Multiple providers that can provide data sources for the fzf command, as lines in the left side.
-3. Multiple previewers that can preview content for the fzf command, as content in the right side.
-4. Interactions that allow user press key and invoke callback function on current line, without exiting fzf popup.
-5. Actions that allow user press key and exit fzf popup, and invoke callback function with selected lines.
-6. Optional 'fzf\_opts', 'win\_opts' and 'other\_opts' that overwrite the default options.
+1. `commands`: feed with different types of input arguments, binding with a provider.
+2. `providers`: provide data sources for fzf command (e.g., lines in the left side).
+3. `previewers`: preview content for the fzf command (e.g., content in the right side).
+4. `actions`: allow user press key and exit fzf popup, and invoke callback function with selected lines.
+5. (Optional) `interactions`: allow user press key and invoke callback function on current line, without exiting fzf popup.
+6. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults.
 
 ```lua
 {
