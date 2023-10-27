@@ -81,6 +81,7 @@ jobs:
           fzfurl=https://github.com/junegunn/fzf/releases/download/0.43.0/fzf-0.43.0-linux_amd64.tar.gz
           fzftemp=fzf.zip
           curl -fLo "$fzftemp" $fzfurl && tar zxvf "$fzftemp" && rm "$fzftemp"
+          chmod +x fzf
           export PATH="$PWD:$PATH"
           vusted --coverage --shuffle ./test
       - name: Generate coverage reports
