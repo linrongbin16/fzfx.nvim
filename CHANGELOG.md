@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.2.1](https://github.com/linrongbin16/fzfx.nvim/compare/v2.2.0...v2.2.1) (2023-10-27)
+
+
+### Performance Improvements
+
+* **path:** add 'expand' option to normalize ([#332](https://github.com/linrongbin16/fzfx.nvim/issues/332)) ([8a13a8e](https://github.com/linrongbin16/fzfx.nvim/commit/8a13a8e8f4d1a459413a29a2e73462d22e92269a))
+* **rpc_server:** more un-conflictable pipe name for Windows ([#341](https://github.com/linrongbin16/fzfx.nvim/issues/341)) ([15c9b12](https://github.com/linrongbin16/fzfx.nvim/commit/15c9b1225cabddcb1fbb055f166d45bc1cb43afc))
+* **test:** improve tests ([#334](https://github.com/linrongbin16/fzfx.nvim/issues/334)) ([fa5845f](https://github.com/linrongbin16/fzfx.nvim/commit/fa5845ff98fdb138e8385e21419d0c1a44a6973e))
+* **test:** improve tests2 ([#336](https://github.com/linrongbin16/fzfx.nvim/issues/336)) ([c68e23c](https://github.com/linrongbin16/fzfx.nvim/commit/c68e23c6685769af2977484277de85753fc89022))
+
 ## [2.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.1.0...v2.2.0) (2023-10-27)
 
 
