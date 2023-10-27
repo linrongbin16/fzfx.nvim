@@ -175,9 +175,45 @@ describe("popup", function()
             assert_false(
                 vim.tbl_isempty(popup._get_all_popup_window_instances())
             )
+            local instances = popup._get_all_popup_window_instances()
+            local n = 0
+            for _, p in pairs(instances) do
+                n = n + 1
+                assert_eq(p.winnr, pw.winnr)
+                assert_eq(p.bufnr, pw.bufnr)
+                assert_true(
+                    vim.deep_equal(
+                        p.window_opts_context,
+                        pw.window_opts_context
+                    )
+                )
+                assert_true(
+                    vim.deep_equal(p._saved_win_opts, pw._saved_win_opts)
+                )
+                assert_eq(p._resizing, pw._resizing)
+            end
+            assert_eq(n, 1)
         end)
     end)
     describe("[PopupWindow]", function()
+        it("creates new", function()
+            local pw = popup.PopupWindow:new()
+            assert_eq(type(pw), "table")
+            assert_eq(type(pw.window_opts_context), "table")
+            assert_eq(type(pw.window_opts_context.bufnr), "number")
+            assert_eq(type(pw.window_opts_context.winnr), "number")
+            assert_eq(type(pw.window_opts_context.tabnr), "number")
+            assert_true(pw.window_opts_context.bufnr > 0)
+            assert_true(pw.window_opts_context.winnr > 0)
+            assert_true(pw.window_opts_context.tabnr > 0)
+            assert_eq(type(pw.bufnr), "number")
+            assert_eq(type(pw.winnr), "number")
+            assert_true(pw.bufnr > 0)
+            assert_true(pw.winnr > 0)
+            assert_eq(type(pw._saved_win_opts), "table")
+            assert_eq(type(pw._resizing), "boolean")
+            assert_false(pw._resizing)
+        end)
         it("creates new", function()
             local pw = popup.PopupWindow:new()
             assert_eq(type(pw), "table")
