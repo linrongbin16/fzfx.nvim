@@ -71,6 +71,11 @@ jobs:
           luaVersion: "luajit-2.1.0-beta3"
       - name: Install luarocks
         uses: leafo/gh-actions-luarocks@v4
+      - name: Install fzf
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+          ~/.fzf/install
       - name: Run test cases
         shell: bash
         run: |
