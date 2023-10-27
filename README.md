@@ -32,7 +32,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [Git](#git)
   - [Lsp & Diagnostics](#lsp--diagnostics)
   - [Vim](#vim)
-  - [File Explorer](#file-explorer)
+  - [Misc](#misc)
 - [Recommended Key Mappings](#-recommended-key-mappings)
   - [Vimscript](#vimscript)
   - [Lua](#lua)
