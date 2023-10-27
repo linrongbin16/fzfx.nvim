@@ -1093,54 +1093,11 @@ local Defaults = {
   -- check nerd fonts icons: https://www.nerdfonts.com/cheat-sheet
   -- check unicode icons: https://symbl.cc/en/
   icons = {
-    -- nerd fonts:
-    --     nf-fa-file_text_o               \uf0f6 (default)
-    --     nf-fa-file_o                    \uf016
     unknown_file = "",
-
-    -- nerd fonts:
-    --     nf-custom-folder                \ue5ff (default)
-    --     nf-fa-folder                    \uf07b
-    -- 󰉋    nf-md-folder                    \udb80\ude4b
     folder = "",
-
-    -- nerd fonts:
-    --     nf-custom-folder_open           \ue5fe (default)
-    --     nf-fa-folder_open               \uf07c
-    -- 󰝰    nf-md-folder_open               \udb81\udf70
     folder_open = "",
 
-    -- nerd fonts:
-    --     nf-oct-arrow_right              \uf432
-    --     nf-cod-arrow_right              \uea9c
-    --     nf-fa-caret_right               \uf0da
-    --     nf-weather-direction_right      \ue349
-    --     nf-fa-long_arrow_right          \uf178
-    --     nf-oct-chevron_right            \uf460
-    --     nf-fa-chevron_right             \uf054 (default)
-    --
-    -- unicode:
-    -- https://symbl.cc/en/collections/arrow-symbols/
-    -- ➜    U+279C                          &#10140;
-    -- ➤    U+27A4                          &#10148;
     fzf_pointer = "",
-
-    -- nerd fonts:
-    --     nf-fa-star                      \uf005
-    -- 󰓎    nf-md-star                      \udb81\udcce
-    --     nf-cod-star_full                \ueb59
-    --     nf-oct-dot_fill                 \uf444
-    --     nf-fa-dot_circle_o              \uf192
-    --     nf-cod-check                    \ueab2
-    --     nf-fa-check                     \uf00c
-    -- 󰄬    nf-md-check                     \udb80\udd2c
-    --
-    -- unicode:
-    -- https://symbl.cc/en/collections/star-symbols/
-    -- https://symbl.cc/en/collections/list-bullets/
-    -- https://symbl.cc/en/collections/special-symbols/
-    -- •    U+2022                          &#8226;
-    -- ✓    U+2713                          &#10003; (default)
     fzf_marker = "✓",
   },
 
