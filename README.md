@@ -1046,7 +1046,8 @@ local Defaults = {
     },
   },
 
-  -- define your own commands group here.
+  -- define your own commands group here,
+  -- please check [Ctreat your own command](#creat-your-own-command).
   users = nil,
 
   -- default fzf options for all all commands.
