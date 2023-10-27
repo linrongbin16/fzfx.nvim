@@ -157,6 +157,7 @@ local default_restricted_rg = {
     "-n",
     "--no-heading",
     "--color=always",
+    "-H",
     "-S",
 }
 -- "rg --column -n --no-heading --color=always -S -uu"
@@ -166,6 +167,7 @@ local default_unrestricted_rg = {
     "-n",
     "--no-heading",
     "--color=always",
+    "-H",
     "-S",
     "-uu",
 }
@@ -191,20 +193,59 @@ local default_unrestricted_grep = {
 }
 
 --- @param query string
---- @param unrestricted boolean
+--- @param context PipelineContext
+--- @param opts {unrestricted:boolean?,buffer:boolean?}
 --- @return string[]|nil
-local function live_grep_provider(query, unrestricted)
+local function live_grep_provider(query, context, opts)
     local parsed_query = utils.parse_flag_query(query or "")
     local content = parsed_query[1]
     local option = parsed_query[2]
 
     local args = nil
     if vim.fn.executable("rg") > 0 then
-        args = unrestricted and vim.deepcopy(default_unrestricted_rg)
-            or vim.deepcopy(default_restricted_rg)
+        if type(opts) == "table" and opts.unrestricted then
+            args = vim.deepcopy(default_unrestricted_rg)
+        elseif type(opts) == "table" and opts.buffer then
+            args = vim.deepcopy(default_unrestricted_rg)
+            local current_bufpath = utils.is_buf_valid(context.bufnr)
+                    and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+                or nil
+            if
+                type(current_bufpath) ~= "string"
+                or string.len(current_bufpath) == 0
+            then
+                log.echo(
+                    LogLevels.INFO,
+                    "invalid buffer (%s).",
+                    vim.inspect(context.bufnr)
+                )
+                return nil
+            end
+        else
+            args = vim.deepcopy(default_restricted_rg)
+        end
     elseif vim.fn.executable("grep") > 0 or vim.fn.executable("ggrep") > 0 then
-        args = unrestricted and vim.deepcopy(default_unrestricted_grep)
-            or vim.deepcopy(default_restricted_grep)
+        if type(opts) == "table" and opts.unrestricted then
+            args = vim.deepcopy(default_unrestricted_grep)
+        elseif type(opts) == "table" and opts.buffer then
+            args = vim.deepcopy(default_unrestricted_grep)
+            local current_bufpath = utils.is_buf_valid(context.bufnr)
+                    and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+                or nil
+            if
+                type(current_bufpath) ~= "string"
+                or string.len(current_bufpath) == 0
+            then
+                log.echo(
+                    LogLevels.INFO,
+                    "invalid buffer (%s).",
+                    vim.inspect(context.bufnr)
+                )
+                return nil
+            end
+        else
+            args = vim.deepcopy(default_restricted_grep)
+        end
     else
         log.echo(LogLevels.INFO, "no rg/grep command found.")
         return nil
@@ -217,8 +258,15 @@ local function live_grep_provider(query, unrestricted)
             end
         end
     end
-    table.insert(args, "--")
-    table.insert(args, content)
+    if type(opts) == "table" and opts.buffer then
+        local current_bufpath =
+            path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+        table.insert(args, content)
+        table.insert(args, current_bufpath)
+    else
+        -- table.insert(args, "--")
+        table.insert(args, content)
+    end
     return args
 end
 
@@ -1859,6 +1907,16 @@ local Defaults = {
                 },
                 default_provider = "unrestricted_mode",
             },
+            {
+                name = "FzfxLiveGrepB",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "*",
+                    desc = "Live grep on current buffer",
+                },
+                default_provider = "buffer_mode",
+            },
             -- visual
             {
                 name = "FzfxLiveGrepV",
@@ -1880,6 +1938,16 @@ local Defaults = {
                 },
                 default_provider = "unrestricted_mode",
             },
+            {
+                name = "FzfxLiveGrepBV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Live grep on current buffer by visual select",
+                },
+                default_provider = "buffer_mode",
+            },
             -- cword
             {
                 name = "FzfxLiveGrepW",
@@ -1898,6 +1966,15 @@ local Defaults = {
                     desc = "Live grep unrestricted by cursor word",
                 },
                 default_provider = "unrestricted_mode",
+            },
+            {
+                name = "FzfxLiveGrepBW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Live grep on current buffer by cursor word",
+                },
+                default_provider = "buffer_mode",
             },
             -- put
             {
@@ -1918,12 +1995,21 @@ local Defaults = {
                 },
                 default_provider = "unrestricted_mode",
             },
+            {
+                name = "FzfxLiveGrepBP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Live grep on current buffer by yank text",
+                },
+                default_provider = "buffer_mode",
+            },
         },
         providers = {
             restricted_mode = {
                 key = "ctrl-r",
-                provider = function(query)
-                    return live_grep_provider(query, false)
+                provider = function(query, context)
+                    return live_grep_provider(query, context, {})
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
@@ -1934,8 +2020,24 @@ local Defaults = {
             },
             unrestricted_mode = {
                 key = "ctrl-u",
-                provider = function(query)
-                    return live_grep_provider(query, true)
+                provider = function(query, context)
+                    return live_grep_provider(
+                        query,
+                        context,
+                        { unrestricted = true }
+                    )
+                end,
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
+            },
+            buffer_mode = {
+                key = "ctrl-o",
+                provider = function(query, context)
+                    return live_grep_provider(query, context, { buffer = true })
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
@@ -1951,6 +2053,10 @@ local Defaults = {
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             unrestricted_mode = {
+                previewer = file_previewer_grep,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+            buffer_mode = {
                 previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
