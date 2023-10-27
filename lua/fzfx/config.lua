@@ -1269,7 +1269,7 @@ local function parse_ex_map_output_line(line)
             vim.inspect(filename),
             vim.inspect(lineno)
         )
-        result.filename = vim.fn.expand(path.normalize(filename))
+        result.filename = path.normalize(filename, { expand = true })
         result.lineno = tonumber(lineno)
     end
     return result
@@ -1315,7 +1315,7 @@ local function get_vim_keymaps()
                 local lineno =
                     vim.trim(line:sub(line_pos + string.len(LINE) + 1))
                 keys_output_map[last_lhs].filename =
-                    vim.fn.expand(path.normalize(filename))
+                    path.normalize(filename, { expand = true })
                 keys_output_map[last_lhs].lineno = tonumber(filename)
             end
         end

@@ -19,7 +19,7 @@ local function parse_find(line, opts)
         assert(type(first_icon_pos) == "number")
         filename = line:sub(first_icon_pos + 1)
     end
-    return vim.fn.expand(path.normalize(filename))
+    return path.normalize(filename, { expand = true })
 end
 
 -- parse lines from grep.
@@ -120,7 +120,7 @@ local function make_parse_ls(start_pos)
             end
             pos = pos + 1
         end
-        return vim.fn.expand(path.normalize(vim.trim(line:sub(pos))))
+        return path.normalize(vim.trim(line:sub(pos)), { expand = true })
     end
     return impl
 end
@@ -154,7 +154,7 @@ local function parse_vim_command(line, context)
         --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
         --     vim.inspect(splits)
         -- )
-        local filename = vim.fn.expand(path.normalize(splits[1]))
+        local filename = path.normalize(splits[1], { expand = true })
         local lineno = tonumber(splits[2])
         -- log.debug(
         --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
@@ -192,7 +192,7 @@ local function parse_vim_keymap(line, context)
         --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
         --     vim.inspect(splits)
         -- )
-        local filename = vim.fn.expand(path.normalize(splits[1]))
+        local filename = path.normalize(splits[1], { expand = true })
         local lineno = tonumber(splits[2])
         -- log.debug(
         --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",

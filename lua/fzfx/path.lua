@@ -3,20 +3,22 @@
 local constants = require("fzfx.constants")
 
 --- @param path string
---- @param opts {transform_backslash:boolean?}?
+--- @param opts {backslash:boolean?,expand:boolean?}?
 --- @return string
 local function normalize(path, opts)
     opts = opts or {}
-    opts.transform_backslash = opts.transform_backslash or false
+    opts.backslash = type(opts.backslash) == "boolean" and opts.backslash
+        or false
+    opts.expand = type(opts.expand) == "boolean" and opts.expand or false
 
     local result = path
     if string.match(result, [[\\]]) then
         result = string.gsub(result, [[\\]], [[\]])
     end
-    if opts.transform_backslash and string.match(result, [[\]]) then
+    if opts.backslash and string.match(result, [[\]]) then
         result = string.gsub(result, [[\]], [[/]])
     end
-    return vim.trim(result)
+    return opts.expand and vim.fn.expand(vim.trim(result)) or vim.trim(result)
 end
 
 local function join(...)

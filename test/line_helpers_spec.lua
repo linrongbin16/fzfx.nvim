@@ -257,7 +257,7 @@ describe("line_helpers", function()
                 assert_eq(type(actual), "table")
                 assert_eq(
                     actual.filename,
-                    vim.fn.expand(path.normalize(expect_splits[1]))
+                    path.normalize(expect_splits[1], { expand = true })
                 )
                 assert_eq(actual.lineno, tonumber(expect_splits[2]))
             end
@@ -290,7 +290,7 @@ describe("line_helpers", function()
                 assert_eq(type(actual), "table")
                 assert_eq(
                     actual.filename,
-                    vim.fn.expand(path.normalize(expect_splits[1]))
+                    path.normalize(expect_splits[1], { expand = true })
                 )
                 assert_eq(actual.lineno, tonumber(expect_splits[2]))
             end
@@ -331,7 +331,7 @@ describe("line_helpers", function()
                 assert_eq(type(actual), "table")
                 assert_eq(
                     actual.filename,
-                    vim.fn.expand(path.normalize(expect_splits[1]))
+                    path.normalize(expect_splits[1], { expand = true })
                 )
                 assert_eq(actual.lineno, tonumber(expect_splits[2]))
             end
