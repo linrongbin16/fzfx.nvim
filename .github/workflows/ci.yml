@@ -78,9 +78,9 @@ jobs:
           luarocks install luacov
           luarocks install cluacov
           luarocks install vusted
-          local url=https://github.com/junegunn/fzf/releases/download/0.43.0/fzf-0.43.0-linux_amd64.tar.gz
-          local temp=fzf.zip
-          curl -fLo "$temp" $url && unzip -o "$temp" && rm -f "$temp"
+          fzfurl=https://github.com/junegunn/fzf/releases/download/0.43.0/fzf-0.43.0-linux_amd64.tar.gz
+          fzftemp=fzf.zip
+          curl -fLo "$fzftemp" $fzfurl && unzip -o "$fzftemp" && rm -f "$fzftemp"
           echo "ls ."
           ls -l .
           export PATH="$PWD:$PATH"
