@@ -21,7 +21,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - [Feature](#-feature)
 - [Requirement](#-requirement)
   - [Windows](#windows)
-  - [Path containing whitespace & Escaping issue](#path-containing-whitespace--escaping-issue)
+  - [Whitespace escaping issue](#whitespace-escaping-issue)
 - [Install](#-install)
   - [vim-plug](#vim-plug)
   - [packer.nvim](#packernvim)
@@ -72,7 +72,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - [git](https://git-scm.com/) (optional for **git** commands).
 - [eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)), [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (optional for **file explorer** commands, print current directory path).
 
-> Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be a better choice. Also see [Windows](#windows) for how to install linux commands on Windows.
+> Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be a better choice, while still recommend to [install linux shell commands on Windows](#windows) since utils like **echo** **sleep** are often used by somewhere.
 
 ### Windows
 
@@ -126,7 +126,7 @@ Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\W
 
 </details>
 
-### Path containing whitespace & Escaping issue
+### Whitespace escaping issue
 
 <details>
 <summary><b>Click here to see how whitespace affect escaping characters on path</b></summary>
