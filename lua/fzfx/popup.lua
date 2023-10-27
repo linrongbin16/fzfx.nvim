@@ -492,6 +492,7 @@ local M = {
     _make_center_window_config = _make_center_window_config,
     _make_window_config = _make_window_config,
     _get_all_popup_window_instances = _get_all_popup_window_instances,
+    PopupWindow = PopupWindow,
     Popup = Popup,
     setup = setup,
 }
