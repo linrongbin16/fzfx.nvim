@@ -1,6 +1,8 @@
 local conf = require("fzfx.config")
 local log = require("fzfx.log")
 local env = require("fzfx.env")
+local utils = require("fzfx.utils")
+local path = require("fzfx.path")
 
 --- @class Yank
 --- @field regname string
@@ -67,17 +69,18 @@ function YankHistory:push(y)
     return self.pos
 end
 
--- from oldest to newest
--- usage:
+-- from oldest to newest, usage:
+--
 -- ```lua
---  local p = yank_history:start_pos()
+--  local p = yank_history:begin()
 --  while p ~= nil then
 --    local yank = yank_history:get(p)
---    p = yank_history:next_pos()
+--    p = yank_history:next(p)
 --  end
 -- ```
+--
 --- @return integer?
-function YankHistory:start_pos()
+function YankHistory:begin()
     if #self.queue == 0 or self.pos == 0 then
         return nil
     end
@@ -91,7 +94,7 @@ end
 -- from oldest to newest
 --- @param pos integer
 --- @return integer?
-function YankHistory:next_pos(pos)
+function YankHistory:next(pos)
     if #self.queue == 0 or pos == 0 then
         return nil
     end
@@ -105,17 +108,18 @@ function YankHistory:next_pos(pos)
     end
 end
 
--- from newest to oldest
--- usage:
+-- from newest to oldest, usage:
+--
 -- ```lua
---  local p = yank_history:rstart_pos()
+--  local p = yank_history:rbegin()
 --  while p ~= nil then
 --    local yank = yank_history:get(p)
---    p = yank_history:rnext_pos()
+--    p = yank_history:rnext()
 --  end
 -- ```
+--
 --- @return integer?
-function YankHistory:rstart_pos()
+function YankHistory:rbegin()
     if #self.queue == 0 or self.pos == 0 then
         return nil
     end
@@ -125,13 +129,13 @@ end
 -- from newest to oldest
 --- @param pos integer
 --- @return integer?
-function YankHistory:rnext_pos(pos)
+function YankHistory:rnext(pos)
     if #self.queue == 0 or pos == 0 then
         return nil
     end
     if self.pos == 1 and pos == #self.queue then
         return nil
-    elseif pos == self.pos + 1 then
+    elseif pos == self.pos then
         return nil
     end
     if pos == 1 then
@@ -156,7 +160,7 @@ end
 local YankHistoryInstance = nil
 
 --- @return table
-local function get_register_info(regname)
+local function _get_register_info(regname)
     return {
         regname = regname,
         regtext = vim.fn.getreg(regname),
@@ -166,13 +170,18 @@ end
 
 --- @return integer?
 local function save_yank()
-    local r = get_register_info(vim.v.event.regname)
+    local r = _get_register_info(vim.v.event.regname)
     local y = Yank:new(
         r.regname,
         r.regtext,
         r.regtype,
-        vim.bo.filetype,
-        vim.api.nvim_buf_get_name(0)
+        utils.is_buf_valid(0)
+                and path.normalize(
+                    vim.api.nvim_buf_get_name(0),
+                    { expand = true }
+                )
+            or nil,
+        vim.bo.filetype
     )
     -- log.debug(
     --     "|fzfx.yank_history - save_yank| r:%s, y:%s",
@@ -199,13 +208,13 @@ local function get_yank()
 end
 
 --- @return YankHistory?
-local function get_global_yank_history()
+local function _get_yank_history_instance()
     return YankHistoryInstance
 end
 
 local function setup()
     YankHistoryInstance = YankHistory:new(
-        env.debug_enable() and 5
+        env.debug_enable() and 10
             or conf.get_config().yank_history.other_opts.maxsize
     )
     vim.api.nvim_create_autocmd("TextYankPost", {
@@ -217,6 +226,11 @@ end
 local M = {
     setup = setup,
     get_yank = get_yank,
+    save_yank = save_yank,
+    Yank = Yank,
+    YankHistory = YankHistory,
+    _get_register_info = _get_register_info,
+    _get_yank_history_instance = _get_yank_history_instance,
 }
 
 return M
