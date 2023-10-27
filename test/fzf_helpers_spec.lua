@@ -105,15 +105,15 @@ describe("helpers", function()
     end)
     describe("[fzf_exec]", function()
         it("get fzf path", function()
-            local ok, err = pcall(fzf_helpers.fzf_exec)
+            local ok, actual = pcall(fzf_helpers.fzf_exec)
             print(
                 string.format(
                     "fzf_exec: %s, %s\n",
                     vim.inspect(ok),
-                    vim.inspect(err)
+                    vim.inspect(actual)
                 )
             )
-            assert_true(ok ~= nil)
+            assert_eq(actual, "fzf")
         end)
     end)
     describe("[preprocess_fzf_opts]", function()
