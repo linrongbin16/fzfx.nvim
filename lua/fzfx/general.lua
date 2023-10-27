@@ -668,9 +668,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
 
     local provide_rpc_registry_id =
-        server:get_global_rpc_server():register(provide_rpc)
+        server:get_rpc_server():register(provide_rpc)
     local preview_rpc_registry_id =
-        server:get_global_rpc_server():register(preview_rpc)
+        server:get_rpc_server():register(preview_rpc)
 
     local query_command = string.format(
         "%s %s %s %s %s",
@@ -737,7 +737,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end
 
             local interaction_rpc_registry_id =
-                server.get_global_rpc_server():register(interaction_rpc)
+                server.get_rpc_server():register(interaction_rpc)
             table.insert(
                 interaction_rpc_registries,
                 interaction_rpc_registry_id
@@ -777,7 +777,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end
 
             local switch_rpc_registry_id =
-                server.get_global_rpc_server():register(switch_rpc)
+                server.get_rpc_server():register(switch_rpc)
             table.insert(switch_rpc_registries, switch_rpc_registry_id)
 
             local switch_command = string.format(
@@ -849,10 +849,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         actions,
         context,
         function()
-            server.get_global_rpc_server():unregister(provide_rpc_registry_id)
-            server.get_global_rpc_server():unregister(preview_rpc_registry_id)
+            server.get_rpc_server():unregister(provide_rpc_registry_id)
+            server.get_rpc_server():unregister(preview_rpc_registry_id)
             for _, switch_registry_id in ipairs(switch_rpc_registries) do
-                server.get_global_rpc_server():unregister(switch_registry_id)
+                server.get_rpc_server():unregister(switch_registry_id)
             end
         end
     )

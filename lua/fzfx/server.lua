@@ -17,19 +17,21 @@ local function next_registry_id()
     return tostring(NextRegistryIntegerId)
 end
 
---- @alias RpcCallback fun(params:any):string?
-
---- @return string|nil
+--- @return string?
 local function get_windows_pipe_name()
     log.ensure(
         constants.is_windows,
         "|fzfx.server - get_windows_pipe_name| error! must use this function in Windows!"
     )
+    local secs, ms = vim.loop.gettimeofday()
+    local randint = math.random(1, 100000)
     local result = vim.trim(
         string.format(
-            [[ \\.\pipe\nvim-pipe-%d-%d ]],
+            [[ \\.\pipe\nvim-pipe-%d-%d-%d-%d ]],
             vim.fn.getpid(),
-            os.time()
+            secs,
+            ms,
+            randint
         )
     )
     log.debug(
@@ -39,6 +41,7 @@ local function get_windows_pipe_name()
     return result
 end
 
+--- @alias RpcCallback fun(params:any):string?
 --- @class RpcServer
 --- @field address string
 --- @field registry table<RpcRegistryId, RpcCallback>
@@ -46,7 +49,6 @@ local RpcServer = {}
 
 --- @return RpcServer
 function RpcServer:new()
-    --- @type string
     local address = constants.is_windows
             and vim.fn.serverstart(get_windows_pipe_name())
         or vim.fn.serverstart() --[[@as string]]
@@ -140,26 +142,27 @@ function RpcServer:get(registry_id)
 end
 
 --- @type RpcServer?
-local GlobalRpcServer = nil
-
-local function setup()
-    GlobalRpcServer = RpcServer:new()
-    log.debug(
-        "|fzfx.server - setup| GlobalRpcServer:%s",
-        vim.inspect(GlobalRpcServer)
-    )
-    return GlobalRpcServer
-end
+local RpcServerInstance = nil
 
 --- @return RpcServer
-local function get_global_rpc_server()
-    return GlobalRpcServer --[[@as RpcServer]]
+local function get_rpc_server()
+    return RpcServerInstance --[[@as RpcServer]]
+end
+
+local function setup()
+    RpcServerInstance = RpcServer:new()
+    log.debug(
+        "|fzfx.server - setup| RpcServerInstance:%s",
+        vim.inspect(RpcServerInstance)
+    )
+    return RpcServerInstance
 end
 
 local M = {
     setup = setup,
-    get_global_rpc_server = get_global_rpc_server,
+    get_rpc_server = get_rpc_server,
     next_registry_id = next_registry_id,
+    get_windows_pipe_name = get_windows_pipe_name,
 }
 
 return M
