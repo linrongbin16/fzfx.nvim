@@ -32,14 +32,12 @@ describe("server", function()
         it("create server", function()
             local s = server.get_rpc_server()
             assert_eq(type(s), "table")
+            local sockaddr = vim.env._FZFX_NVIM_SOCKET_ADDRESS
             print(
-                string.format(
-                    "rpc server socket:%s\n",
-                    vim.inspect(server._get_rpc_server_socket_address())
-                )
+                string.format("rpc server socket:%s\n", vim.inspect(sockaddr))
             )
-            assert_eq(type(server._get_rpc_server_socket_address()), "string")
-            assert_true(string.len(server._get_rpc_server_socket_address()) > 0)
+            assert_eq(type(sockaddr), "string")
+            assert_true(string.len(sockaddr) > 0)
         end)
         it("register/unregister", function()
             local s = server.get_rpc_server()

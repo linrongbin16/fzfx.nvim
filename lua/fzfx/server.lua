@@ -151,11 +151,6 @@ local function get_rpc_server()
     return RpcServerInstance --[[@as RpcServer]]
 end
 
---- @return string
-local function _get_rpc_server_socket_address()
-    return vim.env._FZFX_NVIM_SOCKET_ADDRESS --[[@as string]]
-end
-
 local function setup()
     RpcServerInstance = RpcServer:new()
     log.debug(
@@ -170,7 +165,6 @@ local M = {
     get_rpc_server = get_rpc_server,
     next_registry_id = next_registry_id,
     get_windows_pipe_name = get_windows_pipe_name,
-    _get_rpc_server_socket_address = _get_rpc_server_socket_address,
 }
 
 return M
