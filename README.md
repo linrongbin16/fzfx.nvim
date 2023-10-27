@@ -1218,7 +1218,6 @@ It consists of following components:
       },
       default_provider = "unrestricted_mode",
     },
-    ..., -- the other commands configs
   },
   --- @type table<string, ProviderConfig>
   providers = {
