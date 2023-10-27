@@ -37,6 +37,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [Vimscript](#vimscript)
   - [Lua](#lua)
 - [Configuration](#-configuration)
+  - [Defaults](#defaults)
+  - [Commands Group](#commands-config)
   - [Create your own commands](#create-your-own-commands)
 - [Credit](#-credit)
 - [Development](#-development)
@@ -1023,7 +1025,246 @@ To configure options, please use:
 require('fzfx').setup(option)
 ```
 
-The `option` is an optional lua table that override the default options.
+The `option` is an optional lua table that override the default options:
+
+#### Defaults
+
+```lua
+local Defaults = {
+  --- @type GroupConfig
+  files = ...,
+  --- @type GroupConfig
+  live_grep = ...,
+  --- @type GroupConfig
+  buffers = ...,
+  --- @type GroupConfig
+  git_files = ...,
+  --- @type GroupConfig
+  git_branches = ...,
+  ... -- the other commands groups, please check [Commands Group](#commands-group)
+
+  -- the 'Yank History' commands group (todo)
+  yank_history = {
+    other_opts = {
+      -- max size of saved yank history.
+      -- yank history internally is saved in a ring buffer, which can not grow indefinitely
+      maxsize = 100,
+    },
+  },
+
+  -- define your own commands group here.
+  users = nil,
+
+  -- default fzf options for all all commands.
+  -- each commands group also has a 'fzf_opts' field that can overwrite below defaults.
+  fzf_opts = {
+    "--ansi",
+    "--info=inline",
+    "--layout=reverse",
+    "--border=rounded",
+    "--height=100%",
+    "--bind=ctrl-e:toggle",
+    "--bind=ctrl-a:toggle-all",
+    "--bind=alt-p:toggle-preview",
+    "--bind=ctrl-f:preview-half-page-down",
+    "--bind=ctrl-b:preview-half-page-up",
+  },
+
+  -- fzf colors extract from vim colorscheme's syntax to RGB color code (e.g., #728174),
+  -- then pass to fzf command in '--color' option.
+  -- see: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
+  fzf_color_opts = {
+    fg = { "fg", "Normal" },
+    bg = { "bg", "Normal" },
+    hl = { "fg", "Comment" },
+    ["fg+"] = { "fg", "CursorLine", "CursorColumn", "Normal" },
+    ["bg+"] = { "bg", "CursorLine", "CursorColumn" },
+    ["hl+"] = { "fg", "Statement" },
+    info = { "fg", "PreProc" },
+    border = { "fg", "Ignore" },
+    prompt = { "fg", "Conditional" },
+    pointer = { "fg", "Exception" },
+    marker = { "fg", "Keyword" },
+    spinner = { "fg", "Label" },
+    header = { "fg", "Comment" },
+  },
+
+  -- icons
+  -- check nerd fonts icons: https://www.nerdfonts.com/cheat-sheet
+  -- check unicode icons: https://symbl.cc/en/
+  icons = {
+    unknown_file = "",
+    folder = "",
+    folder_open = "",
+
+    fzf_pointer = "",
+    fzf_marker = "✓",
+  },
+
+  -- default popup window options for all commands groups.
+  -- each commands group also has a 'win_opts' field that can overwrite below defaults.
+  popup = {
+    -- float window options pass to 'vim.api.nvim_open_win()' API.
+    win_opts = {
+      -- height/width.
+      --
+      -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
+      --    e.g. popup height = h * lines, width = w * columns.
+      --
+      -- 2. if h/w > 1, evaluate as absolute height and width,
+      --    directly pass to vim.api.nvim_open_win.
+      --
+      height = 0.85,
+      width = 0.85,
+
+      -- popup window anchor point, by default popup window is in the center of editor.
+      -- e.g. the option `relative="editor"`.
+      -- for now the `relative` options supports:
+      --  - editor
+      --  - win
+      --  - cursor
+      --
+      -- when relative is 'editor' or 'win', the anchor is the center position,
+      -- not default 'NW' (north west).
+      -- because 'NW' is a little bit complicated for users to calculate the position,
+      -- usually we just put the popup window in the center of editor.
+      --
+      -- 1. if -0.5 <= r/c <= 0.5, evaluate proportionally according to editor's lines and columns.
+      --    e.g. shift rows = r * lines, shift columns = c * columns.
+      --
+      -- 2. if r/c <= -1 or r/c >= 1, evaluate as absolute rows/columns to be shift.
+      --    e.g. you can easily set 'row = -vim.o.cmdheight' to move popup window up 1~2 lines
+      --    (based on your 'cmdheight' option).
+      --    this is especially useful when popup window is too big and conflicts with status line at bottom.
+      --
+      -- 3. r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
+      --
+      -- when relative is 'cursor', the anchor is 'NW' (north west).
+      -- because we just want to put the popup window relative to the cursor.
+      -- so 'row' and 'col' will be directly passed to `vim.api.nvim_open_win` API without any pre-processing.
+      --
+      row = 0,
+      col = 0,
+
+      border = "none",
+      zindex = 51,
+    },
+  },
+
+  -- environment variables
+  env = {
+    -- by default use `vim.env.VIM` (e.g., `/usr/local/bin/nvim`) as the lua script interpreter,
+    -- but you can overwrite by set below option.
+    nvim = nil,
+
+    -- by default use `vim.fn['fzf#exec']` function as the fzf binary,
+    -- but you can overwrite by set below option.
+    fzf = nil,
+  },
+
+  -- cache
+  cache = {
+    -- for macOS/linux: ~/.local/share/nvim/fzfx.nvim
+    -- for Windows: ~/AppData/Local/nvim-data/fzfx.nvim
+    dir = require("fzfx.path").join(vim.fn.stdpath("data"), "fzfx.nvim"),
+  },
+
+  -- debug
+  debug = {
+    -- enable debug
+    enable = false,
+
+    -- print logs to console (command line).
+    console_log = true,
+
+    -- write logs to file.
+    -- for macOS/linux: ~/.local/share/nvim/fzfx.log
+    -- for Windows: ~/AppData/Local/nvim-data/fzfx.log
+    file_log = false,
+  },
+}
+```
+
+#### Commands Group
+
+Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share the same schema.
+
+It consists of following components:
+
+1. `commands`: feed with different types of input arguments, binding with a provider.
+2. `providers`: provide data sources for fzf command (e.g., lines in the left side).
+3. `previewers`: preview content for the fzf command (e.g., content in the right side).
+4. `actions`: allow user press key and exit fzf popup, and invoke callback function with selected lines.
+5. (Optional) `interactions`: allow user press key and invoke callback function on current line, without exiting fzf popup.
+6. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults.
+
+```lua
+{
+  --- @type CommandConfig[]
+  commands = {
+    --- @type CommandConfig
+    {
+      name = "FzfxFiles",
+      feed = "args",
+      opts = {
+        bang = true,
+        desc = "Find files",
+      },
+      default_provider = "restricted_mode",
+    },
+    --- @type CommandConfig
+    {
+      name = "FzfxFilesU",
+      feed = "args",
+      opts = {
+        bang = true,
+        desc = "Find files unrestricted",
+      },
+      default_provider = "unrestricted_mode",
+    },
+  },
+  --- @type table<string, ProviderConfig>
+  providers = {
+    restricted_mode = {
+      key = "ctrl-r",
+      provider = { "fd", ".", "--color=never", "--type", "file" },
+    },
+    unrestricted_mode = {
+      key = "ctrl-u",
+      provider = { "fd", ".", "--color=never", "--type", "file", "-u" },
+    },
+  },
+  --- @type table<string, PreviewerConfig>
+  previewers = {
+    restricted_mode = {
+      previewer = function(line)
+        return { "bat", "--color=always", "--pager=never", "--", line }
+      end,
+      previewer_type = "command_list",
+    },
+    unrestricted_mode = {
+      previewer = function(line)
+        return { "bat", "--color=always", "--pager=never", "--", line }
+      end,
+      previewer_type = "command_list",
+    },
+  },
+  actions = {
+    ["esc"] = function(lines)
+      -- do nothing
+    end,
+    ["enter"] = function(lines)
+      for _, line in ipairs(lines) do
+        vim.cmd(string.format([[edit %s]], line))
+      end
+    end,
+  },
+  fzf_opts = {
+    "--multi",
+    { "--prompt", "Files > " },
+  },
+}
+```
 
 For complete options and defaults, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 

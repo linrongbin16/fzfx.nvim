@@ -3809,6 +3809,7 @@ local Defaults = {
         header = { "fg", "Comment" },
     },
 
+    -- icons
     -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
     -- unicode: https://symbl.cc/en/
     icons = {
@@ -3863,6 +3864,7 @@ local Defaults = {
         fzf_marker = "✓",
     },
 
+    -- popup window
     popup = {
         -- nvim float window options
         -- see: https://neovim.io/doc/user/api.html#nvim_open_win()
@@ -3873,10 +3875,8 @@ local Defaults = {
             --    e.g. popup height = h * lines, width = w * columns.
             --
             -- 2. if h/w > 1, evaluate as absolute height and width, directly pass to vim.api.nvim_open_win.
-
-            --- @type number
+            --
             height = 0.85,
-            --- @type number
             width = 0.85,
 
             -- popup window position, by default popup window is in the center of editor.
@@ -3901,12 +3901,9 @@ local Defaults = {
             -- when relative is 'cursor', the anchor is 'NW' (north west).
             -- because we just want to put the popup window relative to the cursor.
             -- so 'row' and 'col' will be directly passed to `vim.api.nvim_open_win` API without any pre-processing.
-
-            --- @type number
+            --
             row = 0,
-            --- @type number
             col = 0,
-
             border = "none",
             zindex = 51,
         },
