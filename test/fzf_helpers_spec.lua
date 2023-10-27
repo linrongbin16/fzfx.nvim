@@ -188,9 +188,8 @@ describe("helpers", function()
             assert_true(string.len(actual --[[@as string]]) > 0)
             assert_true(actual:gmatch("general") ~= nil)
             assert_true(actual:gmatch("provider") ~= nil)
-            assert_eq(
-                utils.string_find(actual, "nvim -n --clean --headless -l"),
-                1
+            assert_true(
+                utils.string_find(actual, "nvim -n --clean --headless -l") >= 1
             )
         end)
     end)

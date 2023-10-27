@@ -17,8 +17,6 @@ local function next_registry_id()
     return tostring(NextRegistryIntegerId)
 end
 
---- @alias RpcCallback fun(params:any):string?
-
 --- @return string?
 local function get_windows_pipe_name()
     log.ensure(
@@ -43,6 +41,7 @@ local function get_windows_pipe_name()
     return result
 end
 
+--- @alias RpcCallback fun(params:any):string?
 --- @class RpcServer
 --- @field address string
 --- @field registry table<RpcRegistryId, RpcCallback>
