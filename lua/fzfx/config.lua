@@ -3812,101 +3812,19 @@ local Defaults = {
     -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
     -- unicode: https://symbl.cc/en/
     icons = {
-        -- nerd fonts:
-        --     nf-fa-file_text_o               \uf0f6 (default)
-        --     nf-fa-file_o                    \uf016
         unknown_file = "",
-
-        -- nerd fonts:
-        --     nf-custom-folder                \ue5ff (default)
-        --     nf-fa-folder                    \uf07b
-        -- 󰉋    nf-md-folder                    \udb80\ude4b
         folder = "",
-
-        -- nerd fonts:
-        --     nf-custom-folder_open           \ue5fe (default)
-        --     nf-fa-folder_open               \uf07c
-        -- 󰝰    nf-md-folder_open               \udb81\udf70
         folder_open = "",
-
-        -- nerd fonts:
-        --     nf-oct-arrow_right              \uf432
-        --     nf-cod-arrow_right              \uea9c
-        --     nf-fa-caret_right               \uf0da
-        --     nf-weather-direction_right      \ue349
-        --     nf-fa-long_arrow_right          \uf178
-        --     nf-oct-chevron_right            \uf460
-        --     nf-fa-chevron_right             \uf054 (default)
-        --
-        -- unicode:
-        -- https://symbl.cc/en/collections/arrow-symbols/
-        -- ➜    U+279C                          &#10140;
-        -- ➤    U+27A4                          &#10148;
         fzf_pointer = "",
-
-        -- nerd fonts:
-        --     nf-fa-star                      \uf005
-        -- 󰓎    nf-md-star                      \udb81\udcce
-        --     nf-cod-star_full                \ueb59
-        --     nf-oct-dot_fill                 \uf444
-        --     nf-fa-dot_circle_o              \uf192
-        --     nf-cod-check                    \ueab2
-        --     nf-fa-check                     \uf00c
-        -- 󰄬    nf-md-check                     \udb80\udd2c
-        --
-        -- unicode:
-        -- https://symbl.cc/en/collections/star-symbols/
-        -- https://symbl.cc/en/collections/list-bullets/
-        -- https://symbl.cc/en/collections/special-symbols/
-        -- •    U+2022                          &#8226;
-        -- ✓    U+2713                          &#10003; (default)
         fzf_marker = "✓",
     },
 
     popup = {
-        -- nvim float window options
-        -- see: https://neovim.io/doc/user/api.html#nvim_open_win()
         win_opts = {
-            -- popup window height/width.
-            --
-            -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
-            --    e.g. popup height = h * lines, width = w * columns.
-            --
-            -- 2. if h/w > 1, evaluate as absolute height and width, directly pass to vim.api.nvim_open_win.
-
-            --- @type number
             height = 0.85,
-            --- @type number
             width = 0.85,
-
-            -- popup window position, by default popup window is in the center of editor.
-            -- e.g. the option `relative="editor"`.
-            -- for now the `relative` options supports:
-            --  - editor
-            --  - win
-            --  - cursor
-            --
-            -- when relative is 'editor' or 'win', the anchor is the center position, not default 'NW' (north west).
-            -- because 'NW' is a little bit complicated for users to calculate the position, usually we just put the popup window in the center of editor.
-            --
-            -- 1. if -0.5 <= r/c <= 0.5, evaluate proportionally according to editor's lines and columns.
-            --    e.g. shift rows = r * lines, shift columns = c * columns.
-            --
-            -- 2. if r/c <= -1 or r/c >= 1, evaluate as absolute rows/columns to be shift.
-            --    e.g. you can easily set 'row = -vim.o.cmdheight' to move popup window to up 1~2 lines (based on your 'cmdheight' option).
-            --    this is especially useful when popup window is too big and conflicts with command/status line at bottom.
-            --
-            -- 3. r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
-            --
-            -- when relative is 'cursor', the anchor is 'NW' (north west).
-            -- because we just want to put the popup window relative to the cursor.
-            -- so 'row' and 'col' will be directly passed to `vim.api.nvim_open_win` API without any pre-processing.
-
-            --- @type number
             row = 0,
-            --- @type number
             col = 0,
-
             border = "none",
             zindex = 51,
         },
