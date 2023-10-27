@@ -204,22 +204,23 @@ local function live_grep_provider(query, context, opts)
         if type(opts) == "table" and opts.unrestricted then
             args = vim.deepcopy(default_unrestricted_rg)
         elseif type(opts) == "table" and opts.buffer then
+            args = vim.deepcopy(default_unrestricted_rg)
             local current_bufpath = utils.is_buf_valid(context.bufnr)
                     and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
                 or nil
             if
-                type(current_bufpath) == "string"
-                and string.len(current_bufpath) > 0
+                type(current_bufpath) ~= "string"
+                or string.len(current_bufpath) == 0
             then
-                args = vim.deepcopy(default_unrestricted_rg)
-                table.insert(args, current_bufpath)
-            else
                 log.echo(
                     LogLevels.INFO,
                     "invalid buffer (%s).",
                     vim.inspect(context.bufnr)
                 )
                 return nil
+            else
+                table.insert(args, "-g")
+                table.insert(args, current_bufpath)
             end
         else
             args = vim.deepcopy(default_restricted_rg)
@@ -228,22 +229,23 @@ local function live_grep_provider(query, context, opts)
         if type(opts) == "table" and opts.unrestricted then
             args = vim.deepcopy(default_unrestricted_grep)
         elseif type(opts) == "table" and opts.buffer then
+            args = vim.deepcopy(default_unrestricted_grep)
             local current_bufpath = utils.is_buf_valid(context.bufnr)
                     and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
                 or nil
             if
-                type(current_bufpath) == "string"
-                and string.len(current_bufpath) > 0
+                type(current_bufpath) ~= "string"
+                or string.len(current_bufpath) == 0
             then
-                args = vim.deepcopy(default_unrestricted_grep)
-                table.insert(args, current_bufpath)
-            else
                 log.echo(
                     LogLevels.INFO,
                     "invalid buffer (%s).",
                     vim.inspect(context.bufnr)
                 )
                 return nil
+            else
+                table.insert(args, "--include")
+                table.insert(args, current_bufpath)
             end
         else
             args = vim.deepcopy(default_restricted_grep)
