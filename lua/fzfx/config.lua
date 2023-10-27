@@ -157,6 +157,7 @@ local default_restricted_rg = {
     "-n",
     "--no-heading",
     "--color=always",
+    "-H",
     "-S",
 }
 -- "rg --column -n --no-heading --color=always -S -uu"
@@ -166,6 +167,7 @@ local default_unrestricted_rg = {
     "-n",
     "--no-heading",
     "--color=always",
+    "-H",
     "-S",
     "-uu",
 }
@@ -218,9 +220,6 @@ local function live_grep_provider(query, context, opts)
                     vim.inspect(context.bufnr)
                 )
                 return nil
-            else
-                table.insert(args, "-g")
-                table.insert(args, current_bufpath)
             end
         else
             args = vim.deepcopy(default_restricted_rg)
@@ -243,9 +242,6 @@ local function live_grep_provider(query, context, opts)
                     vim.inspect(context.bufnr)
                 )
                 return nil
-            else
-                table.insert(args, "--include")
-                table.insert(args, current_bufpath)
             end
         else
             args = vim.deepcopy(default_restricted_grep)
@@ -262,8 +258,15 @@ local function live_grep_provider(query, context, opts)
             end
         end
     end
-    table.insert(args, "--")
-    table.insert(args, content)
+    if type(opts) == "table" and opts.buffer then
+        local current_bufpath =
+            path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+        table.insert(args, content)
+        table.insert(args, current_bufpath)
+    else
+        -- table.insert(args, "--")
+        table.insert(args, content)
+    end
     return args
 end
 
