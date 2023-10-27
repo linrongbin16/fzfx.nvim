@@ -226,6 +226,7 @@ end
 local M = {
     setup = setup,
     get_yank = get_yank,
+    save_yank = save_yank,
     Yank = Yank,
     YankHistory = YankHistory,
     _get_register_info = _get_register_info,
