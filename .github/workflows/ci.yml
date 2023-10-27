@@ -80,9 +80,7 @@ jobs:
           luarocks install vusted
           fzfurl=https://github.com/junegunn/fzf/releases/download/0.43.0/fzf-0.43.0-linux_amd64.tar.gz
           fzftemp=fzf.zip
-          curl -fLo "$fzftemp" $fzfurl && tar zxvf "$fzftemp"
-          echo "ls ."
-          ls -l .
+          curl -fLo "$fzftemp" $fzfurl && tar zxvf "$fzftemp" && rm "$fzftemp"
           export PATH="$PWD:$PATH"
           vusted --coverage --shuffle ./test
       - name: Generate coverage reports
