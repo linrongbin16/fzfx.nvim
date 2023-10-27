@@ -41,7 +41,7 @@ end
 --             and string.match(
 --                 require("fzfx.path").normalize(
 --                     p,
---                     { transform_backslash = true }
+--                     { backslash = true }
 --                 ),
 --                 plugin
 --             )

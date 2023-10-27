@@ -40,7 +40,7 @@ describe("actions", function()
             for i, line in ipairs(lines) do
                 local expect = string.format(
                     "edit %s",
-                    vim.fn.expand(path.normalize(line))
+                    path.normalize(line, { expand = true })
                 )
                 assert_eq(actual[i], expect)
             end
@@ -61,7 +61,10 @@ describe("actions", function()
                 local first_space_pos = utils.string_find(line, " ")
                 local expect = string.format(
                     "edit %s",
-                    vim.fn.expand(path.normalize(line:sub(first_space_pos + 1)))
+                    path.normalize(
+                        line:sub(first_space_pos + 1),
+                        { expand = true }
+                    )
                 )
                 assert_eq(actual[i], expect)
             end
@@ -136,7 +139,10 @@ describe("actions", function()
                 local first_space_pos = utils.string_find(line, " ")
                 local expect = string.format(
                     "edit %s",
-                    vim.fn.expand(path.normalize(line:sub(first_space_pos + 1)))
+                    path.normalize(
+                        line:sub(first_space_pos + 1),
+                        { expand = true }
+                    )
                 )
                 assert_eq(actual[i], expect)
             end
@@ -211,7 +217,10 @@ describe("actions", function()
                 local first_space_pos = utils.string_find(line, " ")
                 local expect = string.format(
                     "edit %s",
-                    vim.fn.expand(path.normalize(line:sub(first_space_pos + 1)))
+                    path.normalize(
+                        line:sub(first_space_pos + 1),
+                        { expand = true }
+                    )
                 )
                 assert_eq(actual[i], expect)
             end
