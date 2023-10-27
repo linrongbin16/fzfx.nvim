@@ -37,8 +37,6 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [Vimscript](#vimscript)
   - [Lua](#lua)
 - [Configuration](#-configuration)
-  - [Defaults](#defaults)
-  - [Commands Group](#commands-config)
   - [Create your own commands](#create-your-own-commands)
 - [Credit](#-credit)
 - [Development](#-development)
@@ -1027,8 +1025,6 @@ require('fzfx').setup(option)
 
 The `option` is an optional lua table that override the default options:
 
-#### Defaults
-
 ```lua
 local Defaults = {
   --- @type GroupConfig
@@ -1038,10 +1034,8 @@ local Defaults = {
   --- @type GroupConfig
   buffers = ...,
   --- @type GroupConfig
-  git_files = ...,
-  --- @type GroupConfig
-  git_branches = ...,
-  ... -- the other commands groups, please check [Commands Group](#commands-group)
+  lsp_diagnostics = ...,
+  ... -- the other commands groups, please check below.
 
   -- the 'Yank History' commands group (todo)
   yank_history = {
@@ -1184,8 +1178,6 @@ local Defaults = {
   },
 }
 ```
-
-#### Commands Group
 
 Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share the same schema.
 
