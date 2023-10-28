@@ -1185,14 +1185,16 @@ It consists of following components:
 
 1. `commands`: a user command, or more variants feed with different types of input queries, each command is binding with a provider.
 2. `providers`: one or more data sources, that provide lines for fzf binary (e.g., on the left side). A provider can be:
-   1. A plain shell command string, for example: `fd . -cnever -tf`.
-   2. A lua function that returns the shell command, for example: `rg --column -n --no-heading -H 'fzfx'` (here user's input `'fzfx'` is dynamically passing to the provider on every keystroke).
+   1. A plain shell command, e.g., `fd . -cnever -tf`.
+   2. A lua function that returns shell command, e.g., `rg --column -n --no-heading -H 'fzfx'` (here user's input `'fzfx'` is dynamically passing to the provider on every keystroke).
    3. A lua function that directly returns the lines for fzf binary. Some data sources are not from shell commands, for example buffers, lsp diagnostics, thus we need to directly generate the lines.
 4. `previewers`: one or more lua function that can generate the preview content for the fzf binary (e.g., on the right side). A previewer can be:
-   1. A lua function that
+   1. A lua function that returns shell command, e.g., `bat --color=always --highlight-line=17 lua/fzfx/config.lua`.
+   2. A lua function that directly returns the preview contents for fzf binary.
+   3. A nvim buffer that shows the preview content (todo).
 6. `actions`: allow user press key and exit fzf popup, and invoke callback function with selected lines.
 7. (Optional) `interactions`: allow user press key and invoke callback function on current line, without exiting fzf popup.
-8. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults.
+8. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults, or provide other abilities.
 
 ```lua
 {
