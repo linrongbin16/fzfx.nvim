@@ -1148,11 +1148,11 @@ local Defaults = {
   -- environment variables
   env = {
     -- by default use `vim.env.VIM` (e.g., `/usr/local/bin/nvim`) as the lua script interpreter,
-    -- but you can overwrite by set below option.
+    -- you can overwrite by set this option.
     nvim = nil,
 
     -- by default use `vim.fn['fzf#exec']` function as the fzf binary,
-    -- but you can overwrite by set below option.
+    -- you can overwrite by set this option.
     fzf = nil,
   },
 
