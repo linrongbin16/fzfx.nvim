@@ -78,11 +78,9 @@ jobs:
           luarocks install luacov
           luarocks install cluacov
           luarocks install vusted
-          fzfurl=https://github.com/junegunn/fzf/releases/download/0.43.0/fzf-0.43.0-linux_amd64.tar.gz
-          fzftemp=fzf.zip
-          curl -fLo "$fzftemp" $fzfurl && tar zxvf "$fzftemp" && rm "$fzftemp"
-          chmod +x fzf
-          export PATH="$PWD:$PATH"
+          git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+          ~/.fzf/install
+          export PATH="$HOME/.fzf/bin:$PATH"
           vusted --coverage --shuffle ./test
       - name: Generate coverage reports
         shell: bash
