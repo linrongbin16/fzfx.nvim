@@ -37,8 +37,6 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [Vimscript](#vimscript)
   - [Lua](#lua)
 - [Configuration](#-configuration)
-  - [Defaults](#defaults)
-  - [Commands Group](#commands-config)
   - [Create your own commands](#create-your-own-commands)
 - [Credit](#-credit)
 - [Development](#-development)
@@ -1027,8 +1025,6 @@ require('fzfx').setup(option)
 
 The `option` is an optional lua table that override the default options:
 
-#### Defaults
-
 ```lua
 local Defaults = {
   --- @type GroupConfig
@@ -1038,12 +1034,9 @@ local Defaults = {
   --- @type GroupConfig
   buffers = ...,
   --- @type GroupConfig
-  git_files = ...,
-  --- @type GroupConfig
-  git_branches = ...,
-  ... -- the other commands groups, please check [Commands Group](#commands-group)
+  lsp_diagnostics = ...,
+  ... -- the other commands groups, please check below.
 
-  -- the 'Yank History' commands group (todo)
   yank_history = {
     other_opts = {
       -- max size of saved yank history.
@@ -1052,11 +1045,12 @@ local Defaults = {
     },
   },
 
-  -- define your own commands group here.
+  -- define your own commands group here,
+  -- please check [Create your own command](#create-your-own-command).
   users = nil,
 
-  -- default fzf options for all all commands.
-  -- each commands group also has a 'fzf_opts' field that can overwrite below defaults.
+  -- fzf options for all commands.
+  -- each commands group also has a 'fzf_opts' field that can overwrite this.
   fzf_opts = {
     "--ansi",
     "--info=inline",
@@ -1071,7 +1065,7 @@ local Defaults = {
   },
 
   -- fzf colors extract from vim colorscheme's syntax to RGB color code (e.g., #728174),
-  -- then pass to fzf command in '--color' option.
+  -- and pass to fzf '--color' option.
   -- see: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
   fzf_color_opts = {
     fg = { "fg", "Normal" },
@@ -1090,8 +1084,8 @@ local Defaults = {
   },
 
   -- icons
-  -- check nerd fonts icons: https://www.nerdfonts.com/cheat-sheet
-  -- check unicode icons: https://symbl.cc/en/
+  -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
+  -- unicode: https://symbl.cc/en/
   icons = {
     unknown_file = "",
     folder = "",
@@ -1101,29 +1095,29 @@ local Defaults = {
     fzf_marker = "✓",
   },
 
-  -- default popup window options for all commands groups.
-  -- each commands group also has a 'win_opts' field that can overwrite below defaults.
+  -- popup window options for all commands.
+  -- each commands group also has a 'win_opts' field that can overwrite this.
   popup = {
     -- float window options pass to 'vim.api.nvim_open_win()' API.
     win_opts = {
+      -- by default popup window is in the centor of editor.
+      -- you can also place it relative to
+      -- 1. editor: whole vim.
+      -- 2. win: current window.
+      -- 3. cursor: cursor in current window.
+      relative = 'editor',
+
       -- height/width.
       --
       -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
-      --    e.g. popup height = h * lines, width = w * columns.
+      --    or window's height and width, e.g. popup height = h * lines, width = w * columns.
       --
       -- 2. if h/w > 1, evaluate as absolute height and width,
-      --    directly pass to vim.api.nvim_open_win.
+      --    directly pass to `vim.api.nvim_open_win` api.
       --
       height = 0.85,
       width = 0.85,
 
-      -- popup window anchor point, by default popup window is in the center of editor.
-      -- e.g. the option `relative="editor"`.
-      -- for now the `relative` options supports:
-      --  - editor
-      --  - win
-      --  - cursor
-      --
       -- when relative is 'editor' or 'win', the anchor is the center position,
       -- not default 'NW' (north west).
       -- because 'NW' is a little bit complicated for users to calculate the position,
@@ -1185,66 +1179,69 @@ local Defaults = {
 }
 ```
 
-#### Commands Group
+Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share a same schema:
 
-Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share the same schema.
+1. `commands`: a user command, or more variants feed with different types of input queries, each command is binding with a provider.
+2. `providers`: one or more data sources, that provide lines for fzf binary (e.g., on the left side). A provider can be:
+   1. A plain shell command, e.g., `fd . -cnever -tf`.
+   2. A lua function that returns shell command, e.g., `rg --column -n --no-heading -H 'fzfx'` (here user's input `'fzfx'` is dynamically passing to the provider on every keystroke).
+   3. A lua function that directly returns the lines for fzf binary. Some data sources are not from shell commands, for example buffers, lsp diagnostics, thus we need to directly generate the lines.
+4. `previewers`: one or more lua function that can generate the preview content for the fzf binary (e.g., on the right side). A previewer can be:
+   1. A lua function that returns shell command, e.g., `bat --color=always --highlight-line=17 lua/fzfx/config.lua`.
+   2. A lua function that directly returns the preview contents for fzf binary.
+   3. A nvim buffer that shows the preview content (todo).
+6. `actions`: allow user press key and exit fzf popup, and invoke callback function with selected lines.
+7. (Optional) `interactions`: allow user press key and invoke callback function on current line, without exiting fzf popup.
+8. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults, or provide other abilities.
 
-It consists of following components:
-
-1. `commands`: feed with different types of input arguments, binding with a provider.
-2. `providers`: provide data sources for fzf command (e.g., lines in the left side).
-3. `previewers`: preview content for the fzf command (e.g., content in the right side).
-4. `actions`: allow user press key and exit fzf popup, and invoke callback function with selected lines.
-5. (Optional) `interactions`: allow user press key and invoke callback function on current line, without exiting fzf popup.
-6. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults.
+For example a minimal (probably not working) group config that implement the `ls -1` like command `FzfxLs`:
 
 ```lua
 {
   --- @type CommandConfig[]
   commands = {
-    --- @type CommandConfig
     {
-      name = "FzfxFiles",
+      name = "FzfxLs",
       feed = "args",
       opts = {
         bang = true,
-        desc = "Find files",
+        desc = "ls -1",
       },
-      default_provider = "restricted_mode",
+      default_provider = "filter_hiddens",
     },
-    --- @type CommandConfig
     {
-      name = "FzfxFilesU",
+      name = "FzfxLsU",
       feed = "args",
       opts = {
         bang = true,
-        desc = "Find files unrestricted",
+        desc = "ls -1a",
       },
-      default_provider = "unrestricted_mode",
+      default_provider = "include_hiddens",
     },
   },
   --- @type table<string, ProviderConfig>
   providers = {
-    restricted_mode = {
-      key = "ctrl-r",
-      provider = { "fd", ".", "--color=never", "--type", "file" },
+    filter_hiddens = {
+      key = "ctrl-h",
+      provider = { "ls", "-1" },
     },
-    unrestricted_mode = {
+    include_hiddens = {
       key = "ctrl-u",
-      provider = { "fd", ".", "--color=never", "--type", "file", "-u" },
+      provider = { "ls", "-1a" },
     },
   },
   --- @type table<string, PreviewerConfig>
   previewers = {
-    restricted_mode = {
+    filter_hiddens = {
       previewer = function(line)
-        return { "bat", "--color=always", "--pager=never", "--", line }
+        -- each line is either a folder or a file
+        return vim.fn.isdirectory(line) ＞ 0 and { "ls", "-lha", line } or { "cat", line }
       end,
       previewer_type = "command_list",
     },
-    unrestricted_mode = {
+    include_hiddens = {
       previewer = function(line)
-        return { "bat", "--color=always", "--pager=never", "--", line }
+        return vim.fn.isdirectory(line) ＞ 0 and { "ls", "-lha", line } or { "cat", line }
       end,
       previewer_type = "command_list",
     },
@@ -1261,7 +1258,7 @@ It consists of following components:
   },
   fzf_opts = {
     "--multi",
-    { "--prompt", "Files > " },
+    { "--prompt", "Ls > " },
   },
 }
 ```
