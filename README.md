@@ -1194,53 +1194,55 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 7. (Optional) `interactions`: allow user press key and invoke callback function on current line, without exiting fzf popup.
 8. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults, or provide other abilities.
 
+For example a minimal (probably not working) group config that implement the `ls -1` like command `FzfxLs`:
+
 ```lua
 {
   --- @type CommandConfig[]
   commands = {
-    --- @type CommandConfig
     {
-      name = "FzfxFiles",
+      name = "FzfxLs",
       feed = "args",
       opts = {
         bang = true,
-        desc = "Find files",
+        desc = "ls -1",
       },
-      default_provider = "restricted_mode",
+      default_provider = "filter_hiddens",
     },
     --- @type CommandConfig
     {
-      name = "FzfxFilesU",
+      name = "FzfxLsU",
       feed = "args",
       opts = {
         bang = true,
-        desc = "Find files unrestricted",
+        desc = "ls -1a",
       },
-      default_provider = "unrestricted_mode",
+      default_provider = "include_hiddens",
     },
   },
   --- @type table<string, ProviderConfig>
   providers = {
-    restricted_mode = {
-      key = "ctrl-r",
-      provider = { "fd", ".", "--color=never", "--type", "file" },
+    filter_hiddens = {
+      key = "ctrl-h",
+      provider = { "ls", "-1" },
     },
-    unrestricted_mode = {
+    include_hiddens = {
       key = "ctrl-u",
-      provider = { "fd", ".", "--color=never", "--type", "file", "-u" },
+      provider = { "ls", "-1a" },
     },
   },
   --- @type table<string, PreviewerConfig>
   previewers = {
-    restricted_mode = {
+    filter_hiddens = {
       previewer = function(line)
-        return { "bat", "--color=always", "--pager=never", "--", line }
+        -- each line is either a folder or a file
+        return vim.fn.isdirectory(line) ＞ 0 and { "ls", "-lha", line } or { "cat", line }
       end,
       previewer_type = "command_list",
     },
-    unrestricted_mode = {
+    include_hiddens = {
       previewer = function(line)
-        return { "bat", "--color=always", "--pager=never", "--", line }
+        return vim.fn.isdirectory(line) ＞ 0 and { "ls", "-lha", line } or { "cat", line }
       end,
       previewer_type = "command_list",
     },
@@ -1257,7 +1259,7 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
   },
   fzf_opts = {
     "--multi",
-    { "--prompt", "Files > " },
+    { "--prompt", "Ls > " },
   },
 }
 ```
