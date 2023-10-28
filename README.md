@@ -1205,70 +1205,76 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 For example a minimal commands group that implement a `ls -1` like command `FzfxLs`:
 
 ```lua
-{
-  --- @type CommandConfig[]
-  commands = {
-    {
-      name = "FzfxLs",
-      feed = "args",
-      opts = {
-        bang = true,
-        desc = "ls -1",
+require("fzfx").setup({
+  users = {
+    ls = {
+      --- @type CommandConfig[]
+      commands = {
+        {
+          name = "FzfxLs",
+          feed = "args",
+          opts = {
+            bang = true,
+            desc = "ls -1",
+          },
+          default_provider = "filter_hiddens",
+        },
+        {
+          name = "FzfxLsU",
+          feed = "args",
+          opts = {
+            bang = true,
+            desc = "ls -1a",
+          },
+          default_provider = "include_hiddens",
+        },
       },
-      default_provider = "filter_hiddens",
-    },
-    {
-      name = "FzfxLsU",
-      feed = "args",
-      opts = {
-        bang = true,
-        desc = "ls -1a",
+      --- @type table<string, ProviderConfig>
+      providers = {
+        filter_hiddens = {
+          key = "ctrl-h",
+          provider = { "ls", "-1" },
+        },
+        include_hiddens = {
+          key = "ctrl-u",
+          provider = { "ls", "-1a" },
+        },
       },
-      default_provider = "include_hiddens",
+      --- @type table<string, PreviewerConfig>
+      previewers = {
+        filter_hiddens = {
+          previewer = function(line)
+            -- each line is either a folder or a file
+            return vim.fn.isdirectory(line) > 0 and { "ls", "-lha", line }
+              or { "cat", line }
+          end,
+          previewer_type = "command_list",
+        },
+        include_hiddens = {
+          previewer = function(line)
+            return vim.fn.isdirectory(line) > 0 and { "ls", "-lha", line }
+              or { "cat", line }
+          end,
+          previewer_type = "command_list",
+        },
+      },
+      actions = {
+        ["esc"] = function(lines)
+          -- do nothing
+        end,
+        ["enter"] = function(lines)
+          for _, line in ipairs(lines) do
+            vim.cmd(string.format([[edit %s]], line))
+          end
+        end,
+      },
+      fzf_opts = {
+        "--multi",
+        { "--prompt", "Ls > " },
+      },
     },
   },
-  --- @type table<string, ProviderConfig>
-  providers = {
-    filter_hiddens = {
-      key = "ctrl-h",
-      provider = { "ls", "-1" },
-    },
-    include_hiddens = {
-      key = "ctrl-u",
-      provider = { "ls", "-1a" },
-    },
-  },
-  --- @type table<string, PreviewerConfig>
-  previewers = {
-    filter_hiddens = {
-      previewer = function(line)
-        -- each line is either a folder or a file
-        return vim.fn.isdirectory(line) ＞ 0 and { "ls", "-lha", line } or { "cat", line }
-      end,
-      previewer_type = "command_list",
-    },
-    include_hiddens = {
-      previewer = function(line)
-        return vim.fn.isdirectory(line) ＞ 0 and { "ls", "-lha", line } or { "cat", line }
-      end,
-      previewer_type = "command_list",
-    },
-  },
-  actions = {
-    ["esc"] = function(lines)
-      -- do nothing
-    end,
-    ["enter"] = function(lines)
-      for _, line in ipairs(lines) do
-        vim.cmd(string.format([[edit %s]], line))
-      end
-    end,
-  },
-  fzf_opts = {
-    "--multi",
-    { "--prompt", "Ls > " },
-  },
-}
+})
 ```
 
 For complete options and defaults, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
