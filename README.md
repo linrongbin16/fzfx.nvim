@@ -1277,6 +1277,8 @@ require("fzfx").setup({
 })
 ```
 
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/28acefc0-e757-4296-a013-c253283d05f1
+
 You can also use the `require("fzfx").register({...})` api to do that.
 
 For complete options and defaults, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
