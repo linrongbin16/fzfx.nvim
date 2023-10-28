@@ -1037,7 +1037,6 @@ local Defaults = {
   lsp_diagnostics = ...,
   ... -- the other commands groups, please check below.
 
-  -- the 'Yank History' commands group (todo)
   yank_history = {
     other_opts = {
       -- max size of saved yank history.
@@ -1050,8 +1049,8 @@ local Defaults = {
   -- please check [Create your own command](#create-your-own-command).
   users = nil,
 
-  -- default fzf options for all all commands.
-  -- each commands group also has a 'fzf_opts' field that can overwrite below defaults.
+  -- fzf options for all commands.
+  -- each commands group also has a 'fzf_opts' field that can overwrite this.
   fzf_opts = {
     "--ansi",
     "--info=inline",
@@ -1066,7 +1065,7 @@ local Defaults = {
   },
 
   -- fzf colors extract from vim colorscheme's syntax to RGB color code (e.g., #728174),
-  -- then pass to fzf command in '--color' option.
+  -- pass to fzf '--color' option.
   -- see: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
   fzf_color_opts = {
     fg = { "fg", "Normal" },
@@ -1085,8 +1084,8 @@ local Defaults = {
   },
 
   -- icons
-  -- check nerd fonts icons: https://www.nerdfonts.com/cheat-sheet
-  -- check unicode icons: https://symbl.cc/en/
+  -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
+  -- unicode: https://symbl.cc/en/
   icons = {
     unknown_file = "",
     folder = "",
@@ -1096,18 +1095,18 @@ local Defaults = {
     fzf_marker = "✓",
   },
 
-  -- default popup window options for all commands groups.
-  -- each commands group also has a 'win_opts' field that can overwrite below defaults.
+  -- popup window options for all commands.
+  -- each commands group also has a 'win_opts' field that can overwrite this.
   popup = {
     -- float window options pass to 'vim.api.nvim_open_win()' API.
     win_opts = {
       -- height/width.
       --
       -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
-      --    e.g. popup height = h * lines, width = w * columns.
+      --    or window's height and width, e.g. popup height = h * lines, width = w * columns.
       --
       -- 2. if h/w > 1, evaluate as absolute height and width,
-      --    directly pass to vim.api.nvim_open_win.
+      --    directly pass to `vim.api.nvim_open_win` api.
       --
       height = 0.85,
       width = 0.85,
