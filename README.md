@@ -1100,7 +1100,8 @@ local Defaults = {
   popup = {
     -- float window options pass to 'vim.api.nvim_open_win()' API.
     win_opts = {
-      -- popup window can be placed relative to
+      -- by default popup window is in the centor of editor.
+      -- you can also place it relative to
       -- 1. editor: whole vim.
       -- 2. win: current window.
       -- 3. cursor: cursor in current window.
@@ -1117,13 +1118,6 @@ local Defaults = {
       height = 0.85,
       width = 0.85,
 
-      -- popup window anchor point, by default popup window is in the center of editor.
-      -- e.g. the option `relative="editor"`.
-      -- for now the `relative` options supports:
-      --  - editor
-      --  - win
-      --  - cursor
-      --
       -- when relative is 'editor' or 'win', the anchor is the center position,
       -- not default 'NW' (north west).
       -- because 'NW' is a little bit complicated for users to calculate the position,
