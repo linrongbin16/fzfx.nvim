@@ -7,6 +7,7 @@ describe("config", function()
 
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
+        require("fzfx.config").setup()
     end)
 
     local conf = require("fzfx.config")
@@ -55,6 +56,20 @@ describe("config", function()
             )
             assert_eq(type(actual), "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
+        end)
+    end)
+    describe("[default_fzf_options]", function()
+        it("is constants", function()
+            assert_eq(conf.default_fzf_options.multi, "--multi")
+            assert_eq(conf.default_fzf_options.toggle, "--bind=ctrl-e:toggle")
+            assert_eq(
+                conf.default_fzf_options.toggle_all,
+                "--bind=ctrl-a:toggle-all"
+            )
+            assert_eq(
+                conf.default_fzf_options.toggle_preview,
+                "--bind=alt-p:toggle-preview"
+            )
         end)
     end)
 end)

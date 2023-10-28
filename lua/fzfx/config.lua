@@ -3953,6 +3953,7 @@ local M = {
     setup = setup,
     get_config = get_config,
     get_defaults = get_defaults,
+    default_fzf_options = default_fzf_options,
 }
 
 return M
