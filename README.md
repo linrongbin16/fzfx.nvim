@@ -1209,7 +1209,6 @@ For example a minimal (probably not working) group config that implement the `ls
       },
       default_provider = "filter_hiddens",
     },
-    --- @type CommandConfig
     {
       name = "FzfxLsU",
       feed = "args",
