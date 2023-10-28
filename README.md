@@ -1100,6 +1100,12 @@ local Defaults = {
   popup = {
     -- float window options pass to 'vim.api.nvim_open_win()' API.
     win_opts = {
+      -- popup window can be placed relative to
+      -- 1. editor: whole vim.
+      -- 2. win: current window.
+      -- 3. cursor: cursor in current window.
+      relative = 'editor',
+
       -- height/width.
       --
       -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
