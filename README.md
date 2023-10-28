@@ -1285,7 +1285,7 @@ For advanced configurations, please check [Advanced Configuration](https://githu
 
 To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
-If you have encounter some breaks on configuration, please see [CHANGELOG](https://github.com/linrongbin16/fzfx.nvim/blob/main/CHANGELOG.md).
+If you have encounter some breaks on configuration, please see [CHANGELOG.md](https://github.com/linrongbin16/fzfx.nvim/blob/main/CHANGELOG.md).
 
 ## 🍀 Credit
 
