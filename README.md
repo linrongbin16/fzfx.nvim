@@ -1179,9 +1179,7 @@ local Defaults = {
 }
 ```
 
-Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share the same schema.
-
-It consists of following components:
+Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share a same schema:
 
 1. `commands`: a user command, or more variants feed with different types of input queries, each command is binding with a provider.
 2. `providers`: one or more data sources, that provide lines for fzf binary (e.g., on the left side). A provider can be:
