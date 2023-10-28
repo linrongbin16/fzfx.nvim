@@ -37,7 +37,9 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
   - [Vimscript](#vimscript)
   - [Lua](#lua)
 - [Configuration](#-configuration)
-  - [Create your own commands](#create-your-own-commands)
+  - [Defaults](#defaults)
+  - [Commands Group](#commands-group)
+  - [The `ls -1` Example](#the-ls--1-example)
 - [Credit](#-credit)
 - [Development](#-development)
 - [Contribute](#-contribute)
@@ -1023,7 +1025,9 @@ To configure options, please use:
 require('fzfx').setup(option)
 ```
 
-The `option` is an optional lua table that override the default options:
+The `option` is an optional lua table that override the default options.
+
+### Defaults
 
 ```lua
 local Defaults = {
@@ -1035,7 +1039,7 @@ local Defaults = {
   buffers = ...,
   --- @type GroupConfig
   lsp_diagnostics = ...,
-  ... -- the other commands groups, please check below.
+  ... -- the other commands groups, please see [Commands Group](#commands-group).
 
   yank_history = {
     other_opts = {
@@ -1179,99 +1183,109 @@ local Defaults = {
 }
 ```
 
-Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share a same schema:
+### Commands Group
+
+Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share the same schema:
 
 1. `commands`: a user command, or more variants feed with different types of input queries, each command is binding with a provider.
 2. `providers`: one or more data sources, that provide lines for fzf binary (e.g., on the left side). A provider can be:
    1. A plain shell command, e.g., `fd . -cnever -tf`.
    2. A lua function that returns shell command, e.g., `rg --column -n --no-heading -H 'fzfx'` (here user's input `'fzfx'` is dynamically passing to the provider on every keystroke).
    3. A lua function that directly returns the lines for fzf binary. Some data sources are not from shell commands, for example buffers, lsp diagnostics, thus we need to directly generate the lines.
-4. `previewers`: one or more lua function that can generate the preview content for the fzf binary (e.g., on the right side). A previewer can be:
+3. `previewers`: one or more lua function that can generate the preview content for the fzf binary (e.g., on the right side). A previewer can be:
    1. A lua function that returns shell command, e.g., `bat --color=always --highlight-line=17 lua/fzfx/config.lua`.
    2. A lua function that directly returns the preview contents for fzf binary.
    3. A nvim buffer that shows the preview content (todo).
-6. `actions`: allow user press key and exit fzf popup, and invoke callback function with selected lines.
-7. (Optional) `interactions`: allow user press key and invoke callback function on current line, without exiting fzf popup.
-8. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults, or provide other abilities.
+4. `actions`: allow user press key and exit fzf popup, and invoke callback function with selected lines.
+5. (Optional) `interactions`: allow user press key and invoke callback function on current line, without exiting fzf popup.
+6. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults, or provide other abilities.
 
-For example a minimal (probably not working) group config that implement the `ls -1` like command `FzfxLs`:
+### The `ls -1` Example
+
+Here's a minimal commands group example that implement the `ls -1` like `FzfxLs`:
 
 ```lua
-{
-  --- @type CommandConfig[]
-  commands = {
-    {
-      name = "FzfxLs",
-      feed = "args",
-      opts = {
-        bang = true,
-        desc = "ls -1",
+require("fzfx").setup({
+  users = {
+    ls = {
+      --- @type CommandConfig[]
+      commands = {
+        {
+          name = "FzfxLs",
+          feed = "args",
+          opts = {
+            bang = true,
+            desc = "ls -1",
+          },
+          default_provider = "filter_hiddens",
+        },
+        {
+          name = "FzfxLsU",
+          feed = "args",
+          opts = {
+            bang = true,
+            desc = "ls -1a",
+          },
+          default_provider = "include_hiddens",
+        },
       },
-      default_provider = "filter_hiddens",
-    },
-    {
-      name = "FzfxLsU",
-      feed = "args",
-      opts = {
-        bang = true,
-        desc = "ls -1a",
+      --- @type table<string, ProviderConfig>
+      providers = {
+        filter_hiddens = {
+          key = "ctrl-h",
+          provider = { "ls", "-1" },
+        },
+        include_hiddens = {
+          key = "ctrl-u",
+          provider = { "ls", "-1a" },
+        },
       },
-      default_provider = "include_hiddens",
+      --- @type table<string, PreviewerConfig>
+      previewers = {
+        filter_hiddens = {
+          previewer = function(line)
+            -- each line is either a folder or a file
+            return vim.fn.isdirectory(line) > 0 and { "ls", "-lha", line }
+              or { "cat", line }
+          end,
+          previewer_type = "command_list",
+        },
+        include_hiddens = {
+          previewer = function(line)
+            return vim.fn.isdirectory(line) > 0 and { "ls", "-lha", line }
+              or { "cat", line }
+          end,
+          previewer_type = "command_list",
+        },
+      },
+      actions = {
+        ["esc"] = function(lines)
+          -- do nothing
+        end,
+        ["enter"] = function(lines)
+          for _, line in ipairs(lines) do
+            vim.cmd(string.format([[edit %s]], line))
+          end
+        end,
+      },
+      fzf_opts = {
+        "--multi",
+        { "--prompt", "Ls > " },
+      },
     },
   },
-  --- @type table<string, ProviderConfig>
-  providers = {
-    filter_hiddens = {
-      key = "ctrl-h",
-      provider = { "ls", "-1" },
-    },
-    include_hiddens = {
-      key = "ctrl-u",
-      provider = { "ls", "-1a" },
-    },
-  },
-  --- @type table<string, PreviewerConfig>
-  previewers = {
-    filter_hiddens = {
-      previewer = function(line)
-        -- each line is either a folder or a file
-        return vim.fn.isdirectory(line) ＞ 0 and { "ls", "-lha", line } or { "cat", line }
-      end,
-      previewer_type = "command_list",
-    },
-    include_hiddens = {
-      previewer = function(line)
-        return vim.fn.isdirectory(line) ＞ 0 and { "ls", "-lha", line } or { "cat", line }
-      end,
-      previewer_type = "command_list",
-    },
-  },
-  actions = {
-    ["esc"] = function(lines)
-      -- do nothing
-    end,
-    ["enter"] = function(lines)
-      for _, line in ipairs(lines) do
-        vim.cmd(string.format([[edit %s]], line))
-      end
-    end,
-  },
-  fzf_opts = {
-    "--multi",
-    { "--prompt", "Ls > " },
-  },
-}
+})
 ```
+
+You can also use the `require("fzfx").register({...})` api to do that.
 
 For complete options and defaults, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
-If you have encounter some breaks on configuration, please see [CHANGELOG](https://github.com/linrongbin16/fzfx.nvim/blob/main/CHANGELOG.md).
-
-### Create your own commands
-
 To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
+
+If you have encounter some breaks on configuration, please see [CHANGELOG.md](https://github.com/linrongbin16/fzfx.nvim/blob/main/CHANGELOG.md).
 
 ## 🍀 Credit
 
