@@ -1065,7 +1065,7 @@ local Defaults = {
   },
 
   -- fzf colors extract from vim colorscheme's syntax to RGB color code (e.g., #728174),
-  -- pass to fzf '--color' option.
+  -- and pass to fzf '--color' option.
   -- see: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
   fzf_color_opts = {
     fg = { "fg", "Normal" },
