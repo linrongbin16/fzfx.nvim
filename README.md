@@ -1202,7 +1202,7 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 
 ### The `ls -1` Example
 
-Here's a minimal commands group example that implement the `ls -1` like `FzfxLs`:
+Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
 
 ```lua
 require("fzfx").setup({
