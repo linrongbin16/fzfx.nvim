@@ -146,7 +146,10 @@ describe("config", function()
                 )
             )
             assert_eq(actual["next"].name, "next")
-            assert_true(vim.fn.filereadable(actual["next"].loc.filename) > 0)
+            assert_true(
+                vim.fn.filereadable(vim.fn.expand(actual["next"].loc.filename))
+                    > 0
+            )
             assert_true(tonumber(actual["next"].loc.lineno) > 0)
             assert_eq(type(actual["bnext"]), "table")
             print(
@@ -156,7 +159,10 @@ describe("config", function()
                 )
             )
             assert_eq(actual["bnext"].name, "bnext")
-            assert_true(vim.fn.filereadable(actual["bnext"].loc.filename) > 0)
+            assert_true(
+                vim.fn.filereadable(vim.fn.expand(actual["bnext"].loc.filename))
+                    > 0
+            )
             assert_true(tonumber(actual["bnext"].loc.lineno) > 0)
         end)
         it("is ex command output header", function()
