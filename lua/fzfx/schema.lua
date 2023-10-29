@@ -105,50 +105,33 @@ local CommandFeedEnum = {
 --
 -- An action is user press a key and we do something.
 -- We have 2 types of actions:
---  * Interaction: interactively execute something without exit fzf.
---  * Action: exit fzf and do something in callback.
+--  * Interaction: interactively do something on current line without exit fzf.
+--  * Action: exit fzf and invoke lua callback with selected lines.
 --
 --- @alias ActionKey string
---- @alias ActionHelp string
---
 --- @alias Interaction fun(line:string?,context:PipelineContext):any
 --- @alias Action fun(line:string[]|nil,context:PipelineContext):any
 
 -- ========== Pipeline ==========
 --
--- A pipeline tries to match a provider with a previewer, with a interactive action key to switch the data sources, and the help message.
--- (Note: when you only have 1 provider, the interactive key and help message can be ommitted).
+-- A pipeline binds a provider with a previewer, with a interactive action to switch the data sources, and the help message.
+-- (Note: when you only have 1 provider, the interaction key and help message can be ommitted).
+-- The provider-interaction-previewer is a pipeline/dataflow.
 --
--- So we say the provider-interaction-previewer is a pipeline (data flow).
---
---- @alias PipelineName string
---
---- @class Pipeline
---- @field name PipelineName
---- @field provider Provider
---- @field provider_type ProviderType
---- @field previewer Previewer
---- @field previewer_type PreviewerType
---- @field switch ActionKey?
---- @field help ActionHelp?
+-- See below `GroupConfig`.
 
--- ========== Schema ==========
+-- ========== Commands Group ==========
 --
--- Finally a schema defines the modern fzf command we are using, e.g. `FzfxLiveGrep`, `FzfxFiles`, etc.
--- The fzf command we try to define should be quite powerful:
+-- Finally a commands group defines the real-world command we are using, e.g. `FzfxLiveGrep`, `FzfxFiles`, etc.
+-- The command is powerful:
 --
---  * We can have multiple data sources from different providers, switch by different interactive actions.
---  * We can have multiple previewers, each bind to one provider.
---  * We can have multiple interactive keys to do something without exiting fzf.
---  * We can have multiple expect keys to exit fzf and run the callbacks.
---  * We can have extra fzf options.
+--  - It has multiple data sources from different providers, switch by different interactive keys.
+--  - It has multiple previewers, bind to a specific provider.
+--  - It has multiple action keys to exit fzf and invoke lua callbacks with selected lines.
+--  - (Optionally) It has multiple interactive keys to do something without exiting fzf.
+--  - (Optionally) It has some extra fzf options and other options for some specific abilities.
 --
---- @class Schema
---- @field name string
---- @field pipelines table<PipelineName, Pipeline>
---- @field interactions table<ActionKey, Interaction>
---- @field interaction_helps table<ActionKey, Interaction>
---- @field actions table<ActionKey, Action>
+-- See below `GroupConfig`.
 
 -- ========== Config ==========
 --
@@ -169,6 +152,7 @@ local CommandFeedEnum = {
 --- @field previewer Previewer
 --- @field previewer_type PreviewerType?
 
+--- @alias PipelineName string a pipeline name is a provider name, a previewer name
 --- @class CommandConfig
 --- @field name string
 --- @field feed CommandFeed
