@@ -356,9 +356,9 @@ end
 --- @param line string
 --- @param start_pos integer
 --- @return {filename:string,lineno:integer}?
-local function parse_ex_command_output_lua_function_definition(line, start_pos)
+local function _parse_ex_command_output_lua_function_definition(line, start_pos)
     log.debug(
-        "|fzfx.config - parse_ex_command_output_lua_function_definition| line:%s, start_pos:%s",
+        "|fzfx.config - _parse_ex_command_output_lua_function_definition| line:%s, start_pos:%s",
         vim.inspect(line),
         vim.inspect(start_pos)
     )
@@ -384,12 +384,12 @@ local function parse_ex_command_output_lua_function_definition(line, start_pos)
         content = content:sub(1, #content - 1)
     end
     log.debug(
-        "|fzfx.config - parse_ex_command_output_lua_function_definition| content-2:%s",
+        "|fzfx.config - _parse_ex_command_output_lua_function_definition| content-2:%s",
         vim.inspect(content)
     )
     local content_splits = utils.string_split(content, ":")
     log.debug(
-        "|fzfx.config - parse_ex_command_output_lua_function_definition| split content:%s",
+        "|fzfx.config - _parse_ex_command_output_lua_function_definition| split content:%s",
         vim.inspect(content_splits)
     )
     return {
@@ -502,7 +502,7 @@ local function parse_ex_command_output()
 
             idx = math.max(parsed_header.definition_pos, idx)
             local parsed_line =
-                parse_ex_command_output_lua_function_definition(line, idx)
+                _parse_ex_command_output_lua_function_definition(line, idx)
             if parsed_line then
                 results[name] = {
                     filename = parsed_line.filename,
@@ -3964,6 +3964,7 @@ local M = {
     _get_vim_ex_commands = _get_vim_ex_commands,
     _is_ex_command_output_header = _is_ex_command_output_header,
     _parse_ex_command_output_header = _parse_ex_command_output_header,
+    _parse_ex_command_output_lua_function_definition = _parse_ex_command_output_lua_function_definition,
 }
 
 return M

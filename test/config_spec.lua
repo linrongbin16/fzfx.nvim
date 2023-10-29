@@ -182,5 +182,49 @@ describe("config", function()
                 utils.string_find(line, "Definition")
             )
         end)
+        it("_parse_ex_command_output_lua_function_definition", function()
+            local header =
+                "Name              Args Address Complete    Definition"
+            local success_lines = {
+                "    Barbecue          ?            <Lua function> <Lua 437: ~/.config/nvim/lazy/barbecue/lua/barbecue.lua:18>",
+                "    BufferLineCloseLeft 0                      <Lua 329: ~/.config/nvim/lazy/bufferline.nvim/lua/bufferline.lua:226>",
+                "    BufferLineCloseRight 0                     <Lua 328: ~/.config/nvim/lazy/bufferline.nvim/lua/bufferline.lua:225>",
+                "!   FzfxBuffers       ?            file        <Lua 744: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>",
+                "!   FzfxBuffersP      0                        <Lua 742: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>",
+                "!   FzfxBuffersV      0    .                   <Lua 358: ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:913>",
+            }
+            local failed_lines = {
+                "                                               Run subcommands through this general command",
+                '!   Bdelete           ?            buffer      :call s:bdelete("bdelete", <q-bang>, <q-args>)',
+                '!   Bwipeout          ?            buffer      :call s:bdelete("bwipeout", <q-bang>, <q-args>)',
+                "    DoMatchParen      0                        call matchup#matchparen#toggle(1)",
+                "!|  Explore           *    0c ?    dir         call netrw#Explore(<count>,0,0+<bang>0,<q-args>)",
+                "!   FZF               *            dir         call s:cmd(<bang>0, <f-args>)",
+                "                                               Find buffers",
+                "                                               Find buffers by yank text",
+            }
+            local def_pos = utils.string_find(header, "Definition")
+            for _, line in ipairs(success_lines) do
+                local actual =
+                    conf._parse_ex_command_output_lua_function_definition(
+                        line,
+                        def_pos
+                    )
+                assert_eq(type(actual), "table")
+                assert_true(string.len(actual.filename) > 0)
+                assert_true(
+                    vim.fn.filereadable(vim.fn.expand(actual.filename)) > 0
+                )
+                assert_true(tonumber(actual.lineno) > 0)
+            end
+            for _, line in ipairs(failed_lines) do
+                local actual =
+                    conf._parse_ex_command_output_lua_function_definition(
+                        line,
+                        def_pos
+                    )
+                assert_true(actual == nil)
+            end
+        end)
     end)
 end)
