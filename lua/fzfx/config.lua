@@ -401,7 +401,7 @@ end
 --- @alias VimExCommandOutputHeader {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
 --- @param header string
 --- @return VimExCommandOutputHeader
-local function parse_ex_command_output_header(header)
+local function _parse_ex_command_output_header(header)
     local name_pos = utils.string_find(header, "Name")
     local args_pos = utils.string_find(header, "Args")
     local address_pos = utils.string_find(header, "Address")
@@ -513,7 +513,7 @@ local function parse_ex_command_output()
 
         if _is_ex_command_output_header(line) then
             found_command_output_header = true
-            parsed_header = parse_ex_command_output_header(line)
+            parsed_header = _parse_ex_command_output_header(line)
             log.debug(
                 "|fzfx.config - parse_ex_command_output| parsed header:%s",
                 vim.inspect(parsed_header)
@@ -3963,6 +3963,7 @@ local M = {
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,
     _get_vim_ex_commands = _get_vim_ex_commands,
     _is_ex_command_output_header = _is_ex_command_output_header,
+    _parse_ex_command_output_header = _parse_ex_command_output_header,
 }
 
 return M

@@ -12,6 +12,7 @@ describe("config", function()
 
     local conf = require("fzfx.config")
     local fzf_helpers = require("fzfx.fzf_helpers")
+    local utils = require("fzfx.utils")
     describe("[setup]", function()
         it("setup with default configs", function()
             conf.setup()
@@ -159,12 +160,21 @@ describe("config", function()
             assert_true(tonumber(actual["bnext"].loc.lineno) > 0)
         end)
         it("is ex command output header", function()
+            local line = "Name              Args Address Complete    Definition"
             local actual1 = conf._is_ex_command_output_header("asdf")
-            local actual2 = conf._is_ex_command_output_header(
-                "Name              Args Address Complete    Definition"
-            )
+            local actual2 = conf._is_ex_command_output_header(line)
             assert_false(actual1)
             assert_true(actual2)
+            local actual3 = conf._parse_ex_command_output_header(line)
+            assert_eq(type(actual3), "table")
+            assert_eq(actual3.name_pos, 1)
+            assert_eq(actual3.args_pos, utils.string_find(line, "Args"))
+            assert_eq(actual3.address_pos, utils.string_find(line, "Address"))
+            assert_eq(actual3.complete_pos, utils.string_find(line, "Complete"))
+            assert_eq(
+                actual3.definition_pos,
+                utils.string_find(line, "Definition")
+            )
         end)
     end)
 end)
