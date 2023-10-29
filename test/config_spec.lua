@@ -61,6 +61,7 @@ describe("config", function()
     describe("[_default_fzf_options]", function()
         it("is constants", function()
             assert_eq(conf._default_fzf_options.multi, "--multi")
+            assert_eq(conf._default_fzf_options.no_multi, "--no-multi")
             assert_eq(conf._default_fzf_options.toggle, "--bind=ctrl-e:toggle")
             assert_eq(
                 conf._default_fzf_options.toggle_all,
@@ -69,6 +70,20 @@ describe("config", function()
             assert_eq(
                 conf._default_fzf_options.toggle_preview,
                 "--bind=alt-p:toggle-preview"
+            )
+            assert_eq(
+                conf._default_fzf_options.preview_half_page_up,
+                "--bind=ctrl-b:preview-half-page-up"
+            )
+            assert_eq(
+                conf._default_fzf_options.preview_half_page_down,
+                "--bind=ctrl-f:preview-half-page-down"
+            )
+            assert_true(
+                vim.deep_equal(
+                    conf._default_fzf_options.lsp_preview_window,
+                    { "--preview-window", "left,65%,+{2}-/2" }
+                )
             )
         end)
     end)
