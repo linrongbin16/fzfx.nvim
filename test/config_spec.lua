@@ -108,11 +108,11 @@ describe("config", function()
         end)
         it("buffer", function()
             vim.cmd([[edit README.md]])
-            local actual = conf._live_grep_provider(
-                "hello",
-                { bufnr = 0 },
-                { buffer = true }
-            )
+            local actual = conf._live_grep_provider("hello", {
+                bufnr = vim.api.nvim_get_current_buf(),
+                winnr = vim.api.nvim_get_current_win(),
+                tabnr = vim.api.nvim_get_current_tabpage(),
+            }, { buffer = true })
             print(string.format("live grep provider:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
             assert_true(
