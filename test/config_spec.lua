@@ -85,4 +85,39 @@ describe("config", function()
             assert_true(actual[1] == "bat" or actual[1] == "cat")
         end)
     end)
+    describe("[_live_grep_provider]", function()
+        it("restricted", function()
+            local actual = conf._live_grep_provider("hello", {}, nil)
+            print(string.format("live grep provider:%s\n", vim.inspect(actual)))
+            assert_eq(type(actual), "table")
+            assert_true(
+                actual[1] == "rg" or actual[1] == "grep" or actual[1] == "ggrep"
+            )
+        end)
+        it("unrestricted", function()
+            local actual = conf._live_grep_provider(
+                "hello",
+                {},
+                { unrestricted = true }
+            )
+            print(string.format("live grep provider:%s\n", vim.inspect(actual)))
+            assert_eq(type(actual), "table")
+            assert_true(
+                actual[1] == "rg" or actual[1] == "grep" or actual[1] == "ggrep"
+            )
+        end)
+        it("buffer", function()
+            vim.cmd([[edit README.md]])
+            local actual = conf._live_grep_provider(
+                "hello",
+                { bufnr = 0 },
+                { buffer = true }
+            )
+            print(string.format("live grep provider:%s\n", vim.inspect(actual)))
+            assert_eq(type(actual), "table")
+            assert_true(
+                actual[1] == "rg" or actual[1] == "grep" or actual[1] == "ggrep"
+            )
+        end)
+    end)
 end)

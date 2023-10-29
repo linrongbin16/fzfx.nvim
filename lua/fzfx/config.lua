@@ -196,7 +196,7 @@ local default_unrestricted_grep = {
 --- @param context PipelineContext
 --- @param opts {unrestricted:boolean?,buffer:boolean?}
 --- @return string[]|nil
-local function live_grep_provider(query, context, opts)
+local function _live_grep_provider(query, context, opts)
     local parsed_query = utils.parse_flag_query(query or "")
     local content = parsed_query[1]
     local option = parsed_query[2]
@@ -2009,7 +2009,7 @@ local Defaults = {
             restricted_mode = {
                 key = "ctrl-r",
                 provider = function(query, context)
-                    return live_grep_provider(query, context, {})
+                    return _live_grep_provider(query, context, {})
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
@@ -2021,7 +2021,7 @@ local Defaults = {
             unrestricted_mode = {
                 key = "ctrl-u",
                 provider = function(query, context)
-                    return live_grep_provider(
+                    return _live_grep_provider(
                         query,
                         context,
                         { unrestricted = true }
@@ -2037,7 +2037,11 @@ local Defaults = {
             buffer_mode = {
                 key = "ctrl-o",
                 provider = function(query, context)
-                    return live_grep_provider(query, context, { buffer = true })
+                    return _live_grep_provider(
+                        query,
+                        context,
+                        { buffer = true }
+                    )
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
@@ -3955,6 +3959,7 @@ local M = {
     get_defaults = get_defaults,
     _default_bat_style_theme = _default_bat_style_theme,
     _make_file_previewer = _make_file_previewer,
+    _live_grep_provider = _live_grep_provider,
 }
 
 return M
