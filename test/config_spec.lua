@@ -134,4 +134,29 @@ describe("config", function()
             end
         end)
     end)
+    describe("[_get_vim_ex_commands]", function()
+        it("get ex commands", function()
+            local actual = conf._get_vim_ex_commands()
+            assert_eq(type(actual["next"]), "table")
+            print(
+                string.format(
+                    "ex command 'next':%s\n",
+                    vim.inspect(actual["next"])
+                )
+            )
+            assert_eq(actual["next"].name, "next")
+            assert_true(vim.fn.filereadable(actual["next"].loc.filename) > 0)
+            assert_true(tonumber(actual["next"].loc.lineno) > 0)
+            assert_eq(type(actual["bnext"]), "table")
+            print(
+                string.format(
+                    "ex command 'bnext':%s\n",
+                    vim.inspect(actual["bnext"])
+                )
+            )
+            assert_eq(actual["bnext"].name, "bnext")
+            assert_true(vim.fn.filereadable(actual["bnext"].loc.filename) > 0)
+            assert_true(tonumber(actual["bnext"].loc.lineno) > 0)
+        end)
+    end)
 end)

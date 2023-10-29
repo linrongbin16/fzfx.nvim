@@ -290,12 +290,12 @@ local function _parse_vim_ex_command_name(line)
 end
 
 --- @return table<string, VimCommand>
-local function get_vim_ex_commands()
+local function _get_vim_ex_commands()
     local help_docs_list =
         ---@diagnostic disable-next-line: param-type-mismatch
         vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
     log.debug(
-        "|fzfx.config - get_vim_ex_commands| help docs:%s",
+        "|fzfx.config - _get_vim_ex_commands| help docs:%s",
         vim.inspect(help_docs_list)
     )
     if type(help_docs_list) ~= "table" or vim.tbl_isempty(help_docs_list) then
@@ -309,7 +309,7 @@ local function get_vim_ex_commands()
             local line = lines[i]
             if utils.string_startswith(line, "|:") then
                 log.debug(
-                    "|fzfx.config - get_vim_ex_commands| line[%d]:%s",
+                    "|fzfx.config - _get_vim_ex_commands| line[%d]:%s",
                     i,
                     vim.inspect(line)
                 )
@@ -328,7 +328,7 @@ local function get_vim_ex_commands()
         end
     end
     log.debug(
-        "|fzfx.config - get_vim_ex_commands| results:%s",
+        "|fzfx.config - _get_vim_ex_commands| results:%s",
         vim.inspect(results)
     )
     return results
@@ -671,7 +671,7 @@ end
 --- @return VimCommand[]
 local function get_vim_commands(no_ex_commands, no_user_commands)
     local results = {}
-    local ex_commands = no_ex_commands and {} or get_vim_ex_commands()
+    local ex_commands = no_ex_commands and {} or _get_vim_ex_commands()
     log.debug(
         "|fzfx.config - get_vim_commands| ex commands:%s",
         vim.inspect(ex_commands)
@@ -3961,6 +3961,7 @@ local M = {
     _make_file_previewer = _make_file_previewer,
     _live_grep_provider = _live_grep_provider,
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,
+    _get_vim_ex_commands = _get_vim_ex_commands,
 }
 
 return M
