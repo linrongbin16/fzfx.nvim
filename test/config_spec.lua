@@ -210,6 +210,12 @@ describe("config", function()
                         line,
                         def_pos
                     )
+                print(
+                    string.format(
+                        "parse ex command lua function:%s\n",
+                        vim.inspect(actual)
+                    )
+                )
                 assert_eq(type(actual), "table")
                 assert_true(string.len(actual.filename) > 0)
                 assert_true(
@@ -223,6 +229,12 @@ describe("config", function()
                         line,
                         def_pos
                     )
+                print(
+                    string.format(
+                        "failed to parse ex command lua function:%s\n",
+                        vim.inspect(actual)
+                    )
+                )
                 assert_true(actual == nil)
             end
         end)
