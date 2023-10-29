@@ -120,4 +120,18 @@ describe("config", function()
             )
         end)
     end)
+    describe("[_parse_vim_ex_command_name]", function()
+        it("parse", function()
+            local lines = {
+                "|:|",
+                "|:next|",
+                "|:FzfxGBranches|",
+            }
+            for _, line in ipairs(lines) do
+                local actual = conf._parse_vim_ex_command_name(line)
+                local expect = vim.trim(line:sub(3, #line - 1))
+                assert_eq(actual, expect)
+            end
+        end)
+    end)
 end)

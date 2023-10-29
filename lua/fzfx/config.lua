@@ -284,7 +284,7 @@ end
 
 --- @param line string
 --- @return string
-local function parse_vim_ex_command_name(line)
+local function _parse_vim_ex_command_name(line)
     local name_stop_pos = utils.string_find(line, "|", 3)
     return vim.trim(line:sub(3, name_stop_pos - 1))
 end
@@ -313,7 +313,7 @@ local function get_vim_ex_commands()
                     i,
                     vim.inspect(line)
                 )
-                local name = parse_vim_ex_command_name(line)
+                local name = _parse_vim_ex_command_name(line)
                 if type(name) == "string" and string.len(name) > 0 then
                     results[name] = {
                         name = name,
@@ -3960,6 +3960,7 @@ local M = {
     _default_bat_style_theme = _default_bat_style_theme,
     _make_file_previewer = _make_file_previewer,
     _live_grep_provider = _live_grep_provider,
+    _parse_vim_ex_command_name = _parse_vim_ex_command_name,
 }
 
 return M
