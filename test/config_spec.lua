@@ -59,12 +59,30 @@ describe("config", function()
         end)
     end)
     describe("[_default_bat_style_theme]", function()
-        it("default bat style theme", function()
+        it("defaults", function()
             vim.env.BAT_STYLE = nil
             vim.env.BAT_THEME = nil
             local style, theme = conf._default_bat_style_theme()
             assert_eq(style, "numbers,changes")
             assert_eq(theme, "base16")
+        end)
+        it("overwrites", function()
+            vim.env.BAT_STYLE = "numbers,changes,headers"
+            vim.env.BAT_THEME = "zenburn"
+            local style, theme = conf._default_bat_style_theme()
+            assert_eq(style, vim.env.BAT_STYLE)
+            assert_eq(theme, vim.env.BAT_THEME)
+            vim.env.BAT_STYLE = nil
+            vim.env.BAT_THEME = nil
+        end)
+    end)
+    describe("[_make_file_previewer]", function()
+        it("file previewer", function()
+            local f = conf._make_file_previewer("lua/fzfx/config.lua", 135)
+            assert_eq(type(f), "function")
+            local actual = f()
+            print(string.format("file previewer:%s\n", vim.inspect(actual)))
+            assert_true(actual[1] == "bat" or actual[1] == "cat")
         end)
     end)
 end)
