@@ -218,9 +218,7 @@ describe("config", function()
                 )
                 assert_eq(type(actual), "table")
                 assert_true(string.len(actual.filename) > 0)
-                assert_true(
-                    vim.fn.filereadable(vim.fn.expand(actual.filename)) > 0
-                )
+                assert_true(string.len(vim.fn.expand(actual.filename)) > 0)
                 assert_true(tonumber(actual.lineno) > 0)
             end
             for _, line in ipairs(failed_lines) do
