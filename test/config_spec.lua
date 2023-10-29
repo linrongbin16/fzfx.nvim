@@ -158,5 +158,13 @@ describe("config", function()
             assert_true(vim.fn.filereadable(actual["bnext"].loc.filename) > 0)
             assert_true(tonumber(actual["bnext"].loc.lineno) > 0)
         end)
+        it("is ex command output header", function()
+            local actual1 = conf._is_ex_command_output_header("asdf")
+            local actual2 = conf._is_ex_command_output_header(
+                "Name              Args Address Complete    Definition"
+            )
+            assert_false(actual1)
+            assert_true(actual2)
+        end)
     end)
 end)

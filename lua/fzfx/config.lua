@@ -336,7 +336,7 @@ end
 
 --- @param header string
 --- @return boolean
-local function is_ex_command_output_header(header)
+local function _is_ex_command_output_header(header)
     local name_pos = utils.string_find(header, "Name")
     local args_pos = utils.string_find(header, "Args")
     local address_pos = utils.string_find(header, "Address")
@@ -511,7 +511,7 @@ local function parse_ex_command_output()
             end
         end
 
-        if is_ex_command_output_header(line) then
+        if _is_ex_command_output_header(line) then
             found_command_output_header = true
             parsed_header = parse_ex_command_output_header(line)
             log.debug(
@@ -3962,6 +3962,7 @@ local M = {
     _live_grep_provider = _live_grep_provider,
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,
     _get_vim_ex_commands = _get_vim_ex_commands,
+    _is_ex_command_output_header = _is_ex_command_output_header,
 }
 
 return M
