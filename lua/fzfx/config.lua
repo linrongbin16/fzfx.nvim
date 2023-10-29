@@ -11,7 +11,7 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 --- @type table<string, FzfOpt>
-local _default_fzf_options = {
+local default_fzf_options = {
     multi = "--multi",
     toggle = "--bind=ctrl-e:toggle",
     toggle_all = "--bind=ctrl-a:toggle-all",
@@ -79,7 +79,7 @@ local default_unrestricted_find = {
 }
 
 --- @return string, string
-local function default_bat_style_and_theme()
+local function _default_bat_style_theme()
     local style = "numbers,changes"
     if
         type(vim.env["BAT_STYLE"]) == "string"
@@ -100,11 +100,11 @@ end
 --- @param filename string
 --- @param lineno integer?
 --- @return fun():string[]
-local function make_file_previewer(filename, lineno)
+local function _make_file_previewer(filename, lineno)
     --- @return string[]
     local function wrap()
         if constants.has_bat then
-            local style, theme = default_bat_style_and_theme()
+            local style, theme = _default_bat_style_theme()
             -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
             return type(lineno) == "number"
                     and {
@@ -141,7 +141,7 @@ end
 --- @return string[]
 local function file_previewer(line)
     local filename = line_helpers.parse_find(line)
-    local impl = make_file_previewer(filename)
+    local impl = _make_file_previewer(filename)
     return impl()
 end
 
@@ -274,7 +274,7 @@ end
 --- @return string[]
 local function file_previewer_grep(line)
     local parsed = line_helpers.parse_grep(line)
-    local impl = make_file_previewer(parsed.filename, parsed.lineno)
+    local impl = _make_file_previewer(parsed.filename, parsed.lineno)
     return impl()
 end
 
@@ -736,7 +736,7 @@ end
 local function vim_commands_lua_function_previewer(filename, lineno)
     local height = vim.api.nvim_win_get_height(0)
     if constants.has_bat then
-        local style, theme = default_bat_style_and_theme()
+        local style, theme = _default_bat_style_theme()
         -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
         return {
             constants.bat,
@@ -1546,7 +1546,7 @@ end
 local function vim_keymaps_lua_function_previewer(filename, lineno)
     local height = vim.api.nvim_win_get_height(0)
     if constants.has_bat then
-        local style, theme = default_bat_style_and_theme()
+        local style, theme = _default_bat_style_theme()
         -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
         return {
             constants.bat,
@@ -1727,7 +1727,7 @@ end
 local function file_explorer_previewer(line, context)
     local p = make_filename_by_file_explorer_context(line, context)
     if vim.fn.filereadable(p) > 0 then
-        local preview = make_file_previewer(p)
+        local preview = _make_file_previewer(p)
         return preview()
     elseif vim.fn.isdirectory(p) > 0 then
         return directory_previewer(p)
@@ -1875,7 +1875,7 @@ local Defaults = {
             ["ctrl-q"] = require("fzfx.actions").setqflist_find,
         },
         fzf_opts = {
-            _default_fzf_options.multi,
+            default_fzf_options.multi,
             function()
                 return { "--prompt", path.shorten() .. " > " }
             end,
@@ -2073,7 +2073,7 @@ local Defaults = {
                 or require("fzfx.actions").setqflist_grep,
         },
         fzf_opts = {
-            _default_fzf_options.multi,
+            default_fzf_options.multi,
             "--disabled",
             { "--prompt", "Live Grep > " },
             { "--delimiter", ":" },
@@ -2196,7 +2196,7 @@ local Defaults = {
             ["ctrl-q"] = require("fzfx.actions").setqflist_find,
         },
         fzf_opts = {
-            _default_fzf_options.multi,
+            default_fzf_options.multi,
             { "--prompt", "Buffers > " },
             function()
                 local current_bufnr = vim.api.nvim_get_current_buf()
@@ -2322,7 +2322,7 @@ local Defaults = {
             ["ctrl-q"] = require("fzfx.actions").setqflist_find,
         },
         fzf_opts = {
-            _default_fzf_options.multi,
+            default_fzf_options.multi,
             function()
                 return { "--prompt", path.shorten() .. " > " }
             end,
@@ -2542,7 +2542,7 @@ local Defaults = {
             ["double-click"] = require("fzfx.actions").git_checkout,
         },
         fzf_opts = {
-            _default_fzf_options.no_multi,
+            default_fzf_options.no_multi,
             { "--prompt", "GBranches > " },
             function()
                 local cmd = require("fzfx.cmd")
@@ -2706,7 +2706,7 @@ local Defaults = {
             ["double-click"] = require("fzfx.actions").yank_git_commit,
         },
         fzf_opts = {
-            _default_fzf_options.no_multi,
+            default_fzf_options.no_multi,
             { "--prompt", "GCommits > " },
         },
     },
@@ -2797,7 +2797,7 @@ local Defaults = {
             ["double-click"] = require("fzfx.actions").yank_git_commit,
         },
         fzf_opts = {
-            _default_fzf_options.no_multi,
+            default_fzf_options.no_multi,
             { "--prompt", "GBlame > " },
         },
     },
@@ -2977,7 +2977,7 @@ local Defaults = {
             ["double-click"] = require("fzfx.actions").feed_vim_command,
         },
         fzf_opts = {
-            _default_fzf_options.no_multi,
+            default_fzf_options.no_multi,
             "--header-lines=1",
             { "--preview-window", "~1" },
             { "--prompt", "Commands > " },
@@ -3214,7 +3214,7 @@ local Defaults = {
             ["double-click"] = require("fzfx.actions").feed_vim_key,
         },
         fzf_opts = {
-            _default_fzf_options.no_multi,
+            default_fzf_options.no_multi,
             "--header-lines=1",
             { "--preview-window", "~1" },
             { "--prompt", "Key Maps > " },
@@ -3357,7 +3357,7 @@ local Defaults = {
             ["ctrl-q"] = require("fzfx.actions").setqflist_rg,
         },
         fzf_opts = {
-            _default_fzf_options.multi,
+            default_fzf_options.multi,
             { "--delimiter", ":" },
             { "--preview-window", "+{2}-/2" },
             { "--prompt", "Diagnostics > " },
@@ -3404,8 +3404,8 @@ local Defaults = {
             ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
-            _default_fzf_options.multi,
-            _default_fzf_options.lsp_preview_window,
+            default_fzf_options.multi,
+            default_fzf_options.lsp_preview_window,
             "--border=none",
             { "--delimiter", ":" },
             { "--prompt", "Definitions > " },
@@ -3464,8 +3464,8 @@ local Defaults = {
             ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
-            _default_fzf_options.multi,
-            _default_fzf_options.lsp_preview_window,
+            default_fzf_options.multi,
+            default_fzf_options.lsp_preview_window,
             "--border=none",
             { "--delimiter", ":" },
             { "--prompt", "TypeDefinitions > " },
@@ -3524,8 +3524,8 @@ local Defaults = {
             ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
-            _default_fzf_options.multi,
-            _default_fzf_options.lsp_preview_window,
+            default_fzf_options.multi,
+            default_fzf_options.lsp_preview_window,
             "--border=none",
             { "--delimiter", ":" },
             { "--prompt", "References > " },
@@ -3584,8 +3584,8 @@ local Defaults = {
             ["double-click"] = require("fzfx.actions").edit_rg,
         },
         fzf_opts = {
-            _default_fzf_options.multi,
-            _default_fzf_options.lsp_preview_window,
+            default_fzf_options.multi,
+            default_fzf_options.lsp_preview_window,
             "--border=none",
             { "--delimiter", ":" },
             { "--prompt", "Implementations > " },
@@ -3749,7 +3749,7 @@ local Defaults = {
             ["double-click"] = edit_file_explorer,
         },
         fzf_opts = {
-            _default_fzf_options.multi,
+            default_fzf_options.multi,
             { "--prompt", path.shorten() .. " > " },
             function()
                 local n = 0
@@ -3784,11 +3784,11 @@ local Defaults = {
         "--layout=reverse",
         "--border=rounded",
         "--height=100%",
-        _default_fzf_options.toggle,
-        _default_fzf_options.toggle_all,
-        _default_fzf_options.toggle_preview,
-        _default_fzf_options.preview_half_page_down,
-        _default_fzf_options.preview_half_page_up,
+        default_fzf_options.toggle,
+        default_fzf_options.toggle_all,
+        default_fzf_options.toggle_preview,
+        default_fzf_options.preview_half_page_down,
+        default_fzf_options.preview_half_page_up,
     },
 
     -- fzf colors
@@ -3953,7 +3953,8 @@ local M = {
     setup = setup,
     get_config = get_config,
     get_defaults = get_defaults,
-    _default_fzf_options = _default_fzf_options,
+    _default_bat_style_theme = _default_bat_style_theme,
+    _make_file_previewer = _make_file_previewer,
 }
 
 return M
