@@ -1277,7 +1277,9 @@ require("fzfx").setup({
 })
 ```
 
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/28acefc0-e757-4296-a013-c253283d05f1
+And you will got:
+
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/e60b69ab-3a29-4acc-8e48-cb9ab1b22b24
 
 You can also use the `require("fzfx").register("ls", {...})` api to do that.
 
