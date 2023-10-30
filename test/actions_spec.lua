@@ -185,12 +185,12 @@ describe("actions", function()
         end)
     end)
     describe("[_make_edit_rg_commands]", function()
-        it("edit file without icon", function()
+        it("edit rg without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
             local lines = {
-                "~/github/linrongbin16/fzfx.nvim/README.md",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:1",
-                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:hello world",
+                "~/github/linrongbin16/fzfx.nvim/README.md:1:1:ok",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:1:2:hello",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3:hello world",
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:71:9129",
             }
@@ -211,54 +211,58 @@ describe("actions", function()
                 end
             end
         end)
-        it("edit file with prepend icon", function()
+        it("edit rg with prepend icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
             local lines = {
-                " ~/github/linrongbin16/fzfx.nvim/README.md",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua",
-                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
+                " ~/github/linrongbin16/fzfx.nvim/README.md:7:18",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:38:72:fzfx",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:108:2:fzfx",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81:goodbye",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:91:94",
             }
             local actual = actions._make_edit_rg_commands(lines)
             assert_eq(type(actual), "table")
-            assert_eq(#actual, 5)
-            for i, line in ipairs(lines) do
+            assert_eq(#actual, 6)
+            for i = 1, 5 do
+                local line = lines[i]
                 local first_space_pos = utils.string_find(line, " ")
                 local expect = string.format(
                     "edit %s",
                     path.normalize(
-                        line:sub(first_space_pos + 1),
+                        line:sub(
+                            first_space_pos + 1,
+                            utils.string_find(line, ":", first_space_pos + 1)
+                                - 1
+                        ),
                         { expand = true }
                     )
                 )
                 assert_eq(actual[i], expect)
             end
+            assert_eq(actual[6], "call setpos('.', [0, 81, 72])")
         end)
-        it("run edit file command without icon", function()
+        it("run rg file command without icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = nil
             local lines = {
-                "README.md",
-                "lua/fzfx.lua",
-                "lua/fzfx/config.lua",
-                "lua/fzfx/test/goodbye world/goodbye.lua",
-                "lua/fzfx/test/goodbye world/world.txt",
-                "lua/fzfx/test/hello world.txt",
+                "~/github/linrongbin16/fzfx.nvim/README.md:1:1:ok",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:1:2:hello",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:3:hello world",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:71:9129",
             }
-            actions.edit_find(lines)
+            actions.edit_rg(lines)
             assert_true(true)
         end)
-        it("run edit file command with prepend icon", function()
+        it("run rg file command with prepend icon", function()
             vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
             local lines = {
-                " README.md",
-                "󰢱 lua/fzfx.lua",
-                "󰢱 lua/fzfx/config.lua",
-                "󰢱 lua/fzfx/test/goodbye world/goodbye.lua",
-                "󰢱 lua/fzfx/test/goodbye world/world.txt",
-                "󰢱 lua/fzfx/test/hello world.txt",
+                " ~/github/linrongbin16/fzfx.nvim/README.md:7:18",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:38:72:fzfx",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:108:2:fzfx",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81:goodbye",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:91:94",
             }
-            actions.edit_find(lines)
+            actions.edit_rg(lines)
             assert_true(true)
         end)
     end)
