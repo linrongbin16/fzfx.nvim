@@ -358,21 +358,21 @@ Commands are named following below rules:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxLiveGrep(U)</td>
+    <td>FzfxLiveGrep(B/U)</td>
     <td>N</td>
     <td rowspan="4">Yes</td>
     <td rowspan="4">Yes</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(U)V</td>
+    <td>FzfxLiveGrep(B/U)V</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(U)W</td>
+    <td>FzfxLiveGrep(B/U)W</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(U)P</td>
+    <td>FzfxLiveGrep(B/U)P</td>
     <td>N</td>
   </tr>
 </tbody>
