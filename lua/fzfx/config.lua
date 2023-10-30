@@ -733,7 +733,7 @@ end
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
-local function vim_commands_lua_function_previewer(filename, lineno)
+local function _vim_commands_lua_function_previewer(filename, lineno)
     local height = vim.api.nvim_win_get_height(0)
     if constants.has_bat then
         local style, theme = _default_bat_style_theme()
@@ -783,7 +783,7 @@ local function vim_commands_previewer(line, context)
             "|fzfx.config - vim_commands_previewer| loc:%s",
             vim.inspect(desc_or_loc)
         )
-        return vim_commands_lua_function_previewer(
+        return _vim_commands_lua_function_previewer(
             desc_or_loc.filename,
             desc_or_loc.lineno
         )
@@ -3970,6 +3970,7 @@ local M = {
     _render_vim_commands_column_opts = _render_vim_commands_column_opts,
     _render_vim_commands_columns_status = _render_vim_commands_columns_status,
     _render_vim_commands = _render_vim_commands,
+    _vim_commands_lua_function_previewer = _vim_commands_lua_function_previewer,
 }
 
 return M

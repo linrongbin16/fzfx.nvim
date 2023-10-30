@@ -434,5 +434,28 @@ describe("config", function()
             assert_true(utils.string_startswith(actual[3], "bnext"))
             assert_true(utils.string_endswith(actual[3], '"next buffer"'))
         end)
+        it("_vim_commands_lua_function_previewer", function()
+            vim.cmd([[edit README.md]])
+            local actual = conf._vim_commands_lua_function_previewer(
+                "lua/fzfx/config.lua",
+                13
+            )
+            assert_eq(type(actual), "table")
+            if actual[1] == "bat" then
+                assert_eq(actual[1], "bat")
+                assert_eq(actual[2], "--style=numbers,changes")
+                assert_eq(actual[3], "--theme=base16")
+                assert_eq(actual[4], "--color=always")
+                assert_eq(actual[5], "--pager=never")
+                assert_eq(actual[6], "--highlight-line=13")
+                assert_eq(actual[7], "--line-range")
+                assert_true(utils.string_endswith(actual[8], ":"))
+                assert_eq(actual[9], "--")
+                assert_eq(actual[10], "lua/fzfx/config.lua")
+            else
+                assert_eq(actual[1], "cat")
+                assert_eq(actual[2], "lua/fzfx/config.lua")
+            end
+        end)
     end)
 end)
