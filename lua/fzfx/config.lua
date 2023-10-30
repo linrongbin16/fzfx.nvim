@@ -283,10 +283,37 @@ end
 -- git status {
 
 --- @param line string
---- @return string[]
+--- @return string|nil
 local function git_status_previewer(line)
     local filename = line_helpers.parse_git_status(line)
-    return { "git", "diff", "--color=always", filename }
+    if vim.fn.executable("delta") > 0 then
+        -- return {
+        --     "git",
+        --     "-c",
+        --     "core.pager=delta",
+        --     "-c",
+        --     "delta.line-numbers=true",
+        --     "-c",
+        --     "delta.true-color=always",
+        --     "diff",
+        --     filename,
+        -- }
+        return vim.o.termguicolors
+                and string.format(
+                    [[git diff %s | delta -n --true-color=always]],
+                    utils.shellescape(filename)
+                )
+            or string.format(
+                [[git diff %s | delta -n]],
+                utils.shellescape(filename)
+            )
+    else
+        -- return { "git", "diff", "--color=always", filename }
+        return string.format(
+            [[git diff --color=always %s]],
+            utils.shellescape(filename)
+        )
+    end
 end
 
 -- }
@@ -2439,11 +2466,11 @@ local Defaults = {
         previewers = {
             current_folder = {
                 previewer = git_status_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_type = PreviewerTypeEnum.COMMAND,
             },
             workspace = {
                 previewer = git_status_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_type = PreviewerTypeEnum.COMMAND,
             },
         },
         actions = {
@@ -2454,6 +2481,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
+            { "--preview-window", "wrap" },
             { "--prompt", "GitStatus > " },
         },
     },
