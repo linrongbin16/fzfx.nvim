@@ -1610,7 +1610,7 @@ end
 
 --- @alias FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
 --- @return FileExplorerPipelineContext
-local function file_explorer_context_maker()
+local function _file_explorer_context_maker()
     local temp = vim.fn.tempname()
     utils.writefile(temp, vim.fn.getcwd())
     local context = {
@@ -1624,7 +1624,7 @@ end
 
 --- @param ls_args "-lh"|"-lha"
 --- @return fun(query:string,context:PipelineContext):string?
-local function make_file_explorer_provider(ls_args)
+local function _make_file_explorer_provider(ls_args)
     --- @param query string
     --- @param context FileExplorerPipelineContext
     --- @return string?
@@ -3689,12 +3689,12 @@ local Defaults = {
         providers = {
             filter_hidden = {
                 key = "ctrl-r",
-                provider = make_file_explorer_provider("-lh"),
+                provider = _make_file_explorer_provider("-lh"),
                 provider_type = ProviderTypeEnum.COMMAND,
             },
             include_hidden = {
                 key = "ctrl-u",
-                provider = make_file_explorer_provider("-lha"),
+                provider = _make_file_explorer_provider("-lha"),
                 provider_type = ProviderTypeEnum.COMMAND,
             },
         },
@@ -3762,7 +3762,7 @@ local Defaults = {
             end,
         },
         other_opts = {
-            context_maker = file_explorer_context_maker,
+            context_maker = _file_explorer_context_maker,
         },
     },
 
@@ -3981,6 +3981,8 @@ local M = {
     _render_vim_keymaps = _render_vim_keymaps,
     _vim_keymaps_context_maker = _vim_keymaps_context_maker,
     _vim_keymaps_lua_function_previewer = _vim_keymaps_lua_function_previewer,
+    _file_explorer_context_maker = _file_explorer_context_maker,
+    _make_file_explorer_provider = _make_file_explorer_provider,
 }
 
 return M

@@ -740,4 +740,60 @@ describe("config", function()
             end
         end)
     end)
+    describe("[file explorer]", function()
+        it("_file_explorer_context_maker", function()
+            local ctx = conf._file_explorer_context_maker()
+            print(string.format("file explorer context:%s\n", vim.inspect(ctx)))
+            assert_eq(type(ctx), "table")
+            assert_true(ctx.bufnr > 0)
+            assert_true(ctx.winnr > 0)
+            assert_true(ctx.tabnr > 0)
+            assert_true(vim.fn.filereadable(ctx.cwd) > 0)
+        end)
+        it("_make_file_explorer_provider", function()
+            local ctx = conf._file_explorer_context_maker()
+            local f1 = conf._make_file_explorer_provider("-lh")
+            assert_eq(type(f1), "function")
+            local actual1 = f1("", ctx)
+            print(
+                string.format(
+                    "file explorer provider1:%s\n",
+                    vim.inspect(actual1)
+                )
+            )
+            assert_eq(type(actual1), "string")
+            assert_true(utils.string_find(actual1, "echo") > 0)
+            assert_true(
+                type(utils.string_find(actual1, "eza")) == "number"
+                    or type(utils.string_find(actual1, "ls")) == "number"
+            )
+            assert_true(
+                utils.string_find(
+                    actual1,
+                    path.normalize(vim.fn.getcwd(), { expand = true })
+                ) > 0
+            )
+            local f2 = conf._make_file_explorer_provider("-lha")
+            assert_eq(type(f2), "function")
+            local actual2 = f2("", ctx)
+            print(
+                string.format(
+                    "file explorer provider2:%s\n",
+                    vim.inspect(actual2)
+                )
+            )
+            assert_eq(type(actual2), "string")
+            assert_true(utils.string_find(actual2, "echo") > 0)
+            assert_true(
+                type(utils.string_find(actual2, "eza")) == "number"
+                    or type(utils.string_find(actual2, "ls")) == "number"
+            )
+            assert_true(
+                utils.string_find(
+                    actual2,
+                    path.normalize(vim.fn.getcwd(), { expand = true })
+                ) > 0
+            )
+        end)
+    end)
 end)
