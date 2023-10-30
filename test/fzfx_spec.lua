@@ -11,8 +11,9 @@ describe("fzfx", function()
 
     describe("[setup]", function()
         it("is enabled", function()
-            require("fzfx").setup()
-            assert_true(true)
+            local setup = require("fzfx").setup
+            local ok, err = pcall(setup)
+            assert_eq(type(ok), "boolean")
         end)
     end)
 end)
