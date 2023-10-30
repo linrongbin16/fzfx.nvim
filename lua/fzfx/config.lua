@@ -1669,7 +1669,7 @@ end
 
 --- @param filename string
 --- @return string[]|nil
-local function directory_previewer(filename)
+local function _directory_previewer(filename)
     if constants.has_eza then
         return {
             constants.eza,
@@ -1725,7 +1725,7 @@ local function file_explorer_previewer(line, context)
         local preview = _make_file_previewer(p)
         return preview()
     elseif vim.fn.isdirectory(p) > 0 then
-        return directory_previewer(p)
+        return _directory_previewer(p)
     else
         return nil
     end
@@ -3983,6 +3983,7 @@ local M = {
     _vim_keymaps_lua_function_previewer = _vim_keymaps_lua_function_previewer,
     _file_explorer_context_maker = _file_explorer_context_maker,
     _make_file_explorer_provider = _make_file_explorer_provider,
+    _directory_previewer = _directory_previewer,
 }
 
 return M
