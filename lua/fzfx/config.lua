@@ -285,9 +285,8 @@ end
 --- @param line string
 --- @return string[]
 local function git_status_previewer(line)
-    local filename = line_helpers.parse_find(line)
-    local impl = _make_file_previewer(filename)
-    return impl()
+    local filename = line_helpers.parse_git_status(line)
+    return { "git", "diff", filename }
 end
 
 -- }

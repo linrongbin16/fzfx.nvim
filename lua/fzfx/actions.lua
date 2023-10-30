@@ -301,6 +301,27 @@ local function setqflist_grep(lines)
     })
 end
 
+--- @param lines string[]
+--- @return {filename:string,lnum:integer,col:integer}[]
+local function _make_setqflist_git_status_items(lines)
+    local qflist = {}
+    for _, line in ipairs(lines) do
+        local filename = line_helpers.parse_git_status(line)
+        table.insert(qflist, { filename = filename, lnum = 1, col = 1 })
+    end
+    return qflist
+end
+
+--- @param lines string[]
+local function setqflist_git_status(lines)
+    local qflist = _make_setqflist_git_status_items(lines --[[@as table]])
+    vim.cmd([[ :copen ]])
+    vim.fn.setqflist({}, " ", {
+        nr = "$",
+        items = qflist,
+    })
+end
+
 --- @package
 --- @param lines string[]
 --- @return string, string
@@ -386,9 +407,11 @@ local M = {
     _make_setqflist_find_items = _make_setqflist_find_items,
     _make_setqflist_rg_items = _make_setqflist_rg_items,
     _make_setqflist_grep_items = _make_setqflist_grep_items,
+    _make_setqflist_git_status_items = _make_setqflist_git_status_items,
     setqflist_find = setqflist_find,
     setqflist_rg = setqflist_rg,
     setqflist_grep = setqflist_grep,
+    setqflist_git_status = setqflist_git_status,
 }
 
 return M

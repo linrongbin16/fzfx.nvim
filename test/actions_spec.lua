@@ -549,4 +549,26 @@ describe("actions", function()
             end
         end)
     end)
+    describe("[_make_setqflist_git_status_items]", function()
+        it("set files", function()
+            local lines = {
+                " M fzfx/config.lua",
+                " D fzfx/constants.lua",
+                " M fzfx/line_helpers.lua",
+                " M ../test/line_helpers_spec.lua",
+                "?? ../hello",
+            }
+            local actual = actions._make_setqflist_git_status_items(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, #lines)
+            for i, act in ipairs(actual) do
+                local line = lines[i]
+                local expect = line_helpers.parse_git_status(line)
+                assert_eq(type(act), "table")
+                assert_eq(act.filename, expect)
+                assert_eq(act.lnum, 1)
+                assert_eq(act.col, 1)
+            end
+        end)
+    end)
 end)
