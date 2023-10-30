@@ -286,7 +286,7 @@ end
 --- @return string[]
 local function git_status_previewer(line)
     local filename = line_helpers.parse_git_status(line)
-    return { "git", "diff", filename }
+    return { "git", "diff", "--color=always", filename }
 end
 
 -- }
@@ -2448,9 +2448,9 @@ local Defaults = {
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_find,
-            ["double-click"] = require("fzfx.actions").edit_find,
-            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
+            ["enter"] = require("fzfx.actions").edit_git_status,
+            ["double-click"] = require("fzfx.actions").edit_git_status,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_git_status,
         },
         fzf_opts = {
             default_fzf_options.multi,

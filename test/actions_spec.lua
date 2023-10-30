@@ -571,4 +571,24 @@ describe("actions", function()
             end
         end)
     end)
+    describe("[_make_edit_git_status_commands]", function()
+        it("set files", function()
+            local lines = {
+                " M fzfx/config.lua",
+                " D fzfx/constants.lua",
+                " M fzfx/line_helpers.lua",
+                " M ../test/line_helpers_spec.lua",
+                "?? ../hello",
+            }
+            local actual = actions._make_edit_git_status_commands(lines)
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, #lines)
+            for i, act in ipairs(actual) do
+                local line = lines[i]
+                local expect = line_helpers.parse_git_status(line)
+                assert_eq(type(act), "string")
+                assert_eq(act, string.format("edit %s", expect))
+            end
+        end)
+    end)
 end)

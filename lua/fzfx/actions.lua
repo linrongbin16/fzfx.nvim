@@ -382,6 +382,29 @@ local function feed_vim_key(lines)
     end
 end
 
+--- @package
+--- @param lines string[]
+--- @return string[]
+local function _make_edit_git_status_commands(lines)
+    local results = {}
+    for i, line in ipairs(lines) do
+        local filename = line_helpers.parse_git_status(line)
+        local edit_command = string.format("edit %s", filename)
+        table.insert(results, edit_command)
+    end
+    return results
+end
+
+-- Run 'edit' vim command on gits status results.
+--- @param lines string[]
+local function edit_git_status(lines)
+    local edit_commands = _make_edit_git_status_commands(lines)
+    for i, edit_command in ipairs(edit_commands) do
+        log.debug("|fzfx.actions - edit_git_status| [%d]:[%s]", i, edit_command)
+        vim.cmd(edit_command)
+    end
+end
+
 local M = {
     nop = nop,
     _make_edit_find_commands = _make_edit_find_commands,
@@ -400,6 +423,8 @@ local M = {
     git_checkout = git_checkout,
     _make_yank_git_commit_command = _make_yank_git_commit_command,
     yank_git_commit = yank_git_commit,
+    _make_edit_git_status_commands = _make_edit_git_status_commands,
+    edit_git_status = edit_git_status,
     _make_feed_vim_command_params = _make_feed_vim_command_params,
     _make_feed_vim_key_params = _make_feed_vim_key_params,
     feed_vim_command = feed_vim_command,
