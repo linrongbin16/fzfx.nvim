@@ -87,13 +87,13 @@ elseif metaopts.previewer_type == "command_list" then
         return
     end
 
-    local asp = shell_helpers.Spawn:make(cmd_splits, println) --[[@as Spawn]]
+    local sp = shell_helpers.Spawn:make(cmd_splits, println) --[[@as Spawn]]
     shell_helpers.log_ensure(
-        asp ~= nil,
+        sp ~= nil,
         "failed to open async command: %s",
         vim.inspect(cmd_splits)
     )
-    asp:run()
+    sp:run()
 elseif metaopts.previewer_type == "list" then
     local f = io.open(resultfile, "r")
     shell_helpers.log_ensure(

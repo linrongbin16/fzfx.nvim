@@ -109,13 +109,13 @@ then
         return
     end
 
-    local asp = shell_helpers.Spawn:make(cmd_splits, println) --[[@as Spawn]]
+    local sp = shell_helpers.Spawn:make(cmd_splits, println) --[[@as Spawn]]
     shell_helpers.log_ensure(
-        asp ~= nil,
+        sp ~= nil,
         "failed to open async command: %s",
         vim.inspect(cmd_splits)
     )
-    asp:run()
+    sp:run()
 elseif metaopts.provider_type == "list" then
     local reader = shell_helpers.FileLineReader:open(resultfile) --[[@as FileLineReader ]]
     shell_helpers.log_ensure(
