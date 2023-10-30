@@ -7,6 +7,9 @@ describe("config", function()
 
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
+        vim.fn["executable"] = function(v)
+            return 1
+        end
     end)
 
     vim.cmd([[!touch bat]])
