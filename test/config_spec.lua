@@ -126,8 +126,8 @@ describe("config", function()
                 )
                 assert_eq(
                     actual[7],
-                    "--exclude=" .. constants.has_gnu_grep and [[.*]]
-                        or [[./.*]]
+                    "--exclude="
+                        .. (constants.has_gnu_grep and [[.*]] or [[./.*]])
                 )
                 assert_eq(actual[8], "hello")
             end
