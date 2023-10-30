@@ -525,35 +525,36 @@ local function _parse_ex_command_output()
 end
 
 --- @return table<string, VimCommand>
-local function get_vim_user_commands()
+local function _get_vim_user_commands()
     local parsed_ex_commands = _parse_ex_command_output()
     local user_commands = vim.api.nvim_get_commands({ builtin = false })
-
     log.debug(
-        "|fzfx.config - get_vim_user_commands| user commands:%s",
+        "|fzfx.config - _get_vim_user_commands| user commands:%s",
         vim.inspect(user_commands)
     )
 
     local results = {}
     for name, opts in pairs(user_commands) do
-        results[name] = {
-            name = opts.name,
-            opts = {
-                bang = opts.bang,
-                bar = opts.bar,
-                range = opts.range,
-                complete = opts.complete,
-                complete_arg = opts.complete_arg,
-                desc = opts.definition,
-                nargs = opts.nargs,
-            },
-        }
-        local parsed = parsed_ex_commands[name]
-        if parsed then
-            results[name].loc = {
-                filename = parsed.filename,
-                lineno = parsed.lineno,
+        if type(opts) == "table" and opts.name == name then
+            results[name] = {
+                name = opts.name,
+                opts = {
+                    bang = opts.bang,
+                    bar = opts.bar,
+                    range = opts.range,
+                    complete = opts.complete,
+                    complete_arg = opts.complete_arg,
+                    desc = opts.definition,
+                    nargs = opts.nargs,
+                },
             }
+            local parsed = parsed_ex_commands[name]
+            if parsed then
+                results[name].loc = {
+                    filename = parsed.filename,
+                    lineno = parsed.lineno,
+                }
+            end
         end
     end
     return results
@@ -676,7 +677,7 @@ local function get_vim_commands(no_ex_commands, no_user_commands)
         "|fzfx.config - get_vim_commands| ex commands:%s",
         vim.inspect(ex_commands)
     )
-    local user_commands = no_user_commands and {} or get_vim_user_commands()
+    local user_commands = no_user_commands and {} or _get_vim_user_commands()
     log.debug(
         "|fzfx.config - get_vim_commands| user commands:%s",
         vim.inspect(user_commands)
@@ -3966,6 +3967,7 @@ local M = {
     _parse_ex_command_output_header = _parse_ex_command_output_header,
     _parse_ex_command_output_lua_function_definition = _parse_ex_command_output_lua_function_definition,
     _parse_ex_command_output = _parse_ex_command_output,
+    _get_vim_user_commands = _get_vim_user_commands,
 }
 
 return M

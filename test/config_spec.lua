@@ -316,4 +316,22 @@ describe("config", function()
             end
         end)
     end)
+    describe("[_get_vim_user_commands]", function()
+        it("get user commands", function()
+            local user_commands = vim.api.nvim_get_commands({ builtin = false })
+            print(
+                string.format("user commands:%s\n", vim.inspect(user_commands))
+            )
+            local actual = conf._get_vim_user_commands()
+            for k, v in pairs(actual) do
+                assert_true(vim.fn.exists(":" .. k) > 0)
+                if type(v.loc) == "table" then
+                    assert_eq(type(v.loc.filename), "string")
+                    assert_true(string.len(v.loc.filename) > 0)
+                    assert_eq(type(v.loc.lineno), "number")
+                    assert_true(v.loc.lineno > 0)
+                end
+            end
+        end)
+    end)
 end)
