@@ -1017,7 +1017,7 @@ end
 
 --- @alias LspLocationPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,position_params:any}
 --- @return LspLocationPipelineContext
-local function lsp_position_context_maker()
+local function _lsp_position_context_maker()
     local context = {
         bufnr = vim.api.nvim_get_current_buf(),
         winnr = vim.api.nvim_get_current_win(),
@@ -1221,7 +1221,7 @@ end
 --```
 --- @param line string
 --- @return VimKeyMap
-local function parse_ex_map_output_line(line)
+local function _parse_map_command_output_line(line)
     local first_space_pos = 1
     while
         first_space_pos <= #line
@@ -1262,7 +1262,7 @@ local function parse_ex_map_output_line(line)
         local lineno =
             rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
         log.debug(
-            "|fzfx.config - parse_ex_map_output_line| lhs:%s, filename:%s, lineno:%s",
+            "|fzfx.config - _parse_map_command_output_line| lhs:%s, filename:%s, lineno:%s",
             vim.inspect(lhs),
             vim.inspect(filename),
             vim.inspect(lineno)
@@ -1297,7 +1297,7 @@ local function get_vim_keymaps()
         local line = map_output_lines[i]
         if type(line) == "string" and string.len(vim.trim(line)) > 0 then
             if utils.string_isalpha(line:sub(1, 1)) then
-                local parsed = parse_ex_map_output_line(line)
+                local parsed = _parse_map_command_output_line(line)
                 keys_output_map[parsed.lhs] = parsed
                 last_lhs = parsed.lhs
             elseif
@@ -3422,7 +3422,7 @@ local Defaults = {
             zindex = 51,
         },
         other_opts = {
-            context_maker = lsp_position_context_maker,
+            context_maker = _lsp_position_context_maker,
         },
     },
 
@@ -3482,7 +3482,7 @@ local Defaults = {
             zindex = 51,
         },
         other_opts = {
-            context_maker = lsp_position_context_maker,
+            context_maker = _lsp_position_context_maker,
         },
     },
 
@@ -3542,7 +3542,7 @@ local Defaults = {
             zindex = 51,
         },
         other_opts = {
-            context_maker = lsp_position_context_maker,
+            context_maker = _lsp_position_context_maker,
         },
     },
 
@@ -3602,7 +3602,7 @@ local Defaults = {
             zindex = 51,
         },
         other_opts = {
-            context_maker = lsp_position_context_maker,
+            context_maker = _lsp_position_context_maker,
         },
     },
 
@@ -3974,6 +3974,8 @@ local M = {
     _is_lsp_location = _is_lsp_location,
     _is_lsp_locationlink = _is_lsp_locationlink,
     _lsp_location_render_line = _lsp_location_render_line,
+    _lsp_position_context_maker = _lsp_position_context_maker,
+    _parse_map_command_output_line = _parse_map_command_output_line,
 }
 
 return M

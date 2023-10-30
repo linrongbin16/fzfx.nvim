@@ -498,7 +498,7 @@ describe("config", function()
             assert_true(conf._is_lsp_locationlink(LOCATIONLINK))
         end)
     end)
-    describe("_lsp_location_render_line", function()
+    describe("[_lsp_location_render_line]", function()
         local RANGE = {
             start = { line = 1, character = 20 },
             ["end"] = { line = 1, character = 26 },
@@ -513,6 +513,83 @@ describe("config", function()
             assert_eq(type(loc), "string")
             assert_true(utils.string_startswith(loc, "describe"))
             assert_true(utils.string_endswith(loc, "function()"))
+        end)
+    end)
+    describe("[_lsp_position_context_maker]", function()
+        it("lsp position context", function()
+            vim.cmd([[edit README.md]])
+            local ctx = conf._lsp_position_context_maker()
+            print(string.format("lsp position context:%s\n", vim.inspect(ctx)))
+            assert_true(ctx.bufnr > 0)
+            assert_true(ctx.winnr > 0)
+            assert_true(ctx.tabnr > 0)
+            assert_eq(type(ctx.position_params), "table")
+            assert_eq(type(ctx.position_params.context), "table")
+            assert_eq(type(ctx.position_params.position), "table")
+            assert_true(ctx.position_params.position.character >= 0)
+            assert_true(ctx.position_params.position.line >= 0)
+            assert_eq(type(ctx.position_params.textDocument), "table")
+            assert_eq(type(ctx.position_params.textDocument.uri), "string")
+            assert_true(
+                utils.string_endswith(
+                    ctx.position_params.textDocument.uri,
+                    "README.md"
+                )
+            )
+        end)
+    end)
+    describe("[_parse_map_command_output_line]", function()
+        it("parse", function()
+            local lines = {
+                "n  K           *@<Cmd>lua vim.lsp.buf.hover()<CR>",
+                "                Show hover",
+                "                Last set from Lua",
+                "n  [w          *@<Lua 1213: ~/.config/nvim/lua/builtin/lsp.lua:60>",
+                "                Previous diagnostic warning",
+                "                Last set from Lua",
+                "n  [e          *@<Lua 1211: ~/.config/nvim/lua/builtin/lsp.lua:60>",
+                "                 Previous diagnostic error",
+                "                 Last set from Lua",
+                "n  [d          *@<Lua 1209: ~/.config/nvim/lua/builtin/lsp.lua:60>",
+                "                 Previous diagnostic item",
+                "                 Last set from Lua",
+                "x  ca         *@<Cmd>lua vim.lsp.buf.range_code_action()<CR>",
+                "                 Code actions",
+                "n  <CR>        *@<Lua 961: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>",
+                "                 Last set from Lua",
+                "n  <Esc>       *@<Lua 998: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>",
+                "                 Last set from Lua",
+                "n  .           *@<Lua 977: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>",
+                "                 Last set from Lua",
+                "n  <           *@<Lua 987: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>",
+                "                 Last set from Lua",
+                "v  <BS>        * d",
+                "                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 24",
+                "x  <Plug>NetrwBrowseXVis * :<C-U>call netrw#BrowseXVis()<CR>",
+                "                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 90",
+                "n  <Plug>NetrwBrowseX * :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))<CR>",
+                "                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 84",
+                "n  <C-L>       * :nohlsearch<C-R>=has('diff')?'|diffupdate':''<CR><CR><C-L>",
+                "                 Last set from ~/.config/nvim/lua/builtin/options.vim line 50",
+            }
+            for i, line in ipairs(lines) do
+                local actual = conf._parse_map_command_output_line(line)
+                print(
+                    string.format(
+                        "parse map command[%d]:%s\n",
+                        i,
+                        vim.inspect(actual)
+                    )
+                )
+                if not utils.string_isspace(line:sub(1, 1)) then
+                    assert_true(string.len(actual.lhs) > 0)
+                    assert_true(utils.string_find(line, actual.lhs) > 2)
+                    if utils.string_find(line, "<Lua ") ~= nil then
+                        assert_true(string.len(actual.filename) > 0)
+                        assert_eq(type(actual.lineno), "number")
+                    end
+                end
+            end
         end)
     end)
 end)
