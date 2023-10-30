@@ -606,7 +606,7 @@ end
 --- @param name_width integer
 --- @param opts_width integer
 --- @return string[]
-local function render_vim_commands(commands, name_width, opts_width)
+local function _render_vim_commands(commands, name_width, opts_width)
     --- @param r VimCommand
     --- @return string
     local function rendered_desc_or_loc(r)
@@ -642,7 +642,7 @@ local function render_vim_commands(commands, name_width, opts_width)
     local header = string.format(formatter, NAME, OPTS, DESC_OR_LOC)
     table.insert(results, header)
     log.debug(
-        "|fzfx.config - render_vim_commands| formatter:%s, header:%s",
+        "|fzfx.config - _render_vim_commands| formatter:%s, header:%s",
         vim.inspect(formatter),
         vim.inspect(header)
     )
@@ -654,7 +654,7 @@ local function render_vim_commands(commands, name_width, opts_width)
             rendered_desc_or_loc(c)
         )
         log.debug(
-            "|fzfx.config - render_vim_commands| rendered[%d]:%s",
+            "|fzfx.config - _render_vim_commands| rendered[%d]:%s",
             i,
             vim.inspect(rendered)
         )
@@ -713,21 +713,21 @@ end
 --- @return string[]
 local function vim_commands_provider(ctx)
     local commands = get_vim_commands()
-    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+    return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_ex_commands_provider(ctx)
     local commands = get_vim_commands(nil, true)
-    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+    return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_user_commands_provider(ctx)
     local commands = get_vim_commands(true)
-    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+    return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param filename string
@@ -3969,6 +3969,7 @@ local M = {
     _get_vim_user_commands = _get_vim_user_commands,
     _render_vim_commands_column_opts = _render_vim_commands_column_opts,
     _render_vim_commands_columns_status = _render_vim_commands_columns_status,
+    _render_vim_commands = _render_vim_commands,
 }
 
 return M

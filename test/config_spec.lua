@@ -14,6 +14,7 @@ describe("config", function()
     conf.setup()
     local fzf_helpers = require("fzfx.fzf_helpers")
     local utils = require("fzfx.utils")
+    local path = require("fzfx.path")
     describe("[setup]", function()
         it("setup with default configs", function()
             conf.setup()
@@ -389,6 +390,49 @@ describe("config", function()
             )
             assert_eq(actual1, string.len(commands[1].name))
             assert_eq(actual2, string.len("Bang|Bar|Nargs|Range|Complete"))
+        end)
+        it("_render_vim_commands", function()
+            local commands = {
+                {
+                    name = "FzfxGBranches",
+                    opts = { bang = true, bar = true, desc = "git branches" },
+                    loc = {
+                        filename = "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+                        lineno = 13,
+                    },
+                },
+                {
+                    name = "bnext",
+                    opts = {
+                        bang = false,
+                        bar = false,
+                        nargs = "*",
+                        range = ".",
+                        complete = "<Lua function>",
+                        desc = "next buffer",
+                    },
+                },
+            }
+            local name_width, opts_width =
+                conf._render_vim_commands_columns_status(commands)
+            local actual =
+                conf._render_vim_commands(commands, name_width, opts_width)
+            print(
+                string.format("render vim commands:%s\n", vim.inspect(actual))
+            )
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, 3)
+            assert_true(utils.string_startswith(actual[1], "Name"))
+            assert_true(utils.string_endswith(actual[1], "Desc/Location"))
+            assert_true(utils.string_startswith(actual[2], "FzfxGBranches"))
+            local expect = string.format(
+                "%s:%d",
+                path.reduce(commands[1].loc.filename),
+                commands[1].loc.lineno
+            )
+            assert_true(utils.string_endswith(actual[2], expect))
+            assert_true(utils.string_startswith(actual[3], "bnext"))
+            assert_true(utils.string_endswith(actual[3], '"next buffer"'))
         end)
     end)
 end)
