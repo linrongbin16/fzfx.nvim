@@ -1489,7 +1489,7 @@ end
 
 --- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
 --- @return VimKeyMapsPipelineContext
-local function vim_keymaps_context_maker()
+local function _vim_keymaps_context_maker()
     local ctx = {
         bufnr = vim.api.nvim_get_current_buf(),
         winnr = vim.api.nvim_get_current_win(),
@@ -1538,7 +1538,7 @@ end
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
-local function vim_keymaps_lua_function_previewer(filename, lineno)
+local function _vim_keymaps_lua_function_previewer(filename, lineno)
     local height = vim.api.nvim_win_get_height(0)
     if constants.has_bat then
         local style, theme = _default_bat_style_theme()
@@ -1588,7 +1588,7 @@ local function vim_keymaps_previewer(line, context)
             "|fzfx.config - vim_keymaps_previewer| loc:%s",
             vim.inspect(def_or_loc)
         )
-        return vim_keymaps_lua_function_previewer(
+        return _vim_keymaps_lua_function_previewer(
             def_or_loc.filename,
             def_or_loc.lineno
         )
@@ -3219,7 +3219,7 @@ local Defaults = {
             { "--prompt", "Key Maps > " },
         },
         other_opts = {
-            context_maker = vim_keymaps_context_maker,
+            context_maker = _vim_keymaps_context_maker,
         },
     },
 
@@ -3979,6 +3979,8 @@ local M = {
     _render_vim_keymaps_column_opts = _render_vim_keymaps_column_opts,
     _render_vim_keymaps_columns_status = _render_vim_keymaps_columns_status,
     _render_vim_keymaps = _render_vim_keymaps,
+    _vim_keymaps_context_maker = _vim_keymaps_context_maker,
+    _vim_keymaps_lua_function_previewer = _vim_keymaps_lua_function_previewer,
 }
 
 return M

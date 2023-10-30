@@ -707,5 +707,37 @@ describe("config", function()
                 assert_true(string.len(actual[i]) > 0)
             end
         end)
+        it("_vim_keymaps_context_maker", function()
+            local ctx = conf._vim_keymaps_context_maker()
+            print(string.format("vim keymaps context:%s\n", vim.inspect(ctx)))
+            assert_eq(type(ctx), "table")
+            assert_true(ctx.bufnr > 0)
+            assert_true(ctx.winnr > 0)
+            assert_true(ctx.tabnr > 0)
+            assert_true(ctx.key_width > 0)
+            assert_true(ctx.opts_width > 0)
+        end)
+        it("_vim_keymaps_lua_function_previewer", function()
+            local actual = conf._vim_keymaps_lua_function_previewer(
+                "lua/fzfx/config.lua",
+                13
+            )
+            assert_eq(type(actual), "table")
+            if actual[1] == "bat" then
+                assert_eq(actual[1], "bat")
+                assert_eq(actual[2], "--style=numbers,changes")
+                assert_eq(actual[3], "--theme=base16")
+                assert_eq(actual[4], "--color=always")
+                assert_eq(actual[5], "--pager=never")
+                assert_eq(actual[6], "--highlight-line=13")
+                assert_eq(actual[7], "--line-range")
+                assert_true(utils.string_endswith(actual[8], ":"))
+                assert_eq(actual[9], "--")
+                assert_eq(actual[10], "lua/fzfx/config.lua")
+            else
+                assert_eq(actual[1], "cat")
+                assert_eq(actual[2], "lua/fzfx/config.lua")
+            end
+        end)
     end)
 end)
