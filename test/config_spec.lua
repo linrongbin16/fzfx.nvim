@@ -658,5 +658,39 @@ describe("config", function()
                 assert_true(string.len(act.mode) == 1)
             end
         end)
+        it("_render_vim_keymaps_column_opts", function()
+            local actual1 = conf._render_vim_keymaps_column_opts({
+                lhs = "#",
+                mode = "n",
+                noremap = true,
+                nowait = false,
+                silent = false,
+            })
+            print(
+                string.format(
+                    "render vim keymap opts1:%s\n",
+                    vim.inspect(actual1)
+                )
+            )
+            assert_eq(actual1, "n   |Y      |N     |N     ")
+        end)
+        it("_render_vim_keymaps_columns_status", function()
+            local keymaps = {
+                {
+                    lhs = "#",
+                    mode = "n",
+                    noremap = true,
+                    nowait = false,
+                    silent = false,
+                },
+            }
+            local actual1, actual2 =
+                conf._render_vim_keymaps_columns_status(keymaps)
+            assert_eq(
+                actual1,
+                math.max(string.len(keymaps[1].lhs), string.len("Lhs"))
+            )
+            assert_eq(actual2, string.len("Mode|Noremap|Nowait|Silent"))
+        end)
     end)
 end)

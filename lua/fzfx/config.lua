@@ -1399,7 +1399,7 @@ end
 
 --- @param rendered VimKeyMap
 --- @return string
-local function render_vim_keymaps_column_opts(rendered)
+local function _render_vim_keymaps_column_opts(rendered)
     local mode = rendered.mode or ""
     local noremap = rendered.noremap and "Y" or "N"
     local nowait = rendered.nowait and "Y" or "N"
@@ -1409,7 +1409,7 @@ end
 
 --- @param keys VimKeyMap[]
 --- @return integer,integer
-local function render_vim_keymaps_columns_status(keys)
+local function _render_vim_keymaps_columns_status(keys)
     local KEY = "Key"
     local OPTS = "Mode|Noremap|Nowait|Silent"
     local max_key = string.len(KEY)
@@ -1417,10 +1417,10 @@ local function render_vim_keymaps_columns_status(keys)
     for _, k in ipairs(keys) do
         max_key = math.max(max_key, string.len(k.lhs))
         max_opts =
-            math.max(max_opts, string.len(render_vim_keymaps_column_opts(k)))
+            math.max(max_opts, string.len(_render_vim_keymaps_column_opts(k)))
     end
     log.debug(
-        "|fzfx.config - render_vim_keymaps_columns_status| lhs:%s, opts:%s",
+        "|fzfx.config - _render_vim_keymaps_columns_status| lhs:%s, opts:%s",
         vim.inspect(max_key),
         vim.inspect(max_opts)
     )
@@ -1474,7 +1474,7 @@ local function render_vim_keymaps(keymaps, key_width, opts_width)
         local rendered = string.format(
             formatter,
             c.lhs,
-            render_vim_keymaps_column_opts(c),
+            _render_vim_keymaps_column_opts(c),
             rendered_def_or_loc(c)
         )
         log.debug(
@@ -1496,7 +1496,7 @@ local function vim_keymaps_context_maker()
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
     local keys = _get_vim_keymaps()
-    local key_width, opts_width = render_vim_keymaps_columns_status(keys)
+    local key_width, opts_width = _render_vim_keymaps_columns_status(keys)
     ctx.key_width = key_width
     ctx.opts_width = opts_width
     return ctx
@@ -3976,6 +3976,8 @@ local M = {
     _render_lsp_location_line = _render_lsp_location_line,
     _parse_map_command_output_line = _parse_map_command_output_line,
     _get_vim_keymaps = _get_vim_keymaps,
+    _render_vim_keymaps_column_opts = _render_vim_keymaps_column_opts,
+    _render_vim_keymaps_columns_status = _render_vim_keymaps_columns_status,
 }
 
 return M
