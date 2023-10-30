@@ -562,7 +562,7 @@ end
 
 --- @param rendered VimCommand
 --- @return string
-local function render_vim_commands_column_opts(rendered)
+local function _render_vim_commands_column_opts(rendered)
     local bang = (type(rendered.opts) == "table" and rendered.opts.bang) and "Y"
         or "N"
     local bar = (type(rendered.opts) == "table" and rendered.opts.bar) and "Y"
@@ -597,7 +597,7 @@ local function render_vim_commands_columns_status(commands)
     for _, c in ipairs(commands) do
         max_name = math.max(max_name, string.len(c.name))
         max_opts =
-            math.max(max_opts, string.len(render_vim_commands_column_opts(c)))
+            math.max(max_opts, string.len(_render_vim_commands_column_opts(c)))
     end
 
     return max_name, max_opts
@@ -651,7 +651,7 @@ local function render_vim_commands(commands, name_width, opts_width)
         local rendered = string.format(
             formatter,
             c.name,
-            render_vim_commands_column_opts(c),
+            _render_vim_commands_column_opts(c),
             rendered_desc_or_loc(c)
         )
         log.debug(
@@ -3968,6 +3968,7 @@ local M = {
     _parse_ex_command_output_lua_function_definition = _parse_ex_command_output_lua_function_definition,
     _parse_ex_command_output = _parse_ex_command_output,
     _get_vim_user_commands = _get_vim_user_commands,
+    _render_vim_commands_column_opts = _render_vim_commands_column_opts,
 }
 
 return M

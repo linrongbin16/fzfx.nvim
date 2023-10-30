@@ -333,5 +333,33 @@ describe("config", function()
                 end
             end
         end)
+        it("_render_vim_commands_column_opts", function()
+            local actual1 = conf._render_vim_commands_column_opts({
+                opts = { bang = true, bar = true },
+            })
+            print(
+                string.format(
+                    "render vim command opts1:%s\n",
+                    vim.inspect(actual1)
+                )
+            )
+            assert_eq(actual1, "Y   |Y  |N/A  |N/A  |N/A")
+            local actual2 = conf._render_vim_commands_column_opts({
+                opts = {
+                    bang = false,
+                    bar = false,
+                    nargs = "*",
+                    range = ".",
+                    complete = "<Lua function>",
+                },
+            })
+            print(
+                string.format(
+                    "render vim command opts2:%s\n",
+                    vim.inspect(actual2)
+                )
+            )
+            assert_eq(actual2, "N   |N  |*    |.    |<Lua>")
+        end)
     end)
 end)
