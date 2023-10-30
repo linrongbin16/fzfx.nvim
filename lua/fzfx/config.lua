@@ -1031,6 +1031,68 @@ local function _lsp_position_context_maker()
     return context
 end
 
+--- @param loc LspLocation|LspLocationLink
+--- @return string?
+local function _render_lsp_location_line(loc)
+    log.debug(
+        "|fzfx.config - _render_lsp_location_line| loc:%s",
+        vim.inspect(loc)
+    )
+    local filepath_color = constants.is_windows and color.cyan or color.magenta
+    local filename = nil
+    --- @type LspLocationRange
+    local range = nil
+    if _is_lsp_location(loc) then
+        filename = path.reduce(vim.uri_to_fname(loc.uri))
+        range = loc.range
+        log.debug(
+            "|fzfx.config - _render_lsp_location_line| location filename:%s, range:%s",
+            vim.inspect(filename),
+            vim.inspect(range)
+        )
+    elseif _is_lsp_locationlink(loc) then
+        filename = path.reduce(vim.uri_to_fname(loc.targetUri))
+        range = loc.targetRange
+        log.debug(
+            "|fzfx.config - _render_lsp_location_line| locationlink filename:%s, range:%s",
+            vim.inspect(filename),
+            vim.inspect(range)
+        )
+    end
+    if not _is_lsp_range(range) then
+        return nil
+    end
+    if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
+        return nil
+    end
+    local filelines = utils.readlines(filename)
+    if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
+        return nil
+    end
+    local loc_line = _lsp_location_render_line(
+        filelines[range.start.line + 1],
+        range,
+        color.red
+    )
+    log.debug(
+        "|fzfx.config - _render_lsp_location_line| range:%s, loc_line:%s",
+        vim.inspect(range),
+        vim.inspect(loc_line)
+    )
+    local line = string.format(
+        "%s:%s:%s:%s",
+        filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
+        color.green(tostring(range.start.line + 1)),
+        tostring(range.start.character + 1),
+        loc_line
+    )
+    log.debug(
+        "|fzfx.config - _render_lsp_location_line| line:%s",
+        vim.inspect(line)
+    )
+    return line
+end
+
 --- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"
 --- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"
 
@@ -1082,71 +1144,6 @@ local function lsp_locations_provider(opts)
         return nil
     end
 
-    local filepath_color = constants.is_windows and color.cyan or color.magenta
-
-    --- @param loc LspLocation|LspLocationLink
-    --- @return string?
-    local function process_location(loc)
-        --- @type string
-        local filename = nil
-        --- @type LspLocationRange
-        local range = nil
-        log.debug(
-            "|fzfx.config - lsp_locations_provider.process_location| loc:%s",
-            vim.inspect(loc)
-        )
-        if _is_lsp_location(loc) then
-            filename = path.reduce(vim.uri_to_fname(loc.uri))
-            range = loc.range
-            log.debug(
-                "|fzfx.config - lsp_locations_provider.process_location| location filename:%s, range:%s",
-                vim.inspect(filename),
-                vim.inspect(range)
-            )
-        end
-        if _is_lsp_locationlink(loc) then
-            filename = path.reduce(vim.uri_to_fname(loc.targetUri))
-            range = loc.targetRange
-            log.debug(
-                "|fzfx.config - lsp_locations_provider.process_location| locationlink filename:%s, range:%s",
-                vim.inspect(filename),
-                vim.inspect(range)
-            )
-        end
-        if not _is_lsp_range(range) then
-            return nil
-        end
-        if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
-            return nil
-        end
-        local filelines = utils.readlines(filename)
-        if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
-            return nil
-        end
-        local loc_line = _lsp_location_render_line(
-            filelines[range.start.line + 1],
-            range,
-            color.red
-        )
-        log.debug(
-            "|fzfx.config - lsp_locations_provider.process_location| range:%s, loc_line:%s",
-            vim.inspect(range),
-            vim.inspect(loc_line)
-        )
-        local line = string.format(
-            "%s:%s:%s:%s",
-            filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
-            color.green(tostring(range.start.line + 1)),
-            tostring(range.start.character + 1),
-            loc_line
-        )
-        log.debug(
-            "|fzfx.config - lsp_locations_provider| line:%s",
-            vim.inspect(line)
-        )
-        return line
-    end
-
     local def_lines = {}
 
     for client_id, lsp_result in pairs(lsp_results) do
@@ -1159,13 +1156,13 @@ local function lsp_locations_provider(opts)
         end
         local lsp_defs = lsp_result.result
         if _is_lsp_location(lsp_defs) then
-            local line = process_location(lsp_defs)
+            local line = _render_lsp_location_line(lsp_defs)
             if type(line) == "string" and string.len(line) > 0 then
                 table.insert(def_lines, line)
             end
         else
             for _, def in ipairs(lsp_defs) do
-                local line = process_location(def)
+                local line = _render_lsp_location_line(def)
                 if type(line) == "string" and string.len(line) > 0 then
                     table.insert(def_lines, line)
                 end
@@ -3975,6 +3972,7 @@ local M = {
     _is_lsp_locationlink = _is_lsp_locationlink,
     _lsp_location_render_line = _lsp_location_render_line,
     _lsp_position_context_maker = _lsp_position_context_maker,
+    _render_lsp_location_line = _render_lsp_location_line,
     _parse_map_command_output_line = _parse_map_command_output_line,
 }
 

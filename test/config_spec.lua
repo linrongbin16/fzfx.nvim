@@ -515,6 +515,37 @@ describe("config", function()
             assert_true(utils.string_endswith(loc, "function()"))
         end)
     end)
+    describe("_render_lsp_location_line", function()
+        local RANGE = {
+            start = { line = 1, character = 10 },
+            ["end"] = { line = 10, character = 31 },
+        }
+        local LOCATION = {
+            uri = "file:///usr/home/github/linrongbin16/fzfx.nvim",
+            range = RANGE,
+        }
+        local LOCATIONLINK = {
+            targetUri = "file:///usr/home/github/linrongbin16/fzfx.nvim",
+            targetRange = RANGE,
+        }
+        it("renders location", function()
+            local actual = conf._render_lsp_location_line(LOCATION)
+            print(
+                string.format("render lsp location:%s\n", vim.inspect(actual))
+            )
+            assert_true(actual == nil or type(actual) == "string")
+        end)
+        it("renders locationlink", function()
+            local actual = conf._render_lsp_location_line(LOCATIONLINK)
+            print(
+                string.format(
+                    "render lsp locationlink:%s\n",
+                    vim.inspect(actual)
+                )
+            )
+            assert_true(actual == nil or type(actual) == "string")
+        end)
+    end)
     describe("[_lsp_position_context_maker]", function()
         it("lsp position context", function()
             vim.cmd([[edit README.md]])
