@@ -309,6 +309,30 @@ describe("actions", function()
                 assert_eq(act.col, 1)
             end
         end)
+        it("setqflist files without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
+            }
+            actions.setqflist_find(lines)
+            assert_true(true)
+        end)
+        it("setqflist files with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
+            }
+            actions.setqflist_find(lines)
+            assert_true(true)
+        end)
     end)
     describe("[_make_setqflist_rg_items]", function()
         it("set rg results without icon", function()
@@ -355,6 +379,30 @@ describe("actions", function()
                 assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
             end
         end)
+        it("setqflist rg results without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10:83: ok ok",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81:3: local query = 'hello'",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4:1: print('goodbye world')",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3:10: hello world",
+            }
+            actions.setqflist_rg(lines)
+            assert_true(true)
+        end)
+        it("set rg results with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10:83: ok ok",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81:3: local query = 'hello'",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4:1: print('goodbye world')",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3:10: hello world",
+            }
+            actions.setqflist_rg(lines)
+            assert_true(true)
+        end)
     end)
     describe("[_make_setqflist_grep_items]", function()
         it("set grep results without icon", function()
@@ -400,6 +448,30 @@ describe("actions", function()
                 assert_eq(act.col, 1)
                 assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
             end
+        end)
+        it("setqflist grep results without icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md:1:hello world",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10: ok ok",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81: local query = 'hello'",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4: print('goodbye world')",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3: hello world",
+            }
+            actions.setqflist_grep(lines)
+            assert_true(true)
+        end)
+        it("setqflist grep results with prepend icon", function()
+            vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
+            local lines = {
+                " ~/github/linrongbin16/fzfx.nvim/README.md:1:hello world",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10: ok ok",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81: local query = 'hello'",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4: print('goodbye world')",
+                "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3: hello world",
+            }
+            actions.setqflist_grep(lines)
+            assert_true(true)
         end)
     end)
     describe("[_make_feed_vim_command_params]", function()
