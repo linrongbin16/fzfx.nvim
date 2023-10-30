@@ -305,5 +305,15 @@ describe("config", function()
                 assert_true(actual == nil)
             end
         end)
+        it("_parse_ex_command_output", function()
+            local actual = conf._parse_ex_command_output()
+            for k, v in pairs(actual) do
+                assert_true(vim.fn.exists(":" .. k) > 0)
+                assert_eq(type(v.filename), "string")
+                assert_true(string.len(v.filename) > 0)
+                assert_eq(type(v.lineno), "number")
+                assert_true(v.lineno > 0)
+            end
+        end)
     end)
 end)

@@ -451,7 +451,7 @@ end
 --                                               File explorer (ls -la) by cursor word
 --```
 --- @return table<string, {filename:string,lineno:integer}>
-local function parse_ex_command_output()
+local function _parse_ex_command_output()
     local tmpfile = vim.fn.tempname()
     vim.cmd(string.format(
         [[
@@ -475,7 +475,7 @@ local function parse_ex_command_output()
             -- parse command name, e.g., FzfxCommands, etc.
             local idx = parsed_header.name_pos
             log.debug(
-                "|fzfx.config - parse_ex_command_output| line[%d]:%s(%d)",
+                "|fzfx.config - _parse_ex_command_output| line[%d]:%s(%d)",
                 i,
                 vim.inspect(line),
                 idx
@@ -484,13 +484,13 @@ local function parse_ex_command_output()
                 idx <= #line and not utils.string_isspace(line:sub(idx, idx))
             do
                 -- log.debug(
-                --     "|fzfx.config - parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
+                --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
                 --     idx,
                 --     vim.inspect(line:sub(idx, idx)),
                 --     vim.inspect(string.len(line:sub(idx, idx)))
                 -- )
                 -- log.debug(
-                --     "|fzfx.config - parse_ex_command_output| parse non-spaces, isspace:%s",
+                --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, isspace:%s",
                 --     vim.inspect(utils.string_isspace(line:sub(idx, idx)))
                 -- )
                 if utils.string_isspace(line:sub(idx, idx)) then
@@ -515,7 +515,7 @@ local function parse_ex_command_output()
             found_command_output_header = true
             parsed_header = _parse_ex_command_output_header(line)
             log.debug(
-                "|fzfx.config - parse_ex_command_output| parsed header:%s",
+                "|fzfx.config - _parse_ex_command_output| parsed header:%s",
                 vim.inspect(parsed_header)
             )
         end
@@ -526,7 +526,7 @@ end
 
 --- @return table<string, VimCommand>
 local function get_vim_user_commands()
-    local parsed_ex_commands = parse_ex_command_output()
+    local parsed_ex_commands = _parse_ex_command_output()
     local user_commands = vim.api.nvim_get_commands({ builtin = false })
 
     log.debug(
@@ -3965,6 +3965,7 @@ local M = {
     _is_ex_command_output_header = _is_ex_command_output_header,
     _parse_ex_command_output_header = _parse_ex_command_output_header,
     _parse_ex_command_output_lua_function_definition = _parse_ex_command_output_lua_function_definition,
+    _parse_ex_command_output = _parse_ex_command_output,
 }
 
 return M
