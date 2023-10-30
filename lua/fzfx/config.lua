@@ -79,7 +79,7 @@ local default_unrestricted_find = {
 }
 
 --- @return string, string
-local function default_bat_style_and_theme()
+local function _default_bat_style_theme()
     local style = "numbers,changes"
     if
         type(vim.env["BAT_STYLE"]) == "string"
@@ -100,11 +100,11 @@ end
 --- @param filename string
 --- @param lineno integer?
 --- @return fun():string[]
-local function make_file_previewer(filename, lineno)
+local function _make_file_previewer(filename, lineno)
     --- @return string[]
     local function wrap()
         if constants.has_bat then
-            local style, theme = default_bat_style_and_theme()
+            local style, theme = _default_bat_style_theme()
             -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
             return type(lineno) == "number"
                     and {
@@ -141,7 +141,7 @@ end
 --- @return string[]
 local function file_previewer(line)
     local filename = line_helpers.parse_find(line)
-    local impl = make_file_previewer(filename)
+    local impl = _make_file_previewer(filename)
     return impl()
 end
 
@@ -196,7 +196,7 @@ local default_unrestricted_grep = {
 --- @param context PipelineContext
 --- @param opts {unrestricted:boolean?,buffer:boolean?}
 --- @return string[]|nil
-local function live_grep_provider(query, context, opts)
+local function _live_grep_provider(query, context, opts)
     local parsed_query = utils.parse_flag_query(query or "")
     local content = parsed_query[1]
     local option = parsed_query[2]
@@ -274,7 +274,7 @@ end
 --- @return string[]
 local function file_previewer_grep(line)
     local parsed = line_helpers.parse_grep(line)
-    local impl = make_file_previewer(parsed.filename, parsed.lineno)
+    local impl = _make_file_previewer(parsed.filename, parsed.lineno)
     return impl()
 end
 
@@ -284,18 +284,18 @@ end
 
 --- @param line string
 --- @return string
-local function parse_vim_ex_command_name(line)
+local function _parse_vim_ex_command_name(line)
     local name_stop_pos = utils.string_find(line, "|", 3)
     return vim.trim(line:sub(3, name_stop_pos - 1))
 end
 
 --- @return table<string, VimCommand>
-local function get_vim_ex_commands()
+local function _get_vim_ex_commands()
     local help_docs_list =
         ---@diagnostic disable-next-line: param-type-mismatch
         vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
     log.debug(
-        "|fzfx.config - get_vim_ex_commands| help docs:%s",
+        "|fzfx.config - _get_vim_ex_commands| help docs:%s",
         vim.inspect(help_docs_list)
     )
     if type(help_docs_list) ~= "table" or vim.tbl_isempty(help_docs_list) then
@@ -309,11 +309,11 @@ local function get_vim_ex_commands()
             local line = lines[i]
             if utils.string_startswith(line, "|:") then
                 log.debug(
-                    "|fzfx.config - get_vim_ex_commands| line[%d]:%s",
+                    "|fzfx.config - _get_vim_ex_commands| line[%d]:%s",
                     i,
                     vim.inspect(line)
                 )
-                local name = parse_vim_ex_command_name(line)
+                local name = _parse_vim_ex_command_name(line)
                 if type(name) == "string" and string.len(name) > 0 then
                     results[name] = {
                         name = name,
@@ -328,7 +328,7 @@ local function get_vim_ex_commands()
         end
     end
     log.debug(
-        "|fzfx.config - get_vim_ex_commands| results:%s",
+        "|fzfx.config - _get_vim_ex_commands| results:%s",
         vim.inspect(results)
     )
     return results
@@ -336,7 +336,7 @@ end
 
 --- @param header string
 --- @return boolean
-local function is_ex_command_output_header(header)
+local function _is_ex_command_output_header(header)
     local name_pos = utils.string_find(header, "Name")
     local args_pos = utils.string_find(header, "Args")
     local address_pos = utils.string_find(header, "Address")
@@ -356,9 +356,9 @@ end
 --- @param line string
 --- @param start_pos integer
 --- @return {filename:string,lineno:integer}?
-local function parse_ex_command_output_lua_function_definition(line, start_pos)
+local function _parse_ex_command_output_lua_function_definition(line, start_pos)
     log.debug(
-        "|fzfx.config - parse_ex_command_output_lua_function_definition| line:%s, start_pos:%s",
+        "|fzfx.config - _parse_ex_command_output_lua_function_definition| line:%s, start_pos:%s",
         vim.inspect(line),
         vim.inspect(start_pos)
     )
@@ -384,12 +384,12 @@ local function parse_ex_command_output_lua_function_definition(line, start_pos)
         content = content:sub(1, #content - 1)
     end
     log.debug(
-        "|fzfx.config - parse_ex_command_output_lua_function_definition| content-2:%s",
+        "|fzfx.config - _parse_ex_command_output_lua_function_definition| content-2:%s",
         vim.inspect(content)
     )
     local content_splits = utils.string_split(content, ":")
     log.debug(
-        "|fzfx.config - parse_ex_command_output_lua_function_definition| split content:%s",
+        "|fzfx.config - _parse_ex_command_output_lua_function_definition| split content:%s",
         vim.inspect(content_splits)
     )
     return {
@@ -401,7 +401,7 @@ end
 --- @alias VimExCommandOutputHeader {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
 --- @param header string
 --- @return VimExCommandOutputHeader
-local function parse_ex_command_output_header(header)
+local function _parse_ex_command_output_header(header)
     local name_pos = utils.string_find(header, "Name")
     local args_pos = utils.string_find(header, "Args")
     local address_pos = utils.string_find(header, "Address")
@@ -451,7 +451,7 @@ end
 --                                               File explorer (ls -la) by cursor word
 --```
 --- @return table<string, {filename:string,lineno:integer}>
-local function parse_ex_command_output()
+local function _parse_ex_command_output()
     local tmpfile = vim.fn.tempname()
     vim.cmd(string.format(
         [[
@@ -475,7 +475,7 @@ local function parse_ex_command_output()
             -- parse command name, e.g., FzfxCommands, etc.
             local idx = parsed_header.name_pos
             log.debug(
-                "|fzfx.config - parse_ex_command_output| line[%d]:%s(%d)",
+                "|fzfx.config - _parse_ex_command_output| line[%d]:%s(%d)",
                 i,
                 vim.inspect(line),
                 idx
@@ -484,13 +484,13 @@ local function parse_ex_command_output()
                 idx <= #line and not utils.string_isspace(line:sub(idx, idx))
             do
                 -- log.debug(
-                --     "|fzfx.config - parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
+                --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
                 --     idx,
                 --     vim.inspect(line:sub(idx, idx)),
                 --     vim.inspect(string.len(line:sub(idx, idx)))
                 -- )
                 -- log.debug(
-                --     "|fzfx.config - parse_ex_command_output| parse non-spaces, isspace:%s",
+                --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, isspace:%s",
                 --     vim.inspect(utils.string_isspace(line:sub(idx, idx)))
                 -- )
                 if utils.string_isspace(line:sub(idx, idx)) then
@@ -502,7 +502,7 @@ local function parse_ex_command_output()
 
             idx = math.max(parsed_header.definition_pos, idx)
             local parsed_line =
-                parse_ex_command_output_lua_function_definition(line, idx)
+                _parse_ex_command_output_lua_function_definition(line, idx)
             if parsed_line then
                 results[name] = {
                     filename = parsed_line.filename,
@@ -511,11 +511,11 @@ local function parse_ex_command_output()
             end
         end
 
-        if is_ex_command_output_header(line) then
+        if _is_ex_command_output_header(line) then
             found_command_output_header = true
-            parsed_header = parse_ex_command_output_header(line)
+            parsed_header = _parse_ex_command_output_header(line)
             log.debug(
-                "|fzfx.config - parse_ex_command_output| parsed header:%s",
+                "|fzfx.config - _parse_ex_command_output| parsed header:%s",
                 vim.inspect(parsed_header)
             )
         end
@@ -525,35 +525,36 @@ local function parse_ex_command_output()
 end
 
 --- @return table<string, VimCommand>
-local function get_vim_user_commands()
-    local parsed_ex_commands = parse_ex_command_output()
+local function _get_vim_user_commands()
+    local parsed_ex_commands = _parse_ex_command_output()
     local user_commands = vim.api.nvim_get_commands({ builtin = false })
-
     log.debug(
-        "|fzfx.config - get_vim_user_commands| user commands:%s",
+        "|fzfx.config - _get_vim_user_commands| user commands:%s",
         vim.inspect(user_commands)
     )
 
     local results = {}
     for name, opts in pairs(user_commands) do
-        results[name] = {
-            name = opts.name,
-            opts = {
-                bang = opts.bang,
-                bar = opts.bar,
-                range = opts.range,
-                complete = opts.complete,
-                complete_arg = opts.complete_arg,
-                desc = opts.definition,
-                nargs = opts.nargs,
-            },
-        }
-        local parsed = parsed_ex_commands[name]
-        if parsed then
-            results[name].loc = {
-                filename = parsed.filename,
-                lineno = parsed.lineno,
+        if type(opts) == "table" and opts.name == name then
+            results[name] = {
+                name = opts.name,
+                opts = {
+                    bang = opts.bang,
+                    bar = opts.bar,
+                    range = opts.range,
+                    complete = opts.complete,
+                    complete_arg = opts.complete_arg,
+                    desc = opts.definition,
+                    nargs = opts.nargs,
+                },
             }
+            local parsed = parsed_ex_commands[name]
+            if parsed then
+                results[name].loc = {
+                    filename = parsed.filename,
+                    lineno = parsed.lineno,
+                }
+            end
         end
     end
     return results
@@ -561,7 +562,7 @@ end
 
 --- @param rendered VimCommand
 --- @return string
-local function render_vim_commands_column_opts(rendered)
+local function _render_vim_commands_column_opts(rendered)
     local bang = (type(rendered.opts) == "table" and rendered.opts.bang) and "Y"
         or "N"
     local bar = (type(rendered.opts) == "table" and rendered.opts.bar) and "Y"
@@ -588,7 +589,7 @@ end
 
 --- @param commands VimCommand[]
 --- @return integer,integer
-local function render_vim_commands_columns_status(commands)
+local function _render_vim_commands_columns_status(commands)
     local NAME = "Name"
     local OPTS = "Bang|Bar|Nargs|Range|Complete"
     local max_name = string.len(NAME)
@@ -596,9 +597,8 @@ local function render_vim_commands_columns_status(commands)
     for _, c in ipairs(commands) do
         max_name = math.max(max_name, string.len(c.name))
         max_opts =
-            math.max(max_opts, string.len(render_vim_commands_column_opts(c)))
+            math.max(max_opts, string.len(_render_vim_commands_column_opts(c)))
     end
-
     return max_name, max_opts
 end
 
@@ -606,7 +606,7 @@ end
 --- @param name_width integer
 --- @param opts_width integer
 --- @return string[]
-local function render_vim_commands(commands, name_width, opts_width)
+local function _render_vim_commands(commands, name_width, opts_width)
     --- @param r VimCommand
     --- @return string
     local function rendered_desc_or_loc(r)
@@ -642,7 +642,7 @@ local function render_vim_commands(commands, name_width, opts_width)
     local header = string.format(formatter, NAME, OPTS, DESC_OR_LOC)
     table.insert(results, header)
     log.debug(
-        "|fzfx.config - render_vim_commands| formatter:%s, header:%s",
+        "|fzfx.config - _render_vim_commands| formatter:%s, header:%s",
         vim.inspect(formatter),
         vim.inspect(header)
     )
@@ -650,11 +650,11 @@ local function render_vim_commands(commands, name_width, opts_width)
         local rendered = string.format(
             formatter,
             c.name,
-            render_vim_commands_column_opts(c),
+            _render_vim_commands_column_opts(c),
             rendered_desc_or_loc(c)
         )
         log.debug(
-            "|fzfx.config - render_vim_commands| rendered[%d]:%s",
+            "|fzfx.config - _render_vim_commands| rendered[%d]:%s",
             i,
             vim.inspect(rendered)
         )
@@ -669,16 +669,16 @@ end
 --- @param no_ex_commands boolean?
 --- @param no_user_commands boolean?
 --- @return VimCommand[]
-local function get_vim_commands(no_ex_commands, no_user_commands)
+local function _get_vim_commands(no_ex_commands, no_user_commands)
     local results = {}
-    local ex_commands = no_ex_commands and {} or get_vim_ex_commands()
+    local ex_commands = no_ex_commands and {} or _get_vim_ex_commands()
     log.debug(
-        "|fzfx.config - get_vim_commands| ex commands:%s",
+        "|fzfx.config - _get_vim_commands| ex commands:%s",
         vim.inspect(ex_commands)
     )
-    local user_commands = no_user_commands and {} or get_vim_user_commands()
+    local user_commands = no_user_commands and {} or _get_vim_user_commands()
     log.debug(
-        "|fzfx.config - get_vim_commands| user commands:%s",
+        "|fzfx.config - _get_vim_commands| user commands:%s",
         vim.inspect(user_commands)
     )
     for _, c in pairs(ex_commands) do
@@ -696,14 +696,14 @@ end
 
 --- @alias VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
 --- @return VimCommandsPipelineContext
-local function vim_commands_context_maker()
+local function _vim_commands_context_maker()
     local ctx = {
         bufnr = vim.api.nvim_get_current_buf(),
         winnr = vim.api.nvim_get_current_win(),
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
-    local commands = get_vim_commands()
-    local name_width, opts_width = render_vim_commands_columns_status(commands)
+    local commands = _get_vim_commands()
+    local name_width, opts_width = _render_vim_commands_columns_status(commands)
     ctx.name_width = name_width
     ctx.opts_width = opts_width
     return ctx
@@ -712,31 +712,31 @@ end
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_commands_provider(ctx)
-    local commands = get_vim_commands()
-    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+    local commands = _get_vim_commands()
+    return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_ex_commands_provider(ctx)
-    local commands = get_vim_commands(nil, true)
-    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+    local commands = _get_vim_commands(nil, true)
+    return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_user_commands_provider(ctx)
-    local commands = get_vim_commands(true)
-    return render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+    local commands = _get_vim_commands(true)
+    return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
-local function vim_commands_lua_function_previewer(filename, lineno)
+local function _vim_commands_lua_function_previewer(filename, lineno)
     local height = vim.api.nvim_win_get_height(0)
     if constants.has_bat then
-        local style, theme = default_bat_style_and_theme()
+        local style, theme = _default_bat_style_theme()
         -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
         return {
             constants.bat,
@@ -783,7 +783,7 @@ local function vim_commands_previewer(line, context)
             "|fzfx.config - vim_commands_previewer| loc:%s",
             vim.inspect(desc_or_loc)
         )
-        return vim_commands_lua_function_previewer(
+        return _vim_commands_lua_function_previewer(
             desc_or_loc.filename,
             desc_or_loc.lineno
         )
@@ -962,7 +962,7 @@ end
 
 --- @param r LspLocationRange?
 --- @return boolean
-local function is_lsp_range(r)
+local function _is_lsp_range(r)
     return type(r) == "table"
         and type(r.start) == "table"
         and type(r.start.line) == "number"
@@ -973,28 +973,26 @@ local function is_lsp_range(r)
 end
 
 --- @param loc LspLocation|LspLocationLink|nil
-local function is_lsp_location(loc)
+local function _is_lsp_location(loc)
     return type(loc) == "table"
         and type(loc.uri) == "string"
-        and is_lsp_range(loc.range)
+        and _is_lsp_range(loc.range)
 end
 
 --- @param loc LspLocation|LspLocationLink|nil
-local function is_lsp_locationlink(loc)
+local function _is_lsp_locationlink(loc)
     return type(loc) == "table"
         and type(loc.targetUri) == "string"
-        and is_lsp_range(loc.originSelectionRange)
-        and is_lsp_range(loc.targetRange)
-        and is_lsp_range(loc.targetSelectionRange)
+        and _is_lsp_range(loc.targetRange)
 end
 
 --- @param line string
 --- @param range LspLocationRange
 --- @param color_renderer fun(text:string):string
 --- @return string?
-local function lsp_location_render_line(line, range, color_renderer)
+local function _lsp_location_render_line(line, range, color_renderer)
     log.debug(
-        "|fzfx.config - lsp_location_render_line| range:%s, line:%s",
+        "|fzfx.config - _lsp_location_render_line| range:%s, line:%s",
         vim.inspect(range),
         vim.inspect(line)
     )
@@ -1019,7 +1017,7 @@ end
 
 --- @alias LspLocationPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,position_params:any}
 --- @return LspLocationPipelineContext
-local function lsp_position_context_maker()
+local function _lsp_position_context_maker()
     local context = {
         bufnr = vim.api.nvim_get_current_buf(),
         winnr = vim.api.nvim_get_current_win(),
@@ -1031,6 +1029,68 @@ local function lsp_position_context_maker()
         includeDeclaration = true,
     }
     return context
+end
+
+--- @param loc LspLocation|LspLocationLink
+--- @return string?
+local function _render_lsp_location_line(loc)
+    log.debug(
+        "|fzfx.config - _render_lsp_location_line| loc:%s",
+        vim.inspect(loc)
+    )
+    local filepath_color = constants.is_windows and color.cyan or color.magenta
+    local filename = nil
+    --- @type LspLocationRange
+    local range = nil
+    if _is_lsp_location(loc) then
+        filename = path.reduce(vim.uri_to_fname(loc.uri))
+        range = loc.range
+        log.debug(
+            "|fzfx.config - _render_lsp_location_line| location filename:%s, range:%s",
+            vim.inspect(filename),
+            vim.inspect(range)
+        )
+    elseif _is_lsp_locationlink(loc) then
+        filename = path.reduce(vim.uri_to_fname(loc.targetUri))
+        range = loc.targetRange
+        log.debug(
+            "|fzfx.config - _render_lsp_location_line| locationlink filename:%s, range:%s",
+            vim.inspect(filename),
+            vim.inspect(range)
+        )
+    end
+    if not _is_lsp_range(range) then
+        return nil
+    end
+    if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
+        return nil
+    end
+    local filelines = utils.readlines(filename)
+    if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
+        return nil
+    end
+    local loc_line = _lsp_location_render_line(
+        filelines[range.start.line + 1],
+        range,
+        color.red
+    )
+    log.debug(
+        "|fzfx.config - _render_lsp_location_line| range:%s, loc_line:%s",
+        vim.inspect(range),
+        vim.inspect(loc_line)
+    )
+    local line = string.format(
+        "%s:%s:%s:%s",
+        filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
+        color.green(tostring(range.start.line + 1)),
+        tostring(range.start.character + 1),
+        loc_line
+    )
+    log.debug(
+        "|fzfx.config - _render_lsp_location_line| line:%s",
+        vim.inspect(line)
+    )
+    return line
 end
 
 --- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"
@@ -1084,71 +1144,6 @@ local function lsp_locations_provider(opts)
         return nil
     end
 
-    local filepath_color = constants.is_windows and color.cyan or color.magenta
-
-    --- @param loc LspLocation|LspLocationLink
-    --- @return string?
-    local function process_location(loc)
-        --- @type string
-        local filename = nil
-        --- @type LspLocationRange
-        local range = nil
-        log.debug(
-            "|fzfx.config - lsp_locations_provider.process_location| loc:%s",
-            vim.inspect(loc)
-        )
-        if is_lsp_location(loc) then
-            filename = path.reduce(vim.uri_to_fname(loc.uri))
-            range = loc.range
-            log.debug(
-                "|fzfx.config - lsp_locations_provider.process_location| location filename:%s, range:%s",
-                vim.inspect(filename),
-                vim.inspect(range)
-            )
-        end
-        if is_lsp_locationlink(loc) then
-            filename = path.reduce(vim.uri_to_fname(loc.targetUri))
-            range = loc.targetRange
-            log.debug(
-                "|fzfx.config - lsp_locations_provider.process_location| locationlink filename:%s, range:%s",
-                vim.inspect(filename),
-                vim.inspect(range)
-            )
-        end
-        if not is_lsp_range(range) then
-            return nil
-        end
-        if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
-            return nil
-        end
-        local filelines = utils.readlines(filename)
-        if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
-            return nil
-        end
-        local loc_line = lsp_location_render_line(
-            filelines[range.start.line + 1],
-            range,
-            color.red
-        )
-        log.debug(
-            "|fzfx.config - lsp_locations_provider.process_location| range:%s, loc_line:%s",
-            vim.inspect(range),
-            vim.inspect(loc_line)
-        )
-        local line = string.format(
-            "%s:%s:%s:%s",
-            filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
-            color.green(tostring(range.start.line + 1)),
-            tostring(range.start.character + 1),
-            loc_line
-        )
-        log.debug(
-            "|fzfx.config - lsp_locations_provider| line:%s",
-            vim.inspect(line)
-        )
-        return line
-    end
-
     local def_lines = {}
 
     for client_id, lsp_result in pairs(lsp_results) do
@@ -1160,14 +1155,14 @@ local function lsp_locations_provider(opts)
             break
         end
         local lsp_defs = lsp_result.result
-        if is_lsp_location(lsp_defs) then
-            local line = process_location(lsp_defs)
+        if _is_lsp_location(lsp_defs) then
+            local line = _render_lsp_location_line(lsp_defs)
             if type(line) == "string" and string.len(line) > 0 then
                 table.insert(def_lines, line)
             end
         else
             for _, def in ipairs(lsp_defs) do
-                local line = process_location(def)
+                local line = _render_lsp_location_line(def)
                 if type(line) == "string" and string.len(line) > 0 then
                     table.insert(def_lines, line)
                 end
@@ -1223,7 +1218,7 @@ end
 --```
 --- @param line string
 --- @return VimKeyMap
-local function parse_ex_map_output_line(line)
+local function _parse_map_command_output_line(line)
     local first_space_pos = 1
     while
         first_space_pos <= #line
@@ -1264,7 +1259,7 @@ local function parse_ex_map_output_line(line)
         local lineno =
             rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
         log.debug(
-            "|fzfx.config - parse_ex_map_output_line| lhs:%s, filename:%s, lineno:%s",
+            "|fzfx.config - _parse_map_command_output_line| lhs:%s, filename:%s, lineno:%s",
             vim.inspect(lhs),
             vim.inspect(filename),
             vim.inspect(lineno)
@@ -1277,7 +1272,7 @@ end
 
 --- @alias VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
 --- @return VimKeyMap[]
-local function get_vim_keymaps()
+local function _get_vim_keymaps()
     local tmpfile = vim.fn.tempname()
     vim.cmd(string.format(
         [[
@@ -1299,7 +1294,7 @@ local function get_vim_keymaps()
         local line = map_output_lines[i]
         if type(line) == "string" and string.len(vim.trim(line)) > 0 then
             if utils.string_isalpha(line:sub(1, 1)) then
-                local parsed = parse_ex_map_output_line(line)
+                local parsed = _parse_map_command_output_line(line)
                 keys_output_map[parsed.lhs] = parsed
                 last_lhs = parsed.lhs
             elseif
@@ -1321,12 +1316,12 @@ local function get_vim_keymaps()
         end
     end
     -- log.debug(
-    --     "|fzfx.config - get_vim_keymaps| keys_output_map1:%s",
+    --     "|fzfx.config - _get_vim_keymaps| keys_output_map1:%s",
     --     vim.inspect(keys_output_map)
     -- )
     local api_keys_list = vim.api.nvim_get_keymap("")
     -- log.debug(
-    --     "|fzfx.config - get_vim_keymaps| api_keys_list:%s",
+    --     "|fzfx.config - _get_vim_keymaps| api_keys_list:%s",
     --     vim.inspect(api_keys_list)
     -- )
     local api_keys_map = {}
@@ -1385,7 +1380,7 @@ local function get_vim_keymaps()
         end
     end
     log.debug(
-        "|fzfx.config - get_vim_keymaps| keys_output_map2:%s",
+        "|fzfx.config - _get_vim_keymaps| keys_output_map2:%s",
         vim.inspect(keys_output_map)
     )
     local results = {}
@@ -1396,7 +1391,7 @@ local function get_vim_keymaps()
         return a.lhs < b.lhs
     end)
     log.debug(
-        "|fzfx.config - get_vim_keymaps| results:%s",
+        "|fzfx.config - _get_vim_keymaps| results:%s",
         vim.inspect(results)
     )
     return results
@@ -1404,7 +1399,7 @@ end
 
 --- @param rendered VimKeyMap
 --- @return string
-local function render_vim_keymaps_column_opts(rendered)
+local function _render_vim_keymaps_column_opts(rendered)
     local mode = rendered.mode or ""
     local noremap = rendered.noremap and "Y" or "N"
     local nowait = rendered.nowait and "Y" or "N"
@@ -1414,7 +1409,7 @@ end
 
 --- @param keys VimKeyMap[]
 --- @return integer,integer
-local function render_vim_keymaps_columns_status(keys)
+local function _render_vim_keymaps_columns_status(keys)
     local KEY = "Key"
     local OPTS = "Mode|Noremap|Nowait|Silent"
     local max_key = string.len(KEY)
@@ -1422,10 +1417,10 @@ local function render_vim_keymaps_columns_status(keys)
     for _, k in ipairs(keys) do
         max_key = math.max(max_key, string.len(k.lhs))
         max_opts =
-            math.max(max_opts, string.len(render_vim_keymaps_column_opts(k)))
+            math.max(max_opts, string.len(_render_vim_keymaps_column_opts(k)))
     end
     log.debug(
-        "|fzfx.config - render_vim_keymaps_columns_status| lhs:%s, opts:%s",
+        "|fzfx.config - _render_vim_keymaps_columns_status| lhs:%s, opts:%s",
         vim.inspect(max_key),
         vim.inspect(max_opts)
     )
@@ -1436,7 +1431,7 @@ end
 --- @param key_width integer
 --- @param opts_width integer
 --- @return string[]
-local function render_vim_keymaps(keymaps, key_width, opts_width)
+local function _render_vim_keymaps(keymaps, key_width, opts_width)
     --- @param r VimKeyMap
     --- @return string?
     local function rendered_def_or_loc(r)
@@ -1471,7 +1466,7 @@ local function render_vim_keymaps(keymaps, key_width, opts_width)
     local header = string.format(formatter, KEY, OPTS, DEF_OR_LOC)
     table.insert(results, header)
     log.debug(
-        "|fzfx.config - render_vim_keymaps| formatter:%s, header:%s",
+        "|fzfx.config - _render_vim_keymaps| formatter:%s, header:%s",
         vim.inspect(formatter),
         vim.inspect(header)
     )
@@ -1479,11 +1474,11 @@ local function render_vim_keymaps(keymaps, key_width, opts_width)
         local rendered = string.format(
             formatter,
             c.lhs,
-            render_vim_keymaps_column_opts(c),
+            _render_vim_keymaps_column_opts(c),
             rendered_def_or_loc(c)
         )
         log.debug(
-            "|fzfx.config - render_vim_keymaps| rendered[%d]:%s",
+            "|fzfx.config - _render_vim_keymaps| rendered[%d]:%s",
             i,
             vim.inspect(rendered)
         )
@@ -1494,14 +1489,14 @@ end
 
 --- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
 --- @return VimKeyMapsPipelineContext
-local function vim_keymaps_context_maker()
+local function _vim_keymaps_context_maker()
     local ctx = {
         bufnr = vim.api.nvim_get_current_buf(),
         winnr = vim.api.nvim_get_current_win(),
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
-    local keys = get_vim_keymaps()
-    local key_width, opts_width = render_vim_keymaps_columns_status(keys)
+    local keys = _get_vim_keymaps()
+    local key_width, opts_width = _render_vim_keymaps_columns_status(keys)
     ctx.key_width = key_width
     ctx.opts_width = opts_width
     return ctx
@@ -1511,7 +1506,7 @@ end
 --- @param ctx VimKeyMapsPipelineContext
 --- @return string[]
 local function vim_keymaps_provider(mode, ctx)
-    local keys = get_vim_keymaps()
+    local keys = _get_vim_keymaps()
     local filtered_keys = {}
     if mode == "all" then
         filtered_keys = keys
@@ -1537,16 +1532,16 @@ local function vim_keymaps_provider(mode, ctx)
             end
         end
     end
-    return render_vim_keymaps(filtered_keys, ctx.key_width, ctx.opts_width)
+    return _render_vim_keymaps(filtered_keys, ctx.key_width, ctx.opts_width)
 end
 
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
-local function vim_keymaps_lua_function_previewer(filename, lineno)
+local function _vim_keymaps_lua_function_previewer(filename, lineno)
     local height = vim.api.nvim_win_get_height(0)
     if constants.has_bat then
-        local style, theme = default_bat_style_and_theme()
+        local style, theme = _default_bat_style_theme()
         -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
         return {
             constants.bat,
@@ -1593,7 +1588,7 @@ local function vim_keymaps_previewer(line, context)
             "|fzfx.config - vim_keymaps_previewer| loc:%s",
             vim.inspect(def_or_loc)
         )
-        return vim_keymaps_lua_function_previewer(
+        return _vim_keymaps_lua_function_previewer(
             def_or_loc.filename,
             def_or_loc.lineno
         )
@@ -1615,7 +1610,7 @@ end
 
 --- @alias FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
 --- @return FileExplorerPipelineContext
-local function file_explorer_context_maker()
+local function _file_explorer_context_maker()
     local temp = vim.fn.tempname()
     utils.writefile(temp, vim.fn.getcwd())
     local context = {
@@ -1629,7 +1624,7 @@ end
 
 --- @param ls_args "-lh"|"-lha"
 --- @return fun(query:string,context:PipelineContext):string?
-local function make_file_explorer_provider(ls_args)
+local function _make_file_explorer_provider(ls_args)
     --- @param query string
     --- @param context FileExplorerPipelineContext
     --- @return string?
@@ -1674,7 +1669,7 @@ end
 
 --- @param filename string
 --- @return string[]|nil
-local function directory_previewer(filename)
+local function _directory_previewer(filename)
     if constants.has_eza then
         return {
             constants.eza,
@@ -1727,10 +1722,10 @@ end
 local function file_explorer_previewer(line, context)
     local p = make_filename_by_file_explorer_context(line, context)
     if vim.fn.filereadable(p) > 0 then
-        local preview = make_file_previewer(p)
+        local preview = _make_file_previewer(p)
         return preview()
     elseif vim.fn.isdirectory(p) > 0 then
-        return directory_previewer(p)
+        return _directory_previewer(p)
     else
         return nil
     end
@@ -2009,7 +2004,7 @@ local Defaults = {
             restricted_mode = {
                 key = "ctrl-r",
                 provider = function(query, context)
-                    return live_grep_provider(query, context, {})
+                    return _live_grep_provider(query, context, {})
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
@@ -2021,7 +2016,7 @@ local Defaults = {
             unrestricted_mode = {
                 key = "ctrl-u",
                 provider = function(query, context)
-                    return live_grep_provider(
+                    return _live_grep_provider(
                         query,
                         context,
                         { unrestricted = true }
@@ -2037,7 +2032,11 @@ local Defaults = {
             buffer_mode = {
                 key = "ctrl-o",
                 provider = function(query, context)
-                    return live_grep_provider(query, context, { buffer = true })
+                    return _live_grep_provider(
+                        query,
+                        context,
+                        { buffer = true }
+                    )
                 end,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
@@ -2983,7 +2982,7 @@ local Defaults = {
             { "--prompt", "Commands > " },
         },
         other_opts = {
-            context_maker = vim_commands_context_maker,
+            context_maker = _vim_commands_context_maker,
         },
     },
 
@@ -3220,7 +3219,7 @@ local Defaults = {
             { "--prompt", "Key Maps > " },
         },
         other_opts = {
-            context_maker = vim_keymaps_context_maker,
+            context_maker = _vim_keymaps_context_maker,
         },
     },
 
@@ -3420,7 +3419,7 @@ local Defaults = {
             zindex = 51,
         },
         other_opts = {
-            context_maker = lsp_position_context_maker,
+            context_maker = _lsp_position_context_maker,
         },
     },
 
@@ -3480,7 +3479,7 @@ local Defaults = {
             zindex = 51,
         },
         other_opts = {
-            context_maker = lsp_position_context_maker,
+            context_maker = _lsp_position_context_maker,
         },
     },
 
@@ -3540,7 +3539,7 @@ local Defaults = {
             zindex = 51,
         },
         other_opts = {
-            context_maker = lsp_position_context_maker,
+            context_maker = _lsp_position_context_maker,
         },
     },
 
@@ -3600,7 +3599,7 @@ local Defaults = {
             zindex = 51,
         },
         other_opts = {
-            context_maker = lsp_position_context_maker,
+            context_maker = _lsp_position_context_maker,
         },
     },
 
@@ -3690,12 +3689,12 @@ local Defaults = {
         providers = {
             filter_hidden = {
                 key = "ctrl-r",
-                provider = make_file_explorer_provider("-lh"),
+                provider = _make_file_explorer_provider("-lh"),
                 provider_type = ProviderTypeEnum.COMMAND,
             },
             include_hidden = {
                 key = "ctrl-u",
-                provider = make_file_explorer_provider("-lha"),
+                provider = _make_file_explorer_provider("-lha"),
                 provider_type = ProviderTypeEnum.COMMAND,
             },
         },
@@ -3763,7 +3762,7 @@ local Defaults = {
             end,
         },
         other_opts = {
-            context_maker = file_explorer_context_maker,
+            context_maker = _file_explorer_context_maker,
         },
     },
 
@@ -3953,6 +3952,38 @@ local M = {
     setup = setup,
     get_config = get_config,
     get_defaults = get_defaults,
+    _default_bat_style_theme = _default_bat_style_theme,
+    _make_file_previewer = _make_file_previewer,
+    _live_grep_provider = _live_grep_provider,
+    _parse_vim_ex_command_name = _parse_vim_ex_command_name,
+    _get_vim_ex_commands = _get_vim_ex_commands,
+    _is_ex_command_output_header = _is_ex_command_output_header,
+    _parse_ex_command_output_header = _parse_ex_command_output_header,
+    _parse_ex_command_output_lua_function_definition = _parse_ex_command_output_lua_function_definition,
+    _parse_ex_command_output = _parse_ex_command_output,
+    _get_vim_user_commands = _get_vim_user_commands,
+    _render_vim_commands_column_opts = _render_vim_commands_column_opts,
+    _render_vim_commands_columns_status = _render_vim_commands_columns_status,
+    _render_vim_commands = _render_vim_commands,
+    _vim_commands_lua_function_previewer = _vim_commands_lua_function_previewer,
+    _vim_commands_context_maker = _vim_commands_context_maker,
+    _get_vim_commands = _get_vim_commands,
+    _is_lsp_range = _is_lsp_range,
+    _is_lsp_location = _is_lsp_location,
+    _is_lsp_locationlink = _is_lsp_locationlink,
+    _lsp_location_render_line = _lsp_location_render_line,
+    _lsp_position_context_maker = _lsp_position_context_maker,
+    _render_lsp_location_line = _render_lsp_location_line,
+    _parse_map_command_output_line = _parse_map_command_output_line,
+    _get_vim_keymaps = _get_vim_keymaps,
+    _render_vim_keymaps_column_opts = _render_vim_keymaps_column_opts,
+    _render_vim_keymaps_columns_status = _render_vim_keymaps_columns_status,
+    _render_vim_keymaps = _render_vim_keymaps,
+    _vim_keymaps_context_maker = _vim_keymaps_context_maker,
+    _vim_keymaps_lua_function_previewer = _vim_keymaps_lua_function_previewer,
+    _file_explorer_context_maker = _file_explorer_context_maker,
+    _make_file_explorer_provider = _make_file_explorer_provider,
+    _directory_previewer = _directory_previewer,
 }
 
 return M

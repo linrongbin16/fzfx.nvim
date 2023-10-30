@@ -38,24 +38,20 @@ local Cmd = {}
 function Cmd:run(source)
     local result = CmdResult:new()
 
-    local async_cmd = require("fzfx.utils").AsyncSpawn:make(
-        source,
-        function(line)
-            if type(line) == "string" then
-                table.insert(result.stdout, line)
-            end
-        end,
-        function(line)
-            if type(line) == "string" then
-                table.insert(result.stderr, line)
-            end
+    local sp = require("fzfx.spawn").Spawn:make(source, function(line)
+        if type(line) == "string" then
+            table.insert(result.stdout, line)
         end
-    ) --[[@as AsyncSpawn]]
-    async_cmd:run()
+    end, function(line)
+        if type(line) == "string" then
+            table.insert(result.stderr, line)
+        end
+    end) --[[@as Spawn]]
+    sp:run()
 
-    if type(async_cmd.result) == "table" then
-        result.code = async_cmd.result.code
-        result.signal = async_cmd.result.signal
+    if type(sp.result) == "table" then
+        result.code = sp.result.code
+        result.signal = sp.result.signal
     end
 
     local o = {
