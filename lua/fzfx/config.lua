@@ -1431,7 +1431,7 @@ end
 --- @param key_width integer
 --- @param opts_width integer
 --- @return string[]
-local function render_vim_keymaps(keymaps, key_width, opts_width)
+local function _render_vim_keymaps(keymaps, key_width, opts_width)
     --- @param r VimKeyMap
     --- @return string?
     local function rendered_def_or_loc(r)
@@ -1466,7 +1466,7 @@ local function render_vim_keymaps(keymaps, key_width, opts_width)
     local header = string.format(formatter, KEY, OPTS, DEF_OR_LOC)
     table.insert(results, header)
     log.debug(
-        "|fzfx.config - render_vim_keymaps| formatter:%s, header:%s",
+        "|fzfx.config - _render_vim_keymaps| formatter:%s, header:%s",
         vim.inspect(formatter),
         vim.inspect(header)
     )
@@ -1478,7 +1478,7 @@ local function render_vim_keymaps(keymaps, key_width, opts_width)
             rendered_def_or_loc(c)
         )
         log.debug(
-            "|fzfx.config - render_vim_keymaps| rendered[%d]:%s",
+            "|fzfx.config - _render_vim_keymaps| rendered[%d]:%s",
             i,
             vim.inspect(rendered)
         )
@@ -1532,7 +1532,7 @@ local function vim_keymaps_provider(mode, ctx)
             end
         end
     end
-    return render_vim_keymaps(filtered_keys, ctx.key_width, ctx.opts_width)
+    return _render_vim_keymaps(filtered_keys, ctx.key_width, ctx.opts_width)
 end
 
 --- @param filename string
@@ -3978,6 +3978,7 @@ local M = {
     _get_vim_keymaps = _get_vim_keymaps,
     _render_vim_keymaps_column_opts = _render_vim_keymaps_column_opts,
     _render_vim_keymaps_columns_status = _render_vim_keymaps_columns_status,
+    _render_vim_keymaps = _render_vim_keymaps,
 }
 
 return M

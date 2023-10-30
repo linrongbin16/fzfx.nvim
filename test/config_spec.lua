@@ -692,5 +692,20 @@ describe("config", function()
             )
             assert_eq(actual2, string.len("Mode|Noremap|Nowait|Silent"))
         end)
+        it("_render_vim_keymaps", function()
+            local keymaps = conf._get_vim_keymaps()
+            local lhs_width, opts_width =
+                conf._render_vim_keymaps_columns_status(keymaps)
+            local actual =
+                conf._render_vim_keymaps(keymaps, lhs_width, opts_width)
+            print(string.format("render vim keymaps:%s\n", vim.inspect(actual)))
+            assert_eq(type(actual), "table")
+            assert_true(#actual >= 1)
+            assert_true(utils.string_startswith(actual[1], "Key"))
+            assert_true(utils.string_endswith(actual[1], "Definition/Location"))
+            for i = 2, #actual do
+                assert_true(string.len(actual[i]) > 0)
+            end
+        end)
     end)
 end)
