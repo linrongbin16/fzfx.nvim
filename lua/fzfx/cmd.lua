@@ -38,7 +38,7 @@ local Cmd = {}
 function Cmd:run(source)
     local result = CmdResult:new()
 
-    local asp = require("fzfx.spawn").Spawn:make(source, function(line)
+    local sp = require("fzfx.spawn").Spawn:make(source, function(line)
         if type(line) == "string" then
             table.insert(result.stdout, line)
         end
@@ -47,11 +47,11 @@ function Cmd:run(source)
             table.insert(result.stderr, line)
         end
     end) --[[@as Spawn]]
-    asp:run()
+    sp:run()
 
-    if type(asp.result) == "table" then
-        result.code = asp.result.code
-        result.signal = asp.result.signal
+    if type(sp.result) == "table" then
+        result.code = sp.result.code
+        result.signal = sp.result.signal
     end
 
     local o = {
