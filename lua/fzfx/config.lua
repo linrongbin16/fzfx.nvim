@@ -1272,7 +1272,7 @@ end
 
 --- @alias VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
 --- @return VimKeyMap[]
-local function get_vim_keymaps()
+local function _get_vim_keymaps()
     local tmpfile = vim.fn.tempname()
     vim.cmd(string.format(
         [[
@@ -1316,12 +1316,12 @@ local function get_vim_keymaps()
         end
     end
     -- log.debug(
-    --     "|fzfx.config - get_vim_keymaps| keys_output_map1:%s",
+    --     "|fzfx.config - _get_vim_keymaps| keys_output_map1:%s",
     --     vim.inspect(keys_output_map)
     -- )
     local api_keys_list = vim.api.nvim_get_keymap("")
     -- log.debug(
-    --     "|fzfx.config - get_vim_keymaps| api_keys_list:%s",
+    --     "|fzfx.config - _get_vim_keymaps| api_keys_list:%s",
     --     vim.inspect(api_keys_list)
     -- )
     local api_keys_map = {}
@@ -1380,7 +1380,7 @@ local function get_vim_keymaps()
         end
     end
     log.debug(
-        "|fzfx.config - get_vim_keymaps| keys_output_map2:%s",
+        "|fzfx.config - _get_vim_keymaps| keys_output_map2:%s",
         vim.inspect(keys_output_map)
     )
     local results = {}
@@ -1391,7 +1391,7 @@ local function get_vim_keymaps()
         return a.lhs < b.lhs
     end)
     log.debug(
-        "|fzfx.config - get_vim_keymaps| results:%s",
+        "|fzfx.config - _get_vim_keymaps| results:%s",
         vim.inspect(results)
     )
     return results
@@ -1495,7 +1495,7 @@ local function vim_keymaps_context_maker()
         winnr = vim.api.nvim_get_current_win(),
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
-    local keys = get_vim_keymaps()
+    local keys = _get_vim_keymaps()
     local key_width, opts_width = render_vim_keymaps_columns_status(keys)
     ctx.key_width = key_width
     ctx.opts_width = opts_width
@@ -1506,7 +1506,7 @@ end
 --- @param ctx VimKeyMapsPipelineContext
 --- @return string[]
 local function vim_keymaps_provider(mode, ctx)
-    local keys = get_vim_keymaps()
+    local keys = _get_vim_keymaps()
     local filtered_keys = {}
     if mode == "all" then
         filtered_keys = keys
@@ -3974,6 +3974,7 @@ local M = {
     _lsp_position_context_maker = _lsp_position_context_maker,
     _render_lsp_location_line = _render_lsp_location_line,
     _parse_map_command_output_line = _parse_map_command_output_line,
+    _get_vim_keymaps = _get_vim_keymaps,
 }
 
 return M
