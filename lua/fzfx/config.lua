@@ -589,7 +589,7 @@ end
 
 --- @param commands VimCommand[]
 --- @return integer,integer
-local function render_vim_commands_columns_status(commands)
+local function _render_vim_commands_columns_status(commands)
     local NAME = "Name"
     local OPTS = "Bang|Bar|Nargs|Range|Complete"
     local max_name = string.len(NAME)
@@ -599,7 +599,6 @@ local function render_vim_commands_columns_status(commands)
         max_opts =
             math.max(max_opts, string.len(_render_vim_commands_column_opts(c)))
     end
-
     return max_name, max_opts
 end
 
@@ -704,7 +703,7 @@ local function vim_commands_context_maker()
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
     local commands = get_vim_commands()
-    local name_width, opts_width = render_vim_commands_columns_status(commands)
+    local name_width, opts_width = _render_vim_commands_columns_status(commands)
     ctx.name_width = name_width
     ctx.opts_width = opts_width
     return ctx
@@ -3969,6 +3968,7 @@ local M = {
     _parse_ex_command_output = _parse_ex_command_output,
     _get_vim_user_commands = _get_vim_user_commands,
     _render_vim_commands_column_opts = _render_vim_commands_column_opts,
+    _render_vim_commands_columns_status = _render_vim_commands_columns_status,
 }
 
 return M

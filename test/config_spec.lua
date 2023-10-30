@@ -361,5 +361,34 @@ describe("config", function()
             )
             assert_eq(actual2, "N   |N  |*    |.    |<Lua>")
         end)
+        it("_render_vim_commands_columns_status", function()
+            local commands = {
+                {
+                    name = "FzfxGBranches",
+                    opts = { bang = true, bar = true },
+                },
+                {
+                    name = "bnext",
+                    opts = {
+                        bang = false,
+                        bar = false,
+                        nargs = "*",
+                        range = ".",
+                        complete = "<Lua function>",
+                    },
+                },
+            }
+            local actual1, actual2 =
+                conf._render_vim_commands_columns_status(commands)
+            print(
+                string.format(
+                    "render vim command status:%s, %s\n",
+                    vim.inspect(actual1),
+                    vim.inspect(actual2)
+                )
+            )
+            assert_eq(actual1, string.len(commands[1].name))
+            assert_eq(actual2, string.len("Bang|Bar|Nargs|Range|Complete"))
+        end)
     end)
 end)
