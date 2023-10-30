@@ -280,6 +280,18 @@ end
 
 -- }
 
+-- git status {
+
+--- @param line string
+--- @return string[]
+local function git_status_previewer(line)
+    local filename = line_helpers.parse_find(line)
+    local impl = _make_file_previewer(filename)
+    return impl()
+end
+
+-- }
+
 -- vim commands {
 
 --- @param line string
@@ -2311,6 +2323,127 @@ local Defaults = {
             },
             workspace = {
                 previewer = file_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+        },
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").edit_find,
+            ["double-click"] = require("fzfx.actions").edit_find,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
+        },
+        fzf_opts = {
+            default_fzf_options.multi,
+            function()
+                return { "--prompt", path.shorten() .. " > " }
+            end,
+        },
+    },
+
+    -- the 'Git Status' commands
+    --- @type GroupConfig
+    git_status = {
+        commands = {
+            -- normal
+            {
+                name = "FzfxGStatus",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find changed git files(git status)",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGStatusC",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find changed git files(git status) in current directory",
+                },
+                default_provider = "current_folder",
+            },
+            -- visual
+            {
+                name = "FzfxGStatusV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find changed git files(git status) by visual select",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGStatsuCV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find changed git files(git status) in current directory by visual select",
+                },
+                default_provider = "current_folder",
+            },
+            -- cword
+            {
+                name = "FzfxGStatusW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files(git status) by cursor word",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGStatusCW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files(git status) in current directory by cursor word",
+                },
+                default_provider = "current_folder",
+            },
+            -- put
+            {
+                name = "FzfxGStatusP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files(git status) by yank text",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGStatusCP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find git files in current directory by yank text",
+                },
+                default_provider = "current_folder",
+            },
+        },
+        providers = {
+            current_folder = {
+                key = "ctrl-u",
+                provider = { "git", "status", "--short", "." },
+            },
+            workspace = {
+                key = "ctrl-w",
+                provider = { "git", "status", "--short" },
+            },
+        },
+        previewers = {
+            current_folder = {
+                previewer = git_status_previewer,
+                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            },
+            workspace = {
+                previewer = git_status_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
         },

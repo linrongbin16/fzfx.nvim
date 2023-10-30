@@ -47,6 +47,18 @@ local function parse_rg(line, opts)
     return { filename = filename, lineno = lineno, column = column, text = text }
 end
 
+-- parse lines from `git status`.
+--- @param line string
+--- @return string
+local function parse_git_status(line)
+    line = vim.trim(line)
+    local i = 1
+    while i <= #line and not utils.string_isspace(line:sub(i, i)) do
+        i = i + 1
+    end
+    return vim.trim(line:sub(i))
+end
+
 -- parse lines from ls/eza/exa.
 --
 -- The `ls -lh` output looks like:
@@ -209,6 +221,7 @@ local M = {
     parse_find = parse_find,
     parse_grep = parse_grep,
     parse_rg = parse_rg,
+    parse_git_status = parse_git_status,
     make_parse_ls = make_parse_ls,
     parse_ls = parse_ls,
     parse_eza = parse_eza,
