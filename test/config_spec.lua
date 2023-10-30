@@ -471,8 +471,8 @@ describe("config", function()
     end)
     describe("[_is_lsp_xxx]", function()
         local RANGE = {
-            start = { line = 1, character = 30 },
-            ["end"] = { line = 10, character = 71 },
+            start = { line = 1, character = 10 },
+            ["end"] = { line = 10, character = 31 },
         }
         local LOCATION = {
             uri = "file:///usr/home/github/linrongbin16/fzfx.nvim",
@@ -496,6 +496,23 @@ describe("config", function()
             assert_false(conf._is_lsp_locationlink("hello"))
             assert_false(conf._is_lsp_locationlink({}))
             assert_true(conf._is_lsp_locationlink(LOCATIONLINK))
+        end)
+    end)
+    describe("_lsp_location_render_line", function()
+        local RANGE = {
+            start = { line = 1, character = 20 },
+            ["end"] = { line = 1, character = 26 },
+        }
+        it("render", function()
+            local loc = conf._lsp_location_render_line(
+                'describe("_lsp_location_render_line", function()',
+                RANGE,
+                require("fzfx.color").red
+            )
+            print(string.format("lsp render line:%s\n", vim.inspect(loc)))
+            assert_eq(type(loc), "string")
+            assert_true(utils.string_startswith(loc, "describe"))
+            assert_true(utils.string_endswith(loc, "function()"))
         end)
     end)
 end)

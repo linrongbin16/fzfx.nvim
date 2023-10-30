@@ -990,9 +990,9 @@ end
 --- @param range LspLocationRange
 --- @param color_renderer fun(text:string):string
 --- @return string?
-local function lsp_location_render_line(line, range, color_renderer)
+local function _lsp_location_render_line(line, range, color_renderer)
     log.debug(
-        "|fzfx.config - lsp_location_render_line| range:%s, line:%s",
+        "|fzfx.config - _lsp_location_render_line| range:%s, line:%s",
         vim.inspect(range),
         vim.inspect(line)
     )
@@ -1123,7 +1123,7 @@ local function lsp_locations_provider(opts)
         if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
             return nil
         end
-        local loc_line = lsp_location_render_line(
+        local loc_line = _lsp_location_render_line(
             filelines[range.start.line + 1],
             range,
             color.red
@@ -3973,6 +3973,7 @@ local M = {
     _is_lsp_range = _is_lsp_range,
     _is_lsp_location = _is_lsp_location,
     _is_lsp_locationlink = _is_lsp_locationlink,
+    _lsp_location_render_line = _lsp_location_render_line,
 }
 
 return M
