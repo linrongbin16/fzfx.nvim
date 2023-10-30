@@ -696,7 +696,7 @@ end
 
 --- @alias VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
 --- @return VimCommandsPipelineContext
-local function vim_commands_context_maker()
+local function _vim_commands_context_maker()
     local ctx = {
         bufnr = vim.api.nvim_get_current_buf(),
         winnr = vim.api.nvim_get_current_win(),
@@ -2985,7 +2985,7 @@ local Defaults = {
             { "--prompt", "Commands > " },
         },
         other_opts = {
-            context_maker = vim_commands_context_maker,
+            context_maker = _vim_commands_context_maker,
         },
     },
 
@@ -3969,6 +3969,7 @@ local M = {
     _render_vim_commands_columns_status = _render_vim_commands_columns_status,
     _render_vim_commands = _render_vim_commands,
     _vim_commands_lua_function_previewer = _vim_commands_lua_function_previewer,
+    _vim_commands_context_maker = _vim_commands_context_maker,
     _is_lsp_range = _is_lsp_range,
     _is_lsp_location = _is_lsp_location,
     _is_lsp_locationlink = _is_lsp_locationlink,

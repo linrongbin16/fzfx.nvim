@@ -457,6 +457,17 @@ describe("config", function()
                 assert_eq(actual[2], "lua/fzfx/config.lua")
             end
         end)
+        it("_vim_commands_context_maker", function()
+            local ctx = conf._vim_commands_context_maker()
+            print(string.format("vim commands context:%s\n", vim.inspect(ctx)))
+            assert_true(ctx.bufnr > 0)
+            assert_true(ctx.winnr > 0)
+            assert_true(ctx.tabnr > 0)
+            assert_true(ctx.name_width > 0)
+            assert_true(
+                ctx.opts_width >= string.len("Bang|Bar|Nargs|Range|Complete")
+            )
+        end)
     end)
     describe("[_is_lsp_xxx]", function()
         local RANGE = {
