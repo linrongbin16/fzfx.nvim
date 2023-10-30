@@ -962,7 +962,7 @@ end
 
 --- @param r LspLocationRange?
 --- @return boolean
-local function is_lsp_range(r)
+local function _is_lsp_range(r)
     return type(r) == "table"
         and type(r.start) == "table"
         and type(r.start.line) == "number"
@@ -973,19 +973,17 @@ local function is_lsp_range(r)
 end
 
 --- @param loc LspLocation|LspLocationLink|nil
-local function is_lsp_location(loc)
+local function _is_lsp_location(loc)
     return type(loc) == "table"
         and type(loc.uri) == "string"
-        and is_lsp_range(loc.range)
+        and _is_lsp_range(loc.range)
 end
 
 --- @param loc LspLocation|LspLocationLink|nil
-local function is_lsp_locationlink(loc)
+local function _is_lsp_locationlink(loc)
     return type(loc) == "table"
         and type(loc.targetUri) == "string"
-        and is_lsp_range(loc.originSelectionRange)
-        and is_lsp_range(loc.targetRange)
-        and is_lsp_range(loc.targetSelectionRange)
+        and _is_lsp_range(loc.targetRange)
 end
 
 --- @param line string
@@ -1097,7 +1095,7 @@ local function lsp_locations_provider(opts)
             "|fzfx.config - lsp_locations_provider.process_location| loc:%s",
             vim.inspect(loc)
         )
-        if is_lsp_location(loc) then
+        if _is_lsp_location(loc) then
             filename = path.reduce(vim.uri_to_fname(loc.uri))
             range = loc.range
             log.debug(
@@ -1106,7 +1104,7 @@ local function lsp_locations_provider(opts)
                 vim.inspect(range)
             )
         end
-        if is_lsp_locationlink(loc) then
+        if _is_lsp_locationlink(loc) then
             filename = path.reduce(vim.uri_to_fname(loc.targetUri))
             range = loc.targetRange
             log.debug(
@@ -1115,7 +1113,7 @@ local function lsp_locations_provider(opts)
                 vim.inspect(range)
             )
         end
-        if not is_lsp_range(range) then
+        if not _is_lsp_range(range) then
             return nil
         end
         if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
@@ -1160,7 +1158,7 @@ local function lsp_locations_provider(opts)
             break
         end
         local lsp_defs = lsp_result.result
-        if is_lsp_location(lsp_defs) then
+        if _is_lsp_location(lsp_defs) then
             local line = process_location(lsp_defs)
             if type(line) == "string" and string.len(line) > 0 then
                 table.insert(def_lines, line)
@@ -3971,6 +3969,9 @@ local M = {
     _render_vim_commands_columns_status = _render_vim_commands_columns_status,
     _render_vim_commands = _render_vim_commands,
     _vim_commands_lua_function_previewer = _vim_commands_lua_function_previewer,
+    _is_lsp_range = _is_lsp_range,
+    _is_lsp_location = _is_lsp_location,
+    _is_lsp_locationlink = _is_lsp_locationlink,
 }
 
 return M

@@ -458,4 +458,33 @@ describe("config", function()
             end
         end)
     end)
+    describe("[_is_lsp_xxx]", function()
+        local RANGE = {
+            start = { line = 1, character = 30 },
+            ["end"] = { line = 10, character = 71 },
+        }
+        local LOCATION = {
+            uri = "file:///usr/home/github/linrongbin16/fzfx.nvim",
+            range = RANGE,
+        }
+        local LOCATIONLINK = {
+            targetUri = "file:///usr/home/github/linrongbin16/fzfx.nvim",
+            targetRange = RANGE,
+        }
+        it("_is_lsp_range", function()
+            assert_false(conf._is_lsp_range(nil))
+            assert_false(conf._is_lsp_range({}))
+            assert_true(conf._is_lsp_range(RANGE))
+        end)
+        it("_is_lsp_location", function()
+            assert_false(conf._is_lsp_location("asdf"))
+            assert_false(conf._is_lsp_location({}))
+            assert_true(conf._is_lsp_location(LOCATION))
+        end)
+        it("_is_lsp_locationlink", function()
+            assert_false(conf._is_lsp_locationlink("hello"))
+            assert_false(conf._is_lsp_locationlink({}))
+            assert_true(conf._is_lsp_locationlink(LOCATIONLINK))
+        end)
+    end)
 end)
