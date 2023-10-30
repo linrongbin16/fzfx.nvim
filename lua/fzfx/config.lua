@@ -2454,9 +2454,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.multi,
-            function()
-                return { "--prompt", path.shorten() .. " > " }
-            end,
+            { "--prompt", "GitStatus > " },
         },
     },
 
@@ -2674,7 +2672,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            { "--prompt", "GBranches > " },
+            { "--prompt", "GitBranches > " },
             function()
                 local cmd = require("fzfx.cmd")
                 local git_root_cmd = cmd.GitRootCmd:run()
@@ -2838,7 +2836,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            { "--prompt", "GCommits > " },
+            { "--prompt", "GitCommits > " },
         },
     },
 
@@ -2929,7 +2927,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            { "--prompt", "GBlame > " },
+            { "--prompt", "GitBlame > " },
         },
     },
 
