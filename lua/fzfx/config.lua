@@ -669,16 +669,16 @@ end
 --- @param no_ex_commands boolean?
 --- @param no_user_commands boolean?
 --- @return VimCommand[]
-local function get_vim_commands(no_ex_commands, no_user_commands)
+local function _get_vim_commands(no_ex_commands, no_user_commands)
     local results = {}
     local ex_commands = no_ex_commands and {} or _get_vim_ex_commands()
     log.debug(
-        "|fzfx.config - get_vim_commands| ex commands:%s",
+        "|fzfx.config - _get_vim_commands| ex commands:%s",
         vim.inspect(ex_commands)
     )
     local user_commands = no_user_commands and {} or _get_vim_user_commands()
     log.debug(
-        "|fzfx.config - get_vim_commands| user commands:%s",
+        "|fzfx.config - _get_vim_commands| user commands:%s",
         vim.inspect(user_commands)
     )
     for _, c in pairs(ex_commands) do
@@ -702,7 +702,7 @@ local function _vim_commands_context_maker()
         winnr = vim.api.nvim_get_current_win(),
         tabnr = vim.api.nvim_get_current_tabpage(),
     }
-    local commands = get_vim_commands()
+    local commands = _get_vim_commands()
     local name_width, opts_width = _render_vim_commands_columns_status(commands)
     ctx.name_width = name_width
     ctx.opts_width = opts_width
@@ -712,21 +712,21 @@ end
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_commands_provider(ctx)
-    local commands = get_vim_commands()
+    local commands = _get_vim_commands()
     return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_ex_commands_provider(ctx)
-    local commands = get_vim_commands(nil, true)
+    local commands = _get_vim_commands(nil, true)
     return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_user_commands_provider(ctx)
-    local commands = get_vim_commands(true)
+    local commands = _get_vim_commands(true)
     return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
@@ -3967,6 +3967,7 @@ local M = {
     _render_vim_commands = _render_vim_commands,
     _vim_commands_lua_function_previewer = _vim_commands_lua_function_previewer,
     _vim_commands_context_maker = _vim_commands_context_maker,
+    _get_vim_commands = _get_vim_commands,
     _is_lsp_range = _is_lsp_range,
     _is_lsp_location = _is_lsp_location,
     _is_lsp_locationlink = _is_lsp_locationlink,

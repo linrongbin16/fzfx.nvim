@@ -468,6 +468,27 @@ describe("config", function()
                 ctx.opts_width >= string.len("Bang|Bar|Nargs|Range|Complete")
             )
         end)
+        it("_get_vim_commands", function()
+            local actual = conf._get_vim_commands()
+            print(string.format("vim commands:%s\n", vim.inspect(actual)))
+            assert_eq(type(actual), "table")
+            assert_true(#actual >= 0)
+            for i, act in ipairs(actual) do
+                -- print(
+                --     string.format("vim command[%d]:%s\n", i, vim.inspect(act))
+                -- )
+                assert_eq(type(act), "table")
+                assert_eq(type(act.name), "string")
+                assert_true(string.len(act.name) > 0)
+                assert_true(vim.fn.exists(":" .. act.name) >= 0)
+                if
+                    utils.string_isalpha(act.name:sub(1, 1))
+                    and act.name ~= "range"
+                then
+                    assert_true(vim.fn.exists(":" .. act.name) > 0)
+                end
+            end
+        end)
     end)
     describe("[_is_lsp_xxx]", function()
         local RANGE = {
