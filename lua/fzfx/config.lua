@@ -4133,6 +4133,7 @@ local M = {
     _make_file_explorer_provider = _make_file_explorer_provider,
     _directory_previewer = _directory_previewer,
     _git_status_previewer = _git_status_previewer,
+    _git_commits_previewer = _git_commits_previewer,
 }
 
 return M
