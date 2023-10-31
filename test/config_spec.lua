@@ -805,4 +805,70 @@ describe("config", function()
             assert_eq(actual[5], "lua/fzfx/config.lua")
         end)
     end)
+    describe("[git_status]", function()
+        it("_get_delta_width", function()
+            local actual = conf._get_delta_width()
+            assert_eq(type(actual), "number")
+            assert_true(actual >= 3)
+        end)
+        it("_git_status_previewer", function()
+            local lines = {
+                " M fzfx/config.lua",
+                " D fzfx/constants.lua",
+                " M fzfx/line_helpers.lua",
+                " M ../test/line_helpers_spec.lua",
+                "?? ../hello",
+            }
+            for _, line in ipairs(lines) do
+                local actual = conf._git_status_previewer(line)
+                assert_eq(type(actual), "string")
+                assert_true(utils.string_find(actual, "git diff") > 0)
+                if vim.fn.executable("delta") > 0 then
+                    assert_true(utils.string_find(actual, "delta") > 0)
+                else
+                    assert_true(utils.string_find(actual, "delta") == nil)
+                end
+            end
+        end)
+        it("_make_git_status_provider", function()
+            local actual1 = conf._make_git_status_provider({})()
+            local actual2 =
+                conf._make_git_status_provider({ current_folder = true })()
+            print(
+                string.format("git status provider1:%s\n", vim.inspect(actual1))
+            )
+            print(
+                string.format("git status provider2:%s\n", vim.inspect(actual2))
+            )
+            assert_true(
+                actual1 == nil
+                    or vim.deep_equal(actual1, { "git", "status", "--short" })
+            )
+            assert_true(
+                actual2 == nil
+                    or vim.deep_equal(
+                        actual2,
+                        { "git", "status", "--short", "." }
+                    )
+            )
+        end)
+    end)
+    describe("[git_commits]", function()
+        it("_git_commits_previewer", function()
+            local lines = {
+                "44ee80e 2023-10-11 linrongbin16 (HEAD -> origin/feat_git_status) docs: wording",
+                "706e1d6 2023-10-10 linrongbin16 chore",
+            }
+            for _, line in ipairs(lines) do
+                local actual = conf._git_commits_previewer(line)
+                assert_eq(type(actual), "string")
+                assert_true(utils.string_find(actual, "git show") > 0)
+                if vim.fn.executable("delta") > 0 then
+                    assert_true(utils.string_find(actual, "delta") > 0)
+                else
+                    assert_true(utils.string_find(actual, "delta") == nil)
+                end
+            end
+        end)
+    end)
 end)

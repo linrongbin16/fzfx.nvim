@@ -102,7 +102,7 @@ end
 --- @return fun():string[]
 local function _make_file_previewer(filename, lineno)
     --- @return string[]
-    local function wrap()
+    local function impl()
         if constants.has_bat then
             local style, theme = _default_bat_style_theme()
             -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
@@ -134,7 +134,7 @@ local function _make_file_previewer(filename, lineno)
             }
         end
     end
-    return wrap
+    return impl
 end
 
 --- @param line string
@@ -276,6 +276,72 @@ local function file_previewer_grep(line)
     local parsed = line_helpers.parse_grep(line)
     local impl = _make_file_previewer(parsed.filename, parsed.lineno)
     return impl()
+end
+
+-- }
+
+-- git status {
+
+--- @param opts {current_folder:boolean?}
+--- @return fun():string[]|nil
+local function _make_git_status_provider(opts)
+    local function impl()
+        local cmd = require("fzfx.cmd")
+        local git_root_cmd = cmd.GitRootCmd:run()
+        if git_root_cmd:wrong() then
+            log.echo(LogLevels.INFO, "not in git repo.")
+            return nil
+        end
+        return (type(opts) == "table" and opts.current_folder)
+                and { "git", "status", "--short", "." }
+            or { "git", "status", "--short" }
+    end
+    return impl
+end
+
+--- @return integer
+local function _get_delta_width()
+    local window_width = vim.api.nvim_win_get_width(0)
+    return math.floor(math.max(3, window_width / 2 - 6))
+end
+
+--- @param line string
+--- @return string?
+local function _git_status_previewer(line)
+    local filename = line_helpers.parse_git_status(line)
+    if vim.fn.executable("delta") > 0 then
+        local preview_width = _get_delta_width()
+        return string.format(
+            [[git diff %s | delta -n --tabs 4 --width %d]],
+            utils.shellescape(filename),
+            preview_width
+        )
+    else
+        return string.format(
+            [[git diff --color=always %s]],
+            utils.shellescape(filename)
+        )
+    end
+end
+
+-- }
+
+-- git commits {
+
+--- @param line string
+--- @return string?
+local function _git_commits_previewer(line)
+    local commit = utils.string_split(line, " ")[1]
+    if vim.fn.executable("delta") > 0 then
+        local preview_width = _get_delta_width()
+        return string.format(
+            [[git show %s | delta -n --tabs 4 --width %d]],
+            commit,
+            preview_width
+        )
+    else
+        return string.format([[git show --color=always %s]], commit)
+    end
 end
 
 -- }
@@ -1140,7 +1206,7 @@ local function lsp_locations_provider(opts)
         return nil
     end
     if type(lsp_results) ~= "table" then
-        log.echo(LogLevels.INFO, "no lsp definitions found.")
+        log.echo(LogLevels.INFO, "no lsp locations found.")
         return nil
     end
 
@@ -1171,7 +1237,7 @@ local function lsp_locations_provider(opts)
     end
 
     if def_lines == nil or vim.tbl_isempty(def_lines) then
-        log.echo(LogLevels.INFO, "no lsp definitions found.")
+        log.echo(LogLevels.INFO, "no lsp locations found.")
         return nil
     end
 
@@ -1628,7 +1694,7 @@ local function _make_file_explorer_provider(ls_args)
     --- @param query string
     --- @param context FileExplorerPipelineContext
     --- @return string?
-    local function wrap(query, context)
+    local function impl(query, context)
         local cwd = utils.readfile(context.cwd)
         if constants.has_eza then
             return vim.fn.executable("echo") > 0
@@ -1664,7 +1730,7 @@ local function _make_file_explorer_provider(ls_args)
         end
     end
 
-    return wrap
+    return impl
 end
 
 --- @param filename string
@@ -2328,6 +2394,126 @@ local Defaults = {
         },
     },
 
+    -- the 'Git Status' commands
+    --- @type GroupConfig
+    git_status = {
+        commands = {
+            -- normal
+            {
+                name = "FzfxGStatus",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find changed git files (status)",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGStatusC",
+                feed = CommandFeedEnum.ARGS,
+                opts = {
+                    bang = true,
+                    nargs = "?",
+                    complete = "dir",
+                    desc = "Find changed git files (status) in current directory",
+                },
+                default_provider = "current_folder",
+            },
+            -- visual
+            {
+                name = "FzfxGStatusV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find changed git files (status) by visual select",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGStatusCV",
+                feed = CommandFeedEnum.VISUAL,
+                opts = {
+                    bang = true,
+                    range = true,
+                    desc = "Find changed git files (status) in current directory by visual select",
+                },
+                default_provider = "current_folder",
+            },
+            -- cword
+            {
+                name = "FzfxGStatusW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files (status) by cursor word",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGStatusCW",
+                feed = CommandFeedEnum.CWORD,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files (status) in current directory by cursor word",
+                },
+                default_provider = "current_folder",
+            },
+            -- put
+            {
+                name = "FzfxGStatusP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files (status) by yank text",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGStatusCP",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files (status) in current directory by yank text",
+                },
+                default_provider = "current_folder",
+            },
+        },
+        providers = {
+            current_folder = {
+                key = "ctrl-u",
+                provider = _make_git_status_provider({ current_folder = true }),
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
+            },
+            workspace = {
+                key = "ctrl-w",
+                provider = _make_git_status_provider({}),
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
+            },
+        },
+        previewers = {
+            current_folder = {
+                previewer = _git_status_previewer,
+            },
+            workspace = {
+                previewer = _git_status_previewer,
+            },
+        },
+        actions = {
+            ["esc"] = require("fzfx.actions").nop,
+            ["enter"] = require("fzfx.actions").edit_git_status,
+            ["double-click"] = require("fzfx.actions").edit_git_status,
+            ["ctrl-q"] = require("fzfx.actions").setqflist_git_status,
+        },
+        fzf_opts = {
+            default_fzf_options.multi,
+            { "--preview-window", "wrap" },
+            { "--prompt", "GitStatus > " },
+        },
+    },
+
     -- the 'Git Branches' commands
     --- @type GroupConfig
     git_branches = {
@@ -2542,7 +2728,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            { "--prompt", "GBranches > " },
+            { "--prompt", "GitBranches > " },
             function()
                 local cmd = require("fzfx.cmd")
                 local git_root_cmd = cmd.GitRootCmd:run()
@@ -2662,7 +2848,7 @@ local Defaults = {
                     if not utils.is_buf_valid(context.bufnr) then
                         log.echo(
                             LogLevels.INFO,
-                            "no commits found on invalid buffer (%s).",
+                            "invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
                         return nil
@@ -2687,16 +2873,10 @@ local Defaults = {
         },
         previewers = {
             all_commits = {
-                previewer = function(line)
-                    local commit = vim.fn.split(line)[1]
-                    return string.format("git show --color=always %s", commit)
-                end,
+                previewer = _git_commits_previewer,
             },
             buffer_commits = {
-                previewer = function(line)
-                    local commit = vim.fn.split(line)[1]
-                    return string.format("git show --color=always %s", commit)
-                end,
+                previewer = _git_commits_previewer,
             },
         },
         actions = {
@@ -2706,7 +2886,8 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            { "--prompt", "GCommits > " },
+            { "--preview-window", "wrap" },
+            { "--prompt", "GitCommits > " },
         },
     },
 
@@ -2760,7 +2941,7 @@ local Defaults = {
                     if not utils.is_buf_valid(context.bufnr) then
                         log.echo(
                             LogLevels.INFO,
-                            "no commits found on invalid buffer (%s).",
+                            "invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
                         return nil
@@ -2784,10 +2965,7 @@ local Defaults = {
         },
         previewers = {
             default = {
-                previewer = function(line)
-                    local commit = vim.fn.split(line)[1]
-                    return string.format("git show --color=always %s", commit)
-                end,
+                previewer = _git_commits_previewer,
             },
         },
         actions = {
@@ -2797,7 +2975,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
-            { "--prompt", "GBlame > " },
+            { "--prompt", "GitBlame > " },
         },
     },
 
@@ -3984,6 +4162,10 @@ local M = {
     _file_explorer_context_maker = _file_explorer_context_maker,
     _make_file_explorer_provider = _make_file_explorer_provider,
     _directory_previewer = _directory_previewer,
+    _make_git_status_provider = _make_git_status_provider,
+    _get_delta_width = _get_delta_width,
+    _git_status_previewer = _git_status_previewer,
+    _git_commits_previewer = _git_commits_previewer,
 }
 
 return M

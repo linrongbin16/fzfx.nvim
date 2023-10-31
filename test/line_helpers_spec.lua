@@ -353,4 +353,19 @@ describe("line_helpers", function()
             end
         end)
     end)
+    describe("[parse_git_status]", function()
+        it("parse", function()
+            local lines = {
+                " M fzfx/config.lua",
+                " D fzfx/constants.lua",
+                " M fzfx/line_helpers.lua",
+                " M ../test/line_helpers_spec.lua",
+                "?? ../hello",
+            }
+            for _, line in ipairs(lines) do
+                local actual = line_helpers.parse_git_status(line)
+                assert_eq(line:sub(4), actual)
+            end
+        end)
+    end)
 end)

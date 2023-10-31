@@ -70,11 +70,12 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
-- [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
-- [git](https://git-scm.com/) (optional for **git** commands).
-- [eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)), [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (optional for **file explorer** commands, print current directory path).
+- [bat](https://github.com/sharkdp/bat) (optional for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
+- [git](https://git-scm.com/) (optional for **git** commands), [delta](https://github.com/dandavison/delta) (optional for preview **git diff**, **git show**).
+- [eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)), [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (optional for preview **file explorer** cwd).
+- [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (mandatory for vim **commands**, **keymaps** commands).
 
-> Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be a better choice, while still recommend to [install linux shell commands on Windows](#windows) since utils like **echo** **sleep** are often used by somewhere.
+> Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be a better choice, while still recommend to [install linux shell commands on Windows](#windows) since utils like **echo**, **sleep** are often used by somewhere.
 
 ### Windows
 
@@ -262,7 +263,7 @@ Commands are named following below rules:
   - `alt-p`: toggle preview.
   - `ctrl-f`: preview half page down.
   - `ctrl-b`: preview half page up.
-- Multi keys
+- Select keys
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
 
@@ -279,7 +280,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -314,7 +315,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -352,7 +353,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -390,7 +391,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -416,6 +417,42 @@ Commands are named following below rules:
 </tbody>
 </table>
 
+- Git Status (Changed Files)
+
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. Current directory variant is named with `C` suffix.
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Select Keys</th>
+    <th>Preview Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxGStatus(C)</td>
+    <td>N</td>
+    <td rowspan="4">Yes</td>
+    <td rowspan="4">Yes</td>
+  </tr>
+  <tr>
+    <td>FzfxGStatus(C)V</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxGStatus(C)W</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGStatus(C)P</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
 - Git Branches
 
 > 1. Use `enter` to checkout branch.
@@ -426,7 +463,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -461,7 +498,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -496,7 +533,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -531,7 +568,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -566,7 +603,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -605,7 +642,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -643,7 +680,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -678,7 +715,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
