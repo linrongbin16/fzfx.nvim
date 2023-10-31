@@ -70,7 +70,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
-- [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
+- [bat](https://github.com/sharkdp/bat) (optional for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
 - [git](https://git-scm.com/) (optional for **git** commands), [delta](https://github.com/dandavison/delta) (optional for preview **git diff**, **git show**).
 - [eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)), [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (optional for preview **file explorer** cwd).
 
