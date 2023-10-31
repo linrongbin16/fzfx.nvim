@@ -287,17 +287,6 @@ end
 local function _git_status_previewer(line)
     local filename = line_helpers.parse_git_status(line)
     if vim.fn.executable("delta") > 0 then
-        -- return {
-        --     "git",
-        --     "-c",
-        --     "core.pager=delta",
-        --     "-c",
-        --     "delta.line-numbers=true",
-        --     "-c",
-        --     "delta.true-color=always",
-        --     "diff",
-        --     filename,
-        -- }
         return vim.o.termguicolors
                 and string.format(
                     [[git diff %s | delta -n --true-color=always]],
@@ -308,7 +297,6 @@ local function _git_status_previewer(line)
                 utils.shellescape(filename)
             )
     else
-        -- return { "git", "diff", "--color=always", filename }
         return string.format(
             [[git diff --color=always %s]],
             utils.shellescape(filename)
