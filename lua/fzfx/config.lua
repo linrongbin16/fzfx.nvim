@@ -2816,7 +2816,7 @@ local Defaults = {
                     if not utils.is_buf_valid(context.bufnr) then
                         log.echo(
                             LogLevels.INFO,
-                            "no commits found on invalid buffer (%s).",
+                            "invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
                         return nil
