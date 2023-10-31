@@ -805,4 +805,25 @@ describe("config", function()
             assert_eq(actual[5], "lua/fzfx/config.lua")
         end)
     end)
+    describe("[git_status]", function()
+        it("_git_status_previewer", function()
+            local lines = {
+                " M fzfx/config.lua",
+                " D fzfx/constants.lua",
+                " M fzfx/line_helpers.lua",
+                " M ../test/line_helpers_spec.lua",
+                "?? ../hello",
+            }
+            for _, line in ipairs(lines) do
+                local actual = conf._git_status_previewer(line)
+                assert_eq(type(actual), "string")
+                assert_true(utils.string_find(actual, "git diff") > 0)
+                if vim.fn.executable("delta") > 0 then
+                    assert_true(utils.string_find(actual, "delta") > 0)
+                else
+                    assert_true(utils.string_find(actual, "delta") == nil)
+                end
+            end
+        end)
+    end)
 end)

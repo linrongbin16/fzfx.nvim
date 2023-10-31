@@ -283,8 +283,8 @@ end
 -- git status {
 
 --- @param line string
---- @return string|nil
-local function git_status_previewer(line)
+--- @return string?
+local function _git_status_previewer(line)
     local filename = line_helpers.parse_git_status(line)
     if vim.fn.executable("delta") > 0 then
         -- return {
@@ -2465,11 +2465,11 @@ local Defaults = {
         },
         previewers = {
             current_folder = {
-                previewer = git_status_previewer,
+                previewer = _git_status_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND,
             },
             workspace = {
-                previewer = git_status_previewer,
+                previewer = _git_status_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND,
             },
         },
@@ -4142,6 +4142,7 @@ local M = {
     _file_explorer_context_maker = _file_explorer_context_maker,
     _make_file_explorer_provider = _make_file_explorer_provider,
     _directory_previewer = _directory_previewer,
+    _git_status_previewer = _git_status_previewer,
 }
 
 return M
