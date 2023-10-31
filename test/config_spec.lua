@@ -806,6 +806,11 @@ describe("config", function()
         end)
     end)
     describe("[git_status]", function()
+        it("_get_delta_width", function()
+            local actual = conf._get_delta_width()
+            assert_eq(type(actual), "number")
+            assert_true(actual >= 3)
+        end)
         it("_git_status_previewer", function()
             local lines = {
                 " M fzfx/config.lua",

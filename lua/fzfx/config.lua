@@ -102,7 +102,7 @@ end
 --- @return fun():string[]
 local function _make_file_previewer(filename, lineno)
     --- @return string[]
-    local function wrap()
+    local function impl()
         if constants.has_bat then
             local style, theme = _default_bat_style_theme()
             -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
@@ -134,7 +134,7 @@ local function _make_file_previewer(filename, lineno)
             }
         end
     end
-    return wrap
+    return impl
 end
 
 --- @param line string
@@ -285,7 +285,7 @@ end
 --- @param opts {current_folder:boolean?}
 --- @return fun():string[]|nil
 local function _make_git_status_provider(opts)
-    local function wrap()
+    local function impl()
         local cmd = require("fzfx.cmd")
         local git_root_cmd = cmd.GitRootCmd:run()
         if git_root_cmd:wrong() then
@@ -296,7 +296,13 @@ local function _make_git_status_provider(opts)
                 and { "git", "status", "--short", "." }
             or { "git", "status", "--short" }
     end
-    return wrap
+    return impl
+end
+
+--- @return integer
+local function _get_delta_width()
+    local window_width = vim.api.nvim_win_get_width(0)
+    return math.floor(math.max(3, window_width / 2 - 6))
 end
 
 --- @param line string
@@ -304,9 +310,11 @@ end
 local function _git_status_previewer(line)
     local filename = line_helpers.parse_git_status(line)
     if vim.fn.executable("delta") > 0 then
+        local preview_width = _get_delta_width()
         return string.format(
-            [[git diff %s | delta -n]],
-            utils.shellescape(filename)
+            [[git diff %s | delta -n --tabs 4 --width %d]],
+            utils.shellescape(filename),
+            preview_width
         )
     else
         return string.format(
@@ -325,7 +333,12 @@ end
 local function _git_commits_previewer(line)
     local commit = utils.string_split(line, " ")[1]
     if vim.fn.executable("delta") > 0 then
-        return string.format([[git show %s | delta -n]], commit)
+        local preview_width = _get_delta_width()
+        return string.format(
+            [[git show %s | delta -n --tabs 4 --width %d]],
+            commit,
+            preview_width
+        )
     else
         return string.format([[git show --color=always %s]], commit)
     end
@@ -1681,7 +1694,7 @@ local function _make_file_explorer_provider(ls_args)
     --- @param query string
     --- @param context FileExplorerPipelineContext
     --- @return string?
-    local function wrap(query, context)
+    local function impl(query, context)
         local cwd = utils.readfile(context.cwd)
         if constants.has_eza then
             return vim.fn.executable("echo") > 0
@@ -1717,7 +1730,7 @@ local function _make_file_explorer_provider(ls_args)
         end
     end
 
-    return wrap
+    return impl
 end
 
 --- @param filename string
@@ -2873,6 +2886,7 @@ local Defaults = {
         },
         fzf_opts = {
             default_fzf_options.no_multi,
+            { "--preview-window", "wrap" },
             { "--prompt", "GitCommits > " },
         },
     },
@@ -4149,6 +4163,7 @@ local M = {
     _make_file_explorer_provider = _make_file_explorer_provider,
     _directory_previewer = _directory_previewer,
     _make_git_status_provider = _make_git_status_provider,
+    _get_delta_width = _get_delta_width,
     _git_status_previewer = _git_status_previewer,
     _git_commits_previewer = _git_commits_previewer,
 }
