@@ -283,7 +283,7 @@ end
 -- git status {
 
 --- @param opts {current_folder:boolean?}
---- @return string[]|nil
+--- @return fun():string[]|nil
 local function _make_git_status_provider(opts)
     local function wrap()
         local cmd = require("fzfx.cmd")
@@ -296,7 +296,6 @@ local function _make_git_status_provider(opts)
                 and { "git", "status", "--short", "." }
             or { "git", "status", "--short" }
     end
-
     return wrap
 end
 
