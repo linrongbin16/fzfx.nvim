@@ -189,82 +189,92 @@ local default_unrestricted_grep = {
     "-r",
 }
 
---- @param query string
---- @param context PipelineContext
---- @param opts {unrestricted:boolean?,buffer:boolean?}
---- @return string[]|nil
-local function _live_grep_provider(query, context, opts)
-    local parsed_query = utils.parse_flag_query(query or "")
-    local content = parsed_query[1]
-    local option = parsed_query[2]
+--- @param opts {unrestricted:boolean?,buffer:boolean?}?
+--- @return fun(query:string,context:PipelineContext):string[]|nil
+local function _make_live_grep_provider(opts)
+    --- @param query string
+    --- @param context PipelineContext
+    --- @return string[]|nil
+    local function impl(query, context)
+        local parsed_query = utils.parse_flag_query(query or "")
+        local content = parsed_query[1]
+        local option = parsed_query[2]
 
-    local args = nil
-    if vim.fn.executable("rg") > 0 then
-        if type(opts) == "table" and opts.unrestricted then
-            args = vim.deepcopy(default_unrestricted_rg)
-        elseif type(opts) == "table" and opts.buffer then
-            args = vim.deepcopy(default_unrestricted_rg)
-            local current_bufpath = utils.is_buf_valid(context.bufnr)
-                    and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
-                or nil
-            if
-                type(current_bufpath) ~= "string"
-                or string.len(current_bufpath) == 0
-            then
-                log.echo(
-                    LogLevels.INFO,
-                    "invalid buffer (%s).",
-                    vim.inspect(context.bufnr)
-                )
-                return nil
+        local args = nil
+        if vim.fn.executable("rg") > 0 then
+            if type(opts) == "table" and opts.unrestricted then
+                args = vim.deepcopy(default_unrestricted_rg)
+            elseif type(opts) == "table" and opts.buffer then
+                args = vim.deepcopy(default_unrestricted_rg)
+                local current_bufpath = utils.is_buf_valid(context.bufnr)
+                        and path.reduce(
+                            vim.api.nvim_buf_get_name(context.bufnr)
+                        )
+                    or nil
+                if
+                    type(current_bufpath) ~= "string"
+                    or string.len(current_bufpath) == 0
+                then
+                    log.echo(
+                        LogLevels.INFO,
+                        "invalid buffer (%s).",
+                        vim.inspect(context.bufnr)
+                    )
+                    return nil
+                end
+            else
+                args = vim.deepcopy(default_restricted_rg)
+            end
+        elseif
+            vim.fn.executable("grep") > 0 or vim.fn.executable("ggrep") > 0
+        then
+            if type(opts) == "table" and opts.unrestricted then
+                args = vim.deepcopy(default_unrestricted_grep)
+            elseif type(opts) == "table" and opts.buffer then
+                args = vim.deepcopy(default_unrestricted_grep)
+                local current_bufpath = utils.is_buf_valid(context.bufnr)
+                        and path.reduce(
+                            vim.api.nvim_buf_get_name(context.bufnr)
+                        )
+                    or nil
+                if
+                    type(current_bufpath) ~= "string"
+                    or string.len(current_bufpath) == 0
+                then
+                    log.echo(
+                        LogLevels.INFO,
+                        "invalid buffer (%s).",
+                        vim.inspect(context.bufnr)
+                    )
+                    return nil
+                end
+            else
+                args = vim.deepcopy(default_restricted_grep)
             end
         else
-            args = vim.deepcopy(default_restricted_rg)
+            log.echo(LogLevels.INFO, "no rg/grep command found.")
+            return nil
         end
-    elseif vim.fn.executable("grep") > 0 or vim.fn.executable("ggrep") > 0 then
-        if type(opts) == "table" and opts.unrestricted then
-            args = vim.deepcopy(default_unrestricted_grep)
-        elseif type(opts) == "table" and opts.buffer then
-            args = vim.deepcopy(default_unrestricted_grep)
-            local current_bufpath = utils.is_buf_valid(context.bufnr)
-                    and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
-                or nil
-            if
-                type(current_bufpath) ~= "string"
-                or string.len(current_bufpath) == 0
-            then
-                log.echo(
-                    LogLevels.INFO,
-                    "invalid buffer (%s).",
-                    vim.inspect(context.bufnr)
-                )
-                return nil
+        if type(option) == "string" and string.len(option) > 0 then
+            local option_splits = utils.string_split(option, " ")
+            for _, o in ipairs(option_splits) do
+                if type(o) == "string" and string.len(o) > 0 then
+                    table.insert(args, o)
+                end
             end
+        end
+        if type(opts) == "table" and opts.buffer then
+            local current_bufpath =
+                path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+            table.insert(args, content)
+            table.insert(args, current_bufpath)
         else
-            args = vim.deepcopy(default_restricted_grep)
+            -- table.insert(args, "--")
+            table.insert(args, content)
         end
-    else
-        log.echo(LogLevels.INFO, "no rg/grep command found.")
-        return nil
+        return args
     end
-    if type(option) == "string" and string.len(option) > 0 then
-        local option_splits = utils.string_split(option, " ")
-        for _, o in ipairs(option_splits) do
-            if type(o) == "string" and string.len(o) > 0 then
-                table.insert(args, o)
-            end
-        end
-    end
-    if type(opts) == "table" and opts.buffer then
-        local current_bufpath =
-            path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
-        table.insert(args, content)
-        table.insert(args, current_bufpath)
-    else
-        -- table.insert(args, "--")
-        table.insert(args, content)
-    end
-    return args
+    return impl
 end
 
 --- @param line string
@@ -277,10 +287,80 @@ end
 
 -- live grep }
 
+-- buffers {
+
+--- @param bufnr integer
+--- @return boolean
+local function _is_valid_buffer_number(bufnr)
+    local exclude_filetypes = {
+        ["qf"] = true,
+        ["neo-tree"] = true,
+    }
+    local ok, ft_or_err = pcall(utils.get_buf_option, { bufnr, "filetype" })
+    if not ok then
+        return false
+    end
+    return utils.is_buf_valid(bufnr) and not exclude_filetypes[ft_or_err]
+end
+
+--- @param query string
+--- @param context PipelineContext
+--- @return string[]|nil
+local function _buffers_provider(query, context)
+    local bufs = vim.api.nvim_list_bufs()
+    local filenames = {}
+    local current_filename = _is_valid_buffer_number(context.bufnr)
+            and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+        or nil
+    if
+        type(current_filename) == "string"
+        and string.len(current_filename) > 0
+    then
+        table.insert(filenames, current_filename)
+    end
+    for _, bufnr in ipairs(bufs) do
+        local fname = path.reduce(vim.api.nvim_buf_get_name(bufnr))
+        if _is_valid_buffer_number(bufnr) and fname ~= current_filename then
+            table.insert(filenames, fname)
+        end
+    end
+    return filenames
+end
+
+--- @param line string
+local function _delete_buffer(line)
+    local bufs = vim.api.nvim_list_bufs()
+    local filenames = {}
+    for _, bufnr in ipairs(bufs) do
+        local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
+        filenames[bufpath] = bufnr
+    end
+    if type(line) == "string" and string.len(line) > 0 then
+        local selected_filename = line_helpers.parse_find(line)
+        local bufnr = filenames[selected_filename]
+        if type(bufnr) == "number" and utils.is_buf_valid(bufnr) then
+            vim.api.nvim_buf_delete(bufnr, {})
+        end
+    end
+end
+
+-- buffers }
+
 -- git branches {
 
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+
+local function _git_branches_previewer(line)
+    local branch = vim.fn.split(line)[1]
+    -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
+    -- "git log --graph --color=always --date=relative",
+    return string.format(
+        "git log --pretty=%s --graph --date=short --color=always %s",
+        utils.shellescape(default_git_log_pretty),
+        branch
+    )
+end
 
 -- git branches }
 
@@ -328,7 +408,7 @@ local function _git_status_previewer(line)
     end
 end
 
--- }
+-- git status }
 
 -- git commits {
 
@@ -2073,9 +2153,7 @@ local Defaults = {
         providers = {
             restricted_mode = {
                 key = "ctrl-r",
-                provider = function(query, context)
-                    return _live_grep_provider(query, context, {})
-                end,
+                provider = _make_live_grep_provider(),
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
                     prepend_icon_by_ft = true,
@@ -2085,13 +2163,7 @@ local Defaults = {
             },
             unrestricted_mode = {
                 key = "ctrl-u",
-                provider = function(query, context)
-                    return _live_grep_provider(
-                        query,
-                        context,
-                        { unrestricted = true }
-                    )
-                end,
+                provider = _make_live_grep_provider({ unrestricted = true }),
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
                     prepend_icon_by_ft = true,
@@ -2101,13 +2173,7 @@ local Defaults = {
             },
             buffer_mode = {
                 key = "ctrl-o",
-                provider = function(query, context)
-                    return _live_grep_provider(
-                        query,
-                        context,
-                        { buffer = true }
-                    )
-                end,
+                provider = _make_live_grep_provider({ buffer = true }),
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = {
                     prepend_icon_by_ft = true,
@@ -2199,36 +2265,7 @@ local Defaults = {
         },
         providers = {
             key = "default",
-            provider = function(query, context)
-                local function valid_bufnr(b)
-                    local exclude_filetypes = {
-                        ["qf"] = true,
-                        ["neo-tree"] = true,
-                    }
-                    local ft = utils.get_buf_option(b, "filetype")
-                    return utils.is_buf_valid(b) and not exclude_filetypes[ft]
-                end
-                local bufnrs_list = vim.api.nvim_list_bufs()
-                local bufpaths_list = {}
-                local current_bufpath = valid_bufnr(context.bufnr)
-                        and path.reduce(
-                            vim.api.nvim_buf_get_name(context.bufnr)
-                        )
-                    or nil
-                if
-                    type(current_bufpath) == "string"
-                    and string.len(current_bufpath) > 0
-                then
-                    table.insert(bufpaths_list, current_bufpath)
-                end
-                for _, bn in ipairs(bufnrs_list) do
-                    local bp = path.reduce(vim.api.nvim_buf_get_name(bn))
-                    if valid_bufnr(bn) and bp ~= current_bufpath then
-                        table.insert(bufpaths_list, bp)
-                    end
-                end
-                return bufpaths_list
-            end,
+            provider = _buffers_provider,
             provider_type = ProviderTypeEnum.LIST,
             line_opts = { prepend_icon_by_ft = true },
         },
@@ -2239,22 +2276,7 @@ local Defaults = {
         interactions = {
             delete_buffer = {
                 key = "ctrl-d",
-                interaction = function(line)
-                    local list_bufnrs = vim.api.nvim_list_bufs()
-                    local list_bufpaths = {}
-                    for _, bufnr in ipairs(list_bufnrs) do
-                        local bufpath =
-                            path.reduce(vim.api.nvim_buf_get_name(bufnr))
-                        list_bufpaths[bufpath] = bufnr
-                    end
-                    if type(line) == "string" and string.len(line) > 0 then
-                        local bufpath = line_helpers.parse_find(line)
-                        local bufnr = list_bufpaths[bufpath]
-                        if type(bufnr) == "number" then
-                            vim.api.nvim_buf_delete(bufnr, {})
-                        end
-                    end
-                end,
+                interaction = _delete_buffer,
                 reload_after_execute = true,
             },
         },
@@ -4141,7 +4163,13 @@ local M = {
     _file_previewer = _file_previewer,
 
     -- live grep
-    _live_grep_provider = _live_grep_provider,
+    _make_live_grep_provider = _make_live_grep_provider,
+
+    -- buffers
+    _is_valid_buffer_number = _is_valid_buffer_number,
+    _buffers_provider = _buffers_provider,
+    _delete_buffer = _delete_buffer,
+
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,
     _get_vim_ex_commands = _get_vim_ex_commands,
     _is_ex_command_output_header = _is_ex_command_output_header,

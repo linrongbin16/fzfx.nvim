@@ -10,6 +10,14 @@ describe("config", function()
         vim.env._FZFX_NVIM_DEVICONS_PATH = nil
     end)
 
+    local function make_default_context()
+        return {
+            bufnr = vim.api.nvim_get_current_buf(),
+            winnr = vim.api.nvim_get_current_win(),
+            tabnr = vim.api.nvim_get_current_tabpage(),
+        }
+    end
+
     local constants = require("fzfx.constants")
     local conf = require("fzfx.config")
     conf.setup()
@@ -132,9 +140,10 @@ describe("config", function()
             end
         end)
     end)
-    describe("[_live_grep_provider]", function()
-        it("restricted", function()
-            local actual = conf._live_grep_provider("hello", {}, nil)
+    describe("[live_grep]", function()
+        it("_make_live_grep_provider restricted", function()
+            local f = conf._make_live_grep_provider()
+            local actual = f("hello", {})
             -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
             if actual[1] == "rg" then
@@ -165,12 +174,9 @@ describe("config", function()
                 assert_eq(actual[8], "hello")
             end
         end)
-        it("unrestricted", function()
-            local actual = conf._live_grep_provider(
-                "hello",
-                {},
-                { unrestricted = true }
-            )
+        it("_make_live_grep_provider unrestricted", function()
+            local f = conf._make_live_grep_provider({ unrestricted = true })
+            local actual = f("hello", {})
             -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
             if actual[1] == "rg" then
@@ -192,13 +198,10 @@ describe("config", function()
                 assert_eq(actual[6], "hello")
             end
         end)
-        it("buffer", function()
+        it("_make_live_grep_provider buffer", function()
             vim.cmd([[edit README.md]])
-            local actual = conf._live_grep_provider("hello", {
-                bufnr = vim.api.nvim_get_current_buf(),
-                winnr = vim.api.nvim_get_current_win(),
-                tabnr = vim.api.nvim_get_current_tabpage(),
-            }, { buffer = true })
+            local f = conf._make_live_grep_provider({ buffer = true })
+            local actual = f("hello", make_default_context())
             -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
             if actual[1] == "rg" then
@@ -221,6 +224,25 @@ describe("config", function()
                 assert_eq(actual[6], "hello")
                 assert_eq(actual[7], "README.md")
             end
+        end)
+    end)
+    describe("buffers", function()
+        it("_is_valid_buffer_number", function()
+            vim.cmd([[edit README.md]])
+            assert_eq(type(conf._is_valid_buffer_number(0)), "boolean")
+            assert_eq(type(conf._is_valid_buffer_number(1)), "boolean")
+            assert_eq(type(conf._is_valid_buffer_number(2)), "boolean")
+        end)
+        it("_buffers_provider", function()
+            vim.cmd([[edit README.md]])
+            local actual = conf._buffers_provider("", make_default_context())
+            assert_eq(type(actual), "table")
+            assert_true(#actual >= 0)
+        end)
+        it("_delete_buffer", function()
+            vim.cmd([[edit README.md]])
+            conf._delete_buffer("README.md")
+            assert_true(true)
         end)
     end)
     describe("[_parse_vim_ex_command_name]", function()
