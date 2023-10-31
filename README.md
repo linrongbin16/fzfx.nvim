@@ -262,7 +262,7 @@ Commands are named following below rules:
   - `alt-p`: toggle preview.
   - `ctrl-f`: preview half page down.
   - `ctrl-b`: preview half page up.
-- Multi keys
+- Select keys
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
 
@@ -279,7 +279,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -314,7 +314,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -352,7 +352,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -390,7 +390,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -426,7 +426,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -462,7 +462,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -497,7 +497,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -532,7 +532,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -567,7 +567,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -602,7 +602,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -641,7 +641,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -679,7 +679,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
@@ -714,7 +714,7 @@ Commands are named following below rules:
   <tr>
     <th>Command</th>
     <th>Mode</th>
-    <th>Multi Keys</th>
+    <th>Select Keys</th>
     <th>Preview Keys</th>
   </tr>
 </thead>
