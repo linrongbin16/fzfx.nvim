@@ -301,6 +301,21 @@ end
 
 -- }
 
+-- git commits {
+
+--- @param line string
+--- @return string?
+local function _git_commits_previewer(line)
+    local commit = utils.string_split(line, " ")[1]
+    if vim.fn.executable("delta") > 0 then
+        return string.format([[git show %s | delta -n]], commit)
+    else
+        return string.format([[git show --color=always %s]], commit)
+    end
+end
+
+-- }
+
 -- vim commands {
 
 --- @param line string
@@ -2449,11 +2464,9 @@ local Defaults = {
         previewers = {
             current_folder = {
                 previewer = _git_status_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND,
             },
             workspace = {
                 previewer = _git_status_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND,
             },
         },
         actions = {
@@ -2828,16 +2841,10 @@ local Defaults = {
         },
         previewers = {
             all_commits = {
-                previewer = function(line)
-                    local commit = vim.fn.split(line)[1]
-                    return string.format("git show --color=always %s", commit)
-                end,
+                previewer = _git_commits_previewer,
             },
             buffer_commits = {
-                previewer = function(line)
-                    local commit = vim.fn.split(line)[1]
-                    return string.format("git show --color=always %s", commit)
-                end,
+                previewer = _git_commits_previewer,
             },
         },
         actions = {

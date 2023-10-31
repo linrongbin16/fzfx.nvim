@@ -31,6 +31,11 @@
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxGStatus
+  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
+  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxGBranches
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-R`/`CTRL-O` to switch between local/remote branches.
