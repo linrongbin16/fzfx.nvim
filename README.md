@@ -71,10 +71,10 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
 - [bat](https://github.com/sharkdp/bat) (optional for preview files, e.g. the right side of **live grep**, **files**, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
-- [git](https://git-scm.com/) (optional for **git** commands), [delta](https://github.com/dandavison/delta) (optional for **git status** commands).
-- [eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)), [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (optional for **file explorer** commands, print current directory path).
+- [git](https://git-scm.com/) (optional for **git** commands), [delta](https://github.com/dandavison/delta) (optional for **git diff**, **git show** commands).
+- [eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)), [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (optional for **file explorer** commands to print cwd).
 
-> Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be a better choice, while still recommend to [install linux shell commands on Windows](#windows) since utils like **echo** **sleep** are often used by somewhere.
+> Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be a better choice, while still recommend to [install linux shell commands on Windows](#windows) since utils like **echo**, **sleep** are often used by somewhere.
 
 ### Windows
 
