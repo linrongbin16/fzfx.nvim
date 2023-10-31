@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.2.1...v2.3.0) (2023-10-31)
+
+
+### Features
+
+* **git_status:** add FzfxGStatus commands, add git-delta support ([#358](https://github.com/linrongbin16/fzfx.nvim/issues/358)) ([491fb59](https://github.com/linrongbin16/fzfx.nvim/commit/491fb5943a48b3c224dfaf941132d33b6b033d1d))
+
 ## [2.2.1](https://github.com/linrongbin16/fzfx.nvim/compare/v2.2.0...v2.2.1) (2023-10-30)
 
 
