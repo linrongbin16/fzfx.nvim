@@ -7,6 +7,10 @@ describe("fzfx", function()
 
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
+        vim.opt.swapfile = false
+        vim.fn["fzf#exec"] = function()
+            return "fzf"
+        end
     end)
 
     describe("[setup]", function()
