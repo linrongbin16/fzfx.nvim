@@ -282,6 +282,24 @@ end
 
 -- git status {
 
+--- @param opts {current_folder:boolean?}
+--- @return string[]|nil
+local function _make_git_status_provider(opts)
+    local function wrap()
+        local cmd = require("fzfx.cmd")
+        local git_root_cmd = cmd.GitRootCmd:run()
+        if git_root_cmd:wrong() then
+            log.echo(LogLevels.INFO, "not in git repo.")
+            return nil
+        end
+        return (type(opts) == "table" and opts.current_folder)
+                and { "git", "status", "--short", "." }
+            or { "git", "status", "--short" }
+    end
+
+    return wrap
+end
+
 --- @param line string
 --- @return string?
 local function _git_status_previewer(line)
@@ -1176,7 +1194,7 @@ local function lsp_locations_provider(opts)
         return nil
     end
     if type(lsp_results) ~= "table" then
-        log.echo(LogLevels.INFO, "no lsp definitions found.")
+        log.echo(LogLevels.INFO, "no lsp locations found.")
         return nil
     end
 
@@ -1207,7 +1225,7 @@ local function lsp_locations_provider(opts)
     end
 
     if def_lines == nil or vim.tbl_isempty(def_lines) then
-        log.echo(LogLevels.INFO, "no lsp definitions found.")
+        log.echo(LogLevels.INFO, "no lsp locations found.")
         return nil
     end
 
@@ -2454,11 +2472,13 @@ local Defaults = {
         providers = {
             current_folder = {
                 key = "ctrl-u",
-                provider = { "git", "status", "--short", "." },
+                provider = _make_git_status_provider({ current_folder = true }),
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
             },
             workspace = {
                 key = "ctrl-w",
-                provider = { "git", "status", "--short" },
+                provider = _make_git_status_provider({}),
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
             },
         },
         previewers = {
@@ -2908,7 +2928,7 @@ local Defaults = {
                     if not utils.is_buf_valid(context.bufnr) then
                         log.echo(
                             LogLevels.INFO,
-                            "no commits found on invalid buffer (%s).",
+                            "invalid buffer (%s).",
                             vim.inspect(context.bufnr)
                         )
                         return nil
@@ -4129,6 +4149,7 @@ local M = {
     _file_explorer_context_maker = _file_explorer_context_maker,
     _make_file_explorer_provider = _make_file_explorer_provider,
     _directory_previewer = _directory_previewer,
+    _make_git_status_provider = _make_git_status_provider,
     _git_status_previewer = _git_status_previewer,
     _git_commits_previewer = _git_commits_previewer,
 }

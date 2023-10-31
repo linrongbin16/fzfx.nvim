@@ -825,6 +825,28 @@ describe("config", function()
                 end
             end
         end)
+        it("_make_git_status_provider", function()
+            local actual1 = conf._make_git_status_provider({})()
+            local actual2 =
+                conf._make_git_status_provider({ current_folder = true })()
+            print(
+                string.format("git status provider1:%s\n", vim.inspect(actual1))
+            )
+            print(
+                string.format("git status provider2:%s\n", vim.inspect(actual2))
+            )
+            assert_true(
+                actual1 == nil
+                    or vim.deep_equal(actual1, { "git", "status", "--short" })
+            )
+            assert_true(
+                actual2 == nil
+                    or vim.deep_equal(
+                        actual2,
+                        { "git", "status", "--short", "." }
+                    )
+            )
+        end)
     end)
     describe("[git_commits]", function()
         it("_git_commits_previewer", function()
