@@ -807,6 +807,12 @@ describe("config", function()
     end)
     describe("[git_status]", function()
         it("_git_status_previewer", function()
+            vim.cmd([[edit README.md]])
+            local context = {
+                bufnr = vim.api.nvim_get_current_buf(),
+                winnr = vim.api.nvim_get_current_win(),
+                tabnr = vim.api.nvim_get_current_tabpage(),
+            }
             local lines = {
                 " M fzfx/config.lua",
                 " D fzfx/constants.lua",
@@ -815,7 +821,7 @@ describe("config", function()
                 "?? ../hello",
             }
             for _, line in ipairs(lines) do
-                local actual = conf._git_status_previewer(line)
+                local actual = conf._git_status_previewer(line, context)
                 assert_eq(type(actual), "string")
                 assert_true(utils.string_find(actual, "git diff") > 0)
                 if vim.fn.executable("delta") > 0 then

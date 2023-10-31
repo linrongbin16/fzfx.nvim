@@ -7,6 +7,7 @@ local color = require("fzfx.color")
 local path = require("fzfx.path")
 local line_helpers = require("fzfx.line_helpers")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
+
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
@@ -283,18 +284,22 @@ end
 -- git status {
 
 --- @param line string
+--- @param context PipelineContext
 --- @return string?
-local function _git_status_previewer(line)
+local function _git_status_previewer(line, context)
     local filename = line_helpers.parse_git_status(line)
     if vim.fn.executable("delta") > 0 then
+        local window_width = vim.api.nvim_win_get_width(context.winnr)
         return (vim.fn.has("termguicolors") > 0 and vim.o.termguicolors)
                 and string.format(
-                    [[git diff %s | delta -n --true-color=always]],
-                    utils.shellescape(filename)
+                    [[git diff %s | delta -n --width %d --true-color=always]],
+                    utils.shellescape(filename),
+                    window_width
                 )
             or string.format(
-                [[git diff %s | delta -n]],
-                utils.shellescape(filename)
+                [[git diff %s | delta -n --width %d]],
+                utils.shellescape(filename),
+                window_width
             )
     else
         return string.format(
