@@ -287,7 +287,7 @@ end
 local function _git_status_previewer(line)
     local filename = line_helpers.parse_git_status(line)
     if vim.fn.executable("delta") > 0 then
-        return vim.o.termguicolors
+        return (vim.fn.has("termguicolors") > 0 and vim.o.termguicolors)
                 and string.format(
                     [[git diff %s | delta -n --true-color=always]],
                     utils.shellescape(filename)
