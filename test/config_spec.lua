@@ -7,6 +7,7 @@ describe("config", function()
 
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
+        vim.env._FZFX_NVIM_DEVICONS_PATH = nil
     end)
 
     local constants = require("fzfx.constants")
@@ -28,12 +29,12 @@ describe("config", function()
             assert_eq(type(conf.get_config().icons), "table")
             assert_eq(type(conf.get_config().fzf_opts), "table")
             local actual = fzf_helpers.make_fzf_opts(conf.get_config().fzf_opts)
-            print(
-                string.format(
-                    "make fzf opts with default configs:%s\n",
-                    vim.inspect(actual)
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "make fzf opts with default configs:%s\n",
+            --         vim.inspect(actual)
+            --     )
+            -- )
             assert_eq(type(actual), "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
         end)
@@ -51,25 +52,25 @@ describe("config", function()
             assert_eq(type(conf.get_defaults().fzf_opts), "table")
             local actual =
                 fzf_helpers.make_fzf_opts(conf.get_defaults().fzf_opts)
-            print(
-                string.format(
-                    "make fzf opts with default configs:%s\n",
-                    vim.inspect(actual)
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "make fzf opts with default configs:%s\n",
+            --         vim.inspect(actual)
+            --     )
+            -- )
             assert_eq(type(actual), "string")
             assert_true(string.len(actual --[[@as string]]) > 0)
         end)
     end)
-    describe("[_default_bat_style_theme]", function()
-        it("defaults", function()
+    describe("[files]", function()
+        it("_default_bat_style_theme default", function()
             vim.env.BAT_STYLE = nil
             vim.env.BAT_THEME = nil
             local style, theme = conf._default_bat_style_theme()
             assert_eq(style, "numbers,changes")
             assert_eq(theme, "base16")
         end)
-        it("overwrites", function()
+        it("_default_bat_style_theme overwrites", function()
             vim.env.BAT_STYLE = "numbers,changes,headers"
             vim.env.BAT_THEME = "zenburn"
             local style, theme = conf._default_bat_style_theme()
@@ -78,13 +79,13 @@ describe("config", function()
             vim.env.BAT_STYLE = nil
             vim.env.BAT_THEME = nil
         end)
-    end)
-    describe("[_make_file_previewer]", function()
-        it("preview", function()
+        it("_make_file_previewer", function()
             local f = conf._make_file_previewer("lua/fzfx/config.lua", 135)
             assert_eq(type(f), "function")
             local actual = f()
-            print(string.format("file previewer:%s\n", vim.inspect(actual)))
+            -- print(
+            --     string.format("make file previewer:%s\n", vim.inspect(actual))
+            -- )
             if actual[1] == "bat" then
                 assert_eq(actual[1], "bat")
                 assert_eq(actual[2], "--style=numbers,changes")
@@ -99,11 +100,42 @@ describe("config", function()
                 assert_eq(actual[2], "lua/fzfx/config.lua")
             end
         end)
+        it("_file_previewer", function()
+            local lines = {
+                "~/github/linrongbin16/fzfx.nvim/README.md",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua",
+                "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
+            }
+            for _, line in ipairs(lines) do
+                local actual = conf._file_previewer(line)
+                print(string.format("file previewer:%s\n", vim.inspect(actual)))
+                if actual[1] == "bat" then
+                    assert_eq(actual[1], "bat")
+                    assert_eq(actual[2], "--style=numbers,changes")
+                    assert_eq(actual[3], "--theme=base16")
+                    assert_eq(actual[4], "--color=always")
+                    assert_eq(actual[5], "--pager=never")
+                    assert_eq(actual[6], "--")
+                    assert_eq(
+                        actual[7],
+                        path.normalize(line, { expand = true })
+                    )
+                else
+                    assert_eq(actual[1], "cat")
+                    assert_eq(
+                        actual[2],
+                        path.normalize(line, { expand = true })
+                    )
+                end
+            end
+        end)
     end)
     describe("[_live_grep_provider]", function()
         it("restricted", function()
             local actual = conf._live_grep_provider("hello", {}, nil)
-            print(string.format("live grep provider:%s\n", vim.inspect(actual)))
+            -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
             if actual[1] == "rg" then
                 assert_eq(actual[1], "rg")
@@ -139,7 +171,7 @@ describe("config", function()
                 {},
                 { unrestricted = true }
             )
-            print(string.format("live grep provider:%s\n", vim.inspect(actual)))
+            -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
             if actual[1] == "rg" then
                 assert_eq(actual[1], "rg")
@@ -167,7 +199,7 @@ describe("config", function()
                 winnr = vim.api.nvim_get_current_win(),
                 tabnr = vim.api.nvim_get_current_tabpage(),
             }, { buffer = true })
-            print(string.format("live grep provider:%s\n", vim.inspect(actual)))
+            -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
             if actual[1] == "rg" then
                 assert_eq(actual[1], "rg")
@@ -209,12 +241,12 @@ describe("config", function()
         it("get ex commands", function()
             local actual = conf._get_vim_ex_commands()
             assert_eq(type(actual["next"]), "table")
-            print(
-                string.format(
-                    "ex command 'next':%s\n",
-                    vim.inspect(actual["next"])
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "ex command 'next':%s\n",
+            --         vim.inspect(actual["next"])
+            --     )
+            -- )
             assert_eq(actual["next"].name, "next")
             assert_true(
                 vim.fn.filereadable(vim.fn.expand(actual["next"].loc.filename))
@@ -222,12 +254,12 @@ describe("config", function()
             )
             assert_true(tonumber(actual["next"].loc.lineno) > 0)
             assert_eq(type(actual["bnext"]), "table")
-            print(
-                string.format(
-                    "ex command 'bnext':%s\n",
-                    vim.inspect(actual["bnext"])
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "ex command 'bnext':%s\n",
+            --         vim.inspect(actual["bnext"])
+            --     )
+            -- )
             assert_eq(actual["bnext"].name, "bnext")
             assert_true(
                 vim.fn.filereadable(vim.fn.expand(actual["bnext"].loc.filename))
@@ -280,12 +312,12 @@ describe("config", function()
                         line,
                         def_pos
                     )
-                print(
-                    string.format(
-                        "parse ex command lua function:%s\n",
-                        vim.inspect(actual)
-                    )
-                )
+                -- print(
+                --     string.format(
+                --         "parse ex command lua function:%s\n",
+                --         vim.inspect(actual)
+                --     )
+                -- )
                 assert_eq(type(actual), "table")
                 assert_true(string.len(actual.filename) > 0)
                 assert_true(string.len(vim.fn.expand(actual.filename)) > 0)
@@ -297,12 +329,12 @@ describe("config", function()
                         line,
                         def_pos
                     )
-                print(
-                    string.format(
-                        "failed to parse ex command lua function:%s\n",
-                        vim.inspect(actual)
-                    )
-                )
+                -- print(
+                --     string.format(
+                --         "failed to parse ex command lua function:%s\n",
+                --         vim.inspect(actual)
+                --     )
+                -- )
                 assert_true(actual == nil)
             end
         end)
@@ -320,9 +352,9 @@ describe("config", function()
     describe("[_get_vim_user_commands]", function()
         it("get user commands", function()
             local user_commands = vim.api.nvim_get_commands({ builtin = false })
-            print(
-                string.format("user commands:%s\n", vim.inspect(user_commands))
-            )
+            -- print(
+            --     string.format("user commands:%s\n", vim.inspect(user_commands))
+            -- )
             local actual = conf._get_vim_user_commands()
             for k, v in pairs(actual) do
                 assert_true(vim.fn.exists(":" .. k) > 0)
@@ -338,12 +370,12 @@ describe("config", function()
             local actual1 = conf._render_vim_commands_column_opts({
                 opts = { bang = true, bar = true },
             })
-            print(
-                string.format(
-                    "render vim command opts1:%s\n",
-                    vim.inspect(actual1)
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "render vim command opts1:%s\n",
+            --         vim.inspect(actual1)
+            --     )
+            -- )
             assert_eq(actual1, "Y   |Y  |N/A  |N/A  |N/A")
             local actual2 = conf._render_vim_commands_column_opts({
                 opts = {
@@ -354,12 +386,12 @@ describe("config", function()
                     complete = "<Lua function>",
                 },
             })
-            print(
-                string.format(
-                    "render vim command opts2:%s\n",
-                    vim.inspect(actual2)
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "render vim command opts2:%s\n",
+            --         vim.inspect(actual2)
+            --     )
+            -- )
             assert_eq(actual2, "N   |N  |*    |.    |<Lua>")
         end)
         it("_render_vim_commands_columns_status", function()
@@ -381,13 +413,13 @@ describe("config", function()
             }
             local actual1, actual2 =
                 conf._render_vim_commands_columns_status(commands)
-            print(
-                string.format(
-                    "render vim command status:%s, %s\n",
-                    vim.inspect(actual1),
-                    vim.inspect(actual2)
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "render vim command status:%s, %s\n",
+            --         vim.inspect(actual1),
+            --         vim.inspect(actual2)
+            --     )
+            -- )
             assert_eq(actual1, string.len(commands[1].name))
             assert_eq(actual2, string.len("Bang|Bar|Nargs|Range|Complete"))
         end)
@@ -417,9 +449,9 @@ describe("config", function()
                 conf._render_vim_commands_columns_status(commands)
             local actual =
                 conf._render_vim_commands(commands, name_width, opts_width)
-            print(
-                string.format("render vim commands:%s\n", vim.inspect(actual))
-            )
+            -- print(
+            --     string.format("render vim commands:%s\n", vim.inspect(actual))
+            -- )
             assert_eq(type(actual), "table")
             assert_eq(#actual, 3)
             assert_true(utils.string_startswith(actual[1], "Name"))
@@ -459,7 +491,7 @@ describe("config", function()
         end)
         it("_vim_commands_context_maker", function()
             local ctx = conf._vim_commands_context_maker()
-            print(string.format("vim commands context:%s\n", vim.inspect(ctx)))
+            -- print(string.format("vim commands context:%s\n", vim.inspect(ctx)))
             assert_true(ctx.bufnr > 0)
             assert_true(ctx.winnr > 0)
             assert_true(ctx.tabnr > 0)
@@ -470,7 +502,7 @@ describe("config", function()
         end)
         it("_get_vim_commands", function()
             local actual = conf._get_vim_commands()
-            print(string.format("vim commands:%s\n", vim.inspect(actual)))
+            -- print(string.format("vim commands:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
             assert_true(#actual >= 0)
             for i, act in ipairs(actual) do
@@ -530,7 +562,7 @@ describe("config", function()
                 RANGE,
                 require("fzfx.color").red
             )
-            print(string.format("lsp render line:%s\n", vim.inspect(loc)))
+            -- print(string.format("lsp render line:%s\n", vim.inspect(loc)))
             assert_eq(type(loc), "string")
             assert_true(utils.string_startswith(loc, "describe"))
             assert_true(utils.string_endswith(loc, "function()"))
@@ -551,19 +583,19 @@ describe("config", function()
         }
         it("renders location", function()
             local actual = conf._render_lsp_location_line(LOCATION)
-            print(
-                string.format("render lsp location:%s\n", vim.inspect(actual))
-            )
+            -- print(
+            --     string.format("render lsp location:%s\n", vim.inspect(actual))
+            -- )
             assert_true(actual == nil or type(actual) == "string")
         end)
         it("renders locationlink", function()
             local actual = conf._render_lsp_location_line(LOCATIONLINK)
-            print(
-                string.format(
-                    "render lsp locationlink:%s\n",
-                    vim.inspect(actual)
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "render lsp locationlink:%s\n",
+            --         vim.inspect(actual)
+            --     )
+            -- )
             assert_true(actual == nil or type(actual) == "string")
         end)
     end)
@@ -571,7 +603,7 @@ describe("config", function()
         it("lsp position context", function()
             vim.cmd([[edit README.md]])
             local ctx = conf._lsp_position_context_maker()
-            print(string.format("lsp position context:%s\n", vim.inspect(ctx)))
+            -- print(string.format("lsp position context:%s\n", vim.inspect(ctx)))
             assert_true(ctx.bufnr > 0)
             assert_true(ctx.winnr > 0)
             assert_true(ctx.tabnr > 0)
@@ -626,13 +658,13 @@ describe("config", function()
             }
             for i, line in ipairs(lines) do
                 local actual = conf._parse_map_command_output_line(line)
-                print(
-                    string.format(
-                        "parse map command[%d]:%s\n",
-                        i,
-                        vim.inspect(actual)
-                    )
-                )
+                -- print(
+                --     string.format(
+                --         "parse map command[%d]:%s\n",
+                --         i,
+                --         vim.inspect(actual)
+                --     )
+                -- )
                 if not utils.string_isspace(line:sub(1, 1)) then
                     assert_true(string.len(actual.lhs) > 0)
                     assert_true(utils.string_find(line, actual.lhs) > 2)
@@ -647,7 +679,7 @@ describe("config", function()
     describe("[_get_vim_keymaps]", function()
         it("get keymaps", function()
             local actual = conf._get_vim_keymaps()
-            print(string.format("vim keymaps:%s\n", vim.inspect(actual)))
+            -- print(string.format("vim keymaps:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
             assert_true(#actual >= 0)
             for _, act in ipairs(actual) do
@@ -666,12 +698,12 @@ describe("config", function()
                 nowait = false,
                 silent = false,
             })
-            print(
-                string.format(
-                    "render vim keymap opts1:%s\n",
-                    vim.inspect(actual1)
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "render vim keymap opts1:%s\n",
+            --         vim.inspect(actual1)
+            --     )
+            -- )
             assert_eq(actual1, "n   |Y      |N     |N     ")
         end)
         it("_render_vim_keymaps_columns_status", function()
@@ -698,7 +730,7 @@ describe("config", function()
                 conf._render_vim_keymaps_columns_status(keymaps)
             local actual =
                 conf._render_vim_keymaps(keymaps, lhs_width, opts_width)
-            print(string.format("render vim keymaps:%s\n", vim.inspect(actual)))
+            -- print(string.format("render vim keymaps:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
             assert_true(#actual >= 1)
             assert_true(utils.string_startswith(actual[1], "Key"))
@@ -709,7 +741,7 @@ describe("config", function()
         end)
         it("_vim_keymaps_context_maker", function()
             local ctx = conf._vim_keymaps_context_maker()
-            print(string.format("vim keymaps context:%s\n", vim.inspect(ctx)))
+            -- print(string.format("vim keymaps context:%s\n", vim.inspect(ctx)))
             assert_eq(type(ctx), "table")
             assert_true(ctx.bufnr > 0)
             assert_true(ctx.winnr > 0)
@@ -743,7 +775,7 @@ describe("config", function()
     describe("[file explorer]", function()
         it("_file_explorer_context_maker", function()
             local ctx = conf._file_explorer_context_maker()
-            print(string.format("file explorer context:%s\n", vim.inspect(ctx)))
+            -- print(string.format("file explorer context:%s\n", vim.inspect(ctx)))
             assert_eq(type(ctx), "table")
             assert_true(ctx.bufnr > 0)
             assert_true(ctx.winnr > 0)
@@ -755,12 +787,12 @@ describe("config", function()
             local f1 = conf._make_file_explorer_provider("-lh")
             assert_eq(type(f1), "function")
             local actual1 = f1("", ctx)
-            print(
-                string.format(
-                    "file explorer provider1:%s\n",
-                    vim.inspect(actual1)
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "file explorer provider1:%s\n",
+            --         vim.inspect(actual1)
+            --     )
+            -- )
             assert_eq(type(actual1), "string")
             assert_true(utils.string_find(actual1, "echo") > 0)
             assert_true(
@@ -776,12 +808,12 @@ describe("config", function()
             local f2 = conf._make_file_explorer_provider("-lha")
             assert_eq(type(f2), "function")
             local actual2 = f2("", ctx)
-            print(
-                string.format(
-                    "file explorer provider2:%s\n",
-                    vim.inspect(actual2)
-                )
-            )
+            -- print(
+            --     string.format(
+            --         "file explorer provider2:%s\n",
+            --         vim.inspect(actual2)
+            --     )
+            -- )
             assert_eq(type(actual2), "string")
             assert_true(utils.string_find(actual2, "echo") > 0)
             assert_true(
@@ -834,12 +866,12 @@ describe("config", function()
             local actual1 = conf._make_git_status_provider({})()
             local actual2 =
                 conf._make_git_status_provider({ current_folder = true })()
-            print(
-                string.format("git status provider1:%s\n", vim.inspect(actual1))
-            )
-            print(
-                string.format("git status provider2:%s\n", vim.inspect(actual2))
-            )
+            -- print(
+            --     string.format("git status provider1:%s\n", vim.inspect(actual1))
+            -- )
+            -- print(
+            --     string.format("git status provider2:%s\n", vim.inspect(actual2))
+            -- )
             assert_true(
                 actual1 == nil
                     or vim.deep_equal(actual1, { "git", "status", "--short" })

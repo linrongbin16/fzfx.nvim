@@ -22,9 +22,6 @@ local default_fzf_options = {
     lsp_preview_window = { "--preview-window", "left,65%,+{2}-/2" },
 }
 
-local default_git_log_pretty =
-    "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
-
 -- files {
 
 -- fd
@@ -139,10 +136,10 @@ end
 
 --- @param line string
 --- @return string[]
-local function file_previewer(line)
+local function _file_previewer(line)
     local filename = line_helpers.parse_find(line)
-    local impl = _make_file_previewer(filename)
-    return impl()
+    local f = _make_file_previewer(filename)
+    return f()
 end
 
 -- files }
@@ -278,7 +275,14 @@ local function file_previewer_grep(line)
     return impl()
 end
 
--- }
+-- live grep }
+
+-- git branches {
+
+local default_git_log_pretty =
+    "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+
+-- git branches }
 
 -- git status {
 
@@ -1921,11 +1925,11 @@ local Defaults = {
         },
         previewers = {
             restricted_mode = {
-                previewer = file_previewer,
+                previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             unrestricted_mode = {
-                previewer = file_previewer,
+                previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
         },
@@ -2229,7 +2233,7 @@ local Defaults = {
             line_opts = { prepend_icon_by_ft = true },
         },
         previewers = {
-            previewer = file_previewer,
+            previewer = _file_previewer,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         },
         interactions = {
@@ -2372,11 +2376,11 @@ local Defaults = {
         },
         previewers = {
             current_folder = {
-                previewer = file_previewer,
+                previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             workspace = {
-                previewer = file_previewer,
+                previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
         },
@@ -4130,8 +4134,13 @@ local M = {
     setup = setup,
     get_config = get_config,
     get_defaults = get_defaults,
+
+    -- files
     _default_bat_style_theme = _default_bat_style_theme,
     _make_file_previewer = _make_file_previewer,
+    _file_previewer = _file_previewer,
+
+    -- live grep
     _live_grep_provider = _live_grep_provider,
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,
     _get_vim_ex_commands = _get_vim_ex_commands,
