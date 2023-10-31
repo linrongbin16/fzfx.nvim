@@ -289,18 +289,10 @@ end
 local function _git_status_previewer(line, context)
     local filename = line_helpers.parse_git_status(line)
     if vim.fn.executable("delta") > 0 then
-        local window_width = vim.api.nvim_win_get_width(context.winnr)
-        return (vim.fn.has("termguicolors") > 0 and vim.o.termguicolors)
-                and string.format(
-                    [[git diff %s | delta -n --width %d --true-color=always]],
-                    utils.shellescape(filename),
-                    window_width
-                )
-            or string.format(
-                [[git diff %s | delta -n --width %d]],
-                utils.shellescape(filename),
-                window_width
-            )
+        return string.format(
+            [[git diff %s | delta -n]],
+            utils.shellescape(filename)
+        )
     else
         return string.format(
             [[git diff --color=always %s]],
