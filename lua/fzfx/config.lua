@@ -2932,10 +2932,7 @@ local Defaults = {
         },
         previewers = {
             default = {
-                previewer = function(line)
-                    local commit = vim.fn.split(line)[1]
-                    return string.format("git show --color=always %s", commit)
-                end,
+                previewer = _git_commits_previewer,
             },
         },
         actions = {
