@@ -284,9 +284,8 @@ end
 -- git status {
 
 --- @param line string
---- @param context PipelineContext
 --- @return string?
-local function _git_status_previewer(line, context)
+local function _git_status_previewer(line)
     local filename = line_helpers.parse_git_status(line)
     if vim.fn.executable("delta") > 0 then
         return string.format(
