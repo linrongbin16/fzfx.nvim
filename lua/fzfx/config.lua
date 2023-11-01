@@ -372,6 +372,51 @@ end
 
 -- git branches {
 
+--- @param opts {remote_branch:boolean?}?
+local function _make_git_branches_provider(opts)
+    local function impl()
+        local cmd = require("fzfx.cmd")
+        local git_root_cmd = cmd.GitRootCmd:run()
+        if git_root_cmd:wrong() then
+            log.echo(LogLevels.INFO, default_git_root_error)
+            return nil
+        end
+        local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
+        if git_current_branch_cmd:wrong() then
+            log.echo(
+                LogLevels.WARN,
+                table.concat(git_current_branch_cmd.result.stderr, " ")
+            )
+            return nil
+        end
+        local branch_results = {}
+        table.insert(
+            branch_results,
+            string.format("* %s", git_current_branch_cmd:value())
+        )
+        local git_branch_cmd = cmd.GitBranchCmd:run(
+            (type(opts) == "table" and opts.remote_branch) and true or false
+        )
+        if git_branch_cmd.result:wrong() then
+            log.echo(
+                LogLevels.WARN,
+                table.concat(git_current_branch_cmd.result.stderr, " ")
+            )
+            return nil
+        end
+        for _, line in ipairs(git_branch_cmd.result.stdout) do
+            if vim.trim(line):sub(1, 1) ~= "*" then
+                table.insert(
+                    branch_results,
+                    string.format("  %s", vim.trim(line))
+                )
+            end
+        end
+        return branch_results
+    end
+    return impl
+end
+
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
@@ -390,7 +435,7 @@ end
 
 -- git status {
 
---- @param opts {current_folder:boolean?}
+--- @param opts {current_folder:boolean?}?
 --- @return fun():string[]|nil
 local function _make_git_status_provider(opts)
     local function impl()
@@ -2539,7 +2584,7 @@ local Defaults = {
             },
             workspace = {
                 key = "ctrl-w",
-                provider = _make_git_status_provider({}),
+                provider = _make_git_status_provider(),
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
             },
         },
@@ -2652,123 +2697,21 @@ local Defaults = {
         providers = {
             local_branch = {
                 key = "ctrl-o",
-                provider = function(query, context)
-                    local cmd = require("fzfx.cmd")
-                    local git_root_cmd = cmd.GitRootCmd:run()
-                    if git_root_cmd:wrong() then
-                        log.echo(LogLevels.INFO, default_git_root_error)
-                        return nil
-                    end
-                    local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
-                    if git_current_branch_cmd:wrong() then
-                        log.echo(
-                            LogLevels.WARN,
-                            table.concat(
-                                git_current_branch_cmd.result.stderr,
-                                " "
-                            )
-                        )
-                        return nil
-                    end
-                    local branch_results = {}
-                    table.insert(
-                        branch_results,
-                        string.format("* %s", git_current_branch_cmd:value())
-                    )
-                    local git_branch_cmd = cmd.GitBranchCmd:run()
-                    if git_branch_cmd.result:wrong() then
-                        log.echo(
-                            LogLevels.WARN,
-                            table.concat(
-                                git_current_branch_cmd.result.stderr,
-                                " "
-                            )
-                        )
-                        return nil
-                    end
-                    for _, line in ipairs(git_branch_cmd.result.stdout) do
-                        if vim.trim(line):sub(1, 1) ~= "*" then
-                            table.insert(
-                                branch_results,
-                                string.format("  %s", vim.trim(line))
-                            )
-                        end
-                    end
-                    return branch_results
-                end,
+                provider = _make_git_branches_provider(),
                 provider_type = ProviderTypeEnum.LIST,
             },
             remote_branch = {
                 key = "ctrl-r",
-                provider = function(query, context)
-                    local cmd = require("fzfx.cmd")
-                    local git_root_cmd = cmd.GitRootCmd:run()
-                    if git_root_cmd:wrong() then
-                        log.echo(LogLevels.INFO, default_git_root_error)
-                        return nil
-                    end
-                    local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
-                    if git_current_branch_cmd:wrong() then
-                        log.echo(
-                            LogLevels.WARN,
-                            table.concat(
-                                git_current_branch_cmd.result.stderr,
-                                " "
-                            )
-                        )
-                        return nil
-                    end
-                    local branch_results = {}
-                    table.insert(
-                        branch_results,
-                        string.format("* %s", git_current_branch_cmd:value())
-                    )
-                    local git_branch_cmd = cmd.GitBranchCmd:run(true)
-                    if git_branch_cmd.result:wrong() then
-                        log.echo(
-                            LogLevels.WARN,
-                            table.concat(
-                                git_current_branch_cmd.result.stderr,
-                                " "
-                            )
-                        )
-                        return nil
-                    end
-                    for _, line in ipairs(git_branch_cmd.result.stdout) do
-                        if vim.trim(line):sub(1, 1) ~= "*" then
-                            table.insert(
-                                branch_results,
-                                string.format("  %s", vim.trim(line))
-                            )
-                        end
-                    end
-                    return branch_results
-                end,
+                provider = _make_git_branches_provider({ remote_branch = true }),
                 provider_type = ProviderTypeEnum.LIST,
             },
         },
         previewers = {
             local_branch = {
-                previewer = function(line)
-                    local branch = vim.fn.split(line)[1]
-                    -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
-                    -- "git log --graph --color=always --date=relative",
-                    return string.format(
-                        "git log --pretty=%s --graph --date=short --color=always %s",
-                        utils.shellescape(default_git_log_pretty),
-                        branch
-                    )
-                end,
+                previewer = _git_branches_previewer,
             },
             remote_branch = {
-                previewer = function(line)
-                    local branch = vim.fn.split(line)[1]
-                    return string.format(
-                        "git log --pretty=%s --graph --date=short --color=always %s",
-                        utils.shellescape(default_git_log_pretty),
-                        branch
-                    )
-                end,
+                previewer = _git_branches_previewer,
             },
         },
         actions = {
@@ -4196,6 +4139,10 @@ local M = {
 
     -- git files
     _make_git_files_provider = _make_git_files_provider,
+
+    -- git branches
+    _make_git_branches_provider = _make_git_branches_provider,
+    _git_branches_previewer = _git_branches_previewer,
 
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,
     _get_vim_ex_commands = _get_vim_ex_commands,
