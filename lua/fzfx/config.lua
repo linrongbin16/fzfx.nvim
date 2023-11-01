@@ -503,6 +503,37 @@ end
 
 -- git commits }
 
+-- git blame {
+
+--- @param query string
+--- @param context PipelineContext
+--- @return string[]|nil
+local function _git_blame_provider(query, context)
+    if not utils.is_buf_valid(context.bufnr) then
+        log.echo(
+            LogLevels.INFO,
+            default_invalid_buffer_error,
+            vim.inspect(context.bufnr)
+        )
+        return nil
+    end
+    local bufname = vim.api.nvim_buf_get_name(context.bufnr)
+    local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
+    -- return string.format(
+    --     "git blame --date=short --color-lines %s",
+    --     bufpath
+    -- )
+    return {
+        "git",
+        "blame",
+        "--date=short",
+        "--color-lines",
+        bufpath,
+    }
+end
+
+-- git blame }
+
 -- git status {
 
 --- @param opts {current_folder:boolean?}?
@@ -2978,29 +3009,7 @@ local Defaults = {
         providers = {
             default = {
                 key = "default",
-                provider = function(query, context)
-                    if not utils.is_buf_valid(context.bufnr) then
-                        log.echo(
-                            LogLevels.INFO,
-                            default_invalid_buffer_error,
-                            vim.inspect(context.bufnr)
-                        )
-                        return nil
-                    end
-                    local bufname = vim.api.nvim_buf_get_name(context.bufnr)
-                    local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
-                    -- return string.format(
-                    --     "git blame --date=short --color-lines %s",
-                    --     bufpath
-                    -- )
-                    return {
-                        "git",
-                        "blame",
-                        "--date=short",
-                        "--color-lines",
-                        bufpath,
-                    }
-                end,
+                provider = _git_blame_provider,
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
             },
         },
