@@ -509,6 +509,12 @@ end
 --- @param context PipelineContext
 --- @return string[]|nil
 local function _git_blame_provider(query, context)
+    local cmd = require("fzfx.cmd")
+    local git_root_cmd = cmd.GitRootCmd:run()
+    if git_root_cmd:wrong() then
+        log.echo(LogLevels.INFO, default_invalid_buffer_error)
+        return nil
+    end
     if not utils.is_buf_valid(context.bufnr) then
         log.echo(
             LogLevels.INFO,
@@ -4208,6 +4214,9 @@ local M = {
     -- git commits
     _make_git_commits_provider = _make_git_commits_provider,
     _git_commits_previewer = _git_commits_previewer,
+
+    -- git blame
+    _git_blame_provider = _git_blame_provider,
 
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,
     _get_vim_ex_commands = _get_vim_ex_commands,
