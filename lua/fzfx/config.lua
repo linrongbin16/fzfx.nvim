@@ -1200,6 +1200,7 @@ local function _make_lsp_diagnostic_signs()
 end
 
 --- @alias DiagItem {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}
+--- @param diag {bufnr:integer,lnum:integer,col:integer,message:string,severity:integer}
 --- @return DiagItem?
 local function _process_lsp_diagnostic_item(diag)
     if not vim.api.nvim_buf_is_valid(diag.bufnr) then

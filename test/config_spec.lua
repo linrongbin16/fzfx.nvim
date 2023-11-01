@@ -732,6 +732,48 @@ describe("config", function()
             end
         end)
     end)
+    describe("lsp_diagnostics", function()
+        it("_make_lsp_diagnostic_signs", function()
+            local actual = conf._make_lsp_diagnostic_signs()
+            assert_eq(type(actual), "table")
+            assert_eq(#actual, 4)
+            for i, sign_item in ipairs(actual) do
+                assert_eq(type(sign_item), "table")
+                assert_true(sign_item.severity >= 1 and sign_item.severity <= 4)
+                assert_true(
+                    string.len(sign_item.name) > 0
+                        and utils.string_startswith(
+                            sign_item.name,
+                            "DiagnosticSign"
+                        )
+                )
+                assert_true(
+                    utils.string_endswith(sign_item.name, "Error")
+                        or utils.string_endswith(sign_item.name, "Warn")
+                        or utils.string_endswith(sign_item.name, "Info")
+                        or utils.string_endswith(sign_item.name, "Hint")
+                )
+            end
+        end)
+        it("_process_lsp_diagnostic_item", function()
+            local diags = {
+                { bufnr = 0, lnum = 1, col = 1, message = "a", severity = 1 },
+                { bufnr = 1, lnum = 1, col = 1, message = "b", severity = 2 },
+                { bufnr = 2, lnum = 1, col = 1, message = "c", severity = 3 },
+                { bufnr = 3, lnum = 1, col = 1, message = "d", severity = 4 },
+                { bufnr = 5, lnum = 1, col = 1, message = "e" },
+            }
+            for _, diag in ipairs(diags) do
+                local actual = conf._process_lsp_diagnostic_item(diag)
+                if actual ~= nil then
+                    assert_eq(actual.bufnr, diag.bufnr)
+                    assert_eq(actual.lnum, diag.lnum + 1)
+                    assert_eq(actual.col, diag.col + 1)
+                    assert_eq(actual.severity, diag.severity or 1)
+                end
+            end
+        end)
+    end)
     describe("[_is_lsp_xxx]", function()
         local RANGE = {
             start = { line = 1, character = 10 },
