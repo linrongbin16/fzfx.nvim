@@ -260,6 +260,33 @@ describe("config", function()
             end
         end)
     end)
+    describe("git_branches", function()
+        it("_make_git_branches_provider local", function()
+            local f = conf._make_git_branches_provider()
+            local actual = f()
+            assert_true(actual == nil or type(actual) == "table")
+        end)
+        it("_make_git_branches_provider remotes", function()
+            local f = conf._make_git_branches_provider({ remote_branch = true })
+            local actual = f()
+            assert_true(actual == nil or type(actual) == "table")
+        end)
+        it("_git_branches_previewer", function()
+            local lines = {
+                "main",
+                "my-plugin-dev",
+                "remotes/origin/HEAD -> origin/main",
+                "remotes/origin/main",
+                "remotes/origin/my-plugin-dev",
+                "remotes/origin/ci-fix-create-tags",
+                "remotes/origin/ci-verbose",
+            }
+            for i, line in ipairs(lines) do
+                local actual = conf._git_branches_previewer(line)
+                assert_true(utils.string_find(actual, "git log --pretty") == 1)
+            end
+        end)
+    end)
     describe("[_parse_vim_ex_command_name]", function()
         it("parse", function()
             local lines = {
@@ -907,19 +934,13 @@ describe("config", function()
             -- print(
             --     string.format("git status provider2:%s\n", vim.inspect(actual2))
             -- )
-            assert_true(
-                actual1 == nil
-                    or vim.deep_equal(
-                        actual1,
-                        {
-                            "git",
-                            "-c",
-                            "color.status=always",
-                            "status",
-                            "--short",
-                        }
-                    )
-            )
+            assert_true(actual1 == nil or vim.deep_equal(actual1, {
+                "git",
+                "-c",
+                "color.status=always",
+                "status",
+                "--short",
+            }))
             assert_true(actual2 == nil or vim.deep_equal(actual2, {
                 "git",
                 "-c",
