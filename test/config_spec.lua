@@ -909,15 +909,25 @@ describe("config", function()
             -- )
             assert_true(
                 actual1 == nil
-                    or vim.deep_equal(actual1, { "git", "status", "--short" })
-            )
-            assert_true(
-                actual2 == nil
                     or vim.deep_equal(
-                        actual2,
-                        { "git", "status", "--short", "." }
+                        actual1,
+                        {
+                            "git",
+                            "-c",
+                            "color.status=always",
+                            "status",
+                            "--short",
+                        }
                     )
             )
+            assert_true(actual2 == nil or vim.deep_equal(actual2, {
+                "git",
+                "-c",
+                "color.status=always",
+                "status",
+                "--short",
+                ".",
+            }))
         end)
     end)
     describe("[git_commits]", function()

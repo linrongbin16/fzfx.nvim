@@ -446,8 +446,15 @@ local function _make_git_status_provider(opts)
             return nil
         end
         return (type(opts) == "table" and opts.current_folder)
-                and { "git", "status", "--short", "." }
-            or { "git", "status", "--short" }
+                and {
+                    "git",
+                    "-c",
+                    "color.status=always",
+                    "status",
+                    "--short",
+                    ".",
+                }
+            or { "git", "-c", "color.status=always", "status", "--short" }
     end
     return impl
 end
