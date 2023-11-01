@@ -1120,151 +1120,178 @@ end
 
 -- lsp diagnostics {
 
---- @alias LspDiagnosticOpts {mode:"buffer_diagnostics"|"workspace_diagnostics",severity:integer?,bufnr:integer?}
---- @param opts LspDiagnosticOpts
---- @return string[]?
-local function lsp_diagnostics_provider(opts)
-    local active_lsp_clients = vim.lsp.get_active_clients()
-    if active_lsp_clients == nil or vim.tbl_isempty(active_lsp_clients) then
-        log.echo(LogLevels.INFO, "no active lsp clients.")
-        return nil
-    end
-    local signs = {
-        [1] = {
-            severity = 1,
-            text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
-            texthl = vim.fn.hlexists("DiagnosticSignError") > 0
-                    and "DiagnosticSignError"
-                or (
-                    vim.fn.hlexists("LspDiagnosticsSignError") > 0
-                        and "LspDiagnosticsSignError"
-                    or "ErrorMsg"
-                ),
-            textcolor = "red",
-        },
-        [2] = {
-            severity = 2,
-            text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
-            texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0
-                    and "DiagnosticSignWarn"
-                or (
-                    vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
-                        and "LspDiagnosticsSignWarn"
-                    or "WarningMsg"
-                ),
-            textcolor = "orange",
-        },
-        [3] = {
-            severity = 3,
-            text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
-            texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0
-                    and "DiagnosticSignInfo"
-                or (
-                    vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
-                        and "LspDiagnosticsSignInfo"
-                    or "None"
-                ),
-            textcolor = "teal",
-        },
-        [4] = {
-            severity = 4,
-            text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
-            texthl = vim.fn.hlexists("DiagnosticSignHint") > 0
-                    and "DiagnosticSignHint"
-                or (
-                    vim.fn.hlexists("LspDiagnosticsSignHint") > 0
-                        and "LspDiagnosticsSignHint"
-                    or "Comment"
-                ),
-            textcolor = "grey",
-        },
-    }
-    for _, sign_opts in pairs(signs) do
-        local sign_def = vim.fn.sign_getdefined(sign_opts.sign)
+local default_lsp_diagnostic_signs = {
+    [1] = {
+        severity = 1,
+        name = "DiagnosticSignError",
+        text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
+        texthl = vim.fn.hlexists("DiagnosticSignError") > 0
+                and "DiagnosticSignError"
+            or (
+                vim.fn.hlexists("LspDiagnosticsSignError") > 0
+                    and "LspDiagnosticsSignError"
+                or "ErrorMsg"
+            ),
+        textcolor = "red",
+    },
+    [2] = {
+        severity = 2,
+        name = "DiagnosticSignWarn",
+        text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
+        texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0
+                and "DiagnosticSignWarn"
+            or (
+                vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
+                    and "LspDiagnosticsSignWarn"
+                or "WarningMsg"
+            ),
+        textcolor = "orange",
+    },
+    [3] = {
+        severity = 3,
+        name = "DiagnosticSignInfo",
+        text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
+        texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0
+                and "DiagnosticSignInfo"
+            or (
+                vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
+                    and "LspDiagnosticsSignInfo"
+                or "None"
+            ),
+        textcolor = "teal",
+    },
+    [4] = {
+        severity = 4,
+        name = "DiagnosticSignHint",
+        text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
+        texthl = vim.fn.hlexists("DiagnosticSignHint") > 0
+                and "DiagnosticSignHint"
+            or (
+                vim.fn.hlexists("LspDiagnosticsSignHint") > 0
+                    and "LspDiagnosticsSignHint"
+                or "Comment"
+            ),
+        textcolor = "grey",
+    },
+}
+
+-- simulate rg's filepath color, see:
+-- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
+-- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
+local default_lsp_filename_color = constants.is_windows and color.cyan
+    or color.magenta
+
+local default_no_lsp_clients_error = "no active lsp clients."
+local default_no_lsp_diagnostics_error = "no lsp diagnostics found."
+
+--- @return {severity:integer,name:string,text:string,texthl:string,textcolor:string}[]
+local function _make_lsp_diagnostic_signs()
+    local results = {}
+    for _, signs in ipairs(default_lsp_diagnostic_signs) do
+        local sign_def = vim.fn.sign_getdefined(signs.name)
+        local item = vim.deepcopy(signs)
         if type(sign_def) == "table" and not vim.tbl_isempty(sign_def) then
-            sign_opts.text = sign_def[1].text
-            sign_opts.texthl = sign_def[1].texthl
+            item.text = vim.trim(sign_def[1].text)
+            item.texthl = sign_def[1].texthl
         end
+        table.insert(results, item)
     end
+    return results
+end
 
-    local diag_results = vim.diagnostic.get(
-        opts.mode == "buffer_diagnostics" and opts.bufnr or nil
-    )
-    -- descending: error, warn, info, hint
-    table.sort(diag_results, function(a, b)
-        return a.severity < b.severity
-    end)
-    if diag_results == nil or vim.tbl_isempty(diag_results) then
-        log.echo(LogLevels.INFO, "no lsp diagnostics found.")
+--- @alias DiagItem {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}
+--- @return DiagItem?
+local function _process_lsp_diagnostic_item(diag)
+    if not vim.api.nvim_buf_is_valid(diag.bufnr) then
         return nil
     end
+    log.debug(
+        "|fzfx.config - _process_lsp_diagnostic_item| diag-1:%s",
+        vim.inspect(diag)
+    )
+    local result = {
+        bufnr = diag.bufnr,
+        filename = path.reduce(vim.api.nvim_buf_get_name(diag.bufnr)),
+        lnum = diag.lnum + 1,
+        col = diag.col + 1,
+        text = vim.trim(diag.message:gsub("\n", " ")),
+        severity = diag.severity or 1,
+    }
+    log.debug(
+        "|fzfx.config - _process_lsp_diagnostic_item| diag-2:%s, result:%s",
+        vim.inspect(diag),
+        vim.inspect(result)
+    )
+    return result
+end
 
-    --- @alias DiagItem {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}
-    --- @return DiagItem?
-    local function process_diagnostic_item(diag)
-        if not vim.api.nvim_buf_is_valid(diag.bufnr) then
+--- @param opts {buffer:boolean?}?
+--- @return fun(query:string,context:PipelineContext):string[]|nil
+local function _make_lsp_diagnostics_provider(opts)
+    local signs = _make_lsp_diagnostic_signs()
+
+    --- @param query string
+    --- @param context PipelineContext
+    --- @return string[]|nil
+    local function impl(query, context)
+        local lsp_clients = vim.lsp.get_active_clients()
+        if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+            log.echo(LogLevels.INFO, default_no_lsp_clients_error)
             return nil
         end
-        log.debug(
-            "|fzfx.config - lsp_diagnostics_provider.process_diagnostic_item| diag-1:%s",
-            vim.inspect(diag)
+        local diag_list = vim.diagnostic.get(
+            (type(opts) == "table" and opts.buffer) and context.bufnr or nil
         )
-        local result = {
-            bufnr = diag.bufnr,
-            filename = path.reduce(vim.api.nvim_buf_get_name(diag.bufnr)),
-            lnum = diag.lnum + 1,
-            col = diag.col + 1,
-            text = vim.trim(diag.message:gsub("\n", " ")),
-            severity = diag.severity or 1,
-        }
-        log.debug(
-            "|fzfx.config - lsp_diagnostics_provider.process_diagnostic_item| diag-2:%s, result:%s",
-            vim.inspect(diag),
-            vim.inspect(result)
-        )
-        return result
-    end
-
-    -- simulate rg's filepath color, see:
-    -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
-    -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-    local filepath_color = constants.is_windows and color.cyan or color.magenta
-
-    local diag_lines = {}
-    for _, diag in ipairs(diag_results) do
-        local d = process_diagnostic_item(diag)
-        if d then
-            -- it looks like:
-            -- `lua/fzfx/config.lua:10:13: Unused local `query`.
-            log.debug(
-                "|fzfx.config - lsp_diagnostics_provider| d:%s",
-                vim.inspect(d)
-            )
-            local dtext = ""
-            if type(d.text) == "string" and string.len(d.text) > 0 then
-                if type(signs[d.severity]) == "table" then
-                    local sign_def = signs[d.severity]
-                    local icon_color = color[sign_def.textcolor]
-                    dtext = " " .. icon_color(sign_def.text, sign_def.texthl)
-                end
-                dtext = dtext .. " " .. d.text
-            end
-            log.debug(
-                "|fzfx.config - lsp_diagnostics_provider| d:%s, dtext:%s",
-                vim.inspect(d),
-                vim.inspect(dtext)
-            )
-            local line = string.format(
-                "%s:%s:%s:%s",
-                filepath_color(d.filename),
-                color.green(tostring(d.lnum)),
-                tostring(d.col),
-                dtext
-            )
-            table.insert(diag_lines, line)
+        if diag_list == nil or vim.tbl_isempty(diag_list) then
+            log.echo(LogLevels.INFO, default_no_lsp_diagnostics_error)
+            return nil
         end
+        -- sort order: error > warn > info > hint
+        table.sort(diag_list, function(a, b)
+            return a.severity < b.severity
+        end)
+
+        local results = {}
+        for _, item in ipairs(diag_list) do
+            local diag = _process_lsp_diagnostic_item(item)
+            if diag then
+                -- it looks like:
+                -- `lua/fzfx/config.lua:10:13: Unused local `query`.
+                log.debug(
+                    "|fzfx.config - _make_lsp_diagnostics_provider| diag:%s",
+                    vim.inspect(diag)
+                )
+                local builder = ""
+                if
+                    type(diag.text) == "string"
+                    and string.len(diag.text) > 0
+                then
+                    if type(signs[diag.severity]) == "table" then
+                        local sign_item = signs[diag.severity]
+                        local color_renderer = color[sign_item.textcolor]
+                        builder = " "
+                            .. color_renderer(sign_item.text, sign_item.texthl)
+                    end
+                    builder = builder .. " " .. diag.text
+                end
+                log.debug(
+                    "|fzfx.config - _make_lsp_diagnostics_provider| diag:%s, builder:%s",
+                    vim.inspect(diag),
+                    vim.inspect(builder)
+                )
+                local line = string.format(
+                    "%s:%s:%s:%s",
+                    default_lsp_filename_color(diag.filename),
+                    color.green(tostring(diag.lnum)),
+                    tostring(diag.col),
+                    builder
+                )
+                table.insert(results, line)
+            end
+        end
+        return results
     end
-    return diag_lines
+    return impl
 end
 
 -- lsp diagnostics }
@@ -1355,7 +1382,6 @@ local function _render_lsp_location_line(loc)
         "|fzfx.config - _render_lsp_location_line| loc:%s",
         vim.inspect(loc)
     )
-    local filepath_color = constants.is_windows and color.cyan or color.magenta
     local filename = nil
     --- @type LspLocationRange
     local range = nil
@@ -1398,7 +1424,7 @@ local function _render_lsp_location_line(loc)
     )
     local line = string.format(
         "%s:%s:%s:%s",
-        filepath_color(vim.fn.fnamemodify(filename, ":~:.")),
+        default_lsp_filename_color(vim.fn.fnamemodify(filename, ":~:.")),
         color.green(tostring(range.start.line + 1)),
         tostring(range.start.character + 1),
         loc_line
@@ -1419,7 +1445,7 @@ end
 local function lsp_locations_provider(opts)
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = opts.bufnr })
     if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
-        log.echo(LogLevels.INFO, "no active lsp clients.")
+        log.echo(LogLevels.INFO, default_no_lsp_clients_error)
         return nil
     end
     log.debug(
@@ -3554,11 +3580,7 @@ local Defaults = {
         providers = {
             workspace_diagnostics = {
                 key = "ctrl-w",
-                provider = function(query, context)
-                    return lsp_diagnostics_provider({
-                        mode = "workspace_diagnostics",
-                    })
-                end,
+                provider = _make_lsp_diagnostics_provider(),
                 provider_type = ProviderTypeEnum.LIST,
                 line_opts = {
                     prepend_icon_by_ft = true,
@@ -3568,12 +3590,7 @@ local Defaults = {
             },
             buffer_diagnostics = {
                 key = "ctrl-u",
-                provider = function(query, context)
-                    return lsp_diagnostics_provider({
-                        mode = "buffer_diagnostics",
-                        bufnr = context.bufnr,
-                    })
-                end,
+                provider = _make_lsp_diagnostics_provider({ buffer = true }),
                 provider_type = ProviderTypeEnum.LIST,
                 line_opts = {
                     prepend_icon_by_ft = true,
@@ -4228,6 +4245,20 @@ local M = {
     -- git blame
     _git_blame_provider = _git_blame_provider,
 
+    -- diagnostics
+    _make_lsp_diagnostic_signs = _make_lsp_diagnostic_signs,
+    _process_lsp_diagnostic_item = _process_lsp_diagnostic_item,
+    _make_lsp_diagnostics_provider = _make_lsp_diagnostics_provider,
+
+    -- lsp
+    _is_lsp_range = _is_lsp_range,
+    _is_lsp_location = _is_lsp_location,
+    _is_lsp_locationlink = _is_lsp_locationlink,
+    _lsp_location_render_line = _lsp_location_render_line,
+    _lsp_position_context_maker = _lsp_position_context_maker,
+    _render_lsp_location_line = _render_lsp_location_line,
+
+    -- commands
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,
     _get_vim_ex_commands = _get_vim_ex_commands,
     _is_ex_command_output_header = _is_ex_command_output_header,
@@ -4241,12 +4272,8 @@ local M = {
     _vim_commands_lua_function_previewer = _vim_commands_lua_function_previewer,
     _vim_commands_context_maker = _vim_commands_context_maker,
     _get_vim_commands = _get_vim_commands,
-    _is_lsp_range = _is_lsp_range,
-    _is_lsp_location = _is_lsp_location,
-    _is_lsp_locationlink = _is_lsp_locationlink,
-    _lsp_location_render_line = _lsp_location_render_line,
-    _lsp_position_context_maker = _lsp_position_context_maker,
-    _render_lsp_location_line = _render_lsp_location_line,
+
+    -- keymaps
     _parse_map_command_output_line = _parse_map_command_output_line,
     _get_vim_keymaps = _get_vim_keymaps,
     _render_vim_keymaps_column_opts = _render_vim_keymaps_column_opts,

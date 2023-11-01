@@ -376,8 +376,60 @@ describe("config", function()
             end
         end)
     end)
-    describe("[_parse_vim_ex_command_name]", function()
-        it("parse", function()
+    describe("[git_status]", function()
+        it("_get_delta_width", function()
+            local actual = conf._get_delta_width()
+            assert_eq(type(actual), "number")
+            assert_true(actual >= 3)
+        end)
+        it("_git_status_previewer", function()
+            local lines = {
+                " M fzfx/config.lua",
+                " D fzfx/constants.lua",
+                " M fzfx/line_helpers.lua",
+                " M ../test/line_helpers_spec.lua",
+                "?? ../hello",
+            }
+            for _, line in ipairs(lines) do
+                local actual = conf._git_status_previewer(line)
+                assert_eq(type(actual), "string")
+                assert_true(utils.string_find(actual, "git diff") > 0)
+                if vim.fn.executable("delta") > 0 then
+                    assert_true(utils.string_find(actual, "delta") > 0)
+                else
+                    assert_true(utils.string_find(actual, "delta") == nil)
+                end
+            end
+        end)
+        it("_make_git_status_provider", function()
+            local actual1 = conf._make_git_status_provider({})()
+            local actual2 =
+                conf._make_git_status_provider({ current_folder = true })()
+            -- print(
+            --     string.format("git status provider1:%s\n", vim.inspect(actual1))
+            -- )
+            -- print(
+            --     string.format("git status provider2:%s\n", vim.inspect(actual2))
+            -- )
+            assert_true(actual1 == nil or vim.deep_equal(actual1, {
+                "git",
+                "-c",
+                "color.status=always",
+                "status",
+                "--short",
+            }))
+            assert_true(actual2 == nil or vim.deep_equal(actual2, {
+                "git",
+                "-c",
+                "color.status=always",
+                "status",
+                "--short",
+                ".",
+            }))
+        end)
+    end)
+    describe("[commands]", function()
+        it("_parse_vim_ex_command_name", function()
             local lines = {
                 "|:|",
                 "|:next|",
@@ -389,9 +441,7 @@ describe("config", function()
                 assert_eq(actual, expect)
             end
         end)
-    end)
-    describe("[_get_vim_ex_commands]", function()
-        it("get ex commands", function()
+        it("_get_vim_ex_commands", function()
             local actual = conf._get_vim_ex_commands()
             assert_eq(type(actual["next"]), "table")
             -- print(
@@ -420,23 +470,33 @@ describe("config", function()
             )
             assert_true(tonumber(actual["bnext"].loc.lineno) > 0)
         end)
-        it("is ex command output header", function()
-            local line = "Name              Args Address Complete    Definition"
-            local actual1 = conf._is_ex_command_output_header("asdf")
-            local actual2 = conf._is_ex_command_output_header(line)
-            assert_false(actual1)
-            assert_true(actual2)
-            local actual3 = conf._parse_ex_command_output_header(line)
-            assert_eq(type(actual3), "table")
-            assert_eq(actual3.name_pos, 1)
-            assert_eq(actual3.args_pos, utils.string_find(line, "Args"))
-            assert_eq(actual3.address_pos, utils.string_find(line, "Address"))
-            assert_eq(actual3.complete_pos, utils.string_find(line, "Complete"))
-            assert_eq(
-                actual3.definition_pos,
-                utils.string_find(line, "Definition")
-            )
-        end)
+        it(
+            "_is_ex_command_output_header/_parse_ex_command_output_header",
+            function()
+                local line =
+                    "Name              Args Address Complete    Definition"
+                local actual1 = conf._is_ex_command_output_header("asdf")
+                local actual2 = conf._is_ex_command_output_header(line)
+                assert_false(actual1)
+                assert_true(actual2)
+                local actual3 = conf._parse_ex_command_output_header(line)
+                assert_eq(type(actual3), "table")
+                assert_eq(actual3.name_pos, 1)
+                assert_eq(actual3.args_pos, utils.string_find(line, "Args"))
+                assert_eq(
+                    actual3.address_pos,
+                    utils.string_find(line, "Address")
+                )
+                assert_eq(
+                    actual3.complete_pos,
+                    utils.string_find(line, "Complete")
+                )
+                assert_eq(
+                    actual3.definition_pos,
+                    utils.string_find(line, "Definition")
+                )
+            end
+        )
         it("_parse_ex_command_output_lua_function_definition", function()
             local header =
                 "Name              Args Address Complete    Definition"
@@ -501,9 +561,7 @@ describe("config", function()
                 assert_true(v.lineno > 0)
             end
         end)
-    end)
-    describe("[_get_vim_user_commands]", function()
-        it("get user commands", function()
+        it("_get_vim_user_commands", function()
             local user_commands = vim.api.nvim_get_commands({ builtin = false })
             -- print(
             --     string.format("user commands:%s\n", vim.inspect(user_commands))
@@ -995,58 +1053,6 @@ describe("config", function()
                 assert_eq(actual[4], "--")
                 assert_eq(actual[5], "lua/fzfx/config.lua")
             end
-        end)
-    end)
-    describe("[git_status]", function()
-        it("_get_delta_width", function()
-            local actual = conf._get_delta_width()
-            assert_eq(type(actual), "number")
-            assert_true(actual >= 3)
-        end)
-        it("_git_status_previewer", function()
-            local lines = {
-                " M fzfx/config.lua",
-                " D fzfx/constants.lua",
-                " M fzfx/line_helpers.lua",
-                " M ../test/line_helpers_spec.lua",
-                "?? ../hello",
-            }
-            for _, line in ipairs(lines) do
-                local actual = conf._git_status_previewer(line)
-                assert_eq(type(actual), "string")
-                assert_true(utils.string_find(actual, "git diff") > 0)
-                if vim.fn.executable("delta") > 0 then
-                    assert_true(utils.string_find(actual, "delta") > 0)
-                else
-                    assert_true(utils.string_find(actual, "delta") == nil)
-                end
-            end
-        end)
-        it("_make_git_status_provider", function()
-            local actual1 = conf._make_git_status_provider({})()
-            local actual2 =
-                conf._make_git_status_provider({ current_folder = true })()
-            -- print(
-            --     string.format("git status provider1:%s\n", vim.inspect(actual1))
-            -- )
-            -- print(
-            --     string.format("git status provider2:%s\n", vim.inspect(actual2))
-            -- )
-            assert_true(actual1 == nil or vim.deep_equal(actual1, {
-                "git",
-                "-c",
-                "color.status=always",
-                "status",
-                "--short",
-            }))
-            assert_true(actual2 == nil or vim.deep_equal(actual2, {
-                "git",
-                "-c",
-                "color.status=always",
-                "status",
-                "--short",
-                ".",
-            }))
         end)
     end)
 end)
