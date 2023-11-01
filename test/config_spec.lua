@@ -288,6 +288,24 @@ describe("config", function()
         end)
     end)
     describe("[git_commits]", function()
+        it("_make_git_commits_previewer", function()
+            local lines = {
+                "44ee80e",
+                "706e1d6",
+            }
+            for _, line in ipairs(lines) do
+                local actual = conf._make_git_commits_previewer(line)
+                if actual ~= nil then
+                    assert_eq(type(actual), "string")
+                    assert_true(utils.string_find(actual, "git show") > 0)
+                    if vim.fn.executable("delta") > 0 then
+                        assert_true(utils.string_find(actual, "delta") > 0)
+                    else
+                        assert_true(utils.string_find(actual, "delta") == nil)
+                    end
+                end
+            end
+        end)
         it("_git_commits_previewer", function()
             local lines = {
                 "44ee80e 2023-10-11 linrongbin16 (HEAD -> origin/feat_git_status) docs: wording",
