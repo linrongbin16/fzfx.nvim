@@ -773,6 +773,18 @@ describe("config", function()
                 end
             end
         end)
+        it("_make_lsp_diagnostics_provider", function()
+            local f = conf._make_lsp_diagnostics_provider()
+            local actual = f("", {})
+            if actual ~= nil then
+                assert_eq(type(actual), "table")
+                assert_true(#actual >= 0)
+                for _, act in ipairs(actual) do
+                    assert_eq(type(act), "string")
+                    assert_true(string.len(act) >= 0)
+                end
+            end
+        end)
     end)
     describe("[_is_lsp_xxx]", function()
         local RANGE = {
