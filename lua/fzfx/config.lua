@@ -1,5 +1,6 @@
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
+local cmd = require("fzfx.cmd")
 local env = require("fzfx.env")
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
@@ -357,7 +358,6 @@ local default_git_root_error = "not in git repo."
 local function _make_git_files_provider(opts)
     --- @return string[]|nil
     local function impl()
-        local cmd = require("fzfx.cmd")
         local git_root_cmd = cmd.GitRootCmd:run()
         if git_root_cmd:wrong() then
             log.echo(LogLevels.INFO, default_git_root_error)
@@ -377,7 +377,6 @@ end
 --- @param opts {remote_branch:boolean?}?
 local function _make_git_branches_provider(opts)
     local function impl()
-        local cmd = require("fzfx.cmd")
         local git_root_cmd = cmd.GitRootCmd:run()
         if git_root_cmd:wrong() then
             log.echo(LogLevels.INFO, default_git_root_error)
@@ -444,7 +443,6 @@ local function _make_git_commits_provider(opts)
     --- @param context PipelineContext
     --- @return string[]|nil
     local function impl(query, context)
-        local cmd = require("fzfx.cmd")
         local git_root_cmd = cmd.GitRootCmd:run()
         if git_root_cmd:wrong() then
             log.echo(LogLevels.INFO, default_invalid_buffer_error)
@@ -485,10 +483,9 @@ local function _get_delta_width()
     return math.floor(math.max(3, window_width / 2 - 6))
 end
 
---- @param line string
+--- @param commit string
 --- @return string?
-local function _git_commits_previewer(line)
-    local commit = utils.string_split(line, " ")[1]
+local function _make_git_commits_previewer(commit)
     if vim.fn.executable("delta") > 0 then
         local preview_width = _get_delta_width()
         return string.format(
@@ -501,15 +498,24 @@ local function _git_commits_previewer(line)
     end
 end
 
+--- @param line string
+--- @return string?
+local function _git_commits_previewer(line)
+    if utils.string_isspace(line:sub(1, 1)) then
+        return nil
+    end
+    local commit = utils.string_split(line, " ")[1]
+    return _make_git_commits_previewer(commit)
+end
+
 -- git commits }
 
 -- git blame {
 
 --- @param query string
 --- @param context PipelineContext
---- @return string[]|nil
+--- @return string?
 local function _git_blame_provider(query, context)
-    local cmd = require("fzfx.cmd")
     local git_root_cmd = cmd.GitRootCmd:run()
     if git_root_cmd:wrong() then
         log.echo(LogLevels.INFO, default_invalid_buffer_error)
@@ -529,13 +535,18 @@ local function _git_blame_provider(query, context)
     --     "git blame --date=short --color-lines %s",
     --     bufpath
     -- )
-    return {
-        "git",
-        "blame",
-        "--date=short",
-        "--color-lines",
-        bufpath,
-    }
+    if vim.fn.executable("delta") > 0 then
+        return string.format(
+            [[git blame  %s | delta -n --tabs 4 --blame-format %s]],
+            utils.shellescape(bufpath),
+            utils.shellescape("{commit:<8} {author:<15.14} {timestamp:<15}")
+        )
+    else
+        return string.format(
+            [[git blame --date=short --color-lines %s]],
+            utils.shellescape(bufpath)
+        )
+    end
 end
 
 -- git blame }
@@ -546,7 +557,6 @@ end
 --- @return fun():string[]|nil
 local function _make_git_status_provider(opts)
     local function impl()
-        local cmd = require("fzfx.cmd")
         local git_root_cmd = cmd.GitRootCmd:run()
         if git_root_cmd:wrong() then
             log.echo(LogLevels.INFO, default_invalid_buffer_error)
@@ -2836,7 +2846,6 @@ local Defaults = {
             default_fzf_options.no_multi,
             { "--prompt", "GitBranches > " },
             function()
-                local cmd = require("fzfx.cmd")
                 local git_root_cmd = cmd.GitRootCmd:run()
                 if git_root_cmd:wrong() then
                     return nil
@@ -3016,7 +3025,7 @@ local Defaults = {
             default = {
                 key = "default",
                 provider = _git_blame_provider,
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
+                provider_type = ProviderTypeEnum.COMMAND,
             },
         },
         previewers = {
@@ -4213,6 +4222,7 @@ local M = {
 
     -- git commits
     _make_git_commits_provider = _make_git_commits_provider,
+    _make_git_commits_previewer = _make_git_commits_previewer,
     _git_commits_previewer = _git_commits_previewer,
 
     -- git blame

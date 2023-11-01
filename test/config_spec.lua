@@ -331,6 +331,21 @@ describe("config", function()
             end
         end)
     end)
+    describe("git_blame", function()
+        it("_git_blame_provider", function()
+            local actual = conf._git_blame_provider("", make_default_context())
+            if actual ~= nil then
+                assert_eq(type(actual), "table")
+                assert_eq(actual[1], "git")
+                assert_eq(actual[2], "blame")
+                assert_true(utils.string_startswith(actual[3], "--pretty="))
+                assert_eq(actual[4], "--date=short")
+                assert_eq(actual[5], "--color=always")
+                assert_eq(actual[6], "--")
+                assert_true(utils.string_endswith(actual[7], "README.md"))
+            end
+        end)
+    end)
     describe("[_parse_vim_ex_command_name]", function()
         it("parse", function()
             local lines = {
