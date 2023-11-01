@@ -59,7 +59,7 @@ local function parse_git_status(line)
     return vim.trim(line:sub(i))
 end
 
--- parse lines from ls/eza/exa.
+-- parse lines from ls/lsd/eza/exa.
 --
 -- The `ls -lh` output looks like:
 --
@@ -114,9 +114,21 @@ end
 --
 -- The file name starts from the 6th space.
 --
+-- The `lsd -lh --header --icon=never` output looks like:
+-- ```
+-- Permissions User Group  Size       Date Modified            Name
+-- drwxr-xr-x  rlin staff 160 B  Wed Oct 25 16:59:44 2023 bin
+-- .rw-r--r--  rlin staff  54 KB Tue Oct 31 22:29:35 2023 CHANGELOG.md
+-- .rw-r--r--  rlin staff 120 B  Tue Oct 10 14:47:43 2023 codecov.yml
+-- .rw-r--r--  rlin staff 1.0 KB Mon Aug 28 12:39:24 2023 LICENSE
+-- drwxr-xr-x  rlin staff 128 B  Tue Oct 31 21:55:28 2023 lua
+-- .rw-r--r--  rlin staff  38 KB Wed Nov  1 10:29:19 2023 README.md
+-- drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test
+-- ```
+--
 --- @param start_pos integer
 --- @return fun(line:string):string
-local function make_parse_ls(start_pos)
+local function _make_parse_ls(start_pos)
     --- @param line string
     --- @return string
     local function impl(line)
@@ -137,8 +149,10 @@ local function make_parse_ls(start_pos)
     return impl
 end
 
-local parse_ls = make_parse_ls(8)
-local parse_eza = constants.is_windows and make_parse_ls(5) or make_parse_ls(6)
+local parse_ls = _make_parse_ls(8)
+local parse_eza = constants.is_windows and _make_parse_ls(5)
+    or _make_parse_ls(6)
+local parse_lsd = _make_parse_ls(10)
 
 --- @param line string
 --- @param context VimCommandsPipelineContext
@@ -222,9 +236,10 @@ local M = {
     parse_grep = parse_grep,
     parse_rg = parse_rg,
     parse_git_status = parse_git_status,
-    make_parse_ls = make_parse_ls,
+    _make_parse_ls = _make_parse_ls,
     parse_ls = parse_ls,
     parse_eza = parse_eza,
+    parse_lsd = parse_lsd,
     parse_vim_command = parse_vim_command,
     parse_vim_keymap = parse_vim_keymap,
 }

@@ -27,6 +27,7 @@ local has_gnu_grep = (
 local gnu_grep = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
 local grep = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
 
+local has_lsd = vim.fn.executable("lsd") > 0
 local has_eza = vim.fn.executable("exa") > 0 or vim.fn.executable("eza") > 0
 local eza = vim.fn.executable("eza") > 0 and "eza" or "exa"
 
@@ -55,6 +56,7 @@ local M = {
     gnu_grep = gnu_grep,
     grep = grep,
 
+    has_lsd = has_lsd,
     has_eza = has_eza,
     eza = eza,
 }

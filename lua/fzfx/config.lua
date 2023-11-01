@@ -1856,7 +1856,20 @@ local function _make_file_explorer_provider(ls_args)
     --- @return string?
     local function impl(query, context)
         local cwd = utils.readfile(context.cwd)
-        if constants.has_eza then
+        if constants.has_lsd then
+            return vim.fn.executable("echo") > 0
+                    and string.format(
+                        "echo %s && lsd %s --color=always --header -- %s",
+                        utils.shellescape(cwd --[[@as string]]),
+                        ls_args,
+                        utils.shellescape(cwd --[[@as string]])
+                    )
+                or string.format(
+                    "lsd %s --color=always --header -- %s",
+                    ls_args,
+                    utils.shellescape(cwd --[[@as string]])
+                )
+        elseif constants.has_eza then
             return vim.fn.executable("echo") > 0
                     and string.format(
                         "echo %s && %s --color=always %s -- %s",
@@ -1896,7 +1909,16 @@ end
 --- @param filename string
 --- @return string[]|nil
 local function _directory_previewer(filename)
-    if constants.has_eza then
+    if constants.has_lsd then
+        return {
+            "lsd",
+            "--color=always",
+            "-lha",
+            "--header",
+            "--",
+            filename,
+        }
+    elseif constants.has_eza then
         return {
             constants.eza,
             "--color=always",
@@ -1918,8 +1940,11 @@ end
 local function make_filename_by_file_explorer_context(line, context)
     line = vim.trim(line)
     local cwd = utils.readfile(context.cwd)
-    local target = constants.has_eza and line_helpers.parse_eza(line)
-        or line_helpers.parse_ls(line)
+    local target = constants.has_lsd and line_helpers.parse_lsd(line)
+        or (
+            constants.has_eza and line_helpers.parse_eza(line)
+            or line_helpers.parse_ls(line)
+        )
     if
         (
             utils.string_startswith(target, "'")
@@ -3930,7 +3955,11 @@ local Defaults = {
             { "--prompt", path.shorten() .. " > " },
             function()
                 local n = 0
-                if constants.has_eza or vim.fn.executable("ls") > 0 then
+                if
+                    constants.has_lsd
+                    or constants.has_eza
+                    or vim.fn.executable("ls") > 0
+                then
                     n = n + 1
                 end
                 if vim.fn.executable("echo") > 0 then

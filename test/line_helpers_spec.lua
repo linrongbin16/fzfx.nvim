@@ -181,6 +181,33 @@ describe("line_helpers", function()
             end
         end)
     end)
+    describe("[parse_lsd]", function()
+        it("lsd -lh --header --icon=never", function()
+            local lines = {
+                "drwxr-xr-x  rlin staff 160 B  Wed Oct 25 16:59:44 2023 bin",
+                ".rw-r--r--  rlin staff  54 KB Tue Oct 31 22:29:35 2023 CHANGELOG.md",
+                ".rw-r--r--  rlin staff 120 B  Tue Oct 10 14:47:43 2023 codecov.yml",
+                ".rw-r--r--  rlin staff 1.0 KB Mon Aug 28 12:39:24 2023 LICENSE",
+                "drwxr-xr-x  rlin staff 128 B  Tue Oct 31 21:55:28 2023 lua",
+                ".rw-r--r--  rlin staff  38 KB Wed Nov  1 10:29:19 2023 README.md",
+                "drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test",
+            }
+            local expects = {
+                "bin",
+                "CHANGELOG.md",
+                "codecov.yml",
+                "LICENSE",
+                "lua",
+                "README.md",
+                "test",
+            }
+            for i, line in ipairs(lines) do
+                local actual = line_helpers.parse_lsd(line)
+                local expect = expects[i]
+                assert_eq(actual, expect)
+            end
+        end)
+    end)
     describe("[parse_eza]", function()
         it("runs for windows", function()
             local lines = {
@@ -196,7 +223,7 @@ describe("line_helpers", function()
                 "install.ps1",
                 "install.sh",
             }
-            local parse_eza_on_windows = line_helpers.make_parse_ls(5)
+            local parse_eza_on_windows = line_helpers._make_parse_ls(5)
             for i, line in ipairs(lines) do
                 local actual = parse_eza_on_windows(line)
                 local expect = expects[i]
@@ -227,7 +254,7 @@ describe("line_helpers", function()
                 "test1-README.md",
                 "test2-README.md",
             }
-            local parse_eza_on_macos_linux = line_helpers.make_parse_ls(6)
+            local parse_eza_on_macos_linux = line_helpers._make_parse_ls(6)
             for i, line in ipairs(lines) do
                 local actual = parse_eza_on_macos_linux(line)
                 local expect = expects[i]
