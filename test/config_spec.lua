@@ -907,19 +907,13 @@ describe("config", function()
             -- print(
             --     string.format("git status provider2:%s\n", vim.inspect(actual2))
             -- )
-            assert_true(
-                actual1 == nil
-                    or vim.deep_equal(
-                        actual1,
-                        {
-                            "git",
-                            "-c",
-                            "color.status=always",
-                            "status",
-                            "--short",
-                        }
-                    )
-            )
+            assert_true(actual1 == nil or vim.deep_equal(actual1, {
+                "git",
+                "-c",
+                "color.status=always",
+                "status",
+                "--short",
+            }))
             assert_true(actual2 == nil or vim.deep_equal(actual2, {
                 "git",
                 "-c",
