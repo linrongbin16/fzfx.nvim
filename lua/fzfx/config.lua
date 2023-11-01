@@ -486,7 +486,7 @@ end
 --- @param commit string
 --- @return string?
 local function _make_git_commits_previewer(commit)
-    if vim.fn.executable("delta") > 0 then
+    if constants.has_delta then
         local preview_width = _get_delta_width()
         return string.format(
             [[git show %s | delta -n --tabs 4 --width %d]],
@@ -535,9 +535,9 @@ local function _git_blame_provider(query, context)
     --     "git blame --date=short --color-lines %s",
     --     bufpath
     -- )
-    if vim.fn.executable("delta") > 0 then
+    if constants.has_delta then
         return string.format(
-            [[git blame  %s | delta -n --tabs 4 --blame-format %s]],
+            [[git blame %s | delta -n --tabs 4 --blame-format %s]],
             utils.shellescape(bufpath),
             utils.shellescape("{commit:<8} {author:<15.14} {timestamp:<15}")
         )
@@ -580,7 +580,7 @@ end
 --- @return string?
 local function _git_status_previewer(line)
     local filename = line_helpers.parse_git_status(line)
-    if vim.fn.executable("delta") > 0 then
+    if constants.has_delta then
         local preview_width = _get_delta_width()
         return string.format(
             [[git diff %s | delta -n --tabs 4 --width %d]],

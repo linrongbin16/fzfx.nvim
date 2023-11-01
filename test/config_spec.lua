@@ -292,15 +292,18 @@ describe("config", function()
             local lines = {
                 "44ee80e 2023-10-11 linrongbin16 (HEAD -> origin/feat_git_status) docs: wording",
                 "706e1d6 2023-10-10 linrongbin16 chore",
+                "                                | 1:2| fzfx.nvim",
             }
             for _, line in ipairs(lines) do
                 local actual = conf._git_commits_previewer(line)
-                assert_eq(type(actual), "string")
-                assert_true(utils.string_find(actual, "git show") > 0)
-                if vim.fn.executable("delta") > 0 then
-                    assert_true(utils.string_find(actual, "delta") > 0)
-                else
-                    assert_true(utils.string_find(actual, "delta") == nil)
+                if actual ~= nil then
+                    assert_eq(type(actual), "string")
+                    assert_true(utils.string_find(actual, "git show") > 0)
+                    if vim.fn.executable("delta") > 0 then
+                        assert_true(utils.string_find(actual, "delta") > 0)
+                    else
+                        assert_true(utils.string_find(actual, "delta") == nil)
+                    end
                 end
             end
         end)
@@ -335,14 +338,23 @@ describe("config", function()
         it("_git_blame_provider", function()
             local actual = conf._git_blame_provider("", make_default_context())
             if actual ~= nil then
-                assert_eq(type(actual), "table")
-                assert_eq(actual[1], "git")
-                assert_eq(actual[2], "blame")
-                assert_true(utils.string_startswith(actual[3], "--pretty="))
-                assert_eq(actual[4], "--date=short")
-                assert_eq(actual[5], "--color=always")
-                assert_eq(actual[6], "--")
-                assert_true(utils.string_endswith(actual[7], "README.md"))
+                assert_eq(type(actual), "string")
+                assert_true(utils.string_find(actual, "git blame") == 1)
+                if constants.has_delta then
+                    assert_true(
+                        utils.string_find(
+                            actual,
+                            "delta -n --tabs 4 --blame-format"
+                        ) > string.len("git blame")
+                    )
+                else
+                    assert_true(
+                        utils.string_find(
+                            actual,
+                            "git blame --date=short --color-lines"
+                        ) == 1
+                    )
+                end
             end
         end)
     end)
