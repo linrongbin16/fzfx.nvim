@@ -36,6 +36,7 @@
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to open file.
+  - Both with/without `delta` works.
 - [ ] FzfxGBranches
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-R`/`CTRL-O` to switch between local/remote branches.
@@ -46,10 +47,12 @@
   - Press `CTRL-U`/`CTRL-A` to switch between git repo commits/current buffer commits.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to copy commit hash.
+  - Both with/without `delta` works.
 - [ ] FzfxGBlame
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to copy commit hash.
+  - Both with/without `delta` works.
 - [ ] FzfxLspDiagnostics
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current buffer diagnostics.
@@ -74,4 +77,4 @@
   - Press `CTRL-U`/`CTRL-R` to switch between filter/include hidden files mode.
   - Press `ALT-L`/`ALT-H` to cd into folder and cd upper folder.
   - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
-  - Both `eza` and `ls` works.
+  - All `eza`/`lsd`/`ls` works.
