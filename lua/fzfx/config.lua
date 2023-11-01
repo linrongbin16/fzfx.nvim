@@ -346,13 +346,37 @@ end
 
 -- buffers }
 
+-- git files {
+
+local default_git_root_error = "not in git repo."
+
+--- @param opts {current_folder:boolean?}?
+--- @return fun():string[]|nil
+local function _make_git_files_provider(opts)
+    --- @return string[]|nil
+    local function impl()
+        local cmd = require("fzfx.cmd")
+        local git_root_cmd = cmd.GitRootCmd:run()
+        if git_root_cmd:wrong() then
+            log.echo(LogLevels.INFO, default_git_root_error)
+            return nil
+        end
+        return (type(opts) == "table" and opts.current_folder)
+                and { "git", "ls-files" }
+            or { "git", "ls-files", ":/" }
+    end
+    return impl
+end
+
+-- git files }
+
 -- git branches {
 
 local default_git_log_pretty =
     "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
 local function _git_branches_previewer(line)
-    local branch = vim.fn.split(line)[1]
+    local branch = utils.string_split(line, " ")[1]
     -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
     -- "git log --graph --color=always --date=relative",
     return string.format(
@@ -373,7 +397,7 @@ local function _make_git_status_provider(opts)
         local cmd = require("fzfx.cmd")
         local git_root_cmd = cmd.GitRootCmd:run()
         if git_root_cmd:wrong() then
-            log.echo(LogLevels.INFO, "not in git repo.")
+            log.echo(LogLevels.INFO, default_git_root_error)
             return nil
         end
         return (type(opts) == "table" and opts.current_folder)
@@ -2387,12 +2411,12 @@ local Defaults = {
         providers = {
             current_folder = {
                 key = "ctrl-u",
-                provider = { "git", "ls-files" },
+                provider = _make_git_files_provider({ current_folder = true }),
                 line_opts = { prepend_icon_by_ft = true },
             },
             workspace = {
                 key = "ctrl-w",
-                provider = { "git", "ls-files", ":/" },
+                provider = _make_git_files_provider(),
                 line_opts = { prepend_icon_by_ft = true },
             },
         },
@@ -2632,7 +2656,7 @@ local Defaults = {
                     local cmd = require("fzfx.cmd")
                     local git_root_cmd = cmd.GitRootCmd:run()
                     if git_root_cmd:wrong() then
-                        log.echo(LogLevels.INFO, "not in git repo.")
+                        log.echo(LogLevels.INFO, default_git_root_error)
                         return nil
                     end
                     local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
@@ -2680,7 +2704,7 @@ local Defaults = {
                     local cmd = require("fzfx.cmd")
                     local git_root_cmd = cmd.GitRootCmd:run()
                     if git_root_cmd:wrong() then
-                        log.echo(LogLevels.INFO, "not in git repo.")
+                        log.echo(LogLevels.INFO, default_git_root_error)
                         return nil
                     end
                     local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
@@ -4169,6 +4193,9 @@ local M = {
     _is_valid_buffer_number = _is_valid_buffer_number,
     _buffers_provider = _buffers_provider,
     _delete_buffer = _delete_buffer,
+
+    -- git files
+    _make_git_files_provider = _make_git_files_provider,
 
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,
     _get_vim_ex_commands = _get_vim_ex_commands,
