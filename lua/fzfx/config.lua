@@ -189,6 +189,8 @@ local default_unrestricted_grep = {
     "-r",
 }
 
+local default_invalid_buffer_error = "invalid buffer(%s)."
+
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
 --- @return fun(query:string,context:PipelineContext):string[]|nil
 local function _make_live_grep_provider(opts)
@@ -217,7 +219,7 @@ local function _make_live_grep_provider(opts)
                 then
                     log.echo(
                         LogLevels.INFO,
-                        "invalid buffer (%s).",
+                        default_invalid_buffer_error,
                         vim.inspect(context.bufnr)
                     )
                     return nil
@@ -243,7 +245,7 @@ local function _make_live_grep_provider(opts)
                 then
                     log.echo(
                         LogLevels.INFO,
-                        "invalid buffer (%s).",
+                        default_invalid_buffer_error,
                         vim.inspect(context.bufnr)
                     )
                     return nil
@@ -433,6 +435,74 @@ end
 
 -- git branches }
 
+-- git commits {
+
+--- @param opts {buffer:boolean?}?
+--- @return fun(query:string,context:PipelineContext):string[]|nil
+local function _make_git_commits_provider(opts)
+    --- @param query string
+    --- @param context PipelineContext
+    --- @return string[]|nil
+    local function impl(query, context)
+        local cmd = require("fzfx.cmd")
+        local git_root_cmd = cmd.GitRootCmd:run()
+        if git_root_cmd:wrong() then
+            log.echo(LogLevels.INFO, default_invalid_buffer_error)
+            return nil
+        end
+        if not utils.is_buf_valid(context.bufnr) then
+            log.echo(
+                LogLevels.INFO,
+                default_invalid_buffer_error,
+                vim.inspect(context.bufnr)
+            )
+            return nil
+        end
+        return (type(opts) == "table" and opts.buffer)
+                and {
+                    "git",
+                    "log",
+                    "--pretty=" .. default_git_log_pretty,
+                    "--date=short",
+                    "--color=always",
+                    "--",
+                    vim.api.nvim_buf_get_name(context.bufnr),
+                }
+            or {
+                "git",
+                "log",
+                "--pretty=" .. default_git_log_pretty,
+                "--date=short",
+                "--color=always",
+            }
+    end
+    return impl
+end
+
+--- @return integer
+local function _get_delta_width()
+    local window_width = vim.api.nvim_win_get_width(0)
+    return math.floor(math.max(3, window_width / 2 - 6))
+end
+
+--- @param line string
+--- @return string?
+local function _git_commits_previewer(line)
+    local commit = utils.string_split(line, " ")[1]
+    if vim.fn.executable("delta") > 0 then
+        local preview_width = _get_delta_width()
+        return string.format(
+            [[git show %s | delta -n --tabs 4 --width %d]],
+            commit,
+            preview_width
+        )
+    else
+        return string.format([[git show --color=always %s]], commit)
+    end
+end
+
+-- git commits }
+
 -- git status {
 
 --- @param opts {current_folder:boolean?}?
@@ -442,7 +512,7 @@ local function _make_git_status_provider(opts)
         local cmd = require("fzfx.cmd")
         local git_root_cmd = cmd.GitRootCmd:run()
         if git_root_cmd:wrong() then
-            log.echo(LogLevels.INFO, default_git_root_error)
+            log.echo(LogLevels.INFO, default_invalid_buffer_error)
             return nil
         end
         return (type(opts) == "table" and opts.current_folder)
@@ -457,12 +527,6 @@ local function _make_git_status_provider(opts)
             or { "git", "-c", "color.status=always", "status", "--short" }
     end
     return impl
-end
-
---- @return integer
-local function _get_delta_width()
-    local window_width = vim.api.nvim_win_get_width(0)
-    return math.floor(math.max(3, window_width / 2 - 6))
 end
 
 --- @param line string
@@ -485,26 +549,6 @@ local function _git_status_previewer(line)
 end
 
 -- git status }
-
--- git commits {
-
---- @param line string
---- @return string?
-local function _git_commits_previewer(line)
-    local commit = utils.string_split(line, " ")[1]
-    if vim.fn.executable("delta") > 0 then
-        local preview_width = _get_delta_width()
-        return string.format(
-            [[git show %s | delta -n --tabs 4 --width %d]],
-            commit,
-            preview_width
-        )
-    else
-        return string.format([[git show --color=always %s]], commit)
-    end
-end
-
--- }
 
 -- vim commands {
 
@@ -2859,40 +2903,12 @@ local Defaults = {
         providers = {
             all_commits = {
                 key = "ctrl-a",
-                provider = {
-                    "git",
-                    "log",
-                    "--pretty=" .. default_git_log_pretty,
-                    "--date=short",
-                    "--color=always",
-                },
+                provider = _make_git_commits_provider(),
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
             },
             buffer_commits = {
                 key = "ctrl-u",
-                provider = function(query, context)
-                    if not utils.is_buf_valid(context.bufnr) then
-                        log.echo(
-                            LogLevels.INFO,
-                            "invalid buffer (%s).",
-                            vim.inspect(context.bufnr)
-                        )
-                        return nil
-                    end
-                    -- return string.format(
-                    --     "git log --pretty=%s --date=short --color=always -- %s",
-                    --     utils.shellescape(default_git_log_pretty),
-                    --     vim.api.nvim_buf_get_name(context.bufnr)
-                    -- )
-                    return {
-                        "git",
-                        "log",
-                        "--pretty=" .. default_git_log_pretty,
-                        "--date=short",
-                        "--color=always",
-                        "--",
-                        vim.api.nvim_buf_get_name(context.bufnr),
-                    }
-                end,
+                provider = _make_git_commits_provider({ buffer = true }),
                 provider_type = ProviderTypeEnum.COMMAND_LIST,
             },
         },
@@ -2966,7 +2982,7 @@ local Defaults = {
                     if not utils.is_buf_valid(context.bufnr) then
                         log.echo(
                             LogLevels.INFO,
-                            "invalid buffer (%s).",
+                            default_invalid_buffer_error,
                             vim.inspect(context.bufnr)
                         )
                         return nil
@@ -4180,6 +4196,10 @@ local M = {
     _make_git_branches_provider = _make_git_branches_provider,
     _git_branches_previewer = _git_branches_previewer,
 
+    -- git commits
+    _make_git_commits_provider = _make_git_commits_provider,
+    _git_commits_previewer = _git_commits_previewer,
+
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,
     _get_vim_ex_commands = _get_vim_ex_commands,
     _is_ex_command_output_header = _is_ex_command_output_header,
@@ -4212,7 +4232,6 @@ local M = {
     _make_git_status_provider = _make_git_status_provider,
     _get_delta_width = _get_delta_width,
     _git_status_previewer = _git_status_previewer,
-    _git_commits_previewer = _git_commits_previewer,
 }
 
 return M

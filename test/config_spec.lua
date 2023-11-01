@@ -287,6 +287,50 @@ describe("config", function()
             end
         end)
     end)
+    describe("[git_commits]", function()
+        it("_git_commits_previewer", function()
+            local lines = {
+                "44ee80e 2023-10-11 linrongbin16 (HEAD -> origin/feat_git_status) docs: wording",
+                "706e1d6 2023-10-10 linrongbin16 chore",
+            }
+            for _, line in ipairs(lines) do
+                local actual = conf._git_commits_previewer(line)
+                assert_eq(type(actual), "string")
+                assert_true(utils.string_find(actual, "git show") > 0)
+                if vim.fn.executable("delta") > 0 then
+                    assert_true(utils.string_find(actual, "delta") > 0)
+                else
+                    assert_true(utils.string_find(actual, "delta") == nil)
+                end
+            end
+        end)
+        it("_make_git_commits_provider repo", function()
+            local f = conf._make_git_commits_provider()
+            local actual = f("", {})
+            if actual ~= nil then
+                assert_eq(type(actual), "table")
+                assert_eq(actual[1], "git")
+                assert_eq(actual[2], "log")
+                assert_true(utils.string_startswith(actual[3], "--pretty="))
+                assert_eq(actual[4], "--date=short")
+                assert_eq(actual[5], "--color=always")
+            end
+        end)
+        it("_make_git_commits_provider buffer", function()
+            local f = conf._make_git_commits_provider({ buffer = true })
+            local actual = f("", make_default_context())
+            if actual ~= nil then
+                assert_eq(type(actual), "table")
+                assert_eq(actual[1], "git")
+                assert_eq(actual[2], "log")
+                assert_true(utils.string_startswith(actual[3], "--pretty="))
+                assert_eq(actual[4], "--date=short")
+                assert_eq(actual[5], "--color=always")
+                assert_eq(actual[6], "--")
+                assert_true(utils.string_endswith(actual[7], "README.md"))
+            end
+        end)
+    end)
     describe("[_parse_vim_ex_command_name]", function()
         it("parse", function()
             local lines = {
@@ -958,24 +1002,6 @@ describe("config", function()
                 "--short",
                 ".",
             }))
-        end)
-    end)
-    describe("[git_commits]", function()
-        it("_git_commits_previewer", function()
-            local lines = {
-                "44ee80e 2023-10-11 linrongbin16 (HEAD -> origin/feat_git_status) docs: wording",
-                "706e1d6 2023-10-10 linrongbin16 chore",
-            }
-            for _, line in ipairs(lines) do
-                local actual = conf._git_commits_previewer(line)
-                assert_eq(type(actual), "string")
-                assert_true(utils.string_find(actual, "git show") > 0)
-                if vim.fn.executable("delta") > 0 then
-                    assert_true(utils.string_find(actual, "delta") > 0)
-                else
-                    assert_true(utils.string_find(actual, "delta") == nil)
-                end
-            end
         end)
     end)
 end)
