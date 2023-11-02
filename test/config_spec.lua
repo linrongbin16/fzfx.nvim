@@ -1229,6 +1229,12 @@ describe("config", function()
                 for _, line in ipairs(LS_LINES) do
                     local actual =
                         conf._make_filename_by_file_explorer_context(line, ctx)
+                    print(
+                        string.format(
+                            "make filename from explorer context:%s\n",
+                            vim.inspect(actual)
+                        )
+                    )
                     assert_eq(type(actual), "string")
                     assert_true(
                         vim.fn.filereadable(actual) > 0
