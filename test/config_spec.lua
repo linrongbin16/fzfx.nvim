@@ -1206,9 +1206,9 @@ describe("config", function()
                 for _, line in ipairs(LSD_LINES) do
                     local actual =
                         conf._make_filename_by_file_explorer_context(line, ctx)
-                    print(
-                        string.format("make filename:%s\n", vim.inspect(actual))
-                    )
+                    -- print(
+                    --     string.format("make filename:%s\n", vim.inspect(actual))
+                    -- )
                     assert_eq(type(actual), "string")
                     assert_true(
                         vim.fn.filereadable(actual) > 0
@@ -1237,6 +1237,46 @@ describe("config", function()
                 end
             end
         end)
-        it("_file_explorer_previewer", function() end)
+        it("_file_explorer_previewer", function()
+            local ctx = conf._file_explorer_context_maker()
+            if constants.has_lsd then
+                for _, line in ipairs(LSD_LINES) do
+                    local actual = conf._file_explorer_previewer(line, ctx)
+                    if actual ~= nil then
+                        assert_eq(type(actual), "table")
+                        assert_true(
+                            actual[1] == "bat"
+                                or actual[1] == "cat"
+                                or actual[1] == "lsd"
+                        )
+                    end
+                end
+            elseif constants.has_eza then
+                for _, line in ipairs(EZA_LINES) do
+                    local actual = conf._file_explorer_previewer(line, ctx)
+                    if actual ~= nil then
+                        assert_eq(type(actual), "table")
+                        assert_true(
+                            actual[1] == "bat"
+                                or actual[1] == "cat"
+                                or actual[1] == "eza"
+                                or actual[1] == "exa"
+                        )
+                    end
+                end
+            else
+                for _, line in ipairs(LS_LINES) do
+                    local actual = conf._file_explorer_previewer(line, ctx)
+                    if actual ~= nil then
+                        assert_eq(type(actual), "table")
+                        assert_true(
+                            actual[1] == "bat"
+                                or actual[1] == "cat"
+                                or actual[1] == "ls"
+                        )
+                    end
+                end
+            end
+        end)
     end)
 end)
