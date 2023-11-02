@@ -1278,5 +1278,54 @@ describe("config", function()
                 end
             end
         end)
+        it("_edit_file_explorer", function()
+            local ctx = conf._file_explorer_context_maker()
+            if constants.has_lsd then
+                local actual = conf._edit_file_explorer(LSD_LINES, ctx)
+            elseif constants.has_eza then
+                local actual = conf._edit_file_explorer(EZA_LINES, ctx)
+            else
+                local actual = conf._edit_file_explorer(LS_LINES, ctx)
+            end
+            assert_true(true)
+        end)
+        it("_cd_file_explorer", function()
+            local ctx = conf._file_explorer_context_maker()
+            if constants.has_lsd then
+                for _, line in ipairs(LSD_LINES) do
+                    local actual = conf._cd_file_explorer(line, ctx)
+                    assert_true(actual == nil)
+                end
+            elseif constants.has_eza then
+                for _, line in ipairs(EZA_LINES) do
+                    local actual = conf._cd_file_explorer(line, ctx)
+                    assert_true(actual == nil)
+                end
+            else
+                for _, line in ipairs(LS_LINES) do
+                    local actual = conf._cd_file_explorer(line, ctx)
+                    assert_true(actual == nil)
+                end
+            end
+        end)
+        it("_upper_file_explorer", function()
+            local ctx = conf._file_explorer_context_maker()
+            if constants.has_lsd then
+                for _, line in ipairs(LSD_LINES) do
+                    local actual = conf._upper_file_explorer(line, ctx)
+                    assert_true(actual == nil)
+                end
+            elseif constants.has_eza then
+                for _, line in ipairs(EZA_LINES) do
+                    local actual = conf._upper_file_explorer(line, ctx)
+                    assert_true(actual == nil)
+                end
+            else
+                for _, line in ipairs(LS_LINES) do
+                    local actual = conf._upper_file_explorer(line, ctx)
+                    assert_true(actual == nil)
+                end
+            end
+        end)
     end)
 end)
