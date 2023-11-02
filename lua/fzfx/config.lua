@@ -1437,89 +1437,97 @@ local function _render_lsp_location_line(loc)
     return line
 end
 
+local default_no_lsp_locations_error = "no lsp locations found."
+
 --- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"
 --- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"
-
 --- @alias LspDefinitionOpts {method:LspMethod,capability:LspServerCapability,bufnr:integer,timeout:integer?,position_params:any?}
---- @param opts LspDefinitionOpts
---- @return string[]?
-local function lsp_locations_provider(opts)
-    local lsp_clients = vim.lsp.get_active_clients({ bufnr = opts.bufnr })
-    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
-        log.echo(LogLevels.INFO, default_no_lsp_clients_error)
-        return nil
-    end
-    log.debug(
-        "|fzfx.config - lsp_locations_provider| lsp_clients:%s",
-        vim.inspect(lsp_clients)
-    )
-    local method_support = false
-    for _, lsp_client in ipairs(lsp_clients) do
-        if lsp_client.server_capabilities[opts.capability] then
-            method_support = true
-            break
+--- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
+--- @return fun(query:string,context:LspLocationPipelineContext):string[]|nil
+local function _make_lsp_locations_provider(opts)
+    --- @param query string
+    --- @param context LspLocationPipelineContext
+    --- @return string[]|nil
+    local function impl(query, context)
+        local lsp_clients =
+            vim.lsp.get_active_clients({ bufnr = context.bufnr })
+        if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+            log.echo(LogLevels.INFO, default_no_lsp_clients_error)
+            return nil
         end
-    end
-    if not method_support then
-        log.echo(
-            LogLevels.INFO,
-            string.format("method %s not supported.", vim.inspect(opts.method))
+        log.debug(
+            "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
+            vim.inspect(lsp_clients)
         )
-        return nil
-    end
-    local lsp_results, lsp_err = vim.lsp.buf_request_sync(
-        opts.bufnr,
-        opts.method,
-        opts.position_params,
-        opts.timeout or 3000
-    )
-    log.debug(
-        "|fzfx.config - lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
-        vim.inspect(opts),
-        vim.inspect(lsp_results),
-        vim.inspect(lsp_err)
-    )
-    if lsp_err then
-        log.echo(LogLevels.ERROR, lsp_err)
-        return nil
-    end
-    if type(lsp_results) ~= "table" then
-        log.echo(LogLevels.INFO, "no lsp locations found.")
-        return nil
-    end
-
-    local def_lines = {}
-
-    for client_id, lsp_result in pairs(lsp_results) do
-        if
-            client_id == nil
-            or type(lsp_result) ~= "table"
-            or type(lsp_result.result) ~= "table"
-        then
-            break
-        end
-        local lsp_defs = lsp_result.result
-        if _is_lsp_location(lsp_defs) then
-            local line = _render_lsp_location_line(lsp_defs)
-            if type(line) == "string" and string.len(line) > 0 then
-                table.insert(def_lines, line)
+        local method_supported = false
+        for _, lsp_client in ipairs(lsp_clients) do
+            if lsp_client.server_capabilities[opts.capability] then
+                method_supported = true
+                break
             end
-        else
-            for _, def in ipairs(lsp_defs) do
-                local line = _render_lsp_location_line(def)
+        end
+        if not method_supported then
+            log.echo(
+                LogLevels.INFO,
+                "%s not supported.",
+                vim.inspect(opts.method)
+            )
+            return nil
+        end
+        local lsp_results, lsp_err = vim.lsp.buf_request_sync(
+            context.bufnr,
+            opts.method,
+            context.position_params,
+            opts.timeout or 3000
+        )
+        log.debug(
+            "|fzfx.config - _make_lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
+            vim.inspect(opts),
+            vim.inspect(lsp_results),
+            vim.inspect(lsp_err)
+        )
+        if lsp_err then
+            log.echo(LogLevels.ERROR, lsp_err)
+            return nil
+        end
+        if type(lsp_results) ~= "table" then
+            log.echo(LogLevels.INFO, default_no_lsp_locations_error)
+            return nil
+        end
+
+        local results = {}
+        for client_id, lsp_result in pairs(lsp_results) do
+            if
+                client_id == nil
+                or type(lsp_result) ~= "table"
+                or type(lsp_result.result) ~= "table"
+            then
+                break
+            end
+            local lsp_loc = lsp_result.result
+            if _is_lsp_location(lsp_loc) then
+                local line = _render_lsp_location_line(lsp_loc)
                 if type(line) == "string" and string.len(line) > 0 then
-                    table.insert(def_lines, line)
+                    table.insert(results, line)
+                end
+            else
+                for _, def in ipairs(lsp_loc) do
+                    local line = _render_lsp_location_line(def)
+                    if type(line) == "string" and string.len(line) > 0 then
+                        table.insert(results, line)
+                    end
                 end
             end
         end
-    end
 
-    if def_lines == nil or vim.tbl_isempty(def_lines) then
-        log.echo(LogLevels.INFO, "no lsp locations found.")
-        return nil
-    end
+        if vim.tbl_isempty(results) then
+            log.echo(LogLevels.INFO, default_no_lsp_locations_error)
+            return nil
+        end
 
-    return def_lines
+        return results
+    end
+    return impl
 end
 
 -- lsp locations }
@@ -3637,16 +3645,10 @@ local Defaults = {
         },
         providers = {
             key = "default",
-            --- @param query string
-            --- @param context LspLocationPipelineContext
-            provider = function(query, context)
-                return lsp_locations_provider({
-                    method = "textDocument/definition",
-                    capability = "definitionProvider",
-                    bufnr = context.bufnr,
-                    position_params = context.position_params,
-                })
-            end,
+            provider = _make_lsp_locations_provider({
+                method = "textDocument/definition",
+                capability = "definitionProvider",
+            }),
             provider_type = ProviderTypeEnum.LIST,
             line_opts = {
                 prepend_icon_by_ft = true,
@@ -3697,16 +3699,10 @@ local Defaults = {
         },
         providers = {
             key = "default",
-            --- @param query string
-            --- @param context LspLocationPipelineContext
-            provider = function(query, context)
-                return lsp_locations_provider({
-                    method = "textDocument/type_definition",
-                    capability = "typeDefinitionProvider",
-                    bufnr = context.bufnr,
-                    position_params = context.position_params,
-                })
-            end,
+            provider = _make_lsp_locations_provider({
+                method = "textDocument/type_definition",
+                capability = "typeDefinitionProvider",
+            }),
             provider_type = ProviderTypeEnum.LIST,
             line_opts = {
                 prepend_icon_by_ft = true,
@@ -3757,16 +3753,10 @@ local Defaults = {
         },
         providers = {
             key = "default",
-            --- @param query string
-            --- @param context LspLocationPipelineContext
-            provider = function(query, context)
-                return lsp_locations_provider({
-                    method = "textDocument/references",
-                    capability = "referencesProvider",
-                    bufnr = context.bufnr,
-                    position_params = context.position_params,
-                })
-            end,
+            provider = _make_lsp_locations_provider({
+                method = "textDocument/references",
+                capability = "referencesProvider",
+            }),
             provider_type = ProviderTypeEnum.LIST,
             line_opts = {
                 prepend_icon_by_ft = true,
@@ -3817,16 +3807,10 @@ local Defaults = {
         },
         providers = {
             key = "default",
-            --- @param query string
-            --- @param context LspLocationPipelineContext
-            provider = function(query, context)
-                return lsp_locations_provider({
-                    method = "textDocument/implementation",
-                    capability = "implementationProvider",
-                    bufnr = context.bufnr,
-                    position_params = context.position_params,
-                })
-            end,
+            provider = _make_lsp_locations_provider({
+                method = "textDocument/implementation",
+                capability = "implementationProvider",
+            }),
             provider_type = ProviderTypeEnum.LIST,
             line_opts = {
                 prepend_icon_by_ft = true,
@@ -4258,6 +4242,7 @@ local M = {
     _lsp_location_render_line = _lsp_location_render_line,
     _lsp_position_context_maker = _lsp_position_context_maker,
     _render_lsp_location_line = _render_lsp_location_line,
+    _make_lsp_locations_provider = _make_lsp_locations_provider,
 
     -- commands
     _parse_vim_ex_command_name = _parse_vim_ex_command_name,

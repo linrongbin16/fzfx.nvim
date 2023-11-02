@@ -786,7 +786,7 @@ describe("config", function()
             end
         end)
     end)
-    describe("[_is_lsp_xxx]", function()
+    describe("lsp_locations", function()
         local RANGE = {
             start = { line = 1, character = 10 },
             ["end"] = { line = 10, character = 31 },
@@ -814,16 +814,14 @@ describe("config", function()
             assert_false(conf._is_lsp_locationlink({}))
             assert_true(conf._is_lsp_locationlink(LOCATIONLINK))
         end)
-    end)
-    describe("[_lsp_location_render_line]", function()
-        local RANGE = {
-            start = { line = 1, character = 20 },
-            ["end"] = { line = 1, character = 26 },
-        }
-        it("render", function()
+        it("_lsp_location_render_line", function()
+            local r = {
+                start = { line = 1, character = 20 },
+                ["end"] = { line = 1, character = 26 },
+            }
             local loc = conf._lsp_location_render_line(
                 'describe("_lsp_location_render_line", function()',
-                RANGE,
+                r,
                 require("fzfx.color").red
             )
             -- print(string.format("lsp render line:%s\n", vim.inspect(loc)))
@@ -831,20 +829,6 @@ describe("config", function()
             assert_true(utils.string_startswith(loc, "describe"))
             assert_true(utils.string_endswith(loc, "function()"))
         end)
-    end)
-    describe("_render_lsp_location_line", function()
-        local RANGE = {
-            start = { line = 1, character = 10 },
-            ["end"] = { line = 10, character = 31 },
-        }
-        local LOCATION = {
-            uri = "file:///usr/home/github/linrongbin16/fzfx.nvim",
-            range = RANGE,
-        }
-        local LOCATIONLINK = {
-            targetUri = "file:///usr/home/github/linrongbin16/fzfx.nvim",
-            targetRange = RANGE,
-        }
         it("renders location", function()
             local actual = conf._render_lsp_location_line(LOCATION)
             -- print(
@@ -862,9 +846,7 @@ describe("config", function()
             -- )
             assert_true(actual == nil or type(actual) == "string")
         end)
-    end)
-    describe("[_lsp_position_context_maker]", function()
-        it("lsp position context", function()
+        it("_lsp_position_context_maker", function()
             local ctx = conf._lsp_position_context_maker()
             -- print(string.format("lsp position context:%s\n", vim.inspect(ctx)))
             assert_true(ctx.bufnr > 0)
@@ -883,6 +865,23 @@ describe("config", function()
                     "README.md"
                 )
             )
+        end)
+        it("_make_lsp_locations_provider", function()
+            local ctx = conf._lsp_position_context_maker()
+            local f = conf._make_lsp_locations_provider({
+                method = "textDocument/definition",
+                capability = "definitionProvider",
+            })
+            assert_eq(type(f), "function")
+            local actual = f("", ctx)
+            if actual ~= nil then
+                assert_eq(type(actual), "table")
+                assert_true(#actual >= 0)
+                for _, act in ipairs(actual) do
+                    assert_eq(type(act), "string")
+                    assert_true(string.len(act) > 0)
+                end
+            end
         end)
     end)
     describe("[_parse_map_command_output_line]", function()
