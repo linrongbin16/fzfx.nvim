@@ -299,7 +299,7 @@ local function _is_valid_buffer_number(bufnr)
         ["qf"] = true,
         ["neo-tree"] = true,
     }
-    local ok, ft_or_err = pcall(utils.get_buf_option, { bufnr, "filetype" })
+    local ok, ft_or_err = pcall(utils.get_buf_option, bufnr, "filetype")
     if not ok then
         return false
     end
