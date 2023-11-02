@@ -1106,7 +1106,6 @@ describe("config", function()
         local LS_LINES = {
             "-rw-r--r--   1 rlin  staff   1.0K Aug 28 12:39 LICENSE",
             "-rw-r--r--   1 rlin  staff    27K Oct  8 11:37 README.md",
-            "drwxr-xr-x   3 rlin  staff    96B Aug 28 12:39 autoload",
             "drwxr-xr-x   4 rlin  staff   128B Sep 22 10:11 bin",
             "-rw-r--r--   1 rlin  staff   120B Sep  5 14:14 codecov.yml",
         }
@@ -1120,7 +1119,6 @@ describe("config", function()
             "drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test",
         }
         local EZA_LINES = {
-            "drwxr-xr-x     - linrongbin 28 Aug 12:39  autoload",
             "drwxr-xr-x     - linrongbin 22 Sep 10:11  bin",
             ".rw-r--r--   120 linrongbin  5 Sep 14:14  codecov.yml",
             ".rw-r--r--  1.1k linrongbin 28 Aug 12:39  LICENSE",
