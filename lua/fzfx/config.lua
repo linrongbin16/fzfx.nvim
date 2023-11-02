@@ -2645,11 +2645,13 @@ local Defaults = {
             current_folder = {
                 key = "ctrl-u",
                 provider = _make_git_files_provider({ current_folder = true }),
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = { prepend_icon_by_ft = true },
             },
             workspace = {
                 key = "ctrl-w",
                 provider = _make_git_files_provider(),
+                provider_type = ProviderTypeEnum.COMMAND_LIST,
                 line_opts = { prepend_icon_by_ft = true },
             },
         },
