@@ -1855,36 +1855,45 @@ local function _vim_keymaps_context_maker()
 end
 
 --- @param mode "n"|"i"|"v"|"all"
---- @param ctx VimKeyMapsPipelineContext
---- @return string[]
-local function vim_keymaps_provider(mode, ctx)
-    local keys = _get_vim_keymaps()
-    local filtered_keys = {}
-    if mode == "all" then
-        filtered_keys = keys
-    else
-        for _, k in ipairs(keys) do
-            if k.mode == mode then
-                table.insert(filtered_keys, k)
-            elseif
-                mode == "v"
-                and (
-                    utils.string_find(k.mode, "v")
-                    or utils.string_find(k.mode, "s")
-                    or utils.string_find(k.mode, "x")
-                )
-            then
-                table.insert(filtered_keys, k)
-            elseif mode == "n" and utils.string_find(k.mode, "n") then
-                table.insert(filtered_keys, k)
-            elseif mode == "i" and utils.string_find(k.mode, "i") then
-                table.insert(filtered_keys, k)
-            elseif mode == "n" and string.len(k.mode) == 0 then
-                table.insert(filtered_keys, k)
+--- @return fun(query:string,context:VimKeyMapsPipelineContext):string[]|nil
+local function _make_vim_keymaps_provider(mode)
+    --- @param query string
+    --- @param context VimKeyMapsPipelineContext
+    --- @return string[]|nil
+    local function impl(query, context)
+        local keys = _get_vim_keymaps()
+        local filtered_keys = {}
+        if mode == "all" then
+            filtered_keys = keys
+        else
+            for _, k in ipairs(keys) do
+                if k.mode == mode then
+                    table.insert(filtered_keys, k)
+                elseif
+                    mode == "v"
+                    and (
+                        utils.string_find(k.mode, "v")
+                        or utils.string_find(k.mode, "s")
+                        or utils.string_find(k.mode, "x")
+                    )
+                then
+                    table.insert(filtered_keys, k)
+                elseif mode == "n" and utils.string_find(k.mode, "n") then
+                    table.insert(filtered_keys, k)
+                elseif mode == "i" and utils.string_find(k.mode, "i") then
+                    table.insert(filtered_keys, k)
+                elseif mode == "n" and string.len(k.mode) == 0 then
+                    table.insert(filtered_keys, k)
+                end
             end
         end
+        return _render_vim_keymaps(
+            filtered_keys,
+            context.key_width,
+            context.opts_width
+        )
     end
-    return _render_vim_keymaps(filtered_keys, ctx.key_width, ctx.opts_width)
+    return impl
 end
 
 --- @param filename string
@@ -3432,38 +3441,22 @@ local Defaults = {
         providers = {
             all_mode = {
                 key = "ctrl-a",
-                --- @param query string
-                --- @param context VimKeyMapsPipelineContext
-                provider = function(query, context)
-                    return vim_keymaps_provider("all", context)
-                end,
+                provider = _make_vim_keymaps_provider("all"),
                 provider_type = ProviderTypeEnum.LIST,
             },
             n_mode = {
                 key = "ctrl-o",
-                --- @param query string
-                --- @param context VimKeyMapsPipelineContext
-                provider = function(query, context)
-                    return vim_keymaps_provider("n", context)
-                end,
+                provider = _make_vim_keymaps_provider("n"),
                 provider_type = ProviderTypeEnum.LIST,
             },
             i_mode = {
                 key = "ctrl-i",
-                --- @param query string
-                --- @param context VimKeyMapsPipelineContext
-                provider = function(query, context)
-                    return vim_keymaps_provider("i", context)
-                end,
+                provider = _make_vim_keymaps_provider("i"),
                 provider_type = ProviderTypeEnum.LIST,
             },
             v_mode = {
                 key = "ctrl-v",
-                --- @param query string
-                --- @param context VimKeyMapsPipelineContext
-                provider = function(query, context)
-                    return vim_keymaps_provider("v", context)
-                end,
+                provider = _make_vim_keymaps_provider("v"),
                 provider_type = ProviderTypeEnum.LIST,
             },
         },
@@ -4273,6 +4266,7 @@ local M = {
     _make_git_status_provider = _make_git_status_provider,
     _get_delta_width = _get_delta_width,
     _git_status_previewer = _git_status_previewer,
+    _make_vim_keymaps_provider = _make_vim_keymaps_provider,
 }
 
 return M

@@ -938,8 +938,60 @@ describe("config", function()
             end
         end)
     end)
-    describe("[_get_vim_keymaps]", function()
-        it("get keymaps", function()
+    describe("[keymaps]", function()
+        it("_make_vim_keymaps_provider all", function()
+            local ctx = conf._vim_keymaps_context_maker()
+            local f = conf._make_vim_keymaps_provider("all")
+            local actual = f("", ctx)
+            if actual ~= nil then
+                assert_eq(type(actual), "table")
+                assert_true(#actual >= 0)
+                for _, act in ipairs(actual) do
+                    assert_eq(type(act), "string")
+                    assert_true(string.len(act) > 0)
+                end
+            end
+        end)
+        it("_make_vim_keymaps_provider n", function()
+            local ctx = conf._vim_keymaps_context_maker()
+            local f = conf._make_vim_keymaps_provider("n")
+            local actual = f("", ctx)
+            if actual ~= nil then
+                assert_eq(type(actual), "table")
+                assert_true(#actual >= 0)
+                for _, act in ipairs(actual) do
+                    assert_eq(type(act), "string")
+                    assert_true(string.len(act) > 0)
+                end
+            end
+        end)
+        it("_make_vim_keymaps_provider i", function()
+            local ctx = conf._vim_keymaps_context_maker()
+            local f = conf._make_vim_keymaps_provider("i")
+            local actual = f("", ctx)
+            if actual ~= nil then
+                assert_eq(type(actual), "table")
+                assert_true(#actual >= 0)
+                for _, act in ipairs(actual) do
+                    assert_eq(type(act), "string")
+                    assert_true(string.len(act) > 0)
+                end
+            end
+        end)
+        it("_make_vim_keymaps_provider v", function()
+            local ctx = conf._vim_keymaps_context_maker()
+            local f = conf._make_vim_keymaps_provider("v")
+            local actual = f("", ctx)
+            if actual ~= nil then
+                assert_eq(type(actual), "table")
+                assert_true(#actual >= 0)
+                for _, act in ipairs(actual) do
+                    assert_eq(type(act), "string")
+                    assert_true(string.len(act) > 0)
+                end
+            end
+        end)
+        it("_get_vim_keymaps", function()
             local actual = conf._get_vim_keymaps()
             -- print(string.format("vim keymaps:%s\n", vim.inspect(actual)))
             assert_eq(type(actual), "table")
