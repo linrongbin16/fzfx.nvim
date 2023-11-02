@@ -3993,7 +3993,7 @@ local Defaults = {
         -- nerd fonts:
         --     nf-fa-file_text_o               \uf0f6 (default)
         --     nf-fa-file_o                    \uf016
-        unknown_file = "",
+        unknown_file = "",
 
         -- nerd fonts:
         --     nf-custom-folder                \ue5ff (default)
