@@ -1931,7 +1931,7 @@ end
 --- @param line string
 --- @param context VimKeyMapsPipelineContext
 --- @return string[]|nil
-local function vim_keymaps_previewer(line, context)
+local function _vim_keymaps_previewer(line, context)
     local def_or_loc = line_helpers.parse_vim_keymap(line, context)
     log.debug(
         "|fzfx.config - vim_keymaps_previewer| line:%s, context:%s, desc_or_loc:%s",
@@ -3462,19 +3462,19 @@ local Defaults = {
         },
         previewers = {
             all_mode = {
-                previewer = vim_keymaps_previewer,
+                previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             n_mode = {
-                previewer = vim_keymaps_previewer,
+                previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             i_mode = {
-                previewer = vim_keymaps_previewer,
+                previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             v_mode = {
-                previewer = vim_keymaps_previewer,
+                previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
         },
@@ -4267,6 +4267,7 @@ local M = {
     _get_delta_width = _get_delta_width,
     _git_status_previewer = _git_status_previewer,
     _make_vim_keymaps_provider = _make_vim_keymaps_provider,
+    _vim_keymaps_previewer = _vim_keymaps_previewer,
 }
 
 return M

@@ -1085,6 +1085,22 @@ describe("config", function()
                 assert_eq(actual[2], "lua/fzfx/config.lua")
             end
         end)
+        it("_vim_keymaps_previewer", function()
+            local lines = {
+                '<C-Tab>                                      o   |Y      |N     |N      "<C-C><C-W>w"',
+                "<Plug>(YankyCycleBackward)                   n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:290",
+            }
+            local ctx = conf._vim_keymaps_context_maker()
+            for _, line in ipairs(lines) do
+                local actual = conf._vim_keymaps_previewer(line, ctx)
+                assert_eq(type(actual), "table")
+                assert_true(
+                    actual[1] == "bat"
+                        or actual[1] == "cat"
+                        or actual[1] == "echo"
+                )
+            end
+        end)
     end)
     describe("[file explorer]", function()
         it("_file_explorer_context_maker", function()
