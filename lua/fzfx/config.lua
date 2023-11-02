@@ -2072,7 +2072,7 @@ end
 --- @param line string
 --- @param context FileExplorerPipelineContext
 --- @return string
-local function make_filename_by_file_explorer_context(line, context)
+local function _make_filename_by_file_explorer_context(line, context)
     line = vim.trim(line)
     local cwd = utils.readfile(context.cwd)
     local target = constants.has_lsd and line_helpers.parse_lsd(line)
@@ -2105,8 +2105,8 @@ end
 --- @param line string
 --- @param context FileExplorerPipelineContext
 --- @return string[]|nil
-local function file_explorer_previewer(line, context)
-    local p = make_filename_by_file_explorer_context(line, context)
+local function _file_explorer_previewer(line, context)
+    local p = _make_filename_by_file_explorer_context(line, context)
     if vim.fn.filereadable(p) > 0 then
         local preview = _make_file_previewer(p)
         return preview()
@@ -2117,13 +2117,34 @@ local function file_explorer_previewer(line, context)
     end
 end
 
+--- @param line string
+--- @param context FileExplorerPipelineContext
+local function _cd_file_explorer(line, context)
+    local target = _make_filename_by_file_explorer_context(line, context)
+    if vim.fn.isdirectory(target) > 0 then
+        utils.writefile(context.cwd, target)
+    end
+end
+
+--- @param line string
+--- @param context FileExplorerPipelineContext
+local function _upper_file_explorer(line, context)
+    local cwd = utils.readfile(context.cwd) --[[@as string]]
+    local target = vim.fn.fnamemodify(cwd, ":h")
+    -- Windows root folder: `C:\`
+    -- Unix/linux root folder: `/`
+    local root_len = constants.is_windows and 3 or 1
+    if vim.fn.isdirectory(target) > 0 and string.len(target) > root_len then
+        utils.writefile(context.cwd, target)
+    end
+end
+
 --- @param lines string[]
 --- @param context FileExplorerPipelineContext
---- @return any
-local function edit_file_explorer(lines, context)
+local function _edit_file_explorer(lines, context)
     local fullpath_lines = {}
     for _, line in ipairs(lines) do
-        local p = make_filename_by_file_explorer_context(line, context)
+        local p = _make_filename_by_file_explorer_context(line, context)
         table.insert(fullpath_lines, p)
     end
     log.debug(
@@ -3938,52 +3959,30 @@ local Defaults = {
         },
         previewers = {
             filter_hidden = {
-                previewer = file_explorer_previewer,
+                previewer = _file_explorer_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
             include_hidden = {
-                previewer = file_explorer_previewer,
+                previewer = _file_explorer_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
             },
         },
         interactions = {
             cd = {
                 key = "alt-l",
-                --- @param line string
-                --- @param context FileExplorerPipelineContext
-                interaction = function(line, context)
-                    local target =
-                        make_filename_by_file_explorer_context(line, context)
-                    if vim.fn.isdirectory(target) > 0 then
-                        utils.writefile(context.cwd, target)
-                    end
-                end,
+                interaction = _cd_file_explorer,
                 reload_after_execute = true,
             },
             upper = {
                 key = "alt-h",
-                --- @param line string
-                --- @param context FileExplorerPipelineContext
-                interaction = function(line, context)
-                    local cwd = utils.readfile(context.cwd) --[[@as string]]
-                    local target = vim.fn.fnamemodify(cwd, ":h")
-                    -- Windows root folder: `C:\`
-                    -- Unix/linux root folder: `/`
-                    local root_len = constants.is_windows and 3 or 1
-                    if
-                        vim.fn.isdirectory(target) > 0
-                        and string.len(target) > root_len
-                    then
-                        utils.writefile(context.cwd, target)
-                    end
-                end,
+                interaction = _upper_file_explorer,
                 reload_after_execute = true,
             },
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = edit_file_explorer,
-            ["double-click"] = edit_file_explorer,
+            ["enter"] = _edit_file_explorer,
+            ["double-click"] = _edit_file_explorer,
         },
         fzf_opts = {
             default_fzf_options.multi,
@@ -4260,14 +4259,21 @@ local M = {
     _render_vim_keymaps = _render_vim_keymaps,
     _vim_keymaps_context_maker = _vim_keymaps_context_maker,
     _vim_keymaps_lua_function_previewer = _vim_keymaps_lua_function_previewer,
-    _file_explorer_context_maker = _file_explorer_context_maker,
-    _make_file_explorer_provider = _make_file_explorer_provider,
-    _directory_previewer = _directory_previewer,
     _make_git_status_provider = _make_git_status_provider,
     _get_delta_width = _get_delta_width,
     _git_status_previewer = _git_status_previewer,
     _make_vim_keymaps_provider = _make_vim_keymaps_provider,
     _vim_keymaps_previewer = _vim_keymaps_previewer,
+
+    -- file explorer
+    _make_filename_by_file_explorer_context = _make_filename_by_file_explorer_context,
+    _file_explorer_context_maker = _file_explorer_context_maker,
+    _make_file_explorer_provider = _make_file_explorer_provider,
+    _directory_previewer = _directory_previewer,
+    _file_explorer_previewer = _file_explorer_previewer,
+    _edit_file_explorer = _edit_file_explorer,
+    _cd_file_explorer = _cd_file_explorer,
+    _upper_file_explorer = _upper_file_explorer,
 }
 
 return M

@@ -1103,6 +1103,31 @@ describe("config", function()
         end)
     end)
     describe("[file explorer]", function()
+        local LS_LINES = {
+            "-rw-r--r--   1 rlin  staff   1.0K Aug 28 12:39 LICENSE",
+            "-rw-r--r--   1 rlin  staff    27K Oct  8 11:37 README.md",
+            "drwxr-xr-x   3 rlin  staff    96B Aug 28 12:39 autoload",
+            "drwxr-xr-x   4 rlin  staff   128B Sep 22 10:11 bin",
+            "-rw-r--r--   1 rlin  staff   120B Sep  5 14:14 codecov.yml",
+        }
+        local LSD_LINES = {
+            "drwxr-xr-x  rlin staff 160 B  Wed Oct 25 16:59:44 2023 bin",
+            ".rw-r--r--  rlin staff  54 KB Tue Oct 31 22:29:35 2023 CHANGELOG.md",
+            ".rw-r--r--  rlin staff 120 B  Tue Oct 10 14:47:43 2023 codecov.yml",
+            ".rw-r--r--  rlin staff 1.0 KB Mon Aug 28 12:39:24 2023 LICENSE",
+            "drwxr-xr-x  rlin staff 128 B  Tue Oct 31 21:55:28 2023 lua",
+            ".rw-r--r--  rlin staff  38 KB Wed Nov  1 10:29:19 2023 README.md",
+            "drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test",
+        }
+        local EZA_LINES = {
+            "drwxr-xr-x     - linrongbin 28 Aug 12:39  autoload",
+            "drwxr-xr-x     - linrongbin 22 Sep 10:11  bin",
+            ".rw-r--r--   120 linrongbin  5 Sep 14:14  codecov.yml",
+            ".rw-r--r--  1.1k linrongbin 28 Aug 12:39  LICENSE",
+            "drwxr-xr-x     - linrongbin  8 Oct 09:14  lua",
+            ".rw-r--r--   28k linrongbin  8 Oct 11:37  README.md",
+            "drwxr-xr-x     - linrongbin  8 Oct 11:44  test",
+        }
         it("_file_explorer_context_maker", function()
             local ctx = conf._file_explorer_context_maker()
             -- print(string.format("file explorer context:%s\n", vim.inspect(ctx)))
@@ -1175,5 +1200,43 @@ describe("config", function()
                 assert_eq(actual[5], "lua/fzfx/config.lua")
             end
         end)
+        it("_make_filename_by_file_explorer_context", function()
+            local ctx = conf._file_explorer_context_maker()
+            if constants.has_lsd then
+                for _, line in ipairs(LSD_LINES) do
+                    local actual =
+                        conf._make_filename_by_file_explorer_context(line, ctx)
+                    print(
+                        string.format("make filename:%s\n", vim.inspect(actual))
+                    )
+                    assert_eq(type(actual), "string")
+                    assert_true(
+                        vim.fn.filereadable(actual) > 0
+                            or vim.fn.isdirectory(actual) > 0
+                    )
+                end
+            elseif constants.has_eza then
+                for _, line in ipairs(EZA_LINES) do
+                    local actual =
+                        conf._make_filename_by_file_explorer_context(line, ctx)
+                    assert_eq(type(actual), "string")
+                    assert_true(
+                        vim.fn.filereadable(actual) > 0
+                            or vim.fn.isdirectory(actual) > 0
+                    )
+                end
+            else
+                for _, line in ipairs(LS_LINES) do
+                    local actual =
+                        conf._make_filename_by_file_explorer_context(line, ctx)
+                    assert_eq(type(actual), "string")
+                    assert_true(
+                        vim.fn.filereadable(actual) > 0
+                            or vim.fn.isdirectory(actual) > 0
+                    )
+                end
+            end
+        end)
+        it("_file_explorer_previewer", function() end)
     end)
 end)
