@@ -1659,11 +1659,10 @@ local function _get_vim_keymaps()
                 local filename = vim.trim(
                     line:sub(string.len(LAST_SET_FROM) + 1, line_pos - 1)
                 )
-                local lineno =
-                    vim.trim(line:sub(line_pos + string.len(LINE) + 1))
+                local lineno = vim.trim(line:sub(line_pos + string.len(LINE)))
                 keys_output_map[last_lhs].filename =
                     path.normalize(filename, { expand = true })
-                keys_output_map[last_lhs].lineno = tonumber(filename)
+                keys_output_map[last_lhs].lineno = tonumber(lineno)
             end
         end
     end
