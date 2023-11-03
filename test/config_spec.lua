@@ -363,8 +363,7 @@ describe("config", function()
                         utils.string_find(
                             actual,
                             "delta -n --tabs 4 --blame-format"
-                        )
-                            > string.len("git blame")
+                        ) > string.len("git blame")
                     )
                 else
                     assert_true(
