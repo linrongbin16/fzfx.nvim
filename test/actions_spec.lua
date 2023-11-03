@@ -39,7 +39,7 @@ describe("actions", function()
             assert_eq(#actual, 5)
             for i, line in ipairs(lines) do
                 local expect = string.format(
-                    "edit %s",
+                    "edit! %s",
                     path.normalize(line, { expand = true })
                 )
                 assert_eq(actual[i], expect)
@@ -60,7 +60,7 @@ describe("actions", function()
             for i, line in ipairs(lines) do
                 local first_space_pos = utils.string_find(line, " ")
                 local expect = string.format(
-                    "edit %s",
+                    "edit! %s",
                     path.normalize(
                         line:sub(first_space_pos + 1),
                         { expand = true }
@@ -122,7 +122,7 @@ describe("actions", function()
             for i, act in ipairs(actual) do
                 if i <= #lines then
                     local expect = string.format(
-                        "edit %s",
+                        "edit! %s",
                         vim.fn.expand(
                             path.normalize(utils.string_split(lines[i], ":")[1])
                         )
@@ -149,7 +149,7 @@ describe("actions", function()
                 local line = lines[i]
                 local first_space_pos = utils.string_find(line, " ")
                 local expect = string.format(
-                    "edit %s",
+                    "edit! %s",
                     path.normalize(
                         line:sub(
                             first_space_pos + 1,
@@ -204,7 +204,7 @@ describe("actions", function()
             for i, act in ipairs(actual) do
                 if i <= #lines then
                     local expect = string.format(
-                        "edit %s",
+                        "edit! %s",
                         vim.fn.expand(
                             path.normalize(utils.string_split(lines[i], ":")[1])
                         )
@@ -231,7 +231,7 @@ describe("actions", function()
                 local line = lines[i]
                 local first_space_pos = utils.string_find(line, " ")
                 local expect = string.format(
-                    "edit %s",
+                    "edit! %s",
                     path.normalize(
                         line:sub(
                             first_space_pos + 1,
@@ -677,7 +677,7 @@ describe("actions", function()
                 local line = lines[i]
                 local expect = line_helpers.parse_git_status(line)
                 assert_eq(type(act), "string")
-                assert_eq(act, string.format("edit %s", expect))
+                assert_eq(act, string.format("edit! %s", expect))
             end
         end)
     end)

@@ -18,7 +18,7 @@ local function _make_edit_find_commands(lines, opts)
     local results = {}
     for i, line in ipairs(lines) do
         local filename = line_helpers.parse_find(line, opts)
-        local edit_command = string.format("edit %s", filename)
+        local edit_command = string.format("edit! %s", filename)
         table.insert(results, edit_command)
     end
     return results
@@ -57,7 +57,7 @@ local function _make_edit_rg_commands(lines, opts)
     local results = {}
     for i, line in ipairs(lines) do
         local parsed = line_helpers.parse_rg(line, opts)
-        local edit_command = string.format("edit %s", parsed.filename)
+        local edit_command = string.format("edit! %s", parsed.filename)
         table.insert(results, edit_command)
         if parsed.lineno ~= nil then
             if i == #lines then
@@ -91,7 +91,7 @@ local function _make_edit_grep_commands(lines, opts)
     local results = {}
     for i, line in ipairs(lines) do
         local parsed = line_helpers.parse_grep(line, opts)
-        local edit_command = string.format("edit %s", parsed.filename)
+        local edit_command = string.format("edit! %s", parsed.filename)
         table.insert(results, edit_command)
         if parsed.lineno ~= nil then
             if i == #lines then
@@ -389,7 +389,7 @@ local function _make_edit_git_status_commands(lines)
     local results = {}
     for i, line in ipairs(lines) do
         local filename = line_helpers.parse_git_status(line)
-        local edit_command = string.format("edit %s", filename)
+        local edit_command = string.format("edit! %s", filename)
         table.insert(results, edit_command)
     end
     return results
