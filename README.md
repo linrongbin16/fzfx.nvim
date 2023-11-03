@@ -1128,7 +1128,7 @@ local Defaults = {
   -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
   -- unicode: https://symbl.cc/en/
   icons = {
-    unknown_file = "",
+    unknown_file = ""
     folder = "",
     folder_open = "",
 
