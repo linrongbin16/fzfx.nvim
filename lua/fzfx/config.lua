@@ -2263,6 +2263,7 @@ local Defaults = {
             restricted_mode = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = nil,
             },
             unrestricted_mode = {
                 previewer = _file_previewer,
