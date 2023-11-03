@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/linrongbin16/fzfx.nvim/compare/v2.3.0...v2.3.1) (2023-11-03)
+
+
+### Performance Improvements
+
+* **git & explorer:** check git repo, support delta/lsd ([#360](https://github.com/linrongbin16/fzfx.nvim/issues/360)) ([ebd7ac4](https://github.com/linrongbin16/fzfx.nvim/commit/ebd7ac440d8d301e444c4d62c6431f6ea3d1f434))
+
 ## [2.3.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.2.1...v2.3.0) (2023-10-31)
 
 
