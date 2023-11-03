@@ -9,7 +9,7 @@ local user_canceled_error = "canceled."
 local function confirm_discard_buffer_modified(bufnr, callback)
     if utils.get_buf_option(bufnr, "modified") then
         vim.ui.input({
-            prompt = "[fzfx] current buffer has been modified, discard? (y/n) ",
+            prompt = "[fzfx] current buffer has been modified, continue? (y/n) ",
         }, function(input)
             if
                 type(input) == "string"
