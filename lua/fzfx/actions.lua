@@ -3,6 +3,7 @@ local LogLevels = require("fzfx.log").LogLevels
 local path = require("fzfx.path")
 local line_helpers = require("fzfx.line_helpers")
 local utils = require("fzfx.utils")
+local ui = require("fzfx.ui")
 
 --- @param lines string[]
 --- @return nil
@@ -26,27 +27,30 @@ end
 
 -- Run 'edit' vim command on fd/find results.
 --- @param lines string[]
-local function edit_find(lines)
-    local edit_commands = _make_edit_find_commands(lines)
-    for i, edit_command in ipairs(edit_commands) do
-        log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
-        vim.cmd(edit_command)
-    end
+--- @param context PipelineContext
+local function edit_find(lines, context)
+    ui.confirm_discard_buffer_modified(context.bufnr, function()
+        local edit_commands = _make_edit_find_commands(lines)
+        for i, edit_command in ipairs(edit_commands) do
+            log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
+            vim.cmd(edit_command)
+        end
+    end)
 end
 
 --- @deprecated
-local function edit_buffers(lines)
-    return edit_find(lines)
+local function edit_buffers(lines, context)
+    return edit_find(lines, context)
 end
 
 --- @deprecated
-local function edit_git_files(lines)
-    return edit_find(lines)
+local function edit_git_files(lines, context)
+    return edit_find(lines, context)
 end
 
 --- @deprecated
-local function edit(lines)
-    return edit_find(lines)
+local function edit(lines, context)
+    return edit_find(lines, context)
 end
 
 --- @package
@@ -128,8 +132,8 @@ local function edit_ls(lines)
 end
 
 --- @deprecated
-local function buffer(lines)
-    return edit_find(lines)
+local function buffer(lines, context)
+    return edit_find(lines, context)
 end
 
 --- @deprecated
