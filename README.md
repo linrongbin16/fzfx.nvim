@@ -750,7 +750,6 @@ Commands are named following below rules:
 <br/>
 
 ```vim
-
 " ======== files ========
 
 " find files
@@ -777,56 +776,31 @@ nnoremap <space>pl :\<C-U>FzfxLiveGrepP<CR>
 
 " buffers
 nnoremap <space>bf :\<C-U>FzfxBuffers<CR>
-" by visual select
-xnoremap <space>bf :\<C-U>FzfxBuffersV<CR>
-" by cursor word
-nnoremap <space>wbf :\<C-U>FzfxBuffersW<CR>
-" by yank text
-nnoremap <space>pbf :\<C-U>FzfxBuffersP<CR>
 
 " ======== git files ========
 
 " git files
 nnoremap <space>gf :\<C-U>FzfxGFiles<CR>
-" by visual select
-xnoremap <space>gf :\<C-U>FzfxGFilesV<CR>
-" by cursor word
-nnoremap <space>wgf :\<C-U>FzfxGFilesW<CR>
-" by yank text
-nnoremap <space>pgf :\<C-U>FzfxGFilesP<CR>
+
+" ======== git changed files (status) ========
+
+" git files
+nnoremap <space>gs :\<C-U>FzfxGStatus<CR>
 
 " ======== git branches ========
 
 " git branches
 nnoremap <space>br :\<C-U>FzfxGBranches<CR>
-" by visual select
-xnoremap <space>br :\<C-U>FzfxGBranchesV<CR>
-" by cursor word
-nnoremap <space>wbr :\<C-U>FzfxGBranchesW<CR>
-" by yank text
-nnoremap <space>pbr :\<C-U>FzfxGBranchesP<CR>
 
 " ======== git commits ========
 
 " git commits
 nnoremap <space>gc :\<C-U>FzfxGCommits<CR>
-" by visual select
-xnoremap <space>gc :\<C-U>FzfxGCommitsV<CR>
-" by cursor word
-nnoremap <space>wgc :\<C-U>FzfxGCommitsW<CR>
-" by yank text
-nnoremap <space>pgc :\<C-U>FzfxGCommitsP<CR>
 
 " ======== git blame ========
 
 " git blame
 nnoremap <space>gb :\<C-U>FzfxGBlame<CR>
-" by visual select
-xnoremap <space>gb :\<C-U>FzfxGBlameV<CR>
-" by cursor word
-nnoremap <space>wgb :\<C-U>FzfxGBlameW<CR>
-" by yank text
-nnoremap <space>pgb :\<C-U>FzfxGBlameP<CR>
 
 " ======== lsp diagnostics ========
 
@@ -878,178 +852,220 @@ nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 <br/>
 
 ```lua
-
 -- ======== files ========
 
 -- find files
-vim.keymap.set('n', '<space>f', '<cmd>FzfxFiles<cr>',
-        {silent=true, noremap=true, desc="Find files"})
+vim.keymap.set(
+  "n",
+  "<space>f",
+  "<cmd>FzfxFiles<cr>",
+  { silent = true, noremap = true, desc = "Find files" }
+)
 -- by visual select
-vim.keymap.set('x', '<space>f', '<cmd>FzfxFilesV<CR>',
-        {silent=true, noremap=true, desc="Find files"})
+vim.keymap.set(
+  "x",
+  "<space>f",
+  "<cmd>FzfxFilesV<CR>",
+  { silent = true, noremap = true, desc = "Find files" }
+)
 -- by cursor word
-vim.keymap.set('n', '<space>wf', '<cmd>FzfxFilesW<cr>',
-        {silent=true, noremap=true, desc="Find files by cursor word"})
+vim.keymap.set(
+  "n",
+  "<space>wf",
+  "<cmd>FzfxFilesW<cr>",
+  { silent = true, noremap = true, desc = "Find files by cursor word" }
+)
 -- by yank text
-vim.keymap.set('n', '<space>pf', '<cmd>FzfxFilesP<cr>',
-        {silent=true, noremap=true, desc="Find files by yank text"})
+vim.keymap.set(
+  "n",
+  "<space>pf",
+  "<cmd>FzfxFilesP<cr>",
+  { silent = true, noremap = true, desc = "Find files by yank text" }
+)
 
 -- ======== live grep ========
 
 -- live grep
-vim.keymap.set('n', '<space>l',
-        '<cmd>FzfxLiveGrep<cr>',
-        {silent=true, noremap=true, desc="Live grep"})
+vim.keymap.set(
+  "n",
+  "<space>l",
+  "<cmd>FzfxLiveGrep<cr>",
+  { silent = true, noremap = true, desc = "Live grep" }
+)
 -- by visual select
-vim.keymap.set('x', '<space>l',
-        "<cmd>FzfxLiveGrepV<cr>",
-        {silent=true, noremap=true, desc="Live grep"})
+vim.keymap.set(
+  "x",
+  "<space>l",
+  "<cmd>FzfxLiveGrepV<cr>",
+  { silent = true, noremap = true, desc = "Live grep" }
+)
 -- by cursor word
-vim.keymap.set('n', '<space>wl',
-        '<cmd>FzfxLiveGrepW<cr>',
-        {silent=true, noremap=true, desc="Live grep by cursor word"})
+vim.keymap.set(
+  "n",
+  "<space>wl",
+  "<cmd>FzfxLiveGrepW<cr>",
+  { silent = true, noremap = true, desc = "Live grep by cursor word" }
+)
 -- by yank text
-vim.keymap.set('n', '<space>pl',
-        '<cmd>FzfxLiveGrepP<cr>',
-        {silent=true, noremap=true, desc="Live grep by cursor word"})
+vim.keymap.set(
+  "n",
+  "<space>pl",
+  "<cmd>FzfxLiveGrepP<cr>",
+  { silent = true, noremap = true, desc = "Live grep by cursor word" }
+)
 
 -- ======== buffers ========
 
 -- buffers
-vim.keymap.set('n', '<space>bf',
-        '<cmd>FzfxBuffers<cr>',
-        {silent=true, noremap=true, desc="Find buffers"})
--- by visual select
-vim.keymap.set('x', '<space>bf',
-        "<cmd>FzfxBuffersV<cr>",
-        {silent=true, noremap=true, desc="Find buffers"})
--- by cursor word
-vim.keymap.set('n', '<space>wbf',
-        '<cmd>FzfxBuffersW<cr>',
-        {silent=true, noremap=true, desc="Find buffers by cursor word"})
--- by yank text
-vim.keymap.set('n', '<space>pbf',
-        '<cmd>FzfxBuffersP<cr>',
-        {silent=true, noremap=true, desc="Find buffers by yank text"})
+vim.keymap.set(
+  "n",
+  "<space>bf",
+  "<cmd>FzfxBuffers<cr>",
+  { silent = true, noremap = true, desc = "Find buffers" }
+)
 
 -- ======== git files ========
 
 -- git files
-vim.keymap.set('n', '<space>gf',
-        '<cmd>FzfxGFiles<cr>',
-        {silent=true, noremap=true, desc="Find git files"})
--- by visual select
-vim.keymap.set('x', '<space>gf',
-        "<cmd>FzfxGFilesV<cr>",
-        {silent=true, noremap=true, desc="Find git files"})
--- by cursor word
-vim.keymap.set('n', '<space>wgf',
-        '<cmd>FzfxGFilesW<cr>',
-        {silent=true, noremap=true, desc="Find git files by cursor word"})
--- by yank text
-vim.keymap.set('n', '<space>pgf',
-        '<cmd>FzfxGFilesP<cr>',
-        {silent=true, noremap=true, desc="Find git files by yank text"})
+vim.keymap.set(
+  "n",
+  "<space>gf",
+  "<cmd>FzfxGFiles<cr>",
+  { silent = true, noremap = true, desc = "Find git files" }
+)
+
+-- ======== git changed files (status) ========
+
+-- git status
+vim.keymap.set(
+  "n",
+  "<space>gs",
+  "<cmd>FzfxGStatus<cr>",
+  { silent = true, noremap = true, desc = "Find git changed files (status)" }
+)
 
 -- ======== git branches ========
 
 -- git branches
-vim.keymap.set('n', '<space>br', '<cmd>FzfxGBranches<cr>',
-        {silent=true, noremap=true, desc="Search git branches"})
--- by visual select
-vim.keymap.set('x', '<space>br', '<cmd>FzfxGBranchesV<CR>',
-        {silent=true, noremap=true, desc="Search git branches"})
--- by cursor word
-vim.keymap.set('n', '<space>wbr', '<cmd>FzfxGBranchesW<cr>',
-        {silent=true, noremap=true, desc="Search git branches by cursor word"})
--- by yank text
-vim.keymap.set('n', '<space>pbr', '<cmd>FzfxGBranchesP<cr>',
-        {silent=true, noremap=true, desc="Search git branches by yank text"})
+vim.keymap.set(
+  "n",
+  "<space>br",
+  "<cmd>FzfxGBranches<cr>",
+  { silent = true, noremap = true, desc = "Search git branches" }
+)
 
 -- ======== git commits ========
 
 -- git commits
-vim.keymap.set('n', '<space>gc', '<cmd>FzfxGCommits<cr>',
-        {silent=true, noremap=true, desc="Search git commits"})
--- by visual select
-vim.keymap.set('x', '<space>gc', '<cmd>FzfxGCommitsV<CR>',
-        {silent=true, noremap=true, desc="Search git commits"})
--- by cursor word
-vim.keymap.set('n', '<space>wgc', '<cmd>FzfxGCommitsW<cr>',
-        {silent=true, noremap=true, desc="Search git commits by cursor word"})
--- by yank text
-vim.keymap.set('n', '<space>pgc', '<cmd>FzfxGCommitsP<cr>',
-        {silent=true, noremap=true, desc="Search git commits by yank text"})
+vim.keymap.set(
+  "n",
+  "<space>gc",
+  "<cmd>FzfxGCommits<cr>",
+  { silent = true, noremap = true, desc = "Search git commits" }
+)
 
 -- ======== git blame ========
 
 -- git blame
-vim.keymap.set('n', '<space>gb',
-        '<cmd>FzfxGBlame<cr>',
-        {silent=true, noremap=true, desc="Search git blame"})
--- by visual select
-vim.keymap.set('x', '<space>gb',
-        "<cmd>FzfxGBlameV<cr>",
-        {silent=true, noremap=true, desc="Search git blame"})
--- by cursor word
-vim.keymap.set('n', '<space>wgb',
-        '<cmd>FzfxGBlameW<cr>',
-        {silent=true, noremap=true, desc="Search git blame by cursor word"})
--- by yank text
-vim.keymap.set('n', '<space>pgb',
-        '<cmd>FzfxGBlameP<cr>',
-        {silent=true, noremap=true, desc="Search git blame by yank text"})
+vim.keymap.set(
+  "n",
+  "<space>gb",
+  "<cmd>FzfxGBlame<cr>",
+  { silent = true, noremap = true, desc = "Search git blame" }
+)
 
 -- ======== lsp diagnostics ========
 
 -- lsp diagnostics
-vim.keymap.set('n', '<space>dg', '<cmd>FzfxLspDiagnostics<cr>',
-        {silent=true, noremap=true, desc="Search lsp diagnostics"})
+vim.keymap.set(
+  "n",
+  "<space>dg",
+  "<cmd>FzfxLspDiagnostics<cr>",
+  { silent = true, noremap = true, desc = "Search lsp diagnostics" }
+)
 -- by visual select
-vim.keymap.set('x', '<space>dg', '<cmd>FzfxLspDiagnosticsV<CR>',
-        {silent=true, noremap=true, desc="Search lsp diagnostics"})
+vim.keymap.set(
+  "x",
+  "<space>dg",
+  "<cmd>FzfxLspDiagnosticsV<CR>",
+  { silent = true, noremap = true, desc = "Search lsp diagnostics" }
+)
 -- by cursor word
-vim.keymap.set('n', '<space>wdg', '<cmd>FzfxLspDiagnosticsW<cr>',
-        {silent=true, noremap=true, desc="Search lsp diagnostics by cursor word"})
+vim.keymap.set("n", "<space>wdg", "<cmd>FzfxLspDiagnosticsW<cr>", {
+  silent = true,
+  noremap = true,
+  desc = "Search lsp diagnostics by cursor word",
+})
 -- by yank text
-vim.keymap.set('n', '<space>pdg', '<cmd>FzfxLspDiagnosticsP<cr>',
-        {silent=true, noremap=true, desc="Search lsp diagnostics by yank text"})
+vim.keymap.set("n", "<space>pdg", "<cmd>FzfxLspDiagnosticsP<cr>", {
+  silent = true,
+  noremap = true,
+  desc = "Search lsp diagnostics by yank text",
+})
 
 -- ======== lsp symbols ========
 
 -- lsp definitions
-vim.keymap.set('n', 'gd', '<cmd>FzfxLspDefinitions<cr>',
-        {silent=true, noremap=true, desc="Goto lsp definitions"})
+vim.keymap.set(
+  "n",
+  "gd",
+  "<cmd>FzfxLspDefinitions<cr>",
+  { silent = true, noremap = true, desc = "Goto lsp definitions" }
+)
 
 -- lsp type definitions
-vim.keymap.set('n', 'gt', '<cmd>FzfxLspTypeDefinitions<cr>',
-        {silent=true, noremap=true, desc="Goto lsp type definitions"})
+vim.keymap.set(
+  "n",
+  "gt",
+  "<cmd>FzfxLspTypeDefinitions<cr>",
+  { silent = true, noremap = true, desc = "Goto lsp type definitions" }
+)
 
 -- lsp references
-vim.keymap.set('n', 'gr', '<cmd>FzfxLspReferences<cr>',
-        {silent=true, noremap=true, desc="Goto lsp references"})
+vim.keymap.set(
+  "n",
+  "gr",
+  "<cmd>FzfxLspReferences<cr>",
+  { silent = true, noremap = true, desc = "Goto lsp references" }
+)
 
 -- lsp implementations
-vim.keymap.set('n', 'gi', '<cmd>FzfxLspImplementations<cr>',
-        {silent=true, noremap=true, desc="Goto lsp implementations"})
+vim.keymap.set(
+  "n",
+  "gi",
+  "<cmd>FzfxLspImplementations<cr>",
+  { silent = true, noremap = true, desc = "Goto lsp implementations" }
+)
 
 -- ======== vim commands ========
 
 -- vim commands
-vim.keymap.set('n', '<space>cm', '<cmd>FzfxCommands<cr>',
-        {silent=true, noremap=true, desc="Search vim commands"})
+vim.keymap.set(
+  "n",
+  "<space>cm",
+  "<cmd>FzfxCommands<cr>",
+  { silent = true, noremap = true, desc = "Search vim commands" }
+)
 
 -- ======== vim key maps ========
 
 -- vim key maps
-vim.keymap.set('n', '<space>km', '<cmd>FzfxKeyMaps<cr>',
-        {silent=true, noremap=true, desc="Search vim keymaps"})
+vim.keymap.set(
+  "n",
+  "<space>km",
+  "<cmd>FzfxKeyMaps<cr>",
+  { silent = true, noremap = true, desc = "Search vim keymaps" }
+)
 
 -- ======== file explorer ========
 
 -- file explorer
-vim.keymap.set('n', '<space>xp', '<cmd>FzfxFileExplorer<cr>',
-        {silent=true, noremap=true, desc="File explorer"})
+vim.keymap.set(
+  "n",
+  "<space>xp",
+  "<cmd>FzfxFileExplorer<cr>",
+  { silent = true, noremap = true, desc = "File explorer" }
+)
 ```
 
 </details>
