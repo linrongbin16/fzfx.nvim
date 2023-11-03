@@ -39,16 +39,22 @@ local function edit_find(lines, context)
 end
 
 --- @deprecated
+--- @param lines string[]
+--- @param context PipelineContext
 local function edit_buffers(lines, context)
     return edit_find(lines, context)
 end
 
 --- @deprecated
+--- @param lines string[]
+--- @param context PipelineContext
 local function edit_git_files(lines, context)
     return edit_find(lines, context)
 end
 
 --- @deprecated
+--- @param lines string[]
+--- @param context PipelineContext
 local function edit(lines, context)
     return edit_find(lines, context)
 end
@@ -132,6 +138,8 @@ local function edit_ls(lines)
 end
 
 --- @deprecated
+--- @param lines string[]
+--- @param context PipelineContext
 local function buffer(lines, context)
     return edit_find(lines, context)
 end

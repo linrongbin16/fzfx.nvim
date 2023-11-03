@@ -10,6 +10,14 @@ describe("actions", function()
         vim.opt.swapfile = false
     end)
 
+    local function make_context()
+        return {
+            bufnr = vim.api.nvim_get_current_buf(),
+            winnr = vim.api.nvim_get_current_win(),
+            tabnr = vim.api.nvim_get_current_tabpage(),
+        }
+    end
+
     local DEVICONS_PATH =
         "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
     require("fzfx.config").setup()
@@ -79,11 +87,11 @@ describe("actions", function()
                 "lua/fzfx/test/goodbye world/world.txt",
                 "lua/fzfx/test/hello world.txt",
             }
-            actions.edit_find(lines)
-            actions.edit_buffers(lines)
-            actions.edit_git_files(lines)
-            actions.edit(lines)
-            actions.buffer(lines)
+            actions.edit_find(lines, make_context())
+            actions.edit_buffers(lines, make_context())
+            actions.edit_git_files(lines, make_context())
+            actions.edit(lines, make_context())
+            actions.buffer(lines, make_context())
             actions.edit_ls(lines)
             assert_true(true)
         end)
@@ -97,11 +105,11 @@ describe("actions", function()
                 "󰢱 lua/fzfx/test/goodbye world/world.txt",
                 "󰢱 lua/fzfx/test/hello world.txt",
             }
-            actions.edit_find(lines)
-            actions.edit_buffers(lines)
-            actions.edit_git_files(lines)
-            actions.edit(lines)
-            actions.buffer(lines)
+            actions.edit_find(lines, make_context())
+            actions.edit_buffers(lines, make_context())
+            actions.edit_git_files(lines, make_context())
+            actions.edit(lines, make_context())
+            actions.buffer(lines, make_context())
             actions.edit_ls(lines)
             assert_true(true)
         end)
