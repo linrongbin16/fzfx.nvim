@@ -2263,11 +2263,12 @@ local Defaults = {
             restricted_mode = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = nil,
+                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
             },
             unrestricted_mode = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
             },
         },
         actions = {
