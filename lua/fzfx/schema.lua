@@ -24,9 +24,9 @@
 --
 --- @alias PipelineContextMaker fun():PipelineContext
 --
---- @alias PlainProvider string?|string[]?
---- @alias CommandProvider fun(query:string?,context:PipelineContext?):string?|string[]?
---- @alias ListProvider fun(query:string?,context:PipelineContext?):string[]?
+--- @alias PlainProvider string|string[]
+--- @alias CommandProvider fun(query:string?,context:PipelineContext):string|string[]|nil
+--- @alias ListProvider fun(query:string?,context:PipelineContext):string[]|nil
 --
 --- @alias Provider PlainProvider|CommandProvider|ListProvider
 --- @alias ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
@@ -49,9 +49,9 @@ local ProviderTypeEnum = {
 --
 -- The BuiltinPreviewer returns the configs for the nvim window.
 --
---- @alias CommandPreviewer fun(line:string?,context:PipelineContext?):string?
---- @alias ListPreviewer fun(line:string?,context:PipelineContext?):string[]?
---- @alias BuiltinPreviewer fun(line:string?,context:PipelineContext?):table?
+--- @alias CommandPreviewer fun(line:string?,context:PipelineContext):string|nil
+--- @alias ListPreviewer fun(line:string?,context:PipelineContext):string[]|nil
+--- @alias BuiltinPreviewer fun(line:string?,context:PipelineContext):table|nil
 --
 --- @alias Previewer CommandPreviewer|ListPreviewer|BuiltinPreviewer
 --- @alias PreviewerType "command"|"command_list"|"list"|"builtin"
@@ -148,9 +148,11 @@ local CommandFeedEnum = {
 --- @field provider_type ProviderType? by default "plain"
 --- @field line_opts ProviderConfigLineOpts?
 
+--- @alias PreviewerLabel fun(line:string?,context:PipelineContext):string?
 --- @class PreviewerConfig
 --- @field previewer Previewer
 --- @field previewer_type PreviewerType?
+--- @field previewer_label PreviewerLabel?
 
 --- @alias PipelineName string a pipeline name is a provider name, a previewer name
 --- @class CommandConfig
@@ -236,6 +238,7 @@ local M = {
     ProviderTypeEnum = ProviderTypeEnum,
     PreviewerTypeEnum = PreviewerTypeEnum,
     CommandFeedEnum = CommandFeedEnum,
+    PlainPreviewerLabelEnum = PlainPreviewerLabelEnum,
 
     is_command_config = is_command_config,
     is_provider_config = is_provider_config,
