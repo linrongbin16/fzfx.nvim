@@ -94,14 +94,14 @@ local function ansi(text, name, hl)
     local fgcode = hlcode("fg", hl)
     if type(fgcode) == "string" then
         fgfmt = csi(fgcode, true)
-    -- log.debug(
-    --     "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
-    --     vim.inspect(text),
-    --     vim.inspect(name),
-    --     vim.inspect(hl),
-    --     vim.inspect(fg),
-    --     vim.inspect(fgcolor)
-    -- )
+        -- log.debug(
+        --     "|fzfx.color - ansi| rgb, text:%s, name:%s, group:%s, fg:%s, fgcolor:%s",
+        --     vim.inspect(text),
+        --     vim.inspect(name),
+        --     vim.inspect(hl),
+        --     vim.inspect(fg),
+        --     vim.inspect(fgcolor)
+        -- )
     else
         fgfmt = AnsiCode[name]
         -- log.debug(
