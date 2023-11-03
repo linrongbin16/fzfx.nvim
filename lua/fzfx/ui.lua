@@ -23,6 +23,8 @@ local function confirm_discard_buffer_modified(bufnr, callback)
                 end
             end
         )
+    else
+        callback()
     end
 end
 
