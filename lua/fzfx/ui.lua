@@ -6,7 +6,6 @@ local user_canceled_error = "canceled."
 
 --- @param bufnr integer
 --- @param callback fun():any
---- @return boolean
 local function confirm_discard_buffer_modified(bufnr, callback)
     if utils.get_buf_option(bufnr, "modified") then
         vim.ui.input({
