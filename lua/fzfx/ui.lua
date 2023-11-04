@@ -2,7 +2,7 @@ local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
 local utils = require("fzfx.utils")
 
-local user_canceled_error = "canceled."
+local user_cancelled_error = "cancelled."
 
 --- @param bufnr integer
 --- @param callback fun():any
@@ -18,9 +18,13 @@ local function confirm_discard_buffer_modified(bufnr, callback)
             then
                 callback()
             else
-                log.echo(LogLevels.INFO, user_canceled_error)
+                log.echo(LogLevels.INFO, user_cancelled_error)
             end
         end)
+        local current_mode = vim.api.nvim_get_mode()
+        if utils.string_find(current_mode.mode, "i") == nil then
+            vim.api.nvim_feedkeys("i", "m", false)
+        end
     else
         callback()
     end
