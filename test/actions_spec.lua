@@ -10,6 +10,14 @@ describe("actions", function()
         vim.opt.swapfile = false
     end)
 
+    local function make_context()
+        return {
+            bufnr = vim.api.nvim_get_current_buf(),
+            winnr = vim.api.nvim_get_current_win(),
+            tabnr = vim.api.nvim_get_current_tabpage(),
+        }
+    end
+
     local DEVICONS_PATH =
         "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
     require("fzfx.config").setup()
@@ -39,7 +47,7 @@ describe("actions", function()
             assert_eq(#actual, 5)
             for i, line in ipairs(lines) do
                 local expect = string.format(
-                    "edit %s",
+                    "edit! %s",
                     path.normalize(line, { expand = true })
                 )
                 assert_eq(actual[i], expect)
@@ -60,7 +68,7 @@ describe("actions", function()
             for i, line in ipairs(lines) do
                 local first_space_pos = utils.string_find(line, " ")
                 local expect = string.format(
-                    "edit %s",
+                    "edit! %s",
                     path.normalize(
                         line:sub(first_space_pos + 1),
                         { expand = true }
@@ -79,11 +87,11 @@ describe("actions", function()
                 "lua/fzfx/test/goodbye world/world.txt",
                 "lua/fzfx/test/hello world.txt",
             }
-            actions.edit_find(lines)
-            actions.edit_buffers(lines)
-            actions.edit_git_files(lines)
-            actions.edit(lines)
-            actions.buffer(lines)
+            actions.edit_find(lines, make_context())
+            actions.edit_buffers(lines, make_context())
+            actions.edit_git_files(lines, make_context())
+            actions.edit(lines, make_context())
+            actions.buffer(lines, make_context())
             actions.edit_ls(lines)
             assert_true(true)
         end)
@@ -97,11 +105,11 @@ describe("actions", function()
                 "󰢱 lua/fzfx/test/goodbye world/world.txt",
                 "󰢱 lua/fzfx/test/hello world.txt",
             }
-            actions.edit_find(lines)
-            actions.edit_buffers(lines)
-            actions.edit_git_files(lines)
-            actions.edit(lines)
-            actions.buffer(lines)
+            actions.edit_find(lines, make_context())
+            actions.edit_buffers(lines, make_context())
+            actions.edit_git_files(lines, make_context())
+            actions.edit(lines, make_context())
+            actions.buffer(lines, make_context())
             actions.edit_ls(lines)
             assert_true(true)
         end)
@@ -122,7 +130,7 @@ describe("actions", function()
             for i, act in ipairs(actual) do
                 if i <= #lines then
                     local expect = string.format(
-                        "edit %s",
+                        "edit! %s",
                         vim.fn.expand(
                             path.normalize(utils.string_split(lines[i], ":")[1])
                         )
@@ -149,7 +157,7 @@ describe("actions", function()
                 local line = lines[i]
                 local first_space_pos = utils.string_find(line, " ")
                 local expect = string.format(
-                    "edit %s",
+                    "edit! %s",
                     path.normalize(
                         line:sub(
                             first_space_pos + 1,
@@ -172,7 +180,7 @@ describe("actions", function()
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:9129",
             }
-            actions.edit_grep(lines)
+            actions.edit_grep(lines, make_context())
             assert_true(true)
         end)
         it("run edit grep command with prepend icon", function()
@@ -184,7 +192,7 @@ describe("actions", function()
                 "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:83 goodbye",
                 "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:83:82:71:world",
             }
-            actions.edit_grep(lines)
+            actions.edit_grep(lines, make_context())
             assert_true(true)
         end)
     end)
@@ -204,7 +212,7 @@ describe("actions", function()
             for i, act in ipairs(actual) do
                 if i <= #lines then
                     local expect = string.format(
-                        "edit %s",
+                        "edit! %s",
                         vim.fn.expand(
                             path.normalize(utils.string_split(lines[i], ":")[1])
                         )
@@ -231,7 +239,7 @@ describe("actions", function()
                 local line = lines[i]
                 local first_space_pos = utils.string_find(line, " ")
                 local expect = string.format(
-                    "edit %s",
+                    "edit! %s",
                     path.normalize(
                         line:sub(
                             first_space_pos + 1,
@@ -254,7 +262,7 @@ describe("actions", function()
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:71:9129",
             }
-            actions.edit_rg(lines)
+            actions.edit_rg(lines, make_context())
             assert_true(true)
         end)
         it("run rg file command with prepend icon", function()
@@ -266,7 +274,7 @@ describe("actions", function()
                 "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81:goodbye",
                 "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:91:94",
             }
-            actions.edit_rg(lines)
+            actions.edit_rg(lines, make_context())
             assert_true(true)
         end)
     end)
@@ -662,7 +670,7 @@ describe("actions", function()
         end)
     end)
     describe("[_make_edit_git_status_commands]", function()
-        it("set files", function()
+        it("open files", function()
             local lines = {
                 " M fzfx/config.lua",
                 " D fzfx/constants.lua",
@@ -677,8 +685,19 @@ describe("actions", function()
                 local line = lines[i]
                 local expect = line_helpers.parse_git_status(line)
                 assert_eq(type(act), "string")
-                assert_eq(act, string.format("edit %s", expect))
+                assert_eq(act, string.format("edit! %s", expect))
             end
+        end)
+        it("run open files", function()
+            local lines = {
+                " M fzfx/config.lua",
+                " D fzfx/constants.lua",
+                " M fzfx/line_helpers.lua",
+                " M ../test/line_helpers_spec.lua",
+                "?? ../hello",
+            }
+            local actual = actions.edit_git_status(lines, make_context())
+            assert_true(true)
         end)
     end)
 end)
