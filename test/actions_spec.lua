@@ -180,7 +180,7 @@ describe("actions", function()
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:9129",
             }
-            actions.edit_grep(lines)
+            actions.edit_grep(lines, make_context())
             assert_true(true)
         end)
         it("run edit grep command with prepend icon", function()
@@ -192,7 +192,7 @@ describe("actions", function()
                 "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:83 goodbye",
                 "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:83:82:71:world",
             }
-            actions.edit_grep(lines)
+            actions.edit_grep(lines, make_context())
             assert_true(true)
         end)
     end)
@@ -262,7 +262,7 @@ describe("actions", function()
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
                 "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:71:9129",
             }
-            actions.edit_rg(lines)
+            actions.edit_rg(lines, make_context())
             assert_true(true)
         end)
         it("run rg file command with prepend icon", function()
@@ -274,7 +274,7 @@ describe("actions", function()
                 "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81:goodbye",
                 "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:91:94",
             }
-            actions.edit_rg(lines)
+            actions.edit_rg(lines, make_context())
             assert_true(true)
         end)
     end)
@@ -670,7 +670,7 @@ describe("actions", function()
         end)
     end)
     describe("[_make_edit_git_status_commands]", function()
-        it("set files", function()
+        it("open files", function()
             local lines = {
                 " M fzfx/config.lua",
                 " D fzfx/constants.lua",
@@ -687,6 +687,17 @@ describe("actions", function()
                 assert_eq(type(act), "string")
                 assert_eq(act, string.format("edit! %s", expect))
             end
+        end)
+        it("run open files", function()
+            local lines = {
+                " M fzfx/config.lua",
+                " D fzfx/constants.lua",
+                " M fzfx/line_helpers.lua",
+                " M ../test/line_helpers_spec.lua",
+                "?? ../hello",
+            }
+            local actual = actions.edit_git_status(lines, make_context())
+            assert_true(true)
         end)
     end)
 end)

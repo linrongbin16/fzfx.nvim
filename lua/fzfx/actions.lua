@@ -29,8 +29,8 @@ end
 --- @param lines string[]
 --- @param context PipelineContext
 local function edit_find(lines, context)
+    local edit_commands = _make_edit_find_commands(lines)
     ui.confirm_discard_buffer_modified(context.bufnr, function()
-        local edit_commands = _make_edit_find_commands(lines)
         for i, edit_command in ipairs(edit_commands) do
             log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
             vim.cmd(edit_command)
@@ -67,7 +67,7 @@ local function _make_edit_rg_commands(lines, opts)
     local results = {}
     for i, line in ipairs(lines) do
         local parsed = line_helpers.parse_rg(line, opts)
-        local edit_command = string.format("edit %s", parsed.filename)
+        local edit_command = string.format("edit! %s", parsed.filename)
         table.insert(results, edit_command)
         if parsed.lineno ~= nil then
             if i == #lines then
@@ -85,12 +85,15 @@ local function _make_edit_rg_commands(lines, opts)
 end
 
 --- @param lines string[]
-local function edit_rg(lines)
+--- @param context PipelineContext
+local function edit_rg(lines, context)
     local vim_commands = _make_edit_rg_commands(lines)
-    for i, vim_command in ipairs(vim_commands) do
-        log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, vim_command)
-        vim.cmd(vim_command)
-    end
+    ui.confirm_discard_buffer_modified(context.bufnr, function()
+        for i, vim_command in ipairs(vim_commands) do
+            log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, vim_command)
+            vim.cmd(vim_command)
+        end
+    end)
 end
 
 --- @package
@@ -119,12 +122,15 @@ local function _make_edit_grep_commands(lines, opts)
 end
 
 --- @param lines string[]
-local function edit_grep(lines)
+--- @param context PipelineContext
+local function edit_grep(lines, context)
     local vim_commands = _make_edit_grep_commands(lines)
-    for i, vim_command in ipairs(vim_commands) do
-        log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, vim_command)
-        vim.cmd(vim_command)
-    end
+    ui.confirm_discard_buffer_modified(context.bufnr, function()
+        for i, vim_command in ipairs(vim_commands) do
+            log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, vim_command)
+            vim.cmd(vim_command)
+        end
+    end)
 end
 
 -- Run 'edit' vim command on eza/exa/ls results.
@@ -409,38 +415,60 @@ end
 
 -- Run 'edit' vim command on gits status results.
 --- @param lines string[]
-local function edit_git_status(lines)
+--- @param context PipelineContext
+local function edit_git_status(lines, context)
     local edit_commands = _make_edit_git_status_commands(lines)
-    for i, edit_command in ipairs(edit_commands) do
-        log.debug("|fzfx.actions - edit_git_status| [%d]:[%s]", i, edit_command)
-        vim.cmd(edit_command)
-    end
+    ui.confirm_discard_buffer_modified(context.bufnr, function()
+        for i, edit_command in ipairs(edit_commands) do
+            log.debug(
+                "|fzfx.actions - edit_git_status| [%d]:[%s]",
+                i,
+                edit_command
+            )
+            vim.cmd(edit_command)
+        end
+    end)
 end
 
 local M = {
     nop = nop,
+
+    -- find/buffers/git files
     _make_edit_find_commands = _make_edit_find_commands,
-    _make_edit_grep_commands = _make_edit_grep_commands,
-    _make_edit_rg_commands = _make_edit_rg_commands,
     edit = edit,
     edit_find = edit_find,
     edit_buffers = edit_buffers,
     edit_git_files = edit_git_files,
-    edit_ls = edit_ls,
-    edit_rg = edit_rg,
-    edit_grep = edit_grep,
+    -- deprecated
     buffer = buffer,
     bdelete = bdelete,
+
+    -- ls/eza/lsd
+    edit_ls = edit_ls,
+
+    -- rg/grep
+    _make_edit_rg_commands = _make_edit_rg_commands,
+    edit_rg = edit_rg,
+    _make_edit_grep_commands = _make_edit_grep_commands,
+    edit_grep = edit_grep,
+
+    -- git branch
     _make_git_checkout_command = _make_git_checkout_command,
     git_checkout = git_checkout,
+
+    -- git commit
     _make_yank_git_commit_command = _make_yank_git_commit_command,
     yank_git_commit = yank_git_commit,
+
+    -- git status
     _make_edit_git_status_commands = _make_edit_git_status_commands,
     edit_git_status = edit_git_status,
+
     _make_feed_vim_command_params = _make_feed_vim_command_params,
     _make_feed_vim_key_params = _make_feed_vim_key_params,
     feed_vim_command = feed_vim_command,
     feed_vim_key = feed_vim_key,
+
     _make_setqflist_find_items = _make_setqflist_find_items,
     _make_setqflist_rg_items = _make_setqflist_rg_items,
     _make_setqflist_grep_items = _make_setqflist_grep_items,
