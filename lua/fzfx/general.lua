@@ -378,7 +378,7 @@ function PreviewerSwitch:preview(name, line, context)
         previewer_type = previewer_type,
     }
 
-    local metajson = json.encode(metaopts)
+    local metajson = json.encode(metaopts) --[[@as string]]
     utils.writefile(self.metafile, metajson)
     if previewer_type == PreviewerTypeEnum.COMMAND then
         local ok, result = pcall(previewer, line, context)
