@@ -67,7 +67,7 @@ local function _make_edit_rg_commands(lines, opts)
     local results = {}
     for i, line in ipairs(lines) do
         local parsed = line_helpers.parse_rg(line, opts)
-        local edit_command = string.format("edit! %s", parsed.filename)
+        local edit_command = string.format("edit %s", parsed.filename)
         table.insert(results, edit_command)
         if parsed.lineno ~= nil then
             if i == #lines then
