@@ -55,7 +55,7 @@ shell_helpers.log_ensure(
     "metajsonstring is not string! %s",
     vim.inspect(metajsonstring)
 )
-local metaopts = vim.fn.json_decode(metajsonstring) --[[@as PreviewerMetaOpts]]
+local metaopts = shell_helpers.json.decode(metajsonstring) --[[@as PreviewerMetaOpts]]
 shell_helpers.log_debug("metaopts:[%s]", vim.inspect(metaopts))
 
 --- @param l string?
@@ -81,7 +81,7 @@ elseif metaopts.previewer_type == "command_list" then
         os.exit(0)
         return
     end
-    local cmd_splits = vim.fn.json_decode(cmd)
+    local cmd_splits = shell_helpers.json.decode(cmd)
     if type(cmd_splits) ~= "table" or vim.tbl_isempty(cmd_splits) then
         os.exit(0)
         return

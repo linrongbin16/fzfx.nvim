@@ -10,6 +10,7 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local schema = require("fzfx.schema")
 local conf = require("fzfx.config")
+local json = require("fzfx.json")
 
 local DEFAULT_PIPELINE = "default"
 
@@ -156,7 +157,7 @@ function ProviderSwitch:provide(name, query, context)
             provider_config.line_opts.prepend_icon_path_position
     end
 
-    local metajson = vim.fn.json_encode(metaopts) --[[@as string]]
+    local metajson = json.encode(metaopts) --[[@as string]]
     utils.writefile(self.metafile, metajson)
 
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then
@@ -191,7 +192,7 @@ function ProviderSwitch:provide(name, query, context)
         else
             utils.writefile(
                 self.resultfile,
-                vim.fn.json_encode(provider_config.provider) --[[@as string]]
+                json.encode(provider_config.provider) --[[@as string]]
             )
         end
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
@@ -255,7 +256,7 @@ function ProviderSwitch:provide(name, query, context)
             else
                 utils.writefile(
                     self.resultfile,
-                    vim.fn.json_encode(result) --[[@as string]]
+                    json.encode(result) --[[@as string]]
                 )
             end
         end
@@ -377,7 +378,7 @@ function PreviewerSwitch:preview(name, line, context)
         previewer_type = previewer_type,
     }
 
-    local metajson = vim.fn.json_encode(metaopts)
+    local metajson = json.encode(metaopts)
     utils.writefile(self.metafile, metajson)
     if previewer_type == PreviewerTypeEnum.COMMAND then
         local ok, result = pcall(previewer, line, context)
@@ -439,7 +440,7 @@ function PreviewerSwitch:preview(name, line, context)
             else
                 utils.writefile(
                     self.resultfile,
-                    vim.fn.json_encode(result) --[[@as string]]
+                    json.encode(result) --[[@as string]]
                 )
             end
         end

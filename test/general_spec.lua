@@ -16,6 +16,7 @@ describe("general", function()
     local path = require("fzfx.path")
     local schema = require("fzfx.schema")
     local conf = require("fzfx.config")
+    local json = require("fzfx.json")
     conf.setup()
 
     local function get_provider_metafile(name)
@@ -53,7 +54,7 @@ describe("general", function()
                 local result1 =
                     utils.readfile(get_provider_resultfile("single_test"))
                 print(string.format("metafile1:%s\n", meta1))
-                local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
+                local metajson1 = json.decode(meta1) --[[@as table]]
                 assert_eq(type(metajson1), "table")
                 assert_eq(metajson1.pipeline, "default")
                 assert_eq(metajson1.provider_type, "plain")
@@ -91,12 +92,12 @@ describe("general", function()
                     get_provider_resultfile("single_plain_list_test")
                 )
                 print(string.format("metafile2:%s\n", meta2))
-                local metajson1 = vim.fn.json_decode(meta2) --[[@as table]]
+                local metajson1 = json.decode(meta2) --[[@as table]]
                 assert_eq(type(metajson1), "table")
                 assert_eq(metajson1.pipeline, "default")
                 assert_eq(metajson1.provider_type, "plain_list")
                 print(string.format("resultfile2:%s\n", result2))
-                local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
+                local resultjson2 = json.decode(result2) --[[@as table]]
                 assert_eq(type(resultjson2), "table")
                 assert_eq(#resultjson2, 3)
                 assert_eq(resultjson2[1], "ls")
@@ -132,7 +133,7 @@ describe("general", function()
                 local result3 =
                     utils.readfile(get_provider_resultfile("multiple_test"))
                 print(string.format("metafile3:%s\n", meta3))
-                local metajson1 = vim.fn.json_decode(meta3) --[[@as table]]
+                local metajson1 = json.decode(meta3) --[[@as table]]
                 assert_eq(type(metajson1), "table")
                 assert_eq(metajson1.pipeline, "p1")
                 assert_eq(metajson1.provider_type, "plain")
@@ -158,12 +159,12 @@ describe("general", function()
                 local result4 =
                     utils.readfile(get_provider_resultfile("multiple_test"))
                 print(string.format("metafile4:%s\n", meta4))
-                local metajson1 = vim.fn.json_decode(meta4) --[[@as table]]
+                local metajson1 = json.decode(meta4) --[[@as table]]
                 assert_eq(type(metajson1), "table")
                 assert_eq(metajson1.pipeline, "p2")
                 assert_eq(metajson1.provider_type, "plain_list")
                 print(string.format("resultfile4:%s\n", result4))
-                local resultjson4 = vim.fn.json_decode(result4) --[[@as table]]
+                local resultjson4 = json.decode(result4) --[[@as table]]
                 assert_eq(type(resultjson4), "table")
                 assert_eq(#resultjson4, 3)
                 assert_eq(resultjson4[1], "p2")
@@ -210,7 +211,7 @@ describe("general", function()
                     )
                 )
                 print(string.format("metafile1:%s\n", meta1))
-                local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
+                local metajson1 = json.decode(meta1) --[[@as table]]
                 assert_eq(type(metajson1), "table")
                 assert_eq(metajson1.pipeline, "p1")
                 assert_eq(metajson1.previewer_type, "command")
@@ -235,12 +236,12 @@ describe("general", function()
                     )
                 )
                 print(string.format("metafile2:%s\n", meta2))
-                local metajson2 = vim.fn.json_decode(meta2) --[[@as table]]
+                local metajson2 = json.decode(meta2) --[[@as table]]
                 assert_eq(type(metajson2), "table")
                 assert_eq(metajson2.pipeline, "p2")
                 assert_eq(metajson2.previewer_type, "command_list")
                 print(string.format("resultfile2:%s\n", result2))
-                local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
+                local resultjson2 = json.decode(result2) --[[@as table]]
                 assert_eq(type(resultjson2), "table")
                 assert_eq(#resultjson2, 3)
                 assert_eq(resultjson2[1], "ls")
@@ -280,7 +281,7 @@ describe("general", function()
                     )
                 )
                 print(string.format("metafile:%s\n", meta1))
-                local metajson1 = vim.fn.json_decode(meta1) --[[@as table]]
+                local metajson1 = json.decode(meta1) --[[@as table]]
                 assert_eq(type(metajson1), "table")
                 assert_eq(metajson1.pipeline, "p1")
                 assert_eq(metajson1.previewer_type, "command")
@@ -305,12 +306,12 @@ describe("general", function()
                     )
                 )
                 print(string.format("metafile:%s\n", meta2))
-                local metajson2 = vim.fn.json_decode(meta2) --[[@as table]]
+                local metajson2 = json.decode(meta2) --[[@as table]]
                 assert_eq(type(metajson2), "table")
                 assert_eq(metajson2.pipeline, "p2")
                 assert_eq(metajson2.previewer_type, "command_list")
                 print(string.format("resultfile:%s\n", result2))
-                local resultjson2 = vim.fn.json_decode(result2) --[[@as table]]
+                local resultjson2 = json.decode(result2) --[[@as table]]
                 assert_eq(type(resultjson2), "table")
                 assert_eq(#resultjson2, 3)
                 assert_eq(resultjson2[1], "ls")

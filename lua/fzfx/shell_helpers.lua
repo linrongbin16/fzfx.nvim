@@ -164,6 +164,7 @@ local M = {
     log_err = log_err,
     log_throw = log_throw,
     log_ensure = log_ensure,
+    json = require("fzfx.json"),
     prepend_path_with_icon = prepend_path_with_icon,
     Cmd = require("fzfx.cmd").Cmd,
     GitRootCmd = require("fzfx.cmd").GitRootCmd,
