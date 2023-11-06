@@ -14,8 +14,6 @@ local json = require("fzfx.json")
 
 local DEFAULT_PIPELINE = "default"
 
--- provider switch {
-
 --- @param ... string
 --- @return string
 local function make_cache_filename(...)
@@ -28,6 +26,73 @@ local function make_cache_filename(...)
         return vim.fn.tempname()
     end
 end
+
+--- @class ProviderMetaOpts
+--- @field pipeline PipelineName
+--- @field provider_type ProviderType
+--- @field prepend_icon_by_ft boolean?
+--- @field prepend_icon_path_delimiter string?
+--- @field prepend_icon_path_position integer?
+
+--- @param pipeline string
+--- @param provider_config ProviderConfig
+--- @return ProviderMetaOpts
+local function make_provider_meta_opts(pipeline, provider_config)
+    local o = {
+        pipeline = pipeline,
+        provider_type = provider_config.provider_type,
+    }
+
+    -- prepend_icon_by_ft
+    if
+        type(provider_config.line_opts) == "table"
+        and type(provider_config.line_opts.prepend_icon_by_ft) == "boolean"
+    then
+        o.prepend_icon_by_ft = provider_config.line_opts.prepend_icon_by_ft
+    end
+
+    -- prepend_icon_path_delimiter
+    if
+        type(provider_config.line_opts) == "table"
+        and type(provider_config.line_opts.prepend_icon_path_delimiter) == "string"
+        and string.len(
+                provider_config.line_opts.prepend_icon_path_delimiter
+            )
+            > 0
+    then
+        o.prepend_icon_path_delimiter =
+            provider_config.line_opts.prepend_icon_path_delimiter
+    end
+
+    -- prepend_icon_path_position
+    if
+        type(provider_config.line_opts) == "table"
+        and type(provider_config.line_opts.prepend_icon_path_position)
+            == "number"
+    then
+        o.prepend_icon_path_position =
+            provider_config.line_opts.prepend_icon_path_position
+    end
+
+    return o
+end
+
+--- @class PreviewerMetaOpts
+--- @field pipeline PipelineName
+--- @field previewer_type PreviewerType
+
+--- @param pipeline string
+--- @param previewer_config PreviewerConfig
+--- @return PreviewerMetaOpts
+local function make_previewer_meta_opts(pipeline, previewer_config)
+    local o = {
+        pipeline = pipeline,
+        previewer_type = previewer_config.previewer_type,
+    }
+    return o
+end
+
+-- provider switch {
 
 --- @class ProviderSwitch
 --- @field pipeline PipelineName
@@ -97,8 +162,7 @@ function ProviderSwitch:provide(name, query, context)
         vim.inspect(provider_config)
     )
     log.ensure(
-        provider_config.provider == nil
-            or type(provider_config.provider) == "table"
+        type(provider_config.provider) == "table"
             or type(provider_config.provider) == "string"
             or type(provider_config.provider) == "function",
         "invalid provider in %s! pipeline: %s, provider: %s",
@@ -118,45 +182,7 @@ function ProviderSwitch:provide(name, query, context)
         vim.inspect(provider_config)
     )
 
-    --- @class ProviderMetaOpts
-    --- @field pipeline PipelineName
-    --- @field provider_type ProviderType
-    --- @field prepend_icon_by_ft boolean?
-    --- @field prepend_icon_path_delimiter string?
-    --- @field prepend_icon_path_position integer?
-
-    --- @type ProviderMetaOpts
-    local metaopts = {
-        pipeline = self.pipeline,
-        provider_type = provider_config.provider_type,
-    }
-    if
-        type(provider_config.line_opts) == "table"
-        and provider_config.line_opts.prepend_icon_by_ft ~= nil
-    then
-        metaopts.prepend_icon_by_ft =
-            provider_config.line_opts.prepend_icon_by_ft
-    end
-    if
-        type(provider_config.line_opts) == "table"
-        and type(provider_config.line_opts.prepend_icon_path_delimiter) == "string"
-        and string.len(
-                provider_config.line_opts.prepend_icon_path_delimiter
-            )
-            > 0
-    then
-        metaopts.prepend_icon_path_delimiter =
-            provider_config.line_opts.prepend_icon_path_delimiter
-    end
-    if
-        type(provider_config.line_opts) == "table"
-        and type(provider_config.line_opts.prepend_icon_path_position)
-            == "number"
-    then
-        metaopts.prepend_icon_path_position =
-            provider_config.line_opts.prepend_icon_path_position
-    end
-
+    local metaopts = make_provider_meta_opts(self.pipeline, provider_config)
     local metajson = json.encode(metaopts) --[[@as string]]
     utils.writefile(self.metafile, metajson)
 
@@ -307,8 +333,7 @@ end
 
 --- @class PreviewerSwitch
 --- @field pipeline PipelineName
---- @field previewers table<PipelineName, Previewer>
---- @field previewer_types table<PipelineName, PreviewerType>
+--- @field previewer_configs table<PipelineName, PreviewerConfig>
 --- @field metafile string
 --- @field resultfile string
 local PreviewerSwitch = {}
@@ -318,24 +343,29 @@ local PreviewerSwitch = {}
 --- @param previewer_configs Options
 --- @return PreviewerSwitch
 function PreviewerSwitch:new(name, pipeline, previewer_configs)
-    local previewers_map = {}
-    local previewer_types_map = {}
+    local previewer_configs_map = {}
     if schema.is_previewer_config(previewer_configs) then
-        previewers_map[DEFAULT_PIPELINE] = previewer_configs.previewer
-        previewer_types_map[DEFAULT_PIPELINE] =
+        previewer_configs.previewer_type =
             schema.get_previewer_type_or_default(previewer_configs)
+        previewer_configs_map[DEFAULT_PIPELINE] = previewer_configs
     else
         for previewer_name, previewer_opts in pairs(previewer_configs) do
-            previewers_map[previewer_name] = previewer_opts.previewer
-            previewer_types_map[previewer_name] =
+            log.ensure(
+                schema.is_previewer_config(previewer_opts),
+                "error! %s (%s) is not a valid previewer! %s",
+                vim.inspect(previewer_name),
+                vim.inspect(name),
+                vim.inspect(previewer_opts)
+            )
+            previewer_opts.previewer_type =
                 schema.get_previewer_type_or_default(previewer_opts)
+            previewer_configs_map[previewer_name] = previewer_opts
         end
     end
 
     local o = {
         pipeline = pipeline,
-        previewers = previewers_map,
-        previewer_types = previewer_types_map,
+        previewer_configs = previewer_configs_map,
         metafile = make_cache_filename("previewer", "metafile", name),
         resultfile = make_cache_filename("previewer", "resultfile", name),
     }
@@ -355,34 +385,43 @@ end
 --- @param context PipelineContext?
 --- @return PreviewerType
 function PreviewerSwitch:preview(name, line, context)
-    local previewer = self.previewers[self.pipeline]
-    local previewer_type = self.previewer_types[self.pipeline]
-    log.ensure(
-        type(previewer) == "function",
-        "|fzfx.general - PreviewerSwitch:preview| invalid previewer! %s",
-        vim.inspect(self)
+    local previewer_config = self.previewer_configs[self.pipeline]
+    log.debug(
+        "|fzfx.general - PreviewerSwitch:preview| pipeline:%s, previewer_config:%s, context:%s",
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config),
+        vim.inspect(context)
     )
     log.ensure(
-        previewer_type == PreviewerTypeEnum.COMMAND
-            or previewer_type == PreviewerTypeEnum.COMMAND_LIST
-            or previewer_type == PreviewerTypeEnum.LIST,
-        "|fzfx.general - PreviewerSwitch:preview| invalid previewer_type! %s",
-        vim.inspect(self)
+        type(previewer_config) == "table",
+        "invalid previewer config in %s! pipeline: %s, previewer config: %s",
+        vim.inspect(name),
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config)
+    )
+    log.ensure(
+        type(previewer_config.previewer) == "function",
+        "invalid previewer in %s! pipeline: %s, previewer: %s",
+        vim.inspect(name),
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config)
+    )
+    log.ensure(
+        previewer_config.previewer_type == PreviewerTypeEnum.COMMAND
+            or previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST
+            or previewer_config.previewer_type == PreviewerTypeEnum.LIST,
+        "invalid previewer type in %s! pipeline: %s, previewer type: %s",
+        vim.inspect(name),
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config)
     )
 
-    --- @class PreviewerMetaOpts
-    --- @field pipeline PipelineName
-    --- @field previewer_type PreviewerType
-    local metaopts = {
-        pipeline = self.pipeline,
-        previewer_type = previewer_type,
-    }
-
+    local metaopts = make_previewer_meta_opts(self.pipeline, previewer_config)
     local metajson = json.encode(metaopts) --[[@as string]]
     utils.writefile(self.metafile, metajson)
 
-    if previewer_type == PreviewerTypeEnum.COMMAND then
-        local ok, result = pcall(previewer, line, context)
+    if previewer_config.previewer_type == PreviewerTypeEnum.COMMAND then
+        local ok, result = pcall(previewer_config.previewer, line, context)
         log.debug(
             "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
             vim.inspect(ok),
@@ -393,7 +432,7 @@ function PreviewerSwitch:preview(name, line, context)
             log.err(
                 "failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(name),
-                vim.inspect(previewer),
+                vim.inspect(previewer_config.previewer),
                 vim.inspect(line),
                 vim.inspect(context),
                 vim.inspect(result)
@@ -411,8 +450,10 @@ function PreviewerSwitch:preview(name, line, context)
                 utils.writefile(self.resultfile, result --[[@as string]])
             end
         end
-    elseif previewer_type == PreviewerTypeEnum.COMMAND_LIST then
-        local ok, result = pcall(previewer, line, context)
+    elseif
+        previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST
+    then
+        local ok, result = pcall(previewer_config.previewer, line, context)
         log.debug(
             "|fzfx.general - PreviewerSwitch:preview| pcall command_list previewer, ok:%s, result:%s",
             vim.inspect(ok),
@@ -423,7 +464,7 @@ function PreviewerSwitch:preview(name, line, context)
             log.err(
                 "failed to call pipeline %s command_list previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(name),
-                vim.inspect(previewer),
+                vim.inspect(previewer_config.previewer),
                 vim.inspect(line),
                 vim.inspect(context),
                 vim.inspect(result)
@@ -445,8 +486,8 @@ function PreviewerSwitch:preview(name, line, context)
                 )
             end
         end
-    elseif previewer_type == PreviewerTypeEnum.LIST then
-        local ok, result = pcall(previewer, line, context)
+    elseif previewer_config.previewer_type == PreviewerTypeEnum.LIST then
+        local ok, result = pcall(previewer_config.previewer, line, context)
         log.debug(
             "|fzfx.general - PreviewerSwitch:preview| pcall list previewer, ok:%s, result:%s",
             vim.inspect(ok),
@@ -457,7 +498,7 @@ function PreviewerSwitch:preview(name, line, context)
             log.err(
                 "failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(name),
-                vim.inspect(previewer),
+                vim.inspect(previewer_config.previewer),
                 vim.inspect(line),
                 vim.inspect(context),
                 vim.inspect(result)
@@ -477,7 +518,7 @@ function PreviewerSwitch:preview(name, line, context)
             vim.inspect(self)
         )
     end
-    return previewer_type
+    return previewer_config.previewer_type
 end
 
 -- previewer switch }
@@ -915,6 +956,8 @@ end
 local M = {
     setup = setup,
     make_cache_filename = make_cache_filename,
+    make_provider_meta_opts = make_provider_meta_opts,
+    make_previewer_meta_opts = make_previewer_meta_opts,
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,
     HeaderSwitch = HeaderSwitch,

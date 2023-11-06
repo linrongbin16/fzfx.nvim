@@ -329,11 +329,11 @@ describe("general", function()
             })
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
-            assert_eq(type(ps.previewers), "table")
-            assert_false(vim.tbl_isempty(ps.previewers))
-            assert_eq(type(ps.previewers.default), "function")
-            assert_eq(ps.previewers.default(), "ls -1")
-            assert_eq(ps.previewer_types.default, "command")
+            assert_eq(type(ps.previewer_configs), "table")
+            assert_false(vim.tbl_isempty(ps.previewer_configs))
+            assert_eq(type(ps.previewer_configs.default.previewer), "function")
+            assert_eq(ps.previewer_configs.default.previewer(), "ls -1")
+            assert_eq(ps.previewer_configs.default.previewer_type, "command")
             assert_eq(ps:switch("default"), nil)
         end)
         it("creates multiple command previewer", function()
@@ -351,19 +351,18 @@ describe("general", function()
             })
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
-
-            assert_eq(type(ps.previewers), "table")
-            assert_false(vim.tbl_isempty(ps.previewers))
-            assert_eq(type(ps.previewers.p1), "function")
-            assert_eq(ps.previewers.p1(), "p1")
-            assert_eq(ps.previewer_types.p1, "command")
+            assert_eq(type(ps.previewer_configs), "table")
+            assert_false(vim.tbl_isempty(ps.previewer_configs))
+            assert_eq(type(ps.previewer_configs.p1.previewer), "function")
+            assert_eq(ps.previewer_configs.p1.previewer(), "p1")
+            assert_eq(ps.previewer_configs.p1.previewer_type, "command")
             assert_eq(ps:switch("p1"), nil)
 
-            assert_eq(type(ps.previewers), "table")
-            assert_false(vim.tbl_isempty(ps.previewers))
-            assert_eq(type(ps.previewers.p2), "function")
-            assert_eq(ps.previewers.p2(), "p2")
-            assert_eq(ps.previewer_types.p2, "command")
+            assert_eq(type(ps.previewer_configs), "table")
+            assert_false(vim.tbl_isempty(ps.previewer_configs))
+            assert_eq(type(ps.previewer_configs.p2.previewer), "function")
+            assert_eq(ps.previewer_configs.p2.previewer(), "p2")
+            assert_eq(ps.previewer_configs.p2.previewer_type, "command")
             assert_eq(ps:switch("p2"), nil)
         end)
     end)
@@ -506,6 +505,73 @@ describe("general", function()
                         "provider_switch_meta_live_grep"
                     )
             )
+        end)
+    end)
+    describe("[make_provider_meta_opts]", function()
+        it("makes without icon", function()
+            local actual1 = general.make_provider_meta_opts("test1", {
+                key = "test1",
+                provider_type = "command",
+            })
+            assert_eq(type(actual1), "table")
+            assert_eq(actual1.pipeline, "test1")
+            assert_eq(actual1.provider_type, "command")
+            assert_true(actual1.prepend_icon_by_ft == nil)
+            local actual2 = general.make_provider_meta_opts("test2", {
+                key = "test2",
+                provider_type = "command_list",
+                line_opts = {
+                    prepend_icon_by_ft = false,
+                },
+            })
+            assert_eq(type(actual2), "table")
+            assert_eq(actual2.pipeline, "test2")
+            assert_eq(actual1.provider_type, "command")
+            assert_false(actual2.prepend_icon_by_ft)
+        end)
+        it("makes with icon", function()
+            local actual = general.make_provider_meta_opts("test3", {
+                key = "test3",
+                provider_type = "list",
+                line_opts = {
+                    prepend_icon_by_ft = true,
+                    prepend_icon_path_delimiter = ":",
+                    prepend_icon_path_position = 1,
+                },
+            })
+            assert_eq(type(actual), "table")
+            assert_eq(actual.pipeline, "test3")
+            assert_eq(actual.provider_type, "list")
+            assert_true(actual.prepend_icon_by_ft)
+            assert_eq(actual.prepend_icon_path_delimiter, ":")
+            assert_eq(actual.prepend_icon_path_position, 1)
+        end)
+    end)
+    describe("[make_previewer_meta_opts]", function()
+        it("makes without icon", function()
+            local actual1 = general.make_previewer_meta_opts("test1", {
+                previewer = function() end,
+                previewer_type = "command",
+            })
+            assert_eq(type(actual1), "table")
+            assert_eq(actual1.pipeline, "test1")
+            assert_eq(actual1.previewer_type, "command")
+            local actual2 = general.make_previewer_meta_opts("test2", {
+                previewer = function() end,
+                previewer_type = "command_list",
+            })
+            assert_eq(type(actual2), "table")
+            assert_eq(actual2.pipeline, "test2")
+            assert_eq(actual2.previewer_type, "command_list")
+        end)
+        it("makes with icon", function()
+            local actual = general.make_previewer_meta_opts("test3", {
+                previewer = function() end,
+                previewer_type = "list",
+            })
+            assert_eq(type(actual), "table")
+            assert_eq(actual.pipeline, "test3")
+            assert_eq(actual.previewer_type, "list")
         end)
     end)
 end)
