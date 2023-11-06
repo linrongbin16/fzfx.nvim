@@ -8,14 +8,14 @@ local user_cancelled_error = "cancelled."
 --- @param callback fun():any
 local function confirm_discard_buffer_modified(bufnr, callback)
     if utils.get_buf_option(bufnr, "modified") then
-        local user_input = vim.fn.input({
+        local input = vim.fn.input({
             prompt = "[fzfx] current buffer has been modified, continue? (y/n) ",
             cancelreturn = "n",
         })
         if
-            type(user_input) == "string"
-            and string.len(user_input) > 0
-            and utils.string_startswith(user_input:lower(), "y")
+            type(input) == "string"
+            and string.len(input) > 0
+            and utils.string_startswith(input:lower(), "y")
         then
             callback()
         else
