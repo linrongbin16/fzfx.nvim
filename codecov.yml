@@ -7,4 +7,4 @@ coverage:
       default:
         threshold: 90%
 ignore:
-  - "lua/fzfx/json.lua"
+  - "lua/fzfx/rxi_json.lua"
