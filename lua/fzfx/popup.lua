@@ -66,11 +66,11 @@ local function _make_cursor_window_config(opts)
         border = opts.border,
         zindex = opts.zindex,
     }
-    log.debug(
-        "|fzfx.popup - make_popup_window_opts_relative_to_cursor| (origin) win_opts:%s, pw_config:%s",
-        vim.inspect(opts),
-        vim.inspect(pw_config)
-    )
+    -- log.debug(
+    --     "|fzfx.popup - make_popup_window_opts_relative_to_cursor| (origin) win_opts:%s, pw_config:%s",
+    --     vim.inspect(opts),
+    --     vim.inspect(pw_config)
+    -- )
     return pw_config
 end
 
@@ -116,13 +116,13 @@ local function _make_center_window_config(opts)
         )
     end
     local row = _make_window_center_shift(total_height, height, opts.row)
-    log.debug(
-        "|fzfx.popup - make_popup_window_opts_relative_to_center| row:%s, win_opts:%s, total_height:%s, height:%s",
-        vim.inspect(row),
-        vim.inspect(opts),
-        vim.inspect(total_height),
-        vim.inspect(height)
-    )
+    -- log.debug(
+    --     "|fzfx.popup - make_popup_window_opts_relative_to_center| row:%s, win_opts:%s, total_height:%s, height:%s",
+    --     vim.inspect(row),
+    --     vim.inspect(opts),
+    --     vim.inspect(total_height),
+    --     vim.inspect(height)
+    -- )
 
     if
         (opts.col > -1 and opts.col < -0.5)
@@ -147,11 +147,11 @@ local function _make_center_window_config(opts)
         border = opts.border,
         zindex = opts.zindex,
     }
-    log.debug(
-        "|fzfx.popup - make_popup_window_opts_relative_to_center| (origin) win_opts:%s, pw_config:%s",
-        vim.inspect(opts),
-        vim.inspect(pw_config)
-    )
+    -- log.debug(
+    --     "|fzfx.popup - make_popup_window_opts_relative_to_center| (origin) win_opts:%s, pw_config:%s",
+    --     vim.inspect(opts),
+    --     vim.inspect(pw_config)
+    -- )
     return pw_config
 end
 
@@ -237,15 +237,15 @@ function PopupWindow:new(win_opts)
 end
 
 function PopupWindow:close()
-    log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
+    -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 
     if vim.api.nvim_win_is_valid(self.winnr) then
         vim.api.nvim_win_close(self.winnr, true)
-    else
-        log.debug(
-            "error! cannot close invalid popup window! %s",
-            vim.inspect(self.winnr)
-        )
+        -- else
+        --     log.debug(
+        --         "error! cannot close invalid popup window! %s",
+        --         vim.inspect(self.winnr)
+        --     )
     end
 
     ---@diagnostic disable-next-line: undefined-field
@@ -294,12 +294,12 @@ end
 local function _merge_fzf_actions(fzf_opts, actions)
     local expect_keys = _make_expect_keys(actions)
     local merged_opts = vim.list_extend(vim.deepcopy(fzf_opts), expect_keys)
-    log.debug(
-        "|fzfx.popup - _merge_fzf_actions| fzf_opts:%s, actions:%s, merged_opts:%s",
-        vim.inspect(fzf_opts),
-        vim.inspect(actions),
-        vim.inspect(merged_opts)
-    )
+    -- log.debug(
+    --     "|fzfx.popup - _merge_fzf_actions| fzf_opts:%s, actions:%s, merged_opts:%s",
+    --     vim.inspect(fzf_opts),
+    --     vim.inspect(actions),
+    --     vim.inspect(merged_opts)
+    -- )
     return merged_opts
 end
 
@@ -310,21 +310,21 @@ end
 local function _make_fzf_command(fzf_opts, actions, result)
     local final_opts = _merge_fzf_actions(fzf_opts, actions)
     local final_opts_string = fzf_helpers.make_fzf_opts(final_opts)
-    log.debug(
-        "|fzfx.popup - _make_fzf_command| final_opts:%s, builder:%s",
-        vim.inspect(final_opts),
-        vim.inspect(final_opts_string)
-    )
+    -- log.debug(
+    --     "|fzfx.popup - _make_fzf_command| final_opts:%s, builder:%s",
+    --     vim.inspect(final_opts),
+    --     vim.inspect(final_opts_string)
+    -- )
     local command = string.format(
         "%s %s >%s",
         fzf_helpers.fzf_exec(),
         final_opts_string,
         result
     )
-    log.debug(
-        "|fzfx.popup - _make_fzf_command| command:%s",
-        vim.inspect(command)
-    )
+    -- log.debug(
+    --     "|fzfx.popup - _make_fzf_command| command:%s",
+    --     vim.inspect(command)
+    -- )
     return command
 end
 
@@ -342,12 +342,12 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
     local popup_window = PopupWindow:new(win_opts)
 
     local function on_fzf_exit(jobid2, exitcode, event)
-        log.debug(
-            "|fzfx.popup - Popup:new.on_fzf_exit| jobid2:%s, exitcode:%s, event:%s",
-            vim.inspect(jobid2),
-            vim.inspect(exitcode),
-            vim.inspect(event)
-        )
+        -- log.debug(
+        --     "|fzfx.popup - Popup:new.on_fzf_exit| jobid2:%s, exitcode:%s, event:%s",
+        --     vim.inspect(jobid2),
+        --     vim.inspect(exitcode),
+        --     vim.inspect(event)
+        -- )
         if exitcode > 1 and (exitcode ~= 130 and exitcode ~= 129) then
             log.err(
                 "command '%s' running with exit code %d",
@@ -377,18 +377,18 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
             vim.inspect(result)
         )
         local lines = utils.readlines(result) --[[@as table]]
-        log.debug(
-            "|fzfx.popup - Popup:new.on_fzf_exit| result:%s, result_lines:%s",
-            vim.inspect(result),
-            vim.inspect(lines)
-        )
+        -- log.debug(
+        --     "|fzfx.popup - Popup:new.on_fzf_exit| result:%s, result_lines:%s",
+        --     vim.inspect(result),
+        --     vim.inspect(lines)
+        -- )
         local action_key = vim.trim(lines[1])
         local action_lines = vim.list_slice(lines, 2)
-        log.debug(
-            "|fzfx.popup - Popup:new.on_fzf_exit| action_key:%s, action_lines:%s",
-            vim.inspect(action_key),
-            vim.inspect(action_lines)
-        )
+        -- log.debug(
+        --     "|fzfx.popup - Popup:new.on_fzf_exit| action_key:%s, action_lines:%s",
+        --     vim.inspect(action_key),
+        --     vim.inspect(action_lines)
+        -- )
         if actions[action_key] ~= nil then
             local action_callback = actions[action_key]
             if type(action_callback) ~= "function" then
@@ -458,7 +458,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
 end
 
 function Popup:close()
-    log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
+    -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 end
 
 --- @return table<integer, PopupWindow>
@@ -480,10 +480,10 @@ local function _count_all_popup_window_instances()
 end
 
 local function resize_all_popup_window_instances()
-    log.debug(
-        "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
-        vim.inspect(PopupWindowInstances)
-    )
+    -- log.debug(
+    --     "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
+    --     vim.inspect(PopupWindowInstances)
+    -- )
     for winnr, popup_win in pairs(PopupWindowInstances) do
         if winnr and popup_win then
             popup_win:resize()

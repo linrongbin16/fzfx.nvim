@@ -738,8 +738,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch.resultfile
     )
     log.debug(
-        "|fzfx.general - general| query_command:%s, preview_command:%s",
-        vim.inspect(query_command),
+        "|fzfx.general - general| query_command:%s",
+        vim.inspect(query_command)
+    )
+    log.debug(
+        "|fzfx.general - general| reload_query_command:%s",
+        vim.inspect(reload_query_command)
+    )
+    log.debug(
+        "|fzfx.general - general| preview_command:%s",
         vim.inspect(preview_command)
     )
     local fzf_opts = {

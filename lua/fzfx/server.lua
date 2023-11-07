@@ -34,10 +34,10 @@ local function get_windows_pipe_name()
             randint
         )
     )
-    log.debug(
-        "|fzfx.server - make_windows_pipe_name| result:%s",
-        vim.inspect(result)
-    )
+    -- log.debug(
+    --     "|fzfx.server - make_windows_pipe_name| result:%s",
+    --     vim.inspect(result)
+    -- )
     return result
 end
 
@@ -52,10 +52,10 @@ function RpcServer:new()
     local address = constants.is_windows
             and vim.fn.serverstart(get_windows_pipe_name())
         or vim.fn.serverstart() --[[@as string]]
-    log.debug(
-        "|fzfx.server - RpcServer:new| start server on socket address:%s",
-        vim.inspect(address)
-    )
+    -- log.debug(
+    --     "|fzfx.server - RpcServer:new| start server on socket address:%s",
+    --     vim.inspect(address)
+    -- )
     log.ensure(
         type(address) == "string" and string.len(address) > 0,
         "error! failed to start socket server!"
@@ -75,14 +75,14 @@ end
 
 --- @return string?
 function RpcServer:close()
-    log.debug("|fzfx.server - RpcServer:close| self: %s!", vim.inspect(self))
+    -- log.debug("|fzfx.server - RpcServer:close| self: %s!", vim.inspect(self))
     local address = self.address
     if type(self.address) == "string" and string.len(self.address) > 0 then
         local result = vim.fn.serverstop(self.address)
-        log.debug(
-            "|fzfx.server - RpcServer:close| stop result(valid): %s!",
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.server - RpcServer:close| stop result(valid): %s!",
+        --     vim.inspect(result)
+        -- )
     end
     self.address = nil
     return address
@@ -151,10 +151,10 @@ end
 
 local function setup()
     RpcServerInstance = RpcServer:new()
-    log.debug(
-        "|fzfx.server - setup| RpcServerInstance:%s",
-        vim.inspect(RpcServerInstance)
-    )
+    -- log.debug(
+    --     "|fzfx.server - setup| RpcServerInstance:%s",
+    --     vim.inspect(RpcServerInstance)
+    -- )
     return RpcServerInstance
 end
 
