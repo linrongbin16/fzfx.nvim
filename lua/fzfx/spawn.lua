@@ -1,5 +1,6 @@
 -- No Setup Need
 
+local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 
 --- @alias SpawnLineConsumer fun(line:string):any
@@ -180,8 +181,7 @@ function Spawn:run()
     end)
     vim.loop.run()
 
-    local max_timeout = 2 ^ 31
-    vim.wait(max_timeout, function()
+    vim.wait(constants.int32_max, function()
         return self._close_count == 3
     end)
 end
