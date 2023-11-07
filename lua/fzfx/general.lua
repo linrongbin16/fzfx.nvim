@@ -224,11 +224,11 @@ function ProviderSwitch:provide(name, query, context)
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
         local ok, result =
             pcall(provider_config.provider --[[@as function]], query, context)
-        log.debug(
-            "|fzfx.general - ProviderSwitch:provide| pcall command provider, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - ProviderSwitch:provide| pcall command provider, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         log.ensure(
             result == nil or type(result) == "string",
             "|fzfx.general - ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
@@ -255,11 +255,11 @@ function ProviderSwitch:provide(name, query, context)
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST then
         local ok, result =
             pcall(provider_config.provider --[[@as function]], query, context)
-        log.debug(
-            "|fzfx.general - ProviderSwitch:provide| pcall command_list provider, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - ProviderSwitch:provide| pcall command_list provider, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         log.ensure(
             result == nil or type(result) == "table",
             "|fzfx.general - ProviderSwitch:provide| command_list provider result must be string! self:%s, result:%s",
@@ -289,11 +289,11 @@ function ProviderSwitch:provide(name, query, context)
     elseif provider_config.provider_type == ProviderTypeEnum.LIST then
         local ok, result =
             pcall(provider_config.provider --[[@as function]], query, context)
-        log.debug(
-            "|fzfx.general - ProviderSwitch:provide| pcall list provider, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - ProviderSwitch:provide| pcall list provider, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         if not ok then
             utils.writefile(self.resultfile, "")
             log.err(
@@ -422,11 +422,11 @@ function PreviewerSwitch:preview(name, line, context)
 
     if previewer_config.previewer_type == PreviewerTypeEnum.COMMAND then
         local ok, result = pcall(previewer_config.previewer, line, context)
-        log.debug(
-            "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         if not ok then
             utils.writefile(self.resultfile, "")
             log.err(
@@ -454,11 +454,11 @@ function PreviewerSwitch:preview(name, line, context)
         previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST
     then
         local ok, result = pcall(previewer_config.previewer, line, context)
-        log.debug(
-            "|fzfx.general - PreviewerSwitch:preview| pcall command_list previewer, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - PreviewerSwitch:preview| pcall command_list previewer, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         if not ok then
             utils.writefile(self.resultfile, "")
             log.err(
@@ -488,11 +488,11 @@ function PreviewerSwitch:preview(name, line, context)
         end
     elseif previewer_config.previewer_type == PreviewerTypeEnum.LIST then
         local ok, result = pcall(previewer_config.previewer, line, context)
-        log.debug(
-            "|fzfx.general - PreviewerSwitch:preview| pcall list previewer, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - PreviewerSwitch:preview| pcall list previewer, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         if not ok then
             utils.writefile(self.resultfile, "")
             log.err(
@@ -586,10 +586,10 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
     if schema.is_provider_config(provider_configs) then
         headers_map[DEFAULT_PIPELINE] = make_help_doc(interaction_configs, {})
     else
-        log.debug(
-            "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
-            vim.inspect(provider_configs)
-        )
+        -- log.debug(
+        --     "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
+        --     vim.inspect(provider_configs)
+        -- )
         for provider_name, provider_opts in pairs(provider_configs) do
             local help_builder = make_help_doc(
                 provider_configs,
@@ -661,17 +661,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         local pipeline = nil
         local provider_opts = nil
         if schema.is_provider_config(pipeline_configs.providers) then
-            log.debug(
-                "|fzfx.general - general| providers is single config: %s",
-                vim.inspect(pipeline_configs.providers)
-            )
+            -- log.debug(
+            --     "|fzfx.general - general| providers is single config: %s",
+            --     vim.inspect(pipeline_configs.providers)
+            -- )
             pipeline = DEFAULT_PIPELINE
             provider_opts = pipeline_configs.providers
         else
-            log.debug(
-                "|fzfx.general - general| providers is multiple configs: %s",
-                vim.inspect(pipeline_configs.providers)
-            )
+            -- log.debug(
+            --     "|fzfx.general - general| providers is multiple configs: %s",
+            --     vim.inspect(pipeline_configs.providers)
+            -- )
             pipeline, provider_opts = next(pipeline_configs.providers)
         end
         default_pipeline = pipeline
@@ -772,10 +772,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             local action = interaction_opts.interaction
 
             local function interaction_rpc(line_params)
-                log.debug(
-                    "|fzfx.general - general.interaction_rpc| line_params:%s",
-                    vim.inspect(line_params)
-                )
+                -- log.debug(
+                --     "|fzfx.general - general.interaction_rpc| line_params:%s",
+                --     vim.inspect(line_params)
+                -- )
                 action(line_params, context)
             end
 
