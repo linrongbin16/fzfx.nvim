@@ -67,15 +67,15 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 ## ✅ Requirement
 
 - Neovim &ge; v0.7.0.
+- [echo](https://man7.org/linux/man-pages/man1/echo.1p.html)/[curl](https://man7.org/linux/man-pages/man1/curl.1.html) (mandatory for Windows).
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
 - [bat](https://github.com/sharkdp/bat) (optional for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
 - [git](https://git-scm.com/) (mandatory for **git** commands), [delta](https://github.com/dandavison/delta) (optional for preview **git diff**, **git show**, **git blame**).
-- [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)), [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (optional for preview **file explorer** cwd).
-- [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (mandatory for vim **commands**, **keymaps** commands).
+- [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-> Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be a better choice, while still recommend to [install linux shell commands on Windows](#windows) since utils like **echo**, **sleep** are often used by somewhere.
+> Note: `echo`, `curl`, `grep`, `find`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so Windows users will have to [install linux shell commands on Windows](#windows) since utils like **echo**, **curl** are internally used by this plugin.
 
 ### Windows
 
@@ -101,7 +101,7 @@ Install with the below 3 options:
 
   <img alt="install-windows-git3.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git3.png" width="70%" />
 
-After this step, **git.exe** and builtin linux commands(such as **sh.exe**, **grep.exe**, **find.exe**, **sleep.exe**, **cd.exe**, **ls.exe**) will be available in `%PATH%`.
+After this step, **git.exe** and builtin linux commands(such as **echo.exe**, **grep.exe**, **find.exe**, **curl.exe**) will be available in `%PATH%`.
 
 #### [scoop](https://scoop.sh/)
 
@@ -116,14 +116,13 @@ scoop bucket add extras
 scoop install git
 scoop install mingw
 scoop install coreutils
-scoop install sleep
 scoop install grep
 scoop install findutils
 ```
 
 #### Fix conflicts between embeded commands in `C:\Windows\System32` and portable linux commands
 
-Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\Windows\System32` (or `%SystemRoot%\system32`), which could override our installations. To fix this issue, we could prioritize the git or scoop environment variables in `%PATH%`.
+Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\Windows\System32` (or `%SystemRoot%\system32`), while they are not the linux commands they are named after, but could override our installations. To fix this issue, we could prioritize the git or scoop environment variables in `%PATH%`.
 
 <img alt="windows-path" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5296429b-daae-40f6-be16-6c065ef7bf05" width="70%" />
 
