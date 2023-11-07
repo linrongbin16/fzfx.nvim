@@ -158,6 +158,108 @@ end
 
 -- icon render }
 
+-- rpc client {
+
+--- @param registry_id string
+--- @param params string?
+--- @return string?
+local function make_rpc_call(registry_id, params)
+    local address = vim.env._FZFX_NVIM_SOCKET_ADDRESS
+
+    local client_handle, new_client_err = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    log_ensure(
+        client_handle ~= nil,
+        "|fzfx.shell_helpers - make_rpc_call| failed to create new pipe client:%s",
+        vim.inspect(new_client_err)
+    )
+
+    local function _close_handle()
+        if client_handle and not client_handle:is_closing() then
+            client_handle:close(function()
+                vim.loop.stop()
+            end)
+        end
+    end
+
+    local buffer = nil
+
+    local connect_result, connect_err = client_handle:connect(
+        address,
+        function(connect_complete_err)
+            log_debug(
+                "|fzfx.shell_helpers - make_rpc_call| connect complete on address: %s",
+                vim.inspect(address)
+            )
+            if connect_complete_err then
+                log_err(
+                    "|fzfx.shell_helpers - make_rpc_call| failed to complete connection on address:%s, error:%s",
+                    vim.inspect(address),
+                    vim.inspect(connect_complete_err)
+                )
+                return
+            end
+
+            --- @type RpcParams
+            local obj = {
+                ["id"] = registry_id,
+                params = params,
+            }
+            local send_data = require("fzfx.json").encode(obj) --[[@as string]]
+            client_handle:write(send_data)
+
+            local read_start_result, read_start_err = client_handle:read_start(
+                function(read_err, read_data)
+                    log_debug(
+                        "|fzfx.shell_helpers - make_rpc_call| client pipe read: %s, err: %s",
+                        vim.inspect(read_data),
+                        vim.inspect(read_err)
+                    )
+                    if read_err then
+                        log_err(
+                            "|fzfx.shell_helpers - make_rpc_call| failed to read on client pipe:%s, data:%s",
+                            vim.inspect(read_err),
+                            vim.inspect(read_data)
+                        )
+                        client_handle:read_stop()
+                        _close_handle()
+                        return
+                    end
+
+                    if read_data then
+                        buffer = buffer and (buffer .. read_data) or read_data
+                        buffer = buffer:gsub("\r\n", "\n")
+                    else
+                        client_handle:read_stop()
+                        _close_handle()
+                    end
+                end
+            )
+            log_ensure(
+                read_start_result ~= nil,
+                "|fzfx.shell_helpers - make_rpc_call| failed to start read on address:%s, error:%s",
+                vim.inspect(address),
+                vim.inspect(read_start_err)
+            )
+        end
+    )
+    log_ensure(
+        connect_result ~= nil,
+        "|fzfx.shell_helpers - make_rpc_call| failed to connect to pipe server on address: %s, error: %s",
+        vim.inspect(address),
+        vim.inspect(connect_err)
+    )
+    vim.loop.run()
+
+    -- loop ends
+    log_debug(
+        "|fzfx.shell_helpers - make_rpc_call| returned buffer: %s",
+        vim.inspect(buffer)
+    )
+    return buffer
+end
+
+-- rpc client }
+
 local M = {
     setup = setup,
     log_debug = log_debug,
@@ -175,6 +277,7 @@ local M = {
     FileLineReader = require("fzfx.utils").FileLineReader,
     readfile = require("fzfx.utils").readfile,
     Spawn = require("fzfx.spawn").Spawn,
+    make_rpc_call = make_rpc_call,
 }
 
 return M

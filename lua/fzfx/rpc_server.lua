@@ -1,5 +1,6 @@
-local log = require("fzfx.log")
 local constants = require("fzfx.constants")
+local json = require("fzfx.json")
+local log = require("fzfx.log")
 
 --- @type integer
 local NextRegistryIntegerId = 0
@@ -93,6 +94,14 @@ local function get(registry_id)
     return cb
 end
 
+--- @param handle uv_pipe_t?
+local function _close_client_handle(handle)
+    if handle and not handle:is_closing() then
+        handle:shutdown()
+        handle:close()
+    end
+end
+
 local function setup()
     local address = make_pipe_name()
     log.debug("|fzfx.rpc_server - setup| make address:%s", vim.inspect(address))
@@ -121,19 +130,88 @@ local function setup()
                 )
                 return
             end
+
+            local client_handle, new_client_err = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+            if client_handle == nil then
+                log.err(
+                    "|fzfx.rpc_server - setup| failed to create new client pipe: %s",
+                    vim.inspect(new_client_err)
+                )
+                return
+            end
+
+            local accept_result, accept_err =
+                server_handle:accept(client_handle)
+            if accept_result == nil then
+                log.err(
+                    "|fzfx.rpc_server - setup| failed to accept new client pipe: %s",
+                    vim.inspect(accept_err)
+                )
+                _close_client_handle(client_handle)
+                return
+            end
+
+            local buffer = nil
+
+            local read_start_result, read_start_err = client_handle:read_start(
+                function(read_err, read_data)
+                    log.debug(
+                        "|fzfx.rpc_server - setup| client pipe read: %s, err: %s",
+                        vim.inspect(read_data),
+                        vim.inspect(read_err)
+                    )
+                    if read_err then
+                        log.err(
+                            "|fzfx.rpc_server - setup| failed to read on client pipe:%s, data:%s",
+                            vim.inspect(read_err),
+                            vim.inspect(read_data)
+                        )
+                        client_handle:read_stop()
+                        _close_client_handle(client_handle)
+                        return
+                    end
+
+                    if read_data then
+                        buffer = buffer and (buffer .. read_data) or read_data
+                        buffer = buffer:gsub("\r\n", "\n")
+                    else
+                        --- @alias RpcParams {["id"]:string,params:string?}
+                        --- @type RpcParams
+                        local obj = json.decode(buffer) --[[@as table]]
+                        local registry_id = obj["id"]
+                        local params = obj["params"]
+                        local cb = get(registry_id)
+                        log.ensure(
+                            type(cb) == "function",
+                            "|fzfx.rpc_server - setup| registered callbacks(%s) must be a function: %s",
+                            vim.inspect(registry_id),
+                            vim.inspect(cb)
+                        )
+                        local result = cb(params) --[[@as string?]]
+                        client_handle:write(result or "")
+                        client_handle:read_stop()
+                        _close_client_handle(client_handle)
+                    end
+                end
+            )
+            if read_start_result == nil then
+                log.err(
+                    "|fzfx.rpc_server - setup| failed to start read new client pipe: %s",
+                    vim.inspect(read_start_err)
+                )
+                _close_client_handle(client_handle)
+            end
         end
+    )
+    log.ensure(
+        listen_result ~= nil,
+        "|fzfx.rpc_server - setup| failed to listen pipe server on address: %s! error: %s",
+        vim.inspect(address),
+        vim.inspect(listen_err)
     )
 
     -- export socket address as environment variable
     vim.env._FZFX_NVIM_SOCKET_ADDRESS = address
-
-    local o = {
-        address = address,
-        registry = {},
-    }
-    setmetatable(o, self)
-    self.__index = self
-    return o
 end
 
 local M = {
