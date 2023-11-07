@@ -45,12 +45,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
           args: --config-path .stylua.toml --color always ./
-      - name: Format with stylua
-        if: ${{ github.ref != 'refs/heads/main' }}
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "chore(pr): format with stylua"
-      - name: Download rxi/json.lua
+      - name: Add rxi/json.lua
         if: ${{ github.ref != 'refs/heads/main' }}
         shell: bash
         run: |
@@ -58,13 +53,11 @@ jobs:
           echo $PWD
           git clone --depth 1 https://github.com/rxi/json.lua.git ~/.json.lua
           cp ~/.json.lua/json.lua ./lua/fzfx/rxi_json.lua
-      - name: Commit rxi/json.lua
+      - name: Auto Commit
         if: ${{ github.ref != 'refs/heads/main' }}
-        uses: EndBug/add-and-commit@v9
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          add: "lua/fzfx/rxi_json.lua"
-          default_author: github_actions
-          message: "chore(pr): install rxi/json.lua"
+          commit_message: "chore(pr): format with stylua, add rxi/json.lua"
   unit_test:
     name: Unit Test
     strategy:
