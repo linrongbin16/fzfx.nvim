@@ -57,7 +57,7 @@ jobs:
         if: ${{ github.ref != 'refs/heads/main' }}
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "chore(pr): format with stylua, add rxi/json.lua"
+          commit_message: "chore(pr): auto-commit"
   unit_test:
     name: Unit Test
     strategy:
