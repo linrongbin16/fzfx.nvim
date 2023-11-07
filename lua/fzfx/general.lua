@@ -681,6 +681,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         default_provider_key = provider_opts.key
     end
 
+    local fzf_listen_port_file =
+        make_cache_filename("fzf", "listen", "port", name)
+
     --- @type ProviderSwitch
     local provider_switch =
         ProviderSwitch:new(name, default_pipeline, pipeline_configs.providers)
@@ -756,6 +759,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             preview_command,
         },
     }
+
+    local fzf_start_event_opts = string.format(
+        "start:execute-silent(echo $FZF_PORT >%s)",
+        fzf_listen_port_file
+    )
 
     local header_switch = HeaderSwitch:new(
         pipeline_configs.providers,
@@ -855,10 +863,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 bind_builder,
             })
         end
-        table.insert(fzf_opts, {
-            "--bind",
-            string.format("start:unbind(%s)", default_provider_key),
-        })
+        fzf_start_event_opts = fzf_start_event_opts
+            .. string.format("+unbind(%s)", default_provider_key)
     end
     if
         type(pipeline_configs.other_opts) == "table"
@@ -869,6 +875,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             string.format("change:reload:%s", reload_query_command),
         })
     end
+    table.insert(fzf_opts, "--listen")
+    table.insert(fzf_opts, { "--bind", fzf_start_event_opts })
 
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
