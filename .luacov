@@ -2,3 +2,6 @@ modules = {
     ["fzfx"] = "lua/fzfx.lua",
     ["fzfx.*"] = "lua",
 }
+exclude = {
+    "lua/fzfx/rxi_json.lua",
+}
