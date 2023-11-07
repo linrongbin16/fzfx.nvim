@@ -20,26 +20,28 @@ shell_helpers.log_debug("SOCKET_ADDRESS:%s", vim.inspect(SOCKET_ADDRESS))
 shell_helpers.log_debug("registry_id:%s", vim.inspect(registry_id))
 shell_helpers.log_debug("params:%s", vim.inspect(params))
 
-local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
-shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
-shell_helpers.log_ensure(
-    channel_id > 0,
-    "|fzfx.bin.rpc.client| error! failed to connect socket on SOCKET_ADDRESS:%s",
-    vim.inspect(SOCKET_ADDRESS)
-)
-vim.rpcrequest(
-    channel_id,
-    "nvim_exec_lua",
-    ---@diagnostic disable-next-line: param-type-mismatch
-    [[
-    local luaargs = {...}
-    local registry_id = luaargs[1]
-    local params = nil
-    if #luaargs >= 2 then
-        params = luaargs[2]
-    end
-    require("fzfx.rpc_helpers").call(registry_id, params)
-    ]],
-    params == nil and { registry_id } or { registry_id, params }
-)
-vim.fn.chanclose(channel_id)
+-- local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
+-- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
+-- shell_helpers.log_ensure(
+--     channel_id > 0,
+--     "|fzfx.bin.rpc.client| error! failed to connect socket on SOCKET_ADDRESS:%s",
+--     vim.inspect(SOCKET_ADDRESS)
+-- )
+-- vim.rpcrequest(
+--     channel_id,
+--     "nvim_exec_lua",
+--     ---@diagnostic disable-next-line: param-type-mismatch
+--     [[
+--     local luaargs = {...}
+--     local registry_id = luaargs[1]
+--     local params = nil
+--     if #luaargs >= 2 then
+--         params = luaargs[2]
+--     end
+--     require("fzfx.rpc_helpers").call(registry_id, params)
+--     ]],
+--     params == nil and { registry_id } or { registry_id, params }
+-- )
+-- vim.fn.chanclose(channel_id)
+
+shell_helpers.make_rpc_call(registry_id, params)

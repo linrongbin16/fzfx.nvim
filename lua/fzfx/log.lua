@@ -45,7 +45,9 @@ local function echo(level, fmt, ...)
             LogHighlights[level],
         })
     end
-    vim.api.nvim_echo(msg_chunks, false, {})
+    vim.defer_fn(function()
+        vim.api.nvim_echo(msg_chunks, false, {})
+    end, 0)
 end
 
 --- @type Options

@@ -1,7 +1,8 @@
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
 local fzf_helpers = require("fzfx.fzf_helpers")
-local server = require("fzfx.server")
+-- local server = require("fzfx.server")
+local rpc_server = require("fzfx.rpc_server")
 local color = require("fzfx.color")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
@@ -148,12 +149,12 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
-    log.debug(
-        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(provider_config),
-        vim.inspect(context)
-    )
+    -- log.debug(
+    --     "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
+    --     vim.inspect(self.pipeline),
+    --     vim.inspect(provider_config),
+    --     vim.inspect(context)
+    -- )
     log.ensure(
         type(provider_config) == "table",
         "invalid provider config in %s! pipeline: %s, provider config: %s",
@@ -710,10 +711,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch:preview(name, line_params, context)
     end
 
-    local provide_rpc_registry_id =
-        server:get_rpc_server():register(provide_rpc)
-    local preview_rpc_registry_id =
-        server:get_rpc_server():register(preview_rpc)
+    local provide_rpc_registry_id = rpc_server.register(provide_rpc)
+    local preview_rpc_registry_id = rpc_server.register(preview_rpc)
 
     local query_command = string.format(
         "%s %s %s %s %s",
@@ -780,7 +779,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end
 
             local interaction_rpc_registry_id =
-                server.get_rpc_server():register(interaction_rpc)
+                rpc_server.register(interaction_rpc)
             table.insert(
                 interaction_rpc_registries,
                 interaction_rpc_registry_id
@@ -819,8 +818,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 previewer_switch:switch(pipeline)
             end
 
-            local switch_rpc_registry_id =
-                server.get_rpc_server():register(switch_rpc)
+            local switch_rpc_registry_id = rpc_server.register(switch_rpc)
             table.insert(switch_rpc_registries, switch_rpc_registry_id)
 
             local switch_command = string.format(
@@ -892,10 +890,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         actions,
         context,
         function()
-            server.get_rpc_server():unregister(provide_rpc_registry_id)
-            server.get_rpc_server():unregister(preview_rpc_registry_id)
+            rpc_server.unregister(provide_rpc_registry_id)
+            rpc_server.unregister(preview_rpc_registry_id)
             for _, switch_registry_id in ipairs(switch_rpc_registries) do
-                server.get_rpc_server():unregister(switch_registry_id)
+                rpc_server.unregister(switch_registry_id)
             end
         end
     )

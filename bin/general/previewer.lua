@@ -25,29 +25,31 @@ shell_helpers.log_debug("metafile:[%s]", metafile)
 shell_helpers.log_debug("resultfile:[%s]", resultfile)
 shell_helpers.log_debug("line:[%s]", vim.inspect(line))
 
-local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
--- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
--- shell_helpers.log_ensure(
---     channel_id > 0,
---     "failed to connect socket on SOCKET_ADDRESS:%s",
---     vim.inspect(SOCKET_ADDRESS)
+-- local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
+-- -- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
+-- -- shell_helpers.log_ensure(
+-- --     channel_id > 0,
+-- --     "failed to connect socket on SOCKET_ADDRESS:%s",
+-- --     vim.inspect(SOCKET_ADDRESS)
+-- -- )
+-- vim.rpcrequest(
+--     channel_id,
+--     "nvim_exec_lua",
+--     ---@diagnostic disable-next-line: param-type-mismatch
+--     [[
+--     local luaargs = {...}
+--     local registry_id = luaargs[1]
+--     local line = luaargs[2]
+--     return require("fzfx.rpc_helpers").call(registry_id, line)
+--     ]],
+--     {
+--         registry_id,
+--         line,
+--     }
 -- )
-vim.rpcrequest(
-    channel_id,
-    "nvim_exec_lua",
-    ---@diagnostic disable-next-line: param-type-mismatch
-    [[
-    local luaargs = {...}
-    local registry_id = luaargs[1]
-    local line = luaargs[2]
-    return require("fzfx.rpc_helpers").call(registry_id, line)
-    ]],
-    {
-        registry_id,
-        line,
-    }
-)
-vim.fn.chanclose(channel_id)
+-- vim.fn.chanclose(channel_id)
+
+shell_helpers.make_rpc_call(registry_id, line)
 
 local metajsonstring = shell_helpers.readfile(metafile) --[[@as string]]
 shell_helpers.log_ensure(
