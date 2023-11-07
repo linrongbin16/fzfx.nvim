@@ -422,7 +422,7 @@ describe("general", function()
                     key = "ctrl-u",
                 },
             }
-            local actual = general.make_help_doc(action_configs, {})
+            local actual = general._make_help_doc(action_configs, {})
             assert_eq(type(actual), "table")
             assert_eq(#actual, 2)
             assert_true(
@@ -448,7 +448,7 @@ describe("general", function()
                     key = "alt-p",
                 },
             }
-            local actual = general.make_help_doc(action_configs, {})
+            local actual = general._make_help_doc(action_configs, {})
             assert_eq(type(actual), "table")
             assert_eq(#actual, 3)
             assert_true(
