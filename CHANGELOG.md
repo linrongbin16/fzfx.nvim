@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.4.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.3.0...v2.4.0) (2023-11-07)
+
+
+### Features
+
+* **actions:** require user confirm to discard modified buffer when jump to other files ([#365](https://github.com/linrongbin16/fzfx.nvim/issues/365)) ([1267589](https://github.com/linrongbin16/fzfx.nvim/commit/1267589f67152a5e679f7a2bf06abc74642e66ed))
+
+
+### Bug Fixes
+
+* **ui:** supress ctrl-c abort error ([#368](https://github.com/linrongbin16/fzfx.nvim/issues/368)) ([0e0d063](https://github.com/linrongbin16/fzfx.nvim/commit/0e0d06322c258683e3004e05ca8d0a85618eebd5))
+
+
+### Performance Improvements
+
+* **git & explorer:** check git repo, support delta/lsd ([#360](https://github.com/linrongbin16/fzfx.nvim/issues/360)) ([ebd7ac4](https://github.com/linrongbin16/fzfx.nvim/commit/ebd7ac440d8d301e444c4d62c6431f6ea3d1f434))
+* **icon:** update default icon for unknown filetype ([#361](https://github.com/linrongbin16/fzfx.nvim/issues/361)) ([28d4d54](https://github.com/linrongbin16/fzfx.nvim/commit/28d4d5443cf6c8aa741eadcf2df12a533b9b5218))
+* **json:** migrate legacy json_encode/json_decode to lua module ([#367](https://github.com/linrongbin16/fzfx.nvim/issues/367)) ([9e34209](https://github.com/linrongbin16/fzfx.nvim/commit/9e3420919dab61dd6209b81faad3fa717b8c8370))
+
 ## [2.3.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.2.1...v2.3.0) (2023-10-31)
 
 
