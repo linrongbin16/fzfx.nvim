@@ -16,13 +16,15 @@ local constants = require("fzfx.constants")
 --- @field process_id integer|string|nil
 --- @field _close_count integer
 --- @field result {code:integer?,signal:integer?}?
+--- @field _blocking boolean
 local Spawn = {}
 
 --- @param cmds string[]
 --- @param fn_out_line_consumer SpawnLineConsumer
 --- @param fn_err_line_consumer SpawnLineConsumer?
+--- @param blocking boolean?
 --- @return Spawn?
-function Spawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer)
+function Spawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer, blocking)
     local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
     if not out_pipe or not err_pipe then
@@ -41,6 +43,7 @@ function Spawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer)
         process_id = nil,
         _close_count = 0,
         result = nil,
+        _blocking = type(blocking) == "boolean" and blocking or true,
     }
     setmetatable(o, self)
     self.__index = self
@@ -69,7 +72,7 @@ function Spawn:_close_handle(handle)
     if handle and not handle:is_closing() then
         handle:close(function()
             self._close_count = self._close_count + 1
-            if self._close_count >= 3 then
+            if self._blocking and self._close_count >= 3 then
                 vim.loop.stop()
             end
         end)
@@ -167,7 +170,6 @@ function Spawn:run()
         args = vim.list_slice(self.cmds, 2),
         stdio = { nil, self.out_pipe, self.err_pipe },
         hide = true,
-        -- verbatim = true,
     }, function(code, signal)
         self.result = { code = code, signal = signal }
         self:_close_handle(self.process_handle)
@@ -179,11 +181,12 @@ function Spawn:run()
     self.err_pipe:read_start(function(err, data)
         self:_on_stderr(err, data)
     end)
-    vim.loop.run()
-
-    vim.wait(constants.int32_max, function()
-        return self._close_count == 3
-    end)
+    if self._blocking then
+        vim.loop.run()
+        vim.wait(constants.int32_max, function()
+            return self._close_count == 3
+        end)
+    end
 end
 
 local M = {

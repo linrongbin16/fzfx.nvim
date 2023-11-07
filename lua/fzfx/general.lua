@@ -529,10 +529,11 @@ end
 --- @field headers table<PipelineName, string[]>
 local HeaderSwitch = {}
 
+--- @package
 --- @param name string
 --- @param action string
 --- @return string
-local function render_help(name, action)
+local function _render_help(name, action)
     return color.render(
         color.magenta,
         "Special",
@@ -544,7 +545,7 @@ end
 --- @param excludes string[]|nil
 --- @param s string
 --- @return boolean
-local function skip_help(excludes, s)
+local function _should_skip_help(excludes, s)
     if type(excludes) ~= "table" then
         return false
     end
@@ -560,11 +561,11 @@ end
 --- @param builder string[]
 --- @param excludes string[]|nil
 --- @return string[]
-local function make_help_doc(action_configs, builder, excludes)
+local function _make_help_doc(action_configs, builder, excludes)
     if type(action_configs) == "table" then
         local action_names = {}
         for name, opts in pairs(action_configs) do
-            if not skip_help(excludes, name) then
+            if not _should_skip_help(excludes, name) then
                 table.insert(action_names, name)
             end
         end
@@ -572,7 +573,7 @@ local function make_help_doc(action_configs, builder, excludes)
         for _, name in ipairs(action_names) do
             local opts = action_configs[name]
             local act = opts.key
-            table.insert(builder, render_help(name, act))
+            table.insert(builder, _render_help(name, act))
         end
     end
     return builder
@@ -584,20 +585,20 @@ end
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
     if schema.is_provider_config(provider_configs) then
-        headers_map[DEFAULT_PIPELINE] = make_help_doc(interaction_configs, {})
+        headers_map[DEFAULT_PIPELINE] = _make_help_doc(interaction_configs, {})
     else
         -- log.debug(
         --     "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
         --     vim.inspect(provider_configs)
         -- )
         for provider_name, provider_opts in pairs(provider_configs) do
-            local help_builder = make_help_doc(
+            local help_builder = _make_help_doc(
                 provider_configs,
                 {},
                 { provider_name }
             )
             headers_map[provider_name] =
-                make_help_doc(interaction_configs, help_builder)
+                _make_help_doc(interaction_configs, help_builder)
         end
     end
 
@@ -975,10 +976,10 @@ local M = {
     make_previewer_meta_opts = make_previewer_meta_opts,
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,
+    _render_help = _render_help,
+    _should_skip_help = _should_skip_help,
+    _make_help_doc = _make_help_doc,
     HeaderSwitch = HeaderSwitch,
-    render_help = render_help,
-    skip_help = skip_help,
-    make_help_doc = make_help_doc,
 }
 
 return M
