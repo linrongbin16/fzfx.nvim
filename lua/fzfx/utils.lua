@@ -73,6 +73,18 @@ local function string_not_empty(s)
     return type(s) == "string" and string.len(s) > 0
 end
 
+--- @param s any
+--- @return boolean
+local function string_blank(s)
+    return type(s) ~= "string" or string.len(vim.trim(s)) == 0
+end
+
+--- @param s any
+--- @return boolean
+local function string_not_blank(s)
+    return type(s) == "string" and string.len(vim.trim(s)) > 0
+end
+
 --- @param s string
 --- @param t string
 --- @param start integer?
@@ -752,6 +764,8 @@ local M = {
     get_win_option = get_win_option,
     string_empty = string_empty,
     string_not_empty = string_not_empty,
+    string_blank = string_blank,
+    string_not_blank = string_not_blank,
     string_find = string_find,
     string_rfind = string_rfind,
     string_ltrim = string_ltrim,
