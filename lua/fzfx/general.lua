@@ -745,7 +745,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         default_provider_key = provider_opts.key
     end
 
-    local fzf_port_file = _make_cache_filename("fzf", "port", name)
+    local fzf_port_file = _make_cache_filename("fzf", "port", "file")
 
     --- @type ProviderSwitch
     local provider_switch =
