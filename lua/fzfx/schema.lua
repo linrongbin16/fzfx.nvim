@@ -24,7 +24,7 @@
 --
 --- @alias PipelineContextMaker fun():PipelineContext
 --
---- @alias PlainProvider string?|string[]?
+--- @alias PlainProvider string|string[]
 --- @alias CommandProvider fun(query:string?,context:PipelineContext?):string?|string[]?
 --- @alias ListProvider fun(query:string?,context:PipelineContext?):string[]?
 --
@@ -148,9 +148,11 @@ local CommandFeedEnum = {
 --- @field provider_type ProviderType? by default "plain"
 --- @field line_opts ProviderConfigLineOpts?
 
+--- @alias PreviewerLabel fun(line:string?,context:PipelineContext?):string?
 --- @class PreviewerConfig
 --- @field previewer Previewer
 --- @field previewer_type PreviewerType?
+--- @field previewer_label PreviewerLabel?
 
 --- @alias PipelineName string a pipeline name is a provider name, a previewer name
 --- @class CommandConfig
