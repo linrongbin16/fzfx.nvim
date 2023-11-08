@@ -120,7 +120,10 @@ local function generate_fzf_color_opts()
         for i = 2, #opts do
             local c = color.hlcode(opts[1], opts[i])
             if type(c) == "string" and string.len(c) > 0 then
-                table.insert(builder, string.format("%s:%s", name, c))
+                table.insert(
+                    builder,
+                    string.format("%s:%s", name:gsub("_", "%-"), c)
+                )
                 break
             end
         end
