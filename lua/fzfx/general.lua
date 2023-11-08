@@ -527,14 +527,9 @@ end
 --- @param name string
 --- @param line string?
 --- @param context PipelineContext
---- @param fzf_listen_port_file string
+--- @param fzf_port_file string
 --- @return string?
-function PreviewerSwitch:preview_label(
-    name,
-    line,
-    context,
-    fzf_listen_port_file
-)
+function PreviewerSwitch:preview_label(name, line, context, fzf_port_file)
     local previewer_config = self.previewer_configs[self.pipeline]
     log.debug(
         "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
@@ -579,7 +574,7 @@ function PreviewerSwitch:preview_label(
         then
             return
         end
-        local fzf_port = utils.readfile(fzf_listen_port_file) --[[@as string]]
+        local fzf_port = utils.readfile(fzf_port_file) --[[@as string]]
         fzf_helpers.send_http_post(
             fzf_port,
             string.format("transform-preview-label(echo %s)", last_label)
@@ -750,8 +745,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         default_provider_key = provider_opts.key
     end
 
-    local fzf_listen_port_file =
-        _make_cache_filename("fzf", "listen", "port", name)
+    local fzf_port_file = _make_cache_filename("fzf", "port", name)
 
     --- @type ProviderSwitch
     local provider_switch =
@@ -830,7 +824,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 name,
                 line_params,
                 context,
-                fzf_listen_port_file
+                fzf_port_file
             )
         end
         local preview_label_rpc_registry_id =
@@ -868,10 +862,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         })
     end
 
-    local fzf_start_event_opts = string.format(
-        "start:execute-silent(echo $FZF_PORT >%s)",
-        fzf_listen_port_file
+    local dump_fzf_port_command = string.format(
+        "%s %s",
+        fzf_helpers.make_lua_command("general", "fzf_port.lua"),
+        fzf_port_file
     )
+    local fzf_start_event_opts =
+        string.format("start:execute-silent(%s)", dump_fzf_port_command)
 
     local header_switch = HeaderSwitch:new(
         pipeline_configs.providers,

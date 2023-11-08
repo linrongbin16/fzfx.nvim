@@ -174,6 +174,7 @@ local M = {
     string_rtrim = require("fzfx.utils").string_rtrim,
     FileLineReader = require("fzfx.utils").FileLineReader,
     readfile = require("fzfx.utils").readfile,
+    writefile = require("fzfx.utils").writefile,
     Spawn = require("fzfx.spawn").Spawn,
 }
 
