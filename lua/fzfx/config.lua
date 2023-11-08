@@ -2530,6 +2530,7 @@ local Defaults = {
         previewers = {
             previewer = _file_previewer,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            previewer_label = require("fzfx.previewer_labels").find_previewer_label,
         },
         interactions = {
             delete_buffer = {
