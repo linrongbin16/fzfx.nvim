@@ -4,7 +4,7 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 local shell_helpers = require("fzfx.shell_helpers")
-shell_helpers.setup("provider")
+shell_helpers.setup("fzf_port")
 
 local fzf_port_file = _G.arg[1]
 shell_helpers.log_debug("fzf_port_file:%s", vim.inspect(fzf_port_file))
