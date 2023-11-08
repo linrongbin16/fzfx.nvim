@@ -826,7 +826,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if constants.has_echo and constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
-            previewer_switch:preview_label(name, line_params, context)
+            previewer_switch:preview_label(
+                name,
+                line_params,
+                context,
+                fzf_listen_port_file
+            )
         end
         local preview_label_rpc_registry_id =
             server.get_rpc_server():register(preview_label_rpc)
