@@ -334,6 +334,10 @@ describe("general", function()
             assert_eq(type(ps.previewer_configs.default.previewer), "function")
             assert_eq(ps.previewer_configs.default.previewer(), "ls -1")
             assert_eq(ps.previewer_configs.default.previewer_type, "command")
+            assert_eq(
+                ps.fzfportfile,
+                general._make_cache_filename("previewer", "fzfport", "single")
+            )
             assert_eq(ps:switch("default"), nil)
         end)
         it("creates multiple command previewer", function()
@@ -369,9 +373,9 @@ describe("general", function()
     describe("[PreviewerSwitch:preview_label]", function()
         it("not previews label", function()
             local name = "label_test1"
-            local fzf_listen_port_file =
-                general._make_cache_filename("fzf", "listen", "port", name)
-            utils.writefile(fzf_listen_port_file, "12345")
+            local fzf_port_file =
+                general._make_cache_filename("previewer", "fzfport", name)
+            utils.writefile(fzf_port_file, "12345")
             local ps = general.PreviewerSwitch:new(name, "p1", {
                 p1 = {
                     previewer = function()
@@ -392,11 +396,11 @@ describe("general", function()
                 )
             )
             assert_true(
-                ps:preview_label("p1", "hello", {}, fzf_listen_port_file) == nil
+                ps:preview_label("p1", "hello", {}, fzf_port_file) == nil
             )
             ps:switch("p2")
             assert_true(
-                ps:preview_label("p2", "world", {}, fzf_listen_port_file) == nil
+                ps:preview_label("p2", "world", {}, fzf_port_file) == nil
             )
         end)
         it("previews label", function()
@@ -429,13 +433,9 @@ describe("general", function()
                     os.getenv("GITHUB_ACTIONS")
                 )
             )
-            assert_true(
-                ps:preview_label("p1", "hello", {}, fzf_listen_port_file) == nil
-            )
+            assert_true(ps:preview_label("p1", "hello", {}) == nil)
             ps:switch("p2")
-            assert_true(
-                ps:preview_label("p2", "world", {}, fzf_listen_port_file) == nil
-            )
+            assert_true(ps:preview_label("p2", "world", {}) == nil)
         end)
     end)
     describe("[_render_help]", function()
