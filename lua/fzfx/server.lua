@@ -31,7 +31,7 @@ end
 local function _make_windows_pipe_name()
     log.ensure(
         constants.is_windows,
-        "|fzfx.server - get_windows_pipe_name| error! must use this function in Windows!"
+        "|fzfx.server - get_windows_pipe_name| must use this function in Windows!"
     )
     local result = string.format([[\\.\pipe\nvim-pipe-%s]], _make_uuid())
     return result
@@ -54,7 +54,7 @@ function RpcServer:new()
     -- )
     log.ensure(
         type(address) == "string" and string.len(address) > 0,
-        "error! failed to start socket server!"
+        "failed to start socket server!"
     )
 
     -- export socket address as environment variable
@@ -89,7 +89,7 @@ end
 function RpcServer:register(callback)
     log.ensure(
         type(callback) == "function",
-        "|fzfx.server - RpcServer:register| error! callback f(%s) must be function! %s",
+        "|fzfx.server - RpcServer:register| callback f(%s) must be function! %s",
         type(callback),
         vim.inspect(callback)
     )
@@ -103,14 +103,14 @@ end
 function RpcServer:unregister(registry_id)
     log.ensure(
         type(registry_id) == "string",
-        "|fzfx.server - RpcServer:unregister| error! registry_id(%s) must be string! %s",
+        "|fzfx.server - RpcServer:unregister| registry_id(%s) must be string! %s",
         type(registry_id),
         vim.inspect(registry_id)
     )
     local callback = self.registry[registry_id]
     log.ensure(
         type(callback) == "function",
-        "|fzfx.server - RpcServer:unregister| error! saved callback(%s) must be function! %s",
+        "|fzfx.server - RpcServer:unregister| registered callback(%s) must be function! %s",
         type(callback),
         vim.inspect(callback)
     )
@@ -123,14 +123,14 @@ end
 function RpcServer:get(registry_id)
     log.ensure(
         type(registry_id) == "string",
-        "|fzfx.server - RpcServer:get| error! registry_id(%s) must be string! %s",
+        "|fzfx.server - RpcServer:get| registry_id(%s) must be string! %s",
         type(registry_id),
         vim.inspect(registry_id)
     )
     local callback = self.registry[registry_id]
     log.ensure(
         type(callback) == "function",
-        "|fzfx.server - RpcServer:get| error! saved callback(%s) must be function! %s",
+        "|fzfx.server - RpcServer:get| registered callback(%s) must be function! %s",
         type(callback),
         vim.inspect(callback)
     )

@@ -121,7 +121,7 @@ local function save_yank()
 
     log.ensure(
         YankHistoryInstance ~= nil,
-        "|fzfx.yank_history - save_yank| error! YankHistoryInstance must not be nil!"
+        "|fzfx.yank_history - save_yank| YankHistoryInstance must not be nil!"
     )
     ---@diagnostic disable-next-line: need-check-nil
     return YankHistoryInstance:push(y)
@@ -131,7 +131,7 @@ end
 local function get_yank()
     log.ensure(
         YankHistoryInstance ~= nil,
-        "|fzfx.yank_history - get_yank| error! YankHistoryInstance must not be nil!"
+        "|fzfx.yank_history - get_yank| YankHistoryInstance must not be nil!"
     )
     ---@diagnostic disable-next-line: need-check-nil
     return YankHistoryInstance:get()

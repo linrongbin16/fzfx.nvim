@@ -116,7 +116,7 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
         for provider_name, provider_opts in pairs(provider_configs) do
             log.ensure(
                 schema.is_provider_config(provider_opts),
-                "error! %s (%s) is not a valid provider! %s",
+                "%s (%s) is not a valid provider! %s",
                 vim.inspect(provider_name),
                 vim.inspect(name),
                 vim.inspect(provider_opts)
@@ -320,7 +320,7 @@ function ProviderSwitch:provide(name, query, context)
         end
     else
         log.throw(
-            "|fzfx.general - ProviderSwitch:provide| error! invalid provider type! %s",
+            "|fzfx.general - ProviderSwitch:provide| invalid provider type! %s",
             vim.inspect(self)
         )
     end
@@ -355,7 +355,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         for previewer_name, previewer_opts in pairs(previewer_configs) do
             log.ensure(
                 schema.is_previewer_config(previewer_opts),
-                "error! %s (%s) is not a valid previewer! %s",
+                "%s (%s) is not a valid previewer! %s",
                 vim.inspect(previewer_name),
                 vim.inspect(name),
                 vim.inspect(previewer_opts)
@@ -519,7 +519,7 @@ function PreviewerSwitch:preview(name, line, context)
         end
     else
         log.throw(
-            "|fzfx.general - PreviewerSwitch:preview| error! invalid previewer type! %s",
+            "|fzfx.general - PreviewerSwitch:preview| invalid previewer type! %s",
             vim.inspect(self)
         )
     end
@@ -553,14 +553,19 @@ function PreviewerSwitch:preview_label(name, line, context)
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
-    if type(previewer_config.previewer_label) ~= "function" then
-        return
-    end
     if not constants.has_echo or not constants.has_curl then
         return
     end
+    if type(previewer_config.previewer_label) ~= "function" then
+        return
+    end
     local label = previewer_config.previewer_label(line, context)
-    if type(label) ~= "string" or string.len(vim.trim(label)) == 0 then
+    if type(label) ~= "string" then
+        log.err(
+            "previewer label (%s) returned value must be a string: %s",
+            vim.inspect(name),
+            vim.inspect(previewer_config)
+        )
         return
     end
     self.previewer_labels[self.pipeline] = label
