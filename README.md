@@ -67,15 +67,15 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 ## ✅ Requirement
 
 - Neovim &ge; v0.7.0.
-- [echo](https://man7.org/linux/man-pages/man1/echo.1p.html)/[curl](https://man7.org/linux/man-pages/man1/curl.1.html) (mandatory for Windows).
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
-- [bat](https://github.com/sharkdp/bat) (optional for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
+- [bat](https://github.com/sharkdp/bat) (optional for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)), [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (optional for preview labels).
+- [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (optional for vim **commands**, **keymaps** commands and preview labels).
 - [git](https://git-scm.com/) (mandatory for **git** commands), [delta](https://github.com/dandavison/delta) (optional for preview **git diff**, **git show**, **git blame**).
 - [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-> Note: `echo`, `curl`, `grep`, `find`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so Windows users will have to [install linux shell commands on Windows](#windows) since utils like **echo**, **curl** are internally used by this plugin.
+> Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be better choice. While still recommend Windows users [install linux shell commands](#windows) since utils like `echo`, `curl` are internally used by somewhere.
 
 ### Windows
 
@@ -113,11 +113,11 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 irm get.scoop.sh | iex
 
 scoop bucket add extras
-scoop install git
-scoop install mingw
-scoop install coreutils
-scoop install grep
-scoop install findutils
+scoop install git           # git, bash, sh
+scoop install coreutils     # echo, ls, cat
+scoop install curl          # curl
+scoop install grep          # grep
+scoop install findutils     # find
 ```
 
 #### Fix conflicts between embeded commands in `C:\Windows\System32` and portable linux commands
