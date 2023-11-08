@@ -40,7 +40,7 @@ vim.rpcrequest(
     local luaargs = {...}
     local registry_id = luaargs[1]
     local line = luaargs[2]
-    return require("fzfx.rpc_helpers").call(registry_id, line)
+    return require("fzfx.rpc_helpers").request(registry_id, line)
     ]],
     {
         registry_id,

@@ -34,6 +34,9 @@ local eza = vim.fn.executable("eza") > 0 and "eza" or "exa"
 
 local has_delta = vim.fn.executable("delta") > 0
 
+local has_echo = vim.fn.executable("echo") > 0
+local has_curl = vim.fn.executable("curl") > 0
+
 local M = {
     -- os
     is_windows = is_windows,
@@ -65,6 +68,9 @@ local M = {
     eza = eza,
 
     has_delta = has_delta,
+
+    has_echo = has_echo,
+    has_curl = has_curl,
 }
 
 return M

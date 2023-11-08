@@ -1104,7 +1104,7 @@ local function vim_commands_previewer(line, context)
             desc_or_loc.filename,
             desc_or_loc.lineno
         )
-    elseif vim.fn.executable("echo") > 0 and type(desc_or_loc) == "string" then
+    elseif constants.has_echo and type(desc_or_loc) == "string" then
         log.debug(
             "|fzfx.config - vim_commands_previewer| desc:%s",
             vim.inspect(desc_or_loc)
@@ -1952,7 +1952,7 @@ local function _vim_keymaps_previewer(line, context)
             def_or_loc.filename,
             def_or_loc.lineno
         )
-    elseif vim.fn.executable("echo") > 0 and type(def_or_loc) == "string" then
+    elseif constants.has_echo and type(def_or_loc) == "string" then
         log.debug(
             "|fzfx.config - vim_keymaps_previewer| desc:%s",
             vim.inspect(def_or_loc)
@@ -1991,7 +1991,7 @@ local function _make_file_explorer_provider(ls_args)
     local function impl(query, context)
         local cwd = utils.readfile(context.cwd)
         if constants.has_lsd then
-            return vim.fn.executable("echo") > 0
+            return constants.has_echo
                     and string.format(
                         "echo %s && lsd %s --color=always --header -- %s",
                         utils.shellescape(cwd --[[@as string]]),
@@ -2004,7 +2004,7 @@ local function _make_file_explorer_provider(ls_args)
                     utils.shellescape(cwd --[[@as string]])
                 )
         elseif constants.has_eza then
-            return vim.fn.executable("echo") > 0
+            return constants.has_echo
                     and string.format(
                         "echo %s && %s --color=always %s -- %s",
                         utils.shellescape(cwd --[[@as string]]),
@@ -2019,7 +2019,7 @@ local function _make_file_explorer_provider(ls_args)
                     utils.shellescape(cwd --[[@as string]])
                 )
         elseif vim.fn.executable("ls") > 0 then
-            return vim.fn.executable("echo") > 0
+            return constants.has_echo
                     and string.format(
                         "echo %s && ls --color=always %s %s",
                         utils.shellescape(cwd --[[@as string]]),
@@ -2263,10 +2263,12 @@ local Defaults = {
             restricted_mode = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
             },
             unrestricted_mode = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
             },
         },
         actions = {
@@ -3997,7 +3999,7 @@ local Defaults = {
                 then
                     n = n + 1
                 end
-                if vim.fn.executable("echo") > 0 then
+                if constants.has_echo then
                     n = n + 1
                 end
                 return n > 0 and string.format("--header-lines=%d", n) or nil

@@ -1,3 +1,4 @@
+local constants = require("fzfx.constants")
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
 local fzf_helpers = require("fzfx.fzf_helpers")
@@ -80,6 +81,7 @@ end
 --- @class PreviewerMetaOpts
 --- @field pipeline PipelineName
 --- @field previewer_type PreviewerType
+--- @field previewer_label_enabled boolean?
 
 --- @param pipeline string
 --- @param previewer_config PreviewerConfig
@@ -88,6 +90,8 @@ local function make_previewer_meta_opts(pipeline, previewer_config)
     local o = {
         pipeline = pipeline,
         previewer_type = previewer_config.previewer_type,
+        previewer_label_enabled = type(previewer_config.previewer_label)
+            == "function",
     }
     return o
 end
@@ -521,6 +525,40 @@ function PreviewerSwitch:preview(name, line, context)
     return previewer_config.previewer_type
 end
 
+--- @param name string
+---@param line string?
+---@param context PipelineContext
+function PreviewerSwitch:preview_label(name, line, context)
+    local previewer_config = self.previewer_configs[self.pipeline]
+    log.debug(
+        "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config),
+        vim.inspect(context)
+    )
+    log.ensure(
+        type(previewer_config) == "table",
+        "invalid previewer config in %s! pipeline: %s, previewer config: %s",
+        vim.inspect(name),
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config)
+    )
+    log.ensure(
+        type(previewer_config.previewer_label) == "function"
+            or previewer_config.previewer_label == nil,
+        "invalid previewer label in %s! pipeline: %s, previewer: %s",
+        vim.inspect(name),
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config)
+    )
+    if type(previewer_config.previewer_label) ~= "function" then
+        return
+    end
+    if not constants.has_echo or not constants.has_curl then
+        return
+    end
+end
+
 -- previewer switch }
 
 -- header switch {
@@ -714,10 +752,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch:preview(name, line_params, context)
     end
 
+    --- @param line_params string
+    local function preview_label_rpc(line_params)
+        previewer_switch:preview_label(name, line_params, context)
+    end
+
     local provide_rpc_registry_id =
-        server:get_rpc_server():register(provide_rpc)
+        server.get_rpc_server():register(provide_rpc)
     local preview_rpc_registry_id =
-        server:get_rpc_server():register(preview_rpc)
+        server.get_rpc_server():register(preview_rpc)
+    local preview_label_rpc_registry_id =
+        server.get_rpc_server():register(preview_label_rpc)
 
     local query_command = string.format(
         "%s %s %s %s %s",
@@ -761,10 +806,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         },
     }
 
-    local fzf_start_event_opts = string.format(
-        "start:execute-silent(echo $FZF_PORT >%s)",
-        fzf_listen_port_file
-    )
+    local fzf_start_event_opts = constants.has_echo
+            and string.format(
+                "start:execute-silent(echo $FZF_PORT >%s)",
+                fzf_listen_port_file
+            )
+        or "start:"
 
     local header_switch = HeaderSwitch:new(
         pipeline_configs.providers,
@@ -804,7 +851,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local action_command = string.format(
                 "%s %s {}",
-                fzf_helpers.make_lua_command("rpc", "client.lua"),
+                fzf_helpers.make_lua_command("rpc", "request.lua"),
                 interaction_rpc_registry_id
             )
             local bind_builder = string.format(
@@ -841,7 +888,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local switch_command = string.format(
                 "%s %s",
-                fzf_helpers.make_lua_command("rpc", "client.lua"),
+                fzf_helpers.make_lua_command("rpc", "request.lua"),
                 switch_rpc_registry_id
             )
             local bind_builder = string.format(
@@ -865,7 +912,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             })
         end
         fzf_start_event_opts = fzf_start_event_opts
-            .. string.format("+unbind(%s)", default_provider_key)
+            .. (
+                fzf_start_event_opts == "start:"
+                    and string.format("unbind(%s)", default_provider_key)
+                or string.format("+unbind(%s)", default_provider_key)
+            )
     end
     if
         type(pipeline_configs.other_opts) == "table"

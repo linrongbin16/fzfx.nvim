@@ -1,15 +1,25 @@
 local log = require("fzfx.log")
 local constants = require("fzfx.constants")
 
+--- @return string
+local function _make_uuid()
+    local secs, ms = vim.loop.gettimeofday()
+    return string.format(
+        "%d-%d-%d-%d",
+        vim.loop.os_getpid(),
+        secs,
+        ms,
+        math.random(1, constants.int32_max)
+    )
+end
+
 --- @type integer
 local NextRegistryIntegerId = 0
 
 --- @alias RpcRegistryId string
-
 --- @return RpcRegistryId
-local function next_registry_id()
-    -- int32 max: 2147483647
-    if NextRegistryIntegerId >= 2147483647 then
+local function _next_registry_id()
+    if NextRegistryIntegerId >= constants.int32_max then
         NextRegistryIntegerId = 1
     else
         NextRegistryIntegerId = NextRegistryIntegerId + 1
@@ -18,26 +28,12 @@ local function next_registry_id()
 end
 
 --- @return string?
-local function get_windows_pipe_name()
+local function _make_windows_pipe_name()
     log.ensure(
         constants.is_windows,
         "|fzfx.server - get_windows_pipe_name| error! must use this function in Windows!"
     )
-    local secs, ms = vim.loop.gettimeofday()
-    local randint = math.random(1, 100000)
-    local result = vim.trim(
-        string.format(
-            [[ \\.\pipe\nvim-pipe-%d-%d-%d-%d ]],
-            vim.fn.getpid(),
-            secs,
-            ms,
-            randint
-        )
-    )
-    -- log.debug(
-    --     "|fzfx.server - make_windows_pipe_name| result:%s",
-    --     vim.inspect(result)
-    -- )
+    local result = string.format([[\\.\pipe\nvim-pipe-%s]], _make_uuid())
     return result
 end
 
@@ -50,7 +46,7 @@ local RpcServer = {}
 --- @return RpcServer
 function RpcServer:new()
     local address = constants.is_windows
-            and vim.fn.serverstart(get_windows_pipe_name())
+            and vim.fn.serverstart(_make_windows_pipe_name())
         or vim.fn.serverstart() --[[@as string]]
     -- log.debug(
     --     "|fzfx.server - RpcServer:new| start server on socket address:%s",
@@ -97,7 +93,7 @@ function RpcServer:register(callback)
         type(callback),
         vim.inspect(callback)
     )
-    local registry_id = next_registry_id()
+    local registry_id = _next_registry_id()
     self.registry[registry_id] = callback
     return registry_id
 end
@@ -150,6 +146,7 @@ local function get_rpc_server()
 end
 
 local function setup()
+    math.randomseed(os.time())
     RpcServerInstance = RpcServer:new()
     -- log.debug(
     --     "|fzfx.server - setup| RpcServerInstance:%s",
@@ -161,8 +158,9 @@ end
 local M = {
     setup = setup,
     get_rpc_server = get_rpc_server,
-    next_registry_id = next_registry_id,
-    get_windows_pipe_name = get_windows_pipe_name,
+    _make_uuid = _make_uuid,
+    _next_registry_id = _next_registry_id,
+    _make_windows_pipe_name = _make_windows_pipe_name,
 }
 
 return M
