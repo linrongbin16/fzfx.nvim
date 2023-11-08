@@ -72,7 +72,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
 - [bat](https://github.com/sharkdp/bat) (optional for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)), [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (optional for preview window labels).
 - [echo](https://man7.org/linux/man-pages/man1/echo.1p.html) (mandatory for vim **commands**, **keymaps** commands, optional for preview window labels).
-- [git](https://git-scm.com/) (mandatory for **git** commands), [delta](https://github.com/dandavison/delta) (optional for preview **git diff**, **git show**, **git blame**).
+- [git](https://git-scm.com/) (mandatory for **git** commands), [delta](https://github.com/dandavison/delta) (optional for preview **git diff, show, blame**).
 - [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
 > Note: `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be better choice. While still recommend Windows users [install linux shell commands](#windows) since utils like `echo`, `curl` are internally used by somewhere.
