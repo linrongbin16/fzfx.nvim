@@ -8,7 +8,7 @@ local function _make_find_previewer_label(opts)
     --- @return string?
     local function impl(line)
         if type(line) ~= "string" or string.len(line) == 0 then
-            return nil
+            return ""
         end
         return vim.fn.fnamemodify(line_helpers.parse_find(line, opts), ":t")
     end
@@ -30,7 +30,7 @@ local function _make_rg_previewer_label(opts)
     --- @return string?
     local function impl(line)
         if type(line) ~= "string" or string.len(line) == 0 then
-            return nil
+            return ""
         end
         local parsed = line_helpers.parse_rg(line, opts)
         return string.format(
@@ -58,7 +58,7 @@ local function _make_grep_previewer_label(opts)
     --- @return string?
     local function impl(line)
         if type(line) ~= "string" or string.len(line) == 0 then
-            return nil
+            return ""
         end
         local parsed = line_helpers.parse_grep(line, opts)
         return string.format(

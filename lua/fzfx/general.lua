@@ -553,19 +553,19 @@ function PreviewerSwitch:preview_label(name, line, context)
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
-    if not constants.has_echo or not constants.has_curl then
+    if not constants.has_curl then
         return
     end
     if type(previewer_config.previewer_label) ~= "function" then
         return
     end
     local label = previewer_config.previewer_label(line, context)
+    log.debug(
+        "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
+        vim.inspect(line),
+        vim.inspect(label)
+    )
     if type(label) ~= "string" then
-        log.err(
-            "previewer label (%s) returned value must be a string: %s",
-            vim.inspect(name),
-            vim.inspect(previewer_config)
-        )
         return
     end
     self.previewer_labels[self.pipeline] = label
@@ -574,21 +574,13 @@ function PreviewerSwitch:preview_label(name, line, context)
     vim.defer_fn(function()
         local last_label = self.previewer_labels[self.pipeline]
         self.previewer_labels[self.pipeline] = nil
-        if
-            type(last_label) ~= "string"
-            or string.len(vim.trim(last_label)) == 0
-        then
+        if type(last_label) ~= "string" then
             return
         end
         local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
-        -- log.debug(
-        --     "|fzfx.general - PreviewerSwitch:preview_label| fzf_port:%s, last_label:%s",
-        --     vim.inspect(fzf_port),
-        --     vim.inspect(last_label)
-        -- )
         fzf_helpers.send_http_post(
             fzf_port,
-            string.format("transform-preview-label(echo %s)", last_label)
+            string.format("change-preview-label(%s)", vim.trim(last_label))
         )
     end, 0)
 
@@ -826,7 +818,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
 
     local preview_label_command = nil
-    if constants.has_echo and constants.has_curl then
+    if constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
             previewer_switch:preview_label(name, line_params, context)
@@ -863,6 +855,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         table.insert(fzf_opts, {
             "--bind",
             string.format("load:execute-silent(%s)", preview_label_command),
+        })
+        table.insert(fzf_opts, {
+            "--bind",
+            string.format("zero:execute-silent(%s)", preview_label_command),
         })
     end
 
