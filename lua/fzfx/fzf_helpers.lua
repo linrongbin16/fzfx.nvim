@@ -297,6 +297,8 @@ end
 local function send_http_post(port, body)
     local asp = Spawn:make({
         "curl",
+        "--noproxy",
+        "*",
         "-XPOST",
         string.format("localhost:%s", vim.trim(port)),
         "-d",

@@ -575,6 +575,11 @@ function PreviewerSwitch:preview_label(name, line, context, fzf_port_file)
             return
         end
         local fzf_port = utils.readfile(fzf_port_file) --[[@as string]]
+        -- log.debug(
+        --     "|fzfx.general - PreviewerSwitch:preview_label| fzf_port:%s, last_label:%s",
+        --     vim.inspect(fzf_port),
+        --     vim.inspect(last_label)
+        -- )
         fzf_helpers.send_http_post(
             fzf_port,
             string.format("transform-preview-label(echo %s)", last_label)
