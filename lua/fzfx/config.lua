@@ -4050,7 +4050,7 @@ local Defaults = {
         marker = { "fg", "Keyword" },
         spinner = { "fg", "Label" },
         header = { "fg", "Comment" },
-        preview_label = { "fg", "PreProc" },
+        preview_label = { "fg", "Label" },
     },
 
     -- icons
