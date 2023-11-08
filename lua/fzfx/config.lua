@@ -3690,6 +3690,7 @@ local Defaults = {
         previewers = {
             previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -3744,6 +3745,7 @@ local Defaults = {
         previewers = {
             previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -3798,6 +3800,7 @@ local Defaults = {
         previewers = {
             previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -3852,6 +3855,7 @@ local Defaults = {
         previewers = {
             previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,

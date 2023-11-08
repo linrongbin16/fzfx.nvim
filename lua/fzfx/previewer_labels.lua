@@ -33,7 +33,12 @@ local function _make_rg_previewer_label(opts)
             return nil
         end
         local parsed = line_helpers.parse_rg(line, opts)
-        return vim.fn.fnamemodify(parsed.filename, ":t")
+        return string.format(
+            "%s:%d:%d",
+            vim.fn.fnamemodify(parsed.filename, ":t"),
+            parsed.lineno,
+            parsed.column
+        )
     end
     return impl
 end
@@ -56,7 +61,11 @@ local function _make_grep_previewer_label(opts)
             return nil
         end
         local parsed = line_helpers.parse_grep(line, opts)
-        return vim.fn.fnamemodify(parsed.filename, ":t")
+        return string.format(
+            "%s:%d",
+            vim.fn.fnamemodify(parsed.filename, ":t"),
+            parsed.lineno
+        )
     end
     return impl
 end
