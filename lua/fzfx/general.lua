@@ -862,6 +862,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             "--bind",
             string.format("focus:execute-silent(%s)", preview_label_command),
         })
+        table.insert(fzf_opts, {
+            "--bind",
+            string.format("load:execute-silent(%s)", preview_label_command),
+        })
     end
 
     local fzf_start_event_opts = string.format(
@@ -961,16 +965,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     bind_builder = bind_builder
                         .. string.format("+rebind(%s)", switch_key2)
                 end
-            end
-            if
-                type(preview_label_command) == "string"
-                and string.len(preview_label_command) > 0
-            then
-                bind_builder = bind_builder
-                    .. string.format(
-                        "+execute-silent(%s)",
-                        preview_label_command
-                    )
             end
             table.insert(fzf_opts, {
                 "--bind",
