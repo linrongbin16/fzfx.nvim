@@ -752,17 +752,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch:preview(name, line_params, context)
     end
 
-    --- @param line_params string
-    local function preview_label_rpc(line_params)
-        previewer_switch:preview_label(name, line_params, context)
-    end
-
     local provide_rpc_registry_id =
         server.get_rpc_server():register(provide_rpc)
     local preview_rpc_registry_id =
         server.get_rpc_server():register(preview_rpc)
-    local preview_label_rpc_registry_id =
-        server.get_rpc_server():register(preview_label_rpc)
 
     local query_command = string.format(
         "%s %s %s %s %s",
@@ -772,12 +765,20 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         provider_switch.resultfile,
         utils.shellescape(query)
     )
+    log.debug(
+        "|fzfx.general - general| query_command:%s",
+        vim.inspect(query_command)
+    )
     local reload_query_command = string.format(
         "%s %s %s %s {q}",
         fzf_helpers.make_lua_command("general", "provider.lua"),
         provide_rpc_registry_id,
         provider_switch.metafile,
         provider_switch.resultfile
+    )
+    log.debug(
+        "|fzfx.general - general| reload_query_command:%s",
+        vim.inspect(reload_query_command)
     )
     local preview_command = string.format(
         "%s %s %s %s {}",
@@ -787,17 +788,29 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch.resultfile
     )
     log.debug(
-        "|fzfx.general - general| query_command:%s",
-        vim.inspect(query_command)
-    )
-    log.debug(
-        "|fzfx.general - general| reload_query_command:%s",
-        vim.inspect(reload_query_command)
-    )
-    log.debug(
         "|fzfx.general - general| preview_command:%s",
         vim.inspect(preview_command)
     )
+
+    local preview_label_command = nil
+    if constants.has_echo and constants.has_curl then
+        --- @param line_params string
+        local function preview_label_rpc(line_params)
+            previewer_switch:preview_label(name, line_params, context)
+        end
+        local preview_label_rpc_registry_id =
+            server.get_rpc_server():register(preview_label_rpc)
+        preview_label_command = string.format(
+            "%s %s {}",
+            fzf_helpers.make_lua_command("rpc", "notify.lua"),
+            preview_label_rpc_registry_id
+        )
+        log.debug(
+            "|fzfx.general - general| preview_label_command:%s",
+            vim.inspect(preview_label_command)
+        )
+    end
+
     local fzf_opts = {
         { "--query", query },
         {
@@ -805,6 +818,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             preview_command,
         },
     }
+
+    if
+        type(preview_label_command) == "string"
+        and string.len(preview_label_command) > 0
+    then
+        table.insert(fzf_opts, {
+            "--bind",
+            string.format("focus:execute-silent(%s)", preview_label_command),
+        })
+    end
 
     local fzf_start_event_opts = constants.has_echo
             and string.format(
