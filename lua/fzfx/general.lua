@@ -340,6 +340,7 @@ end
 --- @field previewer_configs table<PipelineName, PreviewerConfig>
 --- @field metafile string
 --- @field resultfile string
+--- @field preview_label_queue any[]
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -372,6 +373,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         previewer_configs = previewer_configs_map,
         metafile = make_cache_filename("previewer", "metafile", name),
         resultfile = make_cache_filename("previewer", "resultfile", name),
+        preview_label_queue = {},
     }
     setmetatable(o, self)
     self.__index = self
@@ -526,9 +528,15 @@ function PreviewerSwitch:preview(name, line, context)
 end
 
 --- @param name string
----@param line string?
----@param context PipelineContext
-function PreviewerSwitch:preview_label(name, line, context)
+--- @param line string?
+--- @param context PipelineContext
+--- @param fzf_listen_port_file string
+function PreviewerSwitch:preview_label(
+    name,
+    line,
+    context,
+    fzf_listen_port_file
+)
     local previewer_config = self.previewer_configs[self.pipeline]
     log.debug(
         "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
@@ -557,6 +565,17 @@ function PreviewerSwitch:preview_label(name, line, context)
     if not constants.has_echo or not constants.has_curl then
         return
     end
+    vim.defer_fn(function()
+        local label = previewer_config.previewer_label(line, context)
+        if type(label) ~= "string" or string.len(label) == 0 then
+            return
+        end
+        local fzf_port = utils.readfile(fzf_listen_port_file) --[[@as string]]
+        fzf_helpers.send_http_post(
+            fzf_port,
+            string.format("transform-preview-label(echo %s)", label)
+        )
+    end, 0)
 end
 
 -- previewer switch }
@@ -829,12 +848,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         })
     end
 
-    local fzf_start_event_opts = constants.has_echo
-            and string.format(
-                "start:execute-silent(echo $FZF_PORT >%s)",
-                fzf_listen_port_file
-            )
-        or "start:"
+    local fzf_start_event_opts = string.format(
+        "start:execute-silent(echo $FZF_PORT >%s)",
+        fzf_listen_port_file
+    )
 
     local header_switch = HeaderSwitch:new(
         pipeline_configs.providers,
@@ -935,11 +952,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             })
         end
         fzf_start_event_opts = fzf_start_event_opts
-            .. (
-                fzf_start_event_opts == "start:"
-                    and string.format("unbind(%s)", default_provider_key)
-                or string.format("+unbind(%s)", default_provider_key)
-            )
+            .. string.format("+unbind(%s)", default_provider_key)
     end
     if
         type(pipeline_configs.other_opts) == "table"
