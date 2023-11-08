@@ -338,6 +338,7 @@ end
 --- @field previewer_labels table<PipelineName, string?>
 --- @field metafile string
 --- @field resultfile string
+--- @field fzfportfile string
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -371,6 +372,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         previewer_labels = {},
         metafile = _make_cache_filename("previewer", "metafile", name),
         resultfile = _make_cache_filename("previewer", "resultfile", name),
+        fzfportfile = _make_cache_filename("previewer", "fzfport", name),
     }
     setmetatable(o, self)
     self.__index = self
@@ -527,9 +529,8 @@ end
 --- @param name string
 --- @param line string?
 --- @param context PipelineContext
---- @param fzf_port_file string
 --- @return string?
-function PreviewerSwitch:preview_label(name, line, context, fzf_port_file)
+function PreviewerSwitch:preview_label(name, line, context)
     local previewer_config = self.previewer_configs[self.pipeline]
     log.debug(
         "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
@@ -574,7 +575,7 @@ function PreviewerSwitch:preview_label(name, line, context, fzf_port_file)
         then
             return
         end
-        local fzf_port = utils.readfile(fzf_port_file) --[[@as string]]
+        local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
         -- log.debug(
         --     "|fzfx.general - PreviewerSwitch:preview_label| fzf_port:%s, last_label:%s",
         --     vim.inspect(fzf_port),
@@ -750,8 +751,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         default_provider_key = provider_opts.key
     end
 
-    local fzf_port_file = _make_cache_filename("fzf", "port", "file")
-
     --- @type ProviderSwitch
     local provider_switch =
         ProviderSwitch:new(name, default_pipeline, pipeline_configs.providers)
@@ -825,12 +824,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if constants.has_echo and constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
-            previewer_switch:preview_label(
-                name,
-                line_params,
-                context,
-                fzf_port_file
-            )
+            previewer_switch:preview_label(name, line_params, context)
         end
         local preview_label_rpc_registry_id =
             server.get_rpc_server():register(preview_label_rpc)
@@ -870,7 +864,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local dump_fzf_port_command = string.format(
         "%s %s",
         fzf_helpers.make_lua_command("general", "fzf_port.lua"),
-        fzf_port_file
+        previewer_switch.fzfportfile
     )
     local fzf_start_event_opts =
         string.format("start:execute-silent(%s)", dump_fzf_port_command)
