@@ -173,7 +173,7 @@ describe("general", function()
             end
         end)
     end)
-    describe("[PreviewerSwitch:provide]", function()
+    describe("[PreviewerSwitch:preview]", function()
         it("is a plain/plain_list provider", function()
             local ps = general.PreviewerSwitch:new("plain_test", "p1", {
                 p1 = {
@@ -364,6 +364,78 @@ describe("general", function()
             assert_eq(ps.previewer_configs.p2.previewer(), "p2")
             assert_eq(ps.previewer_configs.p2.previewer_type, "command")
             assert_eq(ps:switch("p2"), nil)
+        end)
+    end)
+    describe("[PreviewerSwitch:preview_label]", function()
+        it("not previews label", function()
+            local name = "label_test1"
+            local fzf_listen_port_file =
+                general.make_cache_filename("fzf", "listen", "port", name)
+            utils.writefile(fzf_listen_port_file, "12345")
+            local ps = general.PreviewerSwitch:new(name, "p1", {
+                p1 = {
+                    previewer = function()
+                        return "ls -lh"
+                    end,
+                },
+                p2 = {
+                    previewer = function()
+                        return { "ls", "-lha", "~" }
+                    end,
+                    previewer_type = "command_list",
+                },
+            })
+            print(
+                string.format(
+                    "GITHUB_ACTIONS:%s\n",
+                    os.getenv("GITHUB_ACTIONS")
+                )
+            )
+            assert_true(
+                ps:preview_label("p1", "hello", {}, fzf_listen_port_file) == nil
+            )
+            ps:switch("p2")
+            assert_true(
+                ps:preview_label("p2", "world", {}, fzf_listen_port_file) == nil
+            )
+        end)
+        it("previews label", function()
+            local name = "label_test2"
+            local fzf_listen_port_file =
+                general.make_cache_filename("fzf", "listen", "port", name)
+            utils.writefile(fzf_listen_port_file, "54321")
+            local ps = general.PreviewerSwitch:new(name, "p1", {
+                p1 = {
+                    previewer = function()
+                        return "ls -lh"
+                    end,
+                    previewer_label = function(line)
+                        return nil
+                    end,
+                },
+                p2 = {
+                    previewer = function()
+                        return { "ls", "-lha", "~" }
+                    end,
+                    previewer_type = "command_list",
+                    previewer_label = function(line)
+                        return nil
+                    end,
+                },
+            })
+            print(
+                string.format(
+                    "GITHUB_ACTIONS:%s\n",
+                    os.getenv("GITHUB_ACTIONS")
+                )
+            )
+            assert_true(
+                ps:preview_label("p1", "hello", {}, fzf_listen_port_file) == nil
+            )
+            ps:switch("p2")
+            assert_true(
+                ps:preview_label("p2", "world", {}, fzf_listen_port_file) == nil
+            )
         end)
     end)
     describe("[_render_help]", function()

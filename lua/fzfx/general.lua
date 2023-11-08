@@ -528,6 +528,7 @@ end
 --- @param line string?
 --- @param context PipelineContext
 --- @param fzf_listen_port_file string
+--- @return string?
 function PreviewerSwitch:preview_label(
     name,
     line,
@@ -584,6 +585,8 @@ function PreviewerSwitch:preview_label(
             string.format("transform-preview-label(echo %s)", last_label)
         )
     end, 0)
+
+    return label
 end
 
 -- previewer switch }
