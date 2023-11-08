@@ -340,7 +340,7 @@ end
 --- @field previewer_configs table<PipelineName, PreviewerConfig>
 --- @field metafile string
 --- @field resultfile string
---- @field preview_label_queue any[]
+--- @field preview_labels_queue table<PipelineName, string?>
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -373,7 +373,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         previewer_configs = previewer_configs_map,
         metafile = make_cache_filename("previewer", "metafile", name),
         resultfile = make_cache_filename("previewer", "resultfile", name),
-        preview_label_queue = {},
+        preview_labels_queue = {},
     }
     setmetatable(o, self)
     self.__index = self
@@ -565,15 +565,26 @@ function PreviewerSwitch:preview_label(
     if not constants.has_echo or not constants.has_curl then
         return
     end
+    local label = previewer_config.previewer_label(line, context)
+    if type(label) ~= "string" or string.len(vim.trim(label)) == 0 then
+        return
+    end
+    self.preview_labels_queue[self.pipeline] = label
+
+    -- do it async/later
     vim.defer_fn(function()
-        local label = previewer_config.previewer_label(line, context)
-        if type(label) ~= "string" or string.len(label) == 0 then
+        local last_label = self.preview_labels_queue[self.pipeline]
+        self.preview_labels_queue[self.pipeline] = nil
+        if
+            type(last_label) ~= "string"
+            or string.len(vim.trim(last_label)) == 0
+        then
             return
         end
         local fzf_port = utils.readfile(fzf_listen_port_file) --[[@as string]]
         fzf_helpers.send_http_post(
             fzf_port,
-            string.format("transform-preview-label(echo %s)", label)
+            string.format("transform-preview-label(echo %s)", last_label)
         )
     end, 0)
 end
