@@ -654,7 +654,19 @@ function RingBuffer:push(item)
     return self.pos
 end
 
--- from oldest to newest, usage:
+-- get the item on pos, or the last pushed item
+--- @param pos integer?
+--- @return any?
+function RingBuffer:get(pos)
+    pos = pos or self.pos
+    if #self.queue == 0 or pos == 0 then
+        return nil
+    else
+        return self.queue[pos]
+    end
+end
+
+-- iterate from oldest to newest, usage:
 --
 -- ```lua
 --  local p = ring_buffer:begin()
@@ -676,7 +688,7 @@ function RingBuffer:begin()
     end
 end
 
--- from oldest to newest
+-- iterate from oldest to newest
 --- @param pos integer
 --- @return integer?
 function RingBuffer:next(pos)
@@ -693,7 +705,7 @@ function RingBuffer:next(pos)
     end
 end
 
--- from newest to oldest, usage:
+-- iterate from newest to oldest, usage:
 --
 -- ```lua
 --  local p = ring_buffer:rbegin()
@@ -711,7 +723,7 @@ function RingBuffer:rbegin()
     return self.pos
 end
 
--- from newest to oldest
+-- iterate from newest to oldest
 --- @param pos integer
 --- @return integer?
 function RingBuffer:rnext(pos)
@@ -727,17 +739,6 @@ function RingBuffer:rnext(pos)
         return #self.queue
     else
         return pos - 1
-    end
-end
-
---- @param pos integer?
---- @return any?
-function RingBuffer:get(pos)
-    pos = pos or self.pos
-    if #self.queue == 0 or pos == 0 then
-        return nil
-    else
-        return self.queue[pos]
     end
 end
 

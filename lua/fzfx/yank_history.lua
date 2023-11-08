@@ -54,6 +54,12 @@ function YankHistory:push(y)
     return self.ring_buffer:push(y)
 end
 
+--- @param pos integer?
+--- @return Yank?
+function YankHistory:get(pos)
+    return self.ring_buffer:get(pos)
+end
+
 -- from oldest to newest
 --- @return integer?
 function YankHistory:begin()
@@ -78,12 +84,6 @@ end
 --- @return integer?
 function YankHistory:rnext(pos)
     return self.ring_buffer:rnext(pos)
-end
-
---- @param pos integer?
---- @return Yank?
-function YankHistory:get(pos)
-    return self.ring_buffer:get(pos)
 end
 
 --- @type YankHistory?
