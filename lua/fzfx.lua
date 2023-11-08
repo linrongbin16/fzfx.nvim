@@ -14,13 +14,11 @@ local function setup(options)
         file_log = configs.debug.file_log,
     })
 
-    if configs.debug.enable then
-        log.debug(
-            "|fzfx - setup| Defaults:\n%s",
-            vim.inspect(require("fzfx.config").get_defaults())
-        )
-    end
-    log.debug("|fzfx - setup| Configs:\n%s", vim.inspect(configs))
+    -- log.debug(
+    --     "|fzfx - setup| Defaults:\n%s",
+    --     vim.inspect(require("fzfx.config").get_defaults())
+    -- )
+    -- log.debug("|fzfx - setup| Configs:\n%s", vim.inspect(configs))
 
     -- cache
     if vim.fn.filereadable(configs.cache.dir) > 0 then

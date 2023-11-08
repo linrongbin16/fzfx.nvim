@@ -173,7 +173,7 @@ describe("general", function()
             end
         end)
     end)
-    describe("[PreviewerSwitch:provide]", function()
+    describe("[PreviewerSwitch:preview]", function()
         it("is a plain/plain_list provider", function()
             local ps = general.PreviewerSwitch:new("plain_test", "p1", {
                 p1 = {
@@ -366,9 +366,81 @@ describe("general", function()
             assert_eq(ps:switch("p2"), nil)
         end)
     end)
-    describe("[render_help]", function()
+    describe("[PreviewerSwitch:preview_label]", function()
+        it("not previews label", function()
+            local name = "label_test1"
+            local fzf_listen_port_file =
+                general._make_cache_filename("fzf", "listen", "port", name)
+            utils.writefile(fzf_listen_port_file, "12345")
+            local ps = general.PreviewerSwitch:new(name, "p1", {
+                p1 = {
+                    previewer = function()
+                        return "ls -lh"
+                    end,
+                },
+                p2 = {
+                    previewer = function()
+                        return { "ls", "-lha", "~" }
+                    end,
+                    previewer_type = "command_list",
+                },
+            })
+            print(
+                string.format(
+                    "GITHUB_ACTIONS:%s\n",
+                    os.getenv("GITHUB_ACTIONS")
+                )
+            )
+            assert_true(
+                ps:preview_label("p1", "hello", {}, fzf_listen_port_file) == nil
+            )
+            ps:switch("p2")
+            assert_true(
+                ps:preview_label("p2", "world", {}, fzf_listen_port_file) == nil
+            )
+        end)
+        it("previews label", function()
+            local name = "label_test2"
+            local fzf_listen_port_file =
+                general._make_cache_filename("fzf", "listen", "port", name)
+            utils.writefile(fzf_listen_port_file, "54321")
+            local ps = general.PreviewerSwitch:new(name, "p1", {
+                p1 = {
+                    previewer = function()
+                        return "ls -lh"
+                    end,
+                    previewer_label = function(line)
+                        return nil
+                    end,
+                },
+                p2 = {
+                    previewer = function()
+                        return { "ls", "-lha", "~" }
+                    end,
+                    previewer_type = "command_list",
+                    previewer_label = function(line)
+                        return nil
+                    end,
+                },
+            })
+            print(
+                string.format(
+                    "GITHUB_ACTIONS:%s\n",
+                    os.getenv("GITHUB_ACTIONS")
+                )
+            )
+            assert_true(
+                ps:preview_label("p1", "hello", {}, fzf_listen_port_file) == nil
+            )
+            ps:switch("p2")
+            assert_true(
+                ps:preview_label("p2", "world", {}, fzf_listen_port_file) == nil
+            )
+        end)
+    end)
+    describe("[_render_help]", function()
         it("renders1", function()
-            local actual = general.render_help("doc1", "bs")
+            local actual = general._render_help("doc1", "bs")
             print(string.format("render help1:%s\n", actual))
             assert_true(actual:gmatch("to doc1") ~= nil)
             assert_true(actual:gmatch("BS") ~= nil)
@@ -378,7 +450,7 @@ describe("general", function()
             )
         end)
         it("renders2", function()
-            local actual = general.render_help("do_it", "ctrl")
+            local actual = general._render_help("do_it", "ctrl")
             print(string.format("render help2:%s\n", actual))
             assert_true(actual:gmatch("to do it") ~= nil)
             assert_true(actual:gmatch("CTRL") ~= nil)
@@ -388,7 +460,7 @@ describe("general", function()
             )
         end)
         it("renders3", function()
-            local actual = general.render_help("ok_ok", "alt")
+            local actual = general._render_help("ok_ok", "alt")
             print(string.format("render help3:%s\n", actual))
             assert_true(actual:gmatch("to ok ok") ~= nil)
             assert_true(actual:gmatch("ALT") ~= nil)
@@ -398,17 +470,17 @@ describe("general", function()
             )
         end)
     end)
-    describe("[skip_help]", function()
+    describe("[_should_skip_help]", function()
         it("skip1", function()
-            local actual = general.skip_help(nil, "bs")
+            local actual = general._should_skip_help(nil, "bs")
             assert_false(actual)
         end)
         it("skip2", function()
-            local actual = general.skip_help({}, "bs")
+            local actual = general._should_skip_help({}, "bs")
             assert_false(actual)
         end)
         it("skip3", function()
-            local actual = general.skip_help({ "bs" }, "bs")
+            local actual = general._should_skip_help({ "bs" }, "bs")
             assert_true(actual)
         end)
     end)
@@ -422,7 +494,7 @@ describe("general", function()
                     key = "ctrl-u",
                 },
             }
-            local actual = general.make_help_doc(action_configs, {})
+            local actual = general._make_help_doc(action_configs, {})
             assert_eq(type(actual), "table")
             assert_eq(#actual, 2)
             assert_true(
@@ -448,7 +520,7 @@ describe("general", function()
                     key = "alt-p",
                 },
             }
-            local actual = general.make_help_doc(action_configs, {})
+            local actual = general._make_help_doc(action_configs, {})
             assert_eq(type(actual), "table")
             assert_eq(#actual, 3)
             assert_true(
@@ -468,11 +540,11 @@ describe("general", function()
             assert_true(utils.string_endswith(actual[3], "to upper"))
         end)
     end)
-    describe("[make_cache_filename]", function()
+    describe("[_make_cache_filename]", function()
         it("is debug mode", function()
             vim.env._FZFX_NVIM_DEBUG_ENABLE = 1
             assert_eq(
-                general.make_cache_filename(
+                general._make_cache_filename(
                     "provider",
                     "switch",
                     "meta",
@@ -486,7 +558,7 @@ describe("general", function()
         end)
         it("is not debug mode", function()
             vim.env._FZFX_NVIM_DEBUG_ENABLE = 0
-            local actual = general.make_cache_filename(
+            local actual = general._make_cache_filename(
                 "provider",
                 "switch",
                 "meta",

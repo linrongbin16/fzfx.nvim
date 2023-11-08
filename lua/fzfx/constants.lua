@@ -8,6 +8,7 @@ local is_linux = not is_windows
     and not is_macos
     and not is_bsd
     and (vim.fn.has("linux") > 0 or vim.fn.has("unix") > 0)
+local int32_max = 2 ^ 31 - 1
 
 local path_separator = is_windows and "\\" or "/"
 
@@ -33,12 +34,16 @@ local eza = vim.fn.executable("eza") > 0 and "eza" or "exa"
 
 local has_delta = vim.fn.executable("delta") > 0
 
+local has_echo = vim.fn.executable("echo") > 0
+local has_curl = vim.fn.executable("curl") > 0
+
 local M = {
     -- os
     is_windows = is_windows,
     is_macos = is_macos,
     is_bsd = is_bsd,
     is_linux = is_linux,
+    int32_max = int32_max,
 
     -- path
     path_separator = path_separator,
@@ -63,6 +68,9 @@ local M = {
     eza = eza,
 
     has_delta = has_delta,
+
+    has_echo = has_echo,
+    has_curl = has_curl,
 }
 
 return M

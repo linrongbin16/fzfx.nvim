@@ -34,18 +34,14 @@ function Yank:new(regname, regtext, regtype, filename, filetype)
 end
 
 --- @class YankHistory
---- @field pos integer
---- @field queue Yank[]
---- @field maxsize integer
+--- @field ring_buffer RingBuffer
 local YankHistory = {}
 
 --- @param maxsize integer
 --- @return YankHistory
 function YankHistory:new(maxsize)
     local o = {
-        pos = 0,
-        queue = {},
-        maxsize = maxsize,
+        ring_buffer = utils.RingBuffer:new(maxsize),
     }
     setmetatable(o, self)
     self.__index = self
@@ -55,105 +51,39 @@ end
 --- @param y Yank
 --- @return integer
 function YankHistory:push(y)
-    if #self.queue < self.maxsize then
-        self.pos = self.pos + 1
-        table.insert(self.queue, y)
-    else
-        if self.pos == #self.queue then
-            self.pos = 1
-        else
-            self.pos = self.pos + 1
-        end
-        self.queue[self.pos] = y
-    end
-    return self.pos
+    return self.ring_buffer:push(y)
 end
 
--- from oldest to newest, usage:
---
--- ```lua
---  local p = yank_history:begin()
---  while p ~= nil then
---    local yank = yank_history:get(p)
---    p = yank_history:next(p)
---  end
--- ```
---
+--- @param pos integer?
+--- @return Yank?
+function YankHistory:get(pos)
+    return self.ring_buffer:get(pos)
+end
+
+-- from oldest to newest
 --- @return integer?
 function YankHistory:begin()
-    if #self.queue == 0 or self.pos == 0 then
-        return nil
-    end
-    if self.pos == #self.queue then
-        return 1
-    else
-        return self.pos + 1
-    end
+    return self.ring_buffer:begin()
 end
 
 -- from oldest to newest
 --- @param pos integer
 --- @return integer?
 function YankHistory:next(pos)
-    if #self.queue == 0 or pos == 0 then
-        return nil
-    end
-    if pos == self.pos then
-        return nil
-    end
-    if pos == #self.queue then
-        return 1
-    else
-        return pos + 1
-    end
+    return self.ring_buffer:next(pos)
 end
 
--- from newest to oldest, usage:
---
--- ```lua
---  local p = yank_history:rbegin()
---  while p ~= nil then
---    local yank = yank_history:get(p)
---    p = yank_history:rnext()
---  end
--- ```
---
+-- from newest to oldest
 --- @return integer?
 function YankHistory:rbegin()
-    if #self.queue == 0 or self.pos == 0 then
-        return nil
-    end
-    return self.pos
+    return self.ring_buffer:rbegin()
 end
 
 -- from newest to oldest
 --- @param pos integer
 --- @return integer?
 function YankHistory:rnext(pos)
-    if #self.queue == 0 or pos == 0 then
-        return nil
-    end
-    if self.pos == 1 and pos == #self.queue then
-        return nil
-    elseif pos == self.pos then
-        return nil
-    end
-    if pos == 1 then
-        return #self.queue
-    else
-        return pos - 1
-    end
-end
-
---- @param pos integer?
---- @return Yank?
-function YankHistory:get(pos)
-    pos = pos or self.pos
-    if #self.queue == 0 or pos == 0 then
-        return nil
-    else
-        return self.queue[pos]
-    end
+    return self.ring_buffer:rnext(pos)
 end
 
 --- @type YankHistory?

@@ -1,3 +1,4 @@
+local constants = require("fzfx.constants")
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
 local fzf_helpers = require("fzfx.fzf_helpers")
@@ -16,7 +17,7 @@ local DEFAULT_PIPELINE = "default"
 
 --- @param ... string
 --- @return string
-local function make_cache_filename(...)
+local function _make_cache_filename(...)
     if env.debug_enable() then
         return path.join(
             conf.get_config().cache.dir,
@@ -129,8 +130,8 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
     local o = {
         pipeline = pipeline,
         provider_configs = provider_configs_map,
-        metafile = make_cache_filename("provider", "metafile", name),
-        resultfile = make_cache_filename("provider", "resultfile", name),
+        metafile = _make_cache_filename("provider", "metafile", name),
+        resultfile = _make_cache_filename("provider", "resultfile", name),
     }
     setmetatable(o, self)
     self.__index = self
@@ -224,11 +225,11 @@ function ProviderSwitch:provide(name, query, context)
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
         local ok, result =
             pcall(provider_config.provider --[[@as function]], query, context)
-        log.debug(
-            "|fzfx.general - ProviderSwitch:provide| pcall command provider, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - ProviderSwitch:provide| pcall command provider, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         log.ensure(
             result == nil or type(result) == "string",
             "|fzfx.general - ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
@@ -255,11 +256,11 @@ function ProviderSwitch:provide(name, query, context)
     elseif provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST then
         local ok, result =
             pcall(provider_config.provider --[[@as function]], query, context)
-        log.debug(
-            "|fzfx.general - ProviderSwitch:provide| pcall command_list provider, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - ProviderSwitch:provide| pcall command_list provider, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         log.ensure(
             result == nil or type(result) == "table",
             "|fzfx.general - ProviderSwitch:provide| command_list provider result must be string! self:%s, result:%s",
@@ -289,11 +290,11 @@ function ProviderSwitch:provide(name, query, context)
     elseif provider_config.provider_type == ProviderTypeEnum.LIST then
         local ok, result =
             pcall(provider_config.provider --[[@as function]], query, context)
-        log.debug(
-            "|fzfx.general - ProviderSwitch:provide| pcall list provider, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - ProviderSwitch:provide| pcall list provider, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         if not ok then
             utils.writefile(self.resultfile, "")
             log.err(
@@ -334,6 +335,7 @@ end
 --- @class PreviewerSwitch
 --- @field pipeline PipelineName
 --- @field previewer_configs table<PipelineName, PreviewerConfig>
+--- @field previewer_labels table<PipelineName, string?>
 --- @field metafile string
 --- @field resultfile string
 local PreviewerSwitch = {}
@@ -366,8 +368,9 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local o = {
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
-        metafile = make_cache_filename("previewer", "metafile", name),
-        resultfile = make_cache_filename("previewer", "resultfile", name),
+        previewer_labels = {},
+        metafile = _make_cache_filename("previewer", "metafile", name),
+        resultfile = _make_cache_filename("previewer", "resultfile", name),
     }
     setmetatable(o, self)
     self.__index = self
@@ -422,11 +425,11 @@ function PreviewerSwitch:preview(name, line, context)
 
     if previewer_config.previewer_type == PreviewerTypeEnum.COMMAND then
         local ok, result = pcall(previewer_config.previewer, line, context)
-        log.debug(
-            "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         if not ok then
             utils.writefile(self.resultfile, "")
             log.err(
@@ -454,11 +457,11 @@ function PreviewerSwitch:preview(name, line, context)
         previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST
     then
         local ok, result = pcall(previewer_config.previewer, line, context)
-        log.debug(
-            "|fzfx.general - PreviewerSwitch:preview| pcall command_list previewer, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - PreviewerSwitch:preview| pcall command_list previewer, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         if not ok then
             utils.writefile(self.resultfile, "")
             log.err(
@@ -488,11 +491,11 @@ function PreviewerSwitch:preview(name, line, context)
         end
     elseif previewer_config.previewer_type == PreviewerTypeEnum.LIST then
         local ok, result = pcall(previewer_config.previewer, line, context)
-        log.debug(
-            "|fzfx.general - PreviewerSwitch:preview| pcall list previewer, ok:%s, result:%s",
-            vim.inspect(ok),
-            vim.inspect(result)
-        )
+        -- log.debug(
+        --     "|fzfx.general - PreviewerSwitch:preview| pcall list previewer, ok:%s, result:%s",
+        --     vim.inspect(ok),
+        --     vim.inspect(result)
+        -- )
         if not ok then
             utils.writefile(self.resultfile, "")
             log.err(
@@ -521,6 +524,71 @@ function PreviewerSwitch:preview(name, line, context)
     return previewer_config.previewer_type
 end
 
+--- @param name string
+--- @param line string?
+--- @param context PipelineContext
+--- @param fzf_port_file string
+--- @return string?
+function PreviewerSwitch:preview_label(name, line, context, fzf_port_file)
+    local previewer_config = self.previewer_configs[self.pipeline]
+    log.debug(
+        "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config),
+        vim.inspect(context)
+    )
+    log.ensure(
+        type(previewer_config) == "table",
+        "invalid previewer config in %s! pipeline: %s, previewer config: %s",
+        vim.inspect(name),
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config)
+    )
+    log.ensure(
+        type(previewer_config.previewer_label) == "function"
+            or previewer_config.previewer_label == nil,
+        "invalid previewer label in %s! pipeline: %s, previewer: %s",
+        vim.inspect(name),
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config)
+    )
+    if type(previewer_config.previewer_label) ~= "function" then
+        return
+    end
+    if not constants.has_echo or not constants.has_curl then
+        return
+    end
+    local label = previewer_config.previewer_label(line, context)
+    if type(label) ~= "string" or string.len(vim.trim(label)) == 0 then
+        return
+    end
+    self.previewer_labels[self.pipeline] = label
+
+    -- do it async/later
+    vim.defer_fn(function()
+        local last_label = self.previewer_labels[self.pipeline]
+        self.previewer_labels[self.pipeline] = nil
+        if
+            type(last_label) ~= "string"
+            or string.len(vim.trim(last_label)) == 0
+        then
+            return
+        end
+        local fzf_port = utils.readfile(fzf_port_file) --[[@as string]]
+        -- log.debug(
+        --     "|fzfx.general - PreviewerSwitch:preview_label| fzf_port:%s, last_label:%s",
+        --     vim.inspect(fzf_port),
+        --     vim.inspect(last_label)
+        -- )
+        fzf_helpers.send_http_post(
+            fzf_port,
+            string.format("transform-preview-label(echo %s)", last_label)
+        )
+    end, 0)
+
+    return label
+end
+
 -- previewer switch }
 
 -- header switch {
@@ -529,10 +597,11 @@ end
 --- @field headers table<PipelineName, string[]>
 local HeaderSwitch = {}
 
+--- @package
 --- @param name string
 --- @param action string
 --- @return string
-local function render_help(name, action)
+local function _render_help(name, action)
     return color.render(
         color.magenta,
         "Special",
@@ -544,7 +613,7 @@ end
 --- @param excludes string[]|nil
 --- @param s string
 --- @return boolean
-local function skip_help(excludes, s)
+local function _should_skip_help(excludes, s)
     if type(excludes) ~= "table" then
         return false
     end
@@ -560,11 +629,11 @@ end
 --- @param builder string[]
 --- @param excludes string[]|nil
 --- @return string[]
-local function make_help_doc(action_configs, builder, excludes)
+local function _make_help_doc(action_configs, builder, excludes)
     if type(action_configs) == "table" then
         local action_names = {}
         for name, opts in pairs(action_configs) do
-            if not skip_help(excludes, name) then
+            if not _should_skip_help(excludes, name) then
                 table.insert(action_names, name)
             end
         end
@@ -572,7 +641,7 @@ local function make_help_doc(action_configs, builder, excludes)
         for _, name in ipairs(action_names) do
             local opts = action_configs[name]
             local act = opts.key
-            table.insert(builder, render_help(name, act))
+            table.insert(builder, _render_help(name, act))
         end
     end
     return builder
@@ -584,20 +653,20 @@ end
 function HeaderSwitch:new(provider_configs, interaction_configs)
     local headers_map = {}
     if schema.is_provider_config(provider_configs) then
-        headers_map[DEFAULT_PIPELINE] = make_help_doc(interaction_configs, {})
+        headers_map[DEFAULT_PIPELINE] = _make_help_doc(interaction_configs, {})
     else
-        log.debug(
-            "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
-            vim.inspect(provider_configs)
-        )
+        -- log.debug(
+        --     "|fzfx.general - HeaderSwitch:new| provider_configs:%s",
+        --     vim.inspect(provider_configs)
+        -- )
         for provider_name, provider_opts in pairs(provider_configs) do
-            local help_builder = make_help_doc(
+            local help_builder = _make_help_doc(
                 provider_configs,
                 {},
                 { provider_name }
             )
             headers_map[provider_name] =
-                make_help_doc(interaction_configs, help_builder)
+                _make_help_doc(interaction_configs, help_builder)
         end
     end
 
@@ -661,17 +730,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         local pipeline = nil
         local provider_opts = nil
         if schema.is_provider_config(pipeline_configs.providers) then
-            log.debug(
-                "|fzfx.general - general| providers is single config: %s",
-                vim.inspect(pipeline_configs.providers)
-            )
+            -- log.debug(
+            --     "|fzfx.general - general| providers is single config: %s",
+            --     vim.inspect(pipeline_configs.providers)
+            -- )
             pipeline = DEFAULT_PIPELINE
             provider_opts = pipeline_configs.providers
         else
-            log.debug(
-                "|fzfx.general - general| providers is multiple configs: %s",
-                vim.inspect(pipeline_configs.providers)
-            )
+            -- log.debug(
+            --     "|fzfx.general - general| providers is multiple configs: %s",
+            --     vim.inspect(pipeline_configs.providers)
+            -- )
             pipeline, provider_opts = next(pipeline_configs.providers)
         end
         default_pipeline = pipeline
@@ -680,6 +749,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         local provider_opts = pipeline_configs.providers[default_pipeline]
         default_provider_key = provider_opts.key
     end
+
+    local fzf_port_file = _make_cache_filename("fzf", "port", "file")
 
     --- @type ProviderSwitch
     local provider_switch =
@@ -711,9 +782,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
 
     local provide_rpc_registry_id =
-        server:get_rpc_server():register(provide_rpc)
+        server.get_rpc_server():register(provide_rpc)
     local preview_rpc_registry_id =
-        server:get_rpc_server():register(preview_rpc)
+        server.get_rpc_server():register(preview_rpc)
 
     local query_command = string.format(
         "%s %s %s %s %s",
@@ -723,12 +794,20 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         provider_switch.resultfile,
         utils.shellescape(query)
     )
+    log.debug(
+        "|fzfx.general - general| query_command:%s",
+        vim.inspect(query_command)
+    )
     local reload_query_command = string.format(
         "%s %s %s %s {q}",
         fzf_helpers.make_lua_command("general", "provider.lua"),
         provide_rpc_registry_id,
         provider_switch.metafile,
         provider_switch.resultfile
+    )
+    log.debug(
+        "|fzfx.general - general| reload_query_command:%s",
+        vim.inspect(reload_query_command)
     )
     local preview_command = string.format(
         "%s %s %s %s {}",
@@ -738,10 +817,34 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch.resultfile
     )
     log.debug(
-        "|fzfx.general - general| query_command:%s, preview_command:%s",
-        vim.inspect(query_command),
+        "|fzfx.general - general| preview_command:%s",
         vim.inspect(preview_command)
     )
+
+    local preview_label_command = nil
+    if constants.has_echo and constants.has_curl then
+        --- @param line_params string
+        local function preview_label_rpc(line_params)
+            previewer_switch:preview_label(
+                name,
+                line_params,
+                context,
+                fzf_port_file
+            )
+        end
+        local preview_label_rpc_registry_id =
+            server.get_rpc_server():register(preview_label_rpc)
+        preview_label_command = string.format(
+            "%s %s {}",
+            fzf_helpers.make_lua_command("rpc", "notify.lua"),
+            preview_label_rpc_registry_id
+        )
+        log.debug(
+            "|fzfx.general - general| preview_label_command:%s",
+            vim.inspect(preview_label_command)
+        )
+    end
+
     local fzf_opts = {
         { "--query", query },
         {
@@ -749,6 +852,28 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             preview_command,
         },
     }
+
+    if
+        type(preview_label_command) == "string"
+        and string.len(preview_label_command) > 0
+    then
+        table.insert(fzf_opts, {
+            "--bind",
+            string.format("focus:execute-silent(%s)", preview_label_command),
+        })
+        table.insert(fzf_opts, {
+            "--bind",
+            string.format("load:execute-silent(%s)", preview_label_command),
+        })
+    end
+
+    local dump_fzf_port_command = string.format(
+        "%s %s",
+        fzf_helpers.make_lua_command("general", "fzf_port.lua"),
+        fzf_port_file
+    )
+    local fzf_start_event_opts =
+        string.format("start:execute-silent(%s)", dump_fzf_port_command)
 
     local header_switch = HeaderSwitch:new(
         pipeline_configs.providers,
@@ -772,10 +897,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             local action = interaction_opts.interaction
 
             local function interaction_rpc(line_params)
-                log.debug(
-                    "|fzfx.general - general.interaction_rpc| line_params:%s",
-                    vim.inspect(line_params)
-                )
+                -- log.debug(
+                --     "|fzfx.general - general.interaction_rpc| line_params:%s",
+                --     vim.inspect(line_params)
+                -- )
                 action(line_params, context)
             end
 
@@ -788,7 +913,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local action_command = string.format(
                 "%s %s {}",
-                fzf_helpers.make_lua_command("rpc", "client.lua"),
+                fzf_helpers.make_lua_command("rpc", "request.lua"),
                 interaction_rpc_registry_id
             )
             local bind_builder = string.format(
@@ -825,7 +950,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local switch_command = string.format(
                 "%s %s",
-                fzf_helpers.make_lua_command("rpc", "client.lua"),
+                fzf_helpers.make_lua_command("rpc", "request.lua"),
                 switch_rpc_registry_id
             )
             local bind_builder = string.format(
@@ -848,10 +973,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 bind_builder,
             })
         end
-        table.insert(fzf_opts, {
-            "--bind",
-            string.format("start:unbind(%s)", default_provider_key),
-        })
+        fzf_start_event_opts = fzf_start_event_opts
+            .. string.format("+unbind(%s)", default_provider_key)
     end
     if
         type(pipeline_configs.other_opts) == "table"
@@ -862,6 +985,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             string.format("change:reload:%s", reload_query_command),
         })
     end
+    table.insert(fzf_opts, "--listen")
+    table.insert(fzf_opts, { "--bind", fzf_start_event_opts })
 
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
@@ -955,15 +1080,15 @@ end
 
 local M = {
     setup = setup,
-    make_cache_filename = make_cache_filename,
+    _make_cache_filename = _make_cache_filename,
     make_provider_meta_opts = make_provider_meta_opts,
     make_previewer_meta_opts = make_previewer_meta_opts,
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,
+    _render_help = _render_help,
+    _should_skip_help = _should_skip_help,
+    _make_help_doc = _make_help_doc,
     HeaderSwitch = HeaderSwitch,
-    render_help = render_help,
-    skip_help = skip_help,
-    make_help_doc = make_help_doc,
 }
 
 return M

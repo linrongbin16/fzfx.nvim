@@ -51,22 +51,40 @@ describe("utils", function()
             assert_false(s)
         end)
     end)
-    describe("[string_empty/string_not_empty]", function()
-        it("is empty", function()
-            assert_true(utils.string_empty())
-            assert_true(utils.string_empty(nil))
-            assert_true(utils.string_empty(""))
-            assert_false(utils.string_not_empty())
-            assert_false(utils.string_not_empty(nil))
-            assert_false(utils.string_not_empty(""))
-        end)
-        it("is not empty", function()
-            assert_true(utils.string_not_empty(" "))
-            assert_true(utils.string_not_empty(" asdf "))
-            assert_false(utils.string_empty(" "))
-            assert_false(utils.string_empty(" asdf "))
-        end)
-    end)
+    describe(
+        "[string_empty/string_not_empty/string_blank/string_not_blank]",
+        function()
+            it("empty", function()
+                assert_true(utils.string_empty())
+                assert_true(utils.string_empty(nil))
+                assert_true(utils.string_empty(""))
+                assert_false(utils.string_not_empty())
+                assert_false(utils.string_not_empty(nil))
+                assert_false(utils.string_not_empty(""))
+            end)
+            it("not empty", function()
+                assert_true(utils.string_not_empty(" "))
+                assert_true(utils.string_not_empty(" asdf "))
+                assert_false(utils.string_empty(" "))
+                assert_false(utils.string_empty(" asdf "))
+            end)
+            it("blank", function()
+                assert_true(utils.string_blank())
+                assert_true(utils.string_blank(nil))
+                assert_true(utils.string_blank(" "))
+                assert_true(utils.string_blank("\n"))
+                assert_false(utils.string_not_blank())
+                assert_false(utils.string_not_blank(nil))
+                assert_false(utils.string_not_blank(""))
+            end)
+            it("not blank", function()
+                assert_true(utils.string_not_blank(" x"))
+                assert_true(utils.string_not_blank(" asdf "))
+                assert_false(utils.string_blank("y "))
+                assert_false(utils.string_blank(" asdf "))
+            end)
+        end
+    )
     describe("[string_find]", function()
         it("found", function()
             assert_eq(utils.string_find("abcdefg", "a"), 1)
@@ -554,6 +572,102 @@ describe("utils", function()
                 else
                     assert_false(utils.string_isupper(string.char(i)))
                 end
+            end
+        end)
+    end)
+    describe("[RingBuffer]", function()
+        it("creates", function()
+            local rb = utils.RingBuffer:new(10)
+            assert_eq(type(rb), "table")
+            assert_eq(#rb.queue, 0)
+        end)
+        it("loop", function()
+            local rb = utils.RingBuffer:new(10)
+            assert_eq(type(rb), "table")
+            for i = 1, 10 do
+                rb:push(i)
+            end
+            local p = rb:begin()
+            while p do
+                local actual = rb:get(p)
+                assert_eq(actual, p)
+                p = rb:next(p)
+            end
+            rb = utils.RingBuffer:new(10)
+            for i = 1, 15 do
+                rb:push(i)
+            end
+            local p = rb:begin()
+            while p do
+                local actual = rb:get(p)
+                if p <= 5 then
+                    assert_eq(actual, p + 10)
+                else
+                    assert_eq(actual, p)
+                end
+                p = rb:next(p)
+            end
+            rb = utils.RingBuffer:new(10)
+            for i = 1, 20 do
+                rb:push(i)
+            end
+            local p = rb:begin()
+            while p do
+                local actual = rb:get(p)
+                assert_eq(actual, p + 10)
+                p = rb:next(p)
+            end
+        end)
+        it("get latest", function()
+            local rb = utils.RingBuffer:new(10)
+            for i = 1, 50 do
+                rb:push(i)
+                assert_eq(rb:get(), i)
+            end
+            local p = rb:begin()
+            print(string.format("|utils_spec| begin, p:%s\n", vim.inspect(p)))
+            while p do
+                local actual = rb:get(p)
+                print(
+                    string.format(
+                        "|utils_spec| get, p:%s, actual:%s\n",
+                        vim.inspect(p),
+                        vim.inspect(actual)
+                    )
+                )
+                assert_eq(actual, p + 40)
+                p = rb:next(p)
+                print(
+                    string.format("|utils_spec| next, p:%s\n", vim.inspect(p))
+                )
+            end
+            p = rb:rbegin()
+            print(
+                string.format(
+                    "|utils_spec| rbegin, p:%s, rb:%s\n",
+                    vim.inspect(p),
+                    vim.inspect(rb)
+                )
+            )
+            while p do
+                local actual = rb:get(p)
+                print(
+                    string.format(
+                        "|utils_spec| rget, p:%s, actual:%s, rb:%s\n",
+                        vim.inspect(p),
+                        vim.inspect(actual),
+                        vim.inspect(rb)
+                    )
+                )
+                assert_eq(actual, p + 40)
+                p = rb:rnext(p)
+                print(
+                    string.format(
+                        "|utils_spec| rnext, p:%s, rb:%s\n",
+                        vim.inspect(p),
+                        vim.inspect(rb)
+                    )
+                )
             end
         end)
     end)
