@@ -17,7 +17,7 @@ local DEFAULT_PIPELINE = "default"
 
 --- @param ... string
 --- @return string
-local function make_cache_filename(...)
+local function _make_cache_filename(...)
     if env.debug_enable() then
         return path.join(
             conf.get_config().cache.dir,
@@ -130,8 +130,8 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
     local o = {
         pipeline = pipeline,
         provider_configs = provider_configs_map,
-        metafile = make_cache_filename("provider", "metafile", name),
-        resultfile = make_cache_filename("provider", "resultfile", name),
+        metafile = _make_cache_filename("provider", "metafile", name),
+        resultfile = _make_cache_filename("provider", "resultfile", name),
     }
     setmetatable(o, self)
     self.__index = self
@@ -369,8 +369,8 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
         previewer_labels = {},
-        metafile = make_cache_filename("previewer", "metafile", name),
-        resultfile = make_cache_filename("previewer", "resultfile", name),
+        metafile = _make_cache_filename("previewer", "metafile", name),
+        resultfile = _make_cache_filename("previewer", "resultfile", name),
     }
     setmetatable(o, self)
     self.__index = self
@@ -751,7 +751,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
 
     local fzf_listen_port_file =
-        make_cache_filename("fzf", "listen", "port", name)
+        _make_cache_filename("fzf", "listen", "port", name)
 
     --- @type ProviderSwitch
     local provider_switch =
@@ -1078,7 +1078,7 @@ end
 
 local M = {
     setup = setup,
-    make_cache_filename = make_cache_filename,
+    _make_cache_filename = _make_cache_filename,
     make_provider_meta_opts = make_provider_meta_opts,
     make_previewer_meta_opts = make_previewer_meta_opts,
     ProviderSwitch = ProviderSwitch,

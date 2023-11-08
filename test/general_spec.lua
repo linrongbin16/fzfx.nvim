@@ -370,7 +370,7 @@ describe("general", function()
         it("not previews label", function()
             local name = "label_test1"
             local fzf_listen_port_file =
-                general.make_cache_filename("fzf", "listen", "port", name)
+                general._make_cache_filename("fzf", "listen", "port", name)
             utils.writefile(fzf_listen_port_file, "12345")
             local ps = general.PreviewerSwitch:new(name, "p1", {
                 p1 = {
@@ -402,7 +402,7 @@ describe("general", function()
         it("previews label", function()
             local name = "label_test2"
             local fzf_listen_port_file =
-                general.make_cache_filename("fzf", "listen", "port", name)
+                general._make_cache_filename("fzf", "listen", "port", name)
             utils.writefile(fzf_listen_port_file, "54321")
             local ps = general.PreviewerSwitch:new(name, "p1", {
                 p1 = {
@@ -540,11 +540,11 @@ describe("general", function()
             assert_true(utils.string_endswith(actual[3], "to upper"))
         end)
     end)
-    describe("[make_cache_filename]", function()
+    describe("[_make_cache_filename]", function()
         it("is debug mode", function()
             vim.env._FZFX_NVIM_DEBUG_ENABLE = 1
             assert_eq(
-                general.make_cache_filename(
+                general._make_cache_filename(
                     "provider",
                     "switch",
                     "meta",
@@ -558,7 +558,7 @@ describe("general", function()
         end)
         it("is not debug mode", function()
             vim.env._FZFX_NVIM_DEBUG_ENABLE = 0
-            local actual = general.make_cache_filename(
+            local actual = general._make_cache_filename(
                 "provider",
                 "switch",
                 "meta",
