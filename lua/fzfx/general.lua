@@ -81,7 +81,6 @@ end
 --- @class PreviewerMetaOpts
 --- @field pipeline PipelineName
 --- @field previewer_type PreviewerType
---- @field previewer_label_enabled boolean?
 
 --- @param pipeline string
 --- @param previewer_config PreviewerConfig
@@ -90,8 +89,6 @@ local function make_previewer_meta_opts(pipeline, previewer_config)
     local o = {
         pipeline = pipeline,
         previewer_type = previewer_config.previewer_type,
-        previewer_label_enabled = type(previewer_config.previewer_label)
-            == "function",
     }
     return o
 end
