@@ -39,18 +39,12 @@ local function _make_cursor_window_config(opts)
     local width = _make_window_size(opts.width, total_width)
     local height = _make_window_size(opts.height, total_height)
     if opts.row < 0 then
-        log.throw(
-            "error! invalid option (win_opts.row < 0): %s!",
-            vim.inspect(opts)
-        )
+        log.throw("invalid option (win_opts.row < 0): %s!", vim.inspect(opts))
     end
     local row = opts.row
 
     if opts.col < 0 then
-        log.throw(
-            "error! invalid option (win_opts.col < 0): %s!",
-            vim.inspect(opts)
-        )
+        log.throw("invalid option (win_opts.col < 0): %s!", vim.inspect(opts))
     end
     local col = opts.col
 
@@ -110,10 +104,7 @@ local function _make_center_window_config(opts)
         (opts.row > -1 and opts.row < -0.5)
         or (opts.row > 0.5 and opts.row < 1)
     then
-        log.throw(
-            "error! invalid option (win_opts.row): %s!",
-            vim.inspect(opts)
-        )
+        log.throw("invalid option (win_opts.row): %s!", vim.inspect(opts))
     end
     local row = _make_window_center_shift(total_height, height, opts.row)
     -- log.debug(
@@ -128,10 +119,7 @@ local function _make_center_window_config(opts)
         (opts.col > -1 and opts.col < -0.5)
         or (opts.col > 0.5 and opts.col < 1)
     then
-        log.throw(
-            "error! invalid option (win_opts.col): %s!",
-            vim.inspect(opts)
-        )
+        log.throw("invalid option (win_opts.col): %s!", vim.inspect(opts))
     end
     local col = _make_window_center_shift(total_width, width, opts.col)
 
@@ -167,7 +155,7 @@ local function _make_window_config(win_opts)
         return _make_center_window_config(win_opts)
     else
         log.throw(
-            "error! failed to make popup window opts, unsupport relative value %s.",
+            "failed to make popup window opts, unsupport relative value %s.",
             vim.inspect(relative)
         )
         ---@diagnostic disable-next-line: missing-return
@@ -243,7 +231,7 @@ function PopupWindow:close()
         vim.api.nvim_win_close(self.winnr, true)
         -- else
         --     log.debug(
-        --         "error! cannot close invalid popup window! %s",
+        --         "cannot close invalid popup window! %s",
         --         vim.inspect(self.winnr)
         --     )
     end
@@ -373,7 +361,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
 
         log.ensure(
             vim.fn.filereadable(result) > 0,
-            "|fzfx.popup - Popup:new.on_fzf_exit| error! result %s must be readable",
+            "|fzfx.popup - Popup:new.on_fzf_exit| result %s must be readable",
             vim.inspect(result)
         )
         local lines = utils.readlines(result) --[[@as table]]
@@ -393,7 +381,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
             local action_callback = actions[action_key]
             if type(action_callback) ~= "function" then
                 log.throw(
-                    "error! wrong action type on key: %s, must be function(%s): %s",
+                    "wrong action type on key: %s, must be function(%s): %s",
                     vim.inspect(action_key),
                     type(action_callback),
                     vim.inspect(action_callback)
@@ -402,7 +390,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
                 local ok, cb_err = pcall(action_callback, action_lines, context)
                 if not ok then
                     log.throw(
-                        "error! failed to run action on callback(%s) with lines(%s)! %s",
+                        "failed to run action on callback(%s) with lines(%s)! %s",
                         vim.inspect(action_callback),
                         vim.inspect(action_lines),
                         vim.inspect(cb_err)

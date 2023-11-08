@@ -23,7 +23,7 @@ local function setup(options)
     -- cache
     if vim.fn.filereadable(configs.cache.dir) > 0 then
         log.throw(
-            "error! the 'cache.dir' (%s) already exist but not a directory!",
+            "the 'cache.dir' (%s) already exist but not a directory!",
             configs.cache.dir
         )
     else

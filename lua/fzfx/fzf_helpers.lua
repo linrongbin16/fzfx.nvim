@@ -100,7 +100,7 @@ local function get_command_feed(opts, feed_type)
         return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
     else
         log.throw(
-            "|fzfx.fzf_helpers - get_command_feed| error! invalid command feed type! %s",
+            "|fzfx.fzf_helpers - get_command_feed| invalid command feed type! %s",
             vim.inspect(feed_type)
         )
         return ""
@@ -255,7 +255,7 @@ local function nvim_exec()
             return e
         end
     end
-    log.throw("error! failed to found executable 'nvim' on path!")
+    log.throw("failed to found executable 'nvim' on path!")
     return nil
 end
 
@@ -270,7 +270,7 @@ local function fzf_exec()
             return e
         end
     end
-    log.throw("error! failed to found executable 'fzf' on path!")
+    log.throw("failed to found executable 'fzf' on path!")
     return nil
 end
 

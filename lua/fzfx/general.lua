@@ -116,7 +116,7 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
         for provider_name, provider_opts in pairs(provider_configs) do
             log.ensure(
                 schema.is_provider_config(provider_opts),
-                "error! %s (%s) is not a valid provider! %s",
+                "%s (%s) is not a valid provider! %s",
                 vim.inspect(provider_name),
                 vim.inspect(name),
                 vim.inspect(provider_opts)
@@ -320,7 +320,7 @@ function ProviderSwitch:provide(name, query, context)
         end
     else
         log.throw(
-            "|fzfx.general - ProviderSwitch:provide| error! invalid provider type! %s",
+            "|fzfx.general - ProviderSwitch:provide| invalid provider type! %s",
             vim.inspect(self)
         )
     end
@@ -338,6 +338,7 @@ end
 --- @field previewer_labels table<PipelineName, string?>
 --- @field metafile string
 --- @field resultfile string
+--- @field fzfportfile string
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -354,7 +355,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         for previewer_name, previewer_opts in pairs(previewer_configs) do
             log.ensure(
                 schema.is_previewer_config(previewer_opts),
-                "error! %s (%s) is not a valid previewer! %s",
+                "%s (%s) is not a valid previewer! %s",
                 vim.inspect(previewer_name),
                 vim.inspect(name),
                 vim.inspect(previewer_opts)
@@ -371,6 +372,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         previewer_labels = {},
         metafile = _make_cache_filename("previewer", "metafile", name),
         resultfile = _make_cache_filename("previewer", "resultfile", name),
+        fzfportfile = _make_cache_filename("previewer", "fzfport", name),
     }
     setmetatable(o, self)
     self.__index = self
@@ -517,7 +519,7 @@ function PreviewerSwitch:preview(name, line, context)
         end
     else
         log.throw(
-            "|fzfx.general - PreviewerSwitch:preview| error! invalid previewer type! %s",
+            "|fzfx.general - PreviewerSwitch:preview| invalid previewer type! %s",
             vim.inspect(self)
         )
     end
@@ -527,9 +529,8 @@ end
 --- @param name string
 --- @param line string?
 --- @param context PipelineContext
---- @param fzf_port_file string
 --- @return string?
-function PreviewerSwitch:preview_label(name, line, context, fzf_port_file)
+function PreviewerSwitch:preview_label(name, line, context)
     local previewer_config = self.previewer_configs[self.pipeline]
     log.debug(
         "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
@@ -552,14 +553,19 @@ function PreviewerSwitch:preview_label(name, line, context, fzf_port_file)
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
+    if not constants.has_curl then
+        return
+    end
     if type(previewer_config.previewer_label) ~= "function" then
         return
     end
-    if not constants.has_echo or not constants.has_curl then
-        return
-    end
     local label = previewer_config.previewer_label(line, context)
-    if type(label) ~= "string" or string.len(vim.trim(label)) == 0 then
+    log.debug(
+        "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
+        vim.inspect(line),
+        vim.inspect(label)
+    )
+    if type(label) ~= "string" then
         return
     end
     self.previewer_labels[self.pipeline] = label
@@ -568,21 +574,13 @@ function PreviewerSwitch:preview_label(name, line, context, fzf_port_file)
     vim.defer_fn(function()
         local last_label = self.previewer_labels[self.pipeline]
         self.previewer_labels[self.pipeline] = nil
-        if
-            type(last_label) ~= "string"
-            or string.len(vim.trim(last_label)) == 0
-        then
+        if type(last_label) ~= "string" then
             return
         end
-        local fzf_port = utils.readfile(fzf_port_file) --[[@as string]]
-        -- log.debug(
-        --     "|fzfx.general - PreviewerSwitch:preview_label| fzf_port:%s, last_label:%s",
-        --     vim.inspect(fzf_port),
-        --     vim.inspect(last_label)
-        -- )
+        local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
         fzf_helpers.send_http_post(
             fzf_port,
-            string.format("transform-preview-label(echo %s)", last_label)
+            string.format("change-preview-label(%s)", vim.trim(last_label))
         )
     end, 0)
 
@@ -750,8 +748,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         default_provider_key = provider_opts.key
     end
 
-    local fzf_port_file = _make_cache_filename("fzf", "port", "file")
-
     --- @type ProviderSwitch
     local provider_switch =
         ProviderSwitch:new(name, default_pipeline, pipeline_configs.providers)
@@ -822,15 +818,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
 
     local preview_label_command = nil
-    if constants.has_echo and constants.has_curl then
+    if constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
-            previewer_switch:preview_label(
-                name,
-                line_params,
-                context,
-                fzf_port_file
-            )
+            previewer_switch:preview_label(name, line_params, context)
         end
         local preview_label_rpc_registry_id =
             server.get_rpc_server():register(preview_label_rpc)
@@ -865,12 +856,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             "--bind",
             string.format("load:execute-silent(%s)", preview_label_command),
         })
+        table.insert(fzf_opts, {
+            "--bind",
+            string.format("zero:execute-silent(%s)", preview_label_command),
+        })
     end
 
     local dump_fzf_port_command = string.format(
         "%s %s",
         fzf_helpers.make_lua_command("general", "fzf_port.lua"),
-        fzf_port_file
+        previewer_switch.fzfportfile
     )
     local fzf_start_event_opts =
         string.format("start:execute-silent(%s)", dump_fzf_port_command)
