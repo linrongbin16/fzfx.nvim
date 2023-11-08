@@ -302,15 +302,15 @@ local function send_http_post(port, body)
         "-d",
         body,
     }, function(line)
-        log.debug(
-            "|fzfx.fzf_helpers - send_http_post| stdout:%s",
-            vim.inspect(line)
-        )
+        -- log.debug(
+        --     "|fzfx.fzf_helpers - send_http_post| stdout:%s",
+        --     vim.inspect(line)
+        -- )
     end, function(line)
-        log.debug(
-            "|fzfx.fzf_helpers - send_http_post| stderr:%s",
-            vim.inspect(line)
-        )
+        -- log.debug(
+        --     "|fzfx.fzf_helpers - send_http_post| stderr:%s",
+        --     vim.inspect(line)
+        -- )
     end, false) --[[@as Spawn]]
     asp:run()
 end
