@@ -335,9 +335,9 @@ end
 --- @class PreviewerSwitch
 --- @field pipeline PipelineName
 --- @field previewer_configs table<PipelineName, PreviewerConfig>
+--- @field previewer_labels table<PipelineName, string?>
 --- @field metafile string
 --- @field resultfile string
---- @field preview_labels_queue table<PipelineName, string?>
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -368,9 +368,9 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local o = {
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
+        previewer_labels = {},
         metafile = make_cache_filename("previewer", "metafile", name),
         resultfile = make_cache_filename("previewer", "resultfile", name),
-        preview_labels_queue = {},
     }
     setmetatable(o, self)
     self.__index = self
@@ -566,12 +566,12 @@ function PreviewerSwitch:preview_label(
     if type(label) ~= "string" or string.len(vim.trim(label)) == 0 then
         return
     end
-    self.preview_labels_queue[self.pipeline] = label
+    self.previewer_labels[self.pipeline] = label
 
     -- do it async/later
     vim.defer_fn(function()
-        local last_label = self.preview_labels_queue[self.pipeline]
-        self.preview_labels_queue[self.pipeline] = nil
+        local last_label = self.previewer_labels[self.pipeline]
+        self.previewer_labels[self.pipeline] = nil
         if
             type(last_label) ~= "string"
             or string.len(vim.trim(last_label)) == 0
