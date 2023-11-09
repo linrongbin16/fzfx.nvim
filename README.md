@@ -20,7 +20,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 - [Feature](#-feature)
 - [Requirement](#-requirement)
-  - [Windows](#windows)
+  - [For Windows](#for-windows)
   - [Whitespace escaping issue](#whitespace-escaping-issue)
 - [Install](#-install)
   - [vim-plug](#vim-plug)
@@ -48,19 +48,19 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 - Icons & colors.
 - Windows support.
-- Lua support: preview lua function defined commands and key mappings.
-- Fully dynamic parsing user query and selection, a typical use case is passing raw rg options via `--` flag (see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo)).
+- Lua support: preview lua defined vim commands and key mappings.
+- Parsing user query and selection on every keystroke, a typical use case is passing raw rg options via `--` flag (see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo)).
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
   - Search by yank text.
-- Easily switch on multiple data sources:
-  - Whether to filter hidden/ignored files or include them (unrestricted) when searching files.
-  - Local branches or remote branches when searching git branches.
-  - All diagnostics in workspace or only in current buffer when searching diagnostics.
+- Multiple data sources to avoid restart search flow:
+  - Exclude or include the hidden/ignored files when searching files.
+  - Local or remote branches when searching git branches.
+  - Workspace or only current buffer diagnostics when searching diagnostics.
   - ...
 - Maximized configuration.
-- ...
+- And a lot more.
 
 > Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more features & use cases.
 
@@ -75,9 +75,12 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [git](https://git-scm.com/) (mandatory for **git** commands), [delta](https://github.com/dandavison/delta) (optional for preview git **diff, show, blame**).
 - [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-> Note: `grep`, `find`, `cat` are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat` should be better choice. While still recommend Windows users [install linux shell commands](#windows) since utils like `echo`, `curl` are internally used by somewhere.
+### For Windows
 
-### Windows
+`grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be better choice.
+
+While still recommend Windows users install linux shell commands, since utils like `echo`, `curl` are internally used by somewhere.
+
 
 <details>
 <summary><b>Click here to see how to install linux commands on Windows</b></summary>
