@@ -110,7 +110,7 @@ end
 -- fzf opts {
 
 --- @return FzfOpt[]
-local function generate_fzf_color_opts()
+local function _generate_fzf_color_opts()
     if type(conf.get_config().fzf_color_opts) ~= "table" then
         return {}
     end
@@ -136,7 +136,7 @@ local function generate_fzf_color_opts()
 end
 
 --- @return FzfOpt[]
-local function generate_fzf_icon_opts()
+local function _generate_fzf_icon_opts()
     if type(conf.get_config().icons) ~= "table" then
         return {}
     end
@@ -211,13 +211,13 @@ local function make_fzf_default_opts_impl()
             append_fzf_opt(result, o)
         end
     end
-    local color_opts = generate_fzf_color_opts()
+    local color_opts = _generate_fzf_color_opts()
     if type(color_opts) == "table" and #color_opts > 0 then
         for _, o in ipairs(color_opts) do
             append_fzf_opt(result, o)
         end
     end
-    local icon_opts = generate_fzf_icon_opts()
+    local icon_opts = _generate_fzf_icon_opts()
     if type(icon_opts) == "table" and #icon_opts > 0 then
         for _, o in ipairs(icon_opts) do
             append_fzf_opt(result, o)
@@ -339,6 +339,8 @@ local M = {
     _visual_select = _visual_select,
     get_command_feed = get_command_feed,
     preprocess_fzf_opts = preprocess_fzf_opts,
+    _generate_fzf_color_opts = _generate_fzf_color_opts,
+    _generate_fzf_icon_opts = _generate_fzf_icon_opts,
     make_fzf_opts = make_fzf_opts,
     make_fzf_default_opts = make_fzf_default_opts,
     nvim_exec = nvim_exec,
