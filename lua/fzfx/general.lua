@@ -149,12 +149,12 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
-    log.debug(
-        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(provider_config),
-        vim.inspect(context)
-    )
+    -- log.debug(
+    --     "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
+    --     vim.inspect(self.pipeline),
+    --     vim.inspect(provider_config),
+    --     vim.inspect(context)
+    -- )
     log.ensure(
         type(provider_config) == "table",
         "invalid provider config in %s! pipeline: %s, provider config: %s",
@@ -391,12 +391,12 @@ end
 --- @return PreviewerType
 function PreviewerSwitch:preview(name, line, context)
     local previewer_config = self.previewer_configs[self.pipeline]
-    log.debug(
-        "|fzfx.general - PreviewerSwitch:preview| pipeline:%s, previewer_config:%s, context:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(previewer_config),
-        vim.inspect(context)
-    )
+    -- log.debug(
+    --     "|fzfx.general - PreviewerSwitch:preview| pipeline:%s, previewer_config:%s, context:%s",
+    --     vim.inspect(self.pipeline),
+    --     vim.inspect(previewer_config),
+    --     vim.inspect(context)
+    -- )
     log.ensure(
         type(previewer_config) == "table",
         "invalid previewer config in %s! pipeline: %s, previewer config: %s",
@@ -532,12 +532,12 @@ end
 --- @return string?
 function PreviewerSwitch:preview_label(name, line, context)
     local previewer_config = self.previewer_configs[self.pipeline]
-    log.debug(
-        "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(previewer_config),
-        vim.inspect(context)
-    )
+    -- log.debug(
+    --     "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
+    --     vim.inspect(self.pipeline),
+    --     vim.inspect(previewer_config),
+    --     vim.inspect(context)
+    -- )
     log.ensure(
         type(previewer_config) == "table",
         "invalid previewer config in %s! pipeline: %s, previewer config: %s",
@@ -547,7 +547,9 @@ function PreviewerSwitch:preview_label(name, line, context)
     )
     log.ensure(
         type(previewer_config.previewer_label) == "function"
-            or previewer_config.previewer_label == nil,
+            or previewer_config.previewer_label == nil
+            or type(previewer_config.previewer_label) == "boolean"
+            or type(previewer_config.previewer_label) == "string",
         "invalid previewer label in %s! pipeline: %s, previewer: %s",
         vim.inspect(name),
         vim.inspect(self.pipeline),
@@ -556,10 +558,15 @@ function PreviewerSwitch:preview_label(name, line, context)
     if not constants.has_curl then
         return
     end
-    if type(previewer_config.previewer_label) ~= "function" then
+    if
+        type(previewer_config.previewer_label) ~= "function"
+        and type(previewer_config.previewer_label) ~= "string"
+    then
         return
     end
-    local label = previewer_config.previewer_label(line, context)
+    local label = type(previewer_config.previewer_label) == "function"
+            and previewer_config.previewer_label(line, context)
+        or previewer_config.previewer_label
     log.debug(
         "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
         vim.inspect(line),
@@ -844,22 +851,19 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         },
     }
 
+    local fzf_focus_event = fzf_helpers.FzfOptEventBinder:new("focus")
+    local fzf_load_event = fzf_helpers.FzfOptEventBinder:new("load")
+    local fzf_change_event = fzf_helpers.FzfOptEventBinder:new("change")
     if
         type(preview_label_command) == "string"
         and string.len(preview_label_command) > 0
     then
-        table.insert(fzf_opts, {
-            "--bind",
-            string.format("focus:execute-silent(%s)", preview_label_command),
-        })
-        table.insert(fzf_opts, {
-            "--bind",
-            string.format("load:execute-silent(%s)", preview_label_command),
-        })
-        table.insert(fzf_opts, {
-            "--bind",
-            string.format("zero:execute-silent(%s)", preview_label_command),
-        })
+        fzf_focus_event:append(
+            string.format("execute-silent(%s)", preview_label_command)
+        )
+        fzf_load_event:append(
+            string.format("execute-silent(%s)", preview_label_command)
+        )
     end
 
     local dump_fzf_port_command = string.format(
@@ -975,11 +979,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         type(pipeline_configs.other_opts) == "table"
         and pipeline_configs.other_opts.reload_on_change
     then
-        table.insert(fzf_opts, {
-            "--bind",
-            string.format("change:reload:%s", reload_query_command),
-        })
+        fzf_change_event:append(
+            string.format("reload(%s)", reload_query_command)
+        )
     end
+    table.insert(fzf_opts, fzf_focus_event:build())
+    table.insert(fzf_opts, fzf_load_event:build())
+    table.insert(fzf_opts, fzf_change_event:build())
     table.insert(fzf_opts, "--listen")
     table.insert(fzf_opts, { "--bind", fzf_start_event_opts })
 
