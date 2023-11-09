@@ -567,6 +567,9 @@ function FileLineReader:close()
     end
 end
 
+--- @class AsyncFileWriter
+local AsyncFileWriter = {}
+
 --- @param filename string
 --- @param opts {trim:boolean?}|nil
 --- @return string?
