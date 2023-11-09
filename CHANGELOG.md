@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.1](https://github.com/linrongbin16/fzfx.nvim/compare/v2.5.0...v2.5.1) (2023-11-09)
+
+
+### Performance Improvements
+
+* **fzf:** optimize curl responding speed ([#384](https://github.com/linrongbin16/fzfx.nvim/issues/384)) ([64ec61d](https://github.com/linrongbin16/fzfx.nvim/commit/64ec61db80ab9eb7f9c3b51bcfa190d93421291b))
+
 ## [2.5.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.4.0...v2.5.0) (2023-11-09)
 
 
