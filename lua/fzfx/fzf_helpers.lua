@@ -415,6 +415,7 @@ local M = {
     _get_visual_lines = _get_visual_lines,
     _visual_select = _visual_select,
     get_command_feed = get_command_feed,
+    make_last_query_cache = make_last_query_cache,
     preprocess_fzf_opts = preprocess_fzf_opts,
     _generate_fzf_color_opts = _generate_fzf_color_opts,
     _generate_fzf_icon_opts = _generate_fzf_icon_opts,

@@ -133,10 +133,7 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
         provider_configs = provider_configs_map,
         metafile = _make_cache_filename("provider", "metafile", name),
         resultfile = _make_cache_filename("provider", "resultfile", name),
-        lastqueryfile = path.join(
-            conf.get_config().cache.dir,
-            string.format("_%s_last_query_cache", name)
-        ),
+        lastqueryfile = fzf_helpers.make_last_query_cache(name),
     }
     setmetatable(o, self)
     self.__index = self
@@ -191,7 +188,9 @@ function ProviderSwitch:provide(name, query, context)
     local metaopts = make_provider_meta_opts(self.pipeline, provider_config)
     local metajson = json.encode(metaopts) --[[@as string]]
     utils.writefile(self.metafile, metajson)
-    utils.writefile(self.lastqueryfile, query or "")
+    vim.schedule_wrap(function()
+        utils.writefile(self.lastqueryfile, query or "")
+    end)
 
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then
         log.ensure(
