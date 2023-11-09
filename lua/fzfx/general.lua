@@ -844,22 +844,23 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         },
     }
 
+    local fzf_focus_event = fzf_helpers.FzfOptEventBinder:new("focus")
+    local fzf_load_event = fzf_helpers.FzfOptEventBinder:new("load")
+    local fzf_zero_event = fzf_helpers.FzfOptEventBinder:new("zero")
+    local fzf_change_event = fzf_helpers.FzfOptEventBinder:new("change")
     if
         type(preview_label_command) == "string"
         and string.len(preview_label_command) > 0
     then
-        table.insert(fzf_opts, {
-            "--bind",
-            string.format("focus:execute-silent(%s)", preview_label_command),
-        })
-        table.insert(fzf_opts, {
-            "--bind",
-            string.format("load:execute-silent(%s)", preview_label_command),
-        })
-        table.insert(fzf_opts, {
-            "--bind",
-            string.format("zero:execute-silent(%s)", preview_label_command),
-        })
+        fzf_focus_event:append(
+            string.format("execute-silent(%s)", preview_label_command)
+        )
+        fzf_load_event:append(
+            string.format("execute-silent(%s)", preview_label_command)
+        )
+        fzf_zero_event:append(
+            string.format("execute-silent(%s)", preview_label_command)
+        )
     end
 
     local dump_fzf_port_command = string.format(
@@ -975,11 +976,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         type(pipeline_configs.other_opts) == "table"
         and pipeline_configs.other_opts.reload_on_change
     then
-        table.insert(fzf_opts, {
-            "--bind",
-            string.format("change:reload:%s", reload_query_command),
-        })
+        fzf_change_event:append(
+            string.format("reload(%s)", reload_query_command)
+        )
     end
+    table.insert(fzf_opts, fzf_focus_event:build())
+    table.insert(fzf_opts, fzf_load_event:build())
+    table.insert(fzf_opts, fzf_zero_event:build())
+    table.insert(fzf_opts, fzf_change_event:build())
     table.insert(fzf_opts, "--listen")
     table.insert(fzf_opts, { "--bind", fzf_start_event_opts })
 

@@ -320,6 +320,44 @@ local function send_http_post(port, body)
     asp:run()
 end
 
+--- @alias FzfOptEvent "focus"|"load"|"zero"|"change"
+--- @class FzfOptEventBinder
+--- @field event FzfOptEvent
+--- @field opts string[]
+local FzfOptEventBinder = {}
+
+--- @param event FzfOptEvent
+--- @return FzfOptEventBinder
+function FzfOptEventBinder:new(event)
+    local o = {
+        event = event,
+        opts = {},
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+--- @param opt string
+--- @return FzfOptEventBinder
+function FzfOptEventBinder:append(opt)
+    log.ensure(
+        utils.string_not_blank(opt),
+        "|fzfx.fzf_helpers - FzfOptEventBinder:append| opt must not blank:%s",
+        vim.inspect(opt)
+    )
+    table.insert(self.opts, opt)
+    return self
+end
+
+--- @return FzfOpt?
+function FzfOptEventBinder:build()
+    if #self.opts == 0 then
+        return nil
+    end
+    return { "--bind", self.event .. ":" .. table.concat(self.opts, "+") }
+end
+
 local function setup()
     local recalculating = false
     vim.api.nvim_create_autocmd("ColorScheme", {
@@ -346,6 +384,7 @@ local M = {
     _generate_fzf_icon_opts = _generate_fzf_icon_opts,
     make_fzf_opts = make_fzf_opts,
     make_fzf_default_opts = make_fzf_default_opts,
+    FzfOptEventBinder = FzfOptEventBinder,
     nvim_exec = nvim_exec,
     fzf_exec = fzf_exec,
     make_lua_command = make_lua_command,
