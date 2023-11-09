@@ -779,6 +779,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         or default_context_maker
 
     local context = context_maker()
+    local rpc_registries = {}
 
     --- @param query_params string
     local function provide_rpc(query_params)
@@ -790,15 +791,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch:preview(name, line_params, context)
     end
 
-    local provide_rpc_registry_id =
-        server.get_rpc_server():register(provide_rpc)
-    local preview_rpc_registry_id =
-        server.get_rpc_server():register(preview_rpc)
+    local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
+    local preview_rpc_id = server.get_rpc_server():register(preview_rpc)
+    table.insert(rpc_registries, provide_rpc_id)
+    table.insert(rpc_registries, preview_rpc_id)
 
     local query_command = string.format(
         "%s %s %s %s %s",
         fzf_helpers.make_lua_command("general", "provider.lua"),
-        provide_rpc_registry_id,
+        provide_rpc_id,
         provider_switch.metafile,
         provider_switch.resultfile,
         utils.shellescape(query)
@@ -810,7 +811,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local reload_query_command = string.format(
         "%s %s %s %s {q}",
         fzf_helpers.make_lua_command("general", "provider.lua"),
-        provide_rpc_registry_id,
+        provide_rpc_id,
         provider_switch.metafile,
         provider_switch.resultfile
     )
@@ -821,7 +822,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local preview_command = string.format(
         "%s %s %s %s {}",
         fzf_helpers.make_lua_command("general", "previewer.lua"),
-        preview_rpc_registry_id,
+        preview_rpc_id,
         previewer_switch.metafile,
         previewer_switch.resultfile
     )
@@ -836,12 +837,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         local function preview_label_rpc(line_params)
             previewer_switch:preview_label(name, line_params, context)
         end
-        local preview_label_rpc_registry_id =
+        local preview_label_rpc_id =
             server.get_rpc_server():register(preview_label_rpc)
+        table.insert(rpc_registries, preview_label_rpc_id)
         preview_label_command = string.format(
             "%s %s {}",
             fzf_helpers.make_lua_command("rpc", "notify.lua"),
-            preview_label_rpc_registry_id
+            preview_label_rpc_id
         )
         log.debug(
             "|fzfx.general - general| preview_label_command:%s",
@@ -894,7 +896,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         })
     end
 
-    local interaction_rpc_registries = {}
     -- when no interactions, no need to add help
     if type(pipeline_configs.interactions) == "table" then
         for _, interaction_opts in pairs(pipeline_configs.interactions) do
@@ -909,17 +910,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 action(line_params, context)
             end
 
-            local interaction_rpc_registry_id =
+            local interaction_rpc_id =
                 server.get_rpc_server():register(interaction_rpc)
-            table.insert(
-                interaction_rpc_registries,
-                interaction_rpc_registry_id
-            )
+            table.insert(rpc_registries, interaction_rpc_id)
 
             local action_command = string.format(
                 "%s %s {}",
                 fzf_helpers.make_lua_command("rpc", "request.lua"),
-                interaction_rpc_registry_id
+                interaction_rpc_id
             )
             local bind_builder = string.format(
                 "%s:execute-silent(%s)",
@@ -937,8 +935,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         end
     end
 
-    local switch_rpc_registries = {}
-
     -- when only have 1 pipeline, no need to add help for switch keys
     if pipeline_size > 1 then
         for pipeline, provider_opts in pairs(pipeline_configs.providers) do
@@ -949,14 +945,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 previewer_switch:switch(pipeline)
             end
 
-            local switch_rpc_registry_id =
-                server.get_rpc_server():register(switch_rpc)
-            table.insert(switch_rpc_registries, switch_rpc_registry_id)
+            local switch_rpc_id = server.get_rpc_server():register(switch_rpc)
+            table.insert(rpc_registries, switch_rpc_id)
 
             local switch_command = string.format(
                 "%s %s",
                 fzf_helpers.make_lua_command("rpc", "request.lua"),
-                switch_rpc_registry_id
+                switch_rpc_id
             )
             local bind_builder = string.format(
                 "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+reload(%s)",
@@ -1024,11 +1019,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         actions,
         context,
         function()
-            server.get_rpc_server():unregister(provide_rpc_registry_id)
-            server.get_rpc_server():unregister(preview_rpc_registry_id)
-            for _, switch_registry_id in ipairs(switch_rpc_registries) do
-                server.get_rpc_server():unregister(switch_registry_id)
-            end
+            vim.schedule_wrap(function()
+                for _, rpc_id in ipairs(rpc_registries) do
+                    server:get_rpc_server():unregister(rpc_id)
+                end
+            end)
         end
     )
     return p
