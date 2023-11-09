@@ -83,6 +83,13 @@ describe("helpers", function()
                 "",
                 "test6"
             )
+            print(
+                string.format(
+                    "resume:%s, %s\n",
+                    vim.inspect(actual3),
+                    vim.inspect(actual4)
+                )
+            )
             assert_eq(actual3, "query")
             assert_eq(actual4, "provider")
         end)
