@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.5.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.4.0...v2.5.0) (2023-11-09)
+
+
+### Features
+
+* **fzf:** support plain string as previewer label ([#376](https://github.com/linrongbin16/fzfx.nvim/issues/376)) ([a3048c2](https://github.com/linrongbin16/fzfx.nvim/commit/a3048c2dccd5c3f74d150969a7928b6c1627cb99))
+* **preview:** add label for rg/grep preview window ([#374](https://github.com/linrongbin16/fzfx.nvim/issues/374)) ([b82790f](https://github.com/linrongbin16/fzfx.nvim/commit/b82790f28728a6792aa4600465e7219949be78a1))
+* **preview:** add vim commands, keymaps previewer label ([#380](https://github.com/linrongbin16/fzfx.nvim/issues/380)) ([c719e30](https://github.com/linrongbin16/fzfx.nvim/commit/c719e308899fd222e72efc0247f73a299a7c62d4))
+
 ## [2.4.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.3.0...v2.4.0) (2023-11-08)
 
 
