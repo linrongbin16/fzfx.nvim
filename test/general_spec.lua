@@ -373,9 +373,6 @@ describe("general", function()
     describe("[PreviewerSwitch:preview_label]", function()
         it("not previews label", function()
             local name = "label_test1"
-            local fzf_port_file =
-                general._make_cache_filename("previewer", "fzfport", name)
-            utils.writefile(fzf_port_file, "12345")
             local ps = general.PreviewerSwitch:new(name, "p1", {
                 p1 = {
                     previewer = function()
@@ -395,13 +392,9 @@ describe("general", function()
                     os.getenv("GITHUB_ACTIONS")
                 )
             )
-            assert_true(
-                ps:preview_label("p1", "hello", {}, fzf_port_file) == nil
-            )
+            assert_true(ps:preview_label("hello", {}) == nil)
             ps:switch("p2")
-            assert_true(
-                ps:preview_label("p2", "world", {}, fzf_port_file) == nil
-            )
+            assert_true(ps:preview_label("world", {}) == nil)
         end)
         it("previews label", function()
             local name = "label_test2"
@@ -433,9 +426,9 @@ describe("general", function()
                     os.getenv("GITHUB_ACTIONS")
                 )
             )
-            assert_true(ps:preview_label("p1", "hello", {}) == nil)
+            assert_true(ps:preview_label("hello", {}) == "p1")
             ps:switch("p2")
-            assert_true(ps:preview_label("p2", "world", {}) == nil)
+            assert_true(ps:preview_label("world", {}) == "p2")
         end)
     end)
     describe("[_render_help]", function()

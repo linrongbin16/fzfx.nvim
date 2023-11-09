@@ -24,24 +24,54 @@ describe("helpers", function()
         console_log = false,
         file_log = false,
     })
+    describe("[make_last_query_cache]", function()
+        it("makes", function()
+            local actual = fzf_helpers.make_last_query_cache("test")
+            print(string.format("last query cache:%s\n", vim.inspect(actual)))
+            assert_true(utils.string_find(actual, "_test_") > 0)
+        end)
+    end)
     describe("[get_command_feed]", function()
         it("get normal args feed", function()
             local expect = "expect"
             local actual = fzf_helpers.get_command_feed(
-                { args = expect },
-                CommandFeedEnum.ARGS
+                CommandFeedEnum.ARGS,
+                expect,
+                "test1"
             )
             assert_eq(expect, actual)
         end)
         it("get visual select feed", function()
-            local actual =
-                fzf_helpers.get_command_feed({}, CommandFeedEnum.VISUAL)
+            local actual = fzf_helpers.get_command_feed(
+                CommandFeedEnum.VISUAL,
+                "",
+                "test2"
+            )
             assert_eq(type(actual), "string")
         end)
         it("get cword feed", function()
             local actual =
-                fzf_helpers.get_command_feed({}, CommandFeedEnum.CWORD)
+                fzf_helpers.get_command_feed(CommandFeedEnum.CWORD, "", "test3")
             assert_eq(type(actual), "string")
+        end)
+        it("get yank text feed", function()
+            local ok, result = pcall(
+                fzf_helpers.get_command_feed,
+                CommandFeedEnum.PUT,
+                "",
+                "test4"
+            )
+            assert_eq(type(ok), "boolean")
+            assert_true(type(result) == "string" or result == nil)
+        end)
+        it("get resume feed", function()
+            local actual1, actual2 = fzf_helpers.get_command_feed(
+                CommandFeedEnum.RESUME,
+                "",
+                "test5"
+            )
+            assert_eq(type(actual1), "string")
+            assert_true(actual2 == nil or type(actual2) == "string")
         end)
     end)
     describe("[_get_visual_lines]", function()

@@ -540,11 +540,10 @@ function PreviewerSwitch:preview(name, line, context)
     return previewer_config.previewer_type
 end
 
---- @param name string
 --- @param line string?
 --- @param context PipelineContext
 --- @return string?
-function PreviewerSwitch:preview_label(name, line, context)
+function PreviewerSwitch:preview_label(line, context)
     local previewer_config = self.previewer_configs[self.pipeline]
     -- log.debug(
     --     "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
@@ -554,8 +553,7 @@ function PreviewerSwitch:preview_label(name, line, context)
     -- )
     log.ensure(
         type(previewer_config) == "table",
-        "invalid previewer config in %s! pipeline: %s, previewer config: %s",
-        vim.inspect(name),
+        "invalid previewer config in %s! previewer config: %s",
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
@@ -564,8 +562,7 @@ function PreviewerSwitch:preview_label(name, line, context)
             or previewer_config.previewer_label == nil
             or type(previewer_config.previewer_label) == "boolean"
             or type(previewer_config.previewer_label) == "string",
-        "invalid previewer label in %s! pipeline: %s, previewer: %s",
-        vim.inspect(name),
+        "invalid previewer label in %s! previewer: %s",
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
@@ -848,7 +845,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
-            previewer_switch:preview_label(name, line_params, context)
+            previewer_switch:preview_label(line_params, context)
         end
         local preview_label_rpc_id =
             server.get_rpc_server():register(preview_label_rpc)
