@@ -1039,7 +1039,8 @@ end
 --- @param group_config GroupConfig
 local function _make_user_command(name, command_config, group_config)
     vim.api.nvim_create_user_command(command_config.name, function(opts)
-        local query = fzf_helpers.get_command_feed(opts, command_config.feed)
+        local query =
+            fzf_helpers.get_command_feed(command_config.feed, opts.args, name)
         return general(
             name,
             query,

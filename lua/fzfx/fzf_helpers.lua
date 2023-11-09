@@ -84,13 +84,23 @@ end
 
 -- visual select }
 
---- @param opts Options
---- @param feed_type CommandFeed
+--- @param name string
 --- @return string
-local function get_command_feed(opts, feed_type)
+local function make_last_query_cache(name)
+    return path.join(
+        conf.get_config().cache.dir,
+        string.format("_%s_last_query_cache", name)
+    )
+end
+
+--- @param feed_type CommandFeed
+--- @param input_args string
+--- @param pipeline_name string
+--- @return string
+local function get_command_feed(feed_type, input_args, pipeline_name)
     feed_type = string.lower(feed_type)
     if feed_type == "args" then
-        return opts.args
+        return input_args
     elseif feed_type == "visual" then
         return _visual_select()
     elseif feed_type == "cword" then
@@ -99,6 +109,7 @@ local function get_command_feed(opts, feed_type)
         local y = yank_history.get_yank()
         return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
     elseif feed_type == "resume" then
+        local c = make_last_query_cache(pipeline_name)
         local y = yank_history.get_yank()
         return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
     else
