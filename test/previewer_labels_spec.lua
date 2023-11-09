@@ -89,7 +89,7 @@ describe("previewer_labels", function()
             end
         end)
     end)
-    describe("[vim_commands_previewer_label]", function()
+    describe("[vim_command_previewer_label]", function()
         local CONTEXT = {
             name_width = 17,
             opts_width = 37,
@@ -102,7 +102,7 @@ describe("previewer_labels", function()
             }
             for _, line in ipairs(lines) do
                 local actual =
-                    previewer_labels.vim_commands_previewer_label(line, CONTEXT)
+                    previewer_labels.vim_command_previewer_label(line, CONTEXT)
                 assert_eq(type(actual), "string")
                 local actual_splits = utils.string_split(actual, ":")
                 assert_eq(#actual_splits, 2)
@@ -116,7 +116,7 @@ describe("previewer_labels", function()
             }
             for _, line in ipairs(lines) do
                 local actual =
-                    previewer_labels.vim_commands_previewer_label(line, CONTEXT)
+                    previewer_labels.vim_command_previewer_label(line, CONTEXT)
                 assert_eq(type(actual), "string")
                 assert_eq(actual, "Description")
             end

@@ -941,7 +941,7 @@ local function _render_vim_commands(commands, name_width, opts_width)
 
     local NAME = "Name"
     local OPTS = "Bang|Bar|Nargs|Range|Complete"
-    local DESC_OR_LOC = "Desc/Location"
+    local DEF_OR_LOC = "Definition/Location"
 
     local results = {}
     local formatter = "%-"
@@ -951,7 +951,7 @@ local function _render_vim_commands(commands, name_width, opts_width)
         .. "%-"
         .. tostring(opts_width)
         .. "s %s"
-    local header = string.format(formatter, NAME, OPTS, DESC_OR_LOC)
+    local header = string.format(formatter, NAME, OPTS, DEF_OR_LOC)
     table.insert(results, header)
     log.debug(
         "|fzfx.config - _render_vim_commands| formatter:%s, header:%s",
@@ -3278,17 +3278,17 @@ local Defaults = {
             all_commands = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_commands_previewer_label,
+                previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
             },
             ex_commands = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_commands_previewer_label,
+                previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
             },
             user_commands = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_commands_previewer_label,
+                previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
             },
         },
         actions = {
@@ -3498,18 +3498,22 @@ local Defaults = {
             all_mode = {
                 previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
             },
             n_mode = {
                 previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
             },
             i_mode = {
                 previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
             },
             v_mode = {
                 previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
             },
         },
         actions = {
