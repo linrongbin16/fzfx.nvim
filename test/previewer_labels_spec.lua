@@ -94,7 +94,7 @@ describe("previewer_labels", function()
             name_width = 17,
             opts_width = 37,
         }
-        it("previews filename & lineno", function()
+        it("previews location", function()
             local lines = {
                 ":                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1121",
                 ":!                N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1122",
@@ -118,7 +118,42 @@ describe("previewer_labels", function()
                 local actual =
                     previewer_labels.vim_command_previewer_label(line, CONTEXT)
                 assert_eq(type(actual), "string")
-                assert_eq(actual, "Description")
+                assert_eq(actual, "Definition")
+            end
+        end)
+    end)
+    describe("[vim_keymap_previewer_label]", function()
+        local CONTEXT = {
+            key_width = 44,
+            opts_width = 26,
+        }
+        it("previews location", function()
+            local lines = {
+                "<C-F>                                            |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127",
+                "<CR>                                             |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127",
+                "<Plug>(YankyGPutAfterShiftRight)             n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369",
+            }
+            for _, line in ipairs(lines) do
+                local actual =
+                    previewer_labels.vim_keymap_previewer_label(line, CONTEXT)
+                assert_eq(type(actual), "string")
+                local actual_splits = utils.string_split(actual, ":")
+                assert_eq(#actual_splits, 2)
+                assert_true(utils.string_find(line, actual_splits[1]) > 0)
+                assert_true(utils.string_endswith(line, actual_splits[2]))
+            end
+        end)
+        it("previews definition", function()
+            local lines = {
+                '%                                            n   |N      |N     |Y      "<Plug>(matchup-%)"',
+                '&                                            n   |Y      |N     |N      ":&&<CR>"',
+                '<2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"',
+            }
+            for _, line in ipairs(lines) do
+                local actual =
+                    previewer_labels.vim_keymap_previewer_label(line, CONTEXT)
+                assert_eq(type(actual), "string")
+                assert_eq(actual, "Definition")
             end
         end)
     end)

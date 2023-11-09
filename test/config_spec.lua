@@ -666,7 +666,7 @@ describe("config", function()
             assert_eq(type(actual), "table")
             assert_eq(#actual, 3)
             assert_true(utils.string_startswith(actual[1], "Name"))
-            assert_true(utils.string_endswith(actual[1], "Desc/Location"))
+            assert_true(utils.string_endswith(actual[1], "Definition/Location"))
             assert_true(utils.string_startswith(actual[2], "FzfxGBranches"))
             local expect = string.format(
                 "%s:%d",
