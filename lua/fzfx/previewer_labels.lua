@@ -110,6 +110,9 @@ local M = {
     rg_previewer_label = rg_previewer_label,
     _make_grep_previewer_label = _make_grep_previewer_label,
     grep_previewer_label = grep_previewer_label,
+
+    -- commands
+    vim_commands_previewer_label = vim_commands_previewer_label,
 }
 
 return M

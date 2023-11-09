@@ -89,4 +89,37 @@ describe("previewer_labels", function()
             end
         end)
     end)
+    describe("[vim_commands_previewer_label]", function()
+        local CONTEXT = {
+            name_width = 17,
+            opts_width = 37,
+        }
+        it("previews filename & lineno", function()
+            local lines = {
+                ":                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1121",
+                ":!                N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1122",
+                ":Next             N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124",
+            }
+            for _, line in ipairs(lines) do
+                local actual =
+                    previewer_labels.vim_commands_previewer_label(line, CONTEXT)
+                assert_eq(type(actual), "string")
+                local actual_splits = utils.string_split(actual, ":")
+                assert_eq(#actual_splits, 2)
+                assert_true(utils.string_find(line, actual_splits[1]) > 0)
+                assert_true(utils.string_endswith(line, actual_splits[2]))
+            end
+        end)
+        it("previews description", function()
+            local lines = {
+                ':bdelete          N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
+            }
+            for _, line in ipairs(lines) do
+                local actual =
+                    previewer_labels.vim_commands_previewer_label(line, CONTEXT)
+                assert_eq(type(actual), "string")
+                assert_eq(actual, "Description")
+            end
+        end)
+    end)
 end)
