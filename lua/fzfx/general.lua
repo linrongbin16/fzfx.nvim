@@ -100,6 +100,7 @@ end
 --- @field provider_configs table<PipelineName, ProviderConfig>
 --- @field metafile string
 --- @field resultfile string
+--- @field default_provider string
 --- @field lastqueryfile string
 local ProviderSwitch = {}
 
@@ -133,6 +134,7 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
         provider_configs = provider_configs_map,
         metafile = _make_cache_filename("provider", "metafile", name),
         resultfile = _make_cache_filename("provider", "resultfile", name),
+        default_provider = pipeline,
         lastqueryfile = fzf_helpers.make_last_query_cache(name),
     }
     setmetatable(o, self)
@@ -188,8 +190,15 @@ function ProviderSwitch:provide(name, query, context)
     local metaopts = make_provider_meta_opts(self.pipeline, provider_config)
     local metajson = json.encode(metaopts) --[[@as string]]
     utils.writefile(self.metafile, metajson)
+
     vim.schedule_wrap(function()
-        utils.writefile(self.lastqueryfile, query or "")
+        utils.writefile(
+            self.lastqueryfile,
+            json.encode({
+                default_provider = self.default_provider,
+                query = query or "",
+            }) --[[@as string]]
+        )
     end)
 
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then
@@ -340,7 +349,7 @@ end
 --- @class PreviewerSwitch
 --- @field pipeline PipelineName
 --- @field previewer_configs table<PipelineName, PreviewerConfig>
---- @field previewer_labels table<PipelineName, string?>
+--- @field previewer_labels_queue table<PipelineName, {line:string?,context:PipelineContext}>
 --- @field metafile string
 --- @field resultfile string
 --- @field fzfportfile string
@@ -374,7 +383,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local o = {
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
-        previewer_labels = {},
+        previewer_labels_queue = {},
         metafile = _make_cache_filename("previewer", "metafile", name),
         resultfile = _make_cache_filename("previewer", "resultfile", name),
         fzfportfile = _make_cache_filename("previewer", "fzfport", name),
@@ -569,23 +578,28 @@ function PreviewerSwitch:preview_label(name, line, context)
     then
         return
     end
-    local label = type(previewer_config.previewer_label) == "function"
-            and previewer_config.previewer_label(line, context)
-        or previewer_config.previewer_label
-    log.debug(
-        "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
-        vim.inspect(line),
-        vim.inspect(label)
-    )
-    if type(label) ~= "string" then
-        return
-    end
-    self.previewer_labels[self.pipeline] = label
+    self.previewer_labels_queue[self.pipeline] =
+        { line = line, context = context }
 
     -- do it async/later
     vim.defer_fn(function()
-        local last_label = self.previewer_labels[self.pipeline]
-        self.previewer_labels[self.pipeline] = nil
+        local saved_item = self.previewer_labels_queue[self.pipeline]
+        self.previewer_labels_queue[self.pipeline] = nil
+
+        if type(saved_item) ~= "table" then
+            return
+        end
+        local last_label = type(previewer_config.previewer_label) == "function"
+                and previewer_config.previewer_label(
+                    saved_item.line,
+                    saved_item.context
+                )
+            or previewer_config.previewer_label
+        log.debug(
+            "|fzfx.general - PreviewerSwitch:preview_label| saved context:%s, last_label:%s",
+            vim.inspect(saved_item),
+            vim.inspect(last_label)
+        )
         if type(last_label) ~= "string" then
             return
         end
@@ -596,7 +610,7 @@ function PreviewerSwitch:preview_label(name, line, context)
         )
     end, 100)
 
-    return label
+    return self.pipeline
 end
 
 -- previewer switch }
