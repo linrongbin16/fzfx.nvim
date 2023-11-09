@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.2](https://github.com/linrongbin16/fzfx.nvim/compare/v2.5.1...v2.5.2) (2023-11-09)
+
+
+### Bug Fixes
+
+* **rpc:** release rpc registries after fzf exit ([#388](https://github.com/linrongbin16/fzfx.nvim/issues/388)) ([52fb9ed](https://github.com/linrongbin16/fzfx.nvim/commit/52fb9ed3d77bc4a86c22ef29675d53b5a3c85185))
+
 ## [2.5.1](https://github.com/linrongbin16/fzfx.nvim/compare/v2.5.0...v2.5.1) (2023-11-09)
 
 
