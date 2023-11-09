@@ -18,6 +18,7 @@ describe("helpers", function()
     local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
     local fzf_helpers = require("fzfx.fzf_helpers")
     local utils = require("fzfx.utils")
+    local json = require("fzfx.json")
 
     require("fzfx.log").setup({
         level = "INFO",
@@ -72,6 +73,18 @@ describe("helpers", function()
             )
             assert_eq(type(actual1), "string")
             assert_true(actual2 == nil or type(actual2) == "string")
+            local cache = fzf_helpers.make_last_query_cache("test6")
+            utils.writefile(
+                cache,
+                json.encode({ default_provider = "provider", query = "query" }) --[[@as string]]
+            )
+            local actual3, actual4 = fzf_helpers.get_command_feed(
+                CommandFeedEnum.RESUME,
+                "",
+                "test6"
+            )
+            assert_eq(actual3, "query")
+            assert_eq(actual4, "provider")
         end)
     end)
     describe("[_get_visual_lines]", function()
