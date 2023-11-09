@@ -75,13 +75,12 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [git](https://git-scm.com/) (mandatory for **git** commands), [delta](https://github.com/dandavison/delta) (optional for preview git **diff, show, blame**).
 - [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-### Note
+### Windows
 
 `grep`, `find`, `cat` are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat` should be better choice.
 
-While still recommend Windows users [install linux shell commands](#windows) since utils like `echo`, `curl` are internally used by somewhere.
+While still recommend Windows users install linux shell commands, since utils like `echo`, `curl` are internally used.
 
-### Windows
 
 <details>
 <summary><b>Click here to see how to install linux commands on Windows</b></summary>
