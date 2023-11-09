@@ -300,6 +300,8 @@ local function send_http_post(port, body)
         "-s",
         "-S",
         "--disable",
+        "--parallel",
+        "--parallel-immediate",
         "--noproxy",
         "*",
         "-XPOST",

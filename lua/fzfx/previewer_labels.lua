@@ -77,6 +77,44 @@ local function grep_previewer_label(line)
     return f(line)
 end
 
+--- @param parser fun(line:string,context:VimCommandsPipelineContext|VimKeyMapsPipelineContext):table|string
+--- @param default_value string
+--- @return fun(line:string,context:VimCommandsPipelineContext|VimKeyMapsPipelineContext):string?
+local function _make_vim_command_previewer_label(parser, default_value)
+    --- @param line string?
+    --- @param context VimCommandsPipelineContext
+    --- @return string
+    local function impl(line, context)
+        if type(line) ~= "string" or string.len(line) == 0 then
+            return ""
+        end
+        local parsed = parser(line, context)
+        if
+            type(parsed) == "table"
+            and type(parsed.filename) == "string"
+            and string.len(parsed.filename) > 0
+            and type(parsed.lineno) == "number"
+        then
+            return string.format(
+                "%s:%d",
+                vim.fn.fnamemodify(parsed.filename, ":t"),
+                parsed.lineno
+            )
+        end
+        return default_value
+    end
+    return impl
+end
+
+local vim_command_previewer_label = _make_vim_command_previewer_label(
+    line_helpers.parse_vim_command,
+    "Definition"
+)
+local vim_keymap_previewer_label = _make_vim_command_previewer_label(
+    line_helpers.parse_vim_keymap,
+    "Definition"
+)
+
 local M = {
     -- find/buffers/git files
     _make_find_previewer_label = _make_find_previewer_label,
@@ -87,6 +125,11 @@ local M = {
     rg_previewer_label = rg_previewer_label,
     _make_grep_previewer_label = _make_grep_previewer_label,
     grep_previewer_label = grep_previewer_label,
+
+    -- command/keymap
+    _make_vim_command_previewer_label = _make_vim_command_previewer_label,
+    vim_command_previewer_label = vim_command_previewer_label,
+    vim_keymap_previewer_label = vim_keymap_previewer_label,
 }
 
 return M
