@@ -252,7 +252,7 @@ Commands are named following below rules:
 - The visual select variant is named with `V` suffix.
 - The cursor word variant is named with `W` suffix.
 - The yank text variant is named with `P` suffix (just like press the `p` key).
-- The resume last search variant is named with `R` suffix.
+- The resume last search variant is named with `L` suffix.
 - The only current buffer variant is named with `B` suffix.
 
 > Note: command names can be configured, see [Configuration](#-configuration).
