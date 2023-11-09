@@ -167,7 +167,7 @@ describe("line_helpers", function()
                 "README.md",
                 "deps",
                 "init.vim",
-                "'hello world.txt'",
+                "hello world.txt",
                 "LICENSE",
                 "README.md",
                 "autoload",
