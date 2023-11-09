@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.4.0...v2.5.0) (2023-11-09)
+
+
+### Features
+
+* **preview:** add label for rg/grep preview window ([#374](https://github.com/linrongbin16/fzfx.nvim/issues/374)) ([b82790f](https://github.com/linrongbin16/fzfx.nvim/commit/b82790f28728a6792aa4600465e7219949be78a1))
+
 ## [2.4.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.3.0...v2.4.0) (2023-11-08)
 
 
