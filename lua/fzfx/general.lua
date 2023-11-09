@@ -573,17 +573,21 @@ function PreviewerSwitch:preview_label(line, context)
     then
         return
     end
+    -- log.debug(
+    --     "|fzfx.general - PreviewerSwitch:preview_label| start, line:%s",
+    --     vim.inspect(line)
+    -- )
 
     -- emit later
     vim.defer_fn(function()
         local label = type(previewer_config.previewer_label) == "function"
                 and previewer_config.previewer_label(line, context)
             or previewer_config.previewer_label
-        log.debug(
-            "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
-            vim.inspect(line),
-            vim.inspect(label)
-        )
+        -- log.debug(
+        --     "|fzfx.general - PreviewerSwitch:preview_label| defer, line:%s, label:%s",
+        --     vim.inspect(line),
+        --     vim.inspect(label)
+        -- )
         if type(label) ~= "string" then
             return
         end
@@ -839,7 +843,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         table.insert(rpc_registries, preview_label_rpc_id)
         preview_label_command = string.format(
             "%s %s {}",
-            fzf_helpers.make_lua_command("rpc", "notify.lua"),
+            fzf_helpers.make_lua_command("rpc", "request.lua"),
             preview_label_rpc_id
         )
         log.debug(
