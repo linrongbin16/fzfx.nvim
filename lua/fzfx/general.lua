@@ -820,7 +820,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         end
         --- @param query_params string
         local function dump_last_query_rpc(query_params)
-            vim.schedule_wrap(function()
+            vim.defer_fn(function()
                 log.debug(
                     "|fzfx.general - general| query cache:%s",
                     vim.inspect(lastqueryfile)
@@ -832,7 +832,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                         query = query_params,
                     }) --[[@as string]]
                 )
-            end)
+            end, 50)
         end
         local preview_label_rpc_id =
             server.get_rpc_server():register(preview_label_rpc)
@@ -846,7 +846,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             preview_label_rpc_id
         )
         dump_last_query_command = string.format(
-            "%s %s {}",
+            "%s %s {q}",
             fzf_helpers.make_lua_command("rpc", "request.lua"),
             dump_last_query_rpc_id
         )
@@ -1030,7 +1030,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         actions,
         context,
         function()
-            vim.schedule_wrap(function()
+            vim.schedule(function()
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
                 end
