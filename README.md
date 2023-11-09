@@ -79,7 +79,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 `grep`, `find`, `cat` are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat` should be better choice.
 
-While still recommend Windows users install linux shell commands, since utils like `echo`, `curl` are internally used.
+While still recommend Windows users install linux shell commands, since utils like `echo`, `curl` are internally used by somewhere.
 
 
 <details>
