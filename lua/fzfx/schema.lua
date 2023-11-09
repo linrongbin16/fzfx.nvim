@@ -95,13 +95,14 @@ local PreviewerLabelTypeEnum = {
 -- User command feeds are method that what to feed the fzfx command.
 -- E.g. visual selected, cursor word, etc.
 --
---- @alias CommandFeed "args"|"visual"|"cword"|"put"
+--- @alias CommandFeed "args"|"visual"|"cword"|"put"|"resume"
 --- @enum CommandFeedEnum
 local CommandFeedEnum = {
     ARGS = "args",
     VISUAL = "visual",
     CWORD = "cword",
     PUT = "put",
+    RESUME = "resume",
 }
 
 -- ========== Fzf Option ==========

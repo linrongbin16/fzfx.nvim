@@ -85,7 +85,7 @@ end
 -- visual select }
 
 --- @param opts Options
---- @param feed_type "args"|"visual"|"cword"|"put"
+--- @param feed_type CommandFeed
 --- @return string
 local function get_command_feed(opts, feed_type)
     feed_type = string.lower(feed_type)
@@ -96,6 +96,9 @@ local function get_command_feed(opts, feed_type)
     elseif feed_type == "cword" then
         return vim.fn.expand("<cword>")
     elseif feed_type == "put" then
+        local y = yank_history.get_yank()
+        return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
+    elseif feed_type == "resume" then
         local y = yank_history.get_yank()
         return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
     else

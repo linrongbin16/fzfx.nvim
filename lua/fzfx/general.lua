@@ -1035,6 +1035,22 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 end
 
 --- @param name string
+--- @param command_config CommandConfig
+--- @param group_config GroupConfig
+local function _make_user_command(name, command_config, group_config)
+    vim.api.nvim_create_user_command(command_config.name, function(opts)
+        local query = fzf_helpers.get_command_feed(opts, command_config.feed)
+        return general(
+            name,
+            query,
+            opts.bang,
+            group_config,
+            command_config.default_provider
+        )
+    end, command_config.opts)
+end
+
+--- @param name string
 --- @param pipeline_configs Options?
 local function setup(name, pipeline_configs)
     if not pipeline_configs then
@@ -1047,40 +1063,10 @@ local function setup(name, pipeline_configs)
     -- )
     -- User commands
     if schema.is_command_config(pipeline_configs.commands) then
-        vim.api.nvim_create_user_command(
-            pipeline_configs.commands.name,
-            function(opts)
-                local query = fzf_helpers.get_command_feed(
-                    opts,
-                    pipeline_configs.commands.feed
-                )
-                return general(
-                    name,
-                    query,
-                    opts.bang,
-                    pipeline_configs,
-                    pipeline_configs.commands.default_provider
-                )
-            end,
-            pipeline_configs.commands.opts
-        )
+        _make_user_command(name, pipeline_configs.commands, pipeline_configs)
     else
         for _, command_configs in pairs(pipeline_configs.commands) do
-            vim.api.nvim_create_user_command(
-                command_configs.name,
-                function(opts)
-                    local query =
-                        fzf_helpers.get_command_feed(opts, command_configs.feed)
-                    return general(
-                        name,
-                        query,
-                        opts.bang,
-                        pipeline_configs,
-                        command_configs.default_provider
-                    )
-                end,
-                command_configs.opts
-            )
+            _make_user_command(name, command_configs, pipeline_configs)
         end
     end
 end
@@ -1096,6 +1082,7 @@ local M = {
     _should_skip_help = _should_skip_help,
     _make_help_doc = _make_help_doc,
     HeaderSwitch = HeaderSwitch,
+    _make_user_command = _make_user_command,
 }
 
 return M
