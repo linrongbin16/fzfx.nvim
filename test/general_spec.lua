@@ -639,4 +639,14 @@ describe("general", function()
             assert_eq(actual.previewer_type, "list")
         end)
     end)
+    describe("[_make_user_command]", function()
+        it("makes", function()
+            local actual = general._make_user_command(
+                "live_grep_test",
+                conf.get_config().live_grep.commands[1],
+                conf.get_config().live_grep
+            )
+            assert_true(actual == nil)
+        end)
+    end)
 end)
