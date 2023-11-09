@@ -100,8 +100,6 @@ end
 --- @field provider_configs table<PipelineName, ProviderConfig>
 --- @field metafile string
 --- @field resultfile string
---- @field default_provider string
---- @field lastqueryfile string
 local ProviderSwitch = {}
 
 --- @param name string
@@ -134,8 +132,6 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
         provider_configs = provider_configs_map,
         metafile = _make_cache_filename("provider", "metafile", name),
         resultfile = _make_cache_filename("provider", "resultfile", name),
-        default_provider = pipeline,
-        lastqueryfile = fzf_helpers.make_last_query_cache(name),
     }
     setmetatable(o, self)
     self.__index = self
@@ -152,12 +148,12 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(query, context)
     local provider_config = self.provider_configs[self.pipeline]
-    -- log.debug(
-    --     "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
-    --     vim.inspect(self.pipeline),
-    --     vim.inspect(provider_config),
-    --     vim.inspect(context)
-    -- )
+    log.debug(
+        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
+        vim.inspect(self.pipeline),
+        vim.inspect(provider_config),
+        vim.inspect(context)
+    )
     log.ensure(
         type(provider_config) == "table",
         "invalid provider config in %s! provider config: %s",
@@ -186,16 +182,6 @@ function ProviderSwitch:provide(query, context)
     local metaopts = make_provider_meta_opts(self.pipeline, provider_config)
     local metajson = json.encode(metaopts) --[[@as string]]
     utils.writefile(self.metafile, metajson)
-
-    vim.schedule_wrap(function()
-        utils.writefile(
-            self.lastqueryfile,
-            json.encode({
-                default_provider = self.default_provider,
-                query = query or "",
-            }) --[[@as string]]
-        )
-    end)
 
     if provider_config.provider_type == ProviderTypeEnum.PLAIN then
         log.ensure(
@@ -825,22 +811,52 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
 
     local preview_label_command = nil
+    local lastqueryfile = fzf_helpers.make_last_query_cache(name)
+    local dump_last_query_command = nil
     if constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
             previewer_switch:preview_label(line_params, context)
         end
+        --- @param query_params string
+        local function dump_last_query_rpc(query_params)
+            vim.schedule_wrap(function()
+                log.debug(
+                    "|fzfx.general - general| query cache:%s",
+                    vim.inspect(lastqueryfile)
+                )
+                utils.writefile(
+                    lastqueryfile,
+                    json.encode({
+                        default_provider = provider_switch.pipeline,
+                        query = query_params,
+                    }) --[[@as string]]
+                )
+            end)
+        end
         local preview_label_rpc_id =
             server.get_rpc_server():register(preview_label_rpc)
+        local dump_last_query_rpc_id =
+            server.get_rpc_server():register(dump_last_query_rpc)
         table.insert(rpc_registries, preview_label_rpc_id)
+        table.insert(rpc_registries, dump_last_query_rpc_id)
         preview_label_command = string.format(
             "%s %s {}",
             fzf_helpers.make_lua_command("rpc", "request.lua"),
             preview_label_rpc_id
         )
+        dump_last_query_command = string.format(
+            "%s %s {}",
+            fzf_helpers.make_lua_command("rpc", "request.lua"),
+            dump_last_query_rpc_id
+        )
         log.debug(
             "|fzfx.general - general| preview_label_command:%s",
             vim.inspect(preview_label_command)
+        )
+        log.debug(
+            "|fzfx.general - general| dump_last_query_command:%s",
+            vim.inspect(dump_last_query_command)
         )
     end
 
@@ -855,15 +871,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local fzf_focus_event = fzf_helpers.FzfOptEventBinder:new("focus")
     local fzf_load_event = fzf_helpers.FzfOptEventBinder:new("load")
     local fzf_change_event = fzf_helpers.FzfOptEventBinder:new("change")
-    if
-        type(preview_label_command) == "string"
-        and string.len(preview_label_command) > 0
-    then
+    if utils.string_not_blank(preview_label_command) then
         fzf_focus_event:append(
             string.format("execute-silent(%s)", preview_label_command)
         )
         fzf_load_event:append(
             string.format("execute-silent(%s)", preview_label_command)
+        )
+    end
+    if utils.string_not_blank(dump_last_query_command) then
+        fzf_change_event:append(
+            string.format("execute-silent(%s)", dump_last_query_command)
         )
     end
 
