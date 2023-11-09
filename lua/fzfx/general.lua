@@ -589,7 +589,7 @@ function PreviewerSwitch:preview_label(name, line, context)
             fzf_port,
             string.format("change-preview-label(%s)", vim.trim(last_label))
         )
-    end, 0)
+    end, 50)
 
     return label
 end
