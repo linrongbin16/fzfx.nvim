@@ -49,18 +49,18 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - Icons & colors.
 - Windows support.
 - Lua support: preview lua function defined commands and key mappings.
-- Fully dynamic parsing user query and selection, a typical use case is passing raw rg options via `--` flag (see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo)).
+- Fully dynamic parsing user query and selection on every kestroke, a typical use case is passing raw rg options via `--` flag (see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo)).
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
   - Search by yank text.
-- Easily switch on multiple data sources:
-  - Whether to filter hidden/ignored files or include them (unrestricted) when searching files.
-  - Local branches or remote branches when searching git branches.
-  - All diagnostics in workspace or only in current buffer when searching diagnostics.
+- Multiple data sources to avoid restart search flow:
+  - Exclude or include the hidden/ignored files when searching files.
+  - Local or remote branches when searching git branches.
+  - Workspace or only current buffer diagnostics when searching diagnostics.
   - ...
 - Maximized configuration.
-- ...
+- And a lot more.
 
 > Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more features & use cases.
 
