@@ -3278,14 +3278,17 @@ local Defaults = {
             all_commands = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = require("fzfx.previewer_labels").vim_commands_previewer_label,
             },
             ex_commands = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = require("fzfx.previewer_labels").vim_commands_previewer_label,
             },
             user_commands = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = require("fzfx.previewer_labels").vim_commands_previewer_label,
             },
         },
         actions = {
