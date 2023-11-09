@@ -349,7 +349,7 @@ end
 --- @class PreviewerSwitch
 --- @field pipeline PipelineName
 --- @field previewer_configs table<PipelineName, PreviewerConfig>
---- @field previewer_labels_queue table<PipelineName, {line:string?,context:PipelineContext}>
+--- @field previewer_labels table<PipelineName, string?>
 --- @field metafile string
 --- @field resultfile string
 --- @field fzfportfile string
@@ -383,7 +383,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local o = {
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
-        previewer_labels_queue = {},
+        previewer_labels = {},
         metafile = _make_cache_filename("previewer", "metafile", name),
         resultfile = _make_cache_filename("previewer", "resultfile", name),
         fzfportfile = _make_cache_filename("previewer", "fzfport", name),
@@ -575,39 +575,40 @@ function PreviewerSwitch:preview_label(line, context)
     then
         return
     end
-    self.previewer_labels_queue[self.pipeline] =
-        { line = line, context = context }
 
-    -- do it async/later
-    vim.defer_fn(function()
-        local saved_item = self.previewer_labels_queue[self.pipeline]
-        self.previewer_labels_queue[self.pipeline] = nil
+    local saved_pipeline = self.pipeline
 
-        if type(saved_item) ~= "table" then
-            return
-        end
-        local last_label = type(previewer_config.previewer_label) == "function"
-                and previewer_config.previewer_label(
-                    saved_item.line,
-                    saved_item.context
-                )
+    vim.schedule_wrap(function()
+        local label = type(previewer_config.previewer_label) == "function"
+                and previewer_config.previewer_label(line, context)
             or previewer_config.previewer_label
         log.debug(
-            "|fzfx.general - PreviewerSwitch:preview_label| saved context:%s, last_label:%s",
-            vim.inspect(saved_item),
-            vim.inspect(last_label)
+            "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
+            vim.inspect(line),
+            vim.inspect(label)
         )
-        if type(last_label) ~= "string" then
+        if type(label) ~= "string" then
             return
         end
-        local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
-        fzf_helpers.send_http_post(
-            fzf_port,
-            string.format("change-preview-label(%s)", vim.trim(last_label))
-        )
-    end, 100)
+        self.previewer_labels[saved_pipeline] = label
 
-    return self.pipeline
+        -- emit later
+        vim.defer_fn(function()
+            local saved_label = self.previewer_labels[saved_pipeline]
+            self.previewer_labels[saved_pipeline] = nil
+
+            if type(saved_label) ~= "string" then
+                return
+            end
+            local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
+            fzf_helpers.send_http_post(
+                fzf_port,
+                string.format("change-preview-label(%s)", vim.trim(saved_label))
+            )
+        end, 100)
+    end)
+
+    return saved_pipeline
 end
 
 -- previewer switch }
