@@ -83,13 +83,6 @@ describe("helpers", function()
                 "",
                 "test6"
             )
-            print(
-                string.format(
-                    "resume:%s, %s\n",
-                    vim.inspect(actual3),
-                    vim.inspect(actual4)
-                )
-            )
             assert_true(actual3 == "query" or actual3 == "")
             assert_true(actual4 == "provider" or actual4 == nil)
         end)
