@@ -12,9 +12,9 @@
 
 <p align="center"> E(x)tended commands missing in <a href="https://github.com/junegunn/fzf.vim">fzf.vim</a>. </p>
 
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/aa5ef18c-26b4-4a93-bd0c-bfeba6f6caf1
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403
 
-> Search `fzfx` with rg's `-g *ch.lua` option.
+> Search `fzfx` with rg's `-g *spec.lua` option.
 
 ## Table of contents
 
