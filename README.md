@@ -54,6 +54,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - Search by visual select.
   - Search by cursor word.
   - Search by yank text.
+  - Search by previous search, e.g. resume last search.
 - Easily switch on multiple data sources:
   - Whether to filter hidden/ignored files or include them (unrestricted) when searching files.
   - Local branches or remote branches when searching git branches.
@@ -249,6 +250,7 @@ Commands are named following below rules:
 - The visual select variant is named with `V` suffix.
 - The cursor word variant is named with `W` suffix.
 - The yank text variant is named with `P` suffix (just like press the `p` key).
+- The resume variant is named with `R` suffix.
 - The only current buffer variant is named with `B` suffix.
 
 > Note: command names can be configured, see [Configuration](#-configuration).
