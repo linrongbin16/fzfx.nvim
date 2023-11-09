@@ -978,7 +978,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
     table.insert(fzf_opts, fzf_focus_event:build())
     table.insert(fzf_opts, fzf_load_event:build())
-    table.insert(fzf_opts, fzf_zero_event:build())
     table.insert(fzf_opts, fzf_change_event:build())
     table.insert(fzf_opts, "--listen")
     table.insert(fzf_opts, { "--bind", fzf_start_event_opts })
