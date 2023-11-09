@@ -846,7 +846,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local fzf_focus_event = fzf_helpers.FzfOptEventBinder:new("focus")
     local fzf_load_event = fzf_helpers.FzfOptEventBinder:new("load")
-    local fzf_zero_event = fzf_helpers.FzfOptEventBinder:new("zero")
     local fzf_change_event = fzf_helpers.FzfOptEventBinder:new("change")
     if
         type(preview_label_command) == "string"
@@ -856,9 +855,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             string.format("execute-silent(%s)", preview_label_command)
         )
         fzf_load_event:append(
-            string.format("execute-silent(%s)", preview_label_command)
-        )
-        fzf_zero_event:append(
             string.format("execute-silent(%s)", preview_label_command)
         )
     end
