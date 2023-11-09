@@ -115,6 +115,27 @@ local vim_keymap_previewer_label = _make_vim_command_previewer_label(
     "Definition"
 )
 
+--- @param parser fun(line:string):table|string
+--- @return fun(line:string):string?
+local function _make_file_explorer_previewer_label(parser)
+    --- @param line string
+    --- @return string?
+    local function impl(line)
+        if type(line) ~= "string" or string.len(line) == 0 then
+            return ""
+        end
+        return parser(line) --[[@as string]]
+    end
+    return impl
+end
+
+local ls_previewer_label =
+    _make_file_explorer_previewer_label(line_helpers.parse_ls)
+local lsd_previewer_label =
+    _make_file_explorer_previewer_label(line_helpers.parse_lsd)
+local eza_previewer_label =
+    _make_file_explorer_previewer_label(line_helpers.parse_eza)
+
 local M = {
     -- find/buffers/git files
     _make_find_previewer_label = _make_find_previewer_label,
@@ -130,6 +151,12 @@ local M = {
     _make_vim_command_previewer_label = _make_vim_command_previewer_label,
     vim_command_previewer_label = vim_command_previewer_label,
     vim_keymap_previewer_label = vim_keymap_previewer_label,
+
+    -- file explorer
+    _make_file_explorer_previewer_label = _make_file_explorer_previewer_label,
+    ls_previewer_label = ls_previewer_label,
+    lsd_previewer_label = lsd_previewer_label,
+    eza_previewer_label = eza_previewer_label,
 }
 
 return M
