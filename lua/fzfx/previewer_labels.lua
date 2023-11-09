@@ -77,6 +77,29 @@ local function grep_previewer_label(line)
     return f(line)
 end
 
+--- @param line string?
+--- @param context VimCommandsPipelineContext
+--- @return string
+local function vim_commands_previewer_label(line, context)
+    if type(line) ~= "string" or string.len(line) == 0 then
+        return ""
+    end
+    local parsed = line_helpers.parse_vim_command(line, context)
+    if
+        type(parsed) == "table"
+        and type(parsed.filename) == "string"
+        and string.len(parsed.filename) > 0
+        and type(parsed.lineno) == "number"
+    then
+        return string.format(
+            "%s:%d",
+            vim.fn.fnamemodify(parsed.filename, ":t"),
+            parsed.lineno
+        )
+    end
+    return "Description"
+end
+
 local M = {
     -- find/buffers/git files
     _make_find_previewer_label = _make_find_previewer_label,
