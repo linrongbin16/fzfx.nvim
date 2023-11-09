@@ -45,21 +45,38 @@ local ProviderTypeEnum = {
 -- We have 3 types of previewers:
 --  * Command previewer: a lua function that generate a command string to execute and echo details.
 --  * List previewer: a lua function that directly generate a list of strings.
---  * Builtin previewer (todo): a nvim buffer & window, I think the biggest benefits can be allowing users to navigate to the buffer and edit it directly.
+--  * Buffer previewer (todo): a nvim buffer & window, I think the biggest benefits can be allowing users to navigate to the buffer and edit it directly.
 --
--- The BuiltinPreviewer returns the configs for the nvim window.
+-- The BufferPreviewer returns the configs for the nvim window.
 --
 --- @alias CommandPreviewer fun(line:string?,context:PipelineContext?):string?
 --- @alias ListPreviewer fun(line:string?,context:PipelineContext?):string[]?
---- @alias BuiltinPreviewer fun(line:string?,context:PipelineContext?):table?
+--- @alias BufferPreviewer fun(line:string?,context:PipelineContext?):table?
 --
---- @alias Previewer CommandPreviewer|ListPreviewer|BuiltinPreviewer
---- @alias PreviewerType "command"|"command_list"|"list"|"builtin"
+--- @alias Previewer CommandPreviewer|ListPreviewer|BufferPreviewer
+--- @alias PreviewerType "command"|"command_list"|"list"|"buffer"
 --- @enum PreviewerTypeEnum
 local PreviewerTypeEnum = {
     COMMAND = "command",
     COMMAND_LIST = "command_list",
     LIST = "list",
+}
+
+-- ========== Previewer Label ==========
+--
+-- A previewer label is the label/title of the preview window.
+-- We have 2 types of previewers:
+--  * Plain previewer: a simple string which is the label/title of the preview window.
+--  * Function previewer: a lua function to run and generate the string for the preview window.
+--
+--- @alias PlainPreviewerLabel string
+--- @alias FunctionPreviewerLabel fun(line:string?,context:PipelineContext?):string?
+--- @alias PreviewerLabel PlainPreviewerLabel|FunctionPreviewerLabel
+--- @alias PreviewerLabelType "plain"|"function"
+--- @enum PreviewerLabelTypeEnum
+local PreviewerLabelTypeEnum = {
+    PLAIN = "plain",
+    FUNCTION = "function",
 }
 
 -- ========== Command Option ==========
@@ -148,11 +165,11 @@ local CommandFeedEnum = {
 --- @field provider_type ProviderType? by default "plain"
 --- @field line_opts ProviderConfigLineOpts?
 
---- @alias PreviewerLabel fun(line:string?,context:PipelineContext?):string?
 --- @class PreviewerConfig
 --- @field previewer Previewer
 --- @field previewer_type PreviewerType?
 --- @field previewer_label PreviewerLabel?
+--- @field previewer_label_type PreviewerLabelType?
 
 --- @alias PipelineName string a pipeline name is a provider name, a previewer name
 --- @class CommandConfig
@@ -234,9 +251,21 @@ local function get_previewer_type_or_default(previewer_config)
     return previewer_config.previewer_type or PreviewerTypeEnum.COMMAND
 end
 
+--- @param previewer_config PreviewerConfig
+--- @return PreviewerLabelType
+local function get_previewer_label_type_or_default(previewer_config)
+    return previewer_config.previewer_label_type
+        or (
+            type(previewer_config.previewer_label) == "function"
+                and PreviewerLabelTypeEnum.FUNCTION
+            or PreviewerLabelTypeEnum.PLAIN
+        )
+end
+
 local M = {
     ProviderTypeEnum = ProviderTypeEnum,
     PreviewerTypeEnum = PreviewerTypeEnum,
+    PreviewerLabelTypeEnum = PreviewerLabelTypeEnum,
     CommandFeedEnum = CommandFeedEnum,
 
     is_command_config = is_command_config,
@@ -244,6 +273,7 @@ local M = {
     is_previewer_config = is_previewer_config,
     get_provider_type_or_default = get_provider_type_or_default,
     get_previewer_type_or_default = get_previewer_type_or_default,
+    get_previewer_label_type_or_default = get_previewer_label_type_or_default,
 }
 
 return M

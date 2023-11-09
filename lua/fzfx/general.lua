@@ -547,7 +547,9 @@ function PreviewerSwitch:preview_label(name, line, context)
     )
     log.ensure(
         type(previewer_config.previewer_label) == "function"
-            or previewer_config.previewer_label == nil,
+            or previewer_config.previewer_label == nil
+            or type(previewer_config.previewer_label) == "boolean"
+            or type(previewer_config.previewer_label) == "string",
         "invalid previewer label in %s! pipeline: %s, previewer: %s",
         vim.inspect(name),
         vim.inspect(self.pipeline),
@@ -556,10 +558,15 @@ function PreviewerSwitch:preview_label(name, line, context)
     if not constants.has_curl then
         return
     end
-    if type(previewer_config.previewer_label) ~= "function" then
+    if
+        type(previewer_config.previewer_label) ~= "function"
+        or type(previewer_config.previewer_label) ~= "string"
+    then
         return
     end
-    local label = previewer_config.previewer_label(line, context)
+    local label = type(previewer_config.previewer_label) == "function"
+            and previewer_config.previewer_label(line, context)
+        or previewer_config.previewer_label
     log.debug(
         "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
         vim.inspect(line),

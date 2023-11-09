@@ -365,4 +365,34 @@ describe("schema", function()
             )
         end)
     end)
+    describe("[get_previewer_label_type_or_default]", function()
+        it("default", function()
+            assert_eq(
+                schema.get_previewer_label_type_or_default({
+                    previewer_label = function() end,
+                }),
+                "function"
+            )
+            assert_eq(
+                schema.get_previewer_label_type_or_default({
+                    previewer_label = "Files Previewer",
+                }),
+                "plain"
+            )
+        end)
+        it("existed", function()
+            assert_eq(
+                schema.get_previewer_label_type_or_default({
+                    previewer_label_type = schema.PreviewerLabelTypeEnum.FUNCTION,
+                }),
+                "function"
+            )
+            assert_eq(
+                schema.get_previewer_label_type_or_default({
+                    previewer_label_type = schema.PreviewerLabelTypeEnum.PLAIN,
+                }),
+                "plain"
+            )
+        end)
+    end)
 end)
