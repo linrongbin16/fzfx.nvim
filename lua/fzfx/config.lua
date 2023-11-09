@@ -25,7 +25,6 @@ local default_fzf_options = {
 
 -- files {
 
--- fd
 -- "fd . -cnever -tf -tl -L -i"
 local default_restricted_fd = {
     constants.fd,
@@ -47,7 +46,6 @@ local default_unrestricted_fd = {
     "-i",
     "-u",
 }
--- find
 -- 'find -L . -type f -not -path "*/.*"'
 local default_restricted_find = constants.is_windows
         and {
@@ -147,7 +145,6 @@ end
 
 -- live grep {
 
--- rg
 -- "rg --column -n --no-heading --color=always -S"
 local default_restricted_rg = {
     "rg",
@@ -169,8 +166,6 @@ local default_unrestricted_rg = {
     "-S",
     "-uu",
 }
-
--- grep
 -- "grep --color=always -n -H -r --exclude-dir='.*' --exclude='.*'"
 local default_restricted_grep = {
     constants.grep,
