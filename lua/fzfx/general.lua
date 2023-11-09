@@ -349,6 +349,7 @@ end
 --- @class PreviewerSwitch
 --- @field pipeline PipelineName
 --- @field previewer_configs table<PipelineName, PreviewerConfig>
+--- @field previewer_labels table<PipelineName, string?>
 --- @field metafile string
 --- @field resultfile string
 --- @field fzfportfile string
@@ -382,6 +383,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local o = {
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
+        previewer_labels = {},
         metafile = _make_cache_filename("previewer", "metafile", name),
         resultfile = _make_cache_filename("previewer", "resultfile", name),
         fzfportfile = _make_cache_filename("previewer", "fzfport", name),
@@ -574,8 +576,9 @@ function PreviewerSwitch:preview_label(line, context)
         return
     end
 
-    -- emit later
-    vim.defer_fn(function()
+    local current_pipeline = self.pipeline
+
+    vim.schedule_wrap(function()
         local label = type(previewer_config.previewer_label) == "function"
                 and previewer_config.previewer_label(line, context)
             or previewer_config.previewer_label
@@ -587,12 +590,21 @@ function PreviewerSwitch:preview_label(line, context)
         if type(label) ~= "string" then
             return
         end
-        local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
-        fzf_helpers.send_http_post(
-            fzf_port,
-            string.format("change-preview-label(%s)", vim.trim(label))
-        )
-    end, 100)
+        -- emit later
+        vim.defer_fn(function()
+            self.previewer_labels[current_pipeline] = label
+            local last_label = self.previewer_labels[current_pipeline]
+            self.previewer_labels[current_pipeline] = nil
+            if type(last_label) ~= "string" then
+                return
+            end
+            local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
+            fzf_helpers.send_http_post(
+                fzf_port,
+                string.format("change-preview-label(%s)", vim.trim(last_label))
+            )
+        end, 100)
+    end)
 
     return self.pipeline
 end
