@@ -10,6 +10,7 @@ describe("previewer_labels", function()
     end)
 
     local utils = require("fzfx.utils")
+    local line_helpers = require("fzfx.line_helpers")
     local previewer_labels = require("fzfx.previewer_labels")
     describe("[_make_find_previewer_label/find_previewer_label]", function()
         it("makes", function()
@@ -115,7 +116,7 @@ describe("previewer_labels", function()
 
                     local f =
                         previewer_labels._make_vim_command_previewer_label(
-                            require("fzfx.line_helpers").parse_vim_command,
+                            line_helpers.parse_vim_command,
                             "Definition"
                         )
                     local actual2 = f(line, CONTEXT)
@@ -136,7 +137,7 @@ describe("previewer_labels", function()
 
                     local f =
                         previewer_labels._make_vim_command_previewer_label(
-                            require("fzfx.line_helpers").parse_vim_command,
+                            line_helpers.parse_vim_command,
                             "Definition"
                         )
                     local actual2 = f(line, CONTEXT)
@@ -166,7 +167,7 @@ describe("previewer_labels", function()
                 assert_true(utils.string_endswith(line, actual_splits[2]))
 
                 local f = previewer_labels._make_vim_command_previewer_label(
-                    require("fzfx.line_helpers").parse_vim_keymap,
+                    line_helpers.parse_vim_keymap,
                     "Definition"
                 )
                 local actual2 = f(line, CONTEXT)
@@ -186,11 +187,118 @@ describe("previewer_labels", function()
                 assert_eq(actual, "Definition")
 
                 local f = previewer_labels._make_vim_command_previewer_label(
-                    require("fzfx.line_helpers").parse_vim_keymap,
+                    line_helpers.parse_vim_keymap,
                     "Definition"
                 )
                 local actual2 = f(line, CONTEXT)
                 assert_eq(actual, actual2)
+            end
+        end)
+    end)
+    describe("[_make_file_explorer_previewer_label/ls/eza/lsd]", function()
+        it("ls -lh", function()
+            local lines = {
+                "-rw-r--r--   1 linrongbin Administrators 1.1K Jul  9 14:35 LICENSE",
+                "-rw-r--r--   1 linrongbin Administrators 6.2K Sep 28 22:26 README.md",
+                "drwxr-xr-x   2 linrongbin Administrators 4.0K Sep 30 21:55 deps",
+                "-rw-r--r--   1 linrongbin Administrators  585 Jul 22 14:26 init.vim",
+                "-rw-r--r--   1 linrongbin Administrators  585 Jul 22 14:26 'hello world.txt'",
+                "-rw-r--r--   1 rlin  staff   1.0K Aug 28 12:39 LICENSE",
+                "-rw-r--r--   1 rlin  staff    27K Oct  8 11:37 README.md",
+                "drwxr-xr-x   3 rlin  staff    96B Aug 28 12:39 autoload",
+                "drwxr-xr-x   4 rlin  staff   128B Sep 22 10:11 bin",
+                "-rw-r--r--   1 rlin  staff   120B Sep  5 14:14 codecov.yml",
+            }
+            local expects = {
+                "LICENSE",
+                "README.md",
+                "deps",
+                "init.vim",
+                "hello world.txt",
+                "LICENSE",
+                "README.md",
+                "autoload",
+                "bin",
+                "codecov.yml",
+            }
+            for i, line in ipairs(lines) do
+                local actual1 = previewer_labels.ls_previewer_label(line)
+                local expect = expects[i]
+                assert_eq(actual1, expect)
+
+                local f = previewer_labels._make_ls_previewer_label(
+                    line_helpers.parse_ls
+                )
+                local actual2 = f(line)
+                assert_eq(actual1, actual2)
+            end
+        end)
+        it("lsd -lh --header --icon=never", function()
+            local lines = {
+                "drwxr-xr-x  rlin staff 160 B  Wed Oct 25 16:59:44 2023 bin",
+                ".rw-r--r--  rlin staff  54 KB Tue Oct 31 22:29:35 2023 CHANGELOG.md",
+                ".rw-r--r--  rlin staff 120 B  Tue Oct 10 14:47:43 2023 codecov.yml",
+                ".rw-r--r--  rlin staff 1.0 KB Mon Aug 28 12:39:24 2023 LICENSE",
+                "drwxr-xr-x  rlin staff 128 B  Tue Oct 31 21:55:28 2023 lua",
+                ".rw-r--r--  rlin staff  38 KB Wed Nov  1 10:29:19 2023 README.md",
+                "drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test",
+            }
+            local expects = {
+                "bin",
+                "CHANGELOG.md",
+                "codecov.yml",
+                "LICENSE",
+                "lua",
+                "README.md",
+                "test",
+            }
+            for i, line in ipairs(lines) do
+                local actual1 = line_helpers.parse_lsd(line)
+                local expect = expects[i]
+                assert_eq(actual1, expect)
+
+                local f = previewer_labels._make_ls_previewer_label(
+                    line_helpers.parse_lsd
+                )
+                local actual2 = f(line)
+                assert_eq(actual1, actual2)
+            end
+        end)
+        it("eza -lh for macOS/linux", function()
+            local lines = {
+                -- Permissions Size User Date Modified Name
+                "drwxr-xr-x     - linrongbin 28 Aug 12:39  autoload",
+                "drwxr-xr-x     - linrongbin 22 Sep 10:11  bin",
+                ".rw-r--r--   120 linrongbin  5 Sep 14:14  codecov.yml",
+                ".rw-r--r--  1.1k linrongbin 28 Aug 12:39  LICENSE",
+                "drwxr-xr-x     - linrongbin  8 Oct 09:14  lua",
+                ".rw-r--r--   28k linrongbin  8 Oct 11:37  README.md",
+                "drwxr-xr-x     - linrongbin  8 Oct 11:44  test",
+                ".rw-r--r--   28k linrongbin  8 Oct 12:10  test1-README.md",
+                ".rw-r--r--   28k linrongbin  8 Oct 12:10  test2-README.md",
+            }
+            local expects = {
+                "autoload",
+                "bin",
+                "codecov.yml",
+                "LICENSE",
+                "lua",
+                "README.md",
+                "test",
+                "test1-README.md",
+                "test2-README.md",
+            }
+            local parse_eza_on_macos_linux = line_helpers._make_parse_ls(6)
+            for i, line in ipairs(lines) do
+                local actual1 = parse_eza_on_macos_linux(line)
+                local expect = expects[i]
+                assert_eq(actual1, expect)
+
+                local f = previewer_labels._make_ls_previewer_label(
+                    line_helpers.parse_eza
+                )
+                local actual2 = f(line)
+                assert_eq(actual1, actual2)
             end
         end)
     end)

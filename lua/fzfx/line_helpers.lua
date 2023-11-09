@@ -144,7 +144,24 @@ local function _make_parse_ls(start_pos)
             end
             pos = pos + 1
         end
-        return path.normalize(vim.trim(line:sub(pos)), { expand = true })
+        local result =
+            path.normalize(vim.trim(line:sub(pos)), { expand = true })
+
+        -- remove extra single/double quotes
+        if
+            (
+                utils.string_startswith(result, "'")
+                and utils.string_endswith(result, "'")
+            )
+            or (
+                utils.string_startswith(result, '"')
+                and utils.string_endswith(result, '"')
+            )
+        then
+            result = result:sub(2, #result - 1)
+        end
+
+        return result
     end
     return impl
 end

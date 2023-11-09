@@ -2074,18 +2074,6 @@ local function _make_filename_by_file_explorer_context(line, context)
             constants.has_eza and line_helpers.parse_eza(line)
             or line_helpers.parse_ls(line)
         )
-    if
-        (
-            utils.string_startswith(target, "'")
-            and utils.string_endswith(target, "'")
-        )
-        or (
-            utils.string_startswith(target, '"')
-            and utils.string_endswith(target, '"')
-        )
-    then
-        target = target:sub(2, #target - 1)
-    end
     local p = path.join(cwd, target)
     log.debug(
         "|fzfx.config - make_filename_by_file_explorer_context| cwd:%s, target:%s, p:%s",
@@ -3984,10 +3972,24 @@ local Defaults = {
             filter_hidden = {
                 previewer = _file_explorer_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = constants.has_lsd and require(
+                    "fzfx.previewer_labels"
+                ).lsd_previewer_label or (constants.has_eza and require(
+                    "fzfx.previewer_labels"
+                ).eza_previewer_label or require(
+                    "fzfx.previewer_labels"
+                ).ls_previewer_label),
             },
             include_hidden = {
                 previewer = _file_explorer_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+                previewer_label = constants.has_lsd and require(
+                    "fzfx.previewer_labels"
+                ).lsd_previewer_label or (constants.has_eza and require(
+                    "fzfx.previewer_labels"
+                ).eza_previewer_label or require(
+                    "fzfx.previewer_labels"
+                ).ls_previewer_label),
             },
         },
         interactions = {
