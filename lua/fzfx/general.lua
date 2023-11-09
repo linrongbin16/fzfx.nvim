@@ -149,12 +149,12 @@ end
 --- @param context PipelineContext?
 function ProviderSwitch:provide(name, query, context)
     local provider_config = self.provider_configs[self.pipeline]
-    log.debug(
-        "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(provider_config),
-        vim.inspect(context)
-    )
+    -- log.debug(
+    --     "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
+    --     vim.inspect(self.pipeline),
+    --     vim.inspect(provider_config),
+    --     vim.inspect(context)
+    -- )
     log.ensure(
         type(provider_config) == "table",
         "invalid provider config in %s! pipeline: %s, provider config: %s",
@@ -391,12 +391,12 @@ end
 --- @return PreviewerType
 function PreviewerSwitch:preview(name, line, context)
     local previewer_config = self.previewer_configs[self.pipeline]
-    log.debug(
-        "|fzfx.general - PreviewerSwitch:preview| pipeline:%s, previewer_config:%s, context:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(previewer_config),
-        vim.inspect(context)
-    )
+    -- log.debug(
+    --     "|fzfx.general - PreviewerSwitch:preview| pipeline:%s, previewer_config:%s, context:%s",
+    --     vim.inspect(self.pipeline),
+    --     vim.inspect(previewer_config),
+    --     vim.inspect(context)
+    -- )
     log.ensure(
         type(previewer_config) == "table",
         "invalid previewer config in %s! pipeline: %s, previewer config: %s",
@@ -532,12 +532,12 @@ end
 --- @return string?
 function PreviewerSwitch:preview_label(name, line, context)
     local previewer_config = self.previewer_configs[self.pipeline]
-    log.debug(
-        "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(previewer_config),
-        vim.inspect(context)
-    )
+    -- log.debug(
+    --     "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
+    --     vim.inspect(self.pipeline),
+    --     vim.inspect(previewer_config),
+    --     vim.inspect(context)
+    -- )
     log.ensure(
         type(previewer_config) == "table",
         "invalid previewer config in %s! pipeline: %s, previewer config: %s",
@@ -560,7 +560,7 @@ function PreviewerSwitch:preview_label(name, line, context)
     end
     if
         type(previewer_config.previewer_label) ~= "function"
-        or type(previewer_config.previewer_label) ~= "string"
+        and type(previewer_config.previewer_label) ~= "string"
     then
         return
     end
