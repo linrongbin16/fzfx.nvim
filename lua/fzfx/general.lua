@@ -1034,15 +1034,11 @@ end
 --- @param group_config GroupConfig
 local function _make_user_command(name, command_config, group_config)
     vim.api.nvim_create_user_command(command_config.name, function(opts)
-        local query =
+        local query, last_provider =
             fzf_helpers.get_command_feed(command_config.feed, opts.args, name)
-        return general(
-            name,
-            query,
-            opts.bang,
-            group_config,
-            command_config.default_provider
-        )
+        local default_provider = last_provider
+            or command_config.default_provider
+        return general(name, query, opts.bang, group_config, default_provider)
     end, command_config.opts)
 end
 

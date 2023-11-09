@@ -4,6 +4,7 @@ local color = require("fzfx.color")
 local conf = require("fzfx.config")
 local yank_history = require("fzfx.yank_history")
 local utils = require("fzfx.utils")
+local json = require("fzfx.json")
 local Spawn = require("fzfx.spawn").Spawn
 
 -- visual select {
@@ -96,22 +97,33 @@ end
 --- @param feed_type CommandFeed
 --- @param input_args string
 --- @param pipeline_name string
---- @return string
+--- @return string, string?
 local function get_command_feed(feed_type, input_args, pipeline_name)
     feed_type = string.lower(feed_type)
     if feed_type == "args" then
-        return input_args
+        return input_args, nil
     elseif feed_type == "visual" then
-        return _visual_select()
+        return _visual_select(), nil
     elseif feed_type == "cword" then
-        return vim.fn.expand("<cword>")
+        return vim.fn.expand("<cword>"), nil
     elseif feed_type == "put" then
         local y = yank_history.get_yank()
-        return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
+        return (y ~= nil and type(y.regtext) == "string") and y.regtext or "",
+            nil
     elseif feed_type == "resume" then
-        local c = make_last_query_cache(pipeline_name)
-        local y = yank_history.get_yank()
-        return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
+        local cache = make_last_query_cache(pipeline_name)
+        local data = utils.readfile(cache)
+        if
+            type(data) ~= "string"
+            or string.len(data) == 0
+            or not utils.string_startswith(data, "{")
+            or not utils.string_endswith(data, "}")
+        then
+            return "", nil
+        end
+        --- @alias LastQueryCacheObj {default_provider:string,query:string}
+        local obj = json.decode(data) --[[@as LastQueryCacheObj]]
+        return obj.query or "", obj.default_provider
     else
         log.throw(
             "|fzfx.fzf_helpers - get_command_feed| invalid command feed type! %s",
