@@ -865,7 +865,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local dump_fzf_port_command = string.format(
         "%s %s",
-        fzf_helpers.make_lua_command("general", "fzf_port.lua"),
+        fzf_helpers.make_lua_command("general", "fzfport.lua"),
         previewer_switch.fzfportfile
     )
     local fzf_start_event_opts =
