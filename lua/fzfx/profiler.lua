@@ -27,7 +27,8 @@ end
 --- @return integer
 function Profiler:elapsed_ms()
     local secs, ms = vim.loop.gettimeofday()
-    return (secs * 1000 + ms) - (self.start_at.secs * 1000 + self.start_at.ms)
+    return (secs * 1000000 + ms)
+        - (self.start_at.secs * 1000000 + self.start_at.ms)
 end
 
 local M = {
