@@ -158,6 +158,82 @@ end
 
 -- icon render }
 
+-- make pipe rpc {
+
+--- @param registry_id string
+--- @param params string?
+local function make_pipe_rpc_notify(registry_id, params)
+    local address = vim.env._FZFX_NVIM_PIPE_ADDRESS
+
+    local client_handle, new_client_err = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+    log_ensure(
+        client_handle ~= nil,
+        "|fzfx.shell_helpers - make_pipe_rpc_notify| failed to create new pipe client:%s",
+        vim.inspect(new_client_err)
+    )
+
+    local function _close_handle()
+        if client_handle and not client_handle:is_closing() then
+            client_handle:close(function()
+                vim.loop.stop()
+            end)
+        end
+    end
+
+    local connect_result, connect_err = client_handle:connect(
+        address,
+        function(connect_complete_err)
+            log_debug(
+                "|fzfx.shell_helpers - make_pipe_rpc_notify| connect complete on address: %s",
+                vim.inspect(address)
+            )
+            if connect_complete_err then
+                log_err(
+                    "|fzfx.shell_helpers - make_pipe_rpc_notify| failed to complete connection on address:%s, error:%s",
+                    vim.inspect(address),
+                    vim.inspect(connect_complete_err)
+                )
+                return
+            end
+
+            --- @type RpcParams
+            local obj = {
+                ["id"] = registry_id,
+                params = params,
+            }
+            local send_data = require("fzfx.json").encode(obj) --[[@as string]]
+            local write_result, write_err = client_handle:write(
+                send_data,
+                function(write_complete_err)
+                    if write_complete_err then
+                        log_err(
+                            "|fzfx.shell_helpers - make_pipe_rpc_notify| failed to write on client pipe:%s, data:%s",
+                            vim.inspect(write_complete_err),
+                            vim.inspect(send_data)
+                        )
+                    end
+                    _close_handle()
+                end
+            )
+            log_ensure(
+                write_result ~= nil,
+                "|fzfx.shell_helpers - make_pipe_rpc_notify| failed to write client pipe on address:%s, error:%s",
+                vim.inspect(address),
+                vim.inspect(write_err)
+            )
+        end
+    )
+    log_ensure(
+        connect_result ~= nil,
+        "|fzfx.shell_helpers - make_pipe_rpc_notify| failed to connect to pipe server on address: %s, error: %s",
+        vim.inspect(address),
+        vim.inspect(connect_err)
+    )
+    vim.loop.run()
+end
+
+-- make pipe rpc }
+
 local M = {
     setup = setup,
     log_debug = log_debug,
@@ -176,6 +252,7 @@ local M = {
     readfile = require("fzfx.utils").readfile,
     writefile = require("fzfx.utils").writefile,
     Spawn = require("fzfx.spawn").Spawn,
+    make_pipe_rpc_notify = make_pipe_rpc_notify,
 }
 
 return M
