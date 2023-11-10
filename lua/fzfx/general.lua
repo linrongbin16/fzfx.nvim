@@ -774,16 +774,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     --- @param query_params string
     local function provide_rpc(query_params)
-        p1:elapsed_ms("provide start")
+        p1:elapsed_millis("provide start")
         provider_switch:provide(query_params, context)
-        p1:elapsed_ms("provide done")
+        p1:elapsed_millis("provide done")
     end
 
     --- @param line_params string
     local function preview_rpc(line_params)
-        p1:elapsed_ms("preview start")
+        p1:elapsed_millis("preview start")
         previewer_switch:preview(line_params, context)
-        p1:elapsed_ms("preview end")
+        p1:elapsed_millis("preview end")
     end
 
     local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
@@ -830,9 +830,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
-            p1:elapsed_ms("preview-label start")
+            p1:elapsed_millis("preview-label start")
             previewer_switch:preview_label(line_params, context)
-            p1:elapsed_ms("preview-label end")
+            p1:elapsed_millis("preview-label end")
         end
         local preview_label_rpc_id =
             server.get_rpc_server():register(preview_label_rpc)
@@ -1009,7 +1009,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             { height = 1, width = 1, row = 0, col = 0 }
         )
     end
-    p1:elapsed_ms("prepare")
+    p1:elapsed_millis("prepare")
     local p = Popup:new(
         win_opts or {},
         query_command,
@@ -1024,7 +1024,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end, 3000)
         end
     )
-    p1:elapsed_ms("done")
+    p1:elapsed_millis("done")
     return p
 end
 
