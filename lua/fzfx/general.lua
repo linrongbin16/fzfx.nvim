@@ -780,11 +780,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     --- @param query_params string
     local function cache_query_rpc(query_params)
-        if utils.string_not_blank(query_params) then
-            vim.defer_fn(function()
+        vim.defer_fn(function()
+            if utils.string_not_blank(query_params) then
                 query_cache = query_params
-            end, 100)
-        end
+            end
+        end, 100)
     end
 
     --- @param line_params string
