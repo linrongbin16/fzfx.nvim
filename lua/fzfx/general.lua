@@ -144,10 +144,9 @@ function ProviderSwitch:switch(next_pipeline)
     self.pipeline = next_pipeline
 end
 
---- @param name string
 --- @param query string?
 --- @param context PipelineContext?
-function ProviderSwitch:provide(name, query, context)
+function ProviderSwitch:provide(query, context)
     local provider_config = self.provider_configs[self.pipeline]
     -- log.debug(
     --     "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
@@ -157,8 +156,7 @@ function ProviderSwitch:provide(name, query, context)
     -- )
     log.ensure(
         type(provider_config) == "table",
-        "invalid provider config in %s! pipeline: %s, provider config: %s",
-        vim.inspect(name),
+        "invalid provider config in %s! provider config: %s",
         vim.inspect(self.pipeline),
         vim.inspect(provider_config)
     )
@@ -166,8 +164,7 @@ function ProviderSwitch:provide(name, query, context)
         type(provider_config.provider) == "table"
             or type(provider_config.provider) == "string"
             or type(provider_config.provider) == "function",
-        "invalid provider in %s! pipeline: %s, provider: %s",
-        vim.inspect(name),
+        "invalid provider in %s! provider: %s",
         vim.inspect(self.pipeline),
         vim.inspect(provider_config)
     )
@@ -177,8 +174,7 @@ function ProviderSwitch:provide(name, query, context)
             or provider_config.provider_type == ProviderTypeEnum.COMMAND
             or provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST
             or provider_config.provider_type == ProviderTypeEnum.LIST,
-        "invalid provider type in %s! pipeline: %s, provider type: %s",
-        vim.inspect(name),
+        "invalid provider type in %s! provider type: %s",
         vim.inspect(self.pipeline),
         vim.inspect(provider_config)
     )
@@ -240,7 +236,7 @@ function ProviderSwitch:provide(name, query, context)
             utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
-                vim.inspect(name),
+                vim.inspect(self.pipeline),
                 vim.inspect(provider_config),
                 vim.inspect(query),
                 vim.inspect(context),
@@ -271,7 +267,7 @@ function ProviderSwitch:provide(name, query, context)
             utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s command_list provider %s! query:%s, context:%s, error:%s",
-                vim.inspect(name),
+                vim.inspect(self.pipeline),
                 vim.inspect(provider_config),
                 vim.inspect(query),
                 vim.inspect(context),
@@ -299,7 +295,7 @@ function ProviderSwitch:provide(name, query, context)
             utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
-                vim.inspect(name),
+                vim.inspect(self.pipeline),
                 vim.inspect(provider_config),
                 vim.inspect(query),
                 vim.inspect(context),
@@ -335,10 +331,11 @@ end
 --- @class PreviewerSwitch
 --- @field pipeline PipelineName
 --- @field previewer_configs table<PipelineName, PreviewerConfig>
---- @field previewer_labels table<PipelineName, string?>
+--- @field last_previewer_label string?
 --- @field metafile string
 --- @field resultfile string
 --- @field fzfportfile string
+--- @field fzfport string?
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -369,10 +366,11 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local o = {
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
-        previewer_labels = {},
+        last_previewer_label = nil,
         metafile = _make_cache_filename("previewer", "metafile", name),
         resultfile = _make_cache_filename("previewer", "resultfile", name),
         fzfportfile = _make_cache_filename("previewer", "fzfport", name),
+        fzfport = nil,
     }
     setmetatable(o, self)
     self.__index = self
@@ -385,11 +383,10 @@ function PreviewerSwitch:switch(next_pipeline)
     self.pipeline = next_pipeline
 end
 
---- @param name string
 --- @param line string
 --- @param context PipelineContext?
 --- @return PreviewerType
-function PreviewerSwitch:preview(name, line, context)
+function PreviewerSwitch:preview(line, context)
     local previewer_config = self.previewer_configs[self.pipeline]
     -- log.debug(
     --     "|fzfx.general - PreviewerSwitch:preview| pipeline:%s, previewer_config:%s, context:%s",
@@ -399,15 +396,13 @@ function PreviewerSwitch:preview(name, line, context)
     -- )
     log.ensure(
         type(previewer_config) == "table",
-        "invalid previewer config in %s! pipeline: %s, previewer config: %s",
-        vim.inspect(name),
+        "invalid previewer config in %s! previewer config: %s",
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
     log.ensure(
         type(previewer_config.previewer) == "function",
-        "invalid previewer in %s! pipeline: %s, previewer: %s",
-        vim.inspect(name),
+        "invalid previewer in %s! previewer: %s",
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
@@ -415,8 +410,7 @@ function PreviewerSwitch:preview(name, line, context)
         previewer_config.previewer_type == PreviewerTypeEnum.COMMAND
             or previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST
             or previewer_config.previewer_type == PreviewerTypeEnum.LIST,
-        "invalid previewer type in %s! pipeline: %s, previewer type: %s",
-        vim.inspect(name),
+        "invalid previewer type in %s! previewer type: %s",
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
@@ -436,7 +430,7 @@ function PreviewerSwitch:preview(name, line, context)
             utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
-                vim.inspect(name),
+                vim.inspect(self.pipeline),
                 vim.inspect(previewer_config.previewer),
                 vim.inspect(line),
                 vim.inspect(context),
@@ -468,7 +462,7 @@ function PreviewerSwitch:preview(name, line, context)
             utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s command_list previewer %s! line:%s, context:%s, error:%s",
-                vim.inspect(name),
+                vim.inspect(self.pipeline),
                 vim.inspect(previewer_config.previewer),
                 vim.inspect(line),
                 vim.inspect(context),
@@ -502,7 +496,7 @@ function PreviewerSwitch:preview(name, line, context)
             utils.writefile(self.resultfile, "")
             log.err(
                 "failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
-                vim.inspect(name),
+                vim.inspect(self.pipeline),
                 vim.inspect(previewer_config.previewer),
                 vim.inspect(line),
                 vim.inspect(context),
@@ -526,11 +520,10 @@ function PreviewerSwitch:preview(name, line, context)
     return previewer_config.previewer_type
 end
 
---- @param name string
 --- @param line string?
 --- @param context PipelineContext
 --- @return string?
-function PreviewerSwitch:preview_label(name, line, context)
+function PreviewerSwitch:preview_label(line, context)
     local previewer_config = self.previewer_configs[self.pipeline]
     -- log.debug(
     --     "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
@@ -540,8 +533,7 @@ function PreviewerSwitch:preview_label(name, line, context)
     -- )
     log.ensure(
         type(previewer_config) == "table",
-        "invalid previewer config in %s! pipeline: %s, previewer config: %s",
-        vim.inspect(name),
+        "invalid previewer config in %s! previewer config: %s",
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
@@ -550,8 +542,7 @@ function PreviewerSwitch:preview_label(name, line, context)
             or previewer_config.previewer_label == nil
             or type(previewer_config.previewer_label) == "boolean"
             or type(previewer_config.previewer_label) == "string",
-        "invalid previewer label in %s! pipeline: %s, previewer: %s",
-        vim.inspect(name),
+        "invalid previewer label in %s! previewer: %s",
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
@@ -564,34 +555,38 @@ function PreviewerSwitch:preview_label(name, line, context)
     then
         return
     end
-    local label = type(previewer_config.previewer_label) == "function"
-            and previewer_config.previewer_label(line, context)
-        or previewer_config.previewer_label
-    log.debug(
-        "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
-        vim.inspect(line),
-        vim.inspect(label)
-    )
-    if type(label) ~= "string" then
-        return
-    end
-    self.previewer_labels[self.pipeline] = label
 
-    -- do it async/later
-    vim.defer_fn(function()
-        local last_label = self.previewer_labels[self.pipeline]
-        self.previewer_labels[self.pipeline] = nil
-        if type(last_label) ~= "string" then
+    vim.schedule(function()
+        local label = type(previewer_config.previewer_label) == "function"
+                and previewer_config.previewer_label(line, context)
+            or previewer_config.previewer_label
+        log.debug(
+            "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
+            vim.inspect(line),
+            vim.inspect(label)
+        )
+        if type(label) ~= "string" then
             return
         end
-        local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
-        fzf_helpers.send_http_post(
-            fzf_port,
-            string.format("change-preview-label(%s)", vim.trim(last_label))
-        )
-    end, 100)
+        self.last_previewer_label = label
 
-    return label
+        -- do it async/later
+        vim.defer_fn(function()
+            local last_label = self.last_previewer_label
+            self.last_previewer_label = nil
+            if type(last_label) ~= "string" then
+                return
+            end
+            self.fzfport = utils.string_not_empty(self.fzfport) and self.fzfport
+                or utils.readfile(self.fzfportfile) --[[@as string]]
+            fzf_helpers.send_http_post(
+                self.fzfport,
+                string.format("change-preview-label(%s)", vim.trim(last_label))
+            )
+        end, 200)
+    end)
+
+    return self.pipeline
 end
 
 -- previewer switch }
@@ -777,12 +772,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     --- @param query_params string
     local function provide_rpc(query_params)
-        provider_switch:provide(name, query_params, context)
+        provider_switch:provide(query_params, context)
     end
 
     --- @param line_params string
     local function preview_rpc(line_params)
-        previewer_switch:preview(name, line_params, context)
+        previewer_switch:preview(line_params, context)
     end
 
     local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
@@ -829,14 +824,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
-            previewer_switch:preview_label(name, line_params, context)
+            previewer_switch:preview_label(line_params, context)
         end
         local preview_label_rpc_id =
             server.get_rpc_server():register(preview_label_rpc)
         table.insert(rpc_registries, preview_label_rpc_id)
         preview_label_command = string.format(
             "%s %s {}",
-            fzf_helpers.make_lua_command("rpc", "notify.lua"),
+            fzf_helpers.make_lua_command("rpc", "request.lua"),
             preview_label_rpc_id
         )
         log.debug(
@@ -1013,11 +1008,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         actions,
         context,
         function()
-            vim.schedule_wrap(function()
+            vim.defer_fn(function()
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
                 end
-            end)
+            end, 3000)
         end
     )
     return p
