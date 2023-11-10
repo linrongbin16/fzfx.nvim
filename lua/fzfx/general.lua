@@ -773,6 +773,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         provider_switch:provide(query_params, context)
     end
 
+    --- @type string?
+    local last_query_cache = nil
+
+    --- @param query_params string
+    local function cache_last_query_rpc(query_params)
+        last_query_cache = query_params
+    end
+
     --- @param line_params string
     local function preview_rpc(line_params)
         previewer_switch:preview(line_params, context)
@@ -780,8 +788,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
     local preview_rpc_id = server.get_rpc_server():register(preview_rpc)
+    local cache_last_query_rpc_id =
+        server.get_rpc_server():register(cache_last_query_rpc)
     table.insert(rpc_registries, provide_rpc_id)
     table.insert(rpc_registries, preview_rpc_id)
+    table.insert(rpc_registries, cache_last_query_rpc_id)
 
     local query_command = string.format(
         "%s %s %s %s %s",
@@ -806,6 +817,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "|fzfx.general - general| reload_query_command:%s",
         vim.inspect(reload_query_command)
     )
+    local cache_last_query_command = string.format(
+        "%s %s {q}",
+        fzf_helpers.make_lua_command("rpc", "request.lua"),
+        cache_last_query_rpc_id
+    )
+    log.debug(
+        "|fzfx.general - general| cache_last_query_command:%s",
+        vim.inspect(cache_last_query_command)
+    )
     local preview_command = string.format(
         "%s %s %s %s {}",
         fzf_helpers.make_lua_command("general", "previewer.lua"),
@@ -819,52 +839,22 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
 
     local preview_label_command = nil
-    local lastqueryfile = fzf_helpers.make_last_query_cache(name)
-    local dump_last_query_command = nil
     if constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
             previewer_switch:preview_label(line_params, context)
         end
-        --- @param query_params string
-        local function dump_last_query_rpc(query_params)
-            vim.defer_fn(function()
-                log.debug(
-                    "|fzfx.general - general| query cache:%s",
-                    vim.inspect(lastqueryfile)
-                )
-                utils.writefile(
-                    lastqueryfile,
-                    json.encode({
-                        default_provider = provider_switch.pipeline,
-                        query = query_params,
-                    }) --[[@as string]]
-                )
-            end, 50)
-        end
         local preview_label_rpc_id =
             server.get_rpc_server():register(preview_label_rpc)
-        local dump_last_query_rpc_id =
-            server.get_rpc_server():register(dump_last_query_rpc)
         table.insert(rpc_registries, preview_label_rpc_id)
-        table.insert(rpc_registries, dump_last_query_rpc_id)
         preview_label_command = string.format(
             "%s %s {}",
             fzf_helpers.make_lua_command("rpc", "request.lua"),
             preview_label_rpc_id
         )
-        dump_last_query_command = string.format(
-            "%s %s {q}",
-            fzf_helpers.make_lua_command("rpc", "request.lua"),
-            dump_last_query_rpc_id
-        )
         log.debug(
             "|fzfx.general - general| preview_label_command:%s",
             vim.inspect(preview_label_command)
-        )
-        log.debug(
-            "|fzfx.general - general| dump_last_query_command:%s",
-            vim.inspect(dump_last_query_command)
         )
     end
 
@@ -887,11 +877,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             string.format("execute-silent(%s)", preview_label_command)
         )
     end
-    if utils.string_not_blank(dump_last_query_command) then
-        fzf_change_event:append(
-            string.format("execute-silent(%s)", dump_last_query_command)
-        )
-    end
+    fzf_change_event:append(
+        string.format("execute-silent(%s)", cache_last_query_command)
+    )
 
     local dump_fzf_port_command = string.format(
         "%s %s",
@@ -1039,6 +1027,23 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         context,
         function()
             vim.schedule(function()
+                local last_query_cache_file =
+                    fzf_helpers.make_last_query_cache(name)
+                local saved_cache = json.encode({
+                    default_provider = provider_switch.pipeline,
+                    query = last_query_cache or "",
+                }) --[[@as string]]
+                utils.asyncwritefile(
+                    last_query_cache_file,
+                    saved_cache,
+                    function(err, bytes)
+                        log.debug(
+                            "|fzfx.general - general| dump last query:%s, err:%s",
+                            vim.inspect(bytes),
+                            vim.inspect(err)
+                        )
+                    end
+                )
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
                 end

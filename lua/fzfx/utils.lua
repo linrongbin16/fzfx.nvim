@@ -598,9 +598,6 @@ local function readlines(filename)
     return results
 end
 
---- @class AsyncFileWriter
-local AsyncFileWriter = {}
-
 --- @param filename string
 --- @param content string
 --- @return integer
@@ -612,6 +609,56 @@ local function writefile(filename, content)
     f:write(content)
     f:close()
     return 0
+end
+
+--- @alias AsyncWriteFileOnComplete fun(err:string?,bytes:integer?):any
+--- @param filename string
+--- @param content string
+--- @param on_complete AsyncWriteFileOnComplete?
+local function asyncwritefile(filename, content, on_complete)
+    vim.loop.fs_open(filename, "w", 438, function(open_err, fd)
+        if open_err then
+            error(
+                string.format(
+                    "|fzfx.utils - asyncwritefile| failed to open file: %s! error: %s",
+                    vim.inspect(filename),
+                    vim.inspect(open_err)
+                )
+            )
+            return
+        end
+        ---@diagnostic disable-next-line: param-type-mismatch
+        vim.loop.fs_write(fd, content, nil, function(write_err, bytes)
+            if write_err then
+                error(
+                    string.format(
+                        "|fzfx.utils - asyncwritefile| failed to write file: %s! error: %s",
+                        vim.inspect(filename),
+                        vim.inspect(write_err)
+                    )
+                )
+            end
+            ---@diagnostic disable-next-line: param-type-mismatch
+            vim.loop.fs_close(fd, function(close_err)
+                if close_err then
+                    error(
+                        string.format(
+                            "|fzfx.utils - asyncwritefile| failed to close file on write error: %s! error: %s",
+                            vim.inspect(filename),
+                            vim.inspect(close_err)
+                        )
+                    )
+                end
+                if type(on_complete) == "function" then
+                    if write_err then
+                        on_complete(write_err, bytes)
+                    else
+                        on_complete(close_err, bytes)
+                    end
+                end
+            end)
+        end)
+    end)
 end
 
 --- @param filename string
@@ -793,6 +840,7 @@ local M = {
     readfile = readfile,
     readlines = readlines,
     writefile = writefile,
+    asyncwritefile = asyncwritefile,
     writelines = writelines,
     RingBuffer = RingBuffer,
 }
