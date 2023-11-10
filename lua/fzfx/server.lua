@@ -14,17 +14,17 @@ local function _make_uuid()
 end
 
 --- @type integer
-local NextRegistryIntegerId = 0
+local NextRpcRegistryId = 0
 
 --- @alias RpcRegistryId string
 --- @return RpcRegistryId
 local function _next_registry_id()
-    if NextRegistryIntegerId >= constants.int32_max then
-        NextRegistryIntegerId = 1
+    if NextRpcRegistryId >= constants.int32_max then
+        NextRpcRegistryId = 1
     else
-        NextRegistryIntegerId = NextRegistryIntegerId + 1
+        NextRpcRegistryId = NextRpcRegistryId + 1
     end
-    return tostring(NextRegistryIntegerId)
+    return tostring(NextRpcRegistryId)
 end
 
 --- @return string?
@@ -33,7 +33,7 @@ local function _make_windows_pipe_name()
         constants.is_windows,
         "|fzfx.server - get_windows_pipe_name| must use this function in Windows!"
     )
-    local result = string.format([[\\.\pipe\nvim-pipe-%s]], _make_uuid())
+    local result = string.format([[\\.\pipe\nvim-rpc-%s]], _make_uuid())
     return result
 end
 
