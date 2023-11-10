@@ -190,8 +190,7 @@ local function setup()
                             vim.inspect(registry_id),
                             vim.inspect(cb)
                         )
-                        local result = cb(params) --[[@as string?]]
-                        client_handle:write(result or "")
+                        cb(params) --[[@as string?]]
                         client_handle:read_stop()
                         _close_client_handle(client_handle)
                     end
