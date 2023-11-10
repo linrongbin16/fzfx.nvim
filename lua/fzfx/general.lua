@@ -836,7 +836,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         table.insert(rpc_registries, preview_label_rpc_id)
         preview_label_command = string.format(
             "%s %s {}",
-            fzf_helpers.make_lua_command("rpc", "notify.lua"),
+            fzf_helpers.make_lua_command("rpc", "request.lua"),
             preview_label_rpc_id
         )
         log.debug(
@@ -1013,11 +1013,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         actions,
         context,
         function()
-            vim.schedule_wrap(function()
+            vim.defer_fn(function()
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
                 end
-            end)
+            end, 3000)
         end
     )
     return p
