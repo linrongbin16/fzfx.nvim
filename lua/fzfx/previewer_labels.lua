@@ -34,10 +34,12 @@ local function _make_rg_previewer_label(opts)
         end
         local parsed = line_helpers.parse_rg(line, opts)
         return string.format(
-            "%s:%d:%d",
+            "%s:%d%s",
             vim.fn.fnamemodify(parsed.filename, ":t"),
             parsed.lineno,
-            parsed.column
+            type(parsed.column) == "number"
+                    and string.format(":%d", parsed.column)
+                or ""
         )
     end
     return impl

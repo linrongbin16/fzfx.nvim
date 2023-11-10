@@ -37,7 +37,7 @@ end
 -- parse lines from rg.
 --- @param line string
 --- @param opts {no_icon:boolean?}?
---- @return {filename:string,lineno:integer,column:integer,text:string}
+--- @return {filename:string,lineno:integer,column:integer?,text:string}
 local function parse_rg(line, opts)
     local splits = utils.string_split(line, ":")
     local filename = parse_find(splits[1], opts)
