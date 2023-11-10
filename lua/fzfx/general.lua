@@ -774,16 +774,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     --- @param query_params string
     local function provide_rpc(query_params)
-        p1:elapsed_micros("provide start")
+        local p2 = Profiler:new("provide_rpc")
         provider_switch:provide(query_params, context)
-        p1:elapsed_micros("provide done")
+        p2:elapsed_micros("done")
     end
 
     --- @param line_params string
     local function preview_rpc(line_params)
-        p1:elapsed_micros("preview start")
+        local p3 = Profiler:new("preview_rpc")
         previewer_switch:preview(line_params, context)
-        p1:elapsed_micros("preview end")
+        p3:elapsed_micros("end")
     end
 
     local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
@@ -830,9 +830,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
-            p1:elapsed_micros("preview-label start")
+            local p4 = Profiler:new("preview_label_rpc")
             previewer_switch:preview_label(line_params, context)
-            p1:elapsed_micros("preview-label end")
+            p4:elapsed_micros("end")
         end
         local preview_label_rpc_id =
             server.get_rpc_server():register(preview_label_rpc)
