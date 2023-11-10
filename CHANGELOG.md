@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.5.3...v3.0.0) (2023-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **preview-label:** revert bad-performance feature since too laggy on x86_64 Windows 10 PC ([#401](https://github.com/linrongbin16/fzfx.nvim/issues/401))
+
+### Performance Improvements
+
+* **preview-label:** revert bad-performance feature since too laggy on x86_64 Windows 10 PC ([#401](https://github.com/linrongbin16/fzfx.nvim/issues/401)) ([c6941e9](https://github.com/linrongbin16/fzfx.nvim/commit/c6941e9e257c88e94d593c398ed19b1efc276d06))
+
 ## [2.5.3](https://github.com/linrongbin16/fzfx.nvim/compare/v2.5.2...v2.5.3) (2023-11-10)
 
 
