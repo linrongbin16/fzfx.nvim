@@ -3,6 +3,7 @@ local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
 local fzf_helpers = require("fzfx.fzf_helpers")
 local server = require("fzfx.server")
+local pipe_server = require("fzfx.pipe_server")
 local color = require("fzfx.color")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
@@ -771,6 +772,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local context = context_maker()
     local rpc_registries = {}
+    local pipe_rpc_registries = {}
 
     --- @param query_params string
     local function provide_rpc(query_params)
@@ -830,16 +832,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
-            local p4 = Profiler:new("preview_label_rpc")
-            previewer_switch:preview_label(line_params, context)
-            p4:elapsed_micros("end")
+            vim.schedule(function()
+                local p4 = Profiler:new("preview_label_rpc")
+                previewer_switch:preview_label(line_params, context)
+                p4:elapsed_micros("end")
+            end)
         end
-        local preview_label_rpc_id =
-            server.get_rpc_server():register(preview_label_rpc)
-        table.insert(rpc_registries, preview_label_rpc_id)
+        local preview_label_rpc_id = pipe_server.register(preview_label_rpc)
+        table.insert(pipe_rpc_registries, preview_label_rpc_id)
         preview_label_command = string.format(
             "%s %s {}",
-            fzf_helpers.make_lua_command("rpc", "request.lua"),
+            fzf_helpers.make_lua_command("general", "previewer_label.lua"),
             preview_label_rpc_id
         )
         log.debug(
@@ -1020,6 +1023,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             vim.defer_fn(function()
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
+                end
+                for _, pipe_rpc_id in ipairs(pipe_rpc_registries) do
+                    pipe_server.unregister(pipe_rpc_id)
                 end
             end, 3000)
         end

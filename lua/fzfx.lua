@@ -35,6 +35,7 @@ local function setup(options)
 
     -- rpc server
     require("fzfx.server").setup()
+    require("fzfx.pipe_server").setup()
 
     -- yank history
     require("fzfx.yank_history").setup()
