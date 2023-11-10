@@ -774,11 +774,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
 
     --- @type string?
-    local last_query_cache = nil
+    local query_cache = nil
 
     --- @param query_params string
-    local function cache_last_query_rpc(query_params)
-        last_query_cache = query_params
+    local function cache_query_rpc(query_params)
+        vim.defer_fn(function()
+            query_cache = query_params
+        end, 100)
     end
 
     --- @param line_params string
@@ -788,11 +790,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
     local preview_rpc_id = server.get_rpc_server():register(preview_rpc)
-    local cache_last_query_rpc_id =
-        server.get_rpc_server():register(cache_last_query_rpc)
+    local cache_query_rpc_id = server.get_rpc_server():register(cache_query_rpc)
     table.insert(rpc_registries, provide_rpc_id)
     table.insert(rpc_registries, preview_rpc_id)
-    table.insert(rpc_registries, cache_last_query_rpc_id)
+    table.insert(rpc_registries, cache_query_rpc_id)
 
     local query_command = string.format(
         "%s %s %s %s %s",
@@ -817,14 +818,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "|fzfx.general - general| reload_query_command:%s",
         vim.inspect(reload_query_command)
     )
-    local cache_last_query_command = string.format(
+    local cache_query_command = string.format(
         "%s %s {q}",
-        fzf_helpers.make_lua_command("rpc", "request.lua"),
-        cache_last_query_rpc_id
+        fzf_helpers.make_lua_command("rpc", "notify.lua"),
+        cache_query_rpc_id
     )
     log.debug(
         "|fzfx.general - general| cache_last_query_command:%s",
-        vim.inspect(cache_last_query_command)
+        vim.inspect(cache_query_command)
     )
     local preview_command = string.format(
         "%s %s %s %s {}",
@@ -849,7 +850,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         table.insert(rpc_registries, preview_label_rpc_id)
         preview_label_command = string.format(
             "%s %s {}",
-            fzf_helpers.make_lua_command("rpc", "request.lua"),
+            fzf_helpers.make_lua_command("rpc", "notify.lua"),
             preview_label_rpc_id
         )
         log.debug(
@@ -878,7 +879,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         )
     end
     fzf_change_event:append(
-        string.format("execute-silent(%s)", cache_last_query_command)
+        string.format("execute-silent(%s)", cache_query_command)
     )
 
     local dump_fzf_port_command = string.format(
@@ -1031,7 +1032,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     fzf_helpers.make_last_query_cache(name)
                 local saved_cache = json.encode({
                     default_provider = provider_switch.pipeline,
-                    query = last_query_cache or "",
+                    query = query_cache or "",
                 }) --[[@as string]]
                 utils.asyncwritefile(
                     last_query_cache_file,
