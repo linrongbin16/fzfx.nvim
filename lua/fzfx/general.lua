@@ -331,10 +331,11 @@ end
 --- @class PreviewerSwitch
 --- @field pipeline PipelineName
 --- @field previewer_configs table<PipelineName, PreviewerConfig>
+--- @field last_previewer_label string?
 --- @field metafile string
 --- @field resultfile string
 --- @field fzfportfile string
---- @field previewer_label_cache string?
+--- @field fzfport string?
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -365,10 +366,11 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
     local o = {
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
+        last_previewer_label = nil,
         metafile = _make_cache_filename("previewer", "metafile", name),
         resultfile = _make_cache_filename("previewer", "resultfile", name),
         fzfportfile = _make_cache_filename("previewer", "fzfport", name),
-        previewer_label_cache = nil,
+        fzfport = nil,
     }
     setmetatable(o, self)
     self.__index = self
@@ -553,35 +555,35 @@ function PreviewerSwitch:preview_label(line, context)
     then
         return
     end
-    -- log.debug(
-    --     "|fzfx.general - PreviewerSwitch:preview_label| start, line:%s",
-    --     vim.inspect(line)
-    -- )
 
-    -- emit later
     vim.schedule(function()
-        self.previewer_label_cache = type(previewer_config.previewer_label)
-                    == "function"
+        local label = type(previewer_config.previewer_label) == "function"
                 and previewer_config.previewer_label(line, context)
-            or previewer_config.previewer_label --[[@as string]]
+            or previewer_config.previewer_label
+        log.debug(
+            "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
+            vim.inspect(line),
+            vim.inspect(label)
+        )
+        if type(label) ~= "string" then
+            return
+        end
+        self.last_previewer_label = label
 
+        -- do it async/later
         vim.defer_fn(function()
-            -- log.debug(
-            --     "|fzfx.general - PreviewerSwitch:preview_label| defer, line:%s, label:%s",
-            --     vim.inspect(line),
-            --     vim.inspect(label)
-            -- )
-            local label = self.previewer_label_cache
-            self.previewer_label_cache = nil
-            if type(label) ~= "string" then
+            local last_label = self.last_previewer_label
+            self.last_previewer_label = nil
+            if type(last_label) ~= "string" then
                 return
             end
-            local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
+            self.fzfport = utils.string_not_empty(self.fzfport) and self.fzfport
+                or utils.readfile(self.fzfportfile) --[[@as string]]
             fzf_helpers.send_http_post(
-                fzf_port,
-                string.format("change-preview-label(%s)", vim.trim(label))
+                self.fzfport,
+                string.format("change-preview-label(%s)", vim.trim(last_label))
             )
-        end, 100)
+        end, 200)
     end)
 
     return self.pipeline
@@ -850,7 +852,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         table.insert(rpc_registries, preview_label_rpc_id)
         preview_label_command = string.format(
             "%s %s {}",
-            fzf_helpers.make_lua_command("rpc", "notify.lua"),
+            fzf_helpers.make_lua_command("rpc", "request.lua"),
             preview_label_rpc_id
         )
         log.debug(
@@ -1045,10 +1047,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                         )
                     end
                 )
+            end)
+            vim.defer_fn(function()
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
                 end
-            end)
+            end, 3000)
         end
     )
     return p
