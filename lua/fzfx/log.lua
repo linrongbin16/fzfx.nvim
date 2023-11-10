@@ -121,9 +121,9 @@ local function log(level, msg)
                 local secs, ms = vim.loop.gettimeofday()
                 fp:write(
                     string.format(
-                        "%s.%06d [%s]: %s\n",
+                        "%s.%03d [%s]: %s\n",
                         os.date("%Y-%m-%d %H:%M:%S", secs),
-                        ms,
+                        math.floor(ms / 1000),
                         LogLevelNames[level],
                         line
                     )
