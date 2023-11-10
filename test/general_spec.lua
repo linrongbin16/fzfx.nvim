@@ -47,7 +47,7 @@ describe("general", function()
             assert_eq(ps.provider_configs.default.provider, "ls -1")
             assert_eq(ps.provider_configs.default.provider_type, "plain")
             assert_eq(ps:switch("default"), nil)
-            assert_eq(ps:provide("default", "hello", {}), "plain")
+            assert_eq(ps:provide("hello", {}), "plain")
             if not github_actions then
                 local meta1 =
                     utils.readfile(get_provider_metafile("single_test"))
@@ -83,7 +83,7 @@ describe("general", function()
             assert_eq(ps.provider_configs.default.provider[3], "~")
             assert_eq(ps.provider_configs.default.provider_type, "plain_list")
             assert_eq(ps:switch("default"), nil)
-            assert_eq(ps:provide("default", "hello", {}), "plain_list")
+            assert_eq(ps:provide("hello", {}), "plain_list")
             if not github_actions then
                 local meta2 = utils.readfile(
                     get_provider_metafile("single_plain_list_test")
@@ -126,7 +126,7 @@ describe("general", function()
             assert_eq(ps.provider_configs.p1.provider, "p1")
             assert_eq(ps.provider_configs.p1.provider_type, "plain")
             assert_eq(ps:switch("p1"), nil)
-            assert_eq(ps:provide("p1", "hello", {}), "plain")
+            assert_eq(ps:provide("hello", {}), "plain")
             if not github_actions then
                 local meta3 =
                     utils.readfile(get_provider_metafile("multiple_test"))
@@ -152,7 +152,7 @@ describe("general", function()
             assert_eq(ps.provider_configs.p2.provider[3], "p4")
             assert_eq(ps.provider_configs.p2.provider_type, "plain_list")
             assert_eq(ps:switch("p2"), nil)
-            assert_eq(ps:provide("p2", "hello", {}), "plain_list")
+            assert_eq(ps:provide("hello", {}), "plain_list")
             if not github_actions then
                 local meta4 =
                     utils.readfile(get_provider_metafile("multiple_test"))
@@ -194,7 +194,7 @@ describe("general", function()
                     os.getenv("GITHUB_ACTIONS")
                 )
             )
-            assert_eq(ps:preview("p1", "hello", {}), "command")
+            assert_eq(ps:preview("hello", {}), "command")
             if not github_actions then
                 local meta1 = utils.readfile(
                     path.join(
@@ -219,7 +219,7 @@ describe("general", function()
                 assert_eq(result1, "ls -lh")
             end
             ps:switch("p2")
-            assert_eq(ps:preview("p2", "world", {}), "command_list")
+            assert_eq(ps:preview("world", {}), "command_list")
             if not github_actions then
                 local meta2 = utils.readfile(
                     path.join(
@@ -264,7 +264,7 @@ describe("general", function()
                     previewer_type = schema.ProviderTypeEnum.COMMAND_LIST,
                 },
             })
-            assert_eq(ps:preview("p1", "hello", {}), "command")
+            assert_eq(ps:preview("hello", {}), "command")
             if not github_actions then
                 local meta1 = utils.readfile(
                     path.join(
@@ -289,7 +289,7 @@ describe("general", function()
                 assert_eq(result1, "ls -lh")
             end
             ps:switch("p2")
-            assert_eq(ps:preview("p2", "world", {}), "command_list")
+            assert_eq(ps:preview("world", {}), "command_list")
             if not github_actions then
                 local meta2 = utils.readfile(
                     path.join(
@@ -395,13 +395,9 @@ describe("general", function()
                     os.getenv("GITHUB_ACTIONS")
                 )
             )
-            assert_true(
-                ps:preview_label("p1", "hello", {}, fzf_port_file) == nil
-            )
+            assert_true(ps:preview_label("hello", {}, fzf_port_file) == nil)
             ps:switch("p2")
-            assert_true(
-                ps:preview_label("p2", "world", {}, fzf_port_file) == nil
-            )
+            assert_true(ps:preview_label("world", {}, fzf_port_file) == nil)
         end)
         it("previews label", function()
             local name = "label_test2"
