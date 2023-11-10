@@ -334,6 +334,7 @@ end
 --- @field metafile string
 --- @field resultfile string
 --- @field fzfportfile string
+--- @field previewer_label_cache string?
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -367,6 +368,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         metafile = _make_cache_filename("previewer", "metafile", name),
         resultfile = _make_cache_filename("previewer", "resultfile", name),
         fzfportfile = _make_cache_filename("previewer", "fzfport", name),
+        previewer_label_cache = nil,
     }
     setmetatable(o, self)
     self.__index = self
@@ -557,24 +559,30 @@ function PreviewerSwitch:preview_label(line, context)
     -- )
 
     -- emit later
-    vim.defer_fn(function()
-        local label = type(previewer_config.previewer_label) == "function"
+    vim.schedule(function()
+        self.previewer_label_cache = type(previewer_config.previewer_label)
+                    == "function"
                 and previewer_config.previewer_label(line, context)
-            or previewer_config.previewer_label
-        -- log.debug(
-        --     "|fzfx.general - PreviewerSwitch:preview_label| defer, line:%s, label:%s",
-        --     vim.inspect(line),
-        --     vim.inspect(label)
-        -- )
-        if type(label) ~= "string" then
-            return
-        end
-        local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
-        fzf_helpers.send_http_post(
-            fzf_port,
-            string.format("change-preview-label(%s)", vim.trim(label))
-        )
-    end, 100)
+            or previewer_config.previewer_label --[[@as string]]
+
+        vim.defer_fn(function()
+            -- log.debug(
+            --     "|fzfx.general - PreviewerSwitch:preview_label| defer, line:%s, label:%s",
+            --     vim.inspect(line),
+            --     vim.inspect(label)
+            -- )
+            local label = self.previewer_label_cache
+            self.previewer_label_cache = nil
+            if type(label) ~= "string" then
+                return
+            end
+            local fzf_port = utils.readfile(self.fzfportfile) --[[@as string]]
+            fzf_helpers.send_http_post(
+                fzf_port,
+                string.format("change-preview-label(%s)", vim.trim(label))
+            )
+        end, 100)
+    end)
 
     return self.pipeline
 end

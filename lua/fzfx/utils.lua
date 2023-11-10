@@ -567,9 +567,6 @@ function FileLineReader:close()
     end
 end
 
---- @class AsyncFileWriter
-local AsyncFileWriter = {}
-
 --- @param filename string
 --- @param opts {trim:boolean?}|nil
 --- @return string?
@@ -600,6 +597,9 @@ local function readlines(filename)
     reader:close()
     return results
 end
+
+--- @class AsyncFileWriter
+local AsyncFileWriter = {}
 
 --- @param filename string
 --- @param content string
