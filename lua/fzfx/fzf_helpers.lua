@@ -122,8 +122,12 @@ local function get_command_feed(feed_type, input_args, pipeline_name)
             return "", nil
         end
         --- @alias LastQueryCacheObj {default_provider:string,query:string}
-        local obj = json.decode(data) --[[@as LastQueryCacheObj]]
-        return obj.query or "", obj.default_provider
+        local ok, obj = pcall(json.decode, data) --[[@as LastQueryCacheObj]]
+        if ok then
+            return obj.query or "", obj.default_provider
+        else
+            return "", nil
+        end
     else
         log.throw(
             "|fzfx.fzf_helpers - get_command_feed| invalid command feed type! %s",
