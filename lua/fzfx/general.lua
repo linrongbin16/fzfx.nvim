@@ -12,6 +12,7 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local schema = require("fzfx.schema")
 local conf = require("fzfx.config")
 local json = require("fzfx.json")
+local Profiler = require("fzfx.profiler").Profiler
 
 local DEFAULT_PIPELINE = "default"
 
@@ -723,6 +724,7 @@ end
 --- @param default_pipeline PipelineName?
 --- @return Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
+    local p1 = Profiler:new("general")
     local pipeline_size = get_pipeline_size(pipeline_configs)
 
     local default_provider_key = nil
@@ -772,12 +774,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     --- @param query_params string
     local function provide_rpc(query_params)
+        local p2 = Profiler:new("provide_rpc")
         provider_switch:provide(query_params, context)
+        p2:elapsed_micros("done")
     end
 
     --- @param line_params string
     local function preview_rpc(line_params)
+        local p3 = Profiler:new("preview_rpc")
         previewer_switch:preview(line_params, context)
+        p3:elapsed_micros("end")
     end
 
     local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
@@ -824,7 +830,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if constants.has_curl then
         --- @param line_params string
         local function preview_label_rpc(line_params)
+            local p4 = Profiler:new("preview_label_rpc")
             previewer_switch:preview_label(line_params, context)
+            p4:elapsed_micros("end")
         end
         local preview_label_rpc_id =
             server.get_rpc_server():register(preview_label_rpc)
@@ -1001,6 +1009,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             { height = 1, width = 1, row = 0, col = 0 }
         )
     end
+    p1:elapsed_millis("prepare")
     local p = Popup:new(
         win_opts or {},
         query_command,
@@ -1015,7 +1024,21 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end, 3000)
         end
     )
+    p1:elapsed_millis("done")
     return p
+end
+
+--- @param name string
+--- @param command_config CommandConfig
+--- @param group_config GroupConfig
+local function _make_user_command(name, command_config, group_config)
+    vim.api.nvim_create_user_command(command_config.name, function(opts)
+        local query, last_provider =
+            fzf_helpers.get_command_feed(opts, command_config.feed)
+        local default_provider = last_provider
+            or command_config.default_provider
+        return general(name, query, opts.bang, group_config, default_provider)
+    end, command_config.opts)
 end
 
 --- @param name string
@@ -1031,46 +1054,17 @@ local function setup(name, pipeline_configs)
     -- )
     -- User commands
     if schema.is_command_config(pipeline_configs.commands) then
-        vim.api.nvim_create_user_command(
-            pipeline_configs.commands.name,
-            function(opts)
-                local query = fzf_helpers.get_command_feed(
-                    opts,
-                    pipeline_configs.commands.feed
-                )
-                return general(
-                    name,
-                    query,
-                    opts.bang,
-                    pipeline_configs,
-                    pipeline_configs.commands.default_provider
-                )
-            end,
-            pipeline_configs.commands.opts
-        )
+        _make_user_command(name, pipeline_configs.commands, pipeline_configs)
     else
         for _, command_configs in pairs(pipeline_configs.commands) do
-            vim.api.nvim_create_user_command(
-                command_configs.name,
-                function(opts)
-                    local query =
-                        fzf_helpers.get_command_feed(opts, command_configs.feed)
-                    return general(
-                        name,
-                        query,
-                        opts.bang,
-                        pipeline_configs,
-                        command_configs.default_provider
-                    )
-                end,
-                command_configs.opts
-            )
+            _make_user_command(name, command_configs, pipeline_configs)
         end
     end
 end
 
 local M = {
     setup = setup,
+    _make_user_command = _make_user_command,
     _make_cache_filename = _make_cache_filename,
     make_provider_meta_opts = make_provider_meta_opts,
     make_previewer_meta_opts = make_previewer_meta_opts,

@@ -118,10 +118,12 @@ local function log(level, msg)
         local fp = io.open(Configs.file_path, "a")
         if fp then
             for _, line in ipairs(msg_lines) do
+                local secs, ms = vim.loop.gettimeofday()
                 fp:write(
                     string.format(
-                        "%s [%s]: %s\n",
-                        os.date("%Y-%m-%d %H:%M:%S"),
+                        "%s.%03d [%s]: %s\n",
+                        os.date("%Y-%m-%d %H:%M:%S", secs),
+                        math.floor(ms / 1000),
                         LogLevelNames[level],
                         line
                     )
