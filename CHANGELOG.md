@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.3](https://github.com/linrongbin16/fzfx.nvim/compare/v2.5.2...v2.5.3) (2023-11-10)
+
+
+### Bug Fixes
+
+* **rg:** fix column missing error ([#393](https://github.com/linrongbin16/fzfx.nvim/issues/393)) ([623da80](https://github.com/linrongbin16/fzfx.nvim/commit/623da80c8b228ac826b31225cbe1e748fa6a1b30))
+
 ## [2.5.2](https://github.com/linrongbin16/fzfx.nvim/compare/v2.5.1...v2.5.2) (2023-11-10)
 
 
