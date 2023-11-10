@@ -443,31 +443,33 @@ local function _make_git_commits_provider(opts)
             log.echo(LogLevels.INFO, default_git_root_error)
             return nil
         end
-        if not utils.is_buf_valid(context.bufnr) then
-            log.echo(
-                LogLevels.INFO,
-                default_invalid_buffer_error,
-                vim.inspect(context.bufnr)
-            )
-            return nil
-        end
-        return (type(opts) == "table" and opts.buffer)
-                and {
-                    "git",
-                    "log",
-                    "--pretty=" .. default_git_log_pretty,
-                    "--date=short",
-                    "--color=always",
-                    "--",
-                    vim.api.nvim_buf_get_name(context.bufnr),
-                }
-            or {
+        if type(opts) == "table" and opts.buffer then
+            if not utils.is_buf_valid(context.bufnr) then
+                log.echo(
+                    LogLevels.INFO,
+                    default_invalid_buffer_error,
+                    vim.inspect(context.bufnr)
+                )
+                return nil
+            end
+            return {
+                "git",
+                "log",
+                "--pretty=" .. default_git_log_pretty,
+                "--date=short",
+                "--color=always",
+                "--",
+                vim.api.nvim_buf_get_name(context.bufnr),
+            }
+        else
+            return {
                 "git",
                 "log",
                 "--pretty=" .. default_git_log_pretty,
                 "--date=short",
                 "--color=always",
             }
+        end
     end
     return impl
 end
