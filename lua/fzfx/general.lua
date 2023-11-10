@@ -827,26 +827,26 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
 
     local preview_label_command = nil
-    -- if constants.has_curl then
-    --     --- @param line_params string
-    --     local function preview_label_rpc(line_params)
-    --         local p4 = Profiler:new("preview_label_rpc")
-    --         previewer_switch:preview_label(line_params, context)
-    --         p4:elapsed_micros("end")
-    --     end
-    --     local preview_label_rpc_id =
-    --         server.get_rpc_server():register(preview_label_rpc)
-    --     table.insert(rpc_registries, preview_label_rpc_id)
-    --     preview_label_command = string.format(
-    --         "%s %s {}",
-    --         fzf_helpers.make_lua_command("rpc", "notify.lua"),
-    --         preview_label_rpc_id
-    --     )
-    --     log.debug(
-    --         "|fzfx.general - general| preview_label_command:%s",
-    --         vim.inspect(preview_label_command)
-    --     )
-    -- end
+    if constants.has_curl then
+        --- @param line_params string
+        local function preview_label_rpc(line_params)
+            local p4 = Profiler:new("preview_label_rpc")
+            previewer_switch:preview_label(line_params, context)
+            p4:elapsed_micros("end")
+        end
+        local preview_label_rpc_id =
+            server.get_rpc_server():register(preview_label_rpc)
+        table.insert(rpc_registries, preview_label_rpc_id)
+        preview_label_command = string.format(
+            "%s %s {}",
+            fzf_helpers.make_lua_command("rpc", "notify.lua"),
+            preview_label_rpc_id
+        )
+        log.debug(
+            "|fzfx.general - general| preview_label_command:%s",
+            vim.inspect(preview_label_command)
+        )
+    end
 
     local fzf_opts = {
         { "--query", query },
@@ -859,17 +859,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local fzf_focus_event = fzf_helpers.FzfOptEventBinder:new("focus")
     local fzf_load_event = fzf_helpers.FzfOptEventBinder:new("load")
     local fzf_change_event = fzf_helpers.FzfOptEventBinder:new("change")
-    if
-        type(preview_label_command) == "string"
-        and string.len(preview_label_command) > 0
-    then
-        fzf_focus_event:append(
-            string.format("execute-silent(%s)", preview_label_command)
-        )
-        fzf_load_event:append(
-            string.format("execute-silent(%s)", preview_label_command)
-        )
-    end
+    -- if
+    --     type(preview_label_command) == "string"
+    --     and string.len(preview_label_command) > 0
+    -- then
+    --     fzf_focus_event:append(
+    --         string.format("execute-silent(%s)", preview_label_command)
+    --     )
+    --     fzf_load_event:append(
+    --         string.format("execute-silent(%s)", preview_label_command)
+    --     )
+    -- end
 
     local dump_fzf_port_command = string.format(
         "%s %s",
@@ -1021,7 +1021,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
                 end
-            end, 3000)
+            end, 1000)
         end
     )
     p1:elapsed_millis("done")
