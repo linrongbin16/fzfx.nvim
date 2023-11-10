@@ -85,7 +85,7 @@ end
 -- visual select }
 
 --- @param opts Options
---- @param feed_type "args"|"visual"|"cword"|"put"
+--- @param feed_type CommandFeed
 --- @return string
 local function get_command_feed(opts, feed_type)
     feed_type = string.lower(feed_type)

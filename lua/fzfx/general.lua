@@ -1025,7 +1025,7 @@ end
 local function _make_user_command(name, command_config, group_config)
     vim.api.nvim_create_user_command(command_config.name, function(opts)
         local query, last_provider =
-            fzf_helpers.get_command_feed(command_config.feed, opts.args, name)
+            fzf_helpers.get_command_feed(opts, command_config.feed)
         local default_provider = last_provider
             or command_config.default_provider
         return general(name, query, opts.bang, group_config, default_provider)
