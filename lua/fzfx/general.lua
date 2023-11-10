@@ -724,6 +724,7 @@ end
 --- @param default_pipeline PipelineName?
 --- @return Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
+    local p1 = Profiler:new()
     local pipeline_size = get_pipeline_size(pipeline_configs)
 
     local default_provider_key = nil

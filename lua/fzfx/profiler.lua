@@ -19,6 +19,16 @@ function Profiler:new()
 end
 
 --- @return integer
+function Profiler:start_secs()
+    return self.start_at.secs
+end
+
+--- @return integer
+function Profiler:start_ms()
+    return self.start_at.secs * 1000000 + self.start_at.ms
+end
+
+--- @return integer
 function Profiler:elapsed_secs()
     local secs, _ = vim.loop.gettimeofday()
     return secs - self.start_at.secs

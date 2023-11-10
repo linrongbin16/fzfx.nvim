@@ -16,6 +16,14 @@ describe("profiler", function()
             print(string.format("profiler1:%s\n", vim.inspect(p)))
             assert_true(p.start_at.secs > 0)
             assert_true(p.start_at.ms >= 0 and p.start_at.ms < 1000000)
+            assert_true(
+                p:start_secs() > 0 and p:start_secs() == p.start_at.secs
+            )
+            assert_true(
+                p:start_ms() > 0
+                    and p:start_ms()
+                        == (p.start_at.secs * 1000000 + p.start_at.ms)
+            )
         end)
         it("elapsed", function()
             local p = Profiler:new()
