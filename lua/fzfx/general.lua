@@ -826,27 +826,27 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         vim.inspect(preview_command)
     )
 
-    local preview_label_command = nil
-    if constants.has_curl then
-        --- @param line_params string
-        local function preview_label_rpc(line_params)
-            local p4 = Profiler:new("preview_label_rpc")
-            previewer_switch:preview_label(line_params, context)
-            p4:elapsed_micros("end")
-        end
-        local preview_label_rpc_id =
-            server.get_rpc_server():register(preview_label_rpc)
-        table.insert(rpc_registries, preview_label_rpc_id)
-        preview_label_command = string.format(
-            "%s %s {}",
-            fzf_helpers.make_lua_command("rpc", "notify.lua"),
-            preview_label_rpc_id
-        )
-        log.debug(
-            "|fzfx.general - general| preview_label_command:%s",
-            vim.inspect(preview_label_command)
-        )
-    end
+    -- local preview_label_command = nil
+    -- if constants.has_curl then
+    --     --- @param line_params string
+    --     local function preview_label_rpc(line_params)
+    --         local p4 = Profiler:new("preview_label_rpc")
+    --         previewer_switch:preview_label(line_params, context)
+    --         p4:elapsed_micros("end")
+    --     end
+    --     local preview_label_rpc_id =
+    --         server.get_rpc_server():register(preview_label_rpc)
+    --     table.insert(rpc_registries, preview_label_rpc_id)
+    --     preview_label_command = string.format(
+    --         "%s %s {}",
+    --         fzf_helpers.make_lua_command("rpc", "notify.lua"),
+    --         preview_label_rpc_id
+    --     )
+    --     log.debug(
+    --         "|fzfx.general - general| preview_label_command:%s",
+    --         vim.inspect(preview_label_command)
+    --     )
+    -- end
 
     local fzf_opts = {
         { "--query", query },

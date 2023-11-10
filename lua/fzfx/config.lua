@@ -2248,12 +2248,12 @@ local Defaults = {
             restricted_mode = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").find_previewer_label,
             },
             unrestricted_mode = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").find_previewer_label,
             },
         },
         actions = {
@@ -2429,23 +2429,23 @@ local Defaults = {
             restricted_mode = {
                 previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = constants.has_rg
-                        and require("fzfx.previewer_labels").rg_previewer_label
-                    or require("fzfx.previewer_labels").grep_previewer_label,
+                -- previewer_label = constants.has_rg
+                --         and require("fzfx.previewer_labels").rg_previewer_label
+                --     or require("fzfx.previewer_labels").grep_previewer_label,
             },
             unrestricted_mode = {
                 previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = constants.has_rg
-                        and require("fzfx.previewer_labels").rg_previewer_label
-                    or require("fzfx.previewer_labels").grep_previewer_label,
+                -- previewer_label = constants.has_rg
+                --         and require("fzfx.previewer_labels").rg_previewer_label
+                --     or require("fzfx.previewer_labels").grep_previewer_label,
             },
             buffer_mode = {
                 previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = constants.has_rg
-                        and require("fzfx.previewer_labels").rg_previewer_label
-                    or require("fzfx.previewer_labels").grep_previewer_label,
+                -- previewer_label = constants.has_rg
+                --         and require("fzfx.previewer_labels").rg_previewer_label
+                --     or require("fzfx.previewer_labels").grep_previewer_label,
             },
         },
         actions = {
@@ -2524,7 +2524,7 @@ local Defaults = {
         previewers = {
             previewer = _file_previewer,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+            -- previewer_label = require("fzfx.previewer_labels").find_previewer_label,
         },
         interactions = {
             delete_buffer = {
@@ -2655,12 +2655,12 @@ local Defaults = {
             current_folder = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").find_previewer_label,
             },
             workspace = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").find_previewer_label,
             },
         },
         actions = {
@@ -3268,17 +3268,17 @@ local Defaults = {
             all_commands = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
             },
             ex_commands = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
             },
             user_commands = {
                 previewer = vim_commands_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
             },
         },
         actions = {
@@ -3488,22 +3488,22 @@ local Defaults = {
             all_mode = {
                 previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
             },
             n_mode = {
                 previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
             },
             i_mode = {
                 previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
             },
             v_mode = {
                 previewer = _vim_keymaps_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
             },
         },
         actions = {
@@ -3633,12 +3633,12 @@ local Defaults = {
             workspace_diagnostics = {
                 previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
             },
             buffer_diagnostics = {
                 previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+                -- previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
             },
         },
         actions = {
@@ -3682,7 +3682,7 @@ local Defaults = {
         previewers = {
             previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+            -- previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -3737,7 +3737,7 @@ local Defaults = {
         previewers = {
             previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+            -- previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -3792,7 +3792,7 @@ local Defaults = {
         previewers = {
             previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+            -- previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -3847,7 +3847,7 @@ local Defaults = {
         previewers = {
             previewer = file_previewer_grep,
             previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+            -- previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
         },
         actions = {
             ["esc"] = require("fzfx.actions").nop,
@@ -3974,24 +3974,24 @@ local Defaults = {
             filter_hidden = {
                 previewer = _file_explorer_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = constants.has_lsd and require(
-                    "fzfx.previewer_labels"
-                ).lsd_previewer_label or (constants.has_eza and require(
-                    "fzfx.previewer_labels"
-                ).eza_previewer_label or require(
-                    "fzfx.previewer_labels"
-                ).ls_previewer_label),
+                -- previewer_label = constants.has_lsd and require(
+                --     "fzfx.previewer_labels"
+                -- ).lsd_previewer_label or (constants.has_eza and require(
+                --     "fzfx.previewer_labels"
+                -- ).eza_previewer_label or require(
+                --     "fzfx.previewer_labels"
+                -- ).ls_previewer_label),
             },
             include_hidden = {
                 previewer = _file_explorer_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = constants.has_lsd and require(
-                    "fzfx.previewer_labels"
-                ).lsd_previewer_label or (constants.has_eza and require(
-                    "fzfx.previewer_labels"
-                ).eza_previewer_label or require(
-                    "fzfx.previewer_labels"
-                ).ls_previewer_label),
+                -- previewer_label = constants.has_lsd and require(
+                --     "fzfx.previewer_labels"
+                -- ).lsd_previewer_label or (constants.has_eza and require(
+                --     "fzfx.previewer_labels"
+                -- ).eza_previewer_label or require(
+                --     "fzfx.previewer_labels"
+                -- ).ls_previewer_label),
             },
         },
         interactions = {
