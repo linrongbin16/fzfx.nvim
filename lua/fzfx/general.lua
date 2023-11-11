@@ -336,6 +336,7 @@ end
 --- @field metafile string
 --- @field resultfile string
 --- @field fzf_port_file string
+--- @field fzf_port string
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -590,17 +591,18 @@ function PreviewerSwitch:preview_label(line, context)
             if type(last_label) ~= "string" then
                 return
             end
-            utils.asyncreadfile(self.fzf_port_file, function(port)
-                if utils.string_not_empty(port) then
-                    fzf_helpers.send_http_post(
-                        port,
-                        string.format(
-                            "change-preview-label(%s)",
-                            vim.trim(last_label)
-                        )
+            self.fzf_port = utils.string_not_empty(self.fzf_port)
+                    and self.fzf_port
+                or utils.readfile(self.fzf_port_file) --[[@as string]]
+            if utils.string_not_empty(self.fzf_port) then
+                fzf_helpers.send_http_post(
+                    self.fzf_port,
+                    string.format(
+                        "change-preview-label(%s)",
+                        vim.trim(last_label)
                     )
-                end
-            end)
+                )
+            end
         end, 200)
     end)
 
