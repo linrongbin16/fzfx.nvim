@@ -1,31 +1,6 @@
 local log = require("fzfx.log")
 local constants = require("fzfx.constants")
-
---- @return string
-local function _make_uuid()
-    local secs, ms = vim.loop.gettimeofday()
-    return string.format(
-        "%d-%d-%d-%d",
-        vim.loop.os_getpid(),
-        secs,
-        ms,
-        math.random(1, constants.int32_max)
-    )
-end
-
---- @type integer
-local NextRegistryIntegerId = 0
-
---- @alias RpcRegistryId string
---- @return RpcRegistryId
-local function _next_registry_id()
-    if NextRegistryIntegerId >= constants.int32_max then
-        NextRegistryIntegerId = 1
-    else
-        NextRegistryIntegerId = NextRegistryIntegerId + 1
-    end
-    return tostring(NextRegistryIntegerId)
-end
+local utils = require("fzfx.utils")
 
 --- @return string?
 local function _make_windows_pipe_name()
@@ -33,10 +8,11 @@ local function _make_windows_pipe_name()
         constants.is_windows,
         "|fzfx.server - get_windows_pipe_name| must use this function in Windows!"
     )
-    local result = string.format([[\\.\pipe\nvim-pipe-%s]], _make_uuid())
+    local result = string.format([[\\.\pipe\nvim-pipe-%s]], utils.make_uuid())
     return result
 end
 
+--- @alias RpcRegistryId string
 --- @alias RpcCallback fun(params:any):string?
 --- @class RpcServer
 --- @field address string
@@ -93,7 +69,7 @@ function RpcServer:register(callback)
         type(callback),
         vim.inspect(callback)
     )
-    local registry_id = _next_registry_id()
+    local registry_id = utils.make_unique_id()
     self.registry[registry_id] = callback
     return registry_id
 end
@@ -146,7 +122,6 @@ local function get_rpc_server()
 end
 
 local function setup()
-    math.randomseed(os.time())
     RpcServerInstance = RpcServer:new()
     -- log.debug(
     --     "|fzfx.server - setup| RpcServerInstance:%s",
@@ -158,8 +133,6 @@ end
 local M = {
     setup = setup,
     get_rpc_server = get_rpc_server,
-    _make_uuid = _make_uuid,
-    _next_registry_id = _next_registry_id,
     _make_windows_pipe_name = _make_windows_pipe_name,
 }
 

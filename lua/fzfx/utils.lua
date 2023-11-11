@@ -578,9 +578,86 @@ local function readfile(filename, opts)
     if f == nil then
         return nil
     end
-    local content = vim.trim(f:read("*a"))
+    local content = f:read("*a")
     f:close()
-    return content
+    return opts.trim and vim.trim(content) or content
+end
+
+--- @param filename string
+--- @param on_complete fun(data:string?):nil
+--- @param opts {trim:boolean?}|nil
+local function asyncreadfile(filename, on_complete, opts)
+    opts = opts or { trim = true }
+    opts.trim = opts.trim == nil and true or opts.trim
+
+    vim.loop.fs_open(filename, "r", 438, function(open_err, fd)
+        if open_err then
+            error(
+                string.format(
+                    "failed to open file %s: %s",
+                    vim.inspect(filename),
+                    vim.inspect(open_err)
+                )
+            )
+            return
+        end
+        vim.loop.fs_fstat(
+            ---@diagnostic disable-next-line: param-type-mismatch
+            fd,
+            function(fstat_err, stat)
+                if fstat_err then
+                    error(
+                        string.format(
+                            "failed to fstat file %s: %s",
+                            vim.inspect(filename),
+                            vim.inspect(fstat_err)
+                        )
+                    )
+                    return
+                end
+                if not stat then
+                    error(
+                        string.format(
+                            "failed to fstat file %s (empty stat): %s",
+                            vim.inspect(filename),
+                            vim.inspect(fstat_err)
+                        )
+                    )
+                    return
+                end
+                ---@diagnostic disable-next-line: param-type-mismatch
+                vim.loop.fs_read(fd, stat.size, 0, function(read_err, data)
+                    if read_err then
+                        error(
+                            string.format(
+                                "failed to read file %s: %s",
+                                vim.inspect(filename),
+                                vim.inspect(read_err)
+                            )
+                        )
+                        return
+                    end
+                    ---@diagnostic disable-next-line: param-type-mismatch
+                    vim.loop.fs_close(fd, function(close_err)
+                        on_complete(
+                            (opts.trim and type(data) == "string")
+                                    and vim.trim(data)
+                                or data
+                        )
+                        if close_err then
+                            error(
+                                string.format(
+                                    "failed to close file %s: %s",
+                                    vim.inspect(filename),
+                                    vim.inspect(close_err)
+                                )
+                            )
+                        end
+                    end)
+                end)
+            end
+        )
+    end)
 end
 
 --- @param filename string
@@ -756,6 +833,32 @@ end
 
 -- RingBuffer }
 
+--- @param delimiter string?
+--- @return string
+local function make_uuid(delimiter)
+    delimiter = delimiter or "-"
+    local secs, ms = vim.loop.gettimeofday()
+    return table.concat({
+        string.format("%x", vim.loop.os_getpid()),
+        string.format("%x", secs),
+        string.format("%x", ms),
+        string.format("%x", math.random(1, constants.int32_max)),
+    }, delimiter)
+end
+
+local _UniqueIdInteger = 0
+
+--- @alias UniqueId string
+--- @return UniqueId
+local function make_unique_id()
+    if _UniqueIdInteger >= constants.int32_max then
+        _UniqueIdInteger = 1
+    else
+        _UniqueIdInteger = _UniqueIdInteger + 1
+    end
+    return tostring(_UniqueIdInteger)
+end
+
 local M = {
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
@@ -788,10 +891,13 @@ local M = {
     WindowOptsContext = WindowOptsContext,
     FileLineReader = FileLineReader,
     readfile = readfile,
+    asyncreadfile = asyncreadfile,
     readlines = readlines,
     writefile = writefile,
     writelines = writelines,
     RingBuffer = RingBuffer,
+    make_uuid = make_uuid,
+    make_unique_id = make_unique_id,
 }
 
 return M
