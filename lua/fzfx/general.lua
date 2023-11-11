@@ -835,30 +835,23 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         preview_label_cache =
             string.format("_cache_previewer_label_%s", utils.make_uuid("_"))
 
-        --- @param watch_err string?
         --- @param filename string?
         --- @param events table?
-        local function preview_label_on_change_change(
-            watch_err,
-            filename,
-            events
-        )
+        local function preview_label_watch(filename, events)
             log.debug(
-                "|fzfx.general - general| watch preview label cache changed, filename:%s, events:%s, err:%s",
+                "|fzfx.general - general| watch preview label cache changed, filename:%s, events:%s",
                 vim.inspect(filename),
-                vim.inspect(events),
-                vim.inspect(watch_err)
+                vim.inspect(events)
+            )
+            log.ensure(
+                filename == preview_label_cache,
+                "|fzfx.general - general| filename(%s) must equals to cache(%s) in triggered watch callback",
+                vim.inspect(filename),
+                vim.inspect(preview_label_cache)
             )
             if filename ~= preview_label_cache then
                 return
             end
-            log.ensure(
-                not watch_err,
-                "|fzfx.general - general| failed to watch preview label cache, filename:%s, events:%s, err:%s",
-                vim.inspect(filename),
-                vim.inspect(events),
-                vim.inspect(watch_err)
-            )
             vim.schedule(function()
                 -- local p4 = Profiler:new("preview_label_rpc")
                 previewer_switch:preview_label(
@@ -872,7 +865,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         end
         file_watcher
             .get_file_watcher()
-            :watch(preview_label_dir, preview_label_on_change_change)
+            :register(preview_label_cache, preview_label_watch)
 
         preview_label_command = string.format(
             "echo {} >%s",
@@ -1056,6 +1049,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             vim.defer_fn(function()
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
+                end
+                if preview_label_cache then
+                    file_watcher
+                        .get_file_watcher()
+                        :unregister(preview_label_cache)
                 end
             end, 1000)
         end
