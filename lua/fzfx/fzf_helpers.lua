@@ -332,7 +332,7 @@ local function send_http_post(port, body)
     asp:run()
 end
 
---- @alias FzfOptEvent "focus"|"load"|"zero"|"change"
+--- @alias FzfOptEvent "focus"|"load"|"zero"|"change"|"start"
 --- @class FzfOptEventBinder
 --- @field event FzfOptEvent
 --- @field opts string[]

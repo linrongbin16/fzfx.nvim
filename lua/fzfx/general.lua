@@ -132,8 +132,8 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
     local o = {
         pipeline = pipeline,
         provider_configs = provider_configs_map,
-        metafile = _make_cache_filename("provider", "metafile", name),
-        resultfile = _make_cache_filename("provider", "resultfile", name),
+        metafile = _make_cache_filename("provider", "metafile"),
+        resultfile = _make_cache_filename("provider", "resultfile"),
     }
     setmetatable(o, self)
     self.__index = self
@@ -336,15 +336,16 @@ end
 --- @field last_previewer_label string?
 --- @field metafile string
 --- @field resultfile string
---- @field fzfportfile string
---- @field fzfport string?
+--- @field fzf_port_file string
+--- @field fzf_port string?
 local PreviewerSwitch = {}
 
 --- @param name string
 --- @param pipeline PipelineName
---- @param previewer_configs Options
+--- @param previewer_configs PreviewerConfig|table<PipelineName, PreviewerConfig>
+--- @param fzf_port_file string
 --- @return PreviewerSwitch
-function PreviewerSwitch:new(name, pipeline, previewer_configs)
+function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
     local previewer_configs_map = {}
     if schema.is_previewer_config(previewer_configs) then
         previewer_configs.previewer_type =
@@ -369,10 +370,10 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
         last_previewer_label = nil,
-        metafile = _make_cache_filename("previewer", "metafile", name),
-        resultfile = _make_cache_filename("previewer", "resultfile", name),
-        fzfportfile = _make_cache_filename("previewer", "fzf", "port", name),
-        fzfport = nil,
+        metafile = _make_cache_filename("previewer", "metafile"),
+        resultfile = _make_cache_filename("previewer", "resultfile"),
+        fzf_port_file = fzf_port_file,
+        fzf_port = nil,
     }
     setmetatable(o, self)
     self.__index = self
@@ -413,6 +414,15 @@ function PreviewerSwitch:preview(line, context)
             or previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST
             or previewer_config.previewer_type == PreviewerTypeEnum.LIST,
         "invalid previewer type in %s! previewer type: %s",
+        vim.inspect(self.pipeline),
+        vim.inspect(previewer_config)
+    )
+    log.ensure(
+        type(previewer_config.previewer_label) == "function"
+            or previewer_config.previewer_label == nil
+            or type(previewer_config.previewer_label) == "boolean"
+            or type(previewer_config.previewer_label) == "string",
+        "invalid previewer label in %s! previewer label: %s",
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
@@ -519,6 +529,50 @@ function PreviewerSwitch:preview(line, context)
             vim.inspect(self)
         )
     end
+
+    -- preview label
+    if
+        constants.has_curl
+        and (
+            type(previewer_config.previewer_label) == "function"
+            or type(previewer_config.previewer_label == "string")
+        )
+    then
+        vim.schedule(function()
+            local label = type(previewer_config.previewer_label) == "function"
+                    and previewer_config.previewer_label(line, context)
+                or previewer_config.previewer_label
+            log.debug(
+                "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
+                vim.inspect(line),
+                vim.inspect(label)
+            )
+            if type(label) ~= "string" then
+                return
+            end
+            self.last_previewer_label = label
+
+            -- do later
+            vim.defer_fn(function()
+                local last_label = self.last_previewer_label
+                self.last_previewer_label = nil
+                if type(last_label) ~= "string" then
+                    return
+                end
+                self.fzf_port = utils.string_not_empty(self.fzf_port)
+                        and self.fzf_port
+                    or utils.readfile(self.fzf_port_file) --[[@as string]]
+                fzf_helpers.send_http_post(
+                    self.fzf_port,
+                    string.format(
+                        "change-preview-label(%s)",
+                        vim.trim(last_label)
+                    )
+                )
+            end, 200)
+        end)
+    end
+
     return previewer_config.previewer_type
 end
 
@@ -579,10 +633,11 @@ function PreviewerSwitch:preview_label(line, context)
             if type(last_label) ~= "string" then
                 return
             end
-            self.fzfport = utils.string_not_empty(self.fzfport) and self.fzfport
-                or utils.readfile(self.fzfportfile) --[[@as string]]
+            self.fzf_port = utils.string_not_empty(self.fzf_port)
+                    and self.fzf_port
+                or utils.readfile(self.fzf_port_file) --[[@as string]]
             fzf_helpers.send_http_post(
-                self.fzfport,
+                self.fzf_port,
                 string.format("change-preview-label(%s)", vim.trim(last_label))
             )
         end, 200)
@@ -725,6 +780,8 @@ end
 --- @param default_pipeline PipelineName?
 --- @return Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
+    local fzf_port_file = _make_cache_filename("fzf_port_file")
+
     -- local p1 = Profiler:new("general")
     local pipeline_size = get_pipeline_size(pipeline_configs)
 
@@ -758,8 +815,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         ProviderSwitch:new(name, default_pipeline, pipeline_configs.providers)
 
     --- @type PreviewerSwitch
-    local previewer_switch =
-        PreviewerSwitch:new(name, default_pipeline, pipeline_configs.previewers)
+    local previewer_switch = PreviewerSwitch:new(
+        name,
+        default_pipeline,
+        pipeline_configs.previewers,
+        fzf_port_file
+    )
 
     --- @type PipelineContext
 
@@ -827,59 +888,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         vim.inspect(preview_command)
     )
 
-    local preview_label_dir = conf.get_config().cache.dir
-    local preview_label_cache = nil
-    local preview_label_command = nil
-
-    if constants.has_curl and not constants.is_windows then
-        preview_label_cache =
-            string.format("_cache_previewer_label_%s", utils.make_uuid("_"))
-
-        --- @param filename string?
-        --- @param events table?
-        local function preview_label_watch(filename, events)
-            log.debug(
-                "|fzfx.general - general| watch preview label cache changed, filename:%s, events:%s",
-                vim.inspect(filename),
-                vim.inspect(events)
-            )
-            log.ensure(
-                filename == preview_label_cache,
-                "|fzfx.general - general| filename(%s) must equals to cache(%s) in triggered watch callback",
-                vim.inspect(filename),
-                vim.inspect(preview_label_cache)
-            )
-            if filename ~= preview_label_cache then
-                return
-            end
-            vim.schedule(function()
-                utils.asyncreadfile(
-                    path.join(preview_label_dir, preview_label_cache),
-                    function(line_params)
-                        previewer_switch:preview_label(line_params, context)
-                    end
-                )
-                -- local line_params = utils.readfile(
-                --     path.join(preview_label_dir, preview_label_cache)
-                -- )
-                -- local p4 = Profiler:new("preview_label_rpc")
-                -- p4:elapsed_micros("end")
-            end)
-        end
-        file_watcher
-            .get_file_watcher()
-            :register(preview_label_cache, preview_label_watch)
-
-        preview_label_command = string.format(
-            "echo {} >%s",
-            path.join(preview_label_dir, preview_label_cache)
-        )
-        log.debug(
-            "|fzfx.general - general| preview_label_command:%s",
-            vim.inspect(preview_label_command)
-        )
-    end
-
     local fzf_opts = {
         { "--query", query },
         {
@@ -888,28 +896,26 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         },
     }
 
-    local fzf_focus_event = fzf_helpers.FzfOptEventBinder:new("focus")
-    local fzf_load_event = fzf_helpers.FzfOptEventBinder:new("load")
-    local fzf_change_event = fzf_helpers.FzfOptEventBinder:new("change")
-    if
-        type(preview_label_command) == "string"
-        and string.len(preview_label_command) > 0
-    then
-        fzf_focus_event:append(
-            string.format("execute-silent(%s)", preview_label_command)
-        )
-        fzf_load_event:append(
-            string.format("execute-silent(%s)", preview_label_command)
-        )
+    local dump_fzf_port_command = nil
+    if constants.is_windows then
+        -- if vim.fn.executable("sh") > 0 or vim.fn.executable("bash") > 0 then
+        --     dump_fzf_port_command = string.format(
+        --         "%s -c %s",
+        --         vim.fn.executable("sh") > 0 and "sh" or "bash",
+        --         utils.shellescape(dump_fzf_port_command)
+        --     )
+        -- else
+        dump_fzf_port_command =
+            string.format("cmd.exe /C echo %%FZF_PORT%%>%s", fzf_port_file)
+        -- end
+    else
+        dump_fzf_port_command =
+            string.format("echo $FZF_PORT>%s", fzf_port_file)
     end
-
-    local dump_fzf_port_command = string.format(
-        "%s %s",
-        fzf_helpers.make_lua_command("general", "fzf_port.lua"),
-        previewer_switch.fzfportfile
+    local fzf_start_binder = fzf_helpers.FzfOptEventBinder:new("start")
+    fzf_start_binder:append(
+        string.format("execute-silent(%s)", dump_fzf_port_command)
     )
-    local fzf_start_event_opts =
-        string.format("start:execute-silent(%s)", dump_fzf_port_command)
 
     local header_switch = HeaderSwitch:new(
         pipeline_configs.providers,
@@ -1002,22 +1008,21 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 bind_builder,
             })
         end
-        fzf_start_event_opts = fzf_start_event_opts
-            .. string.format("+unbind(%s)", default_provider_key)
+        fzf_start_binder:append(
+            string.format("unbind(%s)", default_provider_key)
+        )
     end
     if
         type(pipeline_configs.other_opts) == "table"
         and pipeline_configs.other_opts.reload_on_change
     then
-        fzf_change_event:append(
-            string.format("reload(%s)", reload_query_command)
-        )
+        table.insert(fzf_opts, {
+            "--bind",
+            string.format("change:reload(%s)", reload_query_command),
+        })
     end
-    table.insert(fzf_opts, fzf_focus_event:build())
-    table.insert(fzf_opts, fzf_load_event:build())
-    table.insert(fzf_opts, fzf_change_event:build())
     table.insert(fzf_opts, "--listen")
-    table.insert(fzf_opts, { "--bind", fzf_start_event_opts })
+    table.insert(fzf_opts, fzf_start_binder:build())
 
     fzf_opts =
         vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
@@ -1052,15 +1057,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             vim.schedule(function()
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
-                end
-                if preview_label_cache then
-                    file_watcher
-                        .get_file_watcher()
-                        :unregister(preview_label_cache)
-                    vim.loop.fs_unlink(
-                        path.join(preview_label_dir, preview_label_cache),
-                        function() end
-                    )
                 end
             end)
         end

@@ -839,10 +839,10 @@ local function make_uuid(delimiter)
     delimiter = delimiter or "-"
     local secs, ms = vim.loop.gettimeofday()
     return table.concat({
-        tostring(vim.loop.os_getpid()),
-        tostring(secs),
-        tostring(ms),
-        tostring(math.random(1, constants.int32_max)),
+        string.format("%x", vim.loop.os_getpid()),
+        string.format("%x", secs),
+        string.format("%x", ms),
+        string.format("%x", math.random(1, constants.int32_max)),
     }, delimiter)
 end
 
