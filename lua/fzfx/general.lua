@@ -98,7 +98,7 @@ end
 
 --- @class ProviderSwitch
 --- @field pipeline PipelineName
---- @field provider_configs table<PipelineName, ProviderConfig>
+--- @field provider_configs ProviderConfig|table<PipelineName, ProviderConfig>
 --- @field metafile string
 --- @field resultfile string
 local ProviderSwitch = {}
@@ -332,7 +332,7 @@ end
 --- @class PreviewerSwitch
 --- @field pipeline PipelineName
 --- @field previewer_configs table<PipelineName, PreviewerConfig>
---- @field last_previewer_label string?
+--- @field previewer_labels_queue string[]
 --- @field metafile string
 --- @field resultfile string
 --- @field fzf_port_file string
@@ -368,7 +368,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
     local o = {
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
-        last_previewer_label = nil,
+        previewer_labels_queue = {},
         metafile = _make_cache_filename("previewer", "metafile"),
         resultfile = _make_cache_filename("previewer", "resultfile"),
         fzf_port_file = fzf_port_file,
@@ -533,16 +533,12 @@ function PreviewerSwitch:preview(line, context)
     return previewer_config.previewer_type
 end
 
-local SendHttpPostContext = {
-    send = false,
-}
-
 --- @param port string
 --- @param body string
 local function _send_http_post(port, body)
-    if SendHttpPostContext.send then
-        return
-    end
+    -- if SendHttpPostContext.send then
+    --     return
+    -- end
     local asp = require("fzfx.spawn").Spawn:make({
         "curl",
         "-s",
@@ -575,10 +571,6 @@ local function _send_http_post(port, body)
         -- )
     end, false) --[[@as Spawn]]
     asp:run()
-    SendHttpPostContext.send = true
-    vim.defer_fn(function()
-        SendHttpPostContext.send = false
-    end, 100)
 end
 
 --- @param line string?
@@ -630,12 +622,16 @@ function PreviewerSwitch:preview_label(line, context)
         if type(label) ~= "string" then
             return
         end
-        self.last_previewer_label = label
+        table.insert(self.previewer_labels_queue, label)
 
         -- do later
         vim.defer_fn(function()
-            local last_label = self.last_previewer_label
-            self.last_previewer_label = nil
+            if #self.previewer_labels_queue == 0 then
+                return
+            end
+            local last_label =
+                self.previewer_labels_queue[#self.previewer_labels_queue]
+            self.previewer_labels_queue = {}
             if type(last_label) ~= "string" then
                 return
             end
