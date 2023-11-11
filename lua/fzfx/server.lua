@@ -2,20 +2,6 @@ local log = require("fzfx.log")
 local constants = require("fzfx.constants")
 local utils = require("fzfx.utils")
 
---- @type integer
-local NextRegistryIntegerId = 0
-
---- @alias RpcRegistryId string
---- @return RpcRegistryId
-local function _next_registry_id()
-    if NextRegistryIntegerId >= constants.int32_max then
-        NextRegistryIntegerId = 1
-    else
-        NextRegistryIntegerId = NextRegistryIntegerId + 1
-    end
-    return tostring(NextRegistryIntegerId)
-end
-
 --- @return string?
 local function _make_windows_pipe_name()
     log.ensure(
@@ -26,6 +12,7 @@ local function _make_windows_pipe_name()
     return result
 end
 
+--- @alias RpcRegistryId string
 --- @alias RpcCallback fun(params:any):string?
 --- @class RpcServer
 --- @field address string
@@ -82,7 +69,7 @@ function RpcServer:register(callback)
         type(callback),
         vim.inspect(callback)
     )
-    local registry_id = _next_registry_id()
+    local registry_id = utils.get_unique_id()
     self.registry[registry_id] = callback
     return registry_id
 end
@@ -146,7 +133,6 @@ end
 local M = {
     setup = setup,
     get_rpc_server = get_rpc_server,
-    _next_registry_id = _next_registry_id,
     _make_windows_pipe_name = _make_windows_pipe_name,
 }
 

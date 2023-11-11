@@ -846,7 +846,7 @@ local function make_uuid(delimiter)
     }, delimiter)
 end
 
-local _UniqueIdInteger = nil
+local _UniqueIdInteger = 0
 
 --- @alias UniqueId string
 --- @return UniqueId

@@ -1114,6 +1114,7 @@ local M = {
     make_previewer_meta_opts = make_previewer_meta_opts,
     ProviderSwitch = ProviderSwitch,
     PreviewerSwitch = PreviewerSwitch,
+    _send_http_post = _send_http_post,
     _render_help = _render_help,
     _should_skip_help = _should_skip_help,
     _make_help_doc = _make_help_doc,
