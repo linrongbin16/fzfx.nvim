@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.0.0...v3.1.0) (2023-11-11)
+
+
+### Features
+
+* **preview:** preview window label come back again with best performance! ([#404](https://github.com/linrongbin16/fzfx.nvim/issues/404)) ([f821558](https://github.com/linrongbin16/fzfx.nvim/commit/f82155872d4c333b61ca2e2f03e6b490b52c28aa))
+
 ## [3.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v2.5.3...v3.0.0) (2023-11-10)
 
 
