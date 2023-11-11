@@ -756,6 +756,32 @@ end
 
 -- RingBuffer }
 
+--- @param delimiter string?
+--- @return string
+local function make_uuid(delimiter)
+    delimiter = delimiter or "-"
+    local secs, ms = vim.loop.gettimeofday()
+    return table.concat({
+        tostring(vim.loop.os_getpid()),
+        tostring(secs),
+        tostring(ms),
+        tostring(math.random(1, constants.int32_max)),
+    }, delimiter)
+end
+
+local _UniqueIdInteger = nil
+
+--- @alias UniqueId string
+--- @return UniqueId
+local function get_unique_id()
+    if _UniqueIdInteger >= constants.int32_max then
+        _UniqueIdInteger = 1
+    else
+        _UniqueIdInteger = _UniqueIdInteger + 1
+    end
+    return tostring(_UniqueIdInteger)
+end
+
 local M = {
     get_buf_option = get_buf_option,
     set_buf_option = set_buf_option,
@@ -792,6 +818,8 @@ local M = {
     writefile = writefile,
     writelines = writelines,
     RingBuffer = RingBuffer,
+    make_uuid = make_uuid,
+    get_unique_id = get_unique_id,
 }
 
 return M

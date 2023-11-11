@@ -827,10 +827,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         vim.inspect(preview_command)
     )
 
+    local preview_label_cache = nil
     local preview_label_command = nil
+
     if constants.has_curl then
-        local previewer_label_cache =
-            path.join(conf.get_config().cache.dir, "_cache_previewer_label")
+        local preview_label_dir = conf.get_config().cache.dir
+        preview_label_cache =
+            string.format("_cache_previewer_label_%s", utils.make_uuid("_"))
 
         --- @param watch_err string?
         --- @param filename string?
@@ -846,6 +849,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 vim.inspect(events),
                 vim.inspect(watch_err)
             )
+            if filename ~= preview_label_cache then
+                return
+            end
             log.ensure(
                 not watch_err,
                 "|fzfx.general - general| failed to watch preview label cache, filename:%s, events:%s, err:%s",
@@ -856,7 +862,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             vim.schedule(function()
                 -- local p4 = Profiler:new("preview_label_rpc")
                 previewer_switch:preview_label(
-                    utils.readfile(previewer_label_cache),
+                    utils.readfile(
+                        path.join(preview_label_dir, preview_label_cache)
+                    ),
                     context
                 )
                 -- p4:elapsed_micros("end")
@@ -864,13 +872,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         end
         file_watcher
             .get_file_watcher()
-            :watch(previewer_label_cache, preview_label_on_change_change)
+            :watch(preview_label_dir, preview_label_on_change_change)
 
-        -- local preview_label_rpc_id =
-        --     server.get_rpc_server():register(preview_label_rpc)
-        -- table.insert(rpc_registries, preview_label_rpc_id)
-        preview_label_command =
-            string.format("echo {} >%s", previewer_label_cache)
+        preview_label_command = string.format(
+            "echo {} >%s",
+            path.join(preview_label_dir, preview_label_cache)
+        )
         log.debug(
             "|fzfx.general - general| preview_label_command:%s",
             vim.inspect(preview_label_command)
