@@ -3,6 +3,7 @@ local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
 local fzf_helpers = require("fzfx.fzf_helpers")
 local server = require("fzfx.server")
+local file_watcher = require("fzfx.file_watcher")
 local color = require("fzfx.color")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
@@ -12,7 +13,7 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local schema = require("fzfx.schema")
 local conf = require("fzfx.config")
 local json = require("fzfx.json")
-local Profiler = require("fzfx.profiler").Profiler
+-- local Profiler = require("fzfx.profiler").Profiler
 
 local DEFAULT_PIPELINE = "default"
 
@@ -724,7 +725,7 @@ end
 --- @param default_pipeline PipelineName?
 --- @return Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
-    local p1 = Profiler:new("general")
+    -- local p1 = Profiler:new("general")
     local pipeline_size = get_pipeline_size(pipeline_configs)
 
     local default_provider_key = nil
@@ -774,16 +775,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     --- @param query_params string
     local function provide_rpc(query_params)
-        local p2 = Profiler:new("provide_rpc")
+        -- local p2 = Profiler:new("provide_rpc")
         provider_switch:provide(query_params, context)
-        p2:elapsed_micros("done")
+        -- p2:elapsed_micros("done")
     end
 
     --- @param line_params string
     local function preview_rpc(line_params)
-        local p3 = Profiler:new("preview_rpc")
+        -- local p3 = Profiler:new("preview_rpc")
         previewer_switch:preview(line_params, context)
-        p3:elapsed_micros("end")
+        -- p3:elapsed_micros("end")
     end
 
     local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
@@ -828,22 +829,48 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     local preview_label_command = nil
     if constants.has_curl then
-        -- --- @param line_params string
-        -- local function preview_label_rpc(line_params)
-        --     local p4 = Profiler:new("preview_label_rpc")
-        --     previewer_switch:preview_label(line_params, context)
-        --     p4:elapsed_micros("end")
-        -- end
+        local previewer_label_cache =
+            path.join(conf.get_config().cache.dir, "_cache_previewer_label")
+
+        --- @param watch_err string?
+        --- @param filename string?
+        --- @param events table?
+        local function preview_label_on_change_change(
+            watch_err,
+            filename,
+            events
+        )
+            log.debug(
+                "|fzfx.general - general| watch preview label cache changed, filename:%s, events:%s, err:%s",
+                vim.inspect(filename),
+                vim.inspect(events),
+                vim.inspect(watch_err)
+            )
+            log.ensure(
+                not watch_err,
+                "|fzfx.general - general| failed to watch preview label cache, filename:%s, events:%s, err:%s",
+                vim.inspect(filename),
+                vim.inspect(events),
+                vim.inspect(watch_err)
+            )
+            vim.schedule(function()
+                -- local p4 = Profiler:new("preview_label_rpc")
+                previewer_switch:preview_label(
+                    utils.readfile(previewer_label_cache),
+                    context
+                )
+                -- p4:elapsed_micros("end")
+            end)
+        end
+        file_watcher
+            .get_file_watcher()
+            :watch(previewer_label_cache, preview_label_on_change_change)
+
         -- local preview_label_rpc_id =
         --     server.get_rpc_server():register(preview_label_rpc)
         -- table.insert(rpc_registries, preview_label_rpc_id)
-        preview_label_command = string.format(
-            "echo {} >%s",
-            string.format(
-                "%s/fzfx.nvim/_cache_previewer_label",
-                vim.fn.stdpath("data")
-            )
-        )
+        preview_label_command =
+            string.format("echo {} >%s", previewer_label_cache)
         log.debug(
             "|fzfx.general - general| preview_label_command:%s",
             vim.inspect(preview_label_command)
@@ -1011,7 +1038,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             { height = 1, width = 1, row = 0, col = 0 }
         )
     end
-    p1:elapsed_millis("prepare")
+    -- p1:elapsed_millis("prepare")
     local p = Popup:new(
         win_opts or {},
         query_command,
@@ -1026,7 +1053,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end, 1000)
         end
     )
-    p1:elapsed_millis("done")
+    -- p1:elapsed_millis("done")
     return p
 end
 

@@ -35,6 +35,7 @@ local function setup(options)
 
     -- rpc server
     require("fzfx.server").setup()
+    require("fzfx.file_watcher").setup()
 
     -- yank history
     require("fzfx.yank_history").setup()

@@ -38,26 +38,26 @@ end
 function FileWatcher:watch(filename, on_file_change)
     log.ensure(
         self.registries[filename] == nil,
-        "|fzfx.file_watcher - FileWatcher:watch| file %s already been watching",
+        "|fzfx.file_watcher - FileWatcher:register| file %s already been watching",
         vim.inspect(filename)
     )
-    local p = path.normalize(
-        path.join(conf.get_config().cache.dir, filename),
-        { expand = true }
-    )
     local fs_event_result, fs_event_err =
-        self.fs_event_handle:start(p, {}, on_file_change)
+        self.fs_event_handle:start(filename, {}, on_file_change)
     log.ensure(
         fs_event_result ~= nil,
-        "|fzfx.file_watcher - FileWatcher:watch| failed to start watch fs_event on path:%s, error:%s",
-        vim.inspect(p),
+        "|fzfx.file_watcher - FileWatcher:register| failed to start watch fs_event on path:%s, error:%s",
+        vim.inspect(filename),
         vim.inspect(fs_event_err)
     )
     self.registries[filename] = true
 end
 
---- @type FileWatcher
 local FileWatcherInstance = nil
+
+--- @return FileWatcher
+local function get_file_watcher()
+    return FileWatcherInstance --[[@as FileWatcher]]
+end
 
 local function setup()
     FileWatcherInstance = FileWatcher:new()
@@ -65,6 +65,7 @@ end
 
 local M = {
     setup = setup,
+    get_file_watcher = get_file_watcher,
 }
 
 return M
