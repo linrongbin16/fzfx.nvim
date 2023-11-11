@@ -370,7 +370,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs)
         last_previewer_label = nil,
         metafile = _make_cache_filename("previewer", "metafile", name),
         resultfile = _make_cache_filename("previewer", "resultfile", name),
-        fzfportfile = _make_cache_filename("previewer", "fzfport", name),
+        fzfportfile = _make_cache_filename("previewer", "fzf", "port", name),
         fzfport = nil,
     }
     setmetatable(o, self)
@@ -826,27 +826,29 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         vim.inspect(preview_command)
     )
 
-    -- local preview_label_command = nil
-    -- if constants.has_curl then
-    --     --- @param line_params string
-    --     local function preview_label_rpc(line_params)
-    --         local p4 = Profiler:new("preview_label_rpc")
-    --         previewer_switch:preview_label(line_params, context)
-    --         p4:elapsed_micros("end")
-    --     end
-    --     local preview_label_rpc_id =
-    --         server.get_rpc_server():register(preview_label_rpc)
-    --     table.insert(rpc_registries, preview_label_rpc_id)
-    --     preview_label_command = string.format(
-    --         "%s %s {}",
-    --         fzf_helpers.make_lua_command("rpc", "notify.lua"),
-    --         preview_label_rpc_id
-    --     )
-    --     log.debug(
-    --         "|fzfx.general - general| preview_label_command:%s",
-    --         vim.inspect(preview_label_command)
-    --     )
-    -- end
+    local preview_label_command = nil
+    if constants.has_curl then
+        -- --- @param line_params string
+        -- local function preview_label_rpc(line_params)
+        --     local p4 = Profiler:new("preview_label_rpc")
+        --     previewer_switch:preview_label(line_params, context)
+        --     p4:elapsed_micros("end")
+        -- end
+        -- local preview_label_rpc_id =
+        --     server.get_rpc_server():register(preview_label_rpc)
+        -- table.insert(rpc_registries, preview_label_rpc_id)
+        preview_label_command = string.format(
+            "echo {} >%s",
+            string.format(
+                "%s/fzfx.nvim/_cache_previewer_label",
+                vim.fn.stdpath("data")
+            )
+        )
+        log.debug(
+            "|fzfx.general - general| preview_label_command:%s",
+            vim.inspect(preview_label_command)
+        )
+    end
 
     local fzf_opts = {
         { "--query", query },
@@ -859,21 +861,21 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local fzf_focus_event = fzf_helpers.FzfOptEventBinder:new("focus")
     local fzf_load_event = fzf_helpers.FzfOptEventBinder:new("load")
     local fzf_change_event = fzf_helpers.FzfOptEventBinder:new("change")
-    -- if
-    --     type(preview_label_command) == "string"
-    --     and string.len(preview_label_command) > 0
-    -- then
-    --     fzf_focus_event:append(
-    --         string.format("execute-silent(%s)", preview_label_command)
-    --     )
-    --     fzf_load_event:append(
-    --         string.format("execute-silent(%s)", preview_label_command)
-    --     )
-    -- end
+    if
+        type(preview_label_command) == "string"
+        and string.len(preview_label_command) > 0
+    then
+        fzf_focus_event:append(
+            string.format("execute-silent(%s)", preview_label_command)
+        )
+        fzf_load_event:append(
+            string.format("execute-silent(%s)", preview_label_command)
+        )
+    end
 
     local dump_fzf_port_command = string.format(
         "%s %s",
-        fzf_helpers.make_lua_command("general", "fzfport.lua"),
+        fzf_helpers.make_lua_command("general", "fzf_port.lua"),
         previewer_switch.fzfportfile
     )
     local fzf_start_event_opts =

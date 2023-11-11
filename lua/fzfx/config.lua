@@ -2248,12 +2248,12 @@ local Defaults = {
             restricted_mode = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                -- previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
             },
             unrestricted_mode = {
                 previewer = _file_previewer,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                -- previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
             },
         },
         actions = {
@@ -2429,23 +2429,23 @@ local Defaults = {
             restricted_mode = {
                 previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                -- previewer_label = constants.has_rg
-                --         and require("fzfx.previewer_labels").rg_previewer_label
-                --     or require("fzfx.previewer_labels").grep_previewer_label,
+                previewer_label = constants.has_rg
+                        and require("fzfx.previewer_labels").rg_previewer_label
+                    or require("fzfx.previewer_labels").grep_previewer_label,
             },
             unrestricted_mode = {
                 previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                -- previewer_label = constants.has_rg
-                --         and require("fzfx.previewer_labels").rg_previewer_label
-                --     or require("fzfx.previewer_labels").grep_previewer_label,
+                previewer_label = constants.has_rg
+                        and require("fzfx.previewer_labels").rg_previewer_label
+                    or require("fzfx.previewer_labels").grep_previewer_label,
             },
             buffer_mode = {
                 previewer = file_previewer_grep,
                 previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                -- previewer_label = constants.has_rg
-                --         and require("fzfx.previewer_labels").rg_previewer_label
-                --     or require("fzfx.previewer_labels").grep_previewer_label,
+                previewer_label = constants.has_rg
+                        and require("fzfx.previewer_labels").rg_previewer_label
+                    or require("fzfx.previewer_labels").grep_previewer_label,
             },
         },
         actions = {

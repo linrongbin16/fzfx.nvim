@@ -283,8 +283,11 @@ local function make_lua_command(...)
     --     "|fzfx.fzf_helpers - make_lua_command| luascript:%s",
     --     vim.inspect(lua_path)
     -- )
-    local result =
-        string.format("%s -n --clean --headless -l %s", nvim_path, lua_path)
+    local result = string.format(
+        "%s -n -u NONE --clean --headless -l %s",
+        nvim_path,
+        lua_path
+    )
     -- log.debug(
     --     "|fzfx.fzf_helpers - make_lua_command| result:%s",
     --     vim.inspect(result)
