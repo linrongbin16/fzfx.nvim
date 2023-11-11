@@ -533,6 +533,54 @@ function PreviewerSwitch:preview(line, context)
     return previewer_config.previewer_type
 end
 
+local SendHttpPostContext = {
+    send = false,
+}
+
+--- @param port string
+--- @param body string
+local function _send_http_post(port, body)
+    if SendHttpPostContext.send then
+        return
+    end
+    local asp = require("fzfx.spawn").Spawn:make({
+        "curl",
+        "-s",
+        "-S",
+        "-q",
+        "-Z",
+        "--parallel-immediate",
+        "--http2",
+        "--retry",
+        "0",
+        "--connect-timeout",
+        "1",
+        "-m",
+        "1",
+        "--noproxy",
+        "*",
+        "-XPOST",
+        string.format("127.0.0.1:%s", vim.trim(port)),
+        "-d",
+        body,
+    }, function(line)
+        -- log.debug(
+        --     "|fzfx.fzf_helpers - send_http_post| stdout:%s",
+        --     vim.inspect(line)
+        -- )
+    end, function(line)
+        -- log.debug(
+        --     "|fzfx.fzf_helpers - send_http_post| stderr:%s",
+        --     vim.inspect(line)
+        -- )
+    end, false) --[[@as Spawn]]
+    asp:run()
+    SendHttpPostContext.send = true
+    vim.defer_fn(function()
+        SendHttpPostContext.send = false
+    end, 100)
+end
+
 --- @param line string?
 --- @param context PipelineContext
 --- @return string?
@@ -595,7 +643,7 @@ function PreviewerSwitch:preview_label(line, context)
                     and self.fzf_port
                 or utils.readfile(self.fzf_port_file) --[[@as string]]
             if utils.string_not_empty(self.fzf_port) then
-                fzf_helpers.send_http_post(
+                _send_http_post(
                     self.fzf_port,
                     string.format(
                         "change-preview-label(%s)",

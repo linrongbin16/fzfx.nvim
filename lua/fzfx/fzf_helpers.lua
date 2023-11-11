@@ -4,7 +4,6 @@ local color = require("fzfx.color")
 local conf = require("fzfx.config")
 local yank_history = require("fzfx.yank_history")
 local utils = require("fzfx.utils")
-local Spawn = require("fzfx.spawn").Spawn
 
 -- visual select {
 
@@ -295,43 +294,6 @@ local function make_lua_command(...)
     return result
 end
 
---- @param port string
---- @param body string
-local function send_http_post(port, body)
-    local asp = Spawn:make({
-        "curl",
-        "-s",
-        "-S",
-        "-q",
-        "-Z",
-        "--parallel-immediate",
-        "--http2",
-        "--retry",
-        "0",
-        "--connect-timeout",
-        "1",
-        "-m",
-        "1",
-        "--noproxy",
-        "*",
-        "-XPOST",
-        string.format("127.0.0.1:%s", vim.trim(port)),
-        "-d",
-        body,
-    }, function(line)
-        -- log.debug(
-        --     "|fzfx.fzf_helpers - send_http_post| stdout:%s",
-        --     vim.inspect(line)
-        -- )
-    end, function(line)
-        -- log.debug(
-        --     "|fzfx.fzf_helpers - send_http_post| stderr:%s",
-        --     vim.inspect(line)
-        -- )
-    end, false) --[[@as Spawn]]
-    asp:run()
-end
-
 --- @alias FzfOptEvent "focus"|"load"|"zero"|"change"|"start"
 --- @class FzfOptEventBinder
 --- @field event FzfOptEvent
@@ -400,7 +362,6 @@ local M = {
     nvim_exec = nvim_exec,
     fzf_exec = fzf_exec,
     make_lua_command = make_lua_command,
-    send_http_post = send_http_post,
     setup = setup,
 }
 
