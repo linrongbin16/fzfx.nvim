@@ -827,11 +827,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         vim.inspect(preview_command)
     )
 
+    local preview_label_dir = conf.get_config().cache.dir
     local preview_label_cache = nil
     local preview_label_command = nil
 
     if constants.has_curl and not constants.is_windows then
-        local preview_label_dir = conf.get_config().cache.dir
         preview_label_cache =
             string.format("_cache_previewer_label_%s", utils.make_uuid("_"))
 
@@ -1049,14 +1049,20 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         actions,
         context,
         function()
-            vim.defer_fn(function()
+            vim.schedule(function()
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
                 end
-            end, 1000)
-            if preview_label_cache then
-                file_watcher.get_file_watcher():unregister(preview_label_cache)
-            end
+                if preview_label_cache then
+                    file_watcher
+                        .get_file_watcher()
+                        :unregister(preview_label_cache)
+                    vim.loop.fs_unlink(
+                        path.join(preview_label_dir, preview_label_cache),
+                        function() end
+                    )
+                end
+            end)
         end
     )
     -- p1:elapsed_millis("done")
