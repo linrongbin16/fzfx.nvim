@@ -28,6 +28,31 @@ local function _make_cache_filename(...)
     end
 end
 
+--- @return string
+local function _provider_metafile()
+    return _make_cache_filename("provider", "metafile")
+end
+
+--- @return string
+local function _provider_resultfile()
+    return _make_cache_filename("provider", "resultfile")
+end
+
+--- @return string
+local function _previewer_metafile()
+    return _make_cache_filename("previewer", "metafile")
+end
+
+--- @return string
+local function _previewer_resultfile()
+    return _make_cache_filename("previewer", "resultfile")
+end
+
+--- @return string
+local function _fzf_port_file()
+    return _make_cache_filename("fzf", "port", "file")
+end
+
 --- @class ProviderMetaOpts
 --- @field pipeline PipelineName
 --- @field provider_type ProviderType
@@ -130,8 +155,8 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
     local o = {
         pipeline = pipeline,
         provider_configs = provider_configs_map,
-        metafile = _make_cache_filename("provider", "metafile"),
-        resultfile = _make_cache_filename("provider", "resultfile"),
+        metafile = _provider_metafile(),
+        resultfile = _provider_resultfile(),
     }
     setmetatable(o, self)
     self.__index = self
@@ -368,8 +393,8 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
         pipeline = pipeline,
         previewer_configs = previewer_configs_map,
         previewer_labels_queue = {},
-        metafile = _make_cache_filename("previewer", "metafile"),
-        resultfile = _make_cache_filename("previewer", "resultfile"),
+        metafile = _previewer_metafile(),
+        resultfile = _previewer_resultfile(),
         fzf_port_file = fzf_port_file,
     }
     setmetatable(o, self)
@@ -777,7 +802,7 @@ end
 --- @param default_pipeline PipelineName?
 --- @return Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
-    local fzf_port_file = _make_cache_filename("fzf_port_file")
+    local fzf_port_file = _fzf_port_file()
     local pipeline_size = get_pipeline_size(pipeline_configs)
 
     local default_provider_key = nil
@@ -1092,6 +1117,11 @@ local M = {
     setup = setup,
     _make_user_command = _make_user_command,
     _make_cache_filename = _make_cache_filename,
+    _provider_metafile = _provider_metafile,
+    _provider_resultfile = _provider_resultfile,
+    _previewer_metafile = _previewer_metafile,
+    _previewer_resultfile = _previewer_resultfile,
+    _fzf_port_file = _fzf_port_file,
     make_provider_meta_opts = make_provider_meta_opts,
     make_previewer_meta_opts = make_previewer_meta_opts,
     ProviderSwitch = ProviderSwitch,

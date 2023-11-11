@@ -19,20 +19,6 @@ describe("general", function()
     local json = require("fzfx.json")
     conf.setup()
 
-    local function get_provider_metafile(name)
-        return path.join(
-            conf.get_config().cache.dir,
-            "provider_metafile_" .. name
-        )
-    end
-
-    local function get_provider_resultfile(name)
-        return path.join(
-            conf.get_config().cache.dir,
-            "provider_resultfile_" .. name
-        )
-    end
-
     describe("[ProviderSwitch:new]", function()
         it("creates single plain provider", function()
             local ps = general.ProviderSwitch:new("single_test", "pipeline", {
@@ -49,10 +35,8 @@ describe("general", function()
             assert_eq(ps:switch("default"), nil)
             assert_eq(ps:provide("hello", {}), "plain")
             if not github_actions then
-                local meta1 =
-                    utils.readfile(get_provider_metafile("single_test"))
-                local result1 =
-                    utils.readfile(get_provider_resultfile("single_test"))
+                local meta1 = utils.readfile(general._provider_metafile())
+                local result1 = utils.readfile(general._provider_resultfile())
                 print(string.format("metafile1:%s\n", meta1))
                 local metajson1 = json.decode(meta1) --[[@as table]]
                 assert_eq(type(metajson1), "table")
@@ -85,12 +69,8 @@ describe("general", function()
             assert_eq(ps:switch("default"), nil)
             assert_eq(ps:provide("hello", {}), "plain_list")
             if not github_actions then
-                local meta2 = utils.readfile(
-                    get_provider_metafile("single_plain_list_test")
-                )
-                local result2 = utils.readfile(
-                    get_provider_resultfile("single_plain_list_test")
-                )
+                local meta2 = utils.readfile(general._provider_metafile())
+                local result2 = utils.readfile(general._provider_resultfile())
                 print(string.format("metafile2:%s\n", meta2))
                 local metajson1 = json.decode(meta2) --[[@as table]]
                 assert_eq(type(metajson1), "table")
@@ -128,10 +108,8 @@ describe("general", function()
             assert_eq(ps:switch("p1"), nil)
             assert_eq(ps:provide("hello", {}), "plain")
             if not github_actions then
-                local meta3 =
-                    utils.readfile(get_provider_metafile("multiple_test"))
-                local result3 =
-                    utils.readfile(get_provider_resultfile("multiple_test"))
+                local meta3 = utils.readfile(general._provider_metafile())
+                local result3 = utils.readfile(general._provider_resultfile())
                 print(string.format("metafile3:%s\n", meta3))
                 local metajson1 = json.decode(meta3) --[[@as table]]
                 assert_eq(type(metajson1), "table")
@@ -154,10 +132,8 @@ describe("general", function()
             assert_eq(ps:switch("p2"), nil)
             assert_eq(ps:provide("hello", {}), "plain_list")
             if not github_actions then
-                local meta4 =
-                    utils.readfile(get_provider_metafile("multiple_test"))
-                local result4 =
-                    utils.readfile(get_provider_resultfile("multiple_test"))
+                local meta4 = utils.readfile(general._provider_metafile())
+                local result4 = utils.readfile(general._provider_resultfile())
                 print(string.format("metafile4:%s\n", meta4))
                 local metajson1 = json.decode(meta4) --[[@as table]]
                 assert_eq(type(metajson1), "table")
@@ -174,6 +150,7 @@ describe("general", function()
         end)
     end)
     describe("[PreviewerSwitch:preview]", function()
+        local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
         it("is a plain/plain_list provider", function()
             local ps = general.PreviewerSwitch:new("plain_test", "p1", {
                 p1 = {
@@ -187,7 +164,7 @@ describe("general", function()
                     end,
                     previewer_type = "command_list",
                 },
-            })
+            }, FZFPORTFILE)
             print(
                 string.format(
                     "GITHUB_ACTIONS:%s\n",
@@ -196,20 +173,8 @@ describe("general", function()
             )
             assert_eq(ps:preview("hello", {}), "command")
             if not github_actions then
-                local meta1 = utils.readfile(
-                    path.join(
-                        vim.fn.stdpath("data"),
-                        "fzfx.nvim",
-                        "previewer_metafile_plain_test"
-                    )
-                )
-                local result1 = utils.readfile(
-                    path.join(
-                        vim.fn.stdpath("data"),
-                        "fzfx.nvim",
-                        "previewer_resultfile_plain_test"
-                    )
-                )
+                local meta1 = utils.readfile(general._previewer_metafile())
+                local result1 = utils.readfile(general._previewer_resultfile())
                 print(string.format("metafile1:%s\n", meta1))
                 local metajson1 = json.decode(meta1) --[[@as table]]
                 assert_eq(type(metajson1), "table")
@@ -221,20 +186,8 @@ describe("general", function()
             ps:switch("p2")
             assert_eq(ps:preview("world", {}), "command_list")
             if not github_actions then
-                local meta2 = utils.readfile(
-                    path.join(
-                        vim.fn.stdpath("data"),
-                        "fzfx.nvim",
-                        "previewer_metafile_plain_test"
-                    )
-                )
-                local result2 = utils.readfile(
-                    path.join(
-                        vim.fn.stdpath("data"),
-                        "fzfx.nvim",
-                        "previewer_resultfile_plain_test"
-                    )
-                )
+                local meta2 = utils.readfile(general._previewer_metafile())
+                local result2 = utils.readfile(general._previewer_resultfile())
                 print(string.format("metafile2:%s\n", meta2))
                 local metajson2 = json.decode(meta2) --[[@as table]]
                 assert_eq(type(metajson2), "table")
@@ -263,23 +216,11 @@ describe("general", function()
                     end,
                     previewer_type = schema.ProviderTypeEnum.COMMAND_LIST,
                 },
-            })
+            }, FZFPORTFILE)
             assert_eq(ps:preview("hello", {}), "command")
             if not github_actions then
-                local meta1 = utils.readfile(
-                    path.join(
-                        vim.fn.stdpath("data"),
-                        "fzfx.nvim",
-                        "previewer_metafile_command_test"
-                    )
-                )
-                local result1 = utils.readfile(
-                    path.join(
-                        vim.fn.stdpath("data"),
-                        "fzfx.nvim",
-                        "previewer_resultfile_command_test"
-                    )
-                )
+                local meta1 = utils.readfile(general._previewer_metafile())
+                local result1 = utils.readfile(general._previewer_resultfile())
                 print(string.format("metafile:%s\n", meta1))
                 local metajson1 = json.decode(meta1) --[[@as table]]
                 assert_eq(type(metajson1), "table")
@@ -291,20 +232,8 @@ describe("general", function()
             ps:switch("p2")
             assert_eq(ps:preview("world", {}), "command_list")
             if not github_actions then
-                local meta2 = utils.readfile(
-                    path.join(
-                        vim.fn.stdpath("data"),
-                        "fzfx.nvim",
-                        "previewer_metafile_command_test"
-                    )
-                )
-                local result2 = utils.readfile(
-                    path.join(
-                        vim.fn.stdpath("data"),
-                        "fzfx.nvim",
-                        "previewer_resultfile_command_test"
-                    )
-                )
+                local meta2 = utils.readfile(general._previewer_metafile())
+                local result2 = utils.readfile(general._previewer_resultfile())
                 print(string.format("metafile:%s\n", meta2))
                 local metajson2 = json.decode(meta2) --[[@as table]]
                 assert_eq(type(metajson2), "table")
@@ -321,12 +250,13 @@ describe("general", function()
         end)
     end)
     describe("[PreviewerSwitch:new]", function()
+        local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
         it("creates single command previewer", function()
             local ps = general.PreviewerSwitch:new("single", "pipeline", {
                 previewer = function()
                     return "ls -1"
                 end,
-            })
+            }, FZFPORTFILE)
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
             assert_eq(type(ps.previewer_configs), "table")
@@ -334,10 +264,7 @@ describe("general", function()
             assert_eq(type(ps.previewer_configs.default.previewer), "function")
             assert_eq(ps.previewer_configs.default.previewer(), "ls -1")
             assert_eq(ps.previewer_configs.default.previewer_type, "command")
-            assert_eq(
-                ps.fzfportfile,
-                general._make_cache_filename("previewer", "fzfport", "single")
-            )
+            assert_eq(ps.fzf_port_file, FZFPORTFILE)
             assert_eq(ps:switch("default"), nil)
         end)
         it("creates multiple command previewer", function()
@@ -352,7 +279,7 @@ describe("general", function()
                         return "p2"
                     end,
                 },
-            })
+            }, FZFPORTFILE)
             assert_eq(type(ps), "table")
             assert_false(vim.tbl_isempty(ps))
             assert_eq(type(ps.previewer_configs), "table")
@@ -371,11 +298,10 @@ describe("general", function()
         end)
     end)
     describe("[PreviewerSwitch:preview_label]", function()
+        local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
         it("not previews label", function()
             local name = "label_test1"
-            local fzf_port_file =
-                general._make_cache_filename("previewer", "fzfport", name)
-            utils.writefile(fzf_port_file, "12345")
+            utils.writefile(FZFPORTFILE, "12345")
             local ps = general.PreviewerSwitch:new(name, "p1", {
                 p1 = {
                     previewer = function()
@@ -388,22 +314,20 @@ describe("general", function()
                     end,
                     previewer_type = "command_list",
                 },
-            })
+            }, FZFPORTFILE)
             print(
                 string.format(
                     "GITHUB_ACTIONS:%s\n",
                     os.getenv("GITHUB_ACTIONS")
                 )
             )
-            assert_true(ps:preview_label("hello", {}, fzf_port_file) == nil)
+            assert_true(ps:preview_label("hello", {}) == nil)
             ps:switch("p2")
-            assert_true(ps:preview_label("world", {}, fzf_port_file) == nil)
+            assert_true(ps:preview_label("world", {}) == nil)
         end)
         it("previews label", function()
             local name = "label_test2"
-            local fzf_listen_port_file =
-                general._make_cache_filename("fzf", "listen", "port", name)
-            utils.writefile(fzf_listen_port_file, "54321")
+            utils.writefile(FZFPORTFILE, "54321")
             local ps = general.PreviewerSwitch:new(name, "p1", {
                 p1 = {
                     previewer = function()
@@ -422,7 +346,7 @@ describe("general", function()
                         return nil
                     end,
                 },
-            })
+            }, FZFPORTFILE)
             print(
                 string.format(
                     "GITHUB_ACTIONS:%s\n",
