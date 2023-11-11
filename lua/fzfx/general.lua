@@ -12,7 +12,6 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local schema = require("fzfx.schema")
 local conf = require("fzfx.config")
 local json = require("fzfx.json")
--- local Profiler = require("fzfx.profiler").Profiler
 
 local DEFAULT_PIPELINE = "default"
 
@@ -779,8 +778,6 @@ end
 --- @return Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
     local fzf_port_file = _make_cache_filename("fzf_port_file")
-
-    -- local p1 = Profiler:new("general")
     local pipeline_size = get_pipeline_size(pipeline_configs)
 
     local default_provider_key = nil
@@ -834,16 +831,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     --- @param query_params string
     local function provide_rpc(query_params)
-        -- local p2 = Profiler:new("provide_rpc")
         provider_switch:provide(query_params, context)
-        -- p2:elapsed_micros("done")
     end
 
     --- @param line_params string
     local function preview_rpc(line_params)
-        -- local p3 = Profiler:new("preview_rpc")
         previewer_switch:preview(line_params, context)
-        -- p3:elapsed_micros("end")
     end
 
     local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
@@ -1044,7 +1037,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             { height = 1, width = 1, row = 0, col = 0 }
         )
     end
-    -- p1:elapsed_millis("prepare")
     local p = Popup:new(
         win_opts or {},
         query_command,
@@ -1059,7 +1051,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end)
         end
     )
-    -- p1:elapsed_millis("done")
     return p
 end
 
