@@ -35,7 +35,7 @@ describe("server", function()
             local f = function(x) end
             local rid = s:register(f)
             assert_eq(type(rid), "string")
-            assert_true(tonumber(rid) == tonumber(utils.get_unique_id()) - 1)
+            assert_true(tonumber(rid) == tonumber(utils.make_unique_id()) - 1)
             local actual1 = s:get(rid)
             assert_eq(type(actual1), "function")
             assert_eq(vim.inspect(f), vim.inspect(actual1))

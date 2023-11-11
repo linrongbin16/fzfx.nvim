@@ -69,7 +69,7 @@ function RpcServer:register(callback)
         type(callback),
         vim.inspect(callback)
     )
-    local registry_id = utils.get_unique_id()
+    local registry_id = utils.make_unique_id()
     self.registry[registry_id] = callback
     return registry_id
 end

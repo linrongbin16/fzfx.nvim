@@ -850,7 +850,7 @@ local _UniqueIdInteger = 0
 
 --- @alias UniqueId string
 --- @return UniqueId
-local function get_unique_id()
+local function make_unique_id()
     if _UniqueIdInteger >= constants.int32_max then
         _UniqueIdInteger = 1
     else
@@ -897,7 +897,7 @@ local M = {
     writelines = writelines,
     RingBuffer = RingBuffer,
     make_uuid = make_uuid,
-    get_unique_id = get_unique_id,
+    make_unique_id = make_unique_id,
 }
 
 return M
