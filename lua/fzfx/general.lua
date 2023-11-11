@@ -3,7 +3,6 @@ local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
 local fzf_helpers = require("fzfx.fzf_helpers")
 local server = require("fzfx.server")
-local file_watcher = require("fzfx.file_watcher")
 local color = require("fzfx.color")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
@@ -386,8 +385,8 @@ function PreviewerSwitch:switch(next_pipeline)
     self.pipeline = next_pipeline
 end
 
---- @param line string
---- @param context PipelineContext?
+--- @param line string?
+--- @param context PipelineContext
 --- @return PreviewerType
 function PreviewerSwitch:preview(line, context)
     local previewer_config = self.previewer_configs[self.pipeline]
@@ -530,48 +529,7 @@ function PreviewerSwitch:preview(line, context)
         )
     end
 
-    -- preview label
-    if
-        constants.has_curl
-        and (
-            type(previewer_config.previewer_label) == "function"
-            or type(previewer_config.previewer_label == "string")
-        )
-    then
-        vim.schedule(function()
-            local label = type(previewer_config.previewer_label) == "function"
-                    and previewer_config.previewer_label(line, context)
-                or previewer_config.previewer_label
-            log.debug(
-                "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
-                vim.inspect(line),
-                vim.inspect(label)
-            )
-            if type(label) ~= "string" then
-                return
-            end
-            self.last_previewer_label = label
-
-            -- do later
-            vim.defer_fn(function()
-                local last_label = self.last_previewer_label
-                self.last_previewer_label = nil
-                if type(last_label) ~= "string" then
-                    return
-                end
-                self.fzf_port = utils.string_not_empty(self.fzf_port)
-                        and self.fzf_port
-                    or utils.readfile(self.fzf_port_file) --[[@as string]]
-                fzf_helpers.send_http_post(
-                    self.fzf_port,
-                    string.format(
-                        "change-preview-label(%s)",
-                        vim.trim(last_label)
-                    )
-                )
-            end, 200)
-        end)
-    end
+    self:preview_label(line, context)
 
     return previewer_config.previewer_type
 end
@@ -602,6 +560,7 @@ function PreviewerSwitch:preview_label(line, context)
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
+
     if not constants.has_curl then
         return
     end
@@ -626,7 +585,7 @@ function PreviewerSwitch:preview_label(line, context)
         end
         self.last_previewer_label = label
 
-        -- do it async/later
+        -- do later
         vim.defer_fn(function()
             local last_label = self.last_previewer_label
             self.last_previewer_label = nil
