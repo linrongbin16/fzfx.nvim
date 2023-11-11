@@ -415,15 +415,6 @@ function PreviewerSwitch:preview(line, context)
         vim.inspect(self.pipeline),
         vim.inspect(previewer_config)
     )
-    log.ensure(
-        type(previewer_config.previewer_label) == "function"
-            or previewer_config.previewer_label == nil
-            or type(previewer_config.previewer_label) == "boolean"
-            or type(previewer_config.previewer_label) == "string",
-        "invalid previewer label in %s! previewer label: %s",
-        vim.inspect(self.pipeline),
-        vim.inspect(previewer_config)
-    )
 
     local metaopts = make_previewer_meta_opts(self.pipeline, previewer_config)
     local metajson = json.encode(metaopts) --[[@as string]]
