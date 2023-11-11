@@ -315,7 +315,7 @@ local function send_http_post(port, body)
         "--noproxy",
         "*",
         "-XPOST",
-        string.format("localhost:%s", vim.trim(port)),
+        string.format("127.0.0.1:%s", vim.trim(port)),
         "-d",
         body,
     }, function(line)
