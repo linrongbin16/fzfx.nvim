@@ -806,7 +806,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local pipeline_size = get_pipeline_size(pipeline_configs)
 
     local default_provider_key = nil
-    if default_pipeline == nil then
+    if
+        default_pipeline == nil
+        or pipeline_configs.providers[default_pipeline] == nil
+    then
         local pipeline = nil
         local provider_opts = nil
         if schema.is_provider_config(pipeline_configs.providers) then
