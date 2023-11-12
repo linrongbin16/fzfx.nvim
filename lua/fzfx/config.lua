@@ -3123,6 +3123,25 @@ local Defaults = {
                 },
                 default_provider = "buffer_commits",
             },
+            -- resume
+            {
+                name = "FzfxGCommitsR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search git commits by resume last",
+                },
+                default_provider = "all_commits",
+            },
+            {
+                name = "FzfxGCommitsBR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search git commits on current buffer by resume last",
+                },
+                default_provider = "buffer_commits",
+            },
         },
         providers = {
             all_commits = {
