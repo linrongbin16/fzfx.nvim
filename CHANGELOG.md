@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.2.0...v3.3.0) (2023-11-12)
+
+
+### Features
+
+* **variant:** add resume last search variant to all commands ([#413](https://github.com/linrongbin16/fzfx.nvim/issues/413)) ([c46c92d](https://github.com/linrongbin16/fzfx.nvim/commit/c46c92d620b6357c4774187e42b1019460bf74bd))
+
 ## [3.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.1.0...v3.2.0) (2023-11-12)
 
 
