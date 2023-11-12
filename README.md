@@ -11,7 +11,7 @@
 
 <!-- <p align="center">  -->
 
-A fzf-based fuzzy finder running on the dynamic engine that parsing user query and selection on every keystroke, with friendly features, good performance and maximized customization.
+FZF-based fuzzy finder running on a dynamic engine that parsing user query and selection on every keystroke, with friendly features, good performance and maximized customization.
 
 <!-- </p> -->
 
