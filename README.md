@@ -9,7 +9,7 @@
 <a href="https://app.codecov.io/github/linrongbin16/fzfx.nvim"><img alt="codecov" src="https://img.shields.io/codecov/c/github/linrongbin16/fzfx.nvim?logo=codecov&logoColor=white&style=for-the-badge&label=Codecov&labelColor=F01F7A" /></a>
 </p>
 
-<p align="center"> E(x)tended commands missing in <a href="https://github.com/junegunn/fzf.vim">fzf.vim</a>. </p>
+<p align="center"> A fzf-based fuzzy finder running on the dynamic engine that parsing user query and selection on every keystroke, with friendly features, good performance and maximized customization. </p>
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403
 
