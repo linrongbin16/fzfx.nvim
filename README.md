@@ -308,6 +308,10 @@ Commands are named following below rules:
     <td>FzfxFiles(U)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td>FzfxFiles(U)R</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
@@ -379,6 +383,10 @@ Commands are named following below rules:
   </tr>
   <tr>
     <td>FzfxLiveGrep(B/U)P</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(B/U)R</td>
     <td>N</td>
   </tr>
 </tbody>
