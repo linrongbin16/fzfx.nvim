@@ -293,8 +293,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxFiles(U)</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxFiles(U)V</td>
@@ -370,8 +370,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxLiveGrep(B/U)</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(B/U)V</td>
