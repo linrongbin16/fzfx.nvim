@@ -594,7 +594,7 @@ local function asyncreadfile(filename, on_complete, opts)
         if open_err then
             error(
                 string.format(
-                    "failed to open file %s: %s",
+                    "failed to open(r) file %s: %s",
                     vim.inspect(filename),
                     vim.inspect(open_err)
                 )
@@ -686,6 +686,53 @@ local function writefile(filename, content)
     f:write(content)
     f:close()
     return 0
+end
+
+--- @param filename string
+--- @param content string
+--- @param on_complete fun(err:string?,bytes:integer?):any
+local function asyncwritefile(filename, content, on_complete)
+    vim.loop.fs_open(filename, "w", 438, function(open_err, fd)
+        if open_err then
+            error(
+                string.format(
+                    "failed to open(w) file %s: %s",
+                    vim.inspect(filename),
+                    vim.inspect(open_err)
+                )
+            )
+            return
+        end
+        ---@diagnostic disable-next-line: param-type-mismatch
+        vim.loop.fs_write(fd, content, nil, function(write_err, bytes)
+            if write_err then
+                error(
+                    string.format(
+                        "failed to write file %s: %s",
+                        vim.inspect(filename),
+                        vim.inspect(write_err)
+                    )
+                )
+                return
+            end
+            ---@diagnostic disable-next-line: param-type-mismatch
+            vim.loop.fs_close(fd, function(close_err)
+                if close_err then
+                    error(
+                        string.format(
+                            "failed to close(w) file %s: %s",
+                            vim.inspect(filename),
+                            vim.inspect(close_err)
+                        )
+                    )
+                    return
+                end
+                if type(on_complete) == "function" then
+                    on_complete(close_err or write_err, bytes)
+                end
+            end)
+        end)
+    end)
 end
 
 --- @param filename string
@@ -894,6 +941,7 @@ local M = {
     asyncreadfile = asyncreadfile,
     readlines = readlines,
     writefile = writefile,
+    asyncwritefile = asyncwritefile,
     writelines = writelines,
     RingBuffer = RingBuffer,
     make_uuid = make_uuid,

@@ -905,6 +905,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
 
     local fzf_opts = {
+        "--print-query",
+        "--listen",
         { "--query", query },
         {
             "--preview",
@@ -1037,7 +1039,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             string.format("change:reload(%s)", reload_query_command),
         })
     end
-    table.insert(fzf_opts, "--listen")
     table.insert(fzf_opts, fzf_start_binder:build())
 
     fzf_opts =
@@ -1068,11 +1069,27 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         fzf_opts,
         actions,
         context,
-        function()
+        function(last_query)
             vim.schedule(function()
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)
                 end
+                local last_query_cache = fzf_helpers.make_last_query_cache(name)
+                local content = json.encode({
+                    default_provider = provider_switch.pipeline,
+                    query = last_query,
+                }) --[[@as string]]
+                utils.asyncwritefile(
+                    last_query_cache,
+                    content,
+                    function(err, bytes)
+                        log.debug(
+                            "|fzfx.general - general| dump last query:%s, error:%s",
+                            vim.inspect(bytes),
+                            vim.inspect(err)
+                        )
+                    end
+                )
             end)
         end
     )
@@ -1085,7 +1102,7 @@ end
 local function _make_user_command(name, command_config, group_config)
     vim.api.nvim_create_user_command(command_config.name, function(opts)
         local query, last_provider =
-            fzf_helpers.get_command_feed(opts, command_config.feed)
+            fzf_helpers.get_command_feed(command_config.feed, opts.args, name)
         local default_provider = last_provider
             or command_config.default_provider
         return general(name, query, opts.bang, group_config, default_provider)

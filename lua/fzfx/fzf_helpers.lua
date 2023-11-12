@@ -4,6 +4,7 @@ local color = require("fzfx.color")
 local conf = require("fzfx.config")
 local yank_history = require("fzfx.yank_history")
 local utils = require("fzfx.utils")
+local json = require("fzfx.json")
 
 -- visual select {
 
@@ -83,20 +84,53 @@ end
 
 -- visual select }
 
---- @param opts Options
+--- @param name string
+local function make_last_query_cache(name)
+    return path.join(
+        conf.get_config().cache.dir,
+        string.format("_%s_last_query_cache", name)
+    )
+end
+
 --- @param feed_type CommandFeed
---- @return string
-local function get_command_feed(opts, feed_type)
+--- @param input_args string?
+--- @param pipeline_name string
+--- @return string, string?
+local function get_command_feed(feed_type, input_args, pipeline_name)
     feed_type = string.lower(feed_type)
     if feed_type == "args" then
-        return opts.args
+        return input_args or "", nil
     elseif feed_type == "visual" then
         return _visual_select()
     elseif feed_type == "cword" then
-        return vim.fn.expand("<cword>")
+        return vim.fn.expand("<cword>"), nil
     elseif feed_type == "put" then
         local y = yank_history.get_yank()
-        return (y ~= nil and type(y.regtext) == "string") and y.regtext or ""
+        return (y ~= nil and type(y.regtext) == "string") and y.regtext or "",
+            nil
+    elseif feed_type == "resume" then
+        local cache = make_last_query_cache(pipeline_name)
+        local data = utils.readfile(cache)
+        -- log.debug(
+        --     "|fzfx.fzf_helpers - get_command_feed| pipeline %s cache:%s",
+        --     vim.inspect(pipeline_name),
+        --     vim.inspect(data)
+        -- )
+        if
+            type(data) ~= "string"
+            or string.len(data) == 0
+            or not utils.string_startswith(data, "{")
+            or not utils.string_endswith(data, "}")
+        then
+            return "", nil
+        end
+        --- @alias LastQueryCacheObj {default_provider:string,query:string}
+        local ok, obj = pcall(json.decode, data) --[[@as LastQueryCacheObj]]
+        if ok and type(obj) == "table" then
+            return obj.query or "", obj.default_provider
+        else
+            return "", nil
+        end
     else
         log.throw(
             "|fzfx.fzf_helpers - get_command_feed| invalid command feed type! %s",
@@ -352,6 +386,7 @@ end
 local M = {
     _get_visual_lines = _get_visual_lines,
     _visual_select = _visual_select,
+    make_last_query_cache = make_last_query_cache,
     get_command_feed = get_command_feed,
     preprocess_fzf_opts = preprocess_fzf_opts,
     _generate_fzf_color_opts = _generate_fzf_color_opts,

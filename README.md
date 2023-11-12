@@ -57,6 +57,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - Search by visual select.
   - Search by cursor word.
   - Search by yank text.
+  - Search by previous search, e.g. resume last search.
 - Multiple data sources to avoid restart search flow:
   - Exclude or include the hidden/ignored files when searching files.
   - Local or remote branches when searching git branches.
@@ -253,6 +254,7 @@ Commands are named following below rules:
 - The visual select variant is named with `V` suffix.
 - The cursor word variant is named with `W` suffix.
 - The yank text variant is named with `P` suffix (just like press the `p` key).
+- The resume last search variant is named with `R` suffix.
 - The only current buffer variant is named with `B` suffix.
 
 > Note: command names can be configured, see [Configuration](#-configuration).
@@ -291,8 +293,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxFiles(U)</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxFiles(U)V</td>
@@ -304,6 +306,10 @@ Commands are named following below rules:
   </tr>
   <tr>
     <td>FzfxFiles(U)P</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxFiles(U)R</td>
     <td>N</td>
   </tr>
 </tbody>
@@ -364,8 +370,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxLiveGrep(B/U)</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxLiveGrep(B/U)V</td>
@@ -377,6 +383,10 @@ Commands are named following below rules:
   </tr>
   <tr>
     <td>FzfxLiveGrep(B/U)P</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLiveGrep(B/U)R</td>
     <td>N</td>
   </tr>
 </tbody>
@@ -763,6 +773,8 @@ xnoremap <space>f :\<C-U>FzfxFilesV<CR>
 nnoremap <space>wf :\<C-U>FzfxFilesW<CR>
 " by yank text
 nnoremap <space>pf :\<C-U>FzfxFilesP<CR>
+" by resume
+nnoremap <space>rf :\<C-U>FzfxFilesR<CR>
 
 " ======== live grep ========
 
@@ -774,6 +786,8 @@ xnoremap <space>l :\<C-U>FzfxLiveGrepV<CR>
 nnoremap <space>wl :\<C-U>FzfxLiveGrepW<CR>
 " by yank text
 nnoremap <space>pl :\<C-U>FzfxLiveGrepP<CR>
+" by resume
+nnoremap <space>rl :\<C-U>FzfxLiveGrepR<CR>
 
 " ======== buffers ========
 
@@ -809,12 +823,6 @@ nnoremap <space>gb :\<C-U>FzfxGBlame<CR>
 
 " lsp diagnostics
 nnoremap <space>dg :\<C-U>FzfxLspDiagnostics<CR>
-" by visual select
-xnoremap <space>dg :\<C-U>FzfxLspDiagnosticsV<CR>
-" by cursor word
-nnoremap <space>wdg :\<C-U>FzfxLspDiagnosticsW<CR>
-" by yank text
-nnoremap <space>pdg :\<C-U>FzfxLspDiagnosticsP<CR>
 
 " ======== lsp symbols ========
 
@@ -885,6 +893,13 @@ vim.keymap.set(
   "<cmd>FzfxFilesP<cr>",
   { silent = true, noremap = true, desc = "Find files by yank text" }
 )
+-- by resume
+vim.keymap.set(
+  "n",
+  "<space>rf",
+  "<cmd>FzfxFilesR<cr>",
+  { silent = true, noremap = true, desc = "Find files by previous search" }
+)
 
 -- ======== live grep ========
 
@@ -914,7 +929,14 @@ vim.keymap.set(
   "n",
   "<space>pl",
   "<cmd>FzfxLiveGrepP<cr>",
-  { silent = true, noremap = true, desc = "Live grep by cursor word" }
+  { silent = true, noremap = true, desc = "Live grep by yank text" }
+)
+-- by resume
+vim.keymap.set(
+  "n",
+  "<space>rl",
+  "<cmd>FzfxLiveGrepR<cr>",
+  { silent = true, noremap = true, desc = "Live grep by previous search" }
 )
 
 -- ======== buffers ========
@@ -986,25 +1008,6 @@ vim.keymap.set(
   "<cmd>FzfxLspDiagnostics<cr>",
   { silent = true, noremap = true, desc = "Search lsp diagnostics" }
 )
--- by visual select
-vim.keymap.set(
-  "x",
-  "<space>dg",
-  "<cmd>FzfxLspDiagnosticsV<CR>",
-  { silent = true, noremap = true, desc = "Search lsp diagnostics" }
-)
--- by cursor word
-vim.keymap.set("n", "<space>wdg", "<cmd>FzfxLspDiagnosticsW<cr>", {
-  silent = true,
-  noremap = true,
-  desc = "Search lsp diagnostics by cursor word",
-})
--- by yank text
-vim.keymap.set("n", "<space>pdg", "<cmd>FzfxLspDiagnosticsP<cr>", {
-  silent = true,
-  noremap = true,
-  desc = "Search lsp diagnostics by yank text",
-})
 
 -- ======== lsp symbols ========
 
