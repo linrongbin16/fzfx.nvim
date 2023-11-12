@@ -8,7 +8,7 @@
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?label=GitHub%20CI&logo=github&logoColor=fff&style=for-the-badge" /></a>
 
   ![Codecov Badge](https://img.shields.io/badge/Codecov-F01F7A?logo=codecov&logoColor=fff&style=for-the-badge)
-<a href="https://app.codecov.io/github/linrongbin16/fzfx.nvim"><img alt="codecov" src="https://img.shields.io/codecov/c/github/linrongbin16/fzfx.nvim?badgeContent=Codecov-F01F7A&logo=codecov&logoColor=fff&style=for-the-badge&label=Codecov" /></a>
+<a href="https://app.codecov.io/github/linrongbin16/fzfx.nvim"><img alt="codecov" src="https://img.shields.io/codecov/c/github/linrongbin16/fzfx.nvim?badgeContent=Codecov-F01F7A&logo=codecov&logoColor=magenta&style=for-the-badge&label=Codecov" /></a>
 </p>
 <p align="center"> E(x)tended commands missing in <a href="https://github.com/junegunn/fzf.vim">fzf.vim</a>. </p>
 
