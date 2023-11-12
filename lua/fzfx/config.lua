@@ -2229,6 +2229,25 @@ local Defaults = {
                 },
                 default_provider = "unrestricted_mode",
             },
+            -- resume
+            {
+                name = "FzfxFilesR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find files by previous search",
+                },
+                default_provider = "restricted_mode",
+            },
+            {
+                name = "FzfxFilesUR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find files unrestricted by previous search",
+                },
+                default_provider = "unrestricted_mode",
+            },
         },
         providers = {
             restricted_mode = {
