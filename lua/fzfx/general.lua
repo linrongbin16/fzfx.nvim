@@ -905,6 +905,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
 
     local fzf_opts = {
+        "--print-query",
+        "--listen",
         { "--query", query },
         {
             "--preview",
@@ -1037,7 +1039,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             string.format("change:reload(%s)", reload_query_command),
         })
     end
-    table.insert(fzf_opts, "--listen")
     table.insert(fzf_opts, fzf_start_binder:build())
 
     fzf_opts =
@@ -1068,7 +1069,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         fzf_opts,
         actions,
         context,
-        function()
+        function(last_query)
             vim.schedule(function()
                 for _, rpc_id in ipairs(rpc_registries) do
                     server:get_rpc_server():unregister(rpc_id)

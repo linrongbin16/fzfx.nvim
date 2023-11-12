@@ -316,7 +316,7 @@ local function _make_fzf_command(fzf_opts, actions, result)
     return command
 end
 
---- @alias OnPopupExit fun(launch:Popup):nil
+--- @alias OnPopupExit fun(last_query:string):nil
 --- @param win_opts Options?
 --- @param source string
 --- @param fzf_opts Options
@@ -365,13 +365,14 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
             vim.inspect(result)
         )
         local lines = utils.readlines(result) --[[@as table]]
-        -- log.debug(
-        --     "|fzfx.popup - Popup:new.on_fzf_exit| result:%s, result_lines:%s",
-        --     vim.inspect(result),
-        --     vim.inspect(lines)
-        -- )
-        local action_key = vim.trim(lines[1])
-        local action_lines = vim.list_slice(lines, 2)
+        log.debug(
+            "|fzfx.popup - Popup:new.on_fzf_exit| result:%s, result_lines:%s",
+            vim.inspect(result),
+            vim.inspect(lines)
+        )
+        local last_query = vim.trim(lines[1])
+        local action_key = vim.trim(lines[2])
+        local action_lines = vim.list_slice(lines, 3)
         -- log.debug(
         --     "|fzfx.popup - Popup:new.on_fzf_exit| action_key:%s, action_lines:%s",
         --     vim.inspect(action_key),
@@ -401,7 +402,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
             log.err("unknown action key: %s", vim.inspect(action_key))
         end
         if type(on_popup_exit) == "function" then
-            on_popup_exit(self)
+            on_popup_exit(last_query)
         end
     end
 
