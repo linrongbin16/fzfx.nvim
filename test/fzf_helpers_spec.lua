@@ -24,6 +24,12 @@ describe("helpers", function()
         console_log = false,
         file_log = false,
     })
+    describe("[make_last_query_cache]", function()
+        it("makes", function()
+            local actual = fzf_helpers.make_last_query_cache("test")
+            assert_true(utils.string_endswith(actual, "_test_last_query_cache"))
+        end)
+    end)
     describe("[get_command_feed]", function()
         it("get normal args feed", function()
             local expect = "expect"
