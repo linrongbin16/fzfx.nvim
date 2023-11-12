@@ -2235,7 +2235,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find files by previous search",
+                    desc = "Find files by resume last",
                 },
                 default_provider = "restricted_mode",
             },
@@ -2244,7 +2244,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find files unrestricted by previous search",
+                    desc = "Find files unrestricted by resume last",
                 },
                 default_provider = "unrestricted_mode",
             },
@@ -2417,7 +2417,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Live grep by previous search",
+                    desc = "Live grep by resume last",
                 },
                 default_provider = "restricted_mode",
             },
@@ -2426,7 +2426,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Live grep unrestricted by previous search",
+                    desc = "Live grep unrestricted by resume last",
                 },
                 default_provider = "unrestricted_mode",
             },
@@ -2435,7 +2435,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Live grep on current buffer by previous search",
+                    desc = "Live grep on current buffer by resume last",
                 },
                 default_provider = "buffer_mode",
             },
@@ -2561,6 +2561,15 @@ local Defaults = {
                     desc = "Find buffers by yank text",
                 },
             },
+            -- resume
+            {
+                name = "FzfxBuffersR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find buffers by resume last",
+                },
+            },
         },
         providers = {
             key = "default",
@@ -2680,6 +2689,25 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "Find git files in current directory by yank text",
+                },
+                default_provider = "current_folder",
+            },
+            -- resume
+            {
+                name = "FzfxGFilesR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find git files by resume last",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGFilesCR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find git files in current directory by resume last",
                 },
                 default_provider = "current_folder",
             },
@@ -2810,6 +2838,25 @@ local Defaults = {
                 },
                 default_provider = "current_folder",
             },
+            -- resume
+            {
+                name = "FzfxGStatusR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files (status) by resume last",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGStatusCR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files (status) in current directory by resume last",
+                },
+                default_provider = "current_folder",
+            },
         },
         providers = {
             current_folder = {
@@ -2925,6 +2972,25 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "Search remote git branches by yank text",
+                },
+                default_provider = "remote_branch",
+            },
+            -- resume
+            {
+                name = "FzfxGBranchesR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search local git branches by resume last",
+                },
+                default_provider = "local_branch",
+            },
+            {
+                name = "FzfxGBranchesRR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search remote git branches by resume last",
                 },
                 default_provider = "remote_branch",
             },
@@ -3057,6 +3123,25 @@ local Defaults = {
                 },
                 default_provider = "buffer_commits",
             },
+            -- resume
+            {
+                name = "FzfxGCommitsR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search git commits by resume last",
+                },
+                default_provider = "all_commits",
+            },
+            {
+                name = "FzfxGCommitsBR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search git commits on current buffer by resume last",
+                },
+                default_provider = "buffer_commits",
+            },
         },
         providers = {
             all_commits = {
@@ -3130,6 +3215,15 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "Search git commits by yank text",
+                },
+            },
+            -- resume
+            {
+                name = "FzfxGBlameR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search git commits by resume last",
                 },
             },
         },
@@ -3278,6 +3372,34 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "Find vim user commands by yank text",
+                },
+                default_provider = "user_commands",
+            },
+            -- resume
+            {
+                name = "FzfxCommandsR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim commands by resume last",
+                },
+                default_provider = "all_commands",
+            },
+            {
+                name = "FzfxCommandsER",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim ex(builtin) commands by resume last",
+                },
+                default_provider = "ex_commands",
+            },
+            {
+                name = "FzfxCommandsUR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim user commands by resume last",
                 },
                 default_provider = "user_commands",
             },
@@ -3508,6 +3630,43 @@ local Defaults = {
                 },
                 default_provider = "v_mode",
             },
+            -- resume
+            {
+                name = "FzfxKeyMapsR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim keymaps by resume last",
+                },
+                default_provider = "all_mode",
+            },
+            {
+                name = "FzfxKeyMapsNR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim normal(n) mode keymaps by resume last",
+                },
+                default_provider = "n_mode",
+            },
+            {
+                name = "FzfxKeyMapsIR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim insert(i) mode keymaps by resume last",
+                },
+                default_provider = "i_mode",
+            },
+            {
+                name = "FzfxKeyMapsVR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim visual(v/s/x) mode keymaps by resume last",
+                },
+                default_provider = "v_mode",
+            },
         },
         providers = {
             all_mode = {
@@ -3650,6 +3809,25 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "Search lsp diagnostics on current buffer by yank text",
+                },
+                default_provider = "buffer_diagnostics",
+            },
+            -- resume
+            {
+                name = "FzfxLspDiagnosticsR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on workspace by resume last",
+                },
+                default_provider = "workspace_diagnostics",
+            },
+            {
+                name = "FzfxLspDiagnosticsBR",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on current buffer by resume last",
                 },
                 default_provider = "buffer_diagnostics",
             },
@@ -3926,6 +4104,7 @@ local Defaults = {
     --- @type GroupConfig
     file_explorer = {
         commands = {
+            -- normal
             {
                 name = "FzfxFileExplorer",
                 feed = CommandFeedEnum.ARGS,
@@ -3948,6 +4127,7 @@ local Defaults = {
                 },
                 default_provider = "include_hidden",
             },
+            -- visual
             {
                 name = "FzfxFileExplorerV",
                 feed = CommandFeedEnum.VISUAL,
@@ -3968,6 +4148,7 @@ local Defaults = {
                 },
                 default_provider = "include_hidden",
             },
+            -- word
             {
                 name = "FzfxFileExplorerW",
                 feed = CommandFeedEnum.CWORD,
@@ -3986,6 +4167,7 @@ local Defaults = {
                 },
                 default_provider = "include_hidden",
             },
+            -- put
             {
                 name = "FzfxFileExplorerP",
                 feed = CommandFeedEnum.PUT,
@@ -4001,6 +4183,25 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "File explorer (ls -la) by yank text",
+                },
+                default_provider = "include_hidden",
+            },
+            -- resume
+            {
+                name = "FzfxFileExplorerR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "File explorer (ls -l) by resume last",
+                },
+                default_provider = "filter_hidden",
+            },
+            {
+                name = "FzfxFileExplorerUR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "File explorer (ls -la) by resume last",
                 },
                 default_provider = "include_hidden",
             },
