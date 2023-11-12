@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.1.0...v3.2.0) (2023-11-12)
+
+
+### Features
+
+* **variant:** add resume last search variant for 'files' ([#408](https://github.com/linrongbin16/fzfx.nvim/issues/408)) ([cfcb1d4](https://github.com/linrongbin16/fzfx.nvim/commit/cfcb1d485590a75a800287f552feace23a5a6a98))
+* **variant:** add resume last search variant for 'live_grep' ([#408](https://github.com/linrongbin16/fzfx.nvim/issues/408)) ([cfcb1d4](https://github.com/linrongbin16/fzfx.nvim/commit/cfcb1d485590a75a800287f552feace23a5a6a98))
+
 ## [3.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.0.0...v3.1.0) (2023-11-11)
 
 
