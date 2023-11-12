@@ -4,7 +4,7 @@
 
 <p align="center">
 <a href="https://github.com/neovim/neovim/releases/v0.7.0"><img alt="Neovim" src="https://img.shields.io/badge/Neovim--0.7-57A143?logo=neovim&logoColor=fff&style=for-the-badge" /></a>
-<a href="https://github.com/linrongbin16/fzfx.nvim/search?l=lua"><img alt="Language" src="https://img.shields.io/github/languages/top/linrongbin16/fzfx.nvim?badgeContent=Lua-2C2D72&logo=lua&logoColor=fff&style=for-the-badge" /></a>
+<a href="https://github.com/linrongbin16/fzfx.nvim/search?l=lua"><img alt="Language" src="https://img.shields.io/github/languages/top/linrongbin16/fzfx.nvim?badgeContent=Lua&logo=lua&logoColor=fff&labelColor=2C2D72&style=for-the-badge" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?label=GitHub%20CI&logo=github&logoColor=fff&style=for-the-badge" /></a>
 <a href="https://app.codecov.io/github/linrongbin16/fzfx.nvim"><img alt="codecov" src="https://img.shields.io/codecov/c/github/linrongbin16/fzfx.nvim?logo=codecov&logoColor=white&style=for-the-badge&label=Codecov&labelColor=F01F7A" /></a>
 </p>
