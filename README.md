@@ -765,6 +765,8 @@ xnoremap <space>f :\<C-U>FzfxFilesV<CR>
 nnoremap <space>wf :\<C-U>FzfxFilesW<CR>
 " by yank text
 nnoremap <space>pf :\<C-U>FzfxFilesP<CR>
+" by resume
+nnoremap <space>rf :\<C-U>FzfxFilesR<CR>
 
 " ======== live grep ========
 
@@ -776,6 +778,8 @@ xnoremap <space>l :\<C-U>FzfxLiveGrepV<CR>
 nnoremap <space>wl :\<C-U>FzfxLiveGrepW<CR>
 " by yank text
 nnoremap <space>pl :\<C-U>FzfxLiveGrepP<CR>
+" by resume
+nnoremap <space>rl :\<C-U>FzfxLiveGrepR<CR>
 
 " ======== buffers ========
 
@@ -811,12 +815,6 @@ nnoremap <space>gb :\<C-U>FzfxGBlame<CR>
 
 " lsp diagnostics
 nnoremap <space>dg :\<C-U>FzfxLspDiagnostics<CR>
-" by visual select
-xnoremap <space>dg :\<C-U>FzfxLspDiagnosticsV<CR>
-" by cursor word
-nnoremap <space>wdg :\<C-U>FzfxLspDiagnosticsW<CR>
-" by yank text
-nnoremap <space>pdg :\<C-U>FzfxLspDiagnosticsP<CR>
 
 " ======== lsp symbols ========
 
@@ -887,6 +885,13 @@ vim.keymap.set(
   "<cmd>FzfxFilesP<cr>",
   { silent = true, noremap = true, desc = "Find files by yank text" }
 )
+-- by resume
+vim.keymap.set(
+  "n",
+  "<space>rf",
+  "<cmd>FzfxFilesR<cr>",
+  { silent = true, noremap = true, desc = "Find files by previous search" }
+)
 
 -- ======== live grep ========
 
@@ -916,7 +921,14 @@ vim.keymap.set(
   "n",
   "<space>pl",
   "<cmd>FzfxLiveGrepP<cr>",
-  { silent = true, noremap = true, desc = "Live grep by cursor word" }
+  { silent = true, noremap = true, desc = "Live grep by yank text" }
+)
+-- by resume
+vim.keymap.set(
+  "n",
+  "<space>rl",
+  "<cmd>FzfxLiveGrepR<cr>",
+  { silent = true, noremap = true, desc = "Live grep by previous search" }
 )
 
 -- ======== buffers ========
@@ -988,25 +1000,6 @@ vim.keymap.set(
   "<cmd>FzfxLspDiagnostics<cr>",
   { silent = true, noremap = true, desc = "Search lsp diagnostics" }
 )
--- by visual select
-vim.keymap.set(
-  "x",
-  "<space>dg",
-  "<cmd>FzfxLspDiagnosticsV<CR>",
-  { silent = true, noremap = true, desc = "Search lsp diagnostics" }
-)
--- by cursor word
-vim.keymap.set("n", "<space>wdg", "<cmd>FzfxLspDiagnosticsW<cr>", {
-  silent = true,
-  noremap = true,
-  desc = "Search lsp diagnostics by cursor word",
-})
--- by yank text
-vim.keymap.set("n", "<space>pdg", "<cmd>FzfxLspDiagnosticsP<cr>", {
-  silent = true,
-  noremap = true,
-  desc = "Search lsp diagnostics by yank text",
-})
 
 -- ======== lsp symbols ========
 
