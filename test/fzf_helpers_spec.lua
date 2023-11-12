@@ -27,21 +27,31 @@ describe("helpers", function()
     describe("[get_command_feed]", function()
         it("get normal args feed", function()
             local expect = "expect"
-            local actual = fzf_helpers.get_command_feed(
-                { args = expect },
-                CommandFeedEnum.ARGS
+            local actual1, actual2 = fzf_helpers.get_command_feed(
+                CommandFeedEnum.ARGS,
+                "expect",
+                "test"
             )
-            assert_eq(expect, actual)
+            assert_eq(expect, actual1)
+            assert_true(actual2 == nil)
         end)
         it("get visual select feed", function()
-            local actual =
-                fzf_helpers.get_command_feed({}, CommandFeedEnum.VISUAL)
-            assert_eq(type(actual), "string")
+            local actual1, actual2 =
+                fzf_helpers.get_command_feed(CommandFeedEnum.VISUAL, "", "test")
+            assert_eq(type(actual1), "string")
+            assert_true(actual2 == nil)
         end)
         it("get cword feed", function()
-            local actual =
-                fzf_helpers.get_command_feed({}, CommandFeedEnum.CWORD)
-            assert_eq(type(actual), "string")
+            local actual1, actual2 =
+                fzf_helpers.get_command_feed(CommandFeedEnum.CWORD, "", "test")
+            assert_eq(type(actual1), "string")
+            assert_true(actual2 == nil)
+        end)
+        it("get resume feed", function()
+            local actual1, actual2 =
+                fzf_helpers.get_command_feed(CommandFeedEnum.RESUME, "", "test")
+            assert_eq(type(actual1), "string")
+            assert_true(actual2 == nil or type(actual2) == "string")
         end)
     end)
     describe("[_get_visual_lines]", function()
