@@ -2411,6 +2411,34 @@ local Defaults = {
                 },
                 default_provider = "buffer_mode",
             },
+            -- resume
+            {
+                name = "FzfxLiveGrepR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Live grep by previous search",
+                },
+                default_provider = "restricted_mode",
+            },
+            {
+                name = "FzfxLiveGrepUR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Live grep unrestricted by previous search",
+                },
+                default_provider = "unrestricted_mode",
+            },
+            {
+                name = "FzfxLiveGrepBR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Live grep on current buffer by previous search",
+                },
+                default_provider = "buffer_mode",
+            },
         },
         providers = {
             restricted_mode = {
