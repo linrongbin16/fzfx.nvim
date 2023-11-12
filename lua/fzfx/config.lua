@@ -4104,6 +4104,7 @@ local Defaults = {
     --- @type GroupConfig
     file_explorer = {
         commands = {
+            -- normal
             {
                 name = "FzfxFileExplorer",
                 feed = CommandFeedEnum.ARGS,
@@ -4126,6 +4127,7 @@ local Defaults = {
                 },
                 default_provider = "include_hidden",
             },
+            -- visual
             {
                 name = "FzfxFileExplorerV",
                 feed = CommandFeedEnum.VISUAL,
@@ -4146,6 +4148,7 @@ local Defaults = {
                 },
                 default_provider = "include_hidden",
             },
+            -- word
             {
                 name = "FzfxFileExplorerW",
                 feed = CommandFeedEnum.CWORD,
@@ -4164,6 +4167,7 @@ local Defaults = {
                 },
                 default_provider = "include_hidden",
             },
+            -- put
             {
                 name = "FzfxFileExplorerP",
                 feed = CommandFeedEnum.PUT,
@@ -4179,6 +4183,25 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "File explorer (ls -la) by yank text",
+                },
+                default_provider = "include_hidden",
+            },
+            -- resume
+            {
+                name = "FzfxFileExplorerR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "File explorer (ls -l) by resume last",
+                },
+                default_provider = "filter_hidden",
+            },
+            {
+                name = "FzfxFileExplorerUR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "File explorer (ls -la) by resume last",
                 },
                 default_provider = "include_hidden",
             },
