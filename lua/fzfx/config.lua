@@ -2561,6 +2561,15 @@ local Defaults = {
                     desc = "Find buffers by yank text",
                 },
             },
+            -- resume
+            {
+                name = "FzfxBuffersR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find buffers by previous search",
+                },
+            },
         },
         providers = {
             key = "default",
@@ -2680,6 +2689,25 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "Find git files in current directory by yank text",
+                },
+                default_provider = "current_folder",
+            },
+            -- resume
+            {
+                name = "FzfxGFilesR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find git files by previous search",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGFilesCR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find git files in current directory by previous search",
                 },
                 default_provider = "current_folder",
             },
@@ -2810,6 +2838,25 @@ local Defaults = {
                 },
                 default_provider = "current_folder",
             },
+            -- resume
+            {
+                name = "FzfxGStatusR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files (status) by previous search",
+                },
+                default_provider = "workspace",
+            },
+            {
+                name = "FzfxGStatusCR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find changed git files (status) in current directory by previous search",
+                },
+                default_provider = "current_folder",
+            },
         },
         providers = {
             current_folder = {
@@ -2925,6 +2972,25 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "Search remote git branches by yank text",
+                },
+                default_provider = "remote_branch",
+            },
+            -- resume
+            {
+                name = "FzfxGBranchesR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search local git branches by previous search",
+                },
+                default_provider = "local_branch",
+            },
+            {
+                name = "FzfxGBranchesRR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search remote git branches by previous search",
                 },
                 default_provider = "remote_branch",
             },
@@ -3132,6 +3198,15 @@ local Defaults = {
                     desc = "Search git commits by yank text",
                 },
             },
+            -- resume
+            {
+                name = "FzfxGBlameR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search git commits by previous search",
+                },
+            },
         },
         providers = {
             default = {
@@ -3278,6 +3353,34 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "Find vim user commands by yank text",
+                },
+                default_provider = "user_commands",
+            },
+            -- resume
+            {
+                name = "FzfxCommandsR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim commands by previous search",
+                },
+                default_provider = "all_commands",
+            },
+            {
+                name = "FzfxCommandsER",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim ex(builtin) commands by previous search",
+                },
+                default_provider = "ex_commands",
+            },
+            {
+                name = "FzfxCommandsUR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim user commands by previous search",
                 },
                 default_provider = "user_commands",
             },
@@ -3508,6 +3611,43 @@ local Defaults = {
                 },
                 default_provider = "v_mode",
             },
+            -- resume
+            {
+                name = "FzfxKeyMapsR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim keymaps by previous search",
+                },
+                default_provider = "all_mode",
+            },
+            {
+                name = "FzfxKeyMapsNR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim normal(n) mode keymaps by previous search",
+                },
+                default_provider = "n_mode",
+            },
+            {
+                name = "FzfxKeyMapsIR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim insert(i) mode keymaps by previous search",
+                },
+                default_provider = "i_mode",
+            },
+            {
+                name = "FzfxKeyMapsVR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Find vim visual(v/s/x) mode keymaps by previous search",
+                },
+                default_provider = "v_mode",
+            },
         },
         providers = {
             all_mode = {
@@ -3650,6 +3790,25 @@ local Defaults = {
                 opts = {
                     bang = true,
                     desc = "Search lsp diagnostics on current buffer by yank text",
+                },
+                default_provider = "buffer_diagnostics",
+            },
+            -- resume
+            {
+                name = "FzfxLspDiagnosticsR",
+                feed = CommandFeedEnum.RESUME,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on workspace by previous search",
+                },
+                default_provider = "workspace_diagnostics",
+            },
+            {
+                name = "FzfxLspDiagnosticsBR",
+                feed = CommandFeedEnum.PUT,
+                opts = {
+                    bang = true,
+                    desc = "Search lsp diagnostics on current buffer by previous search",
                 },
                 default_provider = "buffer_diagnostics",
             },

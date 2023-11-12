@@ -250,12 +250,10 @@ Commands are named following below rules:
 
 - All commands are named with prefix `Fzfx`.
 - The main command name has no suffix.
-- The unrestricted variant is named with `U` suffix.
-- The visual select variant is named with `V` suffix.
-- The cursor word variant is named with `W` suffix.
-- The yank text variant is named with `P` suffix (just like press the `p` key).
-- The resume last search variant is named with `R` suffix.
-- The only current buffer variant is named with `B` suffix.
+- **Visual select** variant is named with `V` suffix.
+- **Cursor word** variant is named with `W` suffix.
+- **Yank text** variant is named with `P` suffix (just like press the `p` key).
+- **Resume last search** variant is named with `R` suffix.
 
 > Note: command names can be configured, see [Configuration](#-configuration).
 
@@ -279,6 +277,7 @@ Commands are named following below rules:
 - Files
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Unrestricted** variant is named with `U` suffix.
 
 <table>
 <thead>
@@ -332,8 +331,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxBuffers</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxBuffersV</td>
@@ -347,6 +346,10 @@ Commands are named following below rules:
     <td>FzfxBuffersP</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td>FzfxBuffersR</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
@@ -356,6 +359,8 @@ Commands are named following below rules:
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. Use `--` to pass raw options to search command (grep/rg).
+> 3. **Unrestricted** variant is named with `U` suffix.
+> 4. **Current buffer** variant is named with `B` suffix.
 
 <table>
 <thead>
@@ -397,7 +402,7 @@ Commands are named following below rules:
 - Git Files
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. Current directory variant is named with `C` suffix.
+> 2. **Current directory** variant is named with `C` suffix.
 
 <table>
 <thead>
@@ -412,8 +417,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxGFiles(C)</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxGFiles(C)V</td>
@@ -427,13 +432,17 @@ Commands are named following below rules:
     <td>FzfxGFiles(C)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td>FzfxGFiles(C)R</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
 - Git Status (Changed Files)
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. Current directory variant is named with `C` suffix.
+> 2. **Current directory** variant is named with `C` suffix.
 
 <table>
 <thead>
@@ -448,8 +457,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxGStatus(C)</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxGStatus(C)V</td>
@@ -463,13 +472,17 @@ Commands are named following below rules:
     <td>FzfxGStatus(C)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td>FzfxGStatus(C)R</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
 - Git Branches
 
 > 1. Use `enter` to checkout branch.
-> 2. Remote branch variant is named with `R` suffix.
+> 2. **Remote branch** variant is named with `R` suffix.
 
 <table>
 <thead>
@@ -484,8 +497,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxGBranches(R)</td>
     <td>N</td>
-    <td rowspan="4">No</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">No</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxGBranches(R)V</td>
@@ -499,12 +512,17 @@ Commands are named following below rules:
     <td>FzfxGBranches(R)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td>FzfxGBranches(R)R</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
 - Git Commits
 
 > 1. Use `enter` to copy git commit SHA.
+> 2. **Current buffer** variant is named with `B` suffix.
 
 <table>
 <thead>
@@ -519,8 +537,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxGCommits(B)</td>
     <td>N</td>
-    <td rowspan="4">No</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">No</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxGCommits(B)V</td>
@@ -532,6 +550,10 @@ Commands are named following below rules:
   </tr>
   <tr>
     <td>FzfxGCommits(B)P</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGCommits(B)R</td>
     <td>N</td>
   </tr>
 </tbody>
@@ -554,8 +576,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxGBlame</td>
     <td>N</td>
-    <td rowspan="4">No</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">No</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxGBlameV</td>
@@ -567,6 +589,10 @@ Commands are named following below rules:
   </tr>
   <tr>
     <td>FzfxGBlameP</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGBlameR</td>
     <td>N</td>
   </tr>
 </tbody>
@@ -610,6 +636,7 @@ Commands are named following below rules:
 - Diagnostics
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Current buffer** variant is named with `B` suffix.
 
 <table>
 <thead>
@@ -624,8 +651,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxLspDiagnostics(B)</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxLspDiagnostics(B)V</td>
@@ -639,6 +666,10 @@ Commands are named following below rules:
     <td>FzfxLspDiagnostics(B)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td>FzfxLspDiagnostics(B)R</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
@@ -647,8 +678,8 @@ Commands are named following below rules:
 - Commands
 
 > 1. Use `enter` to input vim command.
-> 2. Ex(builtin) commands variant is named with 'E' suffix.
-> 3. User commands variant is named with 'U' suffix.
+> 2. **Ex(builtin) commands** variant is named with `E` suffix.
+> 3. **User commands** variant is named with `U` suffix.
 
 <table>
 <thead>
@@ -663,8 +694,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxCommands(E/U)</td>
     <td>N</td>
-    <td rowspan="4">No</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">No</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxCommands(E/U)V</td>
@@ -678,15 +709,19 @@ Commands are named following below rules:
     <td>FzfxCommands(E/U)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td>FzfxCommands(E/U)R</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
 - Key Maps
 
 > 1. Use `enter` to execute vim key.
-> 2. Normal mode variant is named with `N` suffix.
-> 3. Insert mode variant is named with `I` suffix.
-> 4. Visual(select) mode variant is named with `V` suffix.
+> 2. **Normal mode** variant is named with `N` suffix.
+> 3. **Insert mode** variant is named with `I` suffix.
+> 4. **Visual/select mode** variant is named with `V` suffix.
 
 <table>
 <thead>
@@ -701,8 +736,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxKeMaps(N/I/V)</td>
     <td>N</td>
-    <td rowspan="4">No</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">No</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxKeyMaps(N/I/V)V</td>
@@ -716,12 +751,18 @@ Commands are named following below rules:
     <td>FzfxKeyMaps(N/I/V)P</td>
     <td>N</td>
   </tr>
+  <tr>
+    <td>FzfxKeyMaps(N/I/V)R</td>
+    <td>N</td>
+  </tr>
 </tbody>
 </table>
 
 ### Misc
 
 - File Explorer
+
+> 1. **Unrestricted** variant is named with `U` suffix.
 
 <table>
 <thead>
@@ -736,8 +777,8 @@ Commands are named following below rules:
   <tr>
     <td>FzfxFileExplorer(U)</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
   </tr>
   <tr>
     <td>FzfxFileExplorer(U)V</td>
@@ -749,6 +790,10 @@ Commands are named following below rules:
   </tr>
   <tr>
     <td>FzfxFileExplorer(U)P</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxFileExplorer(U)R</td>
     <td>N</td>
   </tr>
 </tbody>
