@@ -9,72 +9,73 @@
 ## Tasks
 
 - [ ] FzfxFiles
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
-  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
   - Both `fd` and `find` works.
 - [ ] FzfxLiveGrep
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
   - Use `-w` to match word only, use `-g *.lua` to search only lua files.
-  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
   - Both `rg` and `grep` works.
 - [ ] FzfxBuffers
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-D` to delete buffers, and delete the `test/hello world.txt`, `test/goodbye world/goodbye.lua` buffers.
-  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxGFiles
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxGStatus
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to open file.
   - Both with/without `delta` works.
 - [ ] FzfxGBranches
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-R`/`CTRL-O` to switch between local/remote branches.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to checkout branch.
 - [ ] FzfxGCommits
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-A` to switch between git repo commits/current buffer commits.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to copy commit hash.
   - Both with/without `delta` works.
 - [ ] FzfxGBlame
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to copy commit hash.
   - Both with/without `delta` works.
 - [ ] FzfxLspDiagnostics
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current buffer diagnostics.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxLspDefinitions, FzfxLspTypeDefinitions, FzfxLspReferences, FzfxLspImplementations
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Go to definitions/references (this is the most 2 easiest use case when developing this lua plugin with lua_ls).
   - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxCommands
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-E`/`CTRL-A` to switch between user/ex/all vim commands.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to feed vim command.
 - [ ] FzfxKeyMaps
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-O`/`CTRL-I`/`CTRL-A`/`CTRL-V` to switch between normal/insert/visual/all vim key mappings.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to feed vim keys.
 - [ ] FzfxFileExplorer
-  - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between filter/include hidden files mode.
   - Press `ALT-L`/`ALT-H` to cd into folder and cd upper folder.
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
   - All `eza`/`lsd`/`ls` works.
