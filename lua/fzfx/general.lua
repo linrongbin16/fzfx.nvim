@@ -916,9 +916,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     if constants.is_windows then
         -- if vim.fn.executable("sh") > 0 or vim.fn.executable("bash") > 0 then
         --     dump_fzf_port_command = string.format(
-        --         "%s -c %s",
+        --         "%s -c '%s'",
         --         vim.fn.executable("sh") > 0 and "sh" or "bash",
-        --         utils.shellescape(dump_fzf_port_command)
+        --         string.format("echo $FZF_PORT>%s", fzf_port_file)
         --     )
         -- else
         dump_fzf_port_command =
