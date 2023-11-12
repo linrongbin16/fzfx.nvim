@@ -365,11 +365,11 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
             vim.inspect(result)
         )
         local lines = utils.readlines(result) --[[@as table]]
-        log.debug(
-            "|fzfx.popup - Popup:new.on_fzf_exit| result:%s, result_lines:%s",
-            vim.inspect(result),
-            vim.inspect(lines)
-        )
+        -- log.debug(
+        --     "|fzfx.popup - Popup:new.on_fzf_exit| result:%s, result_lines:%s",
+        --     vim.inspect(result),
+        --     vim.inspect(lines)
+        -- )
         local last_query = vim.trim(lines[1])
         local action_key = vim.trim(lines[2])
         local action_lines = vim.list_slice(lines, 3)
