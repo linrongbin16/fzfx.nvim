@@ -110,6 +110,7 @@ jobs:
     name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
+      - luacheck
       - unit_test
     runs-on: ubuntu-latest
     steps:
