@@ -24,7 +24,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [Feature](#-feature)
 - [Requirement](#-requirement)
   - [For Windows](#for-windows)
-  - [Whitespace escaping issue](#whitespace-escaping-issue)
+  - [Whitespace Escaping Issue](#whitespace-escaping-issue)
 - [Install](#-install)
   - [vim-plug](#vim-plug)
   - [packer.nvim](#packernvim)
@@ -133,7 +133,7 @@ Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\W
 
 </details>
 
-### Whitespace escaping issue
+### Whitespace Escaping Issue
 
 <details>
 <summary><b>Click here to see how whitespace affect escaping characters on path</b></summary>
