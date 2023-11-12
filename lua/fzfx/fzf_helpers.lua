@@ -94,9 +94,9 @@ end
 
 --- @param feed_type CommandFeed
 --- @param input_args string?
---- @param group_name string
+--- @param pipeline_name string
 --- @return string, string?
-local function get_command_feed(feed_type, input_args, group_name)
+local function get_command_feed(feed_type, input_args, pipeline_name)
     feed_type = string.lower(feed_type)
     if feed_type == "args" then
         return input_args or "", nil
@@ -109,8 +109,13 @@ local function get_command_feed(feed_type, input_args, group_name)
         return (y ~= nil and type(y.regtext) == "string") and y.regtext or "",
             nil
     elseif feed_type == "resume" then
-        local cache = make_last_query_cache(group_name)
+        local cache = make_last_query_cache(pipeline_name)
         local data = utils.readfile(cache)
+        -- log.debug(
+        --     "|fzfx.fzf_helpers - get_command_feed| pipeline %s cache:%s",
+        --     vim.inspect(pipeline_name),
+        --     vim.inspect(data)
+        -- )
         if
             type(data) ~= "string"
             or string.len(data) == 0
