@@ -57,7 +57,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - Search by visual select.
   - Search by cursor word.
   - Search by yank text.
-  - Search by previous search, e.g. resume last search.
+  - Search by resume last search.
 - Multiple data sources to avoid restart search flow:
   - Exclude or include the hidden/ignored files when searching files.
   - Local or remote branches when searching git branches.
@@ -943,7 +943,7 @@ vim.keymap.set(
   "n",
   "<space>rf",
   "<cmd>FzfxFilesR<cr>",
-  { silent = true, noremap = true, desc = "Find files by previous search" }
+  { silent = true, noremap = true, desc = "Find files by resume last" }
 )
 
 -- ======== live grep ========
@@ -981,7 +981,7 @@ vim.keymap.set(
   "n",
   "<space>rl",
   "<cmd>FzfxLiveGrepR<cr>",
-  { silent = true, noremap = true, desc = "Live grep by previous search" }
+  { silent = true, noremap = true, desc = "Live grep by resume last" }
 )
 
 -- ======== buffers ========

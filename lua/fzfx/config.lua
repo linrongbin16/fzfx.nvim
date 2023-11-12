@@ -2235,7 +2235,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find files by previous search",
+                    desc = "Find files by resume last",
                 },
                 default_provider = "restricted_mode",
             },
@@ -2244,7 +2244,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find files unrestricted by previous search",
+                    desc = "Find files unrestricted by resume last",
                 },
                 default_provider = "unrestricted_mode",
             },
@@ -2417,7 +2417,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Live grep by previous search",
+                    desc = "Live grep by resume last",
                 },
                 default_provider = "restricted_mode",
             },
@@ -2426,7 +2426,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Live grep unrestricted by previous search",
+                    desc = "Live grep unrestricted by resume last",
                 },
                 default_provider = "unrestricted_mode",
             },
@@ -2435,7 +2435,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Live grep on current buffer by previous search",
+                    desc = "Live grep on current buffer by resume last",
                 },
                 default_provider = "buffer_mode",
             },
@@ -2567,7 +2567,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find buffers by previous search",
+                    desc = "Find buffers by resume last",
                 },
             },
         },
@@ -2698,7 +2698,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find git files by previous search",
+                    desc = "Find git files by resume last",
                 },
                 default_provider = "workspace",
             },
@@ -2707,7 +2707,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find git files in current directory by previous search",
+                    desc = "Find git files in current directory by resume last",
                 },
                 default_provider = "current_folder",
             },
@@ -2844,7 +2844,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find changed git files (status) by previous search",
+                    desc = "Find changed git files (status) by resume last",
                 },
                 default_provider = "workspace",
             },
@@ -2853,7 +2853,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find changed git files (status) in current directory by previous search",
+                    desc = "Find changed git files (status) in current directory by resume last",
                 },
                 default_provider = "current_folder",
             },
@@ -2981,7 +2981,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Search local git branches by previous search",
+                    desc = "Search local git branches by resume last",
                 },
                 default_provider = "local_branch",
             },
@@ -2990,7 +2990,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Search remote git branches by previous search",
+                    desc = "Search remote git branches by resume last",
                 },
                 default_provider = "remote_branch",
             },
@@ -3204,7 +3204,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Search git commits by previous search",
+                    desc = "Search git commits by resume last",
                 },
             },
         },
@@ -3362,7 +3362,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find vim commands by previous search",
+                    desc = "Find vim commands by resume last",
                 },
                 default_provider = "all_commands",
             },
@@ -3371,7 +3371,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find vim ex(builtin) commands by previous search",
+                    desc = "Find vim ex(builtin) commands by resume last",
                 },
                 default_provider = "ex_commands",
             },
@@ -3380,7 +3380,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find vim user commands by previous search",
+                    desc = "Find vim user commands by resume last",
                 },
                 default_provider = "user_commands",
             },
@@ -3617,7 +3617,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find vim keymaps by previous search",
+                    desc = "Find vim keymaps by resume last",
                 },
                 default_provider = "all_mode",
             },
@@ -3626,7 +3626,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find vim normal(n) mode keymaps by previous search",
+                    desc = "Find vim normal(n) mode keymaps by resume last",
                 },
                 default_provider = "n_mode",
             },
@@ -3635,7 +3635,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find vim insert(i) mode keymaps by previous search",
+                    desc = "Find vim insert(i) mode keymaps by resume last",
                 },
                 default_provider = "i_mode",
             },
@@ -3644,7 +3644,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Find vim visual(v/s/x) mode keymaps by previous search",
+                    desc = "Find vim visual(v/s/x) mode keymaps by resume last",
                 },
                 default_provider = "v_mode",
             },
@@ -3799,7 +3799,7 @@ local Defaults = {
                 feed = CommandFeedEnum.RESUME,
                 opts = {
                     bang = true,
-                    desc = "Search lsp diagnostics on workspace by previous search",
+                    desc = "Search lsp diagnostics on workspace by resume last",
                 },
                 default_provider = "workspace_diagnostics",
             },
@@ -3808,7 +3808,7 @@ local Defaults = {
                 feed = CommandFeedEnum.PUT,
                 opts = {
                     bang = true,
-                    desc = "Search lsp diagnostics on current buffer by previous search",
+                    desc = "Search lsp diagnostics on current buffer by resume last",
                 },
                 default_provider = "buffer_diagnostics",
             },
