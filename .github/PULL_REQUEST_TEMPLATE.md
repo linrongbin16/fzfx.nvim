@@ -11,20 +11,20 @@
 - [ ] FzfxFiles
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
   - Both `fd` and `find` works.
 - [ ] FzfxLiveGrep
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between restricted/unrestricted mode, and the lines count is consistent when press multiple times.
   - Use `-w` to match word only, use `-g *.lua` to search only lua files.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
   - Both `rg` and `grep` works.
 - [ ] FzfxBuffers
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
   - Press `CTRL-D` to delete buffers, and delete the `test/hello world.txt`, `test/goodbye world/goodbye.lua` buffers.
-  - Use `V`/`W`/`P` variants (visual selection, cursor word, yank text).
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text).
   - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxGFiles
   - Press `CTRL-N`/`CTRL-P` to move down/up and preview contents.
