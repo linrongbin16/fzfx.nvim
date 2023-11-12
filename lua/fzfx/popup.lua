@@ -345,10 +345,9 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
             return
         end
 
+        -- press <ESC> if still in fzf terminal
         local esc_key =
             vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
-
-        -- press <ESC> if still in fzf terminal
         if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
             vim.api.nvim_feedkeys(esc_key, "x", false)
         end
