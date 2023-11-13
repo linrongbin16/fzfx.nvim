@@ -279,11 +279,18 @@ end
 --- @param lines string[]
 local function setqflist_find(lines)
     local qflist = _make_setqflist_find_items(lines --[[@as table]])
-    vim.cmd([[ :copen ]])
-    vim.fn.setqflist({}, " ", {
+    local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+    if not ok then
+        error(result)
+        return
+    end
+    ok, result = pcall(vim.fn.setqflist, {}, " ", {
         nr = "$",
         items = qflist,
     })
+    if not ok then
+        error(result)
+    end
 end
 
 --- @param lines string[]
@@ -305,11 +312,18 @@ end
 --- @param lines string[]
 local function setqflist_rg(lines)
     local qflist = _make_setqflist_rg_items(lines)
-    vim.cmd([[ :copen ]])
-    vim.fn.setqflist({}, " ", {
+    local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+    if not ok then
+        error(result)
+        return
+    end
+    ok, result = pcall(vim.fn.setqflist, {}, " ", {
         nr = "$",
         items = qflist,
     })
+    if not ok then
+        error(result)
+    end
 end
 
 --- @param lines string[]
@@ -331,11 +345,18 @@ end
 --- @param lines string[]
 local function setqflist_grep(lines)
     local qflist = _make_setqflist_grep_items(lines)
-    vim.cmd([[ :copen ]])
-    vim.fn.setqflist({}, " ", {
+    local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+    if not ok then
+        error(result)
+        return
+    end
+    ok, result = pcall(vim.fn.setqflist, {}, " ", {
         nr = "$",
         items = qflist,
     })
+    if not ok then
+        error(result)
+    end
 end
 
 --- @param lines string[]
@@ -352,11 +373,18 @@ end
 --- @param lines string[]
 local function setqflist_git_status(lines)
     local qflist = _make_setqflist_git_status_items(lines --[[@as table]])
-    vim.cmd([[ :copen ]])
-    vim.fn.setqflist({}, " ", {
+    local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+    if not ok then
+        error(result)
+        return
+    end
+    ok, result = pcall(vim.fn.setqflist, {}, " ", {
         nr = "$",
         items = qflist,
     })
+    if not ok then
+        error(result)
+    end
 end
 
 --- @package
@@ -372,7 +400,10 @@ end
 --- @param lines string[]
 local function feed_vim_command(lines)
     local input, mode = _make_feed_vim_command_params(lines)
-    vim.fn.feedkeys(input, mode)
+    local ok, result = pcall(vim.fn.feedkeys, input, mode)
+    if not ok then
+        error(result)
+    end
 end
 
 --- @package
@@ -409,13 +440,19 @@ end
 local function feed_vim_key(lines)
     local feedtype, input, mode = _make_feed_vim_key_params(lines)
     if feedtype == "cmd" and type(input) == "string" then
-        vim.cmd(input)
+        local ok, result = pcall(vim.cmd --[[@as function]], input)
+        if not ok then
+            error(result)
+        end
     elseif
         feedtype == "feedkeys"
         and type(input) == "string"
         and type(mode) == "string"
     then
-        vim.fn.feedkeys(input, mode)
+        local ok, result = pcall(vim.fn.feedkeys, input, mode)
+        if not ok then
+            error(result)
+        end
     end
 end
 
