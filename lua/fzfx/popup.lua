@@ -1,4 +1,5 @@
 local log = require("fzfx.log")
+local LogLevels = require("fzfx.log").LogLevels
 local conf = require("fzfx.config")
 local utils = require("fzfx.utils")
 local fzf_helpers = require("fzfx.fzf_helpers")
@@ -330,17 +331,18 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
     local popup_window = PopupWindow:new(win_opts)
 
     local function on_fzf_exit(jobid2, exitcode, event)
-        -- log.debug(
-        --     "|fzfx.popup - Popup:new.on_fzf_exit| jobid2:%s, exitcode:%s, event:%s",
-        --     vim.inspect(jobid2),
-        --     vim.inspect(exitcode),
-        --     vim.inspect(event)
-        -- )
+        log.debug(
+            "|fzfx.popup - Popup:new| fzf exit, jobid2:%s, exitcode:%s, event:%s",
+            vim.inspect(jobid2),
+            vim.inspect(exitcode),
+            vim.inspect(event)
+        )
         if exitcode > 1 and (exitcode ~= 130 and exitcode ~= 129) then
             log.err(
-                "command '%s' running with exit code %d",
-                fzf_command,
-                exitcode
+                "command '%s' exit with code: %d, event: %s",
+                vim.inspect(fzf_command),
+                vim.inspect(exitcode),
+                vim.inspect(event)
             )
             return
         end
@@ -364,11 +366,15 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
             vim.inspect(result)
         )
         local lines = utils.readlines(result) --[[@as table]]
-        -- log.debug(
-        --     "|fzfx.popup - Popup:new.on_fzf_exit| result:%s, result_lines:%s",
-        --     vim.inspect(result),
-        --     vim.inspect(lines)
-        -- )
+        log.debug(
+            "|fzfx.popup - Popup:new| fzf exit, result:%s, lines:%s",
+            vim.inspect(result),
+            vim.inspect(lines)
+        )
+        if exitcode == 130 and #lines == 0 then
+            log.echo(LogLevels.INFO, "cancelled.")
+            return
+        end
         local last_query = vim.trim(lines[1])
         local action_key = vim.trim(lines[2])
         local action_lines = vim.list_slice(lines, 3)
