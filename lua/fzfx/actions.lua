@@ -33,7 +33,15 @@ local function edit_find(lines, context)
     ui.confirm_discard_buffer_modified(context.bufnr, function()
         for i, edit_command in ipairs(edit_commands) do
             log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
-            vim.cmd(edit_command)
+            local ok, err = pcall(vim.cmd --[[@as function]], edit_command)
+            if not ok then
+                log.err(
+                    "failed to run command:%s, error:%s",
+                    vim.inspect(edit_command),
+                    vim.inspect(err)
+                )
+                return
+            end
         end
     end)
 end
@@ -87,11 +95,19 @@ end
 --- @param lines string[]
 --- @param context PipelineContext
 local function edit_rg(lines, context)
-    local vim_commands = _make_edit_rg_commands(lines)
+    local edit_commands = _make_edit_rg_commands(lines)
     ui.confirm_discard_buffer_modified(context.bufnr, function()
-        for i, vim_command in ipairs(vim_commands) do
-            log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, vim_command)
-            vim.cmd(vim_command)
+        for i, edit_command in ipairs(edit_commands) do
+            log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, edit_command)
+            local ok, err = pcall(vim.cmd --[[@as function]], edit_command)
+            if not ok then
+                log.err(
+                    "failed to run command:%s, error:%s",
+                    vim.inspect(edit_command),
+                    vim.inspect(err)
+                )
+                return
+            end
         end
     end)
 end
@@ -124,11 +140,19 @@ end
 --- @param lines string[]
 --- @param context PipelineContext
 local function edit_grep(lines, context)
-    local vim_commands = _make_edit_grep_commands(lines)
+    local edit_commands = _make_edit_grep_commands(lines)
     ui.confirm_discard_buffer_modified(context.bufnr, function()
-        for i, vim_command in ipairs(vim_commands) do
-            log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, vim_command)
-            vim.cmd(vim_command)
+        for i, edit_command in ipairs(edit_commands) do
+            log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, edit_command)
+            local ok, err = pcall(vim.cmd, edit_command)
+            if not ok then
+                log.err(
+                    "failed to run command:%s, error:%s",
+                    vim.inspect(edit_command),
+                    vim.inspect(err)
+                )
+                return
+            end
         end
     end)
 end
@@ -139,7 +163,15 @@ local function edit_ls(lines)
     local edit_commands = _make_edit_find_commands(lines, { no_icon = true })
     for i, edit_command in ipairs(edit_commands) do
         log.debug("|fzfx.actions - edit_ls| [%d]:[%s]", i, edit_command)
-        vim.cmd(edit_command)
+        local ok, err = pcall(vim.cmd --[[@as function]], edit_command)
+        if not ok then
+            log.err(
+                "failed to run command:%s, error:%s",
+                vim.inspect(edit_command),
+                vim.inspect(err)
+            )
+            return
+        end
     end
 end
 
@@ -220,7 +252,13 @@ end
 --- @param lines string[]
 local function git_checkout(lines)
     local checkout_command = _make_git_checkout_command(lines) --[[@as string]]
-    vim.cmd(checkout_command)
+    local ok, err = pcall(vim.cmd --[[@as function]], checkout_command)
+    log.ensure(
+        ok,
+        "failed to run command:%s, error:%s",
+        vim.inspect(checkout_command),
+        vim.inspect(err)
+    )
 end
 
 --- @param lines string[]
@@ -425,7 +463,15 @@ local function edit_git_status(lines, context)
                 i,
                 edit_command
             )
-            vim.cmd(edit_command)
+            local ok, err = pcall(vim.cmd --[[@as function]], edit_command)
+            if not ok then
+                log.err(
+                    "failed to run command:%s, error:%s",
+                    vim.inspect(edit_command),
+                    vim.inspect(err)
+                )
+                return
+            end
         end
     end)
 end
