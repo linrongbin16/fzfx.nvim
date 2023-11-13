@@ -372,7 +372,6 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
             vim.inspect(lines)
         )
         if exitcode == 130 and #lines == 0 then
-            log.echo(LogLevels.INFO, "cancelled.")
             return
         end
         local last_query = vim.trim(lines[1])
