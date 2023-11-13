@@ -33,13 +33,9 @@ local function edit_find(lines, context)
     ui.confirm_discard_buffer_modified(context.bufnr, function()
         for i, edit_command in ipairs(edit_commands) do
             log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
-            local ok, err = pcall(vim.cmd --[[@as function]], edit_command)
+            local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
             if not ok then
-                log.err(
-                    "failed to run command:%s, error:%s",
-                    vim.inspect(edit_command),
-                    vim.inspect(err)
-                )
+                error(vim.inspect(result))
                 return
             end
         end
@@ -99,13 +95,9 @@ local function edit_rg(lines, context)
     ui.confirm_discard_buffer_modified(context.bufnr, function()
         for i, edit_command in ipairs(edit_commands) do
             log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, edit_command)
-            local ok, err = pcall(vim.cmd --[[@as function]], edit_command)
+            local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
             if not ok then
-                log.err(
-                    "failed to run command:%s, error:%s",
-                    vim.inspect(edit_command),
-                    vim.inspect(err)
-                )
+                error(vim.inspect(result))
                 return
             end
         end
@@ -144,13 +136,9 @@ local function edit_grep(lines, context)
     ui.confirm_discard_buffer_modified(context.bufnr, function()
         for i, edit_command in ipairs(edit_commands) do
             log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, edit_command)
-            local ok, err = pcall(vim.cmd, edit_command)
+            local ok, result = pcall(vim.cmd, edit_command)
             if not ok then
-                log.err(
-                    "failed to run command:%s, error:%s",
-                    vim.inspect(edit_command),
-                    vim.inspect(err)
-                )
+                error(vim.inspect(result))
                 return
             end
         end
@@ -163,13 +151,9 @@ local function edit_ls(lines)
     local edit_commands = _make_edit_find_commands(lines, { no_icon = true })
     for i, edit_command in ipairs(edit_commands) do
         log.debug("|fzfx.actions - edit_ls| [%d]:[%s]", i, edit_command)
-        local ok, err = pcall(vim.cmd --[[@as function]], edit_command)
+        local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
         if not ok then
-            log.err(
-                "failed to run command:%s, error:%s",
-                vim.inspect(edit_command),
-                vim.inspect(err)
-            )
+            error(vim.inspect(result))
             return
         end
     end
@@ -252,13 +236,10 @@ end
 --- @param lines string[]
 local function git_checkout(lines)
     local checkout_command = _make_git_checkout_command(lines) --[[@as string]]
-    local ok, err = pcall(vim.cmd --[[@as function]], checkout_command)
-    log.ensure(
-        ok,
-        "failed to run command:%s, error:%s",
-        vim.inspect(checkout_command),
-        vim.inspect(err)
-    )
+    local ok, result = pcall(vim.cmd --[[@as function]], checkout_command)
+    if not ok then
+        error(vim.inspect(result))
+    end
 end
 
 --- @param lines string[]
@@ -463,13 +444,9 @@ local function edit_git_status(lines, context)
                 i,
                 edit_command
             )
-            local ok, err = pcall(vim.cmd --[[@as function]], edit_command)
+            local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
             if not ok then
-                log.err(
-                    "failed to run command:%s, error:%s",
-                    vim.inspect(edit_command),
-                    vim.inspect(err)
-                )
+                error(vim.inspect(result))
                 return
             end
         end
