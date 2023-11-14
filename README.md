@@ -1383,7 +1383,7 @@ Here's a minimal commands group example that implement the `ls -1` like command 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/e60b69ab-3a29-4acc-8e48-cb9ab1b22b24
 
 <details>
-<summary><i>Click here to see how to configure</b></summary>
+<summary><i>Click here to see how to configure</i></summary>
 
 ```lua
 require("fzfx").setup({
