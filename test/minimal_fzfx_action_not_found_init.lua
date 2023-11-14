@@ -190,8 +190,7 @@ local live_grep_curr = {
     restricted_mode = {
       key = "ctrl-r",
       provider = function(query)
-        local parsed_query =
-          require("fzfx.utils").parse_flagged_query(query or "")
+        local parsed_query = require("fzfx.utils").parse_flag_query(query or "")
         local content = parsed_query[1]
         local option = parsed_query[2]
 
@@ -233,8 +232,7 @@ local live_grep_curr = {
     unrestricted_mode = {
       key = "ctrl-u",
       provider = function(query)
-        local parsed_query =
-          require("fzfx.utils").parse_flagged_query(query or "")
+        local parsed_query = require("fzfx.utils").parse_flag_query(query or "")
         local content = parsed_query[1]
         local option = parsed_query[2]
 
@@ -282,7 +280,7 @@ local live_grep_curr = {
         local log = require("fzfx.log")
         local path = require("fzfx.path")
 
-        local parsed_query = utils.parse_flagged_query(query or "")
+        local parsed_query = utils.parse_flag_query(query or "")
         local content = parsed_query[1]
         local option = parsed_query[2]
         if not utils.is_buf_valid(context.bufnr) then

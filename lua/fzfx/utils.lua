@@ -300,7 +300,7 @@ end
 
 --- @param content string
 --- @return string[]
-local function parse_flagged_query(content)
+local function parse_flag_query(content)
   local query = ""
   local option = nil
 
@@ -930,7 +930,7 @@ local M = {
   string_isupper = string_isupper,
   number_bound = number_bound,
   list_index = list_index,
-  parse_flagged_query = parse_flagged_query,
+  parse_flag_query = parse_flag_query,
   ShellOptsContext = ShellOptsContext,
   shellescape = shellescape,
   WindowOptsContext = WindowOptsContext,

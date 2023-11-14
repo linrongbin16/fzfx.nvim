@@ -194,7 +194,7 @@ local function _make_live_grep_provider(opts)
   --- @param context PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local parsed_query = utils.parse_flagged_query(query or "")
+    local parsed_query = utils.parse_flag_query(query or "")
     local content = parsed_query[1]
     local option = parsed_query[2]
 
@@ -372,7 +372,7 @@ local function _git_live_grep_provider(query, context)
     return nil
   end
 
-  local parsed_query = utils.parse_flagged_query(query or "")
+  local parsed_query = utils.parse_flag_query(query or "")
   local content = parsed_query[1]
   local option = parsed_query[2]
 
