@@ -365,7 +365,7 @@ end
 --- @param query string?
 --- @param context PipelineContext
 --- @return string[]|nil
-local function _git_grep_provider(query, context)
+local function _git_live_grep_provider(query, context)
   local git_root_cmd = cmd.GitRootCmd:run()
   if git_root_cmd:wrong() then
     log.echo(LogLevels.INFO, default_git_root_error)
@@ -2741,61 +2741,61 @@ local Defaults = {
     },
   },
 
-  -- the 'Git Grep' commands
+  -- the 'Git Live Grep' commands
   --- @type GroupConfig
-  git_grep = {
+  git_live_grep = {
     commands = {
       -- normal
       {
-        name = "FzfxGGrep",
+        name = "FzfxGLiveGrep",
         feed = CommandFeedEnum.ARGS,
         opts = {
           bang = true,
           nargs = "*",
-          desc = "Git grep",
+          desc = "Git live grep",
         },
       },
       -- visual
       {
-        name = "FzfxGGrepV",
+        name = "FzfxGLiveGrepV",
         feed = CommandFeedEnum.VISUAL,
         opts = {
           bang = true,
           range = true,
-          desc = "Git grep by visual select",
+          desc = "Git live grep by visual select",
         },
       },
       -- cword
       {
-        name = "FzfxGGrepW",
+        name = "FzfxGLiveGrepW",
         feed = CommandFeedEnum.CWORD,
         opts = {
           bang = true,
-          desc = "Git grep by cursor word",
+          desc = "Git live grep by cursor word",
         },
       },
       -- put
       {
-        name = "FzfxGGrepP",
+        name = "FzfxGLiveGrepP",
         feed = CommandFeedEnum.PUT,
         opts = {
           bang = true,
-          desc = "Git grep by yank text",
+          desc = "Git live grep by yank text",
         },
       },
       -- resume
       {
-        name = "FzfxGGrepR",
+        name = "FzfxGLiveGrepR",
         feed = CommandFeedEnum.RESUME,
         opts = {
           bang = true,
-          desc = "Git grep by resume last",
+          desc = "Git live grep by resume last",
         },
       },
     },
     providers = {
       key = "default",
-      provider = _git_grep_provider,
+      provider = _git_live_grep_provider,
       provider_type = ProviderTypeEnum.COMMAND_LIST,
       line_opts = {
         prepend_icon_by_ft = true,
@@ -2816,7 +2816,13 @@ local Defaults = {
     },
     fzf_opts = {
       default_fzf_options.multi,
-      { "--prompt", "GitGrep > " },
+      { "--prompt", "Git Live Grep > " },
+      "--disabled",
+      { "--delimiter", ":" },
+      { "--preview-window", "+{2}-/2" },
+    },
+    other_opts = {
+      reload_on_change = true,
     },
   },
 
@@ -2955,7 +2961,7 @@ local Defaults = {
     fzf_opts = {
       default_fzf_options.multi,
       { "--preview-window", "wrap" },
-      { "--prompt", "GitStatus > " },
+      { "--prompt", "Git Status > " },
     },
   },
 
@@ -3090,7 +3096,7 @@ local Defaults = {
     },
     fzf_opts = {
       default_fzf_options.no_multi,
-      { "--prompt", "GitBranches > " },
+      { "--prompt", "Git Branches > " },
       function()
         local git_root_cmd = cmd.GitRootCmd:run()
         if git_root_cmd:wrong() then
@@ -3239,7 +3245,7 @@ local Defaults = {
     fzf_opts = {
       default_fzf_options.no_multi,
       { "--preview-window", "wrap" },
-      { "--prompt", "GitCommits > " },
+      { "--prompt", "Git Commits > " },
     },
   },
 
@@ -3314,7 +3320,7 @@ local Defaults = {
     },
     fzf_opts = {
       default_fzf_options.no_multi,
-      { "--prompt", "GitBlame > " },
+      { "--prompt", "Git Blame > " },
     },
   },
 
@@ -4555,7 +4561,7 @@ local M = {
   _make_git_files_provider = _make_git_files_provider,
 
   -- git grep
-  _git_grep_provider = _git_grep_provider,
+  _git_grep_provider = _git_live_grep_provider,
 
   -- git branches
   _make_git_branches_provider = _make_git_branches_provider,
