@@ -251,6 +251,26 @@ describe("config", function()
       end
     end)
   end)
+  describe("git_grep", function()
+    it("_git_grep_provider1", function()
+      local actual = conf._git_grep_provider("", {})
+      print(string.format("git grep:%s\n", vim.inspect(actual)))
+      if actual ~= nil then
+        assert_eq(type(actual), "table")
+        assert_eq(actual[1], "git")
+        assert_eq(actual[2], "grep")
+      end
+    end)
+    it("_git_grep_provider2", function()
+      local actual = conf._git_grep_provider("fzfx -- -v", {})
+      print(string.format("git grep:%s\n", vim.inspect(actual)))
+      if actual ~= nil then
+        assert_eq(type(actual), "table")
+        assert_eq(actual[1], "git")
+        assert_eq(actual[2], "grep")
+      end
+    end)
+  end)
   describe("git_branches", function()
     it("_make_git_branches_provider local", function()
       local f = conf._make_git_branches_provider()

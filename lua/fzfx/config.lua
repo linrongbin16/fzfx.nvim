@@ -4554,6 +4554,9 @@ local M = {
   -- git files
   _make_git_files_provider = _make_git_files_provider,
 
+  -- git grep
+  _git_grep_provider = _git_grep_provider,
+
   -- git branches
   _make_git_branches_provider = _make_git_branches_provider,
   _git_branches_previewer = _git_branches_previewer,
