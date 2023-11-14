@@ -271,7 +271,7 @@ end
 
 --- @param line string
 --- @return string[]
-local function file_previewer_grep(line)
+local function _file_previewer_grep(line)
   local parsed = line_helpers.parse_grep(line)
   local impl = _make_file_previewer(parsed.filename, parsed.lineno)
   return impl()
@@ -359,6 +359,37 @@ local function _make_git_files_provider(opts)
 end
 
 -- git files }
+
+-- git grep {
+
+--- @param query string?
+--- @param context PipelineContext
+--- @return string[]|nil
+local function _git_grep_provider(query, context)
+  local git_root_cmd = cmd.GitRootCmd:run()
+  if git_root_cmd:wrong() then
+    log.echo(LogLevels.INFO, default_git_root_error)
+    return nil
+  end
+
+  local parsed_query = utils.parse_flagged_query(query or "")
+  local content = parsed_query[1]
+  local option = parsed_query[2]
+
+  local args = { "git", "grep", "--color=always", "-n", "--column" }
+  if type(option) == "string" and string.len(option) > 0 then
+    local option_splits = utils.string_split(option, " ")
+    for _, o in ipairs(option_splits) do
+      if type(o) == "string" and string.len(o) > 0 then
+        table.insert(args, o)
+      end
+    end
+  end
+  table.insert(args, content)
+  return args
+end
+
+-- git grep }
 
 -- git branches {
 
@@ -2435,21 +2466,21 @@ local Defaults = {
     },
     previewers = {
       restricted_mode = {
-        previewer = file_previewer_grep,
+        previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = constants.has_rg
             and require("fzfx.previewer_labels").rg_previewer_label
           or require("fzfx.previewer_labels").grep_previewer_label,
       },
       unrestricted_mode = {
-        previewer = file_previewer_grep,
+        previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = constants.has_rg
             and require("fzfx.previewer_labels").rg_previewer_label
           or require("fzfx.previewer_labels").grep_previewer_label,
       },
       buffer_mode = {
-        previewer = file_previewer_grep,
+        previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = constants.has_rg
             and require("fzfx.previewer_labels").rg_previewer_label
@@ -2707,6 +2738,85 @@ local Defaults = {
       function()
         return { "--prompt", path.shorten() .. " > " }
       end,
+    },
+  },
+
+  -- the 'Git Grep' commands
+  --- @type GroupConfig
+  git_grep = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxGGrep",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "*",
+          desc = "Git grep",
+        },
+      },
+      -- visual
+      {
+        name = "FzfxGGrepV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Git grep by visual select",
+        },
+      },
+      -- cword
+      {
+        name = "FzfxGGrepW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Git grep by cursor word",
+        },
+      },
+      -- put
+      {
+        name = "FzfxGGrepP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Git grep by yank text",
+        },
+      },
+      -- resume
+      {
+        name = "FzfxGGrepR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Git grep by resume last",
+        },
+      },
+    },
+    providers = {
+      key = "default",
+      provider = _git_grep_provider,
+      provider_type = ProviderTypeEnum.COMMAND_LIST,
+      line_opts = {
+        prepend_icon_by_ft = true,
+        prepend_icon_path_delimiter = ":",
+        prepend_icon_path_position = 1,
+      },
+    },
+    previewers = {
+      previewer = _file_previewer_grep,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_rg,
+      ["double-click"] = require("fzfx.actions").edit_rg,
+      ["ctrl-q"] = require("fzfx.actions").setqflist_rg,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      { "--prompt", "GitGrep > " },
     },
   },
 
@@ -3814,12 +3924,12 @@ local Defaults = {
     },
     previewers = {
       workspace_diagnostics = {
-        previewer = file_previewer_grep,
+        previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
       },
       buffer_diagnostics = {
-        previewer = file_previewer_grep,
+        previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
       },
@@ -3863,7 +3973,7 @@ local Defaults = {
       },
     },
     previewers = {
-      previewer = file_previewer_grep,
+      previewer = _file_previewer_grep,
       previewer_type = PreviewerTypeEnum.COMMAND_LIST,
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
@@ -3918,7 +4028,7 @@ local Defaults = {
       },
     },
     previewers = {
-      previewer = file_previewer_grep,
+      previewer = _file_previewer_grep,
       previewer_type = PreviewerTypeEnum.COMMAND_LIST,
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
@@ -3973,7 +4083,7 @@ local Defaults = {
       },
     },
     previewers = {
-      previewer = file_previewer_grep,
+      previewer = _file_previewer_grep,
       previewer_type = PreviewerTypeEnum.COMMAND_LIST,
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
@@ -4028,7 +4138,7 @@ local Defaults = {
       },
     },
     previewers = {
-      previewer = file_previewer_grep,
+      previewer = _file_previewer_grep,
       previewer_type = PreviewerTypeEnum.COMMAND_LIST,
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
