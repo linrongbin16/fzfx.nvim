@@ -9,13 +9,11 @@
 <a href="https://app.codecov.io/github/linrongbin16/fzfx.nvim"><img alt="codecov" src="https://img.shields.io/codecov/c/github/linrongbin16/fzfx.nvim?logo=codecov&logoColor=F01F7A&label=Codecov" /></a>
 </p>
 
-<!-- <p align="center">  -->
-
 FZF-based fuzzy finder running on a dynamic engine that parsing user query and selection on every keystroke, with friendly features, good performance and maximized customization.
 
-<!-- </p> -->
+<!-- https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403 -->
 
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403
+![FzfxLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/be8a7a52-c254-42ff-ad6d-93ba637c4f09)
 
 > Search `fzfx` with rg's `-g *spec.lua` option.
 
@@ -149,10 +147,10 @@ But when there're whitespaces on the path, launching correct shell command becom
 
    ```lua
    require("fzfx").setup({
-       env = {
-           nvim = 'nvim',
-           fzf = 'fzf',
-       }
+     env = {
+       nvim = 'nvim',
+       fzf = 'fzf',
+     }
    })
    ```
 

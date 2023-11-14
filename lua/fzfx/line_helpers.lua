@@ -11,15 +11,15 @@ local path = require("fzfx.path")
 --- @param opts {no_icon:boolean?}?
 --- @return string
 local function parse_find(line, opts)
-    local filename = nil
-    if (type(opts) == "table" and opts.no_icon) or not env.icon_enable() then
-        filename = line
-    else
-        local first_icon_pos = utils.string_find(line, " ")
-        assert(type(first_icon_pos) == "number")
-        filename = line:sub(first_icon_pos + 1)
-    end
-    return path.normalize(filename, { expand = true })
+  local filename = nil
+  if (type(opts) == "table" and opts.no_icon) or not env.icon_enable() then
+    filename = line
+  else
+    local first_icon_pos = utils.string_find(line, " ")
+    assert(type(first_icon_pos) == "number")
+    filename = line:sub(first_icon_pos + 1)
+  end
+  return path.normalize(filename, { expand = true })
 end
 
 -- parse lines from grep.
@@ -27,11 +27,11 @@ end
 --- @param opts {no_icon:boolean?}?
 --- @return {filename:string,lineno:integer,text:string}
 local function parse_grep(line, opts)
-    local splits = utils.string_split(line, ":")
-    local filename = parse_find(splits[1], opts)
-    local lineno = tonumber(splits[2])
-    local text = #splits >= 3 and splits[3] or ""
-    return { filename = filename, lineno = lineno, text = text }
+  local splits = utils.string_split(line, ":")
+  local filename = parse_find(splits[1], opts)
+  local lineno = tonumber(splits[2])
+  local text = #splits >= 3 and splits[3] or ""
+  return { filename = filename, lineno = lineno, text = text }
 end
 
 -- parse lines from rg.
@@ -39,24 +39,24 @@ end
 --- @param opts {no_icon:boolean?}?
 --- @return {filename:string,lineno:integer,column:integer?,text:string}
 local function parse_rg(line, opts)
-    local splits = utils.string_split(line, ":")
-    local filename = parse_find(splits[1], opts)
-    local lineno = tonumber(splits[2])
-    local column = tonumber(splits[3])
-    local text = #splits >= 4 and splits[4] or ""
-    return { filename = filename, lineno = lineno, column = column, text = text }
+  local splits = utils.string_split(line, ":")
+  local filename = parse_find(splits[1], opts)
+  local lineno = tonumber(splits[2])
+  local column = tonumber(splits[3])
+  local text = #splits >= 4 and splits[4] or ""
+  return { filename = filename, lineno = lineno, column = column, text = text }
 end
 
 -- parse lines from `git status`.
 --- @param line string
 --- @return string
 local function parse_git_status(line)
-    line = vim.trim(line)
-    local i = 1
-    while i <= #line and not utils.string_isspace(line:sub(i, i)) do
-        i = i + 1
-    end
-    return vim.trim(line:sub(i))
+  line = vim.trim(line)
+  local i = 1
+  while i <= #line and not utils.string_isspace(line:sub(i, i)) do
+    i = i + 1
+  end
+  return vim.trim(line:sub(i))
 end
 
 -- parse lines from ls/lsd/eza/exa.
@@ -129,136 +129,135 @@ end
 --- @param start_pos integer
 --- @return fun(line:string):string
 local function _make_parse_ls(start_pos)
-    --- @param line string
-    --- @return string
-    local function impl(line)
-        local pos = 1
-        for i = 1, start_pos do
-            pos = utils.string_find(line, " ", pos) --[[@as integer]]
-            assert(type(pos) == "number")
-            while
-                pos + 1 <= #line
-                and string.byte(line, pos + 1) == string.byte(" ")
-            do
-                pos = pos + 1
-            end
-            pos = pos + 1
-        end
-        local result =
-            path.normalize(vim.trim(line:sub(pos)), { expand = true })
-
-        -- remove extra single/double quotes
-        if
-            (
-                utils.string_startswith(result, "'")
-                and utils.string_endswith(result, "'")
-            )
-            or (
-                utils.string_startswith(result, '"')
-                and utils.string_endswith(result, '"')
-            )
-        then
-            result = result:sub(2, #result - 1)
-        end
-
-        return result
+  --- @param line string
+  --- @return string
+  local function impl(line)
+    local pos = 1
+    for i = 1, start_pos do
+      pos = utils.string_find(line, " ", pos) --[[@as integer]]
+      assert(type(pos) == "number")
+      while
+        pos + 1 <= #line
+        and string.byte(line, pos + 1) == string.byte(" ")
+      do
+        pos = pos + 1
+      end
+      pos = pos + 1
     end
-    return impl
+    local result = path.normalize(vim.trim(line:sub(pos)), { expand = true })
+
+    -- remove extra single/double quotes
+    if
+      (
+        utils.string_startswith(result, "'")
+        and utils.string_endswith(result, "'")
+      )
+      or (
+        utils.string_startswith(result, '"')
+        and utils.string_endswith(result, '"')
+      )
+    then
+      result = result:sub(2, #result - 1)
+    end
+
+    return result
+  end
+  return impl
 end
 
 local parse_ls = _make_parse_ls(8)
 local parse_eza = constants.is_windows and _make_parse_ls(5)
-    or _make_parse_ls(6)
+  or _make_parse_ls(6)
 local parse_lsd = _make_parse_ls(10)
 
 --- @param line string
 --- @param context VimCommandsPipelineContext
 --- @return {filename:string,lineno:integer}|string
 local function parse_vim_command(line, context)
-    -- local log = require("fzfx.log")
+  -- local log = require("fzfx.log")
 
-    local desc_or_loc =
-        vim.trim(line:sub(context.name_width + 1 + context.opts_width + 1 + 1))
+  local desc_or_loc =
+    vim.trim(line:sub(context.name_width + 1 + context.opts_width + 1 + 1))
+  -- log.debug(
+  --     "|fzfx.line_helpers - parse_vim_commands| desc_or_loc:%s",
+  --     vim.inspect(desc_or_loc)
+  -- )
+  if
+    string.len(desc_or_loc) > 0
+    and not utils.string_startswith(desc_or_loc, '"')
+    and not utils.string_endswith(desc_or_loc, '"')
+  then
+    local split_pos = utils.string_rfind(desc_or_loc, ":")
+    local splits = {
+      desc_or_loc:sub(1, split_pos - 1),
+      desc_or_loc:sub(split_pos + 1),
+    }
     -- log.debug(
-    --     "|fzfx.line_helpers - parse_vim_commands| desc_or_loc:%s",
-    --     vim.inspect(desc_or_loc)
+    --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
+    --     vim.inspect(splits)
     -- )
-    if
-        string.len(desc_or_loc) > 0
-        and not utils.string_startswith(desc_or_loc, '"')
-        and not utils.string_endswith(desc_or_loc, '"')
-    then
-        local split_pos = utils.string_rfind(desc_or_loc, ":")
-        local splits = {
-            desc_or_loc:sub(1, split_pos - 1),
-            desc_or_loc:sub(split_pos + 1),
-        }
-        -- log.debug(
-        --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
-        --     vim.inspect(splits)
-        -- )
-        local filename = path.normalize(splits[1], { expand = true })
-        local lineno = tonumber(splits[2])
-        -- log.debug(
-        --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
-        --     vim.inspect(filename),
-        --     vim.inspect(lineno)
-        -- )
-        return { filename = filename, lineno = lineno }
-    else
-        return desc_or_loc:sub(2, #desc_or_loc - 1)
-    end
+    local filename = path.normalize(splits[1], { expand = true })
+    local lineno = tonumber(splits[2])
+    -- log.debug(
+    --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
+    --     vim.inspect(filename),
+    --     vim.inspect(lineno)
+    -- )
+    return { filename = filename, lineno = lineno }
+  else
+    return desc_or_loc:sub(2, #desc_or_loc - 1)
+  end
 end
 
 --- @param line string
 --- @param context VimKeyMapsPipelineContext
 --- @return {filename:string?,lineno:integer?}|string
 local function parse_vim_keymap(line, context)
-    -- local log = require("fzfx.log")
-    local rhs_or_loc =
-        vim.trim(line:sub(context.key_width + 1 + context.opts_width + 1 + 1))
+  -- local log = require("fzfx.log")
+  local rhs_or_loc =
+    vim.trim(line:sub(context.key_width + 1 + context.opts_width + 1 + 1))
+  -- log.debug(
+  --     "|fzfx.line_helpers - parse_vim_commands| desc_or_loc:%s",
+  --     vim.inspect(desc_or_loc)
+  -- )
+  if
+    string.len(rhs_or_loc) > 0
+    and not utils.string_startswith(rhs_or_loc, '"')
+    and not utils.string_endswith(rhs_or_loc, '"')
+  then
+    local split_pos = utils.string_rfind(rhs_or_loc, ":")
+    local splits = {
+      rhs_or_loc:sub(1, split_pos - 1),
+      rhs_or_loc:sub(split_pos + 1),
+    }
     -- log.debug(
-    --     "|fzfx.line_helpers - parse_vim_commands| desc_or_loc:%s",
-    --     vim.inspect(desc_or_loc)
+    --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
+    --     vim.inspect(splits)
     -- )
-    if
-        string.len(rhs_or_loc) > 0
-        and not utils.string_startswith(rhs_or_loc, '"')
-        and not utils.string_endswith(rhs_or_loc, '"')
-    then
-        local split_pos = utils.string_rfind(rhs_or_loc, ":")
-        local splits = {
-            rhs_or_loc:sub(1, split_pos - 1),
-            rhs_or_loc:sub(split_pos + 1),
-        }
-        -- log.debug(
-        --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
-        --     vim.inspect(splits)
-        -- )
-        local filename = path.normalize(splits[1], { expand = true })
-        local lineno = tonumber(splits[2])
-        -- log.debug(
-        --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
-        --     vim.inspect(filename),
-        --     vim.inspect(lineno)
-        -- )
-        return { filename = filename, lineno = lineno }
-    else
-        return rhs_or_loc:sub(2, #rhs_or_loc - 1)
-    end
+    local filename = path.normalize(splits[1], { expand = true })
+    local lineno = tonumber(splits[2])
+    -- log.debug(
+    --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
+    --     vim.inspect(filename),
+    --     vim.inspect(lineno)
+    -- )
+    return { filename = filename, lineno = lineno }
+  else
+    return rhs_or_loc:sub(2, #rhs_or_loc - 1)
+  end
 end
 
 local M = {
-    parse_find = parse_find,
-    parse_grep = parse_grep,
-    parse_rg = parse_rg,
-    parse_git_status = parse_git_status,
-    _make_parse_ls = _make_parse_ls,
-    parse_ls = parse_ls,
-    parse_eza = parse_eza,
-    parse_lsd = parse_lsd,
-    parse_vim_command = parse_vim_command,
-    parse_vim_keymap = parse_vim_keymap,
+  parse_find = parse_find,
+  parse_grep = parse_grep,
+  parse_rg = parse_rg,
+  parse_git_status = parse_git_status,
+  _make_parse_ls = _make_parse_ls,
+  parse_ls = parse_ls,
+  parse_eza = parse_eza,
+  parse_lsd = parse_lsd,
+  parse_vim_command = parse_vim_command,
+  parse_vim_keymap = parse_vim_keymap,
 }
 
 return M

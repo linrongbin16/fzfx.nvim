@@ -43,7 +43,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
-          args: --config-path .stylua.toml --color always ./
+          args: --config-path .stylua.toml ./lua ./test
       - name: Add rxi/json.lua
         if: ${{ github.ref != 'refs/heads/main' }}
         shell: bash
