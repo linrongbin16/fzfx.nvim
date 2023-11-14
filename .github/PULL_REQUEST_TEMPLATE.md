@@ -31,6 +31,10 @@
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
   - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxGGrep
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
+  - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxGStatus
   - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-W` to switch between workspace/current folder mode.
