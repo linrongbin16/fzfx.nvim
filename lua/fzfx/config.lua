@@ -13,132 +13,132 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 --- @type table<string, FzfOpt>
 local default_fzf_options = {
-    multi = "--multi",
-    toggle = "--bind=ctrl-e:toggle",
-    toggle_all = "--bind=ctrl-a:toggle-all",
-    toggle_preview = "--bind=alt-p:toggle-preview",
-    preview_half_page_down = "--bind=ctrl-f:preview-half-page-down",
-    preview_half_page_up = "--bind=ctrl-b:preview-half-page-up",
-    no_multi = "--no-multi",
-    lsp_preview_window = { "--preview-window", "left,65%,+{2}-/2" },
+  multi = "--multi",
+  toggle = "--bind=ctrl-e:toggle",
+  toggle_all = "--bind=ctrl-a:toggle-all",
+  toggle_preview = "--bind=alt-p:toggle-preview",
+  preview_half_page_down = "--bind=ctrl-f:preview-half-page-down",
+  preview_half_page_up = "--bind=ctrl-b:preview-half-page-up",
+  no_multi = "--no-multi",
+  lsp_preview_window = { "--preview-window", "left,65%,+{2}-/2" },
 }
 
 -- files {
 
 -- "fd . -cnever -tf -tl -L -i"
 local default_restricted_fd = {
-    constants.fd,
-    ".",
-    "-cnever",
-    "-tf",
-    "-tl",
-    "-L",
-    "-i",
+  constants.fd,
+  ".",
+  "-cnever",
+  "-tf",
+  "-tl",
+  "-L",
+  "-i",
 }
 -- "fd . -cnever -tf -tl -L -i -u"
 local default_unrestricted_fd = {
-    constants.fd,
-    ".",
-    "-cnever",
-    "-tf",
-    "-tl",
-    "-L",
-    "-i",
-    "-u",
+  constants.fd,
+  ".",
+  "-cnever",
+  "-tf",
+  "-tl",
+  "-L",
+  "-i",
+  "-u",
 }
 -- 'find -L . -type f -not -path "*/.*"'
 local default_restricted_find = constants.is_windows
-        and {
-            constants.find,
-            "-L",
-            ".",
-            "-type",
-            "f",
-        }
-    or {
-        constants.find,
-        "-L",
-        ".",
-        "-type",
-        "f",
-        "-not",
-        "-path",
-        [[*/.*]],
+    and {
+      constants.find,
+      "-L",
+      ".",
+      "-type",
+      "f",
     }
--- "find -L . -type f"
-local default_unrestricted_find = {
+  or {
     constants.find,
     "-L",
     ".",
     "-type",
     "f",
+    "-not",
+    "-path",
+    [[*/.*]],
+  }
+-- "find -L . -type f"
+local default_unrestricted_find = {
+  constants.find,
+  "-L",
+  ".",
+  "-type",
+  "f",
 }
 
 --- @return string, string
 local function _default_bat_style_theme()
-    local style = "numbers,changes"
-    if
-        type(vim.env["BAT_STYLE"]) == "string"
-        and string.len(vim.env["BAT_STYLE"]) > 0
-    then
-        style = vim.env["BAT_STYLE"]
-    end
-    local theme = "base16"
-    if
-        type(vim.env["BAT_THEME"]) == "string"
-        and string.len(vim.env["BAT_THEME"]) > 0
-    then
-        theme = vim.env["BAT_THEME"]
-    end
-    return style, theme
+  local style = "numbers,changes"
+  if
+    type(vim.env["BAT_STYLE"]) == "string"
+    and string.len(vim.env["BAT_STYLE"]) > 0
+  then
+    style = vim.env["BAT_STYLE"]
+  end
+  local theme = "base16"
+  if
+    type(vim.env["BAT_THEME"]) == "string"
+    and string.len(vim.env["BAT_THEME"]) > 0
+  then
+    theme = vim.env["BAT_THEME"]
+  end
+  return style, theme
 end
 
 --- @param filename string
 --- @param lineno integer?
 --- @return fun():string[]
 local function _make_file_previewer(filename, lineno)
-    --- @return string[]
-    local function impl()
-        if constants.has_bat then
-            local style, theme = _default_bat_style_theme()
-            -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
-            return type(lineno) == "number"
-                    and {
-                        constants.bat,
-                        "--style=" .. style,
-                        "--theme=" .. theme,
-                        "--color=always",
-                        "--pager=never",
-                        "--highlight-line=" .. lineno,
-                        "--",
-                        filename,
-                    }
-                or {
-                    constants.bat,
-                    "--style=" .. style,
-                    "--theme=" .. theme,
-                    "--color=always",
-                    "--pager=never",
-                    "--",
-                    filename,
-                }
-        else
-            -- "cat %s"
-            return {
-                "cat",
-                filename,
-            }
-        end
+  --- @return string[]
+  local function impl()
+    if constants.has_bat then
+      local style, theme = _default_bat_style_theme()
+      -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
+      return type(lineno) == "number"
+          and {
+            constants.bat,
+            "--style=" .. style,
+            "--theme=" .. theme,
+            "--color=always",
+            "--pager=never",
+            "--highlight-line=" .. lineno,
+            "--",
+            filename,
+          }
+        or {
+          constants.bat,
+          "--style=" .. style,
+          "--theme=" .. theme,
+          "--color=always",
+          "--pager=never",
+          "--",
+          filename,
+        }
+    else
+      -- "cat %s"
+      return {
+        "cat",
+        filename,
+      }
     end
-    return impl
+  end
+  return impl
 end
 
 --- @param line string
 --- @return string[]
 local function _file_previewer(line)
-    local filename = line_helpers.parse_find(line)
-    local f = _make_file_previewer(filename)
-    return f()
+  local filename = line_helpers.parse_find(line)
+  local f = _make_file_previewer(filename)
+  return f()
 end
 
 -- files }
@@ -147,42 +147,42 @@ end
 
 -- "rg --column -n --no-heading --color=always -S"
 local default_restricted_rg = {
-    "rg",
-    "--column",
-    "-n",
-    "--no-heading",
-    "--color=always",
-    "-H",
-    "-S",
+  "rg",
+  "--column",
+  "-n",
+  "--no-heading",
+  "--color=always",
+  "-H",
+  "-S",
 }
 -- "rg --column -n --no-heading --color=always -S -uu"
 local default_unrestricted_rg = {
-    "rg",
-    "--column",
-    "-n",
-    "--no-heading",
-    "--color=always",
-    "-H",
-    "-S",
-    "-uu",
+  "rg",
+  "--column",
+  "-n",
+  "--no-heading",
+  "--color=always",
+  "-H",
+  "-S",
+  "-uu",
 }
 -- "grep --color=always -n -H -r --exclude-dir='.*' --exclude='.*'"
 local default_restricted_grep = {
-    constants.grep,
-    "--color=always",
-    "-n",
-    "-H",
-    "-r",
-    "--exclude-dir=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]]),
-    "--exclude=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]]),
+  constants.grep,
+  "--color=always",
+  "-n",
+  "-H",
+  "-r",
+  "--exclude-dir=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]]),
+  "--exclude=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]]),
 }
 -- "grep --color=always -n -H -r"
 local default_unrestricted_grep = {
-    constants.grep,
-    "--color=always",
-    "-n",
-    "-H",
-    "-r",
+  constants.grep,
+  "--color=always",
+  "-n",
+  "-H",
+  "-r",
 }
 
 local default_invalid_buffer_error = "invalid buffer(%s)."
@@ -190,97 +190,91 @@ local default_invalid_buffer_error = "invalid buffer(%s)."
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
 --- @return fun(query:string,context:PipelineContext):string[]|nil
 local function _make_live_grep_provider(opts)
-    --- @param query string
-    --- @param context PipelineContext
-    --- @return string[]|nil
-    local function impl(query, context)
-        local parsed_query = utils.parse_flag_query(query or "")
-        local content = parsed_query[1]
-        local option = parsed_query[2]
+  --- @param query string
+  --- @param context PipelineContext
+  --- @return string[]|nil
+  local function impl(query, context)
+    local parsed_query = utils.parse_flag_query(query or "")
+    local content = parsed_query[1]
+    local option = parsed_query[2]
 
-        local args = nil
-        if constants.has_rg then
-            if type(opts) == "table" and opts.unrestricted then
-                args = vim.deepcopy(default_unrestricted_rg)
-            elseif type(opts) == "table" and opts.buffer then
-                args = vim.deepcopy(default_unrestricted_rg)
-                local current_bufpath = utils.is_buf_valid(context.bufnr)
-                        and path.reduce(
-                            vim.api.nvim_buf_get_name(context.bufnr)
-                        )
-                    or nil
-                if
-                    type(current_bufpath) ~= "string"
-                    or string.len(current_bufpath) == 0
-                then
-                    log.echo(
-                        LogLevels.INFO,
-                        default_invalid_buffer_error,
-                        vim.inspect(context.bufnr)
-                    )
-                    return nil
-                end
-            else
-                args = vim.deepcopy(default_restricted_rg)
-            end
-        elseif
-            vim.fn.executable("grep") > 0 or vim.fn.executable("ggrep") > 0
+    local args = nil
+    if constants.has_rg then
+      if type(opts) == "table" and opts.unrestricted then
+        args = vim.deepcopy(default_unrestricted_rg)
+      elseif type(opts) == "table" and opts.buffer then
+        args = vim.deepcopy(default_unrestricted_rg)
+        local current_bufpath = utils.is_buf_valid(context.bufnr)
+            and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+          or nil
+        if
+          type(current_bufpath) ~= "string"
+          or string.len(current_bufpath) == 0
         then
-            if type(opts) == "table" and opts.unrestricted then
-                args = vim.deepcopy(default_unrestricted_grep)
-            elseif type(opts) == "table" and opts.buffer then
-                args = vim.deepcopy(default_unrestricted_grep)
-                local current_bufpath = utils.is_buf_valid(context.bufnr)
-                        and path.reduce(
-                            vim.api.nvim_buf_get_name(context.bufnr)
-                        )
-                    or nil
-                if
-                    type(current_bufpath) ~= "string"
-                    or string.len(current_bufpath) == 0
-                then
-                    log.echo(
-                        LogLevels.INFO,
-                        default_invalid_buffer_error,
-                        vim.inspect(context.bufnr)
-                    )
-                    return nil
-                end
-            else
-                args = vim.deepcopy(default_restricted_grep)
-            end
-        else
-            log.echo(LogLevels.INFO, "no rg/grep command found.")
-            return nil
+          log.echo(
+            LogLevels.INFO,
+            default_invalid_buffer_error,
+            vim.inspect(context.bufnr)
+          )
+          return nil
         end
-        if type(option) == "string" and string.len(option) > 0 then
-            local option_splits = utils.string_split(option, " ")
-            for _, o in ipairs(option_splits) do
-                if type(o) == "string" and string.len(o) > 0 then
-                    table.insert(args, o)
-                end
-            end
+      else
+        args = vim.deepcopy(default_restricted_rg)
+      end
+    elseif vim.fn.executable("grep") > 0 or vim.fn.executable("ggrep") > 0 then
+      if type(opts) == "table" and opts.unrestricted then
+        args = vim.deepcopy(default_unrestricted_grep)
+      elseif type(opts) == "table" and opts.buffer then
+        args = vim.deepcopy(default_unrestricted_grep)
+        local current_bufpath = utils.is_buf_valid(context.bufnr)
+            and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+          or nil
+        if
+          type(current_bufpath) ~= "string"
+          or string.len(current_bufpath) == 0
+        then
+          log.echo(
+            LogLevels.INFO,
+            default_invalid_buffer_error,
+            vim.inspect(context.bufnr)
+          )
+          return nil
         end
-        if type(opts) == "table" and opts.buffer then
-            local current_bufpath =
-                path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
-            table.insert(args, content)
-            table.insert(args, current_bufpath)
-        else
-            -- table.insert(args, "--")
-            table.insert(args, content)
-        end
-        return args
+      else
+        args = vim.deepcopy(default_restricted_grep)
+      end
+    else
+      log.echo(LogLevels.INFO, "no rg/grep command found.")
+      return nil
     end
-    return impl
+    if type(option) == "string" and string.len(option) > 0 then
+      local option_splits = utils.string_split(option, " ")
+      for _, o in ipairs(option_splits) do
+        if type(o) == "string" and string.len(o) > 0 then
+          table.insert(args, o)
+        end
+      end
+    end
+    if type(opts) == "table" and opts.buffer then
+      local current_bufpath =
+        path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+      table.insert(args, content)
+      table.insert(args, current_bufpath)
+    else
+      -- table.insert(args, "--")
+      table.insert(args, content)
+    end
+    return args
+  end
+  return impl
 end
 
 --- @param line string
 --- @return string[]
 local function file_previewer_grep(line)
-    local parsed = line_helpers.parse_grep(line)
-    local impl = _make_file_previewer(parsed.filename, parsed.lineno)
-    return impl()
+  local parsed = line_helpers.parse_grep(line)
+  local impl = _make_file_previewer(parsed.filename, parsed.lineno)
+  return impl()
 end
 
 -- live grep }
@@ -290,56 +284,56 @@ end
 --- @param bufnr integer
 --- @return boolean
 local function _is_valid_buffer_number(bufnr)
-    local exclude_filetypes = {
-        ["qf"] = true,
-        ["neo-tree"] = true,
-    }
-    local ok, ft_or_err = pcall(utils.get_buf_option, bufnr, "filetype")
-    if not ok then
-        return false
-    end
-    return utils.is_buf_valid(bufnr) and not exclude_filetypes[ft_or_err]
+  local exclude_filetypes = {
+    ["qf"] = true,
+    ["neo-tree"] = true,
+  }
+  local ok, ft_or_err = pcall(utils.get_buf_option, bufnr, "filetype")
+  if not ok then
+    return false
+  end
+  return utils.is_buf_valid(bufnr) and not exclude_filetypes[ft_or_err]
 end
 
 --- @param query string
 --- @param context PipelineContext
 --- @return string[]|nil
 local function _buffers_provider(query, context)
-    local bufs = vim.api.nvim_list_bufs()
-    local filenames = {}
-    local current_filename = _is_valid_buffer_number(context.bufnr)
-            and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
-        or nil
-    if
-        type(current_filename) == "string"
-        and string.len(current_filename) > 0
-    then
-        table.insert(filenames, current_filename)
+  local bufs = vim.api.nvim_list_bufs()
+  local filenames = {}
+  local current_filename = _is_valid_buffer_number(context.bufnr)
+      and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+    or nil
+  if
+    type(current_filename) == "string"
+    and string.len(current_filename) > 0
+  then
+    table.insert(filenames, current_filename)
+  end
+  for _, bufnr in ipairs(bufs) do
+    local fname = path.reduce(vim.api.nvim_buf_get_name(bufnr))
+    if _is_valid_buffer_number(bufnr) and fname ~= current_filename then
+      table.insert(filenames, fname)
     end
-    for _, bufnr in ipairs(bufs) do
-        local fname = path.reduce(vim.api.nvim_buf_get_name(bufnr))
-        if _is_valid_buffer_number(bufnr) and fname ~= current_filename then
-            table.insert(filenames, fname)
-        end
-    end
-    return filenames
+  end
+  return filenames
 end
 
 --- @param line string
 local function _delete_buffer(line)
-    local bufs = vim.api.nvim_list_bufs()
-    local filenames = {}
-    for _, bufnr in ipairs(bufs) do
-        local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
-        filenames[bufpath] = bufnr
+  local bufs = vim.api.nvim_list_bufs()
+  local filenames = {}
+  for _, bufnr in ipairs(bufs) do
+    local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
+    filenames[bufpath] = bufnr
+  end
+  if type(line) == "string" and string.len(line) > 0 then
+    local selected_filename = line_helpers.parse_find(line)
+    local bufnr = filenames[selected_filename]
+    if type(bufnr) == "number" and utils.is_buf_valid(bufnr) then
+      vim.api.nvim_buf_delete(bufnr, {})
     end
-    if type(line) == "string" and string.len(line) > 0 then
-        local selected_filename = line_helpers.parse_find(line)
-        local bufnr = filenames[selected_filename]
-        if type(bufnr) == "number" and utils.is_buf_valid(bufnr) then
-            vim.api.nvim_buf_delete(bufnr, {})
-        end
-    end
+  end
 end
 
 -- buffers }
@@ -351,18 +345,18 @@ local default_git_root_error = "not in git repo."
 --- @param opts {current_folder:boolean?}?
 --- @return fun():string[]|nil
 local function _make_git_files_provider(opts)
-    --- @return string[]|nil
-    local function impl()
-        local git_root_cmd = cmd.GitRootCmd:run()
-        if git_root_cmd:wrong() then
-            log.echo(LogLevels.INFO, default_git_root_error)
-            return nil
-        end
-        return (type(opts) == "table" and opts.current_folder)
-                and { "git", "ls-files" }
-            or { "git", "ls-files", ":/" }
+  --- @return string[]|nil
+  local function impl()
+    local git_root_cmd = cmd.GitRootCmd:run()
+    if git_root_cmd:wrong() then
+      log.echo(LogLevels.INFO, default_git_root_error)
+      return nil
     end
-    return impl
+    return (type(opts) == "table" and opts.current_folder)
+        and { "git", "ls-files" }
+      or { "git", "ls-files", ":/" }
+  end
+  return impl
 end
 
 -- git files }
@@ -371,60 +365,57 @@ end
 
 --- @param opts {remote_branch:boolean?}?
 local function _make_git_branches_provider(opts)
-    local function impl()
-        local git_root_cmd = cmd.GitRootCmd:run()
-        if git_root_cmd:wrong() then
-            log.echo(LogLevels.INFO, default_git_root_error)
-            return nil
-        end
-        local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
-        if git_current_branch_cmd:wrong() then
-            log.echo(
-                LogLevels.WARN,
-                table.concat(git_current_branch_cmd.result.stderr, " ")
-            )
-            return nil
-        end
-        local branch_results = {}
-        table.insert(
-            branch_results,
-            string.format("* %s", git_current_branch_cmd:value())
-        )
-        local git_branch_cmd = cmd.GitBranchCmd:run(
-            (type(opts) == "table" and opts.remote_branch) and true or false
-        )
-        if git_branch_cmd.result:wrong() then
-            log.echo(
-                LogLevels.WARN,
-                table.concat(git_current_branch_cmd.result.stderr, " ")
-            )
-            return nil
-        end
-        for _, line in ipairs(git_branch_cmd.result.stdout) do
-            if vim.trim(line):sub(1, 1) ~= "*" then
-                table.insert(
-                    branch_results,
-                    string.format("  %s", vim.trim(line))
-                )
-            end
-        end
-        return branch_results
+  local function impl()
+    local git_root_cmd = cmd.GitRootCmd:run()
+    if git_root_cmd:wrong() then
+      log.echo(LogLevels.INFO, default_git_root_error)
+      return nil
     end
-    return impl
+    local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
+    if git_current_branch_cmd:wrong() then
+      log.echo(
+        LogLevels.WARN,
+        table.concat(git_current_branch_cmd.result.stderr, " ")
+      )
+      return nil
+    end
+    local branch_results = {}
+    table.insert(
+      branch_results,
+      string.format("* %s", git_current_branch_cmd:value())
+    )
+    local git_branch_cmd = cmd.GitBranchCmd:run(
+      (type(opts) == "table" and opts.remote_branch) and true or false
+    )
+    if git_branch_cmd.result:wrong() then
+      log.echo(
+        LogLevels.WARN,
+        table.concat(git_current_branch_cmd.result.stderr, " ")
+      )
+      return nil
+    end
+    for _, line in ipairs(git_branch_cmd.result.stdout) do
+      if vim.trim(line):sub(1, 1) ~= "*" then
+        table.insert(branch_results, string.format("  %s", vim.trim(line)))
+      end
+    end
+    return branch_results
+  end
+  return impl
 end
 
 local default_git_log_pretty =
-    "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+  "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
 local function _git_branches_previewer(line)
-    local branch = utils.string_split(line, " ")[1]
-    -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
-    -- "git log --graph --color=always --date=relative",
-    return string.format(
-        "git log --pretty=%s --graph --date=short --color=always %s",
-        utils.shellescape(default_git_log_pretty),
-        branch
-    )
+  local branch = utils.string_split(line, " ")[1]
+  -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
+  -- "git log --graph --color=always --date=relative",
+  return string.format(
+    "git log --pretty=%s --graph --date=short --color=always %s",
+    utils.shellescape(default_git_log_pretty),
+    branch
+  )
 end
 
 -- git branches }
@@ -434,75 +425,75 @@ end
 --- @param opts {buffer:boolean?}?
 --- @return fun(query:string,context:PipelineContext):string[]|nil
 local function _make_git_commits_provider(opts)
-    --- @param query string
-    --- @param context PipelineContext
-    --- @return string[]|nil
-    local function impl(query, context)
-        local git_root_cmd = cmd.GitRootCmd:run()
-        if git_root_cmd:wrong() then
-            log.echo(LogLevels.INFO, default_git_root_error)
-            return nil
-        end
-        if type(opts) == "table" and opts.buffer then
-            if not utils.is_buf_valid(context.bufnr) then
-                log.echo(
-                    LogLevels.INFO,
-                    default_invalid_buffer_error,
-                    vim.inspect(context.bufnr)
-                )
-                return nil
-            end
-            return {
-                "git",
-                "log",
-                "--pretty=" .. default_git_log_pretty,
-                "--date=short",
-                "--color=always",
-                "--",
-                vim.api.nvim_buf_get_name(context.bufnr),
-            }
-        else
-            return {
-                "git",
-                "log",
-                "--pretty=" .. default_git_log_pretty,
-                "--date=short",
-                "--color=always",
-            }
-        end
+  --- @param query string
+  --- @param context PipelineContext
+  --- @return string[]|nil
+  local function impl(query, context)
+    local git_root_cmd = cmd.GitRootCmd:run()
+    if git_root_cmd:wrong() then
+      log.echo(LogLevels.INFO, default_git_root_error)
+      return nil
     end
-    return impl
+    if type(opts) == "table" and opts.buffer then
+      if not utils.is_buf_valid(context.bufnr) then
+        log.echo(
+          LogLevels.INFO,
+          default_invalid_buffer_error,
+          vim.inspect(context.bufnr)
+        )
+        return nil
+      end
+      return {
+        "git",
+        "log",
+        "--pretty=" .. default_git_log_pretty,
+        "--date=short",
+        "--color=always",
+        "--",
+        vim.api.nvim_buf_get_name(context.bufnr),
+      }
+    else
+      return {
+        "git",
+        "log",
+        "--pretty=" .. default_git_log_pretty,
+        "--date=short",
+        "--color=always",
+      }
+    end
+  end
+  return impl
 end
 
 --- @return integer
 local function _get_delta_width()
-    local window_width = vim.api.nvim_win_get_width(0)
-    return math.floor(math.max(3, window_width / 2 - 6))
+  local window_width = vim.api.nvim_win_get_width(0)
+  return math.floor(math.max(3, window_width / 2 - 6))
 end
 
 --- @param commit string
 --- @return string?
 local function _make_git_commits_previewer(commit)
-    if constants.has_delta then
-        local preview_width = _get_delta_width()
-        return string.format(
-            [[git show %s | delta -n --tabs 4 --width %d]],
-            commit,
-            preview_width
-        )
-    else
-        return string.format([[git show --color=always %s]], commit)
-    end
+  if constants.has_delta then
+    local preview_width = _get_delta_width()
+    return string.format(
+      [[git show %s | delta -n --tabs 4 --width %d]],
+      commit,
+      preview_width
+    )
+  else
+    return string.format([[git show --color=always %s]], commit)
+  end
 end
 
 --- @param line string
 --- @return string?
 local function _git_commits_previewer(line)
-    if utils.string_isspace(line:sub(1, 1)) then
-        return nil
-    end
-    local commit = utils.string_split(line, " ")[1]
-    return _make_git_commits_previewer(commit)
+  if utils.string_isspace(line:sub(1, 1)) then
+    return nil
+  end
+  local commit = utils.string_split(line, " ")[1]
+  return _make_git_commits_previewer(commit)
 end
 
 -- git commits }
@@ -513,37 +504,37 @@ end
 --- @param context PipelineContext
 --- @return string?
 local function _git_blame_provider(query, context)
-    local git_root_cmd = cmd.GitRootCmd:run()
-    if git_root_cmd:wrong() then
-        log.echo(LogLevels.INFO, default_git_root_error)
-        return nil
-    end
-    if not utils.is_buf_valid(context.bufnr) then
-        log.echo(
-            LogLevels.INFO,
-            default_invalid_buffer_error,
-            vim.inspect(context.bufnr)
-        )
-        return nil
-    end
-    local bufname = vim.api.nvim_buf_get_name(context.bufnr)
-    local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
-    -- return string.format(
-    --     "git blame --date=short --color-lines %s",
-    --     bufpath
-    -- )
-    if constants.has_delta then
-        return string.format(
-            [[git blame %s | delta -n --tabs 4 --blame-format %s]],
-            utils.shellescape(bufpath),
-            utils.shellescape("{commit:<8} {author:<15.14} {timestamp:<15}")
-        )
-    else
-        return string.format(
-            [[git blame --date=short --color-lines %s]],
-            utils.shellescape(bufpath)
-        )
-    end
+  local git_root_cmd = cmd.GitRootCmd:run()
+  if git_root_cmd:wrong() then
+    log.echo(LogLevels.INFO, default_git_root_error)
+    return nil
+  end
+  if not utils.is_buf_valid(context.bufnr) then
+    log.echo(
+      LogLevels.INFO,
+      default_invalid_buffer_error,
+      vim.inspect(context.bufnr)
+    )
+    return nil
+  end
+  local bufname = vim.api.nvim_buf_get_name(context.bufnr)
+  local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
+  -- return string.format(
+  --     "git blame --date=short --color-lines %s",
+  --     bufpath
+  -- )
+  if constants.has_delta then
+    return string.format(
+      [[git blame %s | delta -n --tabs 4 --blame-format %s]],
+      utils.shellescape(bufpath),
+      utils.shellescape("{commit:<8} {author:<15.14} {timestamp:<15}")
+    )
+  else
+    return string.format(
+      [[git blame --date=short --color-lines %s]],
+      utils.shellescape(bufpath)
+    )
+  end
 end
 
 -- git blame }
@@ -553,43 +544,43 @@ end
 --- @param opts {current_folder:boolean?}?
 --- @return fun():string[]|nil
 local function _make_git_status_provider(opts)
-    local function impl()
-        local git_root_cmd = cmd.GitRootCmd:run()
-        if git_root_cmd:wrong() then
-            log.echo(LogLevels.INFO, default_git_root_error)
-            return nil
-        end
-        return (type(opts) == "table" and opts.current_folder)
-                and {
-                    "git",
-                    "-c",
-                    "color.status=always",
-                    "status",
-                    "--short",
-                    ".",
-                }
-            or { "git", "-c", "color.status=always", "status", "--short" }
+  local function impl()
+    local git_root_cmd = cmd.GitRootCmd:run()
+    if git_root_cmd:wrong() then
+      log.echo(LogLevels.INFO, default_git_root_error)
+      return nil
     end
-    return impl
+    return (type(opts) == "table" and opts.current_folder)
+        and {
+          "git",
+          "-c",
+          "color.status=always",
+          "status",
+          "--short",
+          ".",
+        }
+      or { "git", "-c", "color.status=always", "status", "--short" }
+  end
+  return impl
 end
 
 --- @param line string
 --- @return string?
 local function _git_status_previewer(line)
-    local filename = line_helpers.parse_git_status(line)
-    if constants.has_delta then
-        local preview_width = _get_delta_width()
-        return string.format(
-            [[git diff %s | delta -n --tabs 4 --width %d]],
-            utils.shellescape(filename),
-            preview_width
-        )
-    else
-        return string.format(
-            [[git diff --color=always %s]],
-            utils.shellescape(filename)
-        )
-    end
+  local filename = line_helpers.parse_git_status(line)
+  if constants.has_delta then
+    local preview_width = _get_delta_width()
+    return string.format(
+      [[git diff %s | delta -n --tabs 4 --width %d]],
+      utils.shellescape(filename),
+      preview_width
+    )
+  else
+    return string.format(
+      [[git diff --color=always %s]],
+      utils.shellescape(filename)
+    )
+  end
 end
 
 -- git status }
@@ -599,135 +590,134 @@ end
 --- @param line string
 --- @return string
 local function _parse_vim_ex_command_name(line)
-    local name_stop_pos = utils.string_find(line, "|", 3)
-    return vim.trim(line:sub(3, name_stop_pos - 1))
+  local name_stop_pos = utils.string_find(line, "|", 3)
+  return vim.trim(line:sub(3, name_stop_pos - 1))
 end
 
 --- @return table<string, VimCommand>
 local function _get_vim_ex_commands()
-    local help_docs_list =
-        ---@diagnostic disable-next-line: param-type-mismatch
-        vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
-    log.debug(
-        "|fzfx.config - _get_vim_ex_commands| help docs:%s",
-        vim.inspect(help_docs_list)
-    )
-    if type(help_docs_list) ~= "table" or vim.tbl_isempty(help_docs_list) then
-        log.echo(LogLevels.INFO, "no 'doc/index.txt' found.")
-        return {}
-    end
-    local results = {}
-    for _, help_doc in ipairs(help_docs_list) do
-        local lines = utils.readlines(help_doc) --[[@as table]]
-        for i = 1, #lines do
-            local line = lines[i]
-            if utils.string_startswith(line, "|:") then
-                log.debug(
-                    "|fzfx.config - _get_vim_ex_commands| line[%d]:%s",
-                    i,
-                    vim.inspect(line)
-                )
-                local name = _parse_vim_ex_command_name(line)
-                if type(name) == "string" and string.len(name) > 0 then
-                    results[name] = {
-                        name = name,
-                        loc = {
-                            filename = path.reduce2home(help_doc),
-                            lineno = i,
-                        },
-                    }
-                end
-            end
-            i = i + 1
+  local help_docs_list =
+    ---@diagnostic disable-next-line: param-type-mismatch
+    vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
+  log.debug(
+    "|fzfx.config - _get_vim_ex_commands| help docs:%s",
+    vim.inspect(help_docs_list)
+  )
+  if type(help_docs_list) ~= "table" or vim.tbl_isempty(help_docs_list) then
+    log.echo(LogLevels.INFO, "no 'doc/index.txt' found.")
+    return {}
+  end
+  local results = {}
+  for _, help_doc in ipairs(help_docs_list) do
+    local lines = utils.readlines(help_doc) --[[@as table]]
+    for i = 1, #lines do
+      local line = lines[i]
+      if utils.string_startswith(line, "|:") then
+        log.debug(
+          "|fzfx.config - _get_vim_ex_commands| line[%d]:%s",
+          i,
+          vim.inspect(line)
+        )
+        local name = _parse_vim_ex_command_name(line)
+        if type(name) == "string" and string.len(name) > 0 then
+          results[name] = {
+            name = name,
+            loc = {
+              filename = path.reduce2home(help_doc),
+              lineno = i,
+            },
+          }
         end
+      end
+      i = i + 1
     end
-    log.debug(
-        "|fzfx.config - _get_vim_ex_commands| results:%s",
-        vim.inspect(results)
-    )
-    return results
+  end
+  log.debug(
+    "|fzfx.config - _get_vim_ex_commands| results:%s",
+    vim.inspect(results)
+  )
+  return results
 end
 
 --- @param header string
 --- @return boolean
 local function _is_ex_command_output_header(header)
-    local name_pos = utils.string_find(header, "Name")
-    local args_pos = utils.string_find(header, "Args")
-    local address_pos = utils.string_find(header, "Address")
-    local complete_pos = utils.string_find(header, "Complete")
-    local definition_pos = utils.string_find(header, "Definition")
-    return type(name_pos) == "number"
-        and type(args_pos) == "number"
-        and type(address_pos) == "number"
-        and type(complete_pos) == "number"
-        and type(definition_pos) == "number"
-        and name_pos < args_pos
-        and args_pos < address_pos
-        and address_pos < complete_pos
-        and complete_pos < definition_pos
+  local name_pos = utils.string_find(header, "Name")
+  local args_pos = utils.string_find(header, "Args")
+  local address_pos = utils.string_find(header, "Address")
+  local complete_pos = utils.string_find(header, "Complete")
+  local definition_pos = utils.string_find(header, "Definition")
+  return type(name_pos) == "number"
+    and type(args_pos) == "number"
+    and type(address_pos) == "number"
+    and type(complete_pos) == "number"
+    and type(definition_pos) == "number"
+    and name_pos < args_pos
+    and args_pos < address_pos
+    and address_pos < complete_pos
+    and complete_pos < definition_pos
 end
 
 --- @param line string
 --- @param start_pos integer
 --- @return {filename:string,lineno:integer}?
 local function _parse_ex_command_output_lua_function_definition(line, start_pos)
-    log.debug(
-        "|fzfx.config - _parse_ex_command_output_lua_function_definition| line:%s, start_pos:%s",
-        vim.inspect(line),
-        vim.inspect(start_pos)
-    )
-    local lua_flag = "<Lua "
-    local lua_function_flag = "<Lua function>"
-    local lua_function_pos =
-        utils.string_find(line, lua_function_flag, start_pos)
-    if lua_function_pos then
-        start_pos = utils.string_find(
-            line,
-            lua_flag,
-            lua_function_pos + string.len(lua_function_flag)
-        ) --[[@as integer]]
-    else
-        start_pos = utils.string_find(line, lua_flag, start_pos) --[[@as integer]]
-    end
-    if start_pos == nil then
-        return nil
-    end
-    local first_colon_pos = utils.string_find(line, ":", start_pos)
-    local content = vim.trim(line:sub(first_colon_pos + 1))
-    if string.len(content) > 0 and content:sub(#content) == ">" then
-        content = content:sub(1, #content - 1)
-    end
-    log.debug(
-        "|fzfx.config - _parse_ex_command_output_lua_function_definition| content-2:%s",
-        vim.inspect(content)
-    )
-    local content_splits = utils.string_split(content, ":")
-    log.debug(
-        "|fzfx.config - _parse_ex_command_output_lua_function_definition| split content:%s",
-        vim.inspect(content_splits)
-    )
-    return {
-        filename = vim.fn.expand(content_splits[1]),
-        lineno = tonumber(content_splits[2]),
-    }
+  log.debug(
+    "|fzfx.config - _parse_ex_command_output_lua_function_definition| line:%s, start_pos:%s",
+    vim.inspect(line),
+    vim.inspect(start_pos)
+  )
+  local lua_flag = "<Lua "
+  local lua_function_flag = "<Lua function>"
+  local lua_function_pos = utils.string_find(line, lua_function_flag, start_pos)
+  if lua_function_pos then
+    start_pos = utils.string_find(
+      line,
+      lua_flag,
+      lua_function_pos + string.len(lua_function_flag)
+    ) --[[@as integer]]
+  else
+    start_pos = utils.string_find(line, lua_flag, start_pos) --[[@as integer]]
+  end
+  if start_pos == nil then
+    return nil
+  end
+  local first_colon_pos = utils.string_find(line, ":", start_pos)
+  local content = vim.trim(line:sub(first_colon_pos + 1))
+  if string.len(content) > 0 and content:sub(#content) == ">" then
+    content = content:sub(1, #content - 1)
+  end
+  log.debug(
+    "|fzfx.config - _parse_ex_command_output_lua_function_definition| content-2:%s",
+    vim.inspect(content)
+  )
+  local content_splits = utils.string_split(content, ":")
+  log.debug(
+    "|fzfx.config - _parse_ex_command_output_lua_function_definition| split content:%s",
+    vim.inspect(content_splits)
+  )
+  return {
+    filename = vim.fn.expand(content_splits[1]),
+    lineno = tonumber(content_splits[2]),
+  }
 end
 
 --- @alias VimExCommandOutputHeader {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
 --- @param header string
 --- @return VimExCommandOutputHeader
 local function _parse_ex_command_output_header(header)
-    local name_pos = utils.string_find(header, "Name")
-    local args_pos = utils.string_find(header, "Args")
-    local address_pos = utils.string_find(header, "Address")
-    local complete_pos = utils.string_find(header, "Complete")
-    local definition_pos = utils.string_find(header, "Definition")
-    return {
-        name_pos = name_pos,
-        args_pos = args_pos,
-        address_pos = address_pos,
-        complete_pos = complete_pos,
-        definition_pos = definition_pos,
-    }
+  local name_pos = utils.string_find(header, "Name")
+  local args_pos = utils.string_find(header, "Args")
+  local address_pos = utils.string_find(header, "Address")
+  local complete_pos = utils.string_find(header, "Complete")
+  local definition_pos = utils.string_find(header, "Definition")
+  return {
+    name_pos = name_pos,
+    args_pos = args_pos,
+    address_pos = address_pos,
+    complete_pos = complete_pos,
+    definition_pos = definition_pos,
+  }
 end
 
 -- the ':command' output looks like:
@@ -766,154 +756,152 @@ end
 --```
 --- @return table<string, {filename:string,lineno:integer}>
 local function _parse_ex_command_output()
-    local tmpfile = vim.fn.tempname()
-    vim.cmd(string.format(
-        [[
+  local tmpfile = vim.fn.tempname()
+  vim.cmd(string.format(
+    [[
     redir! > %s
     silent command
     redir END
     ]],
-        tmpfile
-    ))
+    tmpfile
+  ))
 
-    local results = {}
-    local command_outputs = utils.readlines(tmpfile) --[[@as table]]
-    local found_command_output_header = false
-    --- @type VimExCommandOutputHeader
-    local parsed_header = nil
+  local results = {}
+  local command_outputs = utils.readlines(tmpfile) --[[@as table]]
+  local found_command_output_header = false
+  --- @type VimExCommandOutputHeader
+  local parsed_header = nil
 
-    for i = 1, #command_outputs do
-        local line = command_outputs[i]
+  for i = 1, #command_outputs do
+    local line = command_outputs[i]
 
-        if found_command_output_header then
-            -- parse command name, e.g., FzfxCommands, etc.
-            local idx = parsed_header.name_pos
-            log.debug(
-                "|fzfx.config - _parse_ex_command_output| line[%d]:%s(%d)",
-                i,
-                vim.inspect(line),
-                idx
-            )
-            while
-                idx <= #line and not utils.string_isspace(line:sub(idx, idx))
-            do
-                -- log.debug(
-                --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
-                --     idx,
-                --     vim.inspect(line:sub(idx, idx)),
-                --     vim.inspect(string.len(line:sub(idx, idx)))
-                -- )
-                -- log.debug(
-                --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, isspace:%s",
-                --     vim.inspect(utils.string_isspace(line:sub(idx, idx)))
-                -- )
-                if utils.string_isspace(line:sub(idx, idx)) then
-                    break
-                end
-                idx = idx + 1
-            end
-            local name = vim.trim(line:sub(parsed_header.name_pos, idx))
-
-            idx = math.max(parsed_header.definition_pos, idx)
-            local parsed_line =
-                _parse_ex_command_output_lua_function_definition(line, idx)
-            if parsed_line then
-                results[name] = {
-                    filename = parsed_line.filename,
-                    lineno = parsed_line.lineno,
-                }
-            end
+    if found_command_output_header then
+      -- parse command name, e.g., FzfxCommands, etc.
+      local idx = parsed_header.name_pos
+      log.debug(
+        "|fzfx.config - _parse_ex_command_output| line[%d]:%s(%d)",
+        i,
+        vim.inspect(line),
+        idx
+      )
+      while idx <= #line and not utils.string_isspace(line:sub(idx, idx)) do
+        -- log.debug(
+        --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
+        --     idx,
+        --     vim.inspect(line:sub(idx, idx)),
+        --     vim.inspect(string.len(line:sub(idx, idx)))
+        -- )
+        -- log.debug(
+        --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, isspace:%s",
+        --     vim.inspect(utils.string_isspace(line:sub(idx, idx)))
+        -- )
+        if utils.string_isspace(line:sub(idx, idx)) then
+          break
         end
+        idx = idx + 1
+      end
+      local name = vim.trim(line:sub(parsed_header.name_pos, idx))
 
-        if _is_ex_command_output_header(line) then
-            found_command_output_header = true
-            parsed_header = _parse_ex_command_output_header(line)
-            log.debug(
-                "|fzfx.config - _parse_ex_command_output| parsed header:%s",
-                vim.inspect(parsed_header)
-            )
-        end
+      idx = math.max(parsed_header.definition_pos, idx)
+      local parsed_line =
+        _parse_ex_command_output_lua_function_definition(line, idx)
+      if parsed_line then
+        results[name] = {
+          filename = parsed_line.filename,
+          lineno = parsed_line.lineno,
+        }
+      end
     end
 
-    return results
+    if _is_ex_command_output_header(line) then
+      found_command_output_header = true
+      parsed_header = _parse_ex_command_output_header(line)
+      log.debug(
+        "|fzfx.config - _parse_ex_command_output| parsed header:%s",
+        vim.inspect(parsed_header)
+      )
+    end
+  end
+
+  return results
 end
 
 --- @return table<string, VimCommand>
 local function _get_vim_user_commands()
-    local parsed_ex_commands = _parse_ex_command_output()
-    local user_commands = vim.api.nvim_get_commands({ builtin = false })
-    log.debug(
-        "|fzfx.config - _get_vim_user_commands| user commands:%s",
-        vim.inspect(user_commands)
-    )
+  local parsed_ex_commands = _parse_ex_command_output()
+  local user_commands = vim.api.nvim_get_commands({ builtin = false })
+  log.debug(
+    "|fzfx.config - _get_vim_user_commands| user commands:%s",
+    vim.inspect(user_commands)
+  )
 
-    local results = {}
-    for name, opts in pairs(user_commands) do
-        if type(opts) == "table" and opts.name == name then
-            results[name] = {
-                name = opts.name,
-                opts = {
-                    bang = opts.bang,
-                    bar = opts.bar,
-                    range = opts.range,
-                    complete = opts.complete,
-                    complete_arg = opts.complete_arg,
-                    desc = opts.definition,
-                    nargs = opts.nargs,
-                },
-            }
-            local parsed = parsed_ex_commands[name]
-            if parsed then
-                results[name].loc = {
-                    filename = parsed.filename,
-                    lineno = parsed.lineno,
-                }
-            end
-        end
+  local results = {}
+  for name, opts in pairs(user_commands) do
+    if type(opts) == "table" and opts.name == name then
+      results[name] = {
+        name = opts.name,
+        opts = {
+          bang = opts.bang,
+          bar = opts.bar,
+          range = opts.range,
+          complete = opts.complete,
+          complete_arg = opts.complete_arg,
+          desc = opts.definition,
+          nargs = opts.nargs,
+        },
+      }
+      local parsed = parsed_ex_commands[name]
+      if parsed then
+        results[name].loc = {
+          filename = parsed.filename,
+          lineno = parsed.lineno,
+        }
+      end
     end
-    return results
+  end
+  return results
 end
 
 --- @param rendered VimCommand
 --- @return string
 local function _render_vim_commands_column_opts(rendered)
-    local bang = (type(rendered.opts) == "table" and rendered.opts.bang) and "Y"
-        or "N"
-    local bar = (type(rendered.opts) == "table" and rendered.opts.bar) and "Y"
-        or "N"
-    local nargs = (type(rendered.opts) == "table" and rendered.opts.nargs)
-            and rendered.opts.nargs
-        or "N/A"
-    local range = (type(rendered.opts) == "table" and rendered.opts.range)
-            and rendered.opts.range
-        or "N/A"
-    local complete = (type(rendered.opts) == "table" and rendered.opts.complete)
-            and (rendered.opts.complete == "<Lua function>" and "<Lua>" or rendered.opts.complete)
-        or "N/A"
+  local bang = (type(rendered.opts) == "table" and rendered.opts.bang) and "Y"
+    or "N"
+  local bar = (type(rendered.opts) == "table" and rendered.opts.bar) and "Y"
+    or "N"
+  local nargs = (type(rendered.opts) == "table" and rendered.opts.nargs)
+      and rendered.opts.nargs
+    or "N/A"
+  local range = (type(rendered.opts) == "table" and rendered.opts.range)
+      and rendered.opts.range
+    or "N/A"
+  local complete = (type(rendered.opts) == "table" and rendered.opts.complete)
+      and (rendered.opts.complete == "<Lua function>" and "<Lua>" or rendered.opts.complete)
+    or "N/A"
 
-    return string.format(
-        "%-4s|%-3s|%-5s|%-5s|%s",
-        bang,
-        bar,
-        nargs,
-        range,
-        complete
-    )
+  return string.format(
+    "%-4s|%-3s|%-5s|%-5s|%s",
+    bang,
+    bar,
+    nargs,
+    range,
+    complete
+  )
 end
 
 --- @param commands VimCommand[]
 --- @return integer,integer
 local function _render_vim_commands_columns_status(commands)
-    local NAME = "Name"
-    local OPTS = "Bang|Bar|Nargs|Range|Complete"
-    local max_name = string.len(NAME)
-    local max_opts = string.len(OPTS)
-    for _, c in ipairs(commands) do
-        max_name = math.max(max_name, string.len(c.name))
-        max_opts =
-            math.max(max_opts, string.len(_render_vim_commands_column_opts(c)))
-    end
-    return max_name, max_opts
+  local NAME = "Name"
+  local OPTS = "Bang|Bar|Nargs|Range|Complete"
+  local max_name = string.len(NAME)
+  local max_opts = string.len(OPTS)
+  for _, c in ipairs(commands) do
+    max_name = math.max(max_name, string.len(c.name))
+    max_opts =
+      math.max(max_opts, string.len(_render_vim_commands_column_opts(c)))
+  end
+  return max_name, max_opts
 end
 
 --- @param commands VimCommand[]
@@ -921,60 +909,56 @@ end
 --- @param opts_width integer
 --- @return string[]
 local function _render_vim_commands(commands, name_width, opts_width)
-    --- @param r VimCommand
-    --- @return string
-    local function rendered_desc_or_loc(r)
-        if
-            type(r.loc) == "table"
-            and type(r.loc.filename) == "string"
-            and type(r.loc.lineno) == "number"
-        then
-            return string.format(
-                "%s:%d",
-                path.reduce(r.loc.filename),
-                r.loc.lineno
-            )
-        else
-            return (type(r.opts) == "table" and type(r.opts.desc) == "string")
-                    and string.format('"%s"', r.opts.desc)
-                or ""
-        end
+  --- @param r VimCommand
+  --- @return string
+  local function rendered_desc_or_loc(r)
+    if
+      type(r.loc) == "table"
+      and type(r.loc.filename) == "string"
+      and type(r.loc.lineno) == "number"
+    then
+      return string.format("%s:%d", path.reduce(r.loc.filename), r.loc.lineno)
+    else
+      return (type(r.opts) == "table" and type(r.opts.desc) == "string")
+          and string.format('"%s"', r.opts.desc)
+        or ""
     end
+  end
 
-    local NAME = "Name"
-    local OPTS = "Bang|Bar|Nargs|Range|Complete"
-    local DEF_OR_LOC = "Definition/Location"
+  local NAME = "Name"
+  local OPTS = "Bang|Bar|Nargs|Range|Complete"
+  local DEF_OR_LOC = "Definition/Location"
 
-    local results = {}
-    local formatter = "%-"
-        .. tostring(name_width)
-        .. "s"
-        .. " "
-        .. "%-"
-        .. tostring(opts_width)
-        .. "s %s"
-    local header = string.format(formatter, NAME, OPTS, DEF_OR_LOC)
-    table.insert(results, header)
-    log.debug(
-        "|fzfx.config - _render_vim_commands| formatter:%s, header:%s",
-        vim.inspect(formatter),
-        vim.inspect(header)
+  local results = {}
+  local formatter = "%-"
+    .. tostring(name_width)
+    .. "s"
+    .. " "
+    .. "%-"
+    .. tostring(opts_width)
+    .. "s %s"
+  local header = string.format(formatter, NAME, OPTS, DEF_OR_LOC)
+  table.insert(results, header)
+  log.debug(
+    "|fzfx.config - _render_vim_commands| formatter:%s, header:%s",
+    vim.inspect(formatter),
+    vim.inspect(header)
+  )
+  for i, c in ipairs(commands) do
+    local rendered = string.format(
+      formatter,
+      c.name,
+      _render_vim_commands_column_opts(c),
+      rendered_desc_or_loc(c)
     )
-    for i, c in ipairs(commands) do
-        local rendered = string.format(
-            formatter,
-            c.name,
-            _render_vim_commands_column_opts(c),
-            rendered_desc_or_loc(c)
-        )
-        log.debug(
-            "|fzfx.config - _render_vim_commands| rendered[%d]:%s",
-            i,
-            vim.inspect(rendered)
-        )
-        table.insert(results, rendered)
-    end
-    return results
+    log.debug(
+      "|fzfx.config - _render_vim_commands| rendered[%d]:%s",
+      i,
+      vim.inspect(rendered)
+    )
+    table.insert(results, rendered)
+  end
+  return results
 end
 
 --- @alias VimCommandLocation {filename:string,lineno:integer}
@@ -984,133 +968,133 @@ end
 --- @param no_user_commands boolean?
 --- @return VimCommand[]
 local function _get_vim_commands(no_ex_commands, no_user_commands)
-    local results = {}
-    local ex_commands = no_ex_commands and {} or _get_vim_ex_commands()
-    log.debug(
-        "|fzfx.config - _get_vim_commands| ex commands:%s",
-        vim.inspect(ex_commands)
-    )
-    local user_commands = no_user_commands and {} or _get_vim_user_commands()
-    log.debug(
-        "|fzfx.config - _get_vim_commands| user commands:%s",
-        vim.inspect(user_commands)
-    )
-    for _, c in pairs(ex_commands) do
-        table.insert(results, c)
-    end
-    for _, c in pairs(user_commands) do
-        table.insert(results, c)
-    end
-    table.sort(results, function(a, b)
-        return a.name < b.name
-    end)
+  local results = {}
+  local ex_commands = no_ex_commands and {} or _get_vim_ex_commands()
+  log.debug(
+    "|fzfx.config - _get_vim_commands| ex commands:%s",
+    vim.inspect(ex_commands)
+  )
+  local user_commands = no_user_commands and {} or _get_vim_user_commands()
+  log.debug(
+    "|fzfx.config - _get_vim_commands| user commands:%s",
+    vim.inspect(user_commands)
+  )
+  for _, c in pairs(ex_commands) do
+    table.insert(results, c)
+  end
+  for _, c in pairs(user_commands) do
+    table.insert(results, c)
+  end
+  table.sort(results, function(a, b)
+    return a.name < b.name
+  end)
 
-    return results
+  return results
 end
 
 --- @alias VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
 --- @return VimCommandsPipelineContext
 local function _vim_commands_context_maker()
-    local ctx = {
-        bufnr = vim.api.nvim_get_current_buf(),
-        winnr = vim.api.nvim_get_current_win(),
-        tabnr = vim.api.nvim_get_current_tabpage(),
-    }
-    local commands = _get_vim_commands()
-    local name_width, opts_width = _render_vim_commands_columns_status(commands)
-    ctx.name_width = name_width
-    ctx.opts_width = opts_width
-    return ctx
+  local ctx = {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+  }
+  local commands = _get_vim_commands()
+  local name_width, opts_width = _render_vim_commands_columns_status(commands)
+  ctx.name_width = name_width
+  ctx.opts_width = opts_width
+  return ctx
 end
 
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_commands_provider(ctx)
-    local commands = _get_vim_commands()
-    return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+  local commands = _get_vim_commands()
+  return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_ex_commands_provider(ctx)
-    local commands = _get_vim_commands(nil, true)
-    return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+  local commands = _get_vim_commands(nil, true)
+  return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param ctx VimCommandsPipelineContext
 --- @return string[]
 local function vim_user_commands_provider(ctx)
-    local commands = _get_vim_commands(true)
-    return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
+  local commands = _get_vim_commands(true)
+  return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
 local function _vim_commands_lua_function_previewer(filename, lineno)
-    local height = vim.api.nvim_win_get_height(0)
-    if constants.has_bat then
-        local style, theme = _default_bat_style_theme()
-        -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
-        return {
-            constants.bat,
-            "--style=" .. style,
-            "--theme=" .. theme,
-            "--color=always",
-            "--pager=never",
-            "--highlight-line=" .. lineno,
-            "--line-range",
-            string.format(
-                "%d:",
-                math.max(lineno - math.max(math.floor(height / 2), 1), 1)
-            ),
-            "--",
-            filename,
-        }
-    else
-        -- "cat %s"
-        return {
-            "cat",
-            filename,
-        }
-    end
+  local height = vim.api.nvim_win_get_height(0)
+  if constants.has_bat then
+    local style, theme = _default_bat_style_theme()
+    -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
+    return {
+      constants.bat,
+      "--style=" .. style,
+      "--theme=" .. theme,
+      "--color=always",
+      "--pager=never",
+      "--highlight-line=" .. lineno,
+      "--line-range",
+      string.format(
+        "%d:",
+        math.max(lineno - math.max(math.floor(height / 2), 1), 1)
+      ),
+      "--",
+      filename,
+    }
+  else
+    -- "cat %s"
+    return {
+      "cat",
+      filename,
+    }
+  end
 end
 
 --- @param line string
 --- @param context VimCommandsPipelineContext
 --- @return string[]|nil
 local function vim_commands_previewer(line, context)
-    local desc_or_loc = line_helpers.parse_vim_command(line, context)
+  local desc_or_loc = line_helpers.parse_vim_command(line, context)
+  log.debug(
+    "|fzfx.config - vim_commands_previewer| line:%s, context:%s, desc_or_loc:%s",
+    vim.inspect(line),
+    vim.inspect(context),
+    vim.inspect(desc_or_loc)
+  )
+  if
+    type(desc_or_loc) == "table"
+    and type(desc_or_loc.filename) == "string"
+    and string.len(desc_or_loc.filename) > 0
+    and type(desc_or_loc.lineno) == "number"
+  then
     log.debug(
-        "|fzfx.config - vim_commands_previewer| line:%s, context:%s, desc_or_loc:%s",
-        vim.inspect(line),
-        vim.inspect(context),
-        vim.inspect(desc_or_loc)
+      "|fzfx.config - vim_commands_previewer| loc:%s",
+      vim.inspect(desc_or_loc)
     )
-    if
-        type(desc_or_loc) == "table"
-        and type(desc_or_loc.filename) == "string"
-        and string.len(desc_or_loc.filename) > 0
-        and type(desc_or_loc.lineno) == "number"
-    then
-        log.debug(
-            "|fzfx.config - vim_commands_previewer| loc:%s",
-            vim.inspect(desc_or_loc)
-        )
-        return _vim_commands_lua_function_previewer(
-            desc_or_loc.filename,
-            desc_or_loc.lineno
-        )
-    elseif constants.has_echo and type(desc_or_loc) == "string" then
-        log.debug(
-            "|fzfx.config - vim_commands_previewer| desc:%s",
-            vim.inspect(desc_or_loc)
-        )
-        return { "echo", desc_or_loc }
-    else
-        log.echo(LogLevels.INFO, "no echo command found.")
-        return nil
-    end
+    return _vim_commands_lua_function_previewer(
+      desc_or_loc.filename,
+      desc_or_loc.lineno
+    )
+  elseif constants.has_echo and type(desc_or_loc) == "string" then
+    log.debug(
+      "|fzfx.config - vim_commands_previewer| desc:%s",
+      vim.inspect(desc_or_loc)
+    )
+    return { "echo", desc_or_loc }
+  else
+    log.echo(LogLevels.INFO, "no echo command found.")
+    return nil
+  end
 end
 
 -- vim commands }
@@ -1118,178 +1102,171 @@ end
 -- lsp diagnostics {
 
 local default_lsp_diagnostic_signs = {
-    [1] = {
-        severity = 1,
-        name = "DiagnosticSignError",
-        text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
-        texthl = vim.fn.hlexists("DiagnosticSignError") > 0
-                and "DiagnosticSignError"
-            or (
-                vim.fn.hlexists("LspDiagnosticsSignError") > 0
-                    and "LspDiagnosticsSignError"
-                or "ErrorMsg"
-            ),
-        textcolor = "red",
-    },
-    [2] = {
-        severity = 2,
-        name = "DiagnosticSignWarn",
-        text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
-        texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0
-                and "DiagnosticSignWarn"
-            or (
-                vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
-                    and "LspDiagnosticsSignWarn"
-                or "WarningMsg"
-            ),
-        textcolor = "orange",
-    },
-    [3] = {
-        severity = 3,
-        name = "DiagnosticSignInfo",
-        text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
-        texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0
-                and "DiagnosticSignInfo"
-            or (
-                vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
-                    and "LspDiagnosticsSignInfo"
-                or "None"
-            ),
-        textcolor = "teal",
-    },
-    [4] = {
-        severity = 4,
-        name = "DiagnosticSignHint",
-        text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
-        texthl = vim.fn.hlexists("DiagnosticSignHint") > 0
-                and "DiagnosticSignHint"
-            or (
-                vim.fn.hlexists("LspDiagnosticsSignHint") > 0
-                    and "LspDiagnosticsSignHint"
-                or "Comment"
-            ),
-        textcolor = "grey",
-    },
+  [1] = {
+    severity = 1,
+    name = "DiagnosticSignError",
+    text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
+    texthl = vim.fn.hlexists("DiagnosticSignError") > 0
+        and "DiagnosticSignError"
+      or (
+        vim.fn.hlexists("LspDiagnosticsSignError") > 0
+          and "LspDiagnosticsSignError"
+        or "ErrorMsg"
+      ),
+    textcolor = "red",
+  },
+  [2] = {
+    severity = 2,
+    name = "DiagnosticSignWarn",
+    text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
+    texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0 and "DiagnosticSignWarn"
+      or (
+        vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
+          and "LspDiagnosticsSignWarn"
+        or "WarningMsg"
+      ),
+    textcolor = "orange",
+  },
+  [3] = {
+    severity = 3,
+    name = "DiagnosticSignInfo",
+    text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
+    texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0 and "DiagnosticSignInfo"
+      or (
+        vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
+          and "LspDiagnosticsSignInfo"
+        or "None"
+      ),
+    textcolor = "teal",
+  },
+  [4] = {
+    severity = 4,
+    name = "DiagnosticSignHint",
+    text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
+    texthl = vim.fn.hlexists("DiagnosticSignHint") > 0 and "DiagnosticSignHint"
+      or (
+        vim.fn.hlexists("LspDiagnosticsSignHint") > 0
+          and "LspDiagnosticsSignHint"
+        or "Comment"
+      ),
+    textcolor = "grey",
+  },
 }
 
 -- simulate rg's filepath color, see:
 -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
 -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
 local default_lsp_filename_color = constants.is_windows and color.cyan
-    or color.magenta
+  or color.magenta
 
 local default_no_lsp_clients_error = "no active lsp clients."
 local default_no_lsp_diagnostics_error = "no lsp diagnostics found."
 
 --- @return {severity:integer,name:string,text:string,texthl:string,textcolor:string}[]
 local function _make_lsp_diagnostic_signs()
-    local results = {}
-    for _, signs in ipairs(default_lsp_diagnostic_signs) do
-        local sign_def = vim.fn.sign_getdefined(signs.name)
-        local item = vim.deepcopy(signs)
-        if type(sign_def) == "table" and not vim.tbl_isempty(sign_def) then
-            item.text = vim.trim(sign_def[1].text)
-            item.texthl = sign_def[1].texthl
-        end
-        table.insert(results, item)
+  local results = {}
+  for _, signs in ipairs(default_lsp_diagnostic_signs) do
+    local sign_def = vim.fn.sign_getdefined(signs.name)
+    local item = vim.deepcopy(signs)
+    if type(sign_def) == "table" and not vim.tbl_isempty(sign_def) then
+      item.text = vim.trim(sign_def[1].text)
+      item.texthl = sign_def[1].texthl
     end
-    return results
+    table.insert(results, item)
+  end
+  return results
 end
 
 --- @alias DiagItem {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}
 --- @param diag {bufnr:integer,lnum:integer,col:integer,message:string,severity:integer}
 --- @return DiagItem?
 local function _process_lsp_diagnostic_item(diag)
-    if not vim.api.nvim_buf_is_valid(diag.bufnr) then
-        return nil
-    end
-    log.debug(
-        "|fzfx.config - _process_lsp_diagnostic_item| diag-1:%s",
-        vim.inspect(diag)
-    )
-    local result = {
-        bufnr = diag.bufnr,
-        filename = path.reduce(vim.api.nvim_buf_get_name(diag.bufnr)),
-        lnum = diag.lnum + 1,
-        col = diag.col + 1,
-        text = vim.trim(diag.message:gsub("\n", " ")),
-        severity = diag.severity or 1,
-    }
-    log.debug(
-        "|fzfx.config - _process_lsp_diagnostic_item| diag-2:%s, result:%s",
-        vim.inspect(diag),
-        vim.inspect(result)
-    )
-    return result
+  if not vim.api.nvim_buf_is_valid(diag.bufnr) then
+    return nil
+  end
+  log.debug(
+    "|fzfx.config - _process_lsp_diagnostic_item| diag-1:%s",
+    vim.inspect(diag)
+  )
+  local result = {
+    bufnr = diag.bufnr,
+    filename = path.reduce(vim.api.nvim_buf_get_name(diag.bufnr)),
+    lnum = diag.lnum + 1,
+    col = diag.col + 1,
+    text = vim.trim(diag.message:gsub("\n", " ")),
+    severity = diag.severity or 1,
+  }
+  log.debug(
+    "|fzfx.config - _process_lsp_diagnostic_item| diag-2:%s, result:%s",
+    vim.inspect(diag),
+    vim.inspect(result)
+  )
+  return result
 end
 
 --- @param opts {buffer:boolean?}?
 --- @return fun(query:string,context:PipelineContext):string[]|nil
 local function _make_lsp_diagnostics_provider(opts)
-    local signs = _make_lsp_diagnostic_signs()
+  local signs = _make_lsp_diagnostic_signs()
 
-    --- @param query string
-    --- @param context PipelineContext
-    --- @return string[]|nil
-    local function impl(query, context)
-        local lsp_clients = vim.lsp.get_active_clients()
-        if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
-            log.echo(LogLevels.INFO, default_no_lsp_clients_error)
-            return nil
-        end
-        local diag_list = vim.diagnostic.get(
-            (type(opts) == "table" and opts.buffer) and context.bufnr or nil
-        )
-        if diag_list == nil or vim.tbl_isempty(diag_list) then
-            log.echo(LogLevels.INFO, default_no_lsp_diagnostics_error)
-            return nil
-        end
-        -- sort order: error > warn > info > hint
-        table.sort(diag_list, function(a, b)
-            return a.severity < b.severity
-        end)
-
-        local results = {}
-        for _, item in ipairs(diag_list) do
-            local diag = _process_lsp_diagnostic_item(item)
-            if diag then
-                -- it looks like:
-                -- `lua/fzfx/config.lua:10:13: Unused local `query`.
-                log.debug(
-                    "|fzfx.config - _make_lsp_diagnostics_provider| diag:%s",
-                    vim.inspect(diag)
-                )
-                local builder = ""
-                if
-                    type(diag.text) == "string"
-                    and string.len(diag.text) > 0
-                then
-                    if type(signs[diag.severity]) == "table" then
-                        local sign_item = signs[diag.severity]
-                        local color_renderer = color[sign_item.textcolor]
-                        builder = " "
-                            .. color_renderer(sign_item.text, sign_item.texthl)
-                    end
-                    builder = builder .. " " .. diag.text
-                end
-                log.debug(
-                    "|fzfx.config - _make_lsp_diagnostics_provider| diag:%s, builder:%s",
-                    vim.inspect(diag),
-                    vim.inspect(builder)
-                )
-                local line = string.format(
-                    "%s:%s:%s:%s",
-                    default_lsp_filename_color(diag.filename),
-                    color.green(tostring(diag.lnum)),
-                    tostring(diag.col),
-                    builder
-                )
-                table.insert(results, line)
-            end
-        end
-        return results
+  --- @param query string
+  --- @param context PipelineContext
+  --- @return string[]|nil
+  local function impl(query, context)
+    local lsp_clients = vim.lsp.get_active_clients()
+    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+      log.echo(LogLevels.INFO, default_no_lsp_clients_error)
+      return nil
     end
-    return impl
+    local diag_list = vim.diagnostic.get(
+      (type(opts) == "table" and opts.buffer) and context.bufnr or nil
+    )
+    if diag_list == nil or vim.tbl_isempty(diag_list) then
+      log.echo(LogLevels.INFO, default_no_lsp_diagnostics_error)
+      return nil
+    end
+    -- sort order: error > warn > info > hint
+    table.sort(diag_list, function(a, b)
+      return a.severity < b.severity
+    end)
+
+    local results = {}
+    for _, item in ipairs(diag_list) do
+      local diag = _process_lsp_diagnostic_item(item)
+      if diag then
+        -- it looks like:
+        -- `lua/fzfx/config.lua:10:13: Unused local `query`.
+        log.debug(
+          "|fzfx.config - _make_lsp_diagnostics_provider| diag:%s",
+          vim.inspect(diag)
+        )
+        local builder = ""
+        if type(diag.text) == "string" and string.len(diag.text) > 0 then
+          if type(signs[diag.severity]) == "table" then
+            local sign_item = signs[diag.severity]
+            local color_renderer = color[sign_item.textcolor]
+            builder = " " .. color_renderer(sign_item.text, sign_item.texthl)
+          end
+          builder = builder .. " " .. diag.text
+        end
+        log.debug(
+          "|fzfx.config - _make_lsp_diagnostics_provider| diag:%s, builder:%s",
+          vim.inspect(diag),
+          vim.inspect(builder)
+        )
+        local line = string.format(
+          "%s:%s:%s:%s",
+          default_lsp_filename_color(diag.filename),
+          color.green(tostring(diag.lnum)),
+          tostring(diag.col),
+          builder
+        )
+        table.insert(results, line)
+      end
+    end
+    return results
+  end
+  return impl
 end
 
 -- lsp diagnostics }
@@ -1305,27 +1282,27 @@ end
 --- @param r LspLocationRange?
 --- @return boolean
 local function _is_lsp_range(r)
-    return type(r) == "table"
-        and type(r.start) == "table"
-        and type(r.start.line) == "number"
-        and type(r.start.character) == "number"
-        and type(r["end"]) == "table"
-        and type(r["end"].line) == "number"
-        and type(r["end"].character) == "number"
+  return type(r) == "table"
+    and type(r.start) == "table"
+    and type(r.start.line) == "number"
+    and type(r.start.character) == "number"
+    and type(r["end"]) == "table"
+    and type(r["end"].line) == "number"
+    and type(r["end"].character) == "number"
 end
 
 --- @param loc LspLocation|LspLocationLink|nil
 local function _is_lsp_location(loc)
-    return type(loc) == "table"
-        and type(loc.uri) == "string"
-        and _is_lsp_range(loc.range)
+  return type(loc) == "table"
+    and type(loc.uri) == "string"
+    and _is_lsp_range(loc.range)
 end
 
 --- @param loc LspLocation|LspLocationLink|nil
 local function _is_lsp_locationlink(loc)
-    return type(loc) == "table"
-        and type(loc.targetUri) == "string"
-        and _is_lsp_range(loc.targetRange)
+  return type(loc) == "table"
+    and type(loc.targetUri) == "string"
+    and _is_lsp_range(loc.targetRange)
 end
 
 --- @param line string
@@ -1333,105 +1310,102 @@ end
 --- @param color_renderer fun(text:string):string
 --- @return string?
 local function _lsp_location_render_line(line, range, color_renderer)
-    log.debug(
-        "|fzfx.config - _lsp_location_render_line| range:%s, line:%s",
-        vim.inspect(range),
-        vim.inspect(line)
-    )
-    local line_start = range.start.character + 1
-    local line_end = range["end"].line ~= range.start.line and #line
-        or math.min(range["end"].character, #line)
-    local p1 = ""
-    if line_start > 1 then
-        p1 = line:sub(1, line_start - 1)
-    end
-    local p2 = ""
-    if line_start <= line_end then
-        p2 = color_renderer(line:sub(line_start, line_end))
-    end
-    local p3 = ""
-    if line_end + 1 <= #line then
-        p3 = line:sub(line_end + 1, #line)
-    end
-    local result = p1 .. p2 .. p3
-    return result
+  log.debug(
+    "|fzfx.config - _lsp_location_render_line| range:%s, line:%s",
+    vim.inspect(range),
+    vim.inspect(line)
+  )
+  local line_start = range.start.character + 1
+  local line_end = range["end"].line ~= range.start.line and #line
+    or math.min(range["end"].character, #line)
+  local p1 = ""
+  if line_start > 1 then
+    p1 = line:sub(1, line_start - 1)
+  end
+  local p2 = ""
+  if line_start <= line_end then
+    p2 = color_renderer(line:sub(line_start, line_end))
+  end
+  local p3 = ""
+  if line_end + 1 <= #line then
+    p3 = line:sub(line_end + 1, #line)
+  end
+  local result = p1 .. p2 .. p3
+  return result
 end
 
 --- @alias LspLocationPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,position_params:any}
 --- @return LspLocationPipelineContext
 local function _lsp_position_context_maker()
-    local context = {
-        bufnr = vim.api.nvim_get_current_buf(),
-        winnr = vim.api.nvim_get_current_win(),
-        tabnr = vim.api.nvim_get_current_tabpage(),
-    }
-    context.position_params =
-        vim.lsp.util.make_position_params(context.winnr, nil)
-    context.position_params.context = {
-        includeDeclaration = true,
-    }
-    return context
+  local context = {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+  }
+  context.position_params =
+    vim.lsp.util.make_position_params(context.winnr, nil)
+  context.position_params.context = {
+    includeDeclaration = true,
+  }
+  return context
 end
 
 --- @param loc LspLocation|LspLocationLink
 --- @return string?
 local function _render_lsp_location_line(loc)
+  log.debug(
+    "|fzfx.config - _render_lsp_location_line| loc:%s",
+    vim.inspect(loc)
+  )
+  local filename = nil
+  --- @type LspLocationRange
+  local range = nil
+  if _is_lsp_location(loc) then
+    filename = path.reduce(vim.uri_to_fname(loc.uri))
+    range = loc.range
     log.debug(
-        "|fzfx.config - _render_lsp_location_line| loc:%s",
-        vim.inspect(loc)
+      "|fzfx.config - _render_lsp_location_line| location filename:%s, range:%s",
+      vim.inspect(filename),
+      vim.inspect(range)
     )
-    local filename = nil
-    --- @type LspLocationRange
-    local range = nil
-    if _is_lsp_location(loc) then
-        filename = path.reduce(vim.uri_to_fname(loc.uri))
-        range = loc.range
-        log.debug(
-            "|fzfx.config - _render_lsp_location_line| location filename:%s, range:%s",
-            vim.inspect(filename),
-            vim.inspect(range)
-        )
-    elseif _is_lsp_locationlink(loc) then
-        filename = path.reduce(vim.uri_to_fname(loc.targetUri))
-        range = loc.targetRange
-        log.debug(
-            "|fzfx.config - _render_lsp_location_line| locationlink filename:%s, range:%s",
-            vim.inspect(filename),
-            vim.inspect(range)
-        )
-    end
-    if not _is_lsp_range(range) then
-        return nil
-    end
-    if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
-        return nil
-    end
-    local filelines = utils.readlines(filename)
-    if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
-        return nil
-    end
-    local loc_line = _lsp_location_render_line(
-        filelines[range.start.line + 1],
-        range,
-        color.red
-    )
+  elseif _is_lsp_locationlink(loc) then
+    filename = path.reduce(vim.uri_to_fname(loc.targetUri))
+    range = loc.targetRange
     log.debug(
-        "|fzfx.config - _render_lsp_location_line| range:%s, loc_line:%s",
-        vim.inspect(range),
-        vim.inspect(loc_line)
+      "|fzfx.config - _render_lsp_location_line| locationlink filename:%s, range:%s",
+      vim.inspect(filename),
+      vim.inspect(range)
     )
-    local line = string.format(
-        "%s:%s:%s:%s",
-        default_lsp_filename_color(vim.fn.fnamemodify(filename, ":~:.")),
-        color.green(tostring(range.start.line + 1)),
-        tostring(range.start.character + 1),
-        loc_line
-    )
-    log.debug(
-        "|fzfx.config - _render_lsp_location_line| line:%s",
-        vim.inspect(line)
-    )
-    return line
+  end
+  if not _is_lsp_range(range) then
+    return nil
+  end
+  if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
+    return nil
+  end
+  local filelines = utils.readlines(filename)
+  if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
+    return nil
+  end
+  local loc_line =
+    _lsp_location_render_line(filelines[range.start.line + 1], range, color.red)
+  log.debug(
+    "|fzfx.config - _render_lsp_location_line| range:%s, loc_line:%s",
+    vim.inspect(range),
+    vim.inspect(loc_line)
+  )
+  local line = string.format(
+    "%s:%s:%s:%s",
+    default_lsp_filename_color(vim.fn.fnamemodify(filename, ":~:.")),
+    color.green(tostring(range.start.line + 1)),
+    tostring(range.start.character + 1),
+    loc_line
+  )
+  log.debug(
+    "|fzfx.config - _render_lsp_location_line| line:%s",
+    vim.inspect(line)
+  )
+  return line
 end
 
 local default_no_lsp_locations_error = "no lsp locations found."
@@ -1442,89 +1416,84 @@ local default_no_lsp_locations_error = "no lsp locations found."
 --- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:LspLocationPipelineContext):string[]|nil
 local function _make_lsp_locations_provider(opts)
-    --- @param query string
-    --- @param context LspLocationPipelineContext
-    --- @return string[]|nil
-    local function impl(query, context)
-        local lsp_clients =
-            vim.lsp.get_active_clients({ bufnr = context.bufnr })
-        if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
-            log.echo(LogLevels.INFO, default_no_lsp_clients_error)
-            return nil
-        end
-        log.debug(
-            "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
-            vim.inspect(lsp_clients)
-        )
-        local method_supported = false
-        for _, lsp_client in ipairs(lsp_clients) do
-            if lsp_client.server_capabilities[opts.capability] then
-                method_supported = true
-                break
-            end
-        end
-        if not method_supported then
-            log.echo(
-                LogLevels.INFO,
-                "%s not supported.",
-                vim.inspect(opts.method)
-            )
-            return nil
-        end
-        local lsp_results, lsp_err = vim.lsp.buf_request_sync(
-            context.bufnr,
-            opts.method,
-            context.position_params,
-            opts.timeout or 3000
-        )
-        log.debug(
-            "|fzfx.config - _make_lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
-            vim.inspect(opts),
-            vim.inspect(lsp_results),
-            vim.inspect(lsp_err)
-        )
-        if lsp_err then
-            log.echo(LogLevels.ERROR, lsp_err)
-            return nil
-        end
-        if type(lsp_results) ~= "table" then
-            log.echo(LogLevels.INFO, default_no_lsp_locations_error)
-            return nil
-        end
-
-        local results = {}
-        for client_id, lsp_result in pairs(lsp_results) do
-            if
-                client_id == nil
-                or type(lsp_result) ~= "table"
-                or type(lsp_result.result) ~= "table"
-            then
-                break
-            end
-            local lsp_loc = lsp_result.result
-            if _is_lsp_location(lsp_loc) then
-                local line = _render_lsp_location_line(lsp_loc)
-                if type(line) == "string" and string.len(line) > 0 then
-                    table.insert(results, line)
-                end
-            else
-                for _, def in ipairs(lsp_loc) do
-                    local line = _render_lsp_location_line(def)
-                    if type(line) == "string" and string.len(line) > 0 then
-                        table.insert(results, line)
-                    end
-                end
-            end
-        end
-
-        if vim.tbl_isempty(results) then
-            log.echo(LogLevels.INFO, default_no_lsp_locations_error)
-            return nil
-        end
-
-        return results
+  --- @param query string
+  --- @param context LspLocationPipelineContext
+  --- @return string[]|nil
+  local function impl(query, context)
+    local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
+    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+      log.echo(LogLevels.INFO, default_no_lsp_clients_error)
+      return nil
     end
-    return impl
+    log.debug(
+      "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
+      vim.inspect(lsp_clients)
+    )
+    local method_supported = false
+    for _, lsp_client in ipairs(lsp_clients) do
+      if lsp_client.server_capabilities[opts.capability] then
+        method_supported = true
+        break
+      end
+    end
+    if not method_supported then
+      log.echo(LogLevels.INFO, "%s not supported.", vim.inspect(opts.method))
+      return nil
+    end
+    local lsp_results, lsp_err = vim.lsp.buf_request_sync(
+      context.bufnr,
+      opts.method,
+      context.position_params,
+      opts.timeout or 3000
+    )
+    log.debug(
+      "|fzfx.config - _make_lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
+      vim.inspect(opts),
+      vim.inspect(lsp_results),
+      vim.inspect(lsp_err)
+    )
+    if lsp_err then
+      log.echo(LogLevels.ERROR, lsp_err)
+      return nil
+    end
+    if type(lsp_results) ~= "table" then
+      log.echo(LogLevels.INFO, default_no_lsp_locations_error)
+      return nil
+    end
+
+    local results = {}
+    for client_id, lsp_result in pairs(lsp_results) do
+      if
+        client_id == nil
+        or type(lsp_result) ~= "table"
+        or type(lsp_result.result) ~= "table"
+      then
+        break
+      end
+      local lsp_loc = lsp_result.result
+      if _is_lsp_location(lsp_loc) then
+        local line = _render_lsp_location_line(lsp_loc)
+        if type(line) == "string" and string.len(line) > 0 then
+          table.insert(results, line)
+        end
+      else
+        for _, def in ipairs(lsp_loc) do
+          local line = _render_lsp_location_line(def)
+          if type(line) == "string" and string.len(line) > 0 then
+            table.insert(results, line)
+          end
+        end
+      end
+    end
+
+    if vim.tbl_isempty(results) then
+      log.echo(LogLevels.INFO, default_no_lsp_locations_error)
+      return nil
+    end
+
+    return results
+  end
+  return impl
 end
 
 -- lsp locations }
@@ -1568,211 +1537,204 @@ end
 --- @param line string
 --- @return VimKeyMap
 local function _parse_map_command_output_line(line)
-    local first_space_pos = 1
-    while
-        first_space_pos <= #line
-        and not utils.string_isspace(line:sub(first_space_pos, first_space_pos))
-    do
-        first_space_pos = first_space_pos + 1
-    end
-    -- local mode = vim.trim(line:sub(1, first_space_pos - 1))
-    while
-        first_space_pos <= #line
-        and utils.string_isspace(line:sub(first_space_pos, first_space_pos))
-    do
-        first_space_pos = first_space_pos + 1
-    end
-    local second_space_pos = first_space_pos
-    while
-        second_space_pos <= #line
-        and not utils.string_isspace(
-            line:sub(second_space_pos, second_space_pos)
-        )
-    do
-        second_space_pos = second_space_pos + 1
-    end
-    local lhs = vim.trim(line:sub(first_space_pos, second_space_pos - 1))
-    local result = { lhs = lhs }
-    local rhs_or_location = vim.trim(line:sub(second_space_pos))
-    local lua_definition_pos = utils.string_find(rhs_or_location, "<Lua ")
+  local first_space_pos = 1
+  while
+    first_space_pos <= #line
+    and not utils.string_isspace(line:sub(first_space_pos, first_space_pos))
+  do
+    first_space_pos = first_space_pos + 1
+  end
+  -- local mode = vim.trim(line:sub(1, first_space_pos - 1))
+  while
+    first_space_pos <= #line
+    and utils.string_isspace(line:sub(first_space_pos, first_space_pos))
+  do
+    first_space_pos = first_space_pos + 1
+  end
+  local second_space_pos = first_space_pos
+  while
+    second_space_pos <= #line
+    and not utils.string_isspace(line:sub(second_space_pos, second_space_pos))
+  do
+    second_space_pos = second_space_pos + 1
+  end
+  local lhs = vim.trim(line:sub(first_space_pos, second_space_pos - 1))
+  local result = { lhs = lhs }
+  local rhs_or_location = vim.trim(line:sub(second_space_pos))
+  local lua_definition_pos = utils.string_find(rhs_or_location, "<Lua ")
 
-    if lua_definition_pos and utils.string_endswith(rhs_or_location, ">") then
-        local first_colon_pos = utils.string_find(
-            rhs_or_location,
-            ":",
-            lua_definition_pos + string.len("<Lua ")
-        ) --[[@as integer]]
-        local last_colon_pos = utils.string_rfind(rhs_or_location, ":") --[[@as integer]]
-        local filename =
-            rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
-        local lineno =
-            rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
-        log.debug(
-            "|fzfx.config - _parse_map_command_output_line| lhs:%s, filename:%s, lineno:%s",
-            vim.inspect(lhs),
-            vim.inspect(filename),
-            vim.inspect(lineno)
-        )
-        result.filename = path.normalize(filename, { expand = true })
-        result.lineno = tonumber(lineno)
-    end
-    return result
+  if lua_definition_pos and utils.string_endswith(rhs_or_location, ">") then
+    local first_colon_pos = utils.string_find(
+      rhs_or_location,
+      ":",
+      lua_definition_pos + string.len("<Lua ")
+    ) --[[@as integer]]
+    local last_colon_pos = utils.string_rfind(rhs_or_location, ":") --[[@as integer]]
+    local filename =
+      rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
+    local lineno = rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
+    log.debug(
+      "|fzfx.config - _parse_map_command_output_line| lhs:%s, filename:%s, lineno:%s",
+      vim.inspect(lhs),
+      vim.inspect(filename),
+      vim.inspect(lineno)
+    )
+    result.filename = path.normalize(filename, { expand = true })
+    result.lineno = tonumber(lineno)
+  end
+  return result
 end
 
 --- @alias VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
 --- @return VimKeyMap[]
 local function _get_vim_keymaps()
-    local tmpfile = vim.fn.tempname()
-    vim.cmd(string.format(
-        [[
+  local tmpfile = vim.fn.tempname()
+  vim.cmd(string.format(
+    [[
     redir! > %s
     silent execute 'verbose map'
     redir END
     ]],
-        tmpfile
-    ))
+    tmpfile
+  ))
 
-    local keys_output_map = {}
-    local map_output_lines = utils.readlines(tmpfile) --[[@as table]]
+  local keys_output_map = {}
+  local map_output_lines = utils.readlines(tmpfile) --[[@as table]]
 
-    local LAST_SET_FROM = "\tLast set from "
-    local LAST_SET_FROM_LUA = "\tLast set from Lua"
-    local LINE = " line "
-    local last_lhs = nil
-    for i = 1, #map_output_lines do
-        local line = map_output_lines[i]
-        if type(line) == "string" and string.len(vim.trim(line)) > 0 then
-            if utils.string_isalpha(line:sub(1, 1)) then
-                local parsed = _parse_map_command_output_line(line)
-                keys_output_map[parsed.lhs] = parsed
-                last_lhs = parsed.lhs
-            elseif
-                utils.string_startswith(line, LAST_SET_FROM)
-                and utils.string_rfind(line, LINE)
-                and not utils.string_startswith(line, LAST_SET_FROM_LUA)
-                and last_lhs
-            then
-                local line_pos = utils.string_rfind(line, LINE)
-                local filename = vim.trim(
-                    line:sub(string.len(LAST_SET_FROM) + 1, line_pos - 1)
-                )
-                local lineno = vim.trim(line:sub(line_pos + string.len(LINE)))
-                keys_output_map[last_lhs].filename =
-                    path.normalize(filename, { expand = true })
-                keys_output_map[last_lhs].lineno = tonumber(lineno)
-            end
-        end
+  local LAST_SET_FROM = "\tLast set from "
+  local LAST_SET_FROM_LUA = "\tLast set from Lua"
+  local LINE = " line "
+  local last_lhs = nil
+  for i = 1, #map_output_lines do
+    local line = map_output_lines[i]
+    if type(line) == "string" and string.len(vim.trim(line)) > 0 then
+      if utils.string_isalpha(line:sub(1, 1)) then
+        local parsed = _parse_map_command_output_line(line)
+        keys_output_map[parsed.lhs] = parsed
+        last_lhs = parsed.lhs
+      elseif
+        utils.string_startswith(line, LAST_SET_FROM)
+        and utils.string_rfind(line, LINE)
+        and not utils.string_startswith(line, LAST_SET_FROM_LUA)
+        and last_lhs
+      then
+        local line_pos = utils.string_rfind(line, LINE)
+        local filename =
+          vim.trim(line:sub(string.len(LAST_SET_FROM) + 1, line_pos - 1))
+        local lineno = vim.trim(line:sub(line_pos + string.len(LINE)))
+        keys_output_map[last_lhs].filename =
+          path.normalize(filename, { expand = true })
+        keys_output_map[last_lhs].lineno = tonumber(lineno)
+      end
     end
-    -- log.debug(
-    --     "|fzfx.config - _get_vim_keymaps| keys_output_map1:%s",
-    --     vim.inspect(keys_output_map)
-    -- )
-    local api_keys_list = vim.api.nvim_get_keymap("")
-    -- log.debug(
-    --     "|fzfx.config - _get_vim_keymaps| api_keys_list:%s",
-    --     vim.inspect(api_keys_list)
-    -- )
-    local api_keys_map = {}
-    for _, km in ipairs(api_keys_list) do
-        if not api_keys_map[km.lhs] then
-            api_keys_map[km.lhs] = km
-        end
+  end
+  -- log.debug(
+  --     "|fzfx.config - _get_vim_keymaps| keys_output_map1:%s",
+  --     vim.inspect(keys_output_map)
+  -- )
+  local api_keys_list = vim.api.nvim_get_keymap("")
+  -- log.debug(
+  --     "|fzfx.config - _get_vim_keymaps| api_keys_list:%s",
+  --     vim.inspect(api_keys_list)
+  -- )
+  local api_keys_map = {}
+  for _, km in ipairs(api_keys_list) do
+    if not api_keys_map[km.lhs] then
+      api_keys_map[km.lhs] = km
     end
+  end
 
-    local function get_boolean(v, default_value)
-        if type(v) == "number" then
-            return v > 0
-        elseif type(v) == "boolean" then
-            return v
-        else
-            return default_value
-        end
+  local function get_boolean(v, default_value)
+    if type(v) == "number" then
+      return v > 0
+    elseif type(v) == "boolean" then
+      return v
+    else
+      return default_value
     end
-    local function get_string(v, default_value)
-        if type(v) == "string" and string.len(v) > 0 then
-            return v
-        else
-            return default_value
-        end
+  end
+  local function get_string(v, default_value)
+    if type(v) == "string" and string.len(v) > 0 then
+      return v
+    else
+      return default_value
     end
+  end
 
-    local function get_key_def(keys, left)
-        if keys[left] then
-            return keys[left]
-        end
-        if
-            utils.string_startswith(left, "<Space>")
-            or utils.string_startswith(left, "<space>")
-        then
-            return keys[" " .. left:sub(string.len("<Space>") + 1)]
-        end
-        return nil
+  local function get_key_def(keys, left)
+    if keys[left] then
+      return keys[left]
     end
+    if
+      utils.string_startswith(left, "<Space>")
+      or utils.string_startswith(left, "<space>")
+    then
+      return keys[" " .. left:sub(string.len("<Space>") + 1)]
+    end
+    return nil
+  end
 
-    for lhs, km in pairs(keys_output_map) do
-        local km2 = get_key_def(api_keys_map, lhs)
-        if km2 then
-            km.rhs = get_string(km2.rhs, "")
-            km.mode = get_string(km2.mode, "")
-            km.noremap = get_boolean(km2.noremap, false)
-            km.nowait = get_boolean(km2.nowait, false)
-            km.silent = get_boolean(km2.silent, false)
-            km.desc = get_string(km2.desc, "")
-        else
-            km.rhs = get_string(km.rhs, "")
-            km.mode = get_string(km.mode, "")
-            km.noremap = get_boolean(km.noremap, false)
-            km.nowait = get_boolean(km.nowait, false)
-            km.silent = get_boolean(km.silent, false)
-            km.desc = get_string(km.desc, "")
-        end
+  for lhs, km in pairs(keys_output_map) do
+    local km2 = get_key_def(api_keys_map, lhs)
+    if km2 then
+      km.rhs = get_string(km2.rhs, "")
+      km.mode = get_string(km2.mode, "")
+      km.noremap = get_boolean(km2.noremap, false)
+      km.nowait = get_boolean(km2.nowait, false)
+      km.silent = get_boolean(km2.silent, false)
+      km.desc = get_string(km2.desc, "")
+    else
+      km.rhs = get_string(km.rhs, "")
+      km.mode = get_string(km.mode, "")
+      km.noremap = get_boolean(km.noremap, false)
+      km.nowait = get_boolean(km.nowait, false)
+      km.silent = get_boolean(km.silent, false)
+      km.desc = get_string(km.desc, "")
     end
-    log.debug(
-        "|fzfx.config - _get_vim_keymaps| keys_output_map2:%s",
-        vim.inspect(keys_output_map)
-    )
-    local results = {}
-    for _, r in pairs(keys_output_map) do
-        table.insert(results, r)
-    end
-    table.sort(results, function(a, b)
-        return a.lhs < b.lhs
-    end)
-    log.debug(
-        "|fzfx.config - _get_vim_keymaps| results:%s",
-        vim.inspect(results)
-    )
-    return results
+  end
+  log.debug(
+    "|fzfx.config - _get_vim_keymaps| keys_output_map2:%s",
+    vim.inspect(keys_output_map)
+  )
+  local results = {}
+  for _, r in pairs(keys_output_map) do
+    table.insert(results, r)
+  end
+  table.sort(results, function(a, b)
+    return a.lhs < b.lhs
+  end)
+  log.debug("|fzfx.config - _get_vim_keymaps| results:%s", vim.inspect(results))
+  return results
 end
 
 --- @param rendered VimKeyMap
 --- @return string
 local function _render_vim_keymaps_column_opts(rendered)
-    local mode = rendered.mode or ""
-    local noremap = rendered.noremap and "Y" or "N"
-    local nowait = rendered.nowait and "Y" or "N"
-    local silent = rendered.silent and "Y" or "N"
-    return string.format("%-4s|%-7s|%-6s|%-6s", mode, noremap, nowait, silent)
+  local mode = rendered.mode or ""
+  local noremap = rendered.noremap and "Y" or "N"
+  local nowait = rendered.nowait and "Y" or "N"
+  local silent = rendered.silent and "Y" or "N"
+  return string.format("%-4s|%-7s|%-6s|%-6s", mode, noremap, nowait, silent)
 end
 
 --- @param keys VimKeyMap[]
 --- @return integer,integer
 local function _render_vim_keymaps_columns_status(keys)
-    local KEY = "Key"
-    local OPTS = "Mode|Noremap|Nowait|Silent"
-    local max_key = string.len(KEY)
-    local max_opts = string.len(OPTS)
-    for _, k in ipairs(keys) do
-        max_key = math.max(max_key, string.len(k.lhs))
-        max_opts =
-            math.max(max_opts, string.len(_render_vim_keymaps_column_opts(k)))
-    end
-    log.debug(
-        "|fzfx.config - _render_vim_keymaps_columns_status| lhs:%s, opts:%s",
-        vim.inspect(max_key),
-        vim.inspect(max_opts)
-    )
-    return max_key, max_opts
+  local KEY = "Key"
+  local OPTS = "Mode|Noremap|Nowait|Silent"
+  local max_key = string.len(KEY)
+  local max_opts = string.len(OPTS)
+  for _, k in ipairs(keys) do
+    max_key = math.max(max_key, string.len(k.lhs))
+    max_opts =
+      math.max(max_opts, string.len(_render_vim_keymaps_column_opts(k)))
+  end
+  log.debug(
+    "|fzfx.config - _render_vim_keymaps_columns_status| lhs:%s, opts:%s",
+    vim.inspect(max_key),
+    vim.inspect(max_opts)
+  )
+  return max_key, max_opts
 end
 
 --- @param keymaps VimKeyMap[]
@@ -1780,185 +1742,185 @@ end
 --- @param opts_width integer
 --- @return string[]
 local function _render_vim_keymaps(keymaps, key_width, opts_width)
-    --- @param r VimKeyMap
-    --- @return string?
-    local function rendered_def_or_loc(r)
-        if
-            type(r) == "table"
-            and type(r.filename) == "string"
-            and string.len(r.filename) > 0
-            and type(r.lineno) == "number"
-            and r.lineno >= 0
-        then
-            return string.format("%s:%d", path.reduce(r.filename), r.lineno)
-        elseif type(r.rhs) == "string" and string.len(r.rhs) > 0 then
-            return string.format('"%s"', r.rhs)
-        elseif type(r.desc) == "string" and string.len(r.desc) > 0 then
-            return string.format('"%s"', r.desc)
-        else
-            return ""
-        end
+  --- @param r VimKeyMap
+  --- @return string?
+  local function rendered_def_or_loc(r)
+    if
+      type(r) == "table"
+      and type(r.filename) == "string"
+      and string.len(r.filename) > 0
+      and type(r.lineno) == "number"
+      and r.lineno >= 0
+    then
+      return string.format("%s:%d", path.reduce(r.filename), r.lineno)
+    elseif type(r.rhs) == "string" and string.len(r.rhs) > 0 then
+      return string.format('"%s"', r.rhs)
+    elseif type(r.desc) == "string" and string.len(r.desc) > 0 then
+      return string.format('"%s"', r.desc)
+    else
+      return ""
     end
+  end
 
-    local KEY = "Key"
-    local OPTS = "Mode|Noremap|Nowait|Silent"
-    local DEF_OR_LOC = "Definition/Location"
+  local KEY = "Key"
+  local OPTS = "Mode|Noremap|Nowait|Silent"
+  local DEF_OR_LOC = "Definition/Location"
 
-    local results = {}
-    local formatter = "%-"
-        .. tostring(key_width)
-        .. "s"
-        .. " %-"
-        .. tostring(opts_width)
-        .. "s %s"
-    local header = string.format(formatter, KEY, OPTS, DEF_OR_LOC)
-    table.insert(results, header)
-    log.debug(
-        "|fzfx.config - _render_vim_keymaps| formatter:%s, header:%s",
-        vim.inspect(formatter),
-        vim.inspect(header)
+  local results = {}
+  local formatter = "%-"
+    .. tostring(key_width)
+    .. "s"
+    .. " %-"
+    .. tostring(opts_width)
+    .. "s %s"
+  local header = string.format(formatter, KEY, OPTS, DEF_OR_LOC)
+  table.insert(results, header)
+  log.debug(
+    "|fzfx.config - _render_vim_keymaps| formatter:%s, header:%s",
+    vim.inspect(formatter),
+    vim.inspect(header)
+  )
+  for i, c in ipairs(keymaps) do
+    local rendered = string.format(
+      formatter,
+      c.lhs,
+      _render_vim_keymaps_column_opts(c),
+      rendered_def_or_loc(c)
     )
-    for i, c in ipairs(keymaps) do
-        local rendered = string.format(
-            formatter,
-            c.lhs,
-            _render_vim_keymaps_column_opts(c),
-            rendered_def_or_loc(c)
-        )
-        log.debug(
-            "|fzfx.config - _render_vim_keymaps| rendered[%d]:%s",
-            i,
-            vim.inspect(rendered)
-        )
-        table.insert(results, rendered)
-    end
-    return results
+    log.debug(
+      "|fzfx.config - _render_vim_keymaps| rendered[%d]:%s",
+      i,
+      vim.inspect(rendered)
+    )
+    table.insert(results, rendered)
+  end
+  return results
 end
 
 --- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
 --- @return VimKeyMapsPipelineContext
 local function _vim_keymaps_context_maker()
-    local ctx = {
-        bufnr = vim.api.nvim_get_current_buf(),
-        winnr = vim.api.nvim_get_current_win(),
-        tabnr = vim.api.nvim_get_current_tabpage(),
-    }
-    local keys = _get_vim_keymaps()
-    local key_width, opts_width = _render_vim_keymaps_columns_status(keys)
-    ctx.key_width = key_width
-    ctx.opts_width = opts_width
-    return ctx
+  local ctx = {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+  }
+  local keys = _get_vim_keymaps()
+  local key_width, opts_width = _render_vim_keymaps_columns_status(keys)
+  ctx.key_width = key_width
+  ctx.opts_width = opts_width
+  return ctx
 end
 
 --- @param mode "n"|"i"|"v"|"all"
 --- @return fun(query:string,context:VimKeyMapsPipelineContext):string[]|nil
 local function _make_vim_keymaps_provider(mode)
-    --- @param query string
-    --- @param context VimKeyMapsPipelineContext
-    --- @return string[]|nil
-    local function impl(query, context)
-        local keys = _get_vim_keymaps()
-        local filtered_keys = {}
-        if mode == "all" then
-            filtered_keys = keys
-        else
-            for _, k in ipairs(keys) do
-                if k.mode == mode then
-                    table.insert(filtered_keys, k)
-                elseif
-                    mode == "v"
-                    and (
-                        utils.string_find(k.mode, "v")
-                        or utils.string_find(k.mode, "s")
-                        or utils.string_find(k.mode, "x")
-                    )
-                then
-                    table.insert(filtered_keys, k)
-                elseif mode == "n" and utils.string_find(k.mode, "n") then
-                    table.insert(filtered_keys, k)
-                elseif mode == "i" and utils.string_find(k.mode, "i") then
-                    table.insert(filtered_keys, k)
-                elseif mode == "n" and string.len(k.mode) == 0 then
-                    table.insert(filtered_keys, k)
-                end
-            end
+  --- @param query string
+  --- @param context VimKeyMapsPipelineContext
+  --- @return string[]|nil
+  local function impl(query, context)
+    local keys = _get_vim_keymaps()
+    local filtered_keys = {}
+    if mode == "all" then
+      filtered_keys = keys
+    else
+      for _, k in ipairs(keys) do
+        if k.mode == mode then
+          table.insert(filtered_keys, k)
+        elseif
+          mode == "v"
+          and (
+            utils.string_find(k.mode, "v")
+            or utils.string_find(k.mode, "s")
+            or utils.string_find(k.mode, "x")
+          )
+        then
+          table.insert(filtered_keys, k)
+        elseif mode == "n" and utils.string_find(k.mode, "n") then
+          table.insert(filtered_keys, k)
+        elseif mode == "i" and utils.string_find(k.mode, "i") then
+          table.insert(filtered_keys, k)
+        elseif mode == "n" and string.len(k.mode) == 0 then
+          table.insert(filtered_keys, k)
         end
-        return _render_vim_keymaps(
-            filtered_keys,
-            context.key_width,
-            context.opts_width
-        )
+      end
     end
-    return impl
+    return _render_vim_keymaps(
+      filtered_keys,
+      context.key_width,
+      context.opts_width
+    )
+  end
+  return impl
 end
 
 --- @param filename string
 --- @param lineno integer
 --- @return string[]
 local function _vim_keymaps_lua_function_previewer(filename, lineno)
-    local height = vim.api.nvim_win_get_height(0)
-    if constants.has_bat then
-        local style, theme = _default_bat_style_theme()
-        -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
-        return {
-            constants.bat,
-            "--style=" .. style,
-            "--theme=" .. theme,
-            "--color=always",
-            "--pager=never",
-            "--highlight-line=" .. lineno,
-            "--line-range",
-            string.format(
-                "%d:",
-                math.max(lineno - math.max(math.floor(height / 2), 1), 1)
-            ),
-            "--",
-            filename,
-        }
-    else
-        -- "cat %s"
-        return {
-            "cat",
-            filename,
-        }
-    end
+  local height = vim.api.nvim_win_get_height(0)
+  if constants.has_bat then
+    local style, theme = _default_bat_style_theme()
+    -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
+    return {
+      constants.bat,
+      "--style=" .. style,
+      "--theme=" .. theme,
+      "--color=always",
+      "--pager=never",
+      "--highlight-line=" .. lineno,
+      "--line-range",
+      string.format(
+        "%d:",
+        math.max(lineno - math.max(math.floor(height / 2), 1), 1)
+      ),
+      "--",
+      filename,
+    }
+  else
+    -- "cat %s"
+    return {
+      "cat",
+      filename,
+    }
+  end
 end
 
 --- @param line string
 --- @param context VimKeyMapsPipelineContext
 --- @return string[]|nil
 local function _vim_keymaps_previewer(line, context)
-    local def_or_loc = line_helpers.parse_vim_keymap(line, context)
+  local def_or_loc = line_helpers.parse_vim_keymap(line, context)
+  log.debug(
+    "|fzfx.config - vim_keymaps_previewer| line:%s, context:%s, desc_or_loc:%s",
+    vim.inspect(line),
+    vim.inspect(context),
+    vim.inspect(def_or_loc)
+  )
+  if
+    type(def_or_loc) == "table"
+    and type(def_or_loc.filename) == "string"
+    and string.len(def_or_loc.filename) > 0
+    and type(def_or_loc.lineno) == "number"
+  then
     log.debug(
-        "|fzfx.config - vim_keymaps_previewer| line:%s, context:%s, desc_or_loc:%s",
-        vim.inspect(line),
-        vim.inspect(context),
-        vim.inspect(def_or_loc)
+      "|fzfx.config - vim_keymaps_previewer| loc:%s",
+      vim.inspect(def_or_loc)
     )
-    if
-        type(def_or_loc) == "table"
-        and type(def_or_loc.filename) == "string"
-        and string.len(def_or_loc.filename) > 0
-        and type(def_or_loc.lineno) == "number"
-    then
-        log.debug(
-            "|fzfx.config - vim_keymaps_previewer| loc:%s",
-            vim.inspect(def_or_loc)
-        )
-        return _vim_keymaps_lua_function_previewer(
-            def_or_loc.filename,
-            def_or_loc.lineno
-        )
-    elseif constants.has_echo and type(def_or_loc) == "string" then
-        log.debug(
-            "|fzfx.config - vim_keymaps_previewer| desc:%s",
-            vim.inspect(def_or_loc)
-        )
-        return { "echo", def_or_loc }
-    else
-        log.echo(LogLevels.INFO, "no echo command found.")
-        return nil
-    end
+    return _vim_keymaps_lua_function_previewer(
+      def_or_loc.filename,
+      def_or_loc.lineno
+    )
+  elseif constants.has_echo and type(def_or_loc) == "string" then
+    log.debug(
+      "|fzfx.config - vim_keymaps_previewer| desc:%s",
+      vim.inspect(def_or_loc)
+    )
+    return { "echo", def_or_loc }
+  else
+    log.echo(LogLevels.INFO, "no echo command found.")
+    return nil
+  end
 end
 
 -- vim keymaps }
@@ -1968,174 +1930,174 @@ end
 --- @alias FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
 --- @return FileExplorerPipelineContext
 local function _file_explorer_context_maker()
-    local temp = vim.fn.tempname()
-    utils.writefile(temp, vim.fn.getcwd())
-    local context = {
-        bufnr = vim.api.nvim_get_current_buf(),
-        winnr = vim.api.nvim_get_current_win(),
-        tabnr = vim.api.nvim_get_current_tabpage(),
-        cwd = temp,
-    }
-    return context
+  local temp = vim.fn.tempname()
+  utils.writefile(temp, vim.fn.getcwd())
+  local context = {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+    cwd = temp,
+  }
+  return context
 end
 
 --- @param ls_args "-lh"|"-lha"
 --- @return fun(query:string,context:PipelineContext):string?
 local function _make_file_explorer_provider(ls_args)
-    --- @param query string
-    --- @param context FileExplorerPipelineContext
-    --- @return string?
-    local function impl(query, context)
-        local cwd = utils.readfile(context.cwd)
-        if constants.has_lsd then
-            return constants.has_echo
-                    and string.format(
-                        "echo %s && lsd %s --color=always --header -- %s",
-                        utils.shellescape(cwd --[[@as string]]),
-                        ls_args,
-                        utils.shellescape(cwd --[[@as string]])
-                    )
-                or string.format(
-                    "lsd %s --color=always --header -- %s",
-                    ls_args,
-                    utils.shellescape(cwd --[[@as string]])
-                )
-        elseif constants.has_eza then
-            return constants.has_echo
-                    and string.format(
-                        "echo %s && %s --color=always %s -- %s",
-                        utils.shellescape(cwd --[[@as string]]),
-                        constants.eza,
-                        ls_args,
-                        utils.shellescape(cwd --[[@as string]])
-                    )
-                or string.format(
-                    "%s --color=always %s -- %s",
-                    constants.eza,
-                    ls_args,
-                    utils.shellescape(cwd --[[@as string]])
-                )
-        elseif vim.fn.executable("ls") > 0 then
-            return constants.has_echo
-                    and string.format(
-                        "echo %s && ls --color=always %s %s",
-                        utils.shellescape(cwd --[[@as string]]),
-                        ls_args,
-                        utils.shellescape(cwd --[[@as string]])
-                    )
-                or string.format(
-                    "ls --color=always %s %s",
-                    ls_args,
-                    utils.shellescape(cwd --[[@as string]])
-                )
-        else
-            log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
-            return nil
-        end
+  --- @param query string
+  --- @param context FileExplorerPipelineContext
+  --- @return string?
+  local function impl(query, context)
+    local cwd = utils.readfile(context.cwd)
+    if constants.has_lsd then
+      return constants.has_echo
+          and string.format(
+            "echo %s && lsd %s --color=always --header -- %s",
+            utils.shellescape(cwd --[[@as string]]),
+            ls_args,
+            utils.shellescape(cwd --[[@as string]])
+          )
+        or string.format(
+          "lsd %s --color=always --header -- %s",
+          ls_args,
+          utils.shellescape(cwd --[[@as string]])
+        )
+    elseif constants.has_eza then
+      return constants.has_echo
+          and string.format(
+            "echo %s && %s --color=always %s -- %s",
+            utils.shellescape(cwd --[[@as string]]),
+            constants.eza,
+            ls_args,
+            utils.shellescape(cwd --[[@as string]])
+          )
+        or string.format(
+          "%s --color=always %s -- %s",
+          constants.eza,
+          ls_args,
+          utils.shellescape(cwd --[[@as string]])
+        )
+    elseif vim.fn.executable("ls") > 0 then
+      return constants.has_echo
+          and string.format(
+            "echo %s && ls --color=always %s %s",
+            utils.shellescape(cwd --[[@as string]]),
+            ls_args,
+            utils.shellescape(cwd --[[@as string]])
+          )
+        or string.format(
+          "ls --color=always %s %s",
+          ls_args,
+          utils.shellescape(cwd --[[@as string]])
+        )
+    else
+      log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
+      return nil
     end
+  end
 
-    return impl
+  return impl
 end
 
 --- @param filename string
 --- @return string[]|nil
 local function _directory_previewer(filename)
-    if constants.has_lsd then
-        return {
-            "lsd",
-            "--color=always",
-            "-lha",
-            "--header",
-            "--",
-            filename,
-        }
-    elseif constants.has_eza then
-        return {
-            constants.eza,
-            "--color=always",
-            "-lha",
-            "--",
-            filename,
-        }
-    elseif vim.fn.executable("ls") > 0 then
-        return { "ls", "--color=always", "-lha", "--", filename }
-    else
-        log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
-        return nil
-    end
+  if constants.has_lsd then
+    return {
+      "lsd",
+      "--color=always",
+      "-lha",
+      "--header",
+      "--",
+      filename,
+    }
+  elseif constants.has_eza then
+    return {
+      constants.eza,
+      "--color=always",
+      "-lha",
+      "--",
+      filename,
+    }
+  elseif vim.fn.executable("ls") > 0 then
+    return { "ls", "--color=always", "-lha", "--", filename }
+  else
+    log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
+    return nil
+  end
 end
 
 --- @param line string
 --- @param context FileExplorerPipelineContext
 --- @return string
 local function _make_filename_by_file_explorer_context(line, context)
-    line = vim.trim(line)
-    local cwd = utils.readfile(context.cwd)
-    local target = constants.has_lsd and line_helpers.parse_lsd(line)
-        or (
-            constants.has_eza and line_helpers.parse_eza(line)
-            or line_helpers.parse_ls(line)
-        )
-    local p = path.join(cwd, target)
-    log.debug(
-        "|fzfx.config - make_filename_by_file_explorer_context| cwd:%s, target:%s, p:%s",
-        vim.inspect(cwd),
-        vim.inspect(target),
-        vim.inspect(p)
+  line = vim.trim(line)
+  local cwd = utils.readfile(context.cwd)
+  local target = constants.has_lsd and line_helpers.parse_lsd(line)
+    or (
+      constants.has_eza and line_helpers.parse_eza(line)
+      or line_helpers.parse_ls(line)
     )
-    return p
+  local p = path.join(cwd, target)
+  log.debug(
+    "|fzfx.config - make_filename_by_file_explorer_context| cwd:%s, target:%s, p:%s",
+    vim.inspect(cwd),
+    vim.inspect(target),
+    vim.inspect(p)
+  )
+  return p
 end
 
 --- @param line string
 --- @param context FileExplorerPipelineContext
 --- @return string[]|nil
 local function _file_explorer_previewer(line, context)
-    local p = _make_filename_by_file_explorer_context(line, context)
-    if vim.fn.filereadable(p) > 0 then
-        local preview = _make_file_previewer(p)
-        return preview()
-    elseif vim.fn.isdirectory(p) > 0 then
-        return _directory_previewer(p)
-    else
-        return nil
-    end
+  local p = _make_filename_by_file_explorer_context(line, context)
+  if vim.fn.filereadable(p) > 0 then
+    local preview = _make_file_previewer(p)
+    return preview()
+  elseif vim.fn.isdirectory(p) > 0 then
+    return _directory_previewer(p)
+  else
+    return nil
+  end
 end
 
 --- @param line string
 --- @param context FileExplorerPipelineContext
 local function _cd_file_explorer(line, context)
-    local target = _make_filename_by_file_explorer_context(line, context)
-    if vim.fn.isdirectory(target) > 0 then
-        utils.writefile(context.cwd, target)
-    end
+  local target = _make_filename_by_file_explorer_context(line, context)
+  if vim.fn.isdirectory(target) > 0 then
+    utils.writefile(context.cwd, target)
+  end
 end
 
 --- @param line string
 --- @param context FileExplorerPipelineContext
 local function _upper_file_explorer(line, context)
-    local cwd = utils.readfile(context.cwd) --[[@as string]]
-    local target = vim.fn.fnamemodify(cwd, ":h")
-    -- Windows root folder: `C:\`
-    -- Unix/linux root folder: `/`
-    local root_len = constants.is_windows and 3 or 1
-    if vim.fn.isdirectory(target) > 0 and string.len(target) > root_len then
-        utils.writefile(context.cwd, target)
-    end
+  local cwd = utils.readfile(context.cwd) --[[@as string]]
+  local target = vim.fn.fnamemodify(cwd, ":h")
+  -- Windows root folder: `C:\`
+  -- Unix/linux root folder: `/`
+  local root_len = constants.is_windows and 3 or 1
+  if vim.fn.isdirectory(target) > 0 and string.len(target) > root_len then
+    utils.writefile(context.cwd, target)
+  end
 end
 
 --- @param lines string[]
 --- @param context FileExplorerPipelineContext
 local function _edit_file_explorer(lines, context)
-    local fullpath_lines = {}
-    for _, line in ipairs(lines) do
-        local p = _make_filename_by_file_explorer_context(line, context)
-        table.insert(fullpath_lines, p)
-    end
-    log.debug(
-        "|fzfx.config - file_explorer.actions| full_lines:%s",
-        vim.inspect(fullpath_lines)
-    )
-    return require("fzfx.actions").edit_ls(fullpath_lines)
+  local fullpath_lines = {}
+  for _, line in ipairs(lines) do
+    local p = _make_filename_by_file_explorer_context(line, context)
+    table.insert(fullpath_lines, p)
+  end
+  log.debug(
+    "|fzfx.config - file_explorer.actions| full_lines:%s",
+    vim.inspect(fullpath_lines)
+  )
+  return require("fzfx.actions").edit_ls(fullpath_lines)
 end
 
 -- file explorer }
@@ -2143,2306 +2105,2303 @@ end
 --- @alias Options table<string, any>
 --- @type Options
 local Defaults = {
-    -- the 'Files' commands
-    --- @type GroupConfig
-    files = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxFiles",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "Find files",
-                },
-                default_provider = "restricted_mode",
-            },
-            {
-                name = "FzfxFilesU",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "Find files",
-                },
-                default_provider = "unrestricted_mode",
-            },
-            -- visual
-            {
-                name = "FzfxFilesV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find files by visual select",
-                },
-                default_provider = "restricted_mode",
-            },
-            {
-                name = "FzfxFilesUV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find files unrestricted by visual select",
-                },
-                default_provider = "unrestricted_mode",
-            },
-            -- cword
-            {
-                name = "FzfxFilesW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find files by cursor word",
-                },
-                default_provider = "restricted_mode",
-            },
-            {
-                name = "FzfxFilesUW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find files unrestricted by cursor word",
-                },
-                default_provider = "unrestricted_mode",
-            },
-            -- put
-            {
-                name = "FzfxFilesP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find files by yank text",
-                },
-                default_provider = "restricted_mode",
-            },
-            {
-                name = "FzfxFilesUP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find files unrestricted by yank text",
-                },
-                default_provider = "unrestricted_mode",
-            },
-            -- resume
-            {
-                name = "FzfxFilesR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find files by resume last",
-                },
-                default_provider = "restricted_mode",
-            },
-            {
-                name = "FzfxFilesUR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find files unrestricted by resume last",
-                },
-                default_provider = "unrestricted_mode",
-            },
+  -- the 'Files' commands
+  --- @type GroupConfig
+  files = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxFiles",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "dir",
+          desc = "Find files",
         },
-        providers = {
-            restricted_mode = {
-                key = "ctrl-r",
-                provider = constants.has_fd and default_restricted_fd
-                    or default_restricted_find,
-                line_opts = { prepend_icon_by_ft = true },
-            },
-            unrestricted_mode = {
-                key = "ctrl-u",
-                provider = constants.has_fd and default_unrestricted_fd
-                    or default_unrestricted_find,
-                line_opts = { prepend_icon_by_ft = true },
-            },
+        default_provider = "restricted_mode",
+      },
+      {
+        name = "FzfxFilesU",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "dir",
+          desc = "Find files",
         },
-        previewers = {
-            restricted_mode = {
-                previewer = _file_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
-            },
-            unrestricted_mode = {
-                previewer = _file_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
-            },
+        default_provider = "unrestricted_mode",
+      },
+      -- visual
+      {
+        name = "FzfxFilesV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find files by visual select",
         },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_find,
-            ["double-click"] = require("fzfx.actions").edit_find,
-            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
+        default_provider = "restricted_mode",
+      },
+      {
+        name = "FzfxFilesUV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find files unrestricted by visual select",
         },
-        fzf_opts = {
-            default_fzf_options.multi,
-            function()
-                return { "--prompt", path.shorten() .. " > " }
-            end,
+        default_provider = "unrestricted_mode",
+      },
+      -- cword
+      {
+        name = "FzfxFilesW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find files by cursor word",
         },
+        default_provider = "restricted_mode",
+      },
+      {
+        name = "FzfxFilesUW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find files unrestricted by cursor word",
+        },
+        default_provider = "unrestricted_mode",
+      },
+      -- put
+      {
+        name = "FzfxFilesP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find files by yank text",
+        },
+        default_provider = "restricted_mode",
+      },
+      {
+        name = "FzfxFilesUP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find files unrestricted by yank text",
+        },
+        default_provider = "unrestricted_mode",
+      },
+      -- resume
+      {
+        name = "FzfxFilesR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find files by resume last",
+        },
+        default_provider = "restricted_mode",
+      },
+      {
+        name = "FzfxFilesUR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find files unrestricted by resume last",
+        },
+        default_provider = "unrestricted_mode",
+      },
     },
-
-    -- the 'Live Grep' commands
-    --- @type GroupConfig
-    live_grep = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxLiveGrep",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "*",
-                    desc = "Live grep",
-                },
-                default_provider = "restricted_mode",
-            },
-            {
-                name = "FzfxLiveGrepU",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "*",
-                    desc = "Live grep unrestricted",
-                },
-                default_provider = "unrestricted_mode",
-            },
-            {
-                name = "FzfxLiveGrepB",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "*",
-                    desc = "Live grep on current buffer",
-                },
-                default_provider = "buffer_mode",
-            },
-            -- visual
-            {
-                name = "FzfxLiveGrepV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Live grep by visual select",
-                },
-                default_provider = "restricted_mode",
-            },
-            {
-                name = "FzfxLiveGrepUV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Live grep unrestricted by visual select",
-                },
-                default_provider = "unrestricted_mode",
-            },
-            {
-                name = "FzfxLiveGrepBV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Live grep on current buffer by visual select",
-                },
-                default_provider = "buffer_mode",
-            },
-            -- cword
-            {
-                name = "FzfxLiveGrepW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Live grep by cursor word",
-                },
-                default_provider = "restricted_mode",
-            },
-            {
-                name = "FzfxLiveGrepUW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Live grep unrestricted by cursor word",
-                },
-                default_provider = "unrestricted_mode",
-            },
-            {
-                name = "FzfxLiveGrepBW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Live grep on current buffer by cursor word",
-                },
-                default_provider = "buffer_mode",
-            },
-            -- put
-            {
-                name = "FzfxLiveGrepP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Live grep by yank text",
-                },
-                default_provider = "restricted_mode",
-            },
-            {
-                name = "FzfxLiveGrepUP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Live grep unrestricted by yank text",
-                },
-                default_provider = "unrestricted_mode",
-            },
-            {
-                name = "FzfxLiveGrepBP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Live grep on current buffer by yank text",
-                },
-                default_provider = "buffer_mode",
-            },
-            -- resume
-            {
-                name = "FzfxLiveGrepR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Live grep by resume last",
-                },
-                default_provider = "restricted_mode",
-            },
-            {
-                name = "FzfxLiveGrepUR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Live grep unrestricted by resume last",
-                },
-                default_provider = "unrestricted_mode",
-            },
-            {
-                name = "FzfxLiveGrepBR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Live grep on current buffer by resume last",
-                },
-                default_provider = "buffer_mode",
-            },
-        },
-        providers = {
-            restricted_mode = {
-                key = "ctrl-r",
-                provider = _make_live_grep_provider(),
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
-                line_opts = {
-                    prepend_icon_by_ft = true,
-                    prepend_icon_path_delimiter = ":",
-                    prepend_icon_path_position = 1,
-                },
-            },
-            unrestricted_mode = {
-                key = "ctrl-u",
-                provider = _make_live_grep_provider({ unrestricted = true }),
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
-                line_opts = {
-                    prepend_icon_by_ft = true,
-                    prepend_icon_path_delimiter = ":",
-                    prepend_icon_path_position = 1,
-                },
-            },
-            buffer_mode = {
-                key = "ctrl-o",
-                provider = _make_live_grep_provider({ buffer = true }),
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
-                line_opts = {
-                    prepend_icon_by_ft = true,
-                    prepend_icon_path_delimiter = ":",
-                    prepend_icon_path_position = 1,
-                },
-            },
-        },
-        previewers = {
-            restricted_mode = {
-                previewer = file_previewer_grep,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = constants.has_rg
-                        and require("fzfx.previewer_labels").rg_previewer_label
-                    or require("fzfx.previewer_labels").grep_previewer_label,
-            },
-            unrestricted_mode = {
-                previewer = file_previewer_grep,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = constants.has_rg
-                        and require("fzfx.previewer_labels").rg_previewer_label
-                    or require("fzfx.previewer_labels").grep_previewer_label,
-            },
-            buffer_mode = {
-                previewer = file_previewer_grep,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = constants.has_rg
-                        and require("fzfx.previewer_labels").rg_previewer_label
-                    or require("fzfx.previewer_labels").grep_previewer_label,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
-                or require("fzfx.actions").edit_grep,
-            ["double-click"] = constants.has_rg
-                    and require("fzfx.actions").edit_rg
-                or require("fzfx.actions").edit_grep,
-            ["ctrl-q"] = constants.has_rg
-                    and require("fzfx.actions").setqflist_rg
-                or require("fzfx.actions").setqflist_grep,
-        },
-        fzf_opts = {
-            default_fzf_options.multi,
-            "--disabled",
-            { "--prompt", "Live Grep > " },
-            { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
-        },
-        other_opts = {
-            reload_on_change = true,
-        },
+    providers = {
+      restricted_mode = {
+        key = "ctrl-r",
+        provider = constants.has_fd and default_restricted_fd
+          or default_restricted_find,
+        line_opts = { prepend_icon_by_ft = true },
+      },
+      unrestricted_mode = {
+        key = "ctrl-u",
+        provider = constants.has_fd and default_unrestricted_fd
+          or default_unrestricted_find,
+        line_opts = { prepend_icon_by_ft = true },
+      },
     },
-
-    -- the 'Buffers' commands
-    --- @type GroupConfig
-    buffers = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxBuffers",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "file",
-                    desc = "Find buffers",
-                },
-            },
-            -- visual
-            {
-                name = "FzfxBuffersV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find buffers by visual select",
-                },
-            },
-            -- cword
-            {
-                name = "FzfxBuffersW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find buffers by cursor word",
-                },
-            },
-            -- put
-            {
-                name = "FzfxBuffersP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find buffers by yank text",
-                },
-            },
-            -- resume
-            {
-                name = "FzfxBuffersR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find buffers by resume last",
-                },
-            },
-        },
-        providers = {
-            key = "default",
-            provider = _buffers_provider,
-            provider_type = ProviderTypeEnum.LIST,
-            line_opts = { prepend_icon_by_ft = true },
-        },
-        previewers = {
-            previewer = _file_previewer,
-            previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            previewer_label = require("fzfx.previewer_labels").find_previewer_label,
-        },
-        interactions = {
-            delete_buffer = {
-                key = "ctrl-d",
-                interaction = _delete_buffer,
-                reload_after_execute = true,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_find,
-            ["double-click"] = require("fzfx.actions").edit_find,
-            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
-        },
-        fzf_opts = {
-            default_fzf_options.multi,
-            { "--prompt", "Buffers > " },
-            function()
-                local current_bufnr = vim.api.nvim_get_current_buf()
-                return utils.is_buf_valid(current_bufnr) and "--header-lines=1"
-                    or nil
-            end,
-        },
+    previewers = {
+      restricted_mode = {
+        previewer = _file_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+      },
+      unrestricted_mode = {
+        previewer = _file_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+      },
     },
-
-    -- the 'Git Files' commands
-    --- @type GroupConfig
-    git_files = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxGFiles",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "Find git files",
-                },
-                default_provider = "workspace",
-            },
-            {
-                name = "FzfxGFilesC",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "Find git files in current directory",
-                },
-                default_provider = "current_folder",
-            },
-            -- visual
-            {
-                name = "FzfxGFilesV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find git files by visual select",
-                },
-                default_provider = "workspace",
-            },
-            {
-                name = "FzfxGFilesCV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find git files in current directory by visual select",
-                },
-                default_provider = "current_folder",
-            },
-            -- cword
-            {
-                name = "FzfxGFilesW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find git files by cursor word",
-                },
-                default_provider = "workspace",
-            },
-            {
-                name = "FzfxGFilesCW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find git files in current directory by cursor word",
-                },
-                default_provider = "current_folder",
-            },
-            -- put
-            {
-                name = "FzfxGFilesP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find git files by yank text",
-                },
-                default_provider = "workspace",
-            },
-            {
-                name = "FzfxGFilesCP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find git files in current directory by yank text",
-                },
-                default_provider = "current_folder",
-            },
-            -- resume
-            {
-                name = "FzfxGFilesR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find git files by resume last",
-                },
-                default_provider = "workspace",
-            },
-            {
-                name = "FzfxGFilesCR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find git files in current directory by resume last",
-                },
-                default_provider = "current_folder",
-            },
-        },
-        providers = {
-            current_folder = {
-                key = "ctrl-u",
-                provider = _make_git_files_provider({ current_folder = true }),
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
-                line_opts = { prepend_icon_by_ft = true },
-            },
-            workspace = {
-                key = "ctrl-w",
-                provider = _make_git_files_provider(),
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
-                line_opts = { prepend_icon_by_ft = true },
-            },
-        },
-        previewers = {
-            current_folder = {
-                previewer = _file_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
-            },
-            workspace = {
-                previewer = _file_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").find_previewer_label,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_find,
-            ["double-click"] = require("fzfx.actions").edit_find,
-            ["ctrl-q"] = require("fzfx.actions").setqflist_find,
-        },
-        fzf_opts = {
-            default_fzf_options.multi,
-            function()
-                return { "--prompt", path.shorten() .. " > " }
-            end,
-        },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_find,
+      ["double-click"] = require("fzfx.actions").edit_find,
+      ["ctrl-q"] = require("fzfx.actions").setqflist_find,
     },
-
-    -- the 'Git Status' commands
-    --- @type GroupConfig
-    git_status = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxGStatus",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "Find changed git files (status)",
-                },
-                default_provider = "workspace",
-            },
-            {
-                name = "FzfxGStatusC",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "Find changed git files (status) in current directory",
-                },
-                default_provider = "current_folder",
-            },
-            -- visual
-            {
-                name = "FzfxGStatusV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find changed git files (status) by visual select",
-                },
-                default_provider = "workspace",
-            },
-            {
-                name = "FzfxGStatusCV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find changed git files (status) in current directory by visual select",
-                },
-                default_provider = "current_folder",
-            },
-            -- cword
-            {
-                name = "FzfxGStatusW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find changed git files (status) by cursor word",
-                },
-                default_provider = "workspace",
-            },
-            {
-                name = "FzfxGStatusCW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find changed git files (status) in current directory by cursor word",
-                },
-                default_provider = "current_folder",
-            },
-            -- put
-            {
-                name = "FzfxGStatusP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find changed git files (status) by yank text",
-                },
-                default_provider = "workspace",
-            },
-            {
-                name = "FzfxGStatusCP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find changed git files (status) in current directory by yank text",
-                },
-                default_provider = "current_folder",
-            },
-            -- resume
-            {
-                name = "FzfxGStatusR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find changed git files (status) by resume last",
-                },
-                default_provider = "workspace",
-            },
-            {
-                name = "FzfxGStatusCR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find changed git files (status) in current directory by resume last",
-                },
-                default_provider = "current_folder",
-            },
-        },
-        providers = {
-            current_folder = {
-                key = "ctrl-u",
-                provider = _make_git_status_provider({ current_folder = true }),
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
-            },
-            workspace = {
-                key = "ctrl-w",
-                provider = _make_git_status_provider(),
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
-            },
-        },
-        previewers = {
-            current_folder = {
-                previewer = _git_status_previewer,
-            },
-            workspace = {
-                previewer = _git_status_previewer,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_git_status,
-            ["double-click"] = require("fzfx.actions").edit_git_status,
-            ["ctrl-q"] = require("fzfx.actions").setqflist_git_status,
-        },
-        fzf_opts = {
-            default_fzf_options.multi,
-            { "--preview-window", "wrap" },
-            { "--prompt", "GitStatus > " },
-        },
-    },
-
-    -- the 'Git Branches' commands
-    --- @type GroupConfig
-    git_branches = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxGBranches",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    desc = "Search local git branches",
-                },
-                default_provider = "local_branch",
-            },
-            {
-                name = "FzfxGBranchesR",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    desc = "Search remote git branches",
-                },
-                default_provider = "remote_branch",
-            },
-            -- visual
-            {
-                name = "FzfxGBranchesV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Search local git branches by visual select",
-                },
-                default_provider = "local_branch",
-            },
-            {
-                name = "FzfxGBranchesRV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Search remote git branches by visual select",
-                },
-                default_provider = "remote_branch",
-            },
-            -- cword
-            {
-                name = "FzfxGBranchesW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Search local git branches by cursor word",
-                },
-                default_provider = "local_branch",
-            },
-            {
-                name = "FzfxGBranchesRW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Search remote git branches by cursor word",
-                },
-                default_provider = "remote_branch",
-            },
-            -- put
-            {
-                name = "FzfxGBranchesP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Search local git branches by yank text",
-                },
-                default_provider = "local_branch",
-            },
-            {
-                name = "FzfxGBranchesRP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Search remote git branches by yank text",
-                },
-                default_provider = "remote_branch",
-            },
-            -- resume
-            {
-                name = "FzfxGBranchesR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Search local git branches by resume last",
-                },
-                default_provider = "local_branch",
-            },
-            {
-                name = "FzfxGBranchesRR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Search remote git branches by resume last",
-                },
-                default_provider = "remote_branch",
-            },
-        },
-        providers = {
-            local_branch = {
-                key = "ctrl-o",
-                provider = _make_git_branches_provider(),
-                provider_type = ProviderTypeEnum.LIST,
-            },
-            remote_branch = {
-                key = "ctrl-r",
-                provider = _make_git_branches_provider({ remote_branch = true }),
-                provider_type = ProviderTypeEnum.LIST,
-            },
-        },
-        previewers = {
-            local_branch = {
-                previewer = _git_branches_previewer,
-            },
-            remote_branch = {
-                previewer = _git_branches_previewer,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").git_checkout,
-            ["double-click"] = require("fzfx.actions").git_checkout,
-        },
-        fzf_opts = {
-            default_fzf_options.no_multi,
-            { "--prompt", "GitBranches > " },
-            function()
-                local git_root_cmd = cmd.GitRootCmd:run()
-                if git_root_cmd:wrong() then
-                    return nil
-                end
-                local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
-                if git_current_branch_cmd:wrong() then
-                    return nil
-                end
-                return utils.string_not_empty(git_current_branch_cmd:value())
-                        and "--header-lines=1"
-                    or nil
-            end,
-        },
-    },
-
-    -- the 'Git Commits' commands
-    --- @type GroupConfig
-    git_commits = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxGCommits",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    desc = "Search git commits",
-                },
-                default_provider = "all_commits",
-            },
-            {
-                name = "FzfxGCommitsB",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    desc = "Search git commits on current buffer",
-                },
-                default_provider = "buffer_commits",
-            },
-            -- visual
-            {
-                name = "FzfxGCommitsV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Search git commits by visual select",
-                },
-                default_provider = "all_commits",
-            },
-            {
-                name = "FzfxGCommitsBV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Search git commits on current buffer by visual select",
-                },
-                default_provider = "buffer_commits",
-            },
-            -- cword
-            {
-                name = "FzfxGCommitsW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Search git commits by cursor word",
-                },
-                default_provider = "all_commits",
-            },
-            {
-                name = "FzfxGCommitsBW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Search git commits on current buffer by cursor word",
-                },
-                default_provider = "buffer_commits",
-            },
-            -- put
-            {
-                name = "FzfxGCommitsP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Search git commits by yank text",
-                },
-                default_provider = "all_commits",
-            },
-            {
-                name = "FzfxGCommitsBP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Search git commits on current buffer by yank text",
-                },
-                default_provider = "buffer_commits",
-            },
-            -- resume
-            {
-                name = "FzfxGCommitsR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Search git commits by resume last",
-                },
-                default_provider = "all_commits",
-            },
-            {
-                name = "FzfxGCommitsBR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Search git commits on current buffer by resume last",
-                },
-                default_provider = "buffer_commits",
-            },
-        },
-        providers = {
-            all_commits = {
-                key = "ctrl-a",
-                provider = _make_git_commits_provider(),
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
-            },
-            buffer_commits = {
-                key = "ctrl-u",
-                provider = _make_git_commits_provider({ buffer = true }),
-                provider_type = ProviderTypeEnum.COMMAND_LIST,
-            },
-        },
-        previewers = {
-            all_commits = {
-                previewer = _git_commits_previewer,
-            },
-            buffer_commits = {
-                previewer = _git_commits_previewer,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").yank_git_commit,
-            ["double-click"] = require("fzfx.actions").yank_git_commit,
-        },
-        fzf_opts = {
-            default_fzf_options.no_multi,
-            { "--preview-window", "wrap" },
-            { "--prompt", "GitCommits > " },
-        },
-    },
-
-    -- the 'Git Blame' command
-    --- @type GroupConfig
-    git_blame = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxGBlame",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    desc = "Search git commits",
-                },
-            },
-            -- visual
-            {
-                name = "FzfxGBlameV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Search git commits by visual select",
-                },
-            },
-            -- cword
-            {
-                name = "FzfxGBlameW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Search git commits by cursor word",
-                },
-            },
-            -- put
-            {
-                name = "FzfxGBlameP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Search git commits by yank text",
-                },
-            },
-            -- resume
-            {
-                name = "FzfxGBlameR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Search git commits by resume last",
-                },
-            },
-        },
-        providers = {
-            default = {
-                key = "default",
-                provider = _git_blame_provider,
-                provider_type = ProviderTypeEnum.COMMAND,
-            },
-        },
-        previewers = {
-            default = {
-                previewer = _git_commits_previewer,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").yank_git_commit,
-            ["double-click"] = require("fzfx.actions").yank_git_commit,
-        },
-        fzf_opts = {
-            default_fzf_options.no_multi,
-            { "--prompt", "GitBlame > " },
-        },
-    },
-
-    -- the 'Vim Commands' commands
-    --- @type GroupConfig
-    vim_commands = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxCommands",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "command",
-                    desc = "Find vim commands",
-                },
-                default_provider = "all_commands",
-            },
-            {
-                name = "FzfxCommandsE",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "command",
-                    desc = "Find vim ex(builtin) commands",
-                },
-                default_provider = "ex_commands",
-            },
-            {
-                name = "FzfxCommandsU",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "command",
-                    desc = "Find vim user commands",
-                },
-                default_provider = "user_commands",
-            },
-            -- visual
-            {
-                name = "FzfxCommandsV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find vim commands by visual select",
-                },
-                default_provider = "all_commands",
-            },
-            {
-                name = "FzfxCommandsEV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find vim ex(builtin) commands by visual select",
-                },
-                default_provider = "ex_commands",
-            },
-            {
-                name = "FzfxCommandsUV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find vim user commands by visual select",
-                },
-                default_provider = "uesr_commands",
-            },
-            -- cword
-            {
-                name = "FzfxCommandsW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find vim commands by cursor word",
-                },
-                default_provider = "all_commands",
-            },
-            {
-                name = "FzfxCommandsEW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find vim ex(builtin) commands by cursor word",
-                },
-                default_provider = "ex_commands",
-            },
-            {
-                name = "FzfxCommandsUW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find vim user commands by cursor word",
-                },
-                default_provider = "user_commands",
-            },
-            -- put
-            {
-                name = "FzfxCommandsP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find vim commands by yank text",
-                },
-                default_provider = "all_commands",
-            },
-            {
-                name = "FzfxCommandsEP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find vim ex(builtin) commands by yank text",
-                },
-                default_provider = "ex_commands",
-            },
-            {
-                name = "FzfxCommandsUP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find vim user commands by yank text",
-                },
-                default_provider = "user_commands",
-            },
-            -- resume
-            {
-                name = "FzfxCommandsR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find vim commands by resume last",
-                },
-                default_provider = "all_commands",
-            },
-            {
-                name = "FzfxCommandsER",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find vim ex(builtin) commands by resume last",
-                },
-                default_provider = "ex_commands",
-            },
-            {
-                name = "FzfxCommandsUR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find vim user commands by resume last",
-                },
-                default_provider = "user_commands",
-            },
-        },
-        providers = {
-            all_commands = {
-                key = "ctrl-a",
-                --- @param query string
-                --- @param context VimCommandsPipelineContext
-                provider = function(query, context)
-                    return vim_commands_provider(context)
-                end,
-                provider_type = ProviderTypeEnum.LIST,
-            },
-            ex_commands = {
-                key = "ctrl-e",
-                --- @param query string
-                --- @param context VimCommandsPipelineContext
-                provider = function(query, context)
-                    return vim_ex_commands_provider(context)
-                end,
-                provider_type = ProviderTypeEnum.LIST,
-            },
-            user_commands = {
-                key = "ctrl-u",
-                --- @param query string
-                --- @param context VimCommandsPipelineContext
-                provider = function(query, context)
-                    return vim_user_commands_provider(context)
-                end,
-                provider_type = ProviderTypeEnum.LIST,
-            },
-        },
-        previewers = {
-            all_commands = {
-                previewer = vim_commands_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
-            },
-            ex_commands = {
-                previewer = vim_commands_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
-            },
-            user_commands = {
-                previewer = vim_commands_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").feed_vim_command,
-            ["double-click"] = require("fzfx.actions").feed_vim_command,
-        },
-        fzf_opts = {
-            default_fzf_options.no_multi,
-            "--header-lines=1",
-            { "--preview-window", "~1" },
-            { "--prompt", "Commands > " },
-        },
-        other_opts = {
-            context_maker = _vim_commands_context_maker,
-        },
-    },
-
-    -- the 'Vim KeyMaps' commands
-    --- @type GroupConfig
-    vim_keymaps = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxKeyMaps",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "mapping",
-                    desc = "Find vim keymaps",
-                },
-                default_provider = "all_mode",
-            },
-            {
-                name = "FzfxKeyMapsN",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "mapping",
-                    desc = "Find vim normal(n) mode keymaps ",
-                },
-                default_provider = "n_mode",
-            },
-            {
-                name = "FzfxKeyMapsI",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "mapping",
-                    desc = "Find vim insert(i) mode keymaps ",
-                },
-                default_provider = "i_mode",
-            },
-            {
-                name = "FzfxKeyMapsV",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "mapping",
-                    desc = "Find vim visual(v/s/x) mode keymaps ",
-                },
-                default_provider = "v_mode",
-            },
-            -- visual
-            {
-                name = "FzfxKeyMapsV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find vim keymaps by visual select",
-                },
-                default_provider = "all_mode",
-            },
-            {
-                name = "FzfxKeyMapsNV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find vim normal(n) mode keymaps by visual select",
-                },
-                default_provider = "n_mode",
-            },
-            {
-                name = "FzfxKeyMapsIV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find vim insert(i) mode keymaps by visual select",
-                },
-                default_provider = "i_mode",
-            },
-            {
-                name = "FzfxKeyMapsVV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Find vim visual(v/s/x) mode keymaps by visual select",
-                },
-                default_provider = "v_mode",
-            },
-            -- cword
-            {
-                name = "FzfxKeyMapsW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find vim keymaps by cursor word",
-                },
-                default_provider = "all_mode",
-            },
-            {
-                name = "FzfxKeyMapsNW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find vim normal(n) mode keymaps by cursor word",
-                },
-                default_provider = "n_mode",
-            },
-            {
-                name = "FzfxKeyMapsIW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find vim insert(i) mode keymaps by cursor word",
-                },
-                default_provider = "i_mode",
-            },
-            {
-                name = "FzfxKeyMapsVW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Find vim visual(v/s/x) mode keymaps by cursor word",
-                },
-                default_provider = "v_mode",
-            },
-            -- put
-            {
-                name = "FzfxKeyMapsP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find vim keymaps by yank text",
-                },
-                default_provider = "all_mode",
-            },
-            {
-                name = "FzfxKeyMapsNP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find vim normal(n) mode keymaps by yank text",
-                },
-                default_provider = "n_mode",
-            },
-            {
-                name = "FzfxKeyMapsIP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find vim insert(i) mode keymaps by yank text",
-                },
-                default_provider = "i_mode",
-            },
-            {
-                name = "FzfxKeyMapsVP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Find vim visual(v/s/x) mode keymaps by yank text",
-                },
-                default_provider = "v_mode",
-            },
-            -- resume
-            {
-                name = "FzfxKeyMapsR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find vim keymaps by resume last",
-                },
-                default_provider = "all_mode",
-            },
-            {
-                name = "FzfxKeyMapsNR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find vim normal(n) mode keymaps by resume last",
-                },
-                default_provider = "n_mode",
-            },
-            {
-                name = "FzfxKeyMapsIR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find vim insert(i) mode keymaps by resume last",
-                },
-                default_provider = "i_mode",
-            },
-            {
-                name = "FzfxKeyMapsVR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Find vim visual(v/s/x) mode keymaps by resume last",
-                },
-                default_provider = "v_mode",
-            },
-        },
-        providers = {
-            all_mode = {
-                key = "ctrl-a",
-                provider = _make_vim_keymaps_provider("all"),
-                provider_type = ProviderTypeEnum.LIST,
-            },
-            n_mode = {
-                key = "ctrl-o",
-                provider = _make_vim_keymaps_provider("n"),
-                provider_type = ProviderTypeEnum.LIST,
-            },
-            i_mode = {
-                key = "ctrl-i",
-                provider = _make_vim_keymaps_provider("i"),
-                provider_type = ProviderTypeEnum.LIST,
-            },
-            v_mode = {
-                key = "ctrl-v",
-                provider = _make_vim_keymaps_provider("v"),
-                provider_type = ProviderTypeEnum.LIST,
-            },
-        },
-        previewers = {
-            all_mode = {
-                previewer = _vim_keymaps_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
-            },
-            n_mode = {
-                previewer = _vim_keymaps_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
-            },
-            i_mode = {
-                previewer = _vim_keymaps_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
-            },
-            v_mode = {
-                previewer = _vim_keymaps_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").feed_vim_key,
-            ["double-click"] = require("fzfx.actions").feed_vim_key,
-        },
-        fzf_opts = {
-            default_fzf_options.no_multi,
-            "--header-lines=1",
-            { "--preview-window", "~1" },
-            { "--prompt", "Key Maps > " },
-        },
-        other_opts = {
-            context_maker = _vim_keymaps_context_maker,
-        },
-    },
-
-    -- the 'Lsp Diagnostics' command
-    --- @type GroupConfig
-    lsp_diagnostics = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxLspDiagnostics",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    desc = "Search lsp diagnostics on workspace",
-                },
-                default_provider = "workspace_diagnostics",
-            },
-            {
-                name = "FzfxLspDiagnosticsB",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    desc = "Search lsp diagnostics on current buffer",
-                },
-                default_provider = "buffer_diagnostics",
-            },
-            -- visual
-            {
-                name = "FzfxLspDiagnosticsV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Search lsp diagnostics on workspace by visual select",
-                },
-                default_provider = "workspace_diagnostics",
-            },
-            {
-                name = "FzfxLspDiagnosticsBV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "Search lsp diagnostics on current buffer by visual select",
-                },
-                default_provider = "buffer_diagnostics",
-            },
-            -- cword
-            {
-                name = "FzfxLspDiagnosticsW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Search lsp diagnostics on workspace by cursor word",
-                },
-                default_provider = "workspace_diagnostics",
-            },
-            {
-                name = "FzfxLspDiagnosticsBW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "Search lsp diagnostics on current buffer by cursor word",
-                },
-                default_provider = "buffer_diagnostics",
-            },
-            -- put
-            {
-                name = "FzfxLspDiagnosticsP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Search lsp diagnostics on workspace by yank text",
-                },
-                default_provider = "workspace_diagnostics",
-            },
-            {
-                name = "FzfxLspDiagnosticsBP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Search lsp diagnostics on current buffer by yank text",
-                },
-                default_provider = "buffer_diagnostics",
-            },
-            -- resume
-            {
-                name = "FzfxLspDiagnosticsR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "Search lsp diagnostics on workspace by resume last",
-                },
-                default_provider = "workspace_diagnostics",
-            },
-            {
-                name = "FzfxLspDiagnosticsBR",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "Search lsp diagnostics on current buffer by resume last",
-                },
-                default_provider = "buffer_diagnostics",
-            },
-        },
-        providers = {
-            workspace_diagnostics = {
-                key = "ctrl-w",
-                provider = _make_lsp_diagnostics_provider(),
-                provider_type = ProviderTypeEnum.LIST,
-                line_opts = {
-                    prepend_icon_by_ft = true,
-                    prepend_icon_path_delimiter = ":",
-                    prepend_icon_path_position = 1,
-                },
-            },
-            buffer_diagnostics = {
-                key = "ctrl-u",
-                provider = _make_lsp_diagnostics_provider({ buffer = true }),
-                provider_type = ProviderTypeEnum.LIST,
-                line_opts = {
-                    prepend_icon_by_ft = true,
-                    prepend_icon_path_delimiter = ":",
-                    prepend_icon_path_position = 1,
-                },
-            },
-        },
-        previewers = {
-            workspace_diagnostics = {
-                previewer = file_previewer_grep,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
-            },
-            buffer_diagnostics = {
-                previewer = file_previewer_grep,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_rg,
-            ["double-click"] = require("fzfx.actions").edit_rg,
-            ["ctrl-q"] = require("fzfx.actions").setqflist_rg,
-        },
-        fzf_opts = {
-            default_fzf_options.multi,
-            { "--delimiter", ":" },
-            { "--preview-window", "+{2}-/2" },
-            { "--prompt", "Diagnostics > " },
-        },
-    },
-
-    -- the 'Lsp Definitions' command
-    --- @type GroupConfig
-    lsp_definitions = {
-        commands = {
-            name = "FzfxLspDefinitions",
-            feed = CommandFeedEnum.ARGS,
-            opts = {
-                bang = true,
-                desc = "Search lsp definitions",
-            },
-        },
-        providers = {
-            key = "default",
-            provider = _make_lsp_locations_provider({
-                method = "textDocument/definition",
-                capability = "definitionProvider",
-            }),
-            provider_type = ProviderTypeEnum.LIST,
-            line_opts = {
-                prepend_icon_by_ft = true,
-                prepend_icon_path_delimiter = ":",
-                prepend_icon_path_position = 1,
-            },
-        },
-        previewers = {
-            previewer = file_previewer_grep,
-            previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_rg,
-            ["double-click"] = require("fzfx.actions").edit_rg,
-        },
-        fzf_opts = {
-            default_fzf_options.multi,
-            default_fzf_options.lsp_preview_window,
-            "--border=none",
-            { "--delimiter", ":" },
-            { "--prompt", "Definitions > " },
-        },
-        win_opts = {
-            relative = "cursor",
-            height = 0.45,
-            width = 1,
-            row = 1,
-            col = 0,
-            border = "none",
-            zindex = 51,
-        },
-        other_opts = {
-            context_maker = _lsp_position_context_maker,
-        },
-    },
-
-    -- the 'Lsp Type Definitions' command
-    --- @type GroupConfig
-    lsp_type_definitions = {
-        commands = {
-            name = "FzfxLspTypeDefinitions",
-            feed = CommandFeedEnum.ARGS,
-            opts = {
-                bang = true,
-                desc = "Search lsp type definitions",
-            },
-        },
-        providers = {
-            key = "default",
-            provider = _make_lsp_locations_provider({
-                method = "textDocument/type_definition",
-                capability = "typeDefinitionProvider",
-            }),
-            provider_type = ProviderTypeEnum.LIST,
-            line_opts = {
-                prepend_icon_by_ft = true,
-                prepend_icon_path_delimiter = ":",
-                prepend_icon_path_position = 1,
-            },
-        },
-        previewers = {
-            previewer = file_previewer_grep,
-            previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_rg,
-            ["double-click"] = require("fzfx.actions").edit_rg,
-        },
-        fzf_opts = {
-            default_fzf_options.multi,
-            default_fzf_options.lsp_preview_window,
-            "--border=none",
-            { "--delimiter", ":" },
-            { "--prompt", "TypeDefinitions > " },
-        },
-        win_opts = {
-            relative = "cursor",
-            height = 0.45,
-            width = 1,
-            row = 1,
-            col = 0,
-            border = "none",
-            zindex = 51,
-        },
-        other_opts = {
-            context_maker = _lsp_position_context_maker,
-        },
-    },
-
-    -- the 'Lsp References' command
-    --- @type GroupConfig
-    lsp_references = {
-        commands = {
-            name = "FzfxLspReferences",
-            feed = CommandFeedEnum.ARGS,
-            opts = {
-                bang = true,
-                desc = "Search lsp references",
-            },
-        },
-        providers = {
-            key = "default",
-            provider = _make_lsp_locations_provider({
-                method = "textDocument/references",
-                capability = "referencesProvider",
-            }),
-            provider_type = ProviderTypeEnum.LIST,
-            line_opts = {
-                prepend_icon_by_ft = true,
-                prepend_icon_path_delimiter = ":",
-                prepend_icon_path_position = 1,
-            },
-        },
-        previewers = {
-            previewer = file_previewer_grep,
-            previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_rg,
-            ["double-click"] = require("fzfx.actions").edit_rg,
-        },
-        fzf_opts = {
-            default_fzf_options.multi,
-            default_fzf_options.lsp_preview_window,
-            "--border=none",
-            { "--delimiter", ":" },
-            { "--prompt", "References > " },
-        },
-        win_opts = {
-            relative = "cursor",
-            height = 0.45,
-            width = 1,
-            row = 1,
-            col = 0,
-            border = "none",
-            zindex = 51,
-        },
-        other_opts = {
-            context_maker = _lsp_position_context_maker,
-        },
-    },
-
-    -- the 'Lsp Implementations' command
-    --- @type GroupConfig
-    lsp_implementations = {
-        commands = {
-            name = "FzfxLspImplementations",
-            feed = CommandFeedEnum.ARGS,
-            opts = {
-                bang = true,
-                desc = "Search lsp implementations",
-            },
-        },
-        providers = {
-            key = "default",
-            provider = _make_lsp_locations_provider({
-                method = "textDocument/implementation",
-                capability = "implementationProvider",
-            }),
-            provider_type = ProviderTypeEnum.LIST,
-            line_opts = {
-                prepend_icon_by_ft = true,
-                prepend_icon_path_delimiter = ":",
-                prepend_icon_path_position = 1,
-            },
-        },
-        previewers = {
-            previewer = file_previewer_grep,
-            previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-            previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = require("fzfx.actions").edit_rg,
-            ["double-click"] = require("fzfx.actions").edit_rg,
-        },
-        fzf_opts = {
-            default_fzf_options.multi,
-            default_fzf_options.lsp_preview_window,
-            "--border=none",
-            { "--delimiter", ":" },
-            { "--prompt", "Implementations > " },
-        },
-        win_opts = {
-            relative = "cursor",
-            height = 0.45,
-            width = 1,
-            row = 1,
-            col = 0,
-            border = "none",
-            zindex = 51,
-        },
-        other_opts = {
-            context_maker = _lsp_position_context_maker,
-        },
-    },
-
-    -- the 'File Explorer' commands
-    --- @type GroupConfig
-    file_explorer = {
-        commands = {
-            -- normal
-            {
-                name = "FzfxFileExplorer",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "File explorer (ls -l)",
-                },
-                default_provider = "filter_hidden",
-            },
-            {
-                name = "FzfxFileExplorerU",
-                feed = CommandFeedEnum.ARGS,
-                opts = {
-                    bang = true,
-                    nargs = "?",
-                    complete = "dir",
-                    desc = "File explorer (ls -la)",
-                },
-                default_provider = "include_hidden",
-            },
-            -- visual
-            {
-                name = "FzfxFileExplorerV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "File explorer (ls -l) by visual select",
-                },
-                default_provider = "filter_hidden",
-            },
-            {
-                name = "FzfxFileExplorerUV",
-                feed = CommandFeedEnum.VISUAL,
-                opts = {
-                    bang = true,
-                    range = true,
-                    desc = "File explorer (ls -la) by visual select",
-                },
-                default_provider = "include_hidden",
-            },
-            -- word
-            {
-                name = "FzfxFileExplorerW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "File explorer (ls -l) by cursor word",
-                },
-                default_provider = "filter_hidden",
-            },
-            {
-                name = "FzfxFileExplorerUW",
-                feed = CommandFeedEnum.CWORD,
-                opts = {
-                    bang = true,
-                    desc = "File explorer (ls -la) by cursor word",
-                },
-                default_provider = "include_hidden",
-            },
-            -- put
-            {
-                name = "FzfxFileExplorerP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "File explorer (ls -l) by yank text",
-                },
-                default_provider = "filter_hidden",
-            },
-            {
-                name = "FzfxFileExplorerUP",
-                feed = CommandFeedEnum.PUT,
-                opts = {
-                    bang = true,
-                    desc = "File explorer (ls -la) by yank text",
-                },
-                default_provider = "include_hidden",
-            },
-            -- resume
-            {
-                name = "FzfxFileExplorerR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "File explorer (ls -l) by resume last",
-                },
-                default_provider = "filter_hidden",
-            },
-            {
-                name = "FzfxFileExplorerUR",
-                feed = CommandFeedEnum.RESUME,
-                opts = {
-                    bang = true,
-                    desc = "File explorer (ls -la) by resume last",
-                },
-                default_provider = "include_hidden",
-            },
-        },
-        providers = {
-            filter_hidden = {
-                key = "ctrl-r",
-                provider = _make_file_explorer_provider("-lh"),
-                provider_type = ProviderTypeEnum.COMMAND,
-            },
-            include_hidden = {
-                key = "ctrl-u",
-                provider = _make_file_explorer_provider("-lha"),
-                provider_type = ProviderTypeEnum.COMMAND,
-            },
-        },
-        previewers = {
-            filter_hidden = {
-                previewer = _file_explorer_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = constants.has_lsd and require(
-                    "fzfx.previewer_labels"
-                ).lsd_previewer_label or (constants.has_eza and require(
-                    "fzfx.previewer_labels"
-                ).eza_previewer_label or require(
-                    "fzfx.previewer_labels"
-                ).ls_previewer_label),
-            },
-            include_hidden = {
-                previewer = _file_explorer_previewer,
-                previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-                previewer_label = constants.has_lsd and require(
-                    "fzfx.previewer_labels"
-                ).lsd_previewer_label or (constants.has_eza and require(
-                    "fzfx.previewer_labels"
-                ).eza_previewer_label or require(
-                    "fzfx.previewer_labels"
-                ).ls_previewer_label),
-            },
-        },
-        interactions = {
-            cd = {
-                key = "alt-l",
-                interaction = _cd_file_explorer,
-                reload_after_execute = true,
-            },
-            upper = {
-                key = "alt-h",
-                interaction = _upper_file_explorer,
-                reload_after_execute = true,
-            },
-        },
-        actions = {
-            ["esc"] = require("fzfx.actions").nop,
-            ["enter"] = _edit_file_explorer,
-            ["double-click"] = _edit_file_explorer,
-        },
-        fzf_opts = {
-            default_fzf_options.multi,
-            { "--prompt", path.shorten() .. " > " },
-            function()
-                local n = 0
-                if
-                    constants.has_lsd
-                    or constants.has_eza
-                    or vim.fn.executable("ls") > 0
-                then
-                    n = n + 1
-                end
-                if constants.has_echo then
-                    n = n + 1
-                end
-                return n > 0 and string.format("--header-lines=%d", n) or nil
-            end,
-        },
-        other_opts = {
-            context_maker = _file_explorer_context_maker,
-        },
-    },
-
-    -- the 'Yank History' commands
-    yank_history = {
-        other_opts = {
-            maxsize = 100,
-        },
-    },
-
-    -- the 'Users' commands
-    users = nil,
-
-    -- FZF_DEFAULT_OPTS
     fzf_opts = {
-        "--ansi",
-        "--info=inline",
-        "--layout=reverse",
-        "--border=rounded",
-        "--height=100%",
-        default_fzf_options.toggle,
-        default_fzf_options.toggle_all,
-        default_fzf_options.toggle_preview,
-        default_fzf_options.preview_half_page_down,
-        default_fzf_options.preview_half_page_up,
+      default_fzf_options.multi,
+      function()
+        return { "--prompt", path.shorten() .. " > " }
+      end,
     },
+  },
 
-    -- fzf colors
-    -- see: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
-    fzf_color_opts = {
-        fg = { "fg", "Normal" },
-        bg = { "bg", "Normal" },
-        hl = { "fg", "Comment" },
-        ["fg+"] = { "fg", "CursorLine", "CursorColumn", "Normal" },
-        ["bg+"] = { "bg", "CursorLine", "CursorColumn" },
-        ["hl+"] = { "fg", "Statement" },
-        info = { "fg", "PreProc" },
-        border = { "fg", "Ignore" },
-        prompt = { "fg", "Conditional" },
-        pointer = { "fg", "Exception" },
-        marker = { "fg", "Keyword" },
-        spinner = { "fg", "Label" },
-        header = { "fg", "Comment" },
-        preview_label = { "fg", "Label" },
-    },
-
-    -- icons
-    -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
-    -- unicode: https://symbl.cc/en/
-    icons = {
-        -- nerd fonts:
-        --     nf-fa-file_text_o               \uf0f6 (default)
-        --     nf-fa-file_o                    \uf016
-        unknown_file = "",
-
-        -- nerd fonts:
-        --     nf-custom-folder                \ue5ff (default)
-        --     nf-fa-folder                    \uf07b
-        -- 󰉋    nf-md-folder                    \udb80\ude4b
-        folder = "",
-
-        -- nerd fonts:
-        --     nf-custom-folder_open           \ue5fe (default)
-        --     nf-fa-folder_open               \uf07c
-        -- 󰝰    nf-md-folder_open               \udb81\udf70
-        folder_open = "",
-
-        -- nerd fonts:
-        --     nf-oct-arrow_right              \uf432
-        --     nf-cod-arrow_right              \uea9c
-        --     nf-fa-caret_right               \uf0da
-        --     nf-weather-direction_right      \ue349
-        --     nf-fa-long_arrow_right          \uf178
-        --     nf-oct-chevron_right            \uf460
-        --     nf-fa-chevron_right             \uf054 (default)
-        --
-        -- unicode:
-        -- https://symbl.cc/en/collections/arrow-symbols/
-        -- ➜    U+279C                          &#10140;
-        -- ➤    U+27A4                          &#10148;
-        fzf_pointer = "",
-
-        -- nerd fonts:
-        --     nf-fa-star                      \uf005
-        -- 󰓎    nf-md-star                      \udb81\udcce
-        --     nf-cod-star_full                \ueb59
-        --     nf-oct-dot_fill                 \uf444
-        --     nf-fa-dot_circle_o              \uf192
-        --     nf-cod-check                    \ueab2
-        --     nf-fa-check                     \uf00c
-        -- 󰄬    nf-md-check                     \udb80\udd2c
-        --
-        -- unicode:
-        -- https://symbl.cc/en/collections/star-symbols/
-        -- https://symbl.cc/en/collections/list-bullets/
-        -- https://symbl.cc/en/collections/special-symbols/
-        -- •    U+2022                          &#8226;
-        -- ✓    U+2713                          &#10003; (default)
-        fzf_marker = "✓",
-    },
-
-    -- popup window
-    popup = {
-        -- nvim float window options
-        -- see: https://neovim.io/doc/user/api.html#nvim_open_win()
-        win_opts = {
-            -- popup window height/width.
-            --
-            -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
-            --    e.g. popup height = h * lines, width = w * columns.
-            --
-            -- 2. if h/w > 1, evaluate as absolute height and width, directly pass to vim.api.nvim_open_win.
-            --
-            height = 0.85,
-            width = 0.85,
-
-            -- popup window position, by default popup window is in the center of editor.
-            -- e.g. the option `relative="editor"`.
-            -- for now the `relative` options supports:
-            --  - editor
-            --  - win
-            --  - cursor
-            --
-            -- when relative is 'editor' or 'win', the anchor is the center position, not default 'NW' (north west).
-            -- because 'NW' is a little bit complicated for users to calculate the position, usually we just put the popup window in the center of editor.
-            --
-            -- 1. if -0.5 <= r/c <= 0.5, evaluate proportionally according to editor's lines and columns.
-            --    e.g. shift rows = r * lines, shift columns = c * columns.
-            --
-            -- 2. if r/c <= -1 or r/c >= 1, evaluate as absolute rows/columns to be shift.
-            --    e.g. you can easily set 'row = -vim.o.cmdheight' to move popup window to up 1~2 lines (based on your 'cmdheight' option).
-            --    this is especially useful when popup window is too big and conflicts with command/status line at bottom.
-            --
-            -- 3. r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
-            --
-            -- when relative is 'cursor', the anchor is 'NW' (north west).
-            -- because we just want to put the popup window relative to the cursor.
-            -- so 'row' and 'col' will be directly passed to `vim.api.nvim_open_win` API without any pre-processing.
-            --
-            row = 0,
-            col = 0,
-            border = "none",
-            zindex = 51,
+  -- the 'Live Grep' commands
+  --- @type GroupConfig
+  live_grep = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxLiveGrep",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "*",
+          desc = "Live grep",
         },
+        default_provider = "restricted_mode",
+      },
+      {
+        name = "FzfxLiveGrepU",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "*",
+          desc = "Live grep unrestricted",
+        },
+        default_provider = "unrestricted_mode",
+      },
+      {
+        name = "FzfxLiveGrepB",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "*",
+          desc = "Live grep on current buffer",
+        },
+        default_provider = "buffer_mode",
+      },
+      -- visual
+      {
+        name = "FzfxLiveGrepV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Live grep by visual select",
+        },
+        default_provider = "restricted_mode",
+      },
+      {
+        name = "FzfxLiveGrepUV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Live grep unrestricted by visual select",
+        },
+        default_provider = "unrestricted_mode",
+      },
+      {
+        name = "FzfxLiveGrepBV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Live grep on current buffer by visual select",
+        },
+        default_provider = "buffer_mode",
+      },
+      -- cword
+      {
+        name = "FzfxLiveGrepW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Live grep by cursor word",
+        },
+        default_provider = "restricted_mode",
+      },
+      {
+        name = "FzfxLiveGrepUW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Live grep unrestricted by cursor word",
+        },
+        default_provider = "unrestricted_mode",
+      },
+      {
+        name = "FzfxLiveGrepBW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Live grep on current buffer by cursor word",
+        },
+        default_provider = "buffer_mode",
+      },
+      -- put
+      {
+        name = "FzfxLiveGrepP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Live grep by yank text",
+        },
+        default_provider = "restricted_mode",
+      },
+      {
+        name = "FzfxLiveGrepUP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Live grep unrestricted by yank text",
+        },
+        default_provider = "unrestricted_mode",
+      },
+      {
+        name = "FzfxLiveGrepBP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Live grep on current buffer by yank text",
+        },
+        default_provider = "buffer_mode",
+      },
+      -- resume
+      {
+        name = "FzfxLiveGrepR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Live grep by resume last",
+        },
+        default_provider = "restricted_mode",
+      },
+      {
+        name = "FzfxLiveGrepUR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Live grep unrestricted by resume last",
+        },
+        default_provider = "unrestricted_mode",
+      },
+      {
+        name = "FzfxLiveGrepBR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Live grep on current buffer by resume last",
+        },
+        default_provider = "buffer_mode",
+      },
     },
+    providers = {
+      restricted_mode = {
+        key = "ctrl-r",
+        provider = _make_live_grep_provider(),
+        provider_type = ProviderTypeEnum.COMMAND_LIST,
+        line_opts = {
+          prepend_icon_by_ft = true,
+          prepend_icon_path_delimiter = ":",
+          prepend_icon_path_position = 1,
+        },
+      },
+      unrestricted_mode = {
+        key = "ctrl-u",
+        provider = _make_live_grep_provider({ unrestricted = true }),
+        provider_type = ProviderTypeEnum.COMMAND_LIST,
+        line_opts = {
+          prepend_icon_by_ft = true,
+          prepend_icon_path_delimiter = ":",
+          prepend_icon_path_position = 1,
+        },
+      },
+      buffer_mode = {
+        key = "ctrl-o",
+        provider = _make_live_grep_provider({ buffer = true }),
+        provider_type = ProviderTypeEnum.COMMAND_LIST,
+        line_opts = {
+          prepend_icon_by_ft = true,
+          prepend_icon_path_delimiter = ":",
+          prepend_icon_path_position = 1,
+        },
+      },
+    },
+    previewers = {
+      restricted_mode = {
+        previewer = file_previewer_grep,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = constants.has_rg
+            and require("fzfx.previewer_labels").rg_previewer_label
+          or require("fzfx.previewer_labels").grep_previewer_label,
+      },
+      unrestricted_mode = {
+        previewer = file_previewer_grep,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = constants.has_rg
+            and require("fzfx.previewer_labels").rg_previewer_label
+          or require("fzfx.previewer_labels").grep_previewer_label,
+      },
+      buffer_mode = {
+        previewer = file_previewer_grep,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = constants.has_rg
+            and require("fzfx.previewer_labels").rg_previewer_label
+          or require("fzfx.previewer_labels").grep_previewer_label,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
+        or require("fzfx.actions").edit_grep,
+      ["double-click"] = constants.has_rg and require("fzfx.actions").edit_rg
+        or require("fzfx.actions").edit_grep,
+      ["ctrl-q"] = constants.has_rg and require("fzfx.actions").setqflist_rg
+        or require("fzfx.actions").setqflist_grep,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      "--disabled",
+      { "--prompt", "Live Grep > " },
+      { "--delimiter", ":" },
+      { "--preview-window", "+{2}-/2" },
+    },
+    other_opts = {
+      reload_on_change = true,
+    },
+  },
 
-    -- environment variables
-    env = {
-        --- @type string|nil
-        nvim = nil,
-        --- @type string|nil
-        fzf = nil,
+  -- the 'Buffers' commands
+  --- @type GroupConfig
+  buffers = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxBuffers",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "file",
+          desc = "Find buffers",
+        },
+      },
+      -- visual
+      {
+        name = "FzfxBuffersV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find buffers by visual select",
+        },
+      },
+      -- cword
+      {
+        name = "FzfxBuffersW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find buffers by cursor word",
+        },
+      },
+      -- put
+      {
+        name = "FzfxBuffersP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find buffers by yank text",
+        },
+      },
+      -- resume
+      {
+        name = "FzfxBuffersR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find buffers by resume last",
+        },
+      },
     },
+    providers = {
+      key = "default",
+      provider = _buffers_provider,
+      provider_type = ProviderTypeEnum.LIST,
+      line_opts = { prepend_icon_by_ft = true },
+    },
+    previewers = {
+      previewer = _file_previewer,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+    },
+    interactions = {
+      delete_buffer = {
+        key = "ctrl-d",
+        interaction = _delete_buffer,
+        reload_after_execute = true,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_find,
+      ["double-click"] = require("fzfx.actions").edit_find,
+      ["ctrl-q"] = require("fzfx.actions").setqflist_find,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      { "--prompt", "Buffers > " },
+      function()
+        local current_bufnr = vim.api.nvim_get_current_buf()
+        return utils.is_buf_valid(current_bufnr) and "--header-lines=1" or nil
+      end,
+    },
+  },
 
-    cache = {
-        dir = path.join(vim.fn.stdpath("data"), "fzfx.nvim"),
+  -- the 'Git Files' commands
+  --- @type GroupConfig
+  git_files = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxGFiles",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "dir",
+          desc = "Find git files",
+        },
+        default_provider = "workspace",
+      },
+      {
+        name = "FzfxGFilesC",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "dir",
+          desc = "Find git files in current directory",
+        },
+        default_provider = "current_folder",
+      },
+      -- visual
+      {
+        name = "FzfxGFilesV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find git files by visual select",
+        },
+        default_provider = "workspace",
+      },
+      {
+        name = "FzfxGFilesCV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find git files in current directory by visual select",
+        },
+        default_provider = "current_folder",
+      },
+      -- cword
+      {
+        name = "FzfxGFilesW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find git files by cursor word",
+        },
+        default_provider = "workspace",
+      },
+      {
+        name = "FzfxGFilesCW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find git files in current directory by cursor word",
+        },
+        default_provider = "current_folder",
+      },
+      -- put
+      {
+        name = "FzfxGFilesP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find git files by yank text",
+        },
+        default_provider = "workspace",
+      },
+      {
+        name = "FzfxGFilesCP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find git files in current directory by yank text",
+        },
+        default_provider = "current_folder",
+      },
+      -- resume
+      {
+        name = "FzfxGFilesR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find git files by resume last",
+        },
+        default_provider = "workspace",
+      },
+      {
+        name = "FzfxGFilesCR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find git files in current directory by resume last",
+        },
+        default_provider = "current_folder",
+      },
     },
+    providers = {
+      current_folder = {
+        key = "ctrl-u",
+        provider = _make_git_files_provider({ current_folder = true }),
+        provider_type = ProviderTypeEnum.COMMAND_LIST,
+        line_opts = { prepend_icon_by_ft = true },
+      },
+      workspace = {
+        key = "ctrl-w",
+        provider = _make_git_files_provider(),
+        provider_type = ProviderTypeEnum.COMMAND_LIST,
+        line_opts = { prepend_icon_by_ft = true },
+      },
+    },
+    previewers = {
+      current_folder = {
+        previewer = _file_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+      },
+      workspace = {
+        previewer = _file_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").find_previewer_label,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_find,
+      ["double-click"] = require("fzfx.actions").edit_find,
+      ["ctrl-q"] = require("fzfx.actions").setqflist_find,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      function()
+        return { "--prompt", path.shorten() .. " > " }
+      end,
+    },
+  },
 
-    -- debug
-    debug = {
-        enable = false,
-        console_log = true,
-        file_log = false,
+  -- the 'Git Status' commands
+  --- @type GroupConfig
+  git_status = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxGStatus",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "dir",
+          desc = "Find changed git files (status)",
+        },
+        default_provider = "workspace",
+      },
+      {
+        name = "FzfxGStatusC",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "dir",
+          desc = "Find changed git files (status) in current directory",
+        },
+        default_provider = "current_folder",
+      },
+      -- visual
+      {
+        name = "FzfxGStatusV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find changed git files (status) by visual select",
+        },
+        default_provider = "workspace",
+      },
+      {
+        name = "FzfxGStatusCV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find changed git files (status) in current directory by visual select",
+        },
+        default_provider = "current_folder",
+      },
+      -- cword
+      {
+        name = "FzfxGStatusW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find changed git files (status) by cursor word",
+        },
+        default_provider = "workspace",
+      },
+      {
+        name = "FzfxGStatusCW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find changed git files (status) in current directory by cursor word",
+        },
+        default_provider = "current_folder",
+      },
+      -- put
+      {
+        name = "FzfxGStatusP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find changed git files (status) by yank text",
+        },
+        default_provider = "workspace",
+      },
+      {
+        name = "FzfxGStatusCP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find changed git files (status) in current directory by yank text",
+        },
+        default_provider = "current_folder",
+      },
+      -- resume
+      {
+        name = "FzfxGStatusR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find changed git files (status) by resume last",
+        },
+        default_provider = "workspace",
+      },
+      {
+        name = "FzfxGStatusCR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find changed git files (status) in current directory by resume last",
+        },
+        default_provider = "current_folder",
+      },
     },
+    providers = {
+      current_folder = {
+        key = "ctrl-u",
+        provider = _make_git_status_provider({ current_folder = true }),
+        provider_type = ProviderTypeEnum.COMMAND_LIST,
+      },
+      workspace = {
+        key = "ctrl-w",
+        provider = _make_git_status_provider(),
+        provider_type = ProviderTypeEnum.COMMAND_LIST,
+      },
+    },
+    previewers = {
+      current_folder = {
+        previewer = _git_status_previewer,
+      },
+      workspace = {
+        previewer = _git_status_previewer,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_git_status,
+      ["double-click"] = require("fzfx.actions").edit_git_status,
+      ["ctrl-q"] = require("fzfx.actions").setqflist_git_status,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      { "--preview-window", "wrap" },
+      { "--prompt", "GitStatus > " },
+    },
+  },
+
+  -- the 'Git Branches' commands
+  --- @type GroupConfig
+  git_branches = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxGBranches",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          desc = "Search local git branches",
+        },
+        default_provider = "local_branch",
+      },
+      {
+        name = "FzfxGBranchesR",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          desc = "Search remote git branches",
+        },
+        default_provider = "remote_branch",
+      },
+      -- visual
+      {
+        name = "FzfxGBranchesV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Search local git branches by visual select",
+        },
+        default_provider = "local_branch",
+      },
+      {
+        name = "FzfxGBranchesRV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Search remote git branches by visual select",
+        },
+        default_provider = "remote_branch",
+      },
+      -- cword
+      {
+        name = "FzfxGBranchesW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Search local git branches by cursor word",
+        },
+        default_provider = "local_branch",
+      },
+      {
+        name = "FzfxGBranchesRW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Search remote git branches by cursor word",
+        },
+        default_provider = "remote_branch",
+      },
+      -- put
+      {
+        name = "FzfxGBranchesP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Search local git branches by yank text",
+        },
+        default_provider = "local_branch",
+      },
+      {
+        name = "FzfxGBranchesRP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Search remote git branches by yank text",
+        },
+        default_provider = "remote_branch",
+      },
+      -- resume
+      {
+        name = "FzfxGBranchesR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Search local git branches by resume last",
+        },
+        default_provider = "local_branch",
+      },
+      {
+        name = "FzfxGBranchesRR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Search remote git branches by resume last",
+        },
+        default_provider = "remote_branch",
+      },
+    },
+    providers = {
+      local_branch = {
+        key = "ctrl-o",
+        provider = _make_git_branches_provider(),
+        provider_type = ProviderTypeEnum.LIST,
+      },
+      remote_branch = {
+        key = "ctrl-r",
+        provider = _make_git_branches_provider({ remote_branch = true }),
+        provider_type = ProviderTypeEnum.LIST,
+      },
+    },
+    previewers = {
+      local_branch = {
+        previewer = _git_branches_previewer,
+      },
+      remote_branch = {
+        previewer = _git_branches_previewer,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").git_checkout,
+      ["double-click"] = require("fzfx.actions").git_checkout,
+    },
+    fzf_opts = {
+      default_fzf_options.no_multi,
+      { "--prompt", "GitBranches > " },
+      function()
+        local git_root_cmd = cmd.GitRootCmd:run()
+        if git_root_cmd:wrong() then
+          return nil
+        end
+        local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
+        if git_current_branch_cmd:wrong() then
+          return nil
+        end
+        return utils.string_not_empty(git_current_branch_cmd:value())
+            and "--header-lines=1"
+          or nil
+      end,
+    },
+  },
+
+  -- the 'Git Commits' commands
+  --- @type GroupConfig
+  git_commits = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxGCommits",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          desc = "Search git commits",
+        },
+        default_provider = "all_commits",
+      },
+      {
+        name = "FzfxGCommitsB",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          desc = "Search git commits on current buffer",
+        },
+        default_provider = "buffer_commits",
+      },
+      -- visual
+      {
+        name = "FzfxGCommitsV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Search git commits by visual select",
+        },
+        default_provider = "all_commits",
+      },
+      {
+        name = "FzfxGCommitsBV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Search git commits on current buffer by visual select",
+        },
+        default_provider = "buffer_commits",
+      },
+      -- cword
+      {
+        name = "FzfxGCommitsW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Search git commits by cursor word",
+        },
+        default_provider = "all_commits",
+      },
+      {
+        name = "FzfxGCommitsBW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Search git commits on current buffer by cursor word",
+        },
+        default_provider = "buffer_commits",
+      },
+      -- put
+      {
+        name = "FzfxGCommitsP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Search git commits by yank text",
+        },
+        default_provider = "all_commits",
+      },
+      {
+        name = "FzfxGCommitsBP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Search git commits on current buffer by yank text",
+        },
+        default_provider = "buffer_commits",
+      },
+      -- resume
+      {
+        name = "FzfxGCommitsR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Search git commits by resume last",
+        },
+        default_provider = "all_commits",
+      },
+      {
+        name = "FzfxGCommitsBR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Search git commits on current buffer by resume last",
+        },
+        default_provider = "buffer_commits",
+      },
+    },
+    providers = {
+      all_commits = {
+        key = "ctrl-a",
+        provider = _make_git_commits_provider(),
+        provider_type = ProviderTypeEnum.COMMAND_LIST,
+      },
+      buffer_commits = {
+        key = "ctrl-u",
+        provider = _make_git_commits_provider({ buffer = true }),
+        provider_type = ProviderTypeEnum.COMMAND_LIST,
+      },
+    },
+    previewers = {
+      all_commits = {
+        previewer = _git_commits_previewer,
+      },
+      buffer_commits = {
+        previewer = _git_commits_previewer,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").yank_git_commit,
+      ["double-click"] = require("fzfx.actions").yank_git_commit,
+    },
+    fzf_opts = {
+      default_fzf_options.no_multi,
+      { "--preview-window", "wrap" },
+      { "--prompt", "GitCommits > " },
+    },
+  },
+
+  -- the 'Git Blame' command
+  --- @type GroupConfig
+  git_blame = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxGBlame",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          desc = "Search git commits",
+        },
+      },
+      -- visual
+      {
+        name = "FzfxGBlameV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Search git commits by visual select",
+        },
+      },
+      -- cword
+      {
+        name = "FzfxGBlameW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Search git commits by cursor word",
+        },
+      },
+      -- put
+      {
+        name = "FzfxGBlameP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Search git commits by yank text",
+        },
+      },
+      -- resume
+      {
+        name = "FzfxGBlameR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Search git commits by resume last",
+        },
+      },
+    },
+    providers = {
+      default = {
+        key = "default",
+        provider = _git_blame_provider,
+        provider_type = ProviderTypeEnum.COMMAND,
+      },
+    },
+    previewers = {
+      default = {
+        previewer = _git_commits_previewer,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").yank_git_commit,
+      ["double-click"] = require("fzfx.actions").yank_git_commit,
+    },
+    fzf_opts = {
+      default_fzf_options.no_multi,
+      { "--prompt", "GitBlame > " },
+    },
+  },
+
+  -- the 'Vim Commands' commands
+  --- @type GroupConfig
+  vim_commands = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxCommands",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "command",
+          desc = "Find vim commands",
+        },
+        default_provider = "all_commands",
+      },
+      {
+        name = "FzfxCommandsE",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "command",
+          desc = "Find vim ex(builtin) commands",
+        },
+        default_provider = "ex_commands",
+      },
+      {
+        name = "FzfxCommandsU",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "command",
+          desc = "Find vim user commands",
+        },
+        default_provider = "user_commands",
+      },
+      -- visual
+      {
+        name = "FzfxCommandsV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find vim commands by visual select",
+        },
+        default_provider = "all_commands",
+      },
+      {
+        name = "FzfxCommandsEV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find vim ex(builtin) commands by visual select",
+        },
+        default_provider = "ex_commands",
+      },
+      {
+        name = "FzfxCommandsUV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find vim user commands by visual select",
+        },
+        default_provider = "uesr_commands",
+      },
+      -- cword
+      {
+        name = "FzfxCommandsW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find vim commands by cursor word",
+        },
+        default_provider = "all_commands",
+      },
+      {
+        name = "FzfxCommandsEW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find vim ex(builtin) commands by cursor word",
+        },
+        default_provider = "ex_commands",
+      },
+      {
+        name = "FzfxCommandsUW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find vim user commands by cursor word",
+        },
+        default_provider = "user_commands",
+      },
+      -- put
+      {
+        name = "FzfxCommandsP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find vim commands by yank text",
+        },
+        default_provider = "all_commands",
+      },
+      {
+        name = "FzfxCommandsEP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find vim ex(builtin) commands by yank text",
+        },
+        default_provider = "ex_commands",
+      },
+      {
+        name = "FzfxCommandsUP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find vim user commands by yank text",
+        },
+        default_provider = "user_commands",
+      },
+      -- resume
+      {
+        name = "FzfxCommandsR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find vim commands by resume last",
+        },
+        default_provider = "all_commands",
+      },
+      {
+        name = "FzfxCommandsER",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find vim ex(builtin) commands by resume last",
+        },
+        default_provider = "ex_commands",
+      },
+      {
+        name = "FzfxCommandsUR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find vim user commands by resume last",
+        },
+        default_provider = "user_commands",
+      },
+    },
+    providers = {
+      all_commands = {
+        key = "ctrl-a",
+        --- @param query string
+        --- @param context VimCommandsPipelineContext
+        provider = function(query, context)
+          return vim_commands_provider(context)
+        end,
+        provider_type = ProviderTypeEnum.LIST,
+      },
+      ex_commands = {
+        key = "ctrl-e",
+        --- @param query string
+        --- @param context VimCommandsPipelineContext
+        provider = function(query, context)
+          return vim_ex_commands_provider(context)
+        end,
+        provider_type = ProviderTypeEnum.LIST,
+      },
+      user_commands = {
+        key = "ctrl-u",
+        --- @param query string
+        --- @param context VimCommandsPipelineContext
+        provider = function(query, context)
+          return vim_user_commands_provider(context)
+        end,
+        provider_type = ProviderTypeEnum.LIST,
+      },
+    },
+    previewers = {
+      all_commands = {
+        previewer = vim_commands_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
+      },
+      ex_commands = {
+        previewer = vim_commands_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
+      },
+      user_commands = {
+        previewer = vim_commands_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").vim_command_previewer_label,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").feed_vim_command,
+      ["double-click"] = require("fzfx.actions").feed_vim_command,
+    },
+    fzf_opts = {
+      default_fzf_options.no_multi,
+      "--header-lines=1",
+      { "--preview-window", "~1" },
+      { "--prompt", "Commands > " },
+    },
+    other_opts = {
+      context_maker = _vim_commands_context_maker,
+    },
+  },
+
+  -- the 'Vim KeyMaps' commands
+  --- @type GroupConfig
+  vim_keymaps = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxKeyMaps",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "mapping",
+          desc = "Find vim keymaps",
+        },
+        default_provider = "all_mode",
+      },
+      {
+        name = "FzfxKeyMapsN",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "mapping",
+          desc = "Find vim normal(n) mode keymaps ",
+        },
+        default_provider = "n_mode",
+      },
+      {
+        name = "FzfxKeyMapsI",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "mapping",
+          desc = "Find vim insert(i) mode keymaps ",
+        },
+        default_provider = "i_mode",
+      },
+      {
+        name = "FzfxKeyMapsV",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "mapping",
+          desc = "Find vim visual(v/s/x) mode keymaps ",
+        },
+        default_provider = "v_mode",
+      },
+      -- visual
+      {
+        name = "FzfxKeyMapsV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find vim keymaps by visual select",
+        },
+        default_provider = "all_mode",
+      },
+      {
+        name = "FzfxKeyMapsNV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find vim normal(n) mode keymaps by visual select",
+        },
+        default_provider = "n_mode",
+      },
+      {
+        name = "FzfxKeyMapsIV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find vim insert(i) mode keymaps by visual select",
+        },
+        default_provider = "i_mode",
+      },
+      {
+        name = "FzfxKeyMapsVV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Find vim visual(v/s/x) mode keymaps by visual select",
+        },
+        default_provider = "v_mode",
+      },
+      -- cword
+      {
+        name = "FzfxKeyMapsW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find vim keymaps by cursor word",
+        },
+        default_provider = "all_mode",
+      },
+      {
+        name = "FzfxKeyMapsNW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find vim normal(n) mode keymaps by cursor word",
+        },
+        default_provider = "n_mode",
+      },
+      {
+        name = "FzfxKeyMapsIW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find vim insert(i) mode keymaps by cursor word",
+        },
+        default_provider = "i_mode",
+      },
+      {
+        name = "FzfxKeyMapsVW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Find vim visual(v/s/x) mode keymaps by cursor word",
+        },
+        default_provider = "v_mode",
+      },
+      -- put
+      {
+        name = "FzfxKeyMapsP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find vim keymaps by yank text",
+        },
+        default_provider = "all_mode",
+      },
+      {
+        name = "FzfxKeyMapsNP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find vim normal(n) mode keymaps by yank text",
+        },
+        default_provider = "n_mode",
+      },
+      {
+        name = "FzfxKeyMapsIP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find vim insert(i) mode keymaps by yank text",
+        },
+        default_provider = "i_mode",
+      },
+      {
+        name = "FzfxKeyMapsVP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Find vim visual(v/s/x) mode keymaps by yank text",
+        },
+        default_provider = "v_mode",
+      },
+      -- resume
+      {
+        name = "FzfxKeyMapsR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find vim keymaps by resume last",
+        },
+        default_provider = "all_mode",
+      },
+      {
+        name = "FzfxKeyMapsNR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find vim normal(n) mode keymaps by resume last",
+        },
+        default_provider = "n_mode",
+      },
+      {
+        name = "FzfxKeyMapsIR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find vim insert(i) mode keymaps by resume last",
+        },
+        default_provider = "i_mode",
+      },
+      {
+        name = "FzfxKeyMapsVR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Find vim visual(v/s/x) mode keymaps by resume last",
+        },
+        default_provider = "v_mode",
+      },
+    },
+    providers = {
+      all_mode = {
+        key = "ctrl-a",
+        provider = _make_vim_keymaps_provider("all"),
+        provider_type = ProviderTypeEnum.LIST,
+      },
+      n_mode = {
+        key = "ctrl-o",
+        provider = _make_vim_keymaps_provider("n"),
+        provider_type = ProviderTypeEnum.LIST,
+      },
+      i_mode = {
+        key = "ctrl-i",
+        provider = _make_vim_keymaps_provider("i"),
+        provider_type = ProviderTypeEnum.LIST,
+      },
+      v_mode = {
+        key = "ctrl-v",
+        provider = _make_vim_keymaps_provider("v"),
+        provider_type = ProviderTypeEnum.LIST,
+      },
+    },
+    previewers = {
+      all_mode = {
+        previewer = _vim_keymaps_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
+      },
+      n_mode = {
+        previewer = _vim_keymaps_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
+      },
+      i_mode = {
+        previewer = _vim_keymaps_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
+      },
+      v_mode = {
+        previewer = _vim_keymaps_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").vim_keymap_previewer_label,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").feed_vim_key,
+      ["double-click"] = require("fzfx.actions").feed_vim_key,
+    },
+    fzf_opts = {
+      default_fzf_options.no_multi,
+      "--header-lines=1",
+      { "--preview-window", "~1" },
+      { "--prompt", "Key Maps > " },
+    },
+    other_opts = {
+      context_maker = _vim_keymaps_context_maker,
+    },
+  },
+
+  -- the 'Lsp Diagnostics' command
+  --- @type GroupConfig
+  lsp_diagnostics = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxLspDiagnostics",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          desc = "Search lsp diagnostics on workspace",
+        },
+        default_provider = "workspace_diagnostics",
+      },
+      {
+        name = "FzfxLspDiagnosticsB",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          desc = "Search lsp diagnostics on current buffer",
+        },
+        default_provider = "buffer_diagnostics",
+      },
+      -- visual
+      {
+        name = "FzfxLspDiagnosticsV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Search lsp diagnostics on workspace by visual select",
+        },
+        default_provider = "workspace_diagnostics",
+      },
+      {
+        name = "FzfxLspDiagnosticsBV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Search lsp diagnostics on current buffer by visual select",
+        },
+        default_provider = "buffer_diagnostics",
+      },
+      -- cword
+      {
+        name = "FzfxLspDiagnosticsW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Search lsp diagnostics on workspace by cursor word",
+        },
+        default_provider = "workspace_diagnostics",
+      },
+      {
+        name = "FzfxLspDiagnosticsBW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Search lsp diagnostics on current buffer by cursor word",
+        },
+        default_provider = "buffer_diagnostics",
+      },
+      -- put
+      {
+        name = "FzfxLspDiagnosticsP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Search lsp diagnostics on workspace by yank text",
+        },
+        default_provider = "workspace_diagnostics",
+      },
+      {
+        name = "FzfxLspDiagnosticsBP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Search lsp diagnostics on current buffer by yank text",
+        },
+        default_provider = "buffer_diagnostics",
+      },
+      -- resume
+      {
+        name = "FzfxLspDiagnosticsR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Search lsp diagnostics on workspace by resume last",
+        },
+        default_provider = "workspace_diagnostics",
+      },
+      {
+        name = "FzfxLspDiagnosticsBR",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Search lsp diagnostics on current buffer by resume last",
+        },
+        default_provider = "buffer_diagnostics",
+      },
+    },
+    providers = {
+      workspace_diagnostics = {
+        key = "ctrl-w",
+        provider = _make_lsp_diagnostics_provider(),
+        provider_type = ProviderTypeEnum.LIST,
+        line_opts = {
+          prepend_icon_by_ft = true,
+          prepend_icon_path_delimiter = ":",
+          prepend_icon_path_position = 1,
+        },
+      },
+      buffer_diagnostics = {
+        key = "ctrl-u",
+        provider = _make_lsp_diagnostics_provider({ buffer = true }),
+        provider_type = ProviderTypeEnum.LIST,
+        line_opts = {
+          prepend_icon_by_ft = true,
+          prepend_icon_path_delimiter = ":",
+          prepend_icon_path_position = 1,
+        },
+      },
+    },
+    previewers = {
+      workspace_diagnostics = {
+        previewer = file_previewer_grep,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+      },
+      buffer_diagnostics = {
+        previewer = file_previewer_grep,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_rg,
+      ["double-click"] = require("fzfx.actions").edit_rg,
+      ["ctrl-q"] = require("fzfx.actions").setqflist_rg,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      { "--delimiter", ":" },
+      { "--preview-window", "+{2}-/2" },
+      { "--prompt", "Diagnostics > " },
+    },
+  },
+
+  -- the 'Lsp Definitions' command
+  --- @type GroupConfig
+  lsp_definitions = {
+    commands = {
+      name = "FzfxLspDefinitions",
+      feed = CommandFeedEnum.ARGS,
+      opts = {
+        bang = true,
+        desc = "Search lsp definitions",
+      },
+    },
+    providers = {
+      key = "default",
+      provider = _make_lsp_locations_provider({
+        method = "textDocument/definition",
+        capability = "definitionProvider",
+      }),
+      provider_type = ProviderTypeEnum.LIST,
+      line_opts = {
+        prepend_icon_by_ft = true,
+        prepend_icon_path_delimiter = ":",
+        prepend_icon_path_position = 1,
+      },
+    },
+    previewers = {
+      previewer = file_previewer_grep,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_rg,
+      ["double-click"] = require("fzfx.actions").edit_rg,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      default_fzf_options.lsp_preview_window,
+      "--border=none",
+      { "--delimiter", ":" },
+      { "--prompt", "Definitions > " },
+    },
+    win_opts = {
+      relative = "cursor",
+      height = 0.45,
+      width = 1,
+      row = 1,
+      col = 0,
+      border = "none",
+      zindex = 51,
+    },
+    other_opts = {
+      context_maker = _lsp_position_context_maker,
+    },
+  },
+
+  -- the 'Lsp Type Definitions' command
+  --- @type GroupConfig
+  lsp_type_definitions = {
+    commands = {
+      name = "FzfxLspTypeDefinitions",
+      feed = CommandFeedEnum.ARGS,
+      opts = {
+        bang = true,
+        desc = "Search lsp type definitions",
+      },
+    },
+    providers = {
+      key = "default",
+      provider = _make_lsp_locations_provider({
+        method = "textDocument/type_definition",
+        capability = "typeDefinitionProvider",
+      }),
+      provider_type = ProviderTypeEnum.LIST,
+      line_opts = {
+        prepend_icon_by_ft = true,
+        prepend_icon_path_delimiter = ":",
+        prepend_icon_path_position = 1,
+      },
+    },
+    previewers = {
+      previewer = file_previewer_grep,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_rg,
+      ["double-click"] = require("fzfx.actions").edit_rg,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      default_fzf_options.lsp_preview_window,
+      "--border=none",
+      { "--delimiter", ":" },
+      { "--prompt", "TypeDefinitions > " },
+    },
+    win_opts = {
+      relative = "cursor",
+      height = 0.45,
+      width = 1,
+      row = 1,
+      col = 0,
+      border = "none",
+      zindex = 51,
+    },
+    other_opts = {
+      context_maker = _lsp_position_context_maker,
+    },
+  },
+
+  -- the 'Lsp References' command
+  --- @type GroupConfig
+  lsp_references = {
+    commands = {
+      name = "FzfxLspReferences",
+      feed = CommandFeedEnum.ARGS,
+      opts = {
+        bang = true,
+        desc = "Search lsp references",
+      },
+    },
+    providers = {
+      key = "default",
+      provider = _make_lsp_locations_provider({
+        method = "textDocument/references",
+        capability = "referencesProvider",
+      }),
+      provider_type = ProviderTypeEnum.LIST,
+      line_opts = {
+        prepend_icon_by_ft = true,
+        prepend_icon_path_delimiter = ":",
+        prepend_icon_path_position = 1,
+      },
+    },
+    previewers = {
+      previewer = file_previewer_grep,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_rg,
+      ["double-click"] = require("fzfx.actions").edit_rg,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      default_fzf_options.lsp_preview_window,
+      "--border=none",
+      { "--delimiter", ":" },
+      { "--prompt", "References > " },
+    },
+    win_opts = {
+      relative = "cursor",
+      height = 0.45,
+      width = 1,
+      row = 1,
+      col = 0,
+      border = "none",
+      zindex = 51,
+    },
+    other_opts = {
+      context_maker = _lsp_position_context_maker,
+    },
+  },
+
+  -- the 'Lsp Implementations' command
+  --- @type GroupConfig
+  lsp_implementations = {
+    commands = {
+      name = "FzfxLspImplementations",
+      feed = CommandFeedEnum.ARGS,
+      opts = {
+        bang = true,
+        desc = "Search lsp implementations",
+      },
+    },
+    providers = {
+      key = "default",
+      provider = _make_lsp_locations_provider({
+        method = "textDocument/implementation",
+        capability = "implementationProvider",
+      }),
+      provider_type = ProviderTypeEnum.LIST,
+      line_opts = {
+        prepend_icon_by_ft = true,
+        prepend_icon_path_delimiter = ":",
+        prepend_icon_path_position = 1,
+      },
+    },
+    previewers = {
+      previewer = file_previewer_grep,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_rg,
+      ["double-click"] = require("fzfx.actions").edit_rg,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      default_fzf_options.lsp_preview_window,
+      "--border=none",
+      { "--delimiter", ":" },
+      { "--prompt", "Implementations > " },
+    },
+    win_opts = {
+      relative = "cursor",
+      height = 0.45,
+      width = 1,
+      row = 1,
+      col = 0,
+      border = "none",
+      zindex = 51,
+    },
+    other_opts = {
+      context_maker = _lsp_position_context_maker,
+    },
+  },
+
+  -- the 'File Explorer' commands
+  --- @type GroupConfig
+  file_explorer = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxFileExplorer",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "dir",
+          desc = "File explorer (ls -l)",
+        },
+        default_provider = "filter_hidden",
+      },
+      {
+        name = "FzfxFileExplorerU",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "?",
+          complete = "dir",
+          desc = "File explorer (ls -la)",
+        },
+        default_provider = "include_hidden",
+      },
+      -- visual
+      {
+        name = "FzfxFileExplorerV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "File explorer (ls -l) by visual select",
+        },
+        default_provider = "filter_hidden",
+      },
+      {
+        name = "FzfxFileExplorerUV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "File explorer (ls -la) by visual select",
+        },
+        default_provider = "include_hidden",
+      },
+      -- word
+      {
+        name = "FzfxFileExplorerW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "File explorer (ls -l) by cursor word",
+        },
+        default_provider = "filter_hidden",
+      },
+      {
+        name = "FzfxFileExplorerUW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "File explorer (ls -la) by cursor word",
+        },
+        default_provider = "include_hidden",
+      },
+      -- put
+      {
+        name = "FzfxFileExplorerP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "File explorer (ls -l) by yank text",
+        },
+        default_provider = "filter_hidden",
+      },
+      {
+        name = "FzfxFileExplorerUP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "File explorer (ls -la) by yank text",
+        },
+        default_provider = "include_hidden",
+      },
+      -- resume
+      {
+        name = "FzfxFileExplorerR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "File explorer (ls -l) by resume last",
+        },
+        default_provider = "filter_hidden",
+      },
+      {
+        name = "FzfxFileExplorerUR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "File explorer (ls -la) by resume last",
+        },
+        default_provider = "include_hidden",
+      },
+    },
+    providers = {
+      filter_hidden = {
+        key = "ctrl-r",
+        provider = _make_file_explorer_provider("-lh"),
+        provider_type = ProviderTypeEnum.COMMAND,
+      },
+      include_hidden = {
+        key = "ctrl-u",
+        provider = _make_file_explorer_provider("-lha"),
+        provider_type = ProviderTypeEnum.COMMAND,
+      },
+    },
+    previewers = {
+      filter_hidden = {
+        previewer = _file_explorer_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = constants.has_lsd
+            and require("fzfx.previewer_labels").lsd_previewer_label
+          or (
+            constants.has_eza
+              and require("fzfx.previewer_labels").eza_previewer_label
+            or require("fzfx.previewer_labels").ls_previewer_label
+          ),
+      },
+      include_hidden = {
+        previewer = _file_explorer_previewer,
+        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+        previewer_label = constants.has_lsd
+            and require("fzfx.previewer_labels").lsd_previewer_label
+          or (
+            constants.has_eza
+              and require("fzfx.previewer_labels").eza_previewer_label
+            or require("fzfx.previewer_labels").ls_previewer_label
+          ),
+      },
+    },
+    interactions = {
+      cd = {
+        key = "alt-l",
+        interaction = _cd_file_explorer,
+        reload_after_execute = true,
+      },
+      upper = {
+        key = "alt-h",
+        interaction = _upper_file_explorer,
+        reload_after_execute = true,
+      },
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = _edit_file_explorer,
+      ["double-click"] = _edit_file_explorer,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      { "--prompt", path.shorten() .. " > " },
+      function()
+        local n = 0
+        if
+          constants.has_lsd
+          or constants.has_eza
+          or vim.fn.executable("ls") > 0
+        then
+          n = n + 1
+        end
+        if constants.has_echo then
+          n = n + 1
+        end
+        return n > 0 and string.format("--header-lines=%d", n) or nil
+      end,
+    },
+    other_opts = {
+      context_maker = _file_explorer_context_maker,
+    },
+  },
+
+  -- the 'Yank History' commands
+  yank_history = {
+    other_opts = {
+      maxsize = 100,
+    },
+  },
+
+  -- the 'Users' commands
+  users = nil,
+
+  -- FZF_DEFAULT_OPTS
+  fzf_opts = {
+    "--ansi",
+    "--info=inline",
+    "--layout=reverse",
+    "--border=rounded",
+    "--height=100%",
+    default_fzf_options.toggle,
+    default_fzf_options.toggle_all,
+    default_fzf_options.toggle_preview,
+    default_fzf_options.preview_half_page_down,
+    default_fzf_options.preview_half_page_up,
+  },
+
+  -- fzf colors
+  -- see: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
+  fzf_color_opts = {
+    fg = { "fg", "Normal" },
+    bg = { "bg", "Normal" },
+    hl = { "fg", "Comment" },
+    ["fg+"] = { "fg", "CursorLine", "CursorColumn", "Normal" },
+    ["bg+"] = { "bg", "CursorLine", "CursorColumn" },
+    ["hl+"] = { "fg", "Statement" },
+    info = { "fg", "PreProc" },
+    border = { "fg", "Ignore" },
+    prompt = { "fg", "Conditional" },
+    pointer = { "fg", "Exception" },
+    marker = { "fg", "Keyword" },
+    spinner = { "fg", "Label" },
+    header = { "fg", "Comment" },
+    preview_label = { "fg", "Label" },
+  },
+
+  -- icons
+  -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
+  -- unicode: https://symbl.cc/en/
+  icons = {
+    -- nerd fonts:
+    --     nf-fa-file_text_o               \uf0f6 (default)
+    --     nf-fa-file_o                    \uf016
+    unknown_file = "",
+
+    -- nerd fonts:
+    --     nf-custom-folder                \ue5ff (default)
+    --     nf-fa-folder                    \uf07b
+    -- 󰉋    nf-md-folder                    \udb80\ude4b
+    folder = "",
+
+    -- nerd fonts:
+    --     nf-custom-folder_open           \ue5fe (default)
+    --     nf-fa-folder_open               \uf07c
+    -- 󰝰    nf-md-folder_open               \udb81\udf70
+    folder_open = "",
+
+    -- nerd fonts:
+    --     nf-oct-arrow_right              \uf432
+    --     nf-cod-arrow_right              \uea9c
+    --     nf-fa-caret_right               \uf0da
+    --     nf-weather-direction_right      \ue349
+    --     nf-fa-long_arrow_right          \uf178
+    --     nf-oct-chevron_right            \uf460
+    --     nf-fa-chevron_right             \uf054 (default)
+    --
+    -- unicode:
+    -- https://symbl.cc/en/collections/arrow-symbols/
+    -- ➜    U+279C                          &#10140;
+    -- ➤    U+27A4                          &#10148;
+    fzf_pointer = "",
+
+    -- nerd fonts:
+    --     nf-fa-star                      \uf005
+    -- 󰓎    nf-md-star                      \udb81\udcce
+    --     nf-cod-star_full                \ueb59
+    --     nf-oct-dot_fill                 \uf444
+    --     nf-fa-dot_circle_o              \uf192
+    --     nf-cod-check                    \ueab2
+    --     nf-fa-check                     \uf00c
+    -- 󰄬    nf-md-check                     \udb80\udd2c
+    --
+    -- unicode:
+    -- https://symbl.cc/en/collections/star-symbols/
+    -- https://symbl.cc/en/collections/list-bullets/
+    -- https://symbl.cc/en/collections/special-symbols/
+    -- •    U+2022                          &#8226;
+    -- ✓    U+2713                          &#10003; (default)
+    fzf_marker = "✓",
+  },
+
+  -- popup window
+  popup = {
+    -- nvim float window options
+    -- see: https://neovim.io/doc/user/api.html#nvim_open_win()
+    win_opts = {
+      -- popup window height/width.
+      --
+      -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
+      --    e.g. popup height = h * lines, width = w * columns.
+      --
+      -- 2. if h/w > 1, evaluate as absolute height and width, directly pass to vim.api.nvim_open_win.
+      --
+      height = 0.85,
+      width = 0.85,
+
+      -- popup window position, by default popup window is in the center of editor.
+      -- e.g. the option `relative="editor"`.
+      -- for now the `relative` options supports:
+      --  - editor
+      --  - win
+      --  - cursor
+      --
+      -- when relative is 'editor' or 'win', the anchor is the center position, not default 'NW' (north west).
+      -- because 'NW' is a little bit complicated for users to calculate the position, usually we just put the popup window in the center of editor.
+      --
+      -- 1. if -0.5 <= r/c <= 0.5, evaluate proportionally according to editor's lines and columns.
+      --    e.g. shift rows = r * lines, shift columns = c * columns.
+      --
+      -- 2. if r/c <= -1 or r/c >= 1, evaluate as absolute rows/columns to be shift.
+      --    e.g. you can easily set 'row = -vim.o.cmdheight' to move popup window to up 1~2 lines (based on your 'cmdheight' option).
+      --    this is especially useful when popup window is too big and conflicts with command/status line at bottom.
+      --
+      -- 3. r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
+      --
+      -- when relative is 'cursor', the anchor is 'NW' (north west).
+      -- because we just want to put the popup window relative to the cursor.
+      -- so 'row' and 'col' will be directly passed to `vim.api.nvim_open_win` API without any pre-processing.
+      --
+      row = 0,
+      col = 0,
+      border = "none",
+      zindex = 51,
+    },
+  },
+
+  -- environment variables
+  env = {
+    --- @type string|nil
+    nvim = nil,
+    --- @type string|nil
+    fzf = nil,
+  },
+
+  cache = {
+    dir = path.join(vim.fn.stdpath("data"), "fzfx.nvim"),
+  },
+
+  -- debug
+  debug = {
+    enable = false,
+    console_log = true,
+    file_log = false,
+  },
 }
 
 --- @type Options
@@ -4451,105 +4410,105 @@ local Configs = {}
 --- @param options Options|nil
 --- @return Options
 local function setup(options)
-    Configs = vim.tbl_deep_extend("force", Defaults, options or {})
-    return Configs
+  Configs = vim.tbl_deep_extend("force", Defaults, options or {})
+  return Configs
 end
 
 --- @return Options
 local function get_config()
-    return Configs
+  return Configs
 end
 
 --- @return Options
 local function get_defaults()
-    return Defaults
+  return Defaults
 end
 
 local M = {
-    setup = setup,
-    get_config = get_config,
-    get_defaults = get_defaults,
+  setup = setup,
+  get_config = get_config,
+  get_defaults = get_defaults,
 
-    -- files
-    _default_bat_style_theme = _default_bat_style_theme,
-    _make_file_previewer = _make_file_previewer,
-    _file_previewer = _file_previewer,
+  -- files
+  _default_bat_style_theme = _default_bat_style_theme,
+  _make_file_previewer = _make_file_previewer,
+  _file_previewer = _file_previewer,
 
-    -- live grep
-    _make_live_grep_provider = _make_live_grep_provider,
+  -- live grep
+  _make_live_grep_provider = _make_live_grep_provider,
 
-    -- buffers
-    _is_valid_buffer_number = _is_valid_buffer_number,
-    _buffers_provider = _buffers_provider,
-    _delete_buffer = _delete_buffer,
+  -- buffers
+  _is_valid_buffer_number = _is_valid_buffer_number,
+  _buffers_provider = _buffers_provider,
+  _delete_buffer = _delete_buffer,
 
-    -- git files
-    _make_git_files_provider = _make_git_files_provider,
+  -- git files
+  _make_git_files_provider = _make_git_files_provider,
 
-    -- git branches
-    _make_git_branches_provider = _make_git_branches_provider,
-    _git_branches_previewer = _git_branches_previewer,
+  -- git branches
+  _make_git_branches_provider = _make_git_branches_provider,
+  _git_branches_previewer = _git_branches_previewer,
 
-    -- git commits
-    _make_git_commits_provider = _make_git_commits_provider,
-    _make_git_commits_previewer = _make_git_commits_previewer,
-    _git_commits_previewer = _git_commits_previewer,
+  -- git commits
+  _make_git_commits_provider = _make_git_commits_provider,
+  _make_git_commits_previewer = _make_git_commits_previewer,
+  _git_commits_previewer = _git_commits_previewer,
 
-    -- git blame
-    _git_blame_provider = _git_blame_provider,
+  -- git blame
+  _git_blame_provider = _git_blame_provider,
 
-    -- diagnostics
-    _make_lsp_diagnostic_signs = _make_lsp_diagnostic_signs,
-    _process_lsp_diagnostic_item = _process_lsp_diagnostic_item,
-    _make_lsp_diagnostics_provider = _make_lsp_diagnostics_provider,
+  -- diagnostics
+  _make_lsp_diagnostic_signs = _make_lsp_diagnostic_signs,
+  _process_lsp_diagnostic_item = _process_lsp_diagnostic_item,
+  _make_lsp_diagnostics_provider = _make_lsp_diagnostics_provider,
 
-    -- lsp
-    _is_lsp_range = _is_lsp_range,
-    _is_lsp_location = _is_lsp_location,
-    _is_lsp_locationlink = _is_lsp_locationlink,
-    _lsp_location_render_line = _lsp_location_render_line,
-    _lsp_position_context_maker = _lsp_position_context_maker,
-    _render_lsp_location_line = _render_lsp_location_line,
-    _make_lsp_locations_provider = _make_lsp_locations_provider,
+  -- lsp
+  _is_lsp_range = _is_lsp_range,
+  _is_lsp_location = _is_lsp_location,
+  _is_lsp_locationlink = _is_lsp_locationlink,
+  _lsp_location_render_line = _lsp_location_render_line,
+  _lsp_position_context_maker = _lsp_position_context_maker,
+  _render_lsp_location_line = _render_lsp_location_line,
+  _make_lsp_locations_provider = _make_lsp_locations_provider,
 
-    -- commands
-    _parse_vim_ex_command_name = _parse_vim_ex_command_name,
-    _get_vim_ex_commands = _get_vim_ex_commands,
-    _is_ex_command_output_header = _is_ex_command_output_header,
-    _parse_ex_command_output_header = _parse_ex_command_output_header,
-    _parse_ex_command_output_lua_function_definition = _parse_ex_command_output_lua_function_definition,
-    _parse_ex_command_output = _parse_ex_command_output,
-    _get_vim_user_commands = _get_vim_user_commands,
-    _render_vim_commands_column_opts = _render_vim_commands_column_opts,
-    _render_vim_commands_columns_status = _render_vim_commands_columns_status,
-    _render_vim_commands = _render_vim_commands,
-    _vim_commands_lua_function_previewer = _vim_commands_lua_function_previewer,
-    _vim_commands_context_maker = _vim_commands_context_maker,
-    _get_vim_commands = _get_vim_commands,
+  -- commands
+  _parse_vim_ex_command_name = _parse_vim_ex_command_name,
+  _get_vim_ex_commands = _get_vim_ex_commands,
+  _is_ex_command_output_header = _is_ex_command_output_header,
+  _parse_ex_command_output_header = _parse_ex_command_output_header,
+  _parse_ex_command_output_lua_function_definition = _parse_ex_command_output_lua_function_definition,
+  _parse_ex_command_output = _parse_ex_command_output,
+  _get_vim_user_commands = _get_vim_user_commands,
+  _render_vim_commands_column_opts = _render_vim_commands_column_opts,
+  _render_vim_commands_columns_status = _render_vim_commands_columns_status,
+  _render_vim_commands = _render_vim_commands,
+  _vim_commands_lua_function_previewer = _vim_commands_lua_function_previewer,
+  _vim_commands_context_maker = _vim_commands_context_maker,
+  _get_vim_commands = _get_vim_commands,
 
-    -- keymaps
-    _parse_map_command_output_line = _parse_map_command_output_line,
-    _get_vim_keymaps = _get_vim_keymaps,
-    _render_vim_keymaps_column_opts = _render_vim_keymaps_column_opts,
-    _render_vim_keymaps_columns_status = _render_vim_keymaps_columns_status,
-    _render_vim_keymaps = _render_vim_keymaps,
-    _vim_keymaps_context_maker = _vim_keymaps_context_maker,
-    _vim_keymaps_lua_function_previewer = _vim_keymaps_lua_function_previewer,
-    _make_git_status_provider = _make_git_status_provider,
-    _get_delta_width = _get_delta_width,
-    _git_status_previewer = _git_status_previewer,
-    _make_vim_keymaps_provider = _make_vim_keymaps_provider,
-    _vim_keymaps_previewer = _vim_keymaps_previewer,
+  -- keymaps
+  _parse_map_command_output_line = _parse_map_command_output_line,
+  _get_vim_keymaps = _get_vim_keymaps,
+  _render_vim_keymaps_column_opts = _render_vim_keymaps_column_opts,
+  _render_vim_keymaps_columns_status = _render_vim_keymaps_columns_status,
+  _render_vim_keymaps = _render_vim_keymaps,
+  _vim_keymaps_context_maker = _vim_keymaps_context_maker,
+  _vim_keymaps_lua_function_previewer = _vim_keymaps_lua_function_previewer,
+  _make_git_status_provider = _make_git_status_provider,
+  _get_delta_width = _get_delta_width,
+  _git_status_previewer = _git_status_previewer,
+  _make_vim_keymaps_provider = _make_vim_keymaps_provider,
+  _vim_keymaps_previewer = _vim_keymaps_previewer,
 
-    -- file explorer
-    _make_filename_by_file_explorer_context = _make_filename_by_file_explorer_context,
-    _file_explorer_context_maker = _file_explorer_context_maker,
-    _make_file_explorer_provider = _make_file_explorer_provider,
-    _directory_previewer = _directory_previewer,
-    _file_explorer_previewer = _file_explorer_previewer,
-    _edit_file_explorer = _edit_file_explorer,
-    _cd_file_explorer = _cd_file_explorer,
-    _upper_file_explorer = _upper_file_explorer,
+  -- file explorer
+  _make_filename_by_file_explorer_context = _make_filename_by_file_explorer_context,
+  _file_explorer_context_maker = _file_explorer_context_maker,
+  _make_file_explorer_provider = _make_file_explorer_provider,
+  _directory_previewer = _directory_previewer,
+  _file_explorer_previewer = _file_explorer_previewer,
+  _edit_file_explorer = _edit_file_explorer,
+  _cd_file_explorer = _cd_file_explorer,
+  _upper_file_explorer = _upper_file_explorer,
 }
 
 return M

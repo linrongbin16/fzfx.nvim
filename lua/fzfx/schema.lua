@@ -32,11 +32,11 @@
 --- @alias ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
 --- @enum ProviderTypeEnum
 local ProviderTypeEnum = {
-    PLAIN = "plain",
-    PLAIN_LIST = "plain_list",
-    COMMAND = "command",
-    COMMAND_LIST = "command_list",
-    LIST = "list",
+  PLAIN = "plain",
+  PLAIN_LIST = "plain_list",
+  COMMAND = "command",
+  COMMAND_LIST = "command_list",
+  LIST = "list",
 }
 
 -- ========== Previewer ==========
@@ -57,9 +57,9 @@ local ProviderTypeEnum = {
 --- @alias PreviewerType "command"|"command_list"|"list"|"buffer"
 --- @enum PreviewerTypeEnum
 local PreviewerTypeEnum = {
-    COMMAND = "command",
-    COMMAND_LIST = "command_list",
-    LIST = "list",
+  COMMAND = "command",
+  COMMAND_LIST = "command_list",
+  LIST = "list",
 }
 
 -- ========== Previewer Label ==========
@@ -75,8 +75,8 @@ local PreviewerTypeEnum = {
 --- @alias PreviewerLabelType "plain"|"function"
 --- @enum PreviewerLabelTypeEnum
 local PreviewerLabelTypeEnum = {
-    PLAIN = "plain",
-    FUNCTION = "function",
+  PLAIN = "plain",
+  FUNCTION = "function",
 }
 
 -- ========== Command Option ==========
@@ -98,11 +98,11 @@ local PreviewerLabelTypeEnum = {
 --- @alias CommandFeed "args"|"visual"|"cword"|"put"|"resume"
 --- @enum CommandFeedEnum
 local CommandFeedEnum = {
-    ARGS = "args",
-    VISUAL = "visual",
-    CWORD = "cword",
-    PUT = "put",
-    RESUME = "resume",
+  ARGS = "args",
+  VISUAL = "visual",
+  CWORD = "cword",
+  PUT = "put",
+  RESUME = "resume",
 }
 
 -- ========== Fzf Option ==========
@@ -197,84 +197,83 @@ local CommandFeedEnum = {
 --- @param cfg CommandConfig?
 --- @return boolean
 local function is_command_config(cfg)
-    return type(cfg) == "table"
-        and type(cfg.name) == "string"
-        and string.len(cfg.name) > 0
-        and type(cfg.feed) == "string"
-        and string.len(cfg.feed) > 0
-        and type(cfg.opts) == "table"
+  return type(cfg) == "table"
+    and type(cfg.name) == "string"
+    and string.len(cfg.name) > 0
+    and type(cfg.feed) == "string"
+    and string.len(cfg.feed) > 0
+    and type(cfg.opts) == "table"
 end
 
 --- @param cfg ProviderConfig?
 --- @return boolean
 local function is_provider_config(cfg)
-    return type(cfg) == "table"
-        and type(cfg.key) == "string"
-        and string.len(cfg.key) > 0
-        and (
-            (
-                type(cfg.provider) == "string"
-                and string.len(cfg.provider --[[@as string]]) > 0
-            )
-            or (type(cfg.provider) == "table" and #cfg.provider > 0)
-            or type(cfg.provider) == "function"
-        )
+  return type(cfg) == "table"
+    and type(cfg.key) == "string"
+    and string.len(cfg.key) > 0
+    and (
+      (
+        type(cfg.provider) == "string"
+        and string.len(cfg.provider --[[@as string]]) > 0
+      )
+      or (type(cfg.provider) == "table" and #cfg.provider > 0)
+      or type(cfg.provider) == "function"
+    )
 end
 
 --- @param cfg PreviewerConfig?
 --- @return boolean
 local function is_previewer_config(cfg)
-    return type(cfg) == "table"
-        and type(cfg.previewer) == "function"
-        and (
-            cfg.previewer_type == nil
-            or (
-                type(cfg.previewer_type) == "string"
-                and string.len(cfg.previewer_type) > 0
-            )
-        )
+  return type(cfg) == "table"
+    and type(cfg.previewer) == "function"
+    and (
+      cfg.previewer_type == nil
+      or (
+        type(cfg.previewer_type) == "string"
+        and string.len(cfg.previewer_type) > 0
+      )
+    )
 end
 
 --- @param provider_config ProviderConfig
 --- @return ProviderType
 local function get_provider_type_or_default(provider_config)
-    return provider_config.provider_type
-        or (
-            type(provider_config.provider) == "string"
-                and ProviderTypeEnum.PLAIN
-            or ProviderTypeEnum.PLAIN_LIST
-        )
+  return provider_config.provider_type
+    or (
+      type(provider_config.provider) == "string" and ProviderTypeEnum.PLAIN
+      or ProviderTypeEnum.PLAIN_LIST
+    )
 end
 
 --- @param previewer_config PreviewerConfig
 --- @return PreviewerType
 local function get_previewer_type_or_default(previewer_config)
-    return previewer_config.previewer_type or PreviewerTypeEnum.COMMAND
+  return previewer_config.previewer_type or PreviewerTypeEnum.COMMAND
 end
 
 --- @param previewer_config PreviewerConfig
 --- @return PreviewerLabelType
 local function get_previewer_label_type_or_default(previewer_config)
-    return previewer_config.previewer_label_type
-        or (
-            type(previewer_config.previewer_label) == "function"
-                and PreviewerLabelTypeEnum.FUNCTION
-            or PreviewerLabelTypeEnum.PLAIN
-        )
+  return previewer_config.previewer_label_type
+    or (
+      type(previewer_config.previewer_label) == "function"
+        and PreviewerLabelTypeEnum.FUNCTION
+      or PreviewerLabelTypeEnum.PLAIN
+    )
 end
 
 local M = {
-    ProviderTypeEnum = ProviderTypeEnum,
-    PreviewerTypeEnum = PreviewerTypeEnum,
-    PreviewerLabelTypeEnum = PreviewerLabelTypeEnum,
-    CommandFeedEnum = CommandFeedEnum,
+  ProviderTypeEnum = ProviderTypeEnum,
+  PreviewerTypeEnum = PreviewerTypeEnum,
+  PreviewerLabelTypeEnum = PreviewerLabelTypeEnum,
+  CommandFeedEnum = CommandFeedEnum,
 
-    is_command_config = is_command_config,
-    is_provider_config = is_provider_config,
-    is_previewer_config = is_previewer_config,
-    get_provider_type_or_default = get_provider_type_or_default,
-    get_previewer_type_or_default = get_previewer_type_or_default,
-    get_previewer_label_type_or_default = get_previewer_label_type_or_default,
+  is_command_config = is_command_config,
+  is_provider_config = is_provider_config,
+  is_previewer_config = is_previewer_config,
+  get_provider_type_or_default = get_provider_type_or_default,
+  get_previewer_type_or_default = get_previewer_type_or_default,
+  get_previewer_label_type_or_default = get_previewer_label_type_or_default,
 }
 
 return M
