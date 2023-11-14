@@ -356,7 +356,7 @@ Commands are named following below rules:
 - Live Grep
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. Use `--` to pass raw options to search command (grep/rg).
+> 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
 > 3. **Unrestricted** variant is named with `U` suffix.
 > 4. **Current buffer** variant is named with `B` suffix.
 
@@ -432,6 +432,46 @@ Commands are named following below rules:
   </tr>
   <tr>
     <td>FzfxGFiles(C)R</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+- Git Grep
+
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. Use `--` flag to pass raw options to search command (`git grep`).
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Select Keys</th>
+    <th>Preview Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxGGrep</td>
+    <td>N</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
+  </tr>
+  <tr>
+    <td>FzfxGGrepV</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxGGrepW</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGGrepP</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGGrepR</td>
     <td>N</td>
   </tr>
 </tbody>
