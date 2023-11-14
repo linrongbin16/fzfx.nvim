@@ -17,7 +17,7 @@ FZF-based fuzzy finder running on a dynamic engine that parsing user query and s
 
 > Search `fzfx` with rg's `-g *spec.lua` option.
 
-## Table of contents
+## 📖 Table of contents
 
 - [Feature](#-feature)
 - [Requirement](#-requirement)
