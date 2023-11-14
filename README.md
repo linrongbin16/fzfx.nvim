@@ -1380,7 +1380,7 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 
 Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
 
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/e60b69ab-3a29-4acc-8e48-cb9ab1b22b24
+![FzfxLs](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/d8dadedf-928e-477d-b176-64a4b6fe7607)
 
 <details>
 <summary><i>Click here to see how to configure</i></summary>
