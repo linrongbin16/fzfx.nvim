@@ -376,7 +376,7 @@ local function _git_grep_provider(query, context)
   local content = parsed_query[1]
   local option = parsed_query[2]
 
-  local args = { "git", "grep", "--color=always", "-n", "--column" }
+  local args = { "git", "grep", "--color=always", "-n" }
   if type(option) == "string" and string.len(option) > 0 then
     local option_splits = utils.string_split(option, " ")
     for _, o in ipairs(option_splits) do
@@ -2806,13 +2806,13 @@ local Defaults = {
     previewers = {
       previewer = _file_previewer_grep,
       previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-      previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+      previewer_label = require("fzfx.previewer_labels").grep_previewer_label,
     },
     actions = {
       ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_rg,
-      ["double-click"] = require("fzfx.actions").edit_rg,
-      ["ctrl-q"] = require("fzfx.actions").setqflist_rg,
+      ["enter"] = require("fzfx.actions").edit_grep,
+      ["double-click"] = require("fzfx.actions").edit_grep,
+      ["ctrl-q"] = require("fzfx.actions").setqflist_grep,
     },
     fzf_opts = {
       default_fzf_options.multi,
