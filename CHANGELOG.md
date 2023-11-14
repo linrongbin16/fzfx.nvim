@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.1](https://github.com/linrongbin16/fzfx.nvim/compare/v3.3.0...v3.3.1) (2023-11-14)
+
+
+### Bug Fixes
+
+* **actions:** fix ctrl-c abort error, improve error message ([#415](https://github.com/linrongbin16/fzfx.nvim/issues/415)) ([715f722](https://github.com/linrongbin16/fzfx.nvim/commit/715f72217fde499a7416a1422637a97e4da1c2af))
+
 ## [3.3.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.2.0...v3.3.0) (2023-11-12)
 
 
