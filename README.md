@@ -402,6 +402,49 @@ Below keys are binded by default:
 
 </details>
 
+<details>
+<summary><b>Git Live Grep</b></summary>
+
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. Use `--` flag to pass raw options to search command (`git grep`).
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Select Keys</th>
+    <th>Preview Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxGLiveGrep</td>
+    <td>N</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
+  </tr>
+  <tr>
+    <td>FzfxGLiveGrepV</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxGLiveGrepW</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGLiveGrepP</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGLiveGrepR</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+</details>
+
 ### Git
 
 <details>
@@ -440,49 +483,6 @@ Below keys are binded by default:
   </tr>
   <tr>
     <td>FzfxGFiles(C)R</td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-<details>
-<summary><b>Git Grep</b></summary>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. Use `--` flag to pass raw options to search command (`git grep`).
-
-<table>
-<thead>
-  <tr>
-    <th>Command</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>FzfxGGrep</td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td>FzfxGGrepV</td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td>FzfxGGrepW</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxGGrepP</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxGGrepR</td>
     <td>N</td>
   </tr>
 </tbody>
