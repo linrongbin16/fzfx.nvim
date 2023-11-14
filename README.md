@@ -922,6 +922,19 @@ nnoremap <space>bf :\<C-U>FzfxBuffers<CR>
 " git files
 nnoremap <space>gf :\<C-U>FzfxGFiles<CR>
 
+" ======== git grep ========
+
+" git grep
+nnoremap <space>gg :\<C-U>FzfxGGrep<CR>
+" by visual select
+xnoremap <space>gg :\<C-U>FzfxGGrepV<CR>
+" by cursor word
+nnoremap <space>wg :\<C-U>FzfxGGrepW<CR>
+" by yank text
+nnoremap <space>pg :\<C-U>FzfxGGrepP<CR>
+" by resume
+nnoremap <space>rg :\<C-U>FzfxGGrepR<CR>
+
 " ======== git changed files (status) ========
 
 " git files
@@ -1080,6 +1093,44 @@ vim.keymap.set(
   "<space>gf",
   "<cmd>FzfxGFiles<cr>",
   { silent = true, noremap = true, desc = "Find git files" }
+)
+
+-- ======== git grep ========
+
+-- git grep
+vim.keymap.set(
+  "n",
+  "<space>gg",
+  "<cmd>FzfxGGrep<cr>",
+  { silent = true, noremap = true, desc = "Git grep" }
+)
+-- by visual select
+vim.keymap.set(
+  "x",
+  "<space>gg",
+  "<cmd>FzfxGGrepV<cr>",
+  { silent = true, noremap = true, desc = "Git grep" }
+)
+-- by cursor word
+vim.keymap.set(
+  "n",
+  "<space>wg",
+  "<cmd>FzfxGGrepW<cr>",
+  { silent = true, noremap = true, desc = "Git grep by cursor word" }
+)
+-- by yank text
+vim.keymap.set(
+  "n",
+  "<space>pg",
+  "<cmd>FzfxGGrepP<cr>",
+  { silent = true, noremap = true, desc = "Git grep by yank text" }
+)
+-- by resume
+vim.keymap.set(
+  "n",
+  "<space>rg",
+  "<cmd>FzfxGGrepR<cr>",
+  { silent = true, noremap = true, desc = "Git grep by resume last" }
 )
 
 -- ======== git changed files (status) ========
