@@ -56,6 +56,7 @@ local function setup(options)
 
   -- git
   general.setup("git_files", configs.git_files)
+  general.setup("git_grep", configs.git_grep)
   general.setup("git_status", configs.git_status)
   general.setup("git_branches", configs.git_branches)
   general.setup("git_commits", configs.git_commits)
