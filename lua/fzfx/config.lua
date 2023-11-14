@@ -4551,6 +4551,7 @@ local M = {
 
   -- live grep
   _make_live_grep_provider = _make_live_grep_provider,
+  _file_previewer_grep = _file_previewer_grep,
 
   -- buffers
   _is_valid_buffer_number = _is_valid_buffer_number,
