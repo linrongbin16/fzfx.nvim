@@ -242,8 +242,6 @@ require("lazy").setup({
 
 ## 🚀 Commands
 
-### Naming Rules
-
 Commands are named following below rules:
 
 - All commands are named with prefix `Fzfx`.
@@ -255,7 +253,7 @@ Commands are named following below rules:
 
 > Note: command names can be configured, see [Configuration](#-configuration).
 
-### Bind Keys
+Below keys are binded by default:
 
 - Exit keys (fzf `--expect` option)
   - `esc`: quit.
@@ -272,7 +270,8 @@ Commands are named following below rules:
 
 ### Files & Buffers
 
-- Files
+<details>
+<summary><b>Files</b></summary>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. **Unrestricted** variant is named with `U` suffix.
@@ -312,7 +311,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Buffers
+</details>
+
+<details>
+<summary><b>Buffers</b></summary>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 
@@ -351,9 +353,12 @@ Commands are named following below rules:
 </tbody>
 </table>
 
+</details>
+
 ### Grep
 
-- Live Grep
+<details>
+<summary><b>Live Grep</b></summary>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
@@ -395,9 +400,12 @@ Commands are named following below rules:
 </tbody>
 </table>
 
+</details>
+
 ### Git
 
-- Git Files
+<details>
+<summary><b>Git Files</b></summary>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. **Current directory** variant is named with `C` suffix.
@@ -437,7 +445,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Grep
+</details>
+
+<details>
+<summary><b>Git Grep</b></summary>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. Use `--` flag to pass raw options to search command (`git grep`).
@@ -477,7 +488,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Status (Changed Files)
+</details>
+
+<details>
+<summary><b>Git Status (Changed Files)</b></summary>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. **Current directory** variant is named with `C` suffix.
@@ -517,7 +531,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Branches
+</details>
+
+<details>
+<summary><b>Git Branches</b></summary>
 
 > 1. Use `enter` to checkout branch.
 > 2. **Remote branch** variant is named with `R` suffix.
@@ -557,7 +574,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Commits
+</details>
+
+<details>
+<summary><b>Git Commits</b></summary>
 
 > 1. Use `enter` to copy git commit SHA.
 > 2. **Current buffer** variant is named with `B` suffix.
@@ -597,7 +617,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Blame
+</details>
+
+<details>
+<summary><b>Git Blame</b></summary>
 
 > 1. Use `enter` to copy git commit SHA.
 
@@ -636,9 +659,12 @@ Commands are named following below rules:
 </tbody>
 </table>
 
+</details>
+
 ### Lsp & Diagnostics
 
-- Lsp
+<details>
+<summary><b>Lsp Symbols</b></summary>
 
 <table>
 <thead>
@@ -671,7 +697,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Diagnostics
+</details>
+
+<details>
+<summary><b>Diagnostics</b></summary>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. **Current buffer** variant is named with `B` suffix.
@@ -711,9 +740,12 @@ Commands are named following below rules:
 </tbody>
 </table>
 
+</details>
+
 ### Vim
 
-- Commands
+<details>
+<summary><b>Commands</b></summary>
 
 > 1. Use `enter` to input vim command.
 > 2. **Ex(builtin) commands** variant is named with `E` suffix.
@@ -754,7 +786,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Key Maps
+</details>
+
+<details>
+<summary><b>Key Maps</b></summary>
 
 > 1. Use `enter` to execute vim key.
 > 2. **Normal mode** variant is named with `N` suffix.
@@ -796,9 +831,12 @@ Commands are named following below rules:
 </tbody>
 </table>
 
+</details>
+
 ### Misc
 
-- File Explorer
+<details>
+<summary><b>File Explorer</b></summary>
 
 > 1. **Unrestricted** variant is named with `U` suffix.
 
@@ -836,6 +874,8 @@ Commands are named following below rules:
   </tr>
 </tbody>
 </table>
+
+</details>
 
 ## 📌 Recommended Key Mappings
 
@@ -1173,15 +1213,8 @@ The `option` is an optional lua table that override the default options.
 
 ```lua
 local Defaults = {
-  --- @type GroupConfig
-  files = ...,
-  --- @type GroupConfig
-  live_grep = ...,
-  --- @type GroupConfig
-  buffers = ...,
-  --- @type GroupConfig
-  lsp_diagnostics = ...,
-  ... -- the other commands groups, please see [Commands Group](#commands-group).
+  -- commands group
+  ...
 
   yank_history = {
     other_opts = {
@@ -1347,6 +1380,11 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 
 Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
 
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/e60b69ab-3a29-4acc-8e48-cb9ab1b22b24
+
+<details>
+<summary><i>Click here to see how to configure</b></summary>
+
 ```lua
 require("fzfx").setup({
   users = {
@@ -1420,9 +1458,7 @@ require("fzfx").setup({
 })
 ```
 
-And you will got:
-
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/e60b69ab-3a29-4acc-8e48-cb9ab1b22b24
+</details>
 
 You can also use the `require("fzfx").register("ls", {...})` api to do that.
 
