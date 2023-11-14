@@ -922,18 +922,18 @@ nnoremap <space>bf :\<C-U>FzfxBuffers<CR>
 " git files
 nnoremap <space>gf :\<C-U>FzfxGFiles<CR>
 
-" ======== git grep ========
+" ======== git live grep ========
 
-" git grep
-nnoremap <space>gr :\<C-U>FzfxGGrep<CR>
+" git live grep
+nnoremap <space>gl :\<C-U>FzfxGLiveGrep<CR>
 " by visual select
-xnoremap <space>gr :\<C-U>FzfxGGrepV<CR>
+xnoremap <space>gl :\<C-U>FzfxGLiveGrepV<CR>
 " by cursor word
-nnoremap <space>wgr :\<C-U>FzfxGGrepW<CR>
+nnoremap <space>wgl :\<C-U>FzfxGLiveGrepW<CR>
 " by yank text
-nnoremap <space>pgr :\<C-U>FzfxGGrepP<CR>
+nnoremap <space>pgl :\<C-U>FzfxGLiveGrepP<CR>
 " by resume
-nnoremap <space>rgr :\<C-U>FzfxGGrepR<CR>
+nnoremap <space>rgl :\<C-U>FzfxGLiveGrepR<CR>
 
 " ======== git changed files (status) ========
 
@@ -1095,42 +1095,42 @@ vim.keymap.set(
   { silent = true, noremap = true, desc = "Find git files" }
 )
 
--- ======== git grep ========
+-- ======== git live grep ========
 
--- git grep
+-- git live grep
 vim.keymap.set(
   "n",
-  "<space>gr",
-  "<cmd>FzfxGGrep<cr>",
-  { silent = true, noremap = true, desc = "Git grep" }
+  "<space>gl",
+  "<cmd>FzfxGLiveGrep<cr>",
+  { silent = true, noremap = true, desc = "Git live grep" }
 )
 -- by visual select
 vim.keymap.set(
   "x",
-  "<space>gr",
-  "<cmd>FzfxGGrepV<cr>",
-  { silent = true, noremap = true, desc = "Git grep" }
+  "<space>gl",
+  "<cmd>FzfxGLiveGrepV<cr>",
+  { silent = true, noremap = true, desc = "Git live grep" }
 )
 -- by cursor word
 vim.keymap.set(
   "n",
-  "<space>wgr",
-  "<cmd>FzfxGGrepW<cr>",
-  { silent = true, noremap = true, desc = "Git grep by cursor word" }
+  "<space>wgl",
+  "<cmd>FzfxGLiveGrepW<cr>",
+  { silent = true, noremap = true, desc = "Git live grep by cursor word" }
 )
 -- by yank text
 vim.keymap.set(
   "n",
-  "<space>pgr",
-  "<cmd>FzfxGGrepP<cr>",
-  { silent = true, noremap = true, desc = "Git grep by yank text" }
+  "<space>pgl",
+  "<cmd>FzfxGLiveGrepP<cr>",
+  { silent = true, noremap = true, desc = "Git live grep by yank text" }
 )
 -- by resume
 vim.keymap.set(
   "n",
-  "<space>rgr",
-  "<cmd>FzfxGGrepR<cr>",
-  { silent = true, noremap = true, desc = "Git grep by resume last" }
+  "<space>rgl",
+  "<cmd>FzfxGLiveGrepR<cr>",
+  { silent = true, noremap = true, desc = "Git live grep by resume last" }
 )
 
 -- ======== git changed files (status) ========
