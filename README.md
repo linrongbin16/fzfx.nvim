@@ -149,10 +149,10 @@ But when there're whitespaces on the path, launching correct shell command becom
 
    ```lua
    require("fzfx").setup({
-       env = {
-           nvim = 'nvim',
-           fzf = 'fzf',
-       }
+     env = {
+       nvim = 'nvim',
+       fzf = 'fzf',
+     }
    })
    ```
 
