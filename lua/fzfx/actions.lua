@@ -33,7 +33,8 @@ local function edit_find(lines, context)
     ui.confirm_discard_buffer_modified(context.bufnr, function()
         for i, edit_command in ipairs(edit_commands) do
             log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
-            vim.cmd(edit_command)
+            local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
+            assert(ok, vim.inspect(result))
         end
     end)
 end
@@ -87,11 +88,12 @@ end
 --- @param lines string[]
 --- @param context PipelineContext
 local function edit_rg(lines, context)
-    local vim_commands = _make_edit_rg_commands(lines)
+    local edit_commands = _make_edit_rg_commands(lines)
     ui.confirm_discard_buffer_modified(context.bufnr, function()
-        for i, vim_command in ipairs(vim_commands) do
-            log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, vim_command)
-            vim.cmd(vim_command)
+        for i, edit_command in ipairs(edit_commands) do
+            log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, edit_command)
+            local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
+            assert(ok, vim.inspect(result))
         end
     end)
 end
@@ -124,11 +126,12 @@ end
 --- @param lines string[]
 --- @param context PipelineContext
 local function edit_grep(lines, context)
-    local vim_commands = _make_edit_grep_commands(lines)
+    local edit_commands = _make_edit_grep_commands(lines)
     ui.confirm_discard_buffer_modified(context.bufnr, function()
-        for i, vim_command in ipairs(vim_commands) do
-            log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, vim_command)
-            vim.cmd(vim_command)
+        for i, edit_command in ipairs(edit_commands) do
+            log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, edit_command)
+            local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
+            assert(ok, vim.inspect(result))
         end
     end)
 end
@@ -139,7 +142,8 @@ local function edit_ls(lines)
     local edit_commands = _make_edit_find_commands(lines, { no_icon = true })
     for i, edit_command in ipairs(edit_commands) do
         log.debug("|fzfx.actions - edit_ls| [%d]:[%s]", i, edit_command)
-        vim.cmd(edit_command)
+        local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
+        assert(ok, vim.inspect(result))
     end
 end
 
@@ -169,7 +173,8 @@ local function bdelete(line)
         log.debug("|fzfx.actions - bdelete| bufpath:%s", vim.inspect(bufpath))
         local bufnr = list_bufpaths[bufpath]
         if type(bufnr) == "number" then
-            vim.api.nvim_buf_delete(bufnr, {})
+            local ok, result = vim.api.nvim_buf_delete(bufnr, {})
+            assert(ok, vim.inspect(result))
         end
     end
 end
@@ -220,7 +225,8 @@ end
 --- @param lines string[]
 local function git_checkout(lines)
     local checkout_command = _make_git_checkout_command(lines) --[[@as string]]
-    vim.cmd(checkout_command)
+    local ok, result = pcall(vim.cmd --[[@as function]], checkout_command)
+    assert(ok, vim.inspect(result))
 end
 
 --- @param lines string[]
@@ -242,7 +248,8 @@ end
 local function yank_git_commit(lines)
     local yank_command = _make_yank_git_commit_command(lines)
     if yank_command then
-        vim.api.nvim_command(yank_command)
+        local ok, result = pcall(vim.api.nvim_command, yank_command)
+        assert(ok, vim.inspect(result))
     end
 end
 
@@ -260,11 +267,13 @@ end
 --- @param lines string[]
 local function setqflist_find(lines)
     local qflist = _make_setqflist_find_items(lines --[[@as table]])
-    vim.cmd([[ :copen ]])
-    vim.fn.setqflist({}, " ", {
+    local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+    assert(ok, vim.inspect(result))
+    ok, result = pcall(vim.fn.setqflist, {}, " ", {
         nr = "$",
         items = qflist,
     })
+    assert(ok, vim.inspect(result))
 end
 
 --- @param lines string[]
@@ -286,11 +295,13 @@ end
 --- @param lines string[]
 local function setqflist_rg(lines)
     local qflist = _make_setqflist_rg_items(lines)
-    vim.cmd([[ :copen ]])
-    vim.fn.setqflist({}, " ", {
+    local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+    assert(ok, vim.inspect(result))
+    ok, result = pcall(vim.fn.setqflist, {}, " ", {
         nr = "$",
         items = qflist,
     })
+    assert(ok, vim.inspect(result))
 end
 
 --- @param lines string[]
@@ -312,11 +323,13 @@ end
 --- @param lines string[]
 local function setqflist_grep(lines)
     local qflist = _make_setqflist_grep_items(lines)
-    vim.cmd([[ :copen ]])
-    vim.fn.setqflist({}, " ", {
+    local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+    assert(ok, vim.inspect(result))
+    ok, result = pcall(vim.fn.setqflist, {}, " ", {
         nr = "$",
         items = qflist,
     })
+    assert(ok, vim.inspect(result))
 end
 
 --- @param lines string[]
@@ -333,11 +346,13 @@ end
 --- @param lines string[]
 local function setqflist_git_status(lines)
     local qflist = _make_setqflist_git_status_items(lines --[[@as table]])
-    vim.cmd([[ :copen ]])
-    vim.fn.setqflist({}, " ", {
+    local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+    assert(ok, vim.inspect(result))
+    ok, result = pcall(vim.fn.setqflist, {}, " ", {
         nr = "$",
         items = qflist,
     })
+    assert(ok, vim.inspect(result))
 end
 
 --- @package
@@ -353,7 +368,8 @@ end
 --- @param lines string[]
 local function feed_vim_command(lines)
     local input, mode = _make_feed_vim_command_params(lines)
-    vim.fn.feedkeys(input, mode)
+    local ok, result = pcall(vim.fn.feedkeys, input, mode)
+    assert(ok, vim.inspect(result))
 end
 
 --- @package
@@ -390,13 +406,15 @@ end
 local function feed_vim_key(lines)
     local feedtype, input, mode = _make_feed_vim_key_params(lines)
     if feedtype == "cmd" and type(input) == "string" then
-        vim.cmd(input)
+        local ok, result = pcall(vim.cmd --[[@as function]], input)
+        assert(ok, vim.inspect(result))
     elseif
         feedtype == "feedkeys"
         and type(input) == "string"
         and type(mode) == "string"
     then
-        vim.fn.feedkeys(input, mode)
+        local ok, result = pcall(vim.fn.feedkeys, input, mode)
+        assert(ok, vim.inspect(result))
     end
 end
 
@@ -425,7 +443,8 @@ local function edit_git_status(lines, context)
                 i,
                 edit_command
             )
-            vim.cmd(edit_command)
+            local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
+            assert(ok, vim.inspect(result))
         end
     end)
 end
