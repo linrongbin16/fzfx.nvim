@@ -78,8 +78,7 @@ local function make_provider_meta_opts(pipeline, provider_config)
   if
     type(provider_config.line_opts) == "table"
     and type(provider_config.line_opts.prepend_icon_path_delimiter) == "string"
-    and string.len(provider_config.line_opts.prepend_icon_path_delimiter)
-      > 0
+    and string.len(provider_config.line_opts.prepend_icon_path_delimiter) > 0
   then
     o.prepend_icon_path_delimiter =
       provider_config.line_opts.prepend_icon_path_delimiter

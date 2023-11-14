@@ -100,8 +100,7 @@ local function _make_center_window_config(opts)
   local height = _make_window_size(opts.height, total_height)
 
   if
-    (opts.row > -1 and opts.row < -0.5)
-    or (opts.row > 0.5 and opts.row < 1)
+    (opts.row > -1 and opts.row < -0.5) or (opts.row > 0.5 and opts.row < 1)
   then
     log.throw("invalid option (win_opts.row): %s!", vim.inspect(opts))
   end
@@ -115,8 +114,7 @@ local function _make_center_window_config(opts)
   -- )
 
   if
-    (opts.col > -1 and opts.col < -0.5)
-    or (opts.col > 0.5 and opts.col < 1)
+    (opts.col > -1 and opts.col < -0.5) or (opts.col > 0.5 and opts.col < 1)
   then
     log.throw("invalid option (win_opts.col): %s!", vim.inspect(opts))
   end

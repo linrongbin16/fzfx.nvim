@@ -305,8 +305,7 @@ local function _buffers_provider(query, context)
       and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
     or nil
   if
-    type(current_filename) == "string"
-    and string.len(current_filename) > 0
+    type(current_filename) == "string" and string.len(current_filename) > 0
   then
     table.insert(filenames, current_filename)
   end
