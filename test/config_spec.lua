@@ -176,6 +176,9 @@ describe("config", function()
       }
       for _, line in ipairs(lines) do
         local actual = conf._file_previewer_grep(line)
+        local expect =
+          path.normalize(utils.string_split(line, ":")[1], { expand = true })
+        print(string.format("normalize:%s\n", vim.inspect(expect)))
         print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
         if actual[1] == "bat" then
           assert_eq(actual[1], "bat")
@@ -185,13 +188,10 @@ describe("config", function()
           assert_eq(actual[5], "--pager=never")
           assert_true(utils.string_startswith(actual[6], "--highlight-line"))
           assert_eq(actual[7], "--")
-          local expect =
-            path.normalize(utils.string_split(line, ":")[1], { expand = true })
-          print(string.format("normalize:%s\n", vim.inspect(expect)))
           assert_true(utils.string_startswith(actual[8], expect))
         else
           assert_eq(actual[1], "cat")
-          assert_eq(actual[2], path.normalize(line, { expand = true }))
+          assert_eq(actual[2], expect)
         end
       end
     end)
