@@ -4561,8 +4561,8 @@ local M = {
   -- git files
   _make_git_files_provider = _make_git_files_provider,
 
-  -- git grep
-  _git_grep_provider = _git_live_grep_provider,
+  -- git live grep
+  _git_live_grep_provider = _git_live_grep_provider,
 
   -- git branches
   _make_git_branches_provider = _make_git_branches_provider,
