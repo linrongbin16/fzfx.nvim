@@ -31,7 +31,6 @@ FZF-based fuzzy finder running on a dynamic engine that parsing user query and s
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
   - [Defaults](#defaults)
-  - [Commands Group](#commands-group)
   - [The `ls -1` Example](#the-ls--1-example)
 - [Credit](#-credit)
 - [Development](#-development)
@@ -1247,6 +1246,9 @@ The `option` is an optional lua table that override the default options.
 
 ### Defaults
 
+<details>
+<summary><i>Click here to see default options</i></summary>
+
 ```lua
 local Defaults = {
   -- commands group
@@ -1401,8 +1403,6 @@ local Defaults = {
 }
 ```
 
-### Commands Group
-
 Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share the same schema:
 
 1. `commands`: a user command, or more variants feed with different types of input queries, each command is binding with a provider.
@@ -1417,6 +1417,8 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 4. `actions`: allow user press key and exit fzf popup, and invoke callback function with selected lines.
 5. (Optional) `interactions`: allow user press key and invoke callback function on current line, without exiting fzf popup.
 6. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults, or provide other abilities.
+
+</details>
 
 ### The `ls -1` Example
 
