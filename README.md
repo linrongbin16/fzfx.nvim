@@ -28,15 +28,7 @@ FZF-based fuzzy finder running on a dynamic engine that parsing user query and s
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#-commands)
-  - [Files & Buffers](#files)
-  - [Grep](#grep)
-  - [Git](#git)
-  - [Lsp & Diagnostics](#lsp--diagnostics)
-  - [Vim](#vim)
-  - [Misc](#misc)
 - [Recommended Key Mappings](#-recommended-key-mappings)
-  - [Vimscript](#vimscript)
-  - [Lua](#lua)
 - [Configuration](#-configuration)
   - [Defaults](#defaults)
   - [Commands Group](#commands-group)
@@ -876,10 +868,8 @@ Below keys are binded by default:
 
 ## 📌 Recommended Key Mappings
 
-### Vimscript
-
 <details>
-<summary><b>Click here to see vimscripts</b></summary>
+<summary><b>Vimscripts</b></summary>
 <br/>
 
 ```vim
@@ -989,10 +979,8 @@ nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 
 </details>
 
-### Lua
-
 <details>
-<summary><b>Click here to see lua scripts</b></summary>
+<summary><b>Lua scripts</b></summary>
 <br/>
 
 ```lua
@@ -1262,6 +1250,12 @@ The `option` is an optional lua table that override the default options.
 ```lua
 local Defaults = {
   -- commands group
+  files = ...,
+  live_grep = ...,
+  buffers = ...,
+  git_files = ...,
+  git_status = ...,
+  lsp_diagnostics = ...,
   ...
 
   yank_history = {
