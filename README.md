@@ -17,7 +17,7 @@ FZF-based fuzzy finder running on a dynamic engine that parsing user query and s
 
 > Search `fzfx` with rg's `-g *spec.lua` option.
 
-## Table of contents
+## 📖 Table of contents
 
 - [Feature](#-feature)
 - [Requirement](#-requirement)
@@ -28,18 +28,9 @@ FZF-based fuzzy finder running on a dynamic engine that parsing user query and s
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#-commands)
-  - [Files & Buffers](#files--buffers)
-  - [Grep](#grep)
-  - [Git](#git)
-  - [Lsp & Diagnostics](#lsp--diagnostics)
-  - [Vim](#vim)
-  - [Misc](#misc)
 - [Recommended Key Mappings](#-recommended-key-mappings)
-  - [Vimscript](#vimscript)
-  - [Lua](#lua)
 - [Configuration](#-configuration)
   - [Defaults](#defaults)
-  - [Commands Group](#commands-group)
   - [The `ls -1` Example](#the-ls--1-example)
 - [Credit](#-credit)
 - [Development](#-development)
@@ -83,7 +74,7 @@ FZF-based fuzzy finder running on a dynamic engine that parsing user query and s
 While still recommend Windows users install linux shell commands, since utils like `echo`, `curl` are internally used by somewhere.
 
 <details>
-<summary><b>Click here to see how to install linux commands on Windows</b></summary>
+<summary><i>Click here to see how to install linux commands on Windows</i></summary>
 <br/>
 
 There're many ways to install portable linux shell and builtin commands on Windows, but personally I would recommend below two methods.
@@ -134,7 +125,7 @@ Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\W
 ### Whitespace Escaping Issue
 
 <details>
-<summary><b>Click here to see how whitespace affect escaping characters on path</b></summary>
+<summary><i>Click here to see how whitespace affect escaping characters on path</i></summary>
 <br/>
 
 This plugin internally extends `nvim`, `fzf` and lua scripts to full path when launching command.
@@ -242,8 +233,6 @@ require("lazy").setup({
 
 ## 🚀 Commands
 
-### Naming Rules
-
 Commands are named following below rules:
 
 - All commands are named with prefix `Fzfx`.
@@ -255,7 +244,7 @@ Commands are named following below rules:
 
 > Note: command names can be configured, see [Configuration](#-configuration).
 
-### Bind Keys
+Below keys are binded by default:
 
 - Exit keys (fzf `--expect` option)
   - `esc`: quit.
@@ -270,12 +259,13 @@ Commands are named following below rules:
 
 > Note: builtin keys can be configured, see [Configuration](#-configuration).
 
-### Files & Buffers
+<details>
+<summary><b>Files & Buffers</b></summary>
 
-- Files
+#### Files
 
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Unrestricted** variant is named with `U` suffix.
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. **Unrestricted** variant is named with `U` suffix.
 
 <table>
 <thead>
@@ -312,9 +302,9 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Buffers
+#### Buffers
 
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 
 <table>
 <thead>
@@ -351,14 +341,17 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Grep
+</details>
 
-- Live Grep
+<details>
+<summary><b>Grep</b></summary>
 
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. Use `--` to pass raw options to search command (grep/rg).
-> 3. **Unrestricted** variant is named with `U` suffix.
-> 4. **Current buffer** variant is named with `B` suffix.
+#### Live Grep
+
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
+3. **Unrestricted** variant is named with `U` suffix.
+4. **Current buffer** variant is named with `B` suffix.
 
 <table>
 <thead>
@@ -395,12 +388,55 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Git
+#### Git Live Grep
 
-- Git Files
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. Use `--` flag to pass raw options to search command (`git grep`).
 
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Current directory** variant is named with `C` suffix.
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Mode</th>
+    <th>Select Keys</th>
+    <th>Preview Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FzfxGLiveGrep</td>
+    <td>N</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
+  </tr>
+  <tr>
+    <td>FzfxGLiveGrepV</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>FzfxGLiveGrepW</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGLiveGrepP</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxGLiveGrepR</td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+</details>
+
+<details>
+<summary><b>Git</b></summary>
+
+#### Git Files
+
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. **Current directory** variant is named with `C` suffix.
 
 <table>
 <thead>
@@ -437,10 +473,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Status (Changed Files)
+#### Git Status (Changed Files)
 
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Current directory** variant is named with `C` suffix.
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. **Current directory** variant is named with `C` suffix.
 
 <table>
 <thead>
@@ -477,10 +513,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Branches
+#### Git Branches
 
-> 1. Use `enter` to checkout branch.
-> 2. **Remote branch** variant is named with `R` suffix.
+1. Use `enter` to checkout branch.
+2. **Remote branch** variant is named with `R` suffix.
 
 <table>
 <thead>
@@ -517,10 +553,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Commits
+#### Git Commits
 
-> 1. Use `enter` to copy git commit SHA.
-> 2. **Current buffer** variant is named with `B` suffix.
+1. Use `enter` to copy git commit SHA.
+2. **Current buffer** variant is named with `B` suffix.
 
 <table>
 <thead>
@@ -557,9 +593,9 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Git Blame
+#### Git Blame
 
-> 1. Use `enter` to copy git commit SHA.
+1. Use `enter` to copy git commit SHA.
 
 <table>
 <thead>
@@ -596,9 +632,12 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Lsp & Diagnostics
+</details>
 
-- Lsp
+<details>
+<summary><b>Lsp & Diagnostics</b></summary>
+
+#### Lsp Symbols
 
 <table>
 <thead>
@@ -631,10 +670,10 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Diagnostics
+#### Diagnostics
 
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Current buffer** variant is named with `B` suffix.
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. **Current buffer** variant is named with `B` suffix.
 
 <table>
 <thead>
@@ -671,13 +710,16 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Vim
+</details>
 
-- Commands
+<details>
+<summary><b>Vim</b></summary>
 
-> 1. Use `enter` to input vim command.
-> 2. **Ex(builtin) commands** variant is named with `E` suffix.
-> 3. **User commands** variant is named with `U` suffix.
+#### Commands
+
+1. Use `enter` to input vim command.
+2. **Ex(builtin) commands** variant is named with `E` suffix.
+3. **User commands** variant is named with `U` suffix.
 
 <table>
 <thead>
@@ -714,12 +756,12 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-- Key Maps
+#### Key Maps
 
-> 1. Use `enter` to execute vim key.
-> 2. **Normal mode** variant is named with `N` suffix.
-> 3. **Insert mode** variant is named with `I` suffix.
-> 4. **Visual/select mode** variant is named with `V` suffix.
+1. Use `enter` to execute vim key.
+2. **Normal mode** variant is named with `N` suffix.
+3. **Insert mode** variant is named with `I` suffix.
+4. **Visual/select mode** variant is named with `V` suffix.
 
 <table>
 <thead>
@@ -756,9 +798,12 @@ Commands are named following below rules:
 </tbody>
 </table>
 
-### Misc
+</details>
 
-- File Explorer
+<details>
+<summary><b>Misc</b></summary>
+
+#### File Explorer
 
 > 1. **Unrestricted** variant is named with `U` suffix.
 
@@ -797,12 +842,12 @@ Commands are named following below rules:
 </tbody>
 </table>
 
+</details>
+
 ## 📌 Recommended Key Mappings
 
-### Vimscript
-
 <details>
-<summary><b>Click here to see vimscripts</b></summary>
+<summary><i>Click here to see how to configure vimscripts</i></summary>
 <br/>
 
 ```vim
@@ -841,6 +886,19 @@ nnoremap <space>bf :\<C-U>FzfxBuffers<CR>
 
 " git files
 nnoremap <space>gf :\<C-U>FzfxGFiles<CR>
+
+" ======== git live grep ========
+
+" git live grep
+nnoremap <space>gl :\<C-U>FzfxGLiveGrep<CR>
+" by visual select
+xnoremap <space>gl :\<C-U>FzfxGLiveGrepV<CR>
+" by cursor word
+nnoremap <space>wgl :\<C-U>FzfxGLiveGrepW<CR>
+" by yank text
+nnoremap <space>pgl :\<C-U>FzfxGLiveGrepP<CR>
+" by resume
+nnoremap <space>rgl :\<C-U>FzfxGLiveGrepR<CR>
 
 " ======== git changed files (status) ========
 
@@ -898,11 +956,10 @@ nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 ```
 
 </details>
-
-### Lua
+<br/>
 
 <details>
-<summary><b>Click here to see lua scripts</b></summary>
+<summary><i>Click here to see how to configure lua scripts</i></summary>
 <br/>
 
 ```lua
@@ -1000,6 +1057,44 @@ vim.keymap.set(
   "<space>gf",
   "<cmd>FzfxGFiles<cr>",
   { silent = true, noremap = true, desc = "Find git files" }
+)
+
+-- ======== git live grep ========
+
+-- git live grep
+vim.keymap.set(
+  "n",
+  "<space>gl",
+  "<cmd>FzfxGLiveGrep<cr>",
+  { silent = true, noremap = true, desc = "Git live grep" }
+)
+-- by visual select
+vim.keymap.set(
+  "x",
+  "<space>gl",
+  "<cmd>FzfxGLiveGrepV<cr>",
+  { silent = true, noremap = true, desc = "Git live grep" }
+)
+-- by cursor word
+vim.keymap.set(
+  "n",
+  "<space>wgl",
+  "<cmd>FzfxGLiveGrepW<cr>",
+  { silent = true, noremap = true, desc = "Git live grep by cursor word" }
+)
+-- by yank text
+vim.keymap.set(
+  "n",
+  "<space>pgl",
+  "<cmd>FzfxGLiveGrepP<cr>",
+  { silent = true, noremap = true, desc = "Git live grep by yank text" }
+)
+-- by resume
+vim.keymap.set(
+  "n",
+  "<space>rgl",
+  "<cmd>FzfxGLiveGrepR<cr>",
+  { silent = true, noremap = true, desc = "Git live grep by resume last" }
 )
 
 -- ======== git changed files (status) ========
@@ -1131,17 +1226,19 @@ The `option` is an optional lua table that override the default options.
 
 ### Defaults
 
+<details>
+<summary><i>Click here to see default options</i></summary>
+
 ```lua
 local Defaults = {
-  --- @type GroupConfig
+  -- commands group
   files = ...,
-  --- @type GroupConfig
   live_grep = ...,
-  --- @type GroupConfig
   buffers = ...,
-  --- @type GroupConfig
+  git_files = ...,
+  git_status = ...,
   lsp_diagnostics = ...,
-  ... -- the other commands groups, please see [Commands Group](#commands-group).
+  ...
 
   yank_history = {
     other_opts = {
@@ -1286,8 +1383,6 @@ local Defaults = {
 }
 ```
 
-### Commands Group
-
 Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share the same schema:
 
 1. `commands`: a user command, or more variants feed with different types of input queries, each command is binding with a provider.
@@ -1303,9 +1398,16 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 5. (Optional) `interactions`: allow user press key and invoke callback function on current line, without exiting fzf popup.
 6. (Optional) `fzf_opts`, `win_opts` and `other_opts`: specific options overwrite the common defaults, or provide other abilities.
 
+</details>
+
 ### The `ls -1` Example
 
 Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
+
+![FzfxLs](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/d8dadedf-928e-477d-b176-64a4b6fe7607)
+
+<details>
+<summary><i>Click here to see how to configure</i></summary>
 
 ```lua
 require("fzfx").setup({
@@ -1380,9 +1482,7 @@ require("fzfx").setup({
 })
 ```
 
-And you will got:
-
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/e60b69ab-3a29-4acc-8e48-cb9ab1b22b24
+</details>
 
 You can also use the `require("fzfx").register("ls", {...})` api to do that.
 

@@ -166,6 +166,35 @@ describe("config", function()
         assert_eq(actual[8], "hello")
       end
     end)
+    it("_file_previewer_grep", function()
+      local lines = {
+        "~/github/linrongbin16/fzfx.nvim/README.md:1",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:2",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:3",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:5",
+      }
+      for _, line in ipairs(lines) do
+        local actual = conf._file_previewer_grep(line)
+        local expect =
+          path.normalize(utils.string_split(line, ":")[1], { expand = true })
+        print(string.format("normalize:%s\n", vim.inspect(expect)))
+        print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
+        if actual[1] == "bat" then
+          assert_eq(actual[1], "bat")
+          assert_eq(actual[2], "--style=numbers,changes")
+          assert_eq(actual[3], "--theme=base16")
+          assert_eq(actual[4], "--color=always")
+          assert_eq(actual[5], "--pager=never")
+          assert_true(utils.string_startswith(actual[6], "--highlight-line"))
+          assert_eq(actual[7], "--")
+          assert_true(utils.string_startswith(actual[8], expect))
+        else
+          assert_eq(actual[1], "cat")
+          assert_eq(actual[2], expect)
+        end
+      end
+    end)
     it("_make_live_grep_provider unrestricted", function()
       local f = conf._make_live_grep_provider({ unrestricted = true })
       local actual = f("hello", {})
@@ -248,6 +277,26 @@ describe("config", function()
       if actual ~= nil then
         assert_eq(type(actual), "table")
         assert_true(vim.deep_equal(actual, { "git", "ls-files" }))
+      end
+    end)
+  end)
+  describe("git_live_grep", function()
+    it("_git_live_grep_provider", function()
+      local actual = conf._git_live_grep_provider("", {})
+      print(string.format("git live grep:%s\n", vim.inspect(actual)))
+      if actual ~= nil then
+        assert_eq(type(actual), "table")
+        assert_eq(actual[1], "git")
+        assert_eq(actual[2], "grep")
+      end
+    end)
+    it("_git_live_grep_provider with -- flag", function()
+      local actual = conf._git_live_grep_provider("fzfx -- -v", {})
+      print(string.format("git live grep:%s\n", vim.inspect(actual)))
+      if actual ~= nil then
+        assert_eq(type(actual), "table")
+        assert_eq(actual[1], "git")
+        assert_eq(actual[2], "grep")
       end
     end)
   end)

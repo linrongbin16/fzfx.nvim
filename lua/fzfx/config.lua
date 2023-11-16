@@ -271,7 +271,7 @@ end
 
 --- @param line string
 --- @return string[]
-local function file_previewer_grep(line)
+local function _file_previewer_grep(line)
   local parsed = line_helpers.parse_grep(line)
   local impl = _make_file_previewer(parsed.filename, parsed.lineno)
   return impl()
@@ -359,6 +359,37 @@ local function _make_git_files_provider(opts)
 end
 
 -- git files }
+
+-- git grep {
+
+--- @param query string?
+--- @param context PipelineContext
+--- @return string[]|nil
+local function _git_live_grep_provider(query, context)
+  local git_root_cmd = cmd.GitRootCmd:run()
+  if git_root_cmd:wrong() then
+    log.echo(LogLevels.INFO, default_git_root_error)
+    return nil
+  end
+
+  local parsed_query = utils.parse_flag_query(query or "")
+  local content = parsed_query[1]
+  local option = parsed_query[2]
+
+  local args = { "git", "grep", "--color=always", "-n" }
+  if type(option) == "string" and string.len(option) > 0 then
+    local option_splits = utils.string_split(option, " ")
+    for _, o in ipairs(option_splits) do
+      if type(o) == "string" and string.len(o) > 0 then
+        table.insert(args, o)
+      end
+    end
+  end
+  table.insert(args, content)
+  return args
+end
+
+-- git grep }
 
 -- git branches {
 
@@ -2435,21 +2466,21 @@ local Defaults = {
     },
     previewers = {
       restricted_mode = {
-        previewer = file_previewer_grep,
+        previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = constants.has_rg
             and require("fzfx.previewer_labels").rg_previewer_label
           or require("fzfx.previewer_labels").grep_previewer_label,
       },
       unrestricted_mode = {
-        previewer = file_previewer_grep,
+        previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = constants.has_rg
             and require("fzfx.previewer_labels").rg_previewer_label
           or require("fzfx.previewer_labels").grep_previewer_label,
       },
       buffer_mode = {
-        previewer = file_previewer_grep,
+        previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = constants.has_rg
             and require("fzfx.previewer_labels").rg_previewer_label
@@ -2710,6 +2741,91 @@ local Defaults = {
     },
   },
 
+  -- the 'Git Live Grep' commands
+  --- @type GroupConfig
+  git_live_grep = {
+    commands = {
+      -- normal
+      {
+        name = "FzfxGLiveGrep",
+        feed = CommandFeedEnum.ARGS,
+        opts = {
+          bang = true,
+          nargs = "*",
+          desc = "Git live grep",
+        },
+      },
+      -- visual
+      {
+        name = "FzfxGLiveGrepV",
+        feed = CommandFeedEnum.VISUAL,
+        opts = {
+          bang = true,
+          range = true,
+          desc = "Git live grep by visual select",
+        },
+      },
+      -- cword
+      {
+        name = "FzfxGLiveGrepW",
+        feed = CommandFeedEnum.CWORD,
+        opts = {
+          bang = true,
+          desc = "Git live grep by cursor word",
+        },
+      },
+      -- put
+      {
+        name = "FzfxGLiveGrepP",
+        feed = CommandFeedEnum.PUT,
+        opts = {
+          bang = true,
+          desc = "Git live grep by yank text",
+        },
+      },
+      -- resume
+      {
+        name = "FzfxGLiveGrepR",
+        feed = CommandFeedEnum.RESUME,
+        opts = {
+          bang = true,
+          desc = "Git live grep by resume last",
+        },
+      },
+    },
+    providers = {
+      key = "default",
+      provider = _git_live_grep_provider,
+      provider_type = ProviderTypeEnum.COMMAND_LIST,
+      line_opts = {
+        prepend_icon_by_ft = true,
+        prepend_icon_path_delimiter = ":",
+        prepend_icon_path_position = 1,
+      },
+    },
+    previewers = {
+      previewer = _file_previewer_grep,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").grep_previewer_label,
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_grep,
+      ["double-click"] = require("fzfx.actions").edit_grep,
+      ["ctrl-q"] = require("fzfx.actions").setqflist_grep,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      { "--prompt", "Git Live Grep > " },
+      "--disabled",
+      { "--delimiter", ":" },
+      { "--preview-window", "+{2}-/2" },
+    },
+    other_opts = {
+      reload_on_change = true,
+    },
+  },
+
   -- the 'Git Status' commands
   --- @type GroupConfig
   git_status = {
@@ -2845,7 +2961,7 @@ local Defaults = {
     fzf_opts = {
       default_fzf_options.multi,
       { "--preview-window", "wrap" },
-      { "--prompt", "GitStatus > " },
+      { "--prompt", "Git Status > " },
     },
   },
 
@@ -2980,7 +3096,7 @@ local Defaults = {
     },
     fzf_opts = {
       default_fzf_options.no_multi,
-      { "--prompt", "GitBranches > " },
+      { "--prompt", "Git Branches > " },
       function()
         local git_root_cmd = cmd.GitRootCmd:run()
         if git_root_cmd:wrong() then
@@ -3129,7 +3245,7 @@ local Defaults = {
     fzf_opts = {
       default_fzf_options.no_multi,
       { "--preview-window", "wrap" },
-      { "--prompt", "GitCommits > " },
+      { "--prompt", "Git Commits > " },
     },
   },
 
@@ -3204,7 +3320,7 @@ local Defaults = {
     },
     fzf_opts = {
       default_fzf_options.no_multi,
-      { "--prompt", "GitBlame > " },
+      { "--prompt", "Git Blame > " },
     },
   },
 
@@ -3814,12 +3930,12 @@ local Defaults = {
     },
     previewers = {
       workspace_diagnostics = {
-        previewer = file_previewer_grep,
+        previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
       },
       buffer_diagnostics = {
-        previewer = file_previewer_grep,
+        previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
       },
@@ -3863,7 +3979,7 @@ local Defaults = {
       },
     },
     previewers = {
-      previewer = file_previewer_grep,
+      previewer = _file_previewer_grep,
       previewer_type = PreviewerTypeEnum.COMMAND_LIST,
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
@@ -3918,7 +4034,7 @@ local Defaults = {
       },
     },
     previewers = {
-      previewer = file_previewer_grep,
+      previewer = _file_previewer_grep,
       previewer_type = PreviewerTypeEnum.COMMAND_LIST,
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
@@ -3973,7 +4089,7 @@ local Defaults = {
       },
     },
     previewers = {
-      previewer = file_previewer_grep,
+      previewer = _file_previewer_grep,
       previewer_type = PreviewerTypeEnum.COMMAND_LIST,
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
@@ -4028,7 +4144,7 @@ local Defaults = {
       },
     },
     previewers = {
-      previewer = file_previewer_grep,
+      previewer = _file_previewer_grep,
       previewer_type = PreviewerTypeEnum.COMMAND_LIST,
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
@@ -4435,6 +4551,7 @@ local M = {
 
   -- live grep
   _make_live_grep_provider = _make_live_grep_provider,
+  _file_previewer_grep = _file_previewer_grep,
 
   -- buffers
   _is_valid_buffer_number = _is_valid_buffer_number,
@@ -4443,6 +4560,9 @@ local M = {
 
   -- git files
   _make_git_files_provider = _make_git_files_provider,
+
+  -- git live grep
+  _git_live_grep_provider = _git_live_grep_provider,
 
   -- git branches
   _make_git_branches_provider = _make_git_branches_provider,
