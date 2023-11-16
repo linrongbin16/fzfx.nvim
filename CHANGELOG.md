@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.3.1...v3.4.0) (2023-11-16)
+
+
+### Features
+
+* **git_live_grep:** add FzfxGLiveGrep ([#419](https://github.com/linrongbin16/fzfx.nvim/issues/419)) ([ddb60b6](https://github.com/linrongbin16/fzfx.nvim/commit/ddb60b6ef3617750ed8c22046f15e516c5476625))
+
 ## [3.3.1](https://github.com/linrongbin16/fzfx.nvim/compare/v3.3.0...v3.3.1) (2023-11-14)
 
 
