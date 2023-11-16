@@ -343,15 +343,15 @@ Below keys are binded by default:
 
 </details>
 
-### Grep
-
 <details>
-<summary><b>Live Grep</b></summary>
+<summary><b>Grep</b></summary>
 
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
-> 3. **Unrestricted** variant is named with `U` suffix.
-> 4. **Current buffer** variant is named with `B` suffix.
+#### Live Grep
+
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
+3. **Unrestricted** variant is named with `U` suffix.
+4. **Current buffer** variant is named with `B` suffix.
 
 <table>
 <thead>
@@ -388,13 +388,10 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-</details>
+#### Git Live Grep
 
-<details>
-<summary><b>Git Live Grep</b></summary>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. Use `--` flag to pass raw options to search command (`git grep`).
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. Use `--` flag to pass raw options to search command (`git grep`).
 
 <table>
 <thead>
@@ -433,13 +430,13 @@ Below keys are binded by default:
 
 </details>
 
-### Git
-
 <details>
-<summary><b>Git Files</b></summary>
+<summary><b>Git</b></summary>
 
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Current directory** variant is named with `C` suffix.
+#### Git Files
+
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. **Current directory** variant is named with `C` suffix.
 
 <table>
 <thead>
@@ -476,13 +473,10 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-</details>
+#### Git Status (Changed Files)
 
-<details>
-<summary><b>Git Status (Changed Files)</b></summary>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Current directory** variant is named with `C` suffix.
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. **Current directory** variant is named with `C` suffix.
 
 <table>
 <thead>
@@ -519,13 +513,10 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-</details>
+#### Git Branches
 
-<details>
-<summary><b>Git Branches</b></summary>
-
-> 1. Use `enter` to checkout branch.
-> 2. **Remote branch** variant is named with `R` suffix.
+1. Use `enter` to checkout branch.
+2. **Remote branch** variant is named with `R` suffix.
 
 <table>
 <thead>
@@ -562,13 +553,10 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-</details>
+#### Git Commits
 
-<details>
-<summary><b>Git Commits</b></summary>
-
-> 1. Use `enter` to copy git commit SHA.
-> 2. **Current buffer** variant is named with `B` suffix.
+1. Use `enter` to copy git commit SHA.
+2. **Current buffer** variant is named with `B` suffix.
 
 <table>
 <thead>
@@ -605,12 +593,9 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-</details>
+#### Git Blame
 
-<details>
-<summary><b>Git Blame</b></summary>
-
-> 1. Use `enter` to copy git commit SHA.
+1. Use `enter` to copy git commit SHA.
 
 <table>
 <thead>
@@ -649,10 +634,10 @@ Below keys are binded by default:
 
 </details>
 
-### Lsp & Diagnostics
-
 <details>
-<summary><b>Lsp Symbols</b></summary>
+<summary><b>Lsp & Diagnostics</b></summary>
+
+#### Lsp Symbols
 
 <table>
 <thead>
@@ -685,13 +670,10 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-</details>
+#### Diagnostics
 
-<details>
-<summary><b>Diagnostics</b></summary>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Current buffer** variant is named with `B` suffix.
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. **Current buffer** variant is named with `B` suffix.
 
 <table>
 <thead>
@@ -730,14 +712,14 @@ Below keys are binded by default:
 
 </details>
 
-### Vim
-
 <details>
-<summary><b>Commands</b></summary>
+<summary><b>Vim</b></summary>
 
-> 1. Use `enter` to input vim command.
-> 2. **Ex(builtin) commands** variant is named with `E` suffix.
-> 3. **User commands** variant is named with `U` suffix.
+#### Commands
+
+1. Use `enter` to input vim command.
+2. **Ex(builtin) commands** variant is named with `E` suffix.
+3. **User commands** variant is named with `U` suffix.
 
 <table>
 <thead>
@@ -774,15 +756,12 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-</details>
+#### Key Maps
 
-<details>
-<summary><b>Key Maps</b></summary>
-
-> 1. Use `enter` to execute vim key.
-> 2. **Normal mode** variant is named with `N` suffix.
-> 3. **Insert mode** variant is named with `I` suffix.
-> 4. **Visual/select mode** variant is named with `V` suffix.
+1. Use `enter` to execute vim key.
+2. **Normal mode** variant is named with `N` suffix.
+3. **Insert mode** variant is named with `I` suffix.
+4. **Visual/select mode** variant is named with `V` suffix.
 
 <table>
 <thead>
@@ -821,10 +800,10 @@ Below keys are binded by default:
 
 </details>
 
-### Misc
-
 <details>
-<summary><b>File Explorer</b></summary>
+<summary><b>Misc</b></summary>
+
+#### File Explorer
 
 > 1. **Unrestricted** variant is named with `U` suffix.
 
