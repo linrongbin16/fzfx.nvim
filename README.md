@@ -74,7 +74,7 @@ FZF-based fuzzy finder running on a dynamic engine that parsing user query and s
 While still recommend Windows users install linux shell commands, since utils like `echo`, `curl` are internally used by somewhere.
 
 <details>
-<summary><b>Click here to see how to install linux commands on Windows</b></summary>
+<summary><i>Click here to see how to install linux commands on Windows</i></summary>
 <br/>
 
 There're many ways to install portable linux shell and builtin commands on Windows, but personally I would recommend below two methods.
@@ -125,7 +125,7 @@ Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\W
 ### Whitespace Escaping Issue
 
 <details>
-<summary><b>Click here to see how whitespace affect escaping characters on path</b></summary>
+<summary><i>Click here to see how whitespace affect escaping characters on path</i></summary>
 <br/>
 
 This plugin internally extends `nvim`, `fzf` and lua scripts to full path when launching command.
@@ -847,7 +847,7 @@ Below keys are binded by default:
 ## 📌 Recommended Key Mappings
 
 <details>
-<summary><b>Vimscripts</b></summary>
+<summary><i>Click here to see how to configure vimscripts</i></summary>
 <br/>
 
 ```vim
@@ -956,9 +956,10 @@ nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 ```
 
 </details>
+<br/>
 
 <details>
-<summary><b>Lua scripts</b></summary>
+<summary><i>Click here to see how to configure lua scripts</i></summary>
 <br/>
 
 ```lua
