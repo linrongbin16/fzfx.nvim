@@ -28,7 +28,7 @@ FZF-based fuzzy finder running on a dynamic engine that parsing user query and s
   - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Commands](#-commands)
-  - [Files & Buffers](#files--buffers)
+  - [Files & Buffers](#files)
   - [Grep](#grep)
   - [Git](#git)
   - [Lsp & Diagnostics](#lsp--diagnostics)
@@ -268,13 +268,13 @@ Below keys are binded by default:
 
 > Note: builtin keys can be configured, see [Configuration](#-configuration).
 
-### Files & Buffers
-
 <details>
-<summary><b>Files</b></summary>
+<summary><b>Files & Buffers</b></summary>
 
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Unrestricted** variant is named with `U` suffix.
+#### Files
+
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+2. **Unrestricted** variant is named with `U` suffix.
 
 <table>
 <thead>
@@ -311,12 +311,9 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-</details>
+#### Buffers
 
-<details>
-<summary><b>Buffers</b></summary>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 
 <table>
 <thead>
