@@ -1440,8 +1440,12 @@ end
 
 local default_no_lsp_locations_error = "no lsp locations found."
 
---- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"
---- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"
+-- lsp methods: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp/protocol.lua#L1028
+--- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"|"callHierarchy/incomingCalls"|"textDocument/prepareCallHierarchy"
+---
+-- lsp capabilities: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp.lua#L39
+--- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"|"callHierarchyProvider"
+---
 --- @alias LspDefinitionOpts {method:LspMethod,capability:LspServerCapability,bufnr:integer,timeout:integer?,position_params:any?}
 --- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:LspLocationPipelineContext):string[]|nil
@@ -4188,8 +4192,8 @@ local Defaults = {
     providers = {
       key = "default",
       provider = _make_lsp_locations_provider({
-        method = "textDocument/implementation",
-        capability = "implementationProvider",
+        method = "textDocument/prepareCallHierarchy",
+        capability = "callHierarchyProvider",
       }),
       provider_type = ProviderTypeEnum.LIST,
       line_opts = {

@@ -63,11 +63,12 @@ local function setup(options)
   general.setup("git_blame", configs.git_blame)
 
   -- lsp & diagnostics
-  general.setup("lsp_diagnostics", configs.lsp_diagnostics)
   general.setup("lsp_definitions", configs.lsp_definitions)
   general.setup("lsp_type_definitions", configs.lsp_type_definitions)
   general.setup("lsp_references", configs.lsp_references)
   general.setup("lsp_implementations", configs.lsp_implementations)
+  general.setup("lsp_incoming_calls", configs.lsp_incoming_calls)
+  general.setup("lsp_diagnostics", configs.lsp_diagnostics)
 
   -- vim
   general.setup("vim_commands", configs.commands or configs.vim_commands)
