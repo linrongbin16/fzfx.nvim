@@ -4174,6 +4174,61 @@ local Defaults = {
     },
   },
 
+  -- the 'Lsp Incoming Calls' command
+  --- @type GroupConfig
+  lsp_incoming_calls = {
+    commands = {
+      name = "FzfxLspIncomingCalls",
+      feed = CommandFeedEnum.ARGS,
+      opts = {
+        bang = true,
+        desc = "Search lsp incoming calls",
+      },
+    },
+    providers = {
+      key = "default",
+      provider = _make_lsp_locations_provider({
+        method = "textDocument/implementation",
+        capability = "implementationProvider",
+      }),
+      provider_type = ProviderTypeEnum.LIST,
+      line_opts = {
+        prepend_icon_by_ft = true,
+        prepend_icon_path_delimiter = ":",
+        prepend_icon_path_position = 1,
+      },
+    },
+    previewers = {
+      previewer = _file_previewer_grep,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_rg,
+      ["double-click"] = require("fzfx.actions").edit_rg,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      default_fzf_options.lsp_preview_window,
+      "--border=none",
+      { "--delimiter", ":" },
+      { "--prompt", "Incoming Calls > " },
+    },
+    win_opts = {
+      relative = "cursor",
+      height = 0.45,
+      width = 1,
+      row = 1,
+      col = 0,
+      border = "none",
+      zindex = 51,
+    },
+    other_opts = {
+      context_maker = _lsp_position_context_maker,
+    },
+  },
+
   -- the 'File Explorer' commands
   --- @type GroupConfig
   file_explorer = {
