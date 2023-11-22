@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.1](https://github.com/linrongbin16/fzfx.nvim/compare/v3.4.0...v3.4.1) (2023-11-22)
+
+
+### Bug Fixes
+
+* **prompt:** respect `hidden` option when open files ([#424](https://github.com/linrongbin16/fzfx.nvim/issues/424)) ([287ba48](https://github.com/linrongbin16/fzfx.nvim/commit/287ba48e71f611a18a9785572d2e58c0ae724eec))
+
 ## [3.4.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.3.1...v3.4.0) (2023-11-16)
 
 
