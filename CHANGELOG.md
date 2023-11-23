@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.4.1...v3.5.0) (2023-11-23)
+
+
+### Features
+
+* **config:** add global `override_fzf_opts` with highest priority ([#427](https://github.com/linrongbin16/fzfx.nvim/issues/427)) ([487a234](https://github.com/linrongbin16/fzfx.nvim/commit/487a234c6df1854263956757802a4fe4d6d2494b))
+
 ## [3.4.1](https://github.com/linrongbin16/fzfx.nvim/compare/v3.4.0...v3.4.1) (2023-11-22)
 
 
