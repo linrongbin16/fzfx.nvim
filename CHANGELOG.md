@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.1](https://github.com/linrongbin16/fzfx.nvim/compare/v3.5.0...v3.5.1) (2023-11-23)
+
+
+### Performance Improvements
+
+* **path:** reduce duplicate lines ([#429](https://github.com/linrongbin16/fzfx.nvim/issues/429)) ([433c0b9](https://github.com/linrongbin16/fzfx.nvim/commit/433c0b9caac587c39f272f9f2219fdab49ca93be))
+
 ## [3.5.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.4.1...v3.5.0) (2023-11-23)
 
 
