@@ -21,7 +21,7 @@ local function _make_cache_filename(...)
   if env.debug_enable() then
     return path.join(conf.get_config().cache.dir, table.concat({ ... }, "_"))
   else
-    return vim.fn.tempname()
+    return vim.fn.tempname() --[[@as string]]
   end
 end
 
@@ -1018,6 +1018,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   table.insert(fzf_opts, fzf_start_binder:build())
 
   fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
+  fzf_opts = vim.list_extend(
+    fzf_opts,
+    vim.deepcopy(conf.get_config().override_fzf_opts or {})
+  )
   fzf_opts = fzf_helpers.preprocess_fzf_opts(fzf_opts)
   local actions = pipeline_configs.actions
   local win_opts = nil
