@@ -4380,6 +4380,37 @@ local Defaults = {
     default_fzf_options.preview_half_page_up,
   },
 
+  -- global fzf opts with highest priority.
+  --
+  -- there're two 'fzf_opts' configs: root level, commands level, for example if the configs is:
+  --
+  -- ```lua
+  -- {
+  --   live_grep = {
+  --     fzf_opts = {
+  --       '--disabled',
+  --       { '--prompt', 'Live Grep > ' },
+  --       { '--preview-window', '+{2}-/2' },
+  --     },
+  --   },
+  --   fzf_opts = {
+  --     '--no-multi',
+  --     { '--preview-window', 'top,70%' },
+  --   },
+  -- }
+  -- ```
+  --
+  -- finally the engine will emit below options to the 'fzf' binary:
+  -- ```
+  -- fzf --no-multi --disabled --prompt 'Live Grep > ' --preview-window '+{2}-/2'
+  -- ```
+  --
+  -- note: the '--preview-window' option in root level will be override by command level (live_grep).
+  --
+  -- now 'override_fzf_opts' provide the highest priority global options that can override command level 'fzf_opts',
+  -- so help users to easier config the fzf opts such as '--preview-window'.
+  override_fzf_opts = {},
+
   -- fzf colors
   -- see: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
   fzf_color_opts = {
