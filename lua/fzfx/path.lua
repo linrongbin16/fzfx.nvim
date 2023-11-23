@@ -26,22 +26,20 @@ end
 
 --- @param p string?
 --- @return string
-local function shorten(p)
-  local dir_path = vim.fn.fnamemodify(p or vim.fn.getcwd(), ":~:.")
-  local shorten_path = vim.fn.pathshorten(dir_path)
-  return shorten_path
+local function reduce2home(p)
+  return vim.fn.fnamemodify(p or vim.fn.getcwd(), ":~") --[[@as string]]
 end
 
 --- @param p string?
 --- @return string
 local function reduce(p)
-  return vim.fn.fnamemodify(p or vim.fn.getcwd(), ":~:.")
+  return vim.fn.fnamemodify(p or vim.fn.getcwd(), ":~:.") --[[@as string]]
 end
 
 --- @param p string?
 --- @return string
-local function reduce2home(p)
-  return vim.fn.fnamemodify(p or vim.fn.getcwd(), ":~")
+local function shorten(p)
+  return vim.fn.pathshorten(reduce(p)) --[[@as string]]
 end
 
 local M = {
