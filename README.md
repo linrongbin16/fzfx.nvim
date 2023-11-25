@@ -11,9 +11,11 @@
 
 FZF-based fuzzy finder running on a dynamic engine that parsing user query and selection on every keystroke.
 
-<!-- https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403 -->
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403
 
+<!-- gif
 ![FzfxLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/be8a7a52-c254-42ff-ad6d-93ba637c4f09)
+-->
 
 > Search `fzfx` with rg's `-g *spec.lua` option.
 
