@@ -4,8 +4,6 @@ local general = require("fzfx.general")
 
 --- @param options Options?
 local function setup(options)
-  math.randomseed(os.time())
-
   -- configs
   local configs = require("fzfx.config").setup(options)
 
