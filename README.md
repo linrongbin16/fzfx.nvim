@@ -641,6 +641,13 @@ Below keys are binded by default:
 
 #### Lsp Symbols
 
+Lsp methods:
+
+- FzfxLspDefinitions: "textDocument/definition".
+- FzfxLspTypeDefinitions: "textDocument/type_definition".
+- FzfxLspReferences: "textDocument/references".
+- FzfxLspImplementations: "textDocument/implementation".
+
 <table>
 <thead>
   <tr>
@@ -1231,7 +1238,7 @@ The `option` is an optional lua table that override the default options.
 <details>
 <summary><i>Click here to see default options</i></summary>
 
-```lua
+````lua
 local Defaults = {
   -- commands group
   files = ...,
@@ -1415,7 +1422,7 @@ local Defaults = {
     file_log = false,
   },
 }
-```
+````
 
 Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share the same schema:
 
