@@ -1441,7 +1441,7 @@ end
 local default_no_lsp_locations_error = "no lsp locations found."
 
 -- lsp methods: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp/protocol.lua#L1028
---- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"|"callHierarchy/incomingCalls"|"textDocument/prepareCallHierarchy"
+--- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"|"callHierarchy/incomingCalls"|"callHierarchy/outgoingCalls"|"textDocument/prepareCallHierarchy"
 ---
 -- lsp capabilities: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp.lua#L39
 --- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"|"callHierarchyProvider"
@@ -1459,10 +1459,10 @@ local function _make_lsp_locations_provider(opts)
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
       return nil
     end
-    log.debug(
-      "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
-      vim.inspect(lsp_clients)
-    )
+    -- log.debug(
+    --   "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
+    --   vim.inspect(lsp_clients)
+    -- )
     local method_supported = false
     for _, lsp_client in ipairs(lsp_clients) do
       if lsp_client.server_capabilities[opts.capability] then
@@ -4192,7 +4192,64 @@ local Defaults = {
     providers = {
       key = "default",
       provider = _make_lsp_locations_provider({
-        method = "textDocument/prepareCallHierarchy",
+        -- method = "textDocument/prepareCallHierarchy",
+        method = "callHierarchy/incomingCalls",
+        capability = "callHierarchyProvider",
+      }),
+      provider_type = ProviderTypeEnum.LIST,
+      line_opts = {
+        prepend_icon_by_ft = true,
+        prepend_icon_path_delimiter = ":",
+        prepend_icon_path_position = 1,
+      },
+    },
+    previewers = {
+      previewer = _file_previewer_grep,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_rg,
+      ["double-click"] = require("fzfx.actions").edit_rg,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      default_fzf_options.lsp_preview_window,
+      "--border=none",
+      { "--delimiter", ":" },
+      { "--prompt", "Incoming Calls > " },
+    },
+    win_opts = {
+      relative = "cursor",
+      height = 0.45,
+      width = 1,
+      row = 1,
+      col = 0,
+      border = "none",
+      zindex = 51,
+    },
+    other_opts = {
+      context_maker = _lsp_position_context_maker,
+    },
+  },
+
+  -- the 'Lsp Outgoing Calls' command
+  --- @type GroupConfig
+  lsp_outgoing_calls = {
+    commands = {
+      name = "FzfxLspOutgoingCalls",
+      feed = CommandFeedEnum.ARGS,
+      opts = {
+        bang = true,
+        desc = "Search lsp outgoing calls",
+      },
+    },
+    providers = {
+      key = "default",
+      provider = _make_lsp_locations_provider({
+        -- method = "textDocument/prepareCallHierarchy",
+        method = "callHierarchy/outgoingCalls",
         capability = "callHierarchyProvider",
       }),
       provider_type = ProviderTypeEnum.LIST,
