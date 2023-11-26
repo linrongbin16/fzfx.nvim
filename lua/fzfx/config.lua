@@ -1583,7 +1583,7 @@ local function _make_lsp_call_hierarchy_provider(opts)
       opts.timeout or 3000
     )
     log.debug(
-      "|fzfx.config - _make_lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
+      "|fzfx.config - _make_lsp_call_hierarchy_provider| opts:%s, lsp_results:%s, lsp_err:%s",
       vim.inspect(opts),
       vim.inspect(lsp_results),
       vim.inspect(lsp_err)
@@ -1597,37 +1597,37 @@ local function _make_lsp_call_hierarchy_provider(opts)
       return nil
     end
 
-    local results = {}
-    for client_id, lsp_result in pairs(lsp_results) do
-      if
-        client_id == nil
-        or type(lsp_result) ~= "table"
-        or type(lsp_result.result) ~= "table"
-      then
-        break
-      end
-      local lsp_loc = lsp_result.result
-      if _is_lsp_location(lsp_loc) then
-        local line = _render_lsp_location_line(lsp_loc)
-        if type(line) == "string" and string.len(line) > 0 then
-          table.insert(results, line)
-        end
-      else
-        for _, def in ipairs(lsp_loc) do
-          local line = _render_lsp_location_line(def)
-          if type(line) == "string" and string.len(line) > 0 then
-            table.insert(results, line)
-          end
-        end
-      end
-    end
+    -- local results = {}
+    -- for client_id, lsp_result in pairs(lsp_results) do
+    --   if
+    --     client_id == nil
+    --     or type(lsp_result) ~= "table"
+    --     or type(lsp_result.result) ~= "table"
+    --   then
+    --     break
+    --   end
+    --   local lsp_loc = lsp_result.result
+    --   if _is_lsp_location(lsp_loc) then
+    --     local line = _render_lsp_location_line(lsp_loc)
+    --     if type(line) == "string" and string.len(line) > 0 then
+    --       table.insert(results, line)
+    --     end
+    --   else
+    --     for _, def in ipairs(lsp_loc) do
+    --       local line = _render_lsp_location_line(def)
+    --       if type(line) == "string" and string.len(line) > 0 then
+    --         table.insert(results, line)
+    --       end
+    --     end
+    --   end
+    -- end
+    --
+    -- if vim.tbl_isempty(results) then
+    --   log.echo(LogLevels.INFO, default_no_lsp_locations_error)
+    --   return nil
+    -- end
 
-    if vim.tbl_isempty(results) then
-      log.echo(LogLevels.INFO, default_no_lsp_locations_error)
-      return nil
-    end
-
-    return results
+    -- return results
   end
   return impl
 end
