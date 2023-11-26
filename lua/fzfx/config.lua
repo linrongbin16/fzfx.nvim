@@ -1446,7 +1446,6 @@ local default_no_lsp_locations_error = "no lsp locations found."
 -- lsp capabilities: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp.lua#L39
 --- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"|"callHierarchyProvider"
 ---
---- @alias LspDefinitionOpts {method:LspMethod,capability:LspServerCapability,bufnr:integer,timeout:integer?,position_params:any?}
 --- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:LspLocationPipelineContext):string[]|nil
 local function _make_lsp_locations_provider(opts)
@@ -1531,6 +1530,109 @@ local function _make_lsp_locations_provider(opts)
 end
 
 -- lsp locations }
+
+-- lsp call hierarchy {
+
+--- @alias LspCallHierarchyPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,position_params:any}
+--- @return LspCallHierarchyPipelineContext
+local function _lsp_call_hierarchy_context_maker()
+  local context = {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+  }
+  context.position_params =
+    vim.lsp.util.make_position_params(context.winnr, nil)
+  context.position_params.context = {
+    includeDeclaration = true,
+  }
+  return context
+end
+
+--- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
+--- @return fun(query:string,context:LspCallHierarchyPipelineContext):string[]|nil
+local function _make_lsp_call_hierarchy_provider(opts)
+  --- @param query string
+  --- @param context LspCallHierarchyPipelineContext
+  --- @return string[]|nil
+  local function impl(query, context)
+    local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
+    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+      log.echo(LogLevels.INFO, default_no_lsp_clients_error)
+      return nil
+    end
+    -- log.debug(
+    --   "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
+    --   vim.inspect(lsp_clients)
+    -- )
+    local method_supported = false
+    for _, lsp_client in ipairs(lsp_clients) do
+      if lsp_client.server_capabilities[opts.capability] then
+        method_supported = true
+        break
+      end
+    end
+    if not method_supported then
+      log.echo(LogLevels.INFO, "%s not supported.", vim.inspect(opts.method))
+      return nil
+    end
+    local lsp_results, lsp_err = vim.lsp.buf_request_sync(
+      context.bufnr,
+      opts.method,
+      context.position_params,
+      opts.timeout or 3000
+    )
+    log.debug(
+      "|fzfx.config - _make_lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
+      vim.inspect(opts),
+      vim.inspect(lsp_results),
+      vim.inspect(lsp_err)
+    )
+    if lsp_err then
+      log.echo(LogLevels.ERROR, lsp_err)
+      return nil
+    end
+    if type(lsp_results) ~= "table" then
+      log.echo(LogLevels.INFO, default_no_lsp_locations_error)
+      return nil
+    end
+
+    local results = {}
+    for client_id, lsp_result in pairs(lsp_results) do
+      if
+        client_id == nil
+        or type(lsp_result) ~= "table"
+        or type(lsp_result.result) ~= "table"
+      then
+        break
+      end
+      local lsp_loc = lsp_result.result
+      if _is_lsp_location(lsp_loc) then
+        local line = _render_lsp_location_line(lsp_loc)
+        if type(line) == "string" and string.len(line) > 0 then
+          table.insert(results, line)
+        end
+      else
+        for _, def in ipairs(lsp_loc) do
+          local line = _render_lsp_location_line(def)
+          if type(line) == "string" and string.len(line) > 0 then
+            table.insert(results, line)
+          end
+        end
+      end
+    end
+
+    if vim.tbl_isempty(results) then
+      log.echo(LogLevels.INFO, default_no_lsp_locations_error)
+      return nil
+    end
+
+    return results
+  end
+  return impl
+end
+
+-- lsp call hierarchy }
 
 -- vim keymaps {
 
