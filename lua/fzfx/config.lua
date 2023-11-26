@@ -1497,23 +1497,22 @@ local function _make_lsp_locations_provider(opts)
     local results = {}
     for client_id, lsp_result in pairs(lsp_results) do
       if
-        client_id == nil
-        or type(lsp_result) ~= "table"
-        or type(lsp_result.result) ~= "table"
+        client_id ~= nil
+        and type(lsp_result) == "table"
+        and type(lsp_result.result) == "table"
       then
-        break
-      end
-      local lsp_loc = lsp_result.result
-      if _is_lsp_location(lsp_loc) then
-        local line = _render_lsp_location_line(lsp_loc)
-        if type(line) == "string" and string.len(line) > 0 then
-          table.insert(results, line)
-        end
-      else
-        for _, def in ipairs(lsp_loc) do
-          local line = _render_lsp_location_line(def)
+        local lsp_loc = lsp_result.result
+        if _is_lsp_location(lsp_loc) then
+          local line = _render_lsp_location_line(lsp_loc)
           if type(line) == "string" and string.len(line) > 0 then
             table.insert(results, line)
+          end
+        else
+          for _, def in ipairs(lsp_loc) do
+            local line = _render_lsp_location_line(def)
+            if type(line) == "string" and string.len(line) > 0 then
+              table.insert(results, line)
+            end
           end
         end
       end
@@ -1549,6 +1548,9 @@ local function _lsp_call_hierarchy_context_maker()
   return context
 end
 
+local default_no_lsp_call_hierarchy_error = "no lsp call hierarchy found."
+
+-- incoming calls test: https://github.com/neovide/neovide/blob/59e4ed47e72076bc8cec09f11d73c389624b19fc/src/main.rs#L266
 --- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:LspCallHierarchyPipelineContext):string[]|nil
 local function _make_lsp_call_hierarchy_provider(opts)
@@ -1578,12 +1580,12 @@ local function _make_lsp_call_hierarchy_provider(opts)
     end
     local lsp_results, lsp_err = vim.lsp.buf_request_sync(
       context.bufnr,
-      opts.method,
+      "textDocument/prepareCallHierarchy",
       context.position_params,
       opts.timeout or 3000
     )
     log.debug(
-      "|fzfx.config - _make_lsp_call_hierarchy_provider| opts:%s, lsp_results:%s, lsp_err:%s",
+      "|fzfx.config - _make_lsp_call_hierarchy_provider| prepare, opts:%s, lsp_results:%s, lsp_err:%s",
       vim.inspect(opts),
       vim.inspect(lsp_results),
       vim.inspect(lsp_err)
@@ -1593,39 +1595,45 @@ local function _make_lsp_call_hierarchy_provider(opts)
       return nil
     end
     if type(lsp_results) ~= "table" then
-      log.echo(LogLevels.INFO, default_no_lsp_locations_error)
+      log.echo(LogLevels.INFO, default_no_lsp_call_hierarchy_error)
       return nil
     end
 
-    -- local results = {}
-    -- for client_id, lsp_result in pairs(lsp_results) do
-    --   if
-    --     client_id == nil
-    --     or type(lsp_result) ~= "table"
-    --     or type(lsp_result.result) ~= "table"
-    --   then
-    --     break
-    --   end
-    --   local lsp_loc = lsp_result.result
-    --   if _is_lsp_location(lsp_loc) then
-    --     local line = _render_lsp_location_line(lsp_loc)
-    --     if type(line) == "string" and string.len(line) > 0 then
-    --       table.insert(results, line)
-    --     end
-    --   else
-    --     for _, def in ipairs(lsp_loc) do
-    --       local line = _render_lsp_location_line(def)
-    --       if type(line) == "string" and string.len(line) > 0 then
-    --         table.insert(results, line)
-    --       end
-    --     end
-    --   end
-    -- end
-    --
-    -- if vim.tbl_isempty(results) then
-    --   log.echo(LogLevels.INFO, default_no_lsp_locations_error)
-    --   return nil
-    -- end
+    local lsp_item = nil
+    for client_id, lsp_result in pairs(lsp_results) do
+      if
+        client_id ~= nil
+        and type(lsp_result) == "table"
+        and type(lsp_result.result) == "table"
+      then
+        lsp_item = lsp_result.result
+        break
+      end
+    end
+    if lsp_item == nil then
+      log.echo(LogLevels.INFO, default_no_lsp_call_hierarchy_error)
+      return nil
+    end
+
+    local results = {}
+    local lsp_results2, lsp_err2 = vim.lsp.buf_request_sync(
+      context.bufnr,
+      opts.method,
+      { item = lsp_item },
+      opts.timeout or 3000
+    )
+    log.debug(
+      "|fzfx.config - _make_lsp_call_hierarchy_provider| 2nd call, opts:%s, lsp_item: %s, lsp_results:%s, lsp_err:%s",
+      vim.inspect(opts),
+      vim.inspect(lsp_item),
+      vim.inspect(lsp_results2),
+      vim.inspect(lsp_err2)
+    )
+
+    if vim.tbl_isempty(results) then
+      log.echo(LogLevels.INFO, default_no_lsp_call_hierarchy_error)
+      return nil
+    end
 
     -- return results
   end
@@ -4293,7 +4301,7 @@ local Defaults = {
     },
     providers = {
       key = "default",
-      provider = _make_lsp_locations_provider({
+      provider = _make_lsp_call_hierarchy_provider({
         -- method = "textDocument/prepareCallHierarchy",
         method = "callHierarchy/incomingCalls",
         capability = "callHierarchyProvider",
