@@ -1303,13 +1303,13 @@ end
 
 -- lsp locations {
 
---- @alias LspLocationRangeStart {line:integer,character:integer}
---- @alias LspLocationRangeEnd {line:integer,character:integer}
---- @alias LspLocationRange {start:LspLocationRangeStart,end:LspLocationRangeEnd}
---- @alias LspLocation {uri:string,range:LspLocationRange}
---- @alias LspLocationLink {originSelectionRange:LspLocationRange,targetUri:string,targetRange:LspLocationRange,targetSelectionRange:LspLocationRange}
+--- @alias LspRangeStart {line:integer,character:integer}
+--- @alias LspRangeEnd {line:integer,character:integer}
+--- @alias LspRange {start:LspRangeStart,end:LspRangeEnd}
+--- @alias LspLocation {uri:string,range:LspRange}
+--- @alias LspLocationLink {originSelectionRange:LspRange,targetUri:string,targetRange:LspRange,targetSelectionRange:LspRange}
 
---- @param r LspLocationRange?
+--- @param r LspRange?
 --- @return boolean
 local function _is_lsp_range(r)
   return type(r) == "table"
@@ -1336,10 +1336,10 @@ local function _is_lsp_locationlink(loc)
 end
 
 --- @param line string
---- @param range LspLocationRange
+--- @param range LspRange
 --- @param color_renderer fun(text:string):string
 --- @return string?
-local function _lsp_location_render_line(line, range, color_renderer)
+local function _lsp_range_render_line(line, range, color_renderer)
   log.debug(
     "|fzfx.config - _lsp_location_render_line| range:%s, line:%s",
     vim.inspect(range),
@@ -1388,7 +1388,7 @@ local function _render_lsp_location_line(loc)
     vim.inspect(loc)
   )
   local filename = nil
-  --- @type LspLocationRange
+  --- @type LspRange
   local range = nil
   if _is_lsp_location(loc) then
     filename = path.reduce(vim.uri_to_fname(loc.uri))
@@ -1418,7 +1418,7 @@ local function _render_lsp_location_line(loc)
     return nil
   end
   local loc_line =
-    _lsp_location_render_line(filelines[range.start.line + 1], range, color.red)
+    _lsp_range_render_line(filelines[range.start.line + 1], range, color.red)
   log.debug(
     "|fzfx.config - _render_lsp_location_line| range:%s, loc_line:%s",
     vim.inspect(range),
@@ -1534,6 +1534,71 @@ end
 
 local default_no_lsp_call_hierarchy_error = "no lsp call hierarchy found."
 
+--- @alias LspCallHierarchyItem {name:string,kind:integer,detail:string?,uri:string,range:LspRange,selectionRange:LspRange}
+--- @param item LspCallHierarchyItem?
+--- @return boolean
+local function _is_lsp_call_hierarchy_item(item)
+  return type(item) == "table"
+    and type(item.name) == "string"
+    and string.len(item.name) > 0
+    and (item.kind ~= nil)
+    and (item.detail == nil or type(item.detail) == "string")
+    and type(item.uri) == "string"
+    and string.len(item.uri) > 0
+    and _is_lsp_range(item.range) > 0
+    and _is_lsp_range(item.selectionRange) > 0
+end
+
+--- @param item LspCallHierarchyItem
+--- @return string?
+local function _render_lsp_call_hierarchy_line(item)
+  log.debug(
+    "|fzfx.config - _render_lsp_call_hierarchy_line| item:%s",
+    vim.inspect(item)
+  )
+  local filename = nil
+  --- @type LspRange
+  local range = nil
+  if _is_lsp_call_hierarchy_item(item) then
+    filename = path.reduce(vim.uri_to_fname(item.uri))
+    range = item.range
+    log.debug(
+      "|fzfx.config - _render_lsp_call_hierarchy_line| location filename:%s, range:%s",
+      vim.inspect(filename),
+      vim.inspect(range)
+    )
+  end
+  if not _is_lsp_range(range) then
+    return nil
+  end
+  if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
+    return nil
+  end
+  local filelines = utils.readlines(filename)
+  if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
+    return nil
+  end
+  local item_line =
+    _lsp_range_render_line(filelines[range.start.line + 1], range, color.red)
+  log.debug(
+    "|fzfx.config - _render_lsp_call_hierarchy_line| range:%s, item_line:%s",
+    vim.inspect(range),
+    vim.inspect(item_line)
+  )
+  local line = string.format(
+    "%s:%s:%s:%s",
+    default_lsp_filename_color(vim.fn.fnamemodify(filename, ":~:.")),
+    color.green(tostring(range.start.line + 1)),
+    tostring(range.start.character + 1),
+    item_line
+  )
+  log.debug(
+    "|fzfx.config - _render_lsp_call_hierarchy_line| line:%s",
+    vim.inspect(line)
+  )
+  return line
+end
+
 -- incoming calls test: https://github.com/neovide/neovide/blob/59e4ed47e72076bc8cec09f11d73c389624b19fc/src/main.rs#L266
 --- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:LspLocationPipelineContext):string[]|nil
@@ -1594,7 +1659,7 @@ local function _make_lsp_call_hierarchy_provider(opts)
         break
       end
     end
-    if lsp_item == nil then
+    if lsp_item == nil or #lsp_item == 0 then
       log.echo(LogLevels.INFO, default_no_lsp_call_hierarchy_error)
       return nil
     end
@@ -1627,15 +1692,15 @@ local function _make_lsp_call_hierarchy_provider(opts)
         and type(lsp_result) == "table"
         and type(lsp_result.result) == "table"
       then
-        local lsp_loc = lsp_result.result
-        if _is_lsp_location(lsp_loc) then
-          local line = _render_lsp_location_line(lsp_loc)
+        local lsp_hierarchy_item = lsp_result.result
+        if _is_lsp_call_hierarchy_item(lsp_hierarchy_item) then
+          local line = _render_lsp_call_hierarchy_line(lsp_hierarchy_item)
           if type(line) == "string" and string.len(line) > 0 then
             table.insert(results, line)
           end
         else
-          for _, def in ipairs(lsp_loc) do
-            local line = _render_lsp_location_line(def)
+          for _, hi_item in ipairs(lsp_hierarchy_item) do
+            local line = _render_lsp_call_hierarchy_line(hi_item)
             if type(line) == "string" and string.len(line) > 0 then
               table.insert(results, line)
             end
@@ -4854,7 +4919,7 @@ local M = {
   _is_lsp_range = _is_lsp_range,
   _is_lsp_location = _is_lsp_location,
   _is_lsp_locationlink = _is_lsp_locationlink,
-  _lsp_location_render_line = _lsp_location_render_line,
+  _lsp_location_render_line = _lsp_range_render_line,
   _lsp_position_context_maker = _lsp_position_context_maker,
   _render_lsp_location_line = _render_lsp_location_line,
   _make_lsp_locations_provider = _make_lsp_locations_provider,
