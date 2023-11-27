@@ -66,6 +66,7 @@ local function setup(options)
   general.setup("lsp_references", configs.lsp_references)
   general.setup("lsp_implementations", configs.lsp_implementations)
   general.setup("lsp_incoming_calls", configs.lsp_incoming_calls)
+  general.setup("lsp_outgoing_calls", configs.lsp_outgoing_calls)
   general.setup("lsp_diagnostics", configs.lsp_diagnostics)
 
   -- vim
