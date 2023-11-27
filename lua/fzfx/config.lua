@@ -1613,6 +1613,14 @@ local function _make_lsp_call_hierarchy_provider(opts)
       vim.inspect(lsp_results2),
       vim.inspect(lsp_err2)
     )
+    if lsp_err2 then
+      log.echo(LogLevels.ERROR, lsp_err2)
+      return nil
+    end
+    if type(lsp_results2) ~= "table" then
+      log.echo(LogLevels.INFO, default_no_lsp_locations_error)
+      return nil
+    end
     for client_id, lsp_result in pairs(lsp_results2) do
       if
         client_id ~= nil
@@ -4308,7 +4316,6 @@ local Defaults = {
     providers = {
       key = "default",
       provider = _make_lsp_call_hierarchy_provider({
-        -- method = "textDocument/prepareCallHierarchy",
         method = "callHierarchy/incomingCalls",
         capability = "callHierarchyProvider",
       }),
@@ -4363,8 +4370,7 @@ local Defaults = {
     },
     providers = {
       key = "default",
-      provider = _make_lsp_locations_provider({
-        -- method = "textDocument/prepareCallHierarchy",
+      provider = _make_lsp_call_hierarchy_provider({
         method = "callHierarchy/outgoingCalls",
         capability = "callHierarchyProvider",
       }),
