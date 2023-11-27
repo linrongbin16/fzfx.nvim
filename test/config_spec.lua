@@ -1423,5 +1423,36 @@ describe("config", function()
       assert_true(vim.deep_equal(actual41, OUTGOING_CALLS.to))
       assert_true(vim.deep_equal(actual42, OUTGOING_CALLS.fromRanges))
     end)
+    it("_make_lsp_call_hierarchy_provider", function()
+      local ctx = conf._lsp_position_context_maker()
+      local f1 = conf._make_lsp_call_hierarchy_provider({
+        method = "callHierarchy/incomingCalls",
+        capability = "callHierarchyProvider",
+      })
+      assert_eq(type(f1), "function")
+      local actual1 = f1("", ctx)
+      if actual1 ~= nil then
+        assert_eq(type(actual1), "table")
+        assert_true(#actual1 >= 0)
+        for _, act in ipairs(actual1) do
+          assert_eq(type(act), "string")
+          assert_true(string.len(act) > 0)
+        end
+      end
+      local f2 = conf._make_lsp_call_hierarchy_provider({
+        method = "callHierarchy/outgoingCalls",
+        capability = "callHierarchyProvider",
+      })
+      assert_eq(type(f2), "function")
+      local actual2 = f2("", ctx)
+      if actual2 ~= nil then
+        assert_eq(type(actual2), "table")
+        assert_true(#actual2 >= 0)
+        for _, act in ipairs(actual2) do
+          assert_eq(type(act), "string")
+          assert_true(string.len(act) > 0)
+        end
+      end
+    end)
   end)
 end)
