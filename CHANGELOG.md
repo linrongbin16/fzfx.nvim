@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.6.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.5.0...v3.6.0) (2023-11-27)
+
+
+### Features
+
+* **lsp_incoming_calls:** add `FzfxLspIncomingCalls` ([#436](https://github.com/linrongbin16/fzfx.nvim/issues/436)) ([81ec652](https://github.com/linrongbin16/fzfx.nvim/commit/81ec65226a240b593fc1d9f5fdb4ff65716451d6))
+* **lsp_outgoing_calls:** add `FzfxLspOutgoingCalls` ([#436](https://github.com/linrongbin16/fzfx.nvim/issues/436)) ([81ec652](https://github.com/linrongbin16/fzfx.nvim/commit/81ec65226a240b593fc1d9f5fdb4ff65716451d6))
+
+
+### Performance Improvements
+
+* **path:** reduce duplicate lines ([#429](https://github.com/linrongbin16/fzfx.nvim/issues/429)) ([433c0b9](https://github.com/linrongbin16/fzfx.nvim/commit/433c0b9caac587c39f272f9f2219fdab49ca93be))
+* **test:** add 'packadd' minimal test case ([#438](https://github.com/linrongbin16/fzfx.nvim/issues/438)) ([3a5c75a](https://github.com/linrongbin16/fzfx.nvim/commit/3a5c75a1b5f39130e39c55234c900ebfb8de96b7))
+
 ## [3.5.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.4.1...v3.5.0) (2023-11-23)
 
 
