@@ -11,6 +11,8 @@ describe("config", function()
     vim.cmd([[edit README.md]])
   end)
 
+  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+
   local function make_default_context()
     return {
       bufnr = vim.api.nvim_get_current_buf(),
@@ -1320,31 +1322,31 @@ describe("config", function()
     end)
   end)
   describe("[lsp_call_hierarchy]", function()
+    local RANGE = {
+      start = {
+        character = 1,
+        line = 299,
+      },
+      ["end"] = {
+        character = 0,
+        line = 289,
+      },
+    }
     local CALL_HIERARCHY_ITEM = {
       name = "name",
       kind = 2,
       detail = "detail",
-      uri = "uri",
-      range = {
-        start = {
-          character = 1,
-          line = 299,
-        },
-        ["end"] = {
-          character = 0,
-          line = 289,
-        },
-      },
-      selectionRange = {
-        start = {
-          character = 1,
-          line = 299,
-        },
-        ["end"] = {
-          character = 0,
-          line = 289,
-        },
-      },
+      uri = "file:///usr/home/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+      range = RANGE,
+      selectionRange = RANGE,
+    }
+    local INCOMING_CALLS = {
+      from = CALL_HIERARCHY_ITEM,
+      fromRanges = { RANGE },
+    }
+    local OUTGOING_CALLS = {
+      to = CALL_HIERARCHY_ITEM,
+      fromRanges = { RANGE },
     }
     it("_is_lsp_call_hierarchy_item", function()
       local actual1 = conf._is_lsp_call_hierarchy_item(nil)
@@ -1370,18 +1372,30 @@ describe("config", function()
       assert_true(actual4)
     end)
     it("_is_lsp_call_hierarchy_incoming_call", function()
-      local actual1 = conf._is_lsp_call_hierarchy_incoming_call({
-        from = CALL_HIERARCHY_ITEM,
-        fromRanges = {},
-      })
+      local actual1 = conf._is_lsp_call_hierarchy_incoming_call(INCOMING_CALLS)
       assert_true(actual1)
     end)
     it("_is_lsp_call_hierarchy_outgoing_call", function()
-      local actual1 = conf._is_lsp_call_hierarchy_outgoing_call({
-        to = CALL_HIERARCHY_ITEM,
-        fromRanges = {},
-      })
+      local actual1 = conf._is_lsp_call_hierarchy_outgoing_call(OUTGOING_CALLS)
       assert_true(actual1)
+    end)
+    it("_render_lsp_call_hierarchy_line", function()
+      local actual1 = conf._render_lsp_call_hierarchy_line(
+        INCOMING_CALLS.from,
+        INCOMING_CALLS.fromRanges
+      )
+      print(string.format("incoming render lines:%s\n", vim.inspect(actual1)))
+      if github_actions then
+        assert_eq(#actual1, 1)
+      end
+      local actual2 = conf._render_lsp_call_hierarchy_line(
+        OUTGOING_CALLS.to,
+        OUTGOING_CALLS.fromRanges
+      )
+      print(string.format("outgoing render lines:%s\n", vim.inspect(actual2)))
+      if github_actions then
+        assert_eq(#actual2, 1)
+      end
     end)
   end)
 end)
