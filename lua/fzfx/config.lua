@@ -1303,13 +1303,13 @@ end
 
 -- lsp locations {
 
---- @alias LspLocationRangeStart {line:integer,character:integer}
---- @alias LspLocationRangeEnd {line:integer,character:integer}
---- @alias LspLocationRange {start:LspLocationRangeStart,end:LspLocationRangeEnd}
---- @alias LspLocation {uri:string,range:LspLocationRange}
---- @alias LspLocationLink {originSelectionRange:LspLocationRange,targetUri:string,targetRange:LspLocationRange,targetSelectionRange:LspLocationRange}
+--- @alias LspRangeStart {line:integer,character:integer}
+--- @alias LspRangeEnd {line:integer,character:integer}
+--- @alias LspRange {start:LspRangeStart,end:LspRangeEnd}
+--- @alias LspLocation {uri:string,range:LspRange}
+--- @alias LspLocationLink {originSelectionRange:LspRange,targetUri:string,targetRange:LspRange,targetSelectionRange:LspRange}
 
---- @param r LspLocationRange?
+--- @param r LspRange?
 --- @return boolean
 local function _is_lsp_range(r)
   return type(r) == "table"
@@ -1336,10 +1336,10 @@ local function _is_lsp_locationlink(loc)
 end
 
 --- @param line string
---- @param range LspLocationRange
+--- @param range LspRange
 --- @param color_renderer fun(text:string):string
 --- @return string?
-local function _lsp_location_render_line(line, range, color_renderer)
+local function _lsp_range_render_line(line, range, color_renderer)
   log.debug(
     "|fzfx.config - _lsp_location_render_line| range:%s, line:%s",
     vim.inspect(range),
@@ -1388,7 +1388,7 @@ local function _render_lsp_location_line(loc)
     vim.inspect(loc)
   )
   local filename = nil
-  --- @type LspLocationRange
+  --- @type LspRange
   local range = nil
   if _is_lsp_location(loc) then
     filename = path.reduce(vim.uri_to_fname(loc.uri))
@@ -1418,7 +1418,7 @@ local function _render_lsp_location_line(loc)
     return nil
   end
   local loc_line =
-    _lsp_location_render_line(filelines[range.start.line + 1], range, color.red)
+    _lsp_range_render_line(filelines[range.start.line + 1], range, color.red)
   log.debug(
     "|fzfx.config - _render_lsp_location_line| range:%s, loc_line:%s",
     vim.inspect(range),
@@ -1440,9 +1440,12 @@ end
 
 local default_no_lsp_locations_error = "no lsp locations found."
 
---- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"
---- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"
---- @alias LspDefinitionOpts {method:LspMethod,capability:LspServerCapability,bufnr:integer,timeout:integer?,position_params:any?}
+-- lsp methods: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp/protocol.lua#L1028
+--- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"|"callHierarchy/incomingCalls"|"callHierarchy/outgoingCalls"|"textDocument/prepareCallHierarchy"
+---
+-- lsp capabilities: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp.lua#L39
+--- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"|"callHierarchyProvider"
+---
 --- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:LspLocationPipelineContext):string[]|nil
 local function _make_lsp_locations_provider(opts)
@@ -1455,10 +1458,10 @@ local function _make_lsp_locations_provider(opts)
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
       return nil
     end
-    log.debug(
-      "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
-      vim.inspect(lsp_clients)
-    )
+    -- log.debug(
+    --   "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
+    --   vim.inspect(lsp_clients)
+    -- )
     local method_supported = false
     for _, lsp_client in ipairs(lsp_clients) do
       if lsp_client.server_capabilities[opts.capability] then
@@ -1494,23 +1497,22 @@ local function _make_lsp_locations_provider(opts)
     local results = {}
     for client_id, lsp_result in pairs(lsp_results) do
       if
-        client_id == nil
-        or type(lsp_result) ~= "table"
-        or type(lsp_result.result) ~= "table"
+        client_id ~= nil
+        and type(lsp_result) == "table"
+        and type(lsp_result.result) == "table"
       then
-        break
-      end
-      local lsp_loc = lsp_result.result
-      if _is_lsp_location(lsp_loc) then
-        local line = _render_lsp_location_line(lsp_loc)
-        if type(line) == "string" and string.len(line) > 0 then
-          table.insert(results, line)
-        end
-      else
-        for _, def in ipairs(lsp_loc) do
-          local line = _render_lsp_location_line(def)
+        local lsp_loc = lsp_result.result
+        if _is_lsp_location(lsp_loc) then
+          local line = _render_lsp_location_line(lsp_loc)
           if type(line) == "string" and string.len(line) > 0 then
             table.insert(results, line)
+          end
+        else
+          for _, loc in ipairs(lsp_loc) do
+            local line = _render_lsp_location_line(loc)
+            if type(line) == "string" and string.len(line) > 0 then
+              table.insert(results, line)
+            end
           end
         end
       end
@@ -1527,6 +1529,272 @@ local function _make_lsp_locations_provider(opts)
 end
 
 -- lsp locations }
+
+-- lsp call hierarchy {
+
+local default_no_lsp_call_hierarchy_error = "no lsp call hierarchy found."
+
+--- @alias LspCallHierarchyItem {name:string,kind:integer,detail:string?,uri:string,range:LspRange,selectionRange:LspRange}
+--- @alias LspCallHierarchyIncomingCall {from:LspCallHierarchyItem,fromRanges:LspRange[]}
+--- @alias LspCallHierarchyOutgoingCall {to:LspCallHierarchyItem,fromRanges:LspRange[]}
+---
+--- @param item LspCallHierarchyItem?
+--- @return boolean
+local function _is_lsp_call_hierarchy_item(item)
+  -- log.debug(
+  --   "|fzfx.config - _is_lsp_call_hierarchy_item| item:%s",
+  --   vim.inspect(item)
+  -- )
+  return type(item) == "table"
+    and type(item.name) == "string"
+    and string.len(item.name) > 0
+    and (item.kind ~= nil)
+    and (item.detail == nil or type(item.detail) == "string")
+    and type(item.uri) == "string"
+    and string.len(item.uri) > 0
+    and _is_lsp_range(item.range)
+    and _is_lsp_range(item.selectionRange)
+end
+
+--- @param call_item Options?
+--- @return boolean
+local function _is_lsp_call_hierarchy_incoming_call(call_item)
+  return type(call_item) == "table"
+    and _is_lsp_call_hierarchy_item(call_item.from)
+    and type(call_item.fromRanges) == "table"
+end
+
+--- @param call_item Options?
+--- @return boolean
+local function _is_lsp_call_hierarchy_outgoing_call(call_item)
+  return type(call_item) == "table"
+    and _is_lsp_call_hierarchy_item(call_item.to)
+    and type(call_item.fromRanges) == "table"
+end
+
+--- @param item LspCallHierarchyItem
+--- @param ranges LspRange[]
+--- @return string[]
+local function _render_lsp_call_hierarchy_line(item, ranges)
+  log.debug(
+    "|fzfx.config - _render_lsp_call_hierarchy_line| item:%s, ranges:%s",
+    vim.inspect(item),
+    vim.inspect(ranges)
+  )
+  local filename = nil
+  if
+    type(item.uri) == "string"
+    and string.len(item.uri) > 0
+    and _is_lsp_range(item.range)
+  then
+    filename = path.reduce(vim.uri_to_fname(item.uri))
+    log.debug(
+      "|fzfx.config - _render_lsp_call_hierarchy_line| location filename:%s",
+      vim.inspect(filename)
+    )
+  end
+  if type(ranges) ~= "table" or #ranges == 0 then
+    return {}
+  end
+  if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
+    return {}
+  end
+  local filelines = utils.readlines(filename)
+  if type(filelines) ~= "table" then
+    return {}
+  end
+  local lines = {}
+  for i, r in ipairs(ranges) do
+    local item_line =
+      _lsp_range_render_line(filelines[r.start.line + 1], r, color.red)
+    log.debug(
+      "|fzfx.config - _render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
+      vim.inspect(i),
+      vim.inspect(r),
+      vim.inspect(item_line)
+    )
+    local line = string.format(
+      "%s:%s:%s:%s",
+      default_lsp_filename_color(vim.fn.fnamemodify(filename, ":~:.")),
+      color.green(tostring(r.start.line + 1)),
+      tostring(r.start.character + 1),
+      item_line
+    )
+    log.debug(
+      "|fzfx.config - _render_lsp_call_hierarchy_line| %s-line:%s",
+      vim.inspect(i),
+      vim.inspect(line)
+    )
+    table.insert(lines, line)
+  end
+  return lines
+end
+
+--- @param method LspMethod
+--- @param hi_item LspCallHierarchyIncomingCall|LspCallHierarchyOutgoingCall
+--- @return LspCallHierarchyItem?, LspRange[]|nil
+local function _retrieve_lsp_call_hierarchy_item_and_from_ranges(
+  method,
+  hi_item
+)
+  if
+    method == "callHierarchy/incomingCalls"
+    and _is_lsp_call_hierarchy_incoming_call(hi_item)
+  then
+    return hi_item.from, hi_item.fromRanges
+  elseif
+    method == "callHierarchy/outgoingCalls"
+    and _is_lsp_call_hierarchy_outgoing_call(hi_item)
+  then
+    return hi_item.to, hi_item.fromRanges
+  else
+    return nil, nil
+  end
+end
+
+-- incoming calls test: https://github.com/neovide/neovide/blob/59e4ed47e72076bc8cec09f11d73c389624b19fc/src/main.rs#L266
+--- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
+--- @return fun(query:string,context:LspLocationPipelineContext):string[]|nil
+local function _make_lsp_call_hierarchy_provider(opts)
+  --- @param query string
+  --- @param context LspLocationPipelineContext
+  --- @return string[]|nil
+  local function impl(query, context)
+    local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
+    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+      log.echo(LogLevels.INFO, default_no_lsp_clients_error)
+      return nil
+    end
+    -- log.debug(
+    --   "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
+    --   vim.inspect(lsp_clients)
+    -- )
+    local method_supported = false
+    for _, lsp_client in ipairs(lsp_clients) do
+      if lsp_client.server_capabilities[opts.capability] then
+        method_supported = true
+        break
+      end
+    end
+    if not method_supported then
+      log.echo(LogLevels.INFO, "%s not supported.", vim.inspect(opts.method))
+      return nil
+    end
+    local lsp_results, lsp_err = vim.lsp.buf_request_sync(
+      context.bufnr,
+      "textDocument/prepareCallHierarchy",
+      context.position_params,
+      opts.timeout or 3000
+    )
+    log.debug(
+      "|fzfx.config - _make_lsp_call_hierarchy_provider| prepare, opts:%s, lsp_results:%s, lsp_err:%s",
+      vim.inspect(opts),
+      vim.inspect(lsp_results),
+      vim.inspect(lsp_err)
+    )
+    if lsp_err then
+      log.echo(LogLevels.ERROR, lsp_err)
+      return nil
+    end
+    if type(lsp_results) ~= "table" then
+      log.echo(LogLevels.INFO, default_no_lsp_call_hierarchy_error)
+      return nil
+    end
+
+    local lsp_item = nil
+    for client_id, lsp_result in pairs(lsp_results) do
+      if
+        client_id ~= nil
+        and type(lsp_result) == "table"
+        and type(lsp_result.result) == "table"
+      then
+        lsp_item = lsp_result.result
+        break
+      end
+    end
+    if lsp_item == nil or #lsp_item == 0 then
+      log.echo(LogLevels.INFO, default_no_lsp_call_hierarchy_error)
+      return nil
+    end
+
+    local results = {}
+    local lsp_results2, lsp_err2 = vim.lsp.buf_request_sync(
+      context.bufnr,
+      opts.method,
+      { item = lsp_item[1] },
+      opts.timeout or 3000
+    )
+    log.debug(
+      "|fzfx.config - _make_lsp_call_hierarchy_provider| 2nd call, opts:%s, lsp_item: %s, lsp_results2:%s, lsp_err2:%s",
+      vim.inspect(opts),
+      vim.inspect(lsp_item),
+      vim.inspect(lsp_results2),
+      vim.inspect(lsp_err2)
+    )
+    if lsp_err2 then
+      log.echo(LogLevels.ERROR, lsp_err2)
+      return nil
+    end
+    if type(lsp_results2) ~= "table" then
+      log.echo(LogLevels.INFO, default_no_lsp_locations_error)
+      return nil
+    end
+    for client_id, lsp_result in pairs(lsp_results2) do
+      if
+        client_id ~= nil
+        and type(lsp_result) == "table"
+        and type(lsp_result.result) == "table"
+      then
+        local lsp_hi_item_list = lsp_result.result
+        log.debug(
+          "|fzfx.config - _make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item_list:%s",
+          vim.inspect(opts.method),
+          vim.inspect(lsp_hi_item_list)
+        )
+        for _, lsp_hi_item in ipairs(lsp_hi_item_list) do
+          local hi_item, from_ranges =
+            _retrieve_lsp_call_hierarchy_item_and_from_ranges(
+              opts.method,
+              lsp_hi_item
+            )
+          log.debug(
+            "|fzfx.config - _make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item:%s, hi_item:%s, from_ranges:%s",
+            vim.inspect(opts.method),
+            vim.inspect(lsp_hi_item_list),
+            vim.inspect(hi_item),
+            vim.inspect(from_ranges)
+          )
+          if
+            _is_lsp_call_hierarchy_item(hi_item)
+            and type(from_ranges) == "table"
+          then
+            local lines = _render_lsp_call_hierarchy_line(
+              hi_item --[[@as LspCallHierarchyItem]],
+              from_ranges
+            )
+            if type(lines) == "table" then
+              for _, line in ipairs(lines) do
+                if type(line) == "string" and string.len(line) > 0 then
+                  table.insert(results, line)
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+
+    if vim.tbl_isempty(results) then
+      log.echo(LogLevels.INFO, default_no_lsp_call_hierarchy_error)
+      return nil
+    end
+
+    return results
+  end
+  return impl
+end
+
+-- lsp call hierarchy }
 
 -- vim keymaps {
 
@@ -4174,6 +4442,116 @@ local Defaults = {
     },
   },
 
+  -- the 'Lsp Incoming Calls' command
+  --- @type GroupConfig
+  lsp_incoming_calls = {
+    commands = {
+      name = "FzfxLspIncomingCalls",
+      feed = CommandFeedEnum.ARGS,
+      opts = {
+        bang = true,
+        desc = "Search lsp incoming calls",
+      },
+    },
+    providers = {
+      key = "default",
+      provider = _make_lsp_call_hierarchy_provider({
+        method = "callHierarchy/incomingCalls",
+        capability = "callHierarchyProvider",
+      }),
+      provider_type = ProviderTypeEnum.LIST,
+      line_opts = {
+        prepend_icon_by_ft = true,
+        prepend_icon_path_delimiter = ":",
+        prepend_icon_path_position = 1,
+      },
+    },
+    previewers = {
+      previewer = _file_previewer_grep,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_rg,
+      ["double-click"] = require("fzfx.actions").edit_rg,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      default_fzf_options.lsp_preview_window,
+      "--border=none",
+      { "--delimiter", ":" },
+      { "--prompt", "Incoming Calls > " },
+    },
+    win_opts = {
+      relative = "cursor",
+      height = 0.45,
+      width = 1,
+      row = 1,
+      col = 0,
+      border = "none",
+      zindex = 51,
+    },
+    other_opts = {
+      context_maker = _lsp_position_context_maker,
+    },
+  },
+
+  -- the 'Lsp Outgoing Calls' command
+  --- @type GroupConfig
+  lsp_outgoing_calls = {
+    commands = {
+      name = "FzfxLspOutgoingCalls",
+      feed = CommandFeedEnum.ARGS,
+      opts = {
+        bang = true,
+        desc = "Search lsp outgoing calls",
+      },
+    },
+    providers = {
+      key = "default",
+      provider = _make_lsp_call_hierarchy_provider({
+        method = "callHierarchy/outgoingCalls",
+        capability = "callHierarchyProvider",
+      }),
+      provider_type = ProviderTypeEnum.LIST,
+      line_opts = {
+        prepend_icon_by_ft = true,
+        prepend_icon_path_delimiter = ":",
+        prepend_icon_path_position = 1,
+      },
+    },
+    previewers = {
+      previewer = _file_previewer_grep,
+      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+      previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
+    },
+    actions = {
+      ["esc"] = require("fzfx.actions").nop,
+      ["enter"] = require("fzfx.actions").edit_rg,
+      ["double-click"] = require("fzfx.actions").edit_rg,
+    },
+    fzf_opts = {
+      default_fzf_options.multi,
+      default_fzf_options.lsp_preview_window,
+      "--border=none",
+      { "--delimiter", ":" },
+      { "--prompt", "Outgoing Calls > " },
+    },
+    win_opts = {
+      relative = "cursor",
+      height = 0.45,
+      width = 1,
+      row = 1,
+      col = 0,
+      border = "none",
+      zindex = 51,
+    },
+    other_opts = {
+      context_maker = _lsp_position_context_maker,
+    },
+  },
+
   -- the 'File Explorer' commands
   --- @type GroupConfig
   file_explorer = {
@@ -4607,19 +4985,27 @@ local M = {
   -- git blame
   _git_blame_provider = _git_blame_provider,
 
-  -- diagnostics
+  -- lsp diagnostics
   _make_lsp_diagnostic_signs = _make_lsp_diagnostic_signs,
   _process_lsp_diagnostic_item = _process_lsp_diagnostic_item,
   _make_lsp_diagnostics_provider = _make_lsp_diagnostics_provider,
 
-  -- lsp
+  -- lsp locations
   _is_lsp_range = _is_lsp_range,
   _is_lsp_location = _is_lsp_location,
   _is_lsp_locationlink = _is_lsp_locationlink,
-  _lsp_location_render_line = _lsp_location_render_line,
+  _lsp_location_render_line = _lsp_range_render_line,
   _lsp_position_context_maker = _lsp_position_context_maker,
   _render_lsp_location_line = _render_lsp_location_line,
   _make_lsp_locations_provider = _make_lsp_locations_provider,
+
+  -- lsp call hierarchy
+  _is_lsp_call_hierarchy_item = _is_lsp_call_hierarchy_item,
+  _is_lsp_call_hierarchy_incoming_call = _is_lsp_call_hierarchy_incoming_call,
+  _is_lsp_call_hierarchy_outgoing_call = _is_lsp_call_hierarchy_outgoing_call,
+  _render_lsp_call_hierarchy_line = _render_lsp_call_hierarchy_line,
+  _retrieve_lsp_call_hierarchy_item_and_from_ranges = _retrieve_lsp_call_hierarchy_item_and_from_ranges,
+  _make_lsp_call_hierarchy_provider = _make_lsp_call_hierarchy_provider,
 
   -- commands
   _parse_vim_ex_command_name = _parse_vim_ex_command_name,

@@ -23,7 +23,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 - [Feature](#-feature)
 - [Requirement](#-requirement)
-  - [For Windows](#for-windows)
+  - [Windows](#windows)
   - [Whitespace Escaping Issue](#whitespace-escaping-issue)
 - [Install](#-install)
   - [vim-plug](#vim-plug)
@@ -69,7 +69,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [delta](https://github.com/dandavison/delta) (optional for preview git **diff, show, blame**).
 - [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-### For Windows
+### Windows
 
 `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be better choice.
 
@@ -639,7 +639,16 @@ Below keys are binded by default:
 <details>
 <summary><b>Lsp & Diagnostics</b></summary>
 
-#### Lsp Symbols
+#### Lsp Locations
+
+Lsp methods:
+
+- FzfxLspDefinitions: "textDocument/definition".
+- FzfxLspTypeDefinitions: "textDocument/type_definition".
+- FzfxLspReferences: "textDocument/references".
+- FzfxLspImplementations: "textDocument/implementation".
+- FzfxLspIncomingCalls: "textDocument/incomingCalls".
+- FzfxLspOutgoingCalls: "textDocument/outgoingCalls".
 
 <table>
 <thead>
@@ -654,8 +663,8 @@ Below keys are binded by default:
   <tr>
     <td>FzfxLspDefinitions</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="6">Yes</td>
+    <td rowspan="6">Yes</td>
   </tr>
   <tr>
     <td>FzfxLspTypeDefinitions</td>
@@ -667,6 +676,14 @@ Below keys are binded by default:
   </tr>
   <tr>
     <td>FzfxLspImplementations</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLspIncomingCalls</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLspOutgoingCalls</td>
     <td>N</td>
   </tr>
 </tbody>
@@ -941,6 +958,12 @@ nnoremap gr :\<C-U>FzfxLspReferences<CR>
 " lsp implementations
 nnoremap gi :\<C-U>FzfxLspImplementations<CR>
 
+" lsp incoming calls
+nnoremap gI :\<C-U>FzfxLspIncomingCalls<CR>
+
+" lsp outgoing calls
+nnoremap gO :\<C-U>FzfxLspOutgoingCalls<CR>
+
 " ======== vim commands ========
 
 " vim commands
@@ -1183,6 +1206,22 @@ vim.keymap.set(
   { silent = true, noremap = true, desc = "Goto lsp implementations" }
 )
 
+-- lsp incoming calls
+vim.keymap.set(
+  "n",
+  "gI",
+  "<cmd>FzfxLspIncomingCalls<cr>",
+  { silent = true, noremap = true, desc = "Goto lsp incoming calls" }
+)
+
+-- lsp outgoing calls
+vim.keymap.set(
+  "n",
+  "gO",
+  "<cmd>FzfxLspOutgoingCalls<cr>",
+  { silent = true, noremap = true, desc = "Goto lsp outgoing calls" }
+)
+
 -- ======== vim commands ========
 
 -- vim commands
@@ -1231,7 +1270,7 @@ The `option` is an optional lua table that override the default options.
 <details>
 <summary><i>Click here to see default options</i></summary>
 
-```lua
+````lua
 local Defaults = {
   -- commands group
   files = ...,
@@ -1415,7 +1454,7 @@ local Defaults = {
     file_log = false,
   },
 }
-```
+````
 
 Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`, etc) share the same schema:
 
@@ -1438,7 +1477,7 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 
 Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
 
-![FzfxLs](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/d8dadedf-928e-477d-b176-64a4b6fe7607)
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/c704e5b2-d82a-45f2-8920-adeec5d3e7c2
 
 <details>
 <summary><i>Click here to see how to configure</i></summary>
@@ -1472,11 +1511,11 @@ require("fzfx").setup({
       providers = {
         filter_hiddens = {
           key = "ctrl-h",
-          provider = { "ls", "-1" },
+          provider = { "ls", "--color=always", "-1" },
         },
         include_hiddens = {
           key = "ctrl-u",
-          provider = { "ls", "-1a" },
+          provider = { "ls", "--color=always", "-1a" },
         },
       },
       --- @type table<string, PreviewerConfig>
@@ -1484,14 +1523,14 @@ require("fzfx").setup({
         filter_hiddens = {
           previewer = function(line)
             -- each line is either a folder or a file
-            return vim.fn.isdirectory(line) > 0 and { "ls", "-lha", line }
+            return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
               or { "cat", line }
           end,
           previewer_type = "command_list",
         },
         include_hiddens = {
           previewer = function(line)
-            return vim.fn.isdirectory(line) > 0 and { "ls", "-lha", line }
+            return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
               or { "cat", line }
           end,
           previewer_type = "command_list",
