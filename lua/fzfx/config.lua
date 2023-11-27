@@ -4536,7 +4536,7 @@ local Defaults = {
       default_fzf_options.lsp_preview_window,
       "--border=none",
       { "--delimiter", ":" },
-      { "--prompt", "Incoming Calls > " },
+      { "--prompt", "Outgoing Calls > " },
     },
     win_opts = {
       relative = "cursor",
