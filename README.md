@@ -23,7 +23,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 - [Feature](#-feature)
 - [Requirement](#-requirement)
-  - [For Windows](#for-windows)
+  - [Windows](#windows)
   - [Whitespace Escaping Issue](#whitespace-escaping-issue)
 - [Install](#-install)
   - [vim-plug](#vim-plug)
@@ -69,7 +69,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [delta](https://github.com/dandavison/delta) (optional for preview git **diff, show, blame**).
 - [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-### For Windows
+### Windows
 
 `grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be better choice.
 
