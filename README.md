@@ -639,7 +639,7 @@ Below keys are binded by default:
 <details>
 <summary><b>Lsp & Diagnostics</b></summary>
 
-#### Lsp Symbols
+#### Lsp Locations
 
 Lsp methods:
 
@@ -663,8 +663,8 @@ Lsp methods:
   <tr>
     <td>FzfxLspDefinitions</td>
     <td>N</td>
-    <td rowspan="4">Yes</td>
-    <td rowspan="4">Yes</td>
+    <td rowspan="6">Yes</td>
+    <td rowspan="6">Yes</td>
   </tr>
   <tr>
     <td>FzfxLspTypeDefinitions</td>
