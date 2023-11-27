@@ -1319,4 +1319,54 @@ describe("config", function()
       end
     end)
   end)
+  describe("[lsp_call_hierarchy]", function()
+    it("_is_lsp_call_hierarchy_item", function()
+      local actual1 = conf._is_lsp_call_hierarchy_item(nil)
+      assert_false(actual1)
+      local actual2 = conf._is_lsp_call_hierarchy_item({})
+      assert_false(actual2)
+      local actual3 = conf._is_lsp_call_hierarchy_item({
+        name = "name",
+        kind = 2,
+        detail = "detail",
+        uri = "uri",
+        range = {
+          start = 1,
+          ["end"] = 2,
+        },
+        selectRange = {
+          start = 1,
+          ["end"] = 2,
+        },
+      })
+      assert_false(actual3)
+      local actual4 = conf._is_lsp_call_hierarchy_item({
+        name = "name",
+        kind = 2,
+        detail = "detail",
+        uri = "uri",
+        range = {
+          start = {
+            character = 1,
+            line = 299,
+          },
+          ["end"] = {
+            character = 0,
+            line = 289,
+          },
+        },
+        selectionRange = {
+          start = {
+            character = 1,
+            line = 299,
+          },
+          ["end"] = {
+            character = 0,
+            line = 289,
+          },
+        },
+      })
+      assert_true(actual4)
+    end)
+  end)
 end)

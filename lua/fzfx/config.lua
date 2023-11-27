@@ -1541,10 +1541,10 @@ local default_no_lsp_call_hierarchy_error = "no lsp call hierarchy found."
 --- @param item LspCallHierarchyItem?
 --- @return boolean
 local function _is_lsp_call_hierarchy_item(item)
-  log.debug(
-    "|fzfx.config - _is_lsp_call_hierarchy_item| item:%s",
-    vim.inspect(item)
-  )
+  -- log.debug(
+  --   "|fzfx.config - _is_lsp_call_hierarchy_item| item:%s",
+  --   vim.inspect(item)
+  -- )
   return type(item) == "table"
     and type(item.name) == "string"
     and string.len(item.name) > 0
@@ -4985,12 +4985,12 @@ local M = {
   -- git blame
   _git_blame_provider = _git_blame_provider,
 
-  -- diagnostics
+  -- lsp diagnostics
   _make_lsp_diagnostic_signs = _make_lsp_diagnostic_signs,
   _process_lsp_diagnostic_item = _process_lsp_diagnostic_item,
   _make_lsp_diagnostics_provider = _make_lsp_diagnostics_provider,
 
-  -- lsp
+  -- lsp locations
   _is_lsp_range = _is_lsp_range,
   _is_lsp_location = _is_lsp_location,
   _is_lsp_locationlink = _is_lsp_locationlink,
@@ -4998,6 +4998,14 @@ local M = {
   _lsp_position_context_maker = _lsp_position_context_maker,
   _render_lsp_location_line = _render_lsp_location_line,
   _make_lsp_locations_provider = _make_lsp_locations_provider,
+
+  -- lsp call hierarchy
+  _is_lsp_call_hierarchy_item = _is_lsp_call_hierarchy_item,
+  _is_lsp_call_hierarchy_incoming_call = _is_lsp_call_hierarchy_incoming_call,
+  _is_lsp_call_hierarchy_outgoing_call = _is_lsp_call_hierarchy_outgoing_call,
+  _render_lsp_call_hierarchy_line = _render_lsp_call_hierarchy_line,
+  _retrieve_lsp_call_hierarchy_item_and_from_ranges = _retrieve_lsp_call_hierarchy_item_and_from_ranges,
+  _make_lsp_call_hierarchy_provider = _make_lsp_call_hierarchy_provider,
 
   -- commands
   _parse_vim_ex_command_name = _parse_vim_ex_command_name,
