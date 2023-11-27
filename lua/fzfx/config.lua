@@ -1508,8 +1508,8 @@ local function _make_lsp_locations_provider(opts)
             table.insert(results, line)
           end
         else
-          for _, def in ipairs(lsp_loc) do
-            local line = _render_lsp_location_line(def)
+          for _, loc in ipairs(lsp_loc) do
+            local line = _render_lsp_location_line(loc)
             if type(line) == "string" and string.len(line) > 0 then
               table.insert(results, line)
             end
