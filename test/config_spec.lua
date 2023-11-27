@@ -1393,5 +1393,35 @@ describe("config", function()
       print(string.format("outgoing render lines:%s\n", vim.inspect(actual2)))
       assert_true(#actual1 >= 0)
     end)
+    it("_retrieve_lsp_call_hierarchy_item_and_from_ranges", function()
+      local actual11, actual12 =
+        conf._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+          "callHierarchy/incomingCalls",
+          INCOMING_CALLS
+        )
+      assert_true(vim.deep_equal(actual11, INCOMING_CALLS.from))
+      assert_true(vim.deep_equal(actual12, INCOMING_CALLS.fromRanges))
+      local actual21, actual22 =
+        conf._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+          "callHierarchy/incomingCalls",
+          OUTGOING_CALLS
+        )
+      assert_eq(actual21, nil)
+      assert_eq(actual22, nil)
+      local actual31, actual32 =
+        conf._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+          "callHierarchy/outgoingCalls",
+          INCOMING_CALLS
+        )
+      assert_eq(actual31, nil)
+      assert_eq(actual32, nil)
+      local actual41, actual42 =
+        conf._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+          "callHierarchy/outgoingCalls",
+          OUTGOING_CALLS
+        )
+      assert_true(vim.deep_equal(actual41, OUTGOING_CALLS.to))
+      assert_true(vim.deep_equal(actual42, OUTGOING_CALLS.fromRanges))
+    end)
   end)
 end)
