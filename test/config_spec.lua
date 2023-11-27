@@ -1320,6 +1320,32 @@ describe("config", function()
     end)
   end)
   describe("[lsp_call_hierarchy]", function()
+    local CALL_HIERARCHY_ITEM = {
+      name = "name",
+      kind = 2,
+      detail = "detail",
+      uri = "uri",
+      range = {
+        start = {
+          character = 1,
+          line = 299,
+        },
+        ["end"] = {
+          character = 0,
+          line = 289,
+        },
+      },
+      selectionRange = {
+        start = {
+          character = 1,
+          line = 299,
+        },
+        ["end"] = {
+          character = 0,
+          line = 289,
+        },
+      },
+    }
     it("_is_lsp_call_hierarchy_item", function()
       local actual1 = conf._is_lsp_call_hierarchy_item(nil)
       assert_false(actual1)
@@ -1340,33 +1366,22 @@ describe("config", function()
         },
       })
       assert_false(actual3)
-      local actual4 = conf._is_lsp_call_hierarchy_item({
-        name = "name",
-        kind = 2,
-        detail = "detail",
-        uri = "uri",
-        range = {
-          start = {
-            character = 1,
-            line = 299,
-          },
-          ["end"] = {
-            character = 0,
-            line = 289,
-          },
-        },
-        selectionRange = {
-          start = {
-            character = 1,
-            line = 299,
-          },
-          ["end"] = {
-            character = 0,
-            line = 289,
-          },
-        },
-      })
+      local actual4 = conf._is_lsp_call_hierarchy_item(CALL_HIERARCHY_ITEM)
       assert_true(actual4)
+    end)
+    it("_is_lsp_call_hierarchy_incoming_call", function()
+      local actual1 = conf._is_lsp_call_hierarchy_incoming_call({
+        from = CALL_HIERARCHY_ITEM,
+        fromRanges = {},
+      })
+      assert_true(actual1)
+    end)
+    it("_is_lsp_call_hierarchy_outgoing_call", function()
+      local actual1 = conf._is_lsp_call_hierarchy_outgoing_call({
+        to = CALL_HIERARCHY_ITEM,
+        fromRanges = {},
+      })
+      assert_true(actual1)
     end)
   end)
 end)
