@@ -1477,7 +1477,7 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 
 Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
 
-![FzfxLs](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/d8dadedf-928e-477d-b176-64a4b6fe7607)
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/c704e5b2-d82a-45f2-8920-adeec5d3e7c2
 
 <details>
 <summary><i>Click here to see how to configure</i></summary>
@@ -1511,11 +1511,11 @@ require("fzfx").setup({
       providers = {
         filter_hiddens = {
           key = "ctrl-h",
-          provider = { "ls", "-1" },
+          provider = { "ls", "--color=always", "-1" },
         },
         include_hiddens = {
           key = "ctrl-u",
-          provider = { "ls", "-1a" },
+          provider = { "ls", "--color=always", "-1a" },
         },
       },
       --- @type table<string, PreviewerConfig>
@@ -1523,14 +1523,14 @@ require("fzfx").setup({
         filter_hiddens = {
           previewer = function(line)
             -- each line is either a folder or a file
-            return vim.fn.isdirectory(line) > 0 and { "ls", "-lha", line }
+            return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
               or { "cat", line }
           end,
           previewer_type = "command_list",
         },
         include_hiddens = {
           previewer = function(line)
-            return vim.fn.isdirectory(line) > 0 and { "ls", "-lha", line }
+            return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
               or { "cat", line }
           end,
           previewer_type = "command_list",
