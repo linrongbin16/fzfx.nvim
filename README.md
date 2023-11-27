@@ -647,6 +647,8 @@ Lsp methods:
 - FzfxLspTypeDefinitions: "textDocument/type_definition".
 - FzfxLspReferences: "textDocument/references".
 - FzfxLspImplementations: "textDocument/implementation".
+- FzfxLspIncomingCalls: "textDocument/incomingCalls".
+- FzfxLspOutgoingCalls: "textDocument/outgoingCalls".
 
 <table>
 <thead>
@@ -674,6 +676,14 @@ Lsp methods:
   </tr>
   <tr>
     <td>FzfxLspImplementations</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLspIncomingCalls</td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td>FzfxLspOutgoingCalls</td>
     <td>N</td>
   </tr>
 </tbody>
@@ -948,6 +958,12 @@ nnoremap gr :\<C-U>FzfxLspReferences<CR>
 " lsp implementations
 nnoremap gi :\<C-U>FzfxLspImplementations<CR>
 
+" lsp incoming calls
+nnoremap gI :\<C-U>FzfxLspIncomingCalls<CR>
+
+" lsp outgoing calls
+nnoremap gO :\<C-U>FzfxLspOutgoingCalls<CR>
+
 " ======== vim commands ========
 
 " vim commands
@@ -1188,6 +1204,22 @@ vim.keymap.set(
   "gi",
   "<cmd>FzfxLspImplementations<cr>",
   { silent = true, noremap = true, desc = "Goto lsp implementations" }
+)
+
+-- lsp incoming calls
+vim.keymap.set(
+  "n",
+  "gI",
+  "<cmd>FzfxLspIncomingCalls<cr>",
+  { silent = true, noremap = true, desc = "Goto lsp incoming calls" }
+)
+
+-- lsp outgoing calls
+vim.keymap.set(
+  "n",
+  "gO",
+  "<cmd>FzfxLspOutgoingCalls<cr>",
+  { silent = true, noremap = true, desc = "Goto lsp outgoing calls" }
 )
 
 -- ======== vim commands ========
