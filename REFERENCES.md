@@ -124,6 +124,21 @@ curl
 
 ### [fzfx.lib.strings](/lua/fzfx/lib/strings.lua)
 
+- `empty(s:string?):boolean`/`not_empty(s:string?):boolean`: detect whether a string is empty or not.
+- `blank(s:string?):boolean`/`not_blank(s:string?):boolean`: detect whether a string is blank or not.
+- `find(s:string, t:string, start:integer?):integer?`: find first `t` in `s` start from `start`, by default `start=1`.
+- `rfind(s:string, t:string, rstart:integer?):integer?`: reversely find last `t` in `s` start from `rstart`, by default `rstart=#s`.
+- `ltrim(s:string, t:string):string`/`rtrim(s:string, t:string):string`: trim left/right `t` from `s`, by default `t` is whitespaces (`\n\t\r `).
+- `split(s:string, delimiter:string, opts:{plain:boolean?,trim:boolean?}?):string`: split `s` by `delimiter`, set `opts.plain=false` to use lua pattern matching, set `opts.trim=false` to not remove whitespaces from results. by default `opts={plain=true, trim=true}`.
+- `startswith(s:string, t:string):boolean`/`endswith(s:string, t:string):boolean`: detect whether `s` is start/end with `t`.
+- `isspace(c:string):boolean`: detect whether character `c` is whitespace (`\n\t\r `), `c` length must be 1.
+- `isalnum(c:string):boolean`: detect whether character `c` is letter or number (`a-zA-Z0-9`), `c` length must be 1.
+- `isdigit(c:string):boolean`: detect whether character `c` is number (`0-9`), `c` length must be 1.
+- `ishex(c:string):boolean`: detect whether character `c` is hex number (`a-eA-E0-9`), `c` length must be 1.
+- `isalpha(c:string):boolean`: detect whether character `c` is letter (`a-zA-Z`), `c` length must be 1.
+- `islower(c:string):boolean`/`isupper(c:string):boolean`: detect whether character `c` is lower letter (`a-z`) or upper letter (`A-Z`), `c` length must be 1.
+- `uuid(delimiter:string?):string`: make uuid, by default `delimiter='-'`.
+
 ### [fzfx.lib.tables](/lua/fzfx/lib/tables.lua)
 
 #### Table
