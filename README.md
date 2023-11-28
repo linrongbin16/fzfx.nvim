@@ -1563,7 +1563,7 @@ For complete options and defaults, please check [config.lua](https://github.com/
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
-To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
+To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command), [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua) and standard APIs references [REFERENCES.md](/REFERENCES.md).
 
 If you have encounter some breaks on configuration, please see [CHANGELOG.md](https://github.com/linrongbin16/fzfx.nvim/blob/main/CHANGELOG.md).
 
