@@ -75,9 +75,14 @@ curl
 
 #### Table
 
-- `tbl_empty(t:any):boolean`/`tbl_not_empty(t:any):boolean`:
+- `tbl_empty(t:any):boolean`/`tbl_not_empty(t:any):boolean`: detect whether a table is empty or not.
 
 #### List
+
+- `list_empty(l:any):boolean`/`list_not_empty(l:any):boolean`: detect whether a list(table) is empty or not.
+- `list_index(i:integer, n:integer):integer`: calculate list index for both positive or negative. `n` is the length of list.
+  - if `i > 0`, `i` is in range `[1,n]`.
+  - if `i < 0`, `i` is in range `[-1,-n]`, `-1` maps to last position (e.g. `n`), `-n` maps to first position (e.g. `1`).
 
 ### [fzfx.lib.filesystems](/lua/fzfx/lib/filesystems.lua)
 
