@@ -18,9 +18,24 @@
 
 ### [fzfx.lib.colors](/lua/fzfx/lib/colors.lua)
 
-- `csi(code:string, fg:boolean):string`: convert ansi color codes or rgb/css color codes into terminal escaped sequences. set `fg=true` for foreground, set `fg=false` for background.
+- `csi(code:string, fg:boolean):string`: convert ansi color codes (38, 42) or rgb/css color codes (`#FF3810`) into terminal escaped sequences (`\x1b[38m`, `\x1b[0m`). set `fg=true` for foreground, set `fg=false` for background.
   - for ansi color codes, please see: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#color-codes
   - for rgb/css color codes, please see: https://www.w3schools.com/tags/ref_colornames.asp
+- `hlcode(attr:"fg"|"bg", hl:string):string?`: retrieve ansi color codes or rgb/css color codes from vim syntax highlighting group (e.g. `Special`, `Constants`, `Number`).
+- `ansi(text:string, name:string, hl:string?):string?`: render `text` with specified color name `name` (e.g. `red`, `green`, `magenta`), if use vim syntax highlighting if `hl` is provided.
+- `erase(text:string):string`: erase colors from terminal escaped contents.
+
+builtin colors
+
+- `black(text:string, hl:string?):string`: render `text` with `black`, use vim syntax highlighting if `hl` provided
+- `grey(text:string, hl:string?):string`: same.
+- `silver(text:string, hl:string?):string`: same.
+- `white(text:string, hl:string?):string`: same.
+- `red(text:string, hl:string?):string`: same.
+- `magenta(text:string, hl:string?):string`: same.
+- `fuchsia(text:string, hl:string?):string`: same.
+- `purple(text:string, hl:string?):string`: same.
+- `purple(text:string, hl:string?):string`: same.
 
 ### [fzfx.lib.constants](/lua/fzfx/lib/constants.lua)
 

@@ -28,9 +28,13 @@ local AnsiCode = {
   red = "0;31",
   magenta = "0;35",
   fuchsia = M.csi("#FF00FF", true),
+  violet = M.csi("#EE82EE", true),
   purple = M.csi("#800080", true),
+  indigo = M.csi("#4B0082", true),
   yellow = "0;33",
   orange = M.csi("#FFA500", true),
+  chocolate = M.csi("#D2691E", true),
+  gold = M.csi("#FFD700", true),
   olive = M.csi("#808000", true),
   green = "0;32",
   lime = M.csi("#00FF00", true),
@@ -39,20 +43,22 @@ local AnsiCode = {
   aqua = M.csi("#00FFFF", true),
   blue = "0;34",
   navy = M.csi("#000080", true),
+  slateblue = M.csi("#6A5ACD", true),
+  steelblue = M.csi("#4682B4", true),
 }
 
 --- @param attr "fg"|"bg"
---- @param group string?
+--- @param hl string?
 --- @return string? rbg code, e.g., #808080
-M.hlcode = function(attr, group)
-  if type(group) ~= "string" then
+M.hlcode = function(attr, hl)
+  if type(hl) ~= "string" then
     return nil
   end
   local gui = vim.fn.has("termguicolors") > 0 and vim.o.termguicolors
   local family = gui and "gui" or "cterm"
   local pattern = gui and "^#[%l%d]+" or "^[%d]+$"
   local code =
-    vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(group)), attr, family) --[[@as string]]
+    vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(hl)), attr, family) --[[@as string]]
   if string.find(code, pattern) then
     return code
   end
