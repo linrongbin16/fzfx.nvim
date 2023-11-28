@@ -79,8 +79,7 @@ describe("lib.filesystems", function()
     it("write", function()
       local t = "asyncwritefile-test.txt"
       local content = "hello world, goodbye world!"
-      fs.asyncwritefile(t, content, function(err, bytes)
-        assert_true(err == nil)
+      fs.asyncwritefile(t, content, function(bytes)
         assert_eq(bytes, #content)
       end)
     end)
