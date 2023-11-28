@@ -9,6 +9,7 @@ describe("lib.filesystem", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
+  local math = require("fzfx.lib.math")
   local strings = require("fzfx.lib.strings")
   local fs = require("fzfx.lib.filesystem")
 
@@ -72,6 +73,16 @@ describe("lib.filesystem", function()
         { on_stdout = function() end, on_stderr = function() end }
       )
       vim.fn.jobwait({ j1, j2 })
+    end)
+  end)
+  describe("[asyncwritefile]", function()
+    it("read", function()
+      local t = "asyncwritefile-test.txt"
+      local content = "hello world, goodbye world!"
+      fs.asyncwritefile(t, content, function(err, bytes)
+        assert_true(err == nil)
+        assert_eq(bytes, #content)
+      end)
     end)
   end)
 end)
