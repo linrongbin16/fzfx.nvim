@@ -5,6 +5,7 @@
 ## Table of contents
 
 - [fzfx.lib](#fzfxlib)
+  - [fzfx.lib.colors](#fzfxlibcolors)
   - [fzfx.lib.constants](#fzfxlibconstants)
   - [fzfx.lib.files](#fzfxlibfiles)
   - [fzfx.lib.numbers](#fzfxlibnumbers)
@@ -14,6 +15,12 @@
   - [fzfx.lib.tables](#fzfxlibtables)
 
 ## [fzfx.lib](/lua/fzfx/lib)
+
+### [fzfx.lib.colors](/lua/fzfx/lib/colors.lua)
+
+- `csi(code:string, fg:boolean):string`: convert ansi color codes or rgb/css color codes into terminal escaped sequences. set `fg=true` for foreground, set `fg=false` for background.
+  - for ansi color codes, please see: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#color-codes
+  - for rgb/css color codes, please see: https://www.w3schools.com/tags/ref_colornames.asp
 
 ### [fzfx.lib.constants](/lua/fzfx/lib/constants.lua)
 
