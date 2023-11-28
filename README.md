@@ -1,4 +1,4 @@
-<!-- markdownlint-disable MD013 MD034 MD033 -->
+<!-- markdownlint-disable MD001 MD013 MD034 MD033 MD051 -->
 
 # fzfx.nvim
 
