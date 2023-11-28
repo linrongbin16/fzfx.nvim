@@ -10,13 +10,19 @@ describe("lib.uv", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
+  local function dummy() end
+
   local strs = require("fzfx.lib.strings")
   local fs = require("fzfx.lib.files")
   local uv = require("fzfx.lib.uv")
 
   describe("[_Spawn]", function()
     it("open", function()
-      local sp = uv._Spawn:make({ "cat", "README.md" }, function() end) --[[@as Spawn]]
+      local sp = uv._Spawn:make(
+        { "cat", "README.md" },
+        function() end,
+        function() end
+      ) --[[@as Spawn]]
       assert_eq(type(sp), "table")
       assert_eq(type(sp.cmds), "table")
       assert_eq(#sp.cmds, 2)
@@ -36,7 +42,11 @@ describe("lib.uv", function()
         assert_eq(line, lines[i])
         i = i + 1
       end
-      local sp = uv._Spawn:make({ "cat", "README.md" }, process_line) --[[@as Spawn]]
+      local sp = uv._Spawn:make(
+        { "cat", "README.md" },
+        process_line,
+        function() end
+      ) --[[@as Spawn]]
       local pos = sp:_consume_line(content, process_line)
       if pos <= #content then
         local line = content:sub(pos, #content)
@@ -54,7 +64,7 @@ describe("lib.uv", function()
         assert_eq(line, lines[i])
         i = i + 1
       end
-      local sp = uv._Spawn:make({ "cat", "README.md" }, process_line) --[[@as Spawn]]
+      local sp = uv._Spawn:make({ "cat", "README.md" }, process_line, dummy) --[[@as Spawn]]
       local content_splits = strs.split(content, "\n", { trimempty = false })
       for j, splits in ipairs(content_splits) do
         sp:_on_stdout(nil, splits)
@@ -76,7 +86,7 @@ describe("lib.uv", function()
         assert_eq(line, lines[i])
         i = i + 1
       end
-      local sp = uv._Spawn:make({ "cat", "README.md" }, process_line) --[[@as Spawn]]
+      local sp = uv._Spawn:make({ "cat", "README.md" }, process_line, dummy) --[[@as Spawn]]
       local content_splits = strs.split(content, " ", { trimempty = false })
       for j, splits in ipairs(content_splits) do
         sp:_on_stdout(nil, splits)
@@ -102,7 +112,7 @@ describe("lib.uv", function()
           assert_eq(line, lines[i])
           i = i + 1
         end
-        local sp = uv._Spawn:make({ "cat", "README.md" }, process_line) --[[@as Spawn]]
+        local sp = uv._Spawn:make({ "cat", "README.md" }, process_line, dummy) --[[@as Spawn]]
         local content_splits =
           strs.split(content, lower_char, { trimempty = false })
         for j, splits in ipairs(content_splits) do
@@ -127,7 +137,7 @@ describe("lib.uv", function()
           assert_eq(line, lines[i])
           i = i + 1
         end
-        local sp = uv._Spawn:make({ "cat", "README.md" }, process_line) --[[@as Spawn]]
+        local sp = uv._Spawn:make({ "cat", "README.md" }, process_line, dummy) --[[@as Spawn]]
         local content_splits =
           strs.split(content, upper_char, { trimempty = false })
         for j, splits in ipairs(content_splits) do
@@ -142,7 +152,7 @@ describe("lib.uv", function()
       delimiter_i = delimiter_i + math.random(1, 5)
     end
     it("stderr", function()
-      local sp = uv._Spawn:make({ "cat", "README.md" }, function() end) --[[@as Spawn]]
+      local sp = uv._Spawn:make({ "cat", "README.md" }, dummy, dummy) --[[@as Spawn]]
       sp:_on_stderr(nil, nil)
       assert_true(sp.err_pipe:is_closing())
     end)
@@ -166,7 +176,7 @@ describe("lib.uv", function()
         i = i + 1
       end
 
-      local sp = uv._Spawn:make({ "cat", "README.md" }, process_line) --[[@as Spawn]]
+      local sp = uv._Spawn:make({ "cat", "README.md" }, process_line, dummy) --[[@as Spawn]]
       sp:run()
     end)
     it("iterate on lua/fzfx/config.lua", function()
@@ -180,14 +190,12 @@ describe("lib.uv", function()
         i = i + 1
       end
 
-      local sp = uv._Spawn:make({ "cat", "lua/fzfx/config.lua" }, process_line) --[[@as Spawn]]
+      local sp =
+        uv._Spawn:make({ "cat", "lua/fzfx/config.lua" }, process_line, dummy) --[[@as Spawn]]
       sp:run()
     end)
     it("close handle", function()
-      local sp = uv._Spawn:make(
-        { "cat", "lua/fzfx/config.lua" },
-        function() end
-      ) --[[@as Spawn]]
+      local sp = uv._Spawn:make({ "cat", "lua/fzfx/config.lua" }, dummy, dummy) --[[@as Spawn]]
       sp:run()
       assert_true(sp.process_handle ~= nil)
       sp:_close_handle(sp.process_handle)
@@ -196,10 +204,7 @@ describe("lib.uv", function()
   end)
   describe("[spawn]", function()
     it("open", function()
-      uv.spawn(
-        { "cat", "README.md" },
-        { on_stdout = function() end, blocking = true }
-      )
+      uv.spawn({ "cat", "README.md" }, { on_stdout = dummy, blocking = true })
     end)
     it("consume line", function()
       local content = fs.readfile("README.md") --[[@as string]]
@@ -290,10 +295,7 @@ describe("lib.uv", function()
       delimiter_i = delimiter_i + math.random(1, 5)
     end
     it("stderr", function()
-      uv.spawn(
-        { "cat", "README.md" },
-        { on_stdout = function() end, blocking = true }
-      )
+      uv.spawn({ "cat", "README.md" }, { on_stdout = dummy, blocking = true })
     end)
     it("stderr2", function()
       local i = 1
@@ -340,7 +342,7 @@ describe("lib.uv", function()
     it("close handle", function()
       uv.spawn(
         { "cat", "lua/fzfx/config.lua" },
-        { on_stdout = function() end, blocking = true }
+        { on_stdout = dummy, blocking = true }
       )
     end)
   end)
