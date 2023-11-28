@@ -62,13 +62,14 @@ function Command:run(source)
         table.insert(result.stderr, line)
       end
     end,
-    on_exit = function(code, signal)
-      result.code = code
-      result.signal = signal
-    end,
     blocking = true,
   })
   sp:run()
+
+  if type(sp.result) == "table" then
+    result.code = sp.result.code
+    result.signal = sp.result.signal
+  end
 
   local o = {
     source = source,
