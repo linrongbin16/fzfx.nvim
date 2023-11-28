@@ -6,6 +6,7 @@
 
 - [fzfx.lib](#fzfxlib)
   - [fzfx.lib.colors](#fzfxlibcolors)
+  - [fzfx.lib.commands](#fzfxlibcommands)
   - [fzfx.lib.constants](#fzfxlibconstants)
   - [fzfx.lib.env](#fzfxlibenv)
   - [fzfx.lib.files](#fzfxlibfiles)
@@ -54,6 +55,39 @@ builtin colors
 - `steelblue(text:string, hl:string?):string`: same.
 
 - `render(renderer:fun(text:string, hl:stirng?):string, hl:string?, fmt:string, ...:any):string`: render parameters `...` with `renderer` and optional `hl`, and format with `fmt`.
+
+### [fzfx.lib.commands](/lua/fzfx/lib/commands.lua)
+
+- `CommandResult`: command line result
+
+  - fields:
+    - `stdout:string[]|nil`: stdout lines.
+    - `stderr:string[]|nil`: stderr lines.
+    - `code:integer?`: exit code.
+    - `signal:integer?`: signal.
+  - `failed():boolean`: exit code `code ~= 0` and `stderr` not empty.
+
+- `Command`: command line (blocking mode spawn).
+
+  - `run(cmds:string[]):Command`: run command line, return handle.
+  - `failed():boolean`: same with `CommandResult`, use `Command.result` to get command line result.
+
+- `GitRootCommand`
+
+  - `run():GitRootCommand`: run `git rev-parse --show-toplevel`, return handle.
+  - `failed():boolean`: same with `Command`, use `GitRootCommand.result` to get command line result.
+  - `output():string?`: get the command output.
+
+- `GitBranchesCommand`
+
+  - `run(remotes:boolean?):GitBranchesCommand`: run `git branch` or `git branch --remotes`, return handle.
+  - `failed():boolean`: same with `Command`, use `GitBranchesCommand.result` to get command line result.
+  - `output():string[]|nil`: get the command output.
+
+- `GitCurrentBranchCommand`
+  - `run():GitCurrentBranchCommand`: run `git rev-parse --abbrev-ref HEAD`, return handle.
+  - `failed():boolean`: same with `Command`, use `GitCurrentBranchCommand.result` to get command line result.
+  - `output():string?`: get the command output.
 
 ### [fzfx.lib.constants](/lua/fzfx/lib/constants.lua)
 
@@ -187,11 +221,11 @@ curl
 ### [fzfx.lib.spawn](/lua/fzfx/lib/spawn.lua)
 
 - `Spawn`: run child process and process stdout/stderr line by line.
-  - `make(cmds:string[], opts:{on_stdout:fun(line:string):any, on_stderr:fun(line:string):any|nil, blocking:boolean}):nil`: prepare child process, return spawn `handle`.
+  - `make(cmds:string[], opts:{on_stdout:fun(line:string):any, on_stderr:fun(line:string):any|nil, blocking:boolean}):Spawn`: prepare child process, return `Spawn` handle.
     - `on_stdout(line:string):any`: invoke callback when there's a new line ready to process on `stdout` fd.
     - `on_stderr(line:string):any`: invoke callback when there's a new line ready to process on `stderr` fd.
     - `blocking`: set `blocking=true` if need to wait for child process finish, set `blocking=false` if no need to wait.
-  - `run():nil`: run child process, wait child process done for blocking mode, use `handle.result` to get the child process result.
+  - `run():nil`: run child process, wait child process done for blocking mode, use `Spawn.result` to get the child process result.
 
 ### [fzfx.lib.strings](/lua/fzfx/lib/strings.lua)
 
