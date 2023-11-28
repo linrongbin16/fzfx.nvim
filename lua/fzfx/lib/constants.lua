@@ -46,6 +46,10 @@ M.LSD = "lsd"
 M.HAS_EZA = vim.fn.executable("exa") > 0 or vim.fn.executable("eza") > 0
 M.EZA = vim.fn.executable("eza") > 0 and "eza" or "exa"
 
+-- ls
+M.HAS_LS = vim.fn.executable("ls") > 0
+M.LS = "ls"
+
 -- git-delta
 M.HAS_DELTA = vim.fn.executable("delta") > 0
 M.DELTA = "delta"
