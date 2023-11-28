@@ -36,6 +36,7 @@ M.HAS_FD = vim.fn.executable("fdfind") > 0 or vim.fn.executable("fd") > 0
 M.FD = vim.fn.executable("fdfind") > 0 and "fdfind" or "fd"
 
 -- find/gfind
+M.HAS_FIND = vim.fn.executable("gfind") > 0 or vim.fn.executable("find") > 0
 M.FIND = vim.fn.executable("gfind") > 0 and "gfind" or "find"
 
 -- lsd
