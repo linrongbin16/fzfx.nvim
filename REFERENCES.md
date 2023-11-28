@@ -6,9 +6,10 @@
 
 - [fzfx.lib](#fzfxlib)
   - [fzfx.lib.constants](#fzfxlibconstants)
-  - [fzfx.lib.filesystems](#fzfxlibfilesystems)
+  - [fzfx.lib.files](#fzfxlibfiles)
   - [fzfx.lib.numbers](#fzfxlibnumbers)
   - [fzfx.lib.nvims](#fzfxlibnvims)
+  - [fzfx.lib.paths](#fzfxlibpaths)
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
 
@@ -74,7 +75,7 @@ curl
 - `HAS_CURL`: has `curl` command.
 - `CURL`: `curl` command.
 
-### [fzfx.lib.filesystems](/lua/fzfx/lib/filesystems.lua)
+### [fzfx.lib.files](/lua/fzfx/lib/files.lua)
 
 #### Read File
 
@@ -84,7 +85,8 @@ curl
   - `next():string?`: get next line.
   - `close():nil`: close the reader handle.
 - `readlines(filename:string):string[]|nil`: open file and read line by line.
-- `readfile(filename:string, opts:{trim:boolean?}?):string?`: open and read all contents from file, set `opts={trim=true}` to trim whitespaces, by default `opts={trim=true}`.
+- `readfile(filename:string, opts:{trim:boolean?}?):string?`: open and read all contents from file.
+  - set `opts={trim=true}` to trim whitespaces, by default `opts={trim=true}`.
 - `asyncreadfile(filename:string, on_complete:fun(data:string?):any, opts:{trim:boolean?}?):nil`: async read file, invoke callback `on_complete` when done.
 
 #### Write File
@@ -122,6 +124,16 @@ curl
   - `save():ShellOptsContext`: save current shell options and return context.
   - `restore():nil`: restore previously saved shell options.
 
+### [fzfx.lib.paths](/lua/fzfx/lib/paths.lua)
+
+- `SEPARATOR`: `\\` for Windows, `/` for Unix/Linux.
+- `normalize(p:string, opts:{backslash:boolean?,expand:boolean?}?)`: normalize path string, replace `\\\\` to `\\`.
+  - set `opts.backslash=true` to replace `\\` to `/`, set `opts.expand=true` to expand path to full path, by default `opts={backslash=false, expand=false}`.
+- `join(...):string`: join multiple parts into path string with `SEPARATOR`.
+- `reduce2home(p:string):string`: reduce path string relative to `$HOME` directory.
+- `reduce(p:string):string`: reduce path string relative to `$HOME` directory or `$PWD` directory.
+- `shorten(p:string):string`: shorten path string to use single char to replace each level directories, e.g. `~/g/l/fzfx.nvim`.
+
 ### [fzfx.lib.strings](/lua/fzfx/lib/strings.lua)
 
 - `empty(s:string?):boolean`/`not_empty(s:string?):boolean`: detect whether a string is empty or not.
@@ -129,7 +141,8 @@ curl
 - `find(s:string, t:string, start:integer?):integer?`: find first `t` in `s` start from `start`, by default `start=1`.
 - `rfind(s:string, t:string, rstart:integer?):integer?`: reversely find last `t` in `s` start from `rstart`, by default `rstart=#s`.
 - `ltrim(s:string, t:string):string`/`rtrim(s:string, t:string):string`: trim left/right `t` from `s`, by default `t` is whitespaces (`\n\t\r `).
-- `split(s:string, delimiter:string, opts:{plain:boolean?,trimempty:boolean?}?):string`: split `s` by `delimiter`, set `opts.plain=false` to use lua pattern matching, set `opts.trimempty=false` to not remove whitespaces from results. by default `opts={plain=true, trimempty=true}`.
+- `split(s:string, delimiter:string, opts:{plain:boolean?,trimempty:boolean?}?):string`: split `s` by `delimiter`.
+  - set `opts.plain=false` to use lua pattern matching, set `opts.trimempty=false` to not remove whitespaces from results. by default `opts={plain=true, trimempty=true}`.
 - `startswith(s:string, t:string):boolean`/`endswith(s:string, t:string):boolean`: detect whether `s` is start/end with `t`.
 - `isspace(c:string):boolean`: detect whether character `c` is whitespace (`\n\t\r `), `c` length must be 1.
 - `isalnum(c:string):boolean`: detect whether character `c` is letter or number (`a-zA-Z0-9`), `c` length must be 1.
