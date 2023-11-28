@@ -4,7 +4,8 @@
 
 ## Table of contents
 
-- [fzfx.lib](#fzfxlib)
+- [fzfx.helper](#fzfxhelper): utilities for easier creating commands
+- [fzfx.lib](#fzfxlib): fundamental infrastructures
   - [fzfx.lib.colors](#fzfxlibcolors)
   - [fzfx.lib.commands](#fzfxlibcommands)
   - [fzfx.lib.constants](#fzfxlibconstants)
@@ -17,6 +18,10 @@
   - [fzfx.lib.spawn](#fzfxlibspawn)
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
+
+## [fzfx.commands](/lua/fzfx)
+
+### [FzfxFiles](/lua/fzfx/files.lua)
 
 ## [fzfx.lib](/lua/fzfx/lib)
 

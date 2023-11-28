@@ -2,7 +2,7 @@ local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
 local general = require("fzfx.general")
 
---- @param options Options?
+--- @param options fzfx.Options?
 local function setup(options)
   -- configs
   local configs = require("fzfx.config").setup(options)
@@ -92,7 +92,7 @@ local function setup(options)
 end
 
 --- @param name string
---- @param configs Options
+--- @param configs fzfx.Options
 local function register(name, configs)
   general.setup(name, configs)
 end

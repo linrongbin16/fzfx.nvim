@@ -122,7 +122,7 @@ local ProviderSwitch = {}
 
 --- @param name string
 --- @param pipeline PipelineName
---- @param provider_configs Options
+--- @param provider_configs fzfx.Options
 --- @return ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
   local provider_configs_map = {}
@@ -685,7 +685,7 @@ local function _should_skip_help(excludes, s)
   return false
 end
 
---- @param action_configs Options?
+--- @param action_configs fzfx.Options?
 --- @param builder string[]
 --- @param excludes string[]|nil
 --- @return string[]
@@ -707,8 +707,8 @@ local function _make_help_doc(action_configs, builder, excludes)
   return builder
 end
 
---- @param provider_configs Options
---- @param interaction_configs Options
+--- @param provider_configs fzfx.Options
+--- @param interaction_configs fzfx.Options
 --- @return HeaderSwitch
 function HeaderSwitch:new(provider_configs, interaction_configs)
   local headers_map = {}
@@ -753,7 +753,7 @@ end
 
 -- header switch }
 
---- @param pipeline_configs Options
+--- @param pipeline_configs fzfx.Options
 local function get_pipeline_size(pipeline_configs)
   local n = 0
   if type(pipeline_configs) == "table" then
@@ -779,7 +779,7 @@ end
 --- @param name string
 --- @param query string
 --- @param bang boolean
---- @param pipeline_configs Options
+--- @param pipeline_configs fzfx.Options
 --- @param default_pipeline PipelineName?
 --- @return Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
@@ -1084,7 +1084,7 @@ local function _make_user_command(name, command_config, group_config)
 end
 
 --- @param name string
---- @param pipeline_configs Options?
+--- @param pipeline_configs fzfx.Options?
 local function setup(name, pipeline_configs)
   if not pipeline_configs then
     return

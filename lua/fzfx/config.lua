@@ -1556,7 +1556,7 @@ local function _is_lsp_call_hierarchy_item(item)
     and _is_lsp_range(item.selectionRange)
 end
 
---- @param call_item Options?
+--- @param call_item fzfx.Options?
 --- @return boolean
 local function _is_lsp_call_hierarchy_incoming_call(call_item)
   return type(call_item) == "table"
@@ -1564,7 +1564,7 @@ local function _is_lsp_call_hierarchy_incoming_call(call_item)
     and type(call_item.fromRanges) == "table"
 end
 
---- @param call_item Options?
+--- @param call_item fzfx.Options?
 --- @return boolean
 local function _is_lsp_call_hierarchy_outgoing_call(call_item)
   return type(call_item) == "table"
@@ -2400,8 +2400,8 @@ end
 
 -- file explorer }
 
---- @alias Options table<string, any>
---- @type Options
+--- @alias fzfx.Options table<string, any>
+--- @type fzfx.Options
 local Defaults = {
   -- the 'Files' commands
   --- @type GroupConfig
@@ -4928,22 +4928,22 @@ local Defaults = {
   },
 }
 
---- @type Options
+--- @type fzfx.Options
 local Configs = {}
 
---- @param options Options|nil
---- @return Options
+--- @param options fzfx.Options|nil
+--- @return fzfx.Options
 local function setup(options)
   Configs = vim.tbl_deep_extend("force", Defaults, options or {})
   return Configs
 end
 
---- @return Options
+--- @return fzfx.Options
 local function get_config()
   return Configs
 end
 
---- @return Options
+--- @return fzfx.Options
 local function get_defaults()
   return Defaults
 end
