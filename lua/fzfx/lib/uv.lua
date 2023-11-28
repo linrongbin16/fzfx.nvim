@@ -1,6 +1,6 @@
 local strs = require("fzfx.lib.strings")
 local numbers = require("fzfx.lib.numbers")
-local uv = (vim.fn.has("nvim-0.10") > 0 and vim.uv ~= nil) and vim.ui
+local uv = (vim.fn.has("nvim-0.10") > 0 and vim.uv ~= nil) and vim.uv
   or vim.loop
 
 local M = {}
