@@ -4,7 +4,7 @@ local numbers = require("fzfx.lib.numbers")
 local M = {}
 
 --- @alias fzfx.SpawnLineConsumer fun(line:string):any
---- @class fzfx.Spawn
+--- @class fzfx._Spawn
 --- @field cmds string[]
 --- @field fn_out_line_consumer fzfx.SpawnLineConsumer
 --- @field fn_err_line_consumer fzfx.SpawnLineConsumer
@@ -17,14 +17,14 @@ local M = {}
 --- @field _close_count integer
 --- @field result {code:integer?,signal:integer?}?
 --- @field _blocking boolean
-local Spawn = {}
+local _Spawn = {}
 
 --- @param cmds string[]
 --- @param fn_out_line_consumer fzfx.SpawnLineConsumer
---- @param fn_err_line_consumer fzfx.SpawnLineConsumer?
+--- @param fn_err_line_consumer fzfx.SpawnLineConsumer
 --- @param blocking boolean?
---- @return fzfx.Spawn?
-function Spawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer, blocking)
+--- @return fzfx._Spawn?
+function _Spawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer, blocking)
   local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
   local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
   if not out_pipe or not err_pipe then
@@ -34,7 +34,7 @@ function Spawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer, blocking)
   local o = {
     cmds = cmds,
     fn_out_line_consumer = fn_out_line_consumer,
-    fn_err_line_consumer = fn_err_line_consumer or function() end,
+    fn_err_line_consumer = fn_err_line_consumer,
     out_pipe = out_pipe,
     err_pipe = err_pipe,
     out_buffer = nil,
@@ -53,7 +53,7 @@ end
 --- @param buffer string
 --- @param fn_line_processor fzfx.SpawnLineConsumer
 --- @return integer
-function Spawn:_consume_line(buffer, fn_line_processor)
+function _Spawn:_consume_line(buffer, fn_line_processor)
   local i = 1
   while i <= #buffer do
     local newline_pos = strs.find(buffer, "\n", i)
@@ -68,7 +68,7 @@ function Spawn:_consume_line(buffer, fn_line_processor)
 end
 
 --- @param handle uv_handle_t
-function Spawn:_close_handle(handle)
+function _Spawn:_close_handle(handle)
   if handle and not handle:is_closing() then
     handle:close(function()
       self._close_count = self._close_count + 1
@@ -81,7 +81,7 @@ end
 
 --- @param err string?
 --- @param data string?
-function Spawn:_on_stdout(err, data)
+function _Spawn:_on_stdout(err, data)
   if err then
     self.out_pipe:read_stop()
     self:_close_handle(self.out_pipe)
@@ -115,7 +115,7 @@ end
 
 --- @param err string?
 --- @param data string?
-function Spawn:_on_stderr(err, data)
+function _Spawn:_on_stderr(err, data)
   if err then
     io.write(
       string.format(
@@ -161,7 +161,7 @@ function Spawn:_on_stderr(err, data)
   end
 end
 
-function Spawn:run()
+function _Spawn:run()
   self.process_handle, self.process_id = vim.loop.spawn(self.cmds[1], {
     args = vim.list_slice(self.cmds, 2),
     stdio = { nil, self.out_pipe, self.err_pipe },
@@ -185,10 +185,21 @@ function Spawn:run()
   end
 end
 
+M._Spawn = _Spawn
+
 --- @param cmds string[]
---- @param opts {on_stdout:fzfx.SpawnLineConsumer, on_stderr:fzfx.SpawnLineConsumer, blocking:boolean}
+--- @param opts {on_stdout:fzfx.SpawnLineConsumer, on_stderr:fzfx.SpawnLineConsumer?, blocking:boolean}
 M.spawn = function(cmds, opts)
-  local sp = Spawn:make(cmds, opts.on_stdout, opts.on_stderr, opts.blocking) --[[@as fzfx.Spawn]]
+  assert(type(opts) == "table")
+  assert(type(opts.blocking) == "boolean")
+  assert(type(opts.on_stdout) == "function")
+  assert(type(opts.on_stderr) == "function" or opts.on_stderr == nil)
+  local sp = M._Spawn:make(
+    cmds,
+    opts.on_stdout,
+    opts.on_stderr or function() end,
+    opts.blocking
+  ) --[[@as fzfx._Spawn]]
   return sp:run()
 end
 
