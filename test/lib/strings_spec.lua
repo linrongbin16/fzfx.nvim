@@ -166,10 +166,11 @@ describe("lib.strings", function()
       end
     end)
     it("splits rg options-3", function()
-      local actual = strs.split("  -w -g *.md  ", " ", { trimempty = false })
+      local actual =
+        strs.split("  -w -g *.md  ", " ", { plain = false, trimempty = false })
       local expect = { "", "", "-w", "-g", "*.md", "", "" }
-      -- print(string.format("splits rg3, actual:%s", vim.inspect(actual)))
-      -- print(string.format("splits rg3, expect:%s", vim.inspect(expect)))
+      print(string.format("splits rg3, actual:%s\n", vim.inspect(actual)))
+      print(string.format("splits rg3, expect:%s\n", vim.inspect(expect)))
       assert_eq(#actual, #expect)
       for i, v in ipairs(actual) do
         assert_eq(v, expect[i])
@@ -219,13 +220,13 @@ describe("lib.strings", function()
         then
           assert_true(strs.isspace(string.char(i)))
         else
-          print(
-            string.format(
-              "isspace: %d: %s\n",
-              i,
-              vim.inspect(strs.isspace(string.char(i)))
-            )
-          )
+          -- print(
+          --   string.format(
+          --     "isspace: %d: %s\n",
+          --     i,
+          --     vim.inspect(strs.isspace(string.char(i)))
+          --   )
+          -- )
           assert_false(strs.isspace(string.char(i)))
         end
       end
@@ -291,13 +292,13 @@ describe("lib.strings", function()
         then
           assert_true(strs.ishex(string.char(i)))
         else
-          print(
-            string.format(
-              "ishex, %d:%s\n",
-              i,
-              vim.inspect(strs.ishex(string.char(i)))
-            )
-          )
+          -- print(
+          --   string.format(
+          --     "ishex, %d:%s\n",
+          --     i,
+          --     vim.inspect(strs.ishex(string.char(i)))
+          --   )
+          -- )
           assert_false(strs.ishex(string.char(i)))
         end
       end
