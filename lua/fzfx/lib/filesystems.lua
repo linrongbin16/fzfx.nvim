@@ -253,7 +253,7 @@ end
 
 --- @param filename string
 --- @param content string
---- @param on_complete fun(err:string?,bytes:integer?):any
+--- @param on_complete fun(bytes:integer?):any
 M.asyncwritefile = function(filename, content, on_complete)
   vim.loop.fs_open(filename, "w", 438, function(open_err, fd)
     if open_err then
@@ -291,7 +291,7 @@ M.asyncwritefile = function(filename, content, on_complete)
           return
         end
         if type(on_complete) == "function" then
-          on_complete(close_err or write_err, bytes)
+          on_complete(bytes)
         end
       end)
     end)

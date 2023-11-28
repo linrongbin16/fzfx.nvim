@@ -75,7 +75,7 @@ curl
 #### Read File
 
 - `FileLineReader`:
-  - `open(filename:string, batchsize:integer?):FileLineReader`: open a file to read, return the reader handle, by default `batchsize=4096`.
+  - `open(filename:string, batchsize:integer?):FileLineReader`: open file to read, return the reader handle, by default `batchsize=4096`.
   - `has_next():boolean`: detect whether there are more lines to read.
   - `next():string?`: get next line.
   - `close():nil`: close the reader handle.
@@ -85,4 +85,6 @@ curl
 
 #### Write File
 
-- `writefile(filename:string, content:string):integer`: write content into a file. return `-1` if fail, `0` if success.
+- `writefile(filename:string, content:string):integer`: write content into file, return `-1` if fail, `0` if success.
+- `writelines(filename:string, lines:string[]):integer`: write lines into file, return `-1` if fail, `0` if success.
+- `asyncwritefile(filename:string, content:string, on_complete:fun(bytes:integer?):any):integer`: async write content into a file, invoke callback `on_complete` when done.
