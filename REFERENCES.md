@@ -101,19 +101,26 @@ curl
 
 ### [fzfx.lib.nvims](/lua/fzfx/lib/nvims.lua)
 
-#### Buffers
+#### Buffer
 
 - `get_buf_option(bufnr:integer, name:string):any`: get buffer option.
 - `set_buf_option(bufnr:integer, name:string, value:any):nil`: set buffer option.
 - `buf_is_valid(bufnr:integer):boolean`: check if buffer is valid.
 
-#### Windows
+#### Window
 
 - `get_win_option(winnr:integer, name:string):any`: get window option.
 - `set_win_option(winnr:integer, name:string, value:any):nil`: set window option.
 - `WindowOptsContext`: window options context.
   - `save():WindowOptsContext`: save current windows & tabs and return context.
   - `restore():nil`: restore previously saved windows & tabs.
+
+#### Shell
+
+- `shellescape(s:string, special:string?):string`: escape shell strings, especially single(`''`)/double(`""`) quotes.
+- `ShellOptsContext`: shell options context.
+  - `save():ShellOptsContext`: save current shell options and return context.
+  - `restore():nil`: restore previously saved shell options.
 
 ### [fzfx.lib.strings](/lua/fzfx/lib/strings.lua)
 
