@@ -15,9 +15,21 @@ M.IS_LINUX = not M.IS_WINDOWS
 M.HAS_BAT = vim.fn.executable("batcat") > 0 or vim.fn.executable("bat") > 0
 M.BAT = vim.fn.executable("batcat") > 0 and "batcat" or "bat"
 
+-- cat
+M.HAS_CAT = vim.fn.executable("cat") > 0
+M.CAT = "cat"
+
 -- ripgrep(rg)
 M.HAS_RG = vim.fn.executable("rg") > 0
 M.RG = "rg"
+
+-- grep/ggrep
+M.HAS_GNU_GREP = (
+  (M.IS_WINDOWS or M.IS_LINUX) and vim.fn.executable("grep") > 0
+) or vim.fn.executable("ggrep") > 0
+M.GNU_GREP = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
+M.HAS_GREP = vim.fn.executable("ggrep") > 0 or vim.fn.executable("grep") > 0
+M.GREP = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
 
 -- fd-find(fd)
 M.HAS_FD = vim.fn.executable("fdfind") > 0 or vim.fn.executable("fd") > 0
@@ -25,13 +37,6 @@ M.FD = vim.fn.executable("fdfind") > 0 and "fdfind" or "fd"
 
 -- find/gfind
 M.FIND = vim.fn.executable("gfind") > 0 and "gfind" or "find"
-
--- grep/ggrep
-M.HAS_GNU_GREP = (
-  (M.IS_WINDOWS or M.IS_LINUX) and vim.fn.executable("grep") > 0
-) or vim.fn.executable("ggrep") > 0
-M.GNU_GREP = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
-M.GREP = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
 
 -- lsd
 M.HAS_LSD = vim.fn.executable("lsd") > 0
