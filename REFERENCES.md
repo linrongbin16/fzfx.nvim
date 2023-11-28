@@ -4,10 +4,10 @@
 
 ## Table of contents
 
-- [lib](#lib)
+- [fzfx.lib](#fzfxlib)
   - [fzfx.lib.constants](#fzfxlibconstants)
 
-## lib
+## [fzfx.lib](/lua/fzfx/lib)
 
 ### [fzfx.lib.constants](/lua/fzfx/lib/constants.lua)
 
