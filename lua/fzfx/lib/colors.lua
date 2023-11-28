@@ -117,9 +117,10 @@ do
 end
 
 --- @alias fzfx.ColorRenderer fun(text:string,hl:string?):string
---- @param fmt string
 --- @param renderer fzfx.ColorRenderer
 --- @param hl string?
+--- @param fmt string
+--- @param ... any
 --- @return string
 M.render = function(renderer, hl, fmt, ...)
   local args = {}
