@@ -194,13 +194,9 @@ M.spawn = function(cmds, opts)
   assert(type(opts.blocking) == "boolean")
   assert(type(opts.on_stdout) == "function")
   assert(type(opts.on_stderr) == "function" or opts.on_stderr == nil)
-  local sp = M._Spawn:make(
-    cmds,
-    opts.on_stdout,
-    opts.on_stderr or function() end,
-    opts.blocking
-  ) --[[@as fzfx._Spawn]]
-  return sp:run()
+  return M._Spawn
+    :make(cmds, opts.on_stdout, opts.on_stderr or function() end, opts.blocking)
+    :run()
 end
 
 return M
