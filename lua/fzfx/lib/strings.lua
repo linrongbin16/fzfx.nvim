@@ -205,4 +205,17 @@ M.isupper = function(s)
   return s:match("%u") ~= nil
 end
 
+--- @param delimiter string?  by default '-'
+--- @return string
+M.uuid = function(delimiter)
+  delimiter = delimiter or "-"
+  local secs, ms = vim.loop.gettimeofday()
+  return table.concat({
+    string.format("%x", vim.loop.os_getpid()),
+    string.format("%x", secs),
+    string.format("%x", ms),
+    string.format("%x", math.random(1, M.INT32_MAX)),
+  }, delimiter)
+end
+
 return M
