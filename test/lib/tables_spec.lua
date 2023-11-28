@@ -25,5 +25,13 @@ describe("lib.tables", function()
       assert_false(libtbl.list_empty({ 1, 2, 3 }))
       assert_true(libtbl.list_empty({ a = 1 }))
     end)
+    it("get index", function()
+      assert_eq(libtbl.list_index(-1, 10), 10)
+      assert_eq(libtbl.list_index(-2, 10), 9)
+      for i = 1, 10 do
+        assert_eq(libtbl.list_index(i, 10), i)
+        assert_eq(libtbl.list_index(-i, 10), 10 - i + 1)
+      end
+    end)
   end)
 end)
