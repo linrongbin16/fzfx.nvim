@@ -15,6 +15,7 @@
   - [fzfx.lib.paths](#fzfxlibpaths)
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
+  - [fzfx.lib.uv](#fzfxlibuv)
 
 ## [fzfx.lib](/lua/fzfx/lib)
 
@@ -213,3 +214,12 @@ curl
 - `list_index(i:integer, n:integer):integer`: calculate list index for both positive or negative. `n` is the length of list.
   - if `i > 0`, `i` is in range `[1,n]`.
   - if `i < 0`, `i` is in range `[-1,-n]`, `-1` maps to last position (e.g. `n`), `-n` maps to first position (e.g. `1`).
+
+### [fzfx.lib.uv](/lua/fzfx/lib/uv.lua)
+
+- `spawn(cmds:string[], opts:{on_stdout:fun(line:string):any, on_stderr:fun(line:string):any|nil, blocking:boolean}):nil`: run child process and process stdout/stderr line by line.
+  - `on_stdout(line:string):any`: invoke callback when there's a new line ready to process on `stdout` fd.
+  - `on_stderr(line:string):any`: invoke callback when there's a new line ready to process on `stderr` fd.
+  - `blocking`: set `blocking=true` if need to wait for child process finish, set `blocking=false` if no need to wait.
+- `blocking_spawn(cmds:string[], opts:{on_stdout:fun(line:string):any, on_stderr:fun(line:string):any|nil}):nil`: same with `spawn` but always set `blocking=true`.
+- `nonblocking_spawn(cmds:string[], opts:{on_stdout:fun(line:string):any, on_stderr:fun(line:string):any|nil}):nil`: same with `spawn` but always set `blocking=false`.

@@ -1,5 +1,7 @@
 local strs = require("fzfx.lib.strings")
 local numbers = require("fzfx.lib.numbers")
+local uv = (vim.fn.has("nvim-0.10") > 0 and vim.uv ~= nil) and vim.ui
+  or vim.loop
 
 local M = {}
 
@@ -25,8 +27,8 @@ local _Spawn = {}
 --- @param blocking boolean?
 --- @return fzfx._Spawn?
 function _Spawn:make(cmds, fn_out_line_consumer, fn_err_line_consumer, blocking)
-  local out_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
-  local err_pipe = vim.loop.new_pipe(false) --[[@as uv_pipe_t]]
+  local out_pipe = uv.new_pipe(false) --[[@as uv_pipe_t]]
+  local err_pipe = uv.new_pipe(false) --[[@as uv_pipe_t]]
   if not out_pipe or not err_pipe then
     return nil
   end
@@ -73,7 +75,7 @@ function _Spawn:_close_handle(handle)
     handle:close(function()
       self._close_count = self._close_count + 1
       if self._blocking and self._close_count >= 3 then
-        vim.loop.stop()
+        uv.stop()
       end
     end)
   end
@@ -162,7 +164,7 @@ function _Spawn:_on_stderr(err, data)
 end
 
 function _Spawn:run()
-  self.process_handle, self.process_id = vim.loop.spawn(self.cmds[1], {
+  self.process_handle, self.process_id = uv.spawn(self.cmds[1], {
     args = vim.list_slice(self.cmds, 2),
     stdio = { nil, self.out_pipe, self.err_pipe },
     hide = true,
@@ -178,7 +180,7 @@ function _Spawn:run()
     self:_on_stderr(err, data)
   end)
   if self._blocking then
-    vim.loop.run()
+    uv.run()
     vim.wait(numbers.INT32_MAX, function()
       return self._close_count == 3
     end)
