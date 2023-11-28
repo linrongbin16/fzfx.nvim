@@ -31,11 +31,26 @@ builtin colors
 - `grey(text:string, hl:string?):string`: same.
 - `silver(text:string, hl:string?):string`: same.
 - `white(text:string, hl:string?):string`: same.
+- `violet(text:string, hl:string?):string`: same.
+- `magenta(text:string, hl:string?):string`: same, or `fuchsia`.
 - `red(text:string, hl:string?):string`: same.
-- `magenta(text:string, hl:string?):string`: same.
-- `fuchsia(text:string, hl:string?):string`: same.
 - `purple(text:string, hl:string?):string`: same.
-- `purple(text:string, hl:string?):string`: same.
+- `indigo(text:string, hl:string?):string`: same.
+- `yellow(text:string, hl:string?):string`: same.
+- `gold(text:string, hl:string?):string`: same.
+- `orange(text:string, hl:string?):string`: same.
+- `chocolate(text:string, hl:string?):string`: same.
+- `olive(text:string, hl:string?):string`: same.
+- `green(text:string, hl:string?):string`: same.
+- `lime(text:string, hl:string?):string`: same.
+- `teal(text:string, hl:string?):string`: same.
+- `cyan(text:string, hl:string?):string`: same, or `aqua`.
+- `blue(text:string, hl:string?):string`: same.
+- `navy(text:string, hl:string?):string`: same.
+- `slateblue(text:string, hl:string?):string`: same.
+- `steelblue(text:string, hl:string?):string`: same.
+
+- `render(renderer:fun(text:string, hl:stirng?):string, hl:string?, fmt:string, ...:any):string`: render parameters `...` with `renderer` and optional `hl`, and format with `fmt`.
 
 ### [fzfx.lib.constants](/lua/fzfx/lib/constants.lua)
 
