@@ -49,6 +49,12 @@ describe("lib.constants", function()
       assert_true(constants.LSD == "lsd")
       assert_eq(type(constants.HAS_EZA), "boolean")
       assert_true(constants.EZA == "eza" or constants.EZA == "exa")
+
+      -- git/delta
+      assert_eq(type(constants.HAS_GIT), "boolean")
+      assert_true(constants.GIT == "git")
+      assert_eq(type(constants.HAS_DELTA), "boolean")
+      assert_true(constants.DELTA == "delta")
     end)
   end)
 end)

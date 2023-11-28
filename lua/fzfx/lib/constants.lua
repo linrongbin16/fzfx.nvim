@@ -50,6 +50,10 @@ M.EZA = vim.fn.executable("eza") > 0 and "eza" or "exa"
 M.HAS_LS = vim.fn.executable("ls") > 0
 M.LS = "ls"
 
+-- git
+M.HAS_GIT = vim.fn.executable("git") > 0
+M.GIT = "git"
+
 -- git-delta
 M.HAS_DELTA = vim.fn.executable("delta") > 0
 M.DELTA = "delta"
