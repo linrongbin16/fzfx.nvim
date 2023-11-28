@@ -1,6 +1,6 @@
 local cwd = vim.fn.getcwd()
 
-describe("lib.filesystem", function()
+describe("lib.filesystems", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -9,9 +9,8 @@ describe("lib.filesystem", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
-  local math = require("fzfx.lib.math")
   local strings = require("fzfx.lib.strings")
-  local fs = require("fzfx.lib.filesystem")
+  local fs = require("fzfx.lib.filesystems")
 
   describe("[readfile/readlines]", function()
     it("readfile and FileLineReader", function()
