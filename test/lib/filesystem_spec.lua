@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field
 local cwd = vim.fn.getcwd()
 
 describe("lib.filesystems", function()
