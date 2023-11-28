@@ -6,6 +6,7 @@
 
 - [fzfx.lib](#fzfxlib)
   - [fzfx.lib.constants](#fzfxlibconstants)
+  - [fzfx.lib.filesystems](#fzfxlibfilesystems)
 
 ## [fzfx.lib](/lua/fzfx/lib)
 
@@ -68,3 +69,13 @@ curl
 
 - `HAS_CURL`: has `curl` command.
 - `CURL`: `curl` command.
+
+### [fzfx.lib.filesystems](/lua/fzfx/lib/filesystems.lua)
+
+#### Read File
+
+- `FileLineReader`:
+  - `open(filename:string, batchsize:integer?):FileLineReader`: open a file to read, return the reader handle, by default `batchsize=4096`.
+  - `has_next():boolean`: detect whether there are more lines to read.
+  - `next():string?`: get next line.
+  - `close():nil`: close the reader handle.
