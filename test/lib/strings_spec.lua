@@ -181,4 +181,141 @@ describe("lib.strings", function()
       assert_false(libstr.endswith("hello world", "hello"))
     end)
   end)
+  describe("[isxxx]", function()
+    local function _contains_char(s, c)
+      assert(string.len(s) > 0)
+      assert(string.len(c) == 1)
+      for i = 1, #s do
+        if string.byte(s, i) == string.byte(c, 1) then
+          return true
+        end
+      end
+      return false
+    end
+
+    local function _contains_code(s, c)
+      for _, i in ipairs(s) do
+        if i == c then
+          return true
+        end
+      end
+      return false
+    end
+
+    it("isspace", function()
+      local whitespaces = "\r\n \t"
+      local char_codes = { 11, 12 }
+      for i = 1, 255 do
+        if
+          _contains_char(whitespaces, string.char(i))
+          or _contains_code(char_codes, i)
+        then
+          assert_true(libstr.isspace(string.char(i)))
+        else
+          print(
+            string.format(
+              "isspace: %d: %s\n",
+              i,
+              vim.inspect(libstr.isspace(string.char(i)))
+            )
+          )
+          assert_false(libstr.isspace(string.char(i)))
+        end
+      end
+    end)
+    it("isalpha", function()
+      local a = "a"
+      local z = "z"
+      local A = "A"
+      local Z = "Z"
+      for i = 1, 255 do
+        if
+          (i >= string.byte(a) and i <= string.byte(z))
+          or (i >= string.byte(A) and i <= string.byte(Z))
+        then
+          assert_true(libstr.isalpha(string.char(i)))
+        else
+          assert_false(libstr.isalpha(string.char(i)))
+        end
+      end
+    end)
+    it("isdigit", function()
+      local _0 = "0"
+      local _9 = "9"
+      for i = 1, 255 do
+        if i >= string.byte(_0) and i <= string.byte(_9) then
+          assert_true(libstr.isdigit(string.char(i)))
+        else
+          assert_false(libstr.isdigit(string.char(i)))
+        end
+      end
+    end)
+    it("isalnum", function()
+      local a = "a"
+      local z = "z"
+      local A = "A"
+      local Z = "Z"
+      local _0 = "0"
+      local _9 = "9"
+      for i = 1, 255 do
+        if
+          (i >= string.byte(a) and i <= string.byte(z))
+          or (i >= string.byte(A) and i <= string.byte(Z))
+          or (i >= string.byte(_0) and i <= string.byte(_9))
+        then
+          assert_true(libstr.isalnum(string.char(i)))
+        else
+          assert_false(libstr.isalnum(string.char(i)))
+        end
+      end
+    end)
+    it("ishex", function()
+      local a = "a"
+      local f = "f"
+      local A = "A"
+      local F = "F"
+      local _0 = "0"
+      local _9 = "9"
+      for i = 1, 255 do
+        if
+          (i >= string.byte(a) and i <= string.byte(f))
+          or (i >= string.byte(A) and i <= string.byte(F))
+          or (i >= string.byte(_0) and i <= string.byte(_9))
+        then
+          assert_true(libstr.ishex(string.char(i)))
+        else
+          print(
+            string.format(
+              "ishex, %d:%s\n",
+              i,
+              vim.inspect(libstr.ishex(string.char(i)))
+            )
+          )
+          assert_false(libstr.ishex(string.char(i)))
+        end
+      end
+    end)
+    it("islower", function()
+      local a = "a"
+      local z = "z"
+      for i = 1, 255 do
+        if i >= string.byte(a) and i <= string.byte(z) then
+          assert_true(libstr.islower(string.char(i)))
+        else
+          assert_false(libstr.islower(string.char(i)))
+        end
+      end
+    end)
+    it("isupper", function()
+      local A = "A"
+      local Z = "Z"
+      for i = 1, 255 do
+        if i >= string.byte(A) and i <= string.byte(Z) then
+          assert_true(libstr.isupper(string.char(i)))
+        else
+          assert_false(libstr.isupper(string.char(i)))
+        end
+      end
+    end)
+  end)
 end)
