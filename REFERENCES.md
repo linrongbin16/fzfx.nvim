@@ -7,6 +7,7 @@
 - [fzfx.lib](#fzfxlib)
   - [fzfx.lib.colors](#fzfxlibcolors)
   - [fzfx.lib.constants](#fzfxlibconstants)
+  - [fzfx.lib.env](#fzfxlibenv)
   - [fzfx.lib.files](#fzfxlibfiles)
   - [fzfx.lib.numbers](#fzfxlibnumbers)
   - [fzfx.lib.nvims](#fzfxlibnvims)
@@ -111,6 +112,11 @@ curl
 
 - `HAS_CURL`: has `curl` command.
 - `CURL`: `curl` command.
+
+### [fzfx.lib.env](/lua/fzfx/lib/env.lua)
+
+- `debug_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEBUG_ENABLE=1`.
+- `icon_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEVICONS_PATH=1`.
 
 ### [fzfx.lib.files](/lua/fzfx/lib/files.lua)
 
