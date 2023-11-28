@@ -7,6 +7,7 @@
 - [fzfx.lib](#fzfxlib)
   - [fzfx.lib.constants](#fzfxlibconstants)
   - [fzfx.lib.tables](#fzfxlibtables)
+  - [fzfx.lib.numbers](#fzfxlibnumbers)
   - [fzfx.lib.filesystems](#fzfxlibfilesystems)
 
 ## [fzfx.lib](/lua/fzfx/lib)
@@ -83,6 +84,12 @@ curl
 - `list_index(i:integer, n:integer):integer`: calculate list index for both positive or negative. `n` is the length of list.
   - if `i > 0`, `i` is in range `[1,n]`.
   - if `i < 0`, `i` is in range `[-1,-n]`, `-1` maps to last position (e.g. `n`), `-n` maps to first position (e.g. `1`).
+
+### [fzfx.lib.numbers](/lua/fzfx/lib/numbers.lua)
+
+- `INT32_MIN`/`INT32_MAX`: `-2147483648`/`2147483647`.
+- `bound(value:integer, left:integer, right:integer):integer`: returned value is bounded in range `[left, right]`.
+- `inc_id():integer`: returned incremental ID.
 
 ### [fzfx.lib.filesystems](/lua/fzfx/lib/filesystems.lua)
 
