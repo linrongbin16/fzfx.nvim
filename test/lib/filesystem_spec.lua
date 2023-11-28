@@ -47,8 +47,8 @@ describe("lib.filesystem", function()
       local content = fs.readfile("README.md") --[[@as string]]
       local lines = fs.readlines("README.md") --[[@as table]]
 
-      local t1 = "test1-README.md"
-      local t2 = "test2-README.md"
+      local t1 = "writefile-test1-README.md"
+      local t2 = "writefile-test2-README.md"
       fs.writefile(t1, content)
       fs.writelines(t2, lines)
 
