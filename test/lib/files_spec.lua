@@ -1,7 +1,7 @@
 ---@diagnostic disable: undefined-field, unused-local
 local cwd = vim.fn.getcwd()
 
-describe("lib.filesystems", function()
+describe("lib.files", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -11,7 +11,7 @@ describe("lib.filesystems", function()
   end)
 
   local strs = require("fzfx.lib.strings")
-  local fs = require("fzfx.lib.filesystems")
+  local fs = require("fzfx.lib.files")
 
   describe("[readfile/readlines]", function()
     it("readfile and FileLineReader", function()

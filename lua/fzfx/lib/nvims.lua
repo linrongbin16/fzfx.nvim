@@ -1,4 +1,4 @@
-local constants = require("fzfx.lib.constants")
+local consts = require("fzfx.lib.constants")
 
 local M = {}
 
@@ -113,7 +113,7 @@ local ShellOptsContext = {}
 
 --- @return fzfx.ShellOptsContext
 function ShellOptsContext:save()
-  local o = constants.IS_WINDOWS
+  local o = consts.IS_WINDOWS
       and {
         shell = vim.o.shell,
         shellslash = vim.o.shellslash,
@@ -130,7 +130,7 @@ function ShellOptsContext:save()
   setmetatable(o, self)
   self.__index = self
 
-  if constants.IS_WINDOWS then
+  if consts.IS_WINDOWS then
     vim.o.shell = "cmd.exe"
     vim.o.shellslash = false
     vim.o.shellcmdflag = "/s /c"
@@ -147,7 +147,7 @@ function ShellOptsContext:save()
 end
 
 function ShellOptsContext:restore()
-  if constants.IS_WINDOWS then
+  if consts.IS_WINDOWS then
     vim.o.shell = self.shell
     vim.o.shellslash = self.shellslash
     vim.o.shellcmdflag = self.shellcmdflag
@@ -167,7 +167,7 @@ M.ShellOptsContext = ShellOptsContext
 --- @param special any?
 --- @return string
 M.shellescape = function(s, special)
-  if constants.IS_WINDOWS then
+  if consts.IS_WINDOWS then
     local shellslash = vim.o.shellslash
     vim.o.shellslash = false
     local result = special ~= nil and vim.fn.shellescape(s, special)

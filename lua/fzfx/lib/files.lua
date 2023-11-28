@@ -1,4 +1,4 @@
-local strings = require("fzfx.lib.strings")
+local strs = require("fzfx.lib.strings")
 
 local M = {}
 
@@ -21,7 +21,7 @@ function FileLineReader:open(filename, batchsize)
   if type(handler) ~= "number" then
     error(
       string.format(
-        "|fzfx.utils - FileLineReader:open| failed to fs_open file: %s",
+        "|fzfx.lib.files - FileLineReader:open| failed to fs_open file: %s",
         vim.inspect(filename)
       )
     )
@@ -31,7 +31,7 @@ function FileLineReader:open(filename, batchsize)
   if type(fstat) ~= "table" then
     error(
       string.format(
-        "|fzfx.utils - FileLineReader:open| failed to fs_fstat file: %s",
+        "|fzfx.lib.files - FileLineReader:open| failed to fs_fstat file: %s",
         vim.inspect(filename)
       )
     )
@@ -67,7 +67,7 @@ function FileLineReader:_read_chunk()
   if read_err then
     error(
       string.format(
-        "|fzfx.utils - FileLineReader:_read_chunk| failed to fs_read file: %s, read_error:%s, read_name:%s",
+        "|fzfx.lib.files - FileLineReader:_read_chunk| failed to fs_read file: %s, read_error:%s, read_name:%s",
         vim.inspect(self.filename),
         vim.inspect(read_err),
         vim.inspect(read_name)
@@ -94,7 +94,7 @@ function FileLineReader:next()
     if self.buffer == nil then
       return nil
     end
-    local nextpos = strings.find(self.buffer, "\n")
+    local nextpos = strs.find(self.buffer, "\n")
     if nextpos then
       local line = self.buffer:sub(1, nextpos - 1)
       self.buffer = self.buffer:sub(nextpos + 1)
