@@ -223,7 +223,7 @@ end
 
 --- @param filename string
 --- @return string[]?
-local function readlines(filename)
+M.readlines = function(filename)
   local reader = FileLineReader:open(filename) --[[@as fzfx.FileLineReader]]
   if not reader then
     return nil
@@ -239,7 +239,7 @@ end
 --- @param filename string
 --- @param content string
 --- @return integer
-local function writefile(filename, content)
+M.writefile = function(filename, content)
   local f = io.open(filename, "w")
   if not f then
     return -1
@@ -252,7 +252,7 @@ end
 --- @param filename string
 --- @param content string
 --- @param on_complete fun(err:string?,bytes:integer?):any
-local function asyncwritefile(filename, content, on_complete)
+M.asyncwritefile = function(filename, content, on_complete)
   vim.loop.fs_open(filename, "w", 438, function(open_err, fd)
     if open_err then
       error(
@@ -299,7 +299,7 @@ end
 --- @param filename string
 --- @param lines string[]
 --- @return integer
-local function writelines(filename, lines)
+M.writelines = function(filename, lines)
   local f = io.open(filename, "w")
   if not f then
     return -1
