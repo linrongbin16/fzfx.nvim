@@ -55,6 +55,14 @@ describe("lib.constants", function()
       assert_true(constants.GIT == "git")
       assert_eq(type(constants.HAS_DELTA), "boolean")
       assert_true(constants.DELTA == "delta")
+
+      -- echo
+      assert_eq(type(constants.HAS_ECHO), "boolean")
+      assert_true(constants.ECHO == "echo")
+
+      -- curl
+      assert_eq(type(constants.HAS_CURL), "boolean")
+      assert_true(constants.CURL == "curl")
     end)
   end)
 end)
