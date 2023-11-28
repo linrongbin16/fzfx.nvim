@@ -25,17 +25,16 @@ M.uuid = function(delimiter)
   }, delimiter)
 end
 
-local UniqueIdInteger = 0
+local IncrementId = 0
 
---- @alias fzfx.UniqueId string
---- @return UniqueId
-M.unique_id = function()
-  if UniqueIdInteger >= M.INT32_MAX then
-    UniqueIdInteger = 1
+--- @return integer
+M.inc_id = function()
+  if IncrementId >= M.INT32_MAX then
+    IncrementId = 1
   else
-    UniqueIdInteger = UniqueIdInteger + 1
+    IncrementId = IncrementId + 1
   end
-  return tostring(UniqueIdInteger)
+  return IncrementId
 end
 
 return M
