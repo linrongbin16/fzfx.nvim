@@ -35,3 +35,5 @@ M.list_index = function(n, i)
   assert((i >= 1 and i <= n) or (i <= -1 and i >= -n))
   return i > 0 and i or (n + i + 1)
 end
+
+return M
