@@ -6,9 +6,11 @@
 
 - [fzfx.lib](#fzfxlib)
   - [fzfx.lib.constants](#fzfxlibconstants)
-  - [fzfx.lib.tables](#fzfxlibtables)
-  - [fzfx.lib.numbers](#fzfxlibnumbers)
   - [fzfx.lib.filesystems](#fzfxlibfilesystems)
+  - [fzfx.lib.numbers](#fzfxlibnumbers)
+  - [fzfx.lib.nvims](#fzfxlibnvims)
+  - [fzfx.lib.strings](#fzfxlibstrings)
+  - [fzfx.lib.tables](#fzfxlibtables)
 
 ## [fzfx.lib](/lua/fzfx/lib)
 
@@ -72,30 +74,11 @@ curl
 - `HAS_CURL`: has `curl` command.
 - `CURL`: `curl` command.
 
-### [fzfx.lib.tables](/lua/fzfx/lib/tables.lua)
-
-#### Table
-
-- `tbl_empty(t:any):boolean`/`tbl_not_empty(t:any):boolean`: detect whether a table is empty or not.
-
-#### List
-
-- `list_empty(l:any):boolean`/`list_not_empty(l:any):boolean`: detect whether a list(table) is empty or not.
-- `list_index(i:integer, n:integer):integer`: calculate list index for both positive or negative. `n` is the length of list.
-  - if `i > 0`, `i` is in range `[1,n]`.
-  - if `i < 0`, `i` is in range `[-1,-n]`, `-1` maps to last position (e.g. `n`), `-n` maps to first position (e.g. `1`).
-
-### [fzfx.lib.numbers](/lua/fzfx/lib/numbers.lua)
-
-- `INT32_MIN`/`INT32_MAX`: `-2147483648`/`2147483647`.
-- `bound(value:integer, left:integer, right:integer):integer`: returned value is bounded in range `[left, right]`.
-- `inc_id():integer`: returned incremental ID.
-
 ### [fzfx.lib.filesystems](/lua/fzfx/lib/filesystems.lua)
 
 #### Read File
 
-- `FileLineReader`:
+- `FileLineReader`: file line reader.
   - `open(filename:string, batchsize:integer?):FileLineReader`: open file to read, return the reader handle, by default `batchsize=4096`.
   - `has_next():boolean`: detect whether there are more lines to read.
   - `next():string?`: get next line.
@@ -109,3 +92,40 @@ curl
 - `writefile(filename:string, content:string):integer`: write content into file, return `-1` if fail, `0` if success.
 - `writelines(filename:string, lines:string[]):integer`: write lines into file, return `-1` if fail, `0` if success.
 - `asyncwritefile(filename:string, content:string, on_complete:fun(bytes:integer?):any):integer`: async write content into a file, invoke callback `on_complete` when done.
+
+### [fzfx.lib.numbers](/lua/fzfx/lib/numbers.lua)
+
+- `INT32_MIN`/`INT32_MAX`: `-2147483648`/`2147483647`.
+- `bound(value:integer, left:integer, right:integer):integer`: returned value is bounded in range `[left, right]`.
+- `inc_id():integer`: returned incremental ID.
+
+### [fzfx.lib.nvims](/lua/fzfx/lib/nvims.lua)
+
+#### Buffers
+
+- `get_buf_option(bufnr:integer, name:string):any`: get buffer option.
+- `set_buf_option(bufnr:integer, name:string, value:any):nil`: set buffer option.
+- `buf_is_valid(bufnr:integer):boolean`: check if buffer is valid.
+
+#### Windows
+
+- `get_win_option(winnr:integer, name:string):any`: get window option.
+- `set_win_option(winnr:integer, name:string, value:any):nil`: set window option.
+- `WindowOptsContext`: window options context.
+  - `save():WindowOptsContext`: save current windows & tabs and return context.
+  - `restore():nil`: restore previously saved windows & tabs.
+
+### [fzfx.lib.strings](/lua/fzfx/lib/strings.lua)
+
+### [fzfx.lib.tables](/lua/fzfx/lib/tables.lua)
+
+#### Table
+
+- `tbl_empty(t:any):boolean`/`tbl_not_empty(t:any):boolean`: detect whether a table is empty or not.
+
+#### List
+
+- `list_empty(l:any):boolean`/`list_not_empty(l:any):boolean`: detect whether a list(table) is empty or not.
+- `list_index(i:integer, n:integer):integer`: calculate list index for both positive or negative. `n` is the length of list.
+  - if `i > 0`, `i` is in range `[1,n]`.
+  - if `i < 0`, `i` is in range `[-1,-n]`, `-1` maps to last position (e.g. `n`), `-n` maps to first position (e.g. `1`).
