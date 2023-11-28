@@ -1,3 +1,5 @@
+local strings = require("fzfx.lib.strings")
+
 local M = {}
 
 -- FileLineReader {
@@ -92,7 +94,7 @@ function FileLineReader:next()
     if self.buffer == nil then
       return nil
     end
-    local nextpos = string_find(self.buffer, "\n")
+    local nextpos = strings.find(self.buffer, "\n")
     if nextpos then
       local line = self.buffer:sub(1, nextpos - 1)
       self.buffer = self.buffer:sub(nextpos + 1)
