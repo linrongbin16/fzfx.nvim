@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: LuaLs Annotation Typecheck
+      - name: LuaLs Typecheck
         uses: stevearc/nvim-typecheck-action@v1
         with:
           path: lua
