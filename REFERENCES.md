@@ -1,4 +1,4 @@
-<!-- markdownlint-disable MD013 MD034 MD033 MD038 -->
+<!-- markdownlint-disable MD013 MD034 MD033 MD038 MD051 -->
 
 # References
 
@@ -9,6 +9,7 @@
   - [fzfx.lib.constants](#fzfxlibconstants)
   - [fzfx.lib.env](#fzfxlibenv)
   - [fzfx.lib.files](#fzfxlibfiles)
+  - [fzfx.lib.jsons](#fzfxlibjsons)
   - [fzfx.lib.numbers](#fzfxlibnumbers)
   - [fzfx.lib.nvims](#fzfxlibnvims)
   - [fzfx.lib.paths](#fzfxlibpaths)
@@ -137,6 +138,11 @@ curl
 - `writefile(filename:string, content:string):integer`: write content into file, return `-1` if fail, `0` if success.
 - `writelines(filename:string, lines:string[]):integer`: write lines into file, return `-1` if fail, `0` if success.
 - `asyncwritefile(filename:string, content:string, on_complete:fun(bytes:integer?):any):integer`: async write content into a file, invoke callback `on_complete` when done.
+
+### [fzfx.lib.jsons](#/lua/fzfx/lib/jsons.lua)
+
+- `encode(t:table?):string?`: convert lua table/list to json string.
+- `decode(s:string?):table?`: convert json string to lua table/list.
 
 ### [fzfx.lib.numbers](/lua/fzfx/lib/numbers.lua)
 
