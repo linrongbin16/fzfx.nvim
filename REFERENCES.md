@@ -79,3 +79,10 @@ curl
   - `has_next():boolean`: detect whether there are more lines to read.
   - `next():string?`: get next line.
   - `close():nil`: close the reader handle.
+- `readlines(filename:string):string[]|nil`: open file and read line by line.
+- `readfile(filename:string, opts:{trim:boolean?}?):string?`: open and read all contents from file, set `opts={trim=true}` to trim whitespaces, by default `opts={trim=true}`.
+- `asyncreadfile(filename:string, on_complete:fun(data:string?):any, opts:{trim:boolean?}?):nil`: async read file, invoke callback `on_complete` when done.
+
+#### Write File
+
+- `writefile(filename:string, content:string):integer`: write content into a file. return `-1` if fail, `0` if success.

@@ -224,8 +224,8 @@ M.asyncreadfile = function(filename, on_complete, opts)
 end
 
 --- @param filename string
---- @return string[]?
-M.readlines = function(filename)
+--- @return string[]|nil
+M.readlines = function(filename, opts)
   local reader = FileLineReader:open(filename) --[[@as fzfx.FileLineReader]]
   if not reader then
     return nil
