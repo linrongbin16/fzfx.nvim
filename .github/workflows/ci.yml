@@ -50,7 +50,7 @@ jobs:
         run: |
           echo "pwd"
           echo $PWD
-          git clone --depth=1 git clone https://github.com/actboy168/json.lua.git ~/.json.lua
+          git clone --depth 1 git clone https://github.com/actboy168/json.lua.git ~/.json.lua
           cp ~/.json.lua/json.lua ./lua/fzfx/lib/actboy168_json.lua
       - name: Auto Commit
         if: ${{ github.ref != 'refs/heads/main' }}
