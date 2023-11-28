@@ -6,6 +6,7 @@
 
 - [fzfx.lib](#fzfxlib)
   - [fzfx.lib.constants](#fzfxlibconstants)
+  - [fzfx.lib.tables](#fzfxlibtables)
   - [fzfx.lib.filesystems](#fzfxlibfilesystems)
 
 ## [fzfx.lib](/lua/fzfx/lib)
@@ -69,6 +70,14 @@ curl
 
 - `HAS_CURL`: has `curl` command.
 - `CURL`: `curl` command.
+
+### [fzfx.lib.tables](/lua/fzfx/lib/tables.lua)
+
+#### Table
+
+- `tbl_empty(t:any):boolean`/`tbl_not_empty(t:any):boolean`:
+
+#### List
 
 ### [fzfx.lib.filesystems](/lua/fzfx/lib/filesystems.lua)
 
