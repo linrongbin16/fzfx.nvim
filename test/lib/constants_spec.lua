@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-field
+---@diagnostic disable: undefined-field, unused-local
 local cwd = vim.fn.getcwd()
 
 describe("lib.constants", function()
