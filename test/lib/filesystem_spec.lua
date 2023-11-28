@@ -52,8 +52,8 @@ describe("lib.filesystem", function()
       fs.writefile(t1, content)
       fs.writelines(t2, lines)
 
-      content = fs.readfile("test1-README.md") --[[@as string]]
-      lines = fs.readlines("test2-README.md") --[[@as table]]
+      content = fs.readfile(t1) --[[@as string]]
+      lines = fs.readlines(t2) --[[@as table]]
 
       local buffer = nil
       for _, line in
