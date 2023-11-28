@@ -199,4 +199,22 @@ M.spawn = function(cmds, opts)
     :run()
 end
 
+--- @param cmds string[]
+--- @param opts {on_stdout:fzfx.SpawnLineConsumer, on_stderr:fzfx.SpawnLineConsumer?}
+M.blocking_spawn = function(cmds, opts)
+  ---@diagnostic disable-next-line: inject-field
+  opts.blocking = true
+  ---@diagnostic disable-next-line: param-type-mismatch
+  return M.spawn(cmds, opts)
+end
+
+--- @param cmds string[]
+--- @param opts {on_stdout:fzfx.SpawnLineConsumer, on_stderr:fzfx.SpawnLineConsumer?}
+M.nonblocking_spawn = function(cmds, opts)
+  ---@diagnostic disable-next-line: inject-field
+  opts.blocking = false
+  ---@diagnostic disable-next-line: param-type-mismatch
+  return M.spawn(cmds, opts)
+end
+
 return M
