@@ -225,7 +225,7 @@ end
 
 --- @param filename string
 --- @return string[]|nil
-M.readlines = function(filename, opts)
+M.readlines = function(filename)
   local reader = FileLineReader:open(filename) --[[@as fzfx.FileLineReader]]
   if not reader then
     return nil

@@ -13,7 +13,7 @@ describe("lib.spawn", function()
   local function dummy() end
 
   local strs = require("fzfx.lib.strings")
-  local fs = require("fzfx.lib.files")
+  local fs = require("fzfx.lib.filesystems")
   local spawn = require("fzfx.lib.spawn")
 
   local dummy = function() end
