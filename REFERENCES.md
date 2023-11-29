@@ -8,7 +8,7 @@ They are supposed to be stable and tested.
 
 ## Table of contents
 
-- [Line Helpers](#line-helpers)
+- [Line-Oriented Helpers](#line-oriented-helpers)
 - [Fundamental Infrastructures](#fundamental-infrastructures)
   - [fzfx.lib.colors](#fzfxlibcolors)
   - [fzfx.lib.commands](#fzfxlibcommands)
@@ -24,9 +24,9 @@ They are supposed to be stable and tested.
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
 
-## [Line Helpers](/lua/fzfx/helper)
+## [Line-Oriented Helpers](/lua/fzfx/helper)
 
-The `fzfx.helper` provides all kinds of useful tools for parsing and rendering all queries/lines required in all scenarios.
+The `fzfx.helper` provides line-oriented helpers for parsing and rendering queries/lines required in all scenarios.
 
 ## [Fundamental Infrastructures](/lua/fzfx/lib)
 
