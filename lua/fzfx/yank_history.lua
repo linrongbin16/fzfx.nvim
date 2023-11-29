@@ -34,12 +34,12 @@ function Yank:new(regname, regtext, regtype, filename, filetype)
   return o
 end
 
---- @class YankHistory
+--- @class fzfx.YankHistory
 --- @field ring_buffer fzfx.RingBuffer
 local YankHistory = {}
 
 --- @param maxsize integer
---- @return YankHistory
+--- @return fzfx.YankHistory
 function YankHistory:new(maxsize)
   local o = {
     ring_buffer = nvims.RingBuffer:new(maxsize),
@@ -87,7 +87,7 @@ function YankHistory:rnext(pos)
   return self.ring_buffer:rnext(pos)
 end
 
---- @type YankHistory?
+--- @type fzfx.YankHistory?
 local YankHistoryInstance = nil
 
 --- @return table
@@ -135,7 +135,7 @@ local function get_yank()
   return YankHistoryInstance:get()
 end
 
---- @return YankHistory?
+--- @return fzfx.YankHistory?
 local function _get_yank_history_instance()
   return YankHistoryInstance
 end
