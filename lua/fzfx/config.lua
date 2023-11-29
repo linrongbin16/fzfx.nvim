@@ -2275,7 +2275,7 @@ local function _make_file_explorer_provider(ls_args)
           ls_args,
           utils.shellescape(cwd --[[@as string]])
         )
-    elseif consts.HAS_LS > 0 then
+    elseif consts.HAS_LS then
       return consts.HAS_ECHO
           and string.format(
             "echo %s && ls --color=always %s %s",
