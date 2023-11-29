@@ -29,7 +29,7 @@ local function _make_window_size(value, base, minimal)
   )
 end
 
---- @param opts Options
+--- @param opts fzfx.Options
 --- @return PopupWindowConfig
 local function _make_cursor_window_config(opts)
   --- @type "cursor"
@@ -83,7 +83,7 @@ local function _make_window_center_shift(maxsize, size, offset)
   end
 end
 
---- @param opts Options
+--- @param opts fzfx.Options
 --- @return PopupWindowConfig
 local function _make_center_window_config(opts)
   --- @type "editor"|"win"
@@ -140,7 +140,7 @@ local function _make_center_window_config(opts)
   return pw_config
 end
 
---- @param win_opts Options
+--- @param win_opts fzfx.Options
 --- @return PopupWindowConfig
 local function _make_window_config(win_opts)
   --- @type "editor"|"win"|"cursor"
@@ -166,12 +166,12 @@ local PopupWindowInstances = {}
 --- @field window_opts_context WindowOptsContext?
 --- @field bufnr integer?
 --- @field winnr integer?
---- @field _saved_win_opts Options
+--- @field _saved_win_opts fzfx.Options
 --- @field _resizing boolean
 local PopupWindow = {}
 
 --- @package
---- @param win_opts Options?
+--- @param win_opts fzfx.Options?
 --- @return PopupWindow
 function PopupWindow:new(win_opts)
   -- check executable: nvim, fzf
@@ -288,8 +288,8 @@ local function _merge_fzf_actions(fzf_opts, actions)
   return merged_opts
 end
 
---- @param fzf_opts Options
---- @param actions Options
+--- @param fzf_opts fzfx.Options
+--- @param actions fzfx.Options
 --- @param result string
 --- @return string
 local function _make_fzf_command(fzf_opts, actions, result)
@@ -314,10 +314,10 @@ local function _make_fzf_command(fzf_opts, actions, result)
 end
 
 --- @alias OnPopupExit fun(last_query:string):nil
---- @param win_opts Options?
+--- @param win_opts fzfx.Options?
 --- @param source string
---- @param fzf_opts Options
---- @param actions Options
+--- @param fzf_opts fzfx.Options
+--- @param actions fzfx.Options
 --- @param context PipelineContext
 --- @param on_popup_exit OnPopupExit?
 --- @return Popup

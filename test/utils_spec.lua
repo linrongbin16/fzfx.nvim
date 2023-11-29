@@ -461,13 +461,13 @@ describe("utils", function()
         then
           assert_true(utils.string_isspace(string.char(i)))
         else
-          print(
-            string.format(
-              "isspace: %d: %s\n",
-              i,
-              vim.inspect(utils.string_isspace(string.char(i)))
-            )
-          )
+          -- print(
+          --   string.format(
+          --     "isspace: %d: %s\n",
+          --     i,
+          --     vim.inspect(utils.string_isspace(string.char(i)))
+          --   )
+          -- )
           assert_false(utils.string_isspace(string.char(i)))
         end
       end
@@ -533,13 +533,13 @@ describe("utils", function()
         then
           assert_true(utils.string_ishex(string.char(i)))
         else
-          print(
-            string.format(
-              "ishex, %d:%s\n",
-              i,
-              vim.inspect(utils.string_ishex(string.char(i)))
-            )
-          )
+          -- print(
+          --   string.format(
+          --     "ishex, %d:%s\n",
+          --     i,
+          --     vim.inspect(utils.string_ishex(string.char(i)))
+          --   )
+          -- )
           assert_false(utils.string_ishex(string.char(i)))
         end
       end

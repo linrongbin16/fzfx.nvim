@@ -1,4 +1,4 @@
-<!-- markdownlint-disable MD013 MD034 MD033 -->
+<!-- markdownlint-disable MD001 MD013 MD034 MD033 MD051 -->
 
 # fzfx.nvim
 
@@ -116,7 +116,7 @@ scoop install grep          # grep
 scoop install findutils     # find
 ```
 
-#### Fix conflicts between embeded commands in `C:\Windows\System32` and portable linux commands
+#### Fix conflicts between embedded commands in `C:\Windows\System32` and portable linux commands
 
 Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\Windows\System32` (or `%SystemRoot%\system32`), while they are not the linux commands they are named after, but could override our installations. To fix this issue, we could prioritize the git or scoop environment variables in `%PATH%`.
 
@@ -1563,7 +1563,7 @@ For complete options and defaults, please check [config.lua](https://github.com/
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
-To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
+To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command), [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua) and standard API references [REFERENCES.md](/REFERENCES.md).
 
 If you have encounter some breaks on configuration, please see [CHANGELOG.md](https://github.com/linrongbin16/fzfx.nvim/blob/main/CHANGELOG.md).
 
