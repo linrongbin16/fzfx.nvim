@@ -110,7 +110,7 @@ then
     return
   end
 
-  local cmd_splits = jsons.decode(cmd)
+  local cmd_splits = jsons.decode(cmd) --[[@as table]]
   if tbls.tbl_empty(cmd_splits) then
     os.exit(0)
     return
