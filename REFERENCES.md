@@ -10,7 +10,7 @@
   - [fzfx.lib.constants](#fzfxlibconstants)
   - [fzfx.lib.deprecations](#fzfxlibdeprecations)
   - [fzfx.lib.env](#fzfxlibenv)
-  - [fzfx.lib.files](#fzfxlibfiles)
+  - [fzfx.lib.filesystems](#fzfxlibfilesystems)
   - [fzfx.lib.jsons](#fzfxlibjsons)
   - [fzfx.lib.numbers](#fzfxlibnumbers)
   - [fzfx.lib.nvims](#fzfxlibnvims)
@@ -18,10 +18,6 @@
   - [fzfx.lib.spawn](#fzfxlibspawn)
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
-
-## [fzfx.commands](/lua/fzfx)
-
-### [FzfxFiles](/lua/fzfx/files.lua)
 
 ## [fzfx.lib](/lua/fzfx/lib)
 
@@ -163,7 +159,7 @@ curl
 - `debug_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEBUG_ENABLE=1`.
 - `icon_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEVICONS_PATH=1`.
 
-### [fzfx.lib.files](/lua/fzfx/lib/files.lua)
+### [fzfx.lib.filesystems](/lua/fzfx/lib/filesystems.lua)
 
 #### Read File
 
