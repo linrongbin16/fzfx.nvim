@@ -1,4 +1,3 @@
----@diagnostic disable: unused-local, deprecated
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
@@ -1249,6 +1248,7 @@ local function _make_lsp_diagnostics_provider(opts)
   --- @param context fzfx.PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
+    ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients()
     if tbls.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
@@ -1459,6 +1459,7 @@ local function _make_lsp_locations_provider(opts)
   --- @param context LspLocationPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
+    ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
     if tbls.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
@@ -1666,6 +1667,7 @@ local function _make_lsp_call_hierarchy_provider(opts)
   --- @param context LspLocationPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
+    ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
     if tbls.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
