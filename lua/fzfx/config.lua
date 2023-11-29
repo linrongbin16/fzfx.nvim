@@ -1,10 +1,9 @@
 local consts = require("fzfx.lib.constants")
 local utils = require("fzfx.utils")
 local cmds = require("fzfx.lib.commands")
-local env = require("fzfx.env")
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
-local color = require("fzfx.color")
+local colors = require("fzfx.lib.colors")
 local path = require("fzfx.path")
 local line_helpers = require("fzfx.line_helpers")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
@@ -1135,7 +1134,7 @@ local default_lsp_diagnostic_signs = {
   [1] = {
     severity = 1,
     name = "DiagnosticSignError",
-    text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
+    text = require("fzfx.lib.env").icon_enabled() and "" or "E", -- nf-fa-times \uf00d
     texthl = vim.fn.hlexists("DiagnosticSignError") > 0
         and "DiagnosticSignError"
       or (
@@ -1148,7 +1147,7 @@ local default_lsp_diagnostic_signs = {
   [2] = {
     severity = 2,
     name = "DiagnosticSignWarn",
-    text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
+    text = require("fzfx.lib.env").icon_enabled() and "" or "W", -- nf-fa-warning \uf071
     texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0 and "DiagnosticSignWarn"
       or (
         vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
@@ -1160,7 +1159,7 @@ local default_lsp_diagnostic_signs = {
   [3] = {
     severity = 3,
     name = "DiagnosticSignInfo",
-    text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
+    text = require("fzfx.lib.env").icon_enabled() and "" or "I", -- nf-fa-info_circle \uf05a
     texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0 and "DiagnosticSignInfo"
       or (
         vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
@@ -1172,7 +1171,7 @@ local default_lsp_diagnostic_signs = {
   [4] = {
     severity = 4,
     name = "DiagnosticSignHint",
-    text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
+    text = require("fzfx.lib.env").icon_enabled() and "" or "H", -- nf-fa-bell \uf0f3
     texthl = vim.fn.hlexists("DiagnosticSignHint") > 0 and "DiagnosticSignHint"
       or (
         vim.fn.hlexists("LspDiagnosticsSignHint") > 0
@@ -1186,8 +1185,8 @@ local default_lsp_diagnostic_signs = {
 -- simulate rg's filepath color, see:
 -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
 -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-local default_lsp_filename_color = consts.IS_WINDOWS and color.cyan
-  or color.magenta
+local default_lsp_filename_color = consts.IS_WINDOWS and colors.cyan
+  or colors.magenta
 
 local default_no_lsp_clients_error = "no active lsp clients."
 local default_no_lsp_diagnostics_error = "no lsp diagnostics found."
@@ -1274,7 +1273,7 @@ local function _make_lsp_diagnostics_provider(opts)
         if type(diag.text) == "string" and string.len(diag.text) > 0 then
           if type(signs[diag.severity]) == "table" then
             local sign_item = signs[diag.severity]
-            local color_renderer = color[sign_item.textcolor]
+            local color_renderer = colors[sign_item.textcolor]
             builder = " " .. color_renderer(sign_item.text, sign_item.texthl)
           end
           builder = builder .. " " .. diag.text
@@ -1287,7 +1286,7 @@ local function _make_lsp_diagnostics_provider(opts)
         local line = string.format(
           "%s:%s:%s:%s",
           default_lsp_filename_color(diag.filename),
-          color.green(tostring(diag.lnum)),
+          colors.green(tostring(diag.lnum)),
           tostring(diag.col),
           builder
         )
@@ -1418,7 +1417,7 @@ local function _render_lsp_location_line(loc)
     return nil
   end
   local loc_line =
-    _lsp_range_render_line(filelines[range.start.line + 1], range, color.red)
+    _lsp_range_render_line(filelines[range.start.line + 1], range, colors.red)
   log.debug(
     "|fzfx.config - _render_lsp_location_line| range:%s, loc_line:%s",
     vim.inspect(range),
@@ -1427,7 +1426,7 @@ local function _render_lsp_location_line(loc)
   local line = string.format(
     "%s:%s:%s:%s",
     default_lsp_filename_color(vim.fn.fnamemodify(filename, ":~:.")),
-    color.green(tostring(range.start.line + 1)),
+    colors.green(tostring(range.start.line + 1)),
     tostring(range.start.character + 1),
     loc_line
   )
@@ -1606,7 +1605,7 @@ local function _render_lsp_call_hierarchy_line(item, ranges)
   local lines = {}
   for i, r in ipairs(ranges) do
     local item_line =
-      _lsp_range_render_line(filelines[r.start.line + 1], r, color.red)
+      _lsp_range_render_line(filelines[r.start.line + 1], r, colors.red)
     log.debug(
       "|fzfx.config - _render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
       vim.inspect(i),
@@ -1616,7 +1615,7 @@ local function _render_lsp_call_hierarchy_line(item, ranges)
     local line = string.format(
       "%s:%s:%s:%s",
       default_lsp_filename_color(vim.fn.fnamemodify(filename, ":~:.")),
-      color.green(tostring(r.start.line + 1)),
+      colors.green(tostring(r.start.line + 1)),
       tostring(r.start.character + 1),
       item_line
     )
