@@ -1,3 +1,4 @@
+---@diagnostic disable: unused-local, deprecated
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
 local utils = require("fzfx.utils")
