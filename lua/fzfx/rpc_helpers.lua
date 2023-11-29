@@ -1,7 +1,7 @@
 -- local log = require("fzfx.log")
 local rpcserver = require("fzfx.rpcserver")
 
---- @param registry_id integer
+--- @param registry_id string
 --- @param params any
 --- @return any
 local function request(registry_id, params)
@@ -19,7 +19,7 @@ local function request(registry_id, params)
   return cb(params)
 end
 
---- @param registry_id integer
+--- @param registry_id string
 --- @param params any
 local function notify(registry_id, params)
   local cb = rpcserver.get_rpc_server():get(registry_id)
