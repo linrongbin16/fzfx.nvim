@@ -42,7 +42,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
-          args: --config-path .stylua.toml ./lua ./test
+          args: --config-path .stylua.toml ./lua ./test ./bin
       - name: Add json.lua
         if: ${{ github.ref != 'refs/heads/main' }}
         shell: bash
