@@ -1,10 +1,13 @@
+local paths = require("fzfx.lib.paths")
+local colors = require("fzfx.lib.colors")
+local jsons = require("fzfx.lib.jsons")
+local fs = require("fzfx.lib.filesystems")
+local strs = require("fzfx.lib.strings")
+local nvims = require("fzfx.lib.nvims")
+
 local log = require("fzfx.log")
-local path = require("fzfx.path")
-local color = require("fzfx.color")
 local conf = require("fzfx.config")
 local yank_history = require("fzfx.yank_history")
-local utils = require("fzfx.utils")
-local json = require("fzfx.json")
 
 -- visual select {
 
@@ -12,8 +15,8 @@ local json = require("fzfx.json")
 --- @param mode string
 --- @return string
 local function _get_visual_lines(mode)
-  local start_pos = vim.fn.getpos("'<")
-  local end_pos = vim.fn.getpos("'>")
+  local start_pos = vim.fn.getpos("'<") --[[@as table]]
+  local end_pos = vim.fn.getpos("'>") --[[@as table]]
   local line_start = start_pos[2]
   local column_start = start_pos[3]
   local line_end = end_pos[2]
@@ -42,9 +45,9 @@ local function _get_visual_lines(mode)
     return ""
   end
 
-  local cursor_pos = vim.fn.getpos(".")
-  local cursor_line = cursor_pos[2]
-  local cursor_column = cursor_pos[3]
+  -- local cursor_pos = vim.fn.getpos(".")
+  -- local cursor_line = cursor_pos[2]
+  -- local cursor_column = cursor_pos[3]
   -- log.debug(
   --     "|fzfx.fzf_helpers - _get_visual_lines| cursor_pos:%s, cursor_line:%s, cursor_column:%s",
   --     vim.inspect(cursor_pos),
@@ -86,7 +89,7 @@ end
 
 --- @param name string
 local function make_last_query_cache(name)
-  return path.join(
+  return paths.join(
     conf.get_config().cache.dir,
     string.format("_%s_last_query_cache", name)
   )
@@ -103,13 +106,14 @@ local function get_command_feed(feed_type, input_args, pipeline_name)
   elseif feed_type == "visual" then
     return _visual_select()
   elseif feed_type == "cword" then
+    ---@diagnostic disable-next-line: return-type-mismatch
     return vim.fn.expand("<cword>"), nil
   elseif feed_type == "put" then
     local y = yank_history.get_yank()
     return (y ~= nil and type(y.regtext) == "string") and y.regtext or "", nil
   elseif feed_type == "resume" then
     local cache = make_last_query_cache(pipeline_name)
-    local data = utils.readfile(cache)
+    local data = fs.readfile(cache)
     -- log.debug(
     --     "|fzfx.fzf_helpers - get_command_feed| pipeline %s cache:%s",
     --     vim.inspect(pipeline_name),
@@ -118,13 +122,13 @@ local function get_command_feed(feed_type, input_args, pipeline_name)
     if
       type(data) ~= "string"
       or string.len(data) == 0
-      or not utils.string_startswith(data, "{")
-      or not utils.string_endswith(data, "}")
+      or not strs.startswith(data, "{")
+      or not strs.endswith(data, "}")
     then
       return "", nil
     end
     --- @alias LastQueryCacheObj {default_provider:string,query:string}
-    local ok, obj = pcall(json.decode, data) --[[@as LastQueryCacheObj]]
+    local ok, obj = pcall(jsons.decode, data) --[[@as LastQueryCacheObj]]
     if ok and type(obj) == "table" then
       return obj.query or "", obj.default_provider
     else
@@ -150,7 +154,7 @@ local function _generate_fzf_color_opts()
   local builder = {}
   for name, opts in pairs(fzf_colors) do
     for i = 2, #opts do
-      local c = color.hlcode(opts[1], opts[i])
+      local c = colors.hlcode(opts[1], opts[i])
       if type(c) == "string" and string.len(c) > 0 then
         table.insert(builder, string.format("%s:%s", name:gsub("_", "%-"), c))
         break
@@ -185,7 +189,7 @@ local function append_fzf_opt(opts, o)
   elseif type(o) == "table" and #o == 2 then
     local k = o[1]
     local v = o[2]
-    table.insert(opts, string.format("%s %s", k, utils.shellescape(v)))
+    table.insert(opts, string.format("%s %s", k, nvims.shellescape(v)))
   else
     log.throw(
       "|fzfx.fzf_helpers - append_fzf_opt| invalid fzf opt: %s",
@@ -307,7 +311,7 @@ end
 local function make_lua_command(...)
   local nvim_path = nvim_exec()
   local lua_path =
-    path.join(require("fzfx.module").plugin_home_dir(), "bin", ...)
+    paths.join(require("fzfx.module").plugin_home_dir(), "bin", ...)
   -- log.debug(
   --     "|fzfx.fzf_helpers - make_lua_command| luascript:%s",
   --     vim.inspect(lua_path)
@@ -343,7 +347,7 @@ end
 --- @return FzfOptEventBinder
 function FzfOptEventBinder:append(opt)
   log.ensure(
-    utils.string_not_blank(opt),
+    strs.not_blank(opt),
     "|fzfx.fzf_helpers - FzfOptEventBinder:append| opt must not blank:%s",
     vim.inspect(opt)
   )
