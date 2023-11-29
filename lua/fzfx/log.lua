@@ -61,7 +61,20 @@ local Defaults = {
 }
 
 --- @type fzfx.Options
-local Configs = {}
+local Configs = {
+  level = LogLevels.DEBUG,
+  console_log = true,
+  name = "[fzfx-safe-mode]",
+  file_log = false,
+  file_name = "fzfx_safe_mode.log",
+  file_dir = vim.fn.stdpath("data"),
+  file_path = string.format(
+    "%s%s%s",
+    vim.fn.stdpath("data"),
+    paths.SEPARATOR,
+    "fzfx_safe_mode.log"
+  ),
+}
 
 --- @param option fzfx.Options
 local function setup(option)
@@ -87,9 +100,6 @@ end
 --- @param level integer
 --- @param msg string
 local function log(level, msg)
-  if Configs.level == nil then
-    return
-  end
   if level < Configs.level then
     return
   end
