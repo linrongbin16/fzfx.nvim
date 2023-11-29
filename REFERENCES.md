@@ -4,11 +4,11 @@
 
 ## Table of contents
 
-- [fzfx.helper](#fzfxhelper): utilities for easier creating commands
 - [fzfx.lib](#fzfxlib): fundamental infrastructures
   - [fzfx.lib.colors](#fzfxlibcolors)
   - [fzfx.lib.commands](#fzfxlibcommands)
   - [fzfx.lib.constants](#fzfxlibconstants)
+  - [fzfx.lib.deprecations](#fzfxlibdeprecations)
   - [fzfx.lib.env](#fzfxlibenv)
   - [fzfx.lib.files](#fzfxlibfiles)
   - [fzfx.lib.jsons](#fzfxlibjsons)
@@ -153,6 +153,10 @@ curl
 
 - `HAS_CURL`: has `curl` command.
 - `CURL`: `curl` command.
+
+### [fzfx.lib.deprecations](/lua/fzfx/lib/deprecations.lua)
+
+- `notify(fmt:string, ...:any):nil`: print deprecation notifications to command line.
 
 ### [fzfx.lib.env](/lua/fzfx/lib/env.lua)
 
