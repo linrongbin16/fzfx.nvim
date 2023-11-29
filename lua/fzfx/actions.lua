@@ -1,7 +1,8 @@
-local log = require("fzfx.log")
-local LogLevels = require("fzfx.log").LogLevels
 local paths = require("fzfx.lib.paths")
 local strs = require("fzfx.lib.strings")
+
+local log = require("fzfx.log")
+local LogLevels = require("fzfx.log").LogLevels
 local line_helpers = require("fzfx.line_helpers")
 local ui = require("fzfx.ui")
 

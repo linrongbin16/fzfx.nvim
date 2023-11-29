@@ -1,6 +1,11 @@
--- No Setup Need
+local uv = (vim.fn.has("nvim-0.10") > 0 and vim.uv ~= nil) and vim.uv
+  or vim.loop
 
-local function notify(fmt, ...)
+local M = {}
+
+--- @param fmt string
+--- @param ... any
+M.notify = function(fmt, ...)
   local msg = string.format(fmt, ...)
 
   local function impl()
@@ -15,7 +20,7 @@ local function notify(fmt, ...)
     vim.api.nvim_echo(msg_chunks, false, {})
   end
 
-  local timer = vim.loop.new_timer()
+  local timer = uv.new_timer()
   timer:start(
     3000,
     0,
@@ -25,10 +30,15 @@ local function notify(fmt, ...)
       impl()
     end)
   )
+  timer:start(
+    6000,
+    0,
+    vim.schedule_wrap(function()
+      timer:stop()
+      timer:close()
+      impl()
+    end)
+  )
 end
-
-local M = {
-  notify = notify,
-}
 
 return M
