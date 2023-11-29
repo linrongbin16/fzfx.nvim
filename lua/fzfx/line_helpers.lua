@@ -1,6 +1,6 @@
 -- No Setup Need
 
-local constants = require("fzfx.constants")
+local consts = require("fzfx.lib.constants")
 local env = require("fzfx.env")
 local utils = require("fzfx.utils")
 local path = require("fzfx.path")
@@ -166,8 +166,7 @@ local function _make_parse_ls(start_pos)
 end
 
 local parse_ls = _make_parse_ls(8)
-local parse_eza = constants.is_windows and _make_parse_ls(5)
-  or _make_parse_ls(6)
+local parse_eza = consts.IS_WINDOWS and _make_parse_ls(5) or _make_parse_ls(6)
 local parse_lsd = _make_parse_ls(10)
 
 --- @param line string

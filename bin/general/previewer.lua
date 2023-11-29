@@ -8,7 +8,7 @@ vim.opt.runtimepath:append(SELF_PATH)
 local shell_helpers = require("fzfx.shell_helpers")
 shell_helpers.setup("previewer")
 
-local SOCKET_ADDRESS = vim.env._FZFX_NVIM_SOCKET_ADDRESS
+local SOCKET_ADDRESS = vim.env._FZFX_NVIM_RPC_SERVER_ADDRESS
 shell_helpers.log_ensure(
     type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
     "SOCKET_ADDRESS must not be empty!"

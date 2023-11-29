@@ -1,6 +1,6 @@
 -- No Setup Need
 
-local constants = require("fzfx.constants")
+local ps = require("fzfx.lib.paths")
 
 --- @param path string
 --- @param opts {backslash:boolean?,expand:boolean?}?
@@ -17,11 +17,12 @@ local function normalize(path, opts)
   if opts.backslash and string.match(result, [[\]]) then
     result = string.gsub(result, [[\]], [[/]])
   end
-  return opts.expand and vim.fn.expand(vim.trim(result)) or vim.trim(result)
+  return opts.expand and vim.fn.expand(vim.trim(result)) --[[@as string]]
+    or vim.trim(result)
 end
 
 local function join(...)
-  return table.concat({ ... }, constants.path_separator)
+  return table.concat({ ... }, ps.SEPARATOR)
 end
 
 --- @param p string?

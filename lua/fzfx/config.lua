@@ -1,4 +1,4 @@
-local constants = require("fzfx.constants")
+local consts = require("fzfx.lib.constants")
 local utils = require("fzfx.utils")
 local cmd = require("fzfx.cmd")
 local env = require("fzfx.env")
@@ -27,7 +27,7 @@ local default_fzf_options = {
 
 -- "fd . -cnever -tf -tl -L -i"
 local default_restricted_fd = {
-  constants.fd,
+  consts.FD,
   ".",
   "-cnever",
   "-tf",
@@ -37,7 +37,7 @@ local default_restricted_fd = {
 }
 -- "fd . -cnever -tf -tl -L -i -u"
 local default_unrestricted_fd = {
-  constants.fd,
+  consts.FD,
   ".",
   "-cnever",
   "-tf",
@@ -47,16 +47,16 @@ local default_unrestricted_fd = {
   "-u",
 }
 -- 'find -L . -type f -not -path "*/.*"'
-local default_restricted_find = constants.is_windows
+local default_restricted_find = consts.IS_WINDOWS
     and {
-      constants.find,
+      consts.FIND,
       "-L",
       ".",
       "-type",
       "f",
     }
   or {
-    constants.find,
+    consts.FIND,
     "-L",
     ".",
     "-type",
@@ -67,7 +67,7 @@ local default_restricted_find = constants.is_windows
   }
 -- "find -L . -type f"
 local default_unrestricted_find = {
-  constants.find,
+  consts.FIND,
   "-L",
   ".",
   "-type",
@@ -99,12 +99,12 @@ end
 local function _make_file_previewer(filename, lineno)
   --- @return string[]
   local function impl()
-    if constants.has_bat then
+    if consts.HAS_BAT then
       local style, theme = _default_bat_style_theme()
       -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
       return type(lineno) == "number"
           and {
-            constants.bat,
+            consts.BAT,
             "--style=" .. style,
             "--theme=" .. theme,
             "--color=always",
@@ -114,7 +114,7 @@ local function _make_file_previewer(filename, lineno)
             filename,
           }
         or {
-          constants.bat,
+          consts.BAT,
           "--style=" .. style,
           "--theme=" .. theme,
           "--color=always",
@@ -168,17 +168,17 @@ local default_unrestricted_rg = {
 }
 -- "grep --color=always -n -H -r --exclude-dir='.*' --exclude='.*'"
 local default_restricted_grep = {
-  constants.grep,
+  consts.GREP,
   "--color=always",
   "-n",
   "-H",
   "-r",
-  "--exclude-dir=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]]),
-  "--exclude=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]]),
+  "--exclude-dir=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]]),
+  "--exclude=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]]),
 }
 -- "grep --color=always -n -H -r"
 local default_unrestricted_grep = {
-  constants.grep,
+  consts.GREP,
   "--color=always",
   "-n",
   "-H",
@@ -199,7 +199,7 @@ local function _make_live_grep_provider(opts)
     local option = parsed_query[2]
 
     local args = nil
-    if constants.has_rg then
+    if consts.HAS_RG then
       if type(opts) == "table" and opts.unrestricted then
         args = vim.deepcopy(default_unrestricted_rg)
       elseif type(opts) == "table" and opts.buffer then
@@ -504,7 +504,7 @@ end
 --- @param commit string
 --- @return string?
 local function _make_git_commits_previewer(commit)
-  if constants.has_delta then
+  if consts.HAS_DELTA then
     local preview_width = _get_delta_width()
     return string.format(
       [[git show %s | delta -n --tabs 4 --width %d]],
@@ -553,7 +553,7 @@ local function _git_blame_provider(query, context)
   --     "git blame --date=short --color-lines %s",
   --     bufpath
   -- )
-  if constants.has_delta then
+  if consts.HAS_DELTA then
     return string.format(
       [[git blame %s | delta -n --tabs 4 --blame-format %s]],
       utils.shellescape(bufpath),
@@ -598,7 +598,7 @@ end
 --- @return string?
 local function _git_status_previewer(line)
   local filename = line_helpers.parse_git_status(line)
-  if constants.has_delta then
+  if consts.HAS_DELTA then
     local preview_width = _get_delta_width()
     return string.format(
       [[git diff %s | delta -n --tabs 4 --width %d]],
@@ -1063,11 +1063,11 @@ end
 --- @return string[]
 local function _vim_commands_lua_function_previewer(filename, lineno)
   local height = vim.api.nvim_win_get_height(0)
-  if constants.has_bat then
+  if consts.HAS_BAT then
     local style, theme = _default_bat_style_theme()
     -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
     return {
-      constants.bat,
+      consts.BAT,
       "--style=" .. style,
       "--theme=" .. theme,
       "--color=always",
@@ -1115,7 +1115,7 @@ local function vim_commands_previewer(line, context)
       desc_or_loc.filename,
       desc_or_loc.lineno
     )
-  elseif constants.has_echo and type(desc_or_loc) == "string" then
+  elseif consts.HAS_ECHO and type(desc_or_loc) == "string" then
     log.debug(
       "|fzfx.config - vim_commands_previewer| desc:%s",
       vim.inspect(desc_or_loc)
@@ -1186,7 +1186,7 @@ local default_lsp_diagnostic_signs = {
 -- simulate rg's filepath color, see:
 -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
 -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-local default_lsp_filename_color = constants.is_windows and color.cyan
+local default_lsp_filename_color = consts.IS_WINDOWS and color.cyan
   or color.magenta
 
 local default_no_lsp_clients_error = "no active lsp clients."
@@ -2157,11 +2157,11 @@ end
 --- @return string[]
 local function _vim_keymaps_lua_function_previewer(filename, lineno)
   local height = vim.api.nvim_win_get_height(0)
-  if constants.has_bat then
+  if consts.HAS_BAT then
     local style, theme = _default_bat_style_theme()
     -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
     return {
-      constants.bat,
+      consts.BAT,
       "--style=" .. style,
       "--theme=" .. theme,
       "--color=always",
@@ -2209,7 +2209,7 @@ local function _vim_keymaps_previewer(line, context)
       def_or_loc.filename,
       def_or_loc.lineno
     )
-  elseif constants.has_echo and type(def_or_loc) == "string" then
+  elseif consts.HAS_ECHO and type(def_or_loc) == "string" then
     log.debug(
       "|fzfx.config - vim_keymaps_previewer| desc:%s",
       vim.inspect(def_or_loc)
@@ -2247,8 +2247,8 @@ local function _make_file_explorer_provider(ls_args)
   --- @return string?
   local function impl(query, context)
     local cwd = utils.readfile(context.cwd)
-    if constants.has_lsd then
-      return constants.has_echo
+    if consts.HAS_LSD then
+      return consts.HAS_ECHO
           and string.format(
             "echo %s && lsd %s --color=always --header -- %s",
             utils.shellescape(cwd --[[@as string]]),
@@ -2260,23 +2260,23 @@ local function _make_file_explorer_provider(ls_args)
           ls_args,
           utils.shellescape(cwd --[[@as string]])
         )
-    elseif constants.has_eza then
-      return constants.has_echo
+    elseif consts.HAS_EZA then
+      return consts.HAS_ECHO
           and string.format(
             "echo %s && %s --color=always %s -- %s",
             utils.shellescape(cwd --[[@as string]]),
-            constants.eza,
+            consts.EZA,
             ls_args,
             utils.shellescape(cwd --[[@as string]])
           )
         or string.format(
           "%s --color=always %s -- %s",
-          constants.eza,
+          consts.EZA,
           ls_args,
           utils.shellescape(cwd --[[@as string]])
         )
-    elseif vim.fn.executable("ls") > 0 then
-      return constants.has_echo
+    elseif consts.HAS_LS > 0 then
+      return consts.HAS_ECHO
           and string.format(
             "echo %s && ls --color=always %s %s",
             utils.shellescape(cwd --[[@as string]]),
@@ -2300,7 +2300,7 @@ end
 --- @param filename string
 --- @return string[]|nil
 local function _directory_previewer(filename)
-  if constants.has_lsd then
+  if consts.HAS_LSD then
     return {
       "lsd",
       "--color=always",
@@ -2309,9 +2309,9 @@ local function _directory_previewer(filename)
       "--",
       filename,
     }
-  elseif constants.has_eza then
+  elseif consts.HAS_EZA then
     return {
-      constants.eza,
+      consts.EZA,
       "--color=always",
       "-lha",
       "--",
@@ -2331,9 +2331,9 @@ end
 local function _make_filename_by_file_explorer_context(line, context)
   line = vim.trim(line)
   local cwd = utils.readfile(context.cwd)
-  local target = constants.has_lsd and line_helpers.parse_lsd(line)
+  local target = consts.HAS_LSD and line_helpers.parse_lsd(line)
     or (
-      constants.has_eza and line_helpers.parse_eza(line)
+      consts.HAS_EZA and line_helpers.parse_eza(line)
       or line_helpers.parse_ls(line)
     )
   local p = path.join(cwd, target)
@@ -2377,7 +2377,7 @@ local function _upper_file_explorer(line, context)
   local target = vim.fn.fnamemodify(cwd, ":h")
   -- Windows root folder: `C:\`
   -- Unix/linux root folder: `/`
-  local root_len = constants.is_windows and 3 or 1
+  local root_len = consts.IS_WINDOWS and 3 or 1
   if vim.fn.isdirectory(target) > 0 and string.len(target) > root_len then
     utils.writefile(context.cwd, target)
   end
@@ -2512,13 +2512,13 @@ local Defaults = {
     providers = {
       restricted_mode = {
         key = "ctrl-r",
-        provider = constants.has_fd and default_restricted_fd
+        provider = consts.HAS_FD and default_restricted_fd
           or default_restricted_find,
         line_opts = { prepend_icon_by_ft = true },
       },
       unrestricted_mode = {
         key = "ctrl-u",
-        provider = constants.has_fd and default_unrestricted_fd
+        provider = consts.HAS_FD and default_unrestricted_fd
           or default_unrestricted_find,
         line_opts = { prepend_icon_by_ft = true },
       },
@@ -2736,32 +2736,32 @@ local Defaults = {
       restricted_mode = {
         previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = constants.has_rg
+        previewer_label = consts.HAS_RG
             and require("fzfx.previewer_labels").rg_previewer_label
           or require("fzfx.previewer_labels").grep_previewer_label,
       },
       unrestricted_mode = {
         previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = constants.has_rg
+        previewer_label = consts.HAS_RG
             and require("fzfx.previewer_labels").rg_previewer_label
           or require("fzfx.previewer_labels").grep_previewer_label,
       },
       buffer_mode = {
         previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = constants.has_rg
+        previewer_label = consts.HAS_RG
             and require("fzfx.previewer_labels").rg_previewer_label
           or require("fzfx.previewer_labels").grep_previewer_label,
       },
     },
     actions = {
       ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
+      ["enter"] = consts.HAS_RG and require("fzfx.actions").edit_rg
         or require("fzfx.actions").edit_grep,
-      ["double-click"] = constants.has_rg and require("fzfx.actions").edit_rg
+      ["double-click"] = consts.HAS_RG and require("fzfx.actions").edit_rg
         or require("fzfx.actions").edit_grep,
-      ["ctrl-q"] = constants.has_rg and require("fzfx.actions").setqflist_rg
+      ["ctrl-q"] = consts.HAS_RG and require("fzfx.actions").setqflist_rg
         or require("fzfx.actions").setqflist_grep,
     },
     fzf_opts = {
@@ -4674,10 +4674,10 @@ local Defaults = {
       filter_hidden = {
         previewer = _file_explorer_previewer,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = constants.has_lsd
+        previewer_label = consts.HAS_LSD
             and require("fzfx.previewer_labels").lsd_previewer_label
           or (
-            constants.has_eza
+            consts.HAS_EZA
               and require("fzfx.previewer_labels").eza_previewer_label
             or require("fzfx.previewer_labels").ls_previewer_label
           ),
@@ -4685,10 +4685,10 @@ local Defaults = {
       include_hidden = {
         previewer = _file_explorer_previewer,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = constants.has_lsd
+        previewer_label = consts.HAS_LSD
             and require("fzfx.previewer_labels").lsd_previewer_label
           or (
-            constants.has_eza
+            consts.HAS_EZA
               and require("fzfx.previewer_labels").eza_previewer_label
             or require("fzfx.previewer_labels").ls_previewer_label
           ),
@@ -4716,14 +4716,10 @@ local Defaults = {
       { "--prompt", path.shorten() .. " > " },
       function()
         local n = 0
-        if
-          constants.has_lsd
-          or constants.has_eza
-          or vim.fn.executable("ls") > 0
-        then
+        if consts.HAS_LSD or consts.HAS_EZA or consts.HAS_LS then
           n = n + 1
         end
-        if constants.has_echo then
+        if consts.HAS_ECHO then
           n = n + 1
         end
         return n > 0 and string.format("--header-lines=%d", n) or nil

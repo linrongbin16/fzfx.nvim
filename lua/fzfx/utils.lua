@@ -1,6 +1,7 @@
 -- No Setup Need
 
-local constants = require("fzfx.constants")
+local consts = require("fzfx.lib.constants")
+local nums = require("fzfx.lib.numbers")
 
 --- @param bufnr integer
 --- @param name string
@@ -327,7 +328,7 @@ local ShellOptsContext = {}
 
 --- @return ShellOptsContext
 function ShellOptsContext:save()
-  local o = constants.is_windows
+  local o = consts.IS_WINDOWS
       and {
         shell = vim.o.shell,
         shellslash = vim.o.shellslash,
@@ -356,7 +357,7 @@ function ShellOptsContext:save()
   --     vim.inspect(vim.o.shellxescape)
   -- )
 
-  if constants.is_windows then
+  if consts.IS_WINDOWS then
     vim.o.shell = "cmd.exe"
     vim.o.shellslash = false
     vim.o.shellcmdflag = "/s /c"
@@ -384,7 +385,7 @@ function ShellOptsContext:save()
 end
 
 function ShellOptsContext:restore()
-  if constants.is_windows then
+  if consts.IS_WINDOWS then
     vim.o.shell = self.shell
     vim.o.shellslash = self.shellslash
     vim.o.shellcmdflag = self.shellcmdflag
@@ -402,7 +403,7 @@ end
 --- @param special any?
 --- @return string
 local function shellescape(s, special)
-  if constants.is_windows then
+  if consts.IS_WINDOWS then
     local shellslash = vim.o.shellslash
     vim.o.shellslash = false
     local result = special ~= nil and vim.fn.shellescape(s, special)
@@ -887,7 +888,7 @@ local function make_uuid(delimiter)
     string.format("%x", vim.loop.os_getpid()),
     string.format("%x", secs),
     string.format("%x", ms),
-    string.format("%x", math.random(1, constants.int32_max)),
+    string.format("%x", math.random(1, nums.INT32_MAX)),
   }, delimiter)
 end
 
@@ -896,7 +897,7 @@ local _UniqueIdInteger = 0
 --- @alias UniqueId string
 --- @return UniqueId
 local function make_unique_id()
-  if _UniqueIdInteger >= constants.int32_max then
+  if _UniqueIdInteger >= nums.INT32_MAX then
     _UniqueIdInteger = 1
   else
     _UniqueIdInteger = _UniqueIdInteger + 1

@@ -1,4 +1,4 @@
-local constants = require("fzfx.constants")
+local consts = require("fzfx.lib.constants")
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
 local fzf_helpers = require("fzfx.fzf_helpers")
@@ -600,7 +600,7 @@ function PreviewerSwitch:preview_label(line, context)
     vim.inspect(previewer_config)
   )
 
-  if not constants.has_curl then
+  if not consts.HAS_CURL then
     return
   end
   if
@@ -899,7 +899,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   }
 
   local dump_fzf_port_command = nil
-  if constants.is_windows then
+  if consts.IS_WINDOWS then
     -- if vim.fn.executable("sh") > 0 or vim.fn.executable("bash") > 0 then
     --     dump_fzf_port_command = string.format(
     --         "%s -c '%s'",

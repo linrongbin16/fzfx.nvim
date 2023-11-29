@@ -1,28 +1,18 @@
+local consts = require("fzfx.lib.constants")
+local paths = require("fzfx.lib.paths")
+local nums = require("fzfx.lib.numbers")
 local log = require("fzfx.log")
-local constants = require("fzfx.constants")
-local utils = require("fzfx.utils")
 
---- @return string?
-local function _make_windows_pipe_name()
-  log.ensure(
-    constants.is_windows,
-    "|fzfx.server - get_windows_pipe_name| must use this function in Windows!"
-  )
-  local result = string.format([[\\.\pipe\nvim-pipe-%s]], utils.make_uuid())
-  return result
-end
-
---- @alias RpcRegistryId string
---- @alias RpcCallback fun(params:any):string?
---- @class RpcServer
+--- @alias fzfx.RpcCallback fun(params:any):string?
+--- @class fzfx.RpcServer
 --- @field address string
---- @field registry table<RpcRegistryId, RpcCallback>
+--- @field registry table<integer, fzfx.RpcCallback>
 local RpcServer = {}
 
---- @return RpcServer
+--- @return fzfx.RpcServer
 function RpcServer:new()
-  local address = constants.is_windows
-      and vim.fn.serverstart(_make_windows_pipe_name())
+  local address = consts.IS_WINDOWS
+      and vim.fn.serverstart(paths.make_pipe_name())
     or vim.fn.serverstart() --[[@as string]]
   -- log.debug(
   --     "|fzfx.server - RpcServer:new| start server on socket address:%s",
@@ -50,6 +40,7 @@ function RpcServer:close()
   -- log.debug("|fzfx.server - RpcServer:close| self: %s!", vim.inspect(self))
   local address = self.address
   if type(self.address) == "string" and string.len(self.address) > 0 then
+    ---@diagnostic disable-next-line: unused-local
     local result = vim.fn.serverstop(self.address)
     -- log.debug(
     --     "|fzfx.server - RpcServer:close| stop result(valid): %s!",
@@ -60,8 +51,8 @@ function RpcServer:close()
   return address
 end
 
---- @param callback RpcCallback
---- @return RpcRegistryId
+--- @param callback fzfx.RpcCallback
+--- @return integer
 function RpcServer:register(callback)
   log.ensure(
     type(callback) == "function",
@@ -69,13 +60,13 @@ function RpcServer:register(callback)
     type(callback),
     vim.inspect(callback)
   )
-  local registry_id = utils.make_unique_id()
+  local registry_id = nums.inc_id()
   self.registry[registry_id] = callback
   return registry_id
 end
 
---- @param registry_id RpcRegistryId
---- @return RpcCallback
+--- @param registry_id integer
+--- @return fzfx.RpcCallback
 function RpcServer:unregister(registry_id)
   log.ensure(
     type(registry_id) == "string",
@@ -94,8 +85,8 @@ function RpcServer:unregister(registry_id)
   return callback
 end
 
---- @param registry_id RpcRegistryId
---- @return RpcCallback
+--- @param registry_id integer
+--- @return fzfx.RpcCallback
 function RpcServer:get(registry_id)
   log.ensure(
     type(registry_id) == "string",
@@ -113,12 +104,12 @@ function RpcServer:get(registry_id)
   return callback
 end
 
---- @type RpcServer?
+--- @type fzfx.RpcServer?
 local RpcServerInstance = nil
 
---- @return RpcServer
+--- @return fzfx.RpcServer
 local function get_rpc_server()
-  return RpcServerInstance --[[@as RpcServer]]
+  return RpcServerInstance --[[@as fzfx.RpcServer]]
 end
 
 local function setup()
@@ -133,7 +124,6 @@ end
 local M = {
   setup = setup,
   get_rpc_server = get_rpc_server,
-  _make_windows_pipe_name = _make_windows_pipe_name,
 }
 
 return M

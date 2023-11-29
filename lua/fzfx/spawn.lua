@@ -1,7 +1,7 @@
 -- No Setup Need
 
+local nums = require("fzfx.lib.numbers")
 local utils = require("fzfx.utils")
-local constants = require("fzfx.constants")
 
 --- @alias SpawnLineConsumer fun(line:string):any
 --- @class Spawn
@@ -181,7 +181,7 @@ function Spawn:run()
   end)
   if self._blocking then
     vim.loop.run()
-    vim.wait(constants.int32_max, function()
+    vim.wait(nums.INT32_MAX, function()
       return self._close_count == 3
     end)
   end
