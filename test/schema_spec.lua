@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, unused-local, missing-fields
 local cwd = vim.fn.getcwd()
 
 describe("schema", function()
