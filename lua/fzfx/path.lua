@@ -1,6 +1,6 @@
 -- No Setup Need
 
-local ps = require("fzfx.lib.paths")
+local paths = require("fzfx.lib.paths")
 
 --- @param path string
 --- @param opts {backslash:boolean?,expand:boolean?}?
@@ -22,7 +22,7 @@ local function normalize(path, opts)
 end
 
 local function join(...)
-  return table.concat({ ... }, ps.SEPARATOR)
+  return table.concat({ ... }, paths.SEPARATOR)
 end
 
 --- @param p string?

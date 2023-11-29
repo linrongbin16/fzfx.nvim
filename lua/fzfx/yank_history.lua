@@ -1,8 +1,9 @@
+local env = require("fzfx.lib.env")
+local nvims = require("fzfx.lib.nvims")
+local paths = require("fzfx.lib.paths")
+
 local conf = require("fzfx.config")
 local log = require("fzfx.log")
-local env = require("fzfx.env")
-local utils = require("fzfx.utils")
-local path = require("fzfx.path")
 
 --- @class Yank
 --- @field regname string
@@ -41,7 +42,7 @@ local YankHistory = {}
 --- @return YankHistory
 function YankHistory:new(maxsize)
   local o = {
-    ring_buffer = utils.RingBuffer:new(maxsize),
+    ring_buffer = nvims.RingBuffer:new(maxsize),
   }
   setmetatable(o, self)
   self.__index = self
@@ -105,8 +106,8 @@ local function save_yank()
     r.regname,
     r.regtext,
     r.regtype,
-    utils.is_buf_valid(0)
-        and path.normalize(vim.api.nvim_buf_get_name(0), { expand = true })
+    nvims.buf_is_valid(0)
+        and paths.normalize(vim.api.nvim_buf_get_name(0), { expand = true })
       or nil,
     vim.bo.filetype
   )
@@ -141,7 +142,7 @@ end
 
 local function setup()
   YankHistoryInstance = YankHistory:new(
-    env.debug_enable() and 10
+    env.debug_enabled() and 10
       or conf.get_config().yank_history.other_opts.maxsize
   )
   vim.api.nvim_create_autocmd("TextYankPost", {

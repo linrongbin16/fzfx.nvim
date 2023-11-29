@@ -311,7 +311,7 @@ end
 local function make_lua_command(...)
   local nvim_path = nvim_exec()
   local lua_path =
-    paths.join(require("fzfx.module").plugin_home_dir(), "bin", ...)
+    paths.join(vim.env._FZFX_NVIM_SELF_PATH --[[@as string]], "bin", ...)
   -- log.debug(
   --     "|fzfx.fzf_helpers - make_lua_command| luascript:%s",
   --     vim.inspect(lua_path)

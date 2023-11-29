@@ -1,9 +1,7 @@
--- No Setup Need
-
 local consts = require("fzfx.lib.constants")
-local env = require("fzfx.env")
-local utils = require("fzfx.utils")
-local path = require("fzfx.path")
+local paths = require("fzfx.lib.paths")
+local env = require("fzfx.lib.env")
+local strs = require("fzfx.lib.strings")
 
 -- parse lines from fd/find.
 -- also support buffers, git files.
@@ -12,14 +10,14 @@ local path = require("fzfx.path")
 --- @return string
 local function parse_find(line, opts)
   local filename = nil
-  if (type(opts) == "table" and opts.no_icon) or not env.icon_enable() then
+  if (type(opts) == "table" and opts.no_icon) or not env.icon_enabled() then
     filename = line
   else
-    local first_icon_pos = utils.string_find(line, " ")
+    local first_icon_pos = strs.find(line, " ")
     assert(type(first_icon_pos) == "number")
     filename = line:sub(first_icon_pos + 1)
   end
-  return path.normalize(filename, { expand = true })
+  return paths.normalize(filename, { expand = true })
 end
 
 -- parse lines from grep.
@@ -27,7 +25,7 @@ end
 --- @param opts {no_icon:boolean?}?
 --- @return {filename:string,lineno:integer,text:string}
 local function parse_grep(line, opts)
-  local splits = utils.string_split(line, ":")
+  local splits = strs.split(line, ":")
   local filename = parse_find(splits[1], opts)
   local lineno = tonumber(splits[2])
   local text = #splits >= 3 and splits[3] or ""
@@ -39,7 +37,7 @@ end
 --- @param opts {no_icon:boolean?}?
 --- @return {filename:string,lineno:integer,column:integer?,text:string}
 local function parse_rg(line, opts)
-  local splits = utils.string_split(line, ":")
+  local splits = strs.split(line, ":")
   local filename = parse_find(splits[1], opts)
   local lineno = tonumber(splits[2])
   local column = tonumber(splits[3])
@@ -53,7 +51,7 @@ end
 local function parse_git_status(line)
   line = vim.trim(line)
   local i = 1
-  while i <= #line and not utils.string_isspace(line:sub(i, i)) do
+  while i <= #line and not strs.isspace(line:sub(i, i)) do
     i = i + 1
   end
   return vim.trim(line:sub(i))
@@ -134,7 +132,7 @@ local function _make_parse_ls(start_pos)
   local function impl(line)
     local pos = 1
     for i = 1, start_pos do
-      pos = utils.string_find(line, " ", pos) --[[@as integer]]
+      pos = strs.find(line, " ", pos) --[[@as integer]]
       assert(type(pos) == "number")
       while
         pos + 1 <= #line
@@ -144,18 +142,12 @@ local function _make_parse_ls(start_pos)
       end
       pos = pos + 1
     end
-    local result = path.normalize(vim.trim(line:sub(pos)), { expand = true })
+    local result = paths.normalize(vim.trim(line:sub(pos)), { expand = true })
 
     -- remove extra single/double quotes
     if
-      (
-        utils.string_startswith(result, "'")
-        and utils.string_endswith(result, "'")
-      )
-      or (
-        utils.string_startswith(result, '"')
-        and utils.string_endswith(result, '"')
-      )
+      (strs.startswith(result, "'") and strs.endswith(result, "'"))
+      or (strs.startswith(result, '"') and strs.endswith(result, '"'))
     then
       result = result:sub(2, #result - 1)
     end
@@ -183,10 +175,10 @@ local function parse_vim_command(line, context)
   -- )
   if
     string.len(desc_or_loc) > 0
-    and not utils.string_startswith(desc_or_loc, '"')
-    and not utils.string_endswith(desc_or_loc, '"')
+    and not strs.startswith(desc_or_loc, '"')
+    and not strs.endswith(desc_or_loc, '"')
   then
-    local split_pos = utils.string_rfind(desc_or_loc, ":")
+    local split_pos = strs.rfind(desc_or_loc, ":")
     local splits = {
       desc_or_loc:sub(1, split_pos - 1),
       desc_or_loc:sub(split_pos + 1),
@@ -195,7 +187,7 @@ local function parse_vim_command(line, context)
     --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
-    local filename = path.normalize(splits[1], { expand = true })
+    local filename = paths.normalize(splits[1], { expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
     --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
@@ -221,10 +213,10 @@ local function parse_vim_keymap(line, context)
   -- )
   if
     string.len(rhs_or_loc) > 0
-    and not utils.string_startswith(rhs_or_loc, '"')
-    and not utils.string_endswith(rhs_or_loc, '"')
+    and not strs.startswith(rhs_or_loc, '"')
+    and not strs.endswith(rhs_or_loc, '"')
   then
-    local split_pos = utils.string_rfind(rhs_or_loc, ":")
+    local split_pos = strs.rfind(rhs_or_loc, ":")
     local splits = {
       rhs_or_loc:sub(1, split_pos - 1),
       rhs_or_loc:sub(split_pos + 1),
@@ -233,7 +225,7 @@ local function parse_vim_keymap(line, context)
     --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
-    local filename = path.normalize(splits[1], { expand = true })
+    local filename = paths.normalize(splits[1], { expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
     --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",

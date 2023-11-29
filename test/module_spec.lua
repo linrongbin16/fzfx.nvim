@@ -73,13 +73,6 @@ describe("module", function()
       assert_true(vim.env._FZFX_NVIM_UNKNOWN_FILE_ICON == nil)
       assert_true(vim.env._FZFX_NVIM_FILE_FOLDER_ICON == nil)
       assert_true(vim.env._FZFX_NVIM_FILE_FOLDER_OPEN_ICON == nil)
-      assert_eq(type(module.plugin_home_dir()), "string")
-      assert_true(string.len(module.plugin_home_dir()) > 0)
-      assert_eq(
-        type(utils.string_find(module.plugin_home_dir(), "fzfx.nvim")),
-        "number"
-      )
-      assert_true(utils.string_find(module.plugin_home_dir(), "fzfx.nvim") > 0)
     end)
   end)
 end)

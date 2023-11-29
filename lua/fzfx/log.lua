@@ -1,5 +1,5 @@
 local strs = require("fzfx.lib.strings")
-local ps = require("fzfx.lib.paths")
+local paths = require("fzfx.lib.paths")
 
 -- see: `lua print(vim.inspect(vim.log.levels))`
 local LogLevels = {
@@ -73,8 +73,12 @@ local function setup(option)
   assert(string.len(Configs.name) > 0)
   assert(type(Configs.level) == "number")
   if Configs.file_log then
-    Configs.file_path =
-      string.format("%s%s%s", Configs.file_dir, ps.SEPARATOR, Configs.file_name)
+    Configs.file_path = string.format(
+      "%s%s%s",
+      Configs.file_dir,
+      paths.SEPARATOR,
+      Configs.file_name
+    )
     assert(type(Configs.file_path) == "string")
     assert(string.len(Configs.file_path) > 0)
   end

@@ -1,8 +1,10 @@
 -- infra utils {
 
-local is_windows = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
+local IS_WINDOWS = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
 
-if is_windows then
+local DEBUG_ENABLE = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE) == "1"
+
+if IS_WINDOWS then
   vim.o.shell = "cmd.exe"
   vim.o.shellslash = false
   vim.o.shellcmdflag = "/s /c"
@@ -14,13 +16,6 @@ if is_windows then
 else
   vim.o.shell = "sh"
 end
-
---- @type string
-local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
-    and "\\"
-  or "/"
-
-local DEBUG_ENABLE = tostring(vim.env._FZFX_NVIM_DEBUG_ENABLE) == "1"
 
 local LoggerContext = {
   level = DEBUG_ENABLE and require("fzfx.log").LogLevels.DEBUG
@@ -35,7 +30,7 @@ local function setup(name)
   LoggerContext.file_path = string.format(
     "%s%s%s",
     vim.fn.stdpath("data"),
-    PATH_SEPARATOR,
+    require("fzfx.lib.paths").SEPARATOR,
     string.format("fzfx_bin_%s.log", name)
   )
 end
@@ -48,7 +43,7 @@ local function _log(level, msg)
     return
   end
 
-  local msg_lines = require("fzfx.utils").string_split(msg, "\n")
+  local msg_lines = require("fzfx.lib.strings").split(msg, "\n")
   if LoggerContext.console_log then
     for _, line in ipairs(msg_lines) do
       io.write(string.format("%s %s\n", LogLevelNames[level], line))
@@ -122,7 +117,7 @@ local function prepend_path_with_icon(line, delimiter, pos)
     and string.len(delimiter) > 0
     and type(pos) == "number"
   then
-    local splits = require("fzfx.utils").string_split(line, delimiter)
+    local splits = require("fzfx.lib.strings").split(line, delimiter)
     filename = splits[pos]
   else
     filename = line
@@ -130,7 +125,7 @@ local function prepend_path_with_icon(line, delimiter, pos)
   -- remove ansi color codes
   -- see: https://stackoverflow.com/a/55324681/4438921
   if type(filename) == "string" and string.len(filename) > 0 then
-    filename = require("fzfx.color").erase(filename)
+    filename = require("fzfx.lib.colors").erase(filename)
   end
   local ext = vim.fn.fnamemodify(filename, ":e")
   local icon, icon_color = DEVICONS.get_icon_color(filename, ext)
@@ -141,7 +136,7 @@ local function prepend_path_with_icon(line, delimiter, pos)
   --     vim.inspect(icon_color)
   -- )
   if type(icon) == "string" and string.len(icon) > 0 then
-    local colorfmt = require("fzfx.color").csi(icon_color, true)
+    local colorfmt = require("fzfx.lib.colors").csi(icon_color, true)
     if colorfmt then
       return string.format("[%sm%s[0m %s", colorfmt, icon, line)
     else

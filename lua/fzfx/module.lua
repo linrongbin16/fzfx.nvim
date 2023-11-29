@@ -1,6 +1,8 @@
 local conf = require("fzfx.config")
 local log = require("fzfx.log")
 
+local M = {}
+
 --- @param plugin string
 --- @param path string
 --- @return string?
@@ -29,12 +31,7 @@ local function search_module_path(plugin, path)
   return nil
 end
 
---- @return string
-local function plugin_home_dir()
-  return vim.env._FZFX_NVIM_SELF_PATH --[[@as string]]
-end
-
-local function setup()
+M.setup = function()
   local configs = conf.get_config()
 
   -- debug
@@ -66,10 +63,5 @@ local function setup()
   )
   vim.env._FZFX_NVIM_SELF_PATH = self_path
 end
-
-local M = {
-  setup = setup,
-  plugin_home_dir = plugin_home_dir,
-}
 
 return M
