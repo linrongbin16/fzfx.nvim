@@ -1,7 +1,6 @@
 ---@diagnostic disable: unused-local, deprecated
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
-local utils = require("fzfx.utils")
 local nvims = require("fzfx.lib.nvims")
 local cmds = require("fzfx.lib.commands")
 local colors = require("fzfx.lib.colors")
@@ -12,6 +11,7 @@ local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
 local line_helpers = require("fzfx.line_helpers")
+local queries_helper = require("fzfx.helper.queries")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
@@ -200,9 +200,9 @@ local function _make_live_grep_provider(opts)
   --- @param context PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local parsed_query = utils.parse_flag_query(query or "")
-    local content = parsed_query[1]
-    local option = parsed_query[2]
+    local parsed = queries_helper.parse_flagged(query or "")
+    local payload = parsed.payload
+    local option = parsed.option
 
     local args = nil
     if consts.HAS_RG then
@@ -264,11 +264,11 @@ local function _make_live_grep_provider(opts)
     if type(opts) == "table" and opts.buffer then
       local current_bufpath =
         paths.reduce(vim.api.nvim_buf_get_name(context.bufnr))
-      table.insert(args, content)
+      table.insert(args, payload)
       table.insert(args, current_bufpath)
     else
       -- table.insert(args, "--")
-      table.insert(args, content)
+      table.insert(args, payload)
     end
     return args
   end
@@ -378,9 +378,9 @@ local function _git_live_grep_provider(query, context)
     return nil
   end
 
-  local parsed_query = utils.parse_flag_query(query or "")
-  local content = parsed_query[1]
-  local option = parsed_query[2]
+  local parsed = queries_helper.parse_flagged(query or "")
+  local payload = parsed.payload
+  local option = parsed.option
 
   local args = { "git", "grep", "--color=always", "-n" }
   if type(option) == "string" and string.len(option) > 0 then
@@ -391,7 +391,7 @@ local function _git_live_grep_provider(query, context)
       end
     end
   end
-  table.insert(args, content)
+  table.insert(args, payload)
   return args
 end
 

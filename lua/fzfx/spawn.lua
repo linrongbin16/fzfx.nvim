@@ -1,7 +1,7 @@
 -- No Setup Need
 
 local nums = require("fzfx.lib.numbers")
-local utils = require("fzfx.utils")
+local strs = require("fzfx.lib.strings")
 
 --- @alias SpawnLineConsumer fun(line:string):any
 --- @class Spawn
@@ -56,7 +56,7 @@ end
 function Spawn:_consume_line(buffer, fn_line_processor)
   local i = 1
   while i <= #buffer do
-    local newline_pos = utils.string_find(buffer, "\n", i)
+    local newline_pos = strs.find(buffer, "\n", i)
     if not newline_pos then
       break
     end
