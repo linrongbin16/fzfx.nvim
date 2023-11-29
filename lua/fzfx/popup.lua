@@ -165,7 +165,7 @@ end
 local PopupWindowInstances = {}
 
 --- @class PopupWindow
---- @field window_opts_context WindowOptsContext?
+--- @field window_opts_context fzfx.WindowOptsContext?
 --- @field bufnr integer?
 --- @field winnr integer?
 --- @field _saved_win_opts fzfx.Options

@@ -35,7 +35,7 @@ function Yank:new(regname, regtext, regtype, filename, filetype)
 end
 
 --- @class YankHistory
---- @field ring_buffer RingBuffer
+--- @field ring_buffer fzfx.RingBuffer
 local YankHistory = {}
 
 --- @param maxsize integer
