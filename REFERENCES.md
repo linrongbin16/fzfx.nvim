@@ -59,7 +59,7 @@ builtin colors
 - `slateblue(text:string, hl:string?):string`: same.
 - `steelblue(text:string, hl:string?):string`: same.
 
-- `render(renderer:fun(text:string, hl:stirng?):string, hl:string?, fmt:string, ...:any):string`: render parameters `...` with `renderer` and optional `hl`, and format with `fmt`.
+- `render(renderer:fun(text:string, hl:string?):string, hl:string?, fmt:string, ...:any):string`: render parameters `...` with `renderer` and optional `hl`, and format with `fmt`.
 
 ### [fzfx.lib.commands](/lua/fzfx/lib/commands.lua)
 

@@ -116,7 +116,7 @@ scoop install grep          # grep
 scoop install findutils     # find
 ```
 
-#### Fix conflicts between embeded commands in `C:\Windows\System32` and portable linux commands
+#### Fix conflicts between embedded commands in `C:\Windows\System32` and portable linux commands
 
 Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\Windows\System32` (or `%SystemRoot%\system32`), while they are not the linux commands they are named after, but could override our installations. To fix this issue, we could prioritize the git or scoop environment variables in `%PATH%`.
 
