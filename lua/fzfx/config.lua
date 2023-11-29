@@ -6,6 +6,7 @@ local cmds = require("fzfx.lib.commands")
 local colors = require("fzfx.lib.colors")
 local paths = require("fzfx.lib.paths")
 local fs = require("fzfx.lib.filesystems")
+local tbls = require("fzfx.lib.tables")
 
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
@@ -637,7 +638,7 @@ local function _get_vim_ex_commands()
     "|fzfx.config - _get_vim_ex_commands| help docs:%s",
     vim.inspect(help_docs_list)
   )
-  if type(help_docs_list) ~= "table" or vim.tbl_isempty(help_docs_list) then
+  if tbls.tbl_empty(help_docs_list) then
     log.echo(LogLevels.INFO, "no 'doc/index.txt' found.")
     return {}
   end
@@ -1200,9 +1201,9 @@ local default_no_lsp_diagnostics_error = "no lsp diagnostics found."
 local function _make_lsp_diagnostic_signs()
   local results = {}
   for _, signs in ipairs(default_lsp_diagnostic_signs) do
-    local sign_def = vim.fn.sign_getdefined(signs.name)
+    local sign_def = vim.fn.sign_getdefined(signs.name) --[[@as table]]
     local item = vim.deepcopy(signs)
-    if type(sign_def) == "table" and not vim.tbl_isempty(sign_def) then
+    if not tbls.tbl_empty(sign_def) then
       item.text = vim.trim(sign_def[1].text)
       item.texthl = sign_def[1].texthl
     end
@@ -1248,14 +1249,14 @@ local function _make_lsp_diagnostics_provider(opts)
   --- @return string[]|nil
   local function impl(query, context)
     local lsp_clients = vim.lsp.get_active_clients()
-    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+    if tbls.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
       return nil
     end
     local diag_list = vim.diagnostic.get(
       (type(opts) == "table" and opts.buffer) and context.bufnr or nil
     )
-    if diag_list == nil or vim.tbl_isempty(diag_list) then
+    if tbls.tbl_empty(diag_list) then
       log.echo(LogLevels.INFO, default_no_lsp_diagnostics_error)
       return nil
     end
@@ -1458,7 +1459,7 @@ local function _make_lsp_locations_provider(opts)
   --- @return string[]|nil
   local function impl(query, context)
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
-    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+    if tbls.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
       return nil
     end
@@ -1522,7 +1523,7 @@ local function _make_lsp_locations_provider(opts)
       end
     end
 
-    if vim.tbl_isempty(results) then
+    if tbls.tbl_empty(results) then
       log.echo(LogLevels.INFO, default_no_lsp_locations_error)
       return nil
     end
@@ -1665,7 +1666,7 @@ local function _make_lsp_call_hierarchy_provider(opts)
   --- @return string[]|nil
   local function impl(query, context)
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
-    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+    if tbls.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
       return nil
     end
@@ -1788,7 +1789,7 @@ local function _make_lsp_call_hierarchy_provider(opts)
       end
     end
 
-    if vim.tbl_isempty(results) then
+    if tbls.tbl_empty(results) then
       log.echo(LogLevels.INFO, default_no_lsp_call_hierarchy_error)
       return nil
     end

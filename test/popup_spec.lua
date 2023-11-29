@@ -1,3 +1,4 @@
+---@diagnostic disable: duplicate-set-field, undefined-field
 local cwd = vim.fn.getcwd()
 
 describe("popup", function()
@@ -12,6 +13,8 @@ describe("popup", function()
       return "fzf"
     end
   end)
+
+  local tbls = require("fzfx.lib.tables")
 
   require("fzfx.config").setup()
   local fzf_helpers = require("fzfx.fzf_helpers")
@@ -161,10 +164,10 @@ describe("popup", function()
     it("get all instances", function()
       popup._remove_all_popup_window_instances()
       assert_eq(type(popup._get_all_popup_window_instances()), "table")
-      assert_true(vim.tbl_isempty(popup._get_all_popup_window_instances()))
+      assert_true(tbls.tbl_empty(popup._get_all_popup_window_instances()))
       local pw = popup.PopupWindow:new()
       assert_eq(type(popup._get_all_popup_window_instances()), "table")
-      assert_false(vim.tbl_isempty(popup._get_all_popup_window_instances()))
+      assert_false(tbls.tbl_empty(popup._get_all_popup_window_instances()))
       local instances = popup._get_all_popup_window_instances()
       for _, p in pairs(instances) do
         assert_eq(p.winnr, pw.winnr)
@@ -180,7 +183,7 @@ describe("popup", function()
     it("create and remove instances", function()
       popup._remove_all_popup_window_instances()
       assert_eq(type(popup._get_all_popup_window_instances()), "table")
-      assert_true(vim.tbl_isempty(popup._get_all_popup_window_instances()))
+      assert_true(tbls.tbl_empty(popup._get_all_popup_window_instances()))
       assert_eq(popup._count_all_popup_window_instances(), 0)
       local pw = popup.PopupWindow:new()
       assert_eq(popup._count_all_popup_window_instances(), 1)

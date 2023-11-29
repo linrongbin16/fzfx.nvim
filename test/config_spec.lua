@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, unused-local
 local cwd = vim.fn.getcwd()
 
 describe("config", function()
@@ -21,6 +22,7 @@ describe("config", function()
     }
   end
 
+  local tbls = require("fzfx.lib.tables")
   local constants = require("fzfx.constants")
   local conf = require("fzfx.config")
   conf.setup()
@@ -31,7 +33,7 @@ describe("config", function()
     it("setup with default configs", function()
       conf.setup()
       assert_eq(type(conf.get_config()), "table")
-      assert_false(vim.tbl_isempty(conf.get_config()))
+      assert_false(tbls.tbl_empty(conf.get_config()))
       assert_eq(type(conf.get_config().live_grep), "table")
       assert_eq(type(conf.get_config().debug), "table")
       assert_eq(type(conf.get_config().debug.enable), "boolean")
@@ -53,7 +55,7 @@ describe("config", function()
   describe("[get_defaults]", function()
     it("get defaults", function()
       assert_eq(type(conf.get_defaults()), "table")
-      assert_false(vim.tbl_isempty(conf.get_defaults()))
+      assert_false(tbls.tbl_empty(conf.get_defaults()))
       assert_eq(type(conf.get_defaults().live_grep), "table")
       assert_eq(type(conf.get_defaults().debug), "table")
       assert_eq(type(conf.get_defaults().debug.enable), "boolean")

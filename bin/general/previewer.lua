@@ -5,6 +5,8 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
   )
 end
 vim.opt.runtimepath:append(SELF_PATH)
+
+local tbls = require("fzfx.lib.tables")
 local shell_helpers = require("fzfx.shell_helpers")
 shell_helpers.setup("previewer")
 
@@ -83,7 +85,7 @@ elseif metaopts.previewer_type == "command_list" then
     return
   end
   local cmd_splits = shell_helpers.json.decode(cmd)
-  if type(cmd_splits) ~= "table" or vim.tbl_isempty(cmd_splits) then
+  if tbls.tbl_empty(cmd_splits) then
     os.exit(0)
     return
   end

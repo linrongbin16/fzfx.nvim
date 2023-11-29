@@ -6,6 +6,7 @@ local jsons = require("fzfx.lib.jsons")
 local strs = require("fzfx.lib.strings")
 local fs = require("fzfx.lib.filesystems")
 local nvims = require("fzfx.lib.nvims")
+local tbls = require("fzfx.lib.tables")
 
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
@@ -225,10 +226,7 @@ function ProviderSwitch:provide(query, context)
       vim.inspect(self),
       vim.inspect(provider_config)
     )
-    if
-      provider_config.provider == nil
-      or vim.tbl_isempty(provider_config.provider --[[@as table]])
-    then
+    if tbls.tbl_empty(provider_config.provider) then
       fs.writefile(self.resultfile, "")
     else
       fs.writefile(
@@ -292,7 +290,7 @@ function ProviderSwitch:provide(query, context)
         vim.inspect(result)
       )
     else
-      if result == nil or vim.tbl_isempty(result) then
+      if tbls.tbl_empty(result) then
         fs.writefile(self.resultfile, "")
       else
         fs.writefile(self.resultfile, jsons.encode(result) --[[@as string]])
@@ -323,7 +321,7 @@ function ProviderSwitch:provide(query, context)
         vim.inspect(self),
         vim.inspect(result)
       )
-      if result == nil or vim.tbl_isempty(result) then
+      if tbls.tbl_empty(result) then
         fs.writefile(self.resultfile, "")
       else
         fs.writelines(self.resultfile, result)
@@ -488,8 +486,7 @@ function PreviewerSwitch:preview(line, context)
         vim.inspect(self),
         vim.inspect(result)
       )
-      ---@diagnostic disable-next-line: param-type-mismatch
-      if result == nil or vim.tbl_isempty(result) then
+      if tbls.tbl_empty(result) then
         fs.writefile(self.resultfile, "")
       else
         fs.writefile(self.resultfile, jsons.encode(result) --[[@as string]])
@@ -1025,10 +1022,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   fzf_opts = fzf_helpers.preprocess_fzf_opts(fzf_opts)
   local actions = pipeline_configs.actions
   local win_opts = nil
-  if
-    type(pipeline_configs.win_opts) == "table"
-    and not vim.tbl_isempty(pipeline_configs.win_opts)
-  then
+  if not tbls.tbl_empty(pipeline_configs.win_opts) then
     win_opts = vim.tbl_deep_extend(
       "force",
       vim.deepcopy(win_opts or {}),
