@@ -1473,6 +1473,8 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 
 </details>
 
+For complete options and defaults, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua) (start from `local Defaults`).
+
 ### The `ls -1` Example
 
 Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
@@ -1558,8 +1560,6 @@ require("fzfx").setup({
 </details>
 
 You can also use the `require("fzfx").register("ls", {...})` api to do that.
-
-For complete options and defaults, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
