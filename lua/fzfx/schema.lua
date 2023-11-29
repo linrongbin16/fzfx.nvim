@@ -131,7 +131,7 @@ local CommandFeedEnum = {
 -- ========== Pipeline ==========
 --
 -- A pipeline binds a provider with a previewer, with a interactive action to switch the data sources, and the help message.
--- (Note: when you only have 1 provider, the interaction key and help message can be ommitted).
+-- (Note: when you only have 1 provider, the interaction key and help message can be omitted).
 -- The provider-interaction-previewer is a pipeline/dataflow.
 --
 -- See below `GroupConfig`.

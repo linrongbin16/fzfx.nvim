@@ -5,6 +5,10 @@ end
 vim.opt.runtimepath:append(SELF_PATH)
 
 local tbls = require("fzfx.lib.tables")
+local fs = require("fzfx.lib.filesystems")
+local jsons = require("fzfx.lib.jsons")
+local strs = require("fzfx.lib.strings")
+local spawn = require("fzfx.lib.spawn")
 local shell_helpers = require("fzfx.shell_helpers")
 shell_helpers.setup("provider")
 
@@ -47,20 +51,20 @@ vim.rpcrequest(
 )
 vim.fn.chanclose(channel_id)
 
-local metajsonstring = shell_helpers.readfile(metafile) --[[@as string]]
+local metajsonstring = fs.readfile(metafile) --[[@as string]]
 shell_helpers.log_ensure(
   type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
   "metajsonstring is not string! %s",
   vim.inspect(metajsonstring)
 )
 --- @type ProviderMetaOpts
-local metaopts = shell_helpers.json.decode(metajsonstring) --[[@as ProviderMetaOpts]]
+local metaopts = jsons.decode(metajsonstring) --[[@as ProviderMetaOpts]]
 shell_helpers.log_debug("metaopt:[%s]", vim.inspect(metaopts))
 
 --- @param line string?
 local function println(line)
   if type(line) == "string" and string.len(vim.trim(line)) > 0 then
-    line = shell_helpers.string_rtrim(line)
+    line = strs.rtrim(line)
     if metaopts.prepend_icon_by_ft then
       local rendered_line = shell_helpers.prepend_path_with_icon(
         line,
@@ -76,7 +80,7 @@ end
 
 if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
   --- @type string
-  local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
+  local cmd = fs.readfile(resultfile) --[[@as string]]
   shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
   if cmd == nil or string.len(cmd) == 0 then
     os.exit(0)
@@ -99,20 +103,21 @@ elseif
   metaopts.provider_type == "plain_list"
   or metaopts.provider_type == "command_list"
 then
-  local cmd = shell_helpers.readfile(resultfile) --[[@as string]]
+  local cmd = fs.readfile(resultfile) --[[@as string]]
   shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
   if cmd == nil or string.len(cmd) == 0 then
     os.exit(0)
     return
   end
 
-  local cmd_splits = shell_helpers.json.decode(cmd)
+  local cmd_splits = jsons.decode(cmd)
   if tbls.tbl_empty(cmd_splits) then
     os.exit(0)
     return
   end
 
-  local sp = shell_helpers.Spawn:make(cmd_splits, println) --[[@as Spawn]]
+  local sp =
+    spawn.Spawn:make(cmd_splits, { on_stdout = println, blocking = true }) --[[@as Spawn]]
   shell_helpers.log_ensure(
     sp ~= nil,
     "failed to open async command: %s",
@@ -120,7 +125,7 @@ then
   )
   sp:run()
 elseif metaopts.provider_type == "list" then
-  local reader = shell_helpers.FileLineReader:open(resultfile) --[[@as FileLineReader ]]
+  local reader = fs.FileLineReader:open(resultfile) --[[@as FileLineReader ]]
   shell_helpers.log_ensure(
     reader ~= nil,
     "failed to open resultfile: %s",

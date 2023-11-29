@@ -154,7 +154,7 @@ local function _make_window_config(win_opts)
     return _make_center_window_config(win_opts)
   else
     log.throw(
-      "failed to make popup window opts, unsupport relative value %s.",
+      "failed to make popup window opts, unsupported relative value %s.",
       vim.inspect(relative)
     )
     ---@diagnostic disable-next-line: missing-return
@@ -194,7 +194,7 @@ function PopupWindow:new(win_opts)
   local merged_win_opts = vim.tbl_deep_extend(
     "force",
     vim.deepcopy(conf.get_config().popup.win_opts),
-    vim.deepcopy(win_opts) or {}
+    vim.deepcopy(win_opts or {})
   )
   local popup_window_config = _make_window_config(merged_win_opts)
 
@@ -324,7 +324,7 @@ end
 --- @param on_popup_exit OnPopupExit?
 --- @return Popup
 function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
-  local result = vim.fn.tempname()
+  local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
   local popup_window = PopupWindow:new(win_opts)
 

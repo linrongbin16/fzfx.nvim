@@ -3,6 +3,7 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
   io.write(string.format("|rpc.request| error! SELF_PATH is empty!"))
 end
 vim.opt.runtimepath:append(SELF_PATH)
+
 local shell_helpers = require("fzfx.shell_helpers")
 shell_helpers.setup("rpc_request")
 

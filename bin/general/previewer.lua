@@ -7,6 +7,10 @@ end
 vim.opt.runtimepath:append(SELF_PATH)
 
 local tbls = require("fzfx.lib.tables")
+local fs = require("fzfx.lib.filesystems")
+local jsons = require("fzfx.lib.jsons")
+local strs = require("fzfx.lib.strings")
+local spawn = require("fzfx.lib.spawn")
 local shell_helpers = require("fzfx.shell_helpers")
 shell_helpers.setup("previewer")
 
@@ -52,25 +56,25 @@ vim.rpcrequest(
 )
 vim.fn.chanclose(channel_id)
 
-local metajsonstring = shell_helpers.readfile(metafile) --[[@as string]]
+local metajsonstring = fs.readfile(metafile) --[[@as string]]
 shell_helpers.log_ensure(
   type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
   "metajsonstring is not string! %s",
   vim.inspect(metajsonstring)
 )
-local metaopts = shell_helpers.json.decode(metajsonstring) --[[@as PreviewerMetaOpts]]
+local metaopts = jsons.decode(metajsonstring) --[[@as PreviewerMetaOpts]]
 shell_helpers.log_debug("metaopts:[%s]", vim.inspect(metaopts))
 
 --- @param l string?
 local function println(l)
   if type(l) == "string" and string.len(vim.trim(l)) > 0 then
-    l = shell_helpers.string_rtrim(l)
+    l = strs.rtrim(l)
     io.write(string.format("%s\n", l))
   end
 end
 
 if metaopts.previewer_type == "command" then
-  local cmd = shell_helpers.readfile(resultfile)
+  local cmd = fs.readfile(resultfile)
   shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
   if cmd == nil or string.len(cmd) == 0 then
     os.exit(0)
@@ -78,19 +82,20 @@ if metaopts.previewer_type == "command" then
     os.execute(cmd)
   end
 elseif metaopts.previewer_type == "command_list" then
-  local cmd = shell_helpers.readfile(resultfile)
+  local cmd = fs.readfile(resultfile)
   shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
   if cmd == nil or string.len(cmd) == 0 then
     os.exit(0)
     return
   end
-  local cmd_splits = shell_helpers.json.decode(cmd)
+  local cmd_splits = jsons.decode(cmd)
   if tbls.tbl_empty(cmd_splits) then
     os.exit(0)
     return
   end
 
-  local sp = shell_helpers.Spawn:make(cmd_splits, println) --[[@as Spawn]]
+  local sp =
+    spawn.Spawn:make(cmd_splits, { on_stdout = println, blocking = true }) --[[@as Spawn]]
   shell_helpers.log_ensure(
     sp ~= nil,
     "failed to open async command: %s",
