@@ -5,7 +5,7 @@ local rpcserver = require("fzfx.rpcserver")
 --- @param params any
 --- @return any
 local function request(registry_id, params)
-  local cb = rpcserver.get_rpc_server():get(registry_id)
+  local cb = rpcserver.get_instance():get(registry_id)
   -- log.debug(
   --     "|fzfx.rpc_helpers - request| global_rpc_server:%s",
   --     vim.inspect(server.get_rpc_server())
@@ -22,7 +22,7 @@ end
 --- @param registry_id string
 --- @param params any
 local function notify(registry_id, params)
-  local cb = rpcserver.get_rpc_server():get(registry_id)
+  local cb = rpcserver.get_instance():get(registry_id)
   -- log.debug(
   --     "|fzfx.rpc_helpers - notify| global_rpc_server:%s",
   --     vim.inspect(server.get_rpc_server())

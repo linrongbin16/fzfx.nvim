@@ -38,7 +38,8 @@ vim.rpcrequest(
     if #luaargs >= 2 then
         params = luaargs[2]
     end
-    require("fzfx.rpc_helpers").request(registry_id, params)
+    local cb = require("fzfx.rpcserver").get_instance():get(registry_id)
+    cb(params)
     ]],
   params == nil and { registry_id } or { registry_id, params }
 )

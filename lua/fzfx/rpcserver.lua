@@ -110,7 +110,7 @@ end
 M._RpcServerInstance = nil
 
 --- @return fzfx.RpcServer
-M.get_rpc_server = function()
+M.get_instance = function()
   return M._RpcServerInstance --[[@as fzfx.RpcServer]]
 end
 
