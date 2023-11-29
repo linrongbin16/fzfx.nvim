@@ -1051,7 +1051,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     function(last_query)
       vim.schedule(function()
         for _, rpc_id in ipairs(rpc_registries) do
-          rpcserver:get_instance():unregister(rpc_id)
+          rpcserver.get_instance():unregister(rpc_id)
         end
         local last_query_cache = fzf_helpers.make_last_query_cache(name)
         local content = json.encode({
