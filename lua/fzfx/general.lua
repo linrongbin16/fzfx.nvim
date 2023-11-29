@@ -2,7 +2,7 @@ local consts = require("fzfx.lib.constants")
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
 local fzf_helpers = require("fzfx.fzf_helpers")
-local server = require("fzfx.server")
+local rpcserver = require("fzfx.rpcserver")
 local color = require("fzfx.color")
 local utils = require("fzfx.utils")
 local env = require("fzfx.env")
@@ -848,8 +848,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     previewer_switch:preview(line_params, context)
   end
 
-  local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
-  local preview_rpc_id = server.get_rpc_server():register(preview_rpc)
+  local provide_rpc_id = rpcserver.get_rpc_server():register(provide_rpc)
+  local preview_rpc_id = rpcserver.get_rpc_server():register(preview_rpc)
   table.insert(rpc_registries, provide_rpc_id)
   table.insert(rpc_registries, preview_rpc_id)
 
@@ -945,7 +945,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       end
 
       local interaction_rpc_id =
-        server.get_rpc_server():register(interaction_rpc)
+        rpcserver.get_rpc_server():register(interaction_rpc)
       table.insert(rpc_registries, interaction_rpc_id)
 
       local action_command = string.format(
@@ -976,7 +976,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch:switch(pipeline)
       end
 
-      local switch_rpc_id = server.get_rpc_server():register(switch_rpc)
+      local switch_rpc_id = rpcserver.get_rpc_server():register(switch_rpc)
       table.insert(rpc_registries, switch_rpc_id)
 
       local switch_command = string.format(
@@ -1051,7 +1051,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     function(last_query)
       vim.schedule(function()
         for _, rpc_id in ipairs(rpc_registries) do
-          server:get_rpc_server():unregister(rpc_id)
+          rpcserver:get_rpc_server():unregister(rpc_id)
         end
         local last_query_cache = fzf_helpers.make_last_query_cache(name)
         local content = json.encode({
