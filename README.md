@@ -33,7 +33,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
   - [Defaults](#defaults)
-  - [The `ls -1` Example](#the-ls--1-example)
+  - [Create Your Own Command](#create-your-own-command)
+  - [API References](#api-references)
 - [Credit](#-credit)
 - [Development](#-development)
 - [Contribute](#-contribute)
@@ -1290,7 +1291,7 @@ local Defaults = {
   },
 
   -- define your own commands group here,
-  -- please check [Create your own command](#create-your-own-command).
+  -- please check [Create Your Own Command](#create-your-own-command).
   users = nil,
 
   -- fzf options for all commands.
@@ -1475,7 +1476,11 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 
 For complete defaults, please see [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua) (start from `local Defaults`).
 
-### The `ls -1` Example
+For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
+
+If you have encounter some breaks on configuration, please see [CHANGELOG.md](https://github.com/linrongbin16/fzfx.nvim/blob/main/CHANGELOG.md).
+
+### Create Your Own Command
 
 Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
 
@@ -1561,11 +1566,17 @@ require("fzfx").setup({
 
 You can also use the `require("fzfx").register("ls", {...})` api to do that.
 
-For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
+For detailed explanation of each components, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command), [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
-To create your own commands, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command), [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua) and standard API references [REFERENCES.md](/REFERENCES.md).
+### API References
 
-If you have encounter some breaks on configuration, please see [CHANGELOG.md](https://github.com/linrongbin16/fzfx.nvim/blob/main/CHANGELOG.md).
+Fzfx provides a set of builtin APIs to help customizing/creating search commands much more easier, there're 3 groups of APIs:
+
+- `fzfx.cfg`: User commands group configurations, e.g. the configurations for `FzfxFiles`, `FzfxLiveGrep`, etc.
+- `fzfx.helper`: Line-oriented helpers for parsing and rendering queries/lines required in all scenarios, since a searching command is all about the lines in (the left side of) fzf binary: generating lines, previewing lines, invoking callbacks on selected lines, etc.
+- `fzfx.lib`: Fundamental infrastructures: compatible cross-platform (Windows, macOS, Linux) APIs, compatible Neovim APIs, file IO & paths, json, strings & numbers, running child process, etc.
+
+These APIs are supposed to be stable and tested, please see [REFERENCES.md](/REFERENCES.md) for details.
 
 ## 🍀 Credit
 
