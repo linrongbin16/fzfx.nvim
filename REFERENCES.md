@@ -42,7 +42,7 @@ The `fzfx.lib` provides fundamental infrastructures for whole plugin, they're us
 
 ### [fzfx.lib.colors](/lua/fzfx/lib/colors.lua)
 
-- `csi(code:string, fg:boolean):string`: convert ansi color codes (38, 42) or rgb/css color codes (`#FF3810`) into terminal escaped sequences (`\x1b[38m`, `\x1b[0m`). set `fg=true` for foreground, set `fg=false` for background.
+- `csi(code:string, fg:boolean):string`: convert ansi color codes (`38`, `42`) or rgb/css color codes (`#FF3810`) into terminal escaped sequences (`\x1b[38m`, `\x1b[0m`). set `fg=true` for foreground, set `fg=false` for background.
   - for ansi color codes, please see: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#color-codes
   - for rgb/css color codes, please see: https://www.w3schools.com/tags/ref_colornames.asp
 - `hlcode(attr:"fg"|"bg", hl:string):string?`: retrieve ansi color codes or rgb/css color codes from vim syntax highlighting group (e.g. `Special`, `Constants`, `Number`).
