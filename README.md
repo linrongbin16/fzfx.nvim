@@ -1473,7 +1473,7 @@ Each commands group (e.g., `files`, `live_grep`, `git_files`, `lsp_diagnostics`,
 
 </details>
 
-For complete options and defaults, please check [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua) (start from `local Defaults`).
+For complete defaults, please see [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua) (start from `local Defaults`).
 
 ### The `ls -1` Example
 
