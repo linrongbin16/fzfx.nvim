@@ -2,9 +2,14 @@
 
 # References
 
+All APIs listed in this doc are recommended for customizing or implementing your own searching commands.
+
+They are supposed to be stable and tested.
+
 ## Table of contents
 
-- [fzfx.lib](#fzfxlib): fundamental infrastructures
+- [Line Helpers](#line-helpers)
+- [Fundamental Infrastructures](#fundamental-infrastructures)
   - [fzfx.lib.colors](#fzfxlibcolors)
   - [fzfx.lib.commands](#fzfxlibcommands)
   - [fzfx.lib.constants](#fzfxlibconstants)
@@ -19,7 +24,21 @@
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
 
-## [fzfx.lib](/lua/fzfx/lib)
+## [Line Helpers](/lua/fzfx/helper)
+
+The `fzfx.helper` provides all kinds of useful tools for parsing and rendering all queries/lines required in all scenarios.
+
+## [Fundamental Infrastructures](/lua/fzfx/lib)
+
+The `fzfx.lib` provides fundamental infrastructures for whole plugin, they're usually handling below issues:
+
+- Cross platforms compatibility between Windows and Linux/macOS.
+- Neovim APIs compatibility between v0.7-nightly versions.
+- Files IO & paths.
+- Json and lua table conversion.
+- Some constants, strings, numbers, lua table and list data structures.
+- Environment variables.
+- Command line running, e.g. child process.
 
 ### [fzfx.lib.colors](/lua/fzfx/lib/colors.lua)
 

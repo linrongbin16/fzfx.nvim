@@ -117,7 +117,7 @@ then
   end
 
   local sp =
-    spawn.Spawn:make(cmd_splits, { on_stdout = println, blocking = true }) --[[@as Spawn]]
+    spawn.Spawn:make(cmd_splits, { on_stdout = println, blocking = true })
   shell_helpers.log_ensure(
     sp ~= nil,
     "failed to open async command: %s",

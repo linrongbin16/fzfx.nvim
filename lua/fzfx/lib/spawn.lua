@@ -87,9 +87,6 @@ function Spawn:_close_handle(handle, code, signal)
       if self._blocking and self._close_count >= 3 then
         uv.stop()
       end
-      if type(self.fn_on_exit) == "function" then
-        self.fn_on_exit(code, signal)
-      end
     end)
   end
 end
@@ -183,6 +180,9 @@ function Spawn:run()
     hide = true,
   }, function(code, signal)
     self.result = { code = code, signal = signal }
+    if type(self.fn_on_exit) == "function" then
+      self.fn_on_exit(code, signal)
+    end
     self:_close_handle(self.process_handle, code, signal)
   end)
 

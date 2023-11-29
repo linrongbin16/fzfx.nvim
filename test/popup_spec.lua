@@ -1,4 +1,4 @@
----@diagnostic disable: duplicate-set-field, undefined-field
+---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
 describe("popup", function()
@@ -15,11 +15,11 @@ describe("popup", function()
   end)
 
   local tbls = require("fzfx.lib.tables")
+  local strs = require("fzfx.lib.strings")
 
   require("fzfx.config").setup()
   local fzf_helpers = require("fzfx.fzf_helpers")
   local popup = require("fzfx.popup")
-  local utils = require("fzfx.utils")
   describe("[_make_window_size]", function()
     it("is in range of [0, 1]", function()
       assert_eq(5, popup._make_window_size(0.5, 10))
@@ -265,9 +265,9 @@ describe("popup", function()
       print(string.format("make fzf command:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "string")
       assert_true(string.len(actual) > 0)
-      assert_true(utils.string_startswith(actual, "fzf "))
-      assert_eq(utils.string_find(actual, fzfopts), 5)
-      assert_true(utils.string_find(actual, "--expect") > string.len(fzfopts))
+      assert_true(strs.startswith(actual, "fzf "))
+      assert_eq(strs.find(actual, fzfopts), 5)
+      assert_true(strs.find(actual, "--expect") > string.len(fzfopts))
     end)
   end)
 end)

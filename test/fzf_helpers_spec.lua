@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch, duplicate-set-field
 local cwd = vim.fn.getcwd()
 
 describe("helpers", function()
@@ -14,12 +15,12 @@ describe("helpers", function()
   end)
 
   local tbls = require("fzfx.lib.tables")
+  local strs = require("fzfx.lib.strings")
 
   require("fzfx.config").setup()
   require("fzfx.module").setup()
   local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
   local fzf_helpers = require("fzfx.fzf_helpers")
-  local utils = require("fzfx.utils")
 
   require("fzfx.log").setup({
     level = "INFO",
@@ -29,7 +30,7 @@ describe("helpers", function()
   describe("[make_last_query_cache]", function()
     it("makes", function()
       local actual = fzf_helpers.make_last_query_cache("test")
-      assert_true(utils.string_endswith(actual, "_test_last_query_cache"))
+      assert_true(strs.endswith(actual, "_test_last_query_cache"))
     end)
   end)
   describe("[get_command_feed]", function()
@@ -186,7 +187,7 @@ describe("helpers", function()
       print(string.format("make default opts: %s\n", vim.inspect(actual)))
       assert_eq(type(actual), "string")
       assert_true(string.len(actual --[[@as string]]) > 0)
-      assert_true(utils.string_find(actual, "--border") > 0)
+      assert_true(strs.find(actual, "--border") > 0)
     end)
   end)
   describe("[setup]", function()
@@ -197,7 +198,7 @@ describe("helpers", function()
       print(string.format("default fzf opts:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "string")
       assert_true(string.len(actual --[[@as string]]) > 0)
-      assert_true(utils.string_find(actual, "--border") > 0)
+      assert_true(strs.find(actual, "--border") > 0)
     end)
   end)
   describe("[make_lua_command]", function()
@@ -209,7 +210,7 @@ describe("helpers", function()
       assert_true(actual:gmatch("general") ~= nil)
       assert_true(actual:gmatch("provider") ~= nil)
       assert_true(
-        utils.string_find(actual, "nvim -n -u NONE --clean --headless -l") >= 1
+        strs.find(actual, "nvim -n -u NONE --clean --headless -l") >= 1
       )
     end)
   end)
@@ -232,7 +233,7 @@ describe("helpers", function()
       binder:append("a"):append("b")
       local actual = binder:build()
       assert_eq(actual[1], "--bind")
-      assert_true(utils.string_startswith(actual[2], "focus:a+b"))
+      assert_true(strs.startswith(actual[2], "focus:a+b"))
     end)
   end)
 end)

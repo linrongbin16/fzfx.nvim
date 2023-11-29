@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
 describe("general", function()
@@ -12,12 +13,13 @@ describe("general", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
   local tbls = require("fzfx.lib.tables")
+  local strs = require("fzfx.lib.strings")
+  local fs = require("fzfx.lib.filesystems")
+  local jsons = require("fzfx.lib.jsons")
+  local paths = require("fzfx.lib.paths")
   local general = require("fzfx.general")
-  local utils = require("fzfx.utils")
-  local path = require("fzfx.path")
   local schema = require("fzfx.schema")
   local conf = require("fzfx.config")
-  local json = require("fzfx.json")
   conf.setup()
 
   describe("[ProviderSwitch:new]", function()
@@ -36,10 +38,10 @@ describe("general", function()
       assert_eq(ps:switch("default"), nil)
       assert_eq(ps:provide("hello", {}), "plain")
       if not github_actions then
-        local meta1 = utils.readfile(general._provider_metafile())
-        local result1 = utils.readfile(general._provider_resultfile())
+        local meta1 = fs.readfile(general._provider_metafile())
+        local result1 = fs.readfile(general._provider_resultfile())
         print(string.format("metafile1:%s\n", meta1))
-        local metajson1 = json.decode(meta1) --[[@as table]]
+        local metajson1 = jsons.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "default")
         assert_eq(metajson1.provider_type, "plain")
@@ -67,15 +69,15 @@ describe("general", function()
       assert_eq(ps:switch("default"), nil)
       assert_eq(ps:provide("hello", {}), "plain_list")
       if not github_actions then
-        local meta2 = utils.readfile(general._provider_metafile())
-        local result2 = utils.readfile(general._provider_resultfile())
+        local meta2 = fs.readfile(general._provider_metafile())
+        local result2 = fs.readfile(general._provider_resultfile())
         print(string.format("metafile2:%s\n", meta2))
-        local metajson1 = json.decode(meta2) --[[@as table]]
+        local metajson1 = jsons.decode(meta2) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "default")
         assert_eq(metajson1.provider_type, "plain_list")
         print(string.format("resultfile2:%s\n", result2))
-        local resultjson2 = json.decode(result2) --[[@as table]]
+        local resultjson2 = jsons.decode(result2) --[[@as table]]
         assert_eq(type(resultjson2), "table")
         assert_eq(#resultjson2, 3)
         assert_eq(resultjson2[1], "ls")
@@ -106,10 +108,10 @@ describe("general", function()
       assert_eq(ps:switch("p1"), nil)
       assert_eq(ps:provide("hello", {}), "plain")
       if not github_actions then
-        local meta3 = utils.readfile(general._provider_metafile())
-        local result3 = utils.readfile(general._provider_resultfile())
+        local meta3 = fs.readfile(general._provider_metafile())
+        local result3 = fs.readfile(general._provider_resultfile())
         print(string.format("metafile3:%s\n", meta3))
-        local metajson1 = json.decode(meta3) --[[@as table]]
+        local metajson1 = jsons.decode(meta3) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "p1")
         assert_eq(metajson1.provider_type, "plain")
@@ -130,15 +132,15 @@ describe("general", function()
       assert_eq(ps:switch("p2"), nil)
       assert_eq(ps:provide("hello", {}), "plain_list")
       if not github_actions then
-        local meta4 = utils.readfile(general._provider_metafile())
-        local result4 = utils.readfile(general._provider_resultfile())
+        local meta4 = fs.readfile(general._provider_metafile())
+        local result4 = fs.readfile(general._provider_resultfile())
         print(string.format("metafile4:%s\n", meta4))
-        local metajson1 = json.decode(meta4) --[[@as table]]
+        local metajson1 = jsons.decode(meta4) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "p2")
         assert_eq(metajson1.provider_type, "plain_list")
         print(string.format("resultfile4:%s\n", result4))
-        local resultjson4 = json.decode(result4) --[[@as table]]
+        local resultjson4 = jsons.decode(result4) --[[@as table]]
         assert_eq(type(resultjson4), "table")
         assert_eq(#resultjson4, 3)
         assert_eq(resultjson4[1], "p2")
@@ -166,10 +168,10 @@ describe("general", function()
       print(string.format("GITHUB_ACTIONS:%s\n", os.getenv("GITHUB_ACTIONS")))
       assert_eq(ps:preview("hello", {}), "command")
       if not github_actions then
-        local meta1 = utils.readfile(general._previewer_metafile())
-        local result1 = utils.readfile(general._previewer_resultfile())
+        local meta1 = fs.readfile(general._previewer_metafile())
+        local result1 = fs.readfile(general._previewer_resultfile())
         print(string.format("metafile1:%s\n", meta1))
-        local metajson1 = json.decode(meta1) --[[@as table]]
+        local metajson1 = jsons.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "p1")
         assert_eq(metajson1.previewer_type, "command")
@@ -179,15 +181,15 @@ describe("general", function()
       ps:switch("p2")
       assert_eq(ps:preview("world", {}), "command_list")
       if not github_actions then
-        local meta2 = utils.readfile(general._previewer_metafile())
-        local result2 = utils.readfile(general._previewer_resultfile())
+        local meta2 = fs.readfile(general._previewer_metafile())
+        local result2 = fs.readfile(general._previewer_resultfile())
         print(string.format("metafile2:%s\n", meta2))
-        local metajson2 = json.decode(meta2) --[[@as table]]
+        local metajson2 = jsons.decode(meta2) --[[@as table]]
         assert_eq(type(metajson2), "table")
         assert_eq(metajson2.pipeline, "p2")
         assert_eq(metajson2.previewer_type, "command_list")
         print(string.format("resultfile2:%s\n", result2))
-        local resultjson2 = json.decode(result2) --[[@as table]]
+        local resultjson2 = jsons.decode(result2) --[[@as table]]
         assert_eq(type(resultjson2), "table")
         assert_eq(#resultjson2, 3)
         assert_eq(resultjson2[1], "ls")
@@ -212,10 +214,10 @@ describe("general", function()
       }, FZFPORTFILE)
       assert_eq(ps:preview("hello", {}), "command")
       if not github_actions then
-        local meta1 = utils.readfile(general._previewer_metafile())
-        local result1 = utils.readfile(general._previewer_resultfile())
+        local meta1 = fs.readfile(general._previewer_metafile())
+        local result1 = fs.readfile(general._previewer_resultfile())
         print(string.format("metafile:%s\n", meta1))
-        local metajson1 = json.decode(meta1) --[[@as table]]
+        local metajson1 = jsons.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
         assert_eq(metajson1.pipeline, "p1")
         assert_eq(metajson1.previewer_type, "command")
@@ -225,15 +227,15 @@ describe("general", function()
       ps:switch("p2")
       assert_eq(ps:preview("world", {}), "command_list")
       if not github_actions then
-        local meta2 = utils.readfile(general._previewer_metafile())
-        local result2 = utils.readfile(general._previewer_resultfile())
+        local meta2 = fs.readfile(general._previewer_metafile())
+        local result2 = fs.readfile(general._previewer_resultfile())
         print(string.format("metafile:%s\n", meta2))
-        local metajson2 = json.decode(meta2) --[[@as table]]
+        local metajson2 = jsons.decode(meta2) --[[@as table]]
         assert_eq(type(metajson2), "table")
         assert_eq(metajson2.pipeline, "p2")
         assert_eq(metajson2.previewer_type, "command_list")
         print(string.format("resultfile:%s\n", result2))
-        local resultjson2 = json.decode(result2) --[[@as table]]
+        local resultjson2 = jsons.decode(result2) --[[@as table]]
         assert_eq(type(resultjson2), "table")
         assert_eq(#resultjson2, 3)
         assert_eq(resultjson2[1], "ls")
@@ -294,7 +296,7 @@ describe("general", function()
     local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
     it("not previews label", function()
       local name = "label_test1"
-      utils.writefile(FZFPORTFILE, "12345")
+      fs.writefile(FZFPORTFILE, "12345")
       local ps = general.PreviewerSwitch:new(name, "p1", {
         p1 = {
           previewer = function()
@@ -315,7 +317,7 @@ describe("general", function()
     end)
     it("previews label", function()
       local name = "label_test2"
-      utils.writefile(FZFPORTFILE, "54321")
+      fs.writefile(FZFPORTFILE, "54321")
       local ps = general.PreviewerSwitch:new(name, "p1", {
         p1 = {
           previewer = function()
@@ -347,28 +349,21 @@ describe("general", function()
       print(string.format("render help1:%s\n", actual))
       assert_true(actual:gmatch("to doc1") ~= nil)
       assert_true(actual:gmatch("BS") ~= nil)
-      assert_true(
-        utils.string_find(actual, "to doc1") > utils.string_find(actual, "BS")
-      )
+      assert_true(strs.find(actual, "to doc1") > strs.find(actual, "BS"))
     end)
     it("renders2", function()
       local actual = general._render_help("do_it", "ctrl")
       print(string.format("render help2:%s\n", actual))
       assert_true(actual:gmatch("to do it") ~= nil)
       assert_true(actual:gmatch("CTRL") ~= nil)
-      assert_true(
-        utils.string_find(actual, "to do it")
-          > utils.string_find(actual, "CTRL")
-      )
+      assert_true(strs.find(actual, "to do it") > strs.find(actual, "CTRL"))
     end)
     it("renders3", function()
       local actual = general._render_help("ok_ok", "alt")
       print(string.format("render help3:%s\n", actual))
       assert_true(actual:gmatch("to ok ok") ~= nil)
       assert_true(actual:gmatch("ALT") ~= nil)
-      assert_true(
-        utils.string_find(actual, "to ok ok") > utils.string_find(actual, "ALT")
-      )
+      assert_true(strs.find(actual, "to ok ok") > strs.find(actual, "ALT"))
     end)
   end)
   describe("[_should_skip_help]", function()
@@ -399,15 +394,13 @@ describe("general", function()
       assert_eq(type(actual), "table")
       assert_eq(#actual, 2)
       assert_true(
-        utils.string_find(actual[1], "to action1")
-          > utils.string_find(actual[1], "CTRL-L")
+        strs.find(actual[1], "to action1") > strs.find(actual[1], "CTRL-L")
       )
-      assert_true(utils.string_endswith(actual[1], "to action1"))
+      assert_true(strs.endswith(actual[1], "to action1"))
       assert_true(
-        utils.string_find(actual[2], "to upper")
-          > utils.string_find(actual[2], "CTRL-U")
+        strs.find(actual[2], "to upper") > strs.find(actual[2], "CTRL-U")
       )
-      assert_true(utils.string_endswith(actual[2], "to upper"))
+      assert_true(strs.endswith(actual[2], "to upper"))
     end)
     it("make2", function()
       local action_configs = {
@@ -425,20 +418,17 @@ describe("general", function()
       assert_eq(type(actual), "table")
       assert_eq(#actual, 3)
       assert_true(
-        utils.string_find(actual[1], "to action1")
-          > utils.string_find(actual[1], "CTRL-L")
+        strs.find(actual[1], "to action1") > strs.find(actual[1], "CTRL-L")
       )
-      assert_true(utils.string_endswith(actual[1], "to action1"))
+      assert_true(strs.endswith(actual[1], "to action1"))
       assert_true(
-        utils.string_find(actual[2], "to goto inter")
-          > utils.string_find(actual[2], "ALT-P")
+        strs.find(actual[2], "to goto inter") > strs.find(actual[2], "ALT-P")
       )
-      assert_true(utils.string_endswith(actual[2], "to goto inter"))
+      assert_true(strs.endswith(actual[2], "to goto inter"))
       assert_true(
-        utils.string_find(actual[3], "to upper")
-          > utils.string_find(actual[3], "CTRL-U")
+        strs.find(actual[3], "to upper") > strs.find(actual[3], "CTRL-U")
       )
-      assert_true(utils.string_endswith(actual[3], "to upper"))
+      assert_true(strs.endswith(actual[3], "to upper"))
     end)
   end)
   describe("[_make_cache_filename]", function()
@@ -446,7 +436,10 @@ describe("general", function()
       vim.env._FZFX_NVIM_DEBUG_ENABLE = 1
       assert_eq(
         general._make_cache_filename("provider", "switch", "meta", "live_grep"),
-        path.join(conf.get_config().cache.dir, "provider_switch_meta_live_grep")
+        paths.join(
+          conf.get_config().cache.dir,
+          "provider_switch_meta_live_grep"
+        )
       )
     end)
     it("is not debug mode", function()
@@ -458,7 +451,10 @@ describe("general", function()
       )
       assert_true(
         actual
-          ~= path.join(vim.fn.stdpath("data"), "provider_switch_meta_live_grep")
+          ~= paths.join(
+            vim.fn.stdpath("data"),
+            "provider_switch_meta_live_grep"
+          )
       )
     end)
   end)

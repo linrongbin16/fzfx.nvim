@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
 describe("line_helpers", function()
@@ -9,9 +10,9 @@ describe("line_helpers", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
+  local strs = require("fzfx.lib.strings")
+  local paths = require("fzfx.lib.paths")
   local line_helpers = require("fzfx.line_helpers")
-  local path = require("fzfx.path")
-  local utils = require("fzfx.utils")
   local DEVICONS_PATH =
     "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
   describe("[parse_find]", function()
@@ -25,7 +26,7 @@ describe("line_helpers", function()
         "~/github/linrongbin16/fzfx.nvim/test/goodbye world/goodbye.lua",
       }
       for i, line in ipairs(lines) do
-        local expect = path.normalize(vim.fn.expand(line))
+        local expect = paths.normalize(vim.fn.expand(line))
         local actual1 = line_helpers.parse_find(expect)
         assert_eq(expect, actual1)
         local actual2 = line_helpers.parse_find(expect, { no_icon = true })
@@ -42,9 +43,10 @@ describe("line_helpers", function()
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/world.txt",
       }
       for i, line in ipairs(lines) do
-        local first_space_pos = utils.string_find(line, " ")
-        local expect =
-          path.normalize(vim.fn.expand(vim.trim(line:sub(first_space_pos + 1))))
+        local first_space_pos = strs.find(line, " ")
+        local expect = paths.normalize(
+          vim.fn.expand(vim.trim(line:sub(first_space_pos + 1)))
+        )
         local actual = line_helpers.parse_find(line)
         assert_eq(expect, actual)
       end
@@ -65,11 +67,11 @@ describe("line_helpers", function()
         assert_eq(type(actual.filename), "string")
         assert_eq(type(actual.lineno), "number")
 
-        local line_splits = utils.string_split(line, ":")
+        local line_splits = strs.split(line, ":")
         assert_eq(actual.lineno, tonumber(line_splits[2]))
         assert_eq(
           actual.filename,
-          path.normalize(vim.fn.expand(line_splits[1]))
+          paths.normalize(vim.fn.expand(line_splits[1]))
         )
       end
     end)
@@ -87,7 +89,7 @@ describe("line_helpers", function()
         assert_eq(type(actual), "table")
         assert_eq(type(actual.filename), "string")
         assert_eq(type(actual.lineno), "number")
-        local line_splits = utils.string_split(line, ":")
+        local line_splits = strs.split(line, ":")
         assert_eq(actual.lineno, tonumber(line_splits[2]))
         assert_eq(actual.filename, line_helpers.parse_find(line_splits[1]))
       end
@@ -109,7 +111,7 @@ describe("line_helpers", function()
         assert_eq(type(actual.filename), "string")
         assert_eq(type(actual.lineno), "number")
         assert_eq(type(actual.column), "number")
-        local line_splits = utils.string_split(line, ":")
+        local line_splits = strs.split(line, ":")
         assert_eq(actual.filename, line_helpers.parse_find(line_splits[1]))
         assert_eq(actual.lineno, tonumber(line_splits[2]))
         assert_eq(actual.column, tonumber(line_splits[3]))
@@ -130,7 +132,7 @@ describe("line_helpers", function()
         assert_eq(type(actual.filename), "string")
         assert_eq(type(actual.lineno), "number")
         assert_eq(type(actual.column), "number")
-        local line_splits = utils.string_split(line, ":")
+        local line_splits = strs.split(line, ":")
         assert_eq(actual.filename, line_helpers.parse_find(line_splits[1]))
         assert_eq(actual.lineno, tonumber(line_splits[2]))
         assert_eq(actual.column, tonumber(line_splits[3]))
@@ -266,13 +268,13 @@ describe("line_helpers", function()
         ":Next             N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124",
       }
       for _, line in ipairs(lines) do
-        local last_space = utils.string_rfind(line, " ")
-        local expect_splits = utils.string_split(line:sub(last_space + 1), ":")
+        local last_space = strs.rfind(line, " ")
+        local expect_splits = strs.split(line:sub(last_space + 1), ":")
         local actual = line_helpers.parse_vim_command(line, CONTEXT)
         assert_eq(type(actual), "table")
         assert_eq(
           actual.filename,
-          path.normalize(expect_splits[1], { expand = true })
+          paths.normalize(expect_splits[1], { expand = true })
         )
         assert_eq(actual.lineno, tonumber(expect_splits[2]))
       end
@@ -282,8 +284,7 @@ describe("line_helpers", function()
         ':bdelete          N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
       }
       for _, line in ipairs(lines) do
-        local double_quote_before_last =
-          utils.string_rfind(line, '"', #line - 1)
+        local double_quote_before_last = strs.rfind(line, '"', #line - 1)
         local expect =
           vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
         local actual = line_helpers.parse_vim_command(line, CONTEXT)
@@ -298,13 +299,13 @@ describe("line_helpers", function()
         "Barbecue          Y   |Y  |N/A  |N/A  |N/A              ~/.config/nvim/lazy/barbecue/lua/barbecue.lua:73",
       }
       for _, line in ipairs(lines) do
-        local last_space = utils.string_rfind(line, " ")
-        local expect_splits = utils.string_split(line:sub(last_space + 1), ":")
+        local last_space = strs.rfind(line, " ")
+        local expect_splits = strs.split(line:sub(last_space + 1), ":")
         local actual = line_helpers.parse_vim_command(line, CONTEXT)
         assert_eq(type(actual), "table")
         assert_eq(
           actual.filename,
-          path.normalize(expect_splits[1], { expand = true })
+          paths.normalize(expect_splits[1], { expand = true })
         )
         assert_eq(actual.lineno, tonumber(expect_splits[2]))
       end
@@ -314,8 +315,7 @@ describe("line_helpers", function()
         'Bdelete           N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
       }
       for _, line in ipairs(lines) do
-        local double_quote_before_last =
-          utils.string_rfind(line, '"', #line - 1)
+        local double_quote_before_last = strs.rfind(line, '"', #line - 1)
         local expect =
           vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
         local actual = line_helpers.parse_vim_command(line, CONTEXT)
@@ -338,13 +338,13 @@ describe("line_helpers", function()
         "<Plug>(YankyGPutAfterShiftRight)             n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369",
       }
       for _, line in ipairs(lines) do
-        local last_space = utils.string_rfind(line, " ")
-        local expect_splits = utils.string_split(line:sub(last_space + 1), ":")
+        local last_space = strs.rfind(line, " ")
+        local expect_splits = strs.split(line:sub(last_space + 1), ":")
         local actual = line_helpers.parse_vim_keymap(line, CONTEXT)
         assert_eq(type(actual), "table")
         assert_eq(
           actual.filename,
-          path.normalize(expect_splits[1], { expand = true })
+          paths.normalize(expect_splits[1], { expand = true })
         )
         assert_eq(actual.lineno, tonumber(expect_splits[2]))
       end
@@ -356,8 +356,7 @@ describe("line_helpers", function()
         '<2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"',
       }
       for _, line in ipairs(lines) do
-        local double_quote_before_last =
-          utils.string_rfind(line, '"', #line - 1)
+        local double_quote_before_last = strs.rfind(line, '"', #line - 1)
         local expect =
           vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
         local actual = line_helpers.parse_vim_keymap(line, CONTEXT)

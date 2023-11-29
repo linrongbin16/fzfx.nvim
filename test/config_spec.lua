@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-field, unused-local
+---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
 describe("config", function()
@@ -23,12 +23,14 @@ describe("config", function()
   end
 
   local tbls = require("fzfx.lib.tables")
-  local constants = require("fzfx.constants")
+  local consts = require("fzfx.lib.constants")
+  local strs = require("fzfx.lib.strings")
+  local paths = require("fzfx.lib.paths")
+  local colors = require("fzfx.lib.colors")
+
   local conf = require("fzfx.config")
   conf.setup()
   local fzf_helpers = require("fzfx.fzf_helpers")
-  local utils = require("fzfx.utils")
-  local path = require("fzfx.path")
   describe("[setup]", function()
     it("setup with default configs", function()
       conf.setup()
@@ -130,10 +132,10 @@ describe("config", function()
           assert_eq(actual[4], "--color=always")
           assert_eq(actual[5], "--pager=never")
           assert_eq(actual[6], "--")
-          assert_eq(actual[7], path.normalize(line, { expand = true }))
+          assert_eq(actual[7], paths.normalize(line, { expand = true }))
         else
           assert_eq(actual[1], "cat")
-          assert_eq(actual[2], path.normalize(line, { expand = true }))
+          assert_eq(actual[2], paths.normalize(line, { expand = true }))
         end
       end
     end)
@@ -154,18 +156,18 @@ describe("config", function()
         assert_eq(actual[7], "-S")
         assert_eq(actual[8], "hello")
       else
-        assert_eq(actual[1], constants.grep)
+        assert_eq(actual[1], consts.GREP)
         assert_eq(actual[2], "--color=always")
         assert_eq(actual[3], "-n")
         assert_eq(actual[4], "-H")
         assert_eq(actual[5], "-r")
         assert_eq(
           actual[6],
-          "--exclude-dir=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]])
+          "--exclude-dir=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]])
         )
         assert_eq(
           actual[7],
-          "--exclude=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]])
+          "--exclude=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]])
         )
         assert_eq(actual[8], "hello")
       end
@@ -181,7 +183,7 @@ describe("config", function()
       for _, line in ipairs(lines) do
         local actual = conf._file_previewer_grep(line)
         local expect =
-          path.normalize(utils.string_split(line, ":")[1], { expand = true })
+          paths.normalize(strs.split(line, ":")[1], { expand = true })
         print(string.format("normalize:%s\n", vim.inspect(expect)))
         print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
         if actual[1] == "bat" then
@@ -190,9 +192,9 @@ describe("config", function()
           assert_eq(actual[3], "--theme=base16")
           assert_eq(actual[4], "--color=always")
           assert_eq(actual[5], "--pager=never")
-          assert_true(utils.string_startswith(actual[6], "--highlight-line"))
+          assert_true(strs.startswith(actual[6], "--highlight-line"))
           assert_eq(actual[7], "--")
-          assert_true(utils.string_startswith(actual[8], expect))
+          assert_true(strs.startswith(actual[8], expect))
         else
           assert_eq(actual[1], "cat")
           assert_eq(actual[2], expect)
@@ -215,7 +217,7 @@ describe("config", function()
         assert_eq(actual[8], "-uu")
         assert_eq(actual[9], "hello")
       else
-        assert_eq(actual[1], constants.grep)
+        assert_eq(actual[1], consts.GREP)
         assert_eq(actual[2], "--color=always")
         assert_eq(actual[3], "-n")
         assert_eq(actual[4], "-H")
@@ -240,7 +242,7 @@ describe("config", function()
         assert_eq(actual[9], "hello")
         assert_eq(actual[10], "README.md")
       else
-        assert_eq(actual[1], constants.grep)
+        assert_eq(actual[1], consts.GREP)
         assert_eq(actual[2], "--color=always")
         assert_eq(actual[3], "-n")
         assert_eq(actual[4], "-H")
@@ -327,7 +329,7 @@ describe("config", function()
       }
       for i, line in ipairs(lines) do
         local actual = conf._git_branches_previewer(line)
-        assert_true(utils.string_find(actual, "git log --pretty") == 1)
+        assert_true(strs.find(actual, "git log --pretty") == 1)
       end
     end)
   end)
@@ -341,11 +343,11 @@ describe("config", function()
         local actual = conf._make_git_commits_previewer(line)
         if actual ~= nil then
           assert_eq(type(actual), "string")
-          assert_true(utils.string_find(actual, "git show") > 0)
+          assert_true(strs.find(actual, "git show") > 0)
           if vim.fn.executable("delta") > 0 then
-            assert_true(utils.string_find(actual, "delta") > 0)
+            assert_true(strs.find(actual, "delta") > 0)
           else
-            assert_true(utils.string_find(actual, "delta") == nil)
+            assert_true(strs.find(actual, "delta") == nil)
           end
         end
       end
@@ -360,11 +362,11 @@ describe("config", function()
         local actual = conf._git_commits_previewer(line)
         if actual ~= nil then
           assert_eq(type(actual), "string")
-          assert_true(utils.string_find(actual, "git show") > 0)
+          assert_true(strs.find(actual, "git show") > 0)
           if vim.fn.executable("delta") > 0 then
-            assert_true(utils.string_find(actual, "delta") > 0)
+            assert_true(strs.find(actual, "delta") > 0)
           else
-            assert_true(utils.string_find(actual, "delta") == nil)
+            assert_true(strs.find(actual, "delta") == nil)
           end
         end
       end
@@ -376,7 +378,7 @@ describe("config", function()
         assert_eq(type(actual), "table")
         assert_eq(actual[1], "git")
         assert_eq(actual[2], "log")
-        assert_true(utils.string_startswith(actual[3], "--pretty="))
+        assert_true(strs.startswith(actual[3], "--pretty="))
         assert_eq(actual[4], "--date=short")
         assert_eq(actual[5], "--color=always")
       end
@@ -388,11 +390,11 @@ describe("config", function()
         assert_eq(type(actual), "table")
         assert_eq(actual[1], "git")
         assert_eq(actual[2], "log")
-        assert_true(utils.string_startswith(actual[3], "--pretty="))
+        assert_true(strs.startswith(actual[3], "--pretty="))
         assert_eq(actual[4], "--date=short")
         assert_eq(actual[5], "--color=always")
         assert_eq(actual[6], "--")
-        assert_true(utils.string_endswith(actual[7], "README.md"))
+        assert_true(strs.endswith(actual[7], "README.md"))
       end
     end)
   end)
@@ -401,16 +403,15 @@ describe("config", function()
       local actual = conf._git_blame_provider("", make_default_context())
       if actual ~= nil then
         assert_eq(type(actual), "string")
-        assert_true(utils.string_find(actual, "git blame") == 1)
-        if constants.has_delta then
+        assert_true(strs.find(actual, "git blame") == 1)
+        if consts.HAS_DELTA then
           assert_true(
-            utils.string_find(actual, "delta -n --tabs 4 --blame-format")
+            strs.find(actual, "delta -n --tabs 4 --blame-format")
               > string.len("git blame")
           )
         else
           assert_true(
-            utils.string_find(actual, "git blame --date=short --color-lines")
-              == 1
+            strs.find(actual, "git blame --date=short --color-lines") == 1
           )
         end
       end
@@ -433,11 +434,11 @@ describe("config", function()
       for _, line in ipairs(lines) do
         local actual = conf._git_status_previewer(line)
         assert_eq(type(actual), "string")
-        assert_true(utils.string_find(actual, "git diff") > 0)
+        assert_true(strs.find(actual, "git diff") > 0)
         if vim.fn.executable("delta") > 0 then
-          assert_true(utils.string_find(actual, "delta") > 0)
+          assert_true(strs.find(actual, "delta") > 0)
         else
-          assert_true(utils.string_find(actual, "delta") == nil)
+          assert_true(strs.find(actual, "delta") == nil)
         end
       end
     end)
@@ -519,10 +520,10 @@ describe("config", function()
         local actual3 = conf._parse_ex_command_output_header(line)
         assert_eq(type(actual3), "table")
         assert_eq(actual3.name_pos, 1)
-        assert_eq(actual3.args_pos, utils.string_find(line, "Args"))
-        assert_eq(actual3.address_pos, utils.string_find(line, "Address"))
-        assert_eq(actual3.complete_pos, utils.string_find(line, "Complete"))
-        assert_eq(actual3.definition_pos, utils.string_find(line, "Definition"))
+        assert_eq(actual3.args_pos, strs.find(line, "Args"))
+        assert_eq(actual3.address_pos, strs.find(line, "Address"))
+        assert_eq(actual3.complete_pos, strs.find(line, "Complete"))
+        assert_eq(actual3.definition_pos, strs.find(line, "Definition"))
       end
     )
     it("_parse_ex_command_output_lua_function_definition", function()
@@ -545,7 +546,7 @@ describe("config", function()
         "                                               Find buffers",
         "                                               Find buffers by yank text",
       }
-      local def_pos = utils.string_find(header, "Definition")
+      local def_pos = strs.find(header, "Definition")
       for _, line in ipairs(success_lines) do
         local actual =
           conf._parse_ex_command_output_lua_function_definition(line, def_pos)
@@ -685,17 +686,17 @@ describe("config", function()
       -- )
       assert_eq(type(actual), "table")
       assert_eq(#actual, 3)
-      assert_true(utils.string_startswith(actual[1], "Name"))
-      assert_true(utils.string_endswith(actual[1], "Definition/Location"))
-      assert_true(utils.string_startswith(actual[2], "FzfxGBranches"))
+      assert_true(strs.startswith(actual[1], "Name"))
+      assert_true(strs.endswith(actual[1], "Definition/Location"))
+      assert_true(strs.startswith(actual[2], "FzfxGBranches"))
       local expect = string.format(
         "%s:%d",
-        path.reduce(commands[1].loc.filename),
+        paths.reduce(commands[1].loc.filename),
         commands[1].loc.lineno
       )
-      assert_true(utils.string_endswith(actual[2], expect))
-      assert_true(utils.string_startswith(actual[3], "bnext"))
-      assert_true(utils.string_endswith(actual[3], '"next buffer"'))
+      assert_true(strs.endswith(actual[2], expect))
+      assert_true(strs.startswith(actual[3], "bnext"))
+      assert_true(strs.endswith(actual[3], '"next buffer"'))
     end)
     it("_vim_commands_lua_function_previewer", function()
       local actual =
@@ -709,7 +710,7 @@ describe("config", function()
         assert_eq(actual[5], "--pager=never")
         assert_eq(actual[6], "--highlight-line=13")
         assert_eq(actual[7], "--line-range")
-        assert_true(utils.string_endswith(actual[8], ":"))
+        assert_true(strs.endswith(actual[8], ":"))
         assert_eq(actual[9], "--")
         assert_eq(actual[10], "lua/fzfx/config.lua")
       else
@@ -739,7 +740,7 @@ describe("config", function()
         assert_eq(type(act.name), "string")
         assert_true(string.len(act.name) > 0)
         assert_true(vim.fn.exists(":" .. act.name) >= 0)
-        if utils.string_isalpha(act.name:sub(1, 1)) and act.name ~= "range" then
+        if strs.isalpha(act.name:sub(1, 1)) and act.name ~= "range" then
           assert_true(vim.fn.exists(":" .. act.name) > 0)
         end
       end
@@ -755,13 +756,13 @@ describe("config", function()
         assert_true(sign_item.severity >= 1 and sign_item.severity <= 4)
         assert_true(
           string.len(sign_item.name) > 0
-            and utils.string_startswith(sign_item.name, "DiagnosticSign")
+            and strs.startswith(sign_item.name, "DiagnosticSign")
         )
         assert_true(
-          utils.string_endswith(sign_item.name, "Error")
-            or utils.string_endswith(sign_item.name, "Warn")
-            or utils.string_endswith(sign_item.name, "Info")
-            or utils.string_endswith(sign_item.name, "Hint")
+          strs.endswith(sign_item.name, "Error")
+            or strs.endswith(sign_item.name, "Warn")
+            or strs.endswith(sign_item.name, "Info")
+            or strs.endswith(sign_item.name, "Hint")
         )
       end
     end)
@@ -832,12 +833,12 @@ describe("config", function()
       local loc = conf._lsp_location_render_line(
         'describe("_lsp_location_render_line", function()',
         r,
-        require("fzfx.color").red
+        colors.red
       )
       -- print(string.format("lsp render line:%s\n", vim.inspect(loc)))
       assert_eq(type(loc), "string")
-      assert_true(utils.string_startswith(loc, "describe"))
-      assert_true(utils.string_endswith(loc, "function()"))
+      assert_true(strs.startswith(loc, "describe"))
+      assert_true(strs.endswith(loc, "function()"))
     end)
     it("renders location", function()
       local actual = conf._render_lsp_location_line(LOCATION)
@@ -870,7 +871,7 @@ describe("config", function()
       assert_eq(type(ctx.position_params.textDocument), "table")
       assert_eq(type(ctx.position_params.textDocument.uri), "string")
       assert_true(
-        utils.string_endswith(ctx.position_params.textDocument.uri, "README.md")
+        strs.endswith(ctx.position_params.textDocument.uri, "README.md")
       )
     end)
     it("_make_lsp_locations_provider", function()
@@ -934,10 +935,10 @@ describe("config", function()
         --         vim.inspect(actual)
         --     )
         -- )
-        if not utils.string_isspace(line:sub(1, 1)) then
+        if not strs.isspace(line:sub(1, 1)) then
           assert_true(string.len(actual.lhs) > 0)
-          assert_true(utils.string_find(line, actual.lhs) > 2)
-          if utils.string_find(line, "<Lua ") ~= nil then
+          assert_true(strs.find(line, actual.lhs) > 2)
+          if strs.find(line, "<Lua ") ~= nil then
             assert_true(string.len(actual.filename) > 0)
             assert_eq(type(actual.lineno), "number")
           end
@@ -1052,8 +1053,8 @@ describe("config", function()
       -- print(string.format("render vim keymaps:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       assert_true(#actual >= 1)
-      assert_true(utils.string_startswith(actual[1], "Key"))
-      assert_true(utils.string_endswith(actual[1], "Definition/Location"))
+      assert_true(strs.startswith(actual[1], "Key"))
+      assert_true(strs.endswith(actual[1], "Definition/Location"))
       for i = 2, #actual do
         assert_true(string.len(actual[i]) > 0)
       end
@@ -1080,7 +1081,7 @@ describe("config", function()
         assert_eq(actual[5], "--pager=never")
         assert_eq(actual[6], "--highlight-line=13")
         assert_eq(actual[7], "--line-range")
-        assert_true(utils.string_endswith(actual[8], ":"))
+        assert_true(strs.endswith(actual[8], ":"))
         assert_eq(actual[9], "--")
         assert_eq(actual[10], "lua/fzfx/config.lua")
       else
@@ -1148,16 +1149,14 @@ describe("config", function()
       --     )
       -- )
       assert_eq(type(actual1), "string")
-      assert_true(utils.string_find(actual1, "echo") > 0)
+      assert_true(strs.find(actual1, "echo") > 0)
       assert_true(
-        type(utils.string_find(actual1, "eza")) == "number"
-          or type(utils.string_find(actual1, "ls")) == "number"
+        type(strs.find(actual1, "eza")) == "number"
+          or type(strs.find(actual1, "ls")) == "number"
       )
       assert_true(
-        utils.string_find(
-          actual1,
-          path.normalize(vim.fn.getcwd(), { expand = true })
-        ) > 0
+        strs.find(actual1, paths.normalize(vim.fn.getcwd(), { expand = true }))
+          > 0
       )
       local f2 = conf._make_file_explorer_provider("-lha")
       assert_eq(type(f2), "function")
@@ -1169,16 +1168,14 @@ describe("config", function()
       --     )
       -- )
       assert_eq(type(actual2), "string")
-      assert_true(utils.string_find(actual2, "echo") > 0)
+      assert_true(strs.find(actual2, "echo") > 0)
       assert_true(
-        type(utils.string_find(actual2, "eza")) == "number"
-          or type(utils.string_find(actual2, "ls")) == "number"
+        type(strs.find(actual2, "eza")) == "number"
+          or type(strs.find(actual2, "ls")) == "number"
       )
       assert_true(
-        utils.string_find(
-          actual2,
-          path.normalize(vim.fn.getcwd(), { expand = true })
-        ) > 0
+        strs.find(actual2, paths.normalize(vim.fn.getcwd(), { expand = true }))
+          > 0
       )
     end)
     it("_directory_previewer", function()
@@ -1201,7 +1198,7 @@ describe("config", function()
     end)
     it("_make_filename_by_file_explorer_context", function()
       local ctx = conf._file_explorer_context_maker()
-      if constants.has_lsd then
+      if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = conf._make_filename_by_file_explorer_context(line, ctx)
           -- print(
@@ -1212,7 +1209,7 @@ describe("config", function()
             vim.fn.filereadable(actual) > 0 or vim.fn.isdirectory(actual) > 0
           )
         end
-      elseif constants.has_eza then
+      elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = conf._make_filename_by_file_explorer_context(line, ctx)
           assert_eq(type(actual), "string")
@@ -1238,7 +1235,7 @@ describe("config", function()
     end)
     it("_file_explorer_previewer", function()
       local ctx = conf._file_explorer_context_maker()
-      if constants.has_lsd then
+      if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = conf._file_explorer_previewer(line, ctx)
           if actual ~= nil then
@@ -1248,7 +1245,7 @@ describe("config", function()
             )
           end
         end
-      elseif constants.has_eza then
+      elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = conf._file_explorer_previewer(line, ctx)
           if actual ~= nil then
@@ -1275,9 +1272,9 @@ describe("config", function()
     end)
     it("_edit_file_explorer", function()
       local ctx = conf._file_explorer_context_maker()
-      if constants.has_lsd then
+      if consts.HAS_LSD then
         local actual = conf._edit_file_explorer(LSD_LINES, ctx)
-      elseif constants.has_eza then
+      elseif consts.HAS_EZA then
         local actual = conf._edit_file_explorer(EZA_LINES, ctx)
       else
         local actual = conf._edit_file_explorer(LS_LINES, ctx)
@@ -1286,12 +1283,12 @@ describe("config", function()
     end)
     it("_cd_file_explorer", function()
       local ctx = conf._file_explorer_context_maker()
-      if constants.has_lsd then
+      if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = conf._cd_file_explorer(line, ctx)
           assert_true(actual == nil)
         end
-      elseif constants.has_eza then
+      elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = conf._cd_file_explorer(line, ctx)
           assert_true(actual == nil)
@@ -1305,12 +1302,12 @@ describe("config", function()
     end)
     it("_upper_file_explorer", function()
       local ctx = conf._file_explorer_context_maker()
-      if constants.has_lsd then
+      if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = conf._upper_file_explorer(line, ctx)
           assert_true(actual == nil)
         end
-      elseif constants.has_eza then
+      elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = conf._upper_file_explorer(line, ctx)
           assert_true(actual == nil)

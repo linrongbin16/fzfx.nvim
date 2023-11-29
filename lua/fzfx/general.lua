@@ -7,6 +7,7 @@ local strs = require("fzfx.lib.strings")
 local fs = require("fzfx.lib.filesystems")
 local nvims = require("fzfx.lib.nvims")
 local tbls = require("fzfx.lib.tables")
+local spawn = require("fzfx.lib.spawn")
 
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
@@ -536,7 +537,7 @@ local function _send_http_post(port, body)
   -- if SendHttpPostContext.send then
   --     return
   -- end
-  local asp = require("fzfx.spawn").Spawn:make({
+  local sp = spawn.Spawn:make({
     "curl",
     "-s",
     "-S",
@@ -556,18 +557,22 @@ local function _send_http_post(port, body)
     string.format("127.0.0.1:%s", vim.trim(port)),
     "-d",
     body,
-  }, function(line)
-    -- log.debug(
-    --     "|fzfx.fzf_helpers - send_http_post| stdout:%s",
-    --     vim.inspect(line)
-    -- )
-  end, function(line)
-    -- log.debug(
-    --     "|fzfx.fzf_helpers - send_http_post| stderr:%s",
-    --     vim.inspect(line)
-    -- )
-  end, false) --[[@as Spawn]]
-  asp:run()
+  }, {
+    on_stdout = function(line)
+      -- log.debug(
+      --     "|fzfx.fzf_helpers - send_http_post| stdout:%s",
+      --     vim.inspect(line)
+      -- )
+    end,
+    on_stderr = function(line)
+      -- log.debug(
+      --     "|fzfx.fzf_helpers - send_http_post| stderr:%s",
+      --     vim.inspect(line)
+      -- )
+    end,
+    blocking = false,
+  })
+  sp:run()
 end
 
 --- @param line string?
