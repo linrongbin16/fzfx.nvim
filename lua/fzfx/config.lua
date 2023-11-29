@@ -633,7 +633,8 @@ end
 --- @return table<string, VimCommand>
 local function _get_vim_ex_commands()
   local help_docs_list =
-    vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
+    ---@diagnostic disable-next-line: param-type-mismatch
+    vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1) --[[@as table]]
   log.debug(
     "|fzfx.config - _get_vim_ex_commands| help docs:%s",
     vim.inspect(help_docs_list)
