@@ -1,6 +1,6 @@
 local consts = require("fzfx.lib.constants")
 local utils = require("fzfx.utils")
-local cmd = require("fzfx.cmd")
+local cmds = require("fzfx.lib.commands")
 local env = require("fzfx.env")
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
@@ -346,8 +346,8 @@ local default_git_root_error = "not in git repo."
 local function _make_git_files_provider(opts)
   --- @return string[]|nil
   local function impl()
-    local git_root_cmd = cmd.GitRootCmd:run()
-    if git_root_cmd:wrong() then
+    local git_root_cmd = cmds.GitRootCommand:run()
+    if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, default_git_root_error)
       return nil
     end
@@ -366,8 +366,8 @@ end
 --- @param context PipelineContext
 --- @return string[]|nil
 local function _git_live_grep_provider(query, context)
-  local git_root_cmd = cmd.GitRootCmd:run()
-  if git_root_cmd:wrong() then
+  local git_root_cmd = cmds.GitRootCommand:run()
+  if git_root_cmd:failed() then
     log.echo(LogLevels.INFO, default_git_root_error)
     return nil
   end
@@ -396,13 +396,13 @@ end
 --- @param opts {remote_branch:boolean?}?
 local function _make_git_branches_provider(opts)
   local function impl()
-    local git_root_cmd = cmd.GitRootCmd:run()
-    if git_root_cmd:wrong() then
+    local git_root_cmd = cmds.GitRootCommand:run()
+    if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, default_git_root_error)
       return nil
     end
-    local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
-    if git_current_branch_cmd:wrong() then
+    local git_current_branch_cmd = cmds.GitCurrentBranchCommand:run()
+    if git_current_branch_cmd:failed() then
       log.echo(
         LogLevels.WARN,
         table.concat(git_current_branch_cmd.result.stderr, " ")
@@ -412,19 +412,19 @@ local function _make_git_branches_provider(opts)
     local branch_results = {}
     table.insert(
       branch_results,
-      string.format("* %s", git_current_branch_cmd:value())
+      string.format("* %s", git_current_branch_cmd:output())
     )
-    local git_branch_cmd = cmd.GitBranchCmd:run(
+    local git_branches_cmd = cmds.GitBranchesCommand:run(
       (type(opts) == "table" and opts.remote_branch) and true or false
     )
-    if git_branch_cmd.result:wrong() then
+    if git_branches_cmd:failed() then
       log.echo(
         LogLevels.WARN,
         table.concat(git_current_branch_cmd.result.stderr, " ")
       )
       return nil
     end
-    for _, line in ipairs(git_branch_cmd.result.stdout) do
+    for _, line in ipairs(git_branches_cmd.result.stdout) do
       if vim.trim(line):sub(1, 1) ~= "*" then
         table.insert(branch_results, string.format("  %s", vim.trim(line)))
       end
@@ -459,8 +459,8 @@ local function _make_git_commits_provider(opts)
   --- @param context PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local git_root_cmd = cmd.GitRootCmd:run()
-    if git_root_cmd:wrong() then
+    local git_root_cmd = cmds.GitRootCommand:run()
+    if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, default_git_root_error)
       return nil
     end
@@ -534,8 +534,8 @@ end
 --- @param context PipelineContext
 --- @return string?
 local function _git_blame_provider(query, context)
-  local git_root_cmd = cmd.GitRootCmd:run()
-  if git_root_cmd:wrong() then
+  local git_root_cmd = cmds.GitRootCommand:run()
+  if git_root_cmd:failed() then
     log.echo(LogLevels.INFO, default_git_root_error)
     return nil
   end
@@ -575,8 +575,8 @@ end
 --- @return fun():string[]|nil
 local function _make_git_status_provider(opts)
   local function impl()
-    local git_root_cmd = cmd.GitRootCmd:run()
-    if git_root_cmd:wrong() then
+    local git_root_cmd = cmds.GitRootCommand:run()
+    if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, default_git_root_error)
       return nil
     end
@@ -3366,15 +3366,15 @@ local Defaults = {
       default_fzf_options.no_multi,
       { "--prompt", "Git Branches > " },
       function()
-        local git_root_cmd = cmd.GitRootCmd:run()
-        if git_root_cmd:wrong() then
+        local git_root_cmd = cmds.GitRootCommand:run()
+        if git_root_cmd:failed() then
           return nil
         end
-        local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
-        if git_current_branch_cmd:wrong() then
+        local git_current_branch_cmd = cmds.GitCurrentBranchCommand:run()
+        if git_current_branch_cmd:failed() then
           return nil
         end
-        return utils.string_not_empty(git_current_branch_cmd:value())
+        return utils.string_not_empty(git_current_branch_cmd:output())
             and "--header-lines=1"
           or nil
       end,
