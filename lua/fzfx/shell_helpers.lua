@@ -1,6 +1,6 @@
--- infra utils {
-
 local M = {}
+
+-- infra utils {
 
 M.IS_WINDOWS = vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0
 
@@ -161,25 +161,5 @@ M.prepend_path_with_icon = function(line, delimiter, pos)
 end
 
 -- icon render }
-
--- local M = {
---   setup = setup,
---   log_debug = log_debug,
---   log_err = log_err,
---   log_throw = log_throw,
---   log_ensure = log_ensure,
---   json = require("fzfx.json"),
---   prepend_path_with_icon = prepend_path_with_icon,
---   Cmd = require("fzfx.cmd").Cmd,
---   GitRootCmd = require("fzfx.cmd").GitRootCmd,
---   GitBranchCmd = require("fzfx.cmd").GitBranchCmd,
---   GitCurrentBranchCmd = require("fzfx.cmd").GitCurrentBranchCmd,
---   string_ltrim = require("fzfx.utils").string_ltrim,
---   string_rtrim = require("fzfx.utils").string_rtrim,
---   FileLineReader = require("fzfx.utils").FileLineReader,
---   readfile = require("fzfx.utils").readfile,
---   writefile = require("fzfx.utils").writefile,
---   Spawn = require("fzfx.spawn").Spawn,
--- }
 
 return M
