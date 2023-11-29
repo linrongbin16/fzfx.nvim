@@ -5,7 +5,7 @@ local paths = require("fzfx.lib.paths")
 local conf = require("fzfx.config")
 local log = require("fzfx.log")
 
---- @class Yank
+--- @class fzfx.Yank
 --- @field regname string
 --- @field regtext string
 --- @field regtype string
@@ -19,7 +19,7 @@ local Yank = {}
 --- @param regtype string
 --- @param filename string?
 --- @param filetype string?
---- @return Yank
+--- @return fzfx.Yank
 function Yank:new(regname, regtext, regtype, filename, filetype)
   local o = {
     regname = regname,
@@ -49,14 +49,14 @@ function YankHistory:new(maxsize)
   return o
 end
 
---- @param y Yank
+--- @param y fzfx.Yank
 --- @return integer
 function YankHistory:push(y)
   return self.ring_buffer:push(y)
 end
 
 --- @param pos integer?
---- @return Yank?
+--- @return fzfx.Yank?
 function YankHistory:get(pos)
   return self.ring_buffer:get(pos)
 end
@@ -125,7 +125,7 @@ local function save_yank()
   return YankHistoryInstance:push(y)
 end
 
---- @return Yank?
+--- @return fzfx.Yank?
 local function get_yank()
   log.ensure(
     YankHistoryInstance ~= nil,

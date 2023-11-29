@@ -57,8 +57,8 @@ shell_helpers.log_ensure(
   "metajsonstring is not string! %s",
   vim.inspect(metajsonstring)
 )
---- @type ProviderMetaOpts
-local metaopts = jsons.decode(metajsonstring) --[[@as ProviderMetaOpts]]
+--- @type fzfx.ProviderMetaOpts
+local metaopts = jsons.decode(metajsonstring) --[[@as fzfx.ProviderMetaOpts]]
 shell_helpers.log_debug("metaopt:[%s]", vim.inspect(metaopts))
 
 --- @param line string?

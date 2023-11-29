@@ -325,14 +325,14 @@ local function make_lua_command(...)
   return result
 end
 
---- @alias FzfOptEvent "focus"|"load"|"zero"|"change"|"start"
---- @class FzfOptEventBinder
---- @field event FzfOptEvent
+--- @alias fzfx.FzfOptEvent "focus"|"load"|"zero"|"change"|"start"
+--- @class fzfx.FzfOptEventBinder
+--- @field event fzfx.FzfOptEvent
 --- @field opts string[]
 local FzfOptEventBinder = {}
 
---- @param event FzfOptEvent
---- @return FzfOptEventBinder
+--- @param event fzfx.FzfOptEvent
+--- @return fzfx.FzfOptEventBinder
 function FzfOptEventBinder:new(event)
   local o = {
     event = event,
@@ -344,7 +344,7 @@ function FzfOptEventBinder:new(event)
 end
 
 --- @param opt string
---- @return FzfOptEventBinder
+--- @return fzfx.FzfOptEventBinder
 function FzfOptEventBinder:append(opt)
   log.ensure(
     strs.not_blank(opt),

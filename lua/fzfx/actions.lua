@@ -28,7 +28,7 @@ end
 
 -- Run 'edit' vim command on fd/find results.
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_find(lines, context)
   local edit_commands = _make_edit_find_commands(lines)
   ui.confirm_discard_buffer_modified(context.bufnr, function()
@@ -42,21 +42,21 @@ end
 
 --- @deprecated
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_buffers(lines, context)
   return edit_find(lines, context)
 end
 
 --- @deprecated
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_git_files(lines, context)
   return edit_find(lines, context)
 end
 
 --- @deprecated
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit(lines, context)
   return edit_find(lines, context)
 end
@@ -84,7 +84,7 @@ local function _make_edit_rg_commands(lines, opts)
 end
 
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_rg(lines, context)
   local edit_commands = _make_edit_rg_commands(lines)
   ui.confirm_discard_buffer_modified(context.bufnr, function()
@@ -119,7 +119,7 @@ local function _make_edit_grep_commands(lines, opts)
 end
 
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_grep(lines, context)
   local edit_commands = _make_edit_grep_commands(lines)
   ui.confirm_discard_buffer_modified(context.bufnr, function()
@@ -144,7 +144,7 @@ end
 
 --- @deprecated
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function buffer(lines, context)
   return edit_find(lines, context)
 end
@@ -427,7 +427,7 @@ end
 
 -- Run 'edit' vim command on gits status results.
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_git_status(lines, context)
   local edit_commands = _make_edit_git_status_commands(lines)
   ui.confirm_discard_buffer_modified(context.bufnr, function()

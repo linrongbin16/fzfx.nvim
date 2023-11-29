@@ -6,7 +6,7 @@ local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local fzf_helpers = require("fzfx.fzf_helpers")
 
---- @class PopupWindowConfig
+--- @class fzfx.PopupWindowConfig
 --- @field anchor "NW"|nil
 --- @field relative "editor"|"win"|"cursor"|nil
 --- @field width integer?
@@ -32,7 +32,7 @@ local function _make_window_size(value, base, minimal)
 end
 
 --- @param opts fzfx.Options
---- @return PopupWindowConfig
+--- @return fzfx.PopupWindowConfig
 local function _make_cursor_window_config(opts)
   --- @type "cursor"
   local relative = opts.relative
@@ -51,7 +51,7 @@ local function _make_cursor_window_config(opts)
   end
   local col = opts.col
 
-  --- @type PopupWindowConfig
+  --- @type fzfx.PopupWindowConfig
   local pw_config = {
     anchor = "NW",
     relative = relative,
@@ -86,7 +86,7 @@ local function _make_window_center_shift(maxsize, size, offset)
 end
 
 --- @param opts fzfx.Options
---- @return PopupWindowConfig
+--- @return fzfx.PopupWindowConfig
 local function _make_center_window_config(opts)
   --- @type "editor"|"win"
   local relative = opts.relative or "editor"
@@ -122,7 +122,7 @@ local function _make_center_window_config(opts)
   end
   local col = _make_window_center_shift(total_width, width, opts.col)
 
-  --- @type PopupWindowConfig
+  --- @type fzfx.PopupWindowConfig
   local pw_config = {
     anchor = "NW",
     relative = relative,
@@ -143,7 +143,7 @@ local function _make_center_window_config(opts)
 end
 
 --- @param win_opts fzfx.Options
---- @return PopupWindowConfig
+--- @return fzfx.PopupWindowConfig
 local function _make_window_config(win_opts)
   --- @type "editor"|"win"|"cursor"
   local relative = win_opts.relative or "editor"
@@ -161,10 +161,10 @@ local function _make_window_config(win_opts)
   end
 end
 
---- @type table<integer, PopupWindow>
+--- @type table<integer, fzfx.PopupWindow>
 local PopupWindowInstances = {}
 
---- @class PopupWindow
+--- @class fzfx.PopupWindow
 --- @field window_opts_context fzfx.WindowOptsContext?
 --- @field bufnr integer?
 --- @field winnr integer?
@@ -174,7 +174,7 @@ local PopupWindow = {}
 
 --- @package
 --- @param win_opts fzfx.Options?
---- @return PopupWindow
+--- @return fzfx.PopupWindow
 function PopupWindow:new(win_opts)
   -- check executable: nvim, fzf
   fzf_helpers.nvim_exec()
@@ -256,8 +256,8 @@ function PopupWindow:resize()
   end)
 end
 
---- @class Popup
---- @field popup_window PopupWindow?
+--- @class fzfx.Popup
+--- @field popup_window fzfx.PopupWindow?
 --- @field source string|string[]|nil
 --- @field jobid integer|nil
 --- @field result string|nil
@@ -320,9 +320,9 @@ end
 --- @param source string
 --- @param fzf_opts fzfx.Options
 --- @param actions fzfx.Options
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 --- @param on_popup_exit OnPopupExit?
---- @return Popup
+--- @return fzfx.Popup
 function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
   local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
@@ -448,7 +448,7 @@ function Popup:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 end
 
---- @return table<integer, PopupWindow>
+--- @return table<integer, fzfx.PopupWindow>
 local function _get_all_popup_window_instances()
   return PopupWindowInstances
 end

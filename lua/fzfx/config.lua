@@ -194,10 +194,10 @@ local default_unrestricted_grep = {
 local default_invalid_buffer_error = "invalid buffer(%s)."
 
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
---- @return fun(query:string,context:PipelineContext):string[]|nil
+--- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 local function _make_live_grep_provider(opts)
   --- @param query string
-  --- @param context PipelineContext
+  --- @param context fzfx.PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
     local parsed = queries_helper.parse_flagged(query or "")
@@ -302,7 +302,7 @@ local function _is_valid_buffer_number(bufnr)
 end
 
 --- @param query string
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 --- @return string[]|nil
 local function _buffers_provider(query, context)
   local bufs = vim.api.nvim_list_bufs()
@@ -369,7 +369,7 @@ end
 -- git grep {
 
 --- @param query string?
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 --- @return string[]|nil
 local function _git_live_grep_provider(query, context)
   local git_root_cmd = cmds.GitRootCommand:run()
@@ -459,10 +459,10 @@ end
 -- git commits {
 
 --- @param opts {buffer:boolean?}?
---- @return fun(query:string,context:PipelineContext):string[]|nil
+--- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 local function _make_git_commits_provider(opts)
   --- @param query string
-  --- @param context PipelineContext
+  --- @param context fzfx.PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
     local git_root_cmd = cmds.GitRootCommand:run()
@@ -537,7 +537,7 @@ end
 -- git blame {
 
 --- @param query string
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 --- @return string?
 local function _git_blame_provider(query, context)
   local git_root_cmd = cmds.GitRootCommand:run()
@@ -1240,12 +1240,12 @@ local function _process_lsp_diagnostic_item(diag)
 end
 
 --- @param opts {buffer:boolean?}?
---- @return fun(query:string,context:PipelineContext):string[]|nil
+--- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 local function _make_lsp_diagnostics_provider(opts)
   local signs = _make_lsp_diagnostic_signs()
 
   --- @param query string
-  --- @param context PipelineContext
+  --- @param context fzfx.PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
     local lsp_clients = vim.lsp.get_active_clients()
@@ -2239,7 +2239,7 @@ local function _file_explorer_context_maker()
 end
 
 --- @param ls_args "-lh"|"-lha"
---- @return fun(query:string,context:PipelineContext):string?
+--- @return fun(query:string,context:fzfx.PipelineContext):string?
 local function _make_file_explorer_provider(ls_args)
   --- @param query string
   --- @param context FileExplorerPipelineContext
@@ -2403,7 +2403,7 @@ end
 --- @type fzfx.Options
 local Defaults = {
   -- the 'Files' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   files = {
     commands = {
       -- normal
@@ -2549,7 +2549,7 @@ local Defaults = {
   },
 
   -- the 'Live Grep' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   live_grep = {
     commands = {
       -- normal
@@ -2776,7 +2776,7 @@ local Defaults = {
   },
 
   -- the 'Buffers' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   buffers = {
     commands = {
       -- normal
@@ -2863,7 +2863,7 @@ local Defaults = {
   },
 
   -- the 'Git Files' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_files = {
     commands = {
       -- normal
@@ -3009,7 +3009,7 @@ local Defaults = {
   },
 
   -- the 'Git Live Grep' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_live_grep = {
     commands = {
       -- normal
@@ -3094,7 +3094,7 @@ local Defaults = {
   },
 
   -- the 'Git Status' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_status = {
     commands = {
       -- normal
@@ -3233,7 +3233,7 @@ local Defaults = {
   },
 
   -- the 'Git Branches' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_branches = {
     commands = {
       -- normal
@@ -3381,7 +3381,7 @@ local Defaults = {
   },
 
   -- the 'Git Commits' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_commits = {
     commands = {
       -- normal
@@ -3517,7 +3517,7 @@ local Defaults = {
   },
 
   -- the 'Git Blame' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_blame = {
     commands = {
       -- normal
@@ -3592,7 +3592,7 @@ local Defaults = {
   },
 
   -- the 'Vim Commands' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   vim_commands = {
     commands = {
       -- normal
@@ -3808,7 +3808,7 @@ local Defaults = {
   },
 
   -- the 'Vim KeyMaps' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   vim_keymaps = {
     commands = {
       -- normal
@@ -4070,7 +4070,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Diagnostics' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_diagnostics = {
     commands = {
       -- normal
@@ -4222,7 +4222,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Definitions' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_definitions = {
     commands = {
       name = "FzfxLspDefinitions",
@@ -4277,7 +4277,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Type Definitions' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_type_definitions = {
     commands = {
       name = "FzfxLspTypeDefinitions",
@@ -4332,7 +4332,7 @@ local Defaults = {
   },
 
   -- the 'Lsp References' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_references = {
     commands = {
       name = "FzfxLspReferences",
@@ -4387,7 +4387,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Implementations' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_implementations = {
     commands = {
       name = "FzfxLspImplementations",
@@ -4442,7 +4442,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Incoming Calls' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_incoming_calls = {
     commands = {
       name = "FzfxLspIncomingCalls",
@@ -4497,7 +4497,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Outgoing Calls' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_outgoing_calls = {
     commands = {
       name = "FzfxLspOutgoingCalls",
@@ -4552,7 +4552,7 @@ local Defaults = {
   },
 
   -- the 'File Explorer' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   file_explorer = {
     commands = {
       -- normal

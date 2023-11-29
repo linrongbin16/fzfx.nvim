@@ -62,7 +62,7 @@ shell_helpers.log_ensure(
   "metajsonstring is not string! %s",
   vim.inspect(metajsonstring)
 )
-local metaopts = jsons.decode(metajsonstring) --[[@as PreviewerMetaOpts]]
+local metaopts = jsons.decode(metajsonstring) --[[@as fzfx.PreviewerMetaOpts]]
 shell_helpers.log_debug("metaopts:[%s]", vim.inspect(metaopts))
 
 --- @param l string?
