@@ -4931,7 +4931,7 @@ local Defaults = {
 --- @type fzfx.Options
 local Configs = {}
 
---- @param options fzfx.Options|nil
+--- @param options fzfx.Options?
 --- @return fzfx.Options
 local function setup(options)
   Configs = vim.tbl_deep_extend("force", Defaults, options or {})
