@@ -1,6 +1,9 @@
+local consts = require("fzfx.lib.constants")
+local strs = require("fzfx.lib.strings")
+
 local M = {}
 
-M.SEPARATOR = require("fzfx.lib.constants").IS_WINDOWS and "\\" or "/"
+M.SEPARATOR = consts.IS_WINDOWS and "\\" or "/"
 
 --- @param p string
 --- @param opts {backslash:boolean?,expand:boolean?}?
@@ -43,6 +46,15 @@ end
 --- @return string
 M.shorten = function(p)
   return vim.fn.pathshorten(M.reduce(p)) --[[@as string]]
+end
+
+--- @return string
+M.make_pipe_name = function()
+  if consts.IS_WINDOWS then
+    return string.format([[\\.\pipe\nvim-pipe-%s]], strs.uuid())
+  else
+    return vim.fn.tempname() --[[@as string]]
+  end
 end
 
 return M

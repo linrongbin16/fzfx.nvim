@@ -16,7 +16,7 @@ describe("lib.filesystems", function()
   describe("[readfile/readlines]", function()
     it("readfile and FileLineReader", function()
       local content = fs.readfile("README.md")
-      local reader = fs.FileLineReader:open("README.md") --[[@as FileLineReader]]
+      local reader = fs.FileLineReader:open("README.md") --[[@as fzfx.FileLineReader]]
       local buffer = nil
       assert_eq(type(reader), "table")
       while reader:has_next() do

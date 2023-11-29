@@ -9,11 +9,11 @@ describe("module", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
+  local strs = require("fzfx.lib.strings")
+
   require("fzfx.config").setup()
   require("fzfx.module").setup()
   local log = require("fzfx.log")
-  local LogLevels = require("fzfx.log").LogLevels
-  local LogLevelNames = require("fzfx.log").LogLevelNames
   log.setup({
     level = "DEBUG",
     console_log = true,
@@ -21,7 +21,6 @@ describe("module", function()
   })
   local conf = require("fzfx.config")
   local module = require("fzfx.module")
-  local utils = require("fzfx.utils")
   describe("[module]", function()
     it("setup", function()
       conf.setup()
@@ -62,10 +61,7 @@ describe("module", function()
           or (
             type(vim.env._FZFX_NVIM_DEVICONS_PATH) == "string"
             and type(
-                utils.string_find(
-                  vim.env._FZFX_NVIM_DEVICONS_PATH,
-                  "nvim-web-devicons"
-                )
+                strs.find(vim.env._FZFX_NVIM_DEVICONS_PATH, "nvim-web-devicons")
               )
               == "number"
           )
@@ -73,13 +69,6 @@ describe("module", function()
       assert_true(vim.env._FZFX_NVIM_UNKNOWN_FILE_ICON == nil)
       assert_true(vim.env._FZFX_NVIM_FILE_FOLDER_ICON == nil)
       assert_true(vim.env._FZFX_NVIM_FILE_FOLDER_OPEN_ICON == nil)
-      assert_eq(type(module.plugin_home_dir()), "string")
-      assert_true(string.len(module.plugin_home_dir()) > 0)
-      assert_eq(
-        type(utils.string_find(module.plugin_home_dir(), "fzfx.nvim")),
-        "number"
-      )
-      assert_true(utils.string_find(module.plugin_home_dir(), "fzfx.nvim") > 0)
     end)
   end)
 end)

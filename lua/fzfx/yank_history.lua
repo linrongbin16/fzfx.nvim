@@ -1,10 +1,11 @@
+local env = require("fzfx.lib.env")
+local nvims = require("fzfx.lib.nvims")
+local paths = require("fzfx.lib.paths")
+
 local conf = require("fzfx.config")
 local log = require("fzfx.log")
-local env = require("fzfx.env")
-local utils = require("fzfx.utils")
-local path = require("fzfx.path")
 
---- @class Yank
+--- @class fzfx.Yank
 --- @field regname string
 --- @field regtext string
 --- @field regtype string
@@ -18,7 +19,7 @@ local Yank = {}
 --- @param regtype string
 --- @param filename string?
 --- @param filetype string?
---- @return Yank
+--- @return fzfx.Yank
 function Yank:new(regname, regtext, regtype, filename, filetype)
   local o = {
     regname = regname,
@@ -33,29 +34,29 @@ function Yank:new(regname, regtext, regtype, filename, filetype)
   return o
 end
 
---- @class YankHistory
---- @field ring_buffer RingBuffer
+--- @class fzfx.YankHistory
+--- @field ring_buffer fzfx.RingBuffer
 local YankHistory = {}
 
 --- @param maxsize integer
---- @return YankHistory
+--- @return fzfx.YankHistory
 function YankHistory:new(maxsize)
   local o = {
-    ring_buffer = utils.RingBuffer:new(maxsize),
+    ring_buffer = nvims.RingBuffer:new(maxsize),
   }
   setmetatable(o, self)
   self.__index = self
   return o
 end
 
---- @param y Yank
+--- @param y fzfx.Yank
 --- @return integer
 function YankHistory:push(y)
   return self.ring_buffer:push(y)
 end
 
 --- @param pos integer?
---- @return Yank?
+--- @return fzfx.Yank?
 function YankHistory:get(pos)
   return self.ring_buffer:get(pos)
 end
@@ -86,7 +87,7 @@ function YankHistory:rnext(pos)
   return self.ring_buffer:rnext(pos)
 end
 
---- @type YankHistory?
+--- @type fzfx.YankHistory?
 local YankHistoryInstance = nil
 
 --- @return table
@@ -105,8 +106,8 @@ local function save_yank()
     r.regname,
     r.regtext,
     r.regtype,
-    utils.is_buf_valid(0)
-        and path.normalize(vim.api.nvim_buf_get_name(0), { expand = true })
+    nvims.buf_is_valid(0)
+        and paths.normalize(vim.api.nvim_buf_get_name(0), { expand = true })
       or nil,
     vim.bo.filetype
   )
@@ -124,7 +125,7 @@ local function save_yank()
   return YankHistoryInstance:push(y)
 end
 
---- @return Yank?
+--- @return fzfx.Yank?
 local function get_yank()
   log.ensure(
     YankHistoryInstance ~= nil,
@@ -134,14 +135,14 @@ local function get_yank()
   return YankHistoryInstance:get()
 end
 
---- @return YankHistory?
+--- @return fzfx.YankHistory?
 local function _get_yank_history_instance()
   return YankHistoryInstance
 end
 
 local function setup()
   YankHistoryInstance = YankHistory:new(
-    env.debug_enable() and 10
+    env.debug_enabled() and 10
       or conf.get_config().yank_history.other_opts.maxsize
   )
   vim.api.nvim_create_autocmd("TextYankPost", {

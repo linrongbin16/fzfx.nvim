@@ -2,15 +2,20 @@
 
 # References
 
+All APIs listed in this doc are recommended for customizing or implementing your own searching commands.
+
+They are supposed to be stable and tested.
+
 ## Table of contents
 
-- [fzfx.helper](#fzfxhelper): utilities for easier creating commands
-- [fzfx.lib](#fzfxlib): fundamental infrastructures
+- [Line-Oriented Helpers](#line-oriented-helpers)
+- [Fundamental Infrastructures](#fundamental-infrastructures)
   - [fzfx.lib.colors](#fzfxlibcolors)
   - [fzfx.lib.commands](#fzfxlibcommands)
   - [fzfx.lib.constants](#fzfxlibconstants)
+  - [fzfx.lib.deprecations](#fzfxlibdeprecations)
   - [fzfx.lib.env](#fzfxlibenv)
-  - [fzfx.lib.files](#fzfxlibfiles)
+  - [fzfx.lib.filesystems](#fzfxlibfilesystems)
   - [fzfx.lib.jsons](#fzfxlibjsons)
   - [fzfx.lib.numbers](#fzfxlibnumbers)
   - [fzfx.lib.nvims](#fzfxlibnvims)
@@ -19,15 +24,25 @@
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
 
-## [fzfx.commands](/lua/fzfx)
+## [Line-Oriented Helpers](/lua/fzfx/helper)
 
-### [FzfxFiles](/lua/fzfx/files.lua)
+The `fzfx.helper` provides line-oriented helpers for parsing and rendering queries/lines required in all scenarios.
 
-## [fzfx.lib](/lua/fzfx/lib)
+## [Fundamental Infrastructures](/lua/fzfx/lib)
+
+The `fzfx.lib` provides fundamental infrastructures for whole plugin, they're usually handling below issues:
+
+- Cross platforms compatibility between Windows and Linux/macOS.
+- Neovim APIs compatibility between v0.7-nightly versions.
+- Files IO & paths.
+- Json and lua table conversion.
+- Some constants, strings, numbers, lua table and list data structures.
+- Environment variables.
+- Command line running, e.g. child process.
 
 ### [fzfx.lib.colors](/lua/fzfx/lib/colors.lua)
 
-- `csi(code:string, fg:boolean):string`: convert ansi color codes (38, 42) or rgb/css color codes (`#FF3810`) into terminal escaped sequences (`\x1b[38m`, `\x1b[0m`). set `fg=true` for foreground, set `fg=false` for background.
+- `csi(code:string, fg:boolean):string`: convert ansi color codes (`38`, `42`) or rgb/css color codes (`#FF3810`) into terminal escaped sequences (`\x1b[38m`, `\x1b[0m`). set `fg=true` for foreground, set `fg=false` for background.
   - for ansi color codes, please see: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#color-codes
   - for rgb/css color codes, please see: https://www.w3schools.com/tags/ref_colornames.asp
 - `hlcode(attr:"fg"|"bg", hl:string):string?`: retrieve ansi color codes or rgb/css color codes from vim syntax highlighting group (e.g. `Special`, `Constants`, `Number`).
@@ -154,12 +169,16 @@ curl
 - `HAS_CURL`: has `curl` command.
 - `CURL`: `curl` command.
 
+### [fzfx.lib.deprecations](/lua/fzfx/lib/deprecations.lua)
+
+- `notify(fmt:string, ...:any):nil`: print deprecation notifications to command line.
+
 ### [fzfx.lib.env](/lua/fzfx/lib/env.lua)
 
 - `debug_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEBUG_ENABLE=1`.
 - `icon_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEVICONS_PATH=1`.
 
-### [fzfx.lib.files](/lua/fzfx/lib/files.lua)
+### [fzfx.lib.filesystems](/lua/fzfx/lib/filesystems.lua)
 
 #### Read File
 

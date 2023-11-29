@@ -1,25 +1,30 @@
-local constants = require("fzfx.constants")
+local consts = require("fzfx.lib.constants")
+local colors = require("fzfx.lib.colors")
+local env = require("fzfx.lib.env")
+local paths = require("fzfx.lib.paths")
+local jsons = require("fzfx.lib.jsons")
+local strs = require("fzfx.lib.strings")
+local fs = require("fzfx.lib.filesystems")
+local nvims = require("fzfx.lib.nvims")
+local tbls = require("fzfx.lib.tables")
+local spawn = require("fzfx.lib.spawn")
+
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
 local fzf_helpers = require("fzfx.fzf_helpers")
-local server = require("fzfx.server")
-local color = require("fzfx.color")
-local utils = require("fzfx.utils")
-local env = require("fzfx.env")
-local path = require("fzfx.path")
+local rpcserver = require("fzfx.rpcserver")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local schema = require("fzfx.schema")
 local conf = require("fzfx.config")
-local json = require("fzfx.json")
 
 local DEFAULT_PIPELINE = "default"
 
 --- @param ... string
 --- @return string
 local function _make_cache_filename(...)
-  if env.debug_enable() then
-    return path.join(conf.get_config().cache.dir, table.concat({ ... }, "_"))
+  if env.debug_enabled() then
+    return paths.join(conf.get_config().cache.dir, table.concat({ ... }, "_"))
   else
     return vim.fn.tempname() --[[@as string]]
   end
@@ -50,16 +55,16 @@ local function _fzf_port_file()
   return _make_cache_filename("fzf", "port", "file")
 end
 
---- @class ProviderMetaOpts
---- @field pipeline PipelineName
+--- @class fzfx.ProviderMetaOpts
+--- @field pipeline fzfx.PipelineName
 --- @field provider_type ProviderType
 --- @field prepend_icon_by_ft boolean?
 --- @field prepend_icon_path_delimiter string?
 --- @field prepend_icon_path_position integer?
 
 --- @param pipeline string
---- @param provider_config ProviderConfig
---- @return ProviderMetaOpts
+--- @param provider_config fzfx.ProviderConfig
+--- @return fzfx.ProviderMetaOpts
 local function make_provider_meta_opts(pipeline, provider_config)
   local o = {
     pipeline = pipeline,
@@ -96,13 +101,13 @@ local function make_provider_meta_opts(pipeline, provider_config)
   return o
 end
 
---- @class PreviewerMetaOpts
---- @field pipeline PipelineName
+--- @class fzfx.PreviewerMetaOpts
+--- @field pipeline fzfx.PipelineName
 --- @field previewer_type PreviewerType
 
 --- @param pipeline string
---- @param previewer_config PreviewerConfig
---- @return PreviewerMetaOpts
+--- @param previewer_config fzfx.PreviewerConfig
+--- @return fzfx.PreviewerMetaOpts
 local function make_previewer_meta_opts(pipeline, previewer_config)
   local o = {
     pipeline = pipeline,
@@ -113,17 +118,17 @@ end
 
 -- provider switch {
 
---- @class ProviderSwitch
---- @field pipeline PipelineName
---- @field provider_configs ProviderConfig|table<PipelineName, ProviderConfig>
+--- @class fzfx.ProviderSwitch
+--- @field pipeline fzfx.PipelineName
+--- @field provider_configs fzfx.ProviderConfig|table<fzfx.PipelineName, fzfx.ProviderConfig>
 --- @field metafile string
 --- @field resultfile string
 local ProviderSwitch = {}
 
 --- @param name string
---- @param pipeline PipelineName
+--- @param pipeline fzfx.PipelineName
 --- @param provider_configs fzfx.Options
---- @return ProviderSwitch
+--- @return fzfx.ProviderSwitch
 function ProviderSwitch:new(name, pipeline, provider_configs)
   local provider_configs_map = {}
   if schema.is_provider_config(provider_configs) then
@@ -156,14 +161,14 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
   return o
 end
 
---- @param next_pipeline PipelineName
+--- @param next_pipeline fzfx.PipelineName
 --- @return nil
 function ProviderSwitch:switch(next_pipeline)
   self.pipeline = next_pipeline
 end
 
 --- @param query string?
---- @param context PipelineContext?
+--- @param context fzfx.PipelineContext?
 function ProviderSwitch:provide(query, context)
   local provider_config = self.provider_configs[self.pipeline]
   -- log.debug(
@@ -198,8 +203,8 @@ function ProviderSwitch:provide(query, context)
   )
 
   local metaopts = make_provider_meta_opts(self.pipeline, provider_config)
-  local metajson = json.encode(metaopts) --[[@as string]]
-  utils.writefile(self.metafile, metajson)
+  local metajson = jsons.encode(metaopts) --[[@as string]]
+  fs.writefile(self.metafile, metajson)
 
   if provider_config.provider_type == ProviderTypeEnum.PLAIN then
     log.ensure(
@@ -210,12 +215,9 @@ function ProviderSwitch:provide(query, context)
       vim.inspect(provider_config)
     )
     if provider_config.provider == nil then
-      utils.writefile(self.resultfile, "")
+      fs.writefile(self.resultfile, "")
     else
-      utils.writefile(
-        self.resultfile,
-        provider_config.provider --[[@as string]]
-      )
+      fs.writefile(self.resultfile, provider_config.provider --[[@as string]])
     end
   elseif provider_config.provider_type == ProviderTypeEnum.PLAIN_LIST then
     log.ensure(
@@ -225,15 +227,12 @@ function ProviderSwitch:provide(query, context)
       vim.inspect(self),
       vim.inspect(provider_config)
     )
-    if
-      provider_config.provider == nil
-      or vim.tbl_isempty(provider_config.provider --[[@as table]])
-    then
-      utils.writefile(self.resultfile, "")
+    if tbls.tbl_empty(provider_config.provider) then
+      fs.writefile(self.resultfile, "")
     else
-      utils.writefile(
+      fs.writefile(
         self.resultfile,
-        json.encode(provider_config.provider) --[[@as string]]
+        jsons.encode(provider_config.provider) --[[@as string]]
       )
     end
   elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
@@ -251,7 +250,7 @@ function ProviderSwitch:provide(query, context)
       vim.inspect(result)
     )
     if not ok then
-      utils.writefile(self.resultfile, "")
+      fs.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -262,9 +261,9 @@ function ProviderSwitch:provide(query, context)
       )
     else
       if result == nil then
-        utils.writefile(self.resultfile, "")
+        fs.writefile(self.resultfile, "")
       else
-        utils.writefile(self.resultfile, result)
+        fs.writefile(self.resultfile, result)
       end
     end
   elseif provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST then
@@ -282,7 +281,7 @@ function ProviderSwitch:provide(query, context)
       vim.inspect(result)
     )
     if not ok then
-      utils.writefile(self.resultfile, "")
+      fs.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s command_list provider %s! query:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -292,10 +291,10 @@ function ProviderSwitch:provide(query, context)
         vim.inspect(result)
       )
     else
-      if result == nil or vim.tbl_isempty(result) then
-        utils.writefile(self.resultfile, "")
+      if tbls.tbl_empty(result) then
+        fs.writefile(self.resultfile, "")
       else
-        utils.writefile(self.resultfile, json.encode(result) --[[@as string]])
+        fs.writefile(self.resultfile, jsons.encode(result) --[[@as string]])
       end
     end
   elseif provider_config.provider_type == ProviderTypeEnum.LIST then
@@ -307,7 +306,7 @@ function ProviderSwitch:provide(query, context)
     --     vim.inspect(result)
     -- )
     if not ok then
-      utils.writefile(self.resultfile, "")
+      fs.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -323,10 +322,10 @@ function ProviderSwitch:provide(query, context)
         vim.inspect(self),
         vim.inspect(result)
       )
-      if result == nil or vim.tbl_isempty(result) then
-        utils.writefile(self.resultfile, "")
+      if tbls.tbl_empty(result) then
+        fs.writefile(self.resultfile, "")
       else
-        utils.writelines(self.resultfile, result)
+        fs.writelines(self.resultfile, result)
       end
     end
   else
@@ -343,9 +342,9 @@ end
 
 -- previewer switch {
 
---- @class PreviewerSwitch
---- @field pipeline PipelineName
---- @field previewer_configs table<PipelineName, PreviewerConfig>
+--- @class fzfx.PreviewerSwitch
+--- @field pipeline fzfx.PipelineName
+--- @field previewer_configs table<fzfx.PipelineName, fzfx.PreviewerConfig>
 --- @field previewer_labels_queue string[]
 --- @field metafile string
 --- @field resultfile string
@@ -354,10 +353,10 @@ end
 local PreviewerSwitch = {}
 
 --- @param name string
---- @param pipeline PipelineName
---- @param previewer_configs PreviewerConfig|table<PipelineName, PreviewerConfig>
+--- @param pipeline fzfx.PipelineName
+--- @param previewer_configs fzfx.PreviewerConfig|table<fzfx.PipelineName, fzfx.PreviewerConfig>
 --- @param fzf_port_file string
---- @return PreviewerSwitch
+--- @return fzfx.PreviewerSwitch
 function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
   local previewer_configs_map = {}
   if schema.is_previewer_config(previewer_configs) then
@@ -392,14 +391,14 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
   return o
 end
 
---- @param next_pipeline PipelineName
+--- @param next_pipeline fzfx.PipelineName
 --- @return nil
 function PreviewerSwitch:switch(next_pipeline)
   self.pipeline = next_pipeline
 end
 
 --- @param line string?
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 --- @return PreviewerType
 function PreviewerSwitch:preview(line, context)
   local previewer_config = self.previewer_configs[self.pipeline]
@@ -431,8 +430,8 @@ function PreviewerSwitch:preview(line, context)
   )
 
   local metaopts = make_previewer_meta_opts(self.pipeline, previewer_config)
-  local metajson = json.encode(metaopts) --[[@as string]]
-  utils.writefile(self.metafile, metajson)
+  local metajson = jsons.encode(metaopts) --[[@as string]]
+  fs.writefile(self.metafile, metajson)
 
   if previewer_config.previewer_type == PreviewerTypeEnum.COMMAND then
     local ok, result = pcall(previewer_config.previewer, line, context)
@@ -442,7 +441,7 @@ function PreviewerSwitch:preview(line, context)
     --     vim.inspect(result)
     -- )
     if not ok then
-      utils.writefile(self.resultfile, "")
+      fs.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -459,9 +458,9 @@ function PreviewerSwitch:preview(line, context)
         vim.inspect(result)
       )
       if result == nil then
-        utils.writefile(self.resultfile, "")
+        fs.writefile(self.resultfile, "")
       else
-        utils.writefile(self.resultfile, result --[[@as string]])
+        fs.writefile(self.resultfile, result --[[@as string]])
       end
     end
   elseif previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST then
@@ -472,7 +471,7 @@ function PreviewerSwitch:preview(line, context)
     --     vim.inspect(result)
     -- )
     if not ok then
-      utils.writefile(self.resultfile, "")
+      fs.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s command_list previewer %s! line:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -488,11 +487,10 @@ function PreviewerSwitch:preview(line, context)
         vim.inspect(self),
         vim.inspect(result)
       )
-      ---@diagnostic disable-next-line: param-type-mismatch
-      if result == nil or vim.tbl_isempty(result) then
-        utils.writefile(self.resultfile, "")
+      if tbls.tbl_empty(result) then
+        fs.writefile(self.resultfile, "")
       else
-        utils.writefile(self.resultfile, json.encode(result) --[[@as string]])
+        fs.writefile(self.resultfile, jsons.encode(result) --[[@as string]])
       end
     end
   elseif previewer_config.previewer_type == PreviewerTypeEnum.LIST then
@@ -503,7 +501,7 @@ function PreviewerSwitch:preview(line, context)
     --     vim.inspect(result)
     -- )
     if not ok then
-      utils.writefile(self.resultfile, "")
+      fs.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -519,7 +517,7 @@ function PreviewerSwitch:preview(line, context)
         vim.inspect(self),
         vim.inspect(result)
       )
-      utils.writelines(self.resultfile, result --[[@as table]])
+      fs.writelines(self.resultfile, result --[[@as table]])
     end
   else
     log.throw(
@@ -539,7 +537,7 @@ local function _send_http_post(port, body)
   -- if SendHttpPostContext.send then
   --     return
   -- end
-  local asp = require("fzfx.spawn").Spawn:make({
+  local sp = spawn.Spawn:make({
     "curl",
     "-s",
     "-S",
@@ -559,22 +557,26 @@ local function _send_http_post(port, body)
     string.format("127.0.0.1:%s", vim.trim(port)),
     "-d",
     body,
-  }, function(line)
-    -- log.debug(
-    --     "|fzfx.fzf_helpers - send_http_post| stdout:%s",
-    --     vim.inspect(line)
-    -- )
-  end, function(line)
-    -- log.debug(
-    --     "|fzfx.fzf_helpers - send_http_post| stderr:%s",
-    --     vim.inspect(line)
-    -- )
-  end, false) --[[@as Spawn]]
-  asp:run()
+  }, {
+    on_stdout = function(line)
+      -- log.debug(
+      --     "|fzfx.fzf_helpers - send_http_post| stdout:%s",
+      --     vim.inspect(line)
+      -- )
+    end,
+    on_stderr = function(line)
+      -- log.debug(
+      --     "|fzfx.fzf_helpers - send_http_post| stderr:%s",
+      --     vim.inspect(line)
+      -- )
+    end,
+    blocking = false,
+  })
+  sp:run()
 end
 
 --- @param line string?
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 --- @return string?
 function PreviewerSwitch:preview_label(line, context)
   local previewer_config = self.previewer_configs[self.pipeline]
@@ -600,7 +602,7 @@ function PreviewerSwitch:preview_label(line, context)
     vim.inspect(previewer_config)
   )
 
-  if not constants.has_curl then
+  if not consts.HAS_CURL then
     return
   end
   if
@@ -635,9 +637,9 @@ function PreviewerSwitch:preview_label(line, context)
       if type(last_label) ~= "string" then
         return
       end
-      self.fzf_port = utils.string_not_empty(self.fzf_port) and self.fzf_port
-        or utils.readfile(self.fzf_port_file) --[[@as string]]
-      if utils.string_not_empty(self.fzf_port) then
+      self.fzf_port = strs.not_empty(self.fzf_port) and self.fzf_port
+        or fs.readfile(self.fzf_port_file) --[[@as string]]
+      if strs.not_empty(self.fzf_port) then
         _send_http_post(
           self.fzf_port,
           string.format("change-preview-label(%s)", vim.trim(last_label))
@@ -653,8 +655,8 @@ end
 
 -- header switch {
 
---- @class HeaderSwitch
---- @field headers table<PipelineName, string[]>
+--- @class fzfx.HeaderSwitch
+--- @field headers table<fzfx.PipelineName, string[]>
 local HeaderSwitch = {}
 
 --- @package
@@ -662,10 +664,10 @@ local HeaderSwitch = {}
 --- @param action string
 --- @return string
 local function _render_help(name, action)
-  return color.render(
-    color.magenta,
+  return colors.render(
+    colors.magenta,
     "Special",
-    "%s to " .. table.concat(utils.string_split(name, "_"), " "),
+    "%s to " .. table.concat(strs.split(name, "_"), " "),
     string.upper(action)
   )
 end
@@ -709,7 +711,7 @@ end
 
 --- @param provider_configs fzfx.Options
 --- @param interaction_configs fzfx.Options
---- @return HeaderSwitch
+--- @return fzfx.HeaderSwitch
 function HeaderSwitch:new(provider_configs, interaction_configs)
   local headers_map = {}
   if schema.is_provider_config(provider_configs) then
@@ -738,7 +740,7 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
   return o
 end
 
---- @param pipeline PipelineName
+--- @param pipeline fzfx.PipelineName
 --- @return FzfOpt?
 function HeaderSwitch:get_header(pipeline)
   log.ensure(
@@ -767,7 +769,7 @@ local function get_pipeline_size(pipeline_configs)
   return n
 end
 
---- @return PipelineContext
+--- @return fzfx.PipelineContext
 local function default_context_maker()
   return {
     bufnr = vim.api.nvim_get_current_buf(),
@@ -780,8 +782,8 @@ end
 --- @param query string
 --- @param bang boolean
 --- @param pipeline_configs fzfx.Options
---- @param default_pipeline PipelineName?
---- @return Popup
+--- @param default_pipeline fzfx.PipelineName?
+--- @return fzfx.Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
   local fzf_port_file = _fzf_port_file()
   local pipeline_size = get_pipeline_size(pipeline_configs)
@@ -814,11 +816,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     default_provider_key = provider_opts.key
   end
 
-  --- @type ProviderSwitch
+  --- @type fzfx.ProviderSwitch
   local provider_switch =
     ProviderSwitch:new(name, default_pipeline, pipeline_configs.providers)
 
-  --- @type PreviewerSwitch
+  --- @type fzfx.PreviewerSwitch
   local previewer_switch = PreviewerSwitch:new(
     name,
     default_pipeline,
@@ -826,7 +828,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     fzf_port_file
   )
 
-  --- @type PipelineContext
+  --- @type fzfx.PipelineContext
 
   local context_maker = (
     type(pipeline_configs.other_opts) == "table"
@@ -848,8 +850,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     previewer_switch:preview(line_params, context)
   end
 
-  local provide_rpc_id = server.get_rpc_server():register(provide_rpc)
-  local preview_rpc_id = server.get_rpc_server():register(preview_rpc)
+  local provide_rpc_id = rpcserver.get_instance():register(provide_rpc)
+  local preview_rpc_id = rpcserver.get_instance():register(preview_rpc)
   table.insert(rpc_registries, provide_rpc_id)
   table.insert(rpc_registries, preview_rpc_id)
 
@@ -859,7 +861,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provide_rpc_id,
     provider_switch.metafile,
     provider_switch.resultfile,
-    utils.shellescape(query)
+    nvims.shellescape(query)
   )
   log.debug(
     "|fzfx.general - general| query_command:%s",
@@ -899,7 +901,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   }
 
   local dump_fzf_port_command = nil
-  if constants.is_windows then
+  if consts.IS_WINDOWS then
     -- if vim.fn.executable("sh") > 0 or vim.fn.executable("bash") > 0 then
     --     dump_fzf_port_command = string.format(
     --         "%s -c '%s'",
@@ -945,7 +947,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       end
 
       local interaction_rpc_id =
-        server.get_rpc_server():register(interaction_rpc)
+        rpcserver.get_instance():register(interaction_rpc)
       table.insert(rpc_registries, interaction_rpc_id)
 
       local action_command = string.format(
@@ -976,7 +978,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch:switch(pipeline)
       end
 
-      local switch_rpc_id = server.get_rpc_server():register(switch_rpc)
+      local switch_rpc_id = rpcserver.get_instance():register(switch_rpc)
       table.insert(rpc_registries, switch_rpc_id)
 
       local switch_command = string.format(
@@ -1025,10 +1027,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   fzf_opts = fzf_helpers.preprocess_fzf_opts(fzf_opts)
   local actions = pipeline_configs.actions
   local win_opts = nil
-  if
-    type(pipeline_configs.win_opts) == "table"
-    and not vim.tbl_isempty(pipeline_configs.win_opts)
-  then
+  if not tbls.tbl_empty(pipeline_configs.win_opts) then
     win_opts = vim.tbl_deep_extend(
       "force",
       vim.deepcopy(win_opts or {}),
@@ -1051,18 +1050,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     function(last_query)
       vim.schedule(function()
         for _, rpc_id in ipairs(rpc_registries) do
-          server:get_rpc_server():unregister(rpc_id)
+          rpcserver.get_instance():unregister(rpc_id)
         end
         local last_query_cache = fzf_helpers.make_last_query_cache(name)
-        local content = json.encode({
+        local content = jsons.encode({
           default_provider = provider_switch.pipeline,
           query = last_query,
         }) --[[@as string]]
-        utils.asyncwritefile(last_query_cache, content, function(err, bytes)
+        fs.asyncwritefile(last_query_cache, content, function(bytes)
           log.debug(
-            "|fzfx.general - general| dump last query:%s, error:%s",
-            vim.inspect(bytes),
-            vim.inspect(err)
+            "|fzfx.general - general| dump last query:%s",
+            vim.inspect(bytes)
           )
         end)
       end)
@@ -1072,8 +1070,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 end
 
 --- @param name string
---- @param command_config CommandConfig
---- @param group_config GroupConfig
+--- @param command_config fzfx.CommandConfig
+--- @param group_config fzfx.GroupConfig
 local function _make_user_command(name, command_config, group_config)
   vim.api.nvim_create_user_command(command_config.name, function(opts)
     local query, last_provider =

@@ -1,5 +1,5 @@
 local strs = require("fzfx.lib.strings")
-local numbers = require("fzfx.lib.numbers")
+local nums = require("fzfx.lib.numbers")
 local uv = (vim.fn.has("nvim-0.10") > 0 and vim.uv ~= nil) and vim.uv
   or vim.loop
 
@@ -86,9 +86,6 @@ function Spawn:_close_handle(handle, code, signal)
       self._close_count = self._close_count + 1
       if self._blocking and self._close_count >= 3 then
         uv.stop()
-      end
-      if type(self.fn_on_exit) == "function" then
-        self.fn_on_exit(code, signal)
       end
     end)
   end
@@ -183,6 +180,9 @@ function Spawn:run()
     hide = true,
   }, function(code, signal)
     self.result = { code = code, signal = signal }
+    if type(self.fn_on_exit) == "function" then
+      self.fn_on_exit(code, signal)
+    end
     self:_close_handle(self.process_handle, code, signal)
   end)
 
@@ -194,7 +194,7 @@ function Spawn:run()
   end)
   if self._blocking then
     uv.run()
-    vim.wait(numbers.INT32_MAX, function()
+    vim.wait(nums.INT32_MAX, function()
       return self._close_count == 3
     end)
   end

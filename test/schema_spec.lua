@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, unused-local, missing-fields
 local cwd = vim.fn.getcwd()
 
 describe("schema", function()
@@ -9,6 +10,7 @@ describe("schema", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
+  local tbls = require("fzfx.lib.tables")
   local schema = require("fzfx.schema")
   describe("[ProviderConfig]", function()
     it("makes a plain provider", function()
@@ -91,7 +93,7 @@ describe("schema", function()
       assert_eq(command.key, command_key)
       assert_eq(type(command.provider), "function")
       assert_eq(type(command.provider()), "table")
-      assert_false(vim.tbl_isempty(command.provider()))
+      assert_false(tbls.tbl_empty(command.provider()))
       assert_eq(#command.provider(), 2)
       assert_eq(command.provider()[1], "ls")
       assert_eq(command.provider()[2], "-la")

@@ -1,12 +1,17 @@
-local constants = require("fzfx.constants")
-local utils = require("fzfx.utils")
-local cmd = require("fzfx.cmd")
-local env = require("fzfx.env")
+local consts = require("fzfx.lib.constants")
+local strs = require("fzfx.lib.strings")
+local nvims = require("fzfx.lib.nvims")
+local cmds = require("fzfx.lib.commands")
+local colors = require("fzfx.lib.colors")
+local paths = require("fzfx.lib.paths")
+local fs = require("fzfx.lib.filesystems")
+local tbls = require("fzfx.lib.tables")
+
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
-local color = require("fzfx.color")
-local path = require("fzfx.path")
 local line_helpers = require("fzfx.line_helpers")
+local queries_helper = require("fzfx.helper.queries")
+
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
@@ -27,7 +32,7 @@ local default_fzf_options = {
 
 -- "fd . -cnever -tf -tl -L -i"
 local default_restricted_fd = {
-  constants.fd,
+  consts.FD,
   ".",
   "-cnever",
   "-tf",
@@ -37,7 +42,7 @@ local default_restricted_fd = {
 }
 -- "fd . -cnever -tf -tl -L -i -u"
 local default_unrestricted_fd = {
-  constants.fd,
+  consts.FD,
   ".",
   "-cnever",
   "-tf",
@@ -47,16 +52,16 @@ local default_unrestricted_fd = {
   "-u",
 }
 -- 'find -L . -type f -not -path "*/.*"'
-local default_restricted_find = constants.is_windows
+local default_restricted_find = consts.IS_WINDOWS
     and {
-      constants.find,
+      consts.FIND,
       "-L",
       ".",
       "-type",
       "f",
     }
   or {
-    constants.find,
+    consts.FIND,
     "-L",
     ".",
     "-type",
@@ -67,7 +72,7 @@ local default_restricted_find = constants.is_windows
   }
 -- "find -L . -type f"
 local default_unrestricted_find = {
-  constants.find,
+  consts.FIND,
   "-L",
   ".",
   "-type",
@@ -99,12 +104,12 @@ end
 local function _make_file_previewer(filename, lineno)
   --- @return string[]
   local function impl()
-    if constants.has_bat then
+    if consts.HAS_BAT then
       local style, theme = _default_bat_style_theme()
       -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
       return type(lineno) == "number"
           and {
-            constants.bat,
+            consts.BAT,
             "--style=" .. style,
             "--theme=" .. theme,
             "--color=always",
@@ -114,7 +119,7 @@ local function _make_file_previewer(filename, lineno)
             filename,
           }
         or {
-          constants.bat,
+          consts.BAT,
           "--style=" .. style,
           "--theme=" .. theme,
           "--color=always",
@@ -168,17 +173,17 @@ local default_unrestricted_rg = {
 }
 -- "grep --color=always -n -H -r --exclude-dir='.*' --exclude='.*'"
 local default_restricted_grep = {
-  constants.grep,
+  consts.GREP,
   "--color=always",
   "-n",
   "-H",
   "-r",
-  "--exclude-dir=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]]),
-  "--exclude=" .. (constants.has_gnu_grep and [[.*]] or [[./.*]]),
+  "--exclude-dir=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]]),
+  "--exclude=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]]),
 }
 -- "grep --color=always -n -H -r"
 local default_unrestricted_grep = {
-  constants.grep,
+  consts.GREP,
   "--color=always",
   "-n",
   "-H",
@@ -188,24 +193,24 @@ local default_unrestricted_grep = {
 local default_invalid_buffer_error = "invalid buffer(%s)."
 
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
---- @return fun(query:string,context:PipelineContext):string[]|nil
+--- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 local function _make_live_grep_provider(opts)
   --- @param query string
-  --- @param context PipelineContext
+  --- @param context fzfx.PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local parsed_query = utils.parse_flag_query(query or "")
-    local content = parsed_query[1]
-    local option = parsed_query[2]
+    local parsed = queries_helper.parse_flagged(query or "")
+    local payload = parsed.payload
+    local option = parsed.option
 
     local args = nil
-    if constants.has_rg then
+    if consts.HAS_RG then
       if type(opts) == "table" and opts.unrestricted then
         args = vim.deepcopy(default_unrestricted_rg)
       elseif type(opts) == "table" and opts.buffer then
         args = vim.deepcopy(default_unrestricted_rg)
-        local current_bufpath = utils.is_buf_valid(context.bufnr)
-            and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+        local current_bufpath = nvims.buf_is_valid(context.bufnr)
+            and paths.reduce(vim.api.nvim_buf_get_name(context.bufnr))
           or nil
         if
           type(current_bufpath) ~= "string"
@@ -226,8 +231,8 @@ local function _make_live_grep_provider(opts)
         args = vim.deepcopy(default_unrestricted_grep)
       elseif type(opts) == "table" and opts.buffer then
         args = vim.deepcopy(default_unrestricted_grep)
-        local current_bufpath = utils.is_buf_valid(context.bufnr)
-            and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+        local current_bufpath = nvims.buf_is_valid(context.bufnr)
+            and paths.reduce(vim.api.nvim_buf_get_name(context.bufnr))
           or nil
         if
           type(current_bufpath) ~= "string"
@@ -248,7 +253,7 @@ local function _make_live_grep_provider(opts)
       return nil
     end
     if type(option) == "string" and string.len(option) > 0 then
-      local option_splits = utils.string_split(option, " ")
+      local option_splits = strs.split(option, " ")
       for _, o in ipairs(option_splits) do
         if type(o) == "string" and string.len(o) > 0 then
           table.insert(args, o)
@@ -257,12 +262,12 @@ local function _make_live_grep_provider(opts)
     end
     if type(opts) == "table" and opts.buffer then
       local current_bufpath =
-        path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
-      table.insert(args, content)
+        paths.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+      table.insert(args, payload)
       table.insert(args, current_bufpath)
     else
       -- table.insert(args, "--")
-      table.insert(args, content)
+      table.insert(args, payload)
     end
     return args
   end
@@ -288,21 +293,21 @@ local function _is_valid_buffer_number(bufnr)
     ["qf"] = true,
     ["neo-tree"] = true,
   }
-  local ok, ft_or_err = pcall(utils.get_buf_option, bufnr, "filetype")
+  local ok, ft_or_err = pcall(nvims.get_buf_option, bufnr, "filetype")
   if not ok then
     return false
   end
-  return utils.is_buf_valid(bufnr) and not exclude_filetypes[ft_or_err]
+  return nvims.buf_is_valid(bufnr) and not exclude_filetypes[ft_or_err]
 end
 
 --- @param query string
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 --- @return string[]|nil
 local function _buffers_provider(query, context)
   local bufs = vim.api.nvim_list_bufs()
   local filenames = {}
   local current_filename = _is_valid_buffer_number(context.bufnr)
-      and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+      and paths.reduce(vim.api.nvim_buf_get_name(context.bufnr))
     or nil
   if
     type(current_filename) == "string" and string.len(current_filename) > 0
@@ -310,7 +315,7 @@ local function _buffers_provider(query, context)
     table.insert(filenames, current_filename)
   end
   for _, bufnr in ipairs(bufs) do
-    local fname = path.reduce(vim.api.nvim_buf_get_name(bufnr))
+    local fname = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
     if _is_valid_buffer_number(bufnr) and fname ~= current_filename then
       table.insert(filenames, fname)
     end
@@ -323,13 +328,13 @@ local function _delete_buffer(line)
   local bufs = vim.api.nvim_list_bufs()
   local filenames = {}
   for _, bufnr in ipairs(bufs) do
-    local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
+    local bufpath = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
     filenames[bufpath] = bufnr
   end
   if type(line) == "string" and string.len(line) > 0 then
     local selected_filename = line_helpers.parse_find(line)
     local bufnr = filenames[selected_filename]
-    if type(bufnr) == "number" and utils.is_buf_valid(bufnr) then
+    if type(bufnr) == "number" and nvims.buf_is_valid(bufnr) then
       vim.api.nvim_buf_delete(bufnr, {})
     end
   end
@@ -346,8 +351,8 @@ local default_git_root_error = "not in git repo."
 local function _make_git_files_provider(opts)
   --- @return string[]|nil
   local function impl()
-    local git_root_cmd = cmd.GitRootCmd:run()
-    if git_root_cmd:wrong() then
+    local git_root_cmd = cmds.GitRootCommand:run()
+    if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, default_git_root_error)
       return nil
     end
@@ -363,29 +368,29 @@ end
 -- git grep {
 
 --- @param query string?
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 --- @return string[]|nil
 local function _git_live_grep_provider(query, context)
-  local git_root_cmd = cmd.GitRootCmd:run()
-  if git_root_cmd:wrong() then
+  local git_root_cmd = cmds.GitRootCommand:run()
+  if git_root_cmd:failed() then
     log.echo(LogLevels.INFO, default_git_root_error)
     return nil
   end
 
-  local parsed_query = utils.parse_flag_query(query or "")
-  local content = parsed_query[1]
-  local option = parsed_query[2]
+  local parsed = queries_helper.parse_flagged(query or "")
+  local payload = parsed.payload
+  local option = parsed.option
 
   local args = { "git", "grep", "--color=always", "-n" }
   if type(option) == "string" and string.len(option) > 0 then
-    local option_splits = utils.string_split(option, " ")
+    local option_splits = strs.split(option, " ")
     for _, o in ipairs(option_splits) do
       if type(o) == "string" and string.len(o) > 0 then
         table.insert(args, o)
       end
     end
   end
-  table.insert(args, content)
+  table.insert(args, payload)
   return args
 end
 
@@ -396,13 +401,13 @@ end
 --- @param opts {remote_branch:boolean?}?
 local function _make_git_branches_provider(opts)
   local function impl()
-    local git_root_cmd = cmd.GitRootCmd:run()
-    if git_root_cmd:wrong() then
+    local git_root_cmd = cmds.GitRootCommand:run()
+    if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, default_git_root_error)
       return nil
     end
-    local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
-    if git_current_branch_cmd:wrong() then
+    local git_current_branch_cmd = cmds.GitCurrentBranchCommand:run()
+    if git_current_branch_cmd:failed() then
       log.echo(
         LogLevels.WARN,
         table.concat(git_current_branch_cmd.result.stderr, " ")
@@ -412,19 +417,19 @@ local function _make_git_branches_provider(opts)
     local branch_results = {}
     table.insert(
       branch_results,
-      string.format("* %s", git_current_branch_cmd:value())
+      string.format("* %s", git_current_branch_cmd:output())
     )
-    local git_branch_cmd = cmd.GitBranchCmd:run(
+    local git_branches_cmd = cmds.GitBranchesCommand:run(
       (type(opts) == "table" and opts.remote_branch) and true or false
     )
-    if git_branch_cmd.result:wrong() then
+    if git_branches_cmd:failed() then
       log.echo(
         LogLevels.WARN,
         table.concat(git_current_branch_cmd.result.stderr, " ")
       )
       return nil
     end
-    for _, line in ipairs(git_branch_cmd.result.stdout) do
+    for _, line in ipairs(git_branches_cmd.result.stdout) do
       if vim.trim(line):sub(1, 1) ~= "*" then
         table.insert(branch_results, string.format("  %s", vim.trim(line)))
       end
@@ -438,12 +443,12 @@ local default_git_log_pretty =
   "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
 local function _git_branches_previewer(line)
-  local branch = utils.string_split(line, " ")[1]
+  local branch = strs.split(line, " ")[1]
   -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
   -- "git log --graph --color=always --date=relative",
   return string.format(
     "git log --pretty=%s --graph --date=short --color=always %s",
-    utils.shellescape(default_git_log_pretty),
+    nvims.shellescape(default_git_log_pretty),
     branch
   )
 end
@@ -453,19 +458,19 @@ end
 -- git commits {
 
 --- @param opts {buffer:boolean?}?
---- @return fun(query:string,context:PipelineContext):string[]|nil
+--- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 local function _make_git_commits_provider(opts)
   --- @param query string
-  --- @param context PipelineContext
+  --- @param context fzfx.PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local git_root_cmd = cmd.GitRootCmd:run()
-    if git_root_cmd:wrong() then
+    local git_root_cmd = cmds.GitRootCommand:run()
+    if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, default_git_root_error)
       return nil
     end
     if type(opts) == "table" and opts.buffer then
-      if not utils.is_buf_valid(context.bufnr) then
+      if not nvims.buf_is_valid(context.bufnr) then
         log.echo(
           LogLevels.INFO,
           default_invalid_buffer_error,
@@ -504,7 +509,7 @@ end
 --- @param commit string
 --- @return string?
 local function _make_git_commits_previewer(commit)
-  if constants.has_delta then
+  if consts.HAS_DELTA then
     local preview_width = _get_delta_width()
     return string.format(
       [[git show %s | delta -n --tabs 4 --width %d]],
@@ -519,10 +524,10 @@ end
 --- @param line string
 --- @return string?
 local function _git_commits_previewer(line)
-  if utils.string_isspace(line:sub(1, 1)) then
+  if strs.isspace(line:sub(1, 1)) then
     return nil
   end
-  local commit = utils.string_split(line, " ")[1]
+  local commit = strs.split(line, " ")[1]
   return _make_git_commits_previewer(commit)
 end
 
@@ -531,15 +536,15 @@ end
 -- git blame {
 
 --- @param query string
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 --- @return string?
 local function _git_blame_provider(query, context)
-  local git_root_cmd = cmd.GitRootCmd:run()
-  if git_root_cmd:wrong() then
+  local git_root_cmd = cmds.GitRootCommand:run()
+  if git_root_cmd:failed() then
     log.echo(LogLevels.INFO, default_git_root_error)
     return nil
   end
-  if not utils.is_buf_valid(context.bufnr) then
+  if not nvims.buf_is_valid(context.bufnr) then
     log.echo(
       LogLevels.INFO,
       default_invalid_buffer_error,
@@ -553,16 +558,16 @@ local function _git_blame_provider(query, context)
   --     "git blame --date=short --color-lines %s",
   --     bufpath
   -- )
-  if constants.has_delta then
+  if consts.HAS_DELTA then
     return string.format(
       [[git blame %s | delta -n --tabs 4 --blame-format %s]],
-      utils.shellescape(bufpath),
-      utils.shellescape("{commit:<8} {author:<15.14} {timestamp:<15}")
+      nvims.shellescape(bufpath --[[@as string]]),
+      nvims.shellescape("{commit:<8} {author:<15.14} {timestamp:<15}")
     )
   else
     return string.format(
       [[git blame --date=short --color-lines %s]],
-      utils.shellescape(bufpath)
+      nvims.shellescape(bufpath --[[@as string]])
     )
   end
 end
@@ -575,8 +580,8 @@ end
 --- @return fun():string[]|nil
 local function _make_git_status_provider(opts)
   local function impl()
-    local git_root_cmd = cmd.GitRootCmd:run()
-    if git_root_cmd:wrong() then
+    local git_root_cmd = cmds.GitRootCommand:run()
+    if git_root_cmd:failed() then
       log.echo(LogLevels.INFO, default_git_root_error)
       return nil
     end
@@ -598,17 +603,17 @@ end
 --- @return string?
 local function _git_status_previewer(line)
   local filename = line_helpers.parse_git_status(line)
-  if constants.has_delta then
+  if consts.HAS_DELTA then
     local preview_width = _get_delta_width()
     return string.format(
       [[git diff %s | delta -n --tabs 4 --width %d]],
-      utils.shellescape(filename),
+      nvims.shellescape(filename),
       preview_width
     )
   else
     return string.format(
       [[git diff --color=always %s]],
-      utils.shellescape(filename)
+      nvims.shellescape(filename)
     )
   end
 end
@@ -620,7 +625,7 @@ end
 --- @param line string
 --- @return string
 local function _parse_vim_ex_command_name(line)
-  local name_stop_pos = utils.string_find(line, "|", 3)
+  local name_stop_pos = strs.find(line, "|", 3)
   return vim.trim(line:sub(3, name_stop_pos - 1))
 end
 
@@ -628,21 +633,21 @@ end
 local function _get_vim_ex_commands()
   local help_docs_list =
     ---@diagnostic disable-next-line: param-type-mismatch
-    vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1)
+    vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1) --[[@as table]]
   log.debug(
     "|fzfx.config - _get_vim_ex_commands| help docs:%s",
     vim.inspect(help_docs_list)
   )
-  if type(help_docs_list) ~= "table" or vim.tbl_isempty(help_docs_list) then
+  if tbls.tbl_empty(help_docs_list) then
     log.echo(LogLevels.INFO, "no 'doc/index.txt' found.")
     return {}
   end
   local results = {}
   for _, help_doc in ipairs(help_docs_list) do
-    local lines = utils.readlines(help_doc) --[[@as table]]
+    local lines = fs.readlines(help_doc) --[[@as table]]
     for i = 1, #lines do
       local line = lines[i]
-      if utils.string_startswith(line, "|:") then
+      if strs.startswith(line, "|:") then
         log.debug(
           "|fzfx.config - _get_vim_ex_commands| line[%d]:%s",
           i,
@@ -653,7 +658,7 @@ local function _get_vim_ex_commands()
           results[name] = {
             name = name,
             loc = {
-              filename = path.reduce2home(help_doc),
+              filename = paths.reduce2home(help_doc),
               lineno = i,
             },
           }
@@ -672,11 +677,11 @@ end
 --- @param header string
 --- @return boolean
 local function _is_ex_command_output_header(header)
-  local name_pos = utils.string_find(header, "Name")
-  local args_pos = utils.string_find(header, "Args")
-  local address_pos = utils.string_find(header, "Address")
-  local complete_pos = utils.string_find(header, "Complete")
-  local definition_pos = utils.string_find(header, "Definition")
+  local name_pos = strs.find(header, "Name")
+  local args_pos = strs.find(header, "Args")
+  local address_pos = strs.find(header, "Address")
+  local complete_pos = strs.find(header, "Complete")
+  local definition_pos = strs.find(header, "Definition")
   return type(name_pos) == "number"
     and type(args_pos) == "number"
     and type(address_pos) == "number"
@@ -699,20 +704,20 @@ local function _parse_ex_command_output_lua_function_definition(line, start_pos)
   )
   local lua_flag = "<Lua "
   local lua_function_flag = "<Lua function>"
-  local lua_function_pos = utils.string_find(line, lua_function_flag, start_pos)
+  local lua_function_pos = strs.find(line, lua_function_flag, start_pos)
   if lua_function_pos then
-    start_pos = utils.string_find(
+    start_pos = strs.find(
       line,
       lua_flag,
       lua_function_pos + string.len(lua_function_flag)
     ) --[[@as integer]]
   else
-    start_pos = utils.string_find(line, lua_flag, start_pos) --[[@as integer]]
+    start_pos = strs.find(line, lua_flag, start_pos) --[[@as integer]]
   end
   if start_pos == nil then
     return nil
   end
-  local first_colon_pos = utils.string_find(line, ":", start_pos)
+  local first_colon_pos = strs.find(line, ":", start_pos)
   local content = vim.trim(line:sub(first_colon_pos + 1))
   if string.len(content) > 0 and content:sub(#content) == ">" then
     content = content:sub(1, #content - 1)
@@ -721,7 +726,7 @@ local function _parse_ex_command_output_lua_function_definition(line, start_pos)
     "|fzfx.config - _parse_ex_command_output_lua_function_definition| content-2:%s",
     vim.inspect(content)
   )
-  local content_splits = utils.string_split(content, ":")
+  local content_splits = strs.split(content, ":")
   log.debug(
     "|fzfx.config - _parse_ex_command_output_lua_function_definition| split content:%s",
     vim.inspect(content_splits)
@@ -736,11 +741,11 @@ end
 --- @param header string
 --- @return VimExCommandOutputHeader
 local function _parse_ex_command_output_header(header)
-  local name_pos = utils.string_find(header, "Name")
-  local args_pos = utils.string_find(header, "Args")
-  local address_pos = utils.string_find(header, "Address")
-  local complete_pos = utils.string_find(header, "Complete")
-  local definition_pos = utils.string_find(header, "Definition")
+  local name_pos = strs.find(header, "Name")
+  local args_pos = strs.find(header, "Args")
+  local address_pos = strs.find(header, "Address")
+  local complete_pos = strs.find(header, "Complete")
+  local definition_pos = strs.find(header, "Definition")
   return {
     name_pos = name_pos,
     args_pos = args_pos,
@@ -797,7 +802,7 @@ local function _parse_ex_command_output()
   ))
 
   local results = {}
-  local command_outputs = utils.readlines(tmpfile) --[[@as table]]
+  local command_outputs = fs.readlines(tmpfile --[[@as string]]) --[[@as table]]
   local found_command_output_header = false
   --- @type VimExCommandOutputHeader
   local parsed_header = nil
@@ -814,7 +819,7 @@ local function _parse_ex_command_output()
         vim.inspect(line),
         idx
       )
-      while idx <= #line and not utils.string_isspace(line:sub(idx, idx)) do
+      while idx <= #line and not strs.isspace(line:sub(idx, idx)) do
         -- log.debug(
         --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
         --     idx,
@@ -823,9 +828,9 @@ local function _parse_ex_command_output()
         -- )
         -- log.debug(
         --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, isspace:%s",
-        --     vim.inspect(utils.string_isspace(line:sub(idx, idx)))
+        --     vim.inspect(strs.isspace(line:sub(idx, idx)))
         -- )
-        if utils.string_isspace(line:sub(idx, idx)) then
+        if strs.isspace(line:sub(idx, idx)) then
           break
         end
         idx = idx + 1
@@ -947,7 +952,7 @@ local function _render_vim_commands(commands, name_width, opts_width)
       and type(r.loc.filename) == "string"
       and type(r.loc.lineno) == "number"
     then
-      return string.format("%s:%d", path.reduce(r.loc.filename), r.loc.lineno)
+      return string.format("%s:%d", paths.reduce(r.loc.filename), r.loc.lineno)
     else
       return (type(r.opts) == "table" and type(r.opts.desc) == "string")
           and string.format('"%s"', r.opts.desc)
@@ -1063,11 +1068,11 @@ end
 --- @return string[]
 local function _vim_commands_lua_function_previewer(filename, lineno)
   local height = vim.api.nvim_win_get_height(0)
-  if constants.has_bat then
+  if consts.HAS_BAT then
     local style, theme = _default_bat_style_theme()
     -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
     return {
-      constants.bat,
+      consts.BAT,
       "--style=" .. style,
       "--theme=" .. theme,
       "--color=always",
@@ -1115,7 +1120,7 @@ local function vim_commands_previewer(line, context)
       desc_or_loc.filename,
       desc_or_loc.lineno
     )
-  elseif constants.has_echo and type(desc_or_loc) == "string" then
+  elseif consts.HAS_ECHO and type(desc_or_loc) == "string" then
     log.debug(
       "|fzfx.config - vim_commands_previewer| desc:%s",
       vim.inspect(desc_or_loc)
@@ -1135,7 +1140,7 @@ local default_lsp_diagnostic_signs = {
   [1] = {
     severity = 1,
     name = "DiagnosticSignError",
-    text = env.icon_enable() and "" or "E", -- nf-fa-times \uf00d
+    text = require("fzfx.lib.env").icon_enabled() and "" or "E", -- nf-fa-times \uf00d
     texthl = vim.fn.hlexists("DiagnosticSignError") > 0
         and "DiagnosticSignError"
       or (
@@ -1148,7 +1153,7 @@ local default_lsp_diagnostic_signs = {
   [2] = {
     severity = 2,
     name = "DiagnosticSignWarn",
-    text = env.icon_enable() and "" or "W", -- nf-fa-warning \uf071
+    text = require("fzfx.lib.env").icon_enabled() and "" or "W", -- nf-fa-warning \uf071
     texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0 and "DiagnosticSignWarn"
       or (
         vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
@@ -1160,7 +1165,7 @@ local default_lsp_diagnostic_signs = {
   [3] = {
     severity = 3,
     name = "DiagnosticSignInfo",
-    text = env.icon_enable() and "" or "I", -- nf-fa-info_circle \uf05a
+    text = require("fzfx.lib.env").icon_enabled() and "" or "I", -- nf-fa-info_circle \uf05a
     texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0 and "DiagnosticSignInfo"
       or (
         vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
@@ -1172,7 +1177,7 @@ local default_lsp_diagnostic_signs = {
   [4] = {
     severity = 4,
     name = "DiagnosticSignHint",
-    text = env.icon_enable() and "" or "H", -- nf-fa-bell \uf0f3
+    text = require("fzfx.lib.env").icon_enabled() and "" or "H", -- nf-fa-bell \uf0f3
     texthl = vim.fn.hlexists("DiagnosticSignHint") > 0 and "DiagnosticSignHint"
       or (
         vim.fn.hlexists("LspDiagnosticsSignHint") > 0
@@ -1186,8 +1191,8 @@ local default_lsp_diagnostic_signs = {
 -- simulate rg's filepath color, see:
 -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
 -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-local default_lsp_filename_color = constants.is_windows and color.cyan
-  or color.magenta
+local default_lsp_filename_color = consts.IS_WINDOWS and colors.cyan
+  or colors.magenta
 
 local default_no_lsp_clients_error = "no active lsp clients."
 local default_no_lsp_diagnostics_error = "no lsp diagnostics found."
@@ -1196,9 +1201,9 @@ local default_no_lsp_diagnostics_error = "no lsp diagnostics found."
 local function _make_lsp_diagnostic_signs()
   local results = {}
   for _, signs in ipairs(default_lsp_diagnostic_signs) do
-    local sign_def = vim.fn.sign_getdefined(signs.name)
+    local sign_def = vim.fn.sign_getdefined(signs.name) --[[@as table]]
     local item = vim.deepcopy(signs)
-    if type(sign_def) == "table" and not vim.tbl_isempty(sign_def) then
+    if not tbls.tbl_empty(sign_def) then
       item.text = vim.trim(sign_def[1].text)
       item.texthl = sign_def[1].texthl
     end
@@ -1220,7 +1225,7 @@ local function _process_lsp_diagnostic_item(diag)
   )
   local result = {
     bufnr = diag.bufnr,
-    filename = path.reduce(vim.api.nvim_buf_get_name(diag.bufnr)),
+    filename = paths.reduce(vim.api.nvim_buf_get_name(diag.bufnr)),
     lnum = diag.lnum + 1,
     col = diag.col + 1,
     text = vim.trim(diag.message:gsub("\n", " ")),
@@ -1235,23 +1240,24 @@ local function _process_lsp_diagnostic_item(diag)
 end
 
 --- @param opts {buffer:boolean?}?
---- @return fun(query:string,context:PipelineContext):string[]|nil
+--- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 local function _make_lsp_diagnostics_provider(opts)
   local signs = _make_lsp_diagnostic_signs()
 
   --- @param query string
-  --- @param context PipelineContext
+  --- @param context fzfx.PipelineContext
   --- @return string[]|nil
   local function impl(query, context)
+    ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients()
-    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+    if tbls.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
       return nil
     end
     local diag_list = vim.diagnostic.get(
       (type(opts) == "table" and opts.buffer) and context.bufnr or nil
     )
-    if diag_list == nil or vim.tbl_isempty(diag_list) then
+    if tbls.tbl_empty(diag_list) then
       log.echo(LogLevels.INFO, default_no_lsp_diagnostics_error)
       return nil
     end
@@ -1274,7 +1280,7 @@ local function _make_lsp_diagnostics_provider(opts)
         if type(diag.text) == "string" and string.len(diag.text) > 0 then
           if type(signs[diag.severity]) == "table" then
             local sign_item = signs[diag.severity]
-            local color_renderer = color[sign_item.textcolor]
+            local color_renderer = colors[sign_item.textcolor]
             builder = " " .. color_renderer(sign_item.text, sign_item.texthl)
           end
           builder = builder .. " " .. diag.text
@@ -1287,7 +1293,7 @@ local function _make_lsp_diagnostics_provider(opts)
         local line = string.format(
           "%s:%s:%s:%s",
           default_lsp_filename_color(diag.filename),
-          color.green(tostring(diag.lnum)),
+          colors.green(tostring(diag.lnum)),
           tostring(diag.col),
           builder
         )
@@ -1391,7 +1397,7 @@ local function _render_lsp_location_line(loc)
   --- @type LspRange
   local range = nil
   if _is_lsp_location(loc) then
-    filename = path.reduce(vim.uri_to_fname(loc.uri))
+    filename = paths.reduce(vim.uri_to_fname(loc.uri))
     range = loc.range
     log.debug(
       "|fzfx.config - _render_lsp_location_line| location filename:%s, range:%s",
@@ -1399,7 +1405,7 @@ local function _render_lsp_location_line(loc)
       vim.inspect(range)
     )
   elseif _is_lsp_locationlink(loc) then
-    filename = path.reduce(vim.uri_to_fname(loc.targetUri))
+    filename = paths.reduce(vim.uri_to_fname(loc.targetUri))
     range = loc.targetRange
     log.debug(
       "|fzfx.config - _render_lsp_location_line| locationlink filename:%s, range:%s",
@@ -1413,12 +1419,12 @@ local function _render_lsp_location_line(loc)
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return nil
   end
-  local filelines = utils.readlines(filename)
+  local filelines = fs.readlines(filename)
   if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
     return nil
   end
   local loc_line =
-    _lsp_range_render_line(filelines[range.start.line + 1], range, color.red)
+    _lsp_range_render_line(filelines[range.start.line + 1], range, colors.red)
   log.debug(
     "|fzfx.config - _render_lsp_location_line| range:%s, loc_line:%s",
     vim.inspect(range),
@@ -1427,7 +1433,7 @@ local function _render_lsp_location_line(loc)
   local line = string.format(
     "%s:%s:%s:%s",
     default_lsp_filename_color(vim.fn.fnamemodify(filename, ":~:.")),
-    color.green(tostring(range.start.line + 1)),
+    colors.green(tostring(range.start.line + 1)),
     tostring(range.start.character + 1),
     loc_line
   )
@@ -1453,8 +1459,9 @@ local function _make_lsp_locations_provider(opts)
   --- @param context LspLocationPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
+    ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
-    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+    if tbls.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
       return nil
     end
@@ -1518,7 +1525,7 @@ local function _make_lsp_locations_provider(opts)
       end
     end
 
-    if vim.tbl_isempty(results) then
+    if tbls.tbl_empty(results) then
       log.echo(LogLevels.INFO, default_no_lsp_locations_error)
       return nil
     end
@@ -1587,7 +1594,7 @@ local function _render_lsp_call_hierarchy_line(item, ranges)
     and string.len(item.uri) > 0
     and _is_lsp_range(item.range)
   then
-    filename = path.reduce(vim.uri_to_fname(item.uri))
+    filename = paths.reduce(vim.uri_to_fname(item.uri))
     log.debug(
       "|fzfx.config - _render_lsp_call_hierarchy_line| location filename:%s",
       vim.inspect(filename)
@@ -1599,14 +1606,14 @@ local function _render_lsp_call_hierarchy_line(item, ranges)
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return {}
   end
-  local filelines = utils.readlines(filename)
+  local filelines = fs.readlines(filename)
   if type(filelines) ~= "table" then
     return {}
   end
   local lines = {}
   for i, r in ipairs(ranges) do
     local item_line =
-      _lsp_range_render_line(filelines[r.start.line + 1], r, color.red)
+      _lsp_range_render_line(filelines[r.start.line + 1], r, colors.red)
     log.debug(
       "|fzfx.config - _render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
       vim.inspect(i),
@@ -1616,7 +1623,7 @@ local function _render_lsp_call_hierarchy_line(item, ranges)
     local line = string.format(
       "%s:%s:%s:%s",
       default_lsp_filename_color(vim.fn.fnamemodify(filename, ":~:.")),
-      color.green(tostring(r.start.line + 1)),
+      colors.green(tostring(r.start.line + 1)),
       tostring(r.start.character + 1),
       item_line
     )
@@ -1660,8 +1667,9 @@ local function _make_lsp_call_hierarchy_provider(opts)
   --- @param context LspLocationPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
+    ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
-    if lsp_clients == nil or vim.tbl_isempty(lsp_clients) then
+    if tbls.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, default_no_lsp_clients_error)
       return nil
     end
@@ -1784,7 +1792,7 @@ local function _make_lsp_call_hierarchy_provider(opts)
       end
     end
 
-    if vim.tbl_isempty(results) then
+    if tbls.tbl_empty(results) then
       log.echo(LogLevels.INFO, default_no_lsp_call_hierarchy_error)
       return nil
     end
@@ -1838,36 +1846,33 @@ local function _parse_map_command_output_line(line)
   local first_space_pos = 1
   while
     first_space_pos <= #line
-    and not utils.string_isspace(line:sub(first_space_pos, first_space_pos))
+    and not strs.isspace(line:sub(first_space_pos, first_space_pos))
   do
     first_space_pos = first_space_pos + 1
   end
   -- local mode = vim.trim(line:sub(1, first_space_pos - 1))
   while
     first_space_pos <= #line
-    and utils.string_isspace(line:sub(first_space_pos, first_space_pos))
+    and strs.isspace(line:sub(first_space_pos, first_space_pos))
   do
     first_space_pos = first_space_pos + 1
   end
   local second_space_pos = first_space_pos
   while
     second_space_pos <= #line
-    and not utils.string_isspace(line:sub(second_space_pos, second_space_pos))
+    and not strs.isspace(line:sub(second_space_pos, second_space_pos))
   do
     second_space_pos = second_space_pos + 1
   end
   local lhs = vim.trim(line:sub(first_space_pos, second_space_pos - 1))
   local result = { lhs = lhs }
   local rhs_or_location = vim.trim(line:sub(second_space_pos))
-  local lua_definition_pos = utils.string_find(rhs_or_location, "<Lua ")
+  local lua_definition_pos = strs.find(rhs_or_location, "<Lua ")
 
-  if lua_definition_pos and utils.string_endswith(rhs_or_location, ">") then
-    local first_colon_pos = utils.string_find(
-      rhs_or_location,
-      ":",
-      lua_definition_pos + string.len("<Lua ")
-    ) --[[@as integer]]
-    local last_colon_pos = utils.string_rfind(rhs_or_location, ":") --[[@as integer]]
+  if lua_definition_pos and strs.endswith(rhs_or_location, ">") then
+    local first_colon_pos =
+      strs.find(rhs_or_location, ":", lua_definition_pos + string.len("<Lua ")) --[[@as integer]]
+    local last_colon_pos = strs.rfind(rhs_or_location, ":") --[[@as integer]]
     local filename =
       rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
     local lineno = rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
@@ -1877,7 +1882,7 @@ local function _parse_map_command_output_line(line)
       vim.inspect(filename),
       vim.inspect(lineno)
     )
-    result.filename = path.normalize(filename, { expand = true })
+    result.filename = paths.normalize(filename, { expand = true })
     result.lineno = tonumber(lineno)
   end
   return result
@@ -1897,7 +1902,7 @@ local function _get_vim_keymaps()
   ))
 
   local keys_output_map = {}
-  local map_output_lines = utils.readlines(tmpfile) --[[@as table]]
+  local map_output_lines = fs.readlines(tmpfile --[[@as string]]) --[[@as table]]
 
   local LAST_SET_FROM = "\tLast set from "
   local LAST_SET_FROM_LUA = "\tLast set from Lua"
@@ -1906,22 +1911,22 @@ local function _get_vim_keymaps()
   for i = 1, #map_output_lines do
     local line = map_output_lines[i]
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
-      if utils.string_isalpha(line:sub(1, 1)) then
+      if strs.isalpha(line:sub(1, 1)) then
         local parsed = _parse_map_command_output_line(line)
         keys_output_map[parsed.lhs] = parsed
         last_lhs = parsed.lhs
       elseif
-        utils.string_startswith(line, LAST_SET_FROM)
-        and utils.string_rfind(line, LINE)
-        and not utils.string_startswith(line, LAST_SET_FROM_LUA)
+        strs.startswith(line, LAST_SET_FROM)
+        and strs.rfind(line, LINE)
+        and not strs.startswith(line, LAST_SET_FROM_LUA)
         and last_lhs
       then
-        local line_pos = utils.string_rfind(line, LINE)
+        local line_pos = strs.rfind(line, LINE)
         local filename =
           vim.trim(line:sub(string.len(LAST_SET_FROM) + 1, line_pos - 1))
         local lineno = vim.trim(line:sub(line_pos + string.len(LINE)))
         keys_output_map[last_lhs].filename =
-          path.normalize(filename, { expand = true })
+          paths.normalize(filename, { expand = true })
         keys_output_map[last_lhs].lineno = tonumber(lineno)
       end
     end
@@ -1963,10 +1968,7 @@ local function _get_vim_keymaps()
     if keys[left] then
       return keys[left]
     end
-    if
-      utils.string_startswith(left, "<Space>")
-      or utils.string_startswith(left, "<space>")
-    then
+    if strs.startswith(left, "<Space>") or strs.startswith(left, "<space>") then
       return keys[" " .. left:sub(string.len("<Space>") + 1)]
     end
     return nil
@@ -2050,7 +2052,7 @@ local function _render_vim_keymaps(keymaps, key_width, opts_width)
       and type(r.lineno) == "number"
       and r.lineno >= 0
     then
-      return string.format("%s:%d", path.reduce(r.filename), r.lineno)
+      return string.format("%s:%d", paths.reduce(r.filename), r.lineno)
     elseif type(r.rhs) == "string" and string.len(r.rhs) > 0 then
       return string.format('"%s"', r.rhs)
     elseif type(r.desc) == "string" and string.len(r.desc) > 0 then
@@ -2128,15 +2130,15 @@ local function _make_vim_keymaps_provider(mode)
         elseif
           mode == "v"
           and (
-            utils.string_find(k.mode, "v")
-            or utils.string_find(k.mode, "s")
-            or utils.string_find(k.mode, "x")
+            strs.find(k.mode, "v")
+            or strs.find(k.mode, "s")
+            or strs.find(k.mode, "x")
           )
         then
           table.insert(filtered_keys, k)
-        elseif mode == "n" and utils.string_find(k.mode, "n") then
+        elseif mode == "n" and strs.find(k.mode, "n") then
           table.insert(filtered_keys, k)
-        elseif mode == "i" and utils.string_find(k.mode, "i") then
+        elseif mode == "i" and strs.find(k.mode, "i") then
           table.insert(filtered_keys, k)
         elseif mode == "n" and string.len(k.mode) == 0 then
           table.insert(filtered_keys, k)
@@ -2157,11 +2159,11 @@ end
 --- @return string[]
 local function _vim_keymaps_lua_function_previewer(filename, lineno)
   local height = vim.api.nvim_win_get_height(0)
-  if constants.has_bat then
+  if consts.HAS_BAT then
     local style, theme = _default_bat_style_theme()
     -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
     return {
-      constants.bat,
+      consts.BAT,
       "--style=" .. style,
       "--theme=" .. theme,
       "--color=always",
@@ -2209,7 +2211,7 @@ local function _vim_keymaps_previewer(line, context)
       def_or_loc.filename,
       def_or_loc.lineno
     )
-  elseif constants.has_echo and type(def_or_loc) == "string" then
+  elseif consts.HAS_ECHO and type(def_or_loc) == "string" then
     log.debug(
       "|fzfx.config - vim_keymaps_previewer| desc:%s",
       vim.inspect(def_or_loc)
@@ -2229,7 +2231,7 @@ end
 --- @return FileExplorerPipelineContext
 local function _file_explorer_context_maker()
   local temp = vim.fn.tempname()
-  utils.writefile(temp, vim.fn.getcwd())
+  fs.writefile(temp --[[@as string]], vim.fn.getcwd() --[[@as string]])
   local context = {
     bufnr = vim.api.nvim_get_current_buf(),
     winnr = vim.api.nvim_get_current_win(),
@@ -2240,53 +2242,53 @@ local function _file_explorer_context_maker()
 end
 
 --- @param ls_args "-lh"|"-lha"
---- @return fun(query:string,context:PipelineContext):string?
+--- @return fun(query:string,context:fzfx.PipelineContext):string?
 local function _make_file_explorer_provider(ls_args)
   --- @param query string
   --- @param context FileExplorerPipelineContext
   --- @return string?
   local function impl(query, context)
-    local cwd = utils.readfile(context.cwd)
-    if constants.has_lsd then
-      return constants.has_echo
+    local cwd = fs.readfile(context.cwd)
+    if consts.HAS_LSD then
+      return consts.HAS_ECHO
           and string.format(
             "echo %s && lsd %s --color=always --header -- %s",
-            utils.shellescape(cwd --[[@as string]]),
+            nvims.shellescape(cwd --[[@as string]]),
             ls_args,
-            utils.shellescape(cwd --[[@as string]])
+            nvims.shellescape(cwd --[[@as string]])
           )
         or string.format(
           "lsd %s --color=always --header -- %s",
           ls_args,
-          utils.shellescape(cwd --[[@as string]])
+          nvims.shellescape(cwd --[[@as string]])
         )
-    elseif constants.has_eza then
-      return constants.has_echo
+    elseif consts.HAS_EZA then
+      return consts.HAS_ECHO
           and string.format(
             "echo %s && %s --color=always %s -- %s",
-            utils.shellescape(cwd --[[@as string]]),
-            constants.eza,
+            nvims.shellescape(cwd --[[@as string]]),
+            consts.EZA,
             ls_args,
-            utils.shellescape(cwd --[[@as string]])
+            nvims.shellescape(cwd --[[@as string]])
           )
         or string.format(
           "%s --color=always %s -- %s",
-          constants.eza,
+          consts.EZA,
           ls_args,
-          utils.shellescape(cwd --[[@as string]])
+          nvims.shellescape(cwd --[[@as string]])
         )
-    elseif vim.fn.executable("ls") > 0 then
-      return constants.has_echo
+    elseif consts.HAS_LS then
+      return consts.HAS_ECHO
           and string.format(
             "echo %s && ls --color=always %s %s",
-            utils.shellescape(cwd --[[@as string]]),
+            nvims.shellescape(cwd --[[@as string]]),
             ls_args,
-            utils.shellescape(cwd --[[@as string]])
+            nvims.shellescape(cwd --[[@as string]])
           )
         or string.format(
           "ls --color=always %s %s",
           ls_args,
-          utils.shellescape(cwd --[[@as string]])
+          nvims.shellescape(cwd --[[@as string]])
         )
     else
       log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
@@ -2300,7 +2302,7 @@ end
 --- @param filename string
 --- @return string[]|nil
 local function _directory_previewer(filename)
-  if constants.has_lsd then
+  if consts.HAS_LSD then
     return {
       "lsd",
       "--color=always",
@@ -2309,9 +2311,9 @@ local function _directory_previewer(filename)
       "--",
       filename,
     }
-  elseif constants.has_eza then
+  elseif consts.HAS_EZA then
     return {
-      constants.eza,
+      consts.EZA,
       "--color=always",
       "-lha",
       "--",
@@ -2330,13 +2332,13 @@ end
 --- @return string
 local function _make_filename_by_file_explorer_context(line, context)
   line = vim.trim(line)
-  local cwd = utils.readfile(context.cwd)
-  local target = constants.has_lsd and line_helpers.parse_lsd(line)
+  local cwd = fs.readfile(context.cwd)
+  local target = consts.HAS_LSD and line_helpers.parse_lsd(line)
     or (
-      constants.has_eza and line_helpers.parse_eza(line)
+      consts.HAS_EZA and line_helpers.parse_eza(line)
       or line_helpers.parse_ls(line)
     )
-  local p = path.join(cwd, target)
+  local p = paths.join(cwd, target)
   log.debug(
     "|fzfx.config - make_filename_by_file_explorer_context| cwd:%s, target:%s, p:%s",
     vim.inspect(cwd),
@@ -2366,20 +2368,20 @@ end
 local function _cd_file_explorer(line, context)
   local target = _make_filename_by_file_explorer_context(line, context)
   if vim.fn.isdirectory(target) > 0 then
-    utils.writefile(context.cwd, target)
+    fs.writefile(context.cwd, target)
   end
 end
 
 --- @param line string
 --- @param context FileExplorerPipelineContext
 local function _upper_file_explorer(line, context)
-  local cwd = utils.readfile(context.cwd) --[[@as string]]
-  local target = vim.fn.fnamemodify(cwd, ":h")
+  local cwd = fs.readfile(context.cwd) --[[@as string]]
+  local target = vim.fn.fnamemodify(cwd, ":h") --[[@as string]]
   -- Windows root folder: `C:\`
   -- Unix/linux root folder: `/`
-  local root_len = constants.is_windows and 3 or 1
+  local root_len = consts.IS_WINDOWS and 3 or 1
   if vim.fn.isdirectory(target) > 0 and string.len(target) > root_len then
-    utils.writefile(context.cwd, target)
+    fs.writefile(context.cwd, target)
   end
 end
 
@@ -2404,7 +2406,7 @@ end
 --- @type fzfx.Options
 local Defaults = {
   -- the 'Files' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   files = {
     commands = {
       -- normal
@@ -2512,13 +2514,13 @@ local Defaults = {
     providers = {
       restricted_mode = {
         key = "ctrl-r",
-        provider = constants.has_fd and default_restricted_fd
+        provider = consts.HAS_FD and default_restricted_fd
           or default_restricted_find,
         line_opts = { prepend_icon_by_ft = true },
       },
       unrestricted_mode = {
         key = "ctrl-u",
-        provider = constants.has_fd and default_unrestricted_fd
+        provider = consts.HAS_FD and default_unrestricted_fd
           or default_unrestricted_find,
         line_opts = { prepend_icon_by_ft = true },
       },
@@ -2544,13 +2546,13 @@ local Defaults = {
     fzf_opts = {
       default_fzf_options.multi,
       function()
-        return { "--prompt", path.shorten() .. " > " }
+        return { "--prompt", paths.shorten() .. " > " }
       end,
     },
   },
 
   -- the 'Live Grep' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   live_grep = {
     commands = {
       -- normal
@@ -2736,32 +2738,32 @@ local Defaults = {
       restricted_mode = {
         previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = constants.has_rg
+        previewer_label = consts.HAS_RG
             and require("fzfx.previewer_labels").rg_previewer_label
           or require("fzfx.previewer_labels").grep_previewer_label,
       },
       unrestricted_mode = {
         previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = constants.has_rg
+        previewer_label = consts.HAS_RG
             and require("fzfx.previewer_labels").rg_previewer_label
           or require("fzfx.previewer_labels").grep_previewer_label,
       },
       buffer_mode = {
         previewer = _file_previewer_grep,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = constants.has_rg
+        previewer_label = consts.HAS_RG
             and require("fzfx.previewer_labels").rg_previewer_label
           or require("fzfx.previewer_labels").grep_previewer_label,
       },
     },
     actions = {
       ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = constants.has_rg and require("fzfx.actions").edit_rg
+      ["enter"] = consts.HAS_RG and require("fzfx.actions").edit_rg
         or require("fzfx.actions").edit_grep,
-      ["double-click"] = constants.has_rg and require("fzfx.actions").edit_rg
+      ["double-click"] = consts.HAS_RG and require("fzfx.actions").edit_rg
         or require("fzfx.actions").edit_grep,
-      ["ctrl-q"] = constants.has_rg and require("fzfx.actions").setqflist_rg
+      ["ctrl-q"] = consts.HAS_RG and require("fzfx.actions").setqflist_rg
         or require("fzfx.actions").setqflist_grep,
     },
     fzf_opts = {
@@ -2777,7 +2779,7 @@ local Defaults = {
   },
 
   -- the 'Buffers' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   buffers = {
     commands = {
       -- normal
@@ -2858,13 +2860,13 @@ local Defaults = {
       { "--prompt", "Buffers > " },
       function()
         local current_bufnr = vim.api.nvim_get_current_buf()
-        return utils.is_buf_valid(current_bufnr) and "--header-lines=1" or nil
+        return nvims.buf_is_valid(current_bufnr) and "--header-lines=1" or nil
       end,
     },
   },
 
   -- the 'Git Files' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_files = {
     commands = {
       -- normal
@@ -3004,13 +3006,13 @@ local Defaults = {
     fzf_opts = {
       default_fzf_options.multi,
       function()
-        return { "--prompt", path.shorten() .. " > " }
+        return { "--prompt", paths.shorten() .. " > " }
       end,
     },
   },
 
   -- the 'Git Live Grep' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_live_grep = {
     commands = {
       -- normal
@@ -3095,7 +3097,7 @@ local Defaults = {
   },
 
   -- the 'Git Status' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_status = {
     commands = {
       -- normal
@@ -3234,7 +3236,7 @@ local Defaults = {
   },
 
   -- the 'Git Branches' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_branches = {
     commands = {
       -- normal
@@ -3366,15 +3368,15 @@ local Defaults = {
       default_fzf_options.no_multi,
       { "--prompt", "Git Branches > " },
       function()
-        local git_root_cmd = cmd.GitRootCmd:run()
-        if git_root_cmd:wrong() then
+        local git_root_cmd = cmds.GitRootCommand:run()
+        if git_root_cmd:failed() then
           return nil
         end
-        local git_current_branch_cmd = cmd.GitCurrentBranchCmd:run()
-        if git_current_branch_cmd:wrong() then
+        local git_current_branch_cmd = cmds.GitCurrentBranchCommand:run()
+        if git_current_branch_cmd:failed() then
           return nil
         end
-        return utils.string_not_empty(git_current_branch_cmd:value())
+        return strs.not_empty(git_current_branch_cmd:output())
             and "--header-lines=1"
           or nil
       end,
@@ -3382,7 +3384,7 @@ local Defaults = {
   },
 
   -- the 'Git Commits' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_commits = {
     commands = {
       -- normal
@@ -3518,7 +3520,7 @@ local Defaults = {
   },
 
   -- the 'Git Blame' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   git_blame = {
     commands = {
       -- normal
@@ -3593,7 +3595,7 @@ local Defaults = {
   },
 
   -- the 'Vim Commands' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   vim_commands = {
     commands = {
       -- normal
@@ -3809,7 +3811,7 @@ local Defaults = {
   },
 
   -- the 'Vim KeyMaps' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   vim_keymaps = {
     commands = {
       -- normal
@@ -4071,7 +4073,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Diagnostics' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_diagnostics = {
     commands = {
       -- normal
@@ -4223,7 +4225,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Definitions' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_definitions = {
     commands = {
       name = "FzfxLspDefinitions",
@@ -4278,7 +4280,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Type Definitions' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_type_definitions = {
     commands = {
       name = "FzfxLspTypeDefinitions",
@@ -4333,7 +4335,7 @@ local Defaults = {
   },
 
   -- the 'Lsp References' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_references = {
     commands = {
       name = "FzfxLspReferences",
@@ -4388,7 +4390,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Implementations' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_implementations = {
     commands = {
       name = "FzfxLspImplementations",
@@ -4443,7 +4445,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Incoming Calls' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_incoming_calls = {
     commands = {
       name = "FzfxLspIncomingCalls",
@@ -4498,7 +4500,7 @@ local Defaults = {
   },
 
   -- the 'Lsp Outgoing Calls' command
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   lsp_outgoing_calls = {
     commands = {
       name = "FzfxLspOutgoingCalls",
@@ -4553,7 +4555,7 @@ local Defaults = {
   },
 
   -- the 'File Explorer' commands
-  --- @type GroupConfig
+  --- @type fzfx.GroupConfig
   file_explorer = {
     commands = {
       -- normal
@@ -4674,10 +4676,10 @@ local Defaults = {
       filter_hidden = {
         previewer = _file_explorer_previewer,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = constants.has_lsd
+        previewer_label = consts.HAS_LSD
             and require("fzfx.previewer_labels").lsd_previewer_label
           or (
-            constants.has_eza
+            consts.HAS_EZA
               and require("fzfx.previewer_labels").eza_previewer_label
             or require("fzfx.previewer_labels").ls_previewer_label
           ),
@@ -4685,10 +4687,10 @@ local Defaults = {
       include_hidden = {
         previewer = _file_explorer_previewer,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = constants.has_lsd
+        previewer_label = consts.HAS_LSD
             and require("fzfx.previewer_labels").lsd_previewer_label
           or (
-            constants.has_eza
+            consts.HAS_EZA
               and require("fzfx.previewer_labels").eza_previewer_label
             or require("fzfx.previewer_labels").ls_previewer_label
           ),
@@ -4713,17 +4715,13 @@ local Defaults = {
     },
     fzf_opts = {
       default_fzf_options.multi,
-      { "--prompt", path.shorten() .. " > " },
+      { "--prompt", paths.shorten() .. " > " },
       function()
         local n = 0
-        if
-          constants.has_lsd
-          or constants.has_eza
-          or vim.fn.executable("ls") > 0
-        then
+        if consts.HAS_LSD or consts.HAS_EZA or consts.HAS_LS then
           n = n + 1
         end
-        if constants.has_echo then
+        if consts.HAS_ECHO then
           n = n + 1
         end
         return n > 0 and string.format("--header-lines=%d", n) or nil
@@ -4917,7 +4915,7 @@ local Defaults = {
   },
 
   cache = {
-    dir = path.join(vim.fn.stdpath("data"), "fzfx.nvim"),
+    dir = paths.join(vim.fn.stdpath("data"), "fzfx.nvim"),
   },
 
   -- debug

@@ -1,8 +1,9 @@
+local paths = require("fzfx.lib.paths")
+local strs = require("fzfx.lib.strings")
+
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
-local path = require("fzfx.path")
 local line_helpers = require("fzfx.line_helpers")
-local utils = require("fzfx.utils")
 local ui = require("fzfx.ui")
 
 --- @param lines string[]
@@ -27,7 +28,7 @@ end
 
 -- Run 'edit' vim command on fd/find results.
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_find(lines, context)
   local edit_commands = _make_edit_find_commands(lines)
   ui.confirm_discard_buffer_modified(context.bufnr, function()
@@ -41,21 +42,21 @@ end
 
 --- @deprecated
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_buffers(lines, context)
   return edit_find(lines, context)
 end
 
 --- @deprecated
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_git_files(lines, context)
   return edit_find(lines, context)
 end
 
 --- @deprecated
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit(lines, context)
   return edit_find(lines, context)
 end
@@ -83,7 +84,7 @@ local function _make_edit_rg_commands(lines, opts)
 end
 
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_rg(lines, context)
   local edit_commands = _make_edit_rg_commands(lines)
   ui.confirm_discard_buffer_modified(context.bufnr, function()
@@ -118,7 +119,7 @@ local function _make_edit_grep_commands(lines, opts)
 end
 
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_grep(lines, context)
   local edit_commands = _make_edit_grep_commands(lines)
   ui.confirm_discard_buffer_modified(context.bufnr, function()
@@ -143,7 +144,7 @@ end
 
 --- @deprecated
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function buffer(lines, context)
   return edit_find(lines, context)
 end
@@ -154,7 +155,7 @@ local function bdelete(line)
   local list_bufnrs = vim.api.nvim_list_bufs()
   local list_bufpaths = {}
   for _, bufnr in ipairs(list_bufnrs) do
-    local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
+    local bufpath = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
     list_bufpaths[bufpath] = bufnr
   end
   log.debug(
@@ -185,7 +186,7 @@ local function _make_git_checkout_command(lines)
   --- @param t string
   --- @return string
   local function _try_remove_prefix(s, t)
-    return utils.string_startswith(s, t) and s:sub(#t + 1) or s
+    return strs.startswith(s, t) and s:sub(#t + 1) or s
   end
 
   if type(lines) == "table" and #lines > 0 then
@@ -204,7 +205,7 @@ local function _make_git_checkout_command(lines)
       -- origin/main
       -- origin/my-plugin-dev
       line = _try_remove_prefix(line, "origin/")
-      local arrow_pos = utils.string_find(line, "->")
+      local arrow_pos = strs.find(line, "->")
       if type(arrow_pos) == "number" and arrow_pos >= 0 then
         arrow_pos = arrow_pos + 1 + 2
         line = vim.trim(line:sub(arrow_pos))
@@ -228,7 +229,7 @@ end
 local function _make_yank_git_commit_command(lines)
   if type(lines) == "table" and #lines > 0 then
     local line = lines[#lines]
-    local space_pos = utils.string_find(line, " ")
+    local space_pos = strs.find(line, " ")
     if not space_pos then
       return nil
     end
@@ -354,7 +355,7 @@ end
 --- @return string, string
 local function _make_feed_vim_command_params(lines)
   local line = lines[#lines]
-  local space_pos = utils.string_find(line, " ")
+  local space_pos = strs.find(line, " ")
   local input = vim.trim(line:sub(1, space_pos - 1))
   return string.format([[:%s]], input), "n"
 end
@@ -371,18 +372,18 @@ end
 --- @return "cmd"|"feedkeys"|nil, string?, string?
 local function _make_feed_vim_key_params(lines)
   local line = lines[#lines]
-  local space_pos = utils.string_find(line, " ") --[[@as integer]]
+  local space_pos = strs.find(line, " ") --[[@as integer]]
   local input = vim.trim(line:sub(1, space_pos - 1))
-  local bar_pos = utils.string_find(line, "|", space_pos)
+  local bar_pos = strs.find(line, "|", space_pos)
   local mode = vim.trim(line:sub(space_pos, bar_pos - 1))
-  if utils.string_find(mode, "n") then
+  if strs.find(mode, "n") then
     mode = "n"
-    if utils.string_startswith(input:lower(), "<plug>") then
+    if strs.startswith(input:lower(), "<plug>") then
       return "cmd", string.format([[execute "normal \%s"]], input), nil
     elseif
-      utils.string_startswith(input, "<")
-      and type(utils.string_rfind(input, ">")) == "number"
-      and utils.string_rfind(input, ">") > 1
+      strs.startswith(input, "<")
+      and type(strs.rfind(input, ">")) == "number"
+      and strs.rfind(input, ">") > 1
     then
       local tcodes = vim.api.nvim_replace_termcodes(input, true, false, true)
       return "feedkeys", tcodes, "n"
@@ -426,7 +427,7 @@ end
 
 -- Run 'edit' vim command on gits status results.
 --- @param lines string[]
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 local function edit_git_status(lines, context)
   local edit_commands = _make_edit_git_status_commands(lines)
   ui.confirm_discard_buffer_modified(context.bufnr, function()

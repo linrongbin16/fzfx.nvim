@@ -1,10 +1,12 @@
+local nums = require("fzfx.lib.numbers")
+local nvims = require("fzfx.lib.nvims")
+local fs = require("fzfx.lib.filesystems")
+
 local log = require("fzfx.log")
-local LogLevels = require("fzfx.log").LogLevels
 local conf = require("fzfx.config")
-local utils = require("fzfx.utils")
 local fzf_helpers = require("fzfx.fzf_helpers")
 
---- @class PopupWindowConfig
+--- @class fzfx.PopupWindowConfig
 --- @field anchor "NW"|nil
 --- @field relative "editor"|"win"|"cursor"|nil
 --- @field width integer?
@@ -22,15 +24,15 @@ local fzf_helpers = require("fzfx.fzf_helpers")
 --- @return integer
 local function _make_window_size(value, base, minimal)
   minimal = minimal or 3
-  return utils.number_bound(
-    minimal,
+  return nums.bound(
     value > 1 and value or math.floor(base * value),
+    minimal,
     base
   )
 end
 
 --- @param opts fzfx.Options
---- @return PopupWindowConfig
+--- @return fzfx.PopupWindowConfig
 local function _make_cursor_window_config(opts)
   --- @type "cursor"
   local relative = opts.relative
@@ -49,7 +51,7 @@ local function _make_cursor_window_config(opts)
   end
   local col = opts.col
 
-  --- @type PopupWindowConfig
+  --- @type fzfx.PopupWindowConfig
   local pw_config = {
     anchor = "NW",
     relative = relative,
@@ -76,15 +78,15 @@ local function _make_window_center_shift(maxsize, size, offset)
   local base = math.floor((maxsize - size) * 0.5)
   if offset >= 0 then
     local shift = offset < 1 and math.floor((maxsize - size) * offset) or offset
-    return utils.number_bound(0, base + shift, maxsize - size)
+    return nums.bound(base + shift, 0, maxsize - size)
   else
     local shift = offset > -1 and math.ceil((maxsize - size) * offset) or offset
-    return utils.number_bound(0, base + shift, maxsize - size)
+    return nums.bound(base + shift, 0, maxsize - size)
   end
 end
 
 --- @param opts fzfx.Options
---- @return PopupWindowConfig
+--- @return fzfx.PopupWindowConfig
 local function _make_center_window_config(opts)
   --- @type "editor"|"win"
   local relative = opts.relative or "editor"
@@ -120,7 +122,7 @@ local function _make_center_window_config(opts)
   end
   local col = _make_window_center_shift(total_width, width, opts.col)
 
-  --- @type PopupWindowConfig
+  --- @type fzfx.PopupWindowConfig
   local pw_config = {
     anchor = "NW",
     relative = relative,
@@ -141,7 +143,7 @@ local function _make_center_window_config(opts)
 end
 
 --- @param win_opts fzfx.Options
---- @return PopupWindowConfig
+--- @return fzfx.PopupWindowConfig
 local function _make_window_config(win_opts)
   --- @type "editor"|"win"|"cursor"
   local relative = win_opts.relative or "editor"
@@ -152,18 +154,18 @@ local function _make_window_config(win_opts)
     return _make_center_window_config(win_opts)
   else
     log.throw(
-      "failed to make popup window opts, unsupport relative value %s.",
+      "failed to make popup window opts, unsupported relative value %s.",
       vim.inspect(relative)
     )
     ---@diagnostic disable-next-line: missing-return
   end
 end
 
---- @type table<integer, PopupWindow>
+--- @type table<integer, fzfx.PopupWindow>
 local PopupWindowInstances = {}
 
---- @class PopupWindow
---- @field window_opts_context WindowOptsContext?
+--- @class fzfx.PopupWindow
+--- @field window_opts_context fzfx.WindowOptsContext?
 --- @field bufnr integer?
 --- @field winnr integer?
 --- @field _saved_win_opts fzfx.Options
@@ -172,27 +174,27 @@ local PopupWindow = {}
 
 --- @package
 --- @param win_opts fzfx.Options?
---- @return PopupWindow
+--- @return fzfx.PopupWindow
 function PopupWindow:new(win_opts)
   -- check executable: nvim, fzf
   fzf_helpers.nvim_exec()
   fzf_helpers.fzf_exec()
 
   -- save current window context
-  local window_opts_context = utils.WindowOptsContext:save()
+  local window_opts_context = nvims.WindowOptsContext:save()
 
   --- @type integer
   local bufnr = vim.api.nvim_create_buf(false, true)
   -- setlocal bufhidden=wipe nobuflisted
   -- setft=fzf
-  utils.set_buf_option(bufnr, "bufhidden", "wipe")
-  utils.set_buf_option(bufnr, "buflisted", false)
-  utils.set_buf_option(bufnr, "filetype", "fzf")
+  nvims.set_buf_option(bufnr, "bufhidden", "wipe")
+  nvims.set_buf_option(bufnr, "buflisted", false)
+  nvims.set_buf_option(bufnr, "filetype", "fzf")
 
   local merged_win_opts = vim.tbl_deep_extend(
     "force",
     vim.deepcopy(conf.get_config().popup.win_opts),
-    vim.deepcopy(win_opts) or {}
+    vim.deepcopy(win_opts or {})
   )
   local popup_window_config = _make_window_config(merged_win_opts)
 
@@ -202,10 +204,10 @@ function PopupWindow:new(win_opts)
   --- setlocal nospell nonumber
   --- set winhighlight='Pmenu:,Normal:Normal'
   --- set colorcolumn=''
-  utils.set_win_option(winnr, "spell", false)
-  utils.set_win_option(winnr, "number", false)
-  utils.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
-  utils.set_win_option(winnr, "colorcolumn", "")
+  nvims.set_win_option(winnr, "spell", false)
+  nvims.set_win_option(winnr, "number", false)
+  nvims.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  nvims.set_win_option(winnr, "colorcolumn", "")
 
   local o = {
     window_opts_context = window_opts_context,
@@ -254,8 +256,8 @@ function PopupWindow:resize()
   end)
 end
 
---- @class Popup
---- @field popup_window PopupWindow?
+--- @class fzfx.Popup
+--- @field popup_window fzfx.PopupWindow?
 --- @field source string|string[]|nil
 --- @field jobid integer|nil
 --- @field result string|nil
@@ -318,11 +320,11 @@ end
 --- @param source string
 --- @param fzf_opts fzfx.Options
 --- @param actions fzfx.Options
---- @param context PipelineContext
+--- @param context fzfx.PipelineContext
 --- @param on_popup_exit OnPopupExit?
---- @return Popup
+--- @return fzfx.Popup
 function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
-  local result = vim.fn.tempname()
+  local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
   local popup_window = PopupWindow:new(win_opts)
 
@@ -360,7 +362,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
       "|fzfx.popup - Popup:new.on_fzf_exit| result %s must be readable",
       vim.inspect(result)
     )
-    local lines = utils.readlines(result) --[[@as table]]
+    local lines = fs.readlines(result --[[@as string]]) --[[@as table]]
     log.debug(
       "|fzfx.popup - Popup:new| fzf exit, result:%s, lines:%s",
       vim.inspect(result),
@@ -406,7 +408,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
   end
 
   -- save shell opts
-  local shell_opts_context = utils.ShellOptsContext:save()
+  local shell_opts_context = nvims.ShellOptsContext:save()
   local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
   local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
   vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()
@@ -446,7 +448,7 @@ function Popup:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 end
 
---- @return table<integer, PopupWindow>
+--- @return table<integer, fzfx.PopupWindow>
 local function _get_all_popup_window_instances()
   return PopupWindowInstances
 end

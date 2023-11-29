@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
 describe("actions", function()
@@ -18,12 +19,13 @@ describe("actions", function()
     }
   end
 
+  local strs = require("fzfx.lib.strings")
+  local paths = require("fzfx.lib.paths")
+
   local DEVICONS_PATH =
     "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
   require("fzfx.config").setup()
   local actions = require("fzfx.actions")
-  local utils = require("fzfx.utils")
-  local path = require("fzfx.path")
   local line_helpers = require("fzfx.line_helpers")
   describe("[nop]", function()
     it("do nothing", function()
@@ -47,7 +49,7 @@ describe("actions", function()
       assert_eq(#actual, 5)
       for i, line in ipairs(lines) do
         local expect =
-          string.format("edit! %s", path.normalize(line, { expand = true }))
+          string.format("edit! %s", paths.normalize(line, { expand = true }))
         assert_eq(actual[i], expect)
       end
     end)
@@ -64,10 +66,10 @@ describe("actions", function()
       assert_eq(type(actual), "table")
       assert_eq(#actual, 5)
       for i, line in ipairs(lines) do
-        local first_space_pos = utils.string_find(line, " ")
+        local first_space_pos = strs.find(line, " ")
         local expect = string.format(
           "edit! %s",
-          path.normalize(line:sub(first_space_pos + 1), { expand = true })
+          paths.normalize(line:sub(first_space_pos + 1), { expand = true })
         )
         assert_eq(actual[i], expect)
       end
@@ -126,7 +128,7 @@ describe("actions", function()
         if i <= #lines then
           local expect = string.format(
             "edit! %s",
-            vim.fn.expand(path.normalize(utils.string_split(lines[i], ":")[1]))
+            vim.fn.expand(paths.normalize(strs.split(lines[i], ":")[1]))
           )
           assert_eq(act, expect)
         else
@@ -148,20 +150,20 @@ describe("actions", function()
       assert_eq(#actual, 6)
       for i = 1, 5 do
         local line = lines[i]
-        local first_space_pos = utils.string_find(line, " ")
+        local first_space_pos = strs.find(line, " ")
         local expect = string.format(
           "edit! %s",
-          path.normalize(
+          paths.normalize(
             line:sub(
               first_space_pos + 1,
-              utils.string_find(line, ":", first_space_pos + 1) - 1
+              strs.find(line, ":", first_space_pos + 1) - 1
             ),
             { expand = true }
           )
         )
         assert_eq(actual[i], expect)
       end
-      assert_true(utils.string_find(actual[6], "setpos") > 0)
+      assert_true(strs.find(actual[6], "setpos") > 0)
     end)
     it("run edit grep command without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
@@ -205,7 +207,7 @@ describe("actions", function()
         if i <= #lines then
           local expect = string.format(
             "edit! %s",
-            vim.fn.expand(path.normalize(utils.string_split(lines[i], ":")[1]))
+            vim.fn.expand(paths.normalize(strs.split(lines[i], ":")[1]))
           )
           assert_eq(act, expect)
         else
@@ -227,13 +229,13 @@ describe("actions", function()
       assert_eq(#actual, 6)
       for i = 1, 5 do
         local line = lines[i]
-        local first_space_pos = utils.string_find(line, " ")
+        local first_space_pos = strs.find(line, " ")
         local expect = string.format(
           "edit! %s",
-          path.normalize(
+          paths.normalize(
             line:sub(
               first_space_pos + 1,
-              utils.string_find(line, ":", first_space_pos + 1) - 1
+              strs.find(line, ":", first_space_pos + 1) - 1
             ),
             { expand = true }
           )
@@ -355,7 +357,7 @@ describe("actions", function()
         assert_eq(act.filename, expect.filename)
         assert_eq(act.lnum, expect.lineno)
         assert_eq(act.col, expect.column)
-        assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
+        assert_eq(act.text, line:sub(strs.rfind(line, ":") + 1))
       end
     end)
     it("set rg results with prepend icon", function()
@@ -377,7 +379,7 @@ describe("actions", function()
         assert_eq(act.filename, expect.filename)
         assert_eq(act.lnum, expect.lineno)
         assert_eq(act.col, expect.column)
-        assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
+        assert_eq(act.text, line:sub(strs.rfind(line, ":") + 1))
       end
     end)
     it("setqflist rg results without icon", function()
@@ -425,7 +427,7 @@ describe("actions", function()
         assert_eq(act.filename, expect.filename)
         assert_eq(act.lnum, expect.lineno)
         assert_eq(act.col, 1)
-        assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
+        assert_eq(act.text, line:sub(strs.rfind(line, ":") + 1))
       end
     end)
     it("set grep results with prepend icon", function()
@@ -447,7 +449,7 @@ describe("actions", function()
         assert_eq(act.filename, expect.filename)
         assert_eq(act.lnum, expect.lineno)
         assert_eq(act.col, 1)
-        assert_eq(act.text, line:sub(utils.string_rfind(line, ":") + 1))
+        assert_eq(act.text, line:sub(strs.rfind(line, ":") + 1))
       end
     end)
     it("setqflist grep results without icon", function()
@@ -532,7 +534,7 @@ describe("actions", function()
       )
       assert_eq(feedtype, "cmd")
       assert_eq(type(input), "string")
-      assert_true(utils.string_startswith(input, [[execute "normal \]]))
+      assert_true(strs.startswith(input, [[execute "normal \]]))
     end)
   end)
   describe("[_make_git_checkout_command]", function()
@@ -564,7 +566,7 @@ describe("actions", function()
         "origin/release-please--branches--main--components--fzfx.nvim",
       }
       for i, line in ipairs(lines) do
-        if utils.string_find(line, "origin/main") then
+        if strs.find(line, "origin/main") then
           local actual = actions._make_git_checkout_command({ line })
           print(string.format("git checkout remote[%d]:%s\n", i, actual))
           assert_eq(string.format("!git checkout main"), actual)
@@ -590,7 +592,7 @@ describe("actions", function()
         "remotes/origin/ci-verbose",
       }
       for i, line in ipairs(lines) do
-        if utils.string_find(line, "main") then
+        if strs.find(line, "main") then
           assert_eq(
             string.format("!git checkout main"),
             actions._make_git_checkout_command({ line })
@@ -598,7 +600,7 @@ describe("actions", function()
         else
           local actual = actions._make_git_checkout_command({ line })
           print(string.format("git checkout all[%d]:%s\n", i, actual))
-          local split_pos = utils.string_find(line, "remotes/origin/")
+          local split_pos = strs.find(line, "remotes/origin/")
           if split_pos then
             assert_eq(
               string.format(

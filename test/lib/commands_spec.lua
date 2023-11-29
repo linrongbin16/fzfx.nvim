@@ -13,12 +13,13 @@ describe("lib.commands", function()
   local CommandResult = require("fzfx.lib.commands").CommandResult
   local Command = require("fzfx.lib.commands").Command
   local cmds = require("fzfx.lib.commands")
+  local tbls = require("fzfx.lib.tables")
 
   describe("[CommandResult]", function()
     it("new result is empty", function()
       local cr = CommandResult:new()
-      assert_true(vim.tbl_isempty(cr.stdout))
-      assert_true(vim.tbl_isempty(cr.stderr))
+      assert_true(tbls.tbl_empty(cr.stdout))
+      assert_true(tbls.tbl_empty(cr.stderr))
       assert_true(cr.code == nil)
     end)
     it("new result is not failed", function()
