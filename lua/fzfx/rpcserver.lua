@@ -111,7 +111,8 @@ M._RpcServerInstance = nil
 
 --- @return fzfx.RpcServer
 M.get_instance = function()
-  return M._RpcServerInstance --[[@as fzfx.RpcServer]]
+  assert(M._RpcServerInstance ~= nil)
+  return M._RpcServerInstance
 end
 
 M.setup = function()
