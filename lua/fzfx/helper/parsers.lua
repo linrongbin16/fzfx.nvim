@@ -13,7 +13,7 @@ local M = {}
 -- 󰢱 bin/general/previewer.lua
 -- ```
 --
--- remove the prepend icon and returns **full** file path. looks like:
+-- remove the prepend icon and returns **expanded** file path. looks like:
 -- ```
 -- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/provider.lua
 -- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/previewer.lua
@@ -39,7 +39,7 @@ end
 -- 󰢱 bin/general/previewer.lua:57:  local colors = require("fzfx.lib.colors")
 -- ```
 --
--- remove the prepend icon and returns **full** file path, line number and text.
+-- remove the prepend icon and returns **expanded** file path, line number and text.
 --
 --- @param line string
 --- @return {filename:string,lineno:integer?,text:string}
@@ -84,7 +84,7 @@ end
 -- 󰢱 bin/general/previewer.lua:57:13:  local colors = require("fzfx.lib.colors")
 -- ```
 --
--- remove the prepend icon and returns **full** file path, line number, column number and text.
+-- remove the prepend icon and returns **expanded** file path, line number, column number and text.
 --
 --- @param line string
 --- @return {filename:string,lineno:integer,column:integer?,text:string}
@@ -138,7 +138,7 @@ end
 -- ?? test.txt
 -- ```
 --
--- remove the prepend symbol and returns **full** file path.
+-- remove the prepend symbol and returns **expanded** file path.
 --
 --- @param line string
 --- @return {filename:string}
@@ -213,7 +213,7 @@ end
 -- drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test
 -- ```
 --
--- remove the prepend extra info and returns **full** file path.
+-- remove the prepend extra info and returns **expanded** file path.
 --
 --- @package
 --- @param start_pos integer
@@ -269,11 +269,11 @@ M.parse_lsd = M._make_parse_ls(10)
 -- bdelete           N   |Y  |N/A  |N/A  |N/A              "delete buffer"
 -- ```
 --
--- removes extra command attributes and returns the command name with **full** file path and line number, or with command description.
+-- removes extra command attributes and returns the command name with **expanded** file path and line number, or with command description.
 --
 --- @param line string
 --- @param context fzfx.VimCommandsPipelineContext
---- @return {command:string,filename:string,lineno:integer?}|{command:string,desc:string}
+--- @return {command:string,filename:string,lineno:integer?}|{command:string,definition:string}
 M.parse_vim_command = function(line, context)
   local first_space_pos = strs.find(line, " ")
   assert(
@@ -310,7 +310,7 @@ M.parse_vim_command = function(line, context)
     -- )
     return { command = command, filename = filename, lineno = lineno }
   else
-    return { command = command, desc = strs.trim_quotes(desc_or_loc) }
+    return { command = command, definition = strs.trim_quotes(desc_or_loc) }
   end
 end
 
@@ -325,11 +325,11 @@ end
 -- <2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"
 -- ```
 --
--- removes extra mapping attributes and returns the key left hands with **full** file path and line number, or with mapping description.
+-- removes extra mapping attributes and returns the key left hands with **expanded** file path and line number, or with mapping description.
 --
 --- @param line string
 --- @param context fzfx.VimKeyMapsPipelineContext
---- @return {lhs:string,filename:string,lineno:integer?}|{lhs:string,desc:string}
+--- @return {lhs:string,filename:string,lineno:integer?}|{lhs:string,definition:string}
 M.parse_vim_keymap = function(line, context)
   local first_space_pos = strs.find(line, " ")
   assert(
@@ -366,7 +366,7 @@ M.parse_vim_keymap = function(line, context)
     -- )
     return { lhs = lhs, filename = filename, lineno = lineno }
   else
-    return { lhs = lhs, desc = strs.trim_quotes(rhs_or_loc) }
+    return { lhs = lhs, definition = strs.trim_quotes(rhs_or_loc) }
   end
 end
 
