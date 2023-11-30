@@ -255,14 +255,19 @@ M.parse_lsd = _make_parse_ls(10)
 -- bdelete           N   |Y  |N/A  |N/A  |N/A              "delete buffer"
 -- ```
 --
--- removes extra command attributes and returns the command name and **full** file path with line number, or command description.
+-- removes extra command attributes and returns the command name with **full** file path and line number, or with command description.
 --
 --- @param line string
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return {command:string,filename:string,lineno:integer?}|{command:string,desc:string}
 M.parse_vim_command = function(line, context)
   -- local log = require("fzfx.log")
-
+  local first_space_pos = strs.find(line, " ")
+  assert(
+    nums.positive(first_space_pos),
+    string.format("failed to parse vim command lines:%s", vim.inspect(line))
+  )
+  local command = vim.trim(line:sub(1, first_space_pos - 1))
   local desc_or_loc =
     vim.trim(line:sub(context.name_width + 1 + context.opts_width + 1 + 1))
   -- log.debug(
@@ -290,9 +295,9 @@ M.parse_vim_command = function(line, context)
     --     vim.inspect(filename),
     --     vim.inspect(lineno)
     -- )
-    return { filename = filename, lineno = lineno }
+    return { command = command, filename = filename, lineno = lineno }
   else
-    return { desc = desc_or_loc:sub(2, #desc_or_loc - 1) }
+    return { command = command, desc = desc_or_loc:sub(2, #desc_or_loc - 1) }
   end
 end
 
