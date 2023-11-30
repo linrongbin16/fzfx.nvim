@@ -4,7 +4,7 @@ local strs = require("fzfx.lib.strings")
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
 local line_helpers = require("fzfx.line_helpers")
-local ui = require("fzfx.ui")
+local prompts_helper = require("fzfx.helper.prompts")
 
 --- @param lines string[]
 --- @return nil
@@ -31,7 +31,7 @@ end
 --- @param context fzfx.PipelineContext
 local function edit_find(lines, context)
   local edit_commands = _make_edit_find_commands(lines)
-  ui.confirm_discard_buffer_modified(context.bufnr, function()
+  prompts_helper.confirm_discard_buffer_modified(context.bufnr, function()
     for i, edit_command in ipairs(edit_commands) do
       log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
       local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
@@ -87,7 +87,7 @@ end
 --- @param context fzfx.PipelineContext
 local function edit_rg(lines, context)
   local edit_commands = _make_edit_rg_commands(lines)
-  ui.confirm_discard_buffer_modified(context.bufnr, function()
+  prompts_helper.confirm_discard_buffer_modified(context.bufnr, function()
     for i, edit_command in ipairs(edit_commands) do
       log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, edit_command)
       local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
@@ -122,7 +122,7 @@ end
 --- @param context fzfx.PipelineContext
 local function edit_grep(lines, context)
   local edit_commands = _make_edit_grep_commands(lines)
-  ui.confirm_discard_buffer_modified(context.bufnr, function()
+  prompts_helper.confirm_discard_buffer_modified(context.bufnr, function()
     for i, edit_command in ipairs(edit_commands) do
       log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, edit_command)
       local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
@@ -430,7 +430,7 @@ end
 --- @param context fzfx.PipelineContext
 local function edit_git_status(lines, context)
   local edit_commands = _make_edit_git_status_commands(lines)
-  ui.confirm_discard_buffer_modified(context.bufnr, function()
+  prompts_helper.confirm_discard_buffer_modified(context.bufnr, function()
     for i, edit_command in ipairs(edit_commands) do
       log.debug("|fzfx.actions - edit_git_status| [%d]:[%s]", i, edit_command)
       local ok, result = pcall(vim.cmd --[[@as function]], edit_command)

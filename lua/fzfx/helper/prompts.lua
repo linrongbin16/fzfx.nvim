@@ -16,12 +16,7 @@ M.confirm_discard_buffer_modified = function(bufnr, callback)
       prompt = "[fzfx] buffer has been modified, continue? (y/n) ",
       cancelreturn = "n",
     })
-    if
-      ok
-      and type(input) == "string"
-      and string.len(input) > 0
-      and strs.startswith(input:lower(), "y")
-    then
+    if ok and strs.not_empty(input) and strs.startswith(input:lower(), "y") then
       callback()
     else
       log.echo(LogLevels.INFO, CANCELLED_MESSAGE)
