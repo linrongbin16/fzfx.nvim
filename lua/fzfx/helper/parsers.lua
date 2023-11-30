@@ -234,14 +234,8 @@ local function _make_parse_ls(start_pos)
       pos = pos + 1
     end
 
-    local result = vim.trim(line:sub(pos))
     -- remove extra single/double quotes
-    if
-      (strs.startswith(result, "'") and strs.endswith(result, "'"))
-      or (strs.startswith(result, '"') and strs.endswith(result, '"'))
-    then
-      result = result:sub(2, #result - 1)
-    end
+    local result = strs.trim_quotes(vim.trim(line:sub(pos)))
     return {
       filename = paths.normalize(paths.join(cwd, result), { expand = true }),
     }
@@ -268,7 +262,6 @@ M.parse_lsd = _make_parse_ls(10)
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return {command:string,filename:string,lineno:integer?}|{command:string,desc:string}
 M.parse_vim_command = function(line, context)
-  -- local log = require("fzfx.log")
   local first_space_pos = strs.find(line, " ")
   assert(
     nums.positive(first_space_pos),
@@ -304,15 +297,33 @@ M.parse_vim_command = function(line, context)
     -- )
     return { command = command, filename = filename, lineno = lineno }
   else
-    return { command = command, desc = desc_or_loc:sub(2, #desc_or_loc - 1) }
+    return { command = command, desc = strs.trim_quotes(desc_or_loc) }
   end
 end
 
+-- parse vim keymap, looks like:
+-- ```
+-- Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Location
+-- <C-F>                                            |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127
+-- <CR>                                             |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127
+-- <Plug>(YankyGPutAfterShiftRight)             n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369
+-- %                                            n   |N      |N     |Y      "<Plug>(matchup-%)"
+-- &                                            n   |Y      |N     |N      ":&&<CR>"
+-- <2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"
+-- ```
+--
+-- removes extra mapping attributes and returns the key left hands with **full** file path and line number, or with mapping description.
+--
 --- @param line string
 --- @param context fzfx.VimKeyMapsPipelineContext
---- @return {filename:string?,lineno:integer?}|string
-local function parse_vim_keymap(line, context)
-  -- local log = require("fzfx.log")
+--- @return {lhs:string,filename:string,lineno:integer?}|{lhs:string,desc:string}
+M.parse_vim_keymap = function(line, context)
+  local first_space_pos = strs.find(line, " ")
+  assert(
+    nums.positive(first_space_pos),
+    string.format("failed to parse vim keymap lines:%s", vim.inspect(line))
+  )
+  local lhs = vim.trim(line:sub(1, first_space_pos - 1))
   local rhs_or_loc =
     vim.trim(line:sub(context.key_width + 1 + context.opts_width + 1 + 1))
   -- log.debug(
@@ -340,23 +351,10 @@ local function parse_vim_keymap(line, context)
     --     vim.inspect(filename),
     --     vim.inspect(lineno)
     -- )
-    return { filename = filename, lineno = lineno }
+    return { lhs = lhs, filename = filename, lineno = lineno }
   else
-    return rhs_or_loc:sub(2, #rhs_or_loc - 1)
+    return { lhs = lhs, desc = strs.trim_quotes(rhs_or_loc) }
   end
 end
-
-local M = {
-  parse_find = parse_find,
-  parse_grep = parse_grep,
-  parse_rg = parse_rg,
-  parse_git_status = parse_git_status,
-  _make_parse_ls = _make_parse_ls,
-  parse_ls = parse_ls,
-  parse_eza = parse_eza,
-  parse_lsd = parse_lsd,
-  parse_vim_command = parse_vim_command,
-  parse_vim_keymap = parse_vim_keymap,
-}
 
 return M
