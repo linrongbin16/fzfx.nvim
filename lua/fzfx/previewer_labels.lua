@@ -2,7 +2,7 @@ local line_helpers = require("fzfx.line_helpers")
 
 --- @package
 --- @param opts {no_icon:boolean?}?
---- @return PreviewerLabel
+--- @return fzfx.PreviewerLabel
 local function _make_find_previewer_label(opts)
   --- @param line string?
   --- @return string?
@@ -24,7 +24,7 @@ end
 
 --- @package
 --- @param opts {no_icon:boolean?}?
---- @return PreviewerLabel
+--- @return fzfx.PreviewerLabel
 local function _make_rg_previewer_label(opts)
   --- @param line string?
   --- @return string?
@@ -53,7 +53,7 @@ end
 
 --- @package
 --- @param opts {no_icon:boolean?}?
---- @return PreviewerLabel
+--- @return fzfx.PreviewerLabel
 local function _make_grep_previewer_label(opts)
   --- @param line string?
   --- @return string?

@@ -95,7 +95,7 @@ local function make_last_query_cache(name)
   )
 end
 
---- @param feed_type CommandFeed
+--- @param feed_type fzfx.CommandFeed
 --- @param input_args string?
 --- @param pipeline_name string
 --- @return string, string?
@@ -127,8 +127,8 @@ local function get_command_feed(feed_type, input_args, pipeline_name)
     then
       return "", nil
     end
-    --- @alias LastQueryCacheObj {default_provider:string,query:string}
-    local ok, obj = pcall(jsons.decode, data) --[[@as LastQueryCacheObj]]
+    --- @alias fzfx.LastQueryCacheObj {default_provider:string,query:string}
+    local ok, obj = pcall(jsons.decode, data) --[[@as fzfx.LastQueryCacheObj]]
     if ok and type(obj) == "table" then
       return obj.query or "", obj.default_provider
     else
@@ -145,7 +145,7 @@ end
 
 -- fzf opts {
 
---- @return FzfOpt[]
+--- @return fzfx.FzfOpt[]
 local function _generate_fzf_color_opts()
   if type(conf.get_config().fzf_color_opts) ~= "table" then
     return {}
@@ -168,7 +168,7 @@ local function _generate_fzf_color_opts()
   return { { "--color", table.concat(builder, ",") } }
 end
 
---- @return FzfOpt[]
+--- @return fzfx.FzfOpt[]
 local function _generate_fzf_icon_opts()
   if type(conf.get_config().icons) ~= "table" then
     return {}
@@ -180,9 +180,9 @@ local function _generate_fzf_icon_opts()
   }
 end
 
---- @param opts FzfOpt[]
---- @param o FzfOpt?
---- @return FzfOpt[]
+--- @param opts fzfx.FzfOpt[]
+--- @param o fzfx.FzfOpt?
+--- @return fzfx.FzfOpt[]
 local function append_fzf_opt(opts, o)
   if type(o) == "string" and string.len(o) > 0 then
     table.insert(opts, o)
@@ -199,8 +199,8 @@ local function append_fzf_opt(opts, o)
   return opts
 end
 
---- @param opts FzfOpt[]
---- @return FzfOpt[]
+--- @param opts fzfx.FzfOpt[]
+--- @return fzfx.FzfOpt[]
 local function preprocess_fzf_opts(opts)
   if opts == nil or #opts == 0 then
     return {}
@@ -219,7 +219,7 @@ local function preprocess_fzf_opts(opts)
   return result
 end
 
---- @param opts FzfOpt[]
+--- @param opts fzfx.FzfOpt[]
 --- @return string?
 local function make_fzf_opts(opts)
   if opts == nil or #opts == 0 then
@@ -355,7 +355,7 @@ function FzfOptEventBinder:append(opt)
   return self
 end
 
---- @return FzfOpt?
+--- @return fzfx.FzfOpt?
 function FzfOptEventBinder:build()
   if #self.opts == 0 then
     return nil
