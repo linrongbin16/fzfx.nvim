@@ -1,21 +1,17 @@
 local consts = require("fzfx.lib.constants")
-local paths = require("fzfx.lib.paths")
 local strs = require("fzfx.lib.strings")
 local tbls = require("fzfx.lib.tables")
 local nums = require("fzfx.lib.numbers")
 
+local parsers = require("fzfx.helper.parsers")
+local prompts = require("fzfx.helper.prompts")
+
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
-local parsers_helper = require("fzfx.helper.parsers")
-local prompts_helper = require("fzfx.helper.prompts")
 
 local M = {}
 
---- @param lines string[]
---- @return nil
-M.nop = function(lines)
-  -- log.debug("|fzfx.helper.actions - nop| lines:%s", vim.inspect(lines))
-end
+M.nop = function() end
 
 --- @package
 --- @param lines string[]
@@ -23,7 +19,7 @@ end
 M._make_edit_find = function(lines)
   local results = {}
   for i, line in ipairs(lines) do
-    local parsed = parsers_helper.parse_find(line)
+    local parsed = parsers.parse_find(line)
     local edit = string.format("edit! %s", parsed.filename)
     table.insert(results, edit)
   end
@@ -35,7 +31,7 @@ end
 --- @param context fzfx.PipelineContext
 M.edit_find = function(lines, context)
   local edits = M._make_edit_find(lines)
-  prompts_helper.confirm_discard_modified(context.bufnr, function()
+  prompts.confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
       -- log.debug("|fzfx.helper.actions - edit_find| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
@@ -49,7 +45,7 @@ end
 M._make_setqflist_find = function(lines)
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers_helper.parse_find(line)
+    local parsed = parsers.parse_find(line)
     table.insert(qfs, { filename = parsed.filename, lnum = 1, col = 1 })
   end
   return qfs
@@ -73,7 +69,7 @@ end
 M._make_edit_rg = function(lines)
   local results = {}
   for i, line in ipairs(lines) do
-    local parsed = parsers_helper.parse_rg(line)
+    local parsed = parsers.parse_rg(line)
     local edit = string.format("edit! %s", parsed.filename)
     table.insert(results, edit)
     if i == #lines and parsed.lineno ~= nil then
@@ -91,7 +87,7 @@ end
 --- @param context fzfx.PipelineContext
 M.edit_rg = function(lines, context)
   local edits = M._make_edit_rg(lines)
-  prompts_helper.confirm_discard_modified(context.bufnr, function()
+  prompts.confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
       -- log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
@@ -105,7 +101,7 @@ end
 M._make_setqflist_rg = function(lines)
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers_helper.parse_rg(line)
+    local parsed = parsers.parse_rg(line)
     table.insert(qfs, {
       filename = parsed.filename,
       lnum = parsed.lineno,
@@ -134,7 +130,7 @@ end
 M._make_edit_grep = function(lines)
   local results = {}
   for i, line in ipairs(lines) do
-    local parsed = parsers_helper.parse_grep(line)
+    local parsed = parsers.parse_grep(line)
     local edit = string.format("edit! %s", parsed.filename)
     table.insert(results, edit)
     if i == #lines and parsed.lineno ~= nil then
@@ -152,7 +148,7 @@ end
 --- @param context fzfx.PipelineContext
 M.edit_grep = function(lines, context)
   local edits = M._make_edit_grep(lines)
-  prompts_helper.confirm_discard_modified(context.bufnr, function()
+  prompts.confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
       -- log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
@@ -166,7 +162,7 @@ end
 M._make_setqflist_grep = function(lines)
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers_helper.parse_grep(line)
+    local parsed = parsers.parse_grep(line)
     table.insert(qfs, {
       filename = parsed.filename,
       lnum = parsed.lineno,
@@ -198,13 +194,13 @@ M._make_edit_ls = function(lines, context)
     local parsed = nil
     if consts.HAS_LSD then
       -- lsd
-      parsed = parsers_helper.parse_lsd(line, context)
+      parsed = parsers.parse_lsd(line, context)
     elseif consts.HAS_EZA then
       -- eza/exa
-      parsed = parsers_helper.parse_eza(line, context)
+      parsed = parsers.parse_eza(line, context)
     else
       -- ls
-      parsed = parsers_helper.parse_ls(line, context)
+      parsed = parsers.parse_ls(line, context)
     end
     local edit = string.format("edit! %s", parsed.filename)
     table.insert(results, edit)
@@ -217,7 +213,7 @@ end
 --- @param context fzfx.FileExplorerPipelineContext
 M.edit_ls = function(lines, context)
   local edits = M._make_edit_ls(lines, context)
-  prompts_helper.confirm_discard_modified(context.bufnr, function()
+  prompts.confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
       -- log.debug("|fzfx.actions - edit_ls| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
@@ -238,8 +234,8 @@ M._make_git_checkout = function(lines, context)
   if tbls.list_not_empty(lines) then
     local line = lines[#lines]
     if strs.not_empty(line) then
-      local parsed = parsers_helper.parse_git_branch(line, context)
-      return string.format([[!git checkout %s]], parsed.branch)
+      local parsed = parsers.parse_git_branch(line, context)
+      return string.format([[!git checkout %s]], parsed.local_branch)
     end
   end
 
@@ -261,7 +257,7 @@ end
 M._make_yank_git_commit = function(lines)
   if tbls.list_not_empty(lines) then
     local line = lines[#lines]
-    local parsed = parsers_helper.parse_git_commit(line)
+    local parsed = parsers.parse_git_commit(line)
     return string.format("let @+ = '%s'", parsed.commit)
   end
   return nil
@@ -277,81 +273,85 @@ M.yank_git_commit = function(lines)
 end
 
 --- @package
---- @param line string
+--- @param lines string[]
 --- @param context fzfx.VimCommandsPipelineContext
---- @return {input:string, mode:string}
-M._make_feed_vim_command = function(line, context)
-  local parsed = parsers_helper.parse_vim_command(line, context)
-  return { input = string.format([[:%s]], parsed.command), mode = "n" }
+--- @return {input:string, mode:string}?
+M._make_feed_vim_command = function(lines, context)
+  if tbls.list_not_empty(lines) then
+    local line = lines[#lines]
+    local parsed = parsers.parse_vim_command(line, context)
+    return { input = string.format([[:%s]], parsed.command), mode = "n" }
+  end
+  return nil
 end
 
 --- @param lines string[]
 --- @param context fzfx.VimCommandsPipelineContext
 M.feed_vim_command = function(lines, context)
-  if tbls.list_not_empty(lines) then
-    local line = lines[#lines]
-    local feed = M._make_feed_vim_command(line, context)
+  local feed = M._make_feed_vim_command(lines, context) --[[@as table]]
+  if tbls.tbl_not_empty(feed) then
     local ok, result = pcall(vim.fn.feedkeys, feed.input, feed.mode)
     assert(ok, vim.inspect(result))
   end
 end
 
 --- @package
---- @param line string
+--- @param lines string[]
 --- @param context fzfx.VimKeyMapsPipelineContext
 --- @return {fn:"cmd"|"feedkeys"|nil, input:string?, mode:string?}?
-M._make_feed_vim_key = function(line, context)
-  local parsed = parsers_helper.parse_vim_keymap(line, context)
-  if strs.find(parsed.mode, "n") ~= nil then
-    if strs.startswith(parsed.lhs:lower(), "<plug>") then
-      return {
-        fn = "cmd",
-        input = string.format([[execute "normal \%s"]], parsed.lhs),
-        mode = "n",
-      }
-    elseif
-      strs.startswith(parsed.lhs, "<")
-      and nums.positive(strs.rfind(parsed.lhs, ">"))
-    then
-      local tcodes =
-        vim.api.nvim_replace_termcodes(parsed.lhs, true, false, true)
-      return { fn = "feedkeys", input = tcodes, mode = "n" }
+M._make_feed_vim_key = function(lines, context)
+  if tbls.list_not_empty(lines) then
+    local line = lines[#lines]
+    local parsed = parsers.parse_vim_keymap(line, context)
+    if strs.find(parsed.mode, "n") ~= nil then
+      if strs.startswith(parsed.lhs:lower(), "<plug>") then
+        return {
+          fn = "cmd",
+          input = string.format([[execute "normal \%s"]], parsed.lhs),
+          mode = "n",
+        }
+      elseif
+        strs.startswith(parsed.lhs, "<")
+        and nums.positive(strs.rfind(parsed.lhs, ">"))
+      then
+        local tcodes =
+          vim.api.nvim_replace_termcodes(parsed.lhs, true, false, true)
+        return { fn = "feedkeys", input = tcodes, mode = "n" }
+      else
+        return { fn = "feedkeys", input = parsed.lhs, mode = "n" }
+      end
     else
-      return { fn = "feedkeys", input = parsed.lhs, mode = "n" }
+      log.echo(
+        LogLevels.INFO,
+        "%s mode %s not support.",
+        vim.inspect(parsed.mode),
+        vim.inspect(parsed.lhs)
+      )
+      return nil
     end
-  else
-    log.echo(
-      LogLevels.INFO,
-      "%s mode %s not support.",
-      vim.inspect(parsed.mode),
-      vim.inspect(parsed.lhs)
-    )
-    return nil
   end
+  return nil
 end
 
 --- @param lines string[]
 --- @param context fzfx.VimKeyMapsPipelineContext
 M.feed_vim_key = function(lines, context)
-  if tbls.list_not_empty(lines) then
-    local line = lines[#lines]
-    local parsed = M._make_feed_vim_key(line, context) --[[@as table]]
-    if
-      tbls.tbl_not_empty(parsed)
-      and parsed.fn == "cmd"
-      and strs.not_empty(parsed.input)
-    then
-      local ok, result = pcall(vim.cmd --[[@as function]], parsed.input)
-      assert(ok, vim.inspect(result))
-    elseif
-      tbls.tbl_not_empty(parsed)
-      and parsed.fn == "feedkeys"
-      and strs.not_empty(parsed.input)
-      and strs.not_empty(parsed.mode)
-    then
-      local ok, result = pcall(vim.fn.feedkeys, parsed.input, parsed.mode)
-      assert(ok, vim.inspect(result))
-    end
+  local parsed = M._make_feed_vim_key(lines, context) --[[@as table]]
+  if
+    tbls.tbl_not_empty(parsed)
+    and parsed.fn == "cmd"
+    and strs.not_empty(parsed.input)
+  then
+    local ok, result = pcall(vim.cmd --[[@as function]], parsed.input)
+    assert(ok, vim.inspect(result))
+  elseif
+    tbls.tbl_not_empty(parsed)
+    and parsed.fn == "feedkeys"
+    and strs.not_empty(parsed.input)
+    and strs.not_empty(parsed.mode)
+  then
+    local ok, result = pcall(vim.fn.feedkeys, parsed.input, parsed.mode)
+    assert(ok, vim.inspect(result))
   end
 end
 
@@ -361,7 +361,7 @@ end
 M._make_edit_git_status = function(lines)
   local edits = {}
   for i, line in ipairs(lines) do
-    local parsed = parsers_helper.parse_git_status(line)
+    local parsed = parsers.parse_git_status(line)
     local edit = string.format("edit! %s", parsed.filename)
     table.insert(edits, edit)
   end
@@ -373,7 +373,7 @@ end
 --- @param context fzfx.PipelineContext
 M.edit_git_status = function(lines, context)
   local edits = M._make_edit_git_status(lines)
-  prompts_helper.confirm_discard_modified(context.bufnr, function()
+  prompts.confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
       log.debug("|fzfx.actions - edit_git_status| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
@@ -387,7 +387,7 @@ end
 M._make_setqflist_git_status = function(lines)
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers_helper.parse_git_status(line)
+    local parsed = parsers.parse_git_status(line)
     table.insert(qfs, { filename = parsed.filename, lnum = 1, col = 1 })
   end
   return qfs
