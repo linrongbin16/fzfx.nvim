@@ -3,6 +3,7 @@ local paths = require("fzfx.lib.paths")
 local env = require("fzfx.lib.env")
 local strs = require("fzfx.lib.strings")
 local nums = require("fzfx.lib.numbers")
+local fs = require("fzfx.lib.filesystems")
 
 local M = {}
 
@@ -125,10 +126,10 @@ end
 -- ?? test.txt
 -- ```
 --
--- remove the prepend symbol and returns file path. looks like:
+-- remove the prepend symbol and returns **full** file path. looks like:
 -- ```
--- lua/fzfx/helper/parsers.lua
--- test.txt
+-- /Users/linrongbin/github/linrongbin16/fzfx.nvim/lua/fzfx/helper/parsers.lua
+-- /Users/linrongbin/github/linrongbin16/fzfx.nvim/test.txt
 -- ```
 --
 --- @param line string
@@ -139,7 +140,7 @@ M.parse_git_status = function(line)
   while i <= #line and not strs.isspace(line:sub(i, i)) do
     i = i + 1
   end
-  return { filename = paths.normalize(line:sub(i)) }
+  return { filename = paths.normalize(line:sub(i), { expand = true }) }
 end
 
 -- parse lines from ls/lsd/eza/exa.
@@ -204,23 +205,25 @@ end
 -- drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test
 -- ```
 --
--- remove the prepend extra info and returns file path. looks like:
+-- remove the prepend extra info and returns **full** file path. looks like:
 -- ```
--- bin
--- CHANGELOG.md
--- codecov.yml
--- LICENSE
--- lua
--- README.md
--- test
+-- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin
+-- /Users/linrongbin/github/linrongbin16/fzfx.nvim/CHANGELOG.md
+-- /Users/linrongbin/github/linrongbin16/fzfx.nvim/codecov.yml
+-- /Users/linrongbin/github/linrongbin16/fzfx.nvim/LICENSE
+-- /Users/linrongbin/github/linrongbin16/fzfx.nvim/lua
+-- /Users/linrongbin/github/linrongbin16/fzfx.nvim/README.md
+-- /Users/linrongbin/github/linrongbin16/fzfx.nvim/test
 -- ```
 --
 --- @param start_pos integer
---- @return fun(line:string):{filename:string}
+--- @return fun(line:string,context:fzfx.FileExplorerPipelineContext):{filename:string}
 local function _make_parse_ls(start_pos)
   --- @param line string
+  --- @param context fzfx.FileExplorerPipelineContext
   --- @return {filename:string}
-  local function impl(line)
+  local function impl(line, context)
+    local cwd = fs.readfile(context.cwd)
     local pos = 1
     for i = 1, start_pos do
       pos = strs.find(line, " ", pos) --[[@as integer]]
@@ -236,8 +239,8 @@ local function _make_parse_ls(start_pos)
       end
       pos = pos + 1
     end
-    local result = paths.normalize(vim.trim(line:sub(pos)))
 
+    local result = vim.trim(line:sub(pos))
     -- remove extra single/double quotes
     if
       (strs.startswith(result, "'") and strs.endswith(result, "'"))
@@ -245,8 +248,9 @@ local function _make_parse_ls(start_pos)
     then
       result = result:sub(2, #result - 1)
     end
-
-    return { filename = result }
+    return {
+      filename = paths.normalize(paths.join(cwd, result), { expand = true }),
+    }
   end
   return impl
 end

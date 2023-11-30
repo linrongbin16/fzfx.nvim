@@ -2227,8 +2227,8 @@ end
 
 -- file explorer {
 
---- @alias FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
---- @return FileExplorerPipelineContext
+--- @alias fzfx.FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
+--- @return fzfx.FileExplorerPipelineContext
 local function _file_explorer_context_maker()
   local temp = vim.fn.tempname()
   fs.writefile(temp --[[@as string]], vim.fn.getcwd() --[[@as string]])
@@ -2245,7 +2245,7 @@ end
 --- @return fun(query:string,context:fzfx.PipelineContext):string?
 local function _make_file_explorer_provider(ls_args)
   --- @param query string
-  --- @param context FileExplorerPipelineContext
+  --- @param context fzfx.FileExplorerPipelineContext
   --- @return string?
   local function impl(query, context)
     local cwd = fs.readfile(context.cwd)
@@ -2328,7 +2328,7 @@ local function _directory_previewer(filename)
 end
 
 --- @param line string
---- @param context FileExplorerPipelineContext
+--- @param context fzfx.FileExplorerPipelineContext
 --- @return string
 local function _make_filename_by_file_explorer_context(line, context)
   line = vim.trim(line)
@@ -2349,7 +2349,7 @@ local function _make_filename_by_file_explorer_context(line, context)
 end
 
 --- @param line string
---- @param context FileExplorerPipelineContext
+--- @param context fzfx.FileExplorerPipelineContext
 --- @return string[]|nil
 local function _file_explorer_previewer(line, context)
   local p = _make_filename_by_file_explorer_context(line, context)
@@ -2364,7 +2364,7 @@ local function _file_explorer_previewer(line, context)
 end
 
 --- @param line string
---- @param context FileExplorerPipelineContext
+--- @param context fzfx.FileExplorerPipelineContext
 local function _cd_file_explorer(line, context)
   local target = _make_filename_by_file_explorer_context(line, context)
   if vim.fn.isdirectory(target) > 0 then
@@ -2373,7 +2373,7 @@ local function _cd_file_explorer(line, context)
 end
 
 --- @param line string
---- @param context FileExplorerPipelineContext
+--- @param context fzfx.FileExplorerPipelineContext
 local function _upper_file_explorer(line, context)
   local cwd = fs.readfile(context.cwd) --[[@as string]]
   local target = vim.fn.fnamemodify(cwd, ":h") --[[@as string]]
@@ -2386,7 +2386,7 @@ local function _upper_file_explorer(line, context)
 end
 
 --- @param lines string[]
---- @param context FileExplorerPipelineContext
+--- @param context fzfx.FileExplorerPipelineContext
 local function _edit_file_explorer(lines, context)
   local fullpath_lines = {}
   for _, line in ipairs(lines) do
