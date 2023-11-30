@@ -211,6 +211,13 @@ local function _make_parse_ls(start_pos)
   --- @return {filename:string}
   local function impl(line, context)
     local cwd = fs.readfile(context.cwd)
+    assert(
+      strs.not_empty(cwd),
+      string.format(
+        "failed to parse file explorer context:%s",
+        vim.inspect(cwd)
+      )
+    )
     local pos = 1
     for i = 1, start_pos do
       pos = strs.find(line, " ", pos) --[[@as integer]]
