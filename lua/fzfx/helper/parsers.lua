@@ -126,11 +126,7 @@ end
 -- ?? test.txt
 -- ```
 --
--- remove the prepend symbol and returns **full** file path. looks like:
--- ```
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/lua/fzfx/helper/parsers.lua
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/test.txt
--- ```
+-- remove the prepend symbol and returns **full** file path.
 --
 --- @param line string
 --- @return {filename:string}
@@ -205,16 +201,7 @@ end
 -- drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test
 -- ```
 --
--- remove the prepend extra info and returns **full** file path. looks like:
--- ```
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/CHANGELOG.md
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/codecov.yml
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/LICENSE
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/lua
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/README.md
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/test
--- ```
+-- remove the prepend extra info and returns **full** file path.
 --
 --- @param start_pos integer
 --- @return fun(line:string,context:fzfx.FileExplorerPipelineContext):{filename:string}
@@ -272,7 +259,7 @@ M.parse_lsd = _make_parse_ls(10)
 --
 --- @param line string
 --- @param context fzfx.VimCommandsPipelineContext
---- @return {command:string,filename:string,lineno:integer}|{command:string,desc:string}
+--- @return {command:string,filename:string,lineno:integer?}|{command:string,desc:string}
 M.parse_vim_command = function(line, context)
   -- local log = require("fzfx.log")
 
