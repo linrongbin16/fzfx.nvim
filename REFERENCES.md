@@ -208,6 +208,8 @@ curl
 ### [fzfx.lib.numbers](/lua/fzfx/lib/numbers.lua)
 
 - `INT32_MIN`/`INT32_MAX`: `-2147483648`/`2147483647`.
+- `positive(n:number?):boolean`/`negative(n:number?):boolean`: is positive/negative number, e.g. `n > 0`/`n < 0`.
+- `non_positive(n:number?):boolean`/`non_negative(n:number?):boolean`: is non-positive/non-negative number, e.g. `n <= 0`/`n >= 0`.
 - `bound(value:integer, left:integer, right:integer):integer`: returned value is bounded in range `[left, right]`.
 - `inc_id():integer`: returned incremental ID.
 
