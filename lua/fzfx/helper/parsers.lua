@@ -472,7 +472,7 @@ end
 --
 --- @param line string
 --- @param context fzfx.VimKeyMapsPipelineContext
---- @return {lhs:string,filename:string,lineno:integer?}|{lhs:string,definition:string}
+--- @return {lhs:string,mode:string,filename:string,lineno:integer?}|{lhs:string,definition:string}
 M.parse_vim_keymap = function(line, context)
   local first_space_pos = strs.find(line, " ")
   assert(
@@ -480,6 +480,8 @@ M.parse_vim_keymap = function(line, context)
     string.format("failed to parse vim keymap lines:%s", vim.inspect(line))
   )
   local lhs = vim.trim(line:sub(1, first_space_pos - 1))
+  local first_bar_pos = strs.find(line, "|", first_space_pos + 1)
+  local mode = vim.trim(line:sub(first_space_pos + 1, first_bar_pos - 1))
   local rhs_or_loc =
     vim.trim(line:sub(context.key_width + 1 + context.opts_width + 1 + 1))
   -- log.debug(
@@ -507,9 +509,9 @@ M.parse_vim_keymap = function(line, context)
     --     vim.inspect(filename),
     --     vim.inspect(lineno)
     -- )
-    return { lhs = lhs, filename = filename, lineno = lineno }
+    return { lhs = lhs, mode = mode, filename = filename, lineno = lineno }
   else
-    return { lhs = lhs, definition = strs.trim_quotes(rhs_or_loc) }
+    return { lhs = lhs, mode = mode, definition = strs.trim_quotes(rhs_or_loc) }
   end
 end
 
