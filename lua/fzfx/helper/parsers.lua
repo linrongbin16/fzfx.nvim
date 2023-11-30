@@ -12,7 +12,7 @@ local M = {}
 -- 󰢱 bin/general/previewer.lua
 -- ```
 --
--- returns full file path and removed the prepend icon. looks like:
+-- remove the prepend icon and returns **full** file path. looks like:
 -- ```
 -- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/provider.lua
 -- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/previewer.lua
@@ -38,11 +38,7 @@ end
 -- 󰢱 bin/general/previewer.lua:57:  local colors = require("fzfx.lib.colors")
 -- ```
 --
--- returns full file path and remove prepend icon, line number and text. file path looks like:
--- ```
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/provider.lua
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/previewer.lua
--- ```
+-- remove the prepend icon and returns **full** file path, line number and text.
 --
 --- @param line string
 --- @return {filename:string,lineno:integer?,text:string}
@@ -81,11 +77,7 @@ end
 -- 󰢱 bin/general/previewer.lua:57:13:  local colors = require("fzfx.lib.colors")
 -- ```
 --
--- returns full file path and remove prepend icon, line number, column number and text. file path looks like:
--- ```
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/provider.lua
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/previewer.lua
--- ```
+-- remove the prepend icon and returns **full** file path, line number, column number and text.
 --
 --- @param line string
 --- @return {filename:string,lineno:integer,column:integer?,text:string}
@@ -133,7 +125,7 @@ end
 -- ?? test.txt
 -- ```
 --
--- returns full file path and remove prepend symbol. looks like:
+-- remove the prepend symbol and returns file path. looks like:
 -- ```
 -- lua/fzfx/helper/parsers.lua
 -- test.txt
@@ -147,7 +139,7 @@ M.parse_git_status = function(line)
   while i <= #line and not strs.isspace(line:sub(i, i)) do
     i = i + 1
   end
-  return { filename = paths.normalize(line:sub(i), { expand = true }) }
+  return { filename = paths.normalize(line:sub(i)) }
 end
 
 -- parse lines from ls/lsd/eza/exa.
@@ -212,8 +204,19 @@ end
 -- drwxr-xr-x  rlin staff 992 B  Wed Nov  1 11:16:13 2023 test
 -- ```
 --
+-- remove the prepend extra info and returns file path. looks like:
+-- ```
+-- bin
+-- CHANGELOG.md
+-- codecov.yml
+-- LICENSE
+-- lua
+-- README.md
+-- test
+-- ```
+--
 --- @param start_pos integer
---- @return fun(line:string):string
+--- @return fun(line:string):{filename:string}
 local function _make_parse_ls(start_pos)
   --- @param line string
   --- @return {filename:string}
@@ -261,9 +264,11 @@ M.parse_lsd = _make_parse_ls(10)
 -- bdelete           N   |Y  |N/A  |N/A  |N/A              "delete buffer"
 -- ```
 --
+-- removes extra command attributes and returns the command name and **full** file path with line number, or command description.
+--
 --- @param line string
 --- @param context fzfx.VimCommandsPipelineContext
---- @return {filename:string,lineno:integer}|{desc:string}
+--- @return {command:string,filename:string,lineno:integer}|{command:string,desc:string}
 M.parse_vim_command = function(line, context)
   -- local log = require("fzfx.log")
 
@@ -287,7 +292,7 @@ M.parse_vim_command = function(line, context)
     --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
-    local filename = paths.normalize(splits[1])
+    local filename = paths.normalize(splits[1], { expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
     --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
@@ -296,7 +301,7 @@ M.parse_vim_command = function(line, context)
     -- )
     return { filename = filename, lineno = lineno }
   else
-    return desc_or_loc:sub(2, #desc_or_loc - 1)
+    return { desc = desc_or_loc:sub(2, #desc_or_loc - 1) }
   end
 end
 
