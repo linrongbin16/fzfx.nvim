@@ -1570,11 +1570,11 @@ For detailed explanation of each components, please see [A General Schema for Cr
 
 ### API References
 
-Fzfx provides builtin APIs to help customizing/creating search commands becomes easier, there're 3 collections:
+Fzfx provides builtin APIs to help make customizing/creating search commands easier, there're 3 collections:
 
 - `fzfx.cfg`: User commands group configurations, e.g. the configurations for `FzfxFiles`, `FzfxLiveGrep`, etc. Easy to read and learn all the components to construct search commands, as well as easy to copy-paste.
-- `fzfx.helper`: Line-oriented helpers for parsing and rendering queries/lines required in all scenarios, since a search command is all about the lines in (both left side and right side of) fzf binary: generating lines, previewing lines, invoking callbacks on selected lines, etc.
-- `fzfx.lib`: Fundamental infrastructures: compatible cross-platform (Windows/Unix/Linux) APIs, compatible Neovim (v0.7-nightly) APIs, file IO & paths, json, strings & numbers, running child process, etc.
+- `fzfx.helper`: Line-oriented helpers for parsing and rendering queries/lines required in all scenarios, since a search command is all about the lines in (both left and right side of) fzf binary: generating lines, previewing lines, invoking callbacks on selected lines, etc.
+- `fzfx.lib`: Fundamental infrastructures: compatible cross-platform (Windows/Unix/Linux) and Neovim APIs, file IO & paths, json, strings & numbers, running child process, etc.
 
 These APIs are supposed to be stable and tested, please see [REFERENCES.md](/REFERENCES.md) for details.
 
