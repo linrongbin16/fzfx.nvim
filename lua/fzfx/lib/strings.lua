@@ -125,6 +125,27 @@ M.rtrim = function(s, t)
 end
 
 --- @param s string
+--- @param opts {single:boolean?,double:boolean?}?  by default `opts={single=true,double=true}`
+--- @return string
+M.trim_quotes = function(s, opts)
+  opts = opts or { single = true, double = true }
+  opts.single = type(opts.single) == "boolean" and opts.single or true
+  opts.double = type(opts.double) == "boolean" and opts.double or true
+
+  if
+    string.len(s) >= 2
+    and (
+      (opts.single and M.startswith(s, "'") and M.endswith(s, "'"))
+      or (opts.double and M.startswith(s, '"') and M.endswith(s, '"'))
+    )
+  then
+    return s:sub(2, #s - 1)
+  else
+    return s
+  end
+end
+
+--- @param s string
 --- @param delimiter string
 --- @param opts {plain:boolean?,trimempty:boolean?}|nil  by default opts={plain=true,trimempty=true}
 --- @return string[]

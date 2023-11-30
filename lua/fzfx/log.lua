@@ -1,8 +1,10 @@
 local strs = require("fzfx.lib.strings")
 local paths = require("fzfx.lib.paths")
 
+local M = {}
+
 -- see: `lua print(vim.inspect(vim.log.levels))`
-local LogLevels = {
+M.LogLevels = {
   TRACE = 0,
   DEBUG = 1,
   INFO = 2,
@@ -11,7 +13,7 @@ local LogLevels = {
   OFF = 5,
 }
 
-local LogLevelNames = {
+M.LogLevelNames = {
   [0] = "TRACE",
   [1] = "DEBUG",
   [2] = "INFO",
@@ -30,14 +32,14 @@ local LogHighlights = {
 --- @param level integer
 --- @param fmt string
 --- @param ... any
-local function echo(level, fmt, ...)
+M.echo = function(level, fmt, ...)
   local msg = string.format(fmt, ...)
   local msg_lines = strs.split(msg, "\n")
   local msg_chunks = {}
   local prefix = ""
-  if level == LogLevels.ERROR then
+  if level == M.LogLevels.ERROR then
     prefix = "error! "
-  elseif level == LogLevels.WARN then
+  elseif level == M.LogLevels.WARN then
     prefix = "warning! "
   end
   for _, line in ipairs(msg_lines) do
@@ -51,7 +53,7 @@ end
 
 --- @type fzfx.Options
 local Defaults = {
-  level = LogLevels.INFO,
+  level = M.LogLevels.INFO,
   console_log = true,
   name = "[fzfx]",
   file_log = false,
@@ -61,13 +63,26 @@ local Defaults = {
 }
 
 --- @type fzfx.Options
-local Configs = {}
+local Configs = {
+  level = M.LogLevels.DEBUG,
+  console_log = true,
+  name = "[fzfx-safe-mode]",
+  file_log = false,
+  file_name = "fzfx_safe_mode.log",
+  file_dir = vim.fn.stdpath("data"),
+  file_path = string.format(
+    "%s%s%s",
+    vim.fn.stdpath("data"),
+    paths.SEPARATOR,
+    "fzfx_safe_mode.log"
+  ),
+}
 
 --- @param option fzfx.Options
-local function setup(option)
+M.setup = function(option)
   Configs = vim.tbl_deep_extend("force", vim.deepcopy(Defaults), option or {})
   if type(Configs.level) == "string" then
-    Configs.level = LogLevels[Configs.level]
+    Configs.level = M.LogLevels[Configs.level]
   end
   assert(type(Configs.name) == "string")
   assert(string.len(Configs.name) > 0)
@@ -86,17 +101,14 @@ end
 
 --- @param level integer
 --- @param msg string
-local function log(level, msg)
-  if Configs.level == nil then
-    return
-  end
+local function _log(level, msg)
   if level < Configs.level then
     return
   end
 
   local msg_lines = strs.split(msg, "\n")
-  if Configs.console_log and level >= LogLevels.INFO then
-    echo(level, msg)
+  if Configs.console_log and level >= M.LogLevels.INFO then
+    M.echo(level, msg)
   end
   if Configs.file_log then
     local fp = io.open(Configs.file_path, "a")
@@ -108,7 +120,7 @@ local function log(level, msg)
             "%s.%03d [%s]: %s\n",
             os.date("%Y-%m-%d %H:%M:%S", secs),
             math.floor(ms / 1000),
-            LogLevelNames[level],
+            M.LogLevelNames[level],
             line
           )
         )
@@ -120,55 +132,42 @@ end
 
 --- @param fmt string
 --- @param ... any
-local function debug(fmt, ...)
-  log(LogLevels.DEBUG, string.format(fmt, ...))
+M.debug = function(fmt, ...)
+  _log(M.LogLevels.DEBUG, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
-local function info(fmt, ...)
-  log(LogLevels.INFO, string.format(fmt, ...))
+M.info = function(fmt, ...)
+  _log(M.LogLevels.INFO, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
-local function warn(fmt, ...)
-  log(LogLevels.WARN, string.format(fmt, ...))
+M.warn = function(fmt, ...)
+  _log(M.LogLevels.WARN, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
-local function err(fmt, ...)
-  log(LogLevels.ERROR, string.format(fmt, ...))
+M.err = function(fmt, ...)
+  _log(M.LogLevels.ERROR, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
-local function throw(fmt, ...)
-  err(fmt, ...)
+M.throw = function(fmt, ...)
+  M.err(fmt, ...)
   error(string.format(fmt, ...))
 end
 
 --- @param cond boolean
 --- @param fmt string
 --- @param ... any
-local function ensure(cond, fmt, ...)
+M.ensure = function(cond, fmt, ...)
   if not cond then
-    throw(fmt, ...)
+    M.throw(fmt, ...)
   end
 end
-
-local M = {
-  setup = setup,
-  LogLevels = LogLevels,
-  LogLevelNames = LogLevelNames,
-  echo = echo,
-  throw = throw,
-  ensure = ensure,
-  err = err,
-  warn = warn,
-  info = info,
-  debug = debug,
-}
 
 return M

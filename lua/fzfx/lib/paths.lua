@@ -10,8 +10,8 @@ M.SEPARATOR = consts.IS_WINDOWS and "\\" or "/"
 --- @return string
 M.normalize = function(p, opts)
   opts = opts or { backslash = false, expand = false }
-  opts.backslash = opts.backslash ~= nil and opts.backslash or false
-  opts.expand = opts.expand ~= nil and opts.expand or false
+  opts.backslash = type(opts.backslash) == "boolean" and opts.backslash or false
+  opts.expand = type(opts.expand) == "boolean" and opts.expand or false
 
   local result = p
   if string.match(result, [[\\]]) then

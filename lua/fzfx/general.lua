@@ -57,7 +57,7 @@ end
 
 --- @class fzfx.ProviderMetaOpts
 --- @field pipeline fzfx.PipelineName
---- @field provider_type ProviderType
+--- @field provider_type fzfx.ProviderType
 --- @field prepend_icon_by_ft boolean?
 --- @field prepend_icon_path_delimiter string?
 --- @field prepend_icon_path_position integer?
@@ -103,7 +103,7 @@ end
 
 --- @class fzfx.PreviewerMetaOpts
 --- @field pipeline fzfx.PipelineName
---- @field previewer_type PreviewerType
+--- @field previewer_type fzfx.PreviewerType
 
 --- @param pipeline string
 --- @param previewer_config fzfx.PreviewerConfig
@@ -399,7 +399,7 @@ end
 
 --- @param line string?
 --- @param context fzfx.PipelineContext
---- @return PreviewerType
+--- @return fzfx.PreviewerType
 function PreviewerSwitch:preview(line, context)
   local previewer_config = self.previewer_configs[self.pipeline]
   -- log.debug(
@@ -741,7 +741,7 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
 end
 
 --- @param pipeline fzfx.PipelineName
---- @return FzfOpt?
+--- @return fzfx.FzfOpt?
 function HeaderSwitch:get_header(pipeline)
   log.ensure(
     type(self.headers[pipeline]) == "table",
