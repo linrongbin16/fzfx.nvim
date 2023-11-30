@@ -398,6 +398,18 @@ end
 
 -- git branches {
 
+--- @alias fzfx.GitBranchesPipelineContext {remotes:string[]|nil}
+--- @return fzfx.GitBranchesPipelineContext
+local function _git_branches_context_maker()
+  local ctx = {}
+  local git_remotes_cmd = cmds.GitRemotesCommand:run()
+  if git_remotes_cmd:failed() then
+    return ctx
+  end
+  ctx.remotes = git_remotes_cmd:output()
+  return ctx
+end
+
 --- @param opts {remote_branch:boolean?}?
 local function _make_git_branches_provider(opts)
   local function impl()
@@ -3379,6 +3391,9 @@ local Defaults = {
             and "--header-lines=1"
           or nil
       end,
+    },
+    other_opts = {
+      context_maker = _git_branches_context_maker,
     },
   },
 

@@ -444,4 +444,41 @@ describe("helper.parsers", function()
       end
     end)
   end)
+
+  describe("[parse_git_branches]", function()
+    local CONTEXT = {
+      remotes = { "origin" },
+    }
+    it("test", function()
+      local lines = {
+        "* chore-lint",
+        "  main",
+        "  remotes/origin/HEAD -> origin/main",
+        "  remotes/origin/chore-lint",
+        "  remotes/origin/main",
+        "  remotes/origin/release-please--branches--main--components--fzfx.nvim",
+      }
+      for i, line in ipairs(lines) do
+        local actual = parsers_helper.parse_git_branches(line, CONTEXT)
+        local expect_splits = strs.split(line, " ")
+        local expect_remote = expect_splits[#expect_splits]
+        local slash_splits = strs.split(expect_remote, "/")
+        local expect_local = slash_splits[#slash_splits]
+        print(
+          string.format(
+            "parse git branches, %d - actual:%s, expect_splits:%s, slash_splits:%s, expect_local:%s, expect_remote:%s\n",
+            vim.inspect(i),
+            vim.inspect(actual),
+            vim.inspect(expect_splits),
+            vim.inspect(slash_splits),
+            vim.inspect(expect_local),
+            vim.inspect(expect_remote)
+          )
+        )
+        assert_eq(type(actual), "table")
+        assert_eq(expect_local, actual.local_branch)
+        assert_eq(expect_remote, actual.remote_branch)
+      end
+    end)
+  end)
 end)

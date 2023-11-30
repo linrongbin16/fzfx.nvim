@@ -1,96 +1,43 @@
+local consts = require("fzfx.lib.constants")
 local paths = require("fzfx.lib.paths")
 local strs = require("fzfx.lib.strings")
+local tbls = require("fzfx.lib.tables")
 
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
-local line_helpers = require("fzfx.line_helpers")
+local parsers_helper = require("fzfx.helper.parsers")
 local prompts_helper = require("fzfx.helper.prompts")
+
+local M = {}
 
 --- @param lines string[]
 --- @return nil
-local function nop(lines)
-  log.debug("|fzfx.actions - nop| lines:%s", vim.inspect(lines))
+M.nop = function(lines)
+  -- log.debug("|fzfx.helper.actions - nop| lines:%s", vim.inspect(lines))
 end
 
 --- @package
 --- @param lines string[]
---- @param opts {no_icon:boolean?}?
 --- @return string[]
-local function _make_edit_find_commands(lines, opts)
+M._make_edit_find = function(lines)
   local results = {}
   for i, line in ipairs(lines) do
-    local filename = line_helpers.parse_find(line, opts)
-    local edit_command = string.format("edit! %s", filename)
-    table.insert(results, edit_command)
+    local parsed = parsers_helper.parse_find(line)
+    local edit = string.format("edit! %s", parsed.filename)
+    table.insert(results, edit)
   end
   return results
 end
 
--- Run 'edit' vim command on fd/find results.
+-- Run 'edit' commands on fd/find results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
-local function edit_find(lines, context)
-  local edit_commands = _make_edit_find_commands(lines)
-  prompts_helper.confirm_discard_buffer_modified(context.bufnr, function()
-    for i, edit_command in ipairs(edit_commands) do
-      log.debug("|fzfx.actions - edit_find| [%d]:[%s]", i, edit_command)
-      local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
-      assert(ok, vim.inspect(result))
-    end
-  end)
-end
-
---- @deprecated
---- @param lines string[]
---- @param context fzfx.PipelineContext
-local function edit_buffers(lines, context)
-  return edit_find(lines, context)
-end
-
---- @deprecated
---- @param lines string[]
---- @param context fzfx.PipelineContext
-local function edit_git_files(lines, context)
-  return edit_find(lines, context)
-end
-
---- @deprecated
---- @param lines string[]
---- @param context fzfx.PipelineContext
-local function edit(lines, context)
-  return edit_find(lines, context)
-end
-
---- @package
---- @param lines string[]
---- @param opts {no_icon:boolean?}?
---- @return string[]
-local function _make_edit_rg_commands(lines, opts)
-  local results = {}
-  for i, line in ipairs(lines) do
-    local parsed = line_helpers.parse_rg(line, opts)
-    local edit_command = string.format("edit! %s", parsed.filename)
-    table.insert(results, edit_command)
-    if parsed.lineno ~= nil then
-      if i == #lines then
-        local column = parsed.column or 1
-        local setpos_command =
-          string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
-        table.insert(results, setpos_command)
-      end
-    end
-  end
-  return results
-end
-
---- @param lines string[]
---- @param context fzfx.PipelineContext
-local function edit_rg(lines, context)
-  local edit_commands = _make_edit_rg_commands(lines)
-  prompts_helper.confirm_discard_buffer_modified(context.bufnr, function()
-    for i, edit_command in ipairs(edit_commands) do
-      log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, edit_command)
-      local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
+M.edit_find = function(lines, context)
+  local edits = M._make_edit_find(lines)
+  prompts_helper.confirm_discard_modified(context.bufnr, function()
+    for i, edit in ipairs(edits) do
+      -- log.debug("|fzfx.helper.actions - edit_find| [%d]:[%s]", i, edit)
+      local ok, result = pcall(vim.cmd --[[@as function]], edit)
       assert(ok, vim.inspect(result))
     end
   end)
@@ -98,135 +45,140 @@ end
 
 --- @package
 --- @param lines string[]
---- @param opts {no_icon:boolean?}?
 --- @return string[]
-local function _make_edit_grep_commands(lines, opts)
+M._make_edit_rg = function(lines)
   local results = {}
   for i, line in ipairs(lines) do
-    local parsed = line_helpers.parse_grep(line, opts)
-    local edit_command = string.format("edit! %s", parsed.filename)
-    table.insert(results, edit_command)
-    if parsed.lineno ~= nil then
-      if i == #lines then
-        local column = 1
-        local setpos_command =
-          string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
-        table.insert(results, setpos_command)
-      end
+    local parsed = parsers_helper.parse_rg(line)
+    local edit = string.format("edit! %s", parsed.filename)
+    table.insert(results, edit)
+    if i == #lines and parsed.lineno ~= nil then
+      local column = parsed.column or 1
+      local setpos =
+        string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
+      table.insert(results, setpos)
     end
   end
   return results
 end
 
+-- Run 'edit' command on rg results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
-local function edit_grep(lines, context)
-  local edit_commands = _make_edit_grep_commands(lines)
-  prompts_helper.confirm_discard_buffer_modified(context.bufnr, function()
-    for i, edit_command in ipairs(edit_commands) do
-      log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, edit_command)
-      local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
+M.edit_rg = function(lines, context)
+  local edits = M._make_edit_rg(lines)
+  prompts_helper.confirm_discard_modified(context.bufnr, function()
+    for i, edit in ipairs(edits) do
+      -- log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, edit)
+      local ok, result = pcall(vim.cmd --[[@as function]], edit)
       assert(ok, vim.inspect(result))
     end
   end)
 end
 
--- Run 'edit' vim command on eza/exa/ls results.
+--- @package
 --- @param lines string[]
-local function edit_ls(lines)
-  local edit_commands = _make_edit_find_commands(lines, { no_icon = true })
-  for i, edit_command in ipairs(edit_commands) do
-    log.debug("|fzfx.actions - edit_ls| [%d]:[%s]", i, edit_command)
-    local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
+--- @return string[]
+M._make_edit_grep = function(lines)
+  local results = {}
+  for i, line in ipairs(lines) do
+    local parsed = parsers_helper.parse_grep(line)
+    local edit = string.format("edit! %s", parsed.filename)
+    table.insert(results, edit)
+    if i == #lines and parsed.lineno ~= nil then
+      local column = 1
+      local setpos =
+        string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
+      table.insert(results, setpos)
+    end
+  end
+  return results
+end
+
+-- Run 'edit' command on grep results.
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+M.edit_grep = function(lines, context)
+  local edits = M._make_edit_grep(lines)
+  prompts_helper.confirm_discard_modified(context.bufnr, function()
+    for i, edit in ipairs(edits) do
+      -- log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, edit)
+      local ok, result = pcall(vim.cmd --[[@as function]], edit)
+      assert(ok, vim.inspect(result))
+    end
+  end)
+end
+
+--- @param lines string[]
+--- @param context fzfx.FileExplorerPipelineContext
+--- @return string[]
+M._make_edit_ls = function(lines, context)
+  local results = {}
+  for _, line in ipairs(lines) do
+    local parsed = nil
+    if consts.HAS_LSD then
+      -- lsd
+      parsed = parsers_helper.parse_lsd(line, context)
+    elseif consts.HAS_EZA then
+      -- eza/exa
+      parsed = parsers_helper.parse_eza(line, context)
+    else
+      -- ls
+      parsed = parsers_helper.parse_ls(line, context)
+    end
+    local edit = string.format("edit! %s", parsed.filename)
+    table.insert(results, edit)
+  end
+  return results
+end
+
+-- Run 'edit' command on eza/exa/ls results.
+--- @param lines string[]
+--- @param context fzfx.FileExplorerPipelineContext
+M.edit_ls = function(lines, context)
+  local edits = M._make_edit_ls(lines, context)
+  prompts_helper.confirm_discard_modified(context.bufnr, function()
+    for i, edit in ipairs(edits) do
+      -- log.debug("|fzfx.actions - edit_ls| [%d]:[%s]", i, edit)
+      local ok, result = pcall(vim.cmd --[[@as function]], edit)
+      assert(ok, vim.inspect(result))
+    end
+  end)
+end
+
+--- @param lines string[]
+--- @param context fzfx.GitBranchesPipelineContext
+--- @return string?
+local function _make_git_checkout(lines, context)
+  log.debug(
+    "|fzfx.helper.actions - _make_git_checkout_command| lines:%s",
+    vim.inspect(lines)
+  )
+
+  if tbls.list_not_empty(lines) then
+    local line = vim.trim(lines[#lines])
+    if strs.not_empty(line) then
+      local parsed = parsers_helper.parse_git_branches(line, context)
+      return string.format([[!git checkout %s]], parsed.branch)
+    end
+  end
+
+  return nil
+end
+
+--- @param lines string[]
+--- @param context fzfx.GitBranchesPipelineContext
+local function git_checkout(lines, context)
+  local checkout = _make_git_checkout(lines, context) --[[@as string]]
+  if strs.not_empty(checkout) then
+    local ok, result = pcall(vim.cmd --[[@as function]], checkout)
     assert(ok, vim.inspect(result))
   end
 end
 
---- @deprecated
---- @param lines string[]
---- @param context fzfx.PipelineContext
-local function buffer(lines, context)
-  return edit_find(lines, context)
-end
-
---- @deprecated
---- @param line string?
-local function bdelete(line)
-  local list_bufnrs = vim.api.nvim_list_bufs()
-  local list_bufpaths = {}
-  for _, bufnr in ipairs(list_bufnrs) do
-    local bufpath = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
-    list_bufpaths[bufpath] = bufnr
-  end
-  log.debug(
-    "|fzfx.actions - bdelete| list_bufpaths:%s",
-    vim.inspect(list_bufpaths)
-  )
-  log.debug("|fzfx.actions - bdelete| line:%s", vim.inspect(line))
-  if type(line) == "string" and string.len(line) > 0 then
-    local bufpath = line_helpers.parse_find(line)
-    log.debug("|fzfx.actions - bdelete| bufpath:%s", vim.inspect(bufpath))
-    local bufnr = list_bufpaths[bufpath]
-    if type(bufnr) == "number" then
-      local ok, result = vim.api.nvim_buf_delete(bufnr, {})
-      assert(ok, vim.inspect(result))
-    end
-  end
-end
-
 --- @param lines string[]
 --- @return string?
-local function _make_git_checkout_command(lines)
-  log.debug(
-    "|fzfx.actions - _make_git_checkout_command| lines:%s",
-    vim.inspect(lines)
-  )
-
-  --- @param s string
-  --- @param t string
-  --- @return string
-  local function _try_remove_prefix(s, t)
-    return strs.startswith(s, t) and s:sub(#t + 1) or s
-  end
-
-  if type(lines) == "table" and #lines > 0 then
-    local line = vim.trim(lines[#lines])
-    if type(line) == "string" and string.len(line) > 0 then
-      -- `git branch -a` output looks like:
-      --   main
-      -- * my-plugin-dev
-      --   remotes/origin/HEAD -> origin/main
-      --   remotes/origin/main
-      --   remotes/origin/my-plugin-dev
-      line = _try_remove_prefix(line, "remotes/origin/")
-
-      -- `git branch -r` output looks like:
-      -- origin/HEAD -> origin/main
-      -- origin/main
-      -- origin/my-plugin-dev
-      line = _try_remove_prefix(line, "origin/")
-      local arrow_pos = strs.find(line, "->")
-      if type(arrow_pos) == "number" and arrow_pos >= 0 then
-        arrow_pos = arrow_pos + 1 + 2
-        line = vim.trim(line:sub(arrow_pos))
-      end
-      line = _try_remove_prefix(line, "origin/")
-
-      return vim.trim(string.format([[ !git checkout %s ]], line))
-    end
-  end
-end
-
---- @param lines string[]
-local function git_checkout(lines)
-  local checkout_command = _make_git_checkout_command(lines) --[[@as string]]
-  local ok, result = pcall(vim.cmd --[[@as function]], checkout_command)
-  assert(ok, vim.inspect(result))
-end
-
---- @param lines string[]
---- @return string?
-local function _make_yank_git_commit_command(lines)
+local function _make_yank_git_commit(lines)
   if type(lines) == "table" and #lines > 0 then
     local line = lines[#lines]
     local space_pos = strs.find(line, " ")
@@ -241,7 +193,7 @@ end
 
 --- @param lines string[]
 local function yank_git_commit(lines)
-  local yank_command = _make_yank_git_commit_command(lines)
+  local yank_command = _make_yank_git_commit(lines)
   if yank_command then
     local ok, result = pcall(vim.api.nvim_command, yank_command)
     assert(ok, vim.inspect(result))
@@ -253,7 +205,7 @@ end
 local function _make_setqflist_find_items(lines)
   local qflist = {}
   for _, line in ipairs(lines) do
-    local filename = line_helpers.parse_find(line)
+    local filename = parsers_helper.parse_find(line)
     table.insert(qflist, { filename = filename, lnum = 1, col = 1 })
   end
   return qflist
@@ -276,7 +228,7 @@ end
 local function _make_setqflist_rg_items(lines)
   local qflist = {}
   for _, line in ipairs(lines) do
-    local parsed = line_helpers.parse_rg(line)
+    local parsed = parsers_helper.parse_rg(line)
     table.insert(qflist, {
       filename = parsed.filename,
       lnum = parsed.lineno,
@@ -304,7 +256,7 @@ end
 local function _make_setqflist_grep_items(lines)
   local qflist = {}
   for _, line in ipairs(lines) do
-    local parsed = line_helpers.parse_grep(line)
+    local parsed = parsers_helper.parse_grep(line)
     table.insert(qflist, {
       filename = parsed.filename,
       lnum = parsed.lineno,
@@ -332,7 +284,7 @@ end
 local function _make_setqflist_git_status_items(lines)
   local qflist = {}
   for _, line in ipairs(lines) do
-    local filename = line_helpers.parse_git_status(line)
+    local filename = parsers_helper.parse_git_status(line)
     table.insert(qflist, { filename = filename, lnum = 1, col = 1 })
   end
   return qflist
@@ -418,7 +370,7 @@ end
 local function _make_edit_git_status_commands(lines)
   local results = {}
   for i, line in ipairs(lines) do
-    local filename = line_helpers.parse_git_status(line)
+    local filename = parsers_helper.parse_git_status(line)
     local edit_command = string.format("edit! %s", filename)
     table.insert(results, edit_command)
   end
@@ -430,7 +382,7 @@ end
 --- @param context fzfx.PipelineContext
 local function edit_git_status(lines, context)
   local edit_commands = _make_edit_git_status_commands(lines)
-  prompts_helper.confirm_discard_buffer_modified(context.bufnr, function()
+  prompts_helper.confirm_discard_modified(context.bufnr, function()
     for i, edit_command in ipairs(edit_commands) do
       log.debug("|fzfx.actions - edit_git_status| [%d]:[%s]", i, edit_command)
       local ok, result = pcall(vim.cmd --[[@as function]], edit_command)
@@ -443,7 +395,7 @@ local M = {
   nop = nop,
 
   -- find/buffers/git files
-  _make_edit_find_commands = _make_edit_find_commands,
+  _make_edit_find_commands = _make_edit_find,
   edit = edit,
   edit_find = edit_find,
   edit_buffers = edit_buffers,
@@ -456,17 +408,17 @@ local M = {
   edit_ls = edit_ls,
 
   -- rg/grep
-  _make_edit_rg_commands = _make_edit_rg_commands,
+  _make_edit_rg_commands = _make_edit_rg,
   edit_rg = edit_rg,
-  _make_edit_grep_commands = _make_edit_grep_commands,
+  _make_edit_grep_commands = _make_edit_grep,
   edit_grep = edit_grep,
 
   -- git branch
-  _make_git_checkout_command = _make_git_checkout_command,
+  _make_git_checkout_command = _make_git_checkout,
   git_checkout = git_checkout,
 
   -- git commit
-  _make_yank_git_commit_command = _make_yank_git_commit_command,
+  _make_yank_git_commit_command = _make_yank_git_commit,
   yank_git_commit = yank_git_commit,
 
   -- git status

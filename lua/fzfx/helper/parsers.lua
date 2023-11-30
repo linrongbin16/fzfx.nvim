@@ -4,6 +4,7 @@ local env = require("fzfx.lib.env")
 local strs = require("fzfx.lib.strings")
 local nums = require("fzfx.lib.numbers")
 local fs = require("fzfx.lib.filesystems")
+local tbls = require("fzfx.lib.tables")
 
 local M = {}
 
@@ -149,6 +150,131 @@ M.parse_git_status = function(line)
     i = i + 1
   end
   return { filename = paths.normalize(line:sub(i), { expand = true }) }
+end
+
+-- parse lines from `git branch` and `git branch --remotes`. looks like:
+-- ```
+-- * chore-lint
+-- main
+-- origin/HEAD -> origin/main
+-- origin/chore-lint
+-- ```
+--
+-- remove the prefix and extra symbols, returns branch name.
+--
+--- @param line string
+--- @param context fzfx.GitBranchesPipelineContext
+--- @return {local_branch:string,remote_branch:string}
+M.parse_git_branches = function(line, context)
+  --- @param s string
+  --- @param t string
+  --- @return boolean, string
+  local function _remove_prefix(s, t)
+    if strs.startswith(s, t) then
+      return true, vim.trim(s:sub(#t + 1))
+    else
+      return false, s
+    end
+  end
+
+  -- remove prefix "* "
+  --
+  -- The `git branch` looks like:
+  -- ```
+  -- * my-plugin-dev
+  -- ```
+  --
+  --- @param l string
+  --- @return string
+  local function _remove_star(l)
+    local success, l1 = _remove_prefix(l, "* ")
+    return success and l1 or l
+  end
+
+  -- remove prefix "remotes/origin/"
+  --
+  -- The `git branch -a` looks like:
+  -- ```
+  --   main
+  -- * my-plugin-dev
+  --   remotes/origin/HEAD -> origin/main
+  --   remotes/origin/main
+  --   remotes/origin/my-plugin-dev
+  -- ```
+  --
+  --- @param l string
+  --- @return string
+  local function _remove_remotes_origin_slash(l)
+    if tbls.list_not_empty(context.remotes) then
+      for _, r in ipairs(context.remotes) do
+        local success, l1 = _remove_prefix(l, string.format("remotes/%s/", r))
+        if success then
+          return l1
+        end
+      end
+    end
+    return l
+  end
+
+  -- remove prefix "origin/"
+  --
+  -- The `git branch -r` looks like:
+  -- ```
+  -- origin/HEAD -> origin/main
+  -- origin/main
+  -- origin/my-plugin-dev
+  -- ```
+  --
+  --- @param l string
+  --- @return string
+  local function _remove_origin_slash(l)
+    if tbls.list_not_empty(context.remotes) then
+      for _, r in ipairs(context.remotes) do
+        local success, l1 = _remove_prefix(l, string.format("%s/", r))
+        if success then
+          return l1
+        end
+      end
+    end
+    return l
+  end
+
+  -- remove prefix "->", looks like:
+  --
+  -- ```
+  -- origin/HEAD -> origin/main
+  -- ```
+  --
+  --- @param l string
+  --- @return string
+  local function _remove_right_arrow(l)
+    local arrow_pos = strs.find(l, "->")
+    if nums.positive(arrow_pos) then
+      return vim.trim(l:sub(arrow_pos + 3))
+    end
+    return l
+  end
+
+  local local_branch = vim.trim(line)
+  local remote_branch = local_branch
+
+  -- remove prefix "* "
+  local_branch = _remove_star(local_branch)
+  remote_branch = local_branch
+
+  if strs.find(local_branch, "->") ~= nil then
+    -- remove right arrow ("->") prefix
+    local_branch = _remove_right_arrow(local_branch)
+    remote_branch = local_branch
+  end
+
+  -- remove prefix "remotes/origin/"
+  local_branch = _remove_remotes_origin_slash(local_branch)
+
+  -- remove prefix "origin/"
+  local_branch = _remove_origin_slash(local_branch)
+
+  return { local_branch = local_branch, remote_branch = remote_branch }
 end
 
 -- parse lines from ls/lsd/eza/exa.
