@@ -81,6 +81,13 @@ describe("lib.filesystems", function()
       local content = "hello world, goodbye world!"
       fs.asyncwritefile(t, content, function(bytes)
         assert_eq(bytes, #content)
+        vim.schedule(function()
+          local j = vim.fn.jobstart(
+            { "rm", t },
+            { on_stdout = function() end, on_stderr = function() end }
+          )
+          vim.fn.jobwait({ j })
+        end)
       end)
     end)
   end)
