@@ -78,12 +78,12 @@ local function grep_previewer_label(line)
   return f(line)
 end
 
---- @param parser fun(line:string,context:VimCommandsPipelineContext|VimKeyMapsPipelineContext):table|string
+--- @param parser fun(line:string,context:fzfx.VimCommandsPipelineContext|fzfx.VimKeyMapsPipelineContext):table|string
 --- @param default_value string
---- @return fun(line:string,context:VimCommandsPipelineContext|VimKeyMapsPipelineContext):string?
+--- @return fun(line:string,context:fzfx.VimCommandsPipelineContext|fzfx.VimKeyMapsPipelineContext):string?
 local function _make_vim_command_previewer_label(parser, default_value)
   --- @param line string?
-  --- @param context VimCommandsPipelineContext
+  --- @param context fzfx.VimCommandsPipelineContext
   --- @return string
   local function impl(line, context)
     if type(line) ~= "string" or string.len(line) == 0 then

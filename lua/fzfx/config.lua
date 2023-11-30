@@ -1027,8 +1027,8 @@ local function _get_vim_commands(no_ex_commands, no_user_commands)
   return results
 end
 
---- @alias VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
---- @return VimCommandsPipelineContext
+--- @alias fzfx.VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
+--- @return fzfx.VimCommandsPipelineContext
 local function _vim_commands_context_maker()
   local ctx = {
     bufnr = vim.api.nvim_get_current_buf(),
@@ -1042,21 +1042,21 @@ local function _vim_commands_context_maker()
   return ctx
 end
 
---- @param ctx VimCommandsPipelineContext
+--- @param ctx fzfx.VimCommandsPipelineContext
 --- @return string[]
 local function vim_commands_provider(ctx)
   local commands = _get_vim_commands()
   return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
---- @param ctx VimCommandsPipelineContext
+--- @param ctx fzfx.VimCommandsPipelineContext
 --- @return string[]
 local function vim_ex_commands_provider(ctx)
   local commands = _get_vim_commands(nil, true)
   return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
---- @param ctx VimCommandsPipelineContext
+--- @param ctx fzfx.VimCommandsPipelineContext
 --- @return string[]
 local function vim_user_commands_provider(ctx)
   local commands = _get_vim_commands(true)
@@ -1096,7 +1096,7 @@ local function _vim_commands_lua_function_previewer(filename, lineno)
 end
 
 --- @param line string
---- @param context VimCommandsPipelineContext
+--- @param context fzfx.VimCommandsPipelineContext
 --- @return string[]|nil
 local function vim_commands_previewer(line, context)
   local desc_or_loc = line_helpers.parse_vim_command(line, context)
@@ -2097,8 +2097,8 @@ local function _render_vim_keymaps(keymaps, key_width, opts_width)
   return results
 end
 
---- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
---- @return VimKeyMapsPipelineContext
+--- @alias fzfx.VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
+--- @return fzfx.VimKeyMapsPipelineContext
 local function _vim_keymaps_context_maker()
   local ctx = {
     bufnr = vim.api.nvim_get_current_buf(),
@@ -2113,10 +2113,10 @@ local function _vim_keymaps_context_maker()
 end
 
 --- @param mode "n"|"i"|"v"|"all"
---- @return fun(query:string,context:VimKeyMapsPipelineContext):string[]|nil
+--- @return fun(query:string,context:fzfx.VimKeyMapsPipelineContext):string[]|nil
 local function _make_vim_keymaps_provider(mode)
   --- @param query string
-  --- @param context VimKeyMapsPipelineContext
+  --- @param context fzfx.VimKeyMapsPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
     local keys = _get_vim_keymaps()
@@ -2187,7 +2187,7 @@ local function _vim_keymaps_lua_function_previewer(filename, lineno)
 end
 
 --- @param line string
---- @param context VimKeyMapsPipelineContext
+--- @param context fzfx.VimKeyMapsPipelineContext
 --- @return string[]|nil
 local function _vim_keymaps_previewer(line, context)
   local def_or_loc = line_helpers.parse_vim_keymap(line, context)
@@ -3752,7 +3752,7 @@ local Defaults = {
       all_commands = {
         key = "ctrl-a",
         --- @param query string
-        --- @param context VimCommandsPipelineContext
+        --- @param context fzfx.VimCommandsPipelineContext
         provider = function(query, context)
           return vim_commands_provider(context)
         end,
@@ -3761,7 +3761,7 @@ local Defaults = {
       ex_commands = {
         key = "ctrl-e",
         --- @param query string
-        --- @param context VimCommandsPipelineContext
+        --- @param context fzfx.VimCommandsPipelineContext
         provider = function(query, context)
           return vim_ex_commands_provider(context)
         end,
@@ -3770,7 +3770,7 @@ local Defaults = {
       user_commands = {
         key = "ctrl-u",
         --- @param query string
-        --- @param context VimCommandsPipelineContext
+        --- @param context fzfx.VimCommandsPipelineContext
         provider = function(query, context)
           return vim_user_commands_provider(context)
         end,
