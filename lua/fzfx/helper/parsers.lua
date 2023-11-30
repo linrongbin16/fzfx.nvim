@@ -2,15 +2,18 @@ local consts = require("fzfx.lib.constants")
 local paths = require("fzfx.lib.paths")
 local env = require("fzfx.lib.env")
 local strs = require("fzfx.lib.strings")
+local nums = require("fzfx.lib.numbers")
 
 -- parse lines from fd/find, also support buffers, git files. looks like:
 -- ```
 -- 󰢱 bin/general/provider.lua
+-- 󰢱 bin/general/previewer.lua
 -- ```
 --
--- returns the full path of filename. looks like:
+-- returns file path that removed the prepend icon. looks like:
 -- ```
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/provider.lua
+-- bin/general/provider.lua
+-- bin/general/previewer.lua
 -- ```
 --
 --- @param line string
@@ -24,65 +27,125 @@ local function parse_find(line)
   else
     filename = line
   end
-  return { filename = paths.normalize(filename, { expand = true }) }
+  return { filename = paths.normalize(filename) }
 end
 
 -- parse lines from grep. looks like:
 -- ```
 -- 󰢱 bin/general/provider.lua:31:  local conf = require("fzfx.config")
+-- 󰢱 bin/general/previewer.lua:57:  local colors = require("fzfx.lib.colors")
 -- ```
 --
--- returns the full path of filename, line number and text. the full filepath looks like:
+-- returns file path that removed the prepend icon, line number and text. file path looks like:
 -- ```
--- /Users/linrongbin/github/linrongbin16/fzfx.nvim/bin/general/provider.lua
+-- bin/general/provider.lua
+-- bin/general/previewer.lua
 -- ```
 --
 --- @param line string
---- @return {filename:string,lineno:integer,text:string}
+--- @return {filename:string,lineno:integer?,text:string}
 local function parse_grep(line)
-  local splits = {}
+  local filename = nil
+  local lineno = nil
+  local text = nil
+
   local first_colon_pos = strs.find(line, ":")
   assert(
     type(first_colon_pos) == "number",
     string.format("failed to parse grep lines:%s", vim.inspect(line))
   )
-  table.insert(splits, line:sub(1, first_colon_pos - 1))
+  filename = line:sub(1, first_colon_pos - 1)
+
   local second_colon_pos = strs.find(line, ":", first_colon_pos + 1)
-  if type(second_colon_pos) == "number" then
-    table.insert(splits, line:sub(first_colon_pos + 1, second_colon_pos - 1))
-    table.insert(splits, line:sub(second_colon_pos + 1))
+  if nums.positive(second_colon_pos) then
+    lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
+    text = line:sub(second_colon_pos + 1)
   else
-    table.insert(splits, line:sub(first_colon_pos + 1))
+    -- if failed to found the second ':', then 'lineno' is nil
+    -- (it's very rare to happen, but I truly have seem such case)
+    text = line:sub(first_colon_pos + 1)
   end
-  local filename = parse_find(splits[1])
-  local lineno = tonumber(splits[2])
-  local text = #splits >= 3 and splits[3] or ""
+
+  filename = parse_find(filename)
+  lineno = tonumber(lineno)
+  text = text or ""
+
   return { filename = filename, lineno = lineno, text = text }
 end
 
--- parse lines from rg.
+-- parse lines from rg. looks like:
+-- ```
+-- 󰢱 bin/general/provider.lua:31:2:  local conf = require("fzfx.config")
+-- 󰢱 bin/general/previewer.lua:57:13:  local colors = require("fzfx.lib.colors")
+-- ```
+--
+-- returns file path that removed the prepend icon, line number, column number and text. file path looks like:
+-- ```
+-- bin/general/provider.lua
+-- bin/general/previewer.lua
+-- ```
+--
 --- @param line string
---- @param opts {no_icon:boolean?}?
 --- @return {filename:string,lineno:integer,column:integer?,text:string}
-local function parse_rg(line, opts)
-  local splits = strs.split(line, ":")
-  local filename = parse_find(splits[1], opts)
-  local lineno = tonumber(splits[2])
-  local column = tonumber(splits[3])
-  local text = #splits >= 4 and splits[4] or ""
+local function parse_rg(line)
+  local filename = nil
+  local lineno = nil
+  local column = nil
+  local text = nil
+
+  local first_colon_pos = strs.find(line, ":")
+  assert(
+    type(first_colon_pos) == "number",
+    string.format("failed to parse rg lines:%s", vim.inspect(line))
+  )
+  filename = line:sub(1, first_colon_pos - 1)
+
+  local second_colon_pos = strs.find(line, ":", first_colon_pos + 1)
+  assert(
+    type(second_colon_pos) == "number",
+    string.format("failed to parse rg lines:%s", vim.inspect(line))
+  )
+  lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
+
+  local third_colon_pos = strs.find(line, ":", second_colon_pos + 1)
+  if nums.positive(third_colon_pos) then
+    column = line:sub(second_colon_pos + 1, third_colon_pos - 1)
+    text = line:sub(third_colon_pos + 1)
+  else
+    -- if failed to found the third ':', then 'column' is nil
+    -- (it's very rare to happen, but I truly have seem such case)
+    text = line:sub(second_colon_pos + 1)
+  end
+
+  filename = parse_find(filename)
+  lineno = tonumber(lineno)
+  column = tonumber(column)
+  text = text or ""
+
   return { filename = filename, lineno = lineno, column = column, text = text }
 end
 
--- parse lines from `git status`.
+-- parse lines from `git status --short`. looks like:
+-- ```
+--  M lua/fzfx/helper/parsers.lua
+-- ?? test.txt
+-- ```
+--
+-- returns file path that removed the prepend icon. looks like:
+-- ```
+-- lua/fzfx/helper/parsers.lua
+-- test.txt
+-- ```
+--
 --- @param line string
---- @return string
+--- @return {filename:string}
 local function parse_git_status(line)
   line = vim.trim(line)
   local i = 1
   while i <= #line and not strs.isspace(line:sub(i, i)) do
     i = i + 1
   end
-  return vim.trim(line:sub(i))
+  return { filename = paths.normalize(line:sub(i)) }
 end
 
 -- parse lines from ls/lsd/eza/exa.
