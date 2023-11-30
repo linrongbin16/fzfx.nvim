@@ -60,12 +60,18 @@ M.parse_grep = function(line)
     lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
     text = line:sub(second_colon_pos + 1)
   else
-    -- if failed to found the second ':', then 'lineno' is nil
-    -- (it's very rare to happen, but I truly have seem such case)
-    text = line:sub(first_colon_pos + 1)
+    -- if failed to found the second ':', then
+    -- 1. first try to parse right hands as 'lineno'
+    -- 2. if failed, treat them as 'text'
+    local rhs = line:sub(first_colon_pos + 1)
+    if tonumber(rhs) == nil then
+      text = rhs
+    else
+      lineno = tonumber(rhs)
+    end
   end
 
-  filename = M.parse_find(filename)
+  filename = M.parse_find(filename).filename
   lineno = tonumber(lineno)
   text = text or ""
 
@@ -107,12 +113,18 @@ M.parse_rg = function(line)
     column = line:sub(second_colon_pos + 1, third_colon_pos - 1)
     text = line:sub(third_colon_pos + 1)
   else
-    -- if failed to found the third ':', then 'column' is nil
-    -- (it's very rare to happen, but I truly have seem such case)
-    text = line:sub(second_colon_pos + 1)
+    -- if failed to found the third ':', then
+    -- 1. first try to parse right hands as 'column'
+    -- 2. if failed, treat them as 'text'
+    local rhs = line:sub(second_colon_pos + 1)
+    if tonumber(rhs) == nil then
+      text = rhs
+    else
+      column = tonumber(rhs)
+    end
   end
 
-  filename = M.parse_find(filename)
+  filename = M.parse_find(filename).filename
   lineno = tonumber(lineno)
   column = tonumber(column)
   text = text or ""
@@ -203,9 +215,10 @@ end
 --
 -- remove the prepend extra info and returns **full** file path.
 --
+--- @package
 --- @param start_pos integer
 --- @return fun(line:string,context:fzfx.FileExplorerPipelineContext):{filename:string}
-local function _make_parse_ls(start_pos)
+M._make_parse_ls = function(start_pos)
   --- @param line string
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return {filename:string}
@@ -243,9 +256,9 @@ local function _make_parse_ls(start_pos)
   return impl
 end
 
-M.parse_ls = _make_parse_ls(8)
-M.parse_eza = consts.IS_WINDOWS and _make_parse_ls(5) or _make_parse_ls(6)
-M.parse_lsd = _make_parse_ls(10)
+M.parse_ls = M._make_parse_ls(8)
+M.parse_eza = consts.IS_WINDOWS and M._make_parse_ls(5) or M._make_parse_ls(6)
+M.parse_lsd = M._make_parse_ls(10)
 
 -- parse vim commands. looks like:
 -- ```
