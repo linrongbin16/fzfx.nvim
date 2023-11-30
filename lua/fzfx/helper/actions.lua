@@ -158,7 +158,7 @@ local function _make_git_checkout(lines, context)
   if tbls.list_not_empty(lines) then
     local line = vim.trim(lines[#lines])
     if strs.not_empty(line) then
-      local parsed = parsers_helper.parse_git_branches(line, context)
+      local parsed = parsers_helper.parse_git_branch(line, context)
       return string.format([[!git checkout %s]], parsed.branch)
     end
   end

@@ -165,7 +165,7 @@ end
 --- @param line string
 --- @param context fzfx.GitBranchesPipelineContext
 --- @return {local_branch:string,remote_branch:string}
-M.parse_git_branches = function(line, context)
+M.parse_git_branch = function(line, context)
   --- @param s string
   --- @param t string
   --- @return boolean, string
@@ -275,6 +275,23 @@ M.parse_git_branches = function(line, context)
   local_branch = _remove_origin_slash(local_branch)
 
   return { local_branch = local_branch, remote_branch = remote_branch }
+end
+
+-- parse lines from `git log --pretty=oneline`. looks like:
+-- ```
+-- c2e32c 2023-11-30 linrongbin16 (HEAD -> chore-lint)
+-- 5fe6ad 2023-11-29 linrongbin16 chore
+-- ```
+--
+--- @param line string
+--- @return {commit:string}
+M.parse_git_commit = function(line)
+  local first_space_pos = strs.find(line, " ")
+  assert(
+    nums.positive(first_space_pos),
+    string.format("failed to parse git commit line:%s", vim.inspect(line))
+  )
+  return { commit = vim.trim(line:sub(1, first_space_pos - 1)) }
 end
 
 -- parse lines from ls/lsd/eza/exa.

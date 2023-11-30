@@ -445,7 +445,7 @@ describe("helper.parsers", function()
     end)
   end)
 
-  describe("[parse_git_branches]", function()
+  describe("[parse_git_branch]", function()
     local CONTEXT = {
       remotes = { "origin" },
     }
@@ -459,7 +459,7 @@ describe("helper.parsers", function()
         "  remotes/origin/release-please--branches--main--components--fzfx.nvim",
       }
       for i, line in ipairs(lines) do
-        local actual = parsers_helper.parse_git_branches(line, CONTEXT)
+        local actual = parsers_helper.parse_git_branch(line, CONTEXT)
         local expect_splits = strs.split(line, " ")
         local expect_remote = expect_splits[#expect_splits]
         local slash_splits = strs.split(expect_remote, "/")
@@ -478,6 +478,20 @@ describe("helper.parsers", function()
         assert_eq(type(actual), "table")
         assert_eq(expect_local, actual.local_branch)
         assert_eq(expect_remote, actual.remote_branch)
+      end
+    end)
+  end)
+
+  describe("[parse_git_commit]", function()
+    it("test", function()
+      local lines = {
+        "c2e32c 2023-11-30 linrongbin16 (HEAD -> chore-lint)",
+        "5fe6ad 2023-11-29 linrongbin16 chore",
+      }
+      for _, line in ipairs(lines) do
+        local actual = parsers_helper.parse_git_commit(line)
+        local expect = strs.split(line, " ")[1]
+        assert_eq(actual.commit, expect)
       end
     end)
   end)
