@@ -89,7 +89,7 @@ M.edit_rg = function(lines, context)
   local edits = M._make_edit_rg(lines)
   prompts.confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
-      -- log.debug("|fzfx.actions - edit_rg| [%d]:[%s]", i, edit)
+      -- log.debug("|fzfx.helper.actions - edit_rg| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
       assert(ok, vim.inspect(result))
     end
@@ -150,7 +150,7 @@ M.edit_grep = function(lines, context)
   local edits = M._make_edit_grep(lines)
   prompts.confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
-      -- log.debug("|fzfx.actions - edit_grep| [%d]:[%s]", i, edit)
+      -- log.debug("|fzfx.helper.actions - edit_grep| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
       assert(ok, vim.inspect(result))
     end
@@ -215,7 +215,7 @@ M.edit_ls = function(lines, context)
   local edits = M._make_edit_ls(lines, context)
   prompts.confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
-      -- log.debug("|fzfx.actions - edit_ls| [%d]:[%s]", i, edit)
+      -- log.debug("|fzfx.helper.actions - edit_ls| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
       assert(ok, vim.inspect(result))
     end
@@ -375,7 +375,7 @@ M.edit_git_status = function(lines, context)
   local edits = M._make_edit_git_status(lines)
   prompts.confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
-      log.debug("|fzfx.actions - edit_git_status| [%d]:[%s]", i, edit)
+      -- log.debug("|fzfx.helper.actions - edit_git_status| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
       assert(ok, vim.inspect(result))
     end
