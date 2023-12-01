@@ -9,8 +9,10 @@ local tbls = require("fzfx.lib.tables")
 
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
+
 local line_helpers = require("fzfx.line_helpers")
 local queries_helper = require("fzfx.helper.queries")
+local actions_helper = require("fzfx.helper.actions")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
@@ -2396,21 +2398,6 @@ local function _upper_file_explorer(line, context)
   end
 end
 
---- @param lines string[]
---- @param context fzfx.FileExplorerPipelineContext
-local function _edit_file_explorer(lines, context)
-  local fullpath_lines = {}
-  for _, line in ipairs(lines) do
-    local p = _make_filename_by_file_explorer_context(line, context)
-    table.insert(fullpath_lines, p)
-  end
-  log.debug(
-    "|fzfx.config - file_explorer.actions| full_lines:%s",
-    vim.inspect(fullpath_lines)
-  )
-  return require("fzfx.actions").edit_ls(fullpath_lines)
-end
-
 -- file explorer }
 
 --- @alias fzfx.Options table<string, any>
@@ -4723,9 +4710,9 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = _edit_file_explorer,
-      ["double-click"] = _edit_file_explorer,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_ls,
+      ["double-click"] = actions_helper.edit_ls,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -5054,7 +5041,6 @@ local M = {
   _make_file_explorer_provider = _make_file_explorer_provider,
   _directory_previewer = _directory_previewer,
   _file_explorer_previewer = _file_explorer_previewer,
-  _edit_file_explorer = _edit_file_explorer,
   _cd_file_explorer = _cd_file_explorer,
   _upper_file_explorer = _upper_file_explorer,
 }
