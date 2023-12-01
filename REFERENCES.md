@@ -30,6 +30,40 @@ They are supposed to be stable and tested.
 
 The `fzfx.helper` provides line-oriented helpers for parsing and rendering queries/lines required in all scenarios.
 
+### [fzfx.helper.actions](/lua/fzfx/helper/actions.lua)
+
+- `nop():nil`: do nothing.
+
+#### `FzfxFiles`/`FzfxBuffers`/`FzfxGFiles`
+
+> The lines are file names relative to current working directory or home directory, they look like:
+>
+> - " README.md",
+> - "󰢱 lua/fzfx.lua:",
+> - "󰢱 lua/fzfx.lua/test/hello world.txt",
+
+- `edit_find(lines:string[], context:fzfx.PipelineContext):nil`: use `edit` command to open selected files on `fd`/`find` results.
+- `setqflist_find(lines:string[], context:fzfx.PipelineContext):nil`: use `setqflist` command to send selected lines (files) to qflist.
+
+#### `FzfxLiveGrep`/`FzfxGLiveGrep`
+
+> The lines are file names, line numbers and column numbers (`grep`/`git` don't generate column numbers), they look like:
+>
+> - "󰢱 lua/fzfx.lua:15:82:",
+> - "󰢱 lua/fzfx/config.lua:1:70",
+> - "󰢱 lua/fzfx/config.lua:4:71: ok ko",
+
+- `edit_find(lines:string[], context:fzfx.PipelineContext):nil`: use `edit` command to open selected files on `fd`/`find` results.
+- `setqflist_find(lines:string[], context:fzfx.PipelineContext):nil`: use `setqflist` command to send selected lines (files) to qflist.
+
+This group of APIs also support `buffers`, `git_files` search command.
+
+### [fzfx.helper.parsers](/lua/fzfx/helper/parsers.lua)
+
+### [fzfx.helper.prompts](/lua/fzfx/helper/prompts.lua)
+
+### [fzfx.helper.queries](/lua/fzfx/helper/queries.lua)
+
 ## [Fundamental Infrastructures](/lua/fzfx/lib)
 
 The `fzfx.lib` provides fundamental infrastructures for whole plugin, they're usually handling below issues:
