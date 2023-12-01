@@ -2756,13 +2756,13 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = consts.HAS_RG and require("fzfx.actions").edit_rg
-        or require("fzfx.actions").edit_grep,
-      ["double-click"] = consts.HAS_RG and require("fzfx.actions").edit_rg
-        or require("fzfx.actions").edit_grep,
-      ["ctrl-q"] = consts.HAS_RG and require("fzfx.actions").setqflist_rg
-        or require("fzfx.actions").setqflist_grep,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = consts.HAS_RG and actions_helper.edit_rg
+        or actions_helper.edit_grep,
+      ["double-click"] = consts.HAS_RG and actions_helper.edit_rg
+        or actions_helper.edit_grep,
+      ["ctrl-q"] = consts.HAS_RG and actions_helper.setqflist_rg
+        or actions_helper.setqflist_grep,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -2848,10 +2848,10 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_find,
-      ["double-click"] = require("fzfx.actions").edit_find,
-      ["ctrl-q"] = require("fzfx.actions").setqflist_find,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_find,
+      ["double-click"] = actions_helper.edit_find,
+      ["ctrl-q"] = actions_helper.setqflist_find,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -2996,10 +2996,10 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_find,
-      ["double-click"] = require("fzfx.actions").edit_find,
-      ["ctrl-q"] = require("fzfx.actions").setqflist_find,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_find,
+      ["double-click"] = actions_helper.edit_find,
+      ["ctrl-q"] = actions_helper.setqflist_find,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -3077,10 +3077,10 @@ local Defaults = {
       previewer_label = require("fzfx.previewer_labels").grep_previewer_label,
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_grep,
-      ["double-click"] = require("fzfx.actions").edit_grep,
-      ["ctrl-q"] = require("fzfx.actions").setqflist_grep,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_grep,
+      ["double-click"] = actions_helper.edit_grep,
+      ["ctrl-q"] = actions_helper.setqflist_grep,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -3221,10 +3221,10 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_git_status,
-      ["double-click"] = require("fzfx.actions").edit_git_status,
-      ["ctrl-q"] = require("fzfx.actions").setqflist_git_status,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_git_status,
+      ["double-click"] = actions_helper.edit_git_status,
+      ["ctrl-q"] = actions_helper.setqflist_git_status,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -3358,9 +3358,9 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").git_checkout,
-      ["double-click"] = require("fzfx.actions").git_checkout,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.git_checkout,
+      ["double-click"] = actions_helper.git_checkout,
     },
     fzf_opts = {
       default_fzf_options.no_multi,
@@ -3509,9 +3509,9 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").yank_git_commit,
-      ["double-click"] = require("fzfx.actions").yank_git_commit,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.yank_git_commit,
+      ["double-click"] = actions_helper.yank_git_commit,
     },
     fzf_opts = {
       default_fzf_options.no_multi,
@@ -3585,9 +3585,9 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").yank_git_commit,
-      ["double-click"] = require("fzfx.actions").yank_git_commit,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.yank_git_commit,
+      ["double-click"] = actions_helper.yank_git_commit,
     },
     fzf_opts = {
       default_fzf_options.no_multi,
@@ -3796,9 +3796,9 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").feed_vim_command,
-      ["double-click"] = require("fzfx.actions").feed_vim_command,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.feed_vim_command,
+      ["double-click"] = actions_helper.feed_vim_command,
     },
     fzf_opts = {
       default_fzf_options.no_multi,
@@ -4058,9 +4058,9 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").feed_vim_key,
-      ["double-click"] = require("fzfx.actions").feed_vim_key,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.feed_vim_key,
+      ["double-click"] = actions_helper.feed_vim_key,
     },
     fzf_opts = {
       default_fzf_options.no_multi,
@@ -4212,10 +4212,10 @@ local Defaults = {
       },
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_rg,
-      ["double-click"] = require("fzfx.actions").edit_rg,
-      ["ctrl-q"] = require("fzfx.actions").setqflist_rg,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_rg,
+      ["double-click"] = actions_helper.edit_rg,
+      ["ctrl-q"] = actions_helper.setqflist_rg,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -4255,9 +4255,9 @@ local Defaults = {
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_rg,
-      ["double-click"] = require("fzfx.actions").edit_rg,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_rg,
+      ["double-click"] = actions_helper.edit_rg,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -4310,9 +4310,9 @@ local Defaults = {
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_rg,
-      ["double-click"] = require("fzfx.actions").edit_rg,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_rg,
+      ["double-click"] = actions_helper.edit_rg,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -4365,9 +4365,9 @@ local Defaults = {
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_rg,
-      ["double-click"] = require("fzfx.actions").edit_rg,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_rg,
+      ["double-click"] = actions_helper.edit_rg,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -4420,9 +4420,9 @@ local Defaults = {
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_rg,
-      ["double-click"] = require("fzfx.actions").edit_rg,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_rg,
+      ["double-click"] = actions_helper.edit_rg,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -4475,9 +4475,9 @@ local Defaults = {
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_rg,
-      ["double-click"] = require("fzfx.actions").edit_rg,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_rg,
+      ["double-click"] = actions_helper.edit_rg,
     },
     fzf_opts = {
       default_fzf_options.multi,
@@ -4530,9 +4530,9 @@ local Defaults = {
       previewer_label = require("fzfx.previewer_labels").rg_previewer_label,
     },
     actions = {
-      ["esc"] = require("fzfx.actions").nop,
-      ["enter"] = require("fzfx.actions").edit_rg,
-      ["double-click"] = require("fzfx.actions").edit_rg,
+      ["esc"] = actions_helper.nop,
+      ["enter"] = actions_helper.edit_rg,
+      ["double-click"] = actions_helper.edit_rg,
     },
     fzf_opts = {
       default_fzf_options.multi,
