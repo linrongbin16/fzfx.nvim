@@ -16,7 +16,7 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
---- @type table<string, FzfOpt>
+--- @type table<string, fzfx.FzfOpt>
 local default_fzf_options = {
   multi = "--multi",
   toggle = "--bind=ctrl-e:toggle",
@@ -398,6 +398,18 @@ end
 
 -- git branches {
 
+--- @alias fzfx.GitBranchesPipelineContext {remotes:string[]|nil}
+--- @return fzfx.GitBranchesPipelineContext
+local function _git_branches_context_maker()
+  local ctx = {}
+  local git_remotes_cmd = cmds.GitRemotesCommand:run()
+  if git_remotes_cmd:failed() then
+    return ctx
+  end
+  ctx.remotes = git_remotes_cmd:output()
+  return ctx
+end
+
 --- @param opts {remote_branch:boolean?}?
 local function _make_git_branches_provider(opts)
   local function impl()
@@ -629,7 +641,7 @@ local function _parse_vim_ex_command_name(line)
   return vim.trim(line:sub(3, name_stop_pos - 1))
 end
 
---- @return table<string, VimCommand>
+--- @return table<string, fzfx.VimCommand>
 local function _get_vim_ex_commands()
   local help_docs_list =
     ---@diagnostic disable-next-line: param-type-mismatch
@@ -737,9 +749,9 @@ local function _parse_ex_command_output_lua_function_definition(line, start_pos)
   }
 end
 
---- @alias VimExCommandOutputHeader {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
+--- @alias fzfx.VimExCommandOutputHeader {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
 --- @param header string
---- @return VimExCommandOutputHeader
+--- @return fzfx.VimExCommandOutputHeader
 local function _parse_ex_command_output_header(header)
   local name_pos = strs.find(header, "Name")
   local args_pos = strs.find(header, "Args")
@@ -804,7 +816,7 @@ local function _parse_ex_command_output()
   local results = {}
   local command_outputs = fs.readlines(tmpfile --[[@as string]]) --[[@as table]]
   local found_command_output_header = false
-  --- @type VimExCommandOutputHeader
+  --- @type fzfx.VimExCommandOutputHeader
   local parsed_header = nil
 
   for i = 1, #command_outputs do
@@ -861,7 +873,7 @@ local function _parse_ex_command_output()
   return results
 end
 
---- @return table<string, VimCommand>
+--- @return table<string, fzfx.VimCommand>
 local function _get_vim_user_commands()
   local parsed_ex_commands = _parse_ex_command_output()
   local user_commands = vim.api.nvim_get_commands({ builtin = false })
@@ -897,7 +909,7 @@ local function _get_vim_user_commands()
   return results
 end
 
---- @param rendered VimCommand
+--- @param rendered fzfx.VimCommand
 --- @return string
 local function _render_vim_commands_column_opts(rendered)
   local bang = (type(rendered.opts) == "table" and rendered.opts.bang) and "Y"
@@ -924,7 +936,7 @@ local function _render_vim_commands_column_opts(rendered)
   )
 end
 
---- @param commands VimCommand[]
+--- @param commands fzfx.VimCommand[]
 --- @return integer,integer
 local function _render_vim_commands_columns_status(commands)
   local NAME = "Name"
@@ -939,12 +951,12 @@ local function _render_vim_commands_columns_status(commands)
   return max_name, max_opts
 end
 
---- @param commands VimCommand[]
+--- @param commands fzfx.VimCommand[]
 --- @param name_width integer
 --- @param opts_width integer
 --- @return string[]
 local function _render_vim_commands(commands, name_width, opts_width)
-  --- @param r VimCommand
+  --- @param r fzfx.VimCommand
   --- @return string
   local function rendered_desc_or_loc(r)
     if
@@ -996,12 +1008,12 @@ local function _render_vim_commands(commands, name_width, opts_width)
   return results
 end
 
---- @alias VimCommandLocation {filename:string,lineno:integer}
---- @alias VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,range:string?,complete:string?,complete_arg:string?,desc:string?}
---- @alias VimCommand {name:string,loc:VimCommandLocation?,opts:VimCommandOptions}
+--- @alias fzfx.VimCommandLocation {filename:string,lineno:integer}
+--- @alias fzfx.VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,range:string?,complete:string?,complete_arg:string?,desc:string?}
+--- @alias fzfx.VimCommand {name:string,loc:fzfx.VimCommandLocation?,opts:fzfx.VimCommandOptions}
 --- @param no_ex_commands boolean?
 --- @param no_user_commands boolean?
---- @return VimCommand[]
+--- @return fzfx.VimCommand[]
 local function _get_vim_commands(no_ex_commands, no_user_commands)
   local results = {}
   local ex_commands = no_ex_commands and {} or _get_vim_ex_commands()
@@ -1027,8 +1039,8 @@ local function _get_vim_commands(no_ex_commands, no_user_commands)
   return results
 end
 
---- @alias VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
---- @return VimCommandsPipelineContext
+--- @alias fzfx.VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
+--- @return fzfx.VimCommandsPipelineContext
 local function _vim_commands_context_maker()
   local ctx = {
     bufnr = vim.api.nvim_get_current_buf(),
@@ -1042,21 +1054,21 @@ local function _vim_commands_context_maker()
   return ctx
 end
 
---- @param ctx VimCommandsPipelineContext
+--- @param ctx fzfx.VimCommandsPipelineContext
 --- @return string[]
 local function vim_commands_provider(ctx)
   local commands = _get_vim_commands()
   return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
---- @param ctx VimCommandsPipelineContext
+--- @param ctx fzfx.VimCommandsPipelineContext
 --- @return string[]
 local function vim_ex_commands_provider(ctx)
   local commands = _get_vim_commands(nil, true)
   return _render_vim_commands(commands, ctx.name_width, ctx.opts_width)
 end
 
---- @param ctx VimCommandsPipelineContext
+--- @param ctx fzfx.VimCommandsPipelineContext
 --- @return string[]
 local function vim_user_commands_provider(ctx)
   local commands = _get_vim_commands(true)
@@ -1096,7 +1108,7 @@ local function _vim_commands_lua_function_previewer(filename, lineno)
 end
 
 --- @param line string
---- @param context VimCommandsPipelineContext
+--- @param context fzfx.VimCommandsPipelineContext
 --- @return string[]|nil
 local function vim_commands_previewer(line, context)
   local desc_or_loc = line_helpers.parse_vim_command(line, context)
@@ -1212,9 +1224,8 @@ local function _make_lsp_diagnostic_signs()
   return results
 end
 
---- @alias DiagItem {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}
 --- @param diag {bufnr:integer,lnum:integer,col:integer,message:string,severity:integer}
---- @return DiagItem?
+--- @return {bufnr:integer,filename:string,lnum:integer,col:integer,text:string,severity:integer}?
 local function _process_lsp_diagnostic_item(diag)
   if not vim.api.nvim_buf_is_valid(diag.bufnr) then
     return nil
@@ -1309,13 +1320,13 @@ end
 
 -- lsp locations {
 
---- @alias LspRangeStart {line:integer,character:integer}
---- @alias LspRangeEnd {line:integer,character:integer}
---- @alias LspRange {start:LspRangeStart,end:LspRangeEnd}
---- @alias LspLocation {uri:string,range:LspRange}
---- @alias LspLocationLink {originSelectionRange:LspRange,targetUri:string,targetRange:LspRange,targetSelectionRange:LspRange}
+--- @alias fzfx.LspRangeStart {line:integer,character:integer}
+--- @alias fzfx.LspRangeEnd {line:integer,character:integer}
+--- @alias fzfx.LspRange {start:fzfx.LspRangeStart,end:fzfx.LspRangeEnd}
+--- @alias fzfx.LspLocation {uri:string,range:fzfx.LspRange}
+--- @alias fzfx.LspLocationLink {originSelectionRange:fzfx.LspRange,targetUri:string,targetRange:fzfx.LspRange,targetSelectionRange:fzfx.LspRange}
 
---- @param r LspRange?
+--- @param r fzfx.LspRange?
 --- @return boolean
 local function _is_lsp_range(r)
   return type(r) == "table"
@@ -1327,14 +1338,14 @@ local function _is_lsp_range(r)
     and type(r["end"].character) == "number"
 end
 
---- @param loc LspLocation|LspLocationLink|nil
+--- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 local function _is_lsp_location(loc)
   return type(loc) == "table"
     and type(loc.uri) == "string"
     and _is_lsp_range(loc.range)
 end
 
---- @param loc LspLocation|LspLocationLink|nil
+--- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 local function _is_lsp_locationlink(loc)
   return type(loc) == "table"
     and type(loc.targetUri) == "string"
@@ -1342,7 +1353,7 @@ local function _is_lsp_locationlink(loc)
 end
 
 --- @param line string
---- @param range LspRange
+--- @param range fzfx.LspRange
 --- @param color_renderer fun(text:string):string
 --- @return string?
 local function _lsp_range_render_line(line, range, color_renderer)
@@ -1370,8 +1381,8 @@ local function _lsp_range_render_line(line, range, color_renderer)
   return result
 end
 
---- @alias LspLocationPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,position_params:any}
---- @return LspLocationPipelineContext
+--- @alias fzfx.LspLocationPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,position_params:any}
+--- @return fzfx.LspLocationPipelineContext
 local function _lsp_position_context_maker()
   local context = {
     bufnr = vim.api.nvim_get_current_buf(),
@@ -1386,7 +1397,7 @@ local function _lsp_position_context_maker()
   return context
 end
 
---- @param loc LspLocation|LspLocationLink
+--- @param loc fzfx.LspLocation|fzfx.LspLocationLink
 --- @return string?
 local function _render_lsp_location_line(loc)
   log.debug(
@@ -1394,7 +1405,7 @@ local function _render_lsp_location_line(loc)
     vim.inspect(loc)
   )
   local filename = nil
-  --- @type LspRange
+  --- @type fzfx.LspRange
   local range = nil
   if _is_lsp_location(loc) then
     filename = paths.reduce(vim.uri_to_fname(loc.uri))
@@ -1447,16 +1458,16 @@ end
 local default_no_lsp_locations_error = "no lsp locations found."
 
 -- lsp methods: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp/protocol.lua#L1028
---- @alias LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"|"callHierarchy/incomingCalls"|"callHierarchy/outgoingCalls"|"textDocument/prepareCallHierarchy"
+--- @alias fzfx.LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"|"callHierarchy/incomingCalls"|"callHierarchy/outgoingCalls"|"textDocument/prepareCallHierarchy"
 ---
 -- lsp capabilities: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp.lua#L39
---- @alias LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"|"callHierarchyProvider"
+--- @alias fzfx.LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"|"callHierarchyProvider"
 ---
---- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
---- @return fun(query:string,context:LspLocationPipelineContext):string[]|nil
+--- @param opts {method:fzfx.LspMethod,capability:fzfx.LspServerCapability,timeout:integer?}
+--- @return fun(query:string,context:fzfx.LspLocationPipelineContext):string[]|nil
 local function _make_lsp_locations_provider(opts)
   --- @param query string
-  --- @param context LspLocationPipelineContext
+  --- @param context fzfx.LspLocationPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
     ---@diagnostic disable-next-line: deprecated
@@ -1541,11 +1552,11 @@ end
 
 local default_no_lsp_call_hierarchy_error = "no lsp call hierarchy found."
 
---- @alias LspCallHierarchyItem {name:string,kind:integer,detail:string?,uri:string,range:LspRange,selectionRange:LspRange}
---- @alias LspCallHierarchyIncomingCall {from:LspCallHierarchyItem,fromRanges:LspRange[]}
---- @alias LspCallHierarchyOutgoingCall {to:LspCallHierarchyItem,fromRanges:LspRange[]}
+--- @alias fzfx.LspCallHierarchyItem {name:string,kind:integer,detail:string?,uri:string,range:fzfx.LspRange,selectionRange:fzfx.LspRange}
+--- @alias fzfx.LspCallHierarchyIncomingCall {from:fzfx.LspCallHierarchyItem,fromRanges:fzfx.LspRange[]}
+--- @alias fzfx.LspCallHierarchyOutgoingCall {to:fzfx.LspCallHierarchyItem,fromRanges:fzfx.LspRange[]}
 ---
---- @param item LspCallHierarchyItem?
+--- @param item fzfx.LspCallHierarchyItem?
 --- @return boolean
 local function _is_lsp_call_hierarchy_item(item)
   -- log.debug(
@@ -1579,8 +1590,8 @@ local function _is_lsp_call_hierarchy_outgoing_call(call_item)
     and type(call_item.fromRanges) == "table"
 end
 
---- @param item LspCallHierarchyItem
---- @param ranges LspRange[]
+--- @param item fzfx.LspCallHierarchyItem
+--- @param ranges fzfx.LspRange[]
 --- @return string[]
 local function _render_lsp_call_hierarchy_line(item, ranges)
   log.debug(
@@ -1637,9 +1648,9 @@ local function _render_lsp_call_hierarchy_line(item, ranges)
   return lines
 end
 
---- @param method LspMethod
---- @param hi_item LspCallHierarchyIncomingCall|LspCallHierarchyOutgoingCall
---- @return LspCallHierarchyItem?, LspRange[]|nil
+--- @param method fzfx.LspMethod
+--- @param hi_item fzfx.LspCallHierarchyIncomingCall|fzfx.LspCallHierarchyOutgoingCall
+--- @return fzfx.LspCallHierarchyItem?, fzfx.LspRange[]|nil
 local function _retrieve_lsp_call_hierarchy_item_and_from_ranges(
   method,
   hi_item
@@ -1660,11 +1671,11 @@ local function _retrieve_lsp_call_hierarchy_item_and_from_ranges(
 end
 
 -- incoming calls test: https://github.com/neovide/neovide/blob/59e4ed47e72076bc8cec09f11d73c389624b19fc/src/main.rs#L266
---- @param opts {method:LspMethod,capability:LspServerCapability,timeout:integer?}
---- @return fun(query:string,context:LspLocationPipelineContext):string[]|nil
+--- @param opts {method:fzfx.LspMethod,capability:fzfx.LspServerCapability,timeout:integer?}
+--- @return fun(query:string,context:fzfx.LspLocationPipelineContext):string[]|nil
 local function _make_lsp_call_hierarchy_provider(opts)
   --- @param query string
-  --- @param context LspLocationPipelineContext
+  --- @param context fzfx.LspLocationPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
     ---@diagnostic disable-next-line: deprecated
@@ -1777,7 +1788,7 @@ local function _make_lsp_call_hierarchy_provider(opts)
             and type(from_ranges) == "table"
           then
             local lines = _render_lsp_call_hierarchy_line(
-              hi_item --[[@as LspCallHierarchyItem]],
+              hi_item --[[@as fzfx.LspCallHierarchyItem]],
               from_ranges
             )
             if type(lines) == "table" then
@@ -1841,7 +1852,7 @@ end
 --                 Last set from ~/.config/nvim/lua/builtin/options.vim line 50
 --```
 --- @param line string
---- @return VimKeyMap
+--- @return fzfx.VimKeyMap
 local function _parse_map_command_output_line(line)
   local first_space_pos = 1
   while
@@ -1888,8 +1899,8 @@ local function _parse_map_command_output_line(line)
   return result
 end
 
---- @alias VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
---- @return VimKeyMap[]
+--- @alias fzfx.VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
+--- @return fzfx.VimKeyMap[]
 local function _get_vim_keymaps()
   local tmpfile = vim.fn.tempname()
   vim.cmd(string.format(
@@ -2007,7 +2018,7 @@ local function _get_vim_keymaps()
   return results
 end
 
---- @param rendered VimKeyMap
+--- @param rendered fzfx.VimKeyMap
 --- @return string
 local function _render_vim_keymaps_column_opts(rendered)
   local mode = rendered.mode or ""
@@ -2017,7 +2028,7 @@ local function _render_vim_keymaps_column_opts(rendered)
   return string.format("%-4s|%-7s|%-6s|%-6s", mode, noremap, nowait, silent)
 end
 
---- @param keys VimKeyMap[]
+--- @param keys fzfx.VimKeyMap[]
 --- @return integer,integer
 local function _render_vim_keymaps_columns_status(keys)
   local KEY = "Key"
@@ -2037,12 +2048,12 @@ local function _render_vim_keymaps_columns_status(keys)
   return max_key, max_opts
 end
 
---- @param keymaps VimKeyMap[]
+--- @param keymaps fzfx.VimKeyMap[]
 --- @param key_width integer
 --- @param opts_width integer
 --- @return string[]
 local function _render_vim_keymaps(keymaps, key_width, opts_width)
-  --- @param r VimKeyMap
+  --- @param r fzfx.VimKeyMap
   --- @return string?
   local function rendered_def_or_loc(r)
     if
@@ -2097,8 +2108,8 @@ local function _render_vim_keymaps(keymaps, key_width, opts_width)
   return results
 end
 
---- @alias VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
---- @return VimKeyMapsPipelineContext
+--- @alias fzfx.VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
+--- @return fzfx.VimKeyMapsPipelineContext
 local function _vim_keymaps_context_maker()
   local ctx = {
     bufnr = vim.api.nvim_get_current_buf(),
@@ -2113,10 +2124,10 @@ local function _vim_keymaps_context_maker()
 end
 
 --- @param mode "n"|"i"|"v"|"all"
---- @return fun(query:string,context:VimKeyMapsPipelineContext):string[]|nil
+--- @return fun(query:string,context:fzfx.VimKeyMapsPipelineContext):string[]|nil
 local function _make_vim_keymaps_provider(mode)
   --- @param query string
-  --- @param context VimKeyMapsPipelineContext
+  --- @param context fzfx.VimKeyMapsPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
     local keys = _get_vim_keymaps()
@@ -2187,7 +2198,7 @@ local function _vim_keymaps_lua_function_previewer(filename, lineno)
 end
 
 --- @param line string
---- @param context VimKeyMapsPipelineContext
+--- @param context fzfx.VimKeyMapsPipelineContext
 --- @return string[]|nil
 local function _vim_keymaps_previewer(line, context)
   local def_or_loc = line_helpers.parse_vim_keymap(line, context)
@@ -2227,8 +2238,8 @@ end
 
 -- file explorer {
 
---- @alias FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
---- @return FileExplorerPipelineContext
+--- @alias fzfx.FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
+--- @return fzfx.FileExplorerPipelineContext
 local function _file_explorer_context_maker()
   local temp = vim.fn.tempname()
   fs.writefile(temp --[[@as string]], vim.fn.getcwd() --[[@as string]])
@@ -2245,7 +2256,7 @@ end
 --- @return fun(query:string,context:fzfx.PipelineContext):string?
 local function _make_file_explorer_provider(ls_args)
   --- @param query string
-  --- @param context FileExplorerPipelineContext
+  --- @param context fzfx.FileExplorerPipelineContext
   --- @return string?
   local function impl(query, context)
     local cwd = fs.readfile(context.cwd)
@@ -2328,7 +2339,7 @@ local function _directory_previewer(filename)
 end
 
 --- @param line string
---- @param context FileExplorerPipelineContext
+--- @param context fzfx.FileExplorerPipelineContext
 --- @return string
 local function _make_filename_by_file_explorer_context(line, context)
   line = vim.trim(line)
@@ -2349,7 +2360,7 @@ local function _make_filename_by_file_explorer_context(line, context)
 end
 
 --- @param line string
---- @param context FileExplorerPipelineContext
+--- @param context fzfx.FileExplorerPipelineContext
 --- @return string[]|nil
 local function _file_explorer_previewer(line, context)
   local p = _make_filename_by_file_explorer_context(line, context)
@@ -2364,7 +2375,7 @@ local function _file_explorer_previewer(line, context)
 end
 
 --- @param line string
---- @param context FileExplorerPipelineContext
+--- @param context fzfx.FileExplorerPipelineContext
 local function _cd_file_explorer(line, context)
   local target = _make_filename_by_file_explorer_context(line, context)
   if vim.fn.isdirectory(target) > 0 then
@@ -2373,7 +2384,7 @@ local function _cd_file_explorer(line, context)
 end
 
 --- @param line string
---- @param context FileExplorerPipelineContext
+--- @param context fzfx.FileExplorerPipelineContext
 local function _upper_file_explorer(line, context)
   local cwd = fs.readfile(context.cwd) --[[@as string]]
   local target = vim.fn.fnamemodify(cwd, ":h") --[[@as string]]
@@ -2386,7 +2397,7 @@ local function _upper_file_explorer(line, context)
 end
 
 --- @param lines string[]
---- @param context FileExplorerPipelineContext
+--- @param context fzfx.FileExplorerPipelineContext
 local function _edit_file_explorer(lines, context)
   local fullpath_lines = {}
   for _, line in ipairs(lines) do
@@ -3381,6 +3392,9 @@ local Defaults = {
           or nil
       end,
     },
+    other_opts = {
+      context_maker = _git_branches_context_maker,
+    },
   },
 
   -- the 'Git Commits' commands
@@ -3752,7 +3766,7 @@ local Defaults = {
       all_commands = {
         key = "ctrl-a",
         --- @param query string
-        --- @param context VimCommandsPipelineContext
+        --- @param context fzfx.VimCommandsPipelineContext
         provider = function(query, context)
           return vim_commands_provider(context)
         end,
@@ -3761,7 +3775,7 @@ local Defaults = {
       ex_commands = {
         key = "ctrl-e",
         --- @param query string
-        --- @param context VimCommandsPipelineContext
+        --- @param context fzfx.VimCommandsPipelineContext
         provider = function(query, context)
           return vim_ex_commands_provider(context)
         end,
@@ -3770,7 +3784,7 @@ local Defaults = {
       user_commands = {
         key = "ctrl-u",
         --- @param query string
-        --- @param context VimCommandsPipelineContext
+        --- @param context fzfx.VimCommandsPipelineContext
         provider = function(query, context)
           return vim_user_commands_provider(context)
         end,
