@@ -9,6 +9,8 @@ They are supposed to be stable and tested.
 ## Table of contents
 
 - [Line-Oriented Helpers](#line-oriented-helpers)
+  - [fzfx.helper.actions](#fzfxhelperactions)
+    - [`FzfxFiles`/`FzfxBuffers`/`FzfxGFiles`](#fzfxfiles-fzfxbuffers-fzfxgfiles)
 - [Fundamental Infrastructures](#fundamental-infrastructures)
   - [fzfx.lib.colors](#fzfxlibcolors)
   - [fzfx.lib.commands](#fzfxlibcommands)
