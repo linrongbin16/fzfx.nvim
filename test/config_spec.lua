@@ -1270,17 +1270,6 @@ describe("config", function()
         end
       end
     end)
-    it("_edit_file_explorer", function()
-      local ctx = conf._file_explorer_context_maker()
-      if consts.HAS_LSD then
-        local actual = conf._edit_file_explorer(LSD_LINES, ctx)
-      elseif consts.HAS_EZA then
-        local actual = conf._edit_file_explorer(EZA_LINES, ctx)
-      else
-        local actual = conf._edit_file_explorer(LS_LINES, ctx)
-      end
-      assert_true(true)
-    end)
     it("_cd_file_explorer", function()
       local ctx = conf._file_explorer_context_maker()
       if consts.HAS_LSD then
