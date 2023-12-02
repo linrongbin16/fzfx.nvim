@@ -42,6 +42,8 @@ The `fzfx.helper` provides line-oriented helpers for parsing and rendering queri
 
 ### [fzfx.helper.actions](/lua/fzfx/helper/actions.lua)
 
+The `actions` are hook functions binding to fzf, user press the key and fzf binary will quit, then invoke these hook functions on the selected lines.
+
 - `nop():nil`: do nothing.
 
 #### `FzfxFiles`/`FzfxBuffers`/`FzfxGFiles`
