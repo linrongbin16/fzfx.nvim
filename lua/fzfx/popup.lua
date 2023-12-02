@@ -315,13 +315,13 @@ local function _make_fzf_command(fzf_opts, actions, result)
   return command
 end
 
---- @alias fzfx.OnPopupExit fun(last_query:string):nil
+--- @alias OnPopupExit fun(last_query:string):nil
 --- @param win_opts fzfx.Options?
 --- @param source string
 --- @param fzf_opts fzfx.Options
 --- @param actions fzfx.Options
 --- @param context fzfx.PipelineContext
---- @param on_popup_exit fzfx.OnPopupExit?
+--- @param on_popup_exit OnPopupExit?
 --- @return fzfx.Popup
 function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
   local result = vim.fn.tempname() --[[@as string]]

@@ -4,30 +4,6 @@ local M = {}
 M.INT32_MAX = 2147483647
 M.INT32_MIN = -2147483648
 
---- @param n integer?
---- @return boolean
-M.positive = function(n)
-  return type(n) == "number" and n > 0
-end
-
---- @param n integer?
---- @return boolean
-M.negative = function(n)
-  return type(n) == "number" and n < 0
-end
-
---- @param n integer?
---- @return boolean
-M.non_negative = function(n)
-  return type(n) == "number" and n >= 0
-end
-
---- @param n integer?
---- @return boolean
-M.non_positive = function(n)
-  return type(n) == "number" and n <= 0
-end
-
 --- @param value number
 --- @param left number?  by default INT32_MIN
 --- @param right number?  by default INT32_MAX

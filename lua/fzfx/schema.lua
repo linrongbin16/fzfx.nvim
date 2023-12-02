@@ -20,15 +20,15 @@
 --- @field tabnr integer
 --- ...
 --
---- @alias fzfx.PipelineContextMaker fun():fzfx.PipelineContext
+--- @alias PipelineContextMaker fun():fzfx.PipelineContext
 --
---- @alias fzfx.PlainProvider string|string[]
---- @alias fzfx.CommandProvider fun(query:string?,context:fzfx.PipelineContext?):string?|string[]?
---- @alias fzfx.ListProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
+--- @alias PlainProvider string|string[]
+--- @alias CommandProvider fun(query:string?,context:fzfx.PipelineContext?):string?|string[]?
+--- @alias ListProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
 --
---- @alias fzfx.Provider fzfx.PlainProvider|fzfx.CommandProvider|fzfx.ListProvider
---- @alias fzfx.ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
---- @enum fzfx.ProviderTypeEnum
+--- @alias Provider PlainProvider|CommandProvider|ListProvider
+--- @alias ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
+--- @enum ProviderTypeEnum
 local ProviderTypeEnum = {
   PLAIN = "plain",
   PLAIN_LIST = "plain_list",
@@ -47,13 +47,13 @@ local ProviderTypeEnum = {
 --
 -- The BufferPreviewer returns the configs for the nvim window.
 --
---- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
---- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.BufferPreviewer fun(line:string?,context:fzfx.PipelineContext?):table?
+--- @alias CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
+--- @alias ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
+--- @alias BufferPreviewer fun(line:string?,context:fzfx.PipelineContext?):table?
 --
---- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer|fzfx.BufferPreviewer
---- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"buffer"
---- @enum fzfx.PreviewerTypeEnum
+--- @alias Previewer CommandPreviewer|ListPreviewer|BufferPreviewer
+--- @alias PreviewerType "command"|"command_list"|"list"|"buffer"
+--- @enum PreviewerTypeEnum
 local PreviewerTypeEnum = {
   COMMAND = "command",
   COMMAND_LIST = "command_list",
@@ -67,10 +67,10 @@ local PreviewerTypeEnum = {
 --  * Plain previewer: a simple string which is the label/title of the preview window.
 --  * Function previewer: a lua function to run and generate the string for the preview window.
 --
---- @alias fzfx.PlainPreviewerLabel string
---- @alias fzfx.FunctionPreviewerLabel fun(line:string?,context:fzfx.PipelineContext?):string?
---- @alias fzfx.PreviewerLabel fzfx.PlainPreviewerLabel|fzfx.FunctionPreviewerLabel
---- @alias fzfx.PreviewerLabelType "plain"|"function"
+--- @alias PlainPreviewerLabel string
+--- @alias FunctionPreviewerLabel fun(line:string?,context:fzfx.PipelineContext?):string?
+--- @alias PreviewerLabel PlainPreviewerLabel|FunctionPreviewerLabel
+--- @alias PreviewerLabelType "plain"|"function"
 --- @enum PreviewerLabelTypeEnum
 local PreviewerLabelTypeEnum = {
   PLAIN = "plain",
@@ -84,17 +84,17 @@ local PreviewerLabelTypeEnum = {
 --  * https://neovim.io/doc/user/api.html#nvim_create_user_command()
 --  * https://neovim.io/doc/user/map.html#command-attributes
 --
---- @alias fzfx.CommandOptKey "nargs"|"bang"|"complete"|"desc"|"range"
---- @alias fzfx.CommandOptValue string|boolean
---- @alias fzfx.CommandOpt table<fzfx.CommandOptKey, fzfx.CommandOptValue>
+--- @alias CommandOptKey "nargs"|"bang"|"complete"|"desc"|"range"
+--- @alias CommandOptValue string|boolean
+--- @alias CommandOpt table<CommandOptKey, CommandOptValue>
 
 -- ========== Command Feed ==========
 --
 -- User command feeds are method that what to feed the fzfx command.
 -- E.g. visual selected, cursor word, etc.
 --
---- @alias fzfx.CommandFeed "args"|"visual"|"cword"|"put"|"resume"
---- @enum fzfx.CommandFeedEnum
+--- @alias CommandFeed "args"|"visual"|"cword"|"put"|"resume"
+--- @enum CommandFeedEnum
 local CommandFeedEnum = {
   ARGS = "args",
   VISUAL = "visual",
@@ -111,11 +111,11 @@ local CommandFeedEnum = {
 --  * Pair fzf option: a list of two strings, e.g. { '--bind', 'ctrl-e:toggle' }.
 --  * Function fzf option: a lua function that run and generate above two kinds of fzf options.
 --
---- @alias fzfx.PlainFzfOpt string
---- @alias fzfx.PairFzfOpt string[]
---- @alias fzfx.FunctionFzfOpt fun():fzfx.PlainFzfOpt|fzfx.PairFzfOpt
+--- @alias PlainFzfOpt string
+--- @alias PairFzfOpt string[]
+--- @alias FunctionFzfOpt fun():PlainFzfOpt|PairFzfOpt
 --
---- @alias fzfx.FzfOpt fzfx.PlainFzfOpt|fzfx.PairFzfOpt|fzfx.FunctionFzfOpt
+--- @alias FzfOpt PlainFzfOpt|PairFzfOpt|FunctionFzfOpt
 
 -- ========== Action ==========
 --
@@ -160,21 +160,21 @@ local CommandFeedEnum = {
 --
 --- @class fzfx.ProviderConfig
 --- @field key fzfx.ActionKey
---- @field provider fzfx.Provider
---- @field provider_type fzfx.ProviderType? by default "plain"
+--- @field provider Provider
+--- @field provider_type ProviderType? by default "plain"
 --- @field line_opts fzfx.ProviderConfigLineOpts?
 
 --- @class fzfx.PreviewerConfig
---- @field previewer fzfx.Previewer
---- @field previewer_type fzfx.PreviewerType?
---- @field previewer_label fzfx.PreviewerLabel?
---- @field previewer_label_type fzfx.PreviewerLabelType?
+--- @field previewer Previewer
+--- @field previewer_type PreviewerType?
+--- @field previewer_label PreviewerLabel?
+--- @field previewer_label_type PreviewerLabelType?
 
 --- @alias fzfx.PipelineName string a pipeline name is a provider name, a previewer name
 --- @class fzfx.CommandConfig
 --- @field name string
---- @field feed fzfx.CommandFeed
---- @field opts fzfx.CommandOpt
+--- @field feed CommandFeed
+--- @field opts CommandOpt
 --- @field default_provider fzfx.PipelineName?
 
 --- @alias fzfx.InteractionName string
@@ -190,7 +190,7 @@ local CommandFeedEnum = {
 --- @field previewers fzfx.PreviewerConfig|table<fzfx.PipelineName, fzfx.PreviewerConfig>
 --- @field interactions table<fzfx.InteractionName, fzfx.InteractionConfig>?
 --- @field actions table<fzfx.ActionKey, fzfx.Action>
---- @field fzf_opts fzfx.FzfOpt[]?
+--- @field fzf_opts FzfOpt[]?
 
 --- @param cfg fzfx.CommandConfig?
 --- @return boolean
@@ -234,7 +234,7 @@ local function is_previewer_config(cfg)
 end
 
 --- @param provider_config fzfx.ProviderConfig
---- @return fzfx.ProviderType
+--- @return ProviderType
 local function get_provider_type_or_default(provider_config)
   return provider_config.provider_type
     or (
@@ -244,13 +244,13 @@ local function get_provider_type_or_default(provider_config)
 end
 
 --- @param previewer_config fzfx.PreviewerConfig
---- @return fzfx.PreviewerType
+--- @return PreviewerType
 local function get_previewer_type_or_default(previewer_config)
   return previewer_config.previewer_type or PreviewerTypeEnum.COMMAND
 end
 
 --- @param previewer_config fzfx.PreviewerConfig
---- @return fzfx.PreviewerLabelType
+--- @return PreviewerLabelType
 local function get_previewer_label_type_or_default(previewer_config)
   return previewer_config.previewer_label_type
     or (

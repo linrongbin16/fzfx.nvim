@@ -1,4 +1,3 @@
-local strs = require("fzfx.lib.strings")
 local spawn = require("fzfx.lib.spawn")
 
 local M = {}
@@ -54,12 +53,12 @@ function Command:run(source)
   local result = CommandResult:new()
   local sp = spawn.Spawn:make(source, {
     on_stdout = function(line)
-      if strs.not_empty(line) then
+      if type(line) == "string" then
         table.insert(result.stdout, line)
       end
     end,
     on_stderr = function(line)
-      if strs.not_empty(line) then
+      if type(line) == "string" then
         table.insert(result.stderr, line)
       end
     end,
@@ -200,43 +199,5 @@ end
 M.GitCurrentBranchCommand = GitCurrentBranchCommand
 
 -- GitCurrentBranchCommand }
-
--- GitRemotesCommand {
-
---- @class fzfx.GitRemotesCommand
---- @field result fzfx.CommandResult?
-local GitRemotesCommand = {}
-
---- @return fzfx.GitRemotesCommand
-function GitRemotesCommand:run()
-  -- git rev-parse --abbrev-ref HEAD
-  local cmd = Command:run({ "git", "remote" })
-
-  local o = {
-    result = cmd.result,
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
-
---- @return boolean
-function GitRemotesCommand:failed()
-  return self.result:failed()
-end
-
---- @return string[]|nil
-function GitRemotesCommand:output()
-  if self:failed() then
-    return nil
-  end
-  return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-      and self.result.stdout
-    or nil
-end
-
-M.GitRemotesCommand = GitRemotesCommand
-
--- GitRemotesCommand }
 
 return M

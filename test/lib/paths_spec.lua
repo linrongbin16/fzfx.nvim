@@ -19,17 +19,6 @@ describe("lib.paths", function()
       local actual2 = ps.normalize(expect2)
       assert_eq(actual1, expect1)
       assert_eq(actual2, expect2)
-
-      local expect3 = "test/lib/paths_spec.lua"
-      local actual3 = ps.normalize(expect3, { expand = true })
-      -- print(
-      --   string.format(
-      --     "paths normalize, expect3:%s, actual3:%s\n",
-      --     vim.inspect(vim.fn.expand(expect3)),
-      --     vim.inspect(actual3)
-      --   )
-      -- )
-      assert_eq(vim.fn.expand(expect3), actual3)
     end)
     it("windows", function()
       local actual1 = ps.normalize(

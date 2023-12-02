@@ -162,7 +162,7 @@ local parse_eza = consts.IS_WINDOWS and _make_parse_ls(5) or _make_parse_ls(6)
 local parse_lsd = _make_parse_ls(10)
 
 --- @param line string
---- @param context fzfx.VimCommandsPipelineContext
+--- @param context VimCommandsPipelineContext
 --- @return {filename:string,lineno:integer}|string
 local function parse_vim_command(line, context)
   -- local log = require("fzfx.log")
@@ -201,7 +201,7 @@ local function parse_vim_command(line, context)
 end
 
 --- @param line string
---- @param context fzfx.VimKeyMapsPipelineContext
+--- @param context VimKeyMapsPipelineContext
 --- @return {filename:string?,lineno:integer?}|string
 local function parse_vim_keymap(line, context)
   -- local log = require("fzfx.log")

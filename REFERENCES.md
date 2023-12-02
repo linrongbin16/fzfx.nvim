@@ -23,8 +23,6 @@ They are supposed to be stable and tested.
   - [fzfx.lib.spawn](#fzfxlibspawn)
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
-- [Logger](#logger)
-  - [fzfx.log](#fzfxlog)
 
 ## [Line-Oriented Helpers](/lua/fzfx/helper)
 
@@ -208,8 +206,6 @@ curl
 ### [fzfx.lib.numbers](/lua/fzfx/lib/numbers.lua)
 
 - `INT32_MIN`/`INT32_MAX`: `-2147483648`/`2147483647`.
-- `positive(n:number?):boolean`/`negative(n:number?):boolean`: is positive/negative number, e.g. `n > 0`/`n < 0`.
-- `non_positive(n:number?):boolean`/`non_negative(n:number?):boolean`: is non-positive/non-negative number, e.g. `n <= 0`/`n >= 0`.
 - `bound(value:integer, left:integer, right:integer):integer`: returned value is bounded in range `[left, right]`.
 - `inc_id():integer`: returned incremental ID.
 
@@ -285,19 +281,3 @@ curl
 - `list_index(i:integer, n:integer):integer`: calculate list index for both positive or negative. `n` is the length of list.
   - if `i > 0`, `i` is in range `[1,n]`.
   - if `i < 0`, `i` is in range `[-1,-n]`, `-1` maps to last position (e.g. `n`), `-n` maps to first position (e.g. `1`).
-
-## Logger
-
-### [fzfx.log](/lua/fzfx/log.lua)
-
-- `debug(fmt:string, ...)`: debug, the `fmt` is formatting messages in C style formatters, e.g. `%d`, `%s`.
-- `info(fmt:string, ...)`: info.
-- `warn(fmt:string, ...)`: warning.
-- `err(fmt:string, ...)`: error
-- `echo(level:LogLevels, fmt:string, ...)`: echo message in log `level`. this API will not been affected by log configs.
-  - `LogLevels.DEBUG`.
-  - `LogLevels.INFO`.
-  - `LogLevels.WARN`.
-  - `LogLevels.ERROR`.
-- `throw(fmt:string, ...)`: same with `err`, additionally it invokes `error()` API, which throw an error to user command line, requires user to press `ENTER` to continue.
-- `ensure(condition:boolean, fmt:string, ...)`: throw error to user if `condition` is false.

@@ -2,7 +2,7 @@ local line_helpers = require("fzfx.line_helpers")
 
 --- @package
 --- @param opts {no_icon:boolean?}?
---- @return fzfx.PreviewerLabel
+--- @return PreviewerLabel
 local function _make_find_previewer_label(opts)
   --- @param line string?
   --- @return string?
@@ -24,7 +24,7 @@ end
 
 --- @package
 --- @param opts {no_icon:boolean?}?
---- @return fzfx.PreviewerLabel
+--- @return PreviewerLabel
 local function _make_rg_previewer_label(opts)
   --- @param line string?
   --- @return string?
@@ -53,7 +53,7 @@ end
 
 --- @package
 --- @param opts {no_icon:boolean?}?
---- @return fzfx.PreviewerLabel
+--- @return PreviewerLabel
 local function _make_grep_previewer_label(opts)
   --- @param line string?
   --- @return string?
@@ -78,12 +78,12 @@ local function grep_previewer_label(line)
   return f(line)
 end
 
---- @param parser fun(line:string,context:fzfx.VimCommandsPipelineContext|fzfx.VimKeyMapsPipelineContext):table|string
+--- @param parser fun(line:string,context:VimCommandsPipelineContext|VimKeyMapsPipelineContext):table|string
 --- @param default_value string
---- @return fun(line:string,context:fzfx.VimCommandsPipelineContext|fzfx.VimKeyMapsPipelineContext):string?
+--- @return fun(line:string,context:VimCommandsPipelineContext|VimKeyMapsPipelineContext):string?
 local function _make_vim_command_previewer_label(parser, default_value)
   --- @param line string?
-  --- @param context fzfx.VimCommandsPipelineContext
+  --- @param context VimCommandsPipelineContext
   --- @return string
   local function impl(line, context)
     if type(line) ~= "string" or string.len(line) == 0 then
