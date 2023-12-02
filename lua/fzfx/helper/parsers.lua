@@ -427,7 +427,7 @@ M.parse_vim_command = function(line, context)
   local desc_or_loc =
     vim.trim(line:sub(context.name_width + 1 + context.opts_width + 1 + 1))
   -- log.debug(
-  --     "|fzfx.line_helpers - parse_vim_commands| desc_or_loc:%s",
+  --     "|fzfx.helper.parsers - parse_vim_commands| desc_or_loc:%s",
   --     vim.inspect(desc_or_loc)
   -- )
   if
@@ -441,13 +441,13 @@ M.parse_vim_command = function(line, context)
       desc_or_loc:sub(split_pos + 1),
     }
     -- log.debug(
-    --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
+    --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
     local filename = paths.normalize(splits[1], { expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
-    --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
+    --     "|fzfx.helper.parsers - parse_vim_commands| filename:%s, lineno:%s",
     --     vim.inspect(filename),
     --     vim.inspect(lineno)
     -- )
@@ -485,7 +485,7 @@ M.parse_vim_keymap = function(line, context)
   local rhs_or_loc =
     vim.trim(line:sub(context.key_width + 1 + context.opts_width + 1 + 1))
   -- log.debug(
-  --     "|fzfx.line_helpers - parse_vim_commands| desc_or_loc:%s",
+  --     "|fzfx.helper.parsers - parse_vim_commands| desc_or_loc:%s",
   --     vim.inspect(desc_or_loc)
   -- )
   if
@@ -499,13 +499,13 @@ M.parse_vim_keymap = function(line, context)
       rhs_or_loc:sub(split_pos + 1),
     }
     -- log.debug(
-    --     "|fzfx.line_helpers - parse_vim_commands| splits:%s",
+    --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
     local filename = paths.normalize(splits[1], { expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
-    --     "|fzfx.line_helpers - parse_vim_commands| filename:%s, lineno:%s",
+    --     "|fzfx.helper.parsers - parse_vim_commands| filename:%s, lineno:%s",
     --     vim.inspect(filename),
     --     vim.inspect(lineno)
     -- )
