@@ -1,7 +1,7 @@
 ---@diagnostic disable: undefined-field, unused-local
 local cwd = vim.fn.getcwd()
 
-describe("rpcserver", function()
+describe("detail.rpcserver", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
