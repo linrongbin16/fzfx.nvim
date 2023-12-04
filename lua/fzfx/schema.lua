@@ -306,6 +306,7 @@ local M = {
   is_command_config = is_command_config,
   is_provider_config = is_provider_config,
   is_previewer_config = is_previewer_config,
+
   get_provider_type_or_default = get_provider_type_or_default,
   get_previewer_type_or_default = get_previewer_type_or_default,
   get_previewer_label_type_or_default = get_previewer_label_type_or_default,
