@@ -30,19 +30,11 @@ local function setup(options)
     vim.fn.mkdir(configs.cache.dir, "p")
   end
 
-  -- lua module environment
+  -- initialize
   require("fzfx.module").setup()
-
-  -- rpc server
   require("fzfx.rpcserver").setup()
-
-  -- yank history
   require("fzfx.yank_history").setup()
-
-  -- fzf helpers
-  require("fzfx.fzf_helpers").setup()
-
-  -- popup
+  require("fzfx.detail.fzf_helpers").setup()
   require("fzfx.popup").setup()
 
   -- files & buffers

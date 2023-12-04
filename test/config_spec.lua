@@ -29,8 +29,9 @@ describe("config", function()
   local colors = require("fzfx.lib.colors")
 
   local conf = require("fzfx.config")
+  local fzf_helpers = require("fzfx.detail.fzf_helpers")
   conf.setup()
-  local fzf_helpers = require("fzfx.fzf_helpers")
+
   describe("[setup]", function()
     it("setup with default configs", function()
       conf.setup()

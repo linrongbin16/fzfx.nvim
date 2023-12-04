@@ -16,10 +16,11 @@ describe("popup", function()
 
   local tbls = require("fzfx.lib.tables")
   local strs = require("fzfx.lib.strings")
+  local fzf_helpers = require("fzfx.detail.fzf_helpers")
+  local popup = require("fzfx.popup")
 
   require("fzfx.config").setup()
-  local fzf_helpers = require("fzfx.fzf_helpers")
-  local popup = require("fzfx.popup")
+
   describe("[_make_window_size]", function()
     it("is in range of [0, 1]", function()
       assert_eq(5, popup._make_window_size(0.5, 10))

@@ -11,12 +11,13 @@ local spawn = require("fzfx.lib.spawn")
 
 local log = require("fzfx.log")
 local Popup = require("fzfx.popup").Popup
-local fzf_helpers = require("fzfx.fzf_helpers")
 local rpcserver = require("fzfx.rpcserver")
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local schema = require("fzfx.schema")
 local conf = require("fzfx.config")
+
+local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
 local DEFAULT_PIPELINE = "default"
 
@@ -560,13 +561,13 @@ local function _send_http_post(port, body)
   }, {
     on_stdout = function(line)
       -- log.debug(
-      --     "|fzfx.fzf_helpers - send_http_post| stdout:%s",
+      --     "|fzfx.general - send_http_post| stdout:%s",
       --     vim.inspect(line)
       -- )
     end,
     on_stderr = function(line)
       -- log.debug(
-      --     "|fzfx.fzf_helpers - send_http_post| stderr:%s",
+      --     "|fzfx.general - send_http_post| stderr:%s",
       --     vim.inspect(line)
       -- )
     end,
