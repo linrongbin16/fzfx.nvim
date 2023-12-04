@@ -92,38 +92,7 @@ describe("helper.previewers", function()
   end)
 
   describe("[live_grep]", function()
-    it("_make_live_grep_provider restricted", function()
-      local f = previewers._make_live_grep_provider()
-      local actual = f("hello", {})
-      -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
-      assert_eq(type(actual), "table")
-      if actual[1] == "rg" then
-        assert_eq(actual[1], "rg")
-        assert_eq(actual[2], "--column")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "--no-heading")
-        assert_eq(actual[5], "--color=always")
-        assert_eq(actual[6], "-H")
-        assert_eq(actual[7], "-S")
-        assert_eq(actual[8], "hello")
-      else
-        assert_eq(actual[1], consts.GREP)
-        assert_eq(actual[2], "--color=always")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "-H")
-        assert_eq(actual[5], "-r")
-        assert_eq(
-          actual[6],
-          "--exclude-dir=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]])
-        )
-        assert_eq(
-          actual[7],
-          "--exclude=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]])
-        )
-        assert_eq(actual[8], "hello")
-      end
-    end)
-    it("_file_previewer_grep", function()
+    it("_preview_files_grep", function()
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md:1",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:2",
@@ -132,7 +101,7 @@ describe("helper.previewers", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:5",
       }
       for _, line in ipairs(lines) do
-        local actual = conf._file_previewer_grep(line)
+        local actual = previewers._preview_files_grep(line)
         local expect =
           paths.normalize(strs.split(line, ":")[1], { expand = true })
         print(string.format("normalize:%s\n", vim.inspect(expect)))
@@ -150,56 +119,6 @@ describe("helper.previewers", function()
           assert_eq(actual[1], "cat")
           assert_eq(actual[2], expect)
         end
-      end
-    end)
-    it("_make_live_grep_provider unrestricted", function()
-      local f = conf._make_live_grep_provider({ unrestricted = true })
-      local actual = f("hello", {})
-      -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
-      assert_eq(type(actual), "table")
-      if actual[1] == "rg" then
-        assert_eq(actual[1], "rg")
-        assert_eq(actual[2], "--column")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "--no-heading")
-        assert_eq(actual[5], "--color=always")
-        assert_eq(actual[6], "-H")
-        assert_eq(actual[7], "-S")
-        assert_eq(actual[8], "-uu")
-        assert_eq(actual[9], "hello")
-      else
-        assert_eq(actual[1], consts.GREP)
-        assert_eq(actual[2], "--color=always")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "-H")
-        assert_eq(actual[5], "-r")
-        assert_eq(actual[6], "hello")
-      end
-    end)
-    it("_make_live_grep_provider buffer", function()
-      local f = conf._make_live_grep_provider({ buffer = true })
-      local actual = f("hello", make_default_context())
-      -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
-      assert_eq(type(actual), "table")
-      if actual[1] == "rg" then
-        assert_eq(actual[1], "rg")
-        assert_eq(actual[2], "--column")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "--no-heading")
-        assert_eq(actual[5], "--color=always")
-        assert_eq(actual[6], "-H")
-        assert_eq(actual[7], "-S")
-        assert_eq(actual[8], "-uu")
-        assert_eq(actual[9], "hello")
-        assert_eq(actual[10], "README.md")
-      else
-        assert_eq(actual[1], consts.GREP)
-        assert_eq(actual[2], "--color=always")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "-H")
-        assert_eq(actual[5], "-r")
-        assert_eq(actual[6], "hello")
-        assert_eq(actual[7], "README.md")
       end
     end)
   end)

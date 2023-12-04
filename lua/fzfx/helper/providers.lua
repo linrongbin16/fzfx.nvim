@@ -129,7 +129,7 @@ M.UNRESTRICTED_GREP = {
 
 --- @param bufnr integer
 --- @return string?
-local function _get_buf_path(bufnr)
+M._get_buf_path = function(bufnr)
   local bufpath = nvims.buf_is_valid(bufnr)
       and paths.reduce(vim.api.nvim_buf_get_name(bufnr))
     or nil
@@ -142,7 +142,7 @@ end
 
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
-local function _make_provide_live_grep(opts)
+M._make_provide_live_grep = function(opts)
   --- @param query string
   --- @param context fzfx.PipelineContext
   --- @return string[]|nil
@@ -160,7 +160,7 @@ local function _make_provide_live_grep(opts)
       ---@diagnostic disable-next-line: need-check-nil
       elseif tbls.tbl_not_empty(opts) and opts.buffer then
         args = vim.deepcopy(M.UNRESTRICTED_RG)
-        bufpath = _get_buf_path(context.bufnr)
+        bufpath = M._get_buf_path(context.bufnr)
         if not bufpath then
           return nil
         end
@@ -174,7 +174,7 @@ local function _make_provide_live_grep(opts)
       ---@diagnostic disable-next-line: need-check-nil
       elseif tbls.tbl_not_empty(opts) and opts.buffer then
         args = vim.deepcopy(M.UNRESTRICTED_GREP)
-        bufpath = _get_buf_path(context.bufnr)
+        bufpath = M._get_buf_path(context.bufnr)
         if not bufpath then
           return nil
         end
@@ -206,10 +206,10 @@ local function _make_provide_live_grep(opts)
   return impl
 end
 
-M.provide_live_grep_restricted_mode = _make_provide_live_grep()
+M.provide_live_grep_restricted_mode = M._make_provide_live_grep()
 M.provide_live_grep_unrestricted_mode =
-  _make_provide_live_grep({ unrestricted = true })
-M.provide_live_grep_buffer_mode = _make_provide_live_grep({ buffer = true })
+  M._make_provide_live_grep({ unrestricted = true })
+M.provide_live_grep_buffer_mode = M._make_provide_live_grep({ buffer = true })
 
 -- live grep }
 

@@ -2165,9 +2165,8 @@ local function _vim_keymaps_previewer(line, context)
     vim.inspect(parsed)
   )
   if
-    type(parsed) == "table"
-    and type(parsed.filename) == "string"
-    and string.len(parsed.filename) > 0
+    tbls.tbl_not_empty(parsed)
+    and strs.not_empty(parsed.filename)
     and type(parsed.lineno) == "number"
   then
     log.debug(
@@ -2175,12 +2174,12 @@ local function _vim_keymaps_previewer(line, context)
       vim.inspect(parsed)
     )
     return _vim_keymaps_lua_function_previewer(parsed.filename, parsed.lineno)
-  elseif consts.HAS_ECHO and type(parsed) == "string" then
+  elseif consts.HAS_ECHO and tbls.tbl_not_empty(parsed) then
     log.debug(
       "|fzfx.config - vim_keymaps_previewer| desc:%s",
       vim.inspect(parsed)
     )
-    return { "echo", parsed }
+    return { "echo", parsed.definition }
   else
     log.echo(LogLevels.INFO, "no echo command found.")
     return nil
@@ -2295,10 +2294,10 @@ end
 --- @param context fzfx.FileExplorerPipelineContext
 --- @return string[]|nil
 local function _file_explorer_previewer(line, context)
-  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line)
+  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line, context)
     or (
-      consts.HAS_EZA and parsers_helper.parse_eza(line)
-      or parsers_helper.parse_ls(line)
+      consts.HAS_EZA and parsers_helper.parse_eza(line, context)
+      or parsers_helper.parse_ls(line, context)
     )
   if vim.fn.filereadable(parsed.filename) > 0 then
     local preview = _make_file_previewer(parsed.filename)
@@ -2313,10 +2312,10 @@ end
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 local function _cd_file_explorer(line, context)
-  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line)
+  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line, context)
     or (
-      consts.HAS_EZA and parsers_helper.parse_eza(line)
-      or parsers_helper.parse_ls(line)
+      consts.HAS_EZA and parsers_helper.parse_eza(line, context)
+      or parsers_helper.parse_ls(line, context)
     )
   if vim.fn.isdirectory(parsed.filename) > 0 then
     fs.writefile(context.cwd, parsed.filename)
