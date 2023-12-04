@@ -1568,15 +1568,15 @@ require("fzfx").setup({
 
 You can also use the `require("fzfx").register("ls", {...})` api to do that.
 
-For detailed explanation of each components, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
+For detailed explanation of each components, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command).
 
 ### API References
 
-Fzfx provides builtin APIs to help make customizing/creating search commands easier, there're 3 collections:
+To help easier customizing/integrating, fzfx provides below builtin API collections:
 
-- `fzfx.cfg`: User commands group configurations, e.g. the configurations for `FzfxFiles`, `FzfxLiveGrep`, etc. Easy to read and learn all the components to construct search commands, as well as easy to copy-paste.
-- `fzfx.helper`: Line-oriented helpers for parsing and rendering queries/lines required in all scenarios, since a search command is all about the lines in (both left and right side of) fzf binary: generating lines, previewing lines, invoking callbacks on selected lines, etc.
-- `fzfx.lib`: Fundamental infrastructures: compatible cross-platform (Windows/Unix/Linux) and Neovim APIs, file IO & paths, json, strings & numbers, running child process, etc.
+- `fzfx.cfg`: Top-level user commands configurations, e.g. the configurations directly create the `FzfxFiles`, `FzfxLiveGrep`, etc. Easy to read and learn all the components used in constructing those commands, as well as easy to copy and paste.
+- `fzfx.helper`: Middle-level line-oriented helpers for parsing and rendering queries/lines required in all scenarios, a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
+- `fzfx.lib`: Low-level fundamental infrastructures: cross-platform (Windows/Unix/Linux) and different Neovim versions API, file IO & paths, json, strings, numbers, lua tables/lists, colors, running child process & stdio, etc.
 
 These APIs are supposed to be stable and tested, please see [REFERENCES.md](/REFERENCES.md) for details.
 
