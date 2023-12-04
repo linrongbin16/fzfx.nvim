@@ -31,7 +31,7 @@ local function setup(options)
   end
 
   -- initialize
-  require("fzfx.module").setup()
+  require("fzfx.detail.module").setup()
   require("fzfx.rpcserver").setup()
   require("fzfx.yank_history").setup()
   require("fzfx.detail.fzf_helpers").setup()

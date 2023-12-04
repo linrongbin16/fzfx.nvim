@@ -21,7 +21,7 @@ describe("detail.fzf_helpers", function()
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
   require("fzfx.config").setup()
-  require("fzfx.module").setup()
+  require("fzfx.detail.module").setup()
 
   describe("[make_last_query_cache]", function()
     it("makes", function()

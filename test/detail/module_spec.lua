@@ -11,16 +11,11 @@ describe("module", function()
 
   local strs = require("fzfx.lib.strings")
 
-  require("fzfx.config").setup()
-  require("fzfx.module").setup()
-  local log = require("fzfx.log")
-  log.setup({
-    level = "DEBUG",
-    console_log = true,
-    file_log = true,
-  })
   local conf = require("fzfx.config")
-  local module = require("fzfx.module")
+  local module = require("fzfx.detail.module")
+  conf.setup()
+  module.setup()
+
   describe("[module]", function()
     it("setup", function()
       conf.setup()
