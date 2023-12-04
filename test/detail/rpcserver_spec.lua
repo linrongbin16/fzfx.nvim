@@ -11,8 +11,9 @@ describe("rpcserver", function()
   end)
 
   local nums = require("fzfx.lib.numbers")
-  local rpcserver = require("fzfx.rpcserver")
+  local rpcserver = require("fzfx.detail.rpcserver")
   rpcserver.setup()
+
   describe("[RpcServer]", function()
     it("create server", function()
       local s = rpcserver.get_instance()

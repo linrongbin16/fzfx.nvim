@@ -14,6 +14,8 @@ local parsers_helper = require("fzfx.helper.parsers")
 local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
+local providers_helper = require("fzfx.helper.providers")
+local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
@@ -32,55 +34,6 @@ local default_fzf_options = {
 }
 
 -- files {
-
--- "fd . -cnever -tf -tl -L -i"
-local default_restricted_fd = {
-  consts.FD,
-  ".",
-  "-cnever",
-  "-tf",
-  "-tl",
-  "-L",
-  "-i",
-}
--- "fd . -cnever -tf -tl -L -i -u"
-local default_unrestricted_fd = {
-  consts.FD,
-  ".",
-  "-cnever",
-  "-tf",
-  "-tl",
-  "-L",
-  "-i",
-  "-u",
-}
--- 'find -L . -type f -not -path "*/.*"'
-local default_restricted_find = consts.IS_WINDOWS
-    and {
-      consts.FIND,
-      "-L",
-      ".",
-      "-type",
-      "f",
-    }
-  or {
-    consts.FIND,
-    "-L",
-    ".",
-    "-type",
-    "f",
-    "-not",
-    "-path",
-    [[*/.*]],
-  }
--- "find -L . -type f"
-local default_unrestricted_find = {
-  consts.FIND,
-  "-L",
-  ".",
-  "-type",
-  "f",
-}
 
 --- @return string, string
 local function _default_bat_style_theme()
@@ -2497,25 +2450,23 @@ local Defaults = {
     providers = {
       restricted_mode = {
         key = "ctrl-r",
-        provider = consts.HAS_FD and default_restricted_fd
-          or default_restricted_find,
+        provider = providers_helper.provide_files_restricted_mode,
         line_opts = { prepend_icon_by_ft = true },
       },
       unrestricted_mode = {
         key = "ctrl-u",
-        provider = consts.HAS_FD and default_unrestricted_fd
-          or default_unrestricted_find,
+        provider = providers_helper.provide_files_unrestricted_mode,
         line_opts = { prepend_icon_by_ft = true },
       },
     },
     previewers = {
       restricted_mode = {
-        previewer = _file_previewer,
+        previewer = previewers_helper.preview_files_restricted_mode,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = labels_helper.label_find,
       },
       unrestricted_mode = {
-        previewer = _file_previewer,
+        previewer = previewers_helper.preview_files_unrestricted_mode,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = labels_helper.label_find,
       },
@@ -2688,7 +2639,7 @@ local Defaults = {
     providers = {
       restricted_mode = {
         key = "ctrl-r",
-        provider = _make_live_grep_provider(),
+        provider = providers_helper.provide_live_grep_restricted_mode,
         provider_type = ProviderTypeEnum.COMMAND_LIST,
         line_opts = {
           prepend_icon_by_ft = true,
@@ -2698,7 +2649,7 @@ local Defaults = {
       },
       unrestricted_mode = {
         key = "ctrl-u",
-        provider = _make_live_grep_provider({ unrestricted = true }),
+        provider = providers_helper.provide_live_grep_unrestricted_mode,
         provider_type = ProviderTypeEnum.COMMAND_LIST,
         line_opts = {
           prepend_icon_by_ft = true,
@@ -2708,7 +2659,7 @@ local Defaults = {
       },
       buffer_mode = {
         key = "ctrl-o",
-        provider = _make_live_grep_provider({ buffer = true }),
+        provider = providers_helper.provide_live_grep_buffer_mode,
         provider_type = ProviderTypeEnum.COMMAND_LIST,
         line_opts = {
           prepend_icon_by_ft = true,
@@ -2719,19 +2670,19 @@ local Defaults = {
     },
     previewers = {
       restricted_mode = {
-        previewer = _file_previewer_grep,
+        previewer = previewers_helper.preview_live_grep_restricted_mode,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = consts.HAS_RG and labels_helper.label_rg
           or labels_helper.label_grep,
       },
       unrestricted_mode = {
-        previewer = _file_previewer_grep,
+        previewer = previewers_helper.preview_live_grep_unrestricted_mode,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = consts.HAS_RG and labels_helper.label_rg
           or labels_helper.label_grep,
       },
       buffer_mode = {
-        previewer = _file_previewer_grep,
+        previewer = previewers_helper.preview_live_grep_buffer_mode,
         previewer_type = PreviewerTypeEnum.COMMAND_LIST,
         previewer_label = consts.HAS_RG and labels_helper.label_rg
           or labels_helper.label_grep,
