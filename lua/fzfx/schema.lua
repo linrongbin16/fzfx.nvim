@@ -1,18 +1,24 @@
--- Schema
--- See: https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command
+-- ========== Schema ==========
 --
--- ========== Provider ==========
+-- A fzf-based search command usually consists of below components:
 --
--- A provider is a shell command that run and generate the lines list for fzf (e.g. things on the left side).
--- We have 3 types of providers:
---  * Plain provider: a simple command string to execute and generate the lines list for fzf.
---  * Command provider: a lua function to run and generate the command string, execute it and generate the lines.
---  * List provider: a lua function to run and directly generate the lines.
+-- Provider: a shell command that can generate the lines list for (the left side of) the fzf binary.
+-- Previewer: a shell command that generate the content to preview the current line (on the left side) for (the right side of) the fzf binary.
+-- Interaction: an interactive key that user press and do something without quit the fzf binary, e.g. the CTRL-U/CTRL-R keys in FzfxLiveGrep to switch on restricted/unrestricted rg searching results.
+-- Action: a key that user press to quit fzf binary, and invoke its registered callback lua functions on selected lines, e.g. the ENTER keys in most of commands.
+-- Fzf options: other fzf options.
+-- With this pattern, I hide all the details of constructing fzf command and interacting across different child processes with nvim editor, provide a friendly config layer to allow users to define any commands on their own needs.
 --
--- The 1st parameter 'query' is the query in fzf prompt.
--- The 2nd parameter 'context' contains information before this plugin start.
--- E.g. the bufnr, winnr before this plugin start.
--- Since some providers will need the context before plugin starting, for example some buffer only commands needs the buffer number before plugin start.
+-- Put all above components together, I name it Pipeline.
+--
+-- Let's defines this pattern more specifically.
+--
+--
+-- ========== Context ==========
+--
+-- A context is some data that passing to pipeline.
+--
+-- After launching the fzf binary command, there's no way to get the current buffer's bufnr and current window's winnr by nvim API, since the current buffer/window is actually the terminal that running the fzf binary, not the buffer/file you're editing. So we need to create a context before actually creating the fzf binary terminal.
 --
 --- @class fzfx.PipelineContext
 --- @field bufnr integer
@@ -22,11 +28,22 @@
 --
 --- @alias fzfx.PipelineContextMaker fun():fzfx.PipelineContext
 --
+--
+-- ========== Provider ==========
+--
+-- A provider is a shell command that run and generate the lines list for (the left side of) the fzf binary.
+--
+-- We have below types of providers:
+--  * Plain provider: a simple shell command (as a string or a string list), execute and generate the lines for fzf.
+--  * Command provider: a lua function to run and returns the shell command (as a string or a string list), then execute and generate the lines for fzf.
+--  * List provider: a lua function to run and directly returns the lines for fzf.
+--
+--
 --- @alias fzfx.PlainProvider string|string[]
 --- @alias fzfx.CommandProvider fun(query:string?,context:fzfx.PipelineContext?):string?|string[]?
 --- @alias fzfx.ListProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
---
 --- @alias fzfx.Provider fzfx.PlainProvider|fzfx.CommandProvider|fzfx.ListProvider
+---
 --- @alias fzfx.ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
 --- @enum fzfx.ProviderTypeEnum
 local ProviderTypeEnum = {
@@ -36,47 +53,56 @@ local ProviderTypeEnum = {
   COMMAND_LIST = "command_list",
   LIST = "list",
 }
-
+--
+-- Note: the 1st parameter 'query' is the user input query in fzf prompt.
+--
+--
 -- ========== Previewer ==========
 --
--- A previewer is a shell command that run and echo details for fzf (e.g. things on the right side).
--- We have 3 types of previewers:
---  * Command previewer: a lua function that generate a command string to execute and echo details.
---  * List previewer: a lua function that directly generate a list of strings.
---  * Buffer previewer (todo): a nvim buffer & window, I think the biggest benefits can be allowing users to navigate to the buffer and edit it directly.
+-- A previewer is a shell command that read current line and generate the preview contents for (the right side of) the fzf binary.
 --
--- The BufferPreviewer returns the configs for the nvim window.
+-- We have below types of previewers:
+--  * Command previewer: a lua function to run and returns a shell command (as a string or a string list), then execute and generate the preview contents for fzf.
+--  * List previewer: a lua function to run and directly returns the preview contents for fzf.
+--  * Buffer previewer (todo): a nvim buffer to show the preview contents. (the biggest benefits are nvim builtin highlightings and allow navigate to the buffer and edit directly)
 --
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.BufferPreviewer fun(line:string?,context:fzfx.PipelineContext?):table?
---
---- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer|fzfx.BufferPreviewer
---- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"buffer"
+--- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer
+---
+--- @alias fzfx.PreviewerType "command"|"command_list"|"list"
 --- @enum fzfx.PreviewerTypeEnum
 local PreviewerTypeEnum = {
   COMMAND = "command",
   COMMAND_LIST = "command_list",
   LIST = "list",
 }
-
+--
+-- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
+--
+--
 -- ========== Previewer Label ==========
 --
--- A previewer label is the label/title of the preview window.
+-- A previewer label is the label/title for the preview window.
+--
 -- We have 2 types of previewers:
---  * Plain previewer: a simple string which is the label/title of the preview window.
---  * Function previewer: a lua function to run and generate the string for the preview window.
+--  * Plain previewer: a static string value which is the label for the preview window.
+--  * Function previewer: a lua function to run and returns the string value for the preview window.
 --
 --- @alias fzfx.PlainPreviewerLabel string
 --- @alias fzfx.FunctionPreviewerLabel fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.PreviewerLabel fzfx.PlainPreviewerLabel|fzfx.FunctionPreviewerLabel
+---
 --- @alias fzfx.PreviewerLabelType "plain"|"function"
 --- @enum PreviewerLabelTypeEnum
 local PreviewerLabelTypeEnum = {
   PLAIN = "plain",
   FUNCTION = "function",
 }
-
+--
+-- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
+--
+--
 -- ========== Command Option ==========
 --
 -- User command options are something that passing to nvim user command lua api.
