@@ -4,7 +4,7 @@
 
 All APIs listed in this doc are recommended for customizing or implementing your own searching commands.
 
-They are supposed to be stable and tested.
+They are supposed to be stable and tested (except those starting with underline `_`, which is exposed for unit tests).
 
 ## Table of contents
 
