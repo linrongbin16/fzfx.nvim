@@ -11,7 +11,7 @@ local fs = require("fzfx.lib.filesystems")
 local jsons = require("fzfx.lib.jsons")
 local strs = require("fzfx.lib.strings")
 local spawn = require("fzfx.lib.spawn")
-local shell_helpers = require("fzfx.shell_helpers")
+local shell_helpers = require("fzfx.detail.shell_helpers")
 shell_helpers.setup("previewer")
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_RPC_SERVER_ADDRESS
@@ -46,7 +46,7 @@ vim.rpcrequest(
     local luaargs = {...}
     local registry_id = luaargs[1]
     local line = luaargs[2]
-    local cb = require("fzfx.rpcserver").get_instance():get(registry_id)
+    local cb = require("fzfx.detail.rpcserver").get_instance():get(registry_id)
     return cb(line)
     ]],
   {

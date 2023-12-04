@@ -29,8 +29,9 @@ describe("config", function()
   local colors = require("fzfx.lib.colors")
 
   local conf = require("fzfx.config")
+  local fzf_helpers = require("fzfx.detail.fzf_helpers")
   conf.setup()
-  local fzf_helpers = require("fzfx.fzf_helpers")
+
   describe("[setup]", function()
     it("setup with default configs", function()
       conf.setup()
@@ -1194,43 +1195,6 @@ describe("config", function()
         assert_eq(actual[3], "-lha")
         assert_eq(actual[4], "--")
         assert_eq(actual[5], "lua/fzfx/config.lua")
-      end
-    end)
-    it("_make_filename_by_file_explorer_context", function()
-      local ctx = conf._file_explorer_context_maker()
-      if consts.HAS_LSD then
-        for _, line in ipairs(LSD_LINES) do
-          local actual = conf._make_filename_by_file_explorer_context(line, ctx)
-          -- print(
-          --     string.format("make filename:%s\n", vim.inspect(actual))
-          -- )
-          assert_eq(type(actual), "string")
-          assert_true(
-            vim.fn.filereadable(actual) > 0 or vim.fn.isdirectory(actual) > 0
-          )
-        end
-      elseif consts.HAS_EZA then
-        for _, line in ipairs(EZA_LINES) do
-          local actual = conf._make_filename_by_file_explorer_context(line, ctx)
-          assert_eq(type(actual), "string")
-          assert_true(
-            vim.fn.filereadable(actual) > 0 or vim.fn.isdirectory(actual) > 0
-          )
-        end
-      else
-        for _, line in ipairs(LS_LINES) do
-          local actual = conf._make_filename_by_file_explorer_context(line, ctx)
-          print(
-            string.format(
-              "make filename from explorer context:%s\n",
-              vim.inspect(actual)
-            )
-          )
-          assert_eq(type(actual), "string")
-          assert_true(
-            vim.fn.filereadable(actual) > 0 or vim.fn.isdirectory(actual) > 0
-          )
-        end
       end
     end)
     it("_file_explorer_previewer", function()

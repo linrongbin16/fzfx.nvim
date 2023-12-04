@@ -1,6 +1,7 @@
+---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
-describe("module", function()
+describe("detail.module", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -11,16 +12,11 @@ describe("module", function()
 
   local strs = require("fzfx.lib.strings")
 
-  require("fzfx.config").setup()
-  require("fzfx.module").setup()
-  local log = require("fzfx.log")
-  log.setup({
-    level = "DEBUG",
-    console_log = true,
-    file_log = true,
-  })
   local conf = require("fzfx.config")
-  local module = require("fzfx.module")
+  local module = require("fzfx.detail.module")
+  conf.setup()
+  module.setup()
+
   describe("[module]", function()
     it("setup", function()
       conf.setup()

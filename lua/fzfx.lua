@@ -1,6 +1,6 @@
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
-local general = require("fzfx.general")
+local general = require("fzfx.detail.general")
 
 --- @param options fzfx.Options?
 local function setup(options)
@@ -30,20 +30,12 @@ local function setup(options)
     vim.fn.mkdir(configs.cache.dir, "p")
   end
 
-  -- lua module environment
-  require("fzfx.module").setup()
-
-  -- rpc server
-  require("fzfx.rpcserver").setup()
-
-  -- yank history
+  -- initialize
+  require("fzfx.detail.module").setup()
+  require("fzfx.detail.rpcserver").setup()
   require("fzfx.yank_history").setup()
-
-  -- fzf helpers
-  require("fzfx.fzf_helpers").setup()
-
-  -- popup
-  require("fzfx.popup").setup()
+  require("fzfx.detail.fzf_helpers").setup()
+  require("fzfx.detail.popup").setup()
 
   -- files & buffers
   general.setup("files", configs.files)

@@ -1,7 +1,7 @@
----@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
+---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch, duplicate-set-field
 local cwd = vim.fn.getcwd()
 
-describe("popup", function()
+describe("detail.popup", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -16,10 +16,11 @@ describe("popup", function()
 
   local tbls = require("fzfx.lib.tables")
   local strs = require("fzfx.lib.strings")
+  local fzf_helpers = require("fzfx.detail.fzf_helpers")
+  local popup = require("fzfx.detail.popup")
 
   require("fzfx.config").setup()
-  local fzf_helpers = require("fzfx.fzf_helpers")
-  local popup = require("fzfx.popup")
+
   describe("[_make_window_size]", function()
     it("is in range of [0, 1]", function()
       assert_eq(5, popup._make_window_size(0.5, 10))

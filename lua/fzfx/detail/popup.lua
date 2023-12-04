@@ -3,8 +3,10 @@ local nvims = require("fzfx.lib.nvims")
 local fs = require("fzfx.lib.filesystems")
 
 local log = require("fzfx.log")
+
+local fzf_helpers = require("fzfx.detail.fzf_helpers")
+
 local conf = require("fzfx.config")
-local fzf_helpers = require("fzfx.fzf_helpers")
 
 --- @class fzfx.PopupWindowConfig
 --- @field anchor "NW"|nil

@@ -1,6 +1,7 @@
+---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch, duplicate-set-field
 local cwd = vim.fn.getcwd()
 
-describe("shell_helpers", function()
+describe("detail.shell_helpers", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -10,8 +11,9 @@ describe("shell_helpers", function()
   end)
 
   vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-  local shell_helpers = require("fzfx.shell_helpers")
+  local shell_helpers = require("fzfx.detail.shell_helpers")
   shell_helpers.setup("test")
+
   describe("[log]", function()
     it("debug", function()
       assert_true(shell_helpers.log_debug("logs without params") == nil)

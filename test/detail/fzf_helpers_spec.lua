@@ -1,7 +1,7 @@
 ---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch, duplicate-set-field
 local cwd = vim.fn.getcwd()
 
-describe("helpers", function()
+describe("detail.fzf_helpers", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -14,25 +14,22 @@ describe("helpers", function()
     end
   end)
 
+  local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
+
   local tbls = require("fzfx.lib.tables")
   local strs = require("fzfx.lib.strings")
+  local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
   require("fzfx.config").setup()
-  require("fzfx.module").setup()
-  local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-  local fzf_helpers = require("fzfx.fzf_helpers")
+  require("fzfx.detail.module").setup()
 
-  require("fzfx.log").setup({
-    level = "INFO",
-    console_log = false,
-    file_log = false,
-  })
   describe("[make_last_query_cache]", function()
     it("makes", function()
       local actual = fzf_helpers.make_last_query_cache("test")
       assert_true(strs.endswith(actual, "_test_last_query_cache"))
     end)
   end)
+
   describe("[get_command_feed]", function()
     it("get normal args feed", function()
       local expect = "expect"
@@ -60,6 +57,7 @@ describe("helpers", function()
       assert_true(actual2 == nil or type(actual2) == "string")
     end)
   end)
+
   describe("[_get_visual_lines]", function()
     it("is v mode", function()
       vim.cmd([[
@@ -84,6 +82,7 @@ describe("helpers", function()
       assert_eq(type(actual), "string")
     end)
   end)
+
   describe("[_visual_select]", function()
     it("is v mode", function()
       vim.cmd([[
@@ -106,6 +105,7 @@ describe("helpers", function()
       assert_eq(type(actual), "string")
     end)
   end)
+
   describe("[nvim_exec]", function()
     it("get nvim path", function()
       local actual = fzf_helpers.nvim_exec()
@@ -115,6 +115,7 @@ describe("helpers", function()
       assert_true(vim.fn.executable(actual) > 0)
     end)
   end)
+
   describe("[fzf_exec]", function()
     it("get fzf path", function()
       local ok, actual = pcall(fzf_helpers.fzf_exec)
@@ -128,6 +129,7 @@ describe("helpers", function()
       assert_eq(actual, "fzf")
     end)
   end)
+
   describe("[preprocess_fzf_opts]", function()
     it("preprocess nil opts", function()
       local actual = fzf_helpers.preprocess_fzf_opts({
@@ -154,6 +156,7 @@ describe("helpers", function()
       assert_eq(#actual, 2)
     end)
   end)
+
   describe("[make_fzf_opts]", function()
     it("_generate_fzf_color_opts", function()
       local actual = fzf_helpers._generate_fzf_color_opts()
@@ -181,6 +184,7 @@ describe("helpers", function()
       assert_eq(actual, expect)
     end)
   end)
+
   describe("[make_fzf_default_opts]", function()
     it("make default opts", function()
       local actual = fzf_helpers.make_fzf_default_opts()
@@ -190,6 +194,7 @@ describe("helpers", function()
       assert_true(strs.find(actual, "--border") > 0)
     end)
   end)
+
   describe("[setup]", function()
     it("setup", function()
       fzf_helpers.setup()
@@ -201,6 +206,7 @@ describe("helpers", function()
       assert_true(strs.find(actual, "--border") > 0)
     end)
   end)
+
   describe("[make_lua_command]", function()
     it("make lua command", function()
       local actual = fzf_helpers.make_lua_command("general", "provider.lua")
@@ -214,6 +220,7 @@ describe("helpers", function()
       )
     end)
   end)
+
   describe("[FzfOptEventBinder]", function()
     it("creates new", function()
       local actual = fzf_helpers.FzfOptEventBinder:new("focus")

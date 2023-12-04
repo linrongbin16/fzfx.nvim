@@ -12,6 +12,7 @@ describe("yank_history", function()
 
   require("fzfx.config").setup()
   local yank_history = require("fzfx.yank_history")
+
   describe("[Yank]", function()
     it("creates", function()
       local yk = yank_history.Yank:new(

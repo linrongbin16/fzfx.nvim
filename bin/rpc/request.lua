@@ -4,7 +4,7 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 
-local shell_helpers = require("fzfx.shell_helpers")
+local shell_helpers = require("fzfx.detail.shell_helpers")
 shell_helpers.setup("rpc_request")
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_RPC_SERVER_ADDRESS
@@ -39,7 +39,7 @@ vim.rpcrequest(
     if #luaargs >= 2 then
         params = luaargs[2]
     end
-    local cb = require("fzfx.rpcserver").get_instance():get(registry_id)
+    local cb = require("fzfx.detail.rpcserver").get_instance():get(registry_id)
     cb(params)
     ]],
   params == nil and { registry_id } or { registry_id, params }

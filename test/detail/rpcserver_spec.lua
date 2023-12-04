@@ -1,7 +1,7 @@
 ---@diagnostic disable: undefined-field, unused-local
 local cwd = vim.fn.getcwd()
 
-describe("rpcserver", function()
+describe("detail.rpcserver", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -11,8 +11,9 @@ describe("rpcserver", function()
   end)
 
   local nums = require("fzfx.lib.numbers")
-  local rpcserver = require("fzfx.rpcserver")
+  local rpcserver = require("fzfx.detail.rpcserver")
   rpcserver.setup()
+
   describe("[RpcServer]", function()
     it("create server", function()
       local s = rpcserver.get_instance()
