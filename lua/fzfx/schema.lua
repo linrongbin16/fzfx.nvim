@@ -105,19 +105,20 @@ local PreviewerLabelTypeEnum = {
 --
 -- ========== Command Option ==========
 --
--- User command options are something that passing to nvim user command lua api.
--- See:
+-- A command option is directly passing to `nvim_create_user_command` API and create the search commands.
+--
+-- References:
 --  * https://neovim.io/doc/user/api.html#nvim_create_user_command()
 --  * https://neovim.io/doc/user/map.html#command-attributes
 --
 --- @alias fzfx.CommandOptKey "nargs"|"bang"|"complete"|"desc"|"range"
 --- @alias fzfx.CommandOptValue string|boolean
 --- @alias fzfx.CommandOpt table<fzfx.CommandOptKey, fzfx.CommandOptValue>
-
+--
+--
 -- ========== Command Feed ==========
 --
--- User command feeds are method that what to feed the fzfx command.
--- E.g. visual selected, cursor word, etc.
+-- A command feed defines what to feed to the search commands, e.g. the multiple variants.
 --
 --- @alias fzfx.CommandFeed "args"|"visual"|"cword"|"put"|"resume"
 --- @enum fzfx.CommandFeedEnum
@@ -128,57 +129,67 @@ local CommandFeedEnum = {
   PUT = "put",
   RESUME = "resume",
 }
-
+--
+--
 -- ========== Fzf Option ==========
 --
--- A fzf option is passing directly to the final fzf command (e.g. --multi, --bind=ctrl-e:toggle).
--- We have 3 types of fzf options:
---  * Plain fzf option: a simple string, e.g. '--multi'.
---  * Pair fzf option: a list of two strings, e.g. { '--bind', 'ctrl-e:toggle' }.
---  * Function fzf option: a lua function that run and generate above two kinds of fzf options.
+-- A fzf option is directly passing to the fzf binary, e.g. '--multi', '--bind=ctrl-e:toggle'.
+--
+-- We have below types of fzf options:
+--  * Plain option: plain fzf option as a string, e.g. '--multi'.
+--  * Pair option: plain fzf option as a pair of two strings, e.g. { '--bind', 'ctrl-e:toggle' }.
+--  * Function option: a lua function to run and returns above two types of fzf options.
 --
 --- @alias fzfx.PlainFzfOpt string
 --- @alias fzfx.PairFzfOpt string[]
 --- @alias fzfx.FunctionFzfOpt fun():fzfx.PlainFzfOpt|fzfx.PairFzfOpt
---
+---
 --- @alias fzfx.FzfOpt fzfx.PlainFzfOpt|fzfx.PairFzfOpt|fzfx.FunctionFzfOpt
-
--- ========== Action ==========
 --
--- An action is user press a key and we do something.
--- We have 2 types of actions:
---  * Interaction: interactively do something on current line without exit fzf.
---  * Action: exit fzf and invoke lua callback with selected lines.
+--
+-- ========== Interaction/Action ==========
+--
+-- An action is the binding on a key that user press and invoke the lua funtion callback.
+--
+-- We have below types of actions:
+--  * Interaction: user press the key and invoke the lua function, do something on current line without quit fzf.
+--  * Action: user press the key to quit fzf, then invoke lua function to do something on the selected lines.
 --
 --- @alias fzfx.ActionKey string
 --- @alias fzfx.Interaction fun(line:string?,context:fzfx.PipelineContext):any
 --- @alias fzfx.Action fun(line:string[]|nil,context:fzfx.PipelineContext):any
-
+--
+-- Note: the 1st parameter in `Interaction` is the current line.
+-- Note: the 1st parameter in `Action` is the selected line(s).
+--
+--
 -- ========== Pipeline ==========
 --
--- A pipeline binds a provider with a previewer, with a interactive action to switch the data sources, and the help message.
+-- A pipeline binds a provider with a previewer, with an interaction to switch the data sources, and the help message.
 -- (Note: when you only have 1 provider, the interaction key and help message can be omitted).
 -- The provider-interaction-previewer is a pipeline/dataflow.
 --
 -- See below `GroupConfig`.
-
+--
+--
 -- ========== Commands Group ==========
 --
 -- Finally a commands group defines the real-world command we are using, e.g. `FzfxLiveGrep`, `FzfxFiles`, etc.
 -- The command is powerful:
 --
---  - It has multiple data sources from different providers, switch by different interactive keys.
---  - It has multiple previewers, bind to a specific provider.
---  - It has multiple action keys to exit fzf and invoke lua callbacks with selected lines.
---  - (Optionally) It has multiple interactive keys to do something without exiting fzf.
---  - (Optionally) It has some extra fzf options and other options for some specific abilities.
+--  * It has multiple data sources from different providers, switch by different interactive keys.
+--  * It has multiple previewers, bind to a specific provider.
+--  * It has multiple action keys to exit fzf and invoke lua callbacks with selected lines.
+--  * (Optionally) It has multiple interactive keys to do something without exiting fzf.
+--  * (Optionally) It has some extra fzf options and other options for some specific abilities.
 --
 -- See below `GroupConfig`.
-
+--
+--
 -- ========== Config ==========
 --
--- Utility for easier writing 'fzfx.config'.
-
+-- Annotation types for 'fzfx.config'.
+--
 --- @class fzfx.ProviderConfigLineOpts
 --- @field prepend_icon_by_ft boolean?
 --- @field prepend_icon_path_delimiter string? -- working with `prepend_icon_by_ft=true`
