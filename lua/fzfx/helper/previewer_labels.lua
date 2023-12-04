@@ -1,7 +1,6 @@
 local parsers = require("fzfx.helper.parsers")
 local strs = require("fzfx.lib.strings")
-local nums = require("fzfx.lib.numbers")
-local tbls = require("'fzfx.lib.tables")
+local tbls = require("fzfx.lib.tables")
 
 local M = {}
 
@@ -78,45 +77,24 @@ M.label_vim_command =
 M.label_vim_keymap =
   M._make_label_vim_command_or_keymap(parsers.parse_vim_keymap, "Definition")
 
---- @param parser fun(line:string):table|string
---- @return fun(line:string):string?
-local function _make_ls_previewer_label(parser)
+--- @param parser fun(line:string, context:fzfx.FileExplorerPipelineContext):table
+--- @return fun(line:string, context:fzfx.FileExplorerPipelineContext):string?
+M._make_label_ls = function(parser)
   --- @param line string
+  --- @param context fzfx.FileExplorerPipelineContext
   --- @return string?
-  local function impl(line)
-    if type(line) ~= "string" or string.len(line) == 0 then
+  local function impl(line, context)
+    if strs.empty(line) then
       return ""
     end
-    return parser(line) --[[@as string]]
+    local parsed = parser(line, context) --[[@as table]]
+    return parsed.filename
   end
   return impl
 end
 
-local ls_previewer_label = _make_ls_previewer_label(line_helpers.parse_ls)
-local lsd_previewer_label = _make_ls_previewer_label(line_helpers.parse_lsd)
-local eza_previewer_label = _make_ls_previewer_label(line_helpers.parse_eza)
-
-local M = {
-  -- find/buffers/git files
-  _make_find_previewer_label = _make_find_previewer_label,
-  find_previewer_label = label_find,
-
-  -- rg/grep
-  _make_rg_previewer_label = _make_rg_previewer_label,
-  rg_previewer_label = rg_previewer_label,
-  _make_grep_previewer_label = _make_grep_previewer_label,
-  grep_previewer_label = grep_previewer_label,
-
-  -- command/keymap
-  _make_vim_command_previewer_label = _make_label_vim_command,
-  vim_command_previewer_label = vim_command_previewer_label,
-  vim_keymap_previewer_label = vim_keymap_previewer_label,
-
-  -- file explorer
-  _make_ls_previewer_label = _make_ls_previewer_label,
-  ls_previewer_label = ls_previewer_label,
-  lsd_previewer_label = lsd_previewer_label,
-  eza_previewer_label = eza_previewer_label,
-}
+M.label_ls = M._make_label_ls(parsers.parse_ls)
+M.label_lsd = M._make_label_ls(parsers.parse_lsd)
+M.label_eza = M._make_label_ls(parsers.parse_eza)
 
 return M
