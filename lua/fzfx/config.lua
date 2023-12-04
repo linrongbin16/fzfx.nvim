@@ -10,7 +10,7 @@ local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
 
-local line_helpers = require("fzfx.line_helpers")
+local parsers_helper = require("fzfx.helpers.parsers")
 local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
@@ -144,8 +144,8 @@ end
 --- @param line string
 --- @return string[]
 local function _file_previewer(line)
-  local filename = line_helpers.parse_find(line)
-  local f = _make_file_previewer(filename)
+  local parsed = parsers_helper.parse_find(line)
+  local f = _make_file_previewer(parsed.filename)
   return f()
 end
 
@@ -280,7 +280,7 @@ end
 --- @param line string
 --- @return string[]
 local function _file_previewer_grep(line)
-  local parsed = line_helpers.parse_grep(line)
+  local parsed = parsers_helper.parse_grep(line)
   local impl = _make_file_previewer(parsed.filename, parsed.lineno)
   return impl()
 end
@@ -335,8 +335,8 @@ local function _delete_buffer(line)
     filenames[bufpath] = bufnr
   end
   if type(line) == "string" and string.len(line) > 0 then
-    local selected_filename = line_helpers.parse_find(line)
-    local bufnr = filenames[selected_filename]
+    local parsed = parsers_helper.parse_find(line)
+    local bufnr = filenames[parsed.filename]
     if type(bufnr) == "number" and nvims.buf_is_valid(bufnr) then
       vim.api.nvim_buf_delete(bufnr, {})
     end
@@ -617,18 +617,18 @@ end
 --- @param line string
 --- @return string?
 local function _git_status_previewer(line)
-  local filename = line_helpers.parse_git_status(line)
+  local parsed = parsers_helper.parse_git_status(line)
   if consts.HAS_DELTA then
     local preview_width = _get_delta_width()
     return string.format(
       [[git diff %s | delta -n --tabs 4 --width %d]],
-      nvims.shellescape(filename),
+      nvims.shellescape(parsed.filename),
       preview_width
     )
   else
     return string.format(
       [[git diff --color=always %s]],
-      nvims.shellescape(filename)
+      nvims.shellescape(parsed.filename)
     )
   end
 end
@@ -1114,33 +1114,33 @@ end
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return string[]|nil
 local function vim_commands_previewer(line, context)
-  local desc_or_loc = line_helpers.parse_vim_command(line, context)
+  local parsed = parsers_helper.parse_vim_command(line, context)
   log.debug(
-    "|fzfx.config - vim_commands_previewer| line:%s, context:%s, desc_or_loc:%s",
+    "|fzfx.config - vim_commands_previewer| line:%s, context:%s, parsed:%s",
     vim.inspect(line),
     vim.inspect(context),
-    vim.inspect(desc_or_loc)
+    vim.inspect(parsed)
   )
   if
-    type(desc_or_loc) == "table"
-    and type(desc_or_loc.filename) == "string"
-    and string.len(desc_or_loc.filename) > 0
-    and type(desc_or_loc.lineno) == "number"
+    tbls.tbl_not_empty(parsed)
+    and strs.not_empty(parsed.filename)
+    and type(parsed.lineno) == "number"
   then
     log.debug(
       "|fzfx.config - vim_commands_previewer| loc:%s",
-      vim.inspect(desc_or_loc)
+      vim.inspect(parsed)
     )
-    return _vim_commands_lua_function_previewer(
-      desc_or_loc.filename,
-      desc_or_loc.lineno
-    )
-  elseif consts.HAS_ECHO and type(desc_or_loc) == "string" then
+    return _vim_commands_lua_function_previewer(parsed.filename, parsed.lineno)
+  elseif
+    consts.HAS_ECHO
+    and tbls.tbl_not_empty(parsed)
+    and strs.not_empty(parsed.definition)
+  then
     log.debug(
       "|fzfx.config - vim_commands_previewer| desc:%s",
-      vim.inspect(desc_or_loc)
+      vim.inspect(parsed)
     )
-    return { "echo", desc_or_loc }
+    return { "echo", parsed.definition }
   else
     log.echo(LogLevels.INFO, "no echo command found.")
     return nil
@@ -2204,33 +2204,30 @@ end
 --- @param context fzfx.VimKeyMapsPipelineContext
 --- @return string[]|nil
 local function _vim_keymaps_previewer(line, context)
-  local def_or_loc = line_helpers.parse_vim_keymap(line, context)
+  local parsed = parsers_helper.parse_vim_keymap(line, context)
   log.debug(
     "|fzfx.config - vim_keymaps_previewer| line:%s, context:%s, desc_or_loc:%s",
     vim.inspect(line),
     vim.inspect(context),
-    vim.inspect(def_or_loc)
+    vim.inspect(parsed)
   )
   if
-    type(def_or_loc) == "table"
-    and type(def_or_loc.filename) == "string"
-    and string.len(def_or_loc.filename) > 0
-    and type(def_or_loc.lineno) == "number"
+    type(parsed) == "table"
+    and type(parsed.filename) == "string"
+    and string.len(parsed.filename) > 0
+    and type(parsed.lineno) == "number"
   then
     log.debug(
       "|fzfx.config - vim_keymaps_previewer| loc:%s",
-      vim.inspect(def_or_loc)
+      vim.inspect(parsed)
     )
-    return _vim_keymaps_lua_function_previewer(
-      def_or_loc.filename,
-      def_or_loc.lineno
-    )
-  elseif consts.HAS_ECHO and type(def_or_loc) == "string" then
+    return _vim_keymaps_lua_function_previewer(parsed.filename, parsed.lineno)
+  elseif consts.HAS_ECHO and type(parsed) == "string" then
     log.debug(
       "|fzfx.config - vim_keymaps_previewer| desc:%s",
-      vim.inspect(def_or_loc)
+      vim.inspect(parsed)
     )
-    return { "echo", def_or_loc }
+    return { "echo", parsed }
   else
     log.echo(LogLevels.INFO, "no echo command found.")
     return nil
