@@ -1,7 +1,7 @@
 ---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
-describe("previewer_labels", function()
+describe("helper.previewer_labels", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -11,10 +11,12 @@ describe("previewer_labels", function()
   end)
 
   local strs = require("fzfx.lib.strings")
-  local line_helpers = require("fzfx.line_helpers")
-  local previewer_labels = require("fzfx.previewer_labels")
-  describe("[_make_find_previewer_label/find_previewer_label]", function()
-    it("makes", function()
+  local parsers = require("fzfx.helper.parsers")
+  local labels = require("fzfx.helper.previewer_labels")
+  local fs = require("fzfx.lib.filesystems")
+
+  describe("[label_find]", function()
+    it("test", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md",
@@ -24,19 +26,15 @@ describe("previewer_labels", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
       }
       for _, line in ipairs(lines) do
-        local f = previewer_labels._make_find_previewer_label(line)
-        local actual1 = f(line)
-        assert_eq(type(actual1), "string")
-        assert_true(strs.endswith(line, actual1))
-        local actual2 = previewer_labels.find_previewer_label(line)
-        assert_eq(type(actual2), "string")
-        assert_true(strs.endswith(line, actual2))
-        assert_eq(actual1, actual2)
+        local actual = labels.label_find(line)
+        assert_eq(type(actual), "string")
+        assert_true(strs.endswith(line, actual))
       end
     end)
   end)
-  describe("[_make_rg_previewer_label/rg_previewer_label]", function()
-    it("makes", function()
+
+  describe("[label_rg]", function()
+    it("test", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md:1:1:ok",
@@ -46,22 +44,16 @@ describe("previewer_labels", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:71:9129",
       }
       for _, line in ipairs(lines) do
-        local f = previewer_labels._make_rg_previewer_label(line)
-        local actual1 = f(line)
-        assert_eq(type(actual1), "string")
-        assert_eq(type(strs.find(line, actual1)), "number")
-        assert_true(strs.find(line, actual1) > 0)
-        local actual2 = previewer_labels.rg_previewer_label(line)
-        assert_eq(type(actual2), "string")
-        assert_eq(type(strs.find(line, actual2)), "number")
-        assert_true(strs.find(line, actual2) > 0)
-        assert_eq(actual1, actual2)
-        assert_eq(strs.find(line, actual1), strs.find(line, actual2))
+        local actual = labels.label_rg(line)
+        assert_eq(type(actual), "string")
+        assert_eq(type(strs.find(line, actual)), "number")
+        assert_true(strs.find(line, actual) > 0)
       end
     end)
   end)
-  describe("[_make_grep_previewer_label/grep_previewer_label]", function()
-    it("makes", function()
+
+  describe("[label_grep]", function()
+    it("test", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md:73",
@@ -71,120 +63,89 @@ describe("previewer_labels", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:9129",
       }
       for _, line in ipairs(lines) do
-        local f = previewer_labels._make_grep_previewer_label(line)
-        local actual1 = f(line)
-        assert_eq(type(actual1), "string")
-        assert_eq(type(strs.find(line, actual1)), "number")
-        assert_true(strs.find(line, actual1) > 0)
-        local actual2 = previewer_labels.grep_previewer_label(line)
-        assert_eq(type(actual2), "string")
-        assert_eq(type(strs.find(line, actual2)), "number")
-        assert_true(strs.find(line, actual2) > 0)
-        assert_eq(actual1, actual2)
-        assert_eq(strs.find(line, actual1), strs.find(line, actual2))
+        local actual = labels.label_grep(line)
+        assert_eq(type(actual), "string")
+        assert_eq(type(strs.find(line, actual)), "number")
+        assert_true(strs.find(line, actual) > 0)
       end
     end)
   end)
-  describe(
-    "[vim_command_previewer_label/_make_vim_command_previewer_label]",
-    function()
-      local CONTEXT = {
-        name_width = 17,
-        opts_width = 37,
+
+  describe("[label_vim_command]", function()
+    local CONTEXT = {
+      name_width = 17,
+      opts_width = 37,
+    }
+    it("test location", function()
+      local lines = {
+        ":                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1121",
+        ":!                N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1122",
+        ":Next             N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124",
       }
-      it("previews location", function()
-        local lines = {
-          ":                 N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1121",
-          ":!                N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1122",
-          ":Next             N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124",
-        }
-        for _, line in ipairs(lines) do
-          local actual =
-            previewer_labels.vim_command_previewer_label(line, CONTEXT)
-          assert_eq(type(actual), "string")
-          local actual_splits = strs.split(actual, ":")
-          assert_eq(#actual_splits, 2)
-          assert_true(strs.find(line, actual_splits[1]) > 0)
-          assert_true(strs.endswith(line, actual_splits[2]))
+      for _, line in ipairs(lines) do
+        local actual = labels.label_vim_command(line, CONTEXT)
+        assert_eq(type(actual), "string")
+        local actual_splits = strs.split(actual, ":")
+        assert_eq(#actual_splits, 2)
+        assert_true(strs.find(line, actual_splits[1]) > 0)
+        assert_true(strs.endswith(line, actual_splits[2]))
+      end
+    end)
+    it("test definition", function()
+      local lines = {
+        ':bdelete          N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
+      }
+      for _, line in ipairs(lines) do
+        local actual = labels.label_vim_command(line, CONTEXT)
+        assert_eq(type(actual), "string")
+        assert_eq(actual, "Definition")
+      end
+    end)
+  end)
 
-          local f = previewer_labels._make_vim_command_previewer_label(
-            line_helpers.parse_vim_command,
-            "Definition"
-          )
-          local actual2 = f(line, CONTEXT)
-          assert_eq(actual, actual2)
-        end
-      end)
-      it("previews description", function()
-        local lines = {
-          ':bdelete          N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
-        }
-        for _, line in ipairs(lines) do
-          local actual =
-            previewer_labels.vim_command_previewer_label(line, CONTEXT)
-          assert_eq(type(actual), "string")
-          assert_eq(actual, "Definition")
-
-          local f = previewer_labels._make_vim_command_previewer_label(
-            line_helpers.parse_vim_command,
-            "Definition"
-          )
-          local actual2 = f(line, CONTEXT)
-          assert_eq(actual, actual2)
-        end
-      end)
-    end
-  )
-  describe("[vim_keymap_previewer_label]", function()
+  describe("[label_vim_keymap]", function()
     local CONTEXT = {
       key_width = 44,
       opts_width = 26,
     }
-    it("previews location", function()
+    it("test location", function()
       local lines = {
         "<C-F>                                            |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127",
         "<CR>                                             |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127",
         "<Plug>(YankyGPutAfterShiftRight)             n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369",
       }
       for _, line in ipairs(lines) do
-        local actual =
-          previewer_labels.vim_keymap_previewer_label(line, CONTEXT)
+        local actual = labels.label_vim_keymap(line, CONTEXT)
         assert_eq(type(actual), "string")
         local actual_splits = strs.split(actual, ":")
         assert_eq(#actual_splits, 2)
         assert_true(strs.find(line, actual_splits[1]) > 0)
         assert_true(strs.endswith(line, actual_splits[2]))
-
-        local f = previewer_labels._make_vim_command_previewer_label(
-          line_helpers.parse_vim_keymap,
-          "Definition"
-        )
-        local actual2 = f(line, CONTEXT)
-        assert_eq(actual, actual2)
       end
     end)
-    it("previews definition", function()
+    it("test definition", function()
       local lines = {
         '%                                            n   |N      |N     |Y      "<Plug>(matchup-%)"',
         '&                                            n   |Y      |N     |N      ":&&<CR>"',
         '<2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"',
       }
       for _, line in ipairs(lines) do
-        local actual =
-          previewer_labels.vim_keymap_previewer_label(line, CONTEXT)
+        local actual = labels.label_vim_keymap(line, CONTEXT)
         assert_eq(type(actual), "string")
         assert_eq(actual, "Definition")
-
-        local f = previewer_labels._make_vim_command_previewer_label(
-          line_helpers.parse_vim_keymap,
-          "Definition"
-        )
-        local actual2 = f(line, CONTEXT)
-        assert_eq(actual, actual2)
       end
     end)
   end)
-  describe("[_make_file_explorer_previewer_label/ls/eza/lsd]", function()
+
+  describe("[label_ls/lsd/eza]", function()
+    local TEMP = vim.fn.tempname()
+    fs.writefile(TEMP --[[@as string]], vim.fn.getcwd() --[[@as string]])
+    local CONTEXT = {
+      bufnr = vim.api.nvim_get_current_buf(),
+      winnr = vim.api.nvim_get_current_win(),
+      tabnr = vim.api.nvim_get_current_tabpage(),
+      cwd = TEMP,
+    }
     it("ls -lh", function()
       local lines = {
         "-rw-r--r--   1 linrongbin Administrators 1.1K Jul  9 14:35 LICENSE",
@@ -211,14 +172,9 @@ describe("previewer_labels", function()
         "codecov.yml",
       }
       for i, line in ipairs(lines) do
-        local actual1 = previewer_labels.ls_previewer_label(line)
+        local actual = labels.label_ls(line, CONTEXT)
         local expect = expects[i]
-        assert_eq(actual1, expect)
-
-        local f =
-          previewer_labels._make_ls_previewer_label(line_helpers.parse_ls)
-        local actual2 = f(line)
-        assert_eq(actual1, actual2)
+        assert_true(strs.endswith(actual, expect))
       end
     end)
     it("lsd -lh --header --icon=never", function()
@@ -241,14 +197,9 @@ describe("previewer_labels", function()
         "test",
       }
       for i, line in ipairs(lines) do
-        local actual1 = line_helpers.parse_lsd(line)
+        local actual = labels.label_lsd(line, CONTEXT)
         local expect = expects[i]
-        assert_eq(actual1, expect)
-
-        local f =
-          previewer_labels._make_ls_previewer_label(line_helpers.parse_lsd)
-        local actual2 = f(line)
-        assert_eq(actual1, actual2)
+        assert_true(strs.endswith(actual, expect))
       end
     end)
     it("eza -lh for macOS/linux", function()
@@ -275,16 +226,10 @@ describe("previewer_labels", function()
         "test1-README.md",
         "test2-README.md",
       }
-      local parse_eza_on_macos_linux = line_helpers._make_parse_ls(6)
       for i, line in ipairs(lines) do
-        local actual1 = parse_eza_on_macos_linux(line)
+        local actual = labels.label_eza(line, CONTEXT)
         local expect = expects[i]
-        assert_eq(actual1, expect)
-
-        local f =
-          previewer_labels._make_ls_previewer_label(line_helpers.parse_eza)
-        local actual2 = f(line)
-        assert_eq(actual1, actual2)
+        assert_true(strs.endswith(actual, expect))
       end
     end)
   end)
