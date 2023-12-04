@@ -191,7 +191,7 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 ### [fzfx.helper.prompts](/lua/fzfx/helper/prompts.lua)
 
-- `confirm_discard_modified(bufnr:integer, callback:fun():nil):nil`: popup a prompt to ask user confirm whether to discard current buffer's modifications if there's any, invoke `callback` if user confirm, do nothing if user cancel.
+- `confirm_discard_modified(bufnr:integer, callback:fun():nil):nil`: popup a prompt to ask user confirm whether to discard current buffer's modifications (only if there's any), invoke `callback` if user confirm, do nothing if user cancel.
 
 ## [Fundamental Infrastructures](/lua/fzfx/lib)
 
