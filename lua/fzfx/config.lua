@@ -10,7 +10,7 @@ local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.log")
 local LogLevels = require("fzfx.log").LogLevels
 
-local parsers_helper = require("fzfx.helpers.parsers")
+local parsers_helper = require("fzfx.helper.parsers")
 local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
@@ -2340,35 +2340,18 @@ end
 
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
---- @return string
-local function _make_filename_by_file_explorer_context(line, context)
-  line = vim.trim(line)
-  local cwd = fs.readfile(context.cwd)
-  local target = consts.HAS_LSD and line_helpers.parse_lsd(line)
-    or (
-      consts.HAS_EZA and line_helpers.parse_eza(line)
-      or line_helpers.parse_ls(line)
-    )
-  local p = paths.join(cwd, target)
-  log.debug(
-    "|fzfx.config - make_filename_by_file_explorer_context| cwd:%s, target:%s, p:%s",
-    vim.inspect(cwd),
-    vim.inspect(target),
-    vim.inspect(p)
-  )
-  return p
-end
-
---- @param line string
---- @param context fzfx.FileExplorerPipelineContext
 --- @return string[]|nil
 local function _file_explorer_previewer(line, context)
-  local p = _make_filename_by_file_explorer_context(line, context)
-  if vim.fn.filereadable(p) > 0 then
-    local preview = _make_file_previewer(p)
+  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line)
+    or (
+      consts.HAS_EZA and parsers_helper.parse_eza(line)
+      or parsers_helper.parse_ls(line)
+    )
+  if vim.fn.filereadable(parsed.filename) > 0 then
+    local preview = _make_file_previewer(parsed.filename)
     return preview()
-  elseif vim.fn.isdirectory(p) > 0 then
-    return _directory_previewer(p)
+  elseif vim.fn.isdirectory(parsed.filename) > 0 then
+    return _directory_previewer(parsed.filename)
   else
     return nil
   end
@@ -2377,9 +2360,13 @@ end
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 local function _cd_file_explorer(line, context)
-  local target = _make_filename_by_file_explorer_context(line, context)
-  if vim.fn.isdirectory(target) > 0 then
-    fs.writefile(context.cwd, target)
+  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line)
+    or (
+      consts.HAS_EZA and parsers_helper.parse_eza(line)
+      or parsers_helper.parse_ls(line)
+    )
+  if vim.fn.isdirectory(parsed.filename) > 0 then
+    fs.writefile(context.cwd, parsed.filename)
   end
 end
 
@@ -5027,7 +5014,6 @@ local M = {
   _vim_keymaps_previewer = _vim_keymaps_previewer,
 
   -- file explorer
-  _make_filename_by_file_explorer_context = _make_filename_by_file_explorer_context,
   _file_explorer_context_maker = _file_explorer_context_maker,
   _make_file_explorer_provider = _make_file_explorer_provider,
   _directory_previewer = _directory_previewer,
