@@ -16,8 +16,8 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local schema = require("fzfx.schema")
 
-local Popup = require("fzfx.popup").Popup
-local rpcserver = require("fzfx.rpcserver")
+local Popup = require("fzfx.detail.popup").Popup
+local rpcserver = require("fzfx.detail.rpcserver")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
 local DEFAULT_PIPELINE = "default"

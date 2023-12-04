@@ -32,10 +32,10 @@ local function setup(options)
 
   -- initialize
   require("fzfx.detail.module").setup()
-  require("fzfx.rpcserver").setup()
+  require("fzfx.detail.rpcserver").setup()
   require("fzfx.yank_history").setup()
   require("fzfx.detail.fzf_helpers").setup()
-  require("fzfx.popup").setup()
+  require("fzfx.detail.popup").setup()
 
   -- files & buffers
   general.setup("files", configs.files)

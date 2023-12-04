@@ -41,7 +41,7 @@ vim.rpcrequest(
     local luaargs = {...}
     local registry_id = luaargs[1]
     local query = luaargs[2]
-    local cb = require("fzfx.rpcserver").get_instance():get(registry_id)
+    local cb = require("fzfx.detail.rpcserver").get_instance():get(registry_id)
     return cb(query)
     ]],
   {

@@ -17,7 +17,7 @@ describe("popup", function()
   local tbls = require("fzfx.lib.tables")
   local strs = require("fzfx.lib.strings")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-  local popup = require("fzfx.popup")
+  local popup = require("fzfx.detail.popup")
 
   require("fzfx.config").setup()
 

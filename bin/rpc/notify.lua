@@ -39,7 +39,7 @@ vim.rpcnotify(
     if #luaargs >= 2 then
         params = luaargs[2]
     end
-    local cb = require("fzfx.rpcserver").get_instance():get(registry_id)
+    local cb = require("fzfx.detail.rpcserver").get_instance():get(registry_id)
     cb(params)
     ]],
   params == nil and { registry_id } or { registry_id, params }
