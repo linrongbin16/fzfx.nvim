@@ -88,7 +88,7 @@ M._make_label_ls = function(parser)
       return ""
     end
     local parsed = parser(line, context) --[[@as table]]
-    return parsed.filename
+    return vim.fn.fnamemodify(parsed.filename, ":t")
   end
   return impl
 end
