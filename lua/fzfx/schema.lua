@@ -1,4 +1,4 @@
--- ========== Schema ==========
+-- Schema: A General Schema for Creating FZF Command
 --
 -- A fzf-based search command usually consists of below components:
 --
