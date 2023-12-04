@@ -12,15 +12,18 @@ describe("general", function()
   end)
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+
   local tbls = require("fzfx.lib.tables")
   local strs = require("fzfx.lib.strings")
   local fs = require("fzfx.lib.filesystems")
   local jsons = require("fzfx.lib.jsons")
   local paths = require("fzfx.lib.paths")
-  local general = require("fzfx.general")
+
   local schema = require("fzfx.schema")
   local conf = require("fzfx.config")
   conf.setup()
+
+  local general = require("fzfx.detail.general")
 
   describe("[ProviderSwitch:new]", function()
     it("creates single plain provider", function()
