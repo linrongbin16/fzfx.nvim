@@ -43,9 +43,9 @@ They are supposed to be stable and tested (except those starting with underline 
 
 ## [Default Configurations](/lua/fzfx/cfg)
 
-The `fzfx.cfg` directly provides configurations for all builtin search commands in this plugin. Easy to read, copy and paste to custom/create other search commands.
+The `fzfx.cfg` directly provide configurations for all builtin search commands in this plugin. Easy to read, copy and paste to custom/create other search commands.
 
-Every configuration contains below components:
+Every commands group contains below components:
 
 - `commands`: a single `fzfx.CommandConfig` (if there's only 1 command) or a `fzfx.CommandConfig` list (if there's multiple commands).
 - `providers`: a single `fzfx.ProviderConfig` (if there's only 1 provider/data source) or a `fzfx.ProviderConfig` map (if there's multiple providers/data sources).
@@ -59,15 +59,15 @@ Every configuration contains below components:
 
 Here are all the builtin search command configurations:
 
-- [buffers](/lua/fzfx/cfg/buffers.lua): `FzfxBuffers` implementations, it has a **delete buffer** interaction.
-- [files](/lua/fzfx/cfg/files.lua): `FzfxFiles` implementations.
-- [git_files](/lua/fzfx/cfg/git_files.lua): `FzfxGFiles` implementations.
-- [git_live_grep](/lua/fzfx/cfg/git_live_grep.lua): `FzfxGLiveGrep` implementations, it enables a special **reload_on_change** (in `other_opts`) option to reload grep on fzf's [change event](https://man.archlinux.org/man/fzf.1.en#AVAILABLE_EVENTS:).
-- [live_grep](/lua/fzfx/cfg/live_grep.lua): `FzfxLiveGrep` implementations, it also enables the **reload_on_change**.
+- [buffers](/lua/fzfx/cfg/buffers.lua): implements `FzfxBuffers`, it has a **delete buffer** interaction.
+- [files](/lua/fzfx/cfg/files.lua): implements `FzfxFiles`.
+- [git_files](/lua/fzfx/cfg/git_files.lua): implements `FzfxGFiles`.
+- [git_live_grep](/lua/fzfx/cfg/git_live_grep.lua): implements `FzfxGLiveGrep`, it enables a special `reload_on_change` (in `other_opts`) option to reload grep on fzf's [change event](https://man.archlinux.org/man/fzf.1.en#AVAILABLE_EVENTS:).
+- [live_grep](/lua/fzfx/cfg/live_grep.lua): implements `FzfxLiveGrep`, it also enables the `reload_on_change`.
 
 ## [Line-Oriented Helpers](/lua/fzfx/helper)
 
-The `fzfx.helper` provides line-oriented helpers for parsing and rendering queries/lines required in all scenarios.
+The `fzfx.helper` provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios. Since a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 
 ### [fzfx.helper.parsers](/lua/fzfx/helper/parsers.lua)
 
