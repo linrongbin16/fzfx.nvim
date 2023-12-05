@@ -113,9 +113,10 @@ scoop bucket add extras
 scoop install git           # git, bash, sh
 scoop install uutils-coreutils     # echo, ls, cat
 scoop install curl          # curl
+scoop install grep          # grep
 ```
 
-> Note: install the rust-reimplementation [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), which is more compatible on Windows (the `ls` from GNU coreutils is actually broken on my Windows 10 x86_64 PC).
+> Note: install the rust-reimplementation [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), since some (for example `ls`) GNU commands is actually broken on Windows 10 x86_64 PC.
 
 #### Fix conflicts between embedded commands in `C:\Windows\System32` and portable linux commands
 
