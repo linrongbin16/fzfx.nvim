@@ -36,8 +36,7 @@ They are supposed to be stable and tested (except those starting with underline 
   - [fzfx.lib.spawn](#fzfxlibspawn)
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
-- [Logger](#logger)
-  - [fzfx.log](#fzfxlog)
+  - [fzfx.lib.log](#fzfxliblog)
 
 ## [Line-Oriented Helpers](/lua/fzfx/helper)
 
@@ -449,9 +448,7 @@ curl
   - if `i > 0`, `i` is in range `[1,n]`.
   - if `i < 0`, `i` is in range `[-1,-n]`, `-1` maps to last position (e.g. `n`), `-n` maps to first position (e.g. `1`).
 
-## Logger
-
-### [fzfx.log](/lua/fzfx/log.lua)
+### [fzfx.lib.log](/lua/fzfx/lib/log.lua)
 
 - `debug(fmt:string, ...)`: debug, the `fmt` is formatting messages in C style formatters, e.g. `%d`, `%s`.
 - `info(fmt:string, ...)`: info.

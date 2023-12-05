@@ -1,8 +1,7 @@
 local nums = require("fzfx.lib.numbers")
 local nvims = require("fzfx.lib.nvims")
 local fs = require("fzfx.lib.filesystems")
-
-local log = require("fzfx.log")
+local log = require("fzfx.lib.log")
 
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 

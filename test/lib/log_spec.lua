@@ -1,6 +1,7 @@
+---@diagnostic disable: undefined-field, unused-local
 local cwd = vim.fn.getcwd()
 
-describe("log", function()
+describe("lib.log", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -9,9 +10,10 @@ describe("log", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
-  local log = require("fzfx.log")
-  local LogLevels = require("fzfx.log").LogLevels
-  local LogLevelNames = require("fzfx.log").LogLevelNames
+  local log = require("fzfx.lib.log")
+  local LogLevels = require("fzfx.lib.log").LogLevels
+  local LogLevelNames = require("fzfx.lib.log").LogLevelNames
+
   log.setup({
     level = "DEBUG",
     console_log = true,

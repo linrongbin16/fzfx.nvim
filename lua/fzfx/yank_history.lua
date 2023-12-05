@@ -1,9 +1,9 @@
 local env = require("fzfx.lib.env")
 local nvims = require("fzfx.lib.nvims")
 local paths = require("fzfx.lib.paths")
+local log = require("fzfx.lib.log")
 
 local conf = require("fzfx.config")
-local log = require("fzfx.log")
 
 --- @class fzfx.Yank
 --- @field regname string

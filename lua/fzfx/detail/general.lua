@@ -8,8 +8,8 @@ local fs = require("fzfx.lib.filesystems")
 local nvims = require("fzfx.lib.nvims")
 local tbls = require("fzfx.lib.tables")
 local spawn = require("fzfx.lib.spawn")
+local log = require("fzfx.lib.log")
 
-local log = require("fzfx.log")
 local conf = require("fzfx.config")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum

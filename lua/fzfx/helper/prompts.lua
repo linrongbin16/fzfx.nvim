@@ -1,8 +1,8 @@
 local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
 
-local log = require("fzfx.log")
-local LogLevels = require("fzfx.log").LogLevels
+local log = require("fzfx.lib.log")
+local LogLevels = require("fzfx.lib.log").LogLevels
 
 local M = {}
 

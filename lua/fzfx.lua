@@ -1,5 +1,5 @@
-local log = require("fzfx.log")
-local LogLevels = require("fzfx.log").LogLevels
+local log = require("fzfx.lib.log")
+local LogLevels = require("fzfx.lib.log").LogLevels
 local general = require("fzfx.detail.general")
 
 --- @param options fzfx.Options?

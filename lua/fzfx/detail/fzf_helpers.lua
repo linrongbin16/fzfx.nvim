@@ -4,8 +4,8 @@ local jsons = require("fzfx.lib.jsons")
 local fs = require("fzfx.lib.filesystems")
 local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
+local log = require("fzfx.lib.log")
 
-local log = require("fzfx.log")
 local conf = require("fzfx.config")
 local yank_history = require("fzfx.yank_history")
 
