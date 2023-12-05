@@ -22,6 +22,8 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
+M.INVALID_BUFFER_ERROR = "invalid buffer(%s)."
+
 M.commands = {
   -- normal
   {

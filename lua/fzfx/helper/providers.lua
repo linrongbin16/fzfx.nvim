@@ -17,10 +17,6 @@ local labels_helper = require("fzfx.helper.previewer_labels")
 
 local M = {}
 
--- common error message
-
-M.INVALID_BUFFER_ERROR = "invalid buffer(%s)."
-
 -- files {
 
 -- "fd . -cnever -tf -tl -L -i"
