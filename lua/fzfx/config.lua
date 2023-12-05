@@ -2347,22 +2347,18 @@ local Defaults = {
   git_files = require("fzfx.cfg.git_files"),
 
   -- the 'Git Live Grep' commands
-  --- @type fzfx.GroupConfig
   git_live_grep = require("fzfx.cfg.git_live_grep"),
 
   -- the 'Git Status' commands
   git_status = require("fzfx.cfg.git_status"),
 
   -- the 'Git Branches' commands
-  --- @type fzfx.GroupConfig
   git_branches = require("fzfx.cfg.git_branches"),
 
   -- the 'Git Commits' commands
-  --- @type fzfx.GroupConfig
   git_commits = require("fzfx.cfg.git_commits"),
 
   -- the 'Git Blame' command
-  --- @type fzfx.GroupConfig
   git_blame = require("fzfx.cfg.git_blame"),
 
   -- the 'Vim Commands' commands
