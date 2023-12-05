@@ -101,7 +101,7 @@ describe("helper.previewers", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:5",
       }
       for _, line in ipairs(lines) do
-        local actual = previewers._preview_files_grep(line)
+        local actual = previewers.preview_files_grep(line)
         local expect =
           paths.normalize(strs.split(line, ":")[1], { expand = true })
         print(string.format("normalize:%s\n", vim.inspect(expect)))

@@ -71,7 +71,6 @@ M.CURL = "curl"
 M.FZF_OPTS = {
   MULTI = "--multi",
   NO_MULTI = "--no-multi",
-  PROMPT = "--prompt",
   TOGGLE = "--bind=ctrl-e:toggle",
   TOGGLE_ALL = "--bind=ctrl-a:toggle-all",
   TOGGLE_PREVIEW = "--bind=alt-p:toggle-preview",

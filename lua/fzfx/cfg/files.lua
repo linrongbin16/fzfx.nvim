@@ -156,7 +156,7 @@ M.actions = {
 M.fzf_opts = {
   consts.FZF_OPTS.MULTI,
   function()
-    return { consts.FZF_OPTS.PROMPT, paths.shorten() .. " > " }
+    return { "--prompt", paths.shorten() .. " > " }
   end,
 }
 
