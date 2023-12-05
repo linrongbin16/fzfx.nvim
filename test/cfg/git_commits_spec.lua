@@ -26,8 +26,8 @@ describe("cfg.git_commits", function()
 
   local git_commits_cfg = require("fzfx.cfg.git_commits")
 
-  describe("[git_commits]", function()
-    it("_git_commits_previewer", function()
+  describe("[_git_commits_previewer]", function()
+    it("test", function()
       local lines = {
         "44ee80e 2023-10-11 linrongbin16 (HEAD -> origin/feat_git_status) docs: wording",
         "706e1d6 2023-10-10 linrongbin16 chore",
@@ -46,8 +46,10 @@ describe("cfg.git_commits", function()
         end
       end
     end)
+  end)
 
-    it("_make_git_commits_provider repo", function()
+  describe("[_make_git_commits_provider]", function()
+    it("all commits", function()
       local f = git_commits_cfg._make_git_commits_provider()
       local actual = f("", {})
       if actual ~= nil then
@@ -59,7 +61,7 @@ describe("cfg.git_commits", function()
         assert_eq(actual[5], "--color=always")
       end
     end)
-    it("_make_git_commits_provider buffer", function()
+    it("buffer commits", function()
       local f = git_commits_cfg._make_git_commits_provider({ buffer = true })
       local actual = f("", contexts.make_pipeline_context())
       if actual ~= nil then
