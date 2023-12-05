@@ -364,14 +364,16 @@ M.previewers = {
   },
 }
 
+local edit = consts.HAS_RG and actions_helper.edit_rg
+  or actions_helper.edit_grep
+local setqflist = consts.HAS_RG and actions_helper.setqflist_rg
+  or actions_helper.setqflist_grep
+
 M.actions = {
   ["esc"] = actions_helper.nop,
-  ["enter"] = consts.HAS_RG and actions_helper.edit_rg
-    or actions_helper.edit_grep,
-  ["double-click"] = consts.HAS_RG and actions_helper.edit_rg
-    or actions_helper.edit_grep,
-  ["ctrl-q"] = consts.HAS_RG and actions_helper.setqflist_rg
-    or actions_helper.setqflist_grep,
+  ["enter"] = edit,
+  ["double-click"] = edit,
+  ["ctrl-q"] = setqflist,
 }
 
 M.fzf_opts = {
