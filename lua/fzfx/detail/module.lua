@@ -1,5 +1,6 @@
+local log = require("fzfx.lib.log")
+
 local conf = require("fzfx.config")
-local log = require("fzfx.log")
 
 local M = {}
 

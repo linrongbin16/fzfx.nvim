@@ -6,8 +6,8 @@ local nums = require("fzfx.lib.numbers")
 local parsers = require("fzfx.helper.parsers")
 local prompts = require("fzfx.helper.prompts")
 
-local log = require("fzfx.log")
-local LogLevels = require("fzfx.log").LogLevels
+local log = require("fzfx.lib.log")
+local LogLevels = require("fzfx.lib.log").LogLevels
 
 local M = {}
 

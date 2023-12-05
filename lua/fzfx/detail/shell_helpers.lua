@@ -20,8 +20,8 @@ else
 end
 
 local LoggerContext = {
-  level = M.DEBUG_ENABLE and require("fzfx.log").LogLevels.DEBUG
-    or require("fzfx.log").LogLevels.INFO,
+  level = M.DEBUG_ENABLE and require("fzfx.lib.log").LogLevels.DEBUG
+    or require("fzfx.lib.log").LogLevels.INFO,
   console_log = M.DEBUG_ENABLE and true or false,
   file_log = M.DEBUG_ENABLE and true or false,
   file_path = nil,
@@ -40,7 +40,7 @@ end
 --- @param level integer
 --- @param msg string
 local function _log(level, msg)
-  local LogLevelNames = require("fzfx.log").LogLevelNames
+  local LogLevelNames = require("fzfx.lib.log").LogLevelNames
   if level < LoggerContext.level then
     return
   end
@@ -72,14 +72,14 @@ end
 --- @param fmt string
 --- @param ... any
 M.log_debug = function(fmt, ...)
-  local LogLevels = require("fzfx.log").LogLevels
+  local LogLevels = require("fzfx.lib.log").LogLevels
   _log(LogLevels.DEBUG, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
 M.log_err = function(fmt, ...)
-  local LogLevels = require("fzfx.log").LogLevels
+  local LogLevels = require("fzfx.lib.log").LogLevels
   _log(LogLevels.ERROR, string.format(fmt, ...))
 end
 

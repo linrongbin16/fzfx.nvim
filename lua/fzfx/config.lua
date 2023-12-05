@@ -6,9 +6,8 @@ local colors = require("fzfx.lib.colors")
 local paths = require("fzfx.lib.paths")
 local fs = require("fzfx.lib.filesystems")
 local tbls = require("fzfx.lib.tables")
-
-local log = require("fzfx.log")
-local LogLevels = require("fzfx.log").LogLevels
+local log = require("fzfx.lib.log")
+local LogLevels = require("fzfx.lib.log").LogLevels
 
 local parsers_helper = require("fzfx.helper.parsers")
 local queries_helper = require("fzfx.helper.queries")

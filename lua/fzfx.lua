@@ -1,5 +1,5 @@
-local log = require("fzfx.log")
-local LogLevels = require("fzfx.log").LogLevels
+local log = require("fzfx.lib.log")
+local LogLevels = require("fzfx.lib.log").LogLevels
 local general = require("fzfx.detail.general")
 
 --- @param options fzfx.Options?
@@ -33,7 +33,7 @@ local function setup(options)
   -- initialize
   require("fzfx.detail.module").setup()
   require("fzfx.detail.rpcserver").setup()
-  require("fzfx.yank_history").setup()
+  require("fzfx.detail.yanks").setup()
   require("fzfx.detail.fzf_helpers").setup()
   require("fzfx.detail.popup").setup()
 

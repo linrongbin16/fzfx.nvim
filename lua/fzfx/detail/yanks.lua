@@ -1,9 +1,11 @@
 local env = require("fzfx.lib.env")
 local nvims = require("fzfx.lib.nvims")
 local paths = require("fzfx.lib.paths")
+local log = require("fzfx.lib.log")
 
 local conf = require("fzfx.config")
-local log = require("fzfx.log")
+
+local M = {}
 
 --- @class fzfx.Yank
 --- @field regname string
@@ -33,6 +35,8 @@ function Yank:new(regname, regtext, regtype, filename, filetype)
   self.__index = self
   return o
 end
+
+M.Yank = Yank
 
 --- @class fzfx.YankHistory
 --- @field ring_buffer fzfx.RingBuffer
@@ -87,11 +91,13 @@ function YankHistory:rnext(pos)
   return self.ring_buffer:rnext(pos)
 end
 
+M.YankHistory = YankHistory
+
 --- @type fzfx.YankHistory?
-local YankHistoryInstance = nil
+M._YankHistoryInstance = nil
 
 --- @return table
-local function _get_register_info(regname)
+M._get_register_info = function(regname)
   return {
     regname = regname,
     regtext = vim.fn.getreg(regname),
@@ -100,8 +106,8 @@ local function _get_register_info(regname)
 end
 
 --- @return integer?
-local function save_yank()
-  local r = _get_register_info(vim.v.event.regname)
+M.save_yank = function()
+  local r = M._get_register_info(vim.v.event.regname)
   local y = Yank:new(
     r.regname,
     r.regtext,
@@ -112,53 +118,43 @@ local function save_yank()
     vim.bo.filetype
   )
   -- log.debug(
-  --     "|fzfx.yank_history - save_yank| r:%s, y:%s",
+  --     "|fzfx.helper.yanks - save_yank| r:%s, y:%s",
   --     vim.inspect(r),
   --     vim.inspect(y)
   -- )
 
   log.ensure(
-    YankHistoryInstance ~= nil,
-    "|fzfx.yank_history - save_yank| YankHistoryInstance must not be nil!"
+    M._YankHistoryInstance ~= nil,
+    "|fzfx.helper.yanks - save_yank| YankHistoryInstance must not be nil!"
   )
   ---@diagnostic disable-next-line: need-check-nil
-  return YankHistoryInstance:push(y)
+  return M._YankHistoryInstance:push(y)
 end
 
 --- @return fzfx.Yank?
-local function get_yank()
+M.get_yank = function()
   log.ensure(
-    YankHistoryInstance ~= nil,
-    "|fzfx.yank_history - get_yank| YankHistoryInstance must not be nil!"
+    M._YankHistoryInstance ~= nil,
+    "|fzfx.helper.yanks - get_yank| YankHistoryInstance must not be nil!"
   )
   ---@diagnostic disable-next-line: need-check-nil
-  return YankHistoryInstance:get()
+  return M._YankHistoryInstance:get()
 end
 
 --- @return fzfx.YankHistory?
-local function _get_yank_history_instance()
-  return YankHistoryInstance
+M._get_yank_history_instance = function()
+  return M._YankHistoryInstance
 end
 
-local function setup()
-  YankHistoryInstance = YankHistory:new(
+M.setup = function()
+  M._YankHistoryInstance = YankHistory:new(
     env.debug_enabled() and 10
       or conf.get_config().yank_history.other_opts.maxsize
   )
   vim.api.nvim_create_autocmd("TextYankPost", {
     pattern = { "*" },
-    callback = save_yank,
+    callback = M.save_yank,
   })
 end
-
-local M = {
-  setup = setup,
-  get_yank = get_yank,
-  save_yank = save_yank,
-  Yank = Yank,
-  YankHistory = YankHistory,
-  _get_register_info = _get_register_info,
-  _get_yank_history_instance = _get_yank_history_instance,
-}
 
 return M

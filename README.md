@@ -98,7 +98,7 @@ Install with the below 3 options:
 
   <img alt="install-windows-git3.png" src="https://raw.githubusercontent.com/linrongbin16/lin.nvim.dev/main/assets/installations/install-windows-git3.png" width="70%" />
 
-After this step, **git.exe** and builtin linux commands(such as **echo.exe**, **grep.exe**, **find.exe**, **curl.exe**) will be available in `%PATH%`.
+After this step, **git.exe** and builtin linux commands(such as **echo.exe**, **ls.exe**, **curl.exe**) will be available in `%PATH%`.
 
 #### [scoop](https://scoop.sh/)
 
@@ -114,10 +114,9 @@ scoop install git           # git, bash, sh
 scoop install uutils-coreutils     # echo, ls, cat
 scoop install curl          # curl
 scoop install grep          # grep
-scoop install findutils     # find
 ```
 
-> Note: install the rust-reimplementation [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), which is more compatible on Windows (the `ls` from GNU coreutils is actually broken on my Windows 10 x86_64 PC).
+> Note: install the rust-reimplementation [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), since some (for example `ls`) GNU commands is actually broken on Windows 10 x86_64 PC.
 
 #### Fix conflicts between embedded commands in `C:\Windows\System32` and portable linux commands
 
@@ -1568,7 +1567,7 @@ require("fzfx").setup({
 
 You can also use the `require("fzfx").register("ls", {...})` api to do that.
 
-For detailed explanation of each components, please see [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
+For detailed explanation of each components, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
 ### API References
 
