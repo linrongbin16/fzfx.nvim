@@ -33,13 +33,13 @@ They are supposed to be stable and tested (except those starting with underline 
   - [fzfx.lib.env](#fzfxlibenv)
   - [fzfx.lib.filesystems](#fzfxlibfilesystems)
   - [fzfx.lib.jsons](#fzfxlibjsons)
+  - [fzfx.lib.log](#fzfxliblog)
   - [fzfx.lib.numbers](#fzfxlibnumbers)
   - [fzfx.lib.nvims](#fzfxlibnvims)
   - [fzfx.lib.paths](#fzfxlibpaths)
   - [fzfx.lib.spawn](#fzfxlibspawn)
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
-  - [fzfx.lib.log](#fzfxliblog)
 
 ## [Default Configurations](/lua/fzfx/cfg)
 
@@ -453,6 +453,20 @@ curl
 - `encode(t:table?):string?`: convert lua table/list to json string.
 - `decode(s:string?):table?`: convert json string to lua table/list.
 
+### [fzfx.lib.log](/lua/fzfx/lib/log.lua)
+
+- `debug(fmt:string, ...)`: debug, the `fmt` is formatting messages in C style formatters, e.g. `%d`, `%s`.
+- `info(fmt:string, ...)`: info.
+- `warn(fmt:string, ...)`: warning.
+- `err(fmt:string, ...)`: error
+- `echo(level:LogLevels, fmt:string, ...)`: echo message in log `level`. this API will not been affected by log configs.
+  - `LogLevels.DEBUG`.
+  - `LogLevels.INFO`.
+  - `LogLevels.WARN`.
+  - `LogLevels.ERROR`.
+- `throw(fmt:string, ...)`: same with `err`, additionally it invokes `error()` API, which throw an error to user command line, requires user to press `ENTER` to continue.
+- `ensure(condition:boolean, fmt:string, ...)`: throw error to user if `condition` is false.
+
 ### [fzfx.lib.numbers](/lua/fzfx/lib/numbers.lua)
 
 - `INT32_MIN`/`INT32_MAX`: `-2147483648`/`2147483647`.
@@ -533,17 +547,3 @@ curl
 - `list_index(i:integer, n:integer):integer`: calculate list index for both positive or negative. `n` is the length of list.
   - if `i > 0`, `i` is in range `[1,n]`.
   - if `i < 0`, `i` is in range `[-1,-n]`, `-1` maps to last position (e.g. `n`), `-n` maps to first position (e.g. `1`).
-
-### [fzfx.lib.log](/lua/fzfx/lib/log.lua)
-
-- `debug(fmt:string, ...)`: debug, the `fmt` is formatting messages in C style formatters, e.g. `%d`, `%s`.
-- `info(fmt:string, ...)`: info.
-- `warn(fmt:string, ...)`: warning.
-- `err(fmt:string, ...)`: error
-- `echo(level:LogLevels, fmt:string, ...)`: echo message in log `level`. this API will not been affected by log configs.
-  - `LogLevels.DEBUG`.
-  - `LogLevels.INFO`.
-  - `LogLevels.WARN`.
-  - `LogLevels.ERROR`.
-- `throw(fmt:string, ...)`: same with `err`, additionally it invokes `error()` API, which throw an error to user command line, requires user to press `ENTER` to continue.
-- `ensure(condition:boolean, fmt:string, ...)`: throw error to user if `condition` is false.
