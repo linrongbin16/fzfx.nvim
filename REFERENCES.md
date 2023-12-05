@@ -45,8 +45,8 @@ They are supposed to be stable and tested (except those starting with underline 
 
 The `fzfx.cfg` directly provides configurations for all builtin search commands in this plugin. Easy to read, copy and paste to custom/create other search commands.
 
-- [files](/lua/fzfx.cfg/files.lua): `FzfxFiles` implementations.
-- [live_grep](/lua/fzfx.cfg/live_grep.lua): `FzfxLiveGrep` implementations.
+- [files](/lua/fzfx/cfg/files.lua): `FzfxFiles` implementations.
+- [live_grep](/lua/fzfx/cfg/live_grep.lua): `FzfxLiveGrep` implementations.
 
 ## [Line-Oriented Helpers](/lua/fzfx/helper)
 
