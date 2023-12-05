@@ -224,21 +224,51 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 ### [fzfx.helper.previewer_labels](/lua/fzfx/helper/previewer_labels.lua)
 
-- `label_find(lines:string):string`: label files on `fd`, `find`, `git ls-files` results, and other sources following the same style, used by `FzfxFiles`, `FzfxBuffers`, `FzfxGFiles`.
-- `label_rg(line:string):string`: label locations on `rg` results, and other sources following the same style, used by `FzfxLiveGrep`, `FzfxLspDiagnostics`, `FzfxLspDefinitions`, `FzfxLspTypeDefinitions`, `FzfxLspImplementations`, `FzfxLspReferences`, `FzfxLspIncomingCalls`, `FzfxLspOutgoingCalls`.
-- `label_grep(line:string):string`: label locations on `grep` results, and other sources following the same style, used by `FzfxLiveGrep` (when `rg` not found), `FzfxGLiveGrep`.
-- `label_lsd(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `lsd` results, and other sources follow the same style. used by `FzfxFileExplorer` (when `lsd` is found).
-- `label_eza(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `eza`, `exa` results, and other sources follow the same style. used by `FzfxFileExplorer` (when `eza`, `exa` is found).
-- `label_ls(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `ls` results, and other sources follow the same style. used by `FzfxFileExplorer` (when `lsd`, `eza`, `exa` not found).
-- `label_vim_command(line:string,context:fzfx.VimCommandsPipelineContext):string`: label the builtin vim commands renderer results, and other sources follow the same style. used by `FzfxCommands`.
-- `label_vim_keymap(line:string,context:fzfx.VimKeyMapsPipelineContext):string`: label the builtin vim keymaps renderer results, and other sources follow the same style. used by `FzfxKeyMaps`.
+- `label_find(lines:string):string`: label files on `fd`, `find`, `git ls-files` results, and other sources following the same style, used by:
+  - `FzfxFiles`
+  - `FzfxBuffers`
+  - `FzfxGFiles`
+- `label_rg(line:string):string`: label locations on `rg` results, and other sources following the same style, used by:
+  - `FzfxLiveGrep`
+  - `FzfxLspDiagnostics`
+  - `FzfxLspDefinitions`
+  - `FzfxLspTypeDefinitions`
+  - `FzfxLspImplementations`
+  - `FzfxLspReferences`
+  - `FzfxLspIncomingCalls`
+  - `FzfxLspOutgoingCalls`
+- `label_grep(line:string):string`: label locations on `grep` results, and other sources following the same style, used by:
+  - `FzfxLiveGrep` (when `rg` not found)
+  - `FzfxGLiveGrep`
+- `label_lsd(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `lsd` results, and other sources follow the same style. used by:
+  - `FzfxFileExplorer` (when `lsd` is found)
+- `label_eza(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `eza`, `exa` results, and other sources follow the same style. used by:
+  - `FzfxFileExplorer` (when `eza`, `exa` is found)
+- `label_ls(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `ls` results, and other sources follow the same style. used by:
+  - `FzfxFileExplorer` (when `lsd`, `eza`, `exa` not found)
+- `label_vim_command(line:string,context:fzfx.VimCommandsPipelineContext):string`: label the builtin vim commands renderer results, and other sources follow the same style. used by:
+  - `FzfxCommands`
+- `label_vim_keymap(line:string,context:fzfx.VimKeyMapsPipelineContext):string`: label the builtin vim keymaps renderer results, and other sources follow the same style. used by:
+  - `FzfxKeyMaps`
 
 ### [fzfx.helper.providers](/lua/fzfx/helper/providers.lua)
 
 ### [fzfx.helper.previewers](/lua/fzfx/helper/previewers.lua)
 
-- `preview_files_find(line:string):string[]`: preview files on `fd`, `find`, `git ls-files` results, and other sources following the same style, used by `FzfxFiles`, `FzfxBuffers`, `FzfxGFiles`.
-- `preview_files_grep(line:string):string[]`: preview locations on `rg`, `grep`, `git grep` results, and other sources following the same style, used by `FzfxLiveGrep`, `FzfxGLiveGrep`, `FzfxLspDiagnostics`, `FzfxLspDefinitions`, `FzfxLspTypeDefinitions`, `FzfxLspImplementations`, `FzfxLspReferences`, `FzfxLspIncomingCalls`, `FzfxLspOutgoingCalls`.
+- `preview_files_find(line:string):string[]`: preview files on `fd`, `find`, `git ls-files` results, and other sources following the same style, used by:
+  - `FzfxFiles`
+  - `FzfxBuffers`
+  - `FzfxGFiles`
+- `preview_files_grep(line:string):string[]`: preview locations on `rg`, `grep`, `git grep` results, and other sources following the same style, used by:
+  - `FzfxLiveGrep`
+  - `FzfxGLiveGrep`
+  - `FzfxLspDiagnostics`
+  - `FzfxLspDefinitions`
+  - `FzfxLspTypeDefinitions`
+  - `FzfxLspImplementations`
+  - `FzfxLspReferences`
+  - `FzfxLspIncomingCalls`
+  - `FzfxLspOutgoingCalls`
 
 ### [fzfx.helper.queries](/lua/fzfx/helper/queries.lua)
 
