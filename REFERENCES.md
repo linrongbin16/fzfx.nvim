@@ -273,6 +273,9 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
   - `FzfxLspReferences`
   - `FzfxLspIncomingCalls`
   - `FzfxLspOutgoingCalls`
+- `preview_git_commit(line:string):string`: preview git commits on `git blame`, `git log --short` results, and other sources following the same style, used by:
+  - `FzfxGCommits`
+  - `FzfxGBlame`
 
 ### [fzfx.helper.queries](/lua/fzfx/helper/queries.lua)
 
