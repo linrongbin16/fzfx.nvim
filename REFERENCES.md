@@ -57,7 +57,7 @@ Every configuration contains below components:
 
 > Please also see: [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command).
 
-All builtin search command configurations:
+Here are all the builtin search command configurations:
 
 - [files](/lua/fzfx/cfg/files.lua): `FzfxFiles` implementations.
 - [live_grep](/lua/fzfx/cfg/live_grep.lua): `FzfxLiveGrep` implementations.
