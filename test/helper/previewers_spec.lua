@@ -131,4 +131,25 @@ describe("helper.previewers", function()
       assert_true(actual >= 3)
     end)
   end)
+
+  describe("[preview_git_commit]", function()
+    it("test", function()
+      local lines = {
+        "44ee80e",
+        "706e1d6",
+      }
+      for _, line in ipairs(lines) do
+        local actual = previewers.preview_git_commit(line)
+        if actual ~= nil then
+          assert_eq(type(actual), "string")
+          assert_true(strs.find(actual, "git show") > 0)
+          if vim.fn.executable("delta") > 0 then
+            assert_true(strs.find(actual, "delta") > 0)
+          else
+            assert_true(strs.find(actual, "delta") == nil)
+          end
+        end
+      end
+    end)
+  end)
 end)
