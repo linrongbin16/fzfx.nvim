@@ -5,9 +5,9 @@ local fs = require("fzfx.lib.filesystems")
 local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
 local log = require("fzfx.lib.log")
+local yanks = require("fzfx.detail.yanks")
 
 local conf = require("fzfx.config")
-local yank_history = require("fzfx.yank_history")
 
 -- visual select {
 
@@ -109,7 +109,7 @@ local function get_command_feed(feed_type, input_args, pipeline_name)
     ---@diagnostic disable-next-line: return-type-mismatch
     return vim.fn.expand("<cword>"), nil
   elseif feed_type == "put" then
-    local y = yank_history.get_yank()
+    local y = yanks.get_yank()
     return (y ~= nil and type(y.regtext) == "string") and y.regtext or "", nil
   elseif feed_type == "resume" then
     local cache = make_last_query_cache(pipeline_name)
