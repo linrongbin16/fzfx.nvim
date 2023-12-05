@@ -98,10 +98,6 @@ M.preview_files_grep = function(line)
   return f()
 end
 
-M.preview_live_grep_restricted_mode = M.preview_files_grep
-M.preview_live_grep_unrestricted_mode = M.preview_files_grep
-M.preview_live_grep_buffer_mode = M.preview_files_grep
-
 -- live grep }
 
 return M
