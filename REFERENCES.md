@@ -8,6 +8,7 @@ They are supposed to be stable and tested (except those starting with underline 
 
 ## Table of contents
 
+- [Default Configurations](#default-configurations)
 - [Line-Oriented Helpers](#line-oriented-helpers)
   - [fzfx.helper.parsers](#fzfxhelperparsers)
   - [fzfx.helper.actions](#fzfxhelperactions)
@@ -20,6 +21,8 @@ They are supposed to be stable and tested (except those starting with underline 
     - [Builtin Vim Key Mappings Renderer](#builtin-vim-key-mappings-renderer)
     - [`eza`/`lsd`/`ls`](#eza)
   - [fzfx.helper.previewer_labels](#fzfxhelperpreviewer_labels)
+  - [fzfx.helper.providers](#fzfxhelperproviders)
+  - [fzfx.helper.previewers](#fzfxhelperpreviewers)
   - [fzfx.helper.queries](#fzfxhelperqueries)
   - [fzfx.helper.prompts](#fzfxhelperprompts)
 - [Fundamental Infrastructures](#fundamental-infrastructures)
@@ -37,6 +40,27 @@ They are supposed to be stable and tested (except those starting with underline 
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
   - [fzfx.lib.log](#fzfxliblog)
+
+## [Default Configurations](/lua/fzfx/cfg)
+
+The `fzfx.cfg` directly provides configurations for all builtin search commands in this plugin. Easy to read, copy and paste to custom/create other search commands.
+
+Every configuration contains below components:
+
+- `commands`: a single `fzfx.CommandConfig` (if there's only 1 command) or a `fzfx.CommandConfig` list (if there's multiple commands).
+- `providers`: a single `fzfx.ProviderConfig` (if there's only 1 provider/data source) or a `fzfx.ProviderConfig` map (if there's multiple providers/data sources).
+- `previewers`: a single `fzfx.PreviewerConfig` (if there's only 1 previewer) or a `fzfx.PreviewerConfig` map (if there's multiple previewers).
+- `actions`: a `fzfx.Action` map.
+- `interactions` (optional): a `fzfx.InterAction` map.
+- `fzf_opts` (optional): a `fzfx.FzfOpt` list.
+- `other_opts` (optional): other special options map.
+
+> Please also see: [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command).
+
+Here are all the builtin search command configurations:
+
+- [files](/lua/fzfx/cfg/files.lua): `FzfxFiles` implementations.
+- [live_grep](/lua/fzfx/cfg/live_grep.lua): `FzfxLiveGrep` implementations.
 
 ## [Line-Oriented Helpers](/lua/fzfx/helper)
 
@@ -66,30 +90,30 @@ The **_actions_** are hook functions binding to fzf, user press the key and fzf 
 
 #### `fd`/`find`
 
-The `fd`/`find`/`git ls-files` generated file names, or other sources (buffers) follow the same style, used by `FzfxFiles`/`FzfxBuffers`/`FzfxGFiles`. they look like:
+The `fd`, `find`, `git ls-files` generated file names, or other sources (buffers) follow the same style, used by `FzfxFiles`, `FzfxBuffers`, `FzfxGFiles`. they look like:
 
 ```
  README.md
 󰢱 lua/fzfx.lua/test/hello world.txt
 ```
 
-- `edit_find(lines:string[], context:fzfx.PipelineContext):nil`: use `edit` command to open selected files on `fd`/`find`/`git ls-files` results.
+- `edit_find(lines:string[], context:fzfx.PipelineContext):nil`: use `edit` command to open selected files on `fd`, `find`, `git ls-files` results.
 - `setqflist_find(lines:string[], context:fzfx.PipelineContext):nil`: use `setqflist` command to send selected lines (files) to qflist.
 
-#### `rg`/`grep`
+#### `rg`, `grep`
 
-The `rg`/`grep`/`git grep` generated locations (file name with line/column number), or other sources (lsp, diagnostics) follow the same style, used by `FzfxLiveGrep`/`FzfxGLiveGrep`/`FzfxLspDiagnostics`/`FzfxLspDefinitions`/`FzfxLspTypeDefinitions`/`FzfxLspReferences`/`FzfxLspImplementations`/`FzfxLspIncomingCalls`/`FzfxLspOutgoingCalls`. they look like:
+The `rg`, `grep`, `git grep` generated locations (file name with line/column number), or other sources (lsp, diagnostics) follow the same style, used by `FzfxLiveGrep`, `FzfxGLiveGrep`, `FzfxLspDiagnostics`, `FzfxLspDefinitions`, `FzfxLspTypeDefinitions`, `FzfxLspReferences`, `FzfxLspImplementations`, `FzfxLspIncomingCalls`, `FzfxLspOutgoingCalls`. they look like:
 
 ```
 󰢱 lua/fzfx.lua:15:82: local strs = require("fzfx.lib.strings")
 󰢱 lua/fzfx/config.lua:1:70: local line = parsers.parse_find(lines, context)
 ```
 
-> Note: the `rg` (lsp, diagnostics) have column number, while `grep`/`git grep` don't have column number.
+> Note: the `rg` (lsp, diagnostics) have column number, while `grep`, `git grep` don't have column number.
 
 - `edit_rg(lines:string[], context:fzfx.PipelineContext):nil`: use `edit` and `setpos` command to open selected locations on `rg` results.
 - `setqflist_rg(lines:string[], context:fzfx.PipelineContext):nil`: use `setqflist` command to send selected locations to qflist.
-- `edit_grep(lines:string[], context:fzfx.PipelineContext):nil`: use `edit` and `setpos` command to open selected locations on `grep`/`git grep` results.
+- `edit_grep(lines:string[], context:fzfx.PipelineContext):nil`: use `edit` and `setpos` command to open selected locations on `grep`, `git grep` results.
 - `setqflist_grep(lines:string[], context:fzfx.PipelineContext):nil`: use `setqflist` command to send selected locations to qflist.
 
 #### `git status`
@@ -119,16 +143,16 @@ The `git branch (-r/-a)` generated git branches, used by `FzfxGBranches`. they l
 
 - `git_checkout(lines:string[], fzfx.GitBranchesPipelineContext):nil`: use `git checkout` shell command to checkout selected branch on `git branch` results.
 
-#### `git log`/`git blame`
+#### `git log`, `git blame`
 
-The `git log --short`/`git blame` generated git commits, used by `FzfxGCommits`/`FzfxGBlame`, they look like:
+The `git log --short`, `git blame` generated git commits, used by `FzfxGCommits`, `FzfxGBlame`, they look like:
 
 ```
 c2e32c 2023-11-30 linrongbin16 (HEAD -> chore-lint)
 5fe6ad 2023-11-29 linrongbin16 chore
 ```
 
-- `yank_git_commit(lines:string[]):nil`: yank selected git commits on `git log`/`git blame` results.
+- `yank_git_commit(lines:string[]):nil`: yank selected git commits on `git log`, `git blame` results.
 
 #### Builtin Vim Commands Renderer
 
@@ -159,9 +183,9 @@ Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Loca
 
 - `feed_vim_key(lines:string[], context:fzfx.VimKeyMapsPipelineContext):nil`: execute selected keys.
 
-#### `eza`/`lsd`/`ls`
+#### `eza`, `lsd`, `ls`
 
-The `lsd`/`eza`/`ls` generated file names/directories, they look like:
+The `lsd`, `eza`, `ls` generated file names/directories, they look like:
 
 ```
 -rw-r--r--   1 linrongbin  staff   1.0K Aug 28 12:39 LICENSE
@@ -171,18 +195,25 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 -rw-r--r--   1 linrongbin  staff   120B Sep  5 14:14 codecov.yml
 ```
 
-- `edit_ls(lines:string[], context:fzfx.FileExplorerPipelineContext):nil`: use `edit` command to open selected file path on `lsd`/`eza`/`ls` results.
+- `edit_ls(lines:string[], context:fzfx.FileExplorerPipelineContext):nil`: use `edit` command to open selected file path on `lsd`, `eza`, `ls` results.
 
 ### [fzfx.helper.previewer_labels](/lua/fzfx/helper/previewer_labels.lua)
 
-- `label_find(lines:string):string`: label files on `fd`/`find`/`git ls-files` results, and other sources following the same style, used by `FzfxFiles`/`FzfxBuffers`/`FzfxGFiles`.
-- `label_rg(line:string):string`: label locations on `rg` results, and other sources following the same style, used by `FzfxLiveGrep`/`FzfxLspDiagnostics`/`FzfxLspDefinitions`/`FzfxLspTypeDefinitions`/`FzfxLspImplementations`/`FzfxLspReferences`/`FzfxLspIncomingCalls`/`FzfxLspOutgoingCalls`.
+- `label_find(lines:string):string`: label files on `fd`, `find`, `git ls-files` results, and other sources following the same style, used by `FzfxFiles`, `FzfxBuffers`, `FzfxGFiles`.
+- `label_rg(line:string):string`: label locations on `rg` results, and other sources following the same style, used by `FzfxLiveGrep`, `FzfxLspDiagnostics`, `FzfxLspDefinitions`, `FzfxLspTypeDefinitions`, `FzfxLspImplementations`, `FzfxLspReferences`, `FzfxLspIncomingCalls`, `FzfxLspOutgoingCalls`.
 - `label_grep(line:string):string`: label locations on `grep` results, and other sources following the same style, used by `FzfxLiveGrep` (when `rg` not found), `FzfxGLiveGrep`.
 - `label_lsd(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `lsd` results, and other sources follow the same style. used by `FzfxFileExplorer` (when `lsd` is found).
-- `label_eza(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `eza`/`exa` results, and other sources follow the same style. used by `FzfxFileExplorer` (when `eza`/`exa` is found).
-- `label_ls(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `ls` results, and other sources follow the same style. used by `FzfxFileExplorer` (when `lsd`/`eza`/`exa` not found).
+- `label_eza(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `eza`, `exa` results, and other sources follow the same style. used by `FzfxFileExplorer` (when `eza`, `exa` is found).
+- `label_ls(line:string,context:fzfx.FileExplorerPipelineContext):string`: label file name/directory on `ls` results, and other sources follow the same style. used by `FzfxFileExplorer` (when `lsd`, `eza`, `exa` not found).
 - `label_vim_command(line:string,context:fzfx.VimCommandsPipelineContext):string`: label the builtin vim commands renderer results, and other sources follow the same style. used by `FzfxCommands`.
 - `label_vim_keymap(line:string,context:fzfx.VimKeyMapsPipelineContext):string`: label the builtin vim keymaps renderer results, and other sources follow the same style. used by `FzfxKeyMaps`.
+
+### [fzfx.helper.providers](/lua/fzfx/helper/providers.lua)
+
+### [fzfx.helper.previewers](/lua/fzfx/helper/previewers.lua)
+
+- `preview_files_find(line:string):string[]`: preview files on `fd`, `find`, `git ls-files` results, and other sources following the same style, used by `FzfxFiles`, `FzfxBuffers`, `FzfxGFiles`.
+- `preview_files_grep(line:string):string[]`: preview locations on `rg`, `grep`, `git grep` results, and other sources following the same style, used by `FzfxLiveGrep`, `FzfxGLiveGrep`, `FzfxLspDiagnostics`, `FzfxLspDefinitions`, `FzfxLspTypeDefinitions`, `FzfxLspImplementations`, `FzfxLspReferences`, `FzfxLspIncomingCalls`, `FzfxLspOutgoingCalls`.
 
 ### [fzfx.helper.queries](/lua/fzfx/helper/queries.lua)
 

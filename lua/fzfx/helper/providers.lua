@@ -17,10 +17,6 @@ local labels_helper = require("fzfx.helper.previewer_labels")
 
 local M = {}
 
--- common error message
-
-M.INVALID_BUFFER_ERROR = "invalid buffer(%s)."
-
 -- files {
 
 -- "fd . -cnever -tf -tl -L -i"
@@ -126,90 +122,6 @@ M.UNRESTRICTED_GREP = {
   "-H",
   "-r",
 }
-
---- @param bufnr integer
---- @return string?
-M._get_buf_path = function(bufnr)
-  local bufpath = nvims.buf_is_valid(bufnr)
-      and paths.reduce(vim.api.nvim_buf_get_name(bufnr))
-    or nil
-  if strs.empty(bufpath) then
-    log.echo(LogLevels.INFO, M.INVALID_BUFFER_ERROR, vim.inspect(bufnr))
-    return nil
-  end
-  return bufpath
-end
-
---- @param opts {unrestricted:boolean?,buffer:boolean?}?
---- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
-M._make_provide_live_grep = function(opts)
-  --- @param query string
-  --- @param context fzfx.PipelineContext
-  --- @return string[]|nil
-  local function impl(query, context)
-    local parsed = queries_helper.parse_flagged(query or "")
-    local payload = parsed.payload
-    local option = parsed.option
-
-    local bufpath = nil
-    local args = nil
-    if consts.HAS_RG then
-      ---@diagnostic disable-next-line: need-check-nil
-      if tbls.tbl_not_empty(opts) and opts.unrestricted then
-        args = vim.deepcopy(M.UNRESTRICTED_RG)
-      ---@diagnostic disable-next-line: need-check-nil
-      elseif tbls.tbl_not_empty(opts) and opts.buffer then
-        args = vim.deepcopy(M.UNRESTRICTED_RG)
-        bufpath = M._get_buf_path(context.bufnr)
-        if not bufpath then
-          return nil
-        end
-      else
-        args = vim.deepcopy(M.RESTRICTED_RG)
-      end
-    elseif consts.HAS_GREP then
-      ---@diagnostic disable-next-line: need-check-nil
-      if tbls.tbl_not_empty(opts) and opts.unrestricted then
-        args = vim.deepcopy(M.UNRESTRICTED_GREP)
-      ---@diagnostic disable-next-line: need-check-nil
-      elseif tbls.tbl_not_empty(opts) and opts.buffer then
-        args = vim.deepcopy(M.UNRESTRICTED_GREP)
-        bufpath = M._get_buf_path(context.bufnr)
-        if not bufpath then
-          return nil
-        end
-      else
-        args = vim.deepcopy(M.RESTRICTED_GREP)
-      end
-    else
-      log.echo(LogLevels.INFO, "no rg/grep command found.")
-      return nil
-    end
-    if strs.not_empty(option) then
-      local option_splits = strs.split(option --[[@as string]], " ")
-      for _, o in ipairs(option_splits) do
-        if strs.not_empty(o) then
-          table.insert(args, o)
-        end
-      end
-    end
-    ---@diagnostic disable-next-line: need-check-nil
-    if tbls.tbl_not_empty(opts) and opts.buffer then
-      assert(strs.not_empty(bufpath))
-      table.insert(args, payload)
-      table.insert(args, bufpath)
-    else
-      table.insert(args, payload)
-    end
-    return args
-  end
-  return impl
-end
-
-M.provide_live_grep_restricted_mode = M._make_provide_live_grep()
-M.provide_live_grep_unrestricted_mode =
-  M._make_provide_live_grep({ unrestricted = true })
-M.provide_live_grep_buffer_mode = M._make_provide_live_grep({ buffer = true })
 
 -- live grep }
 

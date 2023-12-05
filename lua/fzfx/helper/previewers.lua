@@ -80,14 +80,11 @@ end
 
 --- @param line string
 --- @return string[]
-M._preview_files_find = function(line)
+M.preview_files_find = function(line)
   local parsed = parsers_helper.parse_find(line)
   local f = M._make_preview_files(parsed.filename)
   return f()
 end
-
-M.preview_files_restricted_mode = M._preview_files_find
-M.preview_files_unrestricted_mode = M._preview_files_find
 
 -- files }
 
@@ -95,15 +92,11 @@ M.preview_files_unrestricted_mode = M._preview_files_find
 
 --- @param line string
 --- @return string[]
-M._preview_files_grep = function(line)
+M.preview_files_grep = function(line)
   local parsed = parsers_helper.parse_grep(line)
   local f = M._make_preview_files(parsed.filename, parsed.lineno)
   return f()
 end
-
-M.preview_live_grep_restricted_mode = M._preview_files_grep
-M.preview_live_grep_unrestricted_mode = M._preview_files_grep
-M.preview_live_grep_buffer_mode = M._preview_files_grep
 
 -- live grep }
 
