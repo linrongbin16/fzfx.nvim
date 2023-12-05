@@ -136,7 +136,7 @@ M._make_git_commits_provider = function(opts)
   local function impl(query, context)
     local git_root_cmd = cmds.GitRootCommand:run()
     if git_root_cmd:failed() then
-      log.echo(LogLevels.INFO, default_git_root_error)
+      log.echo(LogLevels.INFO, "not in git repo.")
       return nil
     end
     if type(opts) == "table" and opts.buffer then
