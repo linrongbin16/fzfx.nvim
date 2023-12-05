@@ -64,7 +64,7 @@ describe("helper.previewers", function()
       end
     end)
 
-    it("_preview_files_find", function()
+    it("preview_files_find", function()
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
@@ -73,7 +73,7 @@ describe("helper.previewers", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
       }
       for _, line in ipairs(lines) do
-        local actual = previewers._preview_files_find(line)
+        local actual = previewers.preview_files_find(line)
         print(string.format("_preview_files_find:%s\n", vim.inspect(actual)))
         if actual[1] == "bat" then
           assert_eq(actual[1], "bat")

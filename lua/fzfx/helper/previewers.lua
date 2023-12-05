@@ -80,14 +80,14 @@ end
 
 --- @param line string
 --- @return string[]
-M._preview_files_find = function(line)
+M.preview_files_find = function(line)
   local parsed = parsers_helper.parse_find(line)
   local f = M._make_preview_files(parsed.filename)
   return f()
 end
 
-M.preview_files_restricted_mode = M._preview_files_find
-M.preview_files_unrestricted_mode = M._preview_files_find
+M.preview_files_restricted_mode = M.preview_files_find
+M.preview_files_unrestricted_mode = M.preview_files_find
 
 -- files }
 
