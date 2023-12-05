@@ -123,4 +123,12 @@ describe("helper.previewers", function()
       end
     end)
   end)
+
+  describe("[get_preview_window_width]", function()
+    it("test", function()
+      local actual = previewers.get_preview_window_width()
+      assert_eq(type(actual), "number")
+      assert_true(actual >= 3)
+    end)
+  end)
 end)

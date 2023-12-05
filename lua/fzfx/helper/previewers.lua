@@ -100,4 +100,14 @@ end
 
 -- live grep }
 
+-- previewer width {
+
+--- @return integer
+M.get_preview_window_width = function()
+  local win_width = vim.api.nvim_win_get_width(0)
+  return math.floor(math.max(3, win_width / 2 - 6))
+end
+
+-- previewer width }
+
 return M
