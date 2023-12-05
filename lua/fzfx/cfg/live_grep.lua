@@ -252,7 +252,6 @@ M._make_provide_live_grep = function(opts)
       table.insert(args, payload)
       table.insert(args, bufpath)
     else
-      -- table.insert(args, "--")
       table.insert(args, payload)
     end
     return args
