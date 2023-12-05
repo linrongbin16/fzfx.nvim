@@ -20,4 +20,25 @@ M.parse_flagged = function(query, flag)
   return { payload = payload, option = option }
 end
 
+--- @param args_list string[]
+--- @param option string?
+--- @param delimiter string?
+--- @return string[]
+M.append_options = function(args_list, option, delimiter)
+  assert(type(args_list) == "table")
+
+  delimiter = delimiter or " "
+
+  if strs.not_empty(option) then
+    local option_splits = strs.split(option --[[@as string]], delimiter)
+    for _, o in ipairs(option_splits) do
+      if strs.not_empty(o) then
+        table.insert(args_list, o)
+      end
+    end
+  end
+
+  return args_list
+end
+
 return M

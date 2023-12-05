@@ -219,14 +219,8 @@ M._make_provider_rg = function(opts)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_RG)
     end
-    if strs.not_empty(option) then
-      local option_splits = strs.split(option --[[@as string]], " ")
-      for _, o in ipairs(option_splits) do
-        if strs.not_empty(o) then
-          table.insert(args, o)
-        end
-      end
-    end
+    args = queries_helper.append_options(args, option, " ")
+
     if M._is_buffer_mode(opts) then
       local bufpath = M._get_buf_path(context.bufnr)
       if not bufpath then
@@ -261,14 +255,8 @@ M._make_provider_grep = function(opts)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
     end
-    if strs.not_empty(option) then
-      local option_splits = strs.split(option --[[@as string]], " ")
-      for _, o in ipairs(option_splits) do
-        if strs.not_empty(o) then
-          table.insert(args, o)
-        end
-      end
-    end
+    args = queries_helper.append_options(args, option, " ")
+
     if M._is_buffer_mode(opts) then
       local bufpath = M._get_buf_path(context.bufnr)
       if not bufpath then
