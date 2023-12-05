@@ -379,8 +379,8 @@ M.actions = {
 M.fzf_opts = {
   consts.FZF_OPTS.MULTI,
   consts.FZF_OPTS.DISABLED,
+  consts.FZF_OPTS.DELIMITER,
   { "--prompt", "Live Grep > " },
-  { "--delimiter", ":" },
   { "--preview-window", "+{2}-/2" },
 }
 

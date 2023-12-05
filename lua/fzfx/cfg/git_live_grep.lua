@@ -20,86 +20,119 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
-  git_live_grep = {
-    commands = {
-      -- normal
-      {
-        name = "FzfxGLiveGrep",
-        feed = CommandFeedEnum.ARGS,
-        opts = {
-          bang = true,
-          nargs = "*",
-          desc = "Git live grep",
-        },
-      },
-      -- visual
-      {
-        name = "FzfxGLiveGrepV",
-        feed = CommandFeedEnum.VISUAL,
-        opts = {
-          bang = true,
-          range = true,
-          desc = "Git live grep by visual select",
-        },
-      },
-      -- cword
-      {
-        name = "FzfxGLiveGrepW",
-        feed = CommandFeedEnum.CWORD,
-        opts = {
-          bang = true,
-          desc = "Git live grep by cursor word",
-        },
-      },
-      -- put
-      {
-        name = "FzfxGLiveGrepP",
-        feed = CommandFeedEnum.PUT,
-        opts = {
-          bang = true,
-          desc = "Git live grep by yank text",
-        },
-      },
-      -- resume
-      {
-        name = "FzfxGLiveGrepR",
-        feed = CommandFeedEnum.RESUME,
-        opts = {
-          bang = true,
-          desc = "Git live grep by resume last",
-        },
-      },
-    },
-    providers = {
-      key = "default",
-      provider = _git_live_grep_provider,
-      provider_type = ProviderTypeEnum.COMMAND_LIST,
-      line_opts = {
-        prepend_icon_by_ft = true,
-        prepend_icon_path_delimiter = ":",
-        prepend_icon_path_position = 1,
-      },
-    },
-    previewers = {
-      previewer = _file_previewer_grep,
-      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-      previewer_label = labels_helper.label_grep,
-    },
-    actions = {
-      ["esc"] = actions_helper.nop,
-      ["enter"] = actions_helper.edit_grep,
-      ["double-click"] = actions_helper.edit_grep,
-      ["ctrl-q"] = actions_helper.setqflist_grep,
-    },
-    fzf_opts = {
-      default_fzf_options.multi,
-      { "--prompt", "Git Live Grep > " },
-      "--disabled",
-      { "--delimiter", ":" },
-      { "--preview-window", "+{2}-/2" },
-    },
-    other_opts = {
-      reload_on_change = true,
+local M = {}
+
+M.commands = {
+  -- normal
+  {
+    name = "FzfxGLiveGrep",
+    feed = CommandFeedEnum.ARGS,
+    opts = {
+      bang = true,
+      nargs = "*",
+      desc = "Git live grep",
     },
   },
+  -- visual
+  {
+    name = "FzfxGLiveGrepV",
+    feed = CommandFeedEnum.VISUAL,
+    opts = {
+      bang = true,
+      range = true,
+      desc = "Git live grep by visual select",
+    },
+  },
+  -- cword
+  {
+    name = "FzfxGLiveGrepW",
+    feed = CommandFeedEnum.CWORD,
+    opts = {
+      bang = true,
+      desc = "Git live grep by cursor word",
+    },
+  },
+  -- put
+  {
+    name = "FzfxGLiveGrepP",
+    feed = CommandFeedEnum.PUT,
+    opts = {
+      bang = true,
+      desc = "Git live grep by yank text",
+    },
+  },
+  -- resume
+  {
+    name = "FzfxGLiveGrepR",
+    feed = CommandFeedEnum.RESUME,
+    opts = {
+      bang = true,
+      desc = "Git live grep by resume last",
+    },
+  },
+}
 
+--- @param query string?
+--- @param context fzfx.PipelineContext
+--- @return string[]|nil
+M._git_live_grep_provider = function(query, context)
+  local git_root_cmd = cmds.GitRootCommand:run()
+  if git_root_cmd:failed() then
+    log.echo(LogLevels.INFO, "not in git repo.")
+    return nil
+  end
+
+  local parsed = queries_helper.parse_flagged(query or "")
+  local payload = parsed.payload
+  local option = parsed.option
+
+  local args = { "git", "grep", "--color=always", "-n" }
+  if type(option) == "string" and string.len(option) > 0 then
+    local option_splits = strs.split(option, " ")
+    for _, o in ipairs(option_splits) do
+      if type(o) == "string" and string.len(o) > 0 then
+        table.insert(args, o)
+      end
+    end
+  end
+  table.insert(args, payload)
+  return args
+end
+
+M.providers = {
+  key = "default",
+  provider = M._git_live_grep_provider,
+  provider_type = ProviderTypeEnum.COMMAND_LIST,
+  line_opts = {
+    prepend_icon_by_ft = true,
+    prepend_icon_path_delimiter = ":",
+    prepend_icon_path_position = 1,
+  },
+}
+
+M.previewers = {
+  previewer = previewers_helper.preview_files_grep,
+  previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+  previewer_label = labels_helper.label_grep,
+}
+
+M.actions = {
+  ["esc"] = actions_helper.nop,
+  ["enter"] = actions_helper.edit_grep,
+  ["double-click"] = actions_helper.edit_grep,
+  ["ctrl-q"] = actions_helper.setqflist_grep,
+}
+
+M.fzf_opts = {
+  consts.FZF_OPTS.MULTI,
+  consts.FZF_OPTS.DISABLED,
+  consts.FZF_OPTS.DELIMITER,
+  { "--prompt", "Git Live Grep > " },
+  { "--preview-window", "+{2}-/2" },
+}
+
+M.other_opts = {
+  reload_on_change = true,
+}
+
+return M
