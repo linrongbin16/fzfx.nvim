@@ -200,6 +200,23 @@ M._is_buffer_mode = function(opts)
   return tbls.tbl_not_empty(opts) and opts.buffer --[[@as boolean]]
 end
 
+--- @param args_list string[]
+--- @param option string?
+--- @return string[]
+M._append_options = function(args_list, option)
+  assert(type(args_list) == "table")
+  if strs.not_empty(option) then
+    local option_splits = strs.split(option --[[@as string]], " ")
+    for _, o in ipairs(option_splits) do
+      if strs.not_empty(o) then
+        table.insert(args_list, o)
+      end
+    end
+  end
+
+  return args_list
+end
+
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 M._make_provider_rg = function(opts)
@@ -219,7 +236,7 @@ M._make_provider_rg = function(opts)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_RG)
     end
-    args = queries_helper.append_options(args, option, " ")
+    args = M._append_options(args, option)
 
     if M._is_buffer_mode(opts) then
       local bufpath = M._get_buf_path(context.bufnr)
@@ -255,7 +272,7 @@ M._make_provider_grep = function(opts)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
     end
-    args = queries_helper.append_options(args, option, " ")
+    args = M._append_options(args, option)
 
     if M._is_buffer_mode(opts) then
       local bufpath = M._get_buf_path(context.bufnr)
