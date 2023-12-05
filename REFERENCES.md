@@ -45,6 +45,18 @@ They are supposed to be stable and tested (except those starting with underline 
 
 The `fzfx.cfg` directly provides configurations for all builtin search commands in this plugin. Easy to read, copy and paste to custom/create other search commands.
 
+Every configuration contains below components:
+
+- `commands`: a single `fzfx.CommandConfig` (if there's only 1 command) or a `fzfx.CommandConfig` list (if there's multiple commands).
+- `providers`: a single `fzfx.ProviderConfig` (if there's only 1 provider/data source) or a `fzfx.ProviderConfig` map (if there's multiple providers/data sources).
+- `previewers`: a single `fzfx.PreviewerConfig` (if there's only 1 previewer) or a `fzfx.PreviewerConfig` map (if there's multiple previewers).
+- `actions`: a `fzfx.Action` map.
+- `interactions` (optional): a `fzfx.InterAction` map.
+- `fzf_opts` (optional): a `fzfx.FzfOpt` list.
+- `other_opts` (optional): other special options map.
+
+All builtin search command configurations:
+
 - [files](/lua/fzfx/cfg/files.lua): `FzfxFiles` implementations.
 - [live_grep](/lua/fzfx/cfg/live_grep.lua): `FzfxLiveGrep` implementations.
 
