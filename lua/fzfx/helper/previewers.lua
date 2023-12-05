@@ -114,7 +114,7 @@ end
 
 --- @param commit string
 --- @return string?
-M.preview_git_commit = function(commit)
+M._make_preview_git_commit = function(commit)
   if consts.HAS_DELTA then
     local win_width = M.get_preview_window_width()
     return string.format(
@@ -125,6 +125,15 @@ M.preview_git_commit = function(commit)
   else
     return string.format([[git show --color=always %s]], commit)
   end
+end
+
+M.preview_git_commit = function(line)
+  if strs.isspace(line:sub(1, 1)) then
+    return nil
+  end
+  local first_space_pos = strs.find(line, " ")
+  local commit = line:sub(1, first_space_pos - 1)
+  return M._make_preview_git_commit(commit)
 end
 
 -- git commits }

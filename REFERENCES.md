@@ -59,7 +59,7 @@ Every commands group contains below components:
 
 Here are all the builtin search command configurations:
 
-- [buffers](/lua/fzfx/cfg/buffers.lua): implements `FzfxBuffers`, it has a **delete buffer** interaction.
+- [buffers](/lua/fzfx/cfg/buffers.lua): implements `FzfxBuffers`, it's a single data source (has only 1 provider/previewer), and has a **delete buffer** interaction.
 - [files](/lua/fzfx/cfg/files.lua): implements `FzfxFiles`.
 - [git_branches](/lua/fzfx/cfg/git_branches.lua): implements `FzfxGBranches`, it has a special context `fzfx.GitBranchesPipelineContext` that provides all **remotes** in git repo (via `git remote`), which is used by downstream `git_checkout` action.
 - [git_commits](/lua/fzfx/cfg/git_commits.lua): implements `FzfxGCommits`.

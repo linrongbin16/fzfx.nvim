@@ -186,22 +186,12 @@ M.providers = {
   },
 }
 
---- @param line string
---- @return string?
-M._git_commits_previewer = function(line)
-  if strs.isspace(line:sub(1, 1)) then
-    return nil
-  end
-  local commit = strs.split(line, " ")[1]
-  return previewers_helper.preview_git_commit(commit)
-end
-
 M.previewers = {
   all_commits = {
-    previewer = M._git_commits_previewer,
+    previewer = previewers_helper.preview_git_commit,
   },
   buffer_commits = {
-    previewer = M._git_commits_previewer,
+    previewer = previewers_helper.preview_git_commit,
   },
 }
 
