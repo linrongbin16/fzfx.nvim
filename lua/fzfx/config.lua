@@ -353,7 +353,6 @@ end
 
 -- git branches {
 
---- @alias fzfx.GitBranchesPipelineContext {remotes:string[]|nil}
 --- @return fzfx.GitBranchesPipelineContext
 local function _git_branches_context_maker()
   local ctx = {}
