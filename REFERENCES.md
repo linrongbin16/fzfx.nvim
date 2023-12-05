@@ -8,6 +8,7 @@ They are supposed to be stable and tested (except those starting with underline 
 
 ## Table of contents
 
+- [Default Configurations](#default-configurations)
 - [Line-Oriented Helpers](#line-oriented-helpers)
   - [fzfx.helper.parsers](#fzfxhelperparsers)
   - [fzfx.helper.actions](#fzfxhelperactions)
@@ -39,6 +40,13 @@ They are supposed to be stable and tested (except those starting with underline 
   - [fzfx.lib.strings](#fzfxlibstrings)
   - [fzfx.lib.tables](#fzfxlibtables)
   - [fzfx.lib.log](#fzfxliblog)
+
+## [Default Configurations](/lua/fzfx/cfg)
+
+The `fzfx.cfg` directly provides configurations for all builtin search commands in this plugin. Easy to read, copy and paste to custom/create other search commands.
+
+- [files](/lua/fzfx.cfg/files.lua): `FzfxFiles` implementations.
+- [live_grep](/lua/fzfx.cfg/live_grep.lua): `FzfxLiveGrep` implementations.
 
 ## [Line-Oriented Helpers](/lua/fzfx/helper)
 
