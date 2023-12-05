@@ -59,8 +59,11 @@ Every configuration contains below components:
 
 Here are all the builtin search command configurations:
 
+- [buffers](/lua/fzfx/cfg/buffers.lua): `FzfxBuffers` implementations, it has a **delete buffer** interaction.
 - [files](/lua/fzfx/cfg/files.lua): `FzfxFiles` implementations.
-- [live_grep](/lua/fzfx/cfg/live_grep.lua): `FzfxLiveGrep` implementations.
+- [git_files](/lua/fzfx/cfg/git_files.lua): `FzfxGFiles` implementations.
+- [git_live_grep](/lua/fzfx/cfg/git_live_grep.lua): `FzfxGLiveGrep` implementations, it enables a special **reload_on_change** (in `other_opts`) option to reload grep on fzf's [change event](https://man.archlinux.org/man/fzf.1.en#AVAILABLE_EVENTS:).
+- [live_grep](/lua/fzfx/cfg/live_grep.lua): `FzfxLiveGrep` implementations, it also enables the **reload_on_change**.
 
 ## [Line-Oriented Helpers](/lua/fzfx/helper)
 
