@@ -110,4 +110,23 @@ end
 
 -- previewer width }
 
+-- git commits {
+
+--- @param commit string
+--- @return string?
+M.preview_git_commit = function(commit)
+  if consts.HAS_DELTA then
+    local win_width = M.get_preview_window_width()
+    return string.format(
+      [[git show %s | delta -n --tabs 4 --width %d]],
+      commit,
+      win_width
+    )
+  else
+    return string.format([[git show --color=always %s]], commit)
+  end
+end
+
+-- git commits }
+
 return M
