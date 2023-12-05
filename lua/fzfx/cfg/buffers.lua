@@ -131,7 +131,7 @@ M._delete_buffer = function(line)
     local bufpath = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
     filenames[bufpath] = bufnr
   end
-  if type(line) == "string" and string.len(line) > 0 then
+  if strs.not_empty(line) then
     local parsed = parsers_helper.parse_find(line)
     local bufnr = filenames[parsed.filename]
     if type(bufnr) == "number" and nvims.buf_is_valid(bufnr) then
