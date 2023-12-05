@@ -63,6 +63,7 @@ Here are all the builtin search command configurations:
 - [files](/lua/fzfx/cfg/files.lua): implements `FzfxFiles`.
 - [git_files](/lua/fzfx/cfg/git_files.lua): implements `FzfxGFiles`.
 - [git_live_grep](/lua/fzfx/cfg/git_live_grep.lua): implements `FzfxGLiveGrep`, it enables a special `reload_on_change` (in `other_opts`) option to reload grep on fzf's [change event](https://man.archlinux.org/man/fzf.1.en#AVAILABLE_EVENTS:).
+- [git_status](/lua/fzfx/cfg/git_status.lua): implements `FzfxGStatus`.
 - [live_grep](/lua/fzfx/cfg/live_grep.lua): implements `FzfxLiveGrep`, it also enables the `reload_on_change`.
 
 ## [Line-Oriented Helpers](/lua/fzfx/helper)
