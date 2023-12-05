@@ -55,6 +55,8 @@ Every configuration contains below components:
 - `fzf_opts` (optional): a `fzfx.FzfOpt` list.
 - `other_opts` (optional): other special options map.
 
+> Please also see: [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command).
+
 All builtin search command configurations:
 
 - [files](/lua/fzfx/cfg/files.lua): `FzfxFiles` implementations.
