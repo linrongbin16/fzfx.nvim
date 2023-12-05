@@ -200,7 +200,7 @@ end
 
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
-M._make_provide_live_grep = function(opts)
+M._make_provider_rg = function(opts)
   --- @param query string
   --- @param context fzfx.PipelineContext
   --- @return string[]|nil
@@ -211,33 +211,16 @@ M._make_provide_live_grep = function(opts)
 
     local bufpath = nil
     local args = nil
-    if consts.HAS_RG then
-      if M._is_unrestricted_mode(opts) then
-        args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
-      elseif M._is_buffer_mode(opts) then
-        args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
-        bufpath = M._get_buf_path(context.bufnr)
-        if not bufpath then
-          return nil
-        end
-      else
-        args = vim.deepcopy(providers_helper.RESTRICTED_RG)
-      end
-    elseif consts.HAS_GREP then
-      if M._is_unrestricted_mode(opts) then
-        args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
-      elseif M._is_buffer_mode(opts) then
-        args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
-        bufpath = M._get_buf_path(context.bufnr)
-        if not bufpath then
-          return nil
-        end
-      else
-        args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
+    if M._is_unrestricted_mode(opts) then
+      args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
+    elseif M._is_buffer_mode(opts) then
+      args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
+      bufpath = M._get_buf_path(context.bufnr)
+      if not bufpath then
+        return nil
       end
     else
-      log.echo(LogLevels.INFO, "no rg/grep command found.")
-      return nil
+      args = vim.deepcopy(providers_helper.RESTRICTED_RG)
     end
     if strs.not_empty(option) then
       local option_splits = strs.split(option --[[@as string]], " ")
@@ -259,9 +242,70 @@ M._make_provide_live_grep = function(opts)
   return impl
 end
 
-local restricted_provider = M._make_provide_live_grep()
-local unrestricted_provider = M._make_provide_live_grep({ unrestricted = true })
-local buffer_provider = M._make_provide_live_grep({ buffer = true })
+--- @param opts {unrestricted:boolean?,buffer:boolean?}?
+--- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
+M._make_provider_grep = function(opts)
+  --- @param query string
+  --- @param context fzfx.PipelineContext
+  --- @return string[]|nil
+  local function impl(query, context)
+    local parsed = queries_helper.parse_flagged(query or "")
+    local payload = parsed.payload
+    local option = parsed.option
+
+    local bufpath = nil
+    local args = nil
+    if M._is_unrestricted_mode(opts) then
+      args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
+    elseif M._is_buffer_mode(opts) then
+      args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
+      bufpath = M._get_buf_path(context.bufnr)
+      if not bufpath then
+        return nil
+      end
+    else
+      args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
+    end
+    if strs.not_empty(option) then
+      local option_splits = strs.split(option --[[@as string]], " ")
+      for _, o in ipairs(option_splits) do
+        if strs.not_empty(o) then
+          table.insert(args, o)
+        end
+      end
+    end
+    if M._is_buffer_mode(opts) then
+      assert(strs.not_empty(bufpath))
+      table.insert(args, payload)
+      table.insert(args, bufpath)
+    else
+      table.insert(args, payload)
+    end
+    return args
+  end
+  return impl
+end
+
+--- @param opts {unrestricted:boolean?,buffer:boolean?}?
+--- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
+M._make_provider = function(opts)
+  if consts.HAS_RG then
+    return M._make_provider_rg(opts)
+  elseif consts.HAS_GREP then
+    return M._make_provider_grep(opts)
+  else
+    --- @return nil
+    local function impl()
+      log.echo(LogLevels.INFO, "no rg/grep command found.")
+      return nil
+    end
+    return impl
+  end
+end
+
+local restricted_provider = M._make_provider()
+local unrestricted_provider = M._make_provider({ unrestricted = true })
+local buffer_provider = M._make_provider({ buffer = true })
 
 M.providers = {
   restricted_mode = {
