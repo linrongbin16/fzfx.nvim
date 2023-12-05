@@ -211,16 +211,11 @@ M._make_provider_rg = function(opts)
     local payload = parsed.payload
     local option = parsed.option
 
-    local bufpath = nil
     local args = nil
     if M._is_unrestricted_mode(opts) then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
     elseif M._is_buffer_mode(opts) then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
-      bufpath = M._get_buf_path(context.bufnr)
-      if not bufpath then
-        return nil
-      end
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_RG)
     end
@@ -233,7 +228,10 @@ M._make_provider_rg = function(opts)
       end
     end
     if M._is_buffer_mode(opts) then
-      assert(strs.not_empty(bufpath))
+      local bufpath = M._get_buf_path(context.bufnr)
+      if not bufpath then
+        return nil
+      end
       table.insert(args, payload)
       table.insert(args, bufpath)
     else
@@ -255,16 +253,11 @@ M._make_provider_grep = function(opts)
     local payload = parsed.payload
     local option = parsed.option
 
-    local bufpath = nil
     local args = nil
     if M._is_unrestricted_mode(opts) then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
     elseif M._is_buffer_mode(opts) then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
-      bufpath = M._get_buf_path(context.bufnr)
-      if not bufpath then
-        return nil
-      end
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
     end
@@ -277,7 +270,10 @@ M._make_provider_grep = function(opts)
       end
     end
     if M._is_buffer_mode(opts) then
-      assert(strs.not_empty(bufpath))
+      local bufpath = M._get_buf_path(context.bufnr)
+      if not bufpath then
+        return nil
+      end
       table.insert(args, payload)
       table.insert(args, bufpath)
     else
