@@ -24,15 +24,15 @@ describe("helper.previewers", function()
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   conf.setup()
 
-  describe("[files]", function()
-    it("_bat_style_theme default", function()
+  describe("[_bat_style_theme]", function()
+    it("default", function()
       vim.env.BAT_STYLE = nil
       vim.env.BAT_THEME = nil
       local style, theme = previewers._bat_style_theme()
       assert_eq(style, "numbers,changes")
       assert_eq(theme, "base16")
     end)
-    it("_bat_style_theme overwrites", function()
+    it("overwrites", function()
       vim.env.BAT_STYLE = "numbers,changes,headers"
       vim.env.BAT_THEME = "zenburn"
       local style, theme = previewers._bat_style_theme()
@@ -41,8 +41,10 @@ describe("helper.previewers", function()
       vim.env.BAT_STYLE = nil
       vim.env.BAT_THEME = nil
     end)
+  end)
 
-    it("_make_preview_files", function()
+  describe("[preview_files_find]", function()
+    it("test1", function()
       local f = previewers._make_preview_files("lua/fzfx/config.lua", 135)
       assert_eq(type(f), "function")
       local actual = f()
@@ -63,8 +65,7 @@ describe("helper.previewers", function()
         assert_eq(actual[2], "lua/fzfx/config.lua")
       end
     end)
-
-    it("preview_files_find", function()
+    it("test2", function()
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
@@ -91,8 +92,8 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[live_grep]", function()
-    it("_preview_files_grep", function()
+  describe("[preview_files_grep]", function()
+    it("test", function()
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md:1",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:2",
