@@ -215,9 +215,7 @@ M._make_provider_rg = function(opts)
     local option = parsed.option
 
     local args = nil
-    if tbls.tbl_get(opts, "unrestricted") then
-      args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
-    elseif tbls.tbl_get(opts, "buffer") then
+    if tbls.tbl_get(opts, "unrestricted") or tbls.tbl_get(opts, "buffer") then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_RG)
@@ -251,9 +249,7 @@ M._make_provider_grep = function(opts)
     local option = parsed.option
 
     local args = nil
-    if tbls.tbl_get(opts, "unrestricted") then
-      args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
-    elseif tbls.tbl_get(opts, "buffer") then
+    if tbls.tbl_get(opts, "unrestricted") or tbls.tbl_get(opts, "buffer") then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
