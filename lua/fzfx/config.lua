@@ -2163,7 +2163,6 @@ end
 
 -- file explorer {
 
---- @alias fzfx.FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
 --- @return fzfx.FileExplorerPipelineContext
 local function _file_explorer_context_maker()
   local temp = vim.fn.tempname()
@@ -2389,190 +2388,24 @@ local Defaults = {
   lsp_references = require("fzfx.cfg.lsp_references"),
 
   -- the 'Lsp Implementations' command
+  --
   --- @type fzfx.GroupConfig
   lsp_implementations = require("fzfx.cfg.lsp_implementations"),
 
   -- the 'Lsp Incoming Calls' command
+  --
   --- @type fzfx.GroupConfig
   lsp_incoming_calls = require("fzfx.cfg.lsp_incoming_calls"),
 
   -- the 'Lsp Outgoing Calls' command
+  --
   --- @type fzfx.GroupConfig
   lsp_outgoing_calls = require("fzfx.cfg.lsp_outgoing_calls"),
 
   -- the 'File Explorer' commands
+  --
   --- @type fzfx.GroupConfig
-  file_explorer = {
-    commands = {
-      -- normal
-      {
-        name = "FzfxFileExplorer",
-        feed = CommandFeedEnum.ARGS,
-        opts = {
-          bang = true,
-          nargs = "?",
-          complete = "dir",
-          desc = "File explorer (ls -l)",
-        },
-        default_provider = "filter_hidden",
-      },
-      {
-        name = "FzfxFileExplorerU",
-        feed = CommandFeedEnum.ARGS,
-        opts = {
-          bang = true,
-          nargs = "?",
-          complete = "dir",
-          desc = "File explorer (ls -la)",
-        },
-        default_provider = "include_hidden",
-      },
-      -- visual
-      {
-        name = "FzfxFileExplorerV",
-        feed = CommandFeedEnum.VISUAL,
-        opts = {
-          bang = true,
-          range = true,
-          desc = "File explorer (ls -l) by visual select",
-        },
-        default_provider = "filter_hidden",
-      },
-      {
-        name = "FzfxFileExplorerUV",
-        feed = CommandFeedEnum.VISUAL,
-        opts = {
-          bang = true,
-          range = true,
-          desc = "File explorer (ls -la) by visual select",
-        },
-        default_provider = "include_hidden",
-      },
-      -- word
-      {
-        name = "FzfxFileExplorerW",
-        feed = CommandFeedEnum.CWORD,
-        opts = {
-          bang = true,
-          desc = "File explorer (ls -l) by cursor word",
-        },
-        default_provider = "filter_hidden",
-      },
-      {
-        name = "FzfxFileExplorerUW",
-        feed = CommandFeedEnum.CWORD,
-        opts = {
-          bang = true,
-          desc = "File explorer (ls -la) by cursor word",
-        },
-        default_provider = "include_hidden",
-      },
-      -- put
-      {
-        name = "FzfxFileExplorerP",
-        feed = CommandFeedEnum.PUT,
-        opts = {
-          bang = true,
-          desc = "File explorer (ls -l) by yank text",
-        },
-        default_provider = "filter_hidden",
-      },
-      {
-        name = "FzfxFileExplorerUP",
-        feed = CommandFeedEnum.PUT,
-        opts = {
-          bang = true,
-          desc = "File explorer (ls -la) by yank text",
-        },
-        default_provider = "include_hidden",
-      },
-      -- resume
-      {
-        name = "FzfxFileExplorerR",
-        feed = CommandFeedEnum.RESUME,
-        opts = {
-          bang = true,
-          desc = "File explorer (ls -l) by resume last",
-        },
-        default_provider = "filter_hidden",
-      },
-      {
-        name = "FzfxFileExplorerUR",
-        feed = CommandFeedEnum.RESUME,
-        opts = {
-          bang = true,
-          desc = "File explorer (ls -la) by resume last",
-        },
-        default_provider = "include_hidden",
-      },
-    },
-    providers = {
-      filter_hidden = {
-        key = "ctrl-r",
-        provider = _make_file_explorer_provider("-lh"),
-        provider_type = ProviderTypeEnum.COMMAND,
-      },
-      include_hidden = {
-        key = "ctrl-u",
-        provider = _make_file_explorer_provider("-lha"),
-        provider_type = ProviderTypeEnum.COMMAND,
-      },
-    },
-    previewers = {
-      filter_hidden = {
-        previewer = _file_explorer_previewer,
-        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = consts.HAS_LSD and labels_helper.label_lsd
-          or (
-            consts.HAS_EZA and labels_helper.label_eza
-            or labels_helper.label_ls
-          ),
-      },
-      include_hidden = {
-        previewer = _file_explorer_previewer,
-        previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-        previewer_label = consts.HAS_LSD and labels_helper.label_lsd
-          or (
-            consts.HAS_EZA and labels_helper.label_eza
-            or labels_helper.label_ls
-          ),
-      },
-    },
-    interactions = {
-      cd = {
-        key = "alt-l",
-        interaction = _cd_file_explorer,
-        reload_after_execute = true,
-      },
-      upper = {
-        key = "alt-h",
-        interaction = _upper_file_explorer,
-        reload_after_execute = true,
-      },
-    },
-    actions = {
-      ["esc"] = actions_helper.nop,
-      ["enter"] = actions_helper.edit_ls,
-      ["double-click"] = actions_helper.edit_ls,
-    },
-    fzf_opts = {
-      default_fzf_options.multi,
-      { "--prompt", paths.shorten() .. " > " },
-      function()
-        local n = 0
-        if consts.HAS_LSD or consts.HAS_EZA or consts.HAS_LS then
-          n = n + 1
-        end
-        if consts.HAS_ECHO then
-          n = n + 1
-        end
-        return n > 0 and string.format("--header-lines=%d", n) or nil
-      end,
-    },
-    other_opts = {
-      context_maker = _file_explorer_context_maker,
-    },
-  },
+  file_explorer = require("fzfx.cfg.file_explorer"),
 
   -- the 'Yank History' commands
   yank_history = {
