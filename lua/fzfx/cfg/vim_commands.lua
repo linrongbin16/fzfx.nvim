@@ -552,10 +552,16 @@ M._get_vim_commands = function(opts)
   local results = {}
 
   if M._is_ex_commands(opts) then
-    results = vim.list_extend(results, M._get_vim_ex_commands())
+    local tmp = M._get_vim_ex_commands()
+    for _, c in pairs(tmp) do
+      table.insert(results, c)
+    end
   end
   if M._is_user_commands(opts) then
-    results = vim.list_extend(results, M._get_vim_user_commands())
+    local tmp = M._get_vim_user_commands()
+    for _, c in pairs(tmp) do
+      table.insert(results, c)
+    end
   end
 
   table.sort(results, function(a, b)
