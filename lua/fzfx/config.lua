@@ -2163,7 +2163,6 @@ end
 
 -- file explorer {
 
---- @alias fzfx.FileExplorerPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,cwd:string}
 --- @return fzfx.FileExplorerPipelineContext
 local function _file_explorer_context_maker()
   local temp = vim.fn.tempname()
