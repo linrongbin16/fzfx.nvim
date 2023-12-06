@@ -982,10 +982,6 @@ end
 
 local default_no_lsp_call_hierarchy_error = "no lsp call hierarchy found."
 
---- @alias fzfx.LspCallHierarchyItem {name:string,kind:integer,detail:string?,uri:string,range:fzfx.LspRange,selectionRange:fzfx.LspRange}
---- @alias fzfx.LspCallHierarchyIncomingCall {from:fzfx.LspCallHierarchyItem,fromRanges:fzfx.LspRange[]}
---- @alias fzfx.LspCallHierarchyOutgoingCall {to:fzfx.LspCallHierarchyItem,fromRanges:fzfx.LspRange[]}
----
 --- @param item fzfx.LspCallHierarchyItem?
 --- @return boolean
 local function _is_lsp_call_hierarchy_item(item)
