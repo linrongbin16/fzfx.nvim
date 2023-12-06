@@ -79,6 +79,7 @@ M.FZF_OPTS = {
   TOGGLE_PREVIEW = "--bind=alt-p:toggle-preview",
   PREVIEW_HALF_PAGE_DOWN = "--bind=ctrl-f:preview-half-page-down",
   PREVIEW_HALF_PAGE_UP = "--bind=ctrl-b:preview-half-page-up",
+  GREP_PREVIEW_WINDOW = { "--preview-window", "+{2}-/2" },
   LSP_PREVIEW_WINDOW = { "--preview-window", "left,65%,+{2}-/2" },
 }
 

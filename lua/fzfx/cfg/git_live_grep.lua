@@ -127,8 +127,8 @@ M.fzf_opts = {
   consts.FZF_OPTS.MULTI,
   consts.FZF_OPTS.DISABLED,
   consts.FZF_OPTS.DELIMITER,
+  consts.FZF_OPTS.GREP_PREVIEW_WINDOW,
   { "--prompt", "Git Live Grep > " },
-  { "--preview-window", "+{2}-/2" },
 }
 
 M.other_opts = {
