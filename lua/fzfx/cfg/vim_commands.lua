@@ -289,6 +289,7 @@ M._parse_ex_command_output_lua_function_definition = function(line, start_pos)
   }
 end
 
+--- @alias fzfx.VimExCommandOutputHeader {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
 --- @param header string
 --- @return fzfx.VimExCommandOutputHeader
 M._parse_ex_command_output_header = function(header)
