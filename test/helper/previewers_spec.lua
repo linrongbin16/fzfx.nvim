@@ -43,9 +43,9 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[preview_files_find]", function()
-    it("test1", function()
-      local f = previewers._make_preview_files("lua/fzfx/config.lua", 135)
+  describe("[preview_files]", function()
+    it("test", function()
+      local f = previewers.preview_files("lua/fzfx/config.lua", 135)
       assert_eq(type(f), "function")
       local actual = f()
       -- print(
@@ -65,7 +65,10 @@ describe("helper.previewers", function()
         assert_eq(actual[2], "lua/fzfx/config.lua")
       end
     end)
-    it("test2", function()
+  end)
+
+  describe("[preview_files_find]", function()
+    it("test", function()
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",

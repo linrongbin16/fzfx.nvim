@@ -608,64 +608,35 @@ M.providers = {
   },
 }
 
---- @param filename string
---- @param lineno integer
---- @return string[]
-local function _vim_commands_lua_function_previewer(filename, lineno)
-  local height = vim.api.nvim_win_get_height(0)
-  if consts.HAS_BAT then
-    local style, theme = _default_bat_style_theme()
-    -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s --line-range %d: -- %s"
-    return {
-      consts.BAT,
-      "--style=" .. style,
-      "--theme=" .. theme,
-      "--color=always",
-      "--pager=never",
-      "--highlight-line=" .. lineno,
-      "--line-range",
-      string.format(
-        "%d:",
-        math.max(lineno - math.max(math.floor(height / 2), 1), 1)
-      ),
-      "--",
-      filename,
-    }
-  else
-    -- "cat %s"
-    return {
-      "cat",
-      filename,
-    }
-  end
-end
-
 --- @param line string
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return string[]|nil
-local function vim_commands_previewer(line, context)
+M._vim_commands_previewer = function(line, context)
   local parsed = parsers_helper.parse_vim_command(line, context)
-  log.debug(
-    "|fzfx.config - vim_commands_previewer| line:%s, context:%s, parsed:%s",
-    vim.inspect(line),
-    vim.inspect(context),
-    vim.inspect(parsed)
-  )
+  -- log.debug(
+  --   "|fzfx.config - _vim_commands_previewer| line:%s, context:%s, parsed:%s",
+  --   vim.inspect(line),
+  --   vim.inspect(context),
+  --   vim.inspect(parsed)
+  -- )
   if
     tbls.tbl_not_empty(parsed)
     and strs.not_empty(parsed.filename)
     and type(parsed.lineno) == "number"
   then
-    log.debug(
-      "|fzfx.config - vim_commands_previewer| loc:%s",
-      vim.inspect(parsed)
+    -- log.debug(
+    --   "|fzfx.config - _vim_commands_previewer| loc:%s",
+    --   vim.inspect(parsed)
+    -- )
+    return previewers_helper.preview_files_with_line_range(
+      parsed.filename,
+      parsed.lineno
     )
-    return _vim_commands_lua_function_previewer(parsed.filename, parsed.lineno)
   elseif consts.HAS_ECHO and tbls.tbl_not_empty(parsed) then
-    log.debug(
-      "|fzfx.config - vim_commands_previewer| desc:%s",
-      vim.inspect(parsed)
-    )
+    -- log.debug(
+    --   "|fzfx.config - _vim_commands_previewer| desc:%s",
+    --   vim.inspect(parsed)
+    -- )
     return { "echo", parsed.definition or "" }
   else
     log.echo(LogLevels.INFO, "no echo command found.")
@@ -675,17 +646,17 @@ end
 
 M.previewers = {
   all_commands = {
-    previewer = vim_commands_previewer,
+    previewer = M._vim_commands_previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = labels_helper.label_vim_command,
   },
   ex_commands = {
-    previewer = vim_commands_previewer,
+    previewer = M._vim_commands_previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = labels_helper.label_vim_command,
   },
   user_commands = {
-    previewer = vim_commands_previewer,
+    previewer = M._vim_commands_previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = labels_helper.label_vim_command,
   },
@@ -706,17 +677,17 @@ M.fzf_opts = {
 
 --- @param commands fzfx.VimCommand[]
 --- @return integer,integer
-M._render_vim_commands_columns_status = function(commands)
+M._calculate_vim_commands_columns_width = function(commands)
   local NAME = "Name"
   local OPTS = "Bang|Bar|Nargs|Range|Complete"
-  local max_name = string.len(NAME)
-  local max_opts = string.len(OPTS)
+  local name_width = string.len(NAME)
+  local opts_width = string.len(OPTS)
   for _, c in ipairs(commands) do
-    max_name = math.max(max_name, string.len(c.name))
-    max_opts =
-      math.max(max_opts, string.len(M._render_vim_commands_column_opts(c)))
+    name_width = math.max(name_width, string.len(c.name))
+    opts_width =
+      math.max(opts_width, string.len(M._render_vim_commands_column_opts(c)))
   end
-  return max_name, max_opts
+  return name_width, opts_width
 end
 
 --- @alias fzfx.VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
@@ -727,8 +698,10 @@ M._vim_commands_context_maker = function()
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
-  local commands = _get_vim_commands()
-  local name_width, opts_width = M._render_vim_commands_columns_status(commands)
+  local commands =
+    M._get_vim_commands({ ex_commands = true, user_commands = true })
+  local name_width, opts_width =
+    M._calculate_vim_commands_columns_width(commands)
   ctx.name_width = name_width
   ctx.opts_width = opts_width
   return ctx
