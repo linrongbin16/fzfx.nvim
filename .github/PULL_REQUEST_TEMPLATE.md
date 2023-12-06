@@ -66,6 +66,10 @@
   - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Go to definitions/references (this is the most 2 easiest use case when developing this lua plugin with lua_ls).
   - Press `ESC` to quit, `ENTER` to open file.
+- [ ] FzfxLspIncomingCalls, FzfxLspOutgoingCalls
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
+  - Go to incoming/outgoing calls.
+  - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxCommands
   - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-E`/`CTRL-A` to switch between user/ex/all vim commands.
