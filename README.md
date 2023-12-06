@@ -866,7 +866,7 @@ Lsp methods:
 ## 📌 Recommended Key Mappings
 
 <details>
-<summary><i>Click here to see how to configure vimscripts</i></summary>
+<summary><i>Click here to see vim scripts</i></summary>
 <br/>
 
 ```vim
@@ -983,7 +983,7 @@ nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 </details>
 
 <details>
-<summary><i>Click here to see how to configure lua scripts</i></summary>
+<summary><i>Click here to see lua scripts</i></summary>
 <br/>
 
 ```lua
