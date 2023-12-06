@@ -247,4 +247,30 @@ M._lsp_position_context_maker = function()
   return context
 end
 
+M.previewers = {
+  previewer = previewers_helper.preview_files_grep,
+  previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+  previewer_label = labels_helper.label_rg,
+}
+
+M.actions = {
+  ["esc"] = actions_helper.nop,
+  ["enter"] = actions_helper.edit_rg,
+  ["double-click"] = actions_helper.edit_rg,
+}
+
+M.win_opts = {
+  relative = "cursor",
+  height = 0.45,
+  width = 1,
+  row = 1,
+  col = 0,
+  border = "none",
+  zindex = 51,
+}
+
+M.other_opts = {
+  context_maker = M._lsp_position_context_maker,
+}
+
 return M

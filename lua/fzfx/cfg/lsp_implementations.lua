@@ -9,7 +9,6 @@ local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local contexts_helper = require("fzfx.helper.contexts")
 local parsers_helper = require("fzfx.helper.parsers")
 local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
@@ -26,19 +25,19 @@ local _lsp_locations = require("fzfx.cfg._lsp_locations")
 local M = {}
 
 M.commands = {
-  name = "FzfxLspDefinitions",
+  name = "FzfxLspImplementations",
   feed = CommandFeedEnum.ARGS,
   opts = {
     bang = true,
-    desc = "Search lsp definitions",
+    desc = "Search lsp implementations",
   },
 }
 
 M.providers = {
   key = "default",
   provider = _lsp_locations._make_lsp_locations_provider({
-    method = "textDocument/definition",
-    capability = "definitionProvider",
+    method = "textDocument/implementation",
+    capability = "implementationProvider",
   }),
   provider_type = ProviderTypeEnum.LIST,
   line_opts = {
@@ -48,14 +47,6 @@ M.providers = {
   },
 }
 
-M.fzf_opts = {
-  consts.FZF_OPTS.MULTI,
-  consts.FZF_OPTS.LSP_PREVIEW_WINDOW,
-  consts.FZF_OPTS.DELIMITER,
-  "--border=none",
-  { "--prompt", "Definitions > " },
-}
-
 M.previewers = _lsp_locations.previewers
 
 M.actions = _lsp_locations.actions
@@ -63,5 +54,13 @@ M.actions = _lsp_locations.actions
 M.win_opts = _lsp_locations.win_opts
 
 M.other_opts = _lsp_locations.other_opts
+
+M.fzf_opts = {
+  consts.FZF_OPTS.MULTI,
+  consts.FZF_OPTS.LSP_PREVIEW_WINDOW,
+  consts.FZF_OPTS.DELIMITER,
+  "--border=none",
+  { "--prompt", "Implementations > " },
+}
 
 return M

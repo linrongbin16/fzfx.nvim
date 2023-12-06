@@ -1574,7 +1574,7 @@ To help easier customizing/integrating, fzfx provides below builtin API collecti
 - `fzfx.helper`: Middle-level line-oriented helpers for parsing and rendering queries/lines required in all scenarios, a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 - `fzfx.lib`: Low-level fundamental infrastructures: cross-platform (Windows/Unix/Linux) and different Neovim versions API, file IO & paths, json, strings, numbers, lua tables/lists, colors, running child process & stdio, etc.
 
-These APIs are supposed to be stable and tested, please see [REFERENCES.md](/REFERENCES.md) for details.
+The `helper` and `lib` APIs are supposed to be stable and tested (except those starting with underline `_`, which are exposed for unit tests), please see [REFERENCES.md](/REFERENCES.md) for details.
 
 ## 🍀 Credit
 
