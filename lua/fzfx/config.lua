@@ -1844,7 +1844,6 @@ local function _parse_map_command_output_line(line)
   return result
 end
 
---- @alias fzfx.VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
 --- @return fzfx.VimKeyMap[]
 local function _get_vim_keymaps()
   local tmpfile = vim.fn.tempname()
@@ -2053,7 +2052,6 @@ local function _render_vim_keymaps(keymaps, key_width, opts_width)
   return results
 end
 
---- @alias fzfx.VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
 --- @return fzfx.VimKeyMapsPipelineContext
 local function _vim_keymaps_context_maker()
   local ctx = {
