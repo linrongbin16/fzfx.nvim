@@ -159,7 +159,7 @@ But when there're whitespaces on the path, launching correct shell command becom
 
    This will help avoid the shell command issue.
 
-2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe`: user name (`Lin Rongbin` ) contains whitespace.
+2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe`: user name (`Lin Rongbin`) contains whitespace.
 
    We still cannot handle the 2nd case because all lua scripts in this plugin will thus always contain whitespaces in their path.
 
