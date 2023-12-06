@@ -423,13 +423,13 @@ M._get_vim_keymaps = function()
   return results
 end
 
---- @param rendered fzfx.VimKeyMap
+--- @param vk fzfx.VimKeyMap
 --- @return string
-local function _render_vim_keymaps_column_opts(rendered)
-  local mode = rendered.mode or ""
-  local noremap = rendered.noremap and "Y" or "N"
-  local nowait = rendered.nowait and "Y" or "N"
-  local silent = rendered.silent and "Y" or "N"
+M._render_vim_keymaps_column_opts = function(vk)
+  local mode = vk.mode or ""
+  local noremap = vk.noremap and "Y" or "N"
+  local nowait = vk.nowait and "Y" or "N"
+  local silent = vk.silent and "Y" or "N"
   return string.format("%-4s|%-7s|%-6s|%-6s", mode, noremap, nowait, silent)
 end
 
@@ -480,7 +480,7 @@ M._render_vim_keymaps = function(keymaps, key_width, opts_width)
     local rendered = string.format(
       formatter,
       c.lhs,
-      _render_vim_keymaps_column_opts(c),
+      M._render_vim_keymaps_column_opts(c),
       rendered_def_or_loc(c)
     )
     log.debug(
@@ -640,7 +640,7 @@ M._render_vim_keymaps_columns_status = function(keys)
   for _, k in ipairs(keys) do
     max_key = math.max(max_key, string.len(k.lhs))
     max_opts =
-      math.max(max_opts, string.len(_render_vim_keymaps_column_opts(k)))
+      math.max(max_opts, string.len(M._render_vim_keymaps_column_opts(k)))
   end
   log.debug(
     "|fzfx.config - _render_vim_keymaps_columns_status| lhs:%s, opts:%s",

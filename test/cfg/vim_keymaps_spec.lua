@@ -151,28 +151,6 @@ describe("cfg.vim_keymaps", function()
       assert_true(ctx.key_width > 0)
       assert_true(ctx.opts_width > 0)
     end)
-    it("_vim_keymaps_lua_function_previewer", function()
-      local actual = vim_keymaps_cfg._vim_keymaps_lua_function_previewer(
-        "lua/fzfx/config.lua",
-        13
-      )
-      assert_eq(type(actual), "table")
-      if actual[1] == "bat" then
-        assert_eq(actual[1], "bat")
-        assert_eq(actual[2], "--style=numbers,changes")
-        assert_eq(actual[3], "--theme=base16")
-        assert_eq(actual[4], "--color=always")
-        assert_eq(actual[5], "--pager=never")
-        assert_eq(actual[6], "--highlight-line=13")
-        assert_eq(actual[7], "--line-range")
-        assert_true(strs.endswith(actual[8], ":"))
-        assert_eq(actual[9], "--")
-        assert_eq(actual[10], "lua/fzfx/config.lua")
-      else
-        assert_eq(actual[1], "cat")
-        assert_eq(actual[2], "lua/fzfx/config.lua")
-      end
-    end)
     it("_vim_keymaps_previewer", function()
       local lines = {
         '<C-Tab>                                      o   |Y      |N     |N      "<C-C><C-W>w"',
