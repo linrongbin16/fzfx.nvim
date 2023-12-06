@@ -981,7 +981,6 @@ nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 ```
 
 </details>
-<br/>
 
 <details>
 <summary><i>Click here to see how to configure lua scripts</i></summary>
