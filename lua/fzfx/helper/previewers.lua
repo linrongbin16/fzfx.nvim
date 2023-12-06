@@ -150,7 +150,7 @@ end
 -- vim commands/keymaps {
 
 -- for self-rendered lines (unlike rg/grep), we don't have the line number split by colon ':'.
--- thus we cannot set fzf's option '--preview-window=+{2}-/2' or '--delimiter=:' (see M._make_preview_files).
+-- thus we cannot set fzf's option '--preview-window=+{2}-/2' or '--delimiter=:' (see `preview_files`).
 -- so we set `--line-range=40:` (in bat) to place the highlight line in the center of the preview window.
 --
 --- @param filename string
