@@ -12,6 +12,25 @@ M.tbl_not_empty = function(t)
   return type(t) == "table" and not vim.tbl_isempty(t)
 end
 
+-- retrieve value from table like json field indexing via dot `.` delimiter.
+-- for example when parameter `t = { a = { b = 1 } }` and `field = 'a.b'`, it will return `1`.
+--
+--- @param t table?
+--- @param field string
+--- @return any
+M.tbl_get = function(t, field)
+  local cur = t --[[@as table]]
+  local field_splits = vim.split(field, ".", { plain = true, trimempty = true })
+  for _, f in ipairs(field_splits) do
+    if M.tbl_not_empty(cur) and cur[f] ~= nil then
+      cur = cur[f]
+    else
+      return nil
+    end
+  end
+  return cur
+end
+
 --- @param l any?
 --- @return boolean
 M.list_empty = function(l)

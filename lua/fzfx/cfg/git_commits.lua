@@ -139,7 +139,7 @@ M._make_git_commits_provider = function(opts)
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
     end
-    if type(opts) == "table" and opts.buffer then
+    if tbls.tbl_get(opts, "buffer") then
       if not nvims.buf_is_valid(context.bufnr) then
         log.echo(
           LogLevels.INFO,
