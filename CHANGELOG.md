@@ -1,5 +1,42 @@
 # Changelog
 
+## [3.6.1](https://github.com/linrongbin16/fzfx.nvim/compare/v3.6.0...v3.6.1) (2023-12-06)
+
+
+### Bug Fixes
+
+* **test:** fix unit test for buffers 'delete buffer' interaction ([#452](https://github.com/linrongbin16/fzfx.nvim/issues/452)) ([38ba99f](https://github.com/linrongbin16/fzfx.nvim/commit/38ba99fe531640863568820dbe0b04b6258e3687))
+
+
+### Performance Improvements
+
+* **buffers:** migrate 'buffers' to 'cfg.buffers' ([#449](https://github.com/linrongbin16/fzfx.nvim/issues/449)) ([b9c4b2d](https://github.com/linrongbin16/fzfx.nvim/commit/b9c4b2de2639fca522203576172fb3a20d8a58c6))
+* **config:** clean old configs ([#464](https://github.com/linrongbin16/fzfx.nvim/issues/464)) ([01a27ce](https://github.com/linrongbin16/fzfx.nvim/commit/01a27ce96f5be4332042f42ea4891b80e3645547))
+* **config:** migrate 'git_branches' to 'cfg.git_branches' ([#454](https://github.com/linrongbin16/fzfx.nvim/issues/454)) ([688a786](https://github.com/linrongbin16/fzfx.nvim/commit/688a78687bc9eaa9ea87a901e65fa0acada5fda9))
+* **config:** migrate to 'cfg.file_explorer' ([#463](https://github.com/linrongbin16/fzfx.nvim/issues/463)) ([dae8b9d](https://github.com/linrongbin16/fzfx.nvim/commit/dae8b9d71f9cfd2c39c3c234bbafee796a239120))
+* **config:** migrate to 'cfg.git_blame' ([#456](https://github.com/linrongbin16/fzfx.nvim/issues/456)) ([058a6eb](https://github.com/linrongbin16/fzfx.nvim/commit/058a6eb6d927f17505a4618426eacfdea08b1c97))
+* **config:** migrate to 'cfg.git_commits' ([#455](https://github.com/linrongbin16/fzfx.nvim/issues/455)) ([c94d21b](https://github.com/linrongbin16/fzfx.nvim/commit/c94d21ba2bd615a7e97266b037fd634e8795e9fa))
+* **config:** migrate to 'cfg.lsp_definitions' ([#460](https://github.com/linrongbin16/fzfx.nvim/issues/460)) ([c57f7b0](https://github.com/linrongbin16/fzfx.nvim/commit/c57f7b0977fcefd80872c4f5fd4305fb1be55121))
+* **config:** migrate to 'cfg.lsp_diagnostics' ([#459](https://github.com/linrongbin16/fzfx.nvim/issues/459)) ([0d3d0b8](https://github.com/linrongbin16/fzfx.nvim/commit/0d3d0b8789fc9f5ad35bf5cfa04357dd40ec9446))
+* **config:** migrate to 'cfg.lsp_implementations' ([#461](https://github.com/linrongbin16/fzfx.nvim/issues/461)) ([1101df9](https://github.com/linrongbin16/fzfx.nvim/commit/1101df9c9a0a22ffe188c3a8baf9efd10b7a91ec))
+* **config:** migrate to 'cfg.lsp_incoming_calls' ([#462](https://github.com/linrongbin16/fzfx.nvim/issues/462)) ([870f268](https://github.com/linrongbin16/fzfx.nvim/commit/870f2681a5c1598ca56c0e9d845c73b7f6c9234d))
+* **config:** migrate to 'cfg.lsp_outgoing_calls' ([#462](https://github.com/linrongbin16/fzfx.nvim/issues/462)) ([870f268](https://github.com/linrongbin16/fzfx.nvim/commit/870f2681a5c1598ca56c0e9d845c73b7f6c9234d))
+* **config:** migrate to 'cfg.lsp_references' ([#461](https://github.com/linrongbin16/fzfx.nvim/issues/461)) ([1101df9](https://github.com/linrongbin16/fzfx.nvim/commit/1101df9c9a0a22ffe188c3a8baf9efd10b7a91ec))
+* **config:** migrate to 'cfg.lsp_type_definitions' ([#461](https://github.com/linrongbin16/fzfx.nvim/issues/461)) ([1101df9](https://github.com/linrongbin16/fzfx.nvim/commit/1101df9c9a0a22ffe188c3a8baf9efd10b7a91ec))
+* **config:** migrate to 'cfg.vim_commands' ([#457](https://github.com/linrongbin16/fzfx.nvim/issues/457)) ([7d251d6](https://github.com/linrongbin16/fzfx.nvim/commit/7d251d65c835883b817c04e02337a65f4b56d1ef))
+* **config:** migrate to 'cfg.vim_keymaps' ([#458](https://github.com/linrongbin16/fzfx.nvim/issues/458)) ([f3488fc](https://github.com/linrongbin16/fzfx.nvim/commit/f3488fc5a6d6ba3d8c1c4acddd8699621059d84b))
+* **files:** migrate 'files' to 'cfg.files' ([#448](https://github.com/linrongbin16/fzfx.nvim/issues/448)) ([9a75e8f](https://github.com/linrongbin16/fzfx.nvim/commit/9a75e8f9a1341f3ee3d5c3ac4cfa7704a1a88ae9))
+* **git_files:** migrate 'git_files' to 'cfg.git_files' ([#450](https://github.com/linrongbin16/fzfx.nvim/issues/450)) ([df4ee6c](https://github.com/linrongbin16/fzfx.nvim/commit/df4ee6c7d1ef5cb7c24c5de5180c4d2b6fa10d2f))
+* **git_live_grep:** migrate 'git_live_grep' to 'cfg.git_live_grep' ([#451](https://github.com/linrongbin16/fzfx.nvim/issues/451)) ([ad93650](https://github.com/linrongbin16/fzfx.nvim/commit/ad9365070d69534ede1929c46f6ffc7a120d7baa))
+* **git_status:** migrate 'git_status' to 'cfg.git_status' ([#453](https://github.com/linrongbin16/fzfx.nvim/issues/453)) ([fd3640d](https://github.com/linrongbin16/fzfx.nvim/commit/fd3640de4d0c7e268e2abc5c3c9f22bdd7c490a0))
+* **lib:** add api `fzfx.lib.tables.tbl_get` ([0d3d0b8](https://github.com/linrongbin16/fzfx.nvim/commit/0d3d0b8789fc9f5ad35bf5cfa04357dd40ec9446))
+* **lib:** provide standard API layer ([#439](https://github.com/linrongbin16/fzfx.nvim/issues/439)) ([d473b85](https://github.com/linrongbin16/fzfx.nvim/commit/d473b85f03cc3dcc7cb242d08a8e1bee5fb78693))
+* **live_grep:** migrate 'live_grep' to 'cfg.live_grep' ([#448](https://github.com/linrongbin16/fzfx.nvim/issues/448)) ([9a75e8f](https://github.com/linrongbin16/fzfx.nvim/commit/9a75e8f9a1341f3ee3d5c3ac4cfa7704a1a88ae9))
+* **log:** migrate to 'lib.log' ([#447](https://github.com/linrongbin16/fzfx.nvim/issues/447)) ([bbd1d9d](https://github.com/linrongbin16/fzfx.nvim/commit/bbd1d9d2f423939f920a772f8cefb1700e1181a9))
+* **logs:** support safe-mode logs before setup ([#442](https://github.com/linrongbin16/fzfx.nvim/issues/442)) ([d575f58](https://github.com/linrongbin16/fzfx.nvim/commit/d575f58d753be23871a70c9244546af8c16825e2))
+* **parsers:** migrate 'previewer_labels' ([#444](https://github.com/linrongbin16/fzfx.nvim/issues/444)) ([533abe6](https://github.com/linrongbin16/fzfx.nvim/commit/533abe67b81dc38f53cde3a3eeaa1202aa4f8144))
+* **yanks:** migrate to 'detail.yanks' ([bbd1d9d](https://github.com/linrongbin16/fzfx.nvim/commit/bbd1d9d2f423939f920a772f8cefb1700e1181a9))
+
 ## [3.6.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.5.0...v3.6.0) (2023-11-27)
 
 
