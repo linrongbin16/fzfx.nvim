@@ -569,7 +569,7 @@ curl
 #### Table
 
 - `tbl_empty(t:any):boolean`/`tbl_not_empty(t:any):boolean`: detect whether a table is empty or not.
-- `tbl_get(t:any, field:string):any`: retrieve value from table like json field indexing via dot `.` delimiter, for example when parameter `t = {a = { b = 1 }}`, `field = 'a.b'`, this util function will return `1`.
+- `tbl_get(t:any, field:string):any`: retrieve value from table, with json-like field indexing via dot `.` delimiter, for example when parameter `t = {a = { b = 1 }}`, `field = 'a.b'`, this function will return `1`.
 
 #### List
 
