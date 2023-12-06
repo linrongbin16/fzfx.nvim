@@ -704,6 +704,7 @@ M._calculate_vim_commands_columns_width = function(commands)
   return name_width, opts_width
 end
 
+--- @alias fzfx.VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
 --- @return fzfx.VimCommandsPipelineContext
 M._vim_commands_context_maker = function()
   local ctx = {
