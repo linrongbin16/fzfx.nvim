@@ -148,7 +148,7 @@ M._make_git_branches_provider = function(opts)
       string.format("* %s", git_current_branch_cmd:output())
     )
     local git_branches_cmd = cmds.GitBranchesCommand:run(
-      (type(opts) == "table" and opts.remote_branch) and true or false
+      tbls.tbl_get(opts, "remote_branch") and true or false
     )
     if git_branches_cmd:failed() then
       log.echo(

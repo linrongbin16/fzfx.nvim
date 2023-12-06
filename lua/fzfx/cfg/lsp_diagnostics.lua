@@ -124,8 +124,6 @@ M.commands = {
   },
 }
 
--- lsp diagnostics {
-
 local LSP_DIAGNOSTICS_SIGNS = {
   [1] = {
     severity = 1,
@@ -290,8 +288,6 @@ M._make_lsp_diagnostics_provider = function(opts)
   end
   return impl
 end
-
--- lsp diagnostics }
 
 M.providers = {
   workspace_diagnostics = {

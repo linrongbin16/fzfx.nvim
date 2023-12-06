@@ -186,20 +186,6 @@ M._get_buf_path = function(bufnr)
   return bufpath
 end
 
---- @param opts {unrestricted:boolean?,buffer:boolean?}?
---- @return boolean
-M._is_unrestricted_mode = function(opts)
-  ---@diagnostic disable-next-line: need-check-nil
-  return tbls.tbl_not_empty(opts) and opts.unrestricted --[[@as boolean]]
-end
-
---- @param opts {unrestricted:boolean?,buffer:boolean?}?
---- @return boolean
-M._is_buffer_mode = function(opts)
-  ---@diagnostic disable-next-line: need-check-nil
-  return tbls.tbl_not_empty(opts) and opts.buffer --[[@as boolean]]
-end
-
 --- @param args_list string[]
 --- @param option string?
 --- @return string[]
@@ -229,16 +215,16 @@ M._make_provider_rg = function(opts)
     local option = parsed.option
 
     local args = nil
-    if M._is_unrestricted_mode(opts) then
+    if tbls.tbl_get(opts, "unrestricted") then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
-    elseif M._is_buffer_mode(opts) then
+    elseif tbls.tbl_get(opts, "buffer") then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_RG)
     end
     args = M._append_options(args, option)
 
-    if M._is_buffer_mode(opts) then
+    if tbls.tbl_get(opts, "buffer") then
       local bufpath = M._get_buf_path(context.bufnr)
       if not bufpath then
         return nil
@@ -265,16 +251,16 @@ M._make_provider_grep = function(opts)
     local option = parsed.option
 
     local args = nil
-    if M._is_unrestricted_mode(opts) then
+    if tbls.tbl_get(opts, "unrestricted") then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
-    elseif M._is_buffer_mode(opts) then
+    elseif tbls.tbl_get(opts, "buffer") then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
     end
     args = M._append_options(args, option)
 
-    if M._is_buffer_mode(opts) then
+    if tbls.tbl_get(opts, "buffer") then
       local bufpath = M._get_buf_path(context.bufnr)
       if not bufpath then
         return nil

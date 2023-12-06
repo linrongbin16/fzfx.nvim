@@ -136,8 +136,7 @@ M._make_git_files_provider = function(opts)
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
     end
-    return (type(opts) == "table" and opts.current_folder)
-        and { "git", "ls-files" }
+    return tbls.tbl_get(opts, "current_folder") and { "git", "ls-files" }
       or { "git", "ls-files", ":/" }
   end
   return impl

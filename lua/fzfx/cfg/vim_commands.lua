@@ -529,20 +529,6 @@ M._render_vim_commands = function(commands, name_width, opts_width)
   return results
 end
 
---- @param opts {ex_commands:boolean?,user_commands:boolean?}?
---- @return boolean
-M._is_ex_commands = function(opts)
-  ---@diagnostic disable-next-line: need-check-nil
-  return tbls.tbl_not_empty(opts) and opts.ex_commands --[[@as boolean]]
-end
-
---- @param opts {ex_commands:boolean?,user_commands:boolean?}?
---- @return boolean
-M._is_user_commands = function(opts)
-  ---@diagnostic disable-next-line: need-check-nil
-  return tbls.tbl_not_empty(opts) and opts.user_commands --[[@as boolean]]
-end
-
 --- @alias fzfx.VimCommandLocation {filename:string,lineno:integer}
 --- @alias fzfx.VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,range:string?,complete:string?,complete_arg:string?,desc:string?}
 --- @alias fzfx.VimCommand {name:string,loc:fzfx.VimCommandLocation?,opts:fzfx.VimCommandOptions}
@@ -551,13 +537,13 @@ end
 M._get_vim_commands = function(opts)
   local results = {}
 
-  if M._is_ex_commands(opts) then
+  if tbls.tbl_get(opts, "ex_commands") then
     local tmp = M._get_vim_ex_commands()
     for _, c in pairs(tmp) do
       table.insert(results, c)
     end
   end
-  if M._is_user_commands(opts) then
+  if tbls.tbl_get(opts, "user_commands") then
     local tmp = M._get_vim_user_commands()
     for _, c in pairs(tmp) do
       table.insert(results, c)
