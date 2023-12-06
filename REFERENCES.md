@@ -71,6 +71,8 @@ Here are all the builtin search command configurations:
 - [lsp_definitions](/lua/fzfx/cfg/lsp_definitions.lua): implements `FzfxLspDefinitions`.
 - [lsp_diagnostics](/lua/fzfx/cfg/lsp_diagnostics.lua): implements `FzfxLspDiagnostics`.
 - [lsp_implementations](/lua/fzfx/cfg/lsp_implementations.lua): implements `FzfxLspImplementations`.
+- [lsp_incoming_calls](/lua/fzfx/cfg/lsp_incoming_calls.lua): implements `FzfxLspIncomingCalls`.
+- [lsp_outgoing_calls](/lua/fzfx/cfg/lsp_outgoing_calls.lua): implements `FzfxLspOutgoingCalls`.
 - [lsp_references](/lua/fzfx/cfg/lsp_references.lua): implements `FzfxLspReferences`.
 - [lsp_type_definitions](/lua/fzfx/cfg/lsp_type_definitions.lua): implements `FzfxLspTypeDefinitions`.
 - [vim_commands](/lua/fzfx/cfg/vim_commands.lua): implements `FzfxCommands`, it implements the self-rendering form to directly generate lines for (the left side of) the fzf binary, which is a lot of engineering effort for the providers.
