@@ -2328,99 +2328,72 @@ end
 --- @type fzfx.Options
 local Defaults = {
   -- the 'Files' commands
+  --
+  --- @type fzfx.GroupConfig
   files = require("fzfx.cfg.files"),
 
   -- the 'Live Grep' commands
+  --
+  --- @type fzfx.GroupConfig
   live_grep = require("fzfx.cfg.live_grep"),
 
   -- the 'Buffers' commands
+  --
+  --- @type fzfx.GroupConfig
   buffers = require("fzfx.cfg.buffers"),
 
   -- the 'Git Files' commands
+  --
+  --- @type fzfx.GroupConfig
   git_files = require("fzfx.cfg.git_files"),
 
   -- the 'Git Live Grep' commands
+  --
+  --- @type fzfx.GroupConfig
   git_live_grep = require("fzfx.cfg.git_live_grep"),
 
   -- the 'Git Status' commands
+  --
+  --- @type fzfx.GroupConfig
   git_status = require("fzfx.cfg.git_status"),
 
   -- the 'Git Branches' commands
+  --
+  --- @type fzfx.GroupConfig
   git_branches = require("fzfx.cfg.git_branches"),
 
   -- the 'Git Commits' commands
+  --
+  --- @type fzfx.GroupConfig
   git_commits = require("fzfx.cfg.git_commits"),
 
   -- the 'Git Blame' command
+  --
+  --- @type fzfx.GroupConfig
   git_blame = require("fzfx.cfg.git_blame"),
 
   -- the 'Vim Commands' commands
+  --
+  --- @type fzfx.GroupConfig
   vim_commands = require("fzfx.cfg.vim_commands"),
 
   -- the 'Vim KeyMaps' commands
+  --
   --- @type fzfx.GroupConfig
   vim_keymaps = require("fzfx.cfg.vim_keymaps"),
 
   -- the 'Lsp Diagnostics' command
+  --
   --- @type fzfx.GroupConfig
   lsp_diagnostics = require("fzfx.cfg.lsp_diagnostics"),
 
   -- the 'Lsp Definitions' command
+  --
   --- @type fzfx.GroupConfig
-  lsp_definitions = {
-    commands = {
-      name = "FzfxLspDefinitions",
-      feed = CommandFeedEnum.ARGS,
-      opts = {
-        bang = true,
-        desc = "Search lsp definitions",
-      },
-    },
-    providers = {
-      key = "default",
-      provider = _make_lsp_locations_provider({
-        method = "textDocument/definition",
-        capability = "definitionProvider",
-      }),
-      provider_type = ProviderTypeEnum.LIST,
-      line_opts = {
-        prepend_icon_by_ft = true,
-        prepend_icon_path_delimiter = ":",
-        prepend_icon_path_position = 1,
-      },
-    },
-    previewers = {
-      previewer = _file_previewer_grep,
-      previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-      previewer_label = labels_helper.label_rg,
-    },
-    actions = {
-      ["esc"] = actions_helper.nop,
-      ["enter"] = actions_helper.edit_rg,
-      ["double-click"] = actions_helper.edit_rg,
-    },
-    fzf_opts = {
-      default_fzf_options.multi,
-      default_fzf_options.lsp_preview_window,
-      "--border=none",
-      { "--delimiter", ":" },
-      { "--prompt", "Definitions > " },
-    },
-    win_opts = {
-      relative = "cursor",
-      height = 0.45,
-      width = 1,
-      row = 1,
-      col = 0,
-      border = "none",
-      zindex = 51,
-    },
-    other_opts = {
-      context_maker = _lsp_position_context_maker,
-    },
-  },
+  lsp_definitions = require("fzfx.cfg.lsp_definitions"),
 
   -- the 'Lsp Type Definitions' command
+  --
   --- @type fzfx.GroupConfig
   lsp_type_definitions = {
     commands = {
