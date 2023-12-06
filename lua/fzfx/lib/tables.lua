@@ -17,6 +17,7 @@ end
 --
 --- @param t table?
 --- @param field string
+--- @return any
 M.tbl_get = function(t, field)
   local cur = t --[[@as table]]
   local field_splits = vim.split(field, ".", { plain = true, trimempty = true })
