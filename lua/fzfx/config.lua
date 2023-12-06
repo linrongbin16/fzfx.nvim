@@ -760,12 +760,6 @@ end
 
 -- lsp locations {
 
---- @alias fzfx.LspRangeStart {line:integer,character:integer}
---- @alias fzfx.LspRangeEnd {line:integer,character:integer}
---- @alias fzfx.LspRange {start:fzfx.LspRangeStart,end:fzfx.LspRangeEnd}
---- @alias fzfx.LspLocation {uri:string,range:fzfx.LspRange}
---- @alias fzfx.LspLocationLink {originSelectionRange:fzfx.LspRange,targetUri:string,targetRange:fzfx.LspRange,targetSelectionRange:fzfx.LspRange}
-
 --- @param r fzfx.LspRange?
 --- @return boolean
 local function _is_lsp_range(r)
@@ -821,7 +815,6 @@ local function _lsp_range_render_line(line, range, color_renderer)
   return result
 end
 
---- @alias fzfx.LspLocationPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,position_params:any}
 --- @return fzfx.LspLocationPipelineContext
 local function _lsp_position_context_maker()
   local context = {
@@ -898,10 +891,7 @@ end
 local default_no_lsp_locations_error = "no lsp locations found."
 
 -- lsp methods: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp/protocol.lua#L1028
---- @alias fzfx.LspMethod "textDocument/definition"|"textDocument/type_definition"|"textDocument/references"|"textDocument/implementation"|"callHierarchy/incomingCalls"|"callHierarchy/outgoingCalls"|"textDocument/prepareCallHierarchy"
----
 -- lsp capabilities: https://github.com/neovim/neovim/blob/dc9f7b814517045b5354364655f660aae0989710/runtime/lua/vim/lsp.lua#L39
---- @alias fzfx.LspServerCapability "definitionProvider"|"typeDefinitionProvider"|"referencesProvider"|"implementationProvider"|"callHierarchyProvider"
 ---
 --- @param opts {method:fzfx.LspMethod,capability:fzfx.LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:fzfx.LspLocationPipelineContext):string[]|nil
