@@ -23,11 +23,6 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
--- simulate rg's filepath color, see:
--- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
--- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-M.LSP_FILENAME_COLOR = consts.IS_WINDOWS and colors.cyan or colors.magenta
-
 --- @alias fzfx.LspRangeStart {line:integer,character:integer}
 --- @alias fzfx.LspRangeEnd {line:integer,character:integer}
 --- @alias fzfx.LspRange {start:fzfx.LspRangeStart,end:fzfx.LspRangeEnd}
@@ -135,7 +130,7 @@ M._render_lsp_location_line = function(loc)
   )
   local line = string.format(
     "%s:%s:%s:%s",
-    M.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
+    providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
     colors.green(tostring(range.start.line + 1)),
     tostring(range.start.character + 1),
     loc_line
@@ -251,3 +246,5 @@ M.lsp_position_context_maker = function()
   }
   return context
 end
+
+return M

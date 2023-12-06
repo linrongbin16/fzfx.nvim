@@ -21,7 +21,7 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
-local _lsp_cfg = require("fzfx.cfg._lsp")
+local _lsp_locations = require("fzfx.cfg._lsp_locations")
 
 local M = {}
 
@@ -36,7 +36,7 @@ M.commands = {
 
 M.providers = {
   key = "default",
-  provider = _lsp_cfg.make_lsp_locations_provider({
+  provider = _lsp_locations.make_lsp_locations_provider({
     method = "textDocument/definition",
     capability = "definitionProvider",
   }),
@@ -79,7 +79,7 @@ M.win_opts = {
 }
 
 M.other_opts = {
-  context_maker = _lsp_cfg.lsp_position_context_maker,
+  context_maker = _lsp_locations.lsp_position_context_maker,
 }
 
 return M
