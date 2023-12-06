@@ -47,50 +47,45 @@ end
 --
 --- @param filename string
 --- @param lineno integer?
---- @return fun():string[]
+--- @return string[]
 M.preview_files = function(filename, lineno)
-  --- @return string[]
-  local function impl()
-    if consts.HAS_BAT then
-      local style, theme = M._bat_style_theme()
-      -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
-      return type(lineno) == "number"
-          and {
-            consts.BAT,
-            "--style=" .. style,
-            "--theme=" .. theme,
-            "--color=always",
-            "--pager=never",
-            "--highlight-line=" .. lineno,
-            "--",
-            filename,
-          }
-        or {
+  if consts.HAS_BAT then
+    local style, theme = M._bat_style_theme()
+    -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
+    return type(lineno) == "number"
+        and {
           consts.BAT,
           "--style=" .. style,
           "--theme=" .. theme,
           "--color=always",
           "--pager=never",
+          "--highlight-line=" .. lineno,
           "--",
           filename,
         }
-    else
-      -- "cat %s"
-      return {
-        "cat",
+      or {
+        consts.BAT,
+        "--style=" .. style,
+        "--theme=" .. theme,
+        "--color=always",
+        "--pager=never",
+        "--",
         filename,
       }
-    end
+  else
+    -- "cat %s"
+    return {
+      "cat",
+      filename,
+    }
   end
-  return impl
 end
 
 --- @param line string
 --- @return string[]
 M.preview_files_find = function(line)
   local parsed = parsers_helper.parse_find(line)
-  local f = M.preview_files(parsed.filename)
-  return f()
+  return M.preview_files(parsed.filename)
 end
 
 -- files }
@@ -101,8 +96,7 @@ end
 --- @return string[]
 M.preview_files_grep = function(line)
   local parsed = parsers_helper.parse_grep(line)
-  local f = M.preview_files(parsed.filename, parsed.lineno)
-  return f()
+  return M.preview_files(parsed.filename, parsed.lineno)
 end
 
 -- live grep }

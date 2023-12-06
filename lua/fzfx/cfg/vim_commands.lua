@@ -476,7 +476,7 @@ end
 --- @param name_width integer
 --- @param opts_width integer
 --- @return string[]
-local function _render_vim_commands(commands, name_width, opts_width)
+M._render_vim_commands = function(commands, name_width, opts_width)
   --- @param r fzfx.VimCommand
   --- @return string
   local function rendered_desc_or_loc(r)
@@ -577,7 +577,11 @@ end
 local function vim_commands_provider(query, context)
   local commands =
     M._get_vim_commands({ ex_commands = true, user_commands = true })
-  return _render_vim_commands(commands, context.name_width, context.opts_width)
+  return M._render_vim_commands(
+    commands,
+    context.name_width,
+    context.opts_width
+  )
 end
 
 --- @param query string
@@ -585,7 +589,11 @@ end
 --- @return string[]
 local function vim_ex_commands_provider(query, context)
   local commands = M._get_vim_commands({ ex_commands = true })
-  return _render_vim_commands(commands, context.name_width, context.opts_width)
+  return M._render_vim_commands(
+    commands,
+    context.name_width,
+    context.opts_width
+  )
 end
 
 --- @param query string
@@ -593,7 +601,11 @@ end
 --- @return string[]
 local function vim_user_commands_provider(query, context)
   local commands = M._get_vim_commands({ user_commands = true })
-  return _render_vim_commands(commands, context.name_width, context.opts_width)
+  return M._render_vim_commands(
+    commands,
+    context.name_width,
+    context.opts_width
+  )
 end
 
 M.providers = {
