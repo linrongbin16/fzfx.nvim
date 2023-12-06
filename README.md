@@ -163,6 +163,8 @@ But when there're whitespaces on the path, launching correct shell command becom
 
    We still cannot handle the 2nd case because all lua scripts in this plugin will thus always contain whitespaces in their path.
 
+Please always avoid whitespaces in directories and file names.
+
 </details>
 
 ## 📦 Install
