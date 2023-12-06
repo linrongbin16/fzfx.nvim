@@ -213,7 +213,6 @@ end)
 
 ```lua
 require("lazy").setup({
-
   -- optional for icons
   { "nvim-tree/nvim-web-devicons" },
 
@@ -231,7 +230,6 @@ require("lazy").setup({
       require("fzfx").setup()
     end,
   },
-
 })
 ```
 
