@@ -13,7 +13,7 @@ M.tbl_not_empty = function(t)
 end
 
 -- retrieve value from table like json field indexing via dot `.` delimiter.
--- for example `t = { a = { b = 1 } }` and `field = 'a.b'` will return `1`.
+-- for example when parameter `t = { a = { b = 1 } }` and `field = 'a.b'`, it will return `1`.
 --
 --- @param t table?
 --- @param field string
