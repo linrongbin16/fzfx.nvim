@@ -12,6 +12,24 @@ M.tbl_not_empty = function(t)
   return type(t) == "table" and not vim.tbl_isempty(t)
 end
 
+-- retrieve value from table like json field indexing via dot `.` delimiter.
+-- for example `t = { a = { b = 1 } }` and `field = 'a.b'` will return `1`.
+--
+--- @param t table?
+--- @param field string
+M.tbl_get = function(t, field)
+  local cur = t --[[@as table]]
+  local field_splits = vim.split(field, ".", { plain = true, trimempty = true })
+  for _, f in ipairs(field_splits) do
+    if M.tbl_not_empty(cur) and cur[f] ~= nil then
+      cur = cur[f]
+    else
+      return nil
+    end
+  end
+  return cur
+end
+
 --- @param l any?
 --- @return boolean
 M.list_empty = function(l)
@@ -34,24 +52,6 @@ M.list_index = function(i, n)
   assert(n > 0)
   assert((i >= 1 and i <= n) or (i <= -1 and i >= -n))
   return i > 0 and i or (n + i + 1)
-end
-
--- json like field indexing via dot `.` delimiter and get value.
--- for example `t = { a = { b = 1 } }` and `field = 'a.b'` will return `1`.
---
---- @param t table?
---- @param field string
-M.tbl_get = function(t, field)
-  local cur = t --[[@as table]]
-  local field_splits = vim.split(field, ".", { plain = true, trimempty = true })
-  for _, f in ipairs(field_splits) do
-    if M.tbl_not_empty(cur) and cur[f] ~= nil then
-      cur = cur[f]
-    else
-      return nil
-    end
-  end
-  return cur
 end
 
 return M
