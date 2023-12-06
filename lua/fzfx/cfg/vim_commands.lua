@@ -289,7 +289,6 @@ M._parse_ex_command_output_lua_function_definition = function(line, start_pos)
   }
 end
 
---- @alias fzfx.VimExCommandOutputHeader {name_pos:integer,args_pos:integer,address_pos:integer,complete_pos:integer,definition_pos:integer}
 --- @param header string
 --- @return fzfx.VimExCommandOutputHeader
 M._parse_ex_command_output_header = function(header)
@@ -543,9 +542,6 @@ M._is_user_commands = function(opts)
   return tbls.tbl_not_empty(opts) and opts.user_commands --[[@as boolean]]
 end
 
---- @alias fzfx.VimCommandLocation {filename:string,lineno:integer}
---- @alias fzfx.VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,range:string?,complete:string?,complete_arg:string?,desc:string?}
---- @alias fzfx.VimCommand {name:string,loc:fzfx.VimCommandLocation?,opts:fzfx.VimCommandOptions}
 --- @param opts {ex_commands:boolean?,user_commands:boolean?}?
 --- @return fzfx.VimCommand[]
 M._get_vim_commands = function(opts)
@@ -708,7 +704,6 @@ M._calculate_vim_commands_columns_width = function(commands)
   return name_width, opts_width
 end
 
---- @alias fzfx.VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
 --- @return fzfx.VimCommandsPipelineContext
 M._vim_commands_context_maker = function()
   local ctx = {
