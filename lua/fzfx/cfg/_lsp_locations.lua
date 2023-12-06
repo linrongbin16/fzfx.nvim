@@ -150,7 +150,7 @@ end
 ---
 --- @param opts {method:fzfx.LspMethod,capability:fzfx.LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:fzfx.LspLocationPipelineContext):string[]|nil
-M.make_lsp_locations_provider = function(opts)
+M._make_lsp_locations_provider = function(opts)
   --- @param query string
   --- @param context fzfx.LspLocationPipelineContext
   --- @return string[]|nil
@@ -161,7 +161,7 @@ M.make_lsp_locations_provider = function(opts)
       return nil
     end
     -- log.debug(
-    --   "|fzfx.config - make_lsp_locations_provider| lsp_clients:%s",
+    --   "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
     --   vim.inspect(lsp_clients)
     -- )
     local supported = false
@@ -182,7 +182,7 @@ M.make_lsp_locations_provider = function(opts)
       opts.timeout or 3000
     )
     -- log.debug(
-    --   "|fzfx.config - make_lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
+    --   "|fzfx.config - _make_lsp_locations_provider| opts:%s, lsp_results:%s, lsp_err:%s",
     --   vim.inspect(opts),
     --   vim.inspect(response),
     --   vim.inspect(err)
@@ -233,7 +233,7 @@ end
 
 --- @alias fzfx.LspLocationPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,position_params:any}
 --- @return fzfx.LspLocationPipelineContext
-M.lsp_position_context_maker = function()
+M._lsp_position_context_maker = function()
   local context = {
     bufnr = vim.api.nvim_get_current_buf(),
     winnr = vim.api.nvim_get_current_win(),

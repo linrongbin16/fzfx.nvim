@@ -36,7 +36,7 @@ M.commands = {
 
 M.providers = {
   key = "default",
-  provider = _lsp_locations.make_lsp_locations_provider({
+  provider = _lsp_locations._make_lsp_locations_provider({
     method = "textDocument/definition",
     capability = "definitionProvider",
   }),
@@ -79,7 +79,7 @@ M.win_opts = {
 }
 
 M.other_opts = {
-  context_maker = _lsp_locations.lsp_position_context_maker,
+  context_maker = _lsp_locations._lsp_position_context_maker,
 }
 
 return M
