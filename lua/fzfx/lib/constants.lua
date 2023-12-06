@@ -72,6 +72,7 @@ M.FZF_OPTS = {
   MULTI = "--multi",
   NO_MULTI = "--no-multi",
   DISABLED = "--disabled",
+  HEADER_LINES = "--header-lines=1",
   DELIMITER = { "--delimiter", ":" },
   TOGGLE = "--bind=ctrl-e:toggle",
   TOGGLE_ALL = "--bind=ctrl-a:toggle-all",

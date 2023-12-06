@@ -1662,7 +1662,6 @@ local function _get_vim_commands(no_ex_commands, no_user_commands)
   return results
 end
 
---- @alias fzfx.VimCommandsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,name_width:integer,opts_width:integer}
 --- @return fzfx.VimCommandsPipelineContext
 local function _vim_commands_context_maker()
   local ctx = {
