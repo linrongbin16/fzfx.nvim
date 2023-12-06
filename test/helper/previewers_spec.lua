@@ -133,10 +133,30 @@ describe("helper.previewers", function()
   end)
 
   describe("[preview_git_commit]", function()
-    it("test", function()
+    it("_make_preview_git_commit", function()
       local lines = {
         "44ee80e",
         "706e1d6",
+      }
+      for _, line in ipairs(lines) do
+        local actual = previewers._make_preview_git_commit(line)
+        if actual ~= nil then
+          assert_eq(type(actual), "string")
+          assert_true(strs.find(actual, "git show") > 0)
+          if vim.fn.executable("delta") > 0 then
+            assert_true(strs.find(actual, "delta") > 0)
+          else
+            assert_true(strs.find(actual, "delta") == nil)
+          end
+        end
+      end
+    end)
+
+    it("preview_git_commit", function()
+      local lines = {
+        "44ee80e 2023-10-11 linrongbin16 (HEAD -> origin/feat_git_status) docs: wording",
+        "706e1d6 2023-10-10 linrongbin16 chore",
+        "                                | 1:2| fzfx.nvim",
       }
       for _, line in ipairs(lines) do
         local actual = previewers.preview_git_commit(line)
