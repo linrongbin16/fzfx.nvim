@@ -542,6 +542,9 @@ M._is_user_commands = function(opts)
   return tbls.tbl_not_empty(opts) and opts.user_commands --[[@as boolean]]
 end
 
+--- @alias fzfx.VimCommandLocation {filename:string,lineno:integer}
+--- @alias fzfx.VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,range:string?,complete:string?,complete_arg:string?,desc:string?}
+--- @alias fzfx.VimCommand {name:string,loc:fzfx.VimCommandLocation?,opts:fzfx.VimCommandOptions}
 --- @param opts {ex_commands:boolean?,user_commands:boolean?}?
 --- @return fzfx.VimCommand[]
 M._get_vim_commands = function(opts)

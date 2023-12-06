@@ -1631,9 +1631,6 @@ local function _render_vim_commands(commands, name_width, opts_width)
   return results
 end
 
---- @alias fzfx.VimCommandLocation {filename:string,lineno:integer}
---- @alias fzfx.VimCommandOptions {bang:boolean?,bar:boolean?,nargs:string?,range:string?,complete:string?,complete_arg:string?,desc:string?}
---- @alias fzfx.VimCommand {name:string,loc:fzfx.VimCommandLocation?,opts:fzfx.VimCommandOptions}
 --- @param no_ex_commands boolean?
 --- @param no_user_commands boolean?
 --- @return fzfx.VimCommand[]
