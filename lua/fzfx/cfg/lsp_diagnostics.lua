@@ -176,12 +176,6 @@ local LSP_DIAGNOSTICS_SIGNS = {
   },
 }
 
--- simulate rg's filepath color, see:
--- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
--- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-local LSP_DIAGNOSTICS_FILENAME_COLOR = consts.IS_WINDOWS and colors.cyan
-  or colors.magenta
-
 --- @return {severity:integer,name:string,text:string,texthl:string,textcolor:string}[]
 M._make_lsp_diagnostic_signs = function()
   local results = {}
@@ -276,7 +270,7 @@ M._make_lsp_diagnostics_provider = function(opts)
         )
         local line = string.format(
           "%s:%s:%s:%s",
-          LSP_DIAGNOSTICS_FILENAME_COLOR(diag.filename),
+          providers_helper.LSP_FILENAME_COLOR(diag.filename),
           colors.green(tostring(diag.lnum)),
           tostring(diag.col),
           builder
