@@ -54,12 +54,12 @@ describe("cfg._lsp_locations", function()
       assert_false(_lsp_locations._is_lsp_locationlink({}))
       assert_true(_lsp_locations._is_lsp_locationlink(LOCATIONLINK))
     end)
-    it("_lsp_location_render_line", function()
+    it("_colorize_lsp_range", function()
       local r = {
         start = { line = 1, character = 20 },
         ["end"] = { line = 1, character = 26 },
       }
-      local loc = _lsp_locations._lsp_location_render_line(
+      local loc = _lsp_locations._colorize_lsp_range(
         'describe("_lsp_location_render_line", function()',
         r,
         colors.red

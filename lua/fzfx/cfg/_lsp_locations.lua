@@ -59,7 +59,7 @@ end
 --- @param range fzfx.LspRange
 --- @param color_renderer fun(text:string):string
 --- @return string?
-M._lsp_range_render_line = function(line, range, color_renderer)
+M._colorize_lsp_range = function(line, range, color_renderer)
   -- log.debug(
   --   "|fzfx.config - _lsp_location_render_line| range:%s, line:%s",
   --   vim.inspect(range),
@@ -122,7 +122,7 @@ M._render_lsp_location_line = function(loc)
     return nil
   end
   local loc_line =
-    M._lsp_range_render_line(filelines[range.start.line + 1], range, colors.red)
+    M._colorize_lsp_range(filelines[range.start.line + 1], range, colors.red)
   log.debug(
     "|fzfx.config - _render_lsp_location_line| range:%s, loc_line:%s",
     vim.inspect(range),
