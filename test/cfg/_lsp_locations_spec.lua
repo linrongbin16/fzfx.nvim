@@ -121,4 +121,146 @@ describe("cfg._lsp_locations", function()
       end
     end)
   end)
+
+  describe("[_call_hierarchy]", function()
+    local RANGE = {
+      start = {
+        character = 1,
+        line = 299,
+      },
+      ["end"] = {
+        character = 0,
+        line = 289,
+      },
+    }
+    local CALL_HIERARCHY_ITEM = {
+      name = "name",
+      kind = 2,
+      detail = "detail",
+      uri = "file:///usr/home/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+      range = RANGE,
+      selectionRange = RANGE,
+    }
+    local INCOMING_CALLS = {
+      from = CALL_HIERARCHY_ITEM,
+      fromRanges = { RANGE },
+    }
+    local OUTGOING_CALLS = {
+      to = CALL_HIERARCHY_ITEM,
+      fromRanges = { RANGE },
+    }
+    it("_is_lsp_call_hierarchy_item", function()
+      local actual1 = _lsp_locations._is_lsp_call_hierarchy_item(nil)
+      assert_false(actual1)
+      local actual2 = _lsp_locations._is_lsp_call_hierarchy_item({})
+      assert_false(actual2)
+      local actual3 = _lsp_locations._is_lsp_call_hierarchy_item({
+        name = "name",
+        kind = 2,
+        detail = "detail",
+        uri = "uri",
+        range = {
+          start = 1,
+          ["end"] = 2,
+        },
+        selectRange = {
+          start = 1,
+          ["end"] = 2,
+        },
+      })
+      assert_false(actual3)
+      local actual4 =
+        _lsp_locations._is_lsp_call_hierarchy_item(CALL_HIERARCHY_ITEM)
+      assert_true(actual4)
+    end)
+    it("_is_lsp_call_hierarchy_incoming_call", function()
+      local actual1 = _lsp_locations._is_lsp_call_hierarchy_incoming_call(
+        "callHierarchy/incomingCalls",
+        INCOMING_CALLS
+      )
+      assert_true(actual1)
+    end)
+    it("_is_lsp_call_hierarchy_outgoing_call", function()
+      local actual1 = _lsp_locations._is_lsp_call_hierarchy_outgoing_call(
+        "callHierarchy/outgoingCalls",
+        OUTGOING_CALLS
+      )
+      assert_true(actual1)
+    end)
+    it("_render_lsp_call_hierarchy_line", function()
+      local actual1 = _lsp_locations._render_lsp_call_hierarchy_line(
+        INCOMING_CALLS.from,
+        INCOMING_CALLS.fromRanges
+      )
+      print(string.format("incoming render lines:%s\n", vim.inspect(actual1)))
+      assert_true(#actual1 >= 0)
+      local actual2 = _lsp_locations._render_lsp_call_hierarchy_line(
+        OUTGOING_CALLS.to,
+        OUTGOING_CALLS.fromRanges
+      )
+      print(string.format("outgoing render lines:%s\n", vim.inspect(actual2)))
+      assert_true(#actual1 >= 0)
+    end)
+    it("_retrieve_lsp_call_hierarchy_item_and_from_ranges", function()
+      local actual11, actual12 =
+        _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+          "callHierarchy/incomingCalls",
+          INCOMING_CALLS
+        )
+      assert_true(vim.deep_equal(actual11, INCOMING_CALLS.from))
+      assert_true(vim.deep_equal(actual12, INCOMING_CALLS.fromRanges))
+      local actual21, actual22 =
+        _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+          "callHierarchy/incomingCalls",
+          OUTGOING_CALLS
+        )
+      assert_eq(actual21, nil)
+      assert_eq(actual22, nil)
+      local actual31, actual32 =
+        _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+          "callHierarchy/outgoingCalls",
+          INCOMING_CALLS
+        )
+      assert_eq(actual31, nil)
+      assert_eq(actual32, nil)
+      local actual41, actual42 =
+        _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+          "callHierarchy/outgoingCalls",
+          OUTGOING_CALLS
+        )
+      assert_true(vim.deep_equal(actual41, OUTGOING_CALLS.to))
+      assert_true(vim.deep_equal(actual42, OUTGOING_CALLS.fromRanges))
+    end)
+    it("_make_lsp_call_hierarchy_provider", function()
+      local ctx = _lsp_locations._lsp_position_context_maker()
+      local f1 = _lsp_locations._make_lsp_call_hierarchy_provider({
+        method = "callHierarchy/incomingCalls",
+        capability = "callHierarchyProvider",
+      })
+      assert_eq(type(f1), "function")
+      local actual1 = f1("", ctx)
+      if actual1 ~= nil then
+        assert_eq(type(actual1), "table")
+        assert_true(#actual1 >= 0)
+        for _, act in ipairs(actual1) do
+          assert_eq(type(act), "string")
+          assert_true(string.len(act) > 0)
+        end
+      end
+      local f2 = _lsp_locations._make_lsp_call_hierarchy_provider({
+        method = "callHierarchy/outgoingCalls",
+        capability = "callHierarchyProvider",
+      })
+      assert_eq(type(f2), "function")
+      local actual2 = f2("", ctx)
+      if actual2 ~= nil then
+        assert_eq(type(actual2), "table")
+        assert_true(#actual2 >= 0)
+        for _, act in ipairs(actual2) do
+          assert_eq(type(act), "string")
+          assert_true(string.len(act) > 0)
+        end
+      end
+    end)
+  end)
 end)
