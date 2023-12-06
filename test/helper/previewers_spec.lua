@@ -43,11 +43,9 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[preview_files_find]", function()
-    it("test1", function()
-      local f = previewers._make_preview_files("lua/fzfx/config.lua", 135)
-      assert_eq(type(f), "function")
-      local actual = f()
+  describe("[preview_files]", function()
+    it("test", function()
+      local actual = previewers.preview_files("lua/fzfx/config.lua", 135)
       -- print(
       --     string.format("make file previewer:%s\n", vim.inspect(actual))
       -- )
@@ -65,7 +63,10 @@ describe("helper.previewers", function()
         assert_eq(actual[2], "lua/fzfx/config.lua")
       end
     end)
-    it("test2", function()
+  end)
+
+  describe("[preview_files_find]", function()
+    it("test", function()
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
@@ -169,6 +170,32 @@ describe("helper.previewers", function()
             assert_true(strs.find(actual, "delta") == nil)
           end
         end
+      end
+    end)
+  end)
+
+  describe("[preview_files_with_line_range]", function()
+    it("test", function()
+      local actual =
+        previewers.preview_files_with_line_range("lua/fzfx/config.lua", 135)
+      assert_eq(type(actual), "table")
+      print(
+        string.format("preview_files_with_line_range:%s\n", vim.inspect(actual))
+      )
+      if actual[1] == "bat" then
+        assert_eq(actual[1], "bat")
+        assert_eq(actual[2], "--style=numbers,changes")
+        assert_eq(actual[3], "--theme=base16")
+        assert_eq(actual[4], "--color=always")
+        assert_eq(actual[5], "--pager=never")
+        assert_eq(actual[6], "--highlight-line=135")
+        assert_true(strs.startswith(actual[7], "--line-range"))
+        assert_true(strs.endswith(actual[8], ":"))
+        assert_eq(actual[9], "--")
+        assert_eq(actual[10], "lua/fzfx/config.lua")
+      else
+        assert_eq(actual[1], "cat")
+        assert_eq(actual[2], "lua/fzfx/config.lua")
       end
     end)
   end)

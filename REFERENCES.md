@@ -259,6 +259,16 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 ### [fzfx.helper.previewers](/lua/fzfx/helper/previewers.lua)
 
+- `preview_files(filename:string, lineno:integer?):string[]`: preview files with `filename` and optional `lineno` on `fd`/`find` and `rg`/`grep` results, internal API used by `preview_files_find` and `preview_files_grep`.
+
+  > For rg/grep, the line number is always the 2nd column split by colon ':'.
+  > so we use fzf's option '--preview-window=+{2}-/2', '--delimiter=:' with live grep configs.
+  > the `+{2}-/2` indicates:
+  >
+  > 1. the 2nd column (split by colon ':') is the line number
+  > 2. set it as the highlight line
+  > 3. place it in the center (1/2) of the whole preview window
+
 - `preview_files_find(line:string):string[]`: preview files on `fd`, `find`, `git ls-files` results, and other sources following the same style, used by:
   - `FzfxFiles`
   - `FzfxBuffers`
@@ -276,6 +286,16 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 - `preview_git_commit(line:string):string`: preview git commits on `git blame`, `git log --short` results, and other sources following the same style, used by:
   - `FzfxGCommits`
   - `FzfxGBlame`
+- `preview_files_with_line_range(filename:string, lineno:integer):string[]`: preview files with `filename` and mandatory `lineno` on self-rendered results.
+
+  > For self-rendered lines (unlike rg/grep), we don't have the line number split by colon ':'.
+  > thus we cannot set fzf's option '--preview-window=+{2}-/2' or '--delimiter=:' (also see `preview_files`).
+  > so we set `--line-range={lstart}:` (in bat) to try to place the highlight line in the center of the preview window.
+
+  Used by:
+
+  - `FzfxCommands`
+  - `FzfxKeyMaps`
 
 ### [fzfx.helper.queries](/lua/fzfx/helper/queries.lua)
 
@@ -306,7 +326,7 @@ The `fzfx.lib` provides fundamental infrastructures for whole plugin, they're us
 - `ansi(text:string, name:string, hl:string?):string?`: render `text` with specified color name `name` (e.g. `red`, `green`, `magenta`), if use vim syntax highlighting if `hl` is provided.
 - `erase(text:string):string`: erase colors from terminal escaped contents.
 
-builtin colors
+Here are the builtin colors:
 
 - `black(text:string, hl:string?):string`: render `text` with `black`, use vim syntax highlighting if `hl` provided
 - `grey(text:string, hl:string?):string`: same.
