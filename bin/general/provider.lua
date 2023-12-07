@@ -70,14 +70,14 @@ if metaopts.provider_decorator ~= nil then
     vim.opt.runtimepath:append(tbls.tbl_get(metaopts.provider_decorator, "rtp"))
   end
   shell_helpers.log_ensure(
-    strs.not_empty(metaopts.provider_decorator)
-      or strs.not_empty(tbls.tbl_get(metaopts.provider_decorator, "module")),
+    strs.not_empty(tbls.tbl_get(metaopts.provider_decorator, "module")),
     "decorator module cannot be empty: %s",
     vim.inspect(metaopts.provider_decorator)
   )
-  local module_name = strs.not_empty(metaopts.provider_decorator)
-      and metaopts.provider_decorator
-    or metaopts.provider_decorator.module
+  local module_name = metaopts.provider_decorator.module
+  if metaopts.provider_decorator.builtin then
+    module_name = "fzfx.helper.provider_decorators." .. module_name
+  end
   local ok, module_or_err = pcall(require, module_name)
   shell_helpers.log_ensure(
     ok and tbls.tbl_not_empty(module_or_err),
