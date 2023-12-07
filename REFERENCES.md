@@ -308,6 +308,8 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 ### [fzfx.helper.providers](/lua/fzfx/helper/providers.lua)
 
+### [fzfx.helper.provider_decorators](/lua/fzfx/helper/provider_decorators/)
+
 - `prepend_icon_find.decorate(line:string?):string`: (in [prepend_icon_find](/lua/fzfx/helper/provider_decorators/prepend_icon_find.lua) module) prepend file type icon on `fd`/`find` results, or other sources following the same style, used by:
 
   - `FzfxFiles`
