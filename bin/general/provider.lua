@@ -63,6 +63,8 @@ shell_helpers.log_debug("metaopt:[%s]", vim.inspect(metaopts))
 
 -- decorator
 
+vim.opt.runtimepath:append(vim.fn.stdpath("config"))
+
 --- @type {decorate:fun(line:string):string}
 local decorator_module = nil
 if metaopts.provider_decorator ~= nil then
