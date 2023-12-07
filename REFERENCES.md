@@ -23,7 +23,7 @@ The APIs in `helper` and `lib` package are supposed to be stable and tested (exc
   - [fzfx.helper.previewer_labels](#fzfxhelperpreviewer_labels)
   - [fzfx.helper.previewers](#fzfxhelperpreviewers)
   - [fzfx.helper.providers](#fzfxhelperproviders)
-  - [fzfx.helper.provider_decorators](#fzfxhelperproviderdecorators)
+  - [fzfx.helper.provider_decorators](#fzfxhelperprovider_decorators)
   - [fzfx.helper.queries](#fzfxhelperqueries)
   - [fzfx.helper.prompts](#fzfxhelperprompts)
 - [Fundamental Infrastructures](#fundamental-infrastructures)
