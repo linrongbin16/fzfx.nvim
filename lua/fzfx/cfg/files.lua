@@ -135,12 +135,12 @@ M.providers = {
   restricted_mode = {
     key = "ctrl-r",
     provider = restricted_provider,
-    provider_decorator = "fzfx.helper.provider_decorators.prepend_icon_find",
+    provider_decorator = { module = "prepend_icon_find", builtin = true },
   },
   unrestricted_mode = {
     key = "ctrl-u",
     provider = unrestricted_provider,
-    provider_decorator = "fzfx.helper.provider_decorators.prepend_icon_find",
+    provider_decorator = { module = "prepend_icon_find", builtin = true },
   },
 }
 
