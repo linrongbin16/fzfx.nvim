@@ -23,7 +23,7 @@ The APIs in `helper` and `lib` package are supposed to be stable and tested (exc
   - [fzfx.helper.previewer_labels](#fzfxhelperpreviewer_labels)
   - [fzfx.helper.previewers](#fzfxhelperpreviewers)
   - [fzfx.helper.providers](#fzfxhelperproviders)
-  - [fzfx.helper.provider_decorators](#fzfxhelperproviderdecorators)
+  - [fzfx.helper.provider_decorators](#fzfxhelperprovider_decorators)
   - [fzfx.helper.queries](#fzfxhelperqueries)
   - [fzfx.helper.prompts](#fzfxhelperprompts)
 - [Fundamental Infrastructures](#fundamental-infrastructures)
@@ -307,6 +307,8 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
   - `FzfxKeyMaps`
 
 ### [fzfx.helper.providers](/lua/fzfx/helper/providers.lua)
+
+### [fzfx.helper.provider_decorators](/lua/fzfx/helper/provider_decorators/)
 
 - `prepend_icon_find.decorate(line:string?):string`: (in [prepend_icon_find](/lua/fzfx/helper/provider_decorators/prepend_icon_find.lua) module) prepend file type icon on `fd`/`find` results, or other sources following the same style, used by:
 
