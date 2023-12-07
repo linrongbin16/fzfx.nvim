@@ -101,7 +101,7 @@ local function println(line)
       metaopts.prepend_icon_path_position
     )
     io.write(string.format("%s\n", rendered_line))
-  elseif metaopts.provider_decorator ~= nil and decorator_module ~= nil then
+  elseif tbls.tbl_not_empty(decorator_module) then
     vim.schedule(function()
       local rendered_ok, rendered_line_or_err =
         pcall(decorator_module.decorate, line)
