@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.7.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.6.1...v3.7.0) (2023-12-07)
+
+
+### Features
+
+* **provider decorator:** add lua module based provider decorator ([#465](https://github.com/linrongbin16/fzfx.nvim/issues/465)) ([453de6a](https://github.com/linrongbin16/fzfx.nvim/commit/453de6abe053a1287785db3cfff0a66fbb505ccc))
+
+
+### Performance Improvements
+
+* **provider decorators:** add `stdpath('config')` to runtime path ([#468](https://github.com/linrongbin16/fzfx.nvim/issues/468)) ([e17f835](https://github.com/linrongbin16/fzfx.nvim/commit/e17f8357c4c0620401421a48ef5552145f63841f))
+
 ## [3.6.1](https://github.com/linrongbin16/fzfx.nvim/compare/v3.6.0...v3.6.1) (2023-12-06)
 
 
