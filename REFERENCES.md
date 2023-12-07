@@ -21,8 +21,9 @@ The APIs in `helper` and `lib` package are supposed to be stable and tested (exc
     - [Builtin Vim Key Mappings Renderer](#builtin-vim-key-mappings-renderer)
     - [`eza`/`lsd`/`ls`](#eza)
   - [fzfx.helper.previewer_labels](#fzfxhelperpreviewer_labels)
-  - [fzfx.helper.providers](#fzfxhelperproviders)
   - [fzfx.helper.previewers](#fzfxhelperpreviewers)
+  - [fzfx.helper.providers](#fzfxhelperproviders)
+  - [fzfx.helper.provider_decorators](#fzfxhelperproviderdecorators)
   - [fzfx.helper.queries](#fzfxhelperqueries)
   - [fzfx.helper.prompts](#fzfxhelperprompts)
 - [Fundamental Infrastructures](#fundamental-infrastructures)
@@ -265,8 +266,6 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 - `label_vim_keymap(line:string,context:fzfx.VimKeyMapsPipelineContext):string`: label the builtin vim keymaps renderer results, and other sources follow the same style. used by:
   - `FzfxKeyMaps`
 
-### [fzfx.helper.providers](/lua/fzfx/helper/providers.lua)
-
 ### [fzfx.helper.previewers](/lua/fzfx/helper/previewers.lua)
 
 - `preview_files(filename:string, lineno:integer?):string[]`: preview files with `filename` and optional `lineno` on `fd`/`find` and `rg`/`grep` results, internal API used by `preview_files_find` and `preview_files_grep`.
@@ -306,6 +305,10 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
   - `FzfxCommands`
   - `FzfxKeyMaps`
+
+### [fzfx.helper.providers](/lua/fzfx/helper/providers.lua)
+
+### [fzfx.helper.provider_decorators](/lua/fzfx/helper/provider_decorators)
 
 ### [fzfx.helper.queries](/lua/fzfx/helper/queries.lua)
 
