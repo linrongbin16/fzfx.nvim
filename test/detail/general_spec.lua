@@ -481,7 +481,7 @@ describe("detail.general", function()
       assert_eq(type(actual2), "table")
       assert_eq(actual2.pipeline, "test2")
       assert_eq(actual1.provider_type, "command")
-      assert_false(actual2.prepend_icon_by_ft)
+      assert_true(not actual2.prepend_icon_by_ft)
     end)
     it("makes with icon", function()
       local actual = general.make_provider_meta_opts("test3", {
