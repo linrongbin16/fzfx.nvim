@@ -22,3 +22,9 @@ local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
+
+M.prepend_icon_find = function() end
+
+M.prepend_icon_grep = function() end
+
+return M

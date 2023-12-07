@@ -28,6 +28,15 @@ local ProviderTypeEnum = {
 -- Note: the 1st parameter 'query' is the user input query in fzf prompt.
 --
 --
+-- ========== Provider Decorator ==========
+--
+--- @alias fzfx._FunctionProviderDecorator fun(line:string?,context:fzfx.PipelineContext?):string?
+--- @alias fzfx.ProviderDecorator {module:string,rtp:string?}
+--
+-- Note: the 1st parameter `line` (in `fzfx._FunctionProviderDecorator`) is the raw generated line from providers.
+-- Note: the `module` must returns the lua table contains the lua function named `decorate`, the `rtp` is optional (since fzfx itself is already been added into environment).
+--
+--
 -- ========== Previewer ==========
 --
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
@@ -102,6 +111,7 @@ local CommandFeedEnum = {
 --
 -- ========== Config ==========
 --
+--- @deprecated
 --- @class fzfx.ProviderConfigLineOpts
 --- @field prepend_icon_by_ft boolean?
 --- @field prepend_icon_path_delimiter string? -- working with `prepend_icon_by_ft=true`
@@ -111,7 +121,8 @@ local CommandFeedEnum = {
 --- @field key fzfx.ActionKey
 --- @field provider fzfx.Provider
 --- @field provider_type fzfx.ProviderType? by default "plain"
---- @field line_opts fzfx.ProviderConfigLineOpts?
+--- @field line_opts fzfx.ProviderConfigLineOpts?  -- deprecated
+--- @field provider_decorator fzfx.ProviderDecorator?
 
 --- @class fzfx.PreviewerConfig
 --- @field previewer fzfx.Previewer

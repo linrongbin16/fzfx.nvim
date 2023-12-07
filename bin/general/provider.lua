@@ -72,6 +72,34 @@ local function println(line)
         metaopts.prepend_icon_path_position
       )
       io.write(string.format("%s\n", rendered_line))
+    elseif tbls.tbl_not_empty(metaopts.provider_decorator) then
+      if strs.not_empty(metaopts.provider_decorator.rtp) then
+        vim.opt.runtimepath:append(metaopts.provider_decorator.rtp)
+      end
+      shell_helpers.log_ensure(
+        strs.not_empty(metaopts.provider_decorator.module),
+        "decorator module cannot be empty: %s",
+        vim.inspect(metaopts.provider_decorator)
+      )
+      local ok, module_or_err =
+        pcall(require, metaopts.provider_decorator.module)
+      if ok then
+        if type(tbls.tbl_get(module_or_err, "decorate")) == "function" then
+          local rendered_line = pcall(module_or_err.decorate, line)
+        else
+          shell_helpers.log_err(
+            "failed to invoke 'decorate' function in module:%s, module:%s",
+            vim.inspect(metaopts.provider_decorator),
+            vim.inspect(module_or_err)
+          )
+        end
+      else
+        shell_helpers.log_err(
+          "failed to load decorator:%s, error:%s",
+          vim.inspect(metaopts.provider_decorator),
+          vim.inspect(module_or_err)
+        )
+      end
     else
       io.write(string.format("%s\n", line))
     end
