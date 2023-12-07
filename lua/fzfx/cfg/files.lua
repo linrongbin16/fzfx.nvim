@@ -135,12 +135,12 @@ M.providers = {
   restricted_mode = {
     key = "ctrl-r",
     provider = restricted_provider,
-    line_opts = { prepend_icon_by_ft = true },
+    provider_decorator = { module = "prepend_icon_find", builtin = true },
   },
   unrestricted_mode = {
     key = "ctrl-u",
     provider = unrestricted_provider,
-    line_opts = { prepend_icon_by_ft = true },
+    provider_decorator = { module = "prepend_icon_find", builtin = true },
   },
 }
 

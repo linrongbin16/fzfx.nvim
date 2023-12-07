@@ -15,7 +15,7 @@ end
 -- retrieve value from table like json field indexing via dot `.` delimiter.
 -- for example when parameter `t = { a = { b = 1 } }` and `field = 'a.b'`, it will return `1`.
 --
---- @param t table?
+--- @param t any?
 --- @param field string
 --- @return any
 M.tbl_get = function(t, field)

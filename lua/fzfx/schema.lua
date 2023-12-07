@@ -28,6 +28,14 @@ local ProviderTypeEnum = {
 -- Note: the 1st parameter 'query' is the user input query in fzf prompt.
 --
 --
+-- ========== Provider Decorator ==========
+--
+--- @alias fzfx._FunctionProviderDecorator fun(line:string?):string?
+--- @alias fzfx.ProviderDecorator string|{module:string,rtp:string?,builtin:boolean?}
+--
+-- Note: in `fzfx._FunctionProviderDecorator`, the 1st parameter `line` is the raw generated line from providers.
+--
+--
 -- ========== Previewer ==========
 --
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
@@ -102,6 +110,7 @@ local CommandFeedEnum = {
 --
 -- ========== Config ==========
 --
+--- @deprecated
 --- @class fzfx.ProviderConfigLineOpts
 --- @field prepend_icon_by_ft boolean?
 --- @field prepend_icon_path_delimiter string? -- working with `prepend_icon_by_ft=true`
@@ -111,7 +120,8 @@ local CommandFeedEnum = {
 --- @field key fzfx.ActionKey
 --- @field provider fzfx.Provider
 --- @field provider_type fzfx.ProviderType? by default "plain"
---- @field line_opts fzfx.ProviderConfigLineOpts?
+--- @field line_opts fzfx.ProviderConfigLineOpts?  -- deprecated
+--- @field provider_decorator fzfx.ProviderDecorator?
 
 --- @class fzfx.PreviewerConfig
 --- @field previewer fzfx.Previewer

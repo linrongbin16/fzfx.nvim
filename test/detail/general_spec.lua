@@ -5,6 +5,8 @@ describe("detail.general", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
+  local assert_truthy = assert.is.truthy
+  local assert_falsy = assert.is.falsy
 
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
@@ -481,7 +483,7 @@ describe("detail.general", function()
       assert_eq(type(actual2), "table")
       assert_eq(actual2.pipeline, "test2")
       assert_eq(actual1.provider_type, "command")
-      assert_false(actual2.prepend_icon_by_ft)
+      assert_falsy(actual2.prepend_icon_by_ft)
     end)
     it("makes with icon", function()
       local actual = general.make_provider_meta_opts("test3", {

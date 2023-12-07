@@ -60,9 +60,10 @@ end
 --- @class fzfx.ProviderMetaOpts
 --- @field pipeline fzfx.PipelineName
 --- @field provider_type fzfx.ProviderType
---- @field prepend_icon_by_ft boolean?
---- @field prepend_icon_path_delimiter string?
---- @field prepend_icon_path_position integer?
+--- @field prepend_icon_by_ft boolean?  -- deprecated
+--- @field prepend_icon_path_delimiter string?  -- deprecated
+--- @field prepend_icon_path_position integer?  -- deprecated
+--- @field provider_decorator fzfx.ProviderDecorator?
 
 --- @param pipeline string
 --- @param provider_config fzfx.ProviderConfig
@@ -74,30 +75,28 @@ local function make_provider_meta_opts(pipeline, provider_config)
   }
 
   -- prepend_icon_by_ft
-  if
-    type(provider_config.line_opts) == "table"
-    and type(provider_config.line_opts.prepend_icon_by_ft) == "boolean"
-  then
+  if tbls.tbl_get(provider_config, "line_opts.prepend_icon_by_ft") then
     o.prepend_icon_by_ft = provider_config.line_opts.prepend_icon_by_ft
   end
 
   -- prepend_icon_path_delimiter
   if
-    type(provider_config.line_opts) == "table"
-    and type(provider_config.line_opts.prepend_icon_path_delimiter) == "string"
-    and string.len(provider_config.line_opts.prepend_icon_path_delimiter) > 0
+    tbls.tbl_get(provider_config, "line_opts.prepend_icon_path_delimiter")
+    and strs.not_empty(provider_config.line_opts.prepend_icon_path_delimiter)
   then
     o.prepend_icon_path_delimiter =
       provider_config.line_opts.prepend_icon_path_delimiter
   end
 
   -- prepend_icon_path_position
-  if
-    type(provider_config.line_opts) == "table"
-    and type(provider_config.line_opts.prepend_icon_path_position) == "number"
-  then
+  if tbls.tbl_get(provider_config, "line_opts.prepend_icon_path_position") then
     o.prepend_icon_path_position =
       provider_config.line_opts.prepend_icon_path_position
+  end
+
+  -- provider_decorator
+  if tbls.tbl_get(provider_config, "provider_decorator") then
+    o.provider_decorator = provider_config.provider_decorator
   end
 
   return o
