@@ -72,7 +72,7 @@ local function println(line)
         metaopts.prepend_icon_path_position
       )
       io.write(string.format("%s\n", rendered_line))
-    elseif tbls.tbl_not_empty(metaopts.provider_decorator) then
+    elseif metaopts.provider_decorator ~= nil then
       if strs.not_empty(tbls.tbl_get(metaopts.provider_decorator, "rtp")) then
         vim.opt.runtimepath:append(
           tbls.tbl_get(metaopts.provider_decorator, "rtp")
@@ -89,30 +89,21 @@ local function println(line)
             and metaopts.provider_decorator
           or metaopts.provider_decorator.module
         local ok, module_or_err = pcall(require, decorator_module)
-        -- shell_helpers.log_debug(
-        --   "decorator:%s, module:%s",
-        --   vim.inspect(decorator_module),
-        --   vim.inspect(module_or_err)
-        -- )
-        if ok then
-          if type(tbls.tbl_get(module_or_err, "decorate")) == "function" then
-            local rendered_ok, rendered_line =
-              pcall(module_or_err.decorate, line)
-            if rendered_ok then
-              io.write(string.format("%s\n", rendered_line))
-            end
-          else
-            shell_helpers.log_err(
-              "failed to invoke 'decorate' function in module:%s, module:%s",
-              vim.inspect(metaopts.provider_decorator),
-              vim.inspect(module_or_err)
-            )
-          end
+        shell_helpers.log_ensure(
+          ok and tbls.tbl_not_empty(module_or_err),
+          "failed to load decorator:%s, error:%s",
+          vim.inspect(metaopts.provider_decorator),
+          vim.inspect(module_or_err)
+        )
+        local rendered_ok, rendered_line_or_err =
+          pcall(module_or_err.decorate, line)
+        if rendered_ok then
+          io.write(string.format("%s\n", rendered_line_or_err))
         else
           shell_helpers.log_err(
-            "failed to load decorator:%s, error:%s",
-            vim.inspect(metaopts.provider_decorator),
-            vim.inspect(module_or_err)
+            "failed to render line with decorator:%s, error:%s",
+            vim.inspect(decorator_module),
+            vim.inspect(rendered_line_or_err)
           )
         end
       end)

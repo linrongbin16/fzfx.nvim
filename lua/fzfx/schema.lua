@@ -31,7 +31,7 @@ local ProviderTypeEnum = {
 -- ========== Provider Decorator ==========
 --
 --- @alias fzfx._FunctionProviderDecorator fun(line:string?,context:fzfx.PipelineContext?):string?
---- @alias fzfx.ProviderDecorator {module:string,rtp:string?}
+--- @alias fzfx.ProviderDecorator string|{module:string,rtp:string?}
 --
 -- Note: the 1st parameter `line` (in `fzfx._FunctionProviderDecorator`) is the raw generated line from providers.
 -- Note: the `module` must returns the lua table contains the lua function named `decorate`, the `rtp` is optional (since fzfx itself is already been added into environment).
