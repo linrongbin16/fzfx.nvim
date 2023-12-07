@@ -95,10 +95,7 @@ local function make_provider_meta_opts(pipeline, provider_config)
   end
 
   -- provider_decorator
-  if
-    tbls.tbl_get(provider_config, "provider_decorator")
-    and tbls.tbl_not_empty(provider_config.provider_decorator)
-  then
+  if tbls.tbl_get(provider_config, "provider_decorator") then
     o.provider_decorator = provider_config.provider_decorator
   end
 

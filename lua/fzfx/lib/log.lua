@@ -48,7 +48,9 @@ M.echo = function(level, fmt, ...)
       LogHighlights[level],
     })
   end
-  vim.api.nvim_echo(msg_chunks, false, {})
+  vim.schedule(function()
+    vim.api.nvim_echo(msg_chunks, false, {})
+  end)
 end
 
 --- @type fzfx.Options
