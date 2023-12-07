@@ -61,6 +61,8 @@ shell_helpers.log_ensure(
 local metaopts = jsons.decode(metajsonstring) --[[@as fzfx.ProviderMetaOpts]]
 shell_helpers.log_debug("metaopt:[%s]", vim.inspect(metaopts))
 
+local loaded_decorator_module = nil
+
 --- @param line string?
 local function println(line)
   if type(line) == "string" and string.len(vim.trim(line)) > 0 then
@@ -88,15 +90,18 @@ local function println(line)
         local decorator_module = strs.not_empty(metaopts.provider_decorator)
             and metaopts.provider_decorator
           or metaopts.provider_decorator.module
-        local ok, module_or_err = pcall(require, decorator_module)
-        shell_helpers.log_ensure(
-          ok and tbls.tbl_not_empty(module_or_err),
-          "failed to load decorator:%s, error:%s",
-          vim.inspect(metaopts.provider_decorator),
-          vim.inspect(module_or_err)
-        )
+        if not loaded_decorator_module then
+          local ok, module_or_err = pcall(require, decorator_module)
+          shell_helpers.log_ensure(
+            ok and tbls.tbl_not_empty(module_or_err),
+            "failed to load decorator:%s, error:%s",
+            vim.inspect(metaopts.provider_decorator),
+            vim.inspect(module_or_err)
+          )
+          loaded_decorator_module = module_or_err
+        end
         local rendered_ok, rendered_line_or_err =
-          pcall(module_or_err.decorate, line)
+          pcall(loaded_decorator_module.decorate, line)
         if rendered_ok then
           io.write(string.format("%s\n", rendered_line_or_err))
         else
