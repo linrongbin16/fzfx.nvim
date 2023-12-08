@@ -115,9 +115,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      repository-projects: write
     steps:
-      - uses: google-github-actions/release-please-action@v3
+      - uses: google-github-actions/release-please-action@v4
         id: release
         with:
           token: ${{ secrets.PERSONAL_RELEASE_TOKEN }}
