@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.3](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.2...v3.7.3) (2023-12-08)
+
+
+### Performance Improvements
+
+* **ci:** again first release luarocks ([#474](https://github.com/linrongbin16/fzfx.nvim/issues/474)) ([eec2147](https://github.com/linrongbin16/fzfx.nvim/commit/eec21479aad146749e1ddf9dd64d056a0ba02876))
+
 ## [3.7.2](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.1...v3.7.2) (2023-12-08)
 
 
