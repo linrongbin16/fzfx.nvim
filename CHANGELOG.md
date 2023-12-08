@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.4](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.3...v3.7.4) (2023-12-08)
+
+
+### Bug Fixes
+
+* **ci:** fix luarocks actions trigger ([#476](https://github.com/linrongbin16/fzfx.nvim/issues/476)) ([da08581](https://github.com/linrongbin16/fzfx.nvim/commit/da08581dc1b8748b0a0b8c180235e4157b676d2a))
+
 ## [3.7.3](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.2...v3.7.3) (2023-12-08)
 
 
