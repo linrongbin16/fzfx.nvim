@@ -40,11 +40,7 @@ M.providers = {
     capability = "implementationProvider",
   }),
   provider_type = ProviderTypeEnum.LIST,
-  line_opts = {
-    prepend_icon_by_ft = true,
-    prepend_icon_path_delimiter = ":",
-    prepend_icon_path_position = 1,
-  },
+  provider_decorator = { module = "prepend_icon_grep", builtin = true },
 }
 
 M.previewers = _lsp_locations.previewers

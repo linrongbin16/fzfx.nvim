@@ -77,9 +77,6 @@ if metaopts.provider_decorator ~= nil then
     vim.inspect(metaopts.provider_decorator)
   )
   local module_name = metaopts.provider_decorator.module
-  if metaopts.provider_decorator.builtin then
-    module_name = "fzfx.helper.provider_decorators." .. module_name
-  end
   local ok, module_or_err = pcall(require, module_name)
   shell_helpers.log_ensure(
     ok and tbls.tbl_not_empty(module_or_err),
