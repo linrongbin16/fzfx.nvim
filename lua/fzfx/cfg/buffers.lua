@@ -114,7 +114,7 @@ M.providers = {
   key = "default",
   provider = M._buffers_provider,
   provider_type = ProviderTypeEnum.LIST,
-  line_opts = { prepend_icon_by_ft = true },
+  provider_decorator = { module = "prepend_icon_find", builtin = true },
 }
 
 M.previewers = {
