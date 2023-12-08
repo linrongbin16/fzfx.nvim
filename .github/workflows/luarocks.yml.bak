@@ -23,3 +23,5 @@ jobs:
         with:
           summary: "FZF-based fuzzy finder running on a dynamic engine that parsing user query and selection on every keystroke."
           licence: "MIT"
+          labels: |
+            neovim
