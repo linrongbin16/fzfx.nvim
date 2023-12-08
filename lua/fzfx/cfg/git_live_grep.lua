@@ -103,11 +103,7 @@ M.providers = {
   key = "default",
   provider = M._git_live_grep_provider,
   provider_type = ProviderTypeEnum.COMMAND_LIST,
-  line_opts = {
-    prepend_icon_by_ft = true,
-    prepend_icon_path_delimiter = ":",
-    prepend_icon_path_position = 1,
-  },
+  provider_decorator = { module = "prepend_icon_grep", builtin = true },
 }
 
 M.previewers = {

@@ -151,13 +151,13 @@ M.providers = {
     key = "ctrl-u",
     provider = current_folder_provider,
     provider_type = ProviderTypeEnum.COMMAND_LIST,
-    line_opts = { prepend_icon_by_ft = true },
+    provider_decorator = { module = "prepend_icon_find", builtin = true },
   },
   workspace = {
     key = "ctrl-w",
     provider = workspace_provider,
     provider_type = ProviderTypeEnum.COMMAND_LIST,
-    line_opts = { prepend_icon_by_ft = true },
+    provider_decorator = { module = "prepend_icon_find", builtin = true },
   },
 }
 

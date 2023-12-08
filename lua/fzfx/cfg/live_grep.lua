@@ -297,31 +297,19 @@ M.providers = {
     key = "ctrl-r",
     provider = restricted_provider,
     provider_type = ProviderTypeEnum.COMMAND_LIST,
-    line_opts = {
-      prepend_icon_by_ft = true,
-      prepend_icon_path_delimiter = ":",
-      prepend_icon_path_position = 1,
-    },
+    provider_decorator = { module = "prepend_icon_grep", builtin = true },
   },
   unrestricted_mode = {
     key = "ctrl-u",
     provider = unrestricted_provider,
     provider_type = ProviderTypeEnum.COMMAND_LIST,
-    line_opts = {
-      prepend_icon_by_ft = true,
-      prepend_icon_path_delimiter = ":",
-      prepend_icon_path_position = 1,
-    },
+    provider_decorator = { module = "prepend_icon_grep", builtin = true },
   },
   buffer_mode = {
     key = "ctrl-o",
     provider = buffer_provider,
     provider_type = ProviderTypeEnum.COMMAND_LIST,
-    line_opts = {
-      prepend_icon_by_ft = true,
-      prepend_icon_path_delimiter = ":",
-      prepend_icon_path_position = 1,
-    },
+    provider_decorator = { module = "prepend_icon_grep", builtin = true },
   },
 }
 
