@@ -4,7 +4,9 @@ on:
     tags:
       - "*"
   pull_request: # Will test a local install without uploading to luarocks.org
-
+concurrency:
+  group: ${{ github.ref }}-luarocks
+  cancel-in-progress: true
 jobs:
   luarocks-release:
     runs-on: ubuntu-latest
