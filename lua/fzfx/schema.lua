@@ -31,7 +31,7 @@ local ProviderTypeEnum = {
 -- ========== Provider Decorator ==========
 --
 --- @alias fzfx._FunctionProviderDecorator fun(line:string?):string?
---- @alias fzfx.ProviderDecorator string|{module:string,rtp:string?,builtin:boolean?}
+--- @alias fzfx.ProviderDecorator {module:string,rtp:string?,builtin:boolean?}
 --
 -- Note: in `fzfx._FunctionProviderDecorator`, the 1st parameter `line` is the raw generated line from providers.
 --
