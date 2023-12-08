@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.6](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.5...v3.7.6) (2023-12-08)
+
+
+### Reverts
+
+* **ci:** revert please-release action to v3, remove luarocks ci ([#482](https://github.com/linrongbin16/fzfx.nvim/issues/482)) ([22b3385](https://github.com/linrongbin16/fzfx.nvim/commit/22b3385824cf77f704b7499e39108612599b6a95))
+
 ## [3.7.5](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.4...v3.7.5) (2023-12-08)
 
 
