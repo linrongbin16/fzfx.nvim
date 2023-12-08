@@ -97,9 +97,9 @@ local function make_provider_meta_opts(pipeline, provider_config)
   -- provider_decorator
   if tbls.tbl_get(provider_config, "provider_decorator") then
     o.provider_decorator = vim.deepcopy(provider_config.provider_decorator)
-    if provider_config.provider_decorator.builtin then
+    if o.provider_decorator.builtin then
       o.provider_decorator.module = "fzfx.helper.provider_decorators."
-        .. provider_config.provider_decorator.module
+        .. o.provider_decorator.module
     end
   end
 
