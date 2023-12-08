@@ -288,21 +288,13 @@ M.providers = {
     key = "ctrl-w",
     provider = M._make_lsp_diagnostics_provider(),
     provider_type = ProviderTypeEnum.LIST,
-    line_opts = {
-      prepend_icon_by_ft = true,
-      prepend_icon_path_delimiter = ":",
-      prepend_icon_path_position = 1,
-    },
+    provider_decorator = { module = "prepend_icon_grep", builtin = true },
   },
   buffer_diagnostics = {
     key = "ctrl-u",
     provider = M._make_lsp_diagnostics_provider({ buffer = true }),
     provider_type = ProviderTypeEnum.LIST,
-    line_opts = {
-      prepend_icon_by_ft = true,
-      prepend_icon_path_delimiter = ":",
-      prepend_icon_path_position = 1,
-    },
+    provider_decorator = { module = "prepend_icon_grep", builtin = true },
   },
 }
 
