@@ -1,4 +1,4 @@
-name: LuaRocks Release
+name: LuaRocks
 on:
   push:
     tags:
