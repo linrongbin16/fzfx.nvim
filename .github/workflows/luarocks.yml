@@ -3,7 +3,9 @@ on:
   push:
     tags:
       - "*"
-  pull_request: # Will test a local install without uploading to luarocks.org
+  pull_request:
+    branches:
+      - main
 concurrency:
   group: ${{ github.ref }}-luarocks
   cancel-in-progress: true
