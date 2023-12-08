@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.1](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.0...v3.7.1) (2023-12-08)
+
+
+### Performance Improvements
+
+* **config:** migrate to provider decorators ([#469](https://github.com/linrongbin16/fzfx.nvim/issues/469)) ([f825f32](https://github.com/linrongbin16/fzfx.nvim/commit/f825f324664e512e0ee87973e19c9181eee8a834))
+
 ## [3.7.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.6.1...v3.7.0) (2023-12-07)
 
 
