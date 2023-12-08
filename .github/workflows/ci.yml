@@ -112,15 +112,10 @@ jobs:
       - luacheck
       - unit_test
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      repository-projects: write
     steps:
       - uses: google-github-actions/release-please-action@v3
         id: release
         with:
-          token: ${{ secrets.PERSONAL_RELEASE_TOKEN }}
           release-type: simple
           package-name: fzfx.nvim
       - uses: actions/checkout@v4
@@ -131,12 +126,3 @@ jobs:
           message: "Current stable release: ${{ steps.release.outputs.tag_name }}"
           tag_exists_error: false
           force_push_tag: true
-      # - uses: nvim-neorocks/luarocks-tag-release@v5
-      #   if: ${{ steps.release.outputs.release_created }}
-      #   env:
-      #     LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
-      #   with:
-      #     summary: "FZF-based fuzzy finder running on a dynamic engine that parsing user query and selection on every keystroke."
-      #     licence: "MIT"
-      #     labels: |
-      #       neovim
