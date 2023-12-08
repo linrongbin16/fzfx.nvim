@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.7.5](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.4...v3.7.5) (2023-12-08)
+
+
+### Bug Fixes
+
+* **ci:** fix luarocks tags version ([#478](https://github.com/linrongbin16/fzfx.nvim/issues/478)) ([a3625dc](https://github.com/linrongbin16/fzfx.nvim/commit/a3625dc91d491b5490b6fdb2017f1df9635209e3))
+* **ci:** fix please-release action permission ([#481](https://github.com/linrongbin16/fzfx.nvim/issues/481)) ([e377fb6](https://github.com/linrongbin16/fzfx.nvim/commit/e377fb6fbce8d3ad13f6ff09e922f436b3c76fcc))
+* **ci:** only run luarocks upload if tags been created ([#480](https://github.com/linrongbin16/fzfx.nvim/issues/480)) ([5fee521](https://github.com/linrongbin16/fzfx.nvim/commit/5fee521de79446e79f3619604344be5d49db451a))
+
 ## [3.7.4](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.3...v3.7.4) (2023-12-08)
 
 
