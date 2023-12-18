@@ -62,7 +62,7 @@ end
 M.erase = function(text)
   local strings = require("fzfx.commons.strings")
   local termcolors = require("fzfx.commons.termcolors")
-  if strings.empty(text)
+  if strings.empty(text) then
     return text
   end
   return termcolors.erase(text)
