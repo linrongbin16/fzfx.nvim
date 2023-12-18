@@ -1,7 +1,7 @@
 local M = {}
 
 --- @alias commons.SpawnLineProcessor fun(line:string):any
---- @alias commons.SpawnOpts {stdout:commons.SpawnLineProcessor, stderr:commons.SpawnLineProcessor, [string]:any}
+--- @alias commons.SpawnOpts {on_stdout:commons.SpawnLineProcessor, on_stderr:commons.SpawnLineProcessor, [string]:any}
 --- @alias commons.SpawnOnExit fun(completed:vim.SystemCompleted):nil
 --- @param cmd string[]
 --- @param opts commons.SpawnOpts?  by default {text = true}
@@ -10,8 +10,8 @@ M.run = function(cmd, opts, on_exit)
   opts = opts or {}
   opts.text = type(opts.text) == "boolean" and opts.text or true
 
-  assert(type(opts.stdout) == "function")
-  assert(type(opts.stderr) == "function")
+  assert(type(opts.on_stdout) == "function")
+  assert(type(opts.on_stderr) == "function")
 
   --- @param buffer string
   --- @param fn_line_processor commons.SpawnLineProcessor
@@ -52,17 +52,17 @@ M.run = function(cmd, opts, on_exit)
       -- append data to buffer
       stdout_buffer = stdout_buffer and (stdout_buffer .. data) or data
       -- search buffer and process each line
-      local i = _process(stdout_buffer, opts.stdout)
+      local i = _process(stdout_buffer, opts.on_stdout)
       -- truncate the printed lines if found any
       stdout_buffer = i <= #stdout_buffer
           and stdout_buffer:sub(i, #stdout_buffer)
         or nil
     elseif stdout_buffer then
       -- foreach the data_buffer and find every line
-      local i = _process(stdout_buffer, opts.stdout)
+      local i = _process(stdout_buffer, opts.on_stdout)
       if i <= #stdout_buffer then
         local line = stdout_buffer:sub(i, #stdout_buffer)
-        opts.stdout(line)
+        opts.on_stdout(line)
         stdout_buffer = nil
       end
     end
@@ -86,15 +86,15 @@ M.run = function(cmd, opts, on_exit)
 
     if data then
       stderr_buffer = stderr_buffer and (stderr_buffer .. data) or data
-      local i = _process(stderr_buffer, opts.stderr)
+      local i = _process(stderr_buffer, opts.on_stderr)
       stderr_buffer = i <= #stderr_buffer
           and stderr_buffer:sub(i, #stderr_buffer)
         or nil
     elseif stderr_buffer then
-      local i = _process(stderr_buffer, opts.stderr)
+      local i = _process(stderr_buffer, opts.on_stderr)
       if i <= #stderr_buffer then
         local line = stderr_buffer:sub(i, #stderr_buffer)
-        opts.stderr(line)
+        opts.on_stderr(line)
         stderr_buffer = nil
       end
     end
