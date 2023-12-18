@@ -1,6 +1,3 @@
-local strs = require("fzfx.lib.strings")
-local spawn = require("fzfx.lib.spawn")
-
 local M = {}
 
 -- CommandResult {
@@ -51,26 +48,31 @@ local Command = {}
 --- @param source string[]
 --- @return fzfx.Command
 function Command:run(source)
+  local strings = require("fzfx.commons.strings")
+  local spawn = require("fzfx.commons.spawn")
+  local tables = require("fzfx.commons.tables")
+
   local result = CommandResult:new()
-  local sp = spawn.Spawn:make(source, {
-    on_stdout = function(line)
-      if strs.not_empty(line) then
+  local sp = spawn.run(source, {
+    stdout = function(line)
+      if strings.not_empty(line) then
         table.insert(result.stdout, line)
       end
     end,
-    on_stderr = function(line)
-      if strs.not_empty(line) then
+    stderr = function(line)
+      if strings.not_empty(line) then
         table.insert(result.stderr, line)
       end
     end,
-    blocking = true,
-  })
-  sp:run()
-
-  if type(sp.result) == "table" then
-    result.code = sp.result.code
-    result.signal = sp.result.signal
-  end
+  }, function(completed)
+    if tables.tbl_not_empty(completed) and completed.code then
+      result.code = completed.code
+    end
+    if tables.tbl_not_empty(completed) and completed.signal then
+      result.signal = completed.signal
+    end
+  end)
+  sp:wait()
 
   local o = {
     source = source,
