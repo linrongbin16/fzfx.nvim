@@ -24,6 +24,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install commons.nvim
+        if: ${{ github.ref != 'refs/heads/main' }}
+        shell: bash
+        run: |
+          git clone --depth=1 https://github.com/linrongbin16/commons.nvim.git ~/.commons.nvim
+          rm -rf ./lua/fzfx/commons
+          mkdir -p ./lua/fzfx/commons
+          cp -rf ~/.commons.nvim/lua/commons/*.lua ./lua/fzfx/commons
+          cd ./lua/fzfx/commons
+          find . -type f -name '*.lua' -exec sed -i 's/require("commons/require("fzfx.commons/g' {} \;
       - uses: stevearc/nvim-typecheck-action@v1
         with:
           path: lua
@@ -38,14 +48,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
           args: --config-path .stylua.toml ./lua ./test ./bin
-      - name: Add json.lua
-        if: ${{ github.ref != 'refs/heads/main' }}
-        shell: bash
-        run: |
-          echo "pwd"
-          echo $PWD
-          git clone --depth=1 https://github.com/actboy168/json.lua.git ~/.json.lua
-          cp ~/.json.lua/json.lua ./lua/fzfx/lib/actboy168_json.lua
       - uses: stefanzweifel/git-auto-commit-action@v4
         if: ${{ github.ref != 'refs/heads/main' }}
         with:

@@ -4,5 +4,5 @@ modules = {
     ["fzfx.*.*"] = "lua",
 }
 exclude = {
-    "lua/fzfx/lib/actboy168_json.lua",
+    "lua/fzfx/commons/*.lua",
 }
