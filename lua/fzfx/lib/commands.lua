@@ -54,12 +54,12 @@ function Command:run(source)
 
   local result = CommandResult:new()
   local sp = spawn.run(source, {
-    stdout = function(line)
+    on_stdout = function(line)
       if strings.not_empty(line) then
         table.insert(result.stdout, line)
       end
     end,
-    stderr = function(line)
+    on_stderr = function(line)
       if strings.not_empty(line) then
         table.insert(result.stderr, line)
       end
