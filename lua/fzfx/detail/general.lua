@@ -237,7 +237,7 @@ function ProviderSwitch:provide(query, context)
     else
       fs.writefile(
         self.resultfile,
-        jsons.encode(provider_config.provider) --[[@as string]]
+        jsons.encode(provider_config.provider --[[@as table]]) --[[@as string]]
       )
     end
   elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
