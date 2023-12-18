@@ -7,35 +7,6 @@ M.csi = function(code, fg)
   return require("fzfx.commons.termcolors").escape(fg and "fg" or "bg", code)
 end
 
--- css color: https://www.quackit.com/css/css_color_codes.cfm
---- @type table<string, string>
-local AnsiCode = {
-  black = "0;30",
-  grey = M.csi("#808080", true),
-  silver = M.csi("#c0c0c0", true),
-  white = M.csi("#ffffff", true),
-  violet = M.csi("#EE82EE", true),
-  magenta = "0;35",
-  fuchsia = M.csi("#FF00FF", true),
-  red = "0;31",
-  purple = M.csi("#800080", true),
-  indigo = M.csi("#4B0082", true),
-  yellow = "0;33",
-  gold = M.csi("#FFD700", true),
-  orange = M.csi("#FFA500", true),
-  chocolate = M.csi("#D2691E", true),
-  olive = M.csi("#808000", true),
-  green = "0;32",
-  lime = M.csi("#00FF00", true),
-  teal = M.csi("#008080", true),
-  cyan = "0;36",
-  aqua = M.csi("#00FFFF", true),
-  blue = "0;34",
-  navy = M.csi("#000080", true),
-  slateblue = M.csi("#6A5ACD", true),
-  steelblue = M.csi("#4682B4", true),
-}
-
 --- @param attr "fg"|"bg"
 --- @param hl string?
 --- @return string? rbg code, e.g., #808080
