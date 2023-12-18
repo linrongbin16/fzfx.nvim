@@ -329,9 +329,9 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 > [!NOTE]
 >
-> Most of the `fzfx.lib` is migrate to the [commons](https://github.com/linrongbin16/commons.nvim) lua library, which is originally extracted from fzfx lib modules.
+> Most of the `fzfx.lib` is migrate to the [commons](https://github.com/linrongbin16/commons.nvim) lua library.
 >
-> Please refer to the [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/) for a better API references documentation.
+> Please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/) for better API references.
 
 ### [fzfx.lib.colors](/lua/fzfx/lib/colors.lua)
 

@@ -4,18 +4,7 @@ local M = {}
 --- @param fg boolean
 --- @return string
 M.csi = function(code, fg)
-  local control = fg and 38 or 48
-  local r, g, b = code:match("#(..)(..)(..)")
-  if r and g and b then
-    r = tonumber(r, 16)
-    g = tonumber(g, 16)
-    b = tonumber(b, 16)
-    local result = string.format("%d;2;%d;%d;%d", control, r, g, b)
-    return result
-  else
-    local result = string.format("%d;5;%s", control, code)
-    return result
-  end
+  return require("fzfx.commons.termcolors").escape(fg and "fg" or "bg", code)
 end
 
 -- css color: https://www.quackit.com/css/css_color_codes.cfm
