@@ -327,15 +327,11 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 ## [Fundamental Infrastructures](/lua/fzfx/lib)
 
-The `fzfx.lib` provides fundamental infrastructures for whole plugin, they're usually handling below issues:
-
-- Cross platforms compatibility between Windows and Linux/macOS.
-- Neovim APIs compatibility between v0.7-nightly versions.
-- Files IO & paths.
-- Json and lua table conversion.
-- Some constants, strings, numbers, lua table and list data structures.
-- Environment variables.
-- Command line running, e.g. child process.
+> [!NOTE]
+>
+> Most of the `fzfx.lib` is migrate to the [commons](https://github.com/linrongbin16/commons.nvim) lua library, which is originally extracted from fzfx lib modules.
+>
+> Please refer to the [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/) for a better API references documentation.
 
 ### [fzfx.lib.colors](/lua/fzfx/lib/colors.lua)
 
