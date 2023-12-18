@@ -69,7 +69,8 @@ M.erase = function(text)
 end
 
 do
-  for name, code in pairs(AnsiCode) do
+  local predefined_colors = require("fzfx.commons.termcolors").COLOR_NAMES
+  for _, name in ipairs(predefined_colors) do
     --- @param text string
     --- @param hl string?
     --- @return string
