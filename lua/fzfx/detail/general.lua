@@ -495,7 +495,10 @@ function PreviewerSwitch:preview(line, context)
       if tbls.tbl_empty(result) then
         fs.writefile(self.resultfile, "")
       else
-        fs.writefile(self.resultfile, jsons.encode(result) --[[@as string]])
+        fs.writefile(
+          self.resultfile,
+          jsons.encode(result --[[@as table]]) --[[@as string]]
+        )
       end
     end
   elseif previewer_config.previewer_type == PreviewerTypeEnum.LIST then
