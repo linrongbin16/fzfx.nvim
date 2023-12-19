@@ -14,19 +14,31 @@ The `fzfx.cfg` module directly provide configurations for all search commands in
 
 !> Before continue, you may need to read [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) to understand whey the configuration are structured like this.
 
+A real-world search command, say `FzfxLiveGrep`, actually defined multiple user commands:
+
+- `FzfxLiveGrep(B/U)`
+- `FzfxLiveGrep(B/U)V`
+- `FzfxLiveGrep(B/U)W`
+- `FzfxLiveGrep(B/U)R`
+- `FzfxLiveGrep(B/U)P`
+
+They're all defined in the `fzfx.cfg.live_grep` module, it's called a commands group.
+
 Each commands group contains below components:
 
-- `commands`:
-  - When there's only 1 command, it's a single [`fzfx.CommandConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/aa5eac85d5e9dcb020cd4237814ec0b305945193/lua/fzfx/schema.lua?plain=1#L133).
-  - When there's multiple commands, it's a `fzfx.CommandConfig` list .
-- `providers`:
-  - When there's only 1 provider(data source), it's a single [`fzfx.ProviderConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/aa5eac85d5e9dcb020cd4237814ec0b305945193/lua/fzfx/schema.lua?plain=1#L119).
-  - When there's multiple providers(data sources), it's a `fzfx.ProviderConfig` map.
-- `previewers`: a single `fzfx.PreviewerConfig` (if there's only 1 previewer) or a `fzfx.PreviewerConfig` map (if there's multiple previewers).
-- `actions`: a `fzfx.Action` map.
-- `interactions` (optional): a `fzfx.InterAction` map.
-- `fzf_opts` (optional): a `fzfx.FzfOpt` list.
-- `other_opts` (optional): other special options map.
+- `commands`
+  - For only 1 command, it's a single [`fzfx.CommandConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/aa5eac85d5e9dcb020cd4237814ec0b305945193/lua/fzfx/schema.lua?plain=1#L133).
+  - For multiple commands, it's a `fzfx.CommandConfig` list .
+- `providers`
+  - For only 1 provider(data source), it's a single [`fzfx.ProviderConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/aa5eac85d5e9dcb020cd4237814ec0b305945193/lua/fzfx/schema.lua?plain=1#L119).
+  - For multiple providers(data sources), it's a `fzfx.ProviderConfig` map.
+- `previewers`
+  - For only 1 previewer, it's a single [`fzfx.PreviewerConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/835b216c36a94e289c166c0f8790e0f56f7a77bb/lua/fzfx/schema.lua?plain=1#L126).
+  - For multiple previewers, it's a `fzfx.PreviewerConfig` map.
+- `actions`: a [`fzfx.Action`](https://github.com/linrongbin16/fzfx.nvim/blob/835b216c36a94e289c166c0f8790e0f56f7a77bb/lua/fzfx/schema.lua?plain=1#L151) map.
+- (Optional) `interactions`: a [`fzfx.InterAction`](https://github.com/linrongbin16/fzfx.nvim/blob/835b216c36a94e289c166c0f8790e0f56f7a77bb/lua/fzfx/schema.lua?plain=1#L150) map.
+- (Optional) `fzf_opts`: a [`fzfx.FzfOpt`](https://github.com/linrongbin16/fzfx.nvim/blob/835b216c36a94e289c166c0f8790e0f56f7a77bb/lua/fzfx/schema.lua?plain=1#L152) list.
+- (Optional) `other_opts`: other special options.
 
 Here are all the builtin search command configurations:
 
