@@ -88,10 +88,7 @@ Defines the `FzfxGLiveGrep` commands group.
 
 The search results from `git grep` looks like:
 
-```bash
-docs/commons_apis.md:36:Parameters:
-docs/commons_apis.md:38:- `bufnr`: The buffer number.
-```
+![FzfxGLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/55faae50-6266-479d-8a69-6462963d9558)
 
 Which is constructed from file name and line number, split by colon `:`. Thus it's implemented with `grep` related utilities:
 
