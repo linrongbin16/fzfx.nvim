@@ -136,7 +136,7 @@ local function get_command_feed(feed_type, input_args, pipeline_name)
     end
   else
     log.throw(
-      "|fzfx.fzf_helpers - get_command_feed| invalid command feed type! %s",
+      "|get_command_feed| invalid command feed type! %s",
       vim.inspect(feed_type)
     )
     return ""
@@ -191,10 +191,7 @@ local function append_fzf_opt(opts, o)
     local v = o[2]
     table.insert(opts, string.format("%s %s", k, nvims.shellescape(v)))
   else
-    log.throw(
-      "|fzfx.fzf_helpers - append_fzf_opt| invalid fzf opt: %s",
-      vim.inspect(o)
-    )
+    log.throw("|append_fzf_opt| invalid fzf opt: %s", vim.inspect(o))
   end
   return opts
 end
@@ -348,7 +345,7 @@ end
 function FzfOptEventBinder:append(opt)
   log.ensure(
     strs.not_blank(opt),
-    "|fzfx.fzf_helpers - FzfOptEventBinder:append| opt must not blank:%s",
+    "|FzfOptEventBinder:append| opt must not blank:%s",
     vim.inspect(opt)
   )
   table.insert(self.opts, opt)

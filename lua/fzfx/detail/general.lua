@@ -215,7 +215,7 @@ function ProviderSwitch:provide(query, context)
     log.ensure(
       provider_config.provider == nil
         or type(provider_config.provider) == "string",
-      "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
+      "|ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
       vim.inspect(self),
       vim.inspect(provider_config)
     )
@@ -228,7 +228,7 @@ function ProviderSwitch:provide(query, context)
     log.ensure(
       provider_config.provider == nil
         or type(provider_config.provider) == "table",
-      "|fzfx.general - ProviderSwitch:provide| plain_list provider must be string or nil! self:%s, provider:%s",
+      "|ProviderSwitch:provide| plain_list provider must be string or nil! self:%s, provider:%s",
       vim.inspect(self),
       vim.inspect(provider_config)
     )
@@ -250,7 +250,7 @@ function ProviderSwitch:provide(query, context)
     -- )
     log.ensure(
       result == nil or type(result) == "string",
-      "|fzfx.general - ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
+      "|ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
       vim.inspect(self),
       vim.inspect(result)
     )
@@ -281,7 +281,7 @@ function ProviderSwitch:provide(query, context)
     -- )
     log.ensure(
       result == nil or type(result) == "table",
-      "|fzfx.general - ProviderSwitch:provide| command_list provider result must be string! self:%s, result:%s",
+      "|ProviderSwitch:provide| command_list provider result must be string! self:%s, result:%s",
       vim.inspect(self),
       vim.inspect(result)
     )
@@ -323,7 +323,7 @@ function ProviderSwitch:provide(query, context)
     else
       log.ensure(
         result == nil or type(result) == "table",
-        "|fzfx.general - ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
+        "|ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
         vim.inspect(self),
         vim.inspect(result)
       )
@@ -335,7 +335,7 @@ function ProviderSwitch:provide(query, context)
     end
   else
     log.throw(
-      "|fzfx.general - ProviderSwitch:provide| invalid provider type! %s",
+      "|ProviderSwitch:provide| invalid provider type! %s",
       vim.inspect(self)
     )
   end
@@ -458,7 +458,7 @@ function PreviewerSwitch:preview(line, context)
     else
       log.ensure(
         result == nil or type(result) == "string",
-        "|fzfx.general - PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
+        "|PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
         vim.inspect(self),
         vim.inspect(result)
       )
@@ -488,7 +488,7 @@ function PreviewerSwitch:preview(line, context)
     else
       log.ensure(
         result == nil or type(result) == "table",
-        "|fzfx.general - PreviewerSwitch:preview| command_list previewer result must be string! self:%s, result:%s",
+        "|PreviewerSwitch:preview| command_list previewer result must be string! self:%s, result:%s",
         vim.inspect(self),
         vim.inspect(result)
       )
@@ -521,7 +521,7 @@ function PreviewerSwitch:preview(line, context)
     else
       log.ensure(
         type(result) == "table",
-        "|fzfx.general - PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
+        "|PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
         vim.inspect(self),
         vim.inspect(result)
       )
@@ -529,7 +529,7 @@ function PreviewerSwitch:preview(line, context)
     end
   else
     log.throw(
-      "|fzfx.general - PreviewerSwitch:preview| invalid previewer type! %s",
+      "|PreviewerSwitch:preview| invalid previewer type! %s",
       vim.inspect(self)
     )
   end
@@ -753,7 +753,7 @@ end
 function HeaderSwitch:get_header(pipeline)
   log.ensure(
     type(self.headers[pipeline]) == "table",
-    "|fzfx.general - HeaderSwitch:get_header| pipeline (%s) must exists in headers! %s",
+    "|HeaderSwitch:get_header| pipeline (%s) must exists in headers! %s",
     vim.inspect(pipeline),
     vim.inspect(self)
   )

@@ -360,7 +360,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
 
     log.ensure(
       vim.fn.filereadable(result) > 0,
-      "|fzfx.popup - Popup:new.on_fzf_exit| result %s must be readable",
+      "|Popup:new.on_fzf_exit| result %s must be readable",
       vim.inspect(result)
     )
     local lines = fs.readlines(result --[[@as string]]) --[[@as table]]
