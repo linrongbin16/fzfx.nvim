@@ -56,15 +56,7 @@ Defines the `FzfxFiles` commands group.
 
 The search result from `fd`/`find` looks like:
 
-```txt
- README.md
- CHANGELOG.md
-󰢱 bin/general/previewer.lua
-󰢱 bin/general/provider.lua
-󰢱 lua/fzfx.lua/test/hello world.txt
-```
-
-?> Due to github pages limitation, the prepend icons are not shown.
+![FzfxFiles](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/fa9649d4-4007-4e53-ad70-dcfb86612492)
 
 ### [git_blame](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_blame.lua)
 
