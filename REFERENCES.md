@@ -78,13 +78,11 @@ Defines the `FzfxGCommits` commands group.
 
 Defines the `FzfxGFiles` commands group.
 
-The data source is similar to the `FzfxFiles` commands, e.g. following the `fd`/`find` style (see [files](#files)).
+The data source is same with `FzfxFiles` commands, e.g. following the `fd`/`find` style (see [fzfx.cfg.files](#files)).
 
 ### [git_live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_live_grep.lua)
 
-Defines the `FzfxGLiveGrep` commands group.
-
-The search results from `git grep` looks like:
+Defines the `FzfxGLiveGrep` commands group. The search results from `git grep` looks like:
 
 ![FzfxGLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/55faae50-6266-479d-8a69-6462963d9558)
 
@@ -102,9 +100,7 @@ Defines the `FzfxGStatus` commands group.
 
 ### [live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/live_grep.lua)
 
-Defines the `FzfxLiveGrep` commands group.
-
-The search results from `rg` looks like:
+Defines the `FzfxLiveGrep` commands group. The search results from `rg` looks like:
 
 ![FzfxLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/170ad807-a0f3-4092-9555-13ae67f38560)
 
