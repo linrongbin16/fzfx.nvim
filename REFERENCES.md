@@ -52,7 +52,9 @@ Defines the `FzfxFileExplorer` commands group.
 
 ### [files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua)
 
-Defines the `FzfxFiles` commands group. The search result from `fd`/`find` looks like:
+Defines the `FzfxFiles` commands group.
+
+The search result from `fd`/`find` looks like:
 
 ![FzfxFiles](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/fa9649d4-4007-4e53-ad70-dcfb86612492)
 
@@ -71,6 +73,8 @@ Defines the `FzfxGCommits` commands group.
 ### [git_files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
 
 Defines the `FzfxGFiles` commands group.
+
+The data source is similar to the `FzfxFiles` commands, e.g. following the `fd`/`find` style (see [files](#files)).
 
 ### [git_live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_live_grep.lua)
 
