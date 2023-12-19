@@ -1,48 +1,12 @@
 <!-- markdownlint-disable MD013 MD034 MD033 MD038 MD051 MD040 -->
 
-# References
+# API References
 
 All APIs listed in this doc are recommended for customizing or implementing your own search commands.
 
-The APIs in `helper` and `lib` package are supposed to be stable and tested (except those starting with underline `_`, which are exposed for unit tests).
+The APIs in `helper` and `lib` package are recommended for customizing and implementing your own search commands, they are supposed to be stable and tested (except those starting with underline `_`, which are exposed for unit tests).
 
-## Table of contents
-
-- [Default Configurations](#default-configurations)
-- [Line-Oriented Helpers](#line-oriented-helpers)
-  - [fzfx.helper.parsers](#fzfxhelperparsers)
-  - [fzfx.helper.actions](#fzfxhelperactions)
-    - [`fd`/`find`](#fd)
-    - [`rg`/`grep`](#rg)
-    - [`git status`](#git-status)
-    - [`git branch`](#git-branch)
-    - [`git log`/`git blame`](#git-log)
-    - [Builtin Vim Commands Renderer](#builtin-vim-commands-renderer)
-    - [Builtin Vim Key Mappings Renderer](#builtin-vim-key-mappings-renderer)
-    - [`eza`/`lsd`/`ls`](#eza)
-  - [fzfx.helper.previewer_labels](#fzfxhelperpreviewer_labels)
-  - [fzfx.helper.previewers](#fzfxhelperpreviewers)
-  - [fzfx.helper.providers](#fzfxhelperproviders)
-  - [fzfx.helper.provider_decorators](#fzfxhelperprovider_decorators)
-  - [fzfx.helper.queries](#fzfxhelperqueries)
-  - [fzfx.helper.prompts](#fzfxhelperprompts)
-- [Fundamental Infrastructures](#fundamental-infrastructures)
-  - [fzfx.lib.colors](#fzfxlibcolors)
-  - [fzfx.lib.commands](#fzfxlibcommands)
-  - [fzfx.lib.constants](#fzfxlibconstants)
-  - [fzfx.lib.deprecations](#fzfxlibdeprecations)
-  - [fzfx.lib.env](#fzfxlibenv)
-  - [fzfx.lib.filesystems](#fzfxlibfilesystems)
-  - [fzfx.lib.jsons](#fzfxlibjsons)
-  - [fzfx.lib.log](#fzfxliblog)
-  - [fzfx.lib.numbers](#fzfxlibnumbers)
-  - [fzfx.lib.nvims](#fzfxlibnvims)
-  - [fzfx.lib.paths](#fzfxlibpaths)
-  - [fzfx.lib.spawn](#fzfxlibspawn)
-  - [fzfx.lib.strings](#fzfxlibstrings)
-  - [fzfx.lib.tables](#fzfxlibtables)
-
-## [Default Configurations](/lua/fzfx/cfg)
+## [fzfx.cfg](/lua/fzfx/cfg)
 
 The `fzfx.cfg` directly provide configurations for all builtin search commands in this plugin. Easy to read, copy and paste to custom/create other search commands.
 
@@ -56,7 +20,7 @@ Every commands group contains below components:
 - `fzf_opts` (optional): a `fzfx.FzfOpt` list.
 - `other_opts` (optional): other special options map.
 
-> Please also see: [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command).
+> Also see: [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command).
 
 Here are all the builtin search command configurations:
 
@@ -80,7 +44,7 @@ Here are all the builtin search command configurations:
 - [vim_commands](/lua/fzfx/cfg/vim_commands.lua): implements `FzfxCommands`, it implements the self-rendering form to directly generate lines for (the left side of) the fzf binary, which is a lot of engineering effort for the providers.
 - [vim_keymaps](/lua/fzfx/cfg/vim_keymaps.lua): implements `FzfxKeyMaps`, it also implements the self-rendering form to directly generate lines for fzf.
 
-## [Line-Oriented Helpers](/lua/fzfx/helper)
+## [fzfx.helper](/lua/fzfx/helper)
 
 The `fzfx.helper` provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios. Since a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 
@@ -325,7 +289,7 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 - `confirm_discard_modified(bufnr:integer, callback:fun():nil):nil`: popup a prompt to ask user confirm whether to discard current buffer's modifications (only if there's any), invoke `callback` if user confirm, do nothing if user cancel.
 
-## [Fundamental Infrastructures](/lua/fzfx/lib)
+## [fzfx.lib](/lua/fzfx/lib)
 
 > [!NOTE]
 >
