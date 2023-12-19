@@ -90,7 +90,11 @@ The search results from `git grep` looks like:
 
 ![FzfxGLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/55faae50-6266-479d-8a69-6462963d9558)
 
-Which is constructed from file name and line number, split by colon `:`. Thus it's implemented with `grep` related utilities:
+Each line is constructed with file name and line number, split by colon `:`, and prepend with file type icon (only when icon is enabled).
+
+?> The `grep` result has no column number, e.g. the 3rd column in `rg` result.
+
+Thus it's implemented with `grep` utilities:
 
 - [fzfx.helper.parsers.parse_grep](#parse_grep)
 
