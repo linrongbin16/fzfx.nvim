@@ -359,6 +359,27 @@ function Logger:_log(dbg, lvl, fmt, ...)
   end
 end
 
+--- @param level integer|string
+--- @param fmt string
+--- @param ... any
+function Logger:log(level, fmt, ...)
+  if type(level) == "string" then
+    assert(LogLevels[string.upper(level)] ~= nil)
+    level = LogLevels[string.upper(level)]
+  end
+  assert(type(level) == "number" and LogHighlights[level] ~= nil)
+  local dbglvl = 2
+  local dbg = nil
+  while true do
+    dbg = debug.getinfo(dbglvl, "nfSl")
+    if not dbg or dbg.what ~= "C" then
+      break
+    end
+    dbglvl = dbglvl + 1
+  end
+  self:_log(dbg, level, fmt, ...)
+end
+
 --- @param fmt string
 --- @param ... any
 function Logger:debug(fmt, ...)
@@ -529,6 +550,29 @@ M.add = function(logger)
 end
 
 local ROOT = "root"
+
+--- @param level integer|string
+--- @param fmt string
+--- @param ... any
+M.log = function(level, fmt, ...)
+  if type(level) == "string" then
+    assert(LogLevels[string.upper(level)] ~= nil)
+    level = LogLevels[string.upper(level)]
+  end
+  assert(type(level) == "number" and LogHighlights[level] ~= nil)
+  local dbglvl = 2
+  local dbg = nil
+  while true do
+    dbg = debug.getinfo(dbglvl, "nfSl")
+    if not dbg or dbg.what ~= "C" then
+      break
+    end
+    dbglvl = dbglvl + 1
+  end
+  local logger = M.get(ROOT)
+  assert(logger ~= nil)
+  logger:_log(dbg, level, fmt, ...)
+end
 
 --- @param fmt string
 --- @param ... any

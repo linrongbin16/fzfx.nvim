@@ -6,42 +6,42 @@ M.INT32_MIN = -2147483648
 
 --- @param a number
 --- @param b number
---- @return boolean   returns `true` if equals, `false` if not.
+--- @return boolean
 M.eq = function(a, b)
   return type(a) == "number" and type(b) == "number" and a == b
 end
 
 --- @param a number
 --- @param b number
---- @return boolean   returns `true` if not equals, `false` if equals.
+--- @return boolean
 M.ne = function(a, b)
   return not M.eq(a, b)
 end
 
 --- @param a number
 --- @param b number
---- @return boolean   returns `true` if a is greater than b, `false` if not.
+--- @return boolean
 M.gt = function(a, b)
   return type(a) == "number" and type(b) == "number" and a > b
 end
 
 --- @param a number
 --- @param b number
---- @return boolean   returns `true` if a is greater equals to b, `false` if not.
+--- @return boolean
 M.ge = function(a, b)
   return M.gt(a, b) or M.eq(a, b)
 end
 
 --- @param a number
 --- @param b number
---- @return boolean   returns `true` if a is less than b, `false` if not.
+--- @return boolean
 M.lt = function(a, b)
   return type(a) == "number" and type(b) == "number" and a < b
 end
 
 --- @param a number
 --- @param b number
---- @return boolean   returns `true` if a is less equals to b, `false` if not.
+--- @return boolean
 M.le = function(a, b)
   return M.lt(a, b) or M.eq(a, b)
 end
@@ -56,7 +56,7 @@ end
 
 local IncrementalId = 0
 
---- @return integer     returns auto-incremental integer, start from 1.
+--- @return integer
 M.auto_incremental_id = function()
   if IncrementalId >= M.INT32_MAX then
     IncrementalId = 1
