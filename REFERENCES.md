@@ -40,28 +40,6 @@ Each commands group contains below components:
 - (Optional) `fzf_opts`: a [`fzfx.FzfOpt`](https://github.com/linrongbin16/fzfx.nvim/blob/835b216c36a94e289c166c0f8790e0f56f7a77bb/lua/fzfx/schema.lua?plain=1#L152) list.
 - (Optional) `other_opts`: other special options.
 
-Here are all the builtin search command configurations:
-
-- [buffers](/lua/fzfx/cfg/buffers.lua): implements `FzfxBuffers`, it's a single data source pipeline (has only 1 provider/previewer), and has a **delete buffer** interaction.
-- [file_explorer](/lua/fzfx/cfg/file_explorer.lua): implements `FzfxFileExplorer`, it has two interactions **cd** and **go upper**.
-- [files](/lua/fzfx/cfg/files.lua): implements `FzfxFiles`.
-- [git_blame](/lua/fzfx/cfg/git_blame.lua): implements `FzfxGBlame`, it's also a single data source pipeline (has only 1 provider/previewer).
-- [git_branches](/lua/fzfx/cfg/git_branches.lua): implements `FzfxGBranches`, it has a special context `fzfx.GitBranchesPipelineContext` that provides all **remotes** in git repo (via `git remote`), which is used by downstream `git_checkout` action.
-- [git_commits](/lua/fzfx/cfg/git_commits.lua): implements `FzfxGCommits`.
-- [git_files](/lua/fzfx/cfg/git_files.lua): implements `FzfxGFiles`.
-- [git_live_grep](/lua/fzfx/cfg/git_live_grep.lua): implements `FzfxGLiveGrep`, it enables a special `reload_on_change` (in `other_opts`) option to reload grep on fzf's [change event](https://man.archlinux.org/man/fzf.1.en#AVAILABLE_EVENTS:).
-- [git_status](/lua/fzfx/cfg/git_status.lua): implements `FzfxGStatus`.
-- [live_grep](/lua/fzfx/cfg/live_grep.lua): implements `FzfxLiveGrep`, it also enables the `reload_on_change`.
-- [lsp_definitions](/lua/fzfx/cfg/lsp_definitions.lua): implements `FzfxLspDefinitions`.
-- [lsp_diagnostics](/lua/fzfx/cfg/lsp_diagnostics.lua): implements `FzfxLspDiagnostics`.
-- [lsp_implementations](/lua/fzfx/cfg/lsp_implementations.lua): implements `FzfxLspImplementations`.
-- [lsp_incoming_calls](/lua/fzfx/cfg/lsp_incoming_calls.lua): implements `FzfxLspIncomingCalls`.
-- [lsp_outgoing_calls](/lua/fzfx/cfg/lsp_outgoing_calls.lua): implements `FzfxLspOutgoingCalls`.
-- [lsp_references](/lua/fzfx/cfg/lsp_references.lua): implements `FzfxLspReferences`.
-- [lsp_type_definitions](/lua/fzfx/cfg/lsp_type_definitions.lua): implements `FzfxLspTypeDefinitions`.
-- [vim_commands](/lua/fzfx/cfg/vim_commands.lua): implements `FzfxCommands`, it implements the self-rendering form to directly generate lines for (the left side of) the fzf binary, which is a lot of engineering effort for the providers.
-- [vim_keymaps](/lua/fzfx/cfg/vim_keymaps.lua): implements `FzfxKeyMaps`, it also implements the self-rendering form to directly generate lines for fzf.
-
 ### [`fzfx.cfg.buffers`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/buffers.lua)
 
 Defines the `FzfxBuffers` commands group.
@@ -138,7 +116,7 @@ Defines the `FzfxCommands` commands group.
 
 Defines the `FzfxKeyMaps` commands group.
 
-## Module [`fzfx.helper`](/lua/fzfx/helper ":ignore")
+## Module [`fzfx.helper`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper)
 
 The `fzfx.helper` provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios. Since a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 
