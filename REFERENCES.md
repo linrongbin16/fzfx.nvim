@@ -60,7 +60,7 @@ The search result from `fd`/`find` looks like:
 
 Each line is a file name, prepend with a file type icon (only the the icon option is enabled).
 
-Thus it's implemented with `fd`/`find` utilities:
+It's implemented with `fd`/`find` utilities:
 
 - [fzfx.helper.parsers.parse_find](#parse_find)
 
@@ -94,7 +94,7 @@ Each line is constructed with file name and line number, split by colon `:`, and
 
 ?> The `grep` result has no column number, e.g. the 3rd column in `rg` result.
 
-Thus it's implemented with `grep` utilities:
+It's implemented with `grep` utilities:
 
 - [fzfx.helper.parsers.parse_grep](#parse_grep)
 
@@ -112,7 +112,7 @@ The search results from `rg` looks like:
 
 Each line is constructed with file name, line number and column number, split by colon `:`, and prepend with file type icon (only when icon is enabled).
 
-Thus it's implemented with `rg` or `grep` (when `rg` not found) utilities:
+It's implemented with `rg` or `grep` (when `rg` not found) utilities:
 
 - [fzfx.helper.parsers.parse_rg](#parse_rg)
 - [fzfx.helper.parsers.parse_grep](#parse_grep)
