@@ -44,9 +44,7 @@ Each commands group contains below components:
 
 Defines the `FzfxBuffers` commands group.
 
-The data source is similar to the `FzfxFiles` commands, which is a file name. Thus it's implemented with `fd`/`find` related utilities:
-
-- [fzfx.helper.parsers.parse_find](#parse_find)
+The data source is similar to the `FzfxFiles` commands, e.g. following the `fd`/`find` style (see [files](#files)).
 
 ### [file_explorer](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
 
@@ -55,6 +53,18 @@ Defines the `FzfxFileExplorer` commands group.
 ### [files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua)
 
 Defines the `FzfxFiles` commands group.
+
+The search result from `fd`/`find` looks like:
+
+```txt
+ README.md
+ CHANGELOG.md
+󰢱 bin/general/previewer.lua
+󰢱 bin/general/provider.lua
+󰢱 lua/fzfx.lua/test/hello world.txt
+```
+
+?> Due to github pages limitation, the prepend icons are not shown.
 
 ### [git_blame](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_blame.lua)
 

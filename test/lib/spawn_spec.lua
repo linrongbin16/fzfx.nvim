@@ -10,6 +10,7 @@ describe("lib.spawn", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
+  require("fzfx").setup()
   local strs = require("fzfx.lib.strings")
   local fs = require("fzfx.lib.filesystems")
   local spawn = require("fzfx.lib.spawn")
