@@ -197,10 +197,7 @@ M._process_lsp_diagnostic_item = function(diag)
   if not vim.api.nvim_buf_is_valid(diag.bufnr) then
     return nil
   end
-  log.debug(
-    "|fzfx.config - _process_lsp_diagnostic_item| diag-1:%s",
-    vim.inspect(diag)
-  )
+  log.debug("|_process_lsp_diagnostic_item| diag-1:%s", vim.inspect(diag))
   local result = {
     bufnr = diag.bufnr,
     filename = paths.reduce(vim.api.nvim_buf_get_name(diag.bufnr)),
@@ -210,7 +207,7 @@ M._process_lsp_diagnostic_item = function(diag)
     severity = diag.severity or 1,
   }
   log.debug(
-    "|fzfx.config - _process_lsp_diagnostic_item| diag-2:%s, result:%s",
+    "|_process_lsp_diagnostic_item| diag-2:%s, result:%s",
     vim.inspect(diag),
     vim.inspect(result)
   )
@@ -250,10 +247,7 @@ M._make_lsp_diagnostics_provider = function(opts)
       if diag then
         -- it looks like:
         -- `lua/fzfx/config.lua:10:13: Unused local `query`.
-        log.debug(
-          "|fzfx.config - _make_lsp_diagnostics_provider| diag:%s",
-          vim.inspect(diag)
-        )
+        log.debug("|_make_lsp_diagnostics_provider| diag:%s", vim.inspect(diag))
         local builder = ""
         if type(diag.text) == "string" and string.len(diag.text) > 0 then
           if type(signs[diag.severity]) == "table" then
@@ -264,7 +258,7 @@ M._make_lsp_diagnostics_provider = function(opts)
           builder = builder .. " " .. diag.text
         end
         log.debug(
-          "|fzfx.config - _make_lsp_diagnostics_provider| diag:%s, builder:%s",
+          "|_make_lsp_diagnostics_provider| diag:%s, builder:%s",
           vim.inspect(diag),
           vim.inspect(builder)
         )

@@ -226,10 +226,7 @@ end
 --- @param context fzfx.GitBranchesPipelineContext
 --- @return string?
 M._make_git_checkout = function(lines, context)
-  log.debug(
-    "|fzfx.helper.actions - _make_git_checkout_command| lines:%s",
-    vim.inspect(lines)
-  )
+  log.debug("|_make_git_checkout| lines:%s", vim.inspect(lines))
 
   if tbls.list_not_empty(lines) then
     local line = lines[#lines]

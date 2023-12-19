@@ -186,10 +186,7 @@ M._get_vim_ex_commands = function()
   local help_docs_list =
     ---@diagnostic disable-next-line: param-type-mismatch
     vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1) --[[@as table]]
-  log.debug(
-    "|fzfx.config - _get_vim_ex_commands| help docs:%s",
-    vim.inspect(help_docs_list)
-  )
+  log.debug("|_get_vim_ex_commands| help docs:%s", vim.inspect(help_docs_list))
   if tbls.tbl_empty(help_docs_list) then
     log.echo(LogLevels.INFO, "no 'doc/index.txt' found.")
     return {}
@@ -200,11 +197,7 @@ M._get_vim_ex_commands = function()
     for i = 1, #lines do
       local line = lines[i]
       if strs.startswith(line, "|:") then
-        log.debug(
-          "|fzfx.config - _get_vim_ex_commands| line[%d]:%s",
-          i,
-          vim.inspect(line)
-        )
+        log.debug("|_get_vim_ex_commands| line[%d]:%s", i, vim.inspect(line))
         local name = M._parse_vim_ex_command_name(line)
         if type(name) == "string" and string.len(name) > 0 then
           results[name] = {
@@ -219,10 +212,7 @@ M._get_vim_ex_commands = function()
       i = i + 1
     end
   end
-  log.debug(
-    "|fzfx.config - _get_vim_ex_commands| results:%s",
-    vim.inspect(results)
-  )
+  log.debug("|_get_vim_ex_commands| results:%s", vim.inspect(results))
   return results
 end
 
@@ -250,7 +240,7 @@ end
 --- @return {filename:string,lineno:integer}?
 M._parse_ex_command_output_lua_function_definition = function(line, start_pos)
   log.debug(
-    "|fzfx.config - _parse_ex_command_output_lua_function_definition| line:%s, start_pos:%s",
+    "|_parse_ex_command_output_lua_function_definition| line:%s, start_pos:%s",
     vim.inspect(line),
     vim.inspect(start_pos)
   )
@@ -275,12 +265,12 @@ M._parse_ex_command_output_lua_function_definition = function(line, start_pos)
     content = content:sub(1, #content - 1)
   end
   log.debug(
-    "|fzfx.config - _parse_ex_command_output_lua_function_definition| content-2:%s",
+    "|_parse_ex_command_output_lua_function_definition| content-2:%s",
     vim.inspect(content)
   )
   local content_splits = strs.split(content, ":")
   log.debug(
-    "|fzfx.config - _parse_ex_command_output_lua_function_definition| split content:%s",
+    "|_parse_ex_command_output_lua_function_definition| split content:%s",
     vim.inspect(content_splits)
   )
   return {

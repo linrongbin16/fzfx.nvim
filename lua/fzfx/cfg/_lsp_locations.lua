@@ -87,10 +87,7 @@ end
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink
 --- @return string?
 M._render_lsp_location_line = function(loc)
-  log.debug(
-    "|fzfx.config - _render_lsp_location_line| loc:%s",
-    vim.inspect(loc)
-  )
+  log.debug("|_render_lsp_location_line| loc:%s", vim.inspect(loc))
   local filename = nil
   --- @type fzfx.LspRange
   local range = nil
@@ -98,7 +95,7 @@ M._render_lsp_location_line = function(loc)
     filename = paths.reduce(vim.uri_to_fname(loc.uri))
     range = loc.range
     log.debug(
-      "|fzfx.config - _render_lsp_location_line| location filename:%s, range:%s",
+      "|_render_lsp_location_line| location filename:%s, range:%s",
       vim.inspect(filename),
       vim.inspect(range)
     )
@@ -106,7 +103,7 @@ M._render_lsp_location_line = function(loc)
     filename = paths.reduce(vim.uri_to_fname(loc.targetUri))
     range = loc.targetRange
     log.debug(
-      "|fzfx.config - _render_lsp_location_line| locationlink filename:%s, range:%s",
+      "|_render_lsp_location_line| locationlink filename:%s, range:%s",
       vim.inspect(filename),
       vim.inspect(range)
     )
@@ -124,7 +121,7 @@ M._render_lsp_location_line = function(loc)
   local loc_line =
     M._colorize_lsp_range(filelines[range.start.line + 1], range, colors.red)
   log.debug(
-    "|fzfx.config - _render_lsp_location_line| range:%s, loc_line:%s",
+    "|_render_lsp_location_line| range:%s, loc_line:%s",
     vim.inspect(range),
     vim.inspect(loc_line)
   )
@@ -284,7 +281,7 @@ end
 --- @return string[]
 M._render_lsp_call_hierarchy_line = function(item, ranges)
   log.debug(
-    "|fzfx.config - _render_lsp_call_hierarchy_line| item:%s, ranges:%s",
+    "|_render_lsp_call_hierarchy_line| item:%s, ranges:%s",
     vim.inspect(item),
     vim.inspect(ranges)
   )
@@ -296,7 +293,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   then
     filename = paths.reduce(vim.uri_to_fname(item.uri))
     log.debug(
-      "|fzfx.config - _render_lsp_call_hierarchy_line| location filename:%s",
+      "|_render_lsp_call_hierarchy_line| location filename:%s",
       vim.inspect(filename)
     )
   end
@@ -315,7 +312,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
     local item_line =
       M._colorize_lsp_range(filelines[r.start.line + 1], r, colors.red)
     log.debug(
-      "|fzfx.config - _render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
+      "|_render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
       vim.inspect(i),
       vim.inspect(r),
       vim.inspect(item_line)
@@ -328,7 +325,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
       item_line
     )
     log.debug(
-      "|fzfx.config - _render_lsp_call_hierarchy_line| %s-line:%s",
+      "|_render_lsp_call_hierarchy_line| %s-line:%s",
       vim.inspect(i),
       vim.inspect(line)
     )
@@ -386,7 +383,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       opts.timeout or 3000
     )
     log.debug(
-      "|fzfx.config - _make_lsp_call_hierarchy_provider| prepare, opts:%s, lsp_results:%s, lsp_err:%s",
+      "|_make_lsp_call_hierarchy_provider| prepare, opts:%s, lsp_results:%s, lsp_err:%s",
       vim.inspect(opts),
       vim.inspect(lsp_results),
       vim.inspect(lsp_err)
@@ -424,7 +421,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       opts.timeout or 3000
     )
     log.debug(
-      "|fzfx.config - _make_lsp_call_hierarchy_provider| 2nd call, opts:%s, lsp_item: %s, lsp_results2:%s, lsp_err2:%s",
+      "|_make_lsp_call_hierarchy_provider| 2nd call, opts:%s, lsp_item: %s, lsp_results2:%s, lsp_err2:%s",
       vim.inspect(opts),
       vim.inspect(lsp_item),
       vim.inspect(lsp_results2),
@@ -446,7 +443,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       then
         local lsp_hi_item_list = lsp_result.result
         log.debug(
-          "|fzfx.config - _make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item_list:%s",
+          "|_make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item_list:%s",
           vim.inspect(opts.method),
           vim.inspect(lsp_hi_item_list)
         )
@@ -457,7 +454,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
               lsp_hi_item
             )
           log.debug(
-            "|fzfx.config - _make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item:%s, hi_item:%s, from_ranges:%s",
+            "|_make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item:%s, hi_item:%s, from_ranges:%s",
             vim.inspect(opts.method),
             vim.inspect(lsp_hi_item_list),
             vim.inspect(hi_item),
