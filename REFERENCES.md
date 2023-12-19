@@ -62,6 +62,18 @@ Here are all the builtin search command configurations:
 - [vim_commands](/lua/fzfx/cfg/vim_commands.lua): implements `FzfxCommands`, it implements the self-rendering form to directly generate lines for (the left side of) the fzf binary, which is a lot of engineering effort for the providers.
 - [vim_keymaps](/lua/fzfx/cfg/vim_keymaps.lua): implements `FzfxKeyMaps`, it also implements the self-rendering form to directly generate lines for fzf.
 
+### [`fzfx.cfg.buffers`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/buffers.lua)
+
+Defines the `FzfxBuffers` commands group.
+
+### [`fzfx.cfg.file_explorer`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
+
+Defines the `FzfxFileExplorer` commands group.
+
+### [`fzfx.cfg.files`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua)
+
+Defines the `FzfxFiles` commands group.
+
 ## Module [`fzfx.helper`](/lua/fzfx/helper ":ignore")
 
 The `fzfx.helper` provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios. Since a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
@@ -122,7 +134,7 @@ The `fd`, `find`, `git ls-files` generated file names, or other sources (buffers
 - `edit_find(lines:string[], context:fzfx.PipelineContext):nil`: use `edit` command to open selected files on `fd`, `find`, `git ls-files` results.
 - `setqflist_find(lines:string[], context:fzfx.PipelineContext):nil`: use `setqflist` command to send selected lines (files) to qflist.
 
-#### `rg`, `grep`
+#### `rg`/`grep`
 
 The `rg`, `grep`, `git grep` generated locations (file name with line/column number), or other sources (lsp, diagnostics) follow the same style, used by `FzfxLiveGrep`, `FzfxGLiveGrep`, `FzfxLspDiagnostics`, `FzfxLspDefinitions`, `FzfxLspTypeDefinitions`, `FzfxLspReferences`, `FzfxLspImplementations`, `FzfxLspIncomingCalls`, `FzfxLspOutgoingCalls`. they look like:
 
@@ -165,7 +177,7 @@ The `git branch (-r/-a)` generated git branches, used by `FzfxGBranches`. they l
 
 - `git_checkout(lines:string[], fzfx.GitBranchesPipelineContext):nil`: use `git checkout` shell command to checkout selected branch on `git branch` results.
 
-#### `git log`, `git blame`
+#### `git log`/`git blame`
 
 The `git log --short`, `git blame` generated git commits, used by `FzfxGCommits`, `FzfxGBlame`, they look like:
 
@@ -205,7 +217,7 @@ Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Loca
 
 - `feed_vim_key(lines:string[], context:fzfx.VimKeyMapsPipelineContext):nil`: execute selected keys.
 
-#### `eza`, `lsd`, `ls`
+#### `eza`/`lsd`/`ls`
 
 The `lsd`, `eza`, `ls` generated file names/directories, they look like:
 
