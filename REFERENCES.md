@@ -118,7 +118,9 @@ Defines the `FzfxKeyMaps` commands group.
 
 ## Module [`fzfx.helper`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper)
 
-The `fzfx.helper` module provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios. Since a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
+The `fzfx.helper` module provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios.
+
+?> Since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 
 ### [fzfx.helper.parsers](/lua/fzfx/helper/parsers.lua)
 
