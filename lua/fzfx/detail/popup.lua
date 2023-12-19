@@ -480,10 +480,16 @@ local function resize_all_popup_window_instances()
 end
 
 local function setup()
-  vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
+  vim.api.nvim_create_autocmd({ "WinResized" }, {
     pattern = { "*" },
     callback = resize_all_popup_window_instances,
   })
+  if vim.fn.has("nvim-0.9") > 0 then
+    vim.api.nvim_create_autocmd({ "VimResized" }, {
+      pattern = { "*" },
+      callback = resize_all_popup_window_instances,
+    })
+  end
 end
 
 local M = {
