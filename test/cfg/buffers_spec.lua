@@ -14,6 +14,7 @@ describe("cfg.buffers", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
+  require("fzfx").setup()
   local tbls = require("fzfx.lib.tables")
   local consts = require("fzfx.lib.constants")
   local strs = require("fzfx.lib.strings")
