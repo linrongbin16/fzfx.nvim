@@ -8,21 +8,25 @@ The APIs in `fzfx.helper` and `fzfx.lib` are recommended when you implement some
 
 !> Except those APIs start with underline `_`, which are exposed for unit tests.
 
-## [`fzfx.cfg`](/lua/fzfx/cfg) Module
+## Module [`fzfx.cfg`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/cfg)
 
-The `fzfx.cfg` directly provide configurations for all builtin search commands in this plugin. Easy to read, copy and paste to custom/create other search commands.
+The `fzfx.cfg` module directly provide configurations for all search commands in this plugin.
 
-Every commands group contains below components:
+!> Before continue, you may need to read [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) to understand whey the configuration are structured like this.
 
-- `commands`: a single `fzfx.CommandConfig` (if there's only 1 command) or a `fzfx.CommandConfig` list (if there's multiple commands).
-- `providers`: a single `fzfx.ProviderConfig` (if there's only 1 provider/data source) or a `fzfx.ProviderConfig` map (if there's multiple providers/data sources).
+Each commands group contains below components:
+
+- `commands`:
+  - When there's only 1 command, it's a single [`fzfx.CommandConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/aa5eac85d5e9dcb020cd4237814ec0b305945193/lua/fzfx/schema.lua?plain=1#L133).
+  - When there's multiple commands, it's a `fzfx.CommandConfig` list .
+- `providers`:
+  - When there's only 1 provider(data source), it's a single [`fzfx.ProviderConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/aa5eac85d5e9dcb020cd4237814ec0b305945193/lua/fzfx/schema.lua?plain=1#L119).
+  - When there's multiple providers(data sources), it's a `fzfx.ProviderConfig` map.
 - `previewers`: a single `fzfx.PreviewerConfig` (if there's only 1 previewer) or a `fzfx.PreviewerConfig` map (if there's multiple previewers).
 - `actions`: a `fzfx.Action` map.
 - `interactions` (optional): a `fzfx.InterAction` map.
 - `fzf_opts` (optional): a `fzfx.FzfOpt` list.
 - `other_opts` (optional): other special options map.
-
-> Also see: [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command).
 
 Here are all the builtin search command configurations:
 
@@ -46,7 +50,7 @@ Here are all the builtin search command configurations:
 - [vim_commands](/lua/fzfx/cfg/vim_commands.lua): implements `FzfxCommands`, it implements the self-rendering form to directly generate lines for (the left side of) the fzf binary, which is a lot of engineering effort for the providers.
 - [vim_keymaps](/lua/fzfx/cfg/vim_keymaps.lua): implements `FzfxKeyMaps`, it also implements the self-rendering form to directly generate lines for fzf.
 
-## [`fzfx.helper`](/lua/fzfx/helper) Module
+## Module [`fzfx.helper`](/lua/fzfx/helper ":ignore")
 
 The `fzfx.helper` provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios. Since a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 
