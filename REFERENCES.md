@@ -111,7 +111,7 @@ The search results from `rg` looks like:
 
 Each line is constructed with file name, line number and column number, split by colon `:`, and prepend with file type icon (only when icon is enabled).
 
-Thus it's implemented with `rg` (or `grep` when `rg` not found) related utilities:
+Thus it's implemented with `rg` or `grep` (when `rg` not found) related utilities:
 
 - [fzfx.helper.parsers.parse_rg](#parse_rg)
 - [fzfx.helper.parsers.parse_grep](#parse_grep)
