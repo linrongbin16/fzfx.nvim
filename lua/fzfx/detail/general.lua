@@ -625,7 +625,7 @@ function PreviewerSwitch:preview_label(line, context)
         and previewer_config.previewer_label(line, context)
       or previewer_config.previewer_label
     log.debug(
-      "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
+      "|PreviewerSwitch:preview_label| line:%s, label:%s",
       vim.inspect(line),
       vim.inspect(label)
     )
@@ -871,10 +871,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch.resultfile,
     nvims.shellescape(query)
   )
-  log.debug(
-    "|fzfx.general - general| query_command:%s",
-    vim.inspect(query_command)
-  )
+  log.debug("|general| query_command:%s", vim.inspect(query_command))
   local reload_query_command = string.format(
     "%s %s %s %s {q}",
     fzf_helpers.make_lua_command("general", "provider.lua"),
@@ -883,7 +880,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch.resultfile
   )
   log.debug(
-    "|fzfx.general - general| reload_query_command:%s",
+    "|general| reload_query_command:%s",
     vim.inspect(reload_query_command)
   )
   local preview_command = string.format(
@@ -893,10 +890,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     previewer_switch.metafile,
     previewer_switch.resultfile
   )
-  log.debug(
-    "|fzfx.general - general| preview_command:%s",
-    vim.inspect(preview_command)
-  )
+  log.debug("|general| preview_command:%s", vim.inspect(preview_command))
 
   local fzf_opts = {
     "--print-query",
@@ -1066,10 +1060,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           query = last_query,
         }) --[[@as string]]
         fs.asyncwritefile(last_query_cache, content, function(bytes)
-          log.debug(
-            "|fzfx.general - general| dump last query:%s",
-            vim.inspect(bytes)
-          )
+          log.debug("|general| dump last query:%s", vim.inspect(bytes))
         end)
       end)
     end

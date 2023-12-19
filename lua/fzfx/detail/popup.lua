@@ -331,7 +331,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
 
   local function on_fzf_exit(jobid2, exitcode, event)
     log.debug(
-      "|fzfx.popup - Popup:new| fzf exit, jobid2:%s, exitcode:%s, event:%s",
+      "|Popup:new| fzf exit, jobid2:%s, exitcode:%s, event:%s",
       vim.inspect(jobid2),
       vim.inspect(exitcode),
       vim.inspect(event)
@@ -365,7 +365,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
     )
     local lines = fs.readlines(result --[[@as string]]) --[[@as table]]
     log.debug(
-      "|fzfx.popup - Popup:new| fzf exit, result:%s, lines:%s",
+      "|Popup:new| fzf exit, result:%s, lines:%s",
       vim.inspect(result),
       vim.inspect(lines)
     )
@@ -415,14 +415,14 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
   vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()
   vim.env.FZF_DEFAULT_COMMAND = source
   log.debug(
-    "|fzfx.popup - Popup:new| $FZF_DEFAULT_OPTS:%s",
+    "|Popup:new| $FZF_DEFAULT_OPTS:%s",
     vim.inspect(vim.env.FZF_DEFAULT_OPTS)
   )
   log.debug(
-    "|fzfx.popup - Popup:new| $FZF_DEFAULT_COMMAND:%s",
+    "|Popup:new| $FZF_DEFAULT_COMMAND:%s",
     vim.inspect(vim.env.FZF_DEFAULT_COMMAND)
   )
-  log.debug("|fzfx.popup - Popup:new| fzf_command:%s", vim.inspect(fzf_command))
+  log.debug("|Popup:new| fzf_command:%s", vim.inspect(fzf_command))
 
   -- launch
   local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]

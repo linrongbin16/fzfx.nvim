@@ -356,7 +356,7 @@ M._parse_ex_command_output = function()
       -- parse command name, e.g., FzfxCommands, etc.
       local idx = parsed_header.name_pos
       log.debug(
-        "|fzfx.config - _parse_ex_command_output| line[%d]:%s(%d)",
+        "|_parse_ex_command_output| line[%d]:%s(%d)",
         i,
         vim.inspect(line),
         idx
@@ -394,7 +394,7 @@ M._parse_ex_command_output = function()
       found_command_output_header = true
       parsed_header = M._parse_ex_command_output_header(line)
       log.debug(
-        "|fzfx.config - _parse_ex_command_output| parsed header:%s",
+        "|_parse_ex_command_output| parsed header:%s",
         vim.inspect(parsed_header)
       )
     end
@@ -408,7 +408,7 @@ M._get_vim_user_commands = function()
   local parsed_ex_commands = M._parse_ex_command_output()
   local user_commands = vim.api.nvim_get_commands({ builtin = false })
   log.debug(
-    "|fzfx.config - _get_vim_user_commands| user commands:%s",
+    "|_get_vim_user_commands| user commands:%s",
     vim.inspect(user_commands)
   )
 
@@ -498,7 +498,7 @@ M._render_vim_commands = function(commands, name_width, opts_width)
   local header = string.format(formatter, NAME, OPTS, DEF_OR_LOC)
   table.insert(results, header)
   log.debug(
-    "|fzfx.config - _render_vim_commands| formatter:%s, header:%s",
+    "|_render_vim_commands| formatter:%s, header:%s",
     vim.inspect(formatter),
     vim.inspect(header)
   )
@@ -510,7 +510,7 @@ M._render_vim_commands = function(commands, name_width, opts_width)
       rendered_desc_or_loc(c)
     )
     log.debug(
-      "|fzfx.config - _render_vim_commands| rendered[%d]:%s",
+      "|_render_vim_commands| rendered[%d]:%s",
       i,
       vim.inspect(rendered)
     )

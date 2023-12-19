@@ -293,7 +293,7 @@ M._parse_map_command_output_line = function(line)
       rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
     local lineno = rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
     log.debug(
-      "|fzfx.config - _parse_map_command_output_line| lhs:%s, filename:%s, lineno:%s",
+      "|_parse_map_command_output_line| lhs:%s, filename:%s, lineno:%s",
       vim.inspect(lhs),
       vim.inspect(filename),
       vim.inspect(lineno)
@@ -409,7 +409,7 @@ M._get_vim_keymaps = function()
     end
   end
   log.debug(
-    "|fzfx.config - _get_vim_keymaps| keys_output_map2:%s",
+    "|_get_vim_keymaps| keys_output_map2:%s",
     vim.inspect(keys_output_map)
   )
   local results = {}
@@ -419,7 +419,7 @@ M._get_vim_keymaps = function()
   table.sort(results, function(a, b)
     return a.lhs < b.lhs
   end)
-  log.debug("|fzfx.config - _get_vim_keymaps| results:%s", vim.inspect(results))
+  log.debug("|_get_vim_keymaps| results:%s", vim.inspect(results))
   return results
 end
 
@@ -472,7 +472,7 @@ M._render_vim_keymaps = function(keymaps, key_width, opts_width)
   local header = string.format(formatter, KEY, OPTS, DEF_OR_LOC)
   table.insert(results, header)
   log.debug(
-    "|fzfx.config - _render_vim_keymaps| formatter:%s, header:%s",
+    "|_render_vim_keymaps| formatter:%s, header:%s",
     vim.inspect(formatter),
     vim.inspect(header)
   )
@@ -483,11 +483,7 @@ M._render_vim_keymaps = function(keymaps, key_width, opts_width)
       M._render_vim_keymaps_column_opts(c),
       rendered_def_or_loc(c)
     )
-    log.debug(
-      "|fzfx.config - _render_vim_keymaps| rendered[%d]:%s",
-      i,
-      vim.inspect(rendered)
-    )
+    log.debug("|_render_vim_keymaps| rendered[%d]:%s", i, vim.inspect(rendered))
     table.insert(results, rendered)
   end
   return results
@@ -643,7 +639,7 @@ M._render_vim_keymaps_columns_status = function(keys)
       math.max(max_opts, string.len(M._render_vim_keymaps_column_opts(k)))
   end
   log.debug(
-    "|fzfx.config - _render_vim_keymaps_columns_status| lhs:%s, opts:%s",
+    "|_render_vim_keymaps_columns_status| lhs:%s, opts:%s",
     vim.inspect(max_key),
     vim.inspect(max_opts)
   )
