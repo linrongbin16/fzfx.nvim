@@ -74,6 +74,70 @@ Defines the `FzfxFileExplorer` commands group.
 
 Defines the `FzfxFiles` commands group.
 
+### [`fzfx.cfg.git_blame`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_blame.lua)
+
+Defines the `FzfxGBlame` commands group.
+
+### [`fzfx.cfg.git_branches`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_branches.lua)
+
+Defines the `FzfxGBranches` commands group.
+
+### [`fzfx.cfg.git_commits`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_commits.lua)
+
+Defines the `FzfxGCommits` commands group.
+
+### [`fzfx.cfg.git_files`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
+
+Defines the `FzfxGFiles` commands group.
+
+### [`fzfx.cfg.git_live_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_live_grep.lua)
+
+Defines the `FzfxGLiveGrep` commands group.
+
+### [`fzfx.cfg.git_status`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_status.lua)
+
+Defines the `FzfxGStatus` commands group.
+
+### [`fzfx.cfg.live_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/live_grep.lua)
+
+Defines the `FzfxLiveGrep` commands group.
+
+### [`fzfx.cfg.lsp_definitions`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_definitions.lua)
+
+Defines the `FzfxLspDefinitions` commands group.
+
+### [`fzfx.cfg.lsp_diagnostics`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_diagnostics.lua)
+
+Defines the `FzfxLspDiagnostics` commands group.
+
+### [`fzfx.cfg.lsp_implementations`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_implementations.lua)
+
+Defines the `FzfxLspImplementations` commands group.
+
+### [`fzfx.cfg.lsp_incoming_calls`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_incoming_calls.lua)
+
+Defines the `FzfxLspIncomingCalls` commands group.
+
+### [`fzfx.cfg.lsp_outgoing_calls`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_outgoing_calls.lua)
+
+Defines the `FzfxLspOutgoingCalls` commands group.
+
+### [`fzfx.cfg.lsp_references`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_references.lua)
+
+Defines the `FzfxLspReferences` commands group.
+
+### [`fzfx.cfg.lsp_type_definitions`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_type_definitions.lua)
+
+Defines the `FzfxLspTypeDefinitions` commands group.
+
+### [`fzfx.cfg.vim_commands`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_commands.lua)
+
+Defines the `FzfxCommands` commands group.
+
+### [`fzfx.cfg.vim_keymaps`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_keymaps.lua)
+
+Defines the `FzfxKeyMaps` commands group.
+
 ## Module [`fzfx.helper`](/lua/fzfx/helper ":ignore")
 
 The `fzfx.helper` provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios. Since a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
