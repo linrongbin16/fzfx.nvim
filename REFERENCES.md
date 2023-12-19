@@ -40,79 +40,79 @@ Each commands group contains below components:
 - (Optional) `fzf_opts`: a [`fzfx.FzfOpt`](https://github.com/linrongbin16/fzfx.nvim/blob/835b216c36a94e289c166c0f8790e0f56f7a77bb/lua/fzfx/schema.lua?plain=1#L152) list.
 - (Optional) `other_opts`: other special options.
 
-### [`fzfx.cfg.buffers`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/buffers.lua)
+### [fzfx.cfg.buffers](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/buffers.lua)
 
 Defines the `FzfxBuffers` commands group.
 
-### [`fzfx.cfg.file_explorer`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
+### [fzfx.cfg.file_explorer](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
 
 Defines the `FzfxFileExplorer` commands group.
 
-### [`fzfx.cfg.files`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua)
+### [fzfx.cfg.files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua)
 
 Defines the `FzfxFiles` commands group.
 
-### [`fzfx.cfg.git_blame`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_blame.lua)
+### [fzfx.cfg.git_blame](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_blame.lua)
 
 Defines the `FzfxGBlame` commands group.
 
-### [`fzfx.cfg.git_branches`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_branches.lua)
+### [fzfx.cfg.git_branches](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_branches.lua)
 
 Defines the `FzfxGBranches` commands group.
 
-### [`fzfx.cfg.git_commits`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_commits.lua)
+### [fzfx.cfg.git_commits](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_commits.lua)
 
 Defines the `FzfxGCommits` commands group.
 
-### [`fzfx.cfg.git_files`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
+### [fzfx.cfg.git_files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
 
 Defines the `FzfxGFiles` commands group.
 
-### [`fzfx.cfg.git_live_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_live_grep.lua)
+### [fzfx.cfg.git_live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_live_grep.lua)
 
 Defines the `FzfxGLiveGrep` commands group.
 
-### [`fzfx.cfg.git_status`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_status.lua)
+### [fzfx.cfg.git_status](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_status.lua)
 
 Defines the `FzfxGStatus` commands group.
 
-### [`fzfx.cfg.live_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/live_grep.lua)
+### [fzfx.cfg.live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/live_grep.lua)
 
 Defines the `FzfxLiveGrep` commands group.
 
-### [`fzfx.cfg.lsp_definitions`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_definitions.lua)
+### [fzfx.cfg.lsp_definitions](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_definitions.lua)
 
 Defines the `FzfxLspDefinitions` commands group.
 
-### [`fzfx.cfg.lsp_diagnostics`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_diagnostics.lua)
+### [fzfx.cfg.lsp_diagnostics](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_diagnostics.lua)
 
 Defines the `FzfxLspDiagnostics` commands group.
 
-### [`fzfx.cfg.lsp_implementations`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_implementations.lua)
+### [fzfx.cfg.lsp_implementations](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_implementations.lua)
 
 Defines the `FzfxLspImplementations` commands group.
 
-### [`fzfx.cfg.lsp_incoming_calls`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_incoming_calls.lua)
+### [fzfx.cfg.lsp_incoming_calls](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_incoming_calls.lua)
 
 Defines the `FzfxLspIncomingCalls` commands group.
 
-### [`fzfx.cfg.lsp_outgoing_calls`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_outgoing_calls.lua)
+### [fzfx.cfg.lsp_outgoing_calls](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_outgoing_calls.lua)
 
 Defines the `FzfxLspOutgoingCalls` commands group.
 
-### [`fzfx.cfg.lsp_references`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_references.lua)
+### [fzfx.cfg.lsp_references](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_references.lua)
 
 Defines the `FzfxLspReferences` commands group.
 
-### [`fzfx.cfg.lsp_type_definitions`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_type_definitions.lua)
+### [fzfx.cfg.lsp_type_definitions](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_type_definitions.lua)
 
 Defines the `FzfxLspTypeDefinitions` commands group.
 
-### [`fzfx.cfg.vim_commands`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_commands.lua)
+### [fzfx.cfg.vim_commands](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_commands.lua)
 
 Defines the `FzfxCommands` commands group.
 
-### [`fzfx.cfg.vim_keymaps`](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_keymaps.lua)
+### [fzfx.cfg.vim_keymaps](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_keymaps.lua)
 
 Defines the `FzfxKeyMaps` commands group.
 
