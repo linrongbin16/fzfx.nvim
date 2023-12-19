@@ -44,7 +44,7 @@ Each commands group contains below components:
 
 Defines the `FzfxBuffers` commands group.
 
-The data source is similar to the `FzfxFiles` commands, e.g. following the `fd`/`find` style (see [files](#files)).
+The data source is similar to the `FzfxFiles` commands, e.g. following the `fd`/`find` style (see [fzfx.cfg.files](#files)).
 
 ### [file_explorer](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
 
