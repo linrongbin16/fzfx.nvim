@@ -58,6 +58,12 @@ The search result from `fd`/`find` looks like:
 
 ![FzfxFiles](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/fa9649d4-4007-4e53-ad70-dcfb86612492)
 
+Each line is a file name, prepend with a file type icon (only the the icon option is enabled).
+
+Thus it's implemented with `fd`/`find` utilities:
+
+- [parse_find](#parse_find)
+
 ### [git_blame](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_blame.lua)
 
 Defines the `FzfxGBlame` commands group.
@@ -101,12 +107,11 @@ Defines the `FzfxLiveGrep` commands group.
 
 The search results from `rg` looks like:
 
-```bash
-docs/commons_apis.md:36:1:Parameters:
-docs/commons_apis.md:38:1:- `bufnr`: The buffer number.
-```
+![FzfxLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/170ad807-a0f3-4092-9555-13ae67f38560)
 
-Which is constructed from file name, line number and column number, split by colon `:`. Thus it's implemented with `rg` (or `grep` when `rg` not found) related utilities:
+Each line is constructed with file name, line number and column number, split by colon `:`, and prepend with file type icon (only when icon is enabled).
+
+Thus it's implemented with `rg` (or `grep` when `rg` not found) related utilities:
 
 - [fzfx.helper.parsers.parse_rg](#parse_rg)
 - [fzfx.helper.parsers.parse_grep](#parse_grep)
