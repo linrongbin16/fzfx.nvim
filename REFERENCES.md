@@ -62,7 +62,7 @@ Each line is a file name, prepend with a file type icon (only the the icon optio
 
 Thus it's implemented with `fd`/`find` utilities:
 
-- [parse_find](#parse_find)
+- [fzfx.helper.parsers.parse_find](#parse_find)
 
 ### [git_blame](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_blame.lua)
 
