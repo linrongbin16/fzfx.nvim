@@ -4,13 +4,6 @@ local M = {}
 M.INT32_MAX = require("fzfx.commons.numbers").INT32_MAX
 M.INT32_MIN = require("fzfx.commons.numbers").INT32_MIN
 
-M.eq = require("fzfx.commons.numbers").eq
-M.ne = require("fzfx.commons.numbers").ne
-M.le = require("fzfx.commons.numbers").le
-M.lt = require("fzfx.commons.numbers").lt
-M.ge = require("fzfx.commons.numbers").ge
-M.gt = require("fzfx.commons.numbers").gt
-
 --- @param n integer?
 --- @return boolean
 M.positive = function(n)
