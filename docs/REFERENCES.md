@@ -584,13 +584,13 @@ Whether buffer is valid.
 
 ### [fzfx.lib.shells](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib/shells.lua)
 
-#### `shellescape`
+#### [`shellescape`](https://github.com/linrongbin16/fzfx.nvim/blob/4a0fd372be81a5aa506c32c2cacb78a279b460e5/lua/fzfx/lib/shells.lua?plain=1#L71)
 
-Escape shell strings, especially single(`''`)/double(`""`) quotes.
+Cross-platform escape shell strings.
 
-- `ShellOptsContext`: shell options context.
-  - `save():ShellOptsContext`: save current shell options and return context.
-  - `restore():nil`: restore previously saved shell options.
+#### [`ShellOptsContext`](https://github.com/linrongbin16/fzfx.nvim/blob/4a0fd372be81a5aa506c32c2cacb78a279b460e5/lua/fzfx/lib/shells.lua?plain=1#L14)
+
+Save and restore shell options.
 
 ### [fzfx.lib.paths](/lua/fzfx/lib/paths.lua)
 
