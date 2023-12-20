@@ -13,7 +13,7 @@ describe("helper.previewer_labels", function()
   local strs = require("fzfx.lib.strings")
   local parsers = require("fzfx.helper.parsers")
   local labels = require("fzfx.helper.previewer_labels")
-  local fs = require("fzfx.lib.filesystems")
+  local fileios = require("fzfx.commons.fileios")
 
   describe("[label_find]", function()
     it("test", function()
@@ -139,7 +139,7 @@ describe("helper.previewer_labels", function()
 
   describe("[label_ls/lsd/eza]", function()
     local TEMP = vim.fn.tempname()
-    fs.writefile(TEMP --[[@as string]], vim.fn.getcwd() --[[@as string]])
+    fileios.writefile(TEMP --[[@as string]], vim.fn.getcwd() --[[@as string]])
     local CONTEXT = {
       bufnr = vim.api.nvim_get_current_buf(),
       winnr = vim.api.nvim_get_current_win(),

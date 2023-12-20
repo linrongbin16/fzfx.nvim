@@ -1,10 +1,10 @@
+local uv = require("fzfx.commons.uv")
+
 local M = {}
 
 --- @param fmt string
 --- @param ... any
 M.notify = function(fmt, ...)
-  local uv = require("fzfx.commons.uv")
-
   local msg = string.format(fmt, ...)
 
   local function impl()

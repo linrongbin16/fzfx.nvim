@@ -3,7 +3,7 @@ local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
-local fs = require("fzfx.lib.filesystems")
+local fileios = require("fzfx.commons.fileios")
 local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -132,7 +132,7 @@ M._make_file_explorer_provider = function(ls_args)
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return string?
   local function impl(query, context)
-    local cwd = fs.readfile(context.cwd)
+    local cwd = fileios.readfile(context.cwd)
     if consts.HAS_LSD then
       return consts.HAS_ECHO
           and string.format(
@@ -267,20 +267,20 @@ M._cd_file_explorer = function(line, context)
       or parsers_helper.parse_ls(line, context)
     )
   if vim.fn.isdirectory(parsed.filename) > 0 then
-    fs.writefile(context.cwd, parsed.filename)
+    fileios.writefile(context.cwd, parsed.filename)
   end
 end
 
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 M._upper_file_explorer = function(line, context)
-  local cwd = fs.readfile(context.cwd) --[[@as string]]
+  local cwd = fileios.readfile(context.cwd) --[[@as string]]
   local target = vim.fn.fnamemodify(cwd, ":h") --[[@as string]]
   -- Windows root folder: `C:\`
   -- Unix/linux root folder: `/`
   local root_len = consts.IS_WINDOWS and 3 or 1
   if vim.fn.isdirectory(target) > 0 and string.len(target) > root_len then
-    fs.writefile(context.cwd, target)
+    fileios.writefile(context.cwd, target)
   end
 end
 
@@ -322,7 +322,7 @@ M.fzf_opts = {
 --- @return fzfx.FileExplorerPipelineContext
 M._file_explorer_context_maker = function()
   local temp = vim.fn.tempname()
-  fs.writefile(temp --[[@as string]], vim.fn.getcwd() --[[@as string]])
+  fileios.writefile(temp --[[@as string]], vim.fn.getcwd() --[[@as string]])
   local context = {
     bufnr = vim.api.nvim_get_current_buf(),
     winnr = vim.api.nvim_get_current_win(),

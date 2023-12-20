@@ -3,7 +3,7 @@ local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
-local fs = require("fzfx.lib.filesystems")
+local fileios = require("fzfx.commons.fileios")
 local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -317,7 +317,7 @@ M._get_vim_keymaps = function()
   ))
 
   local keys_output_map = {}
-  local map_output_lines = fs.readlines(tmpfile --[[@as string]]) --[[@as table]]
+  local map_output_lines = fileios.readlines(tmpfile --[[@as string]]) --[[@as table]]
 
   local LAST_SET_FROM = "\tLast set from "
   local LAST_SET_FROM_LUA = "\tLast set from Lua"

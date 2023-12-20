@@ -7,7 +7,7 @@ end
 vim.opt.runtimepath:append(SELF_PATH)
 
 local tbls = require("fzfx.lib.tables")
-local fs = require("fzfx.lib.filesystems")
+local fileios = require("fzfx.commons.fileios")
 local jsons = require("fzfx.lib.jsons")
 local strs = require("fzfx.lib.strings")
 local spawn = require("fzfx.lib.spawn")
@@ -56,7 +56,7 @@ vim.rpcrequest(
 )
 vim.fn.chanclose(channel_id)
 
-local metajsonstring = fs.readfile(metafile) --[[@as string]]
+local metajsonstring = fileios.readfile(metafile, { trim = true }) --[[@as string]]
 shell_helpers.log_ensure(
   type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
   "metajsonstring is not string! %s",
@@ -74,17 +74,17 @@ local function println(l)
 end
 
 if metaopts.previewer_type == "command" then
-  local cmd = fs.readfile(resultfile)
+  local cmd = fileios.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
-  if cmd == nil or string.len(cmd) == 0 then
+  if strs.empty(cmd) then
     os.exit(0)
   else
     os.execute(cmd)
   end
 elseif metaopts.previewer_type == "command_list" then
-  local cmd = fs.readfile(resultfile)
+  local cmd = fileios.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
-  if cmd == nil or string.len(cmd) == 0 then
+  if strs.empty(cmd) then
     os.exit(0)
     return
   end

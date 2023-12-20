@@ -17,7 +17,7 @@ describe("detail.general", function()
 
   local tbls = require("fzfx.lib.tables")
   local strs = require("fzfx.lib.strings")
-  local fs = require("fzfx.lib.filesystems")
+  local fileios = require("fzfx.commons.fileios")
   local jsons = require("fzfx.lib.jsons")
   local paths = require("fzfx.lib.paths")
 
@@ -43,8 +43,10 @@ describe("detail.general", function()
       assert_eq(ps:switch("default"), nil)
       assert_eq(ps:provide("hello", {}), "plain")
       if not github_actions then
-        local meta1 = fs.readfile(general._provider_metafile())
-        local result1 = fs.readfile(general._provider_resultfile())
+        local meta1 =
+          fileios.readfile(general._provider_metafile(), { trim = true })
+        local result1 =
+          fileios.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile1:%s\n", meta1))
         local metajson1 = jsons.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -74,8 +76,10 @@ describe("detail.general", function()
       assert_eq(ps:switch("default"), nil)
       assert_eq(ps:provide("hello", {}), "plain_list")
       if not github_actions then
-        local meta2 = fs.readfile(general._provider_metafile())
-        local result2 = fs.readfile(general._provider_resultfile())
+        local meta2 =
+          fileios.readfile(general._provider_metafile(), { trim = true })
+        local result2 =
+          fileios.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile2:%s\n", meta2))
         local metajson1 = jsons.decode(meta2) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -113,8 +117,10 @@ describe("detail.general", function()
       assert_eq(ps:switch("p1"), nil)
       assert_eq(ps:provide("hello", {}), "plain")
       if not github_actions then
-        local meta3 = fs.readfile(general._provider_metafile())
-        local result3 = fs.readfile(general._provider_resultfile())
+        local meta3 =
+          fileios.readfile(general._provider_metafile(), { trim = true })
+        local result3 =
+          fileios.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile3:%s\n", meta3))
         local metajson1 = jsons.decode(meta3) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -137,8 +143,10 @@ describe("detail.general", function()
       assert_eq(ps:switch("p2"), nil)
       assert_eq(ps:provide("hello", {}), "plain_list")
       if not github_actions then
-        local meta4 = fs.readfile(general._provider_metafile())
-        local result4 = fs.readfile(general._provider_resultfile())
+        local meta4 =
+          fileios.readfile(general._provider_metafile(), { trim = true })
+        local result4 =
+          fileios.readfile(general._provider_resultfile(), { trim = true })
         print(string.format("metafile4:%s\n", meta4))
         local metajson1 = jsons.decode(meta4) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -173,8 +181,10 @@ describe("detail.general", function()
       print(string.format("GITHUB_ACTIONS:%s\n", os.getenv("GITHUB_ACTIONS")))
       assert_eq(ps:preview("hello", {}), "command")
       if not github_actions then
-        local meta1 = fs.readfile(general._previewer_metafile())
-        local result1 = fs.readfile(general._previewer_resultfile())
+        local meta1 =
+          fileios.readfile(general._previewer_metafile(), { trim = true })
+        local result1 =
+          fileios.readfile(general._previewer_resultfile(), { trim = true })
         print(string.format("metafile1:%s\n", meta1))
         local metajson1 = jsons.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -186,8 +196,10 @@ describe("detail.general", function()
       ps:switch("p2")
       assert_eq(ps:preview("world", {}), "command_list")
       if not github_actions then
-        local meta2 = fs.readfile(general._previewer_metafile())
-        local result2 = fs.readfile(general._previewer_resultfile())
+        local meta2 =
+          fileios.readfile(general._previewer_metafile(), { trim = true })
+        local result2 =
+          fileios.readfile(general._previewer_resultfile(), { trim = true })
         print(string.format("metafile2:%s\n", meta2))
         local metajson2 = jsons.decode(meta2) --[[@as table]]
         assert_eq(type(metajson2), "table")
@@ -219,8 +231,10 @@ describe("detail.general", function()
       }, FZFPORTFILE)
       assert_eq(ps:preview("hello", {}), "command")
       if not github_actions then
-        local meta1 = fs.readfile(general._previewer_metafile())
-        local result1 = fs.readfile(general._previewer_resultfile())
+        local meta1 =
+          fileios.readfile(general._previewer_metafile(), { trim = true })
+        local result1 =
+          fileios.readfile(general._previewer_resultfile(), { trim = true })
         print(string.format("metafile:%s\n", meta1))
         local metajson1 = jsons.decode(meta1) --[[@as table]]
         assert_eq(type(metajson1), "table")
@@ -232,8 +246,10 @@ describe("detail.general", function()
       ps:switch("p2")
       assert_eq(ps:preview("world", {}), "command_list")
       if not github_actions then
-        local meta2 = fs.readfile(general._previewer_metafile())
-        local result2 = fs.readfile(general._previewer_resultfile())
+        local meta2 =
+          fileios.readfile(general._previewer_metafile(), { trim = true })
+        local result2 =
+          fileios.readfile(general._previewer_resultfile(), { trim = true })
         print(string.format("metafile:%s\n", meta2))
         local metajson2 = jsons.decode(meta2) --[[@as table]]
         assert_eq(type(metajson2), "table")
@@ -301,7 +317,7 @@ describe("detail.general", function()
     local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
     it("not previews label", function()
       local name = "label_test1"
-      fs.writefile(FZFPORTFILE, "12345")
+      fileios.writefile(FZFPORTFILE, "12345")
       local ps = general.PreviewerSwitch:new(name, "p1", {
         p1 = {
           previewer = function()
@@ -322,7 +338,7 @@ describe("detail.general", function()
     end)
     it("previews label", function()
       local name = "label_test2"
-      fs.writefile(FZFPORTFILE, "54321")
+      fileios.writefile(FZFPORTFILE, "54321")
       local ps = general.PreviewerSwitch:new(name, "p1", {
         p1 = {
           previewer = function()

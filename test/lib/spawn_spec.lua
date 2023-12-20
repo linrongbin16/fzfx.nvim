@@ -12,7 +12,7 @@ describe("lib.spawn", function()
 
   require("fzfx").setup()
   local strs = require("fzfx.lib.strings")
-  local fs = require("fzfx.lib.filesystems")
+  local fileios = require("fzfx.commons.fileios")
   local spawn = require("fzfx.lib.spawn")
 
   local dummy = function() end
@@ -32,8 +32,8 @@ describe("lib.spawn", function()
       assert_eq(type(sp.err_pipe), "userdata")
     end)
     it("consume line", function()
-      local content = fs.readfile("README.md") --[[@as string]]
-      local lines = fs.readlines("README.md") --[[@as table]]
+      local content = fileios.readfile("README.md", { trim = true }) --[[@as string]]
+      local lines = fileios.readlines("README.md") --[[@as table]]
 
       local i = 1
       local function process_line(line)
@@ -53,8 +53,8 @@ describe("lib.spawn", function()
       end
     end)
     it("stdout on newline", function()
-      local content = fs.readfile("README.md") --[[@as string]]
-      local lines = fs.readlines("README.md") --[[@as table]]
+      local content = fileios.readfile("README.md", { trim = true }) --[[@as string]]
+      local lines = fileios.readlines("README.md") --[[@as table]]
 
       local i = 1
       local function process_line(line)
@@ -78,8 +78,8 @@ describe("lib.spawn", function()
       assert_true(sp.out_pipe:is_closing())
     end)
     it("stdout on whitespace", function()
-      local content = fs.readfile("README.md") --[[@as string]]
-      local lines = fs.readlines("README.md") --[[@as table]]
+      local content = fileios.readfile("README.md", { trim = true }) --[[@as string]]
+      local lines = fileios.readlines("README.md") --[[@as table]]
 
       local i = 1
       local function process_line(line)
@@ -107,8 +107,8 @@ describe("lib.spawn", function()
       -- lower case: a
       local lower_char = string.char(97 + delimiter_i)
       it(string.format("stdout on %s", lower_char), function()
-        local content = fs.readfile("README.md") --[[@as string]]
-        local lines = fs.readlines("README.md") --[[@as table]]
+        local content = fileios.readfile("README.md", { trim = true }) --[[@as string]]
+        local lines = fileios.readlines("README.md") --[[@as table]]
 
         local i = 1
         local function process_line(line)
@@ -135,8 +135,8 @@ describe("lib.spawn", function()
       -- upper case: A
       local upper_char = string.char(65 + delimiter_i)
       it(string.format("stdout on %s", upper_char), function()
-        local content = fs.readfile("README.md") --[[@as string]]
-        local lines = fs.readlines("README.md") --[[@as table]]
+        local content = fileios.readfile("README.md", { trim = true }) --[[@as string]]
+        local lines = fileios.readlines("README.md") --[[@as table]]
 
         local i = 1
         local function process_line(line)
@@ -182,7 +182,7 @@ describe("lib.spawn", function()
       sp:run()
     end)
     it("iterate on README.md", function()
-      local lines = fs.readlines("README.md") --[[@as table]]
+      local lines = fileios.readlines("README.md") --[[@as table]]
 
       local i = 1
       local function process_line(line)
@@ -199,7 +199,7 @@ describe("lib.spawn", function()
       sp:run()
     end)
     it("iterate on lua/fzfx/config.lua", function()
-      local lines = fs.readlines("lua/fzfx/config.lua") --[[@as table]]
+      local lines = fileios.readlines("lua/fzfx/config.lua") --[[@as table]]
 
       local i = 1
       local function process_line(line)
@@ -241,8 +241,8 @@ describe("lib.spawn", function()
       assert_eq(type(sp.err_pipe), "userdata")
     end)
     it("consume line", function()
-      local content = fs.readfile("README.md") --[[@as string]]
-      local lines = fs.readlines("README.md") --[[@as table]]
+      local content = fileios.readfile("README.md", { trim = true }) --[[@as string]]
+      local lines = fileios.readlines("README.md") --[[@as table]]
 
       local i = 1
       local function process_line(line)
@@ -262,8 +262,8 @@ describe("lib.spawn", function()
       end
     end)
     it("stdout on newline", function()
-      local content = fs.readfile("README.md") --[[@as string]]
-      local lines = fs.readlines("README.md") --[[@as table]]
+      local content = fileios.readfile("README.md", { trim = true }) --[[@as string]]
+      local lines = fileios.readlines("README.md") --[[@as table]]
 
       local i = 1
       local function process_line(line)
@@ -287,8 +287,8 @@ describe("lib.spawn", function()
       assert_true(sp.out_pipe:is_closing())
     end)
     it("stdout on whitespace", function()
-      local content = fs.readfile("README.md") --[[@as string]]
-      local lines = fs.readlines("README.md") --[[@as table]]
+      local content = fileios.readfile("README.md", { trim = true }) --[[@as string]]
+      local lines = fileios.readlines("README.md") --[[@as table]]
 
       local i = 1
       local function process_line(line)
@@ -316,8 +316,8 @@ describe("lib.spawn", function()
       -- lower case: a
       local lower_char = string.char(97 + delimiter_i)
       it(string.format("stdout on %s", lower_char), function()
-        local content = fs.readfile("README.md") --[[@as string]]
-        local lines = fs.readlines("README.md") --[[@as table]]
+        local content = fileios.readfile("README.md", { trim = true }) --[[@as string]]
+        local lines = fileios.readlines("README.md") --[[@as table]]
 
         local i = 1
         local function process_line(line)
@@ -344,8 +344,8 @@ describe("lib.spawn", function()
       -- upper case: A
       local upper_char = string.char(65 + delimiter_i)
       it(string.format("stdout on %s", upper_char), function()
-        local content = fs.readfile("README.md") --[[@as string]]
-        local lines = fs.readlines("README.md") --[[@as table]]
+        local content = fileios.readfile("README.md", { trim = true }) --[[@as string]]
+        local lines = fileios.readlines("README.md") --[[@as table]]
 
         local i = 1
         local function process_line(line)
@@ -391,7 +391,7 @@ describe("lib.spawn", function()
       sp:run()
     end)
     it("iterate on README.md", function()
-      local lines = fs.readlines("README.md") --[[@as table]]
+      local lines = fileios.readlines("README.md") --[[@as table]]
 
       local i = 1
       local function process_line(line)
@@ -408,7 +408,7 @@ describe("lib.spawn", function()
       sp:run()
     end)
     it("iterate on lua/fzfx/config.lua", function()
-      local lines = fs.readlines("lua/fzfx/config.lua") --[[@as table]]
+      local lines = fileios.readlines("lua/fzfx/config.lua") --[[@as table]]
 
       local i = 1
       local function process_line(line)

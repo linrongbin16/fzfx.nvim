@@ -76,13 +76,37 @@ It's implemented with `fd`/`find` utilities:
 
 Defines the `FzfxGBlame` commands group.
 
+?> The data source use same style with `FzfxGCommits` commands, e.g. the `git log` result, see [fzfx.cfg.git_commits](#git_commits).
+
 ### [git_branches](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_branches.lua)
 
-Defines the `FzfxGBranches` commands group.
+Defines the `FzfxGBranches` commands group. The search result from `git branch` looks like:
+
+For local branches:
+
+![FzfxGBranches-local](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/1619f4bc-eae5-4489-823b-43ede4890420)
+
+For remote branches:
+
+![FzfxGBranches-remote](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/440857b8-ad54-49bf-90bd-df68dde46f3d)
+
+Each line is a git **branch name**.
+
+It's implemented with `git_branch` utilities:
+
+- [fzfx.helper.parsers.parse_git_branch](#parse_git_branch)
 
 ### [git_commits](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_commits.lua)
 
-Defines the `FzfxGCommits` commands group.
+Defines the `FzfxGCommits` commands group. The search result from `git log` looks like:
+
+![FzfxGCommits](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/1cac26af-c94c-4606-806e-759ec33ceb9f)
+
+Each line starts with a git **commit number**.
+
+It's implemented with `git_commit` utilities:
+
+- [fzfx.helper.parsers.parse_git_commit](#parse_git_commit)
 
 ### [git_files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
 
@@ -434,11 +458,7 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 ## Module [`fzfx.lib`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib)
 
-> [!NOTE]
->
-> Most of the `fzfx.lib` modules are extracted to the [commons](https://github.com/linrongbin16/commons.nvim) lua library.
->
-> Please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/).
+?> Most of the `fzfx.lib` modules are extracted to the [commons](https://github.com/linrongbin16/commons.nvim) lua library, please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/).
 
 ### [fzfx.lib.commands](/lua/fzfx/lib/commands.lua)
 
@@ -541,26 +561,6 @@ curl
 
 - `debug_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEBUG_ENABLE=1`.
 - `icon_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEVICONS_PATH=1`.
-
-### [fzfx.lib.filesystems](/lua/fzfx/lib/filesystems.lua)
-
-#### Read File
-
-- `FileLineReader`: file line reader.
-  - `open(filename:string, batchsize:integer?):FileLineReader`: open file to read, return the reader handle, by default `batchsize=4096`.
-  - `has_next():boolean`: detect whether there are more lines to read.
-  - `next():string?`: get next line.
-  - `close():nil`: close the reader handle.
-- `readlines(filename:string):string[]|nil`: open file and read line by line.
-- `readfile(filename:string, opts:{trim:boolean?}?):string?`: open and read all contents from file.
-  - set `opts={trim=true}` to trim whitespaces, by default `opts={trim=true}`.
-- `asyncreadfile(filename:string, on_complete:fun(data:string?):any, opts:{trim:boolean?}?):nil`: async read file, invoke callback `on_complete` when done.
-
-#### Write File
-
-- `writefile(filename:string, content:string):integer`: write content into file, return `-1` if fail, `0` if success.
-- `writelines(filename:string, lines:string[]):integer`: write lines into file, return `-1` if fail, `0` if success.
-- `asyncwritefile(filename:string, content:string, on_complete:fun(bytes:integer?):any):integer`: async write content into a file, invoke callback `on_complete` when done.
 
 ### [fzfx.lib.jsons](#/lua/fzfx/lib/jsons.lua)
 

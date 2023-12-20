@@ -4,7 +4,7 @@ local nvims = require("fzfx.lib.nvims")
 local cmds = require("fzfx.lib.commands")
 local termcolors = require("fzfx.commons.termcolors")
 local paths = require("fzfx.lib.paths")
-local fs = require("fzfx.lib.filesystems")
+local fileios = require("fzfx.commons.fileios")
 local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -114,7 +114,7 @@ M._render_lsp_location_line = function(loc)
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return nil
   end
-  local filelines = fs.readlines(filename)
+  local filelines = fileios.readlines(filename)
   if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
     return nil
   end
@@ -306,7 +306,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return {}
   end
-  local filelines = fs.readlines(filename)
+  local filelines = fileios.readlines(filename)
   if type(filelines) ~= "table" then
     return {}
   end

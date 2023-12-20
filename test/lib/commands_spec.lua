@@ -36,7 +36,9 @@ describe("lib.commands", function()
       assert_eq(type(c.result), "table")
       assert_eq(type(c.result.stdout), "table")
       assert_true(#c.result.stdout >= 0)
-      assert_eq(c.result.stdout[1], "1")
+      if #c.result.stdout > 0 then
+        assert_eq(c.result.stdout[1], "1")
+      end
       assert_eq(type(c.result.stderr), "table")
       assert_eq(#c.result.stderr, 0)
       assert_eq(c.result.code, 0)

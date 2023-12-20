@@ -4,7 +4,7 @@ local env = require("fzfx.lib.env")
 local paths = require("fzfx.lib.paths")
 local jsons = require("fzfx.lib.jsons")
 local strs = require("fzfx.lib.strings")
-local fs = require("fzfx.lib.filesystems")
+local fileios = require("fzfx.commons.fileios")
 local nvims = require("fzfx.lib.nvims")
 local tbls = require("fzfx.lib.tables")
 local spawn = require("fzfx.lib.spawn")
@@ -186,7 +186,7 @@ function ProviderSwitch:provide(query, context)
 
   local metaopts = make_provider_meta_opts(self.pipeline, provider_config)
   local metajson = jsons.encode(metaopts) --[[@as string]]
-  fs.writefile(self.metafile, metajson)
+  fileios.writefile(self.metafile, metajson)
 
   if provider_config.provider_type == ProviderTypeEnum.PLAIN then
     log.ensure(
@@ -197,9 +197,12 @@ function ProviderSwitch:provide(query, context)
       vim.inspect(provider_config)
     )
     if provider_config.provider == nil then
-      fs.writefile(self.resultfile, "")
+      fileios.writefile(self.resultfile, "")
     else
-      fs.writefile(self.resultfile, provider_config.provider --[[@as string]])
+      fileios.writefile(
+        self.resultfile,
+        provider_config.provider --[[@as string]]
+      )
     end
   elseif provider_config.provider_type == ProviderTypeEnum.PLAIN_LIST then
     log.ensure(
@@ -210,9 +213,9 @@ function ProviderSwitch:provide(query, context)
       vim.inspect(provider_config)
     )
     if tbls.tbl_empty(provider_config.provider) then
-      fs.writefile(self.resultfile, "")
+      fileios.writefile(self.resultfile, "")
     else
-      fs.writefile(
+      fileios.writefile(
         self.resultfile,
         jsons.encode(provider_config.provider --[[@as table]]) --[[@as string]]
       )
@@ -232,7 +235,7 @@ function ProviderSwitch:provide(query, context)
       vim.inspect(result)
     )
     if not ok then
-      fs.writefile(self.resultfile, "")
+      fileios.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -243,9 +246,9 @@ function ProviderSwitch:provide(query, context)
       )
     else
       if result == nil then
-        fs.writefile(self.resultfile, "")
+        fileios.writefile(self.resultfile, "")
       else
-        fs.writefile(self.resultfile, result)
+        fileios.writefile(self.resultfile, result)
       end
     end
   elseif provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST then
@@ -263,7 +266,7 @@ function ProviderSwitch:provide(query, context)
       vim.inspect(result)
     )
     if not ok then
-      fs.writefile(self.resultfile, "")
+      fileios.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s command_list provider %s! query:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -274,9 +277,12 @@ function ProviderSwitch:provide(query, context)
       )
     else
       if tbls.tbl_empty(result) then
-        fs.writefile(self.resultfile, "")
+        fileios.writefile(self.resultfile, "")
       else
-        fs.writefile(self.resultfile, jsons.encode(result) --[[@as string]])
+        fileios.writefile(
+          self.resultfile,
+          jsons.encode(result) --[[@as string]]
+        )
       end
     end
   elseif provider_config.provider_type == ProviderTypeEnum.LIST then
@@ -288,7 +294,7 @@ function ProviderSwitch:provide(query, context)
     --     vim.inspect(result)
     -- )
     if not ok then
-      fs.writefile(self.resultfile, "")
+      fileios.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -305,9 +311,9 @@ function ProviderSwitch:provide(query, context)
         vim.inspect(result)
       )
       if tbls.tbl_empty(result) then
-        fs.writefile(self.resultfile, "")
+        fileios.writefile(self.resultfile, "")
       else
-        fs.writelines(self.resultfile, result)
+        fileios.writelines(self.resultfile, result)
       end
     end
   else
@@ -413,7 +419,7 @@ function PreviewerSwitch:preview(line, context)
 
   local metaopts = make_previewer_meta_opts(self.pipeline, previewer_config)
   local metajson = jsons.encode(metaopts) --[[@as string]]
-  fs.writefile(self.metafile, metajson)
+  fileios.writefile(self.metafile, metajson)
 
   if previewer_config.previewer_type == PreviewerTypeEnum.COMMAND then
     local ok, result = pcall(previewer_config.previewer, line, context)
@@ -423,7 +429,7 @@ function PreviewerSwitch:preview(line, context)
     --     vim.inspect(result)
     -- )
     if not ok then
-      fs.writefile(self.resultfile, "")
+      fileios.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -440,9 +446,9 @@ function PreviewerSwitch:preview(line, context)
         vim.inspect(result)
       )
       if result == nil then
-        fs.writefile(self.resultfile, "")
+        fileios.writefile(self.resultfile, "")
       else
-        fs.writefile(self.resultfile, result --[[@as string]])
+        fileios.writefile(self.resultfile, result --[[@as string]])
       end
     end
   elseif previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST then
@@ -453,7 +459,7 @@ function PreviewerSwitch:preview(line, context)
     --     vim.inspect(result)
     -- )
     if not ok then
-      fs.writefile(self.resultfile, "")
+      fileios.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s command_list previewer %s! line:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -470,9 +476,9 @@ function PreviewerSwitch:preview(line, context)
         vim.inspect(result)
       )
       if tbls.tbl_empty(result) then
-        fs.writefile(self.resultfile, "")
+        fileios.writefile(self.resultfile, "")
       else
-        fs.writefile(
+        fileios.writefile(
           self.resultfile,
           jsons.encode(result --[[@as table]]) --[[@as string]]
         )
@@ -486,7 +492,7 @@ function PreviewerSwitch:preview(line, context)
     --     vim.inspect(result)
     -- )
     if not ok then
-      fs.writefile(self.resultfile, "")
+      fileios.writefile(self.resultfile, "")
       log.err(
         "failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
         vim.inspect(self.pipeline),
@@ -502,7 +508,7 @@ function PreviewerSwitch:preview(line, context)
         vim.inspect(self),
         vim.inspect(result)
       )
-      fs.writelines(self.resultfile, result --[[@as table]])
+      fileios.writelines(self.resultfile, result --[[@as table]])
     end
   else
     log.throw(
@@ -623,7 +629,7 @@ function PreviewerSwitch:preview_label(line, context)
         return
       end
       self.fzf_port = strs.not_empty(self.fzf_port) and self.fzf_port
-        or fs.readfile(self.fzf_port_file) --[[@as string]]
+        or fileios.readfile(self.fzf_port_file, { trim = true }) --[[@as string]]
       if strs.not_empty(self.fzf_port) then
         _send_http_post(
           self.fzf_port,
@@ -1033,7 +1039,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           default_provider = provider_switch.pipeline,
           query = last_query,
         }) --[[@as string]]
-        fs.asyncwritefile(last_query_cache, content, function(bytes)
+        fileios.asyncwritefile(last_query_cache, content, function(bytes)
           log.debug("|general| dump last query:%s", vim.inspect(bytes))
         end)
       end)

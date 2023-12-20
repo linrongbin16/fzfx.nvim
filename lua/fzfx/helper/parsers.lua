@@ -3,7 +3,7 @@ local paths = require("fzfx.lib.paths")
 local env = require("fzfx.lib.env")
 local strs = require("fzfx.lib.strings")
 local nums = require("fzfx.lib.numbers")
-local fs = require("fzfx.lib.filesystems")
+local fileios = require("fzfx.commons.fileios")
 local tbls = require("fzfx.lib.tables")
 
 local M = {}
@@ -366,7 +366,7 @@ M._make_parse_ls = function(start_pos)
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return {filename:string}
   local function impl(line, context)
-    local cwd = fs.readfile(context.cwd)
+    local cwd = fileios.readfile(context.cwd, { trim = true })
     assert(
       strs.not_empty(cwd),
       string.format(

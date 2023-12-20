@@ -12,7 +12,7 @@ describe("helper.parsers", function()
 
   local strs = require("fzfx.lib.strings")
   local paths = require("fzfx.lib.paths")
-  local fs = require("fzfx.lib.filesystems")
+  local fileios = require("fzfx.commons.fileios")
   local parsers_helper = require("fzfx.helper.parsers")
 
   local DEVICONS_PATH =
@@ -164,7 +164,7 @@ describe("helper.parsers", function()
 
   describe("[parse_ls/parse_lsd/parse_eza]", function()
     local cwdtmp = vim.fn.tempname()
-    fs.writefile(cwdtmp, cwd)
+    fileios.writefile(cwdtmp, cwd)
     local CONTEXT = { cwd = cwdtmp }
     it("test ls", function()
       local lines = {

@@ -3,7 +3,6 @@ local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
-local fs = require("fzfx.lib.filesystems")
 local tbls = require("fzfx.lib.tables")
 
 local log = require("fzfx.lib.log")

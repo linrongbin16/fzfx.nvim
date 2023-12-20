@@ -1,3 +1,7 @@
+local strings = require("fzfx.commons.strings")
+local spawn = require("fzfx.commons.spawn")
+local tables = require("fzfx.commons.tables")
+
 local M = {}
 
 -- CommandResult {
@@ -48,10 +52,6 @@ local Command = {}
 --- @param source string[]
 --- @return fzfx.Command
 function Command:run(source)
-  local strings = require("fzfx.commons.strings")
-  local spawn = require("fzfx.commons.spawn")
-  local tables = require("fzfx.commons.tables")
-
   local result = CommandResult:new()
   local sp = spawn.run(source, {
     on_stdout = function(line)
