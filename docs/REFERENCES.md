@@ -578,7 +578,7 @@ curl
 
 ### [fzfx.lib.bufs](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib/bufs.lua)
 
-#### `buf_is_valid`
+#### [`buf_is_valid`](https://github.com/linrongbin16/fzfx.nvim/blob/3ad43c8657d4dc0759a90035dbafa401b2905384/lua/fzfx/lib/bufs.lua?plain=1#L5)
 
 Whether buffer is valid.
 
