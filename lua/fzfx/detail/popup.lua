@@ -1,6 +1,6 @@
 local nums = require("fzfx.lib.numbers")
 local nvims = require("fzfx.lib.nvims")
-local fs = require("fzfx.lib.filesystems")
+local fileios = require("fzfx.commons.fileios")
 local log = require("fzfx.lib.log")
 
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -363,7 +363,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
       "|Popup:new.on_fzf_exit| result %s must be readable",
       vim.inspect(result)
     )
-    local lines = fs.readlines(result --[[@as string]]) --[[@as table]]
+    local lines = fileios.readlines(result --[[@as string]]) --[[@as table]]
     log.debug(
       "|Popup:new| fzf exit, result:%s, lines:%s",
       vim.inspect(result),

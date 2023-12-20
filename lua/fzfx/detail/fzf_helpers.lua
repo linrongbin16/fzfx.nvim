@@ -1,7 +1,7 @@
 local paths = require("fzfx.lib.paths")
 local termcolors = require("fzfx.commons.termcolors")
 local jsons = require("fzfx.lib.jsons")
-local fs = require("fzfx.lib.filesystems")
+local fileios = require("fzfx.commons.fileios")
 local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
 local log = require("fzfx.lib.log")
@@ -113,7 +113,7 @@ local function get_command_feed(feed_type, input_args, pipeline_name)
     return (y ~= nil and type(y.regtext) == "string") and y.regtext or "", nil
   elseif feed_type == "resume" then
     local cache = make_last_query_cache(pipeline_name)
-    local data = fs.readfile(cache)
+    local data = fileios.readfile(cache, { trim = true })
     -- log.debug(
     --     "|fzfx.fzf_helpers - get_command_feed| pipeline %s cache:%s",
     --     vim.inspect(pipeline_name),

@@ -3,7 +3,7 @@ local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
-local fs = require("fzfx.lib.filesystems")
+local fileios = require("fzfx.commons.fileios")
 local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -192,7 +192,7 @@ M._get_vim_ex_commands = function()
   end
   local results = {}
   for _, help_doc in ipairs(help_docs_list) do
-    local lines = fs.readlines(help_doc) --[[@as table]]
+    local lines = fileios.readlines(help_doc) --[[@as table]]
     for i = 1, #lines do
       local line = lines[i]
       if strs.startswith(line, "|:") then
@@ -343,7 +343,7 @@ M._parse_ex_command_output = function()
   ))
 
   local results = {}
-  local command_outputs = fs.readlines(tmpfile --[[@as string]]) --[[@as table]]
+  local command_outputs = fileios.readlines(tmpfile --[[@as string]]) --[[@as table]]
   local found_command_output_header = false
   --- @type fzfx.VimExCommandOutputHeader
   local parsed_header = nil

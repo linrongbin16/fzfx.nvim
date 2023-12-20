@@ -5,7 +5,7 @@ end
 vim.opt.runtimepath:append(SELF_PATH)
 
 local tbls = require("fzfx.lib.tables")
-local fs = require("fzfx.lib.filesystems")
+local fileios = require("fzfx.commons.fileios")
 local jsons = require("fzfx.lib.jsons")
 local strs = require("fzfx.lib.strings")
 local spawn = require("fzfx.lib.spawn")
@@ -51,7 +51,7 @@ vim.rpcrequest(
 )
 vim.fn.chanclose(channel_id)
 
-local metajsonstring = fs.readfile(metafile) --[[@as string]]
+local metajsonstring = fileios.readfile(metafile, { trim = true }) --[[@as string]]
 shell_helpers.log_ensure(
   type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
   "metajsonstring is not string! %s",
@@ -115,7 +115,7 @@ end
 
 if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
   --- @type string
-  local cmd = fs.readfile(resultfile) --[[@as string]]
+  local cmd = fileios.readfile(resultfile, { trim = true }) --[[@as string]]
   shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
   if cmd == nil or string.len(cmd) == 0 then
     os.exit(0)
@@ -138,7 +138,7 @@ elseif
   metaopts.provider_type == "plain_list"
   or metaopts.provider_type == "command_list"
 then
-  local cmd = fs.readfile(resultfile) --[[@as string]]
+  local cmd = fileios.readfile(resultfile, { trim = true }) --[[@as string]]
   shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
   if cmd == nil or string.len(cmd) == 0 then
     os.exit(0)
@@ -160,7 +160,7 @@ then
   )
   sp:run()
 elseif metaopts.provider_type == "list" then
-  local reader = fs.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
+  local reader = fileios.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
   shell_helpers.log_ensure(
     reader ~= nil,
     "failed to open resultfile: %s",
