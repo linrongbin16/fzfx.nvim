@@ -48,9 +48,17 @@ Defines the `FzfxBuffers` commands group.
 
 ### [file_explorer](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
 
-Defines the `FzfxFileExplorer` commands group.
+Defines the `FzfxFileExplorer` commands group. The search result from `ls`/`lsd`/`eza` looks like:
 
 ![FzfxFileExplorer](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5e402a20-6c96-43a1-a463-345cd2bd86c7)
+
+Each line is constructed with multiple file/directory attributes and **file name**, split by uncertained count of whitespaces `" "`.
+
+It's implemented with `ls`/`lsd`/`eza` utilities:
+
+- [fzfx.helper.parsers.parse_ls](#parse_ls)
+- [fzfx.helper.parsers.parse_lsd](#parse_lsd)
+- [fzfx.helper.parsers.parse_eza](#parse_eza)
 
 ### [files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua)
 
