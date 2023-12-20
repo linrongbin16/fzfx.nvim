@@ -115,57 +115,43 @@ It's implemented with `rg` or `grep` (when `rg` not found) utilities:
 
 Defines the `FzfxLspDefinitions` commands group.
 
-The searching result follows the `live_grep` style, thus it's implemented with `rg` related utilities:
-
-- [fzfx.helper.parsers.parse_rg](#parse_rg)
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_diagnostics](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_diagnostics.lua)
 
 Defines the `FzfxLspDiagnostics` commands group.
 
-The searching result follows the `live_grep` style, thus it's implemented with `rg` related utilities:
-
-- [fzfx.helper.parsers.parse_rg](#parse_rg)
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_implementations](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_implementations.lua)
 
 Defines the `FzfxLspImplementations` commands group.
 
-The searching result follows the `live_grep` style, thus it's implemented with `rg` related utilities:
-
-- [fzfx.helper.parsers.parse_rg](#parse_rg)
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_incoming_calls](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_incoming_calls.lua)
 
 Defines the `FzfxLspIncomingCalls` commands group.
 
-The searching result follows the `live_grep` style, thus it's implemented with `rg` related utilities:
-
-- [fzfx.helper.parsers.parse_rg](#parse_rg)
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_outgoing_calls](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_outgoing_calls.lua)
 
 Defines the `FzfxLspOutgoingCalls` commands group.
 
-The searching result follows the `live_grep` style, thus it's implemented with `rg` related utilities:
-
-- [fzfx.helper.parsers.parse_rg](#parse_rg)
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_references](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_references.lua)
 
 Defines the `FzfxLspReferences` commands group.
 
-The searching result follows the `live_grep` style, thus it's implemented with `rg` related utilities:
-
-- [fzfx.helper.parsers.parse_rg](#parse_rg)
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_type_definitions](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_type_definitions.lua)
 
 Defines the `FzfxLspTypeDefinitions` commands group.
 
-The searching result follows the `live_grep` style, thus it's implemented with `rg` related utilities:
-
-- [fzfx.helper.parsers.parse_rg](#parse_rg)
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [vim_commands](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_commands.lua)
 
