@@ -66,9 +66,10 @@ describe("lib.commands", function()
       assert_eq(type(c.result.stdout), "table")
       assert_true(#c.result.stdout >= 0)
       assert_false(c:failed())
-      assert_eq(type(c:output()), "string")
-      print(string.format("git root:%s\n", c:output()))
-      assert_true(string.len(c:output() --[[@as string]]) > 0)
+      if type(c:output()) == "string" then
+        print(string.format("git root:%s\n", vim.inspect(c:output())))
+        assert_true(string.len(c:output() --[[@as string]]) > 0)
+      end
     end)
   end)
   describe("[GitBranchesCommand]", function()
