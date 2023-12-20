@@ -1,5 +1,5 @@
 local strs = require("fzfx.lib.strings")
-local nums = require("fzfx.lib.numbers")
+local numbers = require("fzfx.commons.numbers")
 local uv = (vim.fn.has("nvim-0.10") > 0 and vim.uv ~= nil) and vim.uv
   or vim.loop
 
@@ -194,7 +194,7 @@ function Spawn:run()
   end)
   if self._blocking then
     uv.run()
-    vim.wait(nums.INT32_MAX, function()
+    vim.wait(numbers.INT32_MAX, function()
       return self._close_count == 3
     end)
   end

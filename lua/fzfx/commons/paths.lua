@@ -85,7 +85,7 @@ M.pipename = function()
         string.format("%x", ms),
         string.format(
           "%x",
-          math.random(1, require("fzfx.lib.numbers").INT32_MAX)
+          math.random(1, require("fzfx.commons.numbers").INT32_MAX)
         ),
       }, "-")
     end
