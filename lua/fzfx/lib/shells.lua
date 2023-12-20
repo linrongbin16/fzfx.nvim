@@ -2,8 +2,6 @@ local constants = require("fzfx.lib.constants")
 
 local M = {}
 
--- shell {
-
 --- @class fzfx.ShellOptsContext
 --- @field shell string?
 --- @field shellslash string?
@@ -83,7 +81,5 @@ M.shellescape = function(s, special)
       or vim.fn.shellescape(s)
   end
 end
-
--- shell }
 
 return M

@@ -582,9 +582,12 @@ curl
 
 Whether buffer is valid.
 
-#### Shell
+### [fzfx.lib.shells](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib/shells.lua)
 
-- `shellescape(s:string, special:string?):string`: escape shell strings, especially single(`''`)/double(`""`) quotes.
+#### `shellescape`
+
+Escape shell strings, especially single(`''`)/double(`""`) quotes.
+
 - `ShellOptsContext`: shell options context.
   - `save():ShellOptsContext`: save current shell options and return context.
   - `restore():nil`: restore previously saved shell options.
