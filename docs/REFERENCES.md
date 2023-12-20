@@ -157,6 +157,8 @@ Defines the `FzfxLspTypeDefinitions` commands group.
 
 Defines the `FzfxCommands` commands group.
 
+![FzfxCommands](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5abe8ccd-e98f-4e15-b827-82d93491d0c0)
+
 ### [vim_keymaps](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_keymaps.lua)
 
 Defines the `FzfxKeyMaps` commands group.
