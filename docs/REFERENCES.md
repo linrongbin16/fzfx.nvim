@@ -217,7 +217,7 @@ The `fzfx.helper` module provide line-oriented helpers for parsing and rendering
 
 ?> Since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 
-### [fzfx.helper.parsers](/lua/fzfx/helper/parsers.lua)
+### [parsers](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper/parsers.lua)
 
 The `fzfx.helper.parsers` are lower-level components (compared with others in `fzfx.helper`) that help **previewer** and **action** understand the lines generated from **provider**, e.g. it's the bridge between data producers and consumers.
 
