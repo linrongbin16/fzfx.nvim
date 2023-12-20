@@ -110,17 +110,10 @@ local CommandFeedEnum = {
 --
 -- ========== Config ==========
 --
---- @deprecated
---- @class fzfx.ProviderConfigLineOpts
---- @field prepend_icon_by_ft boolean?
---- @field prepend_icon_path_delimiter string? -- working with `prepend_icon_by_ft=true`
---- @field prepend_icon_path_position integer? -- working with `prepend_icon_by_ft=true`
---
 --- @class fzfx.ProviderConfig
 --- @field key fzfx.ActionKey
 --- @field provider fzfx.Provider
 --- @field provider_type fzfx.ProviderType? by default "plain"
---- @field line_opts fzfx.ProviderConfigLineOpts?  -- deprecated
 --- @field provider_decorator fzfx.ProviderDecorator?
 
 --- @class fzfx.PreviewerConfig

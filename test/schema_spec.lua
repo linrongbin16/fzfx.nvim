@@ -42,67 +42,6 @@ describe("schema", function()
       assert_true(plain.provider_type == nil)
       assert_eq(schema.get_provider_type_or_default(plain), "plain_list")
     end)
-    it("makes a command provider", function()
-      local command_key = "command"
-      local command_provider = function()
-        return "ls -la"
-      end
-      local command_provider_type = "command"
-      local command = {
-        key = command_key,
-        provider = command_provider,
-        provider_type = command_provider_type,
-        line_opts = {
-          prepend_icon_by_ft = true,
-          prepend_icon_path_delimiter = ":",
-          prepend_icon_path_position = 1,
-        },
-      }
-      assert_eq(type(command), "table")
-      assert_true(schema.is_provider_config(command))
-      assert_eq(command.key, command_key)
-      assert_eq(type(command.provider), "function")
-      assert_eq(command.provider(), command_provider())
-      assert_eq(command.provider_type, command_provider_type)
-      assert_eq(
-        schema.get_provider_type_or_default(command),
-        command_provider_type
-      )
-      assert_eq(type(command.line_opts), "table")
-      assert_true(command.line_opts.prepend_icon_by_ft)
-      assert_eq(command.line_opts.prepend_icon_path_delimiter, ":")
-      assert_eq(command.line_opts.prepend_icon_path_position, 1)
-    end)
-    it("makes a command_list provider", function()
-      local command_key = "command"
-      local command_provider = function()
-        return { "ls", "-la" }
-      end
-      local command = {
-        key = command_key,
-        provider = command_provider,
-        provider_type = "command_list",
-        line_opts = {
-          prepend_icon_by_ft = true,
-          prepend_icon_path_delimiter = ":",
-          prepend_icon_path_position = 1,
-        },
-      }
-      assert_eq(type(command), "table")
-      assert_true(schema.is_provider_config(command))
-      assert_eq(command.key, command_key)
-      assert_eq(type(command.provider), "function")
-      assert_eq(type(command.provider()), "table")
-      assert_false(tbls.tbl_empty(command.provider()))
-      assert_eq(#command.provider(), 2)
-      assert_eq(command.provider()[1], "ls")
-      assert_eq(command.provider()[2], "-la")
-      assert_eq(command.provider_type, "command_list")
-      assert_eq(type(command.line_opts), "table")
-      assert_true(command.line_opts.prepend_icon_by_ft)
-      assert_eq(command.line_opts.prepend_icon_path_delimiter, ":")
-      assert_eq(command.line_opts.prepend_icon_path_position, 1)
-    end)
   end)
   describe("[PreviewerConfig]", function()
     it("makes a command previewer", function()

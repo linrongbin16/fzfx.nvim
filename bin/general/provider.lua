@@ -93,14 +93,7 @@ local function println(line)
     return
   end
   line = strs.rtrim(line --[[@as string]])
-  if metaopts.prepend_icon_by_ft then
-    local rendered_line = shell_helpers.prepend_path_with_icon(
-      line,
-      metaopts.prepend_icon_path_delimiter,
-      metaopts.prepend_icon_path_position
-    )
-    io.write(string.format("%s\n", rendered_line))
-  elseif tbls.tbl_not_empty(decorator_module) then
+  if tbls.tbl_not_empty(decorator_module) then
     -- shell_helpers.log_debug("decorate line:%s", vim.inspect(line))
     vim.schedule(function()
       local rendered_ok, rendered_line_or_err =
