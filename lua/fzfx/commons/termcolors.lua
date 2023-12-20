@@ -1,5 +1,6 @@
 local M = {}
 
+--- @package
 --- @param attr "fg"|"bg"
 --- @param code string
 --- @return string
