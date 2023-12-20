@@ -27,64 +27,24 @@
 
         plugins: [
           function (hook, vm) {
-            hook.beforeEach(function (html, next) {
-              const tasks = [];
+            hook.beforeEach(function (html) {
+              if (/githubusercontent\.com/.test(vm.route.file)) {
+                url = vm.route.file
+                  .replace("raw.githubusercontent.com", "github.com")
+                  .replace(/\/main/, "/blob/main");
+              } else {
+                url =
+                  "https://github.com/linrongbin16/fzfx.nvim/blob/main/docs/" +
+                  vm.route.file;
+              }
+              var editHtml = "[:memo: Edit Document](" + url + ")\n";
 
-              // =permanent-link
-              var regex = /=permanent-link\((.*)\)/g;
-              html = html.replace(regex, function (match, content) {
-                // Get the permanent-link
-                const api = content;
-                // Get which lines you want
-                const tokens = content.split("#");
-                const lines = tokens[1].replaceAll("L", "").split("-");
-                const from_line = lines[0];
-                const to_line = lines[1];
-
-                // https://raw.githubusercontent.com/linrongbin16/commons.nvim/4fb28b74e15792397379ea9469b825d19fa9b946/lua/commons/apis.lua
-                // const raw = tokens[0].replaceAll(
-                //   "https://github.com/linrongbin16/commons.nvim/blob",
-                //   "https://raw.githubusercontent.com/linrongbin16/commons.nvim",
-                // );
-
-                // fetch content
-                const task = fetch(api)
-                  .then((resp) => {
-                    console.log("resp:");
-                    console.log(resp);
-                    return resp.json();
-                  })
-                  .then((data) => {
-                    console.log("data:");
-                    console.log(data);
-                    // html = html.replace(match, data);
-                  })
-                  .catch((err) => {
-                    console.log("err:");
-                    console.log(err);
-                  });
-
-                tasks.push(task);
-              });
-
-              // all tasks done and return
-              Promise.all(tasks).then((finish) => {
-                if (/githubusercontent\.com/.test(vm.route.file)) {
-                  url = vm.route.file
-                    .replace("raw.githubusercontent.com", "github.com")
-                    .replace(/\/main/, "/blob/main");
-                } else {
-                  url =
-                    "https://github.com/linrongbin16/fzfx.nvim/blob/main/docs/" +
-                    vm.route.file;
-                }
-                const editHtml = "[:memo: Edit Document](" + url + ")\n";
-                const powerByHtml =
-                  "\n\n----\n\n" +
-                  '<a href="https://docsify.js.org" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">Powered by <span style="color:#42b983">docsify</span>.</a>';
-
-                next(editHtml + html + powerByHtml);
-              });
+              return (
+                editHtml +
+                html +
+                "\n\n----\n\n" +
+                '<a href="https://docsify.js.org" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">Powered by <span style="color:#42b983">docsify</span>.</a>'
+              );
             });
           },
         ],

@@ -6,15 +6,13 @@ The modules in `fzfx.cfg` are recommended as a reference when you want to custom
 
 The APIs in `fzfx.helper` and `fzfx.lib` are recommended when you implement something in fzfx, they are supposed to be stable and tested.
 
-=permanent-link(https://github.com/linrongbin16/fzfx.nvim/blob/67a04a92fbca815d53b0f633e7eeff5c123a4f41/lua/fzfx/schema.lua?plain=1#L3-L6)
-
 !> Except those APIs start with underline `_`, which are exposed for unit tests.
 
 ## Module [`fzfx.cfg`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/cfg)
 
 The `fzfx.cfg` module directly provide configurations for all search commands in this plugin.
 
-!> Before continue, you may need to read [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) to understand why it's structured this way.
+!> Before continue, you may need to read [A General Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema.md) to understand why it's structured this way.
 
 A real-world search command, say `FzfxLiveGrep`, actually defined multiple user commands:
 
