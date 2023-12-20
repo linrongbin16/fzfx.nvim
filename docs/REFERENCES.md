@@ -130,9 +130,15 @@ It's implemented with `grep` utilities:
 
 ### [git_status](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_status.lua)
 
-Defines the `FzfxGStatus` commands group.
+Defines the `FzfxGStatus` commands group. The search results from `git status` looks like:
 
 ![FzfxGStatus](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/31946271-e0f3-406f-af93-2ec88108e189)
+
+Each line is constructed with changed **file name**, and prepend with git status symbol.
+
+It's implemented with `git_status` utilities:
+
+- [fzfx.helper.parsers.parse_git_status](#parse_git_status)
 
 ### [live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/live_grep.lua)
 
