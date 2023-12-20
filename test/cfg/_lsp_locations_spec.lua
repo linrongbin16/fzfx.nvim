@@ -19,7 +19,7 @@ describe("cfg._lsp_locations", function()
   local consts = require("fzfx.lib.constants")
   local strs = require("fzfx.lib.strings")
   local paths = require("fzfx.lib.paths")
-  local colors = require("fzfx.lib.colors")
+  local termcolors = require("fzfx.commons.termcolors")
 
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
@@ -63,7 +63,7 @@ describe("cfg._lsp_locations", function()
       local loc = _lsp_locations._colorize_lsp_range(
         'describe("_lsp_location_render_line", function()',
         r,
-        colors.red
+        termcolors.red
       )
       -- print(string.format("lsp render line:%s\n", vim.inspect(loc)))
       assert_eq(type(loc), "string")

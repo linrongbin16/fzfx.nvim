@@ -1,5 +1,5 @@
 local consts = require("fzfx.lib.constants")
-local colors = require("fzfx.lib.colors")
+local termcolors = require("fzfx.commons.termcolors")
 local env = require("fzfx.lib.env")
 local paths = require("fzfx.lib.paths")
 local jsons = require("fzfx.lib.jsons")
@@ -672,12 +672,9 @@ local HeaderSwitch = {}
 --- @param action string
 --- @return string
 local function _render_help(name, action)
-  return colors.render(
-    colors.magenta,
-    "Special",
-    "%s to " .. table.concat(strs.split(name, "_"), " "),
-    string.upper(action)
-  )
+  return termcolors.magenta(string.upper(action), "Special")
+    .. " to "
+    .. table.concat(strs.split(name, "_"), " ")
 end
 
 --- @param excludes string[]|nil

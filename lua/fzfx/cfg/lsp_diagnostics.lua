@@ -2,7 +2,7 @@ local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
 local cmds = require("fzfx.lib.commands")
-local colors = require("fzfx.lib.colors")
+local termcolors = require("fzfx.commons.termcolors")
 local paths = require("fzfx.lib.paths")
 local fs = require("fzfx.lib.filesystems")
 local tbls = require("fzfx.lib.tables")
@@ -160,7 +160,7 @@ local LSP_DIAGNOSTICS_SIGNS = {
           and "LspDiagnosticsSignInfo"
         or "None"
       ),
-    textcolor = "teal",
+    textcolor = "green",
   },
   [4] = {
     severity = 4,
@@ -252,7 +252,7 @@ M._make_lsp_diagnostics_provider = function(opts)
         if type(diag.text) == "string" and string.len(diag.text) > 0 then
           if type(signs[diag.severity]) == "table" then
             local sign_item = signs[diag.severity]
-            local color_renderer = colors[sign_item.textcolor]
+            local color_renderer = termcolors[sign_item.textcolor]
             builder = " " .. color_renderer(sign_item.text, sign_item.texthl)
           end
           builder = builder .. " " .. diag.text
@@ -265,7 +265,7 @@ M._make_lsp_diagnostics_provider = function(opts)
         local line = string.format(
           "%s:%s:%s:%s",
           providers_helper.LSP_FILENAME_COLOR(diag.filename),
-          colors.green(tostring(diag.lnum)),
+          termcolors.green(tostring(diag.lnum)),
           tostring(diag.col),
           builder
         )
