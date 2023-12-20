@@ -101,6 +101,7 @@ local function println(line)
     )
     io.write(string.format("%s\n", rendered_line))
   elseif tbls.tbl_not_empty(decorator_module) then
+    -- shell_helpers.log_debug("decorate line:%s", vim.inspect(line))
     vim.schedule(function()
       local rendered_ok, rendered_line_or_err =
         pcall(decorator_module.decorate, line)
