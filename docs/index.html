@@ -27,7 +27,7 @@
 
         plugins: [
           function (hook, vm) {
-            hook.beforeEach(function (html) {
+            hook.beforeEach(function (html, next) {
               const tasks = [];
 
               // =permanent-link
