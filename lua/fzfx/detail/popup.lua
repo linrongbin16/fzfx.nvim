@@ -1,4 +1,4 @@
-local nums = require("fzfx.lib.numbers")
+local numbers = require("fzfx.commons.numbers")
 local nvims = require("fzfx.lib.nvims")
 local fileios = require("fzfx.commons.fileios")
 local log = require("fzfx.lib.log")
@@ -25,7 +25,7 @@ local conf = require("fzfx.config")
 --- @return integer
 local function _make_window_size(value, base, minimal)
   minimal = minimal or 3
-  return nums.bound(
+  return numbers.bound(
     value > 1 and value or math.floor(base * value),
     minimal,
     base
@@ -79,10 +79,10 @@ local function _make_window_center_shift(maxsize, size, offset)
   local base = math.floor((maxsize - size) * 0.5)
   if offset >= 0 then
     local shift = offset < 1 and math.floor((maxsize - size) * offset) or offset
-    return nums.bound(base + shift, 0, maxsize - size)
+    return numbers.bound(base + shift, 0, maxsize - size)
   else
     local shift = offset > -1 and math.ceil((maxsize - size) * offset) or offset
-    return nums.bound(base + shift, 0, maxsize - size)
+    return numbers.bound(base + shift, 0, maxsize - size)
   end
 end
 
