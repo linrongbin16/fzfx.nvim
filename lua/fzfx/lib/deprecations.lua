@@ -1,11 +1,10 @@
-local uv = (vim.fn.has("nvim-0.10") > 0 and vim.uv ~= nil) and vim.uv
-  or vim.loop
-
 local M = {}
 
 --- @param fmt string
 --- @param ... any
 M.notify = function(fmt, ...)
+  local uv = require("fzfx.commons.uv")
+
   local msg = string.format(fmt, ...)
 
   local function impl()

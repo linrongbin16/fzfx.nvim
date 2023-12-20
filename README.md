@@ -3,7 +3,8 @@
 # fzfx.nvim
 
 <p align="center">
-<a href="https://github.com/neovim/neovim/releases/v0.7.0"><img alt="Neovim" src="https://img.shields.io/badge/Neovim-v0.7-57A143?logo=neovim&logoColor=57A143" /></a>
+<a href="https://github.com/neovim/neovim/releases/v0.7.0"><img alt="Neovim" src="https://img.shields.io/badge/Neovim-v0.7+-57A143?logo=neovim&logoColor=57A143" /></a>
+<a href="https://github.com/linrongbin16/commons.nvim"><img alt="commons.nvim" src="https://custom-icon-badges.demolab.com/badge/Powered_by-commons.nvim-teal?logo=heart&logoColor=fff&labelColor=deeppink" /></a>
 <a href="https://luarocks.org/modules/linrongbin16/fzfx.nvim"><img alt="luarocks" src="https://custom-icon-badges.demolab.com/luarocks/v/linrongbin16/fzfx.nvim?label=LuaRocks&labelColor=063B70&logo=tag&logoColor=fff&color=008B8B" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?label=GitHub%20CI&labelColor=181717&logo=github&logoColor=fff" /></a>
 <a href="https://app.codecov.io/github/linrongbin16/fzfx.nvim"><img alt="codecov" src="https://img.shields.io/codecov/c/github/linrongbin16/fzfx.nvim?logo=codecov&logoColor=F01F7A&label=Codecov" /></a>
@@ -1365,7 +1366,7 @@ To help easier customizing/integrating, fzfx provides below builtin API collecti
 - `fzfx.helper`: Middle-level line-oriented helpers for parsing and rendering queries/lines required in all scenarios, a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 - `fzfx.lib`: Low-level fundamental infrastructures: cross-platform (Windows/Unix/Linux) and different Neovim versions API, file IO & paths, json, strings, numbers, lua tables/lists, colors, running child process & stdio, etc.
 
-The `helper` and `lib` APIs are supposed to be stable and tested (except those starting with underline `_`, which are exposed for unit tests), please see [REFERENCES.md](/REFERENCES.md) for details.
+The `helper` and `lib` APIs are supposed to be stable and tested (except those starting with underline `_`, which are exposed for unit tests), please see [API References](https://linrongbin16.github.io/fzfx.nvim) for details.
 
 ## 🍀 Credit
 

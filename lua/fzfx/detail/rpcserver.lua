@@ -58,7 +58,7 @@ end
 function RpcServer:register(callback)
   log.ensure(
     type(callback) == "function",
-    "|fzfx.rpcserver - RpcServer:register| callback f(%s) must be function! %s",
+    "|RpcServer:register| callback f(%s) must be function! %s",
     type(callback),
     vim.inspect(callback)
   )
@@ -72,14 +72,14 @@ end
 function RpcServer:unregister(registry_id)
   log.ensure(
     type(registry_id) == "string",
-    "|fzfx.rpcserver - RpcServer:unregister| registry_id(%s) must be string! %s",
+    "|RpcServer:unregister| registry_id(%s) must be string! %s",
     type(registry_id),
     vim.inspect(registry_id)
   )
   local callback = self.registry[registry_id]
   log.ensure(
     type(callback) == "function",
-    "|fzfx.rpcserver - RpcServer:unregister| registered callback(%s) must be function! %s",
+    "|RpcServer:unregister| registered callback(%s) must be function! %s",
     type(callback),
     vim.inspect(callback)
   )
@@ -92,14 +92,14 @@ end
 function RpcServer:get(registry_id)
   log.ensure(
     type(registry_id) == "string",
-    "|fzfx.rpcserver - RpcServer:get| registry_id(%s) must be string ! %s",
+    "|RpcServer:get| registry_id(%s) must be string ! %s",
     type(registry_id),
     vim.inspect(registry_id)
   )
   local callback = self.registry[registry_id]
   log.ensure(
     type(callback) == "function",
-    "|fzfx.rpcserver - RpcServer:get| registered callback(%s) must be function! %s",
+    "|RpcServer:get| registered callback(%s) must be function! %s",
     type(callback),
     vim.inspect(callback)
   )

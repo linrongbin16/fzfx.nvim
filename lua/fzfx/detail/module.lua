@@ -60,7 +60,7 @@ M.setup = function()
   -- log.debug("|fzfx.module - setup| self path:%s", self_path)
   log.ensure(
     type(self_path) == "string" and string.len(self_path) > 0,
-    "|fzfx.module - setup| failed to find 'fzfx.nvim' plugin!"
+    "|setup| failed to find 'fzfx.nvim' plugin!"
   )
   vim.env._FZFX_NVIM_SELF_PATH = self_path
 end

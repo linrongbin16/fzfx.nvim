@@ -215,7 +215,7 @@ function ProviderSwitch:provide(query, context)
     log.ensure(
       provider_config.provider == nil
         or type(provider_config.provider) == "string",
-      "|fzfx.general - ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
+      "|ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
       vim.inspect(self),
       vim.inspect(provider_config)
     )
@@ -228,7 +228,7 @@ function ProviderSwitch:provide(query, context)
     log.ensure(
       provider_config.provider == nil
         or type(provider_config.provider) == "table",
-      "|fzfx.general - ProviderSwitch:provide| plain_list provider must be string or nil! self:%s, provider:%s",
+      "|ProviderSwitch:provide| plain_list provider must be string or nil! self:%s, provider:%s",
       vim.inspect(self),
       vim.inspect(provider_config)
     )
@@ -237,7 +237,7 @@ function ProviderSwitch:provide(query, context)
     else
       fs.writefile(
         self.resultfile,
-        jsons.encode(provider_config.provider) --[[@as string]]
+        jsons.encode(provider_config.provider --[[@as table]]) --[[@as string]]
       )
     end
   elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
@@ -250,7 +250,7 @@ function ProviderSwitch:provide(query, context)
     -- )
     log.ensure(
       result == nil or type(result) == "string",
-      "|fzfx.general - ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
+      "|ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
       vim.inspect(self),
       vim.inspect(result)
     )
@@ -281,7 +281,7 @@ function ProviderSwitch:provide(query, context)
     -- )
     log.ensure(
       result == nil or type(result) == "table",
-      "|fzfx.general - ProviderSwitch:provide| command_list provider result must be string! self:%s, result:%s",
+      "|ProviderSwitch:provide| command_list provider result must be string! self:%s, result:%s",
       vim.inspect(self),
       vim.inspect(result)
     )
@@ -323,7 +323,7 @@ function ProviderSwitch:provide(query, context)
     else
       log.ensure(
         result == nil or type(result) == "table",
-        "|fzfx.general - ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
+        "|ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
         vim.inspect(self),
         vim.inspect(result)
       )
@@ -335,7 +335,7 @@ function ProviderSwitch:provide(query, context)
     end
   else
     log.throw(
-      "|fzfx.general - ProviderSwitch:provide| invalid provider type! %s",
+      "|ProviderSwitch:provide| invalid provider type! %s",
       vim.inspect(self)
     )
   end
@@ -458,7 +458,7 @@ function PreviewerSwitch:preview(line, context)
     else
       log.ensure(
         result == nil or type(result) == "string",
-        "|fzfx.general - PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
+        "|PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
         vim.inspect(self),
         vim.inspect(result)
       )
@@ -488,14 +488,17 @@ function PreviewerSwitch:preview(line, context)
     else
       log.ensure(
         result == nil or type(result) == "table",
-        "|fzfx.general - PreviewerSwitch:preview| command_list previewer result must be string! self:%s, result:%s",
+        "|PreviewerSwitch:preview| command_list previewer result must be string! self:%s, result:%s",
         vim.inspect(self),
         vim.inspect(result)
       )
       if tbls.tbl_empty(result) then
         fs.writefile(self.resultfile, "")
       else
-        fs.writefile(self.resultfile, jsons.encode(result) --[[@as string]])
+        fs.writefile(
+          self.resultfile,
+          jsons.encode(result --[[@as table]]) --[[@as string]]
+        )
       end
     end
   elseif previewer_config.previewer_type == PreviewerTypeEnum.LIST then
@@ -518,7 +521,7 @@ function PreviewerSwitch:preview(line, context)
     else
       log.ensure(
         type(result) == "table",
-        "|fzfx.general - PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
+        "|PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
         vim.inspect(self),
         vim.inspect(result)
       )
@@ -526,7 +529,7 @@ function PreviewerSwitch:preview(line, context)
     end
   else
     log.throw(
-      "|fzfx.general - PreviewerSwitch:preview| invalid previewer type! %s",
+      "|PreviewerSwitch:preview| invalid previewer type! %s",
       vim.inspect(self)
     )
   end
@@ -622,7 +625,7 @@ function PreviewerSwitch:preview_label(line, context)
         and previewer_config.previewer_label(line, context)
       or previewer_config.previewer_label
     log.debug(
-      "|fzfx.general - PreviewerSwitch:preview_label| line:%s, label:%s",
+      "|PreviewerSwitch:preview_label| line:%s, label:%s",
       vim.inspect(line),
       vim.inspect(label)
     )
@@ -750,7 +753,7 @@ end
 function HeaderSwitch:get_header(pipeline)
   log.ensure(
     type(self.headers[pipeline]) == "table",
-    "|fzfx.general - HeaderSwitch:get_header| pipeline (%s) must exists in headers! %s",
+    "|HeaderSwitch:get_header| pipeline (%s) must exists in headers! %s",
     vim.inspect(pipeline),
     vim.inspect(self)
   )
@@ -868,10 +871,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch.resultfile,
     nvims.shellescape(query)
   )
-  log.debug(
-    "|fzfx.general - general| query_command:%s",
-    vim.inspect(query_command)
-  )
+  log.debug("|general| query_command:%s", vim.inspect(query_command))
   local reload_query_command = string.format(
     "%s %s %s %s {q}",
     fzf_helpers.make_lua_command("general", "provider.lua"),
@@ -880,7 +880,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch.resultfile
   )
   log.debug(
-    "|fzfx.general - general| reload_query_command:%s",
+    "|general| reload_query_command:%s",
     vim.inspect(reload_query_command)
   )
   local preview_command = string.format(
@@ -890,10 +890,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     previewer_switch.metafile,
     previewer_switch.resultfile
   )
-  log.debug(
-    "|fzfx.general - general| preview_command:%s",
-    vim.inspect(preview_command)
-  )
+  log.debug("|general| preview_command:%s", vim.inspect(preview_command))
 
   local fzf_opts = {
     "--print-query",
@@ -1063,10 +1060,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           query = last_query,
         }) --[[@as string]]
         fs.asyncwritefile(last_query_cache, content, function(bytes)
-          log.debug(
-            "|fzfx.general - general| dump last query:%s",
-            vim.inspect(bytes)
-          )
+          log.debug("|general| dump last query:%s", vim.inspect(bytes))
         end)
       end)
     end

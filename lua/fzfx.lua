@@ -1,12 +1,10 @@
-local log = require("fzfx.lib.log")
-local LogLevels = require("fzfx.lib.log").LogLevels
-local general = require("fzfx.detail.general")
-
 --- @param options fzfx.Options?
 local function setup(options)
   -- configs
   local configs = require("fzfx.config").setup(options)
 
+  local log = require("fzfx.lib.log")
+  local LogLevels = require("fzfx.lib.log").LogLevels
   -- log
   log.setup({
     level = configs.debug.enable and LogLevels.DEBUG or LogLevels.INFO,
@@ -36,6 +34,8 @@ local function setup(options)
   require("fzfx.detail.yanks").setup()
   require("fzfx.detail.fzf_helpers").setup()
   require("fzfx.detail.popup").setup()
+
+  local general = require("fzfx.detail.general")
 
   -- files & buffers
   general.setup("files", configs.files)
@@ -86,7 +86,7 @@ end
 --- @param name string
 --- @param configs fzfx.Options
 local function register(name, configs)
-  general.setup(name, configs)
+  require("fzfx.detail.general").setup(name, configs)
 end
 
 local M = {

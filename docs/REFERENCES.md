@@ -1,109 +1,206 @@
 <!-- markdownlint-disable MD013 MD034 MD033 MD038 MD051 MD040 -->
 
-# References
+# API References
 
-All APIs listed in this doc are recommended for customizing or implementing your own search commands.
+The modules in `fzfx.cfg` are recommended as a reference when you want to customize/implement your own search commands.
 
-The APIs in `helper` and `lib` package are supposed to be stable and tested (except those starting with underline `_`, which are exposed for unit tests).
+The APIs in `fzfx.helper` and `fzfx.lib` are recommended when you implement something in fzfx, they are supposed to be stable and tested.
 
-## Table of contents
+!> Except those APIs start with underline `_`, which are exposed for unit tests.
 
-- [Default Configurations](#default-configurations)
-- [Line-Oriented Helpers](#line-oriented-helpers)
-  - [fzfx.helper.parsers](#fzfxhelperparsers)
-  - [fzfx.helper.actions](#fzfxhelperactions)
-    - [`fd`/`find`](#fd)
-    - [`rg`/`grep`](#rg)
-    - [`git status`](#git-status)
-    - [`git branch`](#git-branch)
-    - [`git log`/`git blame`](#git-log)
-    - [Builtin Vim Commands Renderer](#builtin-vim-commands-renderer)
-    - [Builtin Vim Key Mappings Renderer](#builtin-vim-key-mappings-renderer)
-    - [`eza`/`lsd`/`ls`](#eza)
-  - [fzfx.helper.previewer_labels](#fzfxhelperpreviewer_labels)
-  - [fzfx.helper.previewers](#fzfxhelperpreviewers)
-  - [fzfx.helper.providers](#fzfxhelperproviders)
-  - [fzfx.helper.provider_decorators](#fzfxhelperprovider_decorators)
-  - [fzfx.helper.queries](#fzfxhelperqueries)
-  - [fzfx.helper.prompts](#fzfxhelperprompts)
-- [Fundamental Infrastructures](#fundamental-infrastructures)
-  - [fzfx.lib.colors](#fzfxlibcolors)
-  - [fzfx.lib.commands](#fzfxlibcommands)
-  - [fzfx.lib.constants](#fzfxlibconstants)
-  - [fzfx.lib.deprecations](#fzfxlibdeprecations)
-  - [fzfx.lib.env](#fzfxlibenv)
-  - [fzfx.lib.filesystems](#fzfxlibfilesystems)
-  - [fzfx.lib.jsons](#fzfxlibjsons)
-  - [fzfx.lib.log](#fzfxliblog)
-  - [fzfx.lib.numbers](#fzfxlibnumbers)
-  - [fzfx.lib.nvims](#fzfxlibnvims)
-  - [fzfx.lib.paths](#fzfxlibpaths)
-  - [fzfx.lib.spawn](#fzfxlibspawn)
-  - [fzfx.lib.strings](#fzfxlibstrings)
-  - [fzfx.lib.tables](#fzfxlibtables)
+## Module [`fzfx.cfg`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/cfg)
 
-## [Default Configurations](/lua/fzfx/cfg)
+The `fzfx.cfg` module directly provide configurations for all search commands in this plugin.
 
-The `fzfx.cfg` directly provide configurations for all builtin search commands in this plugin. Easy to read, copy and paste to custom/create other search commands.
+!> Before continue, you may need to read [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) to understand why it's structured this way.
 
-Every commands group contains below components:
+A real-world search command, say `FzfxLiveGrep`, actually defined multiple user commands:
 
-- `commands`: a single `fzfx.CommandConfig` (if there's only 1 command) or a `fzfx.CommandConfig` list (if there's multiple commands).
-- `providers`: a single `fzfx.ProviderConfig` (if there's only 1 provider/data source) or a `fzfx.ProviderConfig` map (if there's multiple providers/data sources).
-- `previewers`: a single `fzfx.PreviewerConfig` (if there's only 1 previewer) or a `fzfx.PreviewerConfig` map (if there's multiple previewers).
-- `actions`: a `fzfx.Action` map.
-- `interactions` (optional): a `fzfx.InterAction` map.
-- `fzf_opts` (optional): a `fzfx.FzfOpt` list.
-- `other_opts` (optional): other special options map.
+- `FzfxLiveGrep(B/U)`
+- `FzfxLiveGrep(B/U)V`
+- `FzfxLiveGrep(B/U)W`
+- `FzfxLiveGrep(B/U)R`
+- `FzfxLiveGrep(B/U)P`
 
-> Please also see: [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command).
+They're all defined in the `fzfx.cfg.live_grep` module, it's called a commands group.
 
-Here are all the builtin search command configurations:
+Each commands group contains below components:
 
-- [buffers](/lua/fzfx/cfg/buffers.lua): implements `FzfxBuffers`, it's a single data source pipeline (has only 1 provider/previewer), and has a **delete buffer** interaction.
-- [file_explorer](/lua/fzfx/cfg/file_explorer.lua): implements `FzfxFileExplorer`, it has two interactions **cd** and **go upper**.
-- [files](/lua/fzfx/cfg/files.lua): implements `FzfxFiles`.
-- [git_blame](/lua/fzfx/cfg/git_blame.lua): implements `FzfxGBlame`, it's also a single data source pipeline (has only 1 provider/previewer).
-- [git_branches](/lua/fzfx/cfg/git_branches.lua): implements `FzfxGBranches`, it has a special context `fzfx.GitBranchesPipelineContext` that provides all **remotes** in git repo (via `git remote`), which is used by downstream `git_checkout` action.
-- [git_commits](/lua/fzfx/cfg/git_commits.lua): implements `FzfxGCommits`.
-- [git_files](/lua/fzfx/cfg/git_files.lua): implements `FzfxGFiles`.
-- [git_live_grep](/lua/fzfx/cfg/git_live_grep.lua): implements `FzfxGLiveGrep`, it enables a special `reload_on_change` (in `other_opts`) option to reload grep on fzf's [change event](https://man.archlinux.org/man/fzf.1.en#AVAILABLE_EVENTS:).
-- [git_status](/lua/fzfx/cfg/git_status.lua): implements `FzfxGStatus`.
-- [live_grep](/lua/fzfx/cfg/live_grep.lua): implements `FzfxLiveGrep`, it also enables the `reload_on_change`.
-- [lsp_definitions](/lua/fzfx/cfg/lsp_definitions.lua): implements `FzfxLspDefinitions`.
-- [lsp_diagnostics](/lua/fzfx/cfg/lsp_diagnostics.lua): implements `FzfxLspDiagnostics`.
-- [lsp_implementations](/lua/fzfx/cfg/lsp_implementations.lua): implements `FzfxLspImplementations`.
-- [lsp_incoming_calls](/lua/fzfx/cfg/lsp_incoming_calls.lua): implements `FzfxLspIncomingCalls`.
-- [lsp_outgoing_calls](/lua/fzfx/cfg/lsp_outgoing_calls.lua): implements `FzfxLspOutgoingCalls`.
-- [lsp_references](/lua/fzfx/cfg/lsp_references.lua): implements `FzfxLspReferences`.
-- [lsp_type_definitions](/lua/fzfx/cfg/lsp_type_definitions.lua): implements `FzfxLspTypeDefinitions`.
-- [vim_commands](/lua/fzfx/cfg/vim_commands.lua): implements `FzfxCommands`, it implements the self-rendering form to directly generate lines for (the left side of) the fzf binary, which is a lot of engineering effort for the providers.
-- [vim_keymaps](/lua/fzfx/cfg/vim_keymaps.lua): implements `FzfxKeyMaps`, it also implements the self-rendering form to directly generate lines for fzf.
+- `commands`
+  - For only 1 command, it's a single [`fzfx.CommandConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/aa5eac85d5e9dcb020cd4237814ec0b305945193/lua/fzfx/schema.lua?plain=1#L133).
+  - For multiple commands, it's a `fzfx.CommandConfig` list .
+- `providers`
+  - For only 1 provider(data source), it's a single [`fzfx.ProviderConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/aa5eac85d5e9dcb020cd4237814ec0b305945193/lua/fzfx/schema.lua?plain=1#L119).
+  - For multiple providers(data sources), it's a `fzfx.ProviderConfig` map.
+- `previewers`
+  - For only 1 previewer, it's a single [`fzfx.PreviewerConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/835b216c36a94e289c166c0f8790e0f56f7a77bb/lua/fzfx/schema.lua?plain=1#L126).
+  - For multiple previewers, it's a `fzfx.PreviewerConfig` map.
+- `actions`: a [`fzfx.Action`](https://github.com/linrongbin16/fzfx.nvim/blob/835b216c36a94e289c166c0f8790e0f56f7a77bb/lua/fzfx/schema.lua?plain=1#L151) map.
+- (Optional) `interactions`: a [`fzfx.InterAction`](https://github.com/linrongbin16/fzfx.nvim/blob/835b216c36a94e289c166c0f8790e0f56f7a77bb/lua/fzfx/schema.lua?plain=1#L150) map.
+- (Optional) `fzf_opts`: a [`fzfx.FzfOpt`](https://github.com/linrongbin16/fzfx.nvim/blob/835b216c36a94e289c166c0f8790e0f56f7a77bb/lua/fzfx/schema.lua?plain=1#L152) list.
+- (Optional) `other_opts`: other special options.
 
-## [Line-Oriented Helpers](/lua/fzfx/helper)
+### [buffers](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/buffers.lua)
 
-The `fzfx.helper` provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios. Since a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
+Defines the `FzfxBuffers` commands group.
+
+?> The data source use same style with `FzfxFiles` commands, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
+
+### [file_explorer](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
+
+Defines the `FzfxFileExplorer` commands group.
+
+### [files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua)
+
+Defines the `FzfxFiles` commands group. The search result from `fd`/`find` looks like:
+
+![FzfxFiles](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/fa9649d4-4007-4e53-ad70-dcfb86612492)
+
+Each line is a file name, prepend with a file type icon (only the the icon option is enabled).
+
+It's implemented with `fd`/`find` utilities:
+
+- [fzfx.helper.parsers.parse_find](#parse_find)
+
+### [git_blame](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_blame.lua)
+
+Defines the `FzfxGBlame` commands group.
+
+### [git_branches](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_branches.lua)
+
+Defines the `FzfxGBranches` commands group.
+
+### [git_commits](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_commits.lua)
+
+Defines the `FzfxGCommits` commands group.
+
+### [git_files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
+
+Defines the `FzfxGFiles` commands group.
+
+?> The data source use same style with `FzfxFiles` commands, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
+
+### [git_live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_live_grep.lua)
+
+Defines the `FzfxGLiveGrep` commands group. The search results from `git grep` looks like:
+
+![FzfxGLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/55faae50-6266-479d-8a69-6462963d9558)
+
+Each line is constructed with **file name** and **line number**, split by colon `":"`, and prepend with file type icon (only when icon is enabled).
+
+?> The `grep` result has no column number, e.g. the 3rd column in `rg` result.
+
+It's implemented with `grep` utilities:
+
+- [fzfx.helper.parsers.parse_grep](#parse_grep)
+
+### [git_status](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_status.lua)
+
+Defines the `FzfxGStatus` commands group.
+
+### [live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/live_grep.lua)
+
+Defines the `FzfxLiveGrep` commands group. The search results from `rg` looks like:
+
+![FzfxLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/170ad807-a0f3-4092-9555-13ae67f38560)
+
+Each line is constructed with **file name**, **line number** and **column number**, split by colon `":"`, and prepend with file type icon (only when icon is enabled).
+
+It's implemented with `rg` or `grep` (when `rg` not found) utilities:
+
+- [fzfx.helper.parsers.parse_rg](#parse_rg)
+- [fzfx.helper.parsers.parse_grep](#parse_grep)
+
+### [lsp_definitions](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_definitions.lua)
+
+Defines the `FzfxLspDefinitions` commands group.
+
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+
+### [lsp_diagnostics](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_diagnostics.lua)
+
+Defines the `FzfxLspDiagnostics` commands group.
+
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+
+### [lsp_implementations](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_implementations.lua)
+
+Defines the `FzfxLspImplementations` commands group.
+
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+
+### [lsp_incoming_calls](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_incoming_calls.lua)
+
+Defines the `FzfxLspIncomingCalls` commands group.
+
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+
+### [lsp_outgoing_calls](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_outgoing_calls.lua)
+
+Defines the `FzfxLspOutgoingCalls` commands group.
+
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+
+### [lsp_references](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_references.lua)
+
+Defines the `FzfxLspReferences` commands group.
+
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+
+### [lsp_type_definitions](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_type_definitions.lua)
+
+Defines the `FzfxLspTypeDefinitions` commands group.
+
+?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
+
+### [vim_commands](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_commands.lua)
+
+Defines the `FzfxCommands` commands group. The self-rendered search result looks like:
+
+![FzfxCommands](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5abe8ccd-e98f-4e15-b827-82d93491d0c0)
+
+Each line is constructed with command **name**, **attributes** and **definition/location**, split by uncertained count of whitespaces `" "`.
+
+It's implemented with `vim_command` utilities:
+
+- [fzfx.helper.parsers.parse_vim_command](#parse_vim_command)
+
+### [vim_keymaps](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_keymaps.lua)
+
+Defines the `FzfxKeyMaps` commands group. The self-rendered search result looks like:
+
+![FzfxKeyMaps](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/970bb0dd-e010-4f52-b972-970cf888be75)
+
+Each line is constructed with key mapping **left hands**, **attributes** and **definition/location**, split by uncertained count of whitespaces `" "`.
+
+It's implemented with `vim_keymap` utilities:
+
+- [fzfx.helper.parsers.parse_vim_keymap](#parse_vim_keymap)
+
+## Module [`fzfx.helper`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper)
+
+The `fzfx.helper` module provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios.
+
+?> Since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 
 ### [fzfx.helper.parsers](/lua/fzfx/helper/parsers.lua)
 
-The `fzfx.helper.parsers` are lower-level (compared with others in `fzfx.helper`) components that help **_previewers_**, **_previewer_labels_**, **_actions_**, etc to understand the lines generated from **_providers_**, e.g. it's the bridge between data producers and consumers.
+The `fzfx.helper.parsers` are lower-level components (compared with others in `fzfx.helper`) that help **previewer** and **action** understand the lines generated from **provider**, e.g. it's the bridge between data producers and consumers.
 
-- `parse_find(line:string):{filename:string}`: parse the line generated by `fd`/`find` or other sources (buffers) follow the same style, remove the prepend icon if it's enabled. used by:
-  - `FzfxFiles`
-  - `FzfxBuffers`
-  - `FzfxGFiles`
-- `parse_rg(line:string):{filename:string,lineno:integer,column:integer?,text:string}`: parse the line generated by `rg` or other sources (lsp, diagnostics) follow the same style, remove the prepend icon if it's enabled. used by:
-  - `FzfxLiveGrep`
-  - `FzfxLspDefinitions`
-  - `FzfxLspTypeDefinitions`
-  - `FzfxLspImplementations`
-  - `FzfxLspReferences`
-  - `FzfxLspDiagnostics`
-  - `FzfxLspIncomingCalls`
-  - `FzfxLspOutgoingCalls`
-- `parse_grep(line:string):{filename:string,lineno:integer,text:string}`: parse the line generated by `grep`/`git grep` or other sources follow the same style, remove the prepend icon if it's enabled. The difference between `parse_grep` and `parse_rg` is grep doesn't have the column number. used by:
-  - `FzfxLiveGrep` (when `rg` not found)
-  - `FzfxGLiveGrep`
+#### [`parse_find`](https://github.com/linrongbin16/fzfx.nvim/blob/e929c19fe5427e8eca41e4d108d7f1ab56adb845/lua/fzfx/helper/parsers.lua?plain=1#L25)
+
+Parse the line generated by `fd`/`find` (or other sources follow the same style), remove the prepend icon if exists.
+
+#### [`parse_rg`](https://github.com/linrongbin16/fzfx.nvim/blob/e929c19fe5427e8eca41e4d108d7f1ab56adb845/lua/fzfx/helper/parsers.lua?plain=1#L92)
+
+Parse the line generated by `rg` (or other sources follow the same style), remove the prepend icon if exists.
+
+#### [`parse_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/e929c19fe5427e8eca41e4d108d7f1ab56adb845/lua/fzfx/helper/parsers.lua?plain=1#L47)
+
+Parse the line generated by `grep`/`git grep` (or other sources follow the same style), remove the prepend icon if exists.
+
+?> The result from `grep` doesn't have column number (the 3rd column).
+
 - `parse_git_status(line:string):{filename:string}`: parse the line generated by `git status` or other sources follow the same style, remove the prepend git symbol. used by:
   - `FzfxGStatus`
 - `parse_git_branch(line:string, context:fzfx.GitBranchesPipelineContext):{local_branch:string,remote_branch:string}`: parse the line generated by `git branch (-r)` or other sources follow the same style. used by:
@@ -140,7 +237,7 @@ The `fd`, `find`, `git ls-files` generated file names, or other sources (buffers
 - `edit_find(lines:string[], context:fzfx.PipelineContext):nil`: use `edit` command to open selected files on `fd`, `find`, `git ls-files` results.
 - `setqflist_find(lines:string[], context:fzfx.PipelineContext):nil`: use `setqflist` command to send selected lines (files) to qflist.
 
-#### `rg`, `grep`
+#### `rg`/`grep`
 
 The `rg`, `grep`, `git grep` generated locations (file name with line/column number), or other sources (lsp, diagnostics) follow the same style, used by `FzfxLiveGrep`, `FzfxGLiveGrep`, `FzfxLspDiagnostics`, `FzfxLspDefinitions`, `FzfxLspTypeDefinitions`, `FzfxLspReferences`, `FzfxLspImplementations`, `FzfxLspIncomingCalls`, `FzfxLspOutgoingCalls`. they look like:
 
@@ -183,7 +280,7 @@ The `git branch (-r/-a)` generated git branches, used by `FzfxGBranches`. they l
 
 - `git_checkout(lines:string[], fzfx.GitBranchesPipelineContext):nil`: use `git checkout` shell command to checkout selected branch on `git branch` results.
 
-#### `git log`, `git blame`
+#### `git log`/`git blame`
 
 The `git log --short`, `git blame` generated git commits, used by `FzfxGCommits`, `FzfxGBlame`, they look like:
 
@@ -223,7 +320,7 @@ Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Loca
 
 - `feed_vim_key(lines:string[], context:fzfx.VimKeyMapsPipelineContext):nil`: execute selected keys.
 
-#### `eza`, `lsd`, `ls`
+#### `eza`/`lsd`/`ls`
 
 The `lsd`, `eza`, `ls` generated file names/directories, they look like:
 
@@ -325,17 +422,13 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 - `confirm_discard_modified(bufnr:integer, callback:fun():nil):nil`: popup a prompt to ask user confirm whether to discard current buffer's modifications (only if there's any), invoke `callback` if user confirm, do nothing if user cancel.
 
-## [Fundamental Infrastructures](/lua/fzfx/lib)
+## [`fzfx.lib`](/lua/fzfx/lib) Module
 
-The `fzfx.lib` provides fundamental infrastructures for whole plugin, they're usually handling below issues:
-
-- Cross platforms compatibility between Windows and Linux/macOS.
-- Neovim APIs compatibility between v0.7-nightly versions.
-- Files IO & paths.
-- Json and lua table conversion.
-- Some constants, strings, numbers, lua table and list data structures.
-- Environment variables.
-- Command line running, e.g. child process.
+> [!NOTE]
+>
+> Most of the `fzfx.lib` is migrate to the [commons](https://github.com/linrongbin16/commons.nvim) lua library.
+>
+> Please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/) for better API references.
 
 ### [fzfx.lib.colors](/lua/fzfx/lib/colors.lua)
 

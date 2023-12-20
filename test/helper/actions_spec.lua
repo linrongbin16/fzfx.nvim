@@ -26,7 +26,7 @@ describe("helper.actions", function()
   local actions = require("fzfx.helper.actions")
   local parsers = require("fzfx.helper.parsers")
 
-  require("fzfx.config").setup()
+  require("fzfx").setup()
 
   describe("[nop]", function()
     it("test", function()
