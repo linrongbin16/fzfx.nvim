@@ -50,6 +50,8 @@ Defines the `FzfxBuffers` commands group.
 
 Defines the `FzfxFileExplorer` commands group.
 
+![FzfxFileExplorer](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5e402a20-6c96-43a1-a463-345cd2bd86c7)
+
 ### [files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua)
 
 Defines the `FzfxFiles` commands group. The search result from `fd`/`find` looks like:
