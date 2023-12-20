@@ -27,7 +27,7 @@
 
         plugins: [
           function (hook, vm) {
-            hook.beforeEach(function (html, next) {
+            hook.beforeEach(function (html) {
               if (/githubusercontent\.com/.test(vm.route.file)) {
                 url = vm.route.file
                   .replace("raw.githubusercontent.com", "github.com")
@@ -37,12 +37,14 @@
                   "https://github.com/linrongbin16/fzfx.nvim/blob/main/docs/" +
                   vm.route.file;
               }
-              const editHtml = "[:memo: Edit Document](" + url + ")\n";
-              const powerByHtml =
-                "\n\n----\n\n" +
-                '<a href="https://docsify.js.org" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">Powered by <span style="color:#42b983">docsify</span>.</a>';
+              var editHtml = "[:memo: Edit Document](" + url + ")\n";
 
-              return editHtml + html + powerByHtml;
+              return (
+                editHtml +
+                html +
+                "\n\n----\n\n" +
+                '<a href="https://docsify.js.org" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">Powered by <span style="color:#42b983">docsify</span>.</a>'
+              );
             });
           },
         ],
