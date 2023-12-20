@@ -132,6 +132,8 @@ It's implemented with `grep` utilities:
 
 Defines the `FzfxGStatus` commands group.
 
+![FzfxGStatus](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/31946271-e0f3-406f-af93-2ec88108e189)
+
 ### [live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/live_grep.lua)
 
 Defines the `FzfxLiveGrep` commands group. The search results from `rg` looks like:
