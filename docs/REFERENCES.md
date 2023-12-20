@@ -76,6 +76,8 @@ It's implemented with `fd`/`find` utilities:
 
 Defines the `FzfxGBlame` commands group.
 
+![FzfxGBlame](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b31603d4-07d5-4323-a664-60065fa3484b)
+
 ### [git_branches](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_branches.lua)
 
 Defines the `FzfxGBranches` commands group.
