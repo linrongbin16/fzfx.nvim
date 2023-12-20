@@ -1363,10 +1363,10 @@ For detailed explanation of each components, please see [A General Schema for Cr
 To help easier customizing/integrating, fzfx provides below builtin modules and APIs:
 
 - `fzfx.cfg`: Top-level configurations, e.g. directly create the `FzfxFiles`, `FzfxLiveGrep`, etc search commands. Easy to read and learn all the components used in those commands, as well as easy to copy and paste.
-- `fzfx.helper`: Middle-level line-oriented helpers for parsing and rendering queries/lines required in all scenarios, a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
-- `fzfx.lib`: Low-level fundamental infrastructures: cross-platform (Windows/Unix/Linux) and different Neovim versions API, file IO & paths, json, strings, numbers, lua tables/lists, colors, running child process & stdio, etc.
+- `fzfx.helper`: Line-oriented helper utilities for parsing and rendering user queries and lines, since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
+- `fzfx.lib`: Low-level fundamental infrastructures: lua tables, strings, numbers utilities, terminal color rendering, json and other things.
 
-The `helper` and `lib` APIs are supposed to be stable and tested (except those starting with underline `_`, which are exposed for unit tests), please see [API References](https://linrongbin16.github.io/fzfx.nvim) for details.
+Please see [API References](https://linrongbin16.github.io/fzfx.nvim) for more details.
 
 ## 🍀 Credit
 
