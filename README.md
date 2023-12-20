@@ -1352,7 +1352,7 @@ require("fzfx").setup({
 
 You can also use the `require("fzfx").register("ls", {...})` api to do that.
 
-For detailed explanation of each components, please see [A General Schema for Creating FZF Command](https://github.com/linrongbin16/fzfx.nvim/wiki/A-General-Schema-for-Creating-FZF-Command) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
+For detailed explanation of each components, please see [A General Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema.md) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
 ### API References
 
