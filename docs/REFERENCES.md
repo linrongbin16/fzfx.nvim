@@ -86,7 +86,7 @@ Defines the `FzfxGLiveGrep` commands group. The search results from `git grep` l
 
 ![FzfxGLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/55faae50-6266-479d-8a69-6462963d9558)
 
-Each line is constructed with **file name** and **line number**, split by colon `:`, and prepend with file type icon (only when icon is enabled).
+Each line is constructed with **file name** and **line number**, split by colon `":"`, and prepend with file type icon (only when icon is enabled).
 
 ?> The `grep` result has no column number, e.g. the 3rd column in `rg` result.
 
@@ -104,7 +104,7 @@ Defines the `FzfxLiveGrep` commands group. The search results from `rg` looks li
 
 ![FzfxLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/170ad807-a0f3-4092-9555-13ae67f38560)
 
-Each line is constructed with **file name**, **line number** and **column number**, split by colon `:`, and prepend with file type icon (only when icon is enabled).
+Each line is constructed with **file name**, **line number** and **column number**, split by colon `":"`, and prepend with file type icon (only when icon is enabled).
 
 It's implemented with `rg` or `grep` (when `rg` not found) utilities:
 
@@ -155,13 +155,25 @@ Defines the `FzfxLspTypeDefinitions` commands group.
 
 ### [vim_commands](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_commands.lua)
 
-Defines the `FzfxCommands` commands group.
+Defines the `FzfxCommands` commands group. The self-rendered search result looks like:
 
 ![FzfxCommands](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5abe8ccd-e98f-4e15-b827-82d93491d0c0)
 
+Each line is constructed with command **name**, **attributes** and **definition/location**, split by uncertained count of whitespaces `" "`.
+
+It's implemented with `vim_command` utilities:
+
+- [fzfx.helper.parsers.parse_vim_command](#parse_vim_command)
+
 ### [vim_keymaps](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_keymaps.lua)
 
-Defines the `FzfxKeyMaps` commands group.
+Defines the `FzfxKeyMaps` commands group. The self-rendered search result looks like:
+
+Each line is constructed with key mapping **left hands**, **attributes** and **definition/location**, split by uncertained count of whitespaces `" "`.
+
+It's implemented with `vim_keymap` utilities:
+
+- [fzfx.helper.parsers.parse_vim_keymap](#parse_vim_keymap)
 
 ## Module [`fzfx.helper`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper)
 
