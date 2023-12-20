@@ -1362,7 +1362,7 @@ For detailed explanation of each components, please see [A General Schema for Cr
 
 To help easier customizing/integrating, fzfx provides below builtin API collections:
 
-- `fzfx.cfg`: Top-level user commands configurations, e.g. the configurations directly create the `FzfxFiles`, `FzfxLiveGrep`, etc. Easy to read and learn all the components used in constructing those commands, as well as easy to copy and paste.
+- `fzfx.cfg`: Top-level configurations, e.g. directly create the `FzfxFiles`, `FzfxLiveGrep`, etc search commands. Easy to read and learn all the components used in those commands, as well as easy to copy and paste.
 - `fzfx.helper`: Middle-level line-oriented helpers for parsing and rendering queries/lines required in all scenarios, a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 - `fzfx.lib`: Low-level fundamental infrastructures: cross-platform (Windows/Unix/Linux) and different Neovim versions API, file IO & paths, json, strings, numbers, lua tables/lists, colors, running child process & stdio, etc.
 
