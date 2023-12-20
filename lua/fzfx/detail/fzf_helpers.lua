@@ -1,5 +1,5 @@
 local paths = require("fzfx.lib.paths")
-local colors = require("fzfx.lib.colors")
+local termcolors = require("fzfx.commons.termcolors")
 local jsons = require("fzfx.lib.jsons")
 local fs = require("fzfx.lib.filesystems")
 local strs = require("fzfx.lib.strings")
@@ -154,7 +154,7 @@ local function _generate_fzf_color_opts()
   local builder = {}
   for name, opts in pairs(fzf_colors) do
     for i = 2, #opts do
-      local c = colors.hlcode(opts[1], opts[i])
+      local c = termcolors.retrieve(opts[1], opts[i])
       if type(c) == "string" and string.len(c) > 0 then
         table.insert(builder, string.format("%s:%s", name:gsub("_", "%-"), c))
         break
