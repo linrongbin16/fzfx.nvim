@@ -16,10 +16,6 @@ FZF-based fuzzy finder running on a dynamic engine that parsing user query and s
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403
 
-<!-- gif
-![FzfxLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/be8a7a52-c254-42ff-ad6d-93ba637c4f09)
--->
-
 > Search `fzfx` with rg's `-g *spec.lua` option.
 
 ## 📖 Table of contents
@@ -1360,13 +1356,15 @@ For detailed explanation of each components, please see [A General Schema for Cr
 
 ### API References
 
-To help easier customizing/integrating, fzfx provides below builtin API collections:
+To help easier customizing/integrating, fzfx provides below builtin modules and APIs:
 
-- `fzfx.cfg`: Top-level user commands configurations, e.g. the configurations directly create the `FzfxFiles`, `FzfxLiveGrep`, etc. Easy to read and learn all the components used in constructing those commands, as well as easy to copy and paste.
-- `fzfx.helper`: Middle-level line-oriented helpers for parsing and rendering queries/lines required in all scenarios, a search command is actually all about the lines in (both left and right side of) fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
-- `fzfx.lib`: Low-level fundamental infrastructures: cross-platform (Windows/Unix/Linux) and different Neovim versions API, file IO & paths, json, strings, numbers, lua tables/lists, colors, running child process & stdio, etc.
+- `fzfx.cfg`: Top-level configurations, e.g. directly create the `FzfxFiles`, `FzfxLiveGrep`, etc search commands. Easy to read and learn all the components used in those commands, as well as easy to copy and paste.
+- `fzfx.helper`: Line-oriented helper utilities for parsing and rendering user queries and lines, since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
+- `fzfx.lib`: Low-level fundamental infrastructures, fzfx use the [commons](https://github.com/linrongbin16/commons.nvim) lua library for most of the common utilities, please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/).
 
-The `helper` and `lib` APIs are supposed to be stable and tested (except those starting with underline `_`, which are exposed for unit tests), please see [API References](https://linrongbin16.github.io/fzfx.nvim) for details.
+  > The **commons** lua library was originally part of the **fzfx.lib** modules, since I found they're so commonly useful that I need them for most of my Neovim plugins, I extracted them from **fzfx.lib** and come up with this **commons** lua library.
+
+Please see [API References](https://linrongbin16.github.io/fzfx.nvim) for more details.
 
 ## 🍀 Credit
 

@@ -1,5 +1,5 @@
 local consts = require("fzfx.lib.constants")
-local colors = require("fzfx.lib.colors")
+local termcolors = require("fzfx.commons.termcolors")
 local env = require("fzfx.lib.env")
 local paths = require("fzfx.lib.paths")
 local jsons = require("fzfx.lib.jsons")
@@ -60,9 +60,6 @@ end
 --- @class fzfx.ProviderMetaOpts
 --- @field pipeline fzfx.PipelineName
 --- @field provider_type fzfx.ProviderType
---- @field prepend_icon_by_ft boolean?  -- deprecated
---- @field prepend_icon_path_delimiter string?  -- deprecated
---- @field prepend_icon_path_position integer?  -- deprecated
 --- @field provider_decorator fzfx.ProviderDecorator?
 
 --- @param pipeline string
@@ -73,26 +70,6 @@ local function make_provider_meta_opts(pipeline, provider_config)
     pipeline = pipeline,
     provider_type = provider_config.provider_type,
   }
-
-  -- prepend_icon_by_ft
-  if tbls.tbl_get(provider_config, "line_opts.prepend_icon_by_ft") then
-    o.prepend_icon_by_ft = provider_config.line_opts.prepend_icon_by_ft
-  end
-
-  -- prepend_icon_path_delimiter
-  if
-    tbls.tbl_get(provider_config, "line_opts.prepend_icon_path_delimiter")
-    and strs.not_empty(provider_config.line_opts.prepend_icon_path_delimiter)
-  then
-    o.prepend_icon_path_delimiter =
-      provider_config.line_opts.prepend_icon_path_delimiter
-  end
-
-  -- prepend_icon_path_position
-  if tbls.tbl_get(provider_config, "line_opts.prepend_icon_path_position") then
-    o.prepend_icon_path_position =
-      provider_config.line_opts.prepend_icon_path_position
-  end
 
   -- provider_decorator
   if tbls.tbl_get(provider_config, "provider_decorator") then
@@ -672,12 +649,9 @@ local HeaderSwitch = {}
 --- @param action string
 --- @return string
 local function _render_help(name, action)
-  return colors.render(
-    colors.magenta,
-    "Special",
-    "%s to " .. table.concat(strs.split(name, "_"), " "),
-    string.upper(action)
-  )
+  return termcolors.magenta(string.upper(action), "Special")
+    .. " to "
+    .. table.concat(strs.split(name, "_"), " ")
 end
 
 --- @param excludes string[]|nil

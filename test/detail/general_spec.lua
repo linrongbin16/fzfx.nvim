@@ -472,35 +472,22 @@ describe("detail.general", function()
       assert_eq(type(actual1), "table")
       assert_eq(actual1.pipeline, "test1")
       assert_eq(actual1.provider_type, "command")
-      assert_true(actual1.prepend_icon_by_ft == nil)
       local actual2 = general.make_provider_meta_opts("test2", {
         key = "test2",
         provider_type = "command_list",
-        line_opts = {
-          prepend_icon_by_ft = false,
-        },
       })
       assert_eq(type(actual2), "table")
       assert_eq(actual2.pipeline, "test2")
       assert_eq(actual1.provider_type, "command")
-      assert_falsy(actual2.prepend_icon_by_ft)
     end)
     it("makes with icon", function()
       local actual = general.make_provider_meta_opts("test3", {
         key = "test3",
         provider_type = "list",
-        line_opts = {
-          prepend_icon_by_ft = true,
-          prepend_icon_path_delimiter = ":",
-          prepend_icon_path_position = 1,
-        },
       })
       assert_eq(type(actual), "table")
       assert_eq(actual.pipeline, "test3")
       assert_eq(actual.provider_type, "list")
-      assert_true(actual.prepend_icon_by_ft)
-      assert_eq(actual.prepend_icon_path_delimiter, ":")
-      assert_eq(actual.prepend_icon_path_position, 1)
     end)
   end)
   describe("[make_previewer_meta_opts]", function()

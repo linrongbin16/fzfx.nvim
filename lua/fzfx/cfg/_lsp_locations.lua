@@ -2,7 +2,7 @@ local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
 local cmds = require("fzfx.lib.commands")
-local colors = require("fzfx.lib.colors")
+local termcolors = require("fzfx.commons.termcolors")
 local paths = require("fzfx.lib.paths")
 local fs = require("fzfx.lib.filesystems")
 local tbls = require("fzfx.lib.tables")
@@ -118,8 +118,11 @@ M._render_lsp_location_line = function(loc)
   if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
     return nil
   end
-  local loc_line =
-    M._colorize_lsp_range(filelines[range.start.line + 1], range, colors.red)
+  local loc_line = M._colorize_lsp_range(
+    filelines[range.start.line + 1],
+    range,
+    termcolors.red
+  )
   log.debug(
     "|_render_lsp_location_line| range:%s, loc_line:%s",
     vim.inspect(range),
@@ -128,7 +131,7 @@ M._render_lsp_location_line = function(loc)
   local line = string.format(
     "%s:%s:%s:%s",
     providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
-    colors.green(tostring(range.start.line + 1)),
+    termcolors.green(tostring(range.start.line + 1)),
     tostring(range.start.character + 1),
     loc_line
   )
@@ -310,7 +313,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   local lines = {}
   for i, r in ipairs(ranges) do
     local item_line =
-      M._colorize_lsp_range(filelines[r.start.line + 1], r, colors.red)
+      M._colorize_lsp_range(filelines[r.start.line + 1], r, termcolors.red)
     log.debug(
       "|_render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
       vim.inspect(i),
@@ -320,7 +323,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
     local line = string.format(
       "%s:%s:%s:%s",
       providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
-      colors.green(tostring(r.start.line + 1)),
+      termcolors.green(tostring(r.start.line + 1)),
       tostring(r.start.character + 1),
       item_line
     )

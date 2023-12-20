@@ -17,7 +17,6 @@ describe("helper.previewers", function()
   local consts = require("fzfx.lib.constants")
   local strs = require("fzfx.lib.strings")
   local paths = require("fzfx.lib.paths")
-  local colors = require("fzfx.lib.colors")
 
   local previewers = require("fzfx.helper.previewers")
   local conf = require("fzfx.config")

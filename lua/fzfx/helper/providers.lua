@@ -2,7 +2,7 @@ local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")
 local cmds = require("fzfx.lib.commands")
-local colors = require("fzfx.lib.colors")
+local termcolors = require("fzfx.commons.termcolors")
 local paths = require("fzfx.lib.paths")
 local fs = require("fzfx.lib.filesystems")
 local tbls = require("fzfx.lib.tables")
@@ -130,7 +130,8 @@ M.UNRESTRICTED_GREP = {
 -- simulate rg's filepath color, see:
 -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
 -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-M.LSP_FILENAME_COLOR = consts.IS_WINDOWS and colors.cyan or colors.magenta
+M.LSP_FILENAME_COLOR = consts.IS_WINDOWS and termcolors.cyan
+  or termcolors.magenta
 
 -- lsp }
 

@@ -48,7 +48,17 @@ Defines the `FzfxBuffers` commands group.
 
 ### [file_explorer](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
 
-Defines the `FzfxFileExplorer` commands group.
+Defines the `FzfxFileExplorer` commands group. The search result from `ls`/`lsd`/`eza` looks like:
+
+![FzfxFileExplorer](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5e402a20-6c96-43a1-a463-345cd2bd86c7)
+
+Each line is constructed with multiple file/directory attributes and **file name**, split by uncertained count of whitespaces `" "`.
+
+It's implemented with `ls`/`lsd`/`eza` utilities:
+
+- [fzfx.helper.parsers.parse_ls](#parse_ls)
+- [fzfx.helper.parsers.parse_lsd](#parse_lsd)
+- [fzfx.helper.parsers.parse_eza](#parse_eza)
 
 ### [files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua)
 
@@ -422,49 +432,13 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 - `confirm_discard_modified(bufnr:integer, callback:fun():nil):nil`: popup a prompt to ask user confirm whether to discard current buffer's modifications (only if there's any), invoke `callback` if user confirm, do nothing if user cancel.
 
-## [`fzfx.lib`](/lua/fzfx/lib) Module
+## Module [`fzfx.lib`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib)
 
 > [!NOTE]
 >
-> Most of the `fzfx.lib` is migrate to the [commons](https://github.com/linrongbin16/commons.nvim) lua library.
+> Most of the `fzfx.lib` modules are extracted to the [commons](https://github.com/linrongbin16/commons.nvim) lua library.
 >
-> Please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/) for better API references.
-
-### [fzfx.lib.colors](/lua/fzfx/lib/colors.lua)
-
-- `csi(code:string, fg:boolean):string`: convert ansi color codes (`38`, `42`) or rgb/css color codes (`#FF3810`) into terminal escaped sequences (`\x1b[38m`, `\x1b[0m`). set `fg=true` for foreground, set `fg=false` for background.
-  - for ansi color codes, please see: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#color-codes
-  - for rgb/css color codes, please see: https://www.w3schools.com/tags/ref_colornames.asp
-- `hlcode(attr:"fg"|"bg", hl:string):string?`: retrieve ansi color codes or rgb/css color codes from vim syntax highlighting group (e.g. `Special`, `Constants`, `Number`).
-- `ansi(text:string, name:string, hl:string?):string?`: render `text` with specified color name `name` (e.g. `red`, `green`, `magenta`), if use vim syntax highlighting if `hl` is provided.
-- `erase(text:string):string`: erase colors from terminal escaped contents.
-
-Here are the builtin colors:
-
-- `black(text:string, hl:string?):string`: render `text` with `black`, use vim syntax highlighting if `hl` provided
-- `grey(text:string, hl:string?):string`: same.
-- `silver(text:string, hl:string?):string`: same.
-- `white(text:string, hl:string?):string`: same.
-- `violet(text:string, hl:string?):string`: same.
-- `magenta(text:string, hl:string?):string`: same, or `fuchsia`.
-- `red(text:string, hl:string?):string`: same.
-- `purple(text:string, hl:string?):string`: same.
-- `indigo(text:string, hl:string?):string`: same.
-- `yellow(text:string, hl:string?):string`: same.
-- `gold(text:string, hl:string?):string`: same.
-- `orange(text:string, hl:string?):string`: same.
-- `chocolate(text:string, hl:string?):string`: same.
-- `olive(text:string, hl:string?):string`: same.
-- `green(text:string, hl:string?):string`: same.
-- `lime(text:string, hl:string?):string`: same.
-- `teal(text:string, hl:string?):string`: same.
-- `cyan(text:string, hl:string?):string`: same, or `aqua`.
-- `blue(text:string, hl:string?):string`: same.
-- `navy(text:string, hl:string?):string`: same.
-- `slateblue(text:string, hl:string?):string`: same.
-- `steelblue(text:string, hl:string?):string`: same.
-
-- `render(renderer:fun(text:string, hl:string?):string, hl:string?, fmt:string, ...:any):string`: render parameters `...` with `renderer` and optional `hl`, and format with `fmt`.
+> Please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/).
 
 ### [fzfx.lib.commands](/lua/fzfx/lib/commands.lua)
 

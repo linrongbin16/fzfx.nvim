@@ -1,5 +1,6 @@
 local M = {}
 
+--- @package
 --- @param attr "fg"|"bg"
 --- @param code string
 --- @return string
@@ -109,6 +110,7 @@ M.erase = function(text)
     :gsub("\x1b%[%d+;%d+;%d+m", "")
     :gsub("\x1b%[%d+;%d+m", "")
     :gsub("\x1b%[%d+m", "")
+    :gsub("\x1b%[m", "")
   return result
 end
 
