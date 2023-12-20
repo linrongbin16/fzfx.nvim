@@ -124,16 +124,16 @@ M.previewers = {
 
 --- @param line string
 M._delete_buffer = function(line)
-  local bufs = vim.api.nvim_list_bufs()
+  local bufnrs = vim.api.nvim_list_bufs()
   local filenames = {}
-  for _, bufnr in ipairs(bufs) do
+  for _, bufnr in ipairs(bufnrs) do
     local bufpath = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
     filenames[bufpath] = bufnr
   end
   if strs.not_empty(line) then
     local parsed = parsers_helper.parse_find(line)
     local bufnr = filenames[parsed.filename]
-    if type(bufnr) == "number" and bufs.buf_is_valid(bufnr) then
+    if type(bufnr) == "number" and bufnrs.buf_is_valid(bufnr) then
       vim.api.nvim_buf_delete(bufnr, {})
     end
   end
