@@ -169,6 +169,8 @@ It's implemented with `vim_command` utilities:
 
 Defines the `FzfxKeyMaps` commands group. The self-rendered search result looks like:
 
+![FzfxKeyMaps](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/970bb0dd-e010-4f52-b972-970cf888be75)
+
 Each line is constructed with key mapping **left hands**, **attributes** and **definition/location**, split by uncertained count of whitespaces `" "`.
 
 It's implemented with `vim_keymap` utilities:
