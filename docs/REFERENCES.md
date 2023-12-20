@@ -82,9 +82,15 @@ Defines the `FzfxGBlame` commands group.
 
 Defines the `FzfxGBranches` commands group.
 
+![FzfxGBranches-local](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/1619f4bc-eae5-4489-823b-43ede4890420)
+
+![FzfxGBranches-remote](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/440857b8-ad54-49bf-90bd-df68dde46f3d)
+
 ### [git_commits](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_commits.lua)
 
 Defines the `FzfxGCommits` commands group.
+
+![FzfxGCommits](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/1cac26af-c94c-4606-806e-759ec33ceb9f)
 
 ### [git_files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
 
