@@ -2,7 +2,7 @@ local consts = require("fzfx.lib.constants")
 local paths = require("fzfx.lib.paths")
 local env = require("fzfx.lib.env")
 local strs = require("fzfx.lib.strings")
-local nums = require("fzfx.lib.numbers")
+local numbers = require("fzfx.commons.numbers")
 local fileios = require("fzfx.commons.fileios")
 local tbls = require("fzfx.lib.tables")
 
@@ -57,7 +57,7 @@ M.parse_grep = function(line)
   filename = line:sub(1, first_colon_pos - 1)
 
   local second_colon_pos = strs.find(line, ":", first_colon_pos + 1)
-  if nums.positive(second_colon_pos) then
+  if numbers.gt(second_colon_pos, 0) then
     lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
     text = line:sub(second_colon_pos + 1)
   else
@@ -110,7 +110,7 @@ M.parse_rg = function(line)
   lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
 
   local third_colon_pos = strs.find(line, ":", second_colon_pos + 1)
-  if nums.positive(third_colon_pos) then
+  if numbers.gt(third_colon_pos, 0) then
     column = line:sub(second_colon_pos + 1, third_colon_pos - 1)
     text = line:sub(third_colon_pos + 1)
   else
@@ -249,7 +249,7 @@ M.parse_git_branch = function(line, context)
   --- @return string
   local function _remove_right_arrow(l)
     local arrow_pos = strs.find(l, "->")
-    if nums.positive(arrow_pos) then
+    if numbers.gt(arrow_pos, 0) then
       return vim.trim(l:sub(arrow_pos + 3))
     end
     return l
@@ -288,7 +288,7 @@ end
 M.parse_git_commit = function(line)
   local first_space_pos = strs.find(line, " ")
   assert(
-    nums.positive(first_space_pos),
+    numbers.gt(first_space_pos, 0),
     string.format("failed to parse git commit line:%s", vim.inspect(line))
   )
   return { commit = vim.trim(line:sub(1, first_space_pos - 1)) }
@@ -378,7 +378,7 @@ M._make_parse_ls = function(start_pos)
     for i = 1, start_pos do
       pos = strs.find(line, " ", pos) --[[@as integer]]
       assert(
-        nums.positive(pos),
+        numbers.gt(pos, 0),
         string.format("failed to parse ls/eza/lsd lines:%s", vim.inspect(line))
       )
       while
@@ -420,7 +420,7 @@ M.parse_lsd = M._make_parse_ls(10)
 M.parse_vim_command = function(line, context)
   local first_space_pos = strs.find(line, " ")
   assert(
-    nums.positive(first_space_pos),
+    numbers.gt(first_space_pos, 0),
     string.format("failed to parse vim command lines:%s", vim.inspect(line))
   )
   local command = vim.trim(line:sub(1, first_space_pos - 1))
@@ -476,7 +476,7 @@ end
 M.parse_vim_keymap = function(line, context)
   local first_space_pos = strs.find(line, " ")
   assert(
-    nums.positive(first_space_pos),
+    numbers.gt(first_space_pos, 0),
     string.format("failed to parse vim keymap lines:%s", vim.inspect(line))
   )
   local lhs = vim.trim(line:sub(1, first_space_pos - 1))
