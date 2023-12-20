@@ -6,7 +6,7 @@ The modules in `fzfx.cfg` are recommended as a reference when you want to custom
 
 The APIs in `fzfx.helper` and `fzfx.lib` are recommended when you implement something in fzfx, they are supposed to be stable and tested.
 
-https://github.com/linrongbin16/fzfx.nvim/blob/67a04a92fbca815d53b0f633e7eeff5c123a4f41/lua/fzfx/schema.lua?plain=1#L3-L6
+=permanent-link(https://github.com/linrongbin16/fzfx.nvim/blob/67a04a92fbca815d53b0f633e7eeff5c123a4f41/lua/fzfx/schema.lua?plain=1#L3-L6)
 
 !> Except those APIs start with underline `_`, which are exposed for unit tests.
 
