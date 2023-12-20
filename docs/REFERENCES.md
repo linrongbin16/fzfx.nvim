@@ -76,21 +76,37 @@ It's implemented with `fd`/`find` utilities:
 
 Defines the `FzfxGBlame` commands group.
 
-![FzfxGBlame](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b31603d4-07d5-4323-a664-60065fa3484b)
+?> The data source use same style with `FzfxGCommits` commands, e.g. the `git log` result, see [fzfx.cfg.git_commits](#git_commits).
 
 ### [git_branches](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_branches.lua)
 
-Defines the `FzfxGBranches` commands group.
+Defines the `FzfxGBranches` commands group. The search result from `git branch` looks like:
+
+For local branches:
 
 ![FzfxGBranches-local](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/1619f4bc-eae5-4489-823b-43ede4890420)
 
+For remote branches:
+
 ![FzfxGBranches-remote](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/440857b8-ad54-49bf-90bd-df68dde46f3d)
+
+Each line is a git **branch name**.
+
+It's implemented with `git_branch` utilities:
+
+- [fzfx.helper.parsers.parse_git_branch](#parse_git_branch)
 
 ### [git_commits](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_commits.lua)
 
-Defines the `FzfxGCommits` commands group.
+Defines the `FzfxGCommits` commands group. The search result from `git log` looks like:
 
 ![FzfxGCommits](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/1cac26af-c94c-4606-806e-759ec33ceb9f)
+
+Each line starts with a git **commit number**.
+
+It's implemented with `git_commit` utilities:
+
+- [fzfx.helper.parsers.parse_git_commit](#parse_git_commit)
 
 ### [git_files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
 
