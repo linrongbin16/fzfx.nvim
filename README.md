@@ -1364,7 +1364,9 @@ To help easier customizing/integrating, fzfx provides below builtin modules and 
 
 - `fzfx.cfg`: Top-level configurations, e.g. directly create the `FzfxFiles`, `FzfxLiveGrep`, etc search commands. Easy to read and learn all the components used in those commands, as well as easy to copy and paste.
 - `fzfx.helper`: Line-oriented helper utilities for parsing and rendering user queries and lines, since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
-- `fzfx.lib`: Low-level fundamental infrastructures: lua tables, strings, numbers utilities, terminal color rendering, json and other things.
+- `fzfx.lib`: Low-level fundamental infrastructures, fzfx use the [commons](https://github.com/linrongbin16/commons.nvim) lua library for most of the common utilities, please also refer to [the commons.nvim's Documentation](https://linrongbin16.github.io/commons.nvim/).
+
+  > The **commons** lua library was originally part of the **fzfx.lib** modules, since I found they're so common useful that I need them for most of my Neovim plugins.
 
 Please see [API References](https://linrongbin16.github.io/fzfx.nvim) for more details.
 
