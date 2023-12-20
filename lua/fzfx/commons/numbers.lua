@@ -4,43 +4,43 @@ local M = {}
 M.INT32_MAX = 2147483647
 M.INT32_MIN = -2147483648
 
---- @param a number
---- @param b number
+--- @param a number?
+--- @param b number?
 --- @return boolean
 M.eq = function(a, b)
   return type(a) == "number" and type(b) == "number" and a == b
 end
 
---- @param a number
---- @param b number
+--- @param a number?
+--- @param b number?
 --- @return boolean
 M.ne = function(a, b)
   return not M.eq(a, b)
 end
 
---- @param a number
---- @param b number
+--- @param a number?
+--- @param b number?
 --- @return boolean
 M.gt = function(a, b)
   return type(a) == "number" and type(b) == "number" and a > b
 end
 
---- @param a number
---- @param b number
+--- @param a number?
+--- @param b number?
 --- @return boolean
 M.ge = function(a, b)
   return M.gt(a, b) or M.eq(a, b)
 end
 
---- @param a number
---- @param b number
+--- @param a number?
+--- @param b number?
 --- @return boolean
 M.lt = function(a, b)
   return type(a) == "number" and type(b) == "number" and a < b
 end
 
---- @param a number
---- @param b number
+--- @param a number?
+--- @param b number?
 --- @return boolean
 M.le = function(a, b)
   return M.lt(a, b) or M.eq(a, b)
@@ -51,6 +51,9 @@ end
 --- @param right number?  upper bound, by default INT32_MAX
 --- @return number
 M.bound = function(value, left, right)
+  assert(type(value) == "number")
+  assert(type(left) == "number" or left == nil)
+  assert(type(right) == "number" or right == nil)
   return math.min(math.max(left or M.INT32_MIN, value), right or M.INT32_MAX)
 end
 
