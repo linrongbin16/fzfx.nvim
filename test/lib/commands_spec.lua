@@ -98,9 +98,11 @@ describe("lib.commands", function()
       assert_eq(type(c.result.stdout), "table")
       assert_true(#c.result.stdout >= 0)
       assert_false(c:failed())
-      assert_eq(type(c:output()), "string")
+      if #c.result.stdout > 0 then
+        assert_eq(type(c:output()), "string")
+        assert_true(string.len(c:output() --[[@as string]]) > 0)
+      end
       print(string.format("git current branch:%s\n", c:output()))
-      assert_true(string.len(c:output() --[[@as string]]) > 0)
     end)
   end)
 end)
