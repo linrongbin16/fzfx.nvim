@@ -434,11 +434,7 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 ## Module [`fzfx.lib`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib)
 
-> [!NOTE]
->
-> Most of the `fzfx.lib` modules are extracted to the [commons](https://github.com/linrongbin16/commons.nvim) lua library.
->
-> Please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/).
+?> Most of the `fzfx.lib` modules are extracted to the [commons](https://github.com/linrongbin16/commons.nvim) lua library, please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/).
 
 ### [fzfx.lib.commands](/lua/fzfx/lib/commands.lua)
 
