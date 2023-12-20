@@ -1,6 +1,6 @@
 local paths = require("fzfx.lib.paths")
 local termcolors = require("fzfx.commons.termcolors")
-local jsons = require("fzfx.lib.jsons")
+local jsons = require("fzfx.commons.jsons")
 local fileios = require("fzfx.commons.fileios")
 local strs = require("fzfx.lib.strings")
 local nvims = require("fzfx.lib.nvims")

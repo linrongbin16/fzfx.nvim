@@ -562,11 +562,6 @@ curl
 - `debug_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEBUG_ENABLE=1`.
 - `icon_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEVICONS_PATH=1`.
 
-### [fzfx.lib.jsons](#/lua/fzfx/lib/jsons.lua)
-
-- `encode(t:table?):string?`: convert lua table/list to json string.
-- `decode(s:string?):table?`: convert json string to lua table/list.
-
 ### [fzfx.lib.log](/lua/fzfx/lib/log.lua)
 
 - `debug(fmt:string, ...)`: debug, the `fmt` is formatting messages in C style formatters, e.g. `%d`, `%s`.
