@@ -45,7 +45,7 @@ local function _log(level, msg)
     return
   end
 
-  local msg_lines = require("fzfx.lib.strings").split(msg, "\n")
+  local msg_lines = vim.split(msg, "\n", { plain = true })
   if LoggerContext.console_log then
     for _, line in ipairs(msg_lines) do
       io.write(string.format("%s %s\n", LogLevelNames[level], line))
@@ -117,40 +117,34 @@ end
 --- @param pos integer?
 --- @return string
 M.prepend_path_with_icon = function(line, delimiter, pos)
-  local colors = require("fzfx.lib.colors")
-  local strs = require("fzfx.lib.strings")
+  local termcolors = require("fzfx.commons.termcolors")
+  local strings = require("fzfx.commons.strings")
 
   if devicons == nil then
     return line
   end
   local filename = nil
-  if strs.not_empty(delimiter) and type(pos) == "number" then
-    local splits =
-      require("fzfx.lib.strings").split(line, delimiter --[[@as string]])
+  if strings.not_empty(delimiter) and type(pos) == "number" then
+    local splits = strings.split(line, delimiter --[[@as string]])
     filename = splits[pos]
   else
     filename = line
   end
   -- remove ansi color codes
   -- see: https://stackoverflow.com/a/55324681/4438921
-  if strs.not_empty(filename) then
-    filename = colors.erase(filename)
+  if strings.not_empty(filename) then
+    filename = termcolors.erase(filename)
   end
   local ext = vim.fn.fnamemodify(filename, ":e")
-  local icon, icon_color = devicons.get_icon_color(filename, ext)
+  local icon_text, icon_color = devicons.get_icon_color(filename, ext)
   -- log_debug(
   --     "|fzfx.shell_helpers - render_line_with_icon| ext:%s, icon:%s, icon_color:%s",
   --     vim.inspect(ext),
   --     vim.inspect(icon),
   --     vim.inspect(icon_color)
   -- )
-  if strs.not_empty(icon) then
-    local fmt = colors.csi(icon_color, true)
-    if fmt then
-      return string.format("[%sm%s[0m %s", fmt, icon, line)
-    else
-      return string.format("%s %s", icon, line)
-    end
+  if strings.not_empty(icon_text) then
+    return termcolors.render(icon_text, icon_color)
   else
     if vim.fn.isdirectory(filename) > 0 then
       return string.format("%s %s", FOLDER_ICON, line)
