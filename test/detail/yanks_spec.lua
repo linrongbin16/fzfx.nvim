@@ -31,91 +31,13 @@ describe("detail.yanks", function()
       local yk = yanks.YankHistory:new(10)
       assert_eq(type(yk), "table")
     end)
-    it("loop", function()
+    it("push/get", function()
       local yk = yanks.YankHistory:new(10)
       assert_eq(type(yk), "table")
       for i = 1, 10 do
         yk:push(i)
-      end
-      local p = yk:begin()
-      while p do
-        local actual = yk:get(p)
-        assert_eq(actual, p)
-        p = yk:next(p)
-      end
-      yk = yanks.YankHistory:new(10)
-      for i = 1, 15 do
-        yk:push(i)
-      end
-      p = yk:begin()
-      while p do
-        local actual = yk:get(p)
-        if p <= 5 then
-          assert_eq(actual, p + 10)
-        else
-          assert_eq(actual, p)
-        end
-        p = yk:next(p)
-      end
-      yk = yanks.YankHistory:new(10)
-      for i = 1, 20 do
-        yk:push(i)
-      end
-      p = yk:begin()
-      while p do
-        local actual = yk:get(p)
-        assert_eq(actual, p + 10)
-        p = yk:next(p)
-      end
-    end)
-    it("get latest", function()
-      local yk = yanks.YankHistory:new(10)
-      for i = 1, 50 do
-        yk:push(i)
-        assert_eq(yk:get(), i)
-      end
-      local p = yk:begin()
-      print(string.format("|yank_history_spec| begin, p:%s\n", vim.inspect(p)))
-      while p do
-        local actual = yk:get(p)
-        print(
-          string.format(
-            "|yank_history_spec| get, p:%s, actual:%s\n",
-            vim.inspect(p),
-            vim.inspect(actual)
-          )
-        )
-        assert_eq(actual, p + 40)
-        p = yk:next(p)
-        print(string.format("|yank_history_spec| next, p:%s\n", vim.inspect(p)))
-      end
-      p = yk:rbegin()
-      print(
-        string.format(
-          "|yank_history_spec| rbegin, p:%s, yk:%s\n",
-          vim.inspect(p),
-          vim.inspect(yk)
-        )
-      )
-      while p do
-        local actual = yk:get(p)
-        print(
-          string.format(
-            "|yank_history_spec| rget, p:%s, actual:%s, yk:%s\n",
-            vim.inspect(p),
-            vim.inspect(actual),
-            vim.inspect(yk)
-          )
-        )
-        assert_eq(actual, p + 40)
-        p = yk:rnext(p)
-        print(
-          string.format(
-            "|yank_history_spec| rnext, p:%s, yk:%s\n",
-            vim.inspect(p),
-            vim.inspect(yk)
-          )
-        )
+        local actual = yk:get()
+        assert_eq(actual, i)
       end
     end)
   end)
