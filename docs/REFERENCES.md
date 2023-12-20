@@ -44,7 +44,7 @@ Each commands group contains below components:
 
 Defines the `FzfxBuffers` commands group.
 
-The data source is same with `FzfxFiles` commands, e.g. following the `fd`/`find` style (see [fzfx.cfg.files](#files)).
+?> The data source use same style with `FzfxFiles` commands, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
 
 ### [file_explorer](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
 
@@ -78,7 +78,7 @@ Defines the `FzfxGCommits` commands group.
 
 Defines the `FzfxGFiles` commands group.
 
-The data source is same with `FzfxFiles` commands, e.g. following the `fd`/`find` style (see [fzfx.cfg.files](#files)).
+?> The data source use same style with `FzfxFiles` commands, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
 
 ### [git_live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_live_grep.lua)
 
@@ -86,7 +86,7 @@ Defines the `FzfxGLiveGrep` commands group. The search results from `git grep` l
 
 ![FzfxGLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/55faae50-6266-479d-8a69-6462963d9558)
 
-Each line is constructed with file name and line number, split by colon `:`, and prepend with file type icon (only when icon is enabled).
+Each line is constructed with **file name** and **line number**, split by colon `:`, and prepend with file type icon (only when icon is enabled).
 
 ?> The `grep` result has no column number, e.g. the 3rd column in `rg` result.
 
@@ -104,7 +104,7 @@ Defines the `FzfxLiveGrep` commands group. The search results from `rg` looks li
 
 ![FzfxLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/170ad807-a0f3-4092-9555-13ae67f38560)
 
-Each line is constructed with file name, line number and column number, split by colon `:`, and prepend with file type icon (only when icon is enabled).
+Each line is constructed with **file name**, **line number** and **column number**, split by colon `:`, and prepend with file type icon (only when icon is enabled).
 
 It's implemented with `rg` or `grep` (when `rg` not found) utilities:
 
