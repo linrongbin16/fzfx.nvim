@@ -32,20 +32,16 @@ M._decorate = function(line, delimiter, index)
     filename = colors.erase(filename)
   end
   local ext = vim.fn.fnamemodify(filename, ":e")
-  local icon, icon_color = DEVICONS.get_icon_color(filename, ext)
+  local icon_text, icon_color = DEVICONS.get_icon_color(filename, ext)
   -- log_debug(
   --     "|fzfx.shell_helpers - render_line_with_icon| ext:%s, icon:%s, icon_color:%s",
   --     vim.inspect(ext),
   --     vim.inspect(icon),
   --     vim.inspect(icon_color)
   -- )
-  if strs.not_empty(icon) then
-    local fmt = colors.csi(icon_color, true)
-    if fmt then
-      return string.format("[%sm%s[0m %s", fmt, icon, line)
-    else
-      return string.format("%s %s", icon, line)
-    end
+  if strs.not_empty(icon_text) then
+    local rendered_text = colors.ansi(icon_text, icon_color)
+    return rendered_text .. " " .. line
   else
     if vim.fn.isdirectory(filename) > 0 then
       return string.format("%s %s", vim.env._FZFX_NVIM_FILE_FOLDER_ICON, line)

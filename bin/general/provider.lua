@@ -166,7 +166,7 @@ then
   )
   sp:run()
 elseif metaopts.provider_type == "list" then
-  local reader = fs.FileLineReader:open(resultfile) --[[@as fzfx.FileLineReader ]]
+  local reader = fs.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
   shell_helpers.log_ensure(
     reader ~= nil,
     "failed to open resultfile: %s",
