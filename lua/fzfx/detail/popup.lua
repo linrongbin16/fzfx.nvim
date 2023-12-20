@@ -1,11 +1,43 @@
 local numbers = require("fzfx.commons.numbers")
-local nvims = require("fzfx.lib.nvims")
+local apis = require("fzfx.commons.apis")
+local shells = require("fzfx.lib.shells")
 local fileios = require("fzfx.commons.fileios")
 local log = require("fzfx.lib.log")
 
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
 local conf = require("fzfx.config")
+
+-- WindowOptsContext {
+
+--- @class fzfx.WindowOptsContext
+--- @field bufnr integer
+--- @field tabnr integer
+--- @field winnr integer
+local WindowOptsContext = {}
+
+--- @return fzfx.WindowOptsContext
+function WindowOptsContext:save()
+  local o = {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+  }
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+function WindowOptsContext:restore()
+  if vim.api.nvim_tabpage_is_valid(self.tabnr) then
+    vim.api.nvim_set_current_tabpage(self.tabnr)
+  end
+  if vim.api.nvim_win_is_valid(self.winnr) then
+    vim.api.nvim_set_current_win(self.winnr)
+  end
+end
+
+-- WindowOptsContext }
 
 --- @class fzfx.PopupWindowConfig
 --- @field anchor "NW"|nil
@@ -182,15 +214,15 @@ function PopupWindow:new(win_opts)
   fzf_helpers.fzf_exec()
 
   -- save current window context
-  local window_opts_context = nvims.WindowOptsContext:save()
+  local window_opts_context = WindowOptsContext:save()
 
   --- @type integer
   local bufnr = vim.api.nvim_create_buf(false, true)
   -- setlocal bufhidden=wipe nobuflisted
   -- setft=fzf
-  nvims.set_buf_option(bufnr, "bufhidden", "wipe")
-  nvims.set_buf_option(bufnr, "buflisted", false)
-  nvims.set_buf_option(bufnr, "filetype", "fzf")
+  apis.set_buf_option(bufnr, "bufhidden", "wipe")
+  apis.set_buf_option(bufnr, "buflisted", false)
+  apis.set_buf_option(bufnr, "filetype", "fzf")
 
   local merged_win_opts = vim.tbl_deep_extend(
     "force",
@@ -205,10 +237,10 @@ function PopupWindow:new(win_opts)
   --- setlocal nospell nonumber
   --- set winhighlight='Pmenu:,Normal:Normal'
   --- set colorcolumn=''
-  nvims.set_win_option(winnr, "spell", false)
-  nvims.set_win_option(winnr, "number", false)
-  nvims.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
-  nvims.set_win_option(winnr, "colorcolumn", "")
+  apis.set_win_option(winnr, "spell", false)
+  apis.set_win_option(winnr, "number", false)
+  apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  apis.set_win_option(winnr, "colorcolumn", "")
 
   local o = {
     window_opts_context = window_opts_context,
@@ -409,7 +441,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
   end
 
   -- save shell opts
-  local shell_opts_context = nvims.ShellOptsContext:save()
+  local shell_opts_context = shells.ShellOptsContext:save()
   local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
   local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
   vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()

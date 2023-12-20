@@ -5,10 +5,10 @@ local paths = require("fzfx.lib.paths")
 local jsons = require("fzfx.commons.jsons")
 local strs = require("fzfx.lib.strings")
 local fileios = require("fzfx.commons.fileios")
-local nvims = require("fzfx.lib.nvims")
 local tbls = require("fzfx.lib.tables")
 local spawn = require("fzfx.lib.spawn")
 local log = require("fzfx.lib.log")
+local shells = require("fzfx.lib.shells")
 
 local conf = require("fzfx.config")
 
@@ -849,7 +849,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provide_rpc_id,
     provider_switch.metafile,
     provider_switch.resultfile,
-    nvims.shellescape(query)
+    shells.shellescape(query)
   )
   log.debug("|general| query_command:%s", vim.inspect(query_command))
   local reload_query_command = string.format(

@@ -1,6 +1,6 @@
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
-local nvims = require("fzfx.lib.nvims")
+local shells = require("fzfx.lib.shells")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
 local tbls = require("fzfx.lib.tables")
@@ -179,13 +179,13 @@ M._git_status_previewer = function(line)
     local win_width = previewers_helper.get_preview_window_width()
     return string.format(
       [[git diff %s | delta -n --tabs 4 --width %d]],
-      nvims.shellescape(parsed.filename),
+      shells.shellescape(parsed.filename),
       win_width
     )
   else
     return string.format(
       [[git diff --color=always %s]],
-      nvims.shellescape(parsed.filename)
+      shells.shellescape(parsed.filename)
     )
   end
 end

@@ -576,21 +576,11 @@ curl
 - `throw(fmt:string, ...)`: same with `err`, additionally it invokes `error()` API, which throw an error to user command line, requires user to press `ENTER` to continue.
 - `ensure(condition:boolean, fmt:string, ...)`: throw error to user if `condition` is false.
 
-### [fzfx.lib.nvims](/lua/fzfx/lib/nvims.lua)
+### [fzfx.lib.bufs](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib/bufs.lua)
 
-#### Buffer
+#### `buf_is_valid`
 
-- `get_buf_option(bufnr:integer, name:string):any`: get buffer option.
-- `set_buf_option(bufnr:integer, name:string, value:any):nil`: set buffer option.
-- `buf_is_valid(bufnr:integer):boolean`: check if buffer is valid.
-
-#### Window
-
-- `get_win_option(winnr:integer, name:string):any`: get window option.
-- `set_win_option(winnr:integer, name:string, value:any):nil`: set window option.
-- `WindowOptsContext`: window options context.
-  - `save():WindowOptsContext`: save current windows & tabs and return context.
-  - `restore():nil`: restore previously saved windows & tabs.
+Whether buffer is valid.
 
 #### Shell
 

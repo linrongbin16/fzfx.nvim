@@ -1,6 +1,6 @@
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
-local nvims = require("fzfx.lib.nvims")
+local shells = require("fzfx.lib.shells")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
 local fileios = require("fzfx.commons.fileios")
@@ -137,42 +137,42 @@ M._make_file_explorer_provider = function(ls_args)
       return consts.HAS_ECHO
           and string.format(
             "echo %s && lsd %s --color=always --header -- %s",
-            nvims.shellescape(cwd --[[@as string]]),
+            shells.shellescape(cwd --[[@as string]]),
             ls_args,
-            nvims.shellescape(cwd --[[@as string]])
+            shells.shellescape(cwd --[[@as string]])
           )
         or string.format(
           "lsd %s --color=always --header -- %s",
           ls_args,
-          nvims.shellescape(cwd --[[@as string]])
+          shells.shellescape(cwd --[[@as string]])
         )
     elseif consts.HAS_EZA then
       return consts.HAS_ECHO
           and string.format(
             "echo %s && %s --color=always %s -- %s",
-            nvims.shellescape(cwd --[[@as string]]),
+            shells.shellescape(cwd --[[@as string]]),
             consts.EZA,
             ls_args,
-            nvims.shellescape(cwd --[[@as string]])
+            shells.shellescape(cwd --[[@as string]])
           )
         or string.format(
           "%s --color=always %s -- %s",
           consts.EZA,
           ls_args,
-          nvims.shellescape(cwd --[[@as string]])
+          shells.shellescape(cwd --[[@as string]])
         )
     elseif consts.HAS_LS then
       return consts.HAS_ECHO
           and string.format(
             "echo %s && ls --color=always %s %s",
-            nvims.shellescape(cwd --[[@as string]]),
+            shells.shellescape(cwd --[[@as string]]),
             ls_args,
-            nvims.shellescape(cwd --[[@as string]])
+            shells.shellescape(cwd --[[@as string]])
           )
         or string.format(
           "ls --color=always %s %s",
           ls_args,
-          nvims.shellescape(cwd --[[@as string]])
+          shells.shellescape(cwd --[[@as string]])
         )
     else
       log.echo(LogLevels.INFO, "no ls/eza/exa command found.")

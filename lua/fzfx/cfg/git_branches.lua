@@ -1,6 +1,6 @@
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
-local nvims = require("fzfx.lib.nvims")
+local shells = require("fzfx.lib.shells")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
 local tbls = require("fzfx.lib.tables")
@@ -193,7 +193,7 @@ M._git_branches_previewer = function(line)
   -- "git log --graph --color=always --date=relative",
   return string.format(
     "git log --pretty=%s --graph --date=short --color=always %s",
-    nvims.shellescape(GIT_LOG_PRETTY_FORMAT),
+    shells.shellescape(GIT_LOG_PRETTY_FORMAT),
     branch
   )
 end

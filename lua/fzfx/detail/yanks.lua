@@ -1,7 +1,8 @@
 local env = require("fzfx.lib.env")
-local nvims = require("fzfx.lib.nvims")
+local ringbuf = require("fzfx.commons.ringbuf")
 local paths = require("fzfx.lib.paths")
 local log = require("fzfx.lib.log")
+local bufs = require("fzfx.lib.bufs")
 
 local conf = require("fzfx.config")
 
@@ -39,14 +40,14 @@ end
 M.Yank = Yank
 
 --- @class fzfx.YankHistory
---- @field ring_buffer fzfx.RingBuffer
+--- @field ring_buffer commons.RingBuffer
 local YankHistory = {}
 
 --- @param maxsize integer
 --- @return fzfx.YankHistory
 function YankHistory:new(maxsize)
   local o = {
-    ring_buffer = nvims.RingBuffer:new(maxsize),
+    ring_buffer = ringbuf.RingBuffer:new(maxsize),
   }
   setmetatable(o, self)
   self.__index = self
@@ -59,36 +60,9 @@ function YankHistory:push(y)
   return self.ring_buffer:push(y)
 end
 
---- @param pos integer?
 --- @return fzfx.Yank?
-function YankHistory:get(pos)
-  return self.ring_buffer:get(pos)
-end
-
--- from oldest to newest
---- @return integer?
-function YankHistory:begin()
-  return self.ring_buffer:begin()
-end
-
--- from oldest to newest
---- @param pos integer
---- @return integer?
-function YankHistory:next(pos)
-  return self.ring_buffer:next(pos)
-end
-
--- from newest to oldest
---- @return integer?
-function YankHistory:rbegin()
-  return self.ring_buffer:rbegin()
-end
-
--- from newest to oldest
---- @param pos integer
---- @return integer?
-function YankHistory:rnext(pos)
-  return self.ring_buffer:rnext(pos)
+function YankHistory:get()
+  return self.ring_buffer:peek()
 end
 
 M.YankHistory = YankHistory
@@ -112,7 +86,7 @@ M.save_yank = function()
     r.regname,
     r.regtext,
     r.regtype,
-    nvims.buf_is_valid(0)
+    bufs.buf_is_valid(0)
         and paths.normalize(vim.api.nvim_buf_get_name(0), { expand = true })
       or nil,
     vim.bo.filetype
