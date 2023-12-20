@@ -4,23 +4,21 @@
 
 A fzf-based search command usually consists of below components:
 
-* **Provider**: a shell command that can generate the lines list for (the left side of) the fzf binary.
+- **Provider**: a shell command that can generate the lines list for (the left side of) the fzf binary.
 
-  * (Optional) **Provider Decorator**: a lua function that modify the generated lines. For example `FzfxFiles` will prepend filetype icons for each line generated from the plain provider `fd`/`find`.
+  - (Optional) **Provider Decorator**: a lua function that modify the generated lines. For example `FzfxFiles` will prepend filetype icons for each line generated from the plain provider `fd`/`find`.
 
-* **Previewer**: a shell command that generate the content to preview the current line (on the left side) for (the right side of) the fzf binary.
+- **Previewer**: a shell command that generate the content to preview the current line (on the left side) for (the right side of) the fzf binary.
 
-  * (Optional) **Previewer Label**: a label (string value on the top) for the preview window, which gives extra hint and summary info.
+  - (Optional) **Previewer Label**: a label (string value on the top) for the preview window, which gives extra hint and summary info.
 
-* **Action**: a key that user press to quit fzf binary, and invoke its registered callback lua functions on selected lines, e.g. the `ENTER` keys in most of commands.
-* (Optional) **Interaction**: an interactive key that user press and do something without quit the fzf binary, e.g. the `CTRL-U`/`CTRL-R` keys in `FzfxLiveGrep` to switch on restricted/unrestricted `rg` searching results.
-* (Optional) **Fzf Option**: other fzf options.
-* (Optional) **Other Option**: other special options.
+- **Action**: a key that user press to quit fzf binary, and invoke its registered callback lua functions on selected lines, e.g. the `ENTER` keys in most of commands.
+- (Optional) **Interaction**: an interactive key that user press and do something without quit the fzf binary, e.g. the `CTRL-U`/`CTRL-R` keys in `FzfxLiveGrep` to switch on restricted/unrestricted `rg` searching results.
+- (Optional) **Fzf Option**: other fzf options.
+- (Optional) **Other Option**: other special options.
 
 Put all above components together, it's named **Pipeline**.
 
-> [!NOTE]
->
 > In producer/consumer design pattern, **Provider** is the data producer, **Previewer** and **Action**/**Interaction** are the data consumers.
 
 With this pattern, all the details of constructing fzf command and interacting across different child processes with nvim editor are hidden, only a friendly config layer is provide to user and allow creating any commands on their own needs.
@@ -53,9 +51,9 @@ A **provider** is a shell command that run and generate the lines list for (the 
 
 We have below types of providers:
 
- * Plain provider: a simple shell command (as a string or a string list), execute and generate the lines for fzf.
- * Command provider: a lua function to run and returns the shell command (as a string or a string list), then execute and generate the lines for fzf.
- * List provider: a lua function to run and directly returns the lines for fzf.
+- Plain provider: a simple shell command (as a string or a string list), execute and generate the lines for fzf.
+- Command provider: a lua function to run and returns the shell command (as a string or a string list), then execute and generate the lines for fzf.
+- List provider: a lua function to run and directly returns the lines for fzf.
 
 ```lua
 --- @alias fzfx.PlainProvider string|string[]
@@ -70,11 +68,11 @@ We have below types of providers:
 
 ### Provider Decorator
 
-We cannot actually run a lua function ***inside the nvim editor*** as provider decorator for now, this is the limitation of current architecture.
+We cannot actually run a lua function **_inside the nvim editor_** as provider decorator for now, this is the limitation of current architecture.
 
 Because both providers and decorators are running in a child process launched by the fzf binary, which is outside of the nvim editor process (the editor you're using), and all nvim plugins are been disabled, so it's not able to found the lua function.
 
-> Making RPC request for every line generated from provider, going from the child process (outside of nvim editor) to the nvim editor, invoking the decorator hook, then going back. Take performance into consideration, this will bring much complex architectural design cross the child process launched by fzf binary and the nvim editor (parent process).
+> Making RPC request for every line generated from provider, it will bring much complicated architectural design cross the child process launched by fzf binary and the parent process, e.g. the nvim editor itself.
 
 So, to invoke a lua function, you need to first expose it to the environment runtime path (e.g. `$PATH`) so lua module system could find it.
 
@@ -115,9 +113,9 @@ A **previewer** is a shell command that read current line and generate the previ
 
 We have below types of previewers:
 
- * Command previewer: a lua function to run and returns a shell command (as a string or a string list), then execute and generate the preview contents for fzf.
- * List previewer: a lua function to run and directly returns the preview contents for fzf.
- * Buffer previewer (todo): a nvim buffer to show the preview contents. (the biggest benefits are nvim builtin highlightings and allow navigate to the buffer and edit directly)
+- Command previewer: a lua function to run and returns a shell command (as a string or a string list), then execute and generate the preview contents for fzf.
+- List previewer: a lua function to run and directly returns the preview contents for fzf.
+- Buffer previewer (todo): a nvim buffer to show the preview contents. (the biggest benefits are nvim builtin highlightings and allow navigate to the buffer and edit directly)
 
 ```lua
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
@@ -135,8 +133,8 @@ A **previewer label** is the label (title) for the preview window.
 
 We have 2 types of previewers:
 
- * Plain label: a static string value which is the label for the preview window.
- * Function label: a lua function to run and returns the string value for the preview window.
+- Plain label: a static string value which is the label for the preview window.
+- Function label: a lua function to run and returns the string value for the preview window.
 
 ```lua
 --- @alias fzfx.PlainPreviewerLabel string
@@ -155,7 +153,7 @@ local PreviewerLabelTypeEnum = {
 
 ## Command Option
 
-A **command option** is directly passing to the [nvim_create_user_command()](https://neovim.io/doc/user/api.html#nvim_create_user_command()) API and create nvim user commands.
+A **command option** is directly passing to the [nvim_create_user_command()](<https://neovim.io/doc/user/api.html#nvim_create_user_command()>) API and create nvim user commands.
 
 ```lua
 --- @alias fzfx.CommandOptKey "nargs"|"bang"|"complete"|"desc"|"range"
@@ -165,8 +163,8 @@ A **command option** is directly passing to the [nvim_create_user_command()](htt
 
 References:
 
- * https://neovim.io/doc/user/api.html#nvim_create_user_command()
- * https://neovim.io/doc/user/map.html#command-attributes
+- https://neovim.io/doc/user/api.html#nvim_create_user_command()
+- https://neovim.io/doc/user/map.html#command-attributes
 
 ## Command Feed
 
@@ -182,9 +180,9 @@ A fzf option is directly passing to the fzf binary, e.g. `--multi`, `--bind=ctrl
 
 We have 3 types of fzf options:
 
- * Plain option: plain fzf option as a string, e.g. `--multi`.
- * Pair option: plain fzf option as a pair of two strings, e.g. `{ '--bind', 'ctrl-e:toggle' }`.
- * Function option: a lua function to run and returns above two types of fzf options.
+- Plain option: plain fzf option as a string, e.g. `--multi`.
+- Pair option: plain fzf option as a pair of two strings, e.g. `{ '--bind', 'ctrl-e:toggle' }`.
+- Function option: a lua function to run and returns above two types of fzf options.
 
 ```lua
 --- @alias fzfx.PlainFzfOpt string
@@ -200,8 +198,8 @@ An (inter)action is the lua callback function binding on a key that user press a
 
 We have 2 types of actions:
 
- * Interaction: user press the key and invoke the lua function, do something on current line without quit fzf.
- * Action: user press the key to quit fzf, then invoke lua function to do something on the selected lines.
+- Interaction: user press the key and invoke the lua function, do something on current line without quit fzf.
+- Action: user press the key to quit fzf, then invoke lua function to do something on the selected lines.
 
 ```lua
 --- @alias fzfx.ActionKey string
@@ -235,11 +233,11 @@ The real-world command we're using, say `FzfxLiveGrep`, actually contains multip
 
 They're the powerful **commands group**:
 
- * It has multiple data sources from different providers, switch by different interactive keys.
- * It has multiple previewers, each bind to a specific provider.
- * It has multiple action keys to exit fzf and invoke lua callbacks with selected lines.
- * (Optionally) It has multiple interactive keys to do something without quit fzf.
- * (Optionally) It has some extra fzf options and other options for some specific abilities.
+- It has multiple data sources from different providers, switch by different interactive keys.
+- It has multiple previewers, each bind to a specific provider.
+- It has multiple action keys to exit fzf and invoke lua callbacks with selected lines.
+- (Optionally) It has multiple interactive keys to do something without quit fzf.
+- (Optionally) It has some extra fzf options and other options for some specific abilities.
 
 > See [Config](#config).
 
