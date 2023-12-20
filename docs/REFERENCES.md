@@ -8,7 +8,7 @@ The APIs in `fzfx.helper` and `fzfx.lib` are recommended when you implement some
 
 !> Except those APIs start with underline `_`, which are exposed for unit tests.
 
-## Module [`fzfx.cfg`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/cfg)
+## [fzfx.cfg](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/cfg)
 
 The `fzfx.cfg` module directly provide configurations for all search commands in this plugin.
 
@@ -211,7 +211,7 @@ It's implemented with `vim_keymap` utilities:
 
 - [fzfx.helper.parsers.parse_vim_keymap](#parse_vim_keymap)
 
-## Module [`fzfx.helper`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper)
+## [fzfx.helper](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper)
 
 The `fzfx.helper` module provide line-oriented helpers for parsing and rendering queries/lines required in all scenarios.
 
@@ -456,7 +456,7 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 - `confirm_discard_modified(bufnr:integer, callback:fun():nil):nil`: popup a prompt to ask user confirm whether to discard current buffer's modifications (only if there's any), invoke `callback` if user confirm, do nothing if user cancel.
 
-## Module [`fzfx.lib`](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib)
+## [fzfx.lib](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib)
 
 ?> Most of the `fzfx.lib` modules are extracted to the [commons](https://github.com/linrongbin16/commons.nvim) lua library, please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/#/).
 
