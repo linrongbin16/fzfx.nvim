@@ -538,26 +538,6 @@ curl
 - `debug_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEBUG_ENABLE=1`.
 - `icon_enabled():boolean`: detect whether environment variable `_FZFX_NVIM_DEVICONS_PATH=1`.
 
-### [fzfx.lib.filesystems](/lua/fzfx/lib/filesystems.lua)
-
-#### Read File
-
-- `FileLineReader`: file line reader.
-  - `open(filename:string, batchsize:integer?):FileLineReader`: open file to read, return the reader handle, by default `batchsize=4096`.
-  - `has_next():boolean`: detect whether there are more lines to read.
-  - `next():string?`: get next line.
-  - `close():nil`: close the reader handle.
-- `readlines(filename:string):string[]|nil`: open file and read line by line.
-- `readfile(filename:string, opts:{trim:boolean?}?):string?`: open and read all contents from file.
-  - set `opts={trim=true}` to trim whitespaces, by default `opts={trim=true}`.
-- `asyncreadfile(filename:string, on_complete:fun(data:string?):any, opts:{trim:boolean?}?):nil`: async read file, invoke callback `on_complete` when done.
-
-#### Write File
-
-- `writefile(filename:string, content:string):integer`: write content into file, return `-1` if fail, `0` if success.
-- `writelines(filename:string, lines:string[]):integer`: write lines into file, return `-1` if fail, `0` if success.
-- `asyncwritefile(filename:string, content:string, on_complete:fun(bytes:integer?):any):integer`: async write content into a file, invoke callback `on_complete` when done.
-
 ### [fzfx.lib.jsons](#/lua/fzfx/lib/jsons.lua)
 
 - `encode(t:table?):string?`: convert lua table/list to json string.
