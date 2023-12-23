@@ -64,15 +64,14 @@ function Command:run(source)
         table.insert(result.stderr, line)
       end
     end,
-  }, function(completed)
-    if tables.tbl_not_empty(completed) and completed.code then
-      result.code = completed.code
-    end
-    if tables.tbl_not_empty(completed) and completed.signal then
-      result.signal = completed.signal
-    end
-  end)
-  sp:wait()
+  })
+  local completed = sp:wait()
+  if tables.tbl_not_empty(completed) and completed.code then
+    result.code = completed.code
+  end
+  if tables.tbl_not_empty(completed) and completed.signal then
+    result.signal = completed.signal
+  end
 
   local o = {
     source = source,

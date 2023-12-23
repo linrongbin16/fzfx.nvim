@@ -1,6 +1,6 @@
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
-local nvims = require("fzfx.lib.nvims")
+local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
 local tbls = require("fzfx.lib.tables")
@@ -174,7 +174,7 @@ M.commands = {
 --- @param bufnr integer
 --- @return string?
 M._get_buf_path = function(bufnr)
-  local bufpath = nvims.buf_is_valid(bufnr)
+  local bufpath = bufs.buf_is_valid(bufnr)
       and paths.reduce(vim.api.nvim_buf_get_name(bufnr))
     or nil
   if strs.empty(bufpath) then

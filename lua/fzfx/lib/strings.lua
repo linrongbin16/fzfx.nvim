@@ -243,7 +243,10 @@ M.uuid = function(delimiter)
     string.format("%x", vim.loop.os_getpid()),
     string.format("%x", secs),
     string.format("%x", ms),
-    string.format("%x", math.random(1, require("fzfx.lib.numbers").INT32_MAX)),
+    string.format(
+      "%x",
+      math.random(1, require("fzfx.commons.numbers").INT32_MAX)
+    ),
   }, delimiter)
 end
 

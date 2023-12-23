@@ -1,6 +1,6 @@
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
-local nvims = require("fzfx.lib.nvims")
+local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
 local tbls = require("fzfx.lib.tables")
@@ -138,7 +138,7 @@ M._make_git_commits_provider = function(opts)
       return nil
     end
     if tbls.tbl_get(opts, "buffer") then
-      if not nvims.buf_is_valid(context.bufnr) then
+      if not bufs.buf_is_valid(context.bufnr) then
         log.echo(
           LogLevels.INFO,
           "invalid buffer(%s).",

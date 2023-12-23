@@ -1,11 +1,108 @@
-local nums = require("fzfx.lib.numbers")
-local nvims = require("fzfx.lib.nvims")
+local constants = require("fzfx.lib.constants")
+local numbers = require("fzfx.commons.numbers")
+local apis = require("fzfx.commons.apis")
 local fileios = require("fzfx.commons.fileios")
 local log = require("fzfx.lib.log")
 
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
 local conf = require("fzfx.config")
+
+-- WindowOptsContext {
+
+--- @class fzfx.WindowOptsContext
+--- @field bufnr integer
+--- @field tabnr integer
+--- @field winnr integer
+local WindowOptsContext = {}
+
+--- @return fzfx.WindowOptsContext
+function WindowOptsContext:save()
+  local o = {
+    bufnr = vim.api.nvim_get_current_buf(),
+    winnr = vim.api.nvim_get_current_win(),
+    tabnr = vim.api.nvim_get_current_tabpage(),
+  }
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+function WindowOptsContext:restore()
+  if vim.api.nvim_tabpage_is_valid(self.tabnr) then
+    vim.api.nvim_set_current_tabpage(self.tabnr)
+  end
+  if vim.api.nvim_win_is_valid(self.winnr) then
+    vim.api.nvim_set_current_win(self.winnr)
+  end
+end
+
+-- WindowOptsContext }
+
+-- ShellOptsContext {
+
+--- @class fzfx.ShellOptsContext
+--- @field shell string?
+--- @field shellslash string?
+--- @field shellcmdflag string?
+--- @field shellxquote string?
+--- @field shellquote string?
+--- @field shellredir string?
+--- @field shellpipe string?
+--- @field shellxescape string?
+local ShellOptsContext = {}
+
+--- @return fzfx.ShellOptsContext
+function ShellOptsContext:save()
+  local o = constants.IS_WINDOWS
+      and {
+        shell = vim.o.shell,
+        shellslash = vim.o.shellslash,
+        shellcmdflag = vim.o.shellcmdflag,
+        shellxquote = vim.o.shellxquote,
+        shellquote = vim.o.shellquote,
+        shellredir = vim.o.shellredir,
+        shellpipe = vim.o.shellpipe,
+        shellxescape = vim.o.shellxescape,
+      }
+    or {
+      shell = vim.o.shell,
+    }
+  setmetatable(o, self)
+  self.__index = self
+
+  if constants.IS_WINDOWS then
+    vim.o.shell = "cmd.exe"
+    vim.o.shellslash = false
+    vim.o.shellcmdflag = "/s /c"
+    vim.o.shellxquote = '"'
+    vim.o.shellquote = ""
+    vim.o.shellredir = ">%s 2>&1"
+    vim.o.shellpipe = "2>&1| tee"
+    vim.o.shellxescape = ""
+  else
+    vim.o.shell = "sh"
+  end
+
+  return o
+end
+
+function ShellOptsContext:restore()
+  if constants.IS_WINDOWS then
+    vim.o.shell = self.shell
+    vim.o.shellslash = self.shellslash
+    vim.o.shellcmdflag = self.shellcmdflag
+    vim.o.shellxquote = self.shellxquote
+    vim.o.shellquote = self.shellquote
+    vim.o.shellredir = self.shellredir
+    vim.o.shellpipe = self.shellpipe
+    vim.o.shellxescape = self.shellxescape
+  else
+    vim.o.shell = self.shell
+  end
+end
+
+-- ShellOptsContext }
 
 --- @class fzfx.PopupWindowConfig
 --- @field anchor "NW"|nil
@@ -25,7 +122,7 @@ local conf = require("fzfx.config")
 --- @return integer
 local function _make_window_size(value, base, minimal)
   minimal = minimal or 3
-  return nums.bound(
+  return numbers.bound(
     value > 1 and value or math.floor(base * value),
     minimal,
     base
@@ -79,10 +176,10 @@ local function _make_window_center_shift(maxsize, size, offset)
   local base = math.floor((maxsize - size) * 0.5)
   if offset >= 0 then
     local shift = offset < 1 and math.floor((maxsize - size) * offset) or offset
-    return nums.bound(base + shift, 0, maxsize - size)
+    return numbers.bound(base + shift, 0, maxsize - size)
   else
     local shift = offset > -1 and math.ceil((maxsize - size) * offset) or offset
-    return nums.bound(base + shift, 0, maxsize - size)
+    return numbers.bound(base + shift, 0, maxsize - size)
   end
 end
 
@@ -182,15 +279,15 @@ function PopupWindow:new(win_opts)
   fzf_helpers.fzf_exec()
 
   -- save current window context
-  local window_opts_context = nvims.WindowOptsContext:save()
+  local window_opts_context = WindowOptsContext:save()
 
   --- @type integer
   local bufnr = vim.api.nvim_create_buf(false, true)
   -- setlocal bufhidden=wipe nobuflisted
   -- setft=fzf
-  nvims.set_buf_option(bufnr, "bufhidden", "wipe")
-  nvims.set_buf_option(bufnr, "buflisted", false)
-  nvims.set_buf_option(bufnr, "filetype", "fzf")
+  apis.set_buf_option(bufnr, "bufhidden", "wipe")
+  apis.set_buf_option(bufnr, "buflisted", false)
+  apis.set_buf_option(bufnr, "filetype", "fzf")
 
   local merged_win_opts = vim.tbl_deep_extend(
     "force",
@@ -205,10 +302,10 @@ function PopupWindow:new(win_opts)
   --- setlocal nospell nonumber
   --- set winhighlight='Pmenu:,Normal:Normal'
   --- set colorcolumn=''
-  nvims.set_win_option(winnr, "spell", false)
-  nvims.set_win_option(winnr, "number", false)
-  nvims.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
-  nvims.set_win_option(winnr, "colorcolumn", "")
+  apis.set_win_option(winnr, "spell", false)
+  apis.set_win_option(winnr, "number", false)
+  apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  apis.set_win_option(winnr, "colorcolumn", "")
 
   local o = {
     window_opts_context = window_opts_context,
@@ -409,7 +506,7 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
   end
 
   -- save shell opts
-  local shell_opts_context = nvims.ShellOptsContext:save()
+  local shell_opts_context = ShellOptsContext:save()
   local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
   local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
   vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()

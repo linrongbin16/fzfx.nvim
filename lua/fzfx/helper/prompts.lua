@@ -1,5 +1,5 @@
 local strs = require("fzfx.lib.strings")
-local nvims = require("fzfx.lib.nvims")
+local apis = require("fzfx.commons.apis")
 
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -11,7 +11,7 @@ local CANCELLED_MESSAGE = "cancelled."
 --- @param bufnr integer
 --- @param callback fun():any
 M.confirm_discard_modified = function(bufnr, callback)
-  if not vim.o.hidden and nvims.get_buf_option(bufnr, "modified") then
+  if not vim.o.hidden and apis.get_buf_option(bufnr, "modified") then
     local ok, input = pcall(vim.fn.input, {
       prompt = "[fzfx] buffer has been modified, continue? (y/n) ",
       cancelreturn = "n",

@@ -1,7 +1,7 @@
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
 local tbls = require("fzfx.lib.tables")
-local nums = require("fzfx.lib.numbers")
+local numbers = require("fzfx.commons.numbers")
 
 local parsers = require("fzfx.helper.parsers")
 local prompts = require("fzfx.helper.prompts")
@@ -309,7 +309,7 @@ M._make_feed_vim_key = function(lines, context)
         }
       elseif
         strs.startswith(parsed.lhs, "<")
-        and nums.positive(strs.rfind(parsed.lhs, ">"))
+        and numbers.gt(strs.rfind(parsed.lhs, ">"), 0)
       then
         local tcodes =
           vim.api.nvim_replace_termcodes(parsed.lhs, true, false, true)

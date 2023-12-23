@@ -1,6 +1,6 @@
 local consts = require("fzfx.lib.constants")
 local paths = require("fzfx.lib.paths")
-local nums = require("fzfx.lib.numbers")
+local numbers = require("fzfx.commons.numbers")
 local log = require("fzfx.lib.log")
 
 local M = {}
@@ -62,7 +62,7 @@ function RpcServer:register(callback)
     type(callback),
     vim.inspect(callback)
   )
-  local registry_id = tostring(nums.inc_id())
+  local registry_id = tostring(numbers.auto_incremental_id())
   self.registry[registry_id] = callback
   return registry_id
 end

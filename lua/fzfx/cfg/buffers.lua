@@ -1,6 +1,7 @@
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
-local nvims = require("fzfx.lib.nvims")
+local apis = require("fzfx.commons.apis")
+local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
 local tbls = require("fzfx.lib.tables")
@@ -78,11 +79,11 @@ M._buf_valid = function(bufnr)
     ["qf"] = true,
     ["neo-tree"] = true,
   }
-  local ok, ft_or_err = pcall(nvims.get_buf_option, bufnr, "filetype")
+  local ok, ft_or_err = pcall(apis.get_buf_option, bufnr, "filetype")
   if not ok then
     return false
   end
-  return nvims.buf_is_valid(bufnr) and not exclude_filetypes[ft_or_err]
+  return bufs.buf_is_valid(bufnr) and not exclude_filetypes[ft_or_err]
 end
 
 --- @param query string
@@ -123,16 +124,16 @@ M.previewers = {
 
 --- @param line string
 M._delete_buffer = function(line)
-  local bufs = vim.api.nvim_list_bufs()
+  local bufnrs = vim.api.nvim_list_bufs()
   local filenames = {}
-  for _, bufnr in ipairs(bufs) do
+  for _, bufnr in ipairs(bufnrs) do
     local bufpath = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
     filenames[bufpath] = bufnr
   end
   if strs.not_empty(line) then
     local parsed = parsers_helper.parse_find(line)
     local bufnr = filenames[parsed.filename]
-    if type(bufnr) == "number" and nvims.buf_is_valid(bufnr) then
+    if type(bufnr) == "number" and bufs.buf_is_valid(bufnr) then
       vim.api.nvim_buf_delete(bufnr, {})
     end
   end
@@ -158,7 +159,7 @@ M.fzf_opts = {
   { "--prompt", "Buffers > " },
   function()
     local current_bufnr = vim.api.nvim_get_current_buf()
-    return nvims.buf_is_valid(current_bufnr) and "--header-lines=1" or nil
+    return bufs.buf_is_valid(current_bufnr) and "--header-lines=1" or nil
   end,
 }
 

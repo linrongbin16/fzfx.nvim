@@ -1,6 +1,7 @@
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
-local nvims = require("fzfx.lib.nvims")
+local shells = require("fzfx.lib.shells")
+local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.lib.paths")
 local tbls = require("fzfx.lib.tables")
@@ -79,7 +80,7 @@ M._git_blame_provider = function(query, context)
     log.echo(LogLevels.INFO, "not in git repo.")
     return nil
   end
-  if not nvims.buf_is_valid(context.bufnr) then
+  if not bufs.buf_is_valid(context.bufnr) then
     log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(context.bufnr))
     return nil
   end
@@ -88,13 +89,13 @@ M._git_blame_provider = function(query, context)
   if consts.HAS_DELTA then
     return string.format(
       [[git blame %s | delta -n --tabs 4 --blame-format %s]],
-      nvims.shellescape(bufpath --[[@as string]]),
-      nvims.shellescape("{commit:<8} {author:<15.14} {timestamp:<15}")
+      shells.shellescape(bufpath --[[@as string]]),
+      shells.shellescape("{commit:<8} {author:<15.14} {timestamp:<15}")
     )
   else
     return string.format(
       [[git blame --date=short --color-lines %s]],
-      nvims.shellescape(bufpath --[[@as string]])
+      shells.shellescape(bufpath --[[@as string]])
     )
   end
 end

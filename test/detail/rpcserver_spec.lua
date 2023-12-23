@@ -10,7 +10,7 @@ describe("detail.rpcserver", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
-  local nums = require("fzfx.lib.numbers")
+  local numbers = require("fzfx.commons.numbers")
   local rpcserver = require("fzfx.detail.rpcserver")
   rpcserver.setup()
 
@@ -28,7 +28,7 @@ describe("detail.rpcserver", function()
       local f = function(x) end
       local rid = s:register(f)
       assert_eq(type(rid), "string")
-      assert_true(tonumber(rid) == nums.inc_id() - 1)
+      assert_true(tonumber(rid) == numbers.auto_incremental_id() - 1)
       local actual1 = s:get(rid)
       assert_eq(type(actual1), "function")
       assert_eq(vim.inspect(f), vim.inspect(actual1))
