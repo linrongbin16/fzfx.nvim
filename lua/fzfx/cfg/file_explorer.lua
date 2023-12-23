@@ -286,12 +286,12 @@ end
 
 M.interactions = {
   cd = {
-    key = "alt-l",
+    key = "ctrl-l",
     interaction = M._cd_file_explorer,
     reload_after_execute = true,
   },
   upper = {
-    key = "alt-h",
+    key = "ctrl-h",
     interaction = M._upper_file_explorer,
     reload_after_execute = true,
   },
