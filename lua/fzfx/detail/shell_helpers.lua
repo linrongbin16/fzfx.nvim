@@ -27,10 +27,11 @@ local LoggerContext = {
 
 --- @param name string
 M.setup = function(name)
+  local paths = require("fzfx.commons.paths")
   LoggerContext.file_path = string.format(
     "%s%s%s",
     vim.fn.stdpath("data"),
-    require("fzfx.lib.paths").SEPARATOR,
+    paths.SEPARATOR,
     string.format("fzfx_bin_%s.log", name)
   )
 end

@@ -1,6 +1,6 @@
 local env = require("fzfx.lib.env")
 local ringbuf = require("fzfx.commons.ringbuf")
-local paths = require("fzfx.lib.paths")
+local paths = require("fzfx.commons.paths")
 local log = require("fzfx.lib.log")
 local bufs = require("fzfx.lib.bufs")
 
@@ -87,7 +87,10 @@ M.save_yank = function()
     r.regtext,
     r.regtype,
     bufs.buf_is_valid(0)
-        and paths.normalize(vim.api.nvim_buf_get_name(0), { expand = true })
+        and paths.normalize(
+          vim.api.nvim_buf_get_name(0),
+          { double_backslash = true, expand = true }
+        )
       or nil,
     vim.bo.filetype
   )

@@ -1,7 +1,7 @@
 local consts = require("fzfx.lib.constants")
 local strs = require("fzfx.lib.strings")
 local cmds = require("fzfx.lib.commands")
-local paths = require("fzfx.lib.paths")
+local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
 local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
@@ -296,7 +296,8 @@ M._parse_map_command_output_line = function(line)
       vim.inspect(filename),
       vim.inspect(lineno)
     )
-    result.filename = paths.normalize(filename, { expand = true })
+    result.filename =
+      paths.normalize(filename, { double_backslash = true, expand = true })
     result.lineno = tonumber(lineno)
   end
   return result
@@ -340,7 +341,7 @@ M._get_vim_keymaps = function()
           vim.trim(line:sub(string.len(LAST_SET_FROM) + 1, line_pos - 1))
         local lineno = vim.trim(line:sub(line_pos + string.len(LINE)))
         keys_output_map[last_lhs].filename =
-          paths.normalize(filename, { expand = true })
+          paths.normalize(filename, { double_backslash = true, expand = true })
         keys_output_map[last_lhs].lineno = tonumber(lineno)
       end
     end

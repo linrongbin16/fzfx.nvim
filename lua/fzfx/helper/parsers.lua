@@ -1,5 +1,5 @@
 local consts = require("fzfx.lib.constants")
-local paths = require("fzfx.lib.paths")
+local paths = require("fzfx.commons.paths")
 local env = require("fzfx.lib.env")
 local strs = require("fzfx.lib.strings")
 local numbers = require("fzfx.commons.numbers")
@@ -31,7 +31,12 @@ M.parse_find = function(line)
   else
     filename = line
   end
-  return { filename = paths.normalize(filename, { expand = true }) }
+  return {
+    filename = paths.normalize(
+      filename,
+      { double_backslash = true, expand = true }
+    ),
+  }
 end
 
 -- parse lines from grep. looks like:
@@ -149,7 +154,12 @@ M.parse_git_status = function(line)
   while i <= #line and not strs.isspace(line:sub(i, i)) do
     i = i + 1
   end
-  return { filename = paths.normalize(line:sub(i), { expand = true }) }
+  return {
+    filename = paths.normalize(
+      line:sub(i),
+      { double_backslash = true, expand = true }
+    ),
+  }
 end
 
 -- parse lines from `git branch` and `git branch --remotes`. looks like:
@@ -393,7 +403,10 @@ M._make_parse_ls = function(start_pos)
     -- remove extra single/double quotes
     local result = strs.trim_quotes(vim.trim(line:sub(pos)))
     return {
-      filename = paths.normalize(paths.join(cwd, result), { expand = true }),
+      filename = paths.normalize(
+        paths.join(cwd, result),
+        { double_backslash = true, expand = true }
+      ),
     }
   end
   return impl
@@ -444,7 +457,8 @@ M.parse_vim_command = function(line, context)
     --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
-    local filename = paths.normalize(splits[1], { expand = true })
+    local filename =
+      paths.normalize(splits[1], { double_backslash = true, expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
     --     "|fzfx.helper.parsers - parse_vim_commands| filename:%s, lineno:%s",
@@ -502,7 +516,8 @@ M.parse_vim_keymap = function(line, context)
     --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
-    local filename = paths.normalize(splits[1], { expand = true })
+    local filename =
+      paths.normalize(splits[1], { double_backslash = true, expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
     --     "|fzfx.helper.parsers - parse_vim_commands| filename:%s, lineno:%s",
