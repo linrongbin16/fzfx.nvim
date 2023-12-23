@@ -1,4 +1,4 @@
-local paths = require("fzfx.lib.paths")
+local paths = require("fzfx.commons.paths")
 local termcolors = require("fzfx.commons.termcolors")
 local jsons = require("fzfx.commons.jsons")
 local fileios = require("fzfx.commons.fileios")

@@ -18,7 +18,7 @@ describe("cfg.vim_commands", function()
   local tbls = require("fzfx.lib.tables")
   local consts = require("fzfx.lib.constants")
   local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
+  local paths = require("fzfx.commons.paths")
 
   local contexts = require("fzfx.helper.contexts")
 

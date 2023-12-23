@@ -19,7 +19,7 @@ describe("detail.general", function()
   local strs = require("fzfx.lib.strings")
   local fileios = require("fzfx.commons.fileios")
   local jsons = require("fzfx.commons.jsons")
-  local paths = require("fzfx.lib.paths")
+  local paths = require("fzfx.commons.paths")
 
   local schema = require("fzfx.schema")
   local conf = require("fzfx.config")

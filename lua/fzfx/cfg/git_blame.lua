@@ -3,7 +3,6 @@ local strs = require("fzfx.lib.strings")
 local shells = require("fzfx.lib.shells")
 local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
-local paths = require("fzfx.lib.paths")
 local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels

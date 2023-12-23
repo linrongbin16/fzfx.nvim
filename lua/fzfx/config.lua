@@ -1,5 +1,4 @@
 local consts = require("fzfx.lib.constants")
-local paths = require("fzfx.lib.paths")
 
 local M = {}
 
@@ -284,7 +283,10 @@ local Defaults = {
   },
 
   cache = {
-    dir = paths.join(vim.fn.stdpath("data"), "fzfx.nvim"),
+    dir = require("fzfx.commons.paths").join(
+      vim.fn.stdpath("data"),
+      "fzfx.nvim"
+    ),
   },
 
   -- debug

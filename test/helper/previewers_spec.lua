@@ -16,7 +16,7 @@ describe("helper.previewers", function()
   local tbls = require("fzfx.lib.tables")
   local consts = require("fzfx.lib.constants")
   local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
+  local paths = require("fzfx.commons.paths")
 
   local previewers = require("fzfx.helper.previewers")
   local conf = require("fzfx.config")
@@ -83,10 +83,16 @@ describe("helper.previewers", function()
           assert_eq(actual[4], "--color=always")
           assert_eq(actual[5], "--pager=never")
           assert_eq(actual[6], "--")
-          assert_eq(actual[7], paths.normalize(line, { expand = true }))
+          assert_eq(
+            actual[7],
+            paths.normalize(line, { double_backslash = true, expand = true })
+          )
         else
           assert_eq(actual[1], "cat")
-          assert_eq(actual[2], paths.normalize(line, { expand = true }))
+          assert_eq(
+            actual[2],
+            paths.normalize(line, { double_backslash = true, expand = true })
+          )
         end
       end
     end)
@@ -103,8 +109,10 @@ describe("helper.previewers", function()
       }
       for _, line in ipairs(lines) do
         local actual = previewers.preview_files_grep(line)
-        local expect =
-          paths.normalize(strs.split(line, ":")[1], { expand = true })
+        local expect = paths.normalize(
+          strs.split(line, ":")[1],
+          { double_backslash = true, expand = true }
+        )
         print(string.format("normalize:%s\n", vim.inspect(expect)))
         print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
         if actual[1] == "bat" then

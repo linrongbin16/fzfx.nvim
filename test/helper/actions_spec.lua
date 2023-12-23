@@ -22,7 +22,7 @@ describe("helper.actions", function()
   local DEVICONS_PATH =
     "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
   local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
+  local paths = require("fzfx.commons.paths")
   local actions = require("fzfx.helper.actions")
   local parsers = require("fzfx.helper.parsers")
 
@@ -50,8 +50,10 @@ describe("helper.actions", function()
       assert_eq(type(actual), "table")
       assert_eq(#actual, #lines)
       for i, line in ipairs(lines) do
-        local expect =
-          string.format("edit! %s", paths.normalize(line, { expand = true }))
+        local expect = string.format(
+          "edit! %s",
+          paths.normalize(line, { double_backslash = true, expand = true })
+        )
         assert_eq(actual[i], expect)
       end
     end)
@@ -71,7 +73,10 @@ describe("helper.actions", function()
         local first_space_pos = strs.find(line, " ")
         local expect = string.format(
           "edit! %s",
-          paths.normalize(line:sub(first_space_pos + 1), { expand = true })
+          paths.normalize(
+            line:sub(first_space_pos + 1),
+            { double_backslash = true, expand = true }
+          )
         )
         assert_eq(actual[i], expect)
       end
@@ -189,7 +194,10 @@ describe("helper.actions", function()
         if i <= #lines then
           local expect = string.format(
             "edit! %s",
-            paths.normalize(strs.split(lines[i], ":")[1], { expand = true })
+            paths.normalize(
+              strs.split(lines[i], ":")[1],
+              { double_backslash = true, expand = true }
+            )
           )
           assert_eq(act, expect)
         else
@@ -219,7 +227,7 @@ describe("helper.actions", function()
               first_space_pos + 1,
               strs.find(line, ":", first_space_pos + 1) - 1
             ),
-            { expand = true }
+            { double_backslash = true, expand = true }
           )
         )
         assert_eq(actual[i], expect)
@@ -339,7 +347,10 @@ describe("helper.actions", function()
         if i <= #lines then
           local expect = string.format(
             "edit! %s",
-            paths.normalize(strs.split(lines[i], ":")[1], { expand = true })
+            paths.normalize(
+              strs.split(lines[i], ":")[1],
+              { double_backslash = true, expand = true }
+            )
           )
           assert_eq(act, expect)
         else
@@ -370,7 +381,7 @@ describe("helper.actions", function()
                 first_space_pos + 1,
                 strs.find(line, ":", first_space_pos + 1) - 1
               ),
-              { expand = true }
+              { double_backslash = true, expand = true }
             )
           )
           assert_eq(act, expect)

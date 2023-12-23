@@ -18,7 +18,6 @@ describe("cfg._lsp_locations", function()
   local tbls = require("fzfx.lib.tables")
   local consts = require("fzfx.lib.constants")
   local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
   local termcolors = require("fzfx.commons.termcolors")
 
   local contexts = require("fzfx.helper.contexts")

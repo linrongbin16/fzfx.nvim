@@ -17,7 +17,6 @@ describe("helper.providers", function()
   local tbls = require("fzfx.lib.tables")
   local consts = require("fzfx.lib.constants")
   local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
 
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")

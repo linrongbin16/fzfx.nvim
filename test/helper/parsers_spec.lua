@@ -11,7 +11,7 @@ describe("helper.parsers", function()
   end)
 
   local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
+  local paths = require("fzfx.commons.paths")
   local fileios = require("fzfx.commons.fileios")
   local parsers_helper = require("fzfx.helper.parsers")
 
@@ -29,7 +29,8 @@ describe("helper.parsers", function()
         "~/github/linrongbin16/fzfx.nvim/test/goodbye world/goodbye.lua",
       }
       for i, line in ipairs(lines) do
-        local expect = paths.normalize(line, { expand = true })
+        local expect =
+          paths.normalize(line, { double_backslash = true, expand = true })
         local actual = parsers_helper.parse_find(expect)
         assert_eq(type(actual), "table")
         assert_eq(expect, actual.filename)
@@ -48,7 +49,7 @@ describe("helper.parsers", function()
         local first_space_pos = strs.find(line, " ")
         local expect = paths.normalize(
           vim.trim(line:sub(first_space_pos + 1)),
-          { expand = true }
+          { double_backslash = true, expand = true }
         )
         local actual = parsers_helper.parse_find(line)
         assert_eq(type(actual), "table")
@@ -83,7 +84,10 @@ describe("helper.parsers", function()
         assert_eq(actual.lineno, tonumber(line_splits[2]))
         assert_eq(
           actual.filename,
-          paths.normalize(line_splits[1], { expand = true })
+          paths.normalize(
+            line_splits[1],
+            { double_backslash = true, expand = true }
+          )
         )
       end
     end)
@@ -204,7 +208,10 @@ describe("helper.parsers", function()
         assert_eq(type(actual), "table")
         assert_eq(
           actual.filename,
-          paths.normalize(paths.join(cwd, expect), { expand = true })
+          paths.normalize(
+            paths.join(cwd, expect),
+            { double_backslash = true, expand = true }
+          )
         )
       end
     end)
@@ -233,7 +240,10 @@ describe("helper.parsers", function()
         assert_eq(type(actual), "table")
         assert_eq(
           actual.filename,
-          paths.normalize(paths.join(cwd, expect), { expand = true })
+          paths.normalize(
+            paths.join(cwd, expect),
+            { double_backslash = true, expand = true }
+          )
         )
       end
     end)
@@ -257,7 +267,10 @@ describe("helper.parsers", function()
         local expect = expects[i]
         assert_eq(
           actual,
-          paths.normalize(paths.join(cwd, expect), { expand = true })
+          paths.normalize(
+            paths.join(cwd, expect),
+            { double_backslash = true, expand = true }
+          )
         )
       end
     end)
@@ -288,8 +301,10 @@ describe("helper.parsers", function()
       local parse_eza_on_macos_linux = parsers_helper._make_parse_ls(6)
       for i, line in ipairs(lines) do
         local actual = parse_eza_on_macos_linux(line, CONTEXT).filename
-        local expect =
-          paths.normalize(paths.join(cwd, expects[i]), { expand = true })
+        local expect = paths.normalize(
+          paths.join(cwd, expects[i]),
+          { double_backslash = true, expand = true }
+        )
         assert_eq(actual, expect)
       end
     end)
@@ -318,7 +333,10 @@ describe("helper.parsers", function()
         assert_eq(actual.command, expect_command)
         assert_eq(
           actual.filename,
-          paths.normalize(expect_splits[1], { expand = true })
+          paths.normalize(
+            expect_splits[1],
+            { double_backslash = true, expand = true }
+          )
         )
         assert_eq(actual.lineno, tonumber(expect_splits[2]))
       end
@@ -355,7 +373,10 @@ describe("helper.parsers", function()
         assert_eq(actual.command, expect_command)
         assert_eq(
           actual.filename,
-          paths.normalize(expect_splits[1], { expand = true })
+          paths.normalize(
+            expect_splits[1],
+            { double_backslash = true, expand = true }
+          )
         )
         assert_eq(actual.lineno, tonumber(expect_splits[2]))
       end
@@ -401,7 +422,10 @@ describe("helper.parsers", function()
         assert_eq(actual.lhs, expect_lhs)
         assert_eq(
           actual.filename,
-          paths.normalize(expect_splits[1], { expand = true })
+          paths.normalize(
+            expect_splits[1],
+            { double_backslash = true, expand = true }
+          )
         )
         assert_eq(actual.lineno, tonumber(expect_splits[2]))
       end
@@ -437,8 +461,10 @@ describe("helper.parsers", function()
       }
       for _, line in ipairs(lines) do
         local actual = parsers_helper.parse_git_status(line)
-        local expect =
-          paths.normalize(strs.split(line, " ")[2], { expand = true })
+        local expect = paths.normalize(
+          strs.split(line, " ")[2],
+          { double_backslash = true, expand = true }
+        )
         assert_eq(type(actual), "table")
         assert_eq(expect, actual.filename)
       end
