@@ -83,10 +83,6 @@ M.pipename = function()
         string.format("%x", vim.loop.os_getpid()),
         string.format("%x", secs),
         string.format("%x", ms),
-        string.format(
-          "%x",
-          math.random(1, require("fzfx.lib.numbers").INT32_MAX)
-        ),
       }, "-")
     end
     return string.format([[\\.\pipe\nvim-pipe-%s]], uuid())
