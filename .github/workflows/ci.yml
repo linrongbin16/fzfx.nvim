@@ -55,6 +55,8 @@ jobs:
           commit_message: "chore(pr): auto-commit"
   unit_test:
     name: Unit Test
+    needs:
+      - luacheck
     strategy:
       matrix:
         nvim_version: [stable, nightly, v0.7.0]
@@ -101,7 +103,6 @@ jobs:
     name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
-      - luacheck
       - unit_test
     runs-on: ubuntu-latest
     steps:
