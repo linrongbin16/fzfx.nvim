@@ -78,6 +78,8 @@ M._make_edit_rg = function(lines)
       local setpos =
         string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
       table.insert(results, setpos)
+      local center_cursor = string.format('execute "normal! zz"')
+      table.insert(results, center_cursor)
     end
   end
   return results
@@ -139,6 +141,8 @@ M._make_edit_grep = function(lines)
       local setpos =
         string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
       table.insert(results, setpos)
+      local center_cursor = string.format('execute "normal! zz"')
+      table.insert(results, center_cursor)
     end
   end
   return results
