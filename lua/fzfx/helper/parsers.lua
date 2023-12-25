@@ -402,7 +402,7 @@ M._make_parse_ls = function(start_pos)
     end
 
     -- remove extra single/double quotes
-    local result = strings.trim_quotes(vim.trim(line:sub(pos)))
+    local result = strings.trim(vim.trim(line:sub(pos)), "['\"]+")
     return {
       filename = paths.normalize(
         paths.join(cwd, result),
@@ -468,7 +468,10 @@ M.parse_vim_command = function(line, context)
     -- )
     return { command = command, filename = filename, lineno = lineno }
   else
-    return { command = command, definition = strings.trim_quotes(desc_or_loc) }
+    return {
+      command = command,
+      definition = strings.trim(desc_or_loc, "['\"]+"),
+    }
   end
 end
 
@@ -530,7 +533,7 @@ M.parse_vim_keymap = function(line, context)
     return {
       lhs = lhs,
       mode = mode,
-      definition = strings.trim_quotes(rhs_or_loc),
+      definition = strings.trim(rhs_or_loc, "['\"]+"),
     }
   end
 end
