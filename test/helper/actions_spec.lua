@@ -189,7 +189,7 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_grep(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines + 1)
+      assert_eq(#actual, #lines + 2)
       for i, act in ipairs(actual) do
         if i <= #lines then
           local expect = string.format(
@@ -200,8 +200,10 @@ describe("helper.actions", function()
             )
           )
           assert_eq(act, expect)
-        else
+        elseif i == #lines + 1 then
           assert_eq(act, "call setpos('.', [0, 81, 1])")
+        else
+          assert_eq(act, 'execute "normal! ^zvzz"')
         end
       end
     end)
@@ -216,7 +218,7 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_grep(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines + 1)
+      assert_eq(#actual, #lines + 2)
       for i = 1, 5 do
         local line = lines[i]
         local first_space_pos = strings.find(line, " ")
@@ -233,6 +235,7 @@ describe("helper.actions", function()
         assert_eq(actual[i], expect)
       end
       assert_true(strings.find(actual[6], "setpos") > 0)
+      assert_eq(actual[7], 'execute "normal! ^zvzz"')
     end)
     it("run without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
@@ -342,7 +345,7 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_rg(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines + 1)
+      assert_eq(#actual, #lines + 2)
       for i, act in ipairs(actual) do
         if i <= #lines then
           local expect = string.format(
@@ -353,8 +356,10 @@ describe("helper.actions", function()
             )
           )
           assert_eq(act, expect)
-        else
+        elseif i == #lines + 1 then
           assert_eq(act, "call setpos('.', [0, 81, 71])")
+        else
+          assert_eq(act, 'execute "normal! ^zvzz"')
         end
       end
     end)
@@ -369,7 +374,7 @@ describe("helper.actions", function()
       }
       local actual = actions._make_edit_rg(lines)
       assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines + 1)
+      assert_eq(#actual, #lines + 2)
       for i, act in ipairs(actual) do
         if i <= #lines then
           local line = lines[i]
@@ -385,8 +390,10 @@ describe("helper.actions", function()
             )
           )
           assert_eq(act, expect)
-        else
+        elseif i == #lines + 1 then
           assert_eq(act, "call setpos('.', [0, 81, 72])")
+        else
+          assert_eq(act, 'execute "normal! ^zvzz"')
         end
       end
     end)
