@@ -14,17 +14,13 @@ describe("cfg.lsp_diagnostics", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
   local strings = require("fzfx.commons.strings")
-
   local consts = require("fzfx.lib.constants")
-
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local lsp_diagnostics_cfg = require("fzfx.cfg.lsp_diagnostics")
+  require("fzfx").setup()
 
   describe("lsp_diagnostics", function()
     it("_make_lsp_diagnostic_signs", function()

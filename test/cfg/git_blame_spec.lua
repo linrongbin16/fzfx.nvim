@@ -13,18 +13,13 @@ describe("cfg.git_blame", function()
   end)
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
-
-  require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
   local strings = require("fzfx.commons.strings")
-
   local consts = require("fzfx.lib.constants")
-
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local git_blame_cfg = require("fzfx.cfg.git_blame")
+  require("fzfx").setup()
 
   describe("git_blame", function()
     it("_git_blame_provider", function()

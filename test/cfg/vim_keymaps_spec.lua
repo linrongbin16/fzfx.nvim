@@ -13,18 +13,13 @@ describe("cfg.vim_keymaps", function()
   end)
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
-
-  require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
   local strings = require("fzfx.commons.strings")
-
   local consts = require("fzfx.lib.constants")
-
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local vim_keymaps_cfg = require("fzfx.cfg.vim_keymaps")
+  require("fzfx").setup()
 
   describe("[keymaps]", function()
     it("_make_vim_keymaps_provider all", function()

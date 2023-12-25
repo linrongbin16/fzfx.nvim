@@ -14,13 +14,10 @@ describe("cfg.vim_commands", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  local tbls = require("fzfx.lib.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
-
   local consts = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
-
   local vim_commands_cfg = require("fzfx.cfg.vim_commands")
   require("fzfx").setup()
 

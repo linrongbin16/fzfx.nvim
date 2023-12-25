@@ -14,17 +14,14 @@ describe("cfg._lsp_locations", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
-  local consts = require("fzfx.lib.constants")
   local strings = require("fzfx.commons.strings")
   local termcolors = require("fzfx.commons.termcolors")
-
+  local consts = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local _lsp_locations = require("fzfx.cfg._lsp_locations")
+  require("fzfx").setup()
 
   describe("_lsp_locations", function()
     local RANGE = {

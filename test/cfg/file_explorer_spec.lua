@@ -15,7 +15,6 @@ describe("cfg.file_explorer", function()
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
   require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
 

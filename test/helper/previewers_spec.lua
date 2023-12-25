@@ -13,11 +13,10 @@ describe("helper.previewers", function()
     vim.cmd([[edit README.md]])
   end)
 
-  local tbls = require("fzfx.lib.tables")
-  local consts = require("fzfx.lib.constants")
+  local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
-
+  local consts = require("fzfx.lib.constants")
   local previewers = require("fzfx.helper.previewers")
   local conf = require("fzfx.config")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
