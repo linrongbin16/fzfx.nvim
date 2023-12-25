@@ -12,15 +12,12 @@ M.tbl_not_empty = function(t)
   return type(t) == "table" and not vim.tbl_isempty(t)
 end
 
--- retrieve value from table like json field indexing via dot `.` delimiter.
--- for example when parameter `t = { a = { b = 1 } }` and `field = 'a.b'`, it will return `1`.
---
 --- @param t any?
 --- @param ... any
 --- @return any
 M.tbl_get = function(t, ...)
   if vim.fn.has("nvim-0.10") > 0 and type(vim.tbl_get) == "function" then
-    return vim.tbl_get(t, ...)
+    return type(t) == "table" and vim.tbl_get(t, ...) or nil
   end
 
   local e = t --[[@as table]]
