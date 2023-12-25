@@ -998,18 +998,34 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   end
   table.insert(fzf_opts, fzf_start_binder:build())
 
+  -- fzf_opts
   fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
   fzf_opts = vim.list_extend(
     fzf_opts,
     vim.deepcopy(conf.get_config().override_fzf_opts or {})
   )
   fzf_opts = fzf_helpers.preprocess_fzf_opts(fzf_opts)
+
+  -- actions
   local actions = pipeline_configs.actions
+
+  -- win_opts
   local win_opts = nil
+  local cfg_win_opts = tables.tbl_get(conf.get_config(), "popup", "win_opts")
+  if cfg_win_opts ~= nil then
+    if type(cfg_win_opts) == "function" then
+      win_opts = cfg_win_opts()
+    elseif type(cfg_win_opts) == "table" then
+      win_opts = cfg_win_opts
+    end
+  end
+
   if pipeline_configs.win_opts ~= nil then
-    local pipeline_win_opts = pipeline_configs.win_opts
-    if type(pipeline_win_opts) == "function" then
-      pipeline_win_opts = pipeline_win_opts()
+    local pipeline_win_opts = nil
+    if type(pipeline_configs.win_opts) == "function" then
+      pipeline_win_opts = pipeline_configs.win_opts()
+    elseif type(pipeline_configs.win_opts) == "table" then
+      pipeline_win_opts = pipeline_configs.win_opts
     end
     win_opts = vim.tbl_deep_extend(
       "force",
@@ -1024,6 +1040,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       { height = 1, width = 1, row = 0, col = 0 }
     )
   end
+
   local p = Popup:new(
     win_opts or {},
     query_command,
