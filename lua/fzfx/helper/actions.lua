@@ -1,7 +1,8 @@
-local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
+local strings = require("fzfx.commons.strings")
 local numbers = require("fzfx.commons.numbers")
+
+local consts = require("fzfx.lib.constants")
 
 local parsers = require("fzfx.helper.parsers")
 local prompts = require("fzfx.helper.prompts")
@@ -228,9 +229,9 @@ end
 M._make_git_checkout = function(lines, context)
   log.debug("|_make_git_checkout| lines:%s", vim.inspect(lines))
 
-  if tbls.list_not_empty(lines) then
+  if tables.list_not_empty(lines) then
     local line = lines[#lines]
-    if strs.not_empty(line) then
+    if strings.not_empty(line) then
       local parsed = parsers.parse_git_branch(line, context)
       return string.format([[!git checkout %s]], parsed.local_branch)
     end
@@ -243,7 +244,7 @@ end
 --- @param context fzfx.GitBranchesPipelineContext
 M.git_checkout = function(lines, context)
   local checkout = M._make_git_checkout(lines, context) --[[@as string]]
-  if strs.not_empty(checkout) then
+  if strings.not_empty(checkout) then
     local ok, result = pcall(vim.cmd --[[@as function]], checkout)
     assert(ok, vim.inspect(result))
   end
@@ -252,7 +253,7 @@ end
 --- @param lines string[]
 --- @return string?
 M._make_yank_git_commit = function(lines)
-  if tbls.list_not_empty(lines) then
+  if tables.list_not_empty(lines) then
     local line = lines[#lines]
     local parsed = parsers.parse_git_commit(line)
     return string.format("let @+ = '%s'", parsed.commit)
@@ -274,7 +275,7 @@ end
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return {input:string, mode:string}?
 M._make_feed_vim_command = function(lines, context)
-  if tbls.list_not_empty(lines) then
+  if tables.list_not_empty(lines) then
     local line = lines[#lines]
     local parsed = parsers.parse_vim_command(line, context)
     return { input = string.format([[:%s]], parsed.command), mode = "n" }
@@ -286,7 +287,7 @@ end
 --- @param context fzfx.VimCommandsPipelineContext
 M.feed_vim_command = function(lines, context)
   local feed = M._make_feed_vim_command(lines, context) --[[@as table]]
-  if tbls.tbl_not_empty(feed) then
+  if tables.tbl_not_empty(feed) then
     local ok, result = pcall(vim.fn.feedkeys, feed.input, feed.mode)
     assert(ok, vim.inspect(result))
   end
@@ -297,19 +298,19 @@ end
 --- @param context fzfx.VimKeyMapsPipelineContext
 --- @return {fn:"cmd"|"feedkeys"|nil, input:string?, mode:string?}?
 M._make_feed_vim_key = function(lines, context)
-  if tbls.list_not_empty(lines) then
+  if tables.list_not_empty(lines) then
     local line = lines[#lines]
     local parsed = parsers.parse_vim_keymap(line, context)
-    if strs.find(parsed.mode, "n") ~= nil then
-      if strs.startswith(parsed.lhs:lower(), "<plug>") then
+    if strings.find(parsed.mode, "n") ~= nil then
+      if strings.startswith(parsed.lhs, "<plug>", { ignorecase = true }) then
         return {
           fn = "cmd",
           input = string.format([[execute "normal \%s"]], parsed.lhs),
           mode = "n",
         }
       elseif
-        strs.startswith(parsed.lhs, "<")
-        and numbers.gt(strs.rfind(parsed.lhs, ">"), 0)
+        strings.startswith(parsed.lhs, "<")
+        and numbers.gt(strings.rfind(parsed.lhs, ">"), 0)
       then
         local tcodes =
           vim.api.nvim_replace_termcodes(parsed.lhs, true, false, true)
@@ -335,17 +336,17 @@ end
 M.feed_vim_key = function(lines, context)
   local parsed = M._make_feed_vim_key(lines, context) --[[@as table]]
   if
-    tbls.tbl_not_empty(parsed)
+    tables.tbl_not_empty(parsed)
     and parsed.fn == "cmd"
-    and strs.not_empty(parsed.input)
+    and strings.not_empty(parsed.input)
   then
     local ok, result = pcall(vim.cmd --[[@as function]], parsed.input)
     assert(ok, vim.inspect(result))
   elseif
-    tbls.tbl_not_empty(parsed)
+    tables.tbl_not_empty(parsed)
     and parsed.fn == "feedkeys"
-    and strs.not_empty(parsed.input)
-    and strs.not_empty(parsed.mode)
+    and strings.not_empty(parsed.input)
+    and strings.not_empty(parsed.mode)
   then
     local ok, result = pcall(vim.fn.feedkeys, parsed.input, parsed.mode)
     assert(ok, vim.inspect(result))

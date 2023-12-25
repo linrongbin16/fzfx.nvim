@@ -1,24 +1,17 @@
-local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
-local cmds = require("fzfx.lib.commands")
+local tables = require("fzfx.commons.tables")
 local termcolors = require("fzfx.commons.termcolors")
-local paths = require("fzfx.lib.paths")
+local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
-local tbls = require("fzfx.lib.tables")
+
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local contexts_helper = require("fzfx.helper.contexts")
-local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
 local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
-local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
-local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
@@ -157,7 +150,7 @@ M._make_lsp_locations_provider = function(opts)
   --- @return string[]|nil
   local function impl(query, context)
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
-    if tbls.tbl_empty(lsp_clients) then
+    if tables.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, "no active lsp clients.")
       return nil
     end
@@ -192,7 +185,7 @@ M._make_lsp_locations_provider = function(opts)
       log.echo(LogLevels.ERROR, err)
       return nil
     end
-    if tbls.tbl_empty(response) then
+    if tables.tbl_empty(response) then
       log.echo(LogLevels.INFO, "no lsp locations found.")
       return nil
     end
@@ -203,7 +196,7 @@ M._make_lsp_locations_provider = function(opts)
     do
       if
         client_id ~= nil
-        and tbls.tbl_not_empty(tbls.tbl_get(client_response, "result"))
+        and tables.tbl_not_empty(tables.tbl_get(client_response, "result"))
       then
         local lsp_loc = client_response.result
         if M._is_lsp_location(lsp_loc) then
@@ -222,7 +215,7 @@ M._make_lsp_locations_provider = function(opts)
       end
     end
 
-    if tbls.tbl_empty(results) then
+    if tables.tbl_empty(results) then
       log.echo(LogLevels.INFO, "no lsp locations found.")
       return nil
     end
@@ -359,7 +352,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
   local function impl(query, context)
     ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
-    if tbls.tbl_empty(lsp_clients) then
+    if tables.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, "no active lsp clients.")
       return nil
     end
@@ -482,7 +475,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       end
     end
 
-    if tbls.tbl_empty(results) then
+    if tables.tbl_empty(results) then
       log.echo(LogLevels.INFO, "no lsp call hierarchy found.")
       return nil
     end

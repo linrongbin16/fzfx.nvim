@@ -1,18 +1,13 @@
-local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
+local strings = require("fzfx.commons.strings")
 local apis = require("fzfx.commons.apis")
+local paths = require("fzfx.commons.paths")
+
+local consts = require("fzfx.lib.constants")
 local bufs = require("fzfx.lib.bufs")
-local cmds = require("fzfx.lib.commands")
-local paths = require("fzfx.lib.paths")
-local tbls = require("fzfx.lib.tables")
-local log = require("fzfx.lib.log")
-local LogLevels = require("fzfx.lib.log").LogLevels
 
 local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
@@ -96,7 +91,7 @@ M._buffers_provider = function(query, context)
   local current_path = M._buf_valid(context.bufnr)
       and paths.reduce(vim.api.nvim_buf_get_name(context.bufnr))
     or nil
-  if strs.not_empty(current_path) then
+  if strings.not_empty(current_path) then
     table.insert(bufpaths, current_path)
   end
 
@@ -130,7 +125,7 @@ M._delete_buffer = function(line)
     local bufpath = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
     filenames[bufpath] = bufnr
   end
-  if strs.not_empty(line) then
+  if strings.not_empty(line) then
     local parsed = parsers_helper.parse_find(line)
     local bufnr = filenames[parsed.filename]
     if type(bufnr) == "number" and bufs.buf_is_valid(bufnr) then

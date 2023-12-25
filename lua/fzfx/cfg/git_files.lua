@@ -1,16 +1,13 @@
+local tables = require("fzfx.commons.tables")
+local paths = require("fzfx.commons.paths")
+
 local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
 local cmds = require("fzfx.lib.commands")
-local paths = require("fzfx.lib.paths")
-local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
@@ -133,7 +130,7 @@ M._make_git_files_provider = function(opts)
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
     end
-    return tbls.tbl_get(opts, "current_folder") and { "git", "ls-files" }
+    return tables.tbl_get(opts, "current_folder") and { "git", "ls-files" }
       or { "git", "ls-files", ":/" }
   end
   return impl

@@ -14,17 +14,13 @@ describe("cfg.git_commits", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
+  local strings = require("fzfx.commons.strings")
   local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
-
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local git_commits_cfg = require("fzfx.cfg.git_commits")
+  require("fzfx").setup()
 
   describe("[_make_git_commits_provider]", function()
     it("all commits", function()
@@ -34,7 +30,7 @@ describe("cfg.git_commits", function()
         assert_eq(type(actual), "table")
         assert_eq(actual[1], "git")
         assert_eq(actual[2], "log")
-        assert_true(strs.startswith(actual[3], "--pretty="))
+        assert_true(strings.startswith(actual[3], "--pretty="))
         assert_eq(actual[4], "--date=short")
         assert_eq(actual[5], "--color=always")
       end
@@ -46,11 +42,11 @@ describe("cfg.git_commits", function()
         assert_eq(type(actual), "table")
         assert_eq(actual[1], "git")
         assert_eq(actual[2], "log")
-        assert_true(strs.startswith(actual[3], "--pretty="))
+        assert_true(strings.startswith(actual[3], "--pretty="))
         assert_eq(actual[4], "--date=short")
         assert_eq(actual[5], "--color=always")
         assert_eq(actual[6], "--")
-        assert_true(strs.endswith(actual[7], "README.md"))
+        assert_true(strings.endswith(actual[7], "README.md"))
       end
     end)
   end)

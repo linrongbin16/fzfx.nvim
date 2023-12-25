@@ -13,18 +13,13 @@ describe("cfg.vim_keymaps", function()
   end)
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
-
-  require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
+  local strings = require("fzfx.commons.strings")
   local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
-
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local vim_keymaps_cfg = require("fzfx.cfg.vim_keymaps")
+  require("fzfx").setup()
 
   describe("[keymaps]", function()
     it("_make_vim_keymaps_provider all", function()
@@ -135,8 +130,8 @@ describe("cfg.vim_keymaps", function()
       -- print(string.format("render vim keymaps:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       assert_true(#actual >= 1)
-      assert_true(strs.startswith(actual[1], "Key"))
-      assert_true(strs.endswith(actual[1], "Definition/Location"))
+      assert_true(strings.startswith(actual[1], "Key"))
+      assert_true(strings.endswith(actual[1], "Definition/Location"))
       for i = 2, #actual do
         assert_true(string.len(actual[i]) > 0)
       end

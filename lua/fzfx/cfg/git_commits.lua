@@ -1,21 +1,15 @@
+local tables = require("fzfx.commons.tables")
+
 local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
 local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
-local paths = require("fzfx.lib.paths")
-local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
-local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
-local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
@@ -137,7 +131,7 @@ M._make_git_commits_provider = function(opts)
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
     end
-    if tbls.tbl_get(opts, "buffer") then
+    if tables.tbl_get(opts, "buffer") then
       if not bufs.buf_is_valid(context.bufnr) then
         log.echo(
           LogLevels.INFO,

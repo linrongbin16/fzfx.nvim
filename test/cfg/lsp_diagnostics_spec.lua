@@ -14,17 +14,13 @@ describe("cfg.lsp_diagnostics", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
+  local strings = require("fzfx.commons.strings")
   local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
-
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local lsp_diagnostics_cfg = require("fzfx.cfg.lsp_diagnostics")
+  require("fzfx").setup()
 
   describe("lsp_diagnostics", function()
     it("_make_lsp_diagnostic_signs", function()
@@ -36,13 +32,13 @@ describe("cfg.lsp_diagnostics", function()
         assert_true(sign_item.severity >= 1 and sign_item.severity <= 4)
         assert_true(
           string.len(sign_item.name) > 0
-            and strs.startswith(sign_item.name, "DiagnosticSign")
+            and strings.startswith(sign_item.name, "DiagnosticSign")
         )
         assert_true(
-          strs.endswith(sign_item.name, "Error")
-            or strs.endswith(sign_item.name, "Warn")
-            or strs.endswith(sign_item.name, "Info")
-            or strs.endswith(sign_item.name, "Hint")
+          strings.endswith(sign_item.name, "Error")
+            or strings.endswith(sign_item.name, "Warn")
+            or strings.endswith(sign_item.name, "Info")
+            or strings.endswith(sign_item.name, "Hint")
         )
       end
     end)

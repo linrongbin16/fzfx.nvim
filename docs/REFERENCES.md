@@ -97,6 +97,7 @@ Each line is a git **branch name**.
 It's implemented with `git_branch` utilities:
 
 - [fzfx.helper.parsers.parse_git_branch](#parse_git_branch)
+- [fzfx.helper.actions.git_checkout](#git_checkout)
 
 ### [git_commits](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_commits.lua)
 
@@ -109,6 +110,7 @@ Each line starts with a git **commit number**.
 It's implemented with `git_commit` utilities:
 
 - [fzfx.helper.parsers.parse_git_commit](#parse_git_commit)
+- [fzfx.helper.actions.yank_git_commit](#yank_git_commit)
 
 ### [git_files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
 
@@ -209,6 +211,7 @@ Each line is constructed with command **name**, **attributes** and **definition/
 It's implemented with `vim_command` utilities:
 
 - [fzfx.helper.parsers.parse_vim_command](#parse_vim_command)
+- [fzfx.helper.actions.feed_vim_command](#feed_vim_command)
 
 ### [vim_keymaps](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_keymaps.lua)
 
@@ -221,6 +224,7 @@ Each line is constructed with key mapping **left hands**, **attributes** and **d
 It's implemented with `vim_keymap` utilities:
 
 - [fzfx.helper.parsers.parse_vim_keymap](#parse_vim_keymap)
+- [fzfx.helper.actions.feed_vim_key](#feed_vim_key)
 
 ## [fzfx.helper](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper)
 
@@ -306,7 +310,9 @@ Use `setqflist` command to send selected locations to qflist.
 
 Use `edit` and `setpos` command to open selected locations on `grep`, `git grep` results.
 
-- `setqflist_grep(lines:string[], context:fzfx.PipelineContext):nil`: use `setqflist` command to send selected locations to qflist.
+#### [`setqflist_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/cdb88202d551f3986f6b2240908b975697e0f511/lua/fzfx/helper/actions.lua?plain=1#L178)
+
+Use `setqflist` command to send selected locations to qflist.
 
 #### `git status`
 
@@ -319,61 +325,25 @@ The `git status` generated git status (changed file names), used by `FzfxGStatus
 ?? ../hello
 ```
 
-- `edit_git_status(lines:string[]):nil`: use `edit` command to open selected file names on `git status` results.
+#### [`edit_git_status`](https://github.com/linrongbin16/fzfx.nvim/blob/cdb88202d551f3986f6b2240908b975697e0f511/lua/fzfx/helper/actions.lua?plain=1#L372)
 
-#### `git branch`
+Use `edit` command to open selected file names on `git status` results.
 
-The `git branch (-r/-a)` generated git branches, used by `FzfxGBranches`. they look like:
+#### [`git_checkout`](https://github.com/linrongbin16/fzfx.nvim/blob/a8dff47d1c56385f4f2bb4c5f53e521fdbf3b2d7/lua/fzfx/helper/actions.lua?plain=1#L245)
 
-```
-* chore-lint
-  main
-  remotes/origin/HEAD -> origin/main
-  remotes/origin/chore-lint
-  remotes/origin/main
-```
+Use `git checkout` shell command to checkout selected branch on `git branch` results.
 
-- `git_checkout(lines:string[], fzfx.GitBranchesPipelineContext):nil`: use `git checkout` shell command to checkout selected branch on `git branch` results.
+#### [`yank_git_commit`](https://github.com/linrongbin16/fzfx.nvim/blob/a8dff47d1c56385f4f2bb4c5f53e521fdbf3b2d7/lua/fzfx/helper/actions.lua?plain=1#L265)
 
-#### `git log`/`git blame`
+Yank selected git commits on `git log`, `git blame` results.
 
-The `git log --short`, `git blame` generated git commits, used by `FzfxGCommits`, `FzfxGBlame`, they look like:
+#### [`feed_vim_command`](https://github.com/linrongbin16/fzfx.nvim/blob/a8dff47d1c56385f4f2bb4c5f53e521fdbf3b2d7/lua/fzfx/helper/actions.lua?plain=1#L288)
 
-```
-c2e32c 2023-11-30 linrongbin16 (HEAD -> chore-lint)
-5fe6ad 2023-11-29 linrongbin16 chore
-```
+Feed selected vim command to vim command line.
 
-- `yank_git_commit(lines:string[]):nil`: yank selected git commits on `git log`, `git blame` results.
+#### [`feed_vim_key`](https://github.com/linrongbin16/fzfx.nvim/blob/a8dff47d1c56385f4f2bb4c5f53e521fdbf3b2d7/lua/fzfx/helper/actions.lua?plain=1#L336)
 
-#### Builtin Vim Commands Renderer
-
-The builtin renderer generated vim commands, used by `FzfxCommands`. they look like:
-
-```
-Name              Bang|Bar|Nargs|Range|Complete         Desc/Location
-:!                N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1122
-:Next             N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124
-:bdelete          N   |Y  |N/A  |N/A  |N/A              "delete buffer"
-```
-
-- `feed_vim_command(lines:string[], context:fzfx.VimCommandsPipelineContext):nil`: input selected command in vim command line.
-
-#### Builtin Vim Key Mappings Renderer
-
-The builtin renderer generated vim key mappings, used by `FzfxKeyMaps`. they look like:
-
-```
-Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Location
-<C-F>                                            |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127
-<CR>                                             |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127
-<Plug>(YankyGPutAfterShiftRight)             n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369
-%                                            n   |N      |N     |Y      "<Plug>(matchup-%)"
-&                                            n   |Y      |N     |N      ":&&<CR>"
-<2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"
-```
-
-- `feed_vim_key(lines:string[], context:fzfx.VimKeyMapsPipelineContext):nil`: execute selected keys.
+Execute selected vim key mappings.
 
 #### `eza`/`lsd`/`ls`
 
@@ -387,7 +357,9 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 -rw-r--r--   1 linrongbin  staff   120B Sep  5 14:14 codecov.yml
 ```
 
-- `edit_ls(lines:string[], context:fzfx.FileExplorerPipelineContext):nil`: use `edit` command to open selected file path on `lsd`, `eza`, `ls` results.
+#### [`edit_ls`](https://github.com/linrongbin16/fzfx.nvim/blob/a8dff47d1c56385f4f2bb4c5f53e521fdbf3b2d7/lua/fzfx/helper/actions.lua?plain=1#L215)
+
+Use `edit` command to open selected file path on `ls`/`lsd`/`eza`/`exa` results.
 
 ### [fzfx.helper.previewer_labels](/lua/fzfx/helper/previewer_labels.lua)
 
@@ -483,100 +455,199 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 ### [fzfx.lib.commands](/lua/fzfx/lib/commands.lua)
 
-- `CommandResult`: command line result
+#### [`CommandResult`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/commands.lua?plain=1#L14)
 
-  - fields:
-    - `stdout:string[]|nil`: stdout lines.
-    - `stderr:string[]|nil`: stderr lines.
-    - `code:integer?`: exit code.
-    - `signal:integer?`: signal.
-  - `failed():boolean`: exit code `code ~= 0` and `stderr` not empty.
+The command line result.
 
-- `Command`: command line (blocking mode spawn).
+Contains below fields:
 
-  - `run(cmds:string[]):Command`: run command line, return handle.
-  - `failed():boolean`: same with `CommandResult`, use `Command.result` to get command line result.
+- `stdout:string[]|nil`: stdout lines.
+- `stderr:string[]|nil`: stderr lines.
+- `code:integer?`: exit code.
+- `signal:integer?`: signal.
 
-- `GitRootCommand`
+Contains below methods:
 
-  - `run():GitRootCommand`: run `git rev-parse --show-toplevel`, return handle.
-  - `failed():boolean`: same with `Command`, use `GitRootCommand.result` to get command line result.
-  - `output():string?`: get the command output.
+- `failed():boolean`: exit code `code ~= 0` and `stderr` not empty.
 
-- `GitBranchesCommand`
+#### [`Command`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/commands.lua?plain=1#L50)
 
-  - `run(remotes:boolean?):GitBranchesCommand`: run `git branch` or `git branch --remotes`, return handle.
-  - `failed():boolean`: same with `Command`, use `GitBranchesCommand.result` to get command line result.
-  - `output():string[]|nil`: get the command output.
+The command line (sync/blocking mode spawn.run).
 
-- `GitCurrentBranchCommand`
-  - `run():GitCurrentBranchCommand`: run `git rev-parse --abbrev-ref HEAD`, return handle.
-  - `failed():boolean`: same with `Command`, use `GitCurrentBranchCommand.result` to get command line result.
-  - `output():string?`: get the command output.
+Contains below methods:
+
+- `run(cmds:string[]):Command`: run command line, return handle.
+- `failed():boolean`: same with `CommandResult`, use `Command.result` to get command line result.
+
+#### [`GitRootCommand`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/commands.lua?plain=1#L98)
+
+Find git repository root directory.
+
+Contains below methods:
+
+- `run():GitRootCommand`: run `git rev-parse --show-toplevel`, return handle.
+- `failed():boolean`: same with `Command`, use `GitRootCommand.result` to get command line result.
+- `output():string?`: get the command output.
+
+#### [`GitBranchesCommand`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/commands.lua?plain=1#L134)
+
+Find git repository local or remote branches.
+
+Contains below methods:
+
+- `run(remotes:boolean?):GitBranchesCommand`: run `git branch` or `git branch --remotes`, return handle.
+- `failed():boolean`: same with `Command`, use `GitBranchesCommand.result` to get command line result.
+- `output():string[]|nil`: get the command output.
+
+#### [`GitCurrentBranchCommand`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/commands.lua?plain=1#L171)
+
+Find git repository current branch name.
+
+Contains below methods:
+
+- `run():GitCurrentBranchCommand`: run `git rev-parse --abbrev-ref HEAD`, return handle.
+- `failed():boolean`: same with `Command`, use `GitCurrentBranchCommand.result` to get command line result.
+- `output():string?`: get the command output.
 
 ### [fzfx.lib.constants](/lua/fzfx/lib/constants.lua)
 
 #### OS
 
-- `IS_WINDOWS`: is Windows.
-- `IS_MACOS`: is macOS.
-- `IS_BSD`: is BSD.
-- `IS_LINUX`: is UNIX or Linux.
+##### `IS_WINDOWS`
 
-#### Command Line
+Whether is Windows.
 
-bat/cat
+##### `IS_MACOS`
 
-- `HAS_BAT`: has `bat` command.
-- `BAT`: `bat` command.
-- `HAS_CAT`: has `cat` command.
-- `CAT`: `cat` command.
+Whether is macOS.
 
-rg/grep
+##### `IS_BSD`
 
-- `HAS_RG`: has `rg` command.
-- `RG`: `rg` command.
-- `HAS_GNU_GREP`: has gnu `grep`/`ggrep` command.
-- `GNU_GREP`: `grep`/`ggrep` command.
-- `HAS_GREP`: has `grep`/`ggrep` command.
-- `GREP`: `grep`/`ggrep` command.
+Whether is BSD.
 
-fd/find
+##### `IS_LINUX`
 
-- `HAS_FD`: has `fd` command.
-- `FD`: `fd` command.
-- `HAS_FIND`: has `find`/`gfind` command.
-- `FIND`: `find`/`gfind` command.
+Whether is UNIX or Linux.
 
-ls/lsd/eza
+#### Executables
 
-- `HAS_LS`: has `ls` command.
-- `LS`: `ls` command.
-- `HAS_LSD`: has `lsd` command.
-- `LSD`: `lsd` command.
-- `HAS_EZA`: has `eza`/`exa` command.
-- `EZA`: `eza`/`exa` command.
+##### `HAS_BAT`
 
-git/delta
+Whether has `bat` command.
 
-- `HAS_GIT`: has `git` command.
-- `GIT`: `git` command.
-- `HAS_DELTA`: has `delta` command.
-- `DELTA`: `delta` command.
+##### `BAT`
 
-echo
+`bat` or `batcat` command.
 
-- `HAS_ECHO`: has `echo` command.
-- `ECHO`: `echo` command.
+##### `HAS_CAT`
 
-curl
+Whether has `cat` command.
 
-- `HAS_CURL`: has `curl` command.
-- `CURL`: `curl` command.
+##### `CAT`
+
+`cat` command.
+
+##### `HAS_RG`
+
+Whether has `rg` command.
+
+##### `RG`
+
+`rg` command.
+
+##### `HAS_GNU_GREP`
+
+Whether has gnu `grep`/`ggrep` command.
+
+##### `GNU_GREP`
+
+`grep`/`ggrep` command.
+
+Whether `HAS_GREP`
+
+Whether has `grep`/`ggrep` command.
+
+##### `GREP`
+
+`grep`/`ggrep` command.
+
+##### `HAS_FD`
+
+Whether has `fd` command.
+
+##### `FD`
+
+`fd` or `fdfind` command.
+
+##### `HAS_FIND`
+
+Whether has `find`/`gfind` command.
+
+##### `FIND`
+
+`find` or `gfind` command.
+
+##### `HAS_LS`
+
+Whether has `ls` command.
+
+##### `LS`
+
+`ls` command.
+
+##### `HAS_LSD`
+
+Whether has `lsd` command.
+
+##### `LSD`
+
+`lsd` command.
+
+##### `HAS_EZA`
+
+Whether has `eza`/`exa` command.
+
+##### `EZA`
+
+`eza`/`exa` command.
+
+##### `HAS_GIT`
+
+Whether has `git` command.
+
+##### `GIT`
+
+`git` command.
+
+##### `HAS_DELTA`
+
+Whether has `delta` command.
+
+##### `DELTA`
+
+`delta` command.
+
+##### `HAS_ECHO`
+
+Whether has `echo` command.
+
+##### `ECHO`
+
+`echo` command.
+
+##### `HAS_CURL`
+
+Whether has `curl` command.
+
+##### `CURL`
+
+`curl` command.
 
 ### [fzfx.lib.deprecations](/lua/fzfx/lib/deprecations.lua)
 
-- `notify(fmt:string, ...:any):nil`: print deprecation notifications to command line.
+#### [`notify`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/deprecations.lua?plain=1#L7)
+
+Print deprecation notifications.
 
 ### [fzfx.lib.env](/lua/fzfx/lib/env.lua)
 
@@ -585,17 +656,27 @@ curl
 
 ### [fzfx.lib.log](/lua/fzfx/lib/log.lua)
 
-- `debug(fmt:string, ...)`: debug, the `fmt` is formatting messages in C style formatters, e.g. `%d`, `%s`.
-- `info(fmt:string, ...)`: info.
-- `warn(fmt:string, ...)`: warning.
-- `err(fmt:string, ...)`: error
-- `echo(level:LogLevels, fmt:string, ...)`: echo message in log `level`. this API will not been affected by log configs.
-  - `LogLevels.DEBUG`.
-  - `LogLevels.INFO`.
-  - `LogLevels.WARN`.
-  - `LogLevels.ERROR`.
-- `throw(fmt:string, ...)`: same with `err`, additionally it invokes `error()` API, which throw an error to user command line, requires user to press `ENTER` to continue.
-- `ensure(condition:boolean, fmt:string, ...)`: throw error to user if `condition` is false.
+!> This module requires initialize before using its APIs, except the [echo](#echo) API.
+
+#### [`LogLevels`/`LogLevelNames`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L5-L7)
+
+The logging level integer values and names.
+
+#### [`echo`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L21)
+
+Echo message in log `level`. this API doesn't require initialize `fzfx.lib.log` (e.g. `setup`).
+
+#### [`debug`/`info`/`warn`/`err`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L70-L134)
+
+Log debug, the message format placeholder `fmt` support lua string format, e.g. `%d`, `%s` placeholders.
+
+#### [`throw`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L139)
+
+Same with `err`, additionally it throws an error to user via lua `error()`.
+
+#### [`ensure`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L158)
+
+Write error logs and throw error to user only if `condition` is false.
 
 ### [fzfx.lib.bufs](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib/bufs.lua)
 
@@ -608,54 +689,3 @@ Whether buffer is valid.
 #### [`shellescape`](https://github.com/linrongbin16/fzfx.nvim/blob/4a0fd372be81a5aa506c32c2cacb78a279b460e5/lua/fzfx/lib/shells.lua?plain=1#L71)
 
 Cross-platform escape shell strings.
-
-### [fzfx.lib.paths](/lua/fzfx/lib/paths.lua)
-
-- `SEPARATOR`: `\\` for Windows, `/` for Unix/Linux.
-- `normalize(p:string, opts:{backslash:boolean?,expand:boolean?}?)`: normalize path string, replace `\\\\` to `\\`.
-  - set `opts.backslash=true` to replace `\\` to `/`, set `opts.expand=true` to expand path to full path, by default `opts={backslash=false, expand=false}`.
-- `join(...):string`: join multiple parts into path string with `SEPARATOR`.
-- `reduce2home(p:string):string`: reduce path string relative to `$HOME` directory.
-- `reduce(p:string):string`: reduce path string relative to `$HOME` directory or `$PWD` directory.
-- `shorten(p:string):string`: shorten path string to use single char to replace each level directories, e.g. `~/g/l/fzfx.nvim`.
-
-### [fzfx.lib.spawn](/lua/fzfx/lib/spawn.lua)
-
-- `Spawn`: run child process and process stdout/stderr line by line.
-  - `make(cmds:string[], opts:{on_stdout:fun(line:string):any, on_stderr:fun(line:string):any|nil, blocking:boolean}):Spawn`: prepare child process, return `Spawn` handle.
-    - `on_stdout(line:string):any`: invoke callback when there's a new line ready to process on `stdout` fd.
-    - `on_stderr(line:string):any`: invoke callback when there's a new line ready to process on `stderr` fd.
-    - `blocking`: set `blocking=true` if need to wait for child process finish, set `blocking=false` if no need to wait.
-  - `run():nil`: run child process, wait child process done for blocking mode, use `Spawn.result` to get the child process result.
-
-### [fzfx.lib.strings](/lua/fzfx/lib/strings.lua)
-
-- `empty(s:string?):boolean`/`not_empty(s:string?):boolean`: detect whether a string is empty or not.
-- `blank(s:string?):boolean`/`not_blank(s:string?):boolean`: detect whether a string is blank or not.
-- `find(s:string, t:string, start:integer?):integer?`: find first `t` in `s` start from `start`, by default `start=1`.
-- `rfind(s:string, t:string, rstart:integer?):integer?`: reversely find last `t` in `s` start from `rstart`, by default `rstart=#s`.
-- `ltrim(s:string, t:string):string`/`rtrim(s:string, t:string):string`: trim left/right `t` from `s`, by default `t` is whitespaces (`\n\t\r `).
-- `split(s:string, delimiter:string, opts:{plain:boolean?,trimempty:boolean?}?):string`: split `s` by `delimiter`.
-  - set `opts.plain=false` to use lua pattern matching, set `opts.trimempty=false` to not remove whitespaces from results. by default `opts={plain=true, trimempty=true}`.
-- `startswith(s:string, t:string):boolean`/`endswith(s:string, t:string):boolean`: detect whether `s` is start/end with `t`.
-- `isspace(c:string):boolean`: detect whether character `c` is whitespace (`\n\t\r `), `c` length must be 1.
-- `isalnum(c:string):boolean`: detect whether character `c` is letter or number (`a-zA-Z0-9`), `c` length must be 1.
-- `isdigit(c:string):boolean`: detect whether character `c` is number (`0-9`), `c` length must be 1.
-- `ishex(c:string):boolean`: detect whether character `c` is hex number (`a-eA-E0-9`), `c` length must be 1.
-- `isalpha(c:string):boolean`: detect whether character `c` is letter (`a-zA-Z`), `c` length must be 1.
-- `islower(c:string):boolean`/`isupper(c:string):boolean`: detect whether character `c` is lower letter (`a-z`) or upper letter (`A-Z`), `c` length must be 1.
-- `uuid(delimiter:string?):string`: make uuid, by default `delimiter='-'`.
-
-### [fzfx.lib.tables](/lua/fzfx/lib/tables.lua)
-
-#### Table
-
-- `tbl_empty(t:any):boolean`/`tbl_not_empty(t:any):boolean`: detect whether a table is empty or not.
-- `tbl_get(t:any, field:string):any`: retrieve value from table, with json-like field indexing via dot `.` delimiter, for example when parameter `t = {a = { b = 1 }}`, `field = 'a.b'`, this function will return `1`. When `field = ''` returns `t` itself, when field not exist returns `nil`.
-
-#### List
-
-- `list_empty(l:any):boolean`/`list_not_empty(l:any):boolean`: detect whether a list(table) is empty or not.
-- `list_index(i:integer, n:integer):integer`: calculate list index for both positive or negative. `n` is the length of list.
-  - if `i > 0`, `i` is in range `[1,n]`.
-  - if `i < 0`, `i` is in range `[-1,-n]`, `-1` maps to last position (e.g. `n`), `-n` maps to first position (e.g. `1`).

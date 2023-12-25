@@ -15,10 +15,10 @@ describe("cfg.file_explorer", function()
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
   require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
+  local strings = require("fzfx.commons.strings")
+  local paths = require("fzfx.commons.paths")
+
   local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
 
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
@@ -71,14 +71,19 @@ describe("cfg.file_explorer", function()
       --     )
       -- )
       assert_eq(type(actual1), "string")
-      assert_true(strs.find(actual1, "echo") > 0)
+      assert_true(strings.find(actual1, "echo") > 0)
       assert_true(
-        type(strs.find(actual1, "eza")) == "number"
-          or type(strs.find(actual1, "ls")) == "number"
+        type(strings.find(actual1, "eza")) == "number"
+          or type(strings.find(actual1, "ls")) == "number"
       )
       assert_true(
-        strs.find(actual1, paths.normalize(vim.fn.getcwd(), { expand = true }))
-          > 0
+        strings.find(
+          actual1,
+          paths.normalize(
+            vim.fn.getcwd(),
+            { double_backslash = true, expand = true }
+          )
+        ) > 0
       )
       local f2 = file_explorer_cfg._make_file_explorer_provider("-lha")
       assert_eq(type(f2), "function")
@@ -90,14 +95,19 @@ describe("cfg.file_explorer", function()
       --     )
       -- )
       assert_eq(type(actual2), "string")
-      assert_true(strs.find(actual2, "echo") > 0)
+      assert_true(strings.find(actual2, "echo") > 0)
       assert_true(
-        type(strs.find(actual2, "eza")) == "number"
-          or type(strs.find(actual2, "ls")) == "number"
+        type(strings.find(actual2, "eza")) == "number"
+          or type(strings.find(actual2, "ls")) == "number"
       )
       assert_true(
-        strs.find(actual2, paths.normalize(vim.fn.getcwd(), { expand = true }))
-          > 0
+        strings.find(
+          actual2,
+          paths.normalize(
+            vim.fn.getcwd(),
+            { double_backslash = true, expand = true }
+          )
+        ) > 0
       )
     end)
     it("_directory_previewer", function()

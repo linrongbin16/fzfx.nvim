@@ -1,17 +1,5 @@
-local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
-local cmds = require("fzfx.lib.commands")
 local termcolors = require("fzfx.commons.termcolors")
-local paths = require("fzfx.lib.paths")
-local tbls = require("fzfx.lib.tables")
-
-local log = require("fzfx.lib.log")
-local LogLevels = require("fzfx.lib.log").LogLevels
-
-local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
-local actions_helper = require("fzfx.helper.actions")
-local labels_helper = require("fzfx.helper.previewer_labels")
+local consts = require("fzfx.lib.constants")
 
 local M = {}
 

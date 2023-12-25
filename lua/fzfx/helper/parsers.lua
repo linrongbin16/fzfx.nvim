@@ -1,10 +1,11 @@
-local consts = require("fzfx.lib.constants")
-local paths = require("fzfx.lib.paths")
-local env = require("fzfx.lib.env")
-local strs = require("fzfx.lib.strings")
+local tables = require("fzfx.commons.tables")
+local strings = require("fzfx.commons.strings")
 local numbers = require("fzfx.commons.numbers")
 local fileios = require("fzfx.commons.fileios")
-local tbls = require("fzfx.lib.tables")
+local paths = require("fzfx.commons.paths")
+
+local consts = require("fzfx.lib.constants")
+local env = require("fzfx.lib.env")
 
 local M = {}
 
@@ -25,13 +26,18 @@ local M = {}
 M.parse_find = function(line)
   local filename = nil
   if env.icon_enabled() then
-    local first_icon_pos = strs.find(line, " ")
+    local first_icon_pos = strings.find(line, " ")
     assert(type(first_icon_pos) == "number")
     filename = line:sub(first_icon_pos + 1)
   else
     filename = line
   end
-  return { filename = paths.normalize(filename, { expand = true }) }
+  return {
+    filename = paths.normalize(
+      filename,
+      { double_backslash = true, expand = true }
+    ),
+  }
 end
 
 -- parse lines from grep. looks like:
@@ -49,14 +55,14 @@ M.parse_grep = function(line)
   local lineno = nil
   local text = nil
 
-  local first_colon_pos = strs.find(line, ":")
+  local first_colon_pos = strings.find(line, ":")
   assert(
     type(first_colon_pos) == "number",
     string.format("failed to parse grep lines:%s", vim.inspect(line))
   )
   filename = line:sub(1, first_colon_pos - 1)
 
-  local second_colon_pos = strs.find(line, ":", first_colon_pos + 1)
+  local second_colon_pos = strings.find(line, ":", first_colon_pos + 1)
   if numbers.gt(second_colon_pos, 0) then
     lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
     text = line:sub(second_colon_pos + 1)
@@ -95,21 +101,21 @@ M.parse_rg = function(line)
   local column = nil
   local text = nil
 
-  local first_colon_pos = strs.find(line, ":")
+  local first_colon_pos = strings.find(line, ":")
   assert(
     type(first_colon_pos) == "number",
     string.format("failed to parse rg lines:%s", vim.inspect(line))
   )
   filename = line:sub(1, first_colon_pos - 1)
 
-  local second_colon_pos = strs.find(line, ":", first_colon_pos + 1)
+  local second_colon_pos = strings.find(line, ":", first_colon_pos + 1)
   assert(
     type(second_colon_pos) == "number",
     string.format("failed to parse rg lines:%s", vim.inspect(line))
   )
   lineno = line:sub(first_colon_pos + 1, second_colon_pos - 1)
 
-  local third_colon_pos = strs.find(line, ":", second_colon_pos + 1)
+  local third_colon_pos = strings.find(line, ":", second_colon_pos + 1)
   if numbers.gt(third_colon_pos, 0) then
     column = line:sub(second_colon_pos + 1, third_colon_pos - 1)
     text = line:sub(third_colon_pos + 1)
@@ -146,10 +152,15 @@ end
 M.parse_git_status = function(line)
   line = vim.trim(line)
   local i = 1
-  while i <= #line and not strs.isspace(line:sub(i, i)) do
+  while i <= #line and not strings.isspace(line:sub(i, i)) do
     i = i + 1
   end
-  return { filename = paths.normalize(line:sub(i), { expand = true }) }
+  return {
+    filename = paths.normalize(
+      line:sub(i),
+      { double_backslash = true, expand = true }
+    ),
+  }
 end
 
 -- parse lines from `git branch` and `git branch --remotes`. looks like:
@@ -170,7 +181,7 @@ M.parse_git_branch = function(line, context)
   --- @param t string
   --- @return boolean, string
   local function _remove_prefix(s, t)
-    if strs.startswith(s, t) then
+    if strings.startswith(s, t) then
       return true, vim.trim(s:sub(#t + 1))
     else
       return false, s
@@ -205,7 +216,7 @@ M.parse_git_branch = function(line, context)
   --- @param l string
   --- @return string
   local function _remove_remotes_origin_slash(l)
-    if tbls.list_not_empty(context.remotes) then
+    if tables.list_not_empty(context.remotes) then
       for _, r in ipairs(context.remotes) do
         local success, l1 = _remove_prefix(l, string.format("remotes/%s/", r))
         if success then
@@ -228,7 +239,7 @@ M.parse_git_branch = function(line, context)
   --- @param l string
   --- @return string
   local function _remove_origin_slash(l)
-    if tbls.list_not_empty(context.remotes) then
+    if tables.list_not_empty(context.remotes) then
       for _, r in ipairs(context.remotes) do
         local success, l1 = _remove_prefix(l, string.format("%s/", r))
         if success then
@@ -248,7 +259,7 @@ M.parse_git_branch = function(line, context)
   --- @param l string
   --- @return string
   local function _remove_right_arrow(l)
-    local arrow_pos = strs.find(l, "->")
+    local arrow_pos = strings.find(l, "->")
     if numbers.gt(arrow_pos, 0) then
       return vim.trim(l:sub(arrow_pos + 3))
     end
@@ -262,7 +273,7 @@ M.parse_git_branch = function(line, context)
   local_branch = _remove_star(local_branch)
   remote_branch = local_branch
 
-  if strs.find(local_branch, "->") ~= nil then
+  if strings.find(local_branch, "->") ~= nil then
     -- remove right arrow ("->") prefix
     local_branch = _remove_right_arrow(local_branch)
     remote_branch = local_branch
@@ -286,7 +297,7 @@ end
 --- @param line string
 --- @return {commit:string}
 M.parse_git_commit = function(line)
-  local first_space_pos = strs.find(line, " ")
+  local first_space_pos = strings.find(line, " ")
   assert(
     numbers.gt(first_space_pos, 0),
     string.format("failed to parse git commit line:%s", vim.inspect(line))
@@ -368,7 +379,7 @@ M._make_parse_ls = function(start_pos)
   local function impl(line, context)
     local cwd = fileios.readfile(context.cwd, { trim = true })
     assert(
-      strs.not_empty(cwd),
+      strings.not_empty(cwd),
       string.format(
         "failed to parse file explorer context:%s",
         vim.inspect(cwd)
@@ -376,7 +387,7 @@ M._make_parse_ls = function(start_pos)
     )
     local pos = 1
     for i = 1, start_pos do
-      pos = strs.find(line, " ", pos) --[[@as integer]]
+      pos = strings.find(line, " ", pos) --[[@as integer]]
       assert(
         numbers.gt(pos, 0),
         string.format("failed to parse ls/eza/lsd lines:%s", vim.inspect(line))
@@ -391,9 +402,12 @@ M._make_parse_ls = function(start_pos)
     end
 
     -- remove extra single/double quotes
-    local result = strs.trim_quotes(vim.trim(line:sub(pos)))
+    local result = strings.trim(vim.trim(line:sub(pos)), "['\"]+")
     return {
-      filename = paths.normalize(paths.join(cwd, result), { expand = true }),
+      filename = paths.normalize(
+        paths.join(cwd, result),
+        { double_backslash = true, expand = true }
+      ),
     }
   end
   return impl
@@ -418,7 +432,7 @@ M.parse_lsd = M._make_parse_ls(10)
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return {command:string,filename:string,lineno:integer?}|{command:string,definition:string}
 M.parse_vim_command = function(line, context)
-  local first_space_pos = strs.find(line, " ")
+  local first_space_pos = strings.find(line, " ")
   assert(
     numbers.gt(first_space_pos, 0),
     string.format("failed to parse vim command lines:%s", vim.inspect(line))
@@ -432,10 +446,10 @@ M.parse_vim_command = function(line, context)
   -- )
   if
     string.len(desc_or_loc) > 0
-    and not strs.startswith(desc_or_loc, '"')
-    and not strs.endswith(desc_or_loc, '"')
+    and not strings.startswith(desc_or_loc, '"')
+    and not strings.endswith(desc_or_loc, '"')
   then
-    local split_pos = strs.rfind(desc_or_loc, ":")
+    local split_pos = strings.rfind(desc_or_loc, ":")
     local splits = {
       desc_or_loc:sub(1, split_pos - 1),
       desc_or_loc:sub(split_pos + 1),
@@ -444,7 +458,8 @@ M.parse_vim_command = function(line, context)
     --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
-    local filename = paths.normalize(splits[1], { expand = true })
+    local filename =
+      paths.normalize(splits[1], { double_backslash = true, expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
     --     "|fzfx.helper.parsers - parse_vim_commands| filename:%s, lineno:%s",
@@ -453,7 +468,10 @@ M.parse_vim_command = function(line, context)
     -- )
     return { command = command, filename = filename, lineno = lineno }
   else
-    return { command = command, definition = strs.trim_quotes(desc_or_loc) }
+    return {
+      command = command,
+      definition = strings.trim(desc_or_loc, "['\"]+"),
+    }
   end
 end
 
@@ -474,13 +492,13 @@ end
 --- @param context fzfx.VimKeyMapsPipelineContext
 --- @return {lhs:string,mode:string,filename:string,lineno:integer?}|{lhs:string,definition:string}
 M.parse_vim_keymap = function(line, context)
-  local first_space_pos = strs.find(line, " ")
+  local first_space_pos = strings.find(line, " ")
   assert(
     numbers.gt(first_space_pos, 0),
     string.format("failed to parse vim keymap lines:%s", vim.inspect(line))
   )
   local lhs = vim.trim(line:sub(1, first_space_pos - 1))
-  local first_bar_pos = strs.find(line, "|", first_space_pos + 1)
+  local first_bar_pos = strings.find(line, "|", first_space_pos + 1)
   local mode = vim.trim(line:sub(first_space_pos + 1, first_bar_pos - 1))
   local rhs_or_loc =
     vim.trim(line:sub(context.key_width + 1 + context.opts_width + 1 + 1))
@@ -490,10 +508,10 @@ M.parse_vim_keymap = function(line, context)
   -- )
   if
     string.len(rhs_or_loc) > 0
-    and not strs.startswith(rhs_or_loc, '"')
-    and not strs.endswith(rhs_or_loc, '"')
+    and not strings.startswith(rhs_or_loc, '"')
+    and not strings.endswith(rhs_or_loc, '"')
   then
-    local split_pos = strs.rfind(rhs_or_loc, ":")
+    local split_pos = strings.rfind(rhs_or_loc, ":")
     local splits = {
       rhs_or_loc:sub(1, split_pos - 1),
       rhs_or_loc:sub(split_pos + 1),
@@ -502,7 +520,8 @@ M.parse_vim_keymap = function(line, context)
     --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
-    local filename = paths.normalize(splits[1], { expand = true })
+    local filename =
+      paths.normalize(splits[1], { double_backslash = true, expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
     --     "|fzfx.helper.parsers - parse_vim_commands| filename:%s, lineno:%s",
@@ -511,7 +530,11 @@ M.parse_vim_keymap = function(line, context)
     -- )
     return { lhs = lhs, mode = mode, filename = filename, lineno = lineno }
   else
-    return { lhs = lhs, mode = mode, definition = strs.trim_quotes(rhs_or_loc) }
+    return {
+      lhs = lhs,
+      mode = mode,
+      definition = strings.trim(rhs_or_loc, "['\"]+"),
+    }
   end
 end
 

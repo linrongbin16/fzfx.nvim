@@ -14,17 +14,13 @@ describe("cfg.git_live_grep", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
+  local tables = require("fzfx.commons.tables")
   local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
-
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local git_live_grep_cfg = require("fzfx.cfg.git_live_grep")
+  require("fzfx").setup()
 
   describe("git_live_grep", function()
     it("_git_live_grep_provider", function()

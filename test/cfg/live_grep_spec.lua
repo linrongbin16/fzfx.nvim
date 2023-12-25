@@ -15,13 +15,8 @@ describe("cfg.live_grep", function()
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
   require("fzfx").setup()
-  local tbls = require("fzfx.lib.tables")
   local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
-
   local contexts = require("fzfx.helper.contexts")
-
   local live_grep_cfg = require("fzfx.cfg.live_grep")
 
   describe("[_get_buf_path]", function()

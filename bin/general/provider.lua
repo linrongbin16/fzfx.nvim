@@ -4,11 +4,11 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
 local fileios = require("fzfx.commons.fileios")
 local jsons = require("fzfx.commons.jsons")
-local strs = require("fzfx.lib.strings")
-local spawn = require("fzfx.lib.spawn")
+local strings = require("fzfx.commons.strings")
+local spawn = require("fzfx.commons.spawn")
 local shell_helpers = require("fzfx.detail.shell_helpers")
 shell_helpers.setup("provider")
 
@@ -68,18 +68,20 @@ vim.opt.runtimepath:append(vim.fn.stdpath("config"))
 --- @type {decorate:fun(line:string):string}
 local decorator_module = nil
 if metaopts.provider_decorator ~= nil then
-  if strs.not_empty(tbls.tbl_get(metaopts.provider_decorator, "rtp")) then
-    vim.opt.runtimepath:append(tbls.tbl_get(metaopts.provider_decorator, "rtp"))
+  if strings.not_empty(tables.tbl_get(metaopts.provider_decorator, "rtp")) then
+    vim.opt.runtimepath:append(
+      tables.tbl_get(metaopts.provider_decorator, "rtp")
+    )
   end
   shell_helpers.log_ensure(
-    strs.not_empty(tbls.tbl_get(metaopts.provider_decorator, "module")),
+    strings.not_empty(tables.tbl_get(metaopts.provider_decorator, "module")),
     "decorator module cannot be empty: %s",
     vim.inspect(metaopts.provider_decorator)
   )
   local module_name = metaopts.provider_decorator.module
   local ok, module_or_err = pcall(require, module_name)
   shell_helpers.log_ensure(
-    ok and tbls.tbl_not_empty(module_or_err),
+    ok and tables.tbl_not_empty(module_or_err),
     "failed to load decorator:%s, error:%s",
     vim.inspect(metaopts.provider_decorator),
     vim.inspect(module_or_err)
@@ -89,11 +91,11 @@ end
 
 --- @param line string?
 local function println(line)
-  if strs.empty(line) then
+  if strings.empty(line) then
     return
   end
-  line = strs.rtrim(line --[[@as string]])
-  if tbls.tbl_not_empty(decorator_module) then
+  line = strings.rtrim(line --[[@as string]])
+  if tables.tbl_not_empty(decorator_module) then
     -- shell_helpers.log_debug("decorate line:%s", vim.inspect(line))
     vim.schedule(function()
       local rendered_ok, rendered_line_or_err =
@@ -117,7 +119,7 @@ if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
   --- @type string
   local cmd = fileios.readfile(resultfile, { trim = true }) --[[@as string]]
   shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
-  if cmd == nil or string.len(cmd) == 0 then
+  if strings.empty(cmd) then
     os.exit(0)
     return
   end
@@ -140,25 +142,25 @@ elseif
 then
   local cmd = fileios.readfile(resultfile, { trim = true }) --[[@as string]]
   shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
-  if cmd == nil or string.len(cmd) == 0 then
+  if strings.empty(cmd) then
     os.exit(0)
     return
   end
 
   local cmd_splits = jsons.decode(cmd) --[[@as table]]
-  if tbls.tbl_empty(cmd_splits) then
+  if tables.tbl_empty(cmd_splits) then
     os.exit(0)
     return
   end
 
   local sp =
-    spawn.Spawn:make(cmd_splits, { on_stdout = println, blocking = true })
+    spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
   shell_helpers.log_ensure(
     sp ~= nil,
     "failed to open async command: %s",
     vim.inspect(cmd_splits)
   )
-  sp:run()
+  sp:wait()
 elseif metaopts.provider_type == "list" then
   local reader = fileios.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
   shell_helpers.log_ensure(

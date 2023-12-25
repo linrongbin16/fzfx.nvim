@@ -10,8 +10,8 @@ describe("helper.parsers", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
-  local strs = require("fzfx.lib.strings")
-  local paths = require("fzfx.lib.paths")
+  local strings = require("fzfx.commons.strings")
+  local paths = require("fzfx.commons.paths")
   local fileios = require("fzfx.commons.fileios")
   local parsers_helper = require("fzfx.helper.parsers")
 
@@ -29,7 +29,8 @@ describe("helper.parsers", function()
         "~/github/linrongbin16/fzfx.nvim/test/goodbye world/goodbye.lua",
       }
       for i, line in ipairs(lines) do
-        local expect = paths.normalize(line, { expand = true })
+        local expect =
+          paths.normalize(line, { double_backslash = true, expand = true })
         local actual = parsers_helper.parse_find(expect)
         assert_eq(type(actual), "table")
         assert_eq(expect, actual.filename)
@@ -45,10 +46,10 @@ describe("helper.parsers", function()
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/world.txt",
       }
       for i, line in ipairs(lines) do
-        local first_space_pos = strs.find(line, " ")
+        local first_space_pos = strings.find(line, " ")
         local expect = paths.normalize(
           vim.trim(line:sub(first_space_pos + 1)),
-          { expand = true }
+          { double_backslash = true, expand = true }
         )
         local actual = parsers_helper.parse_find(line)
         assert_eq(type(actual), "table")
@@ -79,11 +80,14 @@ describe("helper.parsers", function()
         assert_eq(type(actual.filename), "string")
         assert_eq(type(actual.lineno), "number")
 
-        local line_splits = strs.split(line, ":")
+        local line_splits = strings.split(line, ":")
         assert_eq(actual.lineno, tonumber(line_splits[2]))
         assert_eq(
           actual.filename,
-          paths.normalize(line_splits[1], { expand = true })
+          paths.normalize(
+            line_splits[1],
+            { double_backslash = true, expand = true }
+          )
         )
       end
     end)
@@ -101,7 +105,7 @@ describe("helper.parsers", function()
         assert_eq(type(actual), "table")
         assert_eq(type(actual.filename), "string")
         assert_eq(type(actual.lineno), "number")
-        local line_splits = strs.split(line, ":")
+        local line_splits = strings.split(line, ":")
         assert_eq(actual.lineno, tonumber(line_splits[2]))
         assert_eq(
           actual.filename,
@@ -127,7 +131,7 @@ describe("helper.parsers", function()
         assert_eq(type(actual.filename), "string")
         assert_eq(type(actual.lineno), "number")
         assert_eq(type(actual.column), "number")
-        local line_splits = strs.split(line, ":")
+        local line_splits = strings.split(line, ":")
         assert_eq(
           actual.filename,
           parsers_helper.parse_find(line_splits[1]).filename
@@ -151,7 +155,7 @@ describe("helper.parsers", function()
         assert_eq(type(actual.filename), "string")
         assert_eq(type(actual.lineno), "number")
         assert_eq(type(actual.column), "number")
-        local line_splits = strs.split(line, ":")
+        local line_splits = strings.split(line, ":")
         assert_eq(
           actual.filename,
           parsers_helper.parse_find(line_splits[1]).filename
@@ -204,7 +208,10 @@ describe("helper.parsers", function()
         assert_eq(type(actual), "table")
         assert_eq(
           actual.filename,
-          paths.normalize(paths.join(cwd, expect), { expand = true })
+          paths.normalize(
+            paths.join(cwd, expect),
+            { double_backslash = true, expand = true }
+          )
         )
       end
     end)
@@ -233,7 +240,10 @@ describe("helper.parsers", function()
         assert_eq(type(actual), "table")
         assert_eq(
           actual.filename,
-          paths.normalize(paths.join(cwd, expect), { expand = true })
+          paths.normalize(
+            paths.join(cwd, expect),
+            { double_backslash = true, expand = true }
+          )
         )
       end
     end)
@@ -257,7 +267,10 @@ describe("helper.parsers", function()
         local expect = expects[i]
         assert_eq(
           actual,
-          paths.normalize(paths.join(cwd, expect), { expand = true })
+          paths.normalize(
+            paths.join(cwd, expect),
+            { double_backslash = true, expand = true }
+          )
         )
       end
     end)
@@ -288,8 +301,10 @@ describe("helper.parsers", function()
       local parse_eza_on_macos_linux = parsers_helper._make_parse_ls(6)
       for i, line in ipairs(lines) do
         local actual = parse_eza_on_macos_linux(line, CONTEXT).filename
-        local expect =
-          paths.normalize(paths.join(cwd, expects[i]), { expand = true })
+        local expect = paths.normalize(
+          paths.join(cwd, expects[i]),
+          { double_backslash = true, expand = true }
+        )
         assert_eq(actual, expect)
       end
     end)
@@ -309,16 +324,19 @@ describe("helper.parsers", function()
         ":Next             N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124",
       }
       for _, line in ipairs(lines) do
-        local first_space_pos = strs.find(line, " ")
+        local first_space_pos = strings.find(line, " ")
         local expect_command = line:sub(1, first_space_pos - 1)
-        local last_space = strs.rfind(line, " ")
-        local expect_splits = strs.split(line:sub(last_space + 1), ":")
+        local last_space = strings.rfind(line, " ")
+        local expect_splits = strings.split(line:sub(last_space + 1), ":")
         local actual = parsers_helper.parse_vim_command(line, CONTEXT)
         assert_eq(type(actual), "table")
         assert_eq(actual.command, expect_command)
         assert_eq(
           actual.filename,
-          paths.normalize(expect_splits[1], { expand = true })
+          paths.normalize(
+            expect_splits[1],
+            { double_backslash = true, expand = true }
+          )
         )
         assert_eq(actual.lineno, tonumber(expect_splits[2]))
       end
@@ -328,9 +346,9 @@ describe("helper.parsers", function()
         ':bdelete          N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
       }
       for _, line in ipairs(lines) do
-        local first_space_pos = strs.find(line, " ")
+        local first_space_pos = strings.find(line, " ")
         local expect_command = line:sub(1, first_space_pos - 1)
-        local double_quote_before_last = strs.rfind(line, '"', #line - 1)
+        local double_quote_before_last = strings.rfind(line, '"', #line - 1)
         local expect_def =
           vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
         local actual = parsers_helper.parse_vim_command(line, CONTEXT)
@@ -346,16 +364,19 @@ describe("helper.parsers", function()
         "Barbecue          Y   |Y  |N/A  |N/A  |N/A              ~/.config/nvim/lazy/barbecue/lua/barbecue.lua:73",
       }
       for _, line in ipairs(lines) do
-        local first_space_pos = strs.find(line, " ")
+        local first_space_pos = strings.find(line, " ")
         local expect_command = line:sub(1, first_space_pos - 1)
-        local last_space_pos = strs.rfind(line, " ")
-        local expect_splits = strs.split(line:sub(last_space_pos + 1), ":")
+        local last_space_pos = strings.rfind(line, " ")
+        local expect_splits = strings.split(line:sub(last_space_pos + 1), ":")
         local actual = parsers_helper.parse_vim_command(line, CONTEXT)
         assert_eq(type(actual), "table")
         assert_eq(actual.command, expect_command)
         assert_eq(
           actual.filename,
-          paths.normalize(expect_splits[1], { expand = true })
+          paths.normalize(
+            expect_splits[1],
+            { double_backslash = true, expand = true }
+          )
         )
         assert_eq(actual.lineno, tonumber(expect_splits[2]))
       end
@@ -365,9 +386,9 @@ describe("helper.parsers", function()
         'Bdelete           N   |Y  |N/A  |N/A  |N/A              "delete buffer"',
       }
       for _, line in ipairs(lines) do
-        local first_space_pos = strs.find(line, " ")
+        local first_space_pos = strings.find(line, " ")
         local expect_command = line:sub(1, first_space_pos - 1)
-        local double_quote_before_last = strs.rfind(line, '"', #line - 1)
+        local double_quote_before_last = strings.rfind(line, '"', #line - 1)
         local expect_def =
           vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
         local actual = parsers_helper.parse_vim_command(line, CONTEXT)
@@ -392,16 +413,19 @@ describe("helper.parsers", function()
         "<Plug>(YankyGPutAfterShiftRight)             n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369",
       }
       for _, line in ipairs(lines) do
-        local first_space_pos = strs.find(line, " ")
+        local first_space_pos = strings.find(line, " ")
         local expect_lhs = line:sub(1, first_space_pos - 1)
-        local last_space_pos = strs.rfind(line, " ")
-        local expect_splits = strs.split(line:sub(last_space_pos + 1), ":")
+        local last_space_pos = strings.rfind(line, " ")
+        local expect_splits = strings.split(line:sub(last_space_pos + 1), ":")
         local actual = parsers_helper.parse_vim_keymap(line, CONTEXT)
         assert_eq(type(actual), "table")
         assert_eq(actual.lhs, expect_lhs)
         assert_eq(
           actual.filename,
-          paths.normalize(expect_splits[1], { expand = true })
+          paths.normalize(
+            expect_splits[1],
+            { double_backslash = true, expand = true }
+          )
         )
         assert_eq(actual.lineno, tonumber(expect_splits[2]))
       end
@@ -413,9 +437,9 @@ describe("helper.parsers", function()
         '<2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"',
       }
       for _, line in ipairs(lines) do
-        local first_space_pos = strs.find(line, " ")
+        local first_space_pos = strings.find(line, " ")
         local expect_lhs = line:sub(1, first_space_pos - 1)
-        local double_quote_before_last = strs.rfind(line, '"', #line - 1)
+        local double_quote_before_last = strings.rfind(line, '"', #line - 1)
         local expect_def =
           vim.trim(line:sub(double_quote_before_last + 1, #line - 1))
         local actual = parsers_helper.parse_vim_keymap(line, CONTEXT)
@@ -437,8 +461,10 @@ describe("helper.parsers", function()
       }
       for _, line in ipairs(lines) do
         local actual = parsers_helper.parse_git_status(line)
-        local expect =
-          paths.normalize(strs.split(line, " ")[2], { expand = true })
+        local expect = paths.normalize(
+          strings.split(line, " ")[2],
+          { double_backslash = true, expand = true }
+        )
         assert_eq(type(actual), "table")
         assert_eq(expect, actual.filename)
       end
@@ -460,9 +486,9 @@ describe("helper.parsers", function()
       }
       for i, line in ipairs(lines) do
         local actual = parsers_helper.parse_git_branch(line, CONTEXT)
-        local expect_splits = strs.split(line, " ")
+        local expect_splits = strings.split(line, " ")
         local expect_remote = expect_splits[#expect_splits]
-        local slash_splits = strs.split(expect_remote, "/")
+        local slash_splits = strings.split(expect_remote, "/")
         local expect_local = slash_splits[#slash_splits]
         print(
           string.format(
@@ -490,7 +516,7 @@ describe("helper.parsers", function()
       }
       for _, line in ipairs(lines) do
         local actual = parsers_helper.parse_git_commit(line)
-        local expect = strs.split(line, " ")[1]
+        local expect = strings.split(line, " ")[1]
         assert_eq(actual.commit, expect)
       end
     end)

@@ -85,69 +85,36 @@ M.rfind = function(s, t, rstart)
 end
 
 --- @param s string
---- @param t string?  by default t is whitespace
+--- @param t string?  by default is whitespace
 --- @return string
 M.ltrim = function(s, t)
   assert(type(s) == "string")
   assert(type(t) == "string" or t == nil)
 
-  local function has(idx)
-    if not t then
-      return M.isspace(s:sub(idx, idx))
-    end
-
-    local c = string.byte(s, idx)
-    local found = false
-    for j = 1, #t do
-      if string.byte(t, j) == c then
-        found = true
-        break
-      end
-    end
-    return found
-  end
-
-  local i = 1
-  while i <= #s do
-    if not has(i) then
-      break
-    end
-    i = i + 1
-  end
-  return s:sub(i, #s)
+  t = t or "%s+"
+  ---@diagnostic disable-next-line: redundant-return-value
+  return string.gsub(s, "^" .. t, "")
 end
 
 --- @param s string
---- @param t string?  by default t is whitespace
+--- @param t string?  by default is whitespace
 --- @return string
 M.rtrim = function(s, t)
   assert(type(s) == "string")
   assert(type(t) == "string" or t == nil)
 
-  local function has(idx)
-    if not t then
-      return M.isspace(s:sub(idx, idx))
-    end
+  t = t or "%s+"
+  ---@diagnostic disable-next-line: redundant-return-value
+  return string.gsub(s, t .. "$", "")
+end
 
-    local c = string.byte(s, idx)
-    local found = false
-    for j = 1, #t do
-      if string.byte(t, j) == c then
-        found = true
-        break
-      end
-    end
-    return found
-  end
-
-  local i = #s
-  while i >= 1 do
-    if not has(i) then
-      break
-    end
-    i = i - 1
-  end
-  return s:sub(1, i)
+--- @param s string
+--- @param t string?  by default is whitespace
+--- @return string
+M.trim = function(s, t)
+  assert(type(s) == "string")
+  assert(type(t) == "string" or t == nil)
+  return M.rtrim(M.ltrim(s, t), t)
 end
 
 --- @param s string

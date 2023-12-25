@@ -1,5 +1,5 @@
 local consts = require("fzfx.lib.constants")
-local paths = require("fzfx.lib.paths")
+local paths = require("fzfx.commons.paths")
 local numbers = require("fzfx.commons.numbers")
 local log = require("fzfx.lib.log")
 
@@ -13,8 +13,7 @@ local RpcServer = {}
 
 --- @return fzfx.RpcServer
 function RpcServer:new()
-  local address = consts.IS_WINDOWS
-      and vim.fn.serverstart(paths.make_pipe_name())
+  local address = consts.IS_WINDOWS and vim.fn.serverstart(paths.pipename())
     or vim.fn.serverstart() --[[@as string]]
   -- log.debug(
   --     "|fzfx.rpcserver - RpcServer:new| start server on socket address:%s",

@@ -1,16 +1,12 @@
 local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
+local strings = require("fzfx.commons.strings")
 local cmds = require("fzfx.lib.commands")
-local paths = require("fzfx.lib.paths")
-local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local parsers_helper = require("fzfx.helper.parsers")
 local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
@@ -85,7 +81,7 @@ M._git_live_grep_provider = function(query, context)
 
   local args = { "git", "grep", "--color=always", "-n" }
   if type(option) == "string" and string.len(option) > 0 then
-    local option_splits = strs.split(option, " ")
+    local option_splits = strings.split(option, " ")
     for _, o in ipairs(option_splits) do
       if type(o) == "string" and string.len(o) > 0 then
         table.insert(args, o)

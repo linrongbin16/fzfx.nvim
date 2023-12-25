@@ -1,3 +1,5 @@
+local numbers = require("fzfx.commons.numbers")
+
 local M = {}
 
 M.LogLevels = require("fzfx.commons.logging").LogLevels
@@ -17,7 +19,6 @@ local LogHighlights = {
 --- @param fmt string
 --- @param ... any
 M.echo = function(level, fmt, ...)
-  local numbers = require("fzfx.commons.numbers")
   level = numbers.bound(level, M.LogLevels.TRACE, M.LogLevels.OFF)
 
   local msg = string.format(fmt, ...)
