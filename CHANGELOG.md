@@ -1,5 +1,48 @@
 # Changelog
 
+## [4.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.6...v4.0.0) (2023-12-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **fzfx.lib.paths:** drop 'fzfx.lib.paths'! ([#511](https://github.com/linrongbin16/fzfx.nvim/issues/511))
+* **fzfx.lib.strings:** drop 'fzfx.lib.strings'! ([#511](https://github.com/linrongbin16/fzfx.nvim/issues/511))
+* **fzfx.lib.tables:** drop 'fzfx.lib.tables'! ([#511](https://github.com/linrongbin16/fzfx.nvim/issues/511))
+* **commons:** migrate to commons 'paths' modules! ([#511](https://github.com/linrongbin16/fzfx.nvim/issues/511))
+* **commons:** drop 'fzfx.lib.nvims' module! ([#504](https://github.com/linrongbin16/fzfx.nvim/issues/504))
+* **commons:** migrate to 'fzfx.lib.shells' and 'fzfx.lib.bufs' module! ([#504](https://github.com/linrongbin16/fzfx.nvim/issues/504))
+* **commons:** migrate to commons 'numbers' module! ([#504](https://github.com/linrongbin16/fzfx.nvim/issues/504))
+* **file explorer:** move alt+l/h to ctrl+l/h keys ([#510](https://github.com/linrongbin16/fzfx.nvim/issues/510))
+* **jsons:** drop off 'fzfx.lib.jsons' module! ([#499](https://github.com/linrongbin16/fzfx.nvim/issues/499))
+* **commons:** migrate to commons 'jsons' module! ([#499](https://github.com/linrongbin16/fzfx.nvim/issues/499))
+* **commons:** migrate to commons 'fileios' module, drop off 'fzfx.lib.filesystems'! ([#498](https://github.com/linrongbin16/fzfx.nvim/issues/498))
+* **decorator:** drop off legacy 'line_opts'! ([#496](https://github.com/linrongbin16/fzfx.nvim/issues/496))
+* **commons:** migrate to commons 'termcolors' modules, drop off 'fzfx.lib.colors'! ([#496](https://github.com/linrongbin16/fzfx.nvim/issues/496))
+
+### break
+
+* **decorator:** drop off legacy 'line_opts'! ([#496](https://github.com/linrongbin16/fzfx.nvim/issues/496)) ([a985e4f](https://github.com/linrongbin16/fzfx.nvim/commit/a985e4fb78fc84194a621bb4c394ef96aa188d6b))
+* **fzfx.lib.paths:** drop 'fzfx.lib.paths'! ([#511](https://github.com/linrongbin16/fzfx.nvim/issues/511)) ([3971ec5](https://github.com/linrongbin16/fzfx.nvim/commit/3971ec58038fa8a1fbddc7e440c805ecc61538ed))
+* **fzfx.lib.strings:** drop 'fzfx.lib.strings'! ([#511](https://github.com/linrongbin16/fzfx.nvim/issues/511)) ([3971ec5](https://github.com/linrongbin16/fzfx.nvim/commit/3971ec58038fa8a1fbddc7e440c805ecc61538ed))
+* **fzfx.lib.tables:** drop 'fzfx.lib.tables'! ([#511](https://github.com/linrongbin16/fzfx.nvim/issues/511)) ([3971ec5](https://github.com/linrongbin16/fzfx.nvim/commit/3971ec58038fa8a1fbddc7e440c805ecc61538ed))
+
+
+### Performance Improvements
+
+* **file explorer:** move alt+l/h to ctrl+l/h keys ([#510](https://github.com/linrongbin16/fzfx.nvim/issues/510)) ([c3ea764](https://github.com/linrongbin16/fzfx.nvim/commit/c3ea764171478dd5cae0d6602237d32cd3c43b34))
+* **jsons:** drop off 'fzfx.lib.jsons' module! ([#499](https://github.com/linrongbin16/fzfx.nvim/issues/499)) ([8abffda](https://github.com/linrongbin16/fzfx.nvim/commit/8abffda709e12bf4a4584d9ce5ec3e826037d4ae))
+
+
+### Code Refactoring
+
+* **commons:** drop 'fzfx.lib.nvims' module! ([#504](https://github.com/linrongbin16/fzfx.nvim/issues/504)) ([4729b11](https://github.com/linrongbin16/fzfx.nvim/commit/4729b11029ca05e9ef912407cf07bc3615948746))
+* **commons:** migrate to 'fzfx.lib.shells' and 'fzfx.lib.bufs' module! ([#504](https://github.com/linrongbin16/fzfx.nvim/issues/504)) ([4729b11](https://github.com/linrongbin16/fzfx.nvim/commit/4729b11029ca05e9ef912407cf07bc3615948746))
+* **commons:** migrate to commons 'fileios' module, drop off 'fzfx.lib.filesystems'! ([#498](https://github.com/linrongbin16/fzfx.nvim/issues/498)) ([fd4e3f4](https://github.com/linrongbin16/fzfx.nvim/commit/fd4e3f453b0966a2f17621cf9e8095508d6d1011))
+* **commons:** migrate to commons 'jsons' module! ([#499](https://github.com/linrongbin16/fzfx.nvim/issues/499)) ([8abffda](https://github.com/linrongbin16/fzfx.nvim/commit/8abffda709e12bf4a4584d9ce5ec3e826037d4ae))
+* **commons:** migrate to commons 'numbers' module! ([#504](https://github.com/linrongbin16/fzfx.nvim/issues/504)) ([4729b11](https://github.com/linrongbin16/fzfx.nvim/commit/4729b11029ca05e9ef912407cf07bc3615948746))
+* **commons:** migrate to commons 'paths' modules! ([#511](https://github.com/linrongbin16/fzfx.nvim/issues/511)) ([3971ec5](https://github.com/linrongbin16/fzfx.nvim/commit/3971ec58038fa8a1fbddc7e440c805ecc61538ed))
+* **commons:** migrate to commons 'termcolors' modules, drop off 'fzfx.lib.colors'! ([#496](https://github.com/linrongbin16/fzfx.nvim/issues/496)) ([a985e4f](https://github.com/linrongbin16/fzfx.nvim/commit/a985e4fb78fc84194a621bb4c394ef96aa188d6b))
+
 ## [3.7.6](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.5...v3.7.6) (2023-12-08)
 
 
