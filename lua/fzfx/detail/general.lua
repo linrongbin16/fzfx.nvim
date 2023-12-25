@@ -1006,11 +1006,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   fzf_opts = fzf_helpers.preprocess_fzf_opts(fzf_opts)
   local actions = pipeline_configs.actions
   local win_opts = nil
-  if not tables.tbl_empty(pipeline_configs.win_opts) then
+  if pipeline_configs.win_opts ~= nil then
+    local pipeline_win_opts = pipeline_configs.win_opts
+    if type(pipeline_win_opts) == "function" then
+      pipeline_win_opts = pipeline_win_opts()
+    end
     win_opts = vim.tbl_deep_extend(
       "force",
       vim.deepcopy(win_opts or {}),
-      pipeline_configs.win_opts
+      pipeline_win_opts
     )
   end
   if bang then
