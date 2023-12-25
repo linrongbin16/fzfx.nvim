@@ -97,6 +97,7 @@ Each line is a git **branch name**.
 It's implemented with `git_branch` utilities:
 
 - [fzfx.helper.parsers.parse_git_branch](#parse_git_branch)
+- [fzfx.helper.actions.git_checkout](#git_checkout)
 
 ### [git_commits](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_commits.lua)
 
@@ -109,6 +110,7 @@ Each line starts with a git **commit number**.
 It's implemented with `git_commit` utilities:
 
 - [fzfx.helper.parsers.parse_git_commit](#parse_git_commit)
+- [fzfx.helper.actions.yank_git_commit](#yank_git_commit)
 
 ### [git_files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
 
@@ -209,6 +211,7 @@ Each line is constructed with command **name**, **attributes** and **definition/
 It's implemented with `vim_command` utilities:
 
 - [fzfx.helper.parsers.parse_vim_command](#parse_vim_command)
+- [fzfx.helper.actions.feed_vim_command](#feed_vim_command)
 
 ### [vim_keymaps](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_keymaps.lua)
 
@@ -221,6 +224,7 @@ Each line is constructed with key mapping **left hands**, **attributes** and **d
 It's implemented with `vim_keymap` utilities:
 
 - [fzfx.helper.parsers.parse_vim_keymap](#parse_vim_keymap)
+- [fzfx.helper.actions.feed_vim_key](#feed_vim_key)
 
 ## [fzfx.helper](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper)
 
@@ -325,59 +329,21 @@ The `git status` generated git status (changed file names), used by `FzfxGStatus
 
 Use `edit` command to open selected file names on `git status` results.
 
-#### `git branch`
+#### [`git_checkout`](https://github.com/linrongbin16/fzfx.nvim/blob/a8dff47d1c56385f4f2bb4c5f53e521fdbf3b2d7/lua/fzfx/helper/actions.lua?plain=1#L245)
 
-The `git branch (-r/-a)` generated git branches, used by `FzfxGBranches`. they look like:
+Use `git checkout` shell command to checkout selected branch on `git branch` results.
 
-```
-* chore-lint
-  main
-  remotes/origin/HEAD -> origin/main
-  remotes/origin/chore-lint
-  remotes/origin/main
-```
+#### [`yank_git_commit`](https://github.com/linrongbin16/fzfx.nvim/blob/a8dff47d1c56385f4f2bb4c5f53e521fdbf3b2d7/lua/fzfx/helper/actions.lua?plain=1#L265)
 
-- `git_checkout(lines:string[], fzfx.GitBranchesPipelineContext):nil`: use `git checkout` shell command to checkout selected branch on `git branch` results.
+Yank selected git commits on `git log`, `git blame` results.
 
-#### `git log`/`git blame`
+#### [`feed_vim_command`](https://github.com/linrongbin16/fzfx.nvim/blob/a8dff47d1c56385f4f2bb4c5f53e521fdbf3b2d7/lua/fzfx/helper/actions.lua?plain=1#L288)
 
-The `git log --short`, `git blame` generated git commits, used by `FzfxGCommits`, `FzfxGBlame`, they look like:
+Feed selected vim command to vim command line.
 
-```
-c2e32c 2023-11-30 linrongbin16 (HEAD -> chore-lint)
-5fe6ad 2023-11-29 linrongbin16 chore
-```
+#### [`feed_vim_key`](https://github.com/linrongbin16/fzfx.nvim/blob/a8dff47d1c56385f4f2bb4c5f53e521fdbf3b2d7/lua/fzfx/helper/actions.lua?plain=1#L336)
 
-- `yank_git_commit(lines:string[]):nil`: yank selected git commits on `git log`, `git blame` results.
-
-#### Builtin Vim Commands Renderer
-
-The builtin renderer generated vim commands, used by `FzfxCommands`. they look like:
-
-```
-Name              Bang|Bar|Nargs|Range|Complete         Desc/Location
-:!                N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1122
-:Next             N   |Y  |N/A  |N/A  |N/A              /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/doc/index.txt:1124
-:bdelete          N   |Y  |N/A  |N/A  |N/A              "delete buffer"
-```
-
-- `feed_vim_command(lines:string[], context:fzfx.VimCommandsPipelineContext):nil`: input selected command in vim command line.
-
-#### Builtin Vim Key Mappings Renderer
-
-The builtin renderer generated vim key mappings, used by `FzfxKeyMaps`. they look like:
-
-```
-Lhs                                          Mode|Noremap|Nowait|Silent Rhs/Location
-<C-F>                                            |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127
-<CR>                                             |N      |N     |N      ~/.config/nvim/lazy/nvim-cmp/lua/cmp/utils/keymap.lua:127
-<Plug>(YankyGPutAfterShiftRight)             n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:369
-%                                            n   |N      |N     |Y      "<Plug>(matchup-%)"
-&                                            n   |Y      |N     |N      ":&&<CR>"
-<2-LeftMouse>                                n   |N      |N     |Y      "<Plug>(matchup-double-click)"
-```
-
-- `feed_vim_key(lines:string[], context:fzfx.VimKeyMapsPipelineContext):nil`: execute selected keys.
+Execute selected vim key mappings.
 
 #### `eza`/`lsd`/`ls`
 
@@ -391,7 +357,9 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 -rw-r--r--   1 linrongbin  staff   120B Sep  5 14:14 codecov.yml
 ```
 
-- `edit_ls(lines:string[], context:fzfx.FileExplorerPipelineContext):nil`: use `edit` command to open selected file path on `lsd`, `eza`, `ls` results.
+#### [`edit_ls`](https://github.com/linrongbin16/fzfx.nvim/blob/a8dff47d1c56385f4f2bb4c5f53e521fdbf3b2d7/lua/fzfx/helper/actions.lua?plain=1#L215)
+
+Use `edit` command to open selected file path on `ls`/`lsd`/`eza`/`exa` results.
 
 ### [fzfx.helper.previewer_labels](/lua/fzfx/helper/previewer_labels.lua)
 
