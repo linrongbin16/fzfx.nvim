@@ -1,9 +1,10 @@
-local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
-local cmds = require("fzfx.lib.commands")
-local paths = require("fzfx.commons.paths")
-local fileios = require("fzfx.commons.fileios")
 local tbls = require("fzfx.lib.tables")
+local fileios = require("fzfx.commons.fileios")
+local strings = require("fzfx.commons.strings")
+local paths = require("fzfx.commons.paths")
+
+local consts = require("fzfx.lib.constants")
+local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -260,33 +261,36 @@ M._parse_map_command_output_line = function(line)
   local first_space_pos = 1
   while
     first_space_pos <= #line
-    and not strs.isspace(line:sub(first_space_pos, first_space_pos))
+    and not strings.isspace(line:sub(first_space_pos, first_space_pos))
   do
     first_space_pos = first_space_pos + 1
   end
   -- local mode = vim.trim(line:sub(1, first_space_pos - 1))
   while
     first_space_pos <= #line
-    and strs.isspace(line:sub(first_space_pos, first_space_pos))
+    and strings.isspace(line:sub(first_space_pos, first_space_pos))
   do
     first_space_pos = first_space_pos + 1
   end
   local second_space_pos = first_space_pos
   while
     second_space_pos <= #line
-    and not strs.isspace(line:sub(second_space_pos, second_space_pos))
+    and not strings.isspace(line:sub(second_space_pos, second_space_pos))
   do
     second_space_pos = second_space_pos + 1
   end
   local lhs = vim.trim(line:sub(first_space_pos, second_space_pos - 1))
   local result = { lhs = lhs }
   local rhs_or_location = vim.trim(line:sub(second_space_pos))
-  local lua_definition_pos = strs.find(rhs_or_location, "<Lua ")
+  local lua_definition_pos = strings.find(rhs_or_location, "<Lua ")
 
-  if lua_definition_pos and strs.endswith(rhs_or_location, ">") then
-    local first_colon_pos =
-      strs.find(rhs_or_location, ":", lua_definition_pos + string.len("<Lua ")) --[[@as integer]]
-    local last_colon_pos = strs.rfind(rhs_or_location, ":") --[[@as integer]]
+  if lua_definition_pos and strings.endswith(rhs_or_location, ">") then
+    local first_colon_pos = strings.find(
+      rhs_or_location,
+      ":",
+      lua_definition_pos + string.len("<Lua ")
+    ) --[[@as integer]]
+    local last_colon_pos = strings.rfind(rhs_or_location, ":") --[[@as integer]]
     local filename =
       rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
     local lineno = rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
@@ -326,17 +330,17 @@ M._get_vim_keymaps = function()
   for i = 1, #map_output_lines do
     local line = map_output_lines[i]
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
-      if strs.isalpha(line:sub(1, 1)) then
+      if strings.isalpha(line:sub(1, 1)) then
         local parsed = M._parse_map_command_output_line(line)
         keys_output_map[parsed.lhs] = parsed
         last_lhs = parsed.lhs
       elseif
-        strs.startswith(line, LAST_SET_FROM)
-        and strs.rfind(line, LINE)
-        and not strs.startswith(line, LAST_SET_FROM_LUA)
+        strings.startswith(line, LAST_SET_FROM)
+        and strings.rfind(line, LINE)
+        and not strings.startswith(line, LAST_SET_FROM_LUA)
         and last_lhs
       then
-        local line_pos = strs.rfind(line, LINE)
+        local line_pos = strings.rfind(line, LINE)
         local filename =
           vim.trim(line:sub(string.len(LAST_SET_FROM) + 1, line_pos - 1))
         local lineno = vim.trim(line:sub(line_pos + string.len(LINE)))
@@ -383,7 +387,9 @@ M._get_vim_keymaps = function()
     if keys[left] then
       return keys[left]
     end
-    if strs.startswith(left, "<Space>") or strs.startswith(left, "<space>") then
+    if
+      strings.startswith(left, "<Space>") or strings.startswith(left, "<space>")
+    then
       return keys[" " .. left:sub(string.len("<Space>") + 1)]
     end
     return nil
@@ -506,15 +512,15 @@ M._make_vim_keymaps_provider = function(mode)
         elseif
           mode == "v"
           and (
-            strs.find(k.mode, "v")
-            or strs.find(k.mode, "s")
-            or strs.find(k.mode, "x")
+            strings.find(k.mode, "v")
+            or strings.find(k.mode, "s")
+            or strings.find(k.mode, "x")
           )
         then
           table.insert(filtered_keys, k)
-        elseif mode == "n" and strs.find(k.mode, "n") then
+        elseif mode == "n" and strings.find(k.mode, "n") then
           table.insert(filtered_keys, k)
-        elseif mode == "i" and strs.find(k.mode, "i") then
+        elseif mode == "i" and strings.find(k.mode, "i") then
           table.insert(filtered_keys, k)
         elseif mode == "n" and string.len(k.mode) == 0 then
           table.insert(filtered_keys, k)
@@ -566,7 +572,7 @@ M._vim_keymaps_previewer = function(line, context)
   -- )
   if
     tbls.tbl_not_empty(parsed)
-    and strs.not_empty(parsed.filename)
+    and strings.not_empty(parsed.filename)
     and type(parsed.lineno) == "number"
   then
     -- log.debug(

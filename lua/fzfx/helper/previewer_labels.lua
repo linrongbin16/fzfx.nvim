@@ -1,13 +1,14 @@
-local parsers = require("fzfx.helper.parsers")
-local strs = require("fzfx.lib.strings")
+local strings = require("fzfx.commons.strings")
 local tbls = require("fzfx.lib.tables")
+
+local parsers = require("fzfx.helper.parsers")
 
 local M = {}
 
 --- @param line string?
 --- @return string
 M.label_find = function(line)
-  if strs.empty(line) then
+  if strings.empty(line) then
     return ""
   end
   local parsed = parsers.parse_find(line --[[@as string]])
@@ -17,7 +18,7 @@ end
 --- @param line string?
 --- @return string
 M.label_rg = function(line)
-  if strs.empty(line) then
+  if strings.empty(line) then
     return ""
   end
   local parsed = parsers.parse_rg(line --[[@as string]])
@@ -33,7 +34,7 @@ end
 --- @param line string?
 --- @return string?
 M.label_grep = function(line)
-  if strs.empty(line) then
+  if strings.empty(line) then
     return ""
   end
   local parsed = parsers.parse_grep(line --[[@as string]])
@@ -52,13 +53,13 @@ M._make_label_vim_command_or_keymap = function(parser, default_value)
   --- @param context fzfx.VimCommandsPipelineContext
   --- @return string
   local function impl(line, context)
-    if strs.empty(line) then
+    if strings.empty(line) then
       return ""
     end
     local parsed = parser(line --[[@as string]], context)
     if
       tbls.tbl_not_empty(parsed)
-      and strs.not_empty(parsed.filename)
+      and strings.not_empty(parsed.filename)
       and type(parsed.lineno) == "number"
     then
       return string.format(
@@ -84,7 +85,7 @@ M._make_label_ls = function(parser)
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return string?
   local function impl(line, context)
-    if strs.empty(line) then
+    if strings.empty(line) then
       return ""
     end
     local parsed = parser(line, context) --[[@as table]]

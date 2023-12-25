@@ -1,8 +1,9 @@
+local tbls = require("fzfx.lib.tables")
+local strings = require("fzfx.commons.strings")
+
 local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
 local shells = require("fzfx.lib.shells")
 local cmds = require("fzfx.lib.commands")
-local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -187,7 +188,7 @@ local GIT_LOG_PRETTY_FORMAT =
 --- @param line string
 --- @return string
 M._git_branches_previewer = function(line)
-  local branch = strs.split(line, " ")[1]
+  local branch = strings.split(line, " ")[1]
   -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
   -- "git log --graph --color=always --date=relative",
   return string.format(
@@ -224,7 +225,7 @@ M.fzf_opts = {
     if git_current_branch_cmd:failed() then
       return nil
     end
-    return strs.not_empty(git_current_branch_cmd:output())
+    return strings.not_empty(git_current_branch_cmd:output())
         and "--header-lines=1"
       or nil
   end,

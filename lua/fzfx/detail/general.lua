@@ -1,12 +1,13 @@
-local consts = require("fzfx.lib.constants")
-local termcolors = require("fzfx.commons.termcolors")
-local env = require("fzfx.lib.env")
+local tbls = require("fzfx.lib.tables")
 local paths = require("fzfx.commons.paths")
 local jsons = require("fzfx.commons.jsons")
-local strs = require("fzfx.lib.strings")
+local strings = require("fzfx.commons.strings")
+local termcolors = require("fzfx.commons.termcolors")
 local fileios = require("fzfx.commons.fileios")
-local tbls = require("fzfx.lib.tables")
-local spawn = require("fzfx.lib.spawn")
+local spawn = require("fzfx.commons.spawn")
+
+local consts = require("fzfx.lib.constants")
+local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
 local shells = require("fzfx.lib.shells")
 
@@ -525,10 +526,7 @@ end
 --- @param port string
 --- @param body string
 local function _send_http_post(port, body)
-  -- if SendHttpPostContext.send then
-  --     return
-  -- end
-  local sp = spawn.Spawn:make({
+  spawn.run({
     "curl",
     "-s",
     "-S",
@@ -561,9 +559,8 @@ local function _send_http_post(port, body)
       --     vim.inspect(line)
       -- )
     end,
-    blocking = false,
+    function(completed) end,
   })
-  sp:run()
 end
 
 --- @param line string?
@@ -628,9 +625,9 @@ function PreviewerSwitch:preview_label(line, context)
       if type(last_label) ~= "string" then
         return
       end
-      self.fzf_port = strs.not_empty(self.fzf_port) and self.fzf_port
+      self.fzf_port = strings.not_empty(self.fzf_port) and self.fzf_port
         or fileios.readfile(self.fzf_port_file, { trim = true }) --[[@as string]]
-      if strs.not_empty(self.fzf_port) then
+      if strings.not_empty(self.fzf_port) then
         _send_http_post(
           self.fzf_port,
           string.format("change-preview-label(%s)", vim.trim(last_label))
@@ -657,7 +654,7 @@ local HeaderSwitch = {}
 local function _render_help(name, action)
   return termcolors.magenta(string.upper(action), "Special")
     .. " to "
-    .. table.concat(strs.split(name, "_"), " ")
+    .. table.concat(strings.split(name, "_"), " ")
 end
 
 --- @param excludes string[]|nil

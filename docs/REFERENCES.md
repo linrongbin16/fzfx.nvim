@@ -609,25 +609,6 @@ Whether buffer is valid.
 
 Cross-platform escape shell strings.
 
-### [fzfx.lib.paths](/lua/fzfx/lib/paths.lua)
-
-- `SEPARATOR`: `\\` for Windows, `/` for Unix/Linux.
-- `normalize(p:string, opts:{backslash:boolean?,expand:boolean?}?)`: normalize path string, replace `\\\\` to `\\`.
-  - set `opts.backslash=true` to replace `\\` to `/`, set `opts.expand=true` to expand path to full path, by default `opts={backslash=false, expand=false}`.
-- `join(...):string`: join multiple parts into path string with `SEPARATOR`.
-- `reduce2home(p:string):string`: reduce path string relative to `$HOME` directory.
-- `reduce(p:string):string`: reduce path string relative to `$HOME` directory or `$PWD` directory.
-- `shorten(p:string):string`: shorten path string to use single char to replace each level directories, e.g. `~/g/l/fzfx.nvim`.
-
-### [fzfx.lib.spawn](/lua/fzfx/lib/spawn.lua)
-
-- `Spawn`: run child process and process stdout/stderr line by line.
-  - `make(cmds:string[], opts:{on_stdout:fun(line:string):any, on_stderr:fun(line:string):any|nil, blocking:boolean}):Spawn`: prepare child process, return `Spawn` handle.
-    - `on_stdout(line:string):any`: invoke callback when there's a new line ready to process on `stdout` fd.
-    - `on_stderr(line:string):any`: invoke callback when there's a new line ready to process on `stderr` fd.
-    - `blocking`: set `blocking=true` if need to wait for child process finish, set `blocking=false` if no need to wait.
-  - `run():nil`: run child process, wait child process done for blocking mode, use `Spawn.result` to get the child process result.
-
 ### [fzfx.lib.strings](/lua/fzfx/lib/strings.lua)
 
 - `empty(s:string?):boolean`/`not_empty(s:string?):boolean`: detect whether a string is empty or not.

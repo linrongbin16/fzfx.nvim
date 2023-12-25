@@ -1,7 +1,6 @@
-local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
-local cmds = require("fzfx.lib.commands")
 local termcolors = require("fzfx.commons.termcolors")
+local consts = require("fzfx.lib.constants")
+local cmds = require("fzfx.lib.commands")
 local tbls = require("fzfx.lib.tables")
 
 local log = require("fzfx.lib.log")

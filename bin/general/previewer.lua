@@ -9,8 +9,8 @@ vim.opt.runtimepath:append(SELF_PATH)
 local tbls = require("fzfx.lib.tables")
 local fileios = require("fzfx.commons.fileios")
 local jsons = require("fzfx.commons.jsons")
-local strs = require("fzfx.lib.strings")
-local spawn = require("fzfx.lib.spawn")
+local strings = require("fzfx.commons.strings")
+local spawn = require("fzfx.commons.spawn")
 local shell_helpers = require("fzfx.detail.shell_helpers")
 shell_helpers.setup("previewer")
 
@@ -68,7 +68,7 @@ shell_helpers.log_debug("metaopts:[%s]", vim.inspect(metaopts))
 --- @param l string?
 local function println(l)
   if type(l) == "string" and string.len(vim.trim(l)) > 0 then
-    l = strs.rtrim(l)
+    l = strings.rtrim(l)
     io.write(string.format("%s\n", l))
   end
 end
@@ -76,7 +76,7 @@ end
 if metaopts.previewer_type == "command" then
   local cmd = fileios.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
-  if strs.empty(cmd) then
+  if strings.empty(cmd) then
     os.exit(0)
   else
     os.execute(cmd)
@@ -84,24 +84,24 @@ if metaopts.previewer_type == "command" then
 elseif metaopts.previewer_type == "command_list" then
   local cmd = fileios.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
-  if strs.empty(cmd) then
+  if strings.empty(cmd) then
     os.exit(0)
     return
   end
-  local cmd_splits = jsons.decode(cmd)
+  local cmd_splits = jsons.decode(cmd) --[[ @as string[] ]]
   if tbls.tbl_empty(cmd_splits) then
     os.exit(0)
     return
   end
 
   local sp =
-    spawn.Spawn:make(cmd_splits, { on_stdout = println, blocking = true })
+    spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
   shell_helpers.log_ensure(
     sp ~= nil,
     "failed to open async command: %s",
     vim.inspect(cmd_splits)
   )
-  sp:run()
+  sp:wait()
 elseif metaopts.previewer_type == "list" then
   local f = io.open(resultfile, "r")
   shell_helpers.log_ensure(
