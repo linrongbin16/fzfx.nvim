@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v4.1.0...v4.1.1) (2023-12-25)
+
+
+### Performance Improvements
+
+* **configs:** support 'win_opts' as lua function ([#517](https://github.com/linrongbin16/fzfx.nvim/issues/517)) ([337225b](https://github.com/linrongbin16/fzfx.nvim/commit/337225b485d12b536aecdf1abc1e49cf58d260c0))
+
 ## [4.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v4.0.0...v4.1.0) (2023-12-25)
 
 
