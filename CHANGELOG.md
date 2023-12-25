@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v4.0.0...v4.1.0) (2023-12-25)
+
+
+### Features
+
+* **actions:** center cursor for 'rg'/'grep' edit actions ([#514](https://github.com/linrongbin16/fzfx.nvim/issues/514)) ([9c7b87e](https://github.com/linrongbin16/fzfx.nvim/commit/9c7b87e3a418f66858716b39b8d96163504e7fe2))
+
 ## [4.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v3.7.6...v4.0.0) (2023-12-25)
 
 
