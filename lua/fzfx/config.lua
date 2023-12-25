@@ -304,16 +304,6 @@ local Configs = {}
 --- @return fzfx.Options
 M.setup = function(opts)
   Configs = vim.tbl_deep_extend("force", Defaults, opts or {})
-
-  -- support 'popup.win_opts' is lua function
-  if type(Configs.popup.win_opts) == "function" then
-    Configs.popup.win_opts = vim.tbl_deep_extend(
-      "force",
-      vim.deepcopy(Defaults.popup.win_opts),
-      Configs.popup.win_opts()
-    )
-  end
-
   return Configs
 end
 
