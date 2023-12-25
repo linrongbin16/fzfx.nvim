@@ -306,7 +306,9 @@ Use `setqflist` command to send selected locations to qflist.
 
 Use `edit` and `setpos` command to open selected locations on `grep`, `git grep` results.
 
-- `setqflist_grep(lines:string[], context:fzfx.PipelineContext):nil`: use `setqflist` command to send selected locations to qflist.
+#### [`setqflist_grep`](https://github.com/linrongbin16/fzfx.nvim/blob/cdb88202d551f3986f6b2240908b975697e0f511/lua/fzfx/helper/actions.lua?plain=1#L178)
+
+Use `setqflist` command to send selected locations to qflist.
 
 #### `git status`
 
@@ -319,7 +321,9 @@ The `git status` generated git status (changed file names), used by `FzfxGStatus
 ?? ../hello
 ```
 
-- `edit_git_status(lines:string[]):nil`: use `edit` command to open selected file names on `git status` results.
+#### [`edit_git_status`](https://github.com/linrongbin16/fzfx.nvim/blob/cdb88202d551f3986f6b2240908b975697e0f511/lua/fzfx/helper/actions.lua?plain=1#L372)
+
+Use `edit` command to open selected file names on `git status` results.
 
 #### `git branch`
 
