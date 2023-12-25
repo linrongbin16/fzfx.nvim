@@ -1,12 +1,10 @@
-local constants = require("fzfx.lib.constants")
 local numbers = require("fzfx.commons.numbers")
 local apis = require("fzfx.commons.apis")
 local fileios = require("fzfx.commons.fileios")
+
+local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
-
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
-local conf = require("fzfx.config")
 
 -- WindowOptsContext {
 
@@ -271,7 +269,7 @@ local PopupWindowInstances = {}
 local PopupWindow = {}
 
 --- @package
---- @param win_opts fzfx.Options?
+--- @param win_opts fzfx.Options
 --- @return fzfx.PopupWindow
 function PopupWindow:new(win_opts)
   -- check executable: nvim, fzf
@@ -289,12 +287,7 @@ function PopupWindow:new(win_opts)
   apis.set_buf_option(bufnr, "buflisted", false)
   apis.set_buf_option(bufnr, "filetype", "fzf")
 
-  local merged_win_opts = vim.tbl_deep_extend(
-    "force",
-    vim.deepcopy(conf.get_config().popup.win_opts),
-    vim.deepcopy(win_opts or {})
-  )
-  local popup_window_config = _make_window_config(merged_win_opts)
+  local popup_window_config = _make_window_config(win_opts or {})
 
   --- @type integer
   local winnr = vim.api.nvim_open_win(bufnr, true, popup_window_config)
@@ -311,7 +304,7 @@ function PopupWindow:new(win_opts)
     window_opts_context = window_opts_context,
     bufnr = bufnr,
     winnr = winnr,
-    _saved_win_opts = merged_win_opts,
+    _saved_win_opts = win_opts,
     _resizing = false,
   }
   setmetatable(o, self)
@@ -414,7 +407,7 @@ local function _make_fzf_command(fzf_opts, actions, result)
 end
 
 --- @alias fzfx.OnPopupExit fun(last_query:string):nil
---- @param win_opts fzfx.Options?
+--- @param win_opts fzfx.Options
 --- @param source string
 --- @param fzf_opts fzfx.Options
 --- @param actions fzfx.Options
