@@ -203,7 +203,7 @@ describe("helper.actions", function()
         elseif i == #lines + 1 then
           assert_eq(act, "call setpos('.', [0, 81, 1])")
         else
-          assert_eq(act, 'execute "normal! ^zvzz"')
+          assert_eq(act, 'execute "normal! zz"')
         end
       end
     end)
@@ -235,7 +235,7 @@ describe("helper.actions", function()
         assert_eq(actual[i], expect)
       end
       assert_true(strings.find(actual[6], "setpos") > 0)
-      assert_eq(actual[7], 'execute "normal! ^zvzz"')
+      assert_eq(actual[7], 'execute "normal! zz"')
     end)
     it("run without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
@@ -359,7 +359,7 @@ describe("helper.actions", function()
         elseif i == #lines + 1 then
           assert_eq(act, "call setpos('.', [0, 81, 71])")
         else
-          assert_eq(act, 'execute "normal! ^zvzz"')
+          assert_eq(act, 'execute "normal! zz"')
         end
       end
     end)
@@ -393,7 +393,7 @@ describe("helper.actions", function()
         elseif i == #lines + 1 then
           assert_eq(act, "call setpos('.', [0, 81, 72])")
         else
-          assert_eq(act, 'execute "normal! ^zvzz"')
+          assert_eq(act, 'execute "normal! zz"')
         end
       end
     end)
