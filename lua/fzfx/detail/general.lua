@@ -1010,7 +1010,20 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local actions = pipeline_configs.actions
 
   -- win_opts
-  local win_opts = tables.tbl_get(conf.get_config(), "popup", "win_opts")
+  local config_win_opts = tables.tbl_get(conf.get_config(), "popup", "win_opts")
+  local win_opts = nil
+  if type(config_win_opts) == "function" then
+    win_opts =
+      vim.deepcopy(tables.tbl_get(conf.get_defaults(), "popup", "win_opts"))
+    win_opts = vim.tbl_deep_extend(
+      "force",
+      vim.deepcopy(win_opts or {}),
+      config_win_opts() or {}
+    )
+  elseif type(config_win_opts) == "table" then
+    win_opts = vim.deepcopy(config_win_opts)
+  end
+
   if pipeline_configs.win_opts ~= nil then
     local pipeline_win_opts = nil
     if type(pipeline_configs.win_opts) == "function" then
