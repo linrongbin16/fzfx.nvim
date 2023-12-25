@@ -1,4 +1,4 @@
-local strs = require("fzfx.lib.strings")
+local strings = require("fzfx.commons.strings")
 local apis = require("fzfx.commons.apis")
 
 local log = require("fzfx.lib.log")
@@ -16,7 +16,11 @@ M.confirm_discard_modified = function(bufnr, callback)
       prompt = "[fzfx] buffer has been modified, continue? (y/n) ",
       cancelreturn = "n",
     })
-    if ok and strs.not_empty(input) and strs.startswith(input:lower(), "y") then
+    if
+      ok
+      and strings.not_empty(input)
+      and strings.startswith(input, "y", { ignorecase = true })
+    then
       callback()
     else
       log.echo(LogLevels.INFO, CANCELLED_MESSAGE)
