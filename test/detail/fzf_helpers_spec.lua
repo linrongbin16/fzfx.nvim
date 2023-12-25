@@ -14,12 +14,10 @@ describe("detail.fzf_helpers", function()
     end
   end)
 
-  local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-
-  local tbls = require("fzfx.lib.tables")
+  local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
+  local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
   require("fzfx.config").setup()
   require("fzfx.detail.module").setup()
 
@@ -140,7 +138,7 @@ describe("detail.fzf_helpers", function()
       })
       print(string.format("preprocess nil opts: %s\n", vim.inspect(actual)))
       assert_true(type(actual) == "table")
-      assert_false(tbls.tbl_empty(actual))
+      assert_false(tables.tbl_empty(actual))
       assert_eq(#actual, 1)
     end)
     it("preprocess string opts", function()
@@ -152,7 +150,7 @@ describe("detail.fzf_helpers", function()
       })
       print(string.format("preprocess string opts: %s\n", vim.inspect(actual)))
       assert_true(type(actual) == "table")
-      assert_false(tbls.tbl_empty(actual))
+      assert_false(tables.tbl_empty(actual))
       assert_eq(#actual, 2)
     end)
   end)

@@ -1,4 +1,4 @@
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
 local numbers = require("fzfx.commons.numbers")
 local fileios = require("fzfx.commons.fileios")
@@ -216,7 +216,7 @@ M.parse_git_branch = function(line, context)
   --- @param l string
   --- @return string
   local function _remove_remotes_origin_slash(l)
-    if tbls.list_not_empty(context.remotes) then
+    if tables.list_not_empty(context.remotes) then
       for _, r in ipairs(context.remotes) do
         local success, l1 = _remove_prefix(l, string.format("remotes/%s/", r))
         if success then
@@ -239,7 +239,7 @@ M.parse_git_branch = function(line, context)
   --- @param l string
   --- @return string
   local function _remove_origin_slash(l)
-    if tbls.list_not_empty(context.remotes) then
+    if tables.list_not_empty(context.remotes) then
       for _, r in ipairs(context.remotes) do
         local success, l1 = _remove_prefix(l, string.format("%s/", r))
         if success then

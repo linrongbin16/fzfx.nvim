@@ -1,7 +1,8 @@
+local tables = require("fzfx.commons.tables")
+
 local consts = require("fzfx.lib.constants")
 local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
-local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -130,7 +131,7 @@ M._make_git_commits_provider = function(opts)
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
     end
-    if tbls.tbl_get(opts, "buffer") then
+    if tables.tbl_get(opts, "buffer") then
       if not bufs.buf_is_valid(context.bufnr) then
         log.echo(
           LogLevels.INFO,

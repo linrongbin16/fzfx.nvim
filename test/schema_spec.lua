@@ -10,7 +10,6 @@ describe("schema", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
-  local tbls = require("fzfx.lib.tables")
   local schema = require("fzfx.schema")
   describe("[ProviderConfig]", function()
     it("makes a plain provider", function()

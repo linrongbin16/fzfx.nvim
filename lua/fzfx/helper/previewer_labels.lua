@@ -1,5 +1,5 @@
+local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
-local tbls = require("fzfx.lib.tables")
 
 local parsers = require("fzfx.helper.parsers")
 
@@ -58,7 +58,7 @@ M._make_label_vim_command_or_keymap = function(parser, default_value)
     end
     local parsed = parser(line --[[@as string]], context)
     if
-      tbls.tbl_not_empty(parsed)
+      tables.tbl_not_empty(parsed)
       and strings.not_empty(parsed.filename)
       and type(parsed.lineno) == "number"
     then

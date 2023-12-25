@@ -1,4 +1,4 @@
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
 local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
@@ -186,7 +186,7 @@ M._get_vim_ex_commands = function()
     ---@diagnostic disable-next-line: param-type-mismatch
     vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1) --[[@as table]]
   log.debug("|_get_vim_ex_commands| help docs:%s", vim.inspect(help_docs_list))
-  if tbls.tbl_empty(help_docs_list) then
+  if tables.tbl_empty(help_docs_list) then
     log.echo(LogLevels.INFO, "no 'doc/index.txt' found.")
     return {}
   end
@@ -526,13 +526,13 @@ end
 M._get_vim_commands = function(opts)
   local results = {}
 
-  if tbls.tbl_get(opts, "ex_commands") then
+  if tables.tbl_get(opts, "ex_commands") then
     local tmp = M._get_vim_ex_commands()
     for _, c in pairs(tmp) do
       table.insert(results, c)
     end
   end
-  if tbls.tbl_get(opts, "user_commands") then
+  if tables.tbl_get(opts, "user_commands") then
     local tmp = M._get_vim_user_commands()
     for _, c in pairs(tmp) do
       table.insert(results, c)
@@ -613,7 +613,7 @@ M._vim_commands_previewer = function(line, context)
   --   vim.inspect(parsed)
   -- )
   if
-    tbls.tbl_not_empty(parsed)
+    tables.tbl_not_empty(parsed)
     and strings.not_empty(parsed.filename)
     and type(parsed.lineno) == "number"
   then
@@ -625,7 +625,7 @@ M._vim_commands_previewer = function(line, context)
       parsed.filename,
       parsed.lineno
     )
-  elseif consts.HAS_ECHO and tbls.tbl_not_empty(parsed) then
+  elseif consts.HAS_ECHO and tables.tbl_not_empty(parsed) then
     -- log.debug(
     --   "|fzfx.config - _vim_commands_previewer| desc:%s",
     --   vim.inspect(parsed)

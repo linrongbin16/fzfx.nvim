@@ -1,7 +1,8 @@
+local tables = require("fzfx.commons.tables")
+
 local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local cmds = require("fzfx.lib.commands")
-local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -122,7 +123,7 @@ M.commands = {
 --- @return boolean
 M._is_current_folder_mode = function(opts)
   ---@diagnostic disable-next-line: need-check-nil
-  return tbls.tbl_not_empty(opts) and opts.current_folder --[[@as boolean]]
+  return tables.tbl_not_empty(opts) and opts.current_folder --[[@as boolean]]
 end
 
 --- @param opts {current_folder:boolean?}?

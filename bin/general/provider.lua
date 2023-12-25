@@ -4,7 +4,7 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
 local fileios = require("fzfx.commons.fileios")
 local jsons = require("fzfx.commons.jsons")
 local strings = require("fzfx.commons.strings")
@@ -68,18 +68,20 @@ vim.opt.runtimepath:append(vim.fn.stdpath("config"))
 --- @type {decorate:fun(line:string):string}
 local decorator_module = nil
 if metaopts.provider_decorator ~= nil then
-  if strings.not_empty(tbls.tbl_get(metaopts.provider_decorator, "rtp")) then
-    vim.opt.runtimepath:append(tbls.tbl_get(metaopts.provider_decorator, "rtp"))
+  if strings.not_empty(tables.tbl_get(metaopts.provider_decorator, "rtp")) then
+    vim.opt.runtimepath:append(
+      tables.tbl_get(metaopts.provider_decorator, "rtp")
+    )
   end
   shell_helpers.log_ensure(
-    strings.not_empty(tbls.tbl_get(metaopts.provider_decorator, "module")),
+    strings.not_empty(tables.tbl_get(metaopts.provider_decorator, "module")),
     "decorator module cannot be empty: %s",
     vim.inspect(metaopts.provider_decorator)
   )
   local module_name = metaopts.provider_decorator.module
   local ok, module_or_err = pcall(require, module_name)
   shell_helpers.log_ensure(
-    ok and tbls.tbl_not_empty(module_or_err),
+    ok and tables.tbl_not_empty(module_or_err),
     "failed to load decorator:%s, error:%s",
     vim.inspect(metaopts.provider_decorator),
     vim.inspect(module_or_err)
@@ -93,7 +95,7 @@ local function println(line)
     return
   end
   line = strings.rtrim(line --[[@as string]])
-  if tbls.tbl_not_empty(decorator_module) then
+  if tables.tbl_not_empty(decorator_module) then
     -- shell_helpers.log_debug("decorate line:%s", vim.inspect(line))
     vim.schedule(function()
       local rendered_ok, rendered_line_or_err =
@@ -146,7 +148,7 @@ then
   end
 
   local cmd_splits = jsons.decode(cmd) --[[@as table]]
-  if tbls.tbl_empty(cmd_splits) then
+  if tables.tbl_empty(cmd_splits) then
     os.exit(0)
     return
   end

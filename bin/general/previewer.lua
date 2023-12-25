@@ -6,7 +6,7 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
 local fileios = require("fzfx.commons.fileios")
 local jsons = require("fzfx.commons.jsons")
 local strings = require("fzfx.commons.strings")
@@ -89,7 +89,7 @@ elseif metaopts.previewer_type == "command_list" then
     return
   end
   local cmd_splits = jsons.decode(cmd) --[[ @as string[] ]]
-  if tbls.tbl_empty(cmd_splits) then
+  if tables.tbl_empty(cmd_splits) then
     os.exit(0)
     return
   end

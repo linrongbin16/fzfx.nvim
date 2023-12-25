@@ -10,11 +10,11 @@ describe("lib.commands", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
-  require("fzfx").setup()
+  local tbls = require("fzfx.commons.tables")
   local CommandResult = require("fzfx.lib.commands").CommandResult
   local Command = require("fzfx.lib.commands").Command
   local cmds = require("fzfx.lib.commands")
-  local tbls = require("fzfx.lib.tables")
+  require("fzfx").setup()
 
   describe("[CommandResult]", function()
     it("new result is empty", function()

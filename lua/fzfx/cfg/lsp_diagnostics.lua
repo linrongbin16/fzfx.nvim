@@ -1,8 +1,9 @@
-local consts = require("fzfx.lib.constants")
-local cmds = require("fzfx.lib.commands")
+local tables = require("fzfx.commons.tables")
 local termcolors = require("fzfx.commons.termcolors")
 local paths = require("fzfx.commons.paths")
-local tbls = require("fzfx.lib.tables")
+
+local consts = require("fzfx.lib.constants")
+local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -179,7 +180,7 @@ M._make_lsp_diagnostic_signs = function()
   for _, signs in ipairs(LSP_DIAGNOSTICS_SIGNS) do
     local sign_def = vim.fn.sign_getdefined(signs.name) --[[@as table]]
     local item = vim.deepcopy(signs)
-    if not tbls.tbl_empty(sign_def) then
+    if not tables.tbl_empty(sign_def) then
       item.text = vim.trim(sign_def[1].text)
       item.texthl = sign_def[1].texthl
     end
@@ -222,14 +223,14 @@ M._make_lsp_diagnostics_provider = function(opts)
   local function impl(query, context)
     ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients()
-    if tbls.tbl_empty(lsp_clients) then
+    if tables.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, "no active lsp clients.")
       return nil
     end
     local diag_list = vim.diagnostic.get(
       (type(opts) == "table" and opts.buffer) and context.bufnr or nil
     )
-    if tbls.tbl_empty(diag_list) then
+    if tables.tbl_empty(diag_list) then
       log.echo(LogLevels.INFO, "no lsp diagnostics found.")
       return nil
     end

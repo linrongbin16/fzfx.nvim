@@ -1,4 +1,4 @@
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
 local paths = require("fzfx.commons.paths")
 local jsons = require("fzfx.commons.jsons")
 local strings = require("fzfx.commons.strings")
@@ -73,7 +73,7 @@ local function make_provider_meta_opts(pipeline, provider_config)
   }
 
   -- provider_decorator
-  if tbls.tbl_get(provider_config, "provider_decorator") then
+  if tables.tbl_get(provider_config, "provider_decorator") then
     o.provider_decorator = vim.deepcopy(provider_config.provider_decorator)
     if o.provider_decorator.builtin then
       o.provider_decorator.module = "fzfx.helper.provider_decorators."
@@ -213,7 +213,7 @@ function ProviderSwitch:provide(query, context)
       vim.inspect(self),
       vim.inspect(provider_config)
     )
-    if tbls.tbl_empty(provider_config.provider) then
+    if tables.tbl_empty(provider_config.provider) then
       fileios.writefile(self.resultfile, "")
     else
       fileios.writefile(
@@ -277,7 +277,7 @@ function ProviderSwitch:provide(query, context)
         vim.inspect(result)
       )
     else
-      if tbls.tbl_empty(result) then
+      if tables.tbl_empty(result) then
         fileios.writefile(self.resultfile, "")
       else
         fileios.writefile(
@@ -311,7 +311,7 @@ function ProviderSwitch:provide(query, context)
         vim.inspect(self),
         vim.inspect(result)
       )
-      if tbls.tbl_empty(result) then
+      if tables.tbl_empty(result) then
         fileios.writefile(self.resultfile, "")
       else
         fileios.writelines(self.resultfile, result)
@@ -476,7 +476,7 @@ function PreviewerSwitch:preview(line, context)
         vim.inspect(self),
         vim.inspect(result)
       )
-      if tbls.tbl_empty(result) then
+      if tables.tbl_empty(result) then
         fileios.writefile(self.resultfile, "")
       else
         fileios.writefile(
@@ -1006,7 +1006,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   fzf_opts = fzf_helpers.preprocess_fzf_opts(fzf_opts)
   local actions = pipeline_configs.actions
   local win_opts = nil
-  if not tbls.tbl_empty(pipeline_configs.win_opts) then
+  if not tables.tbl_empty(pipeline_configs.win_opts) then
     win_opts = vim.tbl_deep_extend(
       "force",
       vim.deepcopy(win_opts or {}),

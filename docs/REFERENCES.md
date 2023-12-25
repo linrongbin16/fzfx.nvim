@@ -483,100 +483,199 @@ drwxr-xr-x   4 linrongbin  staff   128B Sep 22 10:11 bin
 
 ### [fzfx.lib.commands](/lua/fzfx/lib/commands.lua)
 
-- `CommandResult`: command line result
+#### [`CommandResult`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/commands.lua?plain=1#L14)
 
-  - fields:
-    - `stdout:string[]|nil`: stdout lines.
-    - `stderr:string[]|nil`: stderr lines.
-    - `code:integer?`: exit code.
-    - `signal:integer?`: signal.
-  - `failed():boolean`: exit code `code ~= 0` and `stderr` not empty.
+The command line result.
 
-- `Command`: command line (blocking mode spawn).
+Contains below fields:
 
-  - `run(cmds:string[]):Command`: run command line, return handle.
-  - `failed():boolean`: same with `CommandResult`, use `Command.result` to get command line result.
+- `stdout:string[]|nil`: stdout lines.
+- `stderr:string[]|nil`: stderr lines.
+- `code:integer?`: exit code.
+- `signal:integer?`: signal.
 
-- `GitRootCommand`
+Contains below methods:
 
-  - `run():GitRootCommand`: run `git rev-parse --show-toplevel`, return handle.
-  - `failed():boolean`: same with `Command`, use `GitRootCommand.result` to get command line result.
-  - `output():string?`: get the command output.
+- `failed():boolean`: exit code `code ~= 0` and `stderr` not empty.
 
-- `GitBranchesCommand`
+#### [`Command`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/commands.lua?plain=1#L50)
 
-  - `run(remotes:boolean?):GitBranchesCommand`: run `git branch` or `git branch --remotes`, return handle.
-  - `failed():boolean`: same with `Command`, use `GitBranchesCommand.result` to get command line result.
-  - `output():string[]|nil`: get the command output.
+The command line (sync/blocking mode spawn.run).
 
-- `GitCurrentBranchCommand`
-  - `run():GitCurrentBranchCommand`: run `git rev-parse --abbrev-ref HEAD`, return handle.
-  - `failed():boolean`: same with `Command`, use `GitCurrentBranchCommand.result` to get command line result.
-  - `output():string?`: get the command output.
+Contains below methods:
+
+- `run(cmds:string[]):Command`: run command line, return handle.
+- `failed():boolean`: same with `CommandResult`, use `Command.result` to get command line result.
+
+#### [`GitRootCommand`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/commands.lua?plain=1#L98)
+
+Find git repository root directory.
+
+Contains below methods:
+
+- `run():GitRootCommand`: run `git rev-parse --show-toplevel`, return handle.
+- `failed():boolean`: same with `Command`, use `GitRootCommand.result` to get command line result.
+- `output():string?`: get the command output.
+
+#### [`GitBranchesCommand`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/commands.lua?plain=1#L134)
+
+Find git repository local or remote branches.
+
+Contains below methods:
+
+- `run(remotes:boolean?):GitBranchesCommand`: run `git branch` or `git branch --remotes`, return handle.
+- `failed():boolean`: same with `Command`, use `GitBranchesCommand.result` to get command line result.
+- `output():string[]|nil`: get the command output.
+
+#### [`GitCurrentBranchCommand`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/commands.lua?plain=1#L171)
+
+Find git repository current branch name.
+
+Contains below methods:
+
+- `run():GitCurrentBranchCommand`: run `git rev-parse --abbrev-ref HEAD`, return handle.
+- `failed():boolean`: same with `Command`, use `GitCurrentBranchCommand.result` to get command line result.
+- `output():string?`: get the command output.
 
 ### [fzfx.lib.constants](/lua/fzfx/lib/constants.lua)
 
 #### OS
 
-- `IS_WINDOWS`: is Windows.
-- `IS_MACOS`: is macOS.
-- `IS_BSD`: is BSD.
-- `IS_LINUX`: is UNIX or Linux.
+##### `IS_WINDOWS`
 
-#### Command Line
+Whether is Windows.
 
-bat/cat
+##### `IS_MACOS`
 
-- `HAS_BAT`: has `bat` command.
-- `BAT`: `bat` command.
-- `HAS_CAT`: has `cat` command.
-- `CAT`: `cat` command.
+Whether is macOS.
 
-rg/grep
+##### `IS_BSD`
 
-- `HAS_RG`: has `rg` command.
-- `RG`: `rg` command.
-- `HAS_GNU_GREP`: has gnu `grep`/`ggrep` command.
-- `GNU_GREP`: `grep`/`ggrep` command.
-- `HAS_GREP`: has `grep`/`ggrep` command.
-- `GREP`: `grep`/`ggrep` command.
+Whether is BSD.
 
-fd/find
+##### `IS_LINUX`
 
-- `HAS_FD`: has `fd` command.
-- `FD`: `fd` command.
-- `HAS_FIND`: has `find`/`gfind` command.
-- `FIND`: `find`/`gfind` command.
+Whether is UNIX or Linux.
 
-ls/lsd/eza
+#### Executables
 
-- `HAS_LS`: has `ls` command.
-- `LS`: `ls` command.
-- `HAS_LSD`: has `lsd` command.
-- `LSD`: `lsd` command.
-- `HAS_EZA`: has `eza`/`exa` command.
-- `EZA`: `eza`/`exa` command.
+##### `HAS_BAT`
 
-git/delta
+Whether has `bat` command.
 
-- `HAS_GIT`: has `git` command.
-- `GIT`: `git` command.
-- `HAS_DELTA`: has `delta` command.
-- `DELTA`: `delta` command.
+##### `BAT`
 
-echo
+`bat` or `batcat` command.
 
-- `HAS_ECHO`: has `echo` command.
-- `ECHO`: `echo` command.
+##### `HAS_CAT`
 
-curl
+Whether has `cat` command.
 
-- `HAS_CURL`: has `curl` command.
-- `CURL`: `curl` command.
+##### `CAT`
+
+`cat` command.
+
+##### `HAS_RG`
+
+Whether has `rg` command.
+
+##### `RG`
+
+`rg` command.
+
+##### `HAS_GNU_GREP`
+
+Whether has gnu `grep`/`ggrep` command.
+
+##### `GNU_GREP`
+
+`grep`/`ggrep` command.
+
+Whether `HAS_GREP`
+
+Whether has `grep`/`ggrep` command.
+
+##### `GREP`
+
+`grep`/`ggrep` command.
+
+##### `HAS_FD`
+
+Whether has `fd` command.
+
+##### `FD`
+
+`fd` or `fdfind` command.
+
+##### `HAS_FIND`
+
+Whether has `find`/`gfind` command.
+
+##### `FIND`
+
+`find` or `gfind` command.
+
+##### `HAS_LS`
+
+Whether has `ls` command.
+
+##### `LS`
+
+`ls` command.
+
+##### `HAS_LSD`
+
+Whether has `lsd` command.
+
+##### `LSD`
+
+`lsd` command.
+
+##### `HAS_EZA`
+
+Whether has `eza`/`exa` command.
+
+##### `EZA`
+
+`eza`/`exa` command.
+
+##### `HAS_GIT`
+
+Whether has `git` command.
+
+##### `GIT`
+
+`git` command.
+
+##### `HAS_DELTA`
+
+Whether has `delta` command.
+
+##### `DELTA`
+
+`delta` command.
+
+##### `HAS_ECHO`
+
+Whether has `echo` command.
+
+##### `ECHO`
+
+`echo` command.
+
+##### `HAS_CURL`
+
+Whether has `curl` command.
+
+##### `CURL`
+
+`curl` command.
 
 ### [fzfx.lib.deprecations](/lua/fzfx/lib/deprecations.lua)
 
-- `notify(fmt:string, ...:any):nil`: print deprecation notifications to command line.
+#### [`notify`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/deprecations.lua?plain=1#L7)
+
+Print deprecation notifications.
 
 ### [fzfx.lib.env](/lua/fzfx/lib/env.lua)
 
@@ -585,17 +684,27 @@ curl
 
 ### [fzfx.lib.log](/lua/fzfx/lib/log.lua)
 
-- `debug(fmt:string, ...)`: debug, the `fmt` is formatting messages in C style formatters, e.g. `%d`, `%s`.
-- `info(fmt:string, ...)`: info.
-- `warn(fmt:string, ...)`: warning.
-- `err(fmt:string, ...)`: error
-- `echo(level:LogLevels, fmt:string, ...)`: echo message in log `level`. this API will not been affected by log configs.
-  - `LogLevels.DEBUG`.
-  - `LogLevels.INFO`.
-  - `LogLevels.WARN`.
-  - `LogLevels.ERROR`.
-- `throw(fmt:string, ...)`: same with `err`, additionally it invokes `error()` API, which throw an error to user command line, requires user to press `ENTER` to continue.
-- `ensure(condition:boolean, fmt:string, ...)`: throw error to user if `condition` is false.
+!> This module requires initialize before using its APIs, except the [echo](#echo) API.
+
+#### [`LogLevels`/`LogLevelNames`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L5-L7)
+
+The logging level integer values and names.
+
+#### [`echo`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L21)
+
+Echo message in log `level`. this API doesn't require initialize `fzfx.lib.log` (e.g. `setup`).
+
+#### [`debug`/`info`/`warn`/`err`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L70-L134)
+
+Log debug, the message format placeholder `fmt` support lua string format, e.g. `%d`, `%s` placeholders.
+
+#### [`throw`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L139)
+
+Same with `err`, additionally it throws an error to user via lua `error()`.
+
+#### [`ensure`](https://github.com/linrongbin16/fzfx.nvim/blob/b9e31389cfc9ba816efa6603b96eabc5a2320ce1/lua/fzfx/lib/log.lua?plain=1#L158)
+
+Write error logs and throw error to user only if `condition` is false.
 
 ### [fzfx.lib.bufs](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/lib/bufs.lua)
 
@@ -608,17 +717,3 @@ Whether buffer is valid.
 #### [`shellescape`](https://github.com/linrongbin16/fzfx.nvim/blob/4a0fd372be81a5aa506c32c2cacb78a279b460e5/lua/fzfx/lib/shells.lua?plain=1#L71)
 
 Cross-platform escape shell strings.
-
-### [fzfx.lib.tables](/lua/fzfx/lib/tables.lua)
-
-#### Table
-
-- `tbl_empty(t:any):boolean`/`tbl_not_empty(t:any):boolean`: detect whether a table is empty or not.
-- `tbl_get(t:any, field:string):any`: retrieve value from table, with json-like field indexing via dot `.` delimiter, for example when parameter `t = {a = { b = 1 }}`, `field = 'a.b'`, this function will return `1`. When `field = ''` returns `t` itself, when field not exist returns `nil`.
-
-#### List
-
-- `list_empty(l:any):boolean`/`list_not_empty(l:any):boolean`: detect whether a list(table) is empty or not.
-- `list_index(i:integer, n:integer):integer`: calculate list index for both positive or negative. `n` is the length of list.
-  - if `i > 0`, `i` is in range `[1,n]`.
-  - if `i < 0`, `i` is in range `[-1,-n]`, `-1` maps to last position (e.g. `n`), `-n` maps to first position (e.g. `1`).

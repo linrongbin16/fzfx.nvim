@@ -1,18 +1,15 @@
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
 local fileios = require("fzfx.commons.fileios")
 local strings = require("fzfx.commons.strings")
 local paths = require("fzfx.commons.paths")
 
 local consts = require("fzfx.lib.constants")
-local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
 local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
@@ -571,7 +568,7 @@ M._vim_keymaps_previewer = function(line, context)
   --   vim.inspect(parsed)
   -- )
   if
-    tbls.tbl_not_empty(parsed)
+    tables.tbl_not_empty(parsed)
     and strings.not_empty(parsed.filename)
     and type(parsed.lineno) == "number"
   then
@@ -583,7 +580,7 @@ M._vim_keymaps_previewer = function(line, context)
       parsed.filename,
       parsed.lineno
     )
-  elseif consts.HAS_ECHO and tbls.tbl_not_empty(parsed) then
+  elseif consts.HAS_ECHO and tables.tbl_not_empty(parsed) then
     -- log.debug(
     --   "|fzfx.config - vim_keymaps_previewer| desc:%s",
     --   vim.inspect(parsed)

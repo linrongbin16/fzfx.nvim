@@ -1,4 +1,4 @@
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
 local paths = require("fzfx.commons.paths")
 
@@ -214,14 +214,16 @@ M._make_provider_rg = function(opts)
     local option = parsed.option
 
     local args = nil
-    if tbls.tbl_get(opts, "unrestricted") or tbls.tbl_get(opts, "buffer") then
+    if
+      tables.tbl_get(opts, "unrestricted") or tables.tbl_get(opts, "buffer")
+    then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_RG)
     end
     args = M._append_options(args, option)
 
-    if tbls.tbl_get(opts, "buffer") then
+    if tables.tbl_get(opts, "buffer") then
       local bufpath = M._get_buf_path(context.bufnr)
       if not bufpath then
         return nil
@@ -248,14 +250,16 @@ M._make_provider_grep = function(opts)
     local option = parsed.option
 
     local args = nil
-    if tbls.tbl_get(opts, "unrestricted") or tbls.tbl_get(opts, "buffer") then
+    if
+      tables.tbl_get(opts, "unrestricted") or tables.tbl_get(opts, "buffer")
+    then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
     end
     args = M._append_options(args, option)
 
-    if tbls.tbl_get(opts, "buffer") then
+    if tables.tbl_get(opts, "buffer") then
       local bufpath = M._get_buf_path(context.bufnr)
       if not bufpath then
         return nil

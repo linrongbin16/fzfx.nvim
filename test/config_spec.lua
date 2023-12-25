@@ -22,18 +22,16 @@ describe("config", function()
     }
   end
 
-  local tbls = require("fzfx.lib.tables")
+  local tables = require("fzfx.commons.tables")
   local consts = require("fzfx.lib.constants")
-
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
   local conf = require("fzfx.config")
 
   describe("[get_config]", function()
     it("test", function()
       conf.setup()
       assert_eq(type(conf.get_config()), "table")
-      assert_false(tbls.tbl_empty(conf.get_config()))
+      assert_false(tables.tbl_empty(conf.get_config()))
       assert_eq(type(conf.get_config().live_grep), "table")
       assert_eq(type(conf.get_config().debug), "table")
       assert_eq(type(conf.get_config().debug.enable), "boolean")
@@ -56,7 +54,7 @@ describe("config", function()
     it("get defaults", function()
       conf.setup()
       assert_eq(type(conf.get_defaults()), "table")
-      assert_false(tbls.tbl_empty(conf.get_defaults()))
+      assert_false(tables.tbl_empty(conf.get_defaults()))
       assert_eq(type(conf.get_defaults().live_grep), "table")
       assert_eq(type(conf.get_defaults().debug), "table")
       assert_eq(type(conf.get_defaults().debug.enable), "boolean")

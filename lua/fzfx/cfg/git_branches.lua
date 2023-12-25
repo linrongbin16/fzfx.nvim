@@ -1,4 +1,4 @@
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
 
 local consts = require("fzfx.lib.constants")
@@ -7,15 +7,9 @@ local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
-local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
-local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
-local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
@@ -146,7 +140,7 @@ M._make_git_branches_provider = function(opts)
       string.format("* %s", git_current_branch_cmd:output())
     )
     local git_branches_cmd = cmds.GitBranchesCommand:run(
-      tbls.tbl_get(opts, "remote_branch") and true or false
+      tables.tbl_get(opts, "remote_branch") and true or false
     )
     if git_branches_cmd:failed() then
       log.echo(

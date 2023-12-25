@@ -1,4 +1,4 @@
-local tbls = require("fzfx.lib.tables")
+local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
 local numbers = require("fzfx.commons.numbers")
 
@@ -229,7 +229,7 @@ end
 M._make_git_checkout = function(lines, context)
   log.debug("|_make_git_checkout| lines:%s", vim.inspect(lines))
 
-  if tbls.list_not_empty(lines) then
+  if tables.list_not_empty(lines) then
     local line = lines[#lines]
     if strings.not_empty(line) then
       local parsed = parsers.parse_git_branch(line, context)
@@ -253,7 +253,7 @@ end
 --- @param lines string[]
 --- @return string?
 M._make_yank_git_commit = function(lines)
-  if tbls.list_not_empty(lines) then
+  if tables.list_not_empty(lines) then
     local line = lines[#lines]
     local parsed = parsers.parse_git_commit(line)
     return string.format("let @+ = '%s'", parsed.commit)
@@ -275,7 +275,7 @@ end
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return {input:string, mode:string}?
 M._make_feed_vim_command = function(lines, context)
-  if tbls.list_not_empty(lines) then
+  if tables.list_not_empty(lines) then
     local line = lines[#lines]
     local parsed = parsers.parse_vim_command(line, context)
     return { input = string.format([[:%s]], parsed.command), mode = "n" }
@@ -287,7 +287,7 @@ end
 --- @param context fzfx.VimCommandsPipelineContext
 M.feed_vim_command = function(lines, context)
   local feed = M._make_feed_vim_command(lines, context) --[[@as table]]
-  if tbls.tbl_not_empty(feed) then
+  if tables.tbl_not_empty(feed) then
     local ok, result = pcall(vim.fn.feedkeys, feed.input, feed.mode)
     assert(ok, vim.inspect(result))
   end
@@ -298,7 +298,7 @@ end
 --- @param context fzfx.VimKeyMapsPipelineContext
 --- @return {fn:"cmd"|"feedkeys"|nil, input:string?, mode:string?}?
 M._make_feed_vim_key = function(lines, context)
-  if tbls.list_not_empty(lines) then
+  if tables.list_not_empty(lines) then
     local line = lines[#lines]
     local parsed = parsers.parse_vim_keymap(line, context)
     if strings.find(parsed.mode, "n") ~= nil then
@@ -336,14 +336,14 @@ end
 M.feed_vim_key = function(lines, context)
   local parsed = M._make_feed_vim_key(lines, context) --[[@as table]]
   if
-    tbls.tbl_not_empty(parsed)
+    tables.tbl_not_empty(parsed)
     and parsed.fn == "cmd"
     and strings.not_empty(parsed.input)
   then
     local ok, result = pcall(vim.cmd --[[@as function]], parsed.input)
     assert(ok, vim.inspect(result))
   elseif
-    tbls.tbl_not_empty(parsed)
+    tables.tbl_not_empty(parsed)
     and parsed.fn == "feedkeys"
     and strings.not_empty(parsed.input)
     and strings.not_empty(parsed.mode)
