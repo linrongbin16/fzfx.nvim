@@ -16,8 +16,9 @@ describe("cfg.lsp_diagnostics", function()
 
   require("fzfx").setup()
   local tbls = require("fzfx.lib.tables")
+  local strings = require("fzfx.commons.strings")
+
   local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
 
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
@@ -35,13 +36,13 @@ describe("cfg.lsp_diagnostics", function()
         assert_true(sign_item.severity >= 1 and sign_item.severity <= 4)
         assert_true(
           string.len(sign_item.name) > 0
-            and strs.startswith(sign_item.name, "DiagnosticSign")
+            and strings.startswith(sign_item.name, "DiagnosticSign")
         )
         assert_true(
-          strs.endswith(sign_item.name, "Error")
-            or strs.endswith(sign_item.name, "Warn")
-            or strs.endswith(sign_item.name, "Info")
-            or strs.endswith(sign_item.name, "Hint")
+          strings.endswith(sign_item.name, "Error")
+            or strings.endswith(sign_item.name, "Warn")
+            or strings.endswith(sign_item.name, "Info")
+            or strings.endswith(sign_item.name, "Hint")
         )
       end
     end)

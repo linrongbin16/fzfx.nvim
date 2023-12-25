@@ -1,4 +1,4 @@
-local strs = require("fzfx.lib.strings")
+local strings = require("fzfx.commons.strings")
 
 local M = {}
 
@@ -10,7 +10,7 @@ M.parse_flagged = function(query, flag)
   local payload = ""
   local option = nil
 
-  local flag_pos = strs.find(query, flag)
+  local flag_pos = strings.find(query, flag)
   if type(flag_pos) == "number" and flag_pos > 0 then
     payload = vim.trim(string.sub(query, 1, flag_pos - 1))
     option = vim.trim(string.sub(query, flag_pos + 2))

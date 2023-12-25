@@ -1,8 +1,6 @@
-local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
-local cmds = require("fzfx.lib.commands")
-local tbls = require("fzfx.lib.tables")
+local strings = require("fzfx.commons.strings")
 
+local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -133,10 +131,10 @@ M._make_preview_git_commit = function(commit)
 end
 
 M.preview_git_commit = function(line)
-  if strs.isspace(line:sub(1, 1)) then
+  if strings.isspace(line:sub(1, 1)) then
     return nil
   end
-  local first_space_pos = strs.find(line, " ")
+  local first_space_pos = strings.find(line, " ")
   local commit = line:sub(1, first_space_pos - 1)
   return M._make_preview_git_commit(commit)
 end

@@ -24,7 +24,6 @@ describe("config", function()
 
   local tbls = require("fzfx.lib.tables")
   local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
 
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
 

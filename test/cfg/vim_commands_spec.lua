@@ -14,15 +14,15 @@ describe("cfg.vim_commands", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  require("fzfx").setup()
   local tbls = require("fzfx.lib.tables")
-  local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
+  local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
 
+  local consts = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
 
   local vim_commands_cfg = require("fzfx.cfg.vim_commands")
+  require("fzfx").setup()
 
   describe("[commands]", function()
     it("_parse_vim_ex_command_name", function()
@@ -75,10 +75,10 @@ describe("cfg.vim_commands", function()
         local actual3 = vim_commands_cfg._parse_ex_command_output_header(line)
         assert_eq(type(actual3), "table")
         assert_eq(actual3.name_pos, 1)
-        assert_eq(actual3.args_pos, strs.find(line, "Args"))
-        assert_eq(actual3.address_pos, strs.find(line, "Address"))
-        assert_eq(actual3.complete_pos, strs.find(line, "Complete"))
-        assert_eq(actual3.definition_pos, strs.find(line, "Definition"))
+        assert_eq(actual3.args_pos, strings.find(line, "Args"))
+        assert_eq(actual3.address_pos, strings.find(line, "Address"))
+        assert_eq(actual3.complete_pos, strings.find(line, "Complete"))
+        assert_eq(actual3.definition_pos, strings.find(line, "Definition"))
       end
     )
     it("_parse_ex_command_output_lua_function_definition", function()
@@ -101,7 +101,7 @@ describe("cfg.vim_commands", function()
         "                                               Find buffers",
         "                                               Find buffers by yank text",
       }
-      local def_pos = strs.find(header, "Definition")
+      local def_pos = strings.find(header, "Definition")
       for _, line in ipairs(success_lines) do
         local actual =
           vim_commands_cfg._parse_ex_command_output_lua_function_definition(
@@ -248,17 +248,17 @@ describe("cfg.vim_commands", function()
       -- )
       assert_eq(type(actual), "table")
       assert_eq(#actual, 3)
-      assert_true(strs.startswith(actual[1], "Name"))
-      assert_true(strs.endswith(actual[1], "Definition/Location"))
-      assert_true(strs.startswith(actual[2], "FzfxGBranches"))
+      assert_true(strings.startswith(actual[1], "Name"))
+      assert_true(strings.endswith(actual[1], "Definition/Location"))
+      assert_true(strings.startswith(actual[2], "FzfxGBranches"))
       local expect = string.format(
         "%s:%d",
         paths.reduce(commands[1].loc.filename),
         commands[1].loc.lineno
       )
-      assert_true(strs.endswith(actual[2], expect))
-      assert_true(strs.startswith(actual[3], "bnext"))
-      assert_true(strs.endswith(actual[3], '"next buffer"'))
+      assert_true(strings.endswith(actual[2], expect))
+      assert_true(strings.startswith(actual[3], "bnext"))
+      assert_true(strings.endswith(actual[3], '"next buffer"'))
     end)
   end)
 
@@ -288,7 +288,7 @@ describe("cfg.vim_commands", function()
         assert_eq(type(act.name), "string")
         assert_true(string.len(act.name) > 0)
         assert_true(vim.fn.exists(":" .. act.name) >= 0)
-        if strs.isalpha(act.name:sub(1, 1)) and act.name ~= "range" then
+        if strings.isalpha(act.name:sub(1, 1)) and act.name ~= "range" then
           assert_true(vim.fn.exists(":" .. act.name) > 0)
         end
       end

@@ -1,8 +1,9 @@
 local paths = require("fzfx.commons.paths")
 local termcolors = require("fzfx.commons.termcolors")
+local strings = require("fzfx.commons.strings")
 local jsons = require("fzfx.commons.jsons")
 local fileios = require("fzfx.commons.fileios")
-local strs = require("fzfx.lib.strings")
+
 local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
 local yanks = require("fzfx.detail.yanks")
@@ -122,8 +123,8 @@ local function get_command_feed(feed_type, input_args, pipeline_name)
     if
       type(data) ~= "string"
       or string.len(data) == 0
-      or not strs.startswith(data, "{")
-      or not strs.endswith(data, "}")
+      or not strings.startswith(data, "{")
+      or not strings.endswith(data, "}")
     then
       return "", nil
     end
@@ -344,7 +345,7 @@ end
 --- @return fzfx.FzfOptEventBinder
 function FzfOptEventBinder:append(opt)
   log.ensure(
-    strs.not_blank(opt),
+    strings.not_blank(opt),
     "|FzfOptEventBinder:append| opt must not blank:%s",
     vim.inspect(opt)
   )

@@ -1,16 +1,12 @@
 local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
 local cmds = require("fzfx.lib.commands")
 local paths = require("fzfx.commons.paths")
 local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum

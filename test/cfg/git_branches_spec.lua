@@ -14,16 +14,16 @@ describe("cfg.git_branches", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  require("fzfx").setup()
   local tbls = require("fzfx.lib.tables")
-  local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
+  local strings = require("fzfx.commons.strings")
 
+  local consts = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
   local git_branches_cfg = require("fzfx.cfg.git_branches")
+  require("fzfx").setup()
 
   describe("git_branches", function()
     it("_make_git_branches_provider local", function()
@@ -49,7 +49,7 @@ describe("cfg.git_branches", function()
       }
       for i, line in ipairs(lines) do
         local actual = git_branches_cfg._git_branches_previewer(line)
-        assert_true(strs.find(actual, "git log --pretty") == 1)
+        assert_true(strings.find(actual, "git log --pretty") == 1)
       end
     end)
   end)

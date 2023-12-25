@@ -1,5 +1,5 @@
 local consts = require("fzfx.lib.constants")
-local strs = require("fzfx.lib.strings")
+local strings = require("fzfx.commons.strings")
 local cmds = require("fzfx.lib.commands")
 local tbls = require("fzfx.lib.tables")
 local log = require("fzfx.lib.log")
@@ -84,7 +84,7 @@ M._git_live_grep_provider = function(query, context)
 
   local args = { "git", "grep", "--color=always", "-n" }
   if type(option) == "string" and string.len(option) > 0 then
-    local option_splits = strs.split(option, " ")
+    local option_splits = strings.split(option, " ")
     for _, o in ipairs(option_splits) do
       if type(o) == "string" and string.len(o) > 0 then
         table.insert(args, o)

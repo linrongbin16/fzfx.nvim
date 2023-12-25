@@ -17,7 +17,6 @@ describe("cfg.git_live_grep", function()
   require("fzfx").setup()
   local tbls = require("fzfx.lib.tables")
   local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
 
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")

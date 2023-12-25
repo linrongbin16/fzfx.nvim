@@ -15,7 +15,7 @@ describe("helper.previewers", function()
 
   local tbls = require("fzfx.lib.tables")
   local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
+  local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
 
   local previewers = require("fzfx.helper.previewers")
@@ -110,7 +110,7 @@ describe("helper.previewers", function()
       for _, line in ipairs(lines) do
         local actual = previewers.preview_files_grep(line)
         local expect = paths.normalize(
-          strs.split(line, ":")[1],
+          strings.split(line, ":")[1],
           { double_backslash = true, expand = true }
         )
         print(string.format("normalize:%s\n", vim.inspect(expect)))
@@ -121,9 +121,9 @@ describe("helper.previewers", function()
           assert_eq(actual[3], "--theme=base16")
           assert_eq(actual[4], "--color=always")
           assert_eq(actual[5], "--pager=never")
-          assert_true(strs.startswith(actual[6], "--highlight-line"))
+          assert_true(strings.startswith(actual[6], "--highlight-line"))
           assert_eq(actual[7], "--")
-          assert_true(strs.startswith(actual[8], expect))
+          assert_true(strings.startswith(actual[8], expect))
         else
           assert_eq(actual[1], "cat")
           assert_eq(actual[2], expect)
@@ -150,11 +150,11 @@ describe("helper.previewers", function()
         local actual = previewers._make_preview_git_commit(line)
         if actual ~= nil then
           assert_eq(type(actual), "string")
-          assert_true(strs.find(actual, "git show") > 0)
+          assert_true(strings.find(actual, "git show") > 0)
           if vim.fn.executable("delta") > 0 then
-            assert_true(strs.find(actual, "delta") > 0)
+            assert_true(strings.find(actual, "delta") > 0)
           else
-            assert_true(strs.find(actual, "delta") == nil)
+            assert_true(strings.find(actual, "delta") == nil)
           end
         end
       end
@@ -170,11 +170,11 @@ describe("helper.previewers", function()
         local actual = previewers.preview_git_commit(line)
         if actual ~= nil then
           assert_eq(type(actual), "string")
-          assert_true(strs.find(actual, "git show") > 0)
+          assert_true(strings.find(actual, "git show") > 0)
           if vim.fn.executable("delta") > 0 then
-            assert_true(strs.find(actual, "delta") > 0)
+            assert_true(strings.find(actual, "delta") > 0)
           else
-            assert_true(strs.find(actual, "delta") == nil)
+            assert_true(strings.find(actual, "delta") == nil)
           end
         end
       end
@@ -196,8 +196,8 @@ describe("helper.previewers", function()
         assert_eq(actual[4], "--color=always")
         assert_eq(actual[5], "--pager=never")
         assert_eq(actual[6], "--highlight-line=135")
-        assert_true(strs.startswith(actual[7], "--line-range"))
-        assert_true(strs.endswith(actual[8], ":"))
+        assert_true(strings.startswith(actual[7], "--line-range"))
+        assert_true(strings.endswith(actual[8], ":"))
         assert_eq(actual[9], "--")
         assert_eq(actual[10], "lua/fzfx/config.lua")
       else

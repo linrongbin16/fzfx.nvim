@@ -16,9 +16,10 @@ describe("cfg.file_explorer", function()
 
   require("fzfx").setup()
   local tbls = require("fzfx.lib.tables")
-  local consts = require("fzfx.lib.constants")
-  local strs = require("fzfx.lib.strings")
+  local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
+
+  local consts = require("fzfx.lib.constants")
 
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
@@ -71,13 +72,13 @@ describe("cfg.file_explorer", function()
       --     )
       -- )
       assert_eq(type(actual1), "string")
-      assert_true(strs.find(actual1, "echo") > 0)
+      assert_true(strings.find(actual1, "echo") > 0)
       assert_true(
-        type(strs.find(actual1, "eza")) == "number"
-          or type(strs.find(actual1, "ls")) == "number"
+        type(strings.find(actual1, "eza")) == "number"
+          or type(strings.find(actual1, "ls")) == "number"
       )
       assert_true(
-        strs.find(
+        strings.find(
           actual1,
           paths.normalize(
             vim.fn.getcwd(),
@@ -95,13 +96,13 @@ describe("cfg.file_explorer", function()
       --     )
       -- )
       assert_eq(type(actual2), "string")
-      assert_true(strs.find(actual2, "echo") > 0)
+      assert_true(strings.find(actual2, "echo") > 0)
       assert_true(
-        type(strs.find(actual2, "eza")) == "number"
-          or type(strs.find(actual2, "ls")) == "number"
+        type(strings.find(actual2, "eza")) == "number"
+          or type(strings.find(actual2, "ls")) == "number"
       )
       assert_true(
-        strs.find(
+        strings.find(
           actual2,
           paths.normalize(
             vim.fn.getcwd(),
