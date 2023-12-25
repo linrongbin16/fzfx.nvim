@@ -287,7 +287,7 @@ function PopupWindow:new(win_opts)
   apis.set_buf_option(bufnr, "buflisted", false)
   apis.set_buf_option(bufnr, "filetype", "fzf")
 
-  local popup_window_config = _make_window_config(win_opts)
+  local popup_window_config = _make_window_config(win_opts or {})
 
   --- @type integer
   local winnr = vim.api.nvim_open_win(bufnr, true, popup_window_config)

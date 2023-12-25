@@ -18,8 +18,16 @@ describe("detail.popup", function()
   local strings = require("fzfx.commons.strings")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local popup = require("fzfx.detail.popup")
-
   require("fzfx.config").setup()
+
+  local WIN_OPTS = {
+    height = 0.85,
+    width = 0.85,
+    row = 0,
+    col = 0,
+    border = "none",
+    zindex = 51,
+  }
 
   describe("[_make_window_size]", function()
     it("is in range of [0, 1]", function()
@@ -66,14 +74,6 @@ describe("detail.popup", function()
     end)
   end)
   describe("[_make_cursor_window_config]", function()
-    local WIN_OPTS = {
-      height = 0.85,
-      width = 0.85,
-      row = 0,
-      col = 0,
-      border = "none",
-      zindex = 51,
-    }
     it("makes cursor config", function()
       local actual = popup._make_cursor_window_config(WIN_OPTS)
       print(string.format("make cursor config:%s\n", vim.inspect(actual)))
@@ -95,14 +95,6 @@ describe("detail.popup", function()
     end)
   end)
   describe("[_make_center_window_config]", function()
-    local WIN_OPTS = {
-      height = 0.85,
-      width = 0.85,
-      row = 0,
-      col = 0,
-      border = "none",
-      zindex = 51,
-    }
     it("makes center config", function()
       local actual = popup._make_center_window_config(WIN_OPTS)
       print(string.format("make center config:%s\n", vim.inspect(actual)))
@@ -132,14 +124,6 @@ describe("detail.popup", function()
     end)
   end)
   describe("[_make_window_config]", function()
-    local WIN_OPTS = {
-      height = 0.85,
-      width = 0.85,
-      row = 0,
-      col = 0,
-      border = "none",
-      zindex = 51,
-    }
     it("makes center config", function()
       local actual1 = popup._make_window_config(WIN_OPTS)
       local actual2 = popup._make_center_window_config(WIN_OPTS)
@@ -166,7 +150,7 @@ describe("detail.popup", function()
       popup._remove_all_popup_window_instances()
       assert_eq(type(popup._get_all_popup_window_instances()), "table")
       assert_true(tables.tbl_empty(popup._get_all_popup_window_instances()))
-      local pw = popup.PopupWindow:new()
+      local pw = popup.PopupWindow:new(WIN_OPTS)
       assert_eq(type(popup._get_all_popup_window_instances()), "table")
       assert_false(tables.tbl_empty(popup._get_all_popup_window_instances()))
       local instances = popup._get_all_popup_window_instances()
@@ -186,12 +170,12 @@ describe("detail.popup", function()
       assert_eq(type(popup._get_all_popup_window_instances()), "table")
       assert_true(tables.tbl_empty(popup._get_all_popup_window_instances()))
       assert_eq(popup._count_all_popup_window_instances(), 0)
-      local pw = popup.PopupWindow:new()
+      local pw = popup.PopupWindow:new(WIN_OPTS)
       assert_eq(popup._count_all_popup_window_instances(), 1)
       pw:close()
       assert_eq(popup._count_all_popup_window_instances(), 0)
-      local pw1 = popup.PopupWindow:new()
-      local pw2 = popup.PopupWindow:new()
+      local pw1 = popup.PopupWindow:new(WIN_OPTS)
+      local pw2 = popup.PopupWindow:new(WIN_OPTS)
       assert_eq(popup._count_all_popup_window_instances(), 2)
       pw1:close()
       pw2:close()
@@ -200,7 +184,7 @@ describe("detail.popup", function()
   end)
   describe("[PopupWindow]", function()
     it("creates new", function()
-      local pw = popup.PopupWindow:new()
+      local pw = popup.PopupWindow:new(WIN_OPTS)
       assert_eq(type(pw), "table")
       assert_eq(type(pw.window_opts_context), "table")
       assert_eq(type(pw.window_opts_context.bufnr), "number")
@@ -218,7 +202,7 @@ describe("detail.popup", function()
       assert_false(pw._resizing)
     end)
     it("resize", function()
-      local pw = popup.PopupWindow:new()
+      local pw = popup.PopupWindow:new(WIN_OPTS)
       pw:resize()
     end)
   end)
