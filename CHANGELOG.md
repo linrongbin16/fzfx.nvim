@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.2](https://github.com/linrongbin16/fzfx.nvim/compare/v4.1.1...v4.1.2) (2023-12-25)
+
+
+### Bug Fixes
+
+* **configs:** fix 'win_opts' recalculation ([#520](https://github.com/linrongbin16/fzfx.nvim/issues/520)) ([bd0e0b7](https://github.com/linrongbin16/fzfx.nvim/commit/bd0e0b77681d959e49aa0562db881ae916aa165e))
+
 ## [4.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v4.1.0...v4.1.1) (2023-12-25)
 
 
