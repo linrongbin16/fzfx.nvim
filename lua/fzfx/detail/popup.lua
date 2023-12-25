@@ -1,12 +1,10 @@
-local constants = require("fzfx.lib.constants")
 local numbers = require("fzfx.commons.numbers")
 local apis = require("fzfx.commons.apis")
 local fileios = require("fzfx.commons.fileios")
+
+local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
-
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
-
-local conf = require("fzfx.config")
 
 -- WindowOptsContext {
 

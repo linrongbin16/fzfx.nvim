@@ -1010,16 +1010,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local actions = pipeline_configs.actions
 
   -- win_opts
-  local win_opts = nil
-  local cfg_win_opts = tables.tbl_get(conf.get_config(), "popup", "win_opts")
-  if cfg_win_opts ~= nil then
-    if type(cfg_win_opts) == "function" then
-      win_opts = cfg_win_opts()
-    elseif type(cfg_win_opts) == "table" then
-      win_opts = cfg_win_opts
-    end
-  end
-
+  local win_opts = tables.tbl_get(conf.get_config(), "popup", "win_opts")
   if pipeline_configs.win_opts ~= nil then
     local pipeline_win_opts = nil
     if type(pipeline_configs.win_opts) == "function" then
