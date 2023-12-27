@@ -78,7 +78,7 @@ M._buf_valid = function(bufnr)
   if not ok then
     return false
   end
-  return bufs.buf_is_valid(bufnr) and not exclude_filetypes[ft_or_err]
+  return bufs.buf_is_valid(bufnr) and not exclude_filetypes[ft_or_err] and vim.api.nvim_buf_is_loaded(bufnr)
 end
 
 --- @param query string
