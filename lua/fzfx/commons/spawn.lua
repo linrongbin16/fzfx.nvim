@@ -6,6 +6,7 @@ local M = {}
 --- @param cmd string[]
 --- @param opts commons.SpawnOpts?  by default {text = true}
 --- @param on_exit commons.SpawnOnExit?
+--- @return vim.SystemObj
 M.run = function(cmd, opts, on_exit)
   opts = opts or {}
   opts.text = type(opts.text) == "boolean" and opts.text or true
