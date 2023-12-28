@@ -20,8 +20,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 ## 📖 Table of contents
 
-- [Feature](#-feature)
-- [Requirement](#-requirement)
+- [Features](#-features)
+- [Requirements](#-requirements)
   - [Windows](#windows)
   - [Whitespace Escaping Issue](#whitespace-escaping-issue)
 - [Install](#-install)
@@ -37,7 +37,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [Development](#-development)
 - [Contribute](#-contribute)
 
-## ✨ Feature
+## ✨ Features
 
 - Icons & colors.
 - Windows support.
@@ -58,7 +58,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 > Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more features & use cases.
 
-## ✅ Requirement
+## ✅ Requirements
 
 - Neovim &ge; v0.7.0.
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
