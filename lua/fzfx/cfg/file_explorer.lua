@@ -22,14 +22,14 @@ M.command = {
 }
 
 M.variants = {
-  -- normal
+  -- args
   {
-    name = "normal",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
     default_provider = "filter_hidden",
   },
   {
-    name = "hidden_normal",
+    name = "hidden_args",
     feed = CommandFeedEnum.ARGS,
     default_provider = "include_hidden",
   },

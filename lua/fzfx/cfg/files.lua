@@ -17,19 +17,19 @@ M.command = {
 }
 
 M.variants = {
-  -- restricted normal
+  -- args
   {
-    name = "normal",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
     default_provider = "restricted_mode",
   },
-  -- unrestricted normal
+  -- unrestricted args
   {
-    name = "unrestricted_normal",
+    name = "unrestricted_args",
     feed = CommandFeedEnum.ARGS,
     default_provider = "unrestricted_mode",
   },
-  -- restricted visual
+  -- visual
   {
     name = "visual",
     feed = CommandFeedEnum.VISUAL,
@@ -41,7 +41,7 @@ M.variants = {
     feed = CommandFeedEnum.VISUAL,
     default_provider = "unrestricted_mode",
   },
-  -- restricted cword
+  -- cword
   {
     name = "cword",
     feed = CommandFeedEnum.CWORD,
@@ -53,7 +53,7 @@ M.variants = {
     feed = CommandFeedEnum.CWORD,
     default_provider = "unrestricted_mode",
   },
-  -- restricted put
+  -- put
   {
     name = "put",
     feed = CommandFeedEnum.PUT,
@@ -65,7 +65,7 @@ M.variants = {
     feed = CommandFeedEnum.PUT,
     default_provider = "unrestricted_mode",
   },
-  -- restricted resume
+  -- resume
   {
     name = "resume",
     feed = CommandFeedEnum.RESUME,

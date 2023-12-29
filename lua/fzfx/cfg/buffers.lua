@@ -22,9 +22,9 @@ M.command = {
 }
 
 M.variants = {
-  -- normal
+  -- args
   {
-    name = "normal",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
   },
   -- visual
