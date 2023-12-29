@@ -14,104 +14,65 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
+M.command = {
+  name = "FzfxGCommits",
+  desc = "Search git commits",
+}
+
 M.commands = {
-  -- normal
+  -- args
   {
-    name = "FzfxGCommits",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      desc = "Search git commits",
-    },
     default_provider = "all_commits",
   },
   {
-    name = "FzfxGCommitsB",
+    name = "buffer_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      desc = "Search git commits on current buffer",
-    },
     default_provider = "buffer_commits",
   },
   -- visual
   {
-    name = "FzfxGCommitsV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Search git commits by visual select",
-    },
     default_provider = "all_commits",
   },
   {
-    name = "FzfxGCommitsBV",
+    name = "buffer_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Search git commits on current buffer by visual select",
-    },
     default_provider = "buffer_commits",
   },
   -- cword
   {
-    name = "FzfxGCommitsW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Search git commits by cursor word",
-    },
     default_provider = "all_commits",
   },
   {
-    name = "FzfxGCommitsBW",
+    name = "buffer_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Search git commits on current buffer by cursor word",
-    },
     default_provider = "buffer_commits",
   },
   -- put
   {
-    name = "FzfxGCommitsP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Search git commits by yank text",
-    },
     default_provider = "all_commits",
   },
   {
-    name = "FzfxGCommitsBP",
+    name = "buffer_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Search git commits on current buffer by yank text",
-    },
     default_provider = "buffer_commits",
   },
   -- resume
   {
-    name = "FzfxGCommitsR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Search git commits by resume last",
-    },
     default_provider = "all_commits",
   },
   {
-    name = "FzfxGCommitsBR",
+    name = "buffer_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Search git commits on current buffer by resume last",
-    },
     default_provider = "buffer_commits",
   },
 }
