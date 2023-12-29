@@ -544,7 +544,8 @@ describe("detail.general", function()
     it("makes", function()
       local actual = general._make_user_command(
         "live_grep_test",
-        conf.get_config().live_grep.commands[1],
+        conf.get_config().live_grep.command,
+        conf.get_config().live_grep.variants,
         conf.get_config().live_grep
       )
       assert_true(actual == nil)

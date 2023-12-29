@@ -63,44 +63,37 @@ describe("schema", function()
       )
     end)
   end)
-  describe("[CommandConfig]", function()
-    it("makes a command", function()
-      local command = {
+  describe("[VariantConfig]", function()
+    it("makes a variant", function()
+      local variant = {
         name = "command",
         feed = "args",
-        opts = { range = true },
       }
-      assert_eq(type(command), "table")
-      assert_true(schema.is_command_config(command))
-      assert_eq(command.name, "command")
+      assert_eq(type(variant), "table")
+      assert_true(schema.is_variant_config(variant))
+      assert_eq(variant.name, "command")
     end)
   end)
-  describe("[is_command_config]", function()
-    it("is command config", function()
+  describe("[is_variant_config]", function()
+    it("is variant config", function()
       local obj = {
         name = "FzfxLiveGrep",
         feed = "args",
-        opts = {
-          nargs = "?",
-        },
       }
-      assert_true(schema.is_command_config(obj))
+      assert_true(schema.is_variant_config(obj))
       local obj2 = {
         name = "FzfxLiveGrep",
         feed = "args",
-        opts = {
-          nargs = "?",
-        },
       }
-      assert_true(schema.is_command_config(obj2))
+      assert_true(schema.is_variant_config(obj2))
     end)
     it("is not command config", function()
       local obj1 = {}
-      assert_false(schema.is_command_config(obj1))
+      assert_false(schema.is_variant_config(obj1))
       local obj2 = {
         key = "FzfxLiveGrep",
       }
-      assert_false(schema.is_command_config(obj2))
+      assert_false(schema.is_variant_config(obj2))
     end)
   end)
   describe("[is_provider_config]", function()
