@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.4](https://github.com/linrongbin16/fzfx.nvim/compare/v4.1.3...v4.1.4) (2023-12-29)
+
+
+### Performance Improvements
+
+* **actions:** delayed execute actions on fzf quit ([#530](https://github.com/linrongbin16/fzfx.nvim/issues/530)) ([3d40c3a](https://github.com/linrongbin16/fzfx.nvim/commit/3d40c3a0d3cdc669edf0ef11f2efcba597eb76ca))
+
 ## [4.1.3](https://github.com/linrongbin16/fzfx.nvim/compare/v4.1.2...v4.1.3) (2023-12-27)
 
 
