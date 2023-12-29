@@ -21,49 +21,26 @@ M.commands = {
   {
     name = "FzfxBuffers",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "file",
-      desc = "Find buffers",
-    },
   },
   -- visual
   {
     name = "FzfxBuffersV",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find buffers by visual select",
-    },
   },
   -- cword
   {
     name = "FzfxBuffersW",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find buffers by cursor word",
-    },
   },
   -- put
   {
     name = "FzfxBuffersP",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find buffers by yank text",
-    },
   },
   -- resume
   {
     name = "FzfxBuffersR",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find buffers by resume last",
-    },
   },
 }
 

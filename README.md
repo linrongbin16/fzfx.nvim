@@ -182,6 +182,10 @@ require("lazy").setup({
   {
     "linrongbin16/fzfx.nvim",
     dependencies = { "junegunn/fzf", "nvim-tree/nvim-web-devicons" },
+
+    -- specify version to avoid break changes
+    version = 'v4.*',
+
     config = function()
       require("fzfx").setup()
     end,
@@ -208,6 +212,10 @@ return require("packer").startup(function(use)
   })
   use({
     "linrongbin16/fzfx.nvim",
+
+    -- specify version to avoid break changes
+    version = 'v4.1.3',
+
     config = function()
       require("fzfx").setup()
     end,
@@ -228,7 +236,9 @@ Plug 'nvim-tree/nvim-web-devicons'
 
 " mandatory
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'linrongbin16/fzfx.nvim'
+
+" specify version to avoid break changes
+Plug 'linrongbin16/fzfx.nvim', { 'tag': 'v4.1.3' }
 
 call plug#end()
 

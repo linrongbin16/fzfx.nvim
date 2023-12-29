@@ -1077,7 +1077,21 @@ local function _make_user_command(name, command_config, group_config)
       fzf_helpers.get_command_feed(command_config.feed, opts.args, name)
     local default_provider = last_provider or command_config.default_provider
     return general(name, query, opts.bang, group_config, default_provider)
-  end, command_config.opts)
+  end, {
+    nargs = "*",
+    range = true,
+    bang = true,
+    desc = command_config.desc,
+    complete = function()
+      local subcommands = {}
+      for _, sub in ipairs(command_config) do
+        if tables.not_empty(sub) then
+          table.insert(subcommands, sub.name)
+        end
+      end
+      return subcommands
+    end,
+  })
 end
 
 --- @param name string

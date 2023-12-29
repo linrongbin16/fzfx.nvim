@@ -21,101 +21,55 @@ M.commands = {
   {
     name = "FzfxFileExplorer",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "File explorer (ls -l)",
-    },
     default_provider = "filter_hidden",
   },
   {
     name = "FzfxFileExplorerU",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "File explorer (ls -la)",
-    },
     default_provider = "include_hidden",
   },
   -- visual
   {
     name = "FzfxFileExplorerV",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "File explorer (ls -l) by visual select",
-    },
     default_provider = "filter_hidden",
   },
   {
     name = "FzfxFileExplorerUV",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "File explorer (ls -la) by visual select",
-    },
     default_provider = "include_hidden",
   },
   -- word
   {
     name = "FzfxFileExplorerW",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -l) by cursor word",
-    },
     default_provider = "filter_hidden",
   },
   {
     name = "FzfxFileExplorerUW",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -la) by cursor word",
-    },
     default_provider = "include_hidden",
   },
   -- put
   {
     name = "FzfxFileExplorerP",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -l) by yank text",
-    },
     default_provider = "filter_hidden",
   },
   {
     name = "FzfxFileExplorerUP",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -la) by yank text",
-    },
     default_provider = "include_hidden",
   },
   -- resume
   {
     name = "FzfxFileExplorerR",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -l) by resume last",
-    },
     default_provider = "filter_hidden",
   },
   {
     name = "FzfxFileExplorerUR",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -la) by resume last",
-    },
     default_provider = "include_hidden",
   },
 }
