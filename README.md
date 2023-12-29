@@ -164,6 +164,9 @@ Please always avoid whitespaces in directories and file names.
 
 ## 📦 Install
 
+> [!NOTE]
+> Specify version/tag to avoid break changes!
+
 <details>
 <summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
 
