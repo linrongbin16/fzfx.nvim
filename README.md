@@ -25,9 +25,6 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - [Windows](#windows)
   - [Whitespace Escaping Issue](#whitespace-escaping-issue)
 - [Install](#-install)
-  - [vim-plug](#vim-plug)
-  - [packer.nvim](#packernvim)
-  - [lazy.nvim](#lazynvim)
 - [Commands](#-commands)
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
@@ -167,47 +164,8 @@ Please always avoid whitespaces in directories and file names.
 
 ## 📦 Install
 
-### [vim-plug](https://github.com/junegunn/vim-plug)
-
-```vim
-call plug#begin()
-
-" optional for icons
-Plug 'nvim-tree/nvim-web-devicons'
-
-" mandatory
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'linrongbin16/fzfx.nvim'
-
-call plug#end()
-
-lua require('fzfx').setup()
-```
-
-### [packer.nvim](https://github.com/wbthomason/packer.nvim)
-
-```lua
-return require("packer").startup(function(use)
-  -- optional for icons
-  use({ "nvim-tree/nvim-web-devicons" })
-
-  -- mandatory
-  use({
-    "junegunn/fzf",
-    run = function()
-      vim.fn["fzf#install"]()
-    end,
-  })
-  use({
-    "linrongbin16/fzfx.nvim",
-    config = function()
-      require("fzfx").setup()
-    end,
-  })
-end)
-```
-
-### [lazy.nvim](https://github.com/folke/lazy.nvim)
+<details>
+<summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
 
 ```lua
 require("lazy").setup({
@@ -230,6 +188,54 @@ require("lazy").setup({
   },
 })
 ```
+
+</details>
+
+<details>
+<summary><b>With <a href="https://github.com/wbthomason/packer.nvim">packer.nvim</a></b></summary>
+
+```lua
+return require("packer").startup(function(use)
+  -- optional for icons
+  use({ "nvim-tree/nvim-web-devicons" })
+
+  -- mandatory
+  use({
+    "junegunn/fzf",
+    run = function()
+      vim.fn["fzf#install"]()
+    end,
+  })
+  use({
+    "linrongbin16/fzfx.nvim",
+    config = function()
+      require("fzfx").setup()
+    end,
+  })
+end)
+```
+
+</details>
+
+<details>
+<summary><b>With <a href="https://github.com/junegunn/vim-plug">vim-plug</a></b></summary>
+
+```vim
+call plug#begin()
+
+" optional for icons
+Plug 'nvim-tree/nvim-web-devicons'
+
+" mandatory
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'linrongbin16/fzfx.nvim'
+
+call plug#end()
+
+lua require('fzfx').setup()
+```
+
+</details>
 
 ## 🚀 Commands
 
@@ -1395,3 +1401,7 @@ Like fzfx.nvim? Consider
 [![Github Sponsor](https://img.shields.io/badge/-Sponsor%20Me%20on%20Github-magenta?logo=github&logoColor=white)](https://github.com/sponsors/linrongbin16)
 [![Wechat Pay](https://img.shields.io/badge/-Tip%20Me%20on%20WeChat-brightgreen?logo=wechat&logoColor=white)](https://github.com/linrongbin16/lin.nvim/wiki/Sponsor)
 [![Alipay](https://img.shields.io/badge/-Tip%20Me%20on%20Alipay-blue?logo=alipay&logoColor=white)](https://github.com/linrongbin16/lin.nvim/wiki/Sponsor)
+
+```
+
+```
