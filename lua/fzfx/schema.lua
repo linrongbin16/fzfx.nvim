@@ -111,17 +111,18 @@ local CommandFeedEnum = {
 
 --- @alias fzfx.PreviewerConfig {previewer:fzfx.Previewer,previewer_type:fzfx.PreviewerType?,previewer_label:fzfx.PreviewerLabel?,previewer_label_type:fzfx.PreviewerLabelType?}
 
---- @alias fzfx.PipelineName string a pipeline name is a provider name, a previewer name
---
---- @alias fzfx.SubCommandConfig {name:string,feed:fzfx.CommandFeed,default_provider:fzfx.PipelineName?}
---
---- @alias fzfx.CommandConfig {name:string,desc:string?,variants:fzfx.SubCommandConfig[]}
+--- @alias fzfx.PipelineName string
+-- a pipeline name is a provider name, a previewer name
 --
 --- @alias fzfx.InteractionName string
 --
 --- @alias fzfx.InteractionConfig {key:fzfx.ActionKey,interaction:fzfx.Interaction,reload_after_execute:boolean?}
 --
---- @alias fzfx.GroupConfig {commands:fzfx.CommandConfig,providers:fzfx.ProviderConfig|table<fzfx.PipelineName,fzfx.ProviderConfig>,previewers:fzfx.PreviewerConfig|table<fzfx.PipelineName,fzfx.PreviewerConfig>,actions:table<fzfx.ActionKey,fzfx.Action>,interactions:table<fzfx.InteractionName,fzfx.InteractionConfig>?,fzf_opts:fzfx.FzfOpt[]?}
+--- @alias fzfx.VariantConfig {name:string,feed:fzfx.CommandFeed,default_provider:fzfx.PipelineName?}
+--
+--- @alias fzfx.CommandConfig {name:string,desc:string?}
+--
+--- @alias fzfx.GroupConfig {command:fzfx.CommandConfig,variants:fzfx.VariantConfig[],providers:fzfx.ProviderConfig|table<fzfx.PipelineName,fzfx.ProviderConfig>,previewers:fzfx.PreviewerConfig|table<fzfx.PipelineName,fzfx.PreviewerConfig>,actions:table<fzfx.ActionKey,fzfx.Action>,interactions:table<fzfx.InteractionName,fzfx.InteractionConfig>?,fzf_opts:fzfx.FzfOpt[]?}
 
 --- @param cfg fzfx.CommandConfig?
 --- @return boolean

@@ -1070,42 +1070,73 @@ end
 
 --- @param name string
 --- @param command_config fzfx.CommandConfig
+--- @param variant_configs fzfx.VariantConfig[]
 --- @param group_config fzfx.GroupConfig
-local function _make_user_command(name, command_config, group_config)
-  vim.api.nvim_create_user_command(command_config.name, function(opts)
+local function _make_user_command(
+  name,
+  command_config,
+  variant_configs,
+  group_config
+)
+  local command_name = command_config.name
+  local command_desc = command_config.desc
+
+  vim.api.nvim_create_user_command(command_name, function(opts)
     log.debug(
-      "|_make_user_command| command_config:%s, opts:%s",
-      vim.inspect(command_config),
+      "|_make_user_command| command_name:%s, opts:%s",
+      vim.inspect(command_name),
       vim.inspect(opts)
     )
-    local input_args = strings.trim(opts.args)
+    log.ensure(
+      strings.not_empty(opts.args),
+      "missing args in command: %s",
+      vim.inspect(command_name)
+    )
+    local input_args = strings.trim(opts.args or "")
+    log.ensure(
+      strings.not_empty(input_args),
+      "missing args in command: %s",
+      vim.inspect(command_name),
+      vim.inspect(input_args)
+    )
 
-    local sub_command_config =
-      fzf_helpers.get_sub_command(input_args, command_config) --[[@as fzfx.SubCommandConfig]]
-
+    local varcfg = nil
     local first_space_pos = strings.find(input_args, " ")
-    local other_args = ""
-    if first_space_pos then
-      other_args = strings.trim(string.sub(input_args, first_space_pos))
+    local first_arg = first_space_pos ~= nil
+        and string.sub(input_args, 1, first_space_pos - 1)
+      or input_args
+    for i, variant in ipairs(variant_configs) do
+      if first_arg == variant.name then
+        varcfg = variant
+        break
+      end
     end
+    log.ensure(
+      varcfg ~= nil,
+      "unknown command (%s) variant: %s",
+      vim.inspect(command_name),
+      vim.inspect(input_args)
+    )
 
+    local other_args = first_space_pos ~= nil
+        and strings.trim(string.sub(input_args, first_space_pos))
+      or ""
     local query, last_provider =
-      fzf_helpers.get_command_feed(sub_command_config.feed, other_args, name)
+      fzf_helpers.get_command_feed(varcfg.feed, other_args, name)
 
-    local default_provider = last_provider
-      or sub_command_config.default_provider
+    local default_provider = last_provider or varcfg.default_provider
 
     return general(name, query, opts.bang, group_config, default_provider)
   end, {
     nargs = "*",
     range = true,
     bang = true,
-    desc = command_config.desc,
+    desc = command_desc,
     complete = function(ArgLead, CmdLine, CursorPos)
       local sub_commands = {}
-      for i, sub in ipairs(command_config.variants) do
-        if strings.not_empty(tables.tbl_get(sub, "name")) then
-          table.insert(sub_commands, sub.name)
+      for i, variant in ipairs(variant_configs) do
+        if strings.not_empty(variant.name) then
+          table.insert(sub_commands, variant.name)
         end
       end
       return sub_commands
@@ -1124,14 +1155,12 @@ local function setup(name, pipeline_configs)
   --     "|fzfx.general - setup| pipeline_configs:%s",
   --     vim.inspect(pipeline_configs)
   -- )
-  -- User commands
-  -- if schema.is_command_config(pipeline_configs.commands) then
-  --   _make_user_command(name, pipeline_configs.commands, pipeline_configs)
-  -- else
-  -- for _, command_configs in pairs(pipeline_configs.commands) do
-  _make_user_command(name, pipeline_configs.commands, pipeline_configs)
-  -- end
-  -- end
+  _make_user_command(
+    name,
+    pipeline_configs.command,
+    pipeline_configs.variants,
+    pipeline_configs
+  )
 end
 
 local M = {

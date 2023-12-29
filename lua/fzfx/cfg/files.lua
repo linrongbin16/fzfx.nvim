@@ -11,70 +11,71 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
+M.command = {
   name = "FzfxFiles",
   desc = "Find files",
-  variants = {
-    -- restricted normal
-    {
-      name = "normal",
-      feed = CommandFeedEnum.ARGS,
-      default_provider = "restricted_mode",
-    },
-    -- unrestricted normal
-    {
-      name = "unrestricted_normal",
-      feed = CommandFeedEnum.ARGS,
-      default_provider = "unrestricted_mode",
-    },
-    -- restricted visual
-    {
-      name = "visual",
-      feed = CommandFeedEnum.VISUAL,
-      default_provider = "restricted_mode",
-    },
-    -- unrestricted visual
-    {
-      name = "unrestricted_visual",
-      feed = CommandFeedEnum.VISUAL,
-      default_provider = "unrestricted_mode",
-    },
-    -- restricted cword
-    {
-      name = "cword",
-      feed = CommandFeedEnum.CWORD,
-      default_provider = "restricted_mode",
-    },
-    -- unrestricted cword
-    {
-      name = "unrestricted_cword",
-      feed = CommandFeedEnum.CWORD,
-      default_provider = "unrestricted_mode",
-    },
-    -- restricted put
-    {
-      name = "put",
-      feed = CommandFeedEnum.PUT,
-      default_provider = "restricted_mode",
-    },
-    -- unrestricted put
-    {
-      name = "unrestricted_put",
-      feed = CommandFeedEnum.PUT,
-      default_provider = "unrestricted_mode",
-    },
-    -- restricted resume
-    {
-      name = "resume",
-      feed = CommandFeedEnum.RESUME,
-      default_provider = "restricted_mode",
-    },
-    -- unrestricted resume
-    {
-      name = "unrestricted_resume",
-      feed = CommandFeedEnum.RESUME,
-      default_provider = "unrestricted_mode",
-    },
+}
+
+M.variants = {
+  -- restricted normal
+  {
+    name = "normal",
+    feed = CommandFeedEnum.ARGS,
+    default_provider = "restricted_mode",
+  },
+  -- unrestricted normal
+  {
+    name = "unrestricted_normal",
+    feed = CommandFeedEnum.ARGS,
+    default_provider = "unrestricted_mode",
+  },
+  -- restricted visual
+  {
+    name = "visual",
+    feed = CommandFeedEnum.VISUAL,
+    default_provider = "restricted_mode",
+  },
+  -- unrestricted visual
+  {
+    name = "unrestricted_visual",
+    feed = CommandFeedEnum.VISUAL,
+    default_provider = "unrestricted_mode",
+  },
+  -- restricted cword
+  {
+    name = "cword",
+    feed = CommandFeedEnum.CWORD,
+    default_provider = "restricted_mode",
+  },
+  -- unrestricted cword
+  {
+    name = "unrestricted_cword",
+    feed = CommandFeedEnum.CWORD,
+    default_provider = "unrestricted_mode",
+  },
+  -- restricted put
+  {
+    name = "put",
+    feed = CommandFeedEnum.PUT,
+    default_provider = "restricted_mode",
+  },
+  -- unrestricted put
+  {
+    name = "unrestricted_put",
+    feed = CommandFeedEnum.PUT,
+    default_provider = "unrestricted_mode",
+  },
+  -- restricted resume
+  {
+    name = "resume",
+    feed = CommandFeedEnum.RESUME,
+    default_provider = "restricted_mode",
+  },
+  -- unrestricted resume
+  {
+    name = "unrestricted_resume",
+    feed = CommandFeedEnum.RESUME,
+    default_provider = "unrestricted_mode",
   },
 }
 
