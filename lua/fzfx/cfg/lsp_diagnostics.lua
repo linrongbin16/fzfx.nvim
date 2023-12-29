@@ -25,7 +25,7 @@ M.command = {
   desc = "Search lsp definitions",
 }
 
-M.commands = {
+M.variants = {
   -- args
   {
     name = "args",

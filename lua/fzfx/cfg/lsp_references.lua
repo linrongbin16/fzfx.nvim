@@ -7,13 +7,14 @@ local _lsp_locations = require("fzfx.cfg._lsp_locations")
 
 local M = {}
 
-M.commands = {
+M.command = {
   name = "FzfxLspReferences",
+  desc = "Search lsp references",
+}
+
+M.commands = {
+  name = "args",
   feed = CommandFeedEnum.ARGS,
-  opts = {
-    bang = true,
-    desc = "Search lsp references",
-  },
 }
 
 M.providers = {
