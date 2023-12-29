@@ -14,104 +14,65 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
-  -- normal
+M.command = {
+  name = "FzfxGBranches",
+  desc = "Search git branches",
+}
+
+M.variants = {
+  -- args
   {
-    name = "FzfxGBranches",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      desc = "Search local git branches",
-    },
     default_provider = "local_branch",
   },
   {
-    name = "FzfxGBranchesR",
+    name = "remote_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      desc = "Search remote git branches",
-    },
     default_provider = "remote_branch",
   },
   -- visual
   {
-    name = "FzfxGBranchesV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Search local git branches by visual select",
-    },
     default_provider = "local_branch",
   },
   {
-    name = "FzfxGBranchesRV",
+    name = "remote_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Search remote git branches by visual select",
-    },
     default_provider = "remote_branch",
   },
   -- cword
   {
-    name = "FzfxGBranchesW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Search local git branches by cursor word",
-    },
     default_provider = "local_branch",
   },
   {
-    name = "FzfxGBranchesRW",
+    name = "remote_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Search remote git branches by cursor word",
-    },
     default_provider = "remote_branch",
   },
   -- put
   {
-    name = "FzfxGBranchesP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Search local git branches by yank text",
-    },
     default_provider = "local_branch",
   },
   {
-    name = "FzfxGBranchesRP",
+    name = "remote_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Search remote git branches by yank text",
-    },
     default_provider = "remote_branch",
   },
   -- resume
   {
-    name = "FzfxGBranchesR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Search local git branches by resume last",
-    },
     default_provider = "local_branch",
   },
   {
-    name = "FzfxGBranchesRR",
+    name = "remote_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Search remote git branches by resume last",
-    },
     default_provider = "remote_branch",
   },
 }
