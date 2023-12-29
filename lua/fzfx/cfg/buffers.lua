@@ -16,54 +16,36 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
+M.command = {
+  name = "FzfxBuffers",
+  desc = "Find buffers",
+}
+
+M.variants = {
   -- normal
   {
-    name = "FzfxBuffers",
+    name = "normal",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "file",
-      desc = "Find buffers",
-    },
   },
   -- visual
   {
-    name = "FzfxBuffersV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find buffers by visual select",
-    },
   },
   -- cword
   {
-    name = "FzfxBuffersW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find buffers by cursor word",
-    },
   },
   -- put
   {
-    name = "FzfxBuffersP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find buffers by yank text",
-    },
   },
   -- resume
   {
-    name = "FzfxBuffersR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find buffers by resume last",
-    },
   },
 }
 

@@ -39,8 +39,8 @@ local function setup(options)
 
   -- files & buffers
   general.setup("files", configs.files)
-  -- general.setup("buffers", configs.buffers)
-  --
+  general.setup("buffers", configs.buffers)
+
   -- -- grep
   -- general.setup("live_grep", configs.live_grep)
   --
