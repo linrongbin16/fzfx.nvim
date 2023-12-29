@@ -92,9 +92,17 @@ M.pipename = function()
 end
 
 --- @param p string?
---- @return string
+--- @return string?
 M.parent = function(p)
-  return vim.fn.fnamemodify(p or vim.fn.getcwd(), ":h")
+  p = p or vim.fn.getcwd()
+
+  local strings = require("fzfx.commons.strings")
+  if strings.endswith(p, "/") or strings.endswith(p, "\\") then
+    p = string.sub(p, 1, #p - 1)
+  end
+
+  local result = vim.fn.fnamemodify(p, ":h")
+  return string.len(result) < string.len(p) and result or nil
 end
 
 return M
