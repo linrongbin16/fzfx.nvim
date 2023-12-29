@@ -19,7 +19,7 @@ M.command = {
   desc = "Search git commits",
 }
 
-M.commands = {
+M.variants = {
   -- args
   {
     name = "args",

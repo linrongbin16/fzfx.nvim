@@ -16,106 +16,65 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
-  -- normal
+M.command = {
+  name = "FzfxGFiles",
+  desc = "Search git files",
+}
+
+M.variants = {
+  -- args
   {
-    name = "FzfxGFiles",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "Find git files",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGFilesC",
+    name = "cwd_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "Find git files in current directory",
-    },
     default_provider = "current_folder",
   },
   -- visual
   {
-    name = "FzfxGFilesV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find git files by visual select",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGFilesCV",
+    name = "cwd_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find git files in current directory by visual select",
-    },
     default_provider = "current_folder",
   },
   -- cword
   {
-    name = "FzfxGFilesW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find git files by cursor word",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGFilesCW",
+    name = "cwd_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find git files in current directory by cursor word",
-    },
     default_provider = "current_folder",
   },
   -- put
   {
-    name = "FzfxGFilesP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find git files by yank text",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGFilesCP",
+    name = "cwd_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find git files in current directory by yank text",
-    },
     default_provider = "current_folder",
   },
   -- resume
   {
-    name = "FzfxGFilesR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find git files by resume last",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGFilesCR",
+    name = "cwd_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find git files in current directory by resume last",
-    },
     default_provider = "current_folder",
   },
 }
