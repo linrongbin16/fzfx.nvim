@@ -20,104 +20,65 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
+M.command = {
+  name = "FzfxLspDiagnostics",
+  desc = "Search lsp definitions",
+}
+
 M.commands = {
-  -- normal
+  -- args
   {
-    name = "FzfxLspDiagnostics",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      desc = "Search lsp diagnostics on workspace",
-    },
     default_provider = "workspace_diagnostics",
   },
   {
-    name = "FzfxLspDiagnosticsB",
+    name = "buffer_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      desc = "Search lsp diagnostics on current buffer",
-    },
     default_provider = "buffer_diagnostics",
   },
   -- visual
   {
-    name = "FzfxLspDiagnosticsV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Search lsp diagnostics on workspace by visual select",
-    },
     default_provider = "workspace_diagnostics",
   },
   {
-    name = "FzfxLspDiagnosticsBV",
+    name = "buffer_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Search lsp diagnostics on current buffer by visual select",
-    },
     default_provider = "buffer_diagnostics",
   },
   -- cword
   {
-    name = "FzfxLspDiagnosticsW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Search lsp diagnostics on workspace by cursor word",
-    },
     default_provider = "workspace_diagnostics",
   },
   {
-    name = "FzfxLspDiagnosticsBW",
+    name = "buffer_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Search lsp diagnostics on current buffer by cursor word",
-    },
     default_provider = "buffer_diagnostics",
   },
   -- put
   {
-    name = "FzfxLspDiagnosticsP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Search lsp diagnostics on workspace by yank text",
-    },
     default_provider = "workspace_diagnostics",
   },
   {
-    name = "FzfxLspDiagnosticsBP",
+    name = "buffer_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Search lsp diagnostics on current buffer by yank text",
-    },
     default_provider = "buffer_diagnostics",
   },
   -- resume
   {
-    name = "FzfxLspDiagnosticsR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Search lsp diagnostics on workspace by resume last",
-    },
     default_provider = "workspace_diagnostics",
   },
   {
-    name = "FzfxLspDiagnosticsBR",
+    name = "buffer_resume",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Search lsp diagnostics on current buffer by resume last",
-    },
     default_provider = "buffer_diagnostics",
   },
 }

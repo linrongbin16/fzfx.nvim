@@ -124,15 +124,14 @@ local CommandFeedEnum = {
 --
 --- @alias fzfx.GroupConfig {command:fzfx.CommandConfig,variants:fzfx.VariantConfig[],providers:fzfx.ProviderConfig|table<fzfx.PipelineName,fzfx.ProviderConfig>,previewers:fzfx.PreviewerConfig|table<fzfx.PipelineName,fzfx.PreviewerConfig>,actions:table<fzfx.ActionKey,fzfx.Action>,interactions:table<fzfx.InteractionName,fzfx.InteractionConfig>?,fzf_opts:fzfx.FzfOpt[]?}
 
---- @param cfg fzfx.CommandConfig?
+--- @param cfg fzfx.VariantConfig?
 --- @return boolean
-local function is_command_config(cfg)
+local function is_variant_config(cfg)
   return type(cfg) == "table"
     and type(cfg.name) == "string"
     and string.len(cfg.name) > 0
     and type(cfg.feed) == "string"
     and string.len(cfg.feed) > 0
-    and type(cfg.opts) == "table"
 end
 
 --- @param cfg fzfx.ProviderConfig?
@@ -198,7 +197,7 @@ local M = {
   PreviewerLabelTypeEnum = PreviewerLabelTypeEnum,
   CommandFeedEnum = CommandFeedEnum,
 
-  is_command_config = is_command_config,
+  is_variant_config = is_variant_config,
   is_provider_config = is_provider_config,
   is_previewer_config = is_previewer_config,
 

@@ -1158,7 +1158,9 @@ local function setup(name, pipeline_configs)
   _make_user_command(
     name,
     pipeline_configs.command,
-    pipeline_configs.variants,
+    schema.is_variant_config(pipeline_configs.variants)
+        and { pipeline_configs.variants }
+      or pipeline_configs.variants,
     pipeline_configs
   )
 end
