@@ -262,7 +262,9 @@ Commands are named following below rules:
 - **Yank text** variant is named with `P` suffix (just like press the `p` key).
 - **Resume last search** variant is named with `R` suffix.
 
-> Note: command names can be configured, see [Configuration](#-configuration).
+> [!NOTE]
+>
+> Command and sub command names can be configured, see [Configuration](#-configuration).
 
 Below keys are binded by default:
 
@@ -277,7 +279,9 @@ Below keys are binded by default:
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
 
-> Note: builtin keys can be configured, see [Configuration](#-configuration).
+> [!NOTE]
+>
+> Builtin keys can be configured, see [Configuration](#-configuration).
 
 <details>
 <summary><b>Files & Buffers</b></summary>
