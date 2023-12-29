@@ -21,153 +21,92 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.INVALID_BUFFER_ERROR = "invalid buffer(%s)."
+local INVALID_BUFFER_ERROR = "invalid buffer(%s)."
 
-M.commands = {
-  -- normal
+M.command = {
+  name = "FzfxLiveGrep",
+  desc = "Live grep",
+}
+
+M.variants = {
+  -- args
   {
-    name = "FzfxLiveGrep",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "*",
-      desc = "Live grep",
-    },
     default_provider = "restricted_mode",
   },
   {
-    name = "FzfxLiveGrepU",
+    name = "unrestricted_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "*",
-      desc = "Live grep unrestricted",
-    },
     default_provider = "unrestricted_mode",
   },
   {
-    name = "FzfxLiveGrepB",
+    name = "buffer_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "*",
-      desc = "Live grep on current buffer",
-    },
     default_provider = "buffer_mode",
   },
   -- visual
   {
-    name = "FzfxLiveGrepV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Live grep by visual select",
-    },
     default_provider = "restricted_mode",
   },
   {
-    name = "FzfxLiveGrepUV",
+    name = "unrestricted_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Live grep unrestricted by visual select",
-    },
     default_provider = "unrestricted_mode",
   },
   {
-    name = "FzfxLiveGrepBV",
+    name = "buffer_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Live grep on current buffer by visual select",
-    },
     default_provider = "buffer_mode",
   },
   -- cword
   {
-    name = "FzfxLiveGrepW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Live grep by cursor word",
-    },
     default_provider = "restricted_mode",
   },
   {
-    name = "FzfxLiveGrepUW",
+    name = "unrestricted_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Live grep unrestricted by cursor word",
-    },
     default_provider = "unrestricted_mode",
   },
   {
-    name = "FzfxLiveGrepBW",
+    name = "buffer_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Live grep on current buffer by cursor word",
-    },
     default_provider = "buffer_mode",
   },
   -- put
   {
-    name = "FzfxLiveGrepP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Live grep by yank text",
-    },
     default_provider = "restricted_mode",
   },
   {
-    name = "FzfxLiveGrepUP",
+    name = "unrestricted_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Live grep unrestricted by yank text",
-    },
     default_provider = "unrestricted_mode",
   },
   {
-    name = "FzfxLiveGrepBP",
+    name = "buffer_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Live grep on current buffer by yank text",
-    },
     default_provider = "buffer_mode",
   },
   -- resume
   {
-    name = "FzfxLiveGrepR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Live grep by resume last",
-    },
     default_provider = "restricted_mode",
   },
   {
-    name = "FzfxLiveGrepUR",
+    name = "unrestricted_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Live grep unrestricted by resume last",
-    },
     default_provider = "unrestricted_mode",
   },
   {
-    name = "FzfxLiveGrepBR",
+    name = "buffer_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Live grep on current buffer by resume last",
-    },
     default_provider = "buffer_mode",
   },
 }
@@ -179,7 +118,7 @@ M._get_buf_path = function(bufnr)
       and paths.reduce(vim.api.nvim_buf_get_name(bufnr))
     or nil
   if strings.empty(bufpath) then
-    log.echo(LogLevels.INFO, M.INVALID_BUFFER_ERROR, vim.inspect(bufnr))
+    log.echo(LogLevels.INFO, INVALID_BUFFER_ERROR, vim.inspect(bufnr))
     return nil
   end
   return bufpath
