@@ -471,26 +471,28 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
     --     vim.inspect(action_lines)
     -- )
     if actions[action_key] ~= nil then
-      local action_callback = actions[action_key]
-      assert(
-        type(action_callback) == "function",
-        string.format(
-          "wrong action type on key: %s, must be function(%s): %s",
-          vim.inspect(action_key),
-          type(action_callback),
-          vim.inspect(action_callback)
+      vim.schedule(function()
+        local action_callback = actions[action_key]
+        assert(
+          type(action_callback) == "function",
+          string.format(
+            "wrong action type on key: %s, must be function(%s): %s",
+            vim.inspect(action_key),
+            type(action_callback),
+            vim.inspect(action_callback)
+          )
         )
-      )
-      local ok, cb_err = pcall(action_callback, action_lines, context)
-      assert(
-        ok,
-        string.format(
-          "failed to run action on callback(%s) with lines(%s)! %s",
-          vim.inspect(action_callback),
-          vim.inspect(action_lines),
-          vim.inspect(cb_err)
+        local ok, cb_err = pcall(action_callback, action_lines, context)
+        assert(
+          ok,
+          string.format(
+            "failed to run action on callback(%s) with lines(%s)! %s",
+            vim.inspect(action_callback),
+            vim.inspect(action_lines),
+            vim.inspect(cb_err)
+          )
         )
-      )
+      end)
     else
       log.err("unknown action key: %s", vim.inspect(action_key))
     end
