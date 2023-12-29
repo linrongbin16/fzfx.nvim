@@ -1052,18 +1052,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     actions,
     context,
     function(last_query)
-      vim.schedule(function()
-        for _, rpc_id in ipairs(rpc_registries) do
-          rpcserver.get_instance():unregister(rpc_id)
-        end
-        local last_query_cache = fzf_helpers.make_last_query_cache(name)
-        local content = jsons.encode({
-          default_provider = provider_switch.pipeline,
-          query = last_query,
-        }) --[[@as string]]
-        fileios.asyncwritefile(last_query_cache, content, function(bytes)
-          log.debug("|general| dump last query:%s", vim.inspect(bytes))
-        end)
+      for _, rpc_id in ipairs(rpc_registries) do
+        rpcserver.get_instance():unregister(rpc_id)
+      end
+      local last_query_cache = fzf_helpers.make_last_query_cache(name)
+      local content = jsons.encode({
+        default_provider = provider_switch.pipeline,
+        query = last_query,
+      }) --[[@as string]]
+      fileios.asyncwritefile(last_query_cache, content, function(bytes)
+        log.debug("|general| dump last query:%s", vim.inspect(bytes))
       end)
     end
   )

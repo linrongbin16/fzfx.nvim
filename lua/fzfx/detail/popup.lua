@@ -497,7 +497,9 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
       log.err("unknown action key: %s", vim.inspect(action_key))
     end
     if type(on_popup_exit) == "function" then
-      on_popup_exit(last_query)
+      vim.schedule(function()
+        on_popup_exit(last_query)
+      end)
     end
   end
 
