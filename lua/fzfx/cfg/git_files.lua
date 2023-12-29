@@ -18,7 +18,7 @@ local M = {}
 
 M.command = {
   name = "FzfxGFiles",
-  desc = "Search git files",
+  desc = "Find git files",
 }
 
 M.variants = {

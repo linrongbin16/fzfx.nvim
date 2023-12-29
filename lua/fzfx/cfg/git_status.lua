@@ -15,49 +15,32 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
-  -- normal
+M.command = {
+  name = "FzfxGStatus",
+  desc = "Find changed git files (git status)",
+}
+
+M.variants = {
+  -- args
   {
-    name = "FzfxGStatus",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "Find changed git files (status)",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGStatusC",
+    name = "cwd_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "Find changed git files (status) in current directory",
-    },
     default_provider = "current_folder",
   },
   -- visual
   {
-    name = "FzfxGStatusV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find changed git files (status) by visual select",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGStatusCV",
+    name = "cwd_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find changed git files (status) in current directory by visual select",
-    },
     default_provider = "current_folder",
   },
   -- cword
