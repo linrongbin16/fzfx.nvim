@@ -218,7 +218,7 @@ A **pipeline** binds a provider with a previewer, with an interaction to switch 
 
 The **provider-interaction-previewer** is a (dataflow) pipeline.
 
-> See [Config](#config).
+> See [schema.lua - Config](https://github.com/linrongbin16/fzfx.nvim/blob/bfd4fbc8192b9be50ea273f1d3c866cb14eb878e/lua/fzfx/schema.lua?plain=1#L107).
 
 ## Commands Group
 
@@ -239,55 +239,4 @@ They're the powerful **commands group**:
 - (Optionally) It has multiple interactive keys to do something without quit fzf.
 - (Optionally) It has some extra fzf options and other options for some specific abilities.
 
-> See [Config](#config).
-
-## Config
-
-```lua
--- Annotations for 'fzfx.config'.
---
--- ======== Provider ========
---
---- @class fzfx.ProviderConfig
---- @field key fzfx.ActionKey
---- @field provider fzfx.Provider
---- @field provider_type fzfx.ProviderType? by default "plain"|"plain_list"
---
--- ======== Previewer ========
---
---- @class fzfx.PreviewerConfig
---- @field previewer fzfx.Previewer
---- @field previewer_type fzfx.PreviewerType?
---- @field previewer_label fzfx.PreviewerLabel?
---- @field previewer_label_type fzfx.PreviewerLabelType?
---
---- @alias fzfx.PipelineName string
---                           a pipeline name is also a provider name, a previewer name
---
--- ======== Command ========
---
---- @class fzfx.CommandConfig
---- @field name string
---- @field feed fzfx.CommandFeed
---- @field opts fzfx.CommandOpt
---- @field default_provider fzfx.PipelineName?
---
---- @alias fzfx.InteractionName string
---
--- ======== Interaction ========
---
---- @class fzfx.InteractionConfig
---- @field key fzfx.ActionKey
---- @field interaction fzfx.Interaction
---- @field reload_after_execute boolean?
---
--- ======== Group ========
---
---- @class fzfx.GroupConfig
---- @field commands fzfx.CommandConfig|fzfx.CommandConfig[]
---- @field providers fzfx.ProviderConfig|table<fzfx.PipelineName, fzfx.ProviderConfig>
---- @field previewers fzfx.PreviewerConfig|table<fzfx.PipelineName, fzfx.PreviewerConfig>
---- @field interactions table<fzfx.InteractionName, fzfx.InteractionConfig>?
---- @field actions table<fzfx.ActionKey, fzfx.Action>
---- @field fzf_opts fzfx.FzfOpt[]?
-```
+> See [schema.lua - Config](https://github.com/linrongbin16/fzfx.nvim/blob/bfd4fbc8192b9be50ea273f1d3c866cb14eb878e/lua/fzfx/schema.lua?plain=1#L107).
