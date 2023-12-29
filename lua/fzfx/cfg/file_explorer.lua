@@ -16,106 +16,65 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
+M.command = {
+  name = "FzfxFileExplorer",
+  desc = "File explorer (ls -l)",
+}
+
+M.variants = {
   -- normal
   {
-    name = "FzfxFileExplorer",
+    name = "normal",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "File explorer (ls -l)",
-    },
     default_provider = "filter_hidden",
   },
   {
-    name = "FzfxFileExplorerU",
+    name = "hidden_normal",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "File explorer (ls -la)",
-    },
     default_provider = "include_hidden",
   },
   -- visual
   {
-    name = "FzfxFileExplorerV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "File explorer (ls -l) by visual select",
-    },
     default_provider = "filter_hidden",
   },
   {
-    name = "FzfxFileExplorerUV",
+    name = "hidden_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "File explorer (ls -la) by visual select",
-    },
     default_provider = "include_hidden",
   },
   -- word
   {
-    name = "FzfxFileExplorerW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -l) by cursor word",
-    },
     default_provider = "filter_hidden",
   },
   {
-    name = "FzfxFileExplorerUW",
+    name = "hidden_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -la) by cursor word",
-    },
     default_provider = "include_hidden",
   },
   -- put
   {
-    name = "FzfxFileExplorerP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -l) by yank text",
-    },
     default_provider = "filter_hidden",
   },
   {
-    name = "FzfxFileExplorerUP",
+    name = "hidden_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -la) by yank text",
-    },
     default_provider = "include_hidden",
   },
   -- resume
   {
-    name = "FzfxFileExplorerR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -l) by resume last",
-    },
     default_provider = "filter_hidden",
   },
   {
-    name = "FzfxFileExplorerUR",
+    name = "hidden_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "File explorer (ls -la) by resume last",
-    },
     default_provider = "include_hidden",
   },
 }
