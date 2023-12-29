@@ -54,7 +54,6 @@ jobs:
         with:
           commit_message: "chore(pr): auto-commit"
           push_options: "--force"
-          skip_fetch: true
   unit_test:
     name: Unit Test
     needs:
