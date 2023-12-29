@@ -144,6 +144,31 @@ local function get_command_feed(feed_type, input_args, pipeline_name)
   end
 end
 
+--- @param input_args string
+--- @param command_config fzfx.CommandConfig
+--- @return fzfx.SubCommandConfig?
+local function get_sub_command(input_args, command_config)
+  log.ensure(
+    strings.not_empty(input_args),
+    "invalid command args:%s %s",
+    vim.inspect(command_config.name),
+    vim.inspect(input_args)
+  )
+  local first_arg = strings.split(input_args, " ")[1]
+  for i, sub_command in ipairs(command_config.variants) do
+    if first_arg == sub_command.name then
+      return sub_command
+    end
+  end
+  log.ensure(
+    false,
+    "unknown command args:%s %s",
+    vim.inspect(command_config.name),
+    vim.inspect(input_args)
+  )
+  return nil
+end
+
 -- fzf opts {
 
 --- @return fzfx.FzfOpt[]
@@ -382,6 +407,7 @@ local M = {
   _get_visual_lines = _get_visual_lines,
   _visual_select = _visual_select,
   make_last_query_cache = make_last_query_cache,
+  get_sub_command = get_sub_command,
   get_command_feed = get_command_feed,
   preprocess_fzf_opts = preprocess_fzf_opts,
   _generate_fzf_color_opts = _generate_fzf_color_opts,

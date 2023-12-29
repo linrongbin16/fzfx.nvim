@@ -14,58 +14,62 @@ local M = {}
 M.commands = {
   name = "FzfxFiles",
   desc = "Find files",
-
   variants = {
-    -- normal
+    -- restricted normal
     {
-      name = "restricted_normal",
+      name = "normal",
       feed = CommandFeedEnum.ARGS,
       default_provider = "restricted_mode",
     },
+    -- unrestricted normal
     {
       name = "unrestricted_normal",
       feed = CommandFeedEnum.ARGS,
       default_provider = "unrestricted_mode",
     },
-    -- visual
+    -- restricted visual
     {
-      name = "restricted_visual",
+      name = "visual",
       feed = CommandFeedEnum.VISUAL,
       default_provider = "restricted_mode",
     },
+    -- unrestricted visual
     {
       name = "unrestricted_visual",
       feed = CommandFeedEnum.VISUAL,
       default_provider = "unrestricted_mode",
     },
-    -- cword
+    -- restricted cword
     {
-      name = "restricted_cword",
+      name = "cword",
       feed = CommandFeedEnum.CWORD,
       default_provider = "restricted_mode",
     },
+    -- unrestricted cword
     {
       name = "unrestricted_cword",
       feed = CommandFeedEnum.CWORD,
       default_provider = "unrestricted_mode",
     },
-    -- put
+    -- restricted put
     {
-      name = "restricted_put",
+      name = "put",
       feed = CommandFeedEnum.PUT,
       default_provider = "restricted_mode",
     },
+    -- unrestricted put
     {
       name = "unrestricted_put",
       feed = CommandFeedEnum.PUT,
       default_provider = "unrestricted_mode",
     },
-    -- resume
+    -- restricted resume
     {
-      name = "restricted_resume",
+      name = "resume",
       feed = CommandFeedEnum.RESUME,
       default_provider = "restricted_mode",
     },
+    -- unrestricted resume
     {
       name = "unrestricted_resume",
       feed = CommandFeedEnum.RESUME,

@@ -1073,11 +1073,44 @@ end
 --- @param group_config fzfx.GroupConfig
 local function _make_user_command(name, command_config, group_config)
   vim.api.nvim_create_user_command(command_config.name, function(opts)
+    log.debug(
+      "|_make_user_command| command_config:%s, opts:%s",
+      vim.inspect(command_config),
+      vim.inspect(opts)
+    )
+    local input_args = strings.trim(opts.args)
+
+    local sub_command_config =
+      fzf_helpers.get_sub_command(input_args, command_config) --[[@as fzfx.SubCommandConfig]]
+
+    local first_space_pos = strings.find(input_args, " ")
+    local other_args = ""
+    if first_space_pos then
+      other_args = strings.trim(string.sub(input_args, first_space_pos))
+    end
+
     local query, last_provider =
-      fzf_helpers.get_command_feed(command_config.feed, opts.args, name)
-    local default_provider = last_provider or command_config.default_provider
+      fzf_helpers.get_command_feed(sub_command_config.feed, other_args, name)
+
+    local default_provider = last_provider
+      or sub_command_config.default_provider
+
     return general(name, query, opts.bang, group_config, default_provider)
-  end, command_config.opts)
+  end, {
+    nargs = "*",
+    range = true,
+    bang = true,
+    desc = command_config.desc,
+    complete = function(ArgLead, CmdLine, CursorPos)
+      local sub_commands = {}
+      for i, sub in ipairs(command_config.variants) do
+        if strings.not_empty(tables.tbl_get(sub, "name")) then
+          table.insert(sub_commands, sub.name)
+        end
+      end
+      return sub_commands
+    end,
+  })
 end
 
 --- @param name string
@@ -1092,13 +1125,13 @@ local function setup(name, pipeline_configs)
   --     vim.inspect(pipeline_configs)
   -- )
   -- User commands
-  if schema.is_command_config(pipeline_configs.commands) then
-    _make_user_command(name, pipeline_configs.commands, pipeline_configs)
-  else
-    for _, command_configs in pairs(pipeline_configs.commands) do
-      _make_user_command(name, command_configs, pipeline_configs)
-    end
-  end
+  -- if schema.is_command_config(pipeline_configs.commands) then
+  --   _make_user_command(name, pipeline_configs.commands, pipeline_configs)
+  -- else
+  -- for _, command_configs in pairs(pipeline_configs.commands) do
+  _make_user_command(name, pipeline_configs.commands, pipeline_configs)
+  -- end
+  -- end
 end
 
 local M = {

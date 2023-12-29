@@ -115,7 +115,7 @@ local CommandFeedEnum = {
 --
 --- @alias fzfx.SubCommandConfig {name:string,feed:fzfx.CommandFeed,default_provider:fzfx.PipelineName?}
 --
---- @alias fzfx.CommandConfig {name:string,desc:string?,[integer]:fzfx.SubCommandConfig}
+--- @alias fzfx.CommandConfig {name:string,desc:string?,variants:fzfx.SubCommandConfig[]}
 --
 --- @alias fzfx.InteractionName string
 --

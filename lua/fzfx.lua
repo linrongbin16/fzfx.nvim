@@ -39,34 +39,34 @@ local function setup(options)
 
   -- files & buffers
   general.setup("files", configs.files)
-  general.setup("buffers", configs.buffers)
-
-  -- grep
-  general.setup("live_grep", configs.live_grep)
-
-  -- git
-  general.setup("git_files", configs.git_files)
-  general.setup("git_live_grep", configs.git_live_grep)
-  general.setup("git_status", configs.git_status)
-  general.setup("git_branches", configs.git_branches)
-  general.setup("git_commits", configs.git_commits)
-  general.setup("git_blame", configs.git_blame)
-
-  -- lsp & diagnostics
-  general.setup("lsp_definitions", configs.lsp_definitions)
-  general.setup("lsp_type_definitions", configs.lsp_type_definitions)
-  general.setup("lsp_references", configs.lsp_references)
-  general.setup("lsp_implementations", configs.lsp_implementations)
-  general.setup("lsp_incoming_calls", configs.lsp_incoming_calls)
-  general.setup("lsp_outgoing_calls", configs.lsp_outgoing_calls)
-  general.setup("lsp_diagnostics", configs.lsp_diagnostics)
-
-  -- vim
-  general.setup("vim_commands", configs.commands or configs.vim_commands)
-  general.setup("vim_keymaps", configs.vim_keymaps)
-
-  -- file explorer
-  general.setup("file_explorer", configs.file_explorer)
+  -- general.setup("buffers", configs.buffers)
+  --
+  -- -- grep
+  -- general.setup("live_grep", configs.live_grep)
+  --
+  -- -- git
+  -- general.setup("git_files", configs.git_files)
+  -- general.setup("git_live_grep", configs.git_live_grep)
+  -- general.setup("git_status", configs.git_status)
+  -- general.setup("git_branches", configs.git_branches)
+  -- general.setup("git_commits", configs.git_commits)
+  -- general.setup("git_blame", configs.git_blame)
+  --
+  -- -- lsp & diagnostics
+  -- general.setup("lsp_definitions", configs.lsp_definitions)
+  -- general.setup("lsp_type_definitions", configs.lsp_type_definitions)
+  -- general.setup("lsp_references", configs.lsp_references)
+  -- general.setup("lsp_implementations", configs.lsp_implementations)
+  -- general.setup("lsp_incoming_calls", configs.lsp_incoming_calls)
+  -- general.setup("lsp_outgoing_calls", configs.lsp_outgoing_calls)
+  -- general.setup("lsp_diagnostics", configs.lsp_diagnostics)
+  --
+  -- -- vim
+  -- general.setup("vim_commands", configs.commands or configs.vim_commands)
+  -- general.setup("vim_keymaps", configs.vim_keymaps)
+  --
+  -- -- file explorer
+  -- general.setup("file_explorer", configs.file_explorer)
 
   -- users commands
   if type(configs.users) == "table" then
