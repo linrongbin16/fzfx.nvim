@@ -1146,7 +1146,7 @@ local function _make_user_command(
 end
 
 --- @param name string
---- @param pipeline_configs fzfx.Options?
+--- @param pipeline_configs fzfx.GroupConfig?
 local function setup(name, pipeline_configs)
   if not pipeline_configs then
     return

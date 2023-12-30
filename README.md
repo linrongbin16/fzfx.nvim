@@ -58,6 +58,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 ## ✅ Requirements
 
 - Neovim &ge; v0.7.0.
+- [fzf](https://github.com/junegunn/fzf).
 - [Nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
@@ -165,7 +166,7 @@ Please always avoid whitespaces in directories and file names.
 ## 📦 Install
 
 > [!IMPORTANT]
-> 
+>
 > The upgrade of major version means there's a break change, please specify a version/tag to avoid!
 
 <details>
@@ -176,19 +177,20 @@ require("lazy").setup({
   -- optional for icons
   { "nvim-tree/nvim-web-devicons" },
 
-  -- mandatory
+  -- optional for the `fzf` command
   {
     "junegunn/fzf",
     build = function()
       vim.fn["fzf#install"]()
     end,
   },
+
   {
     "linrongbin16/fzfx.nvim",
-    dependencies = { "junegunn/fzf", "nvim-tree/nvim-web-devicons" },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
 
     -- specify version to avoid break changes
-    version = 'v4.*',
+    version = 'v5.*',
 
     config = function()
       require("fzfx").setup()
