@@ -1100,6 +1100,7 @@ local function _make_user_command(
       vim.inspect(input_args)
     )
 
+    --- @type fzfx.VariantConfig
     local varcfg = nil
     local first_space_pos = strings.find(input_args, " ")
     local first_arg = first_space_pos ~= nil
@@ -1133,6 +1134,12 @@ local function _make_user_command(
     bang = true,
     desc = command_desc,
     complete = function(ArgLead, CmdLine, CursorPos)
+      log.debug(
+        "|_make_user_command.complete| ArgLead:%s, CmdLine:%s, CursorPos:%s",
+        vim.inspect(ArgLead),
+        vim.inspect(CmdLine),
+        vim.inspect(CursorPos)
+      )
       local sub_commands = {}
       for i, variant in ipairs(variant_configs) do
         if strings.not_empty(variant.name) then
