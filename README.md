@@ -424,8 +424,10 @@ Below keys are binded by default:
 
 #### `FzfxGLiveGrep` (Live Git Grep)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. Use `--` flag to pass raw options to search command (`git grep`).
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. Use `--` flag to pass raw options to search command (`git grep`).
 
 <table>
 <thead>
@@ -466,8 +468,10 @@ Below keys are binded by default:
 
 #### `FzfxGFiles` (Find Git Files)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Current directory (only)** variant is named with `cwd_` suffix.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Current directory (only)** variant is named with `cwd_` suffix.
 
 <table>
 <thead>
@@ -506,8 +510,10 @@ Below keys are binded by default:
 
 #### `FzfxGStatus` (Search Git Status, e.g. Git Changed Files)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Current directory (only)** variant is named with `cwd_` suffix.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Current directory (only)** variant is named with `cwd_` suffix.
 
 <table>
 <thead>
@@ -546,8 +552,10 @@ Below keys are binded by default:
 
 #### `FzfxGBranches` (Find Git Branches)
 
-1. Use `enter` to checkout branch.
-2. **Remote branch** variant is named with `remote_` suffix.
+> [!NOTE]
+>
+> 1. Use `enter` to checkout branch.
+> 2. **Remote branch** variant is named with `remote_` suffix.
 
 <table>
 <thead>
@@ -586,8 +594,10 @@ Below keys are binded by default:
 
 #### `FzfxGCommits` (Search Git Commits)
 
-1. Use `enter` to copy git commit SHA.
-2. **Current buffer (only)** variant is named with `buf_` suffix.
+> [!NOTE]
+>
+> 1. Use `enter` to copy git commit SHA.
+> 2. **Current buffer (only)** variant is named with `buf_` suffix.
 
 <table>
 <thead>
@@ -626,7 +636,9 @@ Below keys are binded by default:
 
 #### `FzfxGBlame` (Search Git Blame)
 
-1. Use `enter` to copy git commit SHA.
+> [!NOTE]
+>
+> 1. Use `enter` to copy git commit SHA.
 
 <table>
 <thead>
@@ -667,7 +679,7 @@ Below keys are binded by default:
 
 #### `FzfxLsp{Locations}` (Search Lsp Locations)
 
-There're several commands (and relate LSP protocol methods):
+This is a group of several commands (and related LSP protocol methods):
 
 - `FzfxLspDefinitions` ([textDocument/definition](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_definition)).
 - `FzfxLspTypeDefinitions` ([textDocument/typeDefinition](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_typeDefinition)).
@@ -697,8 +709,10 @@ There're several commands (and relate LSP protocol methods):
 
 #### `FzfxLspDiagnostics` (Search Diagnostics)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Current buffer (only)** variant is named with `buf_` suffix.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Current buffer (only)** variant is named with `buf_` suffix.
 
 <table>
 <thead>
@@ -739,9 +753,11 @@ There're several commands (and relate LSP protocol methods):
 
 #### `FzfxCommands` (Search Vim Commands)
 
-1. Use `enter` to input vim command.
-2. **Ex(builtin) commands** variant is named with `ex_` suffix.
-3. **User commands** variant is named with `user_` suffix.
+> [!NOTE]
+>
+> 1. Use `enter` to input vim command.
+> 2. **Ex (builtin) commands** variant is named with `ex_` suffix.
+> 3. **User commands** variant is named with `user_` suffix.
 
 <table>
 <thead>
@@ -780,10 +796,12 @@ There're several commands (and relate LSP protocol methods):
 
 #### `FzfxKeyMaps` (Search Vim Key Mappings)
 
-1. Use `enter` to execute vim key.
-2. **Normal mode** variant is named with `n_mode_` suffix.
-3. **Insert mode** variant is named with `i_mode_` suffix.
-4. **Visual/select mode** variant is named with `v_mode_` suffix.
+> [!NOTE]
+>
+> 1. Use `enter` to execute vim key.
+> 2. **Normal mode** variant is named with `n_mode_` suffix.
+> 3. **Insert mode** variant is named with `i_mode_` suffix.
+> 4. **Visual/select mode** variant is named with `v_mode_` suffix.
 
 <table>
 <thead>
@@ -824,6 +842,8 @@ There're several commands (and relate LSP protocol methods):
 
 #### `FzfxFileExplorer` (Search File Explorer)
 
+> [!NOTE]
+>
 > 1. **Include hidden** variant is named with `hidden_` suffix.
 
 <table>
