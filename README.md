@@ -287,7 +287,7 @@ Below keys are binded by default:
 
 ### Files & Buffers
 
-#### FzfxFiles
+#### `FzfxFiles` (Find Files)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 2. **Unrestricted** variant is named with `unres_` suffix.
@@ -327,7 +327,7 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-#### FzfxBuffers
+#### `FzfxBuffers` (Find Buffers)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 
@@ -368,7 +368,7 @@ Below keys are binded by default:
 
 ### Grep
 
-#### FzfxLiveGrep
+#### `FzfxLiveGrep` (Live Grep)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
@@ -410,7 +410,7 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-#### Git Live Grep
+#### `FzfxGLiveGrep` (Live Git Grep)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 2. Use `--` flag to pass raw options to search command (`git grep`).
@@ -418,7 +418,7 @@ Below keys are binded by default:
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -426,31 +426,29 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGLiveGrep</td>
+    <td>args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGLiveGrepV</td>
+    <td>visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGLiveGrepW</td>
+    <td>cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGLiveGrepP</td>
+    <td>put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGLiveGrepR</td>
+    <td>resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
-
-</details>
 
 <details>
 <summary><b>Git</b></summary>

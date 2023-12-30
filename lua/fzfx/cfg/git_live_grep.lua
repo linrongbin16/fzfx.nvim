@@ -100,7 +100,7 @@ M.fzf_opts = {
   consts.FZF_OPTS.DISABLED,
   consts.FZF_OPTS.DELIMITER,
   consts.FZF_OPTS.GREP_PREVIEW_WINDOW,
-  { "--prompt", "Git Live Grep > " },
+  { "--prompt", "Live Git Grep > " },
 }
 
 M.other_opts = {
