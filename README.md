@@ -888,41 +888,41 @@ This is a group of several commands (and related LSP protocol methods):
 <br/>
 
 ```vim
-" ======== files ========
+" ======== FzfxFiles (Find Files) ========
 
-" find files
-nnoremap <space>f :\<C-U>FzfxFiles<CR>
+" by args
+nnoremap <space>f :\<C-U>FzfxFiles args<CR>
 " by visual select
-xnoremap <space>f :\<C-U>FzfxFilesV<CR>
+xnoremap <space>f :\<C-U>FzfxFiles visual<CR>
 " by cursor word
-nnoremap <space>wf :\<C-U>FzfxFilesW<CR>
+nnoremap <space>wf :\<C-U>FzfxFiles cword<CR>
 " by yank text
-nnoremap <space>pf :\<C-U>FzfxFilesP<CR>
+nnoremap <space>pf :\<C-U>FzfxFiles put<CR>
 " by resume
-nnoremap <space>rf :\<C-U>FzfxFilesR<CR>
+nnoremap <space>rf :\<C-U>FzfxFiles resume<CR>
 
-" ======== live grep ========
+" ======== FzfxLiveGrep (Live Grep) ========
 
-" live grep
-nnoremap <space>l :\<C-U>FzfxLiveGrep<CR>
+" by args
+nnoremap <space>l :\<C-U>FzfxLiveGrep args<CR>
 " by visual select
-xnoremap <space>l :\<C-U>FzfxLiveGrepV<CR>
+xnoremap <space>l :\<C-U>FzfxLiveGrep visual<CR>
 " by cursor word
-nnoremap <space>wl :\<C-U>FzfxLiveGrepW<CR>
+nnoremap <space>wl :\<C-U>FzfxLiveGrep cword<CR>
 " by yank text
-nnoremap <space>pl :\<C-U>FzfxLiveGrepP<CR>
+nnoremap <space>pl :\<C-U>FzfxLiveGrep put<CR>
 " by resume
-nnoremap <space>rl :\<C-U>FzfxLiveGrepR<CR>
+nnoremap <space>rl :\<C-U>FzfxLiveGrep resume<CR>
 
-" ======== buffers ========
+" ======== FzfxBuffers (Find Buffers) ========
 
-" buffers
-nnoremap <space>bf :\<C-U>FzfxBuffers<CR>
+" by args
+nnoremap <space>bf :\<C-U>FzfxBuffers args<CR>
 
-" ======== git files ========
+" ======== FzfxGFiles (Find Git Files) ========
 
-" git files
-nnoremap <space>gf :\<C-U>FzfxGFiles<CR>
+" by args
+nnoremap <space>gf :\<C-U>FzfxGFiles args<CR>
 
 " ======== git live grep ========
 
