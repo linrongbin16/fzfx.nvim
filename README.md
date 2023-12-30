@@ -26,6 +26,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - [Whitespace Escaping Issue](#whitespace-escaping-issue)
 - [Install](#-install)
 - [Commands](#-commands)
+  - [Files & Buffers](#files--buffers)
+  - [Grep](#grep)
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
   - [Create Your Own Command](#create-your-own-command)
@@ -373,7 +375,7 @@ Below keys are binded by default:
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
 3. **Unrestricted** variant is named with `unres_` suffix.
-4. **Only in current buffer** variant is named with `buf_` suffix.
+4. **Current buffer (only)** variant is named with `buf_` suffix.
 
 <table>
 <thead>
@@ -455,7 +457,7 @@ Below keys are binded by default:
 #### `FzfxGFiles` (Find Git Files)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Only in current directory** variant is named with `cwd_` suffix.
+2. **Current directory (only)** variant is named with `cwd_` suffix.
 
 <table>
 <thead>
@@ -492,10 +494,10 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-#### `FzfxGStatus` (Find Git Changed Files, e.g. Git Status)
+#### `FzfxGStatus` (Search Git Status, e.g. Git Changed Files)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Only in current directory** variant is named with `cwd_` suffix.
+2. **Current directory (only)** variant is named with `cwd_` suffix.
 
 <table>
 <thead>
@@ -575,7 +577,7 @@ Below keys are binded by default:
 #### `FzfxGCommits` (Search Git Commits)
 
 1. Use `enter` to copy git commit SHA.
-2. **Only in current buffer** variant is named with `buf_` suffix.
+2. **Current buffer (only)** variant is named with `buf_` suffix.
 
 <table>
 <thead>
@@ -686,7 +688,7 @@ There're several commands (and relate LSP protocol methods):
 #### `FzfxLspDiagnostics` (Search Diagnostics)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Only in current buffer** variant is named with `buf_` suffix.
+2. **Current buffer (only)** variant is named with `buf_` suffix.
 
 <table>
 <thead>
@@ -848,8 +850,6 @@ There're several commands (and relate LSP protocol methods):
   </tr>
 </tbody>
 </table>
-
-</details>
 
 ## 📌 Recommended Key Mappings
 

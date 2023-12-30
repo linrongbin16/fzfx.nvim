@@ -33,7 +33,7 @@ M.variants = {
     default_provider = "workspace_diagnostics",
   },
   {
-    name = "buffer_args",
+    name = "buf_args",
     feed = CommandFeedEnum.ARGS,
     default_provider = "buffer_diagnostics",
   },
@@ -44,7 +44,7 @@ M.variants = {
     default_provider = "workspace_diagnostics",
   },
   {
-    name = "buffer_visual",
+    name = "buf_visual",
     feed = CommandFeedEnum.VISUAL,
     default_provider = "buffer_diagnostics",
   },
@@ -55,7 +55,7 @@ M.variants = {
     default_provider = "workspace_diagnostics",
   },
   {
-    name = "buffer_cword",
+    name = "buf_cword",
     feed = CommandFeedEnum.CWORD,
     default_provider = "buffer_diagnostics",
   },
@@ -66,7 +66,7 @@ M.variants = {
     default_provider = "workspace_diagnostics",
   },
   {
-    name = "buffer_put",
+    name = "buf_put",
     feed = CommandFeedEnum.PUT,
     default_provider = "buffer_diagnostics",
   },
@@ -77,7 +77,7 @@ M.variants = {
     default_provider = "workspace_diagnostics",
   },
   {
-    name = "buffer_resume",
+    name = "buf_resume",
     feed = CommandFeedEnum.PUT,
     default_provider = "buffer_diagnostics",
   },
