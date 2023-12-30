@@ -686,12 +686,12 @@ There're several commands (and relate LSP protocol methods):
 #### `FzfxLspDiagnostics` (Search Diagnostics)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Current buffer** variant is named with `B` suffix.
+2. **Only in current buffer** variant is named with `buf_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -699,45 +699,42 @@ There're several commands (and relate LSP protocol methods):
 </thead>
 <tbody>
   <tr>
-    <td>FzfxLspDiagnostics(B)</td>
+    <td>(buf_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxLspDiagnostics(B)V</td>
+    <td>(buf_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxLspDiagnostics(B)W</td>
+    <td>(buf_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxLspDiagnostics(B)P</td>
+    <td>(buf_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxLspDiagnostics(B)R</td>
+    <td>(buf_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-</details>
+### Vim
 
-<details>
-<summary><b>Vim</b></summary>
-
-#### Commands
+#### `FzfxCommands` (Search Vim Commands)
 
 1. Use `enter` to input vim command.
-2. **Ex(builtin) commands** variant is named with `E` suffix.
-3. **User commands** variant is named with `U` suffix.
+2. **Ex(builtin) commands** variant is named with `ex_` suffix.
+3. **User commands** variant is named with `user_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -745,41 +742,41 @@ There're several commands (and relate LSP protocol methods):
 </thead>
 <tbody>
   <tr>
-    <td>FzfxCommands(E/U)</td>
+    <td>(ex_/user_)args</td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxCommands(E/U)V</td>
+    <td>(ex_/user_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxCommands(E/U)W</td>
+    <td>(ex_/user_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxCommands(E/U)P</td>
+    <td>(ex_/user_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxCommands(E/U)R</td>
+    <td>(ex_/user_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Key Maps
+#### `FzfxKeyMaps` (Search Vim Key Mappings)
 
 1. Use `enter` to execute vim key.
-2. **Normal mode** variant is named with `N` suffix.
-3. **Insert mode** variant is named with `I` suffix.
-4. **Visual/select mode** variant is named with `V` suffix.
+2. **Normal mode** variant is named with `n_mode_` suffix.
+3. **Insert mode** variant is named with `i_mode_` suffix.
+4. **Visual/select mode** variant is named with `v_mode_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -787,43 +784,40 @@ There're several commands (and relate LSP protocol methods):
 </thead>
 <tbody>
   <tr>
-    <td>FzfxKeMaps(N/I/V)</td>
+    <td>(n_mode_/i_mode_/v_mode_)args</td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxKeyMaps(N/I/V)V</td>
+    <td>(n_mode_/i_mode_/v_mode_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxKeyMaps(N/I/V)W</td>
+    <td>(n_mode_/i_mode_/v_mode_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxKeyMaps(N/I/V)P</td>
+    <td>(n_mode_/i_mode_/v_mode_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxKeyMaps(N/I/V)R</td>
+    <td>(n_mode_/i_mode_/v_mode_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-</details>
+### Misc
 
-<details>
-<summary><b>Misc</b></summary>
+#### `FzfxFileExplorer` (Search File Explorer)
 
-#### File Explorer
-
-> 1. **Unrestricted** variant is named with `U` suffix.
+> 1. **Include hidden** variant is named with `hidden_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -831,25 +825,25 @@ There're several commands (and relate LSP protocol methods):
 </thead>
 <tbody>
   <tr>
-    <td>FzfxFileExplorer(U)</td>
+    <td>(hidden_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxFileExplorer(U)V</td>
+    <td>(hidden_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxFileExplorer(U)W</td>
+    <td>(hidden_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxFileExplorer(U)P</td>
+    <td>(hidden_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxFileExplorer(U)R</td>
+    <td>(hidden_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
