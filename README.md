@@ -209,18 +209,19 @@ return require("packer").startup(function(use)
   -- optional for icons
   use({ "nvim-tree/nvim-web-devicons" })
 
-  -- mandatory
+  -- optional for the `fzf` command
   use({
     "junegunn/fzf",
     run = function()
       vim.fn["fzf#install"]()
     end,
   })
+
   use({
     "linrongbin16/fzfx.nvim",
 
     -- specify version to avoid break changes
-    version = 'v4.1.3',
+    version = 'v5.0.0',
 
     config = function()
       require("fzfx").setup()
@@ -240,11 +241,11 @@ call plug#begin()
 " optional for icons
 Plug 'nvim-tree/nvim-web-devicons'
 
-" mandatory
+" optional for the `fzf` command
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 " specify version to avoid break changes
-Plug 'linrongbin16/fzfx.nvim', { 'tag': 'v4.1.3' }
+Plug 'linrongbin16/fzfx.nvim', { 'tag': 'v5.0.0' }
 
 call plug#end()
 
@@ -255,14 +256,13 @@ lua require('fzfx').setup()
 
 ## 🚀 Commands
 
-Commands are named following below rules:
+All commands are named with prefix `Fzfx`, the sub commands e.g. the variants are usually named with below rules:
 
-- All commands are named with prefix `Fzfx`.
-- The main command name has no suffix.
-- **Visual select** variant is named with `V` suffix.
-- **Cursor word** variant is named with `W` suffix.
-- **Yank text** variant is named with `P` suffix (just like press the `p` key).
-- **Resume last search** variant is named with `R` suffix.
+- **Basic** variant is named with `args`, accepts the following arguments as query content.
+- **Visual select** variant is named with `visual`, uses visual selection as query content.
+- **Cursor word** variant is named with `cword`, uses the word text under cursor as query content.
+- **Put** (e.g. yank text) variant is named with `put` (just like press the `p` key), uses the yank text as query content.
+- **Resume last search** variant is named with `resume`, uses the last search content as query content.
 
 > [!NOTE]
 >
@@ -285,18 +285,17 @@ Below keys are binded by default:
 >
 > Builtin keys can be configured, see [Configuration](#-configuration).
 
-<details>
-<summary><b>Files & Buffers</b></summary>
+### Files & Buffers
 
-#### Files
+#### FzfxFiles
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Unrestricted** variant is named with `U` suffix.
+2. **Unrestricted** variant is named with `unres_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -304,38 +303,38 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxFiles(U)</td>
+    <td>(unres_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxFiles(U)V</td>
+    <td>(unres_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxFiles(U)W</td>
+    <td>(unres_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxFiles(U)P</td>
+    <td>(unres_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxFiles(U)R</td>
+    <td>(unres_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Buffers
+#### FzfxBuffers
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -343,46 +342,43 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxBuffers</td>
+    <td>args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxBuffersV</td>
+    <td>visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxBuffersW</td>
+    <td>cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxBuffersP</td>
+    <td>put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxBuffersR</td>
+    <td>resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-</details>
+### Grep
 
-<details>
-<summary><b>Grep</b></summary>
-
-#### Live Grep
+#### FzfxLiveGrep
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
-3. **Unrestricted** variant is named with `U` suffix.
-4. **Current buffer** variant is named with `B` suffix.
+3. **Unrestricted** variant is named with `unres_` suffix.
+4. **Only current buffer** variant is named with `buf_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -390,25 +386,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxLiveGrep(B/U)</td>
+    <td>(unres_/buf_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(B/U)V</td>
+    <td>(unres_/buf_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(B/U)W</td>
+    <td>(unres_/buf_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(B/U)P</td>
+    <td>(unres_/buf_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(B/U)R</td>
+    <td>(unres_/buf_)resume</td>
     <td>N</td>
   </tr>
 </tbody>

@@ -36,12 +36,12 @@ M.variants = {
     default_provider = "restricted_mode",
   },
   {
-    name = "unrestricted_args",
+    name = "unres_args",
     feed = CommandFeedEnum.ARGS,
     default_provider = "unrestricted_mode",
   },
   {
-    name = "buffer_args",
+    name = "buf_args",
     feed = CommandFeedEnum.ARGS,
     default_provider = "buffer_mode",
   },
@@ -52,12 +52,12 @@ M.variants = {
     default_provider = "restricted_mode",
   },
   {
-    name = "unrestricted_visual",
+    name = "unres_visual",
     feed = CommandFeedEnum.VISUAL,
     default_provider = "unrestricted_mode",
   },
   {
-    name = "buffer_visual",
+    name = "buf_visual",
     feed = CommandFeedEnum.VISUAL,
     default_provider = "buffer_mode",
   },
@@ -68,12 +68,12 @@ M.variants = {
     default_provider = "restricted_mode",
   },
   {
-    name = "unrestricted_cword",
+    name = "unres_cword",
     feed = CommandFeedEnum.CWORD,
     default_provider = "unrestricted_mode",
   },
   {
-    name = "buffer_cword",
+    name = "buf_cword",
     feed = CommandFeedEnum.CWORD,
     default_provider = "buffer_mode",
   },
@@ -84,12 +84,12 @@ M.variants = {
     default_provider = "restricted_mode",
   },
   {
-    name = "unrestricted_put",
+    name = "unres_put",
     feed = CommandFeedEnum.PUT,
     default_provider = "unrestricted_mode",
   },
   {
-    name = "buffer_put",
+    name = "buf_put",
     feed = CommandFeedEnum.PUT,
     default_provider = "buffer_mode",
   },
@@ -100,12 +100,12 @@ M.variants = {
     default_provider = "restricted_mode",
   },
   {
-    name = "unrestricted_resume",
+    name = "unres_resume",
     feed = CommandFeedEnum.RESUME,
     default_provider = "unrestricted_mode",
   },
   {
-    name = "buffer_resume",
+    name = "buf_resume",
     feed = CommandFeedEnum.RESUME,
     default_provider = "buffer_mode",
   },

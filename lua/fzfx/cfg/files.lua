@@ -25,7 +25,7 @@ M.variants = {
   },
   -- unrestricted args
   {
-    name = "unrestricted_args",
+    name = "unres_args",
     feed = CommandFeedEnum.ARGS,
     default_provider = "unrestricted_mode",
   },
@@ -37,7 +37,7 @@ M.variants = {
   },
   -- unrestricted visual
   {
-    name = "unrestricted_visual",
+    name = "unres_visual",
     feed = CommandFeedEnum.VISUAL,
     default_provider = "unrestricted_mode",
   },
@@ -49,7 +49,7 @@ M.variants = {
   },
   -- unrestricted cword
   {
-    name = "unrestricted_cword",
+    name = "unres_cword",
     feed = CommandFeedEnum.CWORD,
     default_provider = "unrestricted_mode",
   },
@@ -61,7 +61,7 @@ M.variants = {
   },
   -- unrestricted put
   {
-    name = "unrestricted_put",
+    name = "unres_put",
     feed = CommandFeedEnum.PUT,
     default_provider = "unrestricted_mode",
   },
@@ -73,7 +73,7 @@ M.variants = {
   },
   -- unrestricted resume
   {
-    name = "unrestricted_resume",
+    name = "unres_resume",
     feed = CommandFeedEnum.RESUME,
     default_provider = "unrestricted_mode",
   },
