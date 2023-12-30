@@ -295,8 +295,10 @@ Below keys are binded by default:
 
 #### `FzfxFiles` (Find Files)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Unrestricted** variant is named with `unres_` suffix.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Unrestricted** variant is named with `unres_` suffix.
 
 <table>
 <thead>
@@ -335,7 +337,9 @@ Below keys are binded by default:
 
 #### `FzfxBuffers` (Find Buffers)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 
 <table>
 <thead>
@@ -376,10 +380,12 @@ Below keys are binded by default:
 
 #### `FzfxLiveGrep` (Live Grep)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
-3. **Unrestricted** variant is named with `unres_` suffix.
-4. **Current buffer (only)** variant is named with `buf_` suffix.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
+> 3. **Unrestricted** variant is named with `unres_` suffix.
+> 4. **Current buffer (only)** variant is named with `buf_` suffix.
 
 <table>
 <thead>
