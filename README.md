@@ -373,7 +373,7 @@ Below keys are binded by default:
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
 3. **Unrestricted** variant is named with `unres_` suffix.
-4. **Only current buffer** variant is named with `buf_` suffix.
+4. **Only in current buffer** variant is named with `buf_` suffix.
 
 <table>
 <thead>
@@ -450,18 +450,17 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-<details>
-<summary><b>Git</b></summary>
+### Git
 
-#### Git Files
+#### `FzfxGFiles` (Find Git Files)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Current directory** variant is named with `C` suffix.
+2. **Only in current directory** variant is named with `cwd_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -469,39 +468,39 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGFiles(C)</td>
+    <td>(cwd_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)V</td>
+    <td>(cwd_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)W</td>
+    <td>(cwd_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)P</td>
+    <td>(cwd_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)R</td>
+    <td>(cwd_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Git Status (Changed Files)
+#### `FzfxGStatus` (Find Git Changed Files, e.g. Git Status)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Current directory** variant is named with `C` suffix.
+2. **Only in current directory** variant is named with `cwd_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -509,39 +508,39 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGStatus(C)</td>
+    <td>(cwd_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGStatus(C)V</td>
+    <td>(cwd_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGStatus(C)W</td>
+    <td>(cwd_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGStatus(C)P</td>
+    <td>(cwd_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGStatus(C)R</td>
+    <td>(cwd_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Git Branches
+#### `FzfxGBranches` (Find Git Branches)
 
 1. Use `enter` to checkout branch.
-2. **Remote branch** variant is named with `R` suffix.
+2. **Remote branch** variant is named with `remote_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -549,39 +548,39 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGBranches(R)</td>
+    <td>(remote_)args</td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGBranches(R)V</td>
+    <td>(remote_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGBranches(R)W</td>
+    <td>(remote_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGBranches(R)P</td>
+    <td>(remote_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGBranches(R)R</td>
+    <td>(remote_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Git Commits
+#### `FzfxGCommits` (Search Git Commits)
 
 1. Use `enter` to copy git commit SHA.
-2. **Current buffer** variant is named with `B` suffix.
+2. **Only in current buffer** variant is named with `buf_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -589,38 +588,38 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGCommits(B)</td>
+    <td>(buf_)args</td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGCommits(B)V</td>
+    <td>(buf_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGCommits(B)W</td>
+    <td>(buf_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGCommits(B)P</td>
+    <td>(buf_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGCommits(B)R</td>
+    <td>(buf_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Git Blame
+#### `FzfxGBlame` (Search Git Blame)
 
 1. Use `enter` to copy git commit SHA.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -628,50 +627,47 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGBlame</td>
+    <td>args</td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGBlameV</td>
+    <td>visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGBlameW</td>
+    <td>cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGBlameP</td>
+    <td>put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGBlameR</td>
+    <td>resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-</details>
+### Lsp & Diagnostics
 
-<details>
-<summary><b>Lsp & Diagnostics</b></summary>
+#### `FzfxLsp{Locations}` (Search Lsp Locations)
 
-#### Lsp Locations
+There're several commands (and relate LSP protocol methods):
 
-Lsp methods:
-
-- FzfxLspDefinitions: "textDocument/definition".
-- FzfxLspTypeDefinitions: "textDocument/type_definition".
-- FzfxLspReferences: "textDocument/references".
-- FzfxLspImplementations: "textDocument/implementation".
-- FzfxLspIncomingCalls: "textDocument/incomingCalls".
-- FzfxLspOutgoingCalls: "textDocument/outgoingCalls".
+- `FzfxLspDefinitions` ([textDocument/definition](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_definition)).
+- `FzfxLspTypeDefinitions` ([textDocument/typeDefinition](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_typeDefinition)).
+- `FzfxLspReferences` ([textDocument/references](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_references)).
+- `FzfxLspImplementations` ([textDocument/implementation](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_implementation)).
+- `FzfxLspIncomingCalls` ([callHierarchy/incomingCalls](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_incomingCalls)).
+- `FzfxLspOutgoingCalls` ([callHierarchy/outgoingCalls](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_outgoingCalls)).
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -679,35 +675,15 @@ Lsp methods:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxLspDefinitions</td>
+    <td>args</td>
     <td>N</td>
     <td rowspan="6">Yes</td>
     <td rowspan="6">Yes</td>
   </tr>
-  <tr>
-    <td>FzfxLspTypeDefinitions</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLspReferences</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLspImplementations</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLspIncomingCalls</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLspOutgoingCalls</td>
-    <td>N</td>
-  </tr>
 </tbody>
 </table>
 
-#### Diagnostics
+#### `FzfxLspDiagnostics` (Search Diagnostics)
 
 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 2. **Current buffer** variant is named with `B` suffix.
