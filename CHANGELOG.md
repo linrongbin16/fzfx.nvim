@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.5](https://github.com/linrongbin16/fzfx.nvim/compare/v4.1.4...v4.1.5) (2023-12-31)
+
+
+### Bug Fixes
+
+* **buffers:** revert unload buffers change ([#536](https://github.com/linrongbin16/fzfx.nvim/issues/536)) ([86e9253](https://github.com/linrongbin16/fzfx.nvim/commit/86e9253c399ef93d28b2321079e571cc1c1e8f4a))
+
 ## [4.1.4](https://github.com/linrongbin16/fzfx.nvim/compare/v4.1.3...v4.1.4) (2023-12-29)
 
 
