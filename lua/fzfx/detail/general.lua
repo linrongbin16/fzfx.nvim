@@ -1093,12 +1093,10 @@ local function _make_user_command(
       vim.inspect(command_name),
       vim.inspect(opts)
     )
-    log.ensure(
-      strings.not_empty(opts.args),
-      "missing args in command: %s",
-      vim.inspect(command_name)
-    )
     local input_args = strings.trim(opts.args or "")
+    if strings.empty(input_args) then
+      input_args = variant_configs[1].name
+    end
     log.ensure(
       strings.not_empty(input_args),
       "missing args in command: %s",

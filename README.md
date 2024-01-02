@@ -272,24 +272,22 @@ All commands are named with prefix `Fzfx`, the sub commands e.g. the variants ar
 
 > [!NOTE]
 >
-> Command and sub command names can be configured, see [Configuration](#-configuration).
+> The `args` sub command can be omitted, which means no arguments. For example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
+>
+> But when you want to use `config` as query input, you have to type `:FzfxFiles args config<CR>` to specify the command arguments.
 
 Below keys are binded by default:
 
-- Exit keys (fzf `--expect` option)
+- **Exit** keys (fzf `--expect` option)
   - `esc`: quit.
   - `double-click`/`enter`: open/jump to file (behave different on some specific commands).
-- Preview keys
+- **Preview** keys
   - `alt-p`: toggle preview.
   - `ctrl-f`: preview half page down.
   - `ctrl-b`: preview half page up.
-- Select keys
+- **Select** keys
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
-
-> [!NOTE]
->
-> Builtin keys can be configured, see [Configuration](#-configuration).
 
 ### Files & Buffers
 
@@ -891,7 +889,7 @@ This is a group of several commands (and related LSP protocol methods):
 " ======== FzfxFiles (Find Files) ========
 
 " by args
-nnoremap <space>f :\<C-U>FzfxFiles args<CR>
+nnoremap <space>f :\<C-U>FzfxFiles<CR>
 " by visual select
 xnoremap <space>f :\<C-U>FzfxFiles visual<CR>
 " by cursor word
@@ -904,7 +902,7 @@ nnoremap <space>rf :\<C-U>FzfxFiles resume<CR>
 " ======== FzfxLiveGrep (Live Grep) ========
 
 " by args
-nnoremap <space>l :\<C-U>FzfxLiveGrep args<CR>
+nnoremap <space>l :\<C-U>FzfxLiveGrep<CR>
 " by visual select
 xnoremap <space>l :\<C-U>FzfxLiveGrep visual<CR>
 " by cursor word
@@ -939,35 +937,35 @@ nnoremap <space>rgl :\<C-U>FzfxGLiveGrep resume<CR>
 
 " ======== git changed files (status) ========
 
-" git files
-nnoremap <space>gs :\<C-U>FzfxGStatus<CR>
+" by args
+nnoremap <space>gs :\<C-U>FzfxGStatus args<CR>
 
 " ======== git branches ========
 
-" git branches
-nnoremap <space>br :\<C-U>FzfxGBranches<CR>
+" by args
+nnoremap <space>br :\<C-U>FzfxGBranches args<CR>
 
 " ======== git commits ========
 
-" git commits
-nnoremap <space>gc :\<C-U>FzfxGCommits<CR>
+" by args
+nnoremap <space>gc :\<C-U>FzfxGCommits args<CR>
 
 " ======== git blame ========
 
-" git blame
-nnoremap <space>gb :\<C-U>FzfxGBlame<CR>
+" by args
+nnoremap <space>gb :\<C-U>FzfxGBlame args<CR>
 
 " ======== lsp diagnostics ========
 
-" lsp diagnostics
-nnoremap <space>dg :\<C-U>FzfxLspDiagnostics<CR>
+" by args
+nnoremap <space>dg :\<C-U>FzfxLspDiagnostics args<CR>
 
 " ======== lsp symbols ========
 
-" lsp definitions
-nnoremap gd :\<C-U>FzfxLspDefinitions<CR>
+" by args
+nnoremap gd :\<C-U>FzfxLspDefinitions args<CR>
 
-" lsp type definitions
+" by args
 nnoremap gt :\<C-U>FzfxLspTypeDefinitions<CR>
 
 " lsp references
