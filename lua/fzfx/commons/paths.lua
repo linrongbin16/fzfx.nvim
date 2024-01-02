@@ -32,13 +32,13 @@ end
 M.isdir = function(p)
   assert(type(p) == "string")
   local result, _ = require("fzfx.commons.uv").fs_lstat(p)
-  print(
-    string.format(
-      "|paths.isdir| p:%s, result:%s\n",
-      vim.inspect(p),
-      vim.inspect(result)
-    )
-  )
+  -- print(
+  --   string.format(
+  --     "|paths.isdir| p:%s, result:%s\n",
+  --     vim.inspect(p),
+  --     vim.inspect(result)
+  --   )
+  -- )
   return result ~= nil and result.type == "directory"
 end
 
@@ -47,13 +47,13 @@ end
 M.islink = function(p)
   assert(type(p) == "string")
   local result, _ = require("fzfx.commons.uv").fs_lstat(p)
-  print(
-    string.format(
-      "|paths.issymlink| p:%s, result:%s\n",
-      vim.inspect(p),
-      vim.inspect(result)
-    )
-  )
+  -- print(
+  --   string.format(
+  --     "|paths.issymlink| p:%s, result:%s\n",
+  --     vim.inspect(p),
+  --     vim.inspect(result)
+  --   )
+  -- )
   return result ~= nil and result.type == "link"
 end
 
@@ -110,13 +110,13 @@ M.resolve = function(p)
     return p
   end
   local result, _ = require("fzfx.commons.uv").fs_realpath(p)
-  print(
-    string.format(
-      "|paths.resolve|-4 p:%s, result:%s\n",
-      vim.inspect(p),
-      vim.inspect(result)
-    )
-  )
+  -- print(
+  --   string.format(
+  --     "|paths.resolve|-4 p:%s, result:%s\n",
+  --     vim.inspect(p),
+  --     vim.inspect(result)
+  --   )
+  -- )
   return result ~= nil and result or p
 end
 
@@ -133,33 +133,33 @@ M.normalize = function(p, opts)
   opts.resolve = type(opts.resolve) == "boolean" and opts.resolve or false
 
   local result = M._normalize_slash(p, opts)
-  print(
-    string.format(
-      "|paths.normalize| slash, p:%s, result:%s\n",
-      vim.inspect(p),
-      vim.inspect(result)
-    )
-  )
+  -- print(
+  --   string.format(
+  --     "|paths.normalize| slash, p:%s, result:%s\n",
+  --     vim.inspect(p),
+  --     vim.inspect(result)
+  --   )
+  -- )
   if opts.expand then
     result = M.expand(result)
-    print(
-      string.format(
-        "|paths.normalize| expand, p:%s, result:%s\n",
-        vim.inspect(p),
-        vim.inspect(result)
-      )
-    )
+    -- print(
+    --   string.format(
+    --     "|paths.normalize| expand, p:%s, result:%s\n",
+    --     vim.inspect(p),
+    --     vim.inspect(result)
+    --   )
+    -- )
   end
 
   if opts.resolve then
     result = M.resolve(result)
-    print(
-      string.format(
-        "|paths.normalize| resolve, p:%s, result:%s\n",
-        vim.inspect(p),
-        vim.inspect(result)
-      )
-    )
+    -- print(
+    --   string.format(
+    --     "|paths.normalize| resolve, p:%s, result:%s\n",
+    --     vim.inspect(p),
+    --     vim.inspect(result)
+    --   )
+    -- )
   end
 
   return result
