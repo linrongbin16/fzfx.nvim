@@ -16,15 +16,15 @@ The `fzfx.cfg` module directly provide configurations for all search commands in
 
 A real-world search command, say `FzfxLiveGrep`, actually defined multiple user commands:
 
-- `FzfxLiveGrep(B/U)`
-- `FzfxLiveGrep(B/U)V`
-- `FzfxLiveGrep(B/U)W`
-- `FzfxLiveGrep(B/U)R`
-- `FzfxLiveGrep(B/U)P`
+- `FzfxLiveGrep (unres_/buf_)args`
+- `FzfxLiveGrep (unres_/buf_)visual`
+- `FzfxLiveGrep (unres_/buf_)cword`
+- `FzfxLiveGrep (unres_/buf_)put`
+- `FzfxLiveGrep (unres_/buf_)resume`
 
-They're all defined in the `fzfx.cfg.live_grep` module, it's called a commands group.
+They're all defined in the `fzfx.cfg.live_grep` module, it's called a group.
 
-Each commands group contains below components:
+Each group contains below components:
 
 - `command`: a [`fzfx.CommandConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/53b8a79981c8aa5a5c8a15bea7efeb21d1ca6de7/lua/fzfx/schema.lua?plain=1#L116) that defines the command name and description.
 - `variants`
@@ -43,13 +43,13 @@ Each commands group contains below components:
 
 ### [buffers](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/buffers.lua)
 
-Defines the `FzfxBuffers` commands group.
+Defines the `FzfxBuffers` command.
 
-?> The data source use same style with `FzfxFiles` commands, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
+?> The data source use same style with `FzfxFiles` command, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
 
 ### [file_explorer](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/file_explorer.lua)
 
-Defines the `FzfxFileExplorer` commands group. The search result from `ls`/`lsd`/`eza` looks like:
+Defines the `FzfxFileExplorer` command. The search result from `ls`/`lsd`/`eza` looks like:
 
 ![FzfxFileExplorer](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5e402a20-6c96-43a1-a463-345cd2bd86c7)
 
@@ -63,7 +63,7 @@ It's implemented with `ls`/`lsd`/`eza` utilities:
 
 ### [files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/files.lua)
 
-Defines the `FzfxFiles` commands group. The search result from `fd`/`find` looks like:
+Defines the `FzfxFiles` command. The search result from `fd`/`find` looks like:
 
 ![FzfxFiles](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/fa9649d4-4007-4e53-ad70-dcfb86612492)
 
@@ -77,13 +77,13 @@ It's implemented with `fd`/`find` utilities:
 
 ### [git_blame](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_blame.lua)
 
-Defines the `FzfxGBlame` commands group.
+Defines the `FzfxGBlame` command.
 
 ?> The data source use same style with `FzfxGCommits` commands, e.g. the `git log` result, see [fzfx.cfg.git_commits](#git_commits).
 
 ### [git_branches](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_branches.lua)
 
-Defines the `FzfxGBranches` commands group. The search result from `git branch` looks like:
+Defines the `FzfxGBranches` command. The search result from `git branch` looks like:
 
 For local branches:
 
@@ -102,7 +102,7 @@ It's implemented with `git_branch` utilities:
 
 ### [git_commits](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_commits.lua)
 
-Defines the `FzfxGCommits` commands group. The search result from `git log` looks like:
+Defines the `FzfxGCommits` command. The search result from `git log` looks like:
 
 ![FzfxGCommits](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/1cac26af-c94c-4606-806e-759ec33ceb9f)
 
@@ -115,13 +115,13 @@ It's implemented with `git_commit` utilities:
 
 ### [git_files](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_files.lua)
 
-Defines the `FzfxGFiles` commands group.
+Defines the `FzfxGFiles` command.
 
 ?> The data source use same style with `FzfxFiles` commands, e.g. the `fd`/`find` result, see [fzfx.cfg.files](#files).
 
 ### [git_live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_live_grep.lua)
 
-Defines the `FzfxGLiveGrep` commands group. The search results from `git grep` looks like:
+Defines the `FzfxGLiveGrep` command. The search results from `git grep` looks like:
 
 ![FzfxGLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/55faae50-6266-479d-8a69-6462963d9558)
 
@@ -135,7 +135,7 @@ It's implemented with `grep` utilities:
 
 ### [git_status](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/git_status.lua)
 
-Defines the `FzfxGStatus` commands group. The search results from `git status` looks like:
+Defines the `FzfxGStatus` command. The search results from `git status` looks like:
 
 ![FzfxGStatus](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/31946271-e0f3-406f-af93-2ec88108e189)
 
@@ -147,7 +147,7 @@ It's implemented with `git_status` utilities:
 
 ### [live_grep](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/live_grep.lua)
 
-Defines the `FzfxLiveGrep` commands group. The search results from `rg` looks like:
+Defines the `FzfxLiveGrep` command. The search results from `rg` looks like:
 
 ![FzfxLiveGrep](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/170ad807-a0f3-4092-9555-13ae67f38560)
 
@@ -161,49 +161,49 @@ It's implemented with `rg` or `grep` (when `rg` not found) utilities:
 
 ### [lsp_definitions](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_definitions.lua)
 
-Defines the `FzfxLspDefinitions` commands group.
+Defines the `FzfxLspDefinitions` command.
 
 ?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_diagnostics](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_diagnostics.lua)
 
-Defines the `FzfxLspDiagnostics` commands group.
+Defines the `FzfxLspDiagnostics` command.
 
 ?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_implementations](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_implementations.lua)
 
-Defines the `FzfxLspImplementations` commands group.
+Defines the `FzfxLspImplementations` command.
 
 ?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_incoming_calls](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_incoming_calls.lua)
 
-Defines the `FzfxLspIncomingCalls` commands group.
+Defines the `FzfxLspIncomingCalls` command.
 
 ?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_outgoing_calls](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_outgoing_calls.lua)
 
-Defines the `FzfxLspOutgoingCalls` commands group.
+Defines the `FzfxLspOutgoingCalls` command.
 
 ?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_references](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_references.lua)
 
-Defines the `FzfxLspReferences` commands group.
+Defines the `FzfxLspReferences` command.
 
 ?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [lsp_type_definitions](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/lsp_type_definitions.lua)
 
-Defines the `FzfxLspTypeDefinitions` commands group.
+Defines the `FzfxLspTypeDefinitions` command.
 
 ?> The data source use same style with `FzfxLiveGrep` commands, e.g. the `rg`/`grep` result, see [fzfx.cfg.live_grep](#live_grep).
 
 ### [vim_commands](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_commands.lua)
 
-Defines the `FzfxCommands` commands group. The self-rendered search result looks like:
+Defines the `FzfxCommands` command. The self-rendered search result looks like:
 
 ![FzfxCommands](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5abe8ccd-e98f-4e15-b827-82d93491d0c0)
 
@@ -216,7 +216,7 @@ It's implemented with `vim_command` utilities:
 
 ### [vim_keymaps](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/cfg/vim_keymaps.lua)
 
-Defines the `FzfxKeyMaps` commands group. The self-rendered search result looks like:
+Defines the `FzfxKeyMaps` command. The self-rendered search result looks like:
 
 ![FzfxKeyMaps](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/970bb0dd-e010-4f52-b972-970cf888be75)
 
@@ -285,7 +285,7 @@ Parse the line generated by builtin vim keymaps renderer or other sources follow
 
 ### [actions](https://github.com/linrongbin16/fzfx.nvim/lua/fzfx/helper/parsers.lua)
 
-The `fzfx.helper.actions` are hook functions binding to the commands group, user can press the key and exit fzf, then invoke these hook functions with selected lines.
+The `fzfx.helper.actions` are hook functions binding to the command, user can press the key and exit fzf, then invoke these hook functions with selected lines.
 
 #### [`nop`](https://github.com/linrongbin16/fzfx.nvim/blob/1e81d0bf3385251107e02d14308896e970acc043/lua/fzfx/helper/actions.lua?plain=1#L14)
 
