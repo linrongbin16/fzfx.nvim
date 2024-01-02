@@ -151,21 +151,6 @@ local PreviewerLabelTypeEnum = {
 -- Note: the 1st parameter 'line' is the current selected line.
 ```
 
-## Command Option
-
-A **command option** is directly passing to the [nvim_create_user_command()](<https://neovim.io/doc/user/api.html#nvim_create_user_command()>) API and create nvim user commands.
-
-```lua
---- @alias fzfx.CommandOptKey "nargs"|"bang"|"complete"|"desc"|"range"
---- @alias fzfx.CommandOptValue string|boolean
---- @alias fzfx.CommandOpt table<fzfx.CommandOptKey, fzfx.CommandOptValue>
-```
-
-References:
-
-- https://neovim.io/doc/user/api.html#nvim_create_user_command()
-- https://neovim.io/doc/user/map.html#command-attributes
-
 ## Command Feed
 
 A **command feed** defines what to feed to the search commands, e.g. the multiple variants.
@@ -218,20 +203,18 @@ A **pipeline** binds a provider with a previewer, with an interaction to switch 
 
 The **provider-interaction-previewer** is a (dataflow) pipeline.
 
-> See [schema.lua - Config](https://github.com/linrongbin16/fzfx.nvim/blob/bfd4fbc8192b9be50ea273f1d3c866cb14eb878e/lua/fzfx/schema.lua?plain=1#L107).
-
 ## Commands Group
 
 The real-world command we're using, say `FzfxLiveGrep`, actually contains multiple variants:
 
-- Main command: `FzfxLiveGrep`.
-- Visual select variant: `FzfxLiveGrepV` feed via virual selection.
-- Cursor word variant: `FzfxLiveGrepW` feed via vim `cword`.
-- Yank text (put) variant: `FzfxLiveGrepP` feed via vim yank text.
-- Resume previous search variant: `FzfxLiveGrepR` feed via user input query in previous search.
+- Basic variant: `args`, feed with command arguments.
+- Visual select variant: `visual`, feed with visual selection.
+- Cursor word variant: `cword`, feed with cursor word.
+- Put (yank text) variant: `put`, feed with yank text.
+- Resume previous search variant: `resume`, feed with previous search query content.
 - And combine with other multiple data sources, e.g. restricted/unrestricted for live grep.
 
-They're the powerful **commands group**:
+They're the powerful search **command**:
 
 - It has multiple data sources from different providers, switch by different interactive keys.
 - It has multiple previewers, each bind to a specific provider.
@@ -239,4 +222,4 @@ They're the powerful **commands group**:
 - (Optionally) It has multiple interactive keys to do something without quit fzf.
 - (Optionally) It has some extra fzf options and other options for some specific abilities.
 
-> See [schema.lua - Config](https://github.com/linrongbin16/fzfx.nvim/blob/bfd4fbc8192b9be50ea273f1d3c866cb14eb878e/lua/fzfx/schema.lua?plain=1#L107).
+> See [schema.lua - Config](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
