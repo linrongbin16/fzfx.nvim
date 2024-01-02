@@ -915,17 +915,17 @@ nnoremap <space>rl :\<C-U>FzfxLiveGrep resume<CR>
 " ======== FzfxBuffers (Find Buffers) ========
 
 " by args
-nnoremap <space>bf :\<C-U>FzfxBuffers args<CR>
+nnoremap <space>bf :\<C-U>FzfxBuffers<CR>
 
 " ======== FzfxGFiles (Find Git Files) ========
 
 " by args
-nnoremap <space>gf :\<C-U>FzfxGFiles args<CR>
+nnoremap <space>gf :\<C-U>FzfxGFiles<CR>
 
 " ======== git live grep ========
 
 " by args
-nnoremap <space>gl :\<C-U>FzfxGLiveGrep args<CR>
+nnoremap <space>gl :\<C-U>FzfxGLiveGrep<CR>
 " by visual select
 xnoremap <space>gl :\<C-U>FzfxGLiveGrep visual<CR>
 " by cursor word
@@ -938,34 +938,34 @@ nnoremap <space>rgl :\<C-U>FzfxGLiveGrep resume<CR>
 " ======== git changed files (status) ========
 
 " by args
-nnoremap <space>gs :\<C-U>FzfxGStatus args<CR>
+nnoremap <space>gs :\<C-U>FzfxGStatus<CR>
 
 " ======== git branches ========
 
 " by args
-nnoremap <space>br :\<C-U>FzfxGBranches args<CR>
+nnoremap <space>br :\<C-U>FzfxGBranches<CR>
 
 " ======== git commits ========
 
 " by args
-nnoremap <space>gc :\<C-U>FzfxGCommits args<CR>
+nnoremap <space>gc :\<C-U>FzfxGCommits<CR>
 
 " ======== git blame ========
 
 " by args
-nnoremap <space>gb :\<C-U>FzfxGBlame args<CR>
+nnoremap <space>gb :\<C-U>FzfxGBlame<CR>
 
 " ======== lsp diagnostics ========
 
 " by args
-nnoremap <space>dg :\<C-U>FzfxLspDiagnostics args<CR>
+nnoremap <space>dg :\<C-U>FzfxLspDiagnostics<CR>
 
-" ======== lsp symbols ========
+" ======== lsp locations ========
 
-" by args
-nnoremap gd :\<C-U>FzfxLspDefinitions args<CR>
+" lsp definitions
+nnoremap gd :\<C-U>FzfxLspDefinitions<CR>
 
-" by args
+" lsp type definitions
 nnoremap gt :\<C-U>FzfxLspTypeDefinitions<CR>
 
 " lsp references
@@ -982,17 +982,17 @@ nnoremap gO :\<C-U>FzfxLspOutgoingCalls<CR>
 
 " ======== vim commands ========
 
-" vim commands
+" by args
 nnoremap <space>cm :\<C-U>FzfxCommands<CR>
 
 " ======== vim key maps ========
 
-" vim key maps
+" by args
 nnoremap <space>km :\<C-U>FzfxKeyMaps<CR>
 
 " ======== file explorer ========
 
-" file explorer
+" by args
 nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 ```
 
@@ -1005,7 +1005,7 @@ nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 ```lua
 -- ======== files ========
 
--- find files
+-- by args
 vim.keymap.set(
   "n",
   "<space>f",
@@ -1016,28 +1016,28 @@ vim.keymap.set(
 vim.keymap.set(
   "x",
   "<space>f",
-  "<cmd>FzfxFilesV<CR>",
+  "<cmd>FzfxFiles visual<CR>",
   { silent = true, noremap = true, desc = "Find files" }
 )
 -- by cursor word
 vim.keymap.set(
   "n",
   "<space>wf",
-  "<cmd>FzfxFilesW<cr>",
+  "<cmd>FzfxFiles cword<cr>",
   { silent = true, noremap = true, desc = "Find files by cursor word" }
 )
 -- by yank text
 vim.keymap.set(
   "n",
   "<space>pf",
-  "<cmd>FzfxFilesP<cr>",
+  "<cmd>FzfxFiles put<cr>",
   { silent = true, noremap = true, desc = "Find files by yank text" }
 )
 -- by resume
 vim.keymap.set(
   "n",
   "<space>rf",
-  "<cmd>FzfxFilesR<cr>",
+  "<cmd>FzfxFiles resume<cr>",
   { silent = true, noremap = true, desc = "Find files by resume last" }
 )
 
@@ -1054,34 +1054,34 @@ vim.keymap.set(
 vim.keymap.set(
   "x",
   "<space>l",
-  "<cmd>FzfxLiveGrepV<cr>",
+  "<cmd>FzfxLiveGrep visual<cr>",
   { silent = true, noremap = true, desc = "Live grep" }
 )
 -- by cursor word
 vim.keymap.set(
   "n",
   "<space>wl",
-  "<cmd>FzfxLiveGrepW<cr>",
+  "<cmd>FzfxLiveGrep cword<cr>",
   { silent = true, noremap = true, desc = "Live grep by cursor word" }
 )
 -- by yank text
 vim.keymap.set(
   "n",
   "<space>pl",
-  "<cmd>FzfxLiveGrepP<cr>",
+  "<cmd>FzfxLiveGrep put<cr>",
   { silent = true, noremap = true, desc = "Live grep by yank text" }
 )
 -- by resume
 vim.keymap.set(
   "n",
   "<space>rl",
-  "<cmd>FzfxLiveGrepR<cr>",
+  "<cmd>FzfxLiveGrep resume<cr>",
   { silent = true, noremap = true, desc = "Live grep by resume last" }
 )
 
 -- ======== buffers ========
 
--- buffers
+-- by args
 vim.keymap.set(
   "n",
   "<space>bf",
@@ -1091,7 +1091,7 @@ vim.keymap.set(
 
 -- ======== git files ========
 
--- git files
+-- by args
 vim.keymap.set(
   "n",
   "<space>gf",
@@ -1101,7 +1101,7 @@ vim.keymap.set(
 
 -- ======== git live grep ========
 
--- git live grep
+-- by args
 vim.keymap.set(
   "n",
   "<space>gl",
@@ -1112,34 +1112,34 @@ vim.keymap.set(
 vim.keymap.set(
   "x",
   "<space>gl",
-  "<cmd>FzfxGLiveGrepV<cr>",
+  "<cmd>FzfxGLiveGrep visual<cr>",
   { silent = true, noremap = true, desc = "Git live grep" }
 )
 -- by cursor word
 vim.keymap.set(
   "n",
   "<space>wgl",
-  "<cmd>FzfxGLiveGrepW<cr>",
+  "<cmd>FzfxGLiveGrep cword<cr>",
   { silent = true, noremap = true, desc = "Git live grep by cursor word" }
 )
 -- by yank text
 vim.keymap.set(
   "n",
   "<space>pgl",
-  "<cmd>FzfxGLiveGrepP<cr>",
+  "<cmd>FzfxGLiveGrep put<cr>",
   { silent = true, noremap = true, desc = "Git live grep by yank text" }
 )
 -- by resume
 vim.keymap.set(
   "n",
   "<space>rgl",
-  "<cmd>FzfxGLiveGrepR<cr>",
+  "<cmd>FzfxGLiveGrep resume<cr>",
   { silent = true, noremap = true, desc = "Git live grep by resume last" }
 )
 
 -- ======== git changed files (status) ========
 
--- git status
+-- by args
 vim.keymap.set(
   "n",
   "<space>gs",
@@ -1149,7 +1149,7 @@ vim.keymap.set(
 
 -- ======== git branches ========
 
--- git branches
+-- by args
 vim.keymap.set(
   "n",
   "<space>br",
@@ -1159,7 +1159,7 @@ vim.keymap.set(
 
 -- ======== git commits ========
 
--- git commits
+-- by args
 vim.keymap.set(
   "n",
   "<space>gc",
@@ -1169,7 +1169,7 @@ vim.keymap.set(
 
 -- ======== git blame ========
 
--- git blame
+-- by args
 vim.keymap.set(
   "n",
   "<space>gb",
@@ -1179,7 +1179,7 @@ vim.keymap.set(
 
 -- ======== lsp diagnostics ========
 
--- lsp diagnostics
+-- by args
 vim.keymap.set(
   "n",
   "<space>dg",
@@ -1239,7 +1239,7 @@ vim.keymap.set(
 
 -- ======== vim commands ========
 
--- vim commands
+-- by args
 vim.keymap.set(
   "n",
   "<space>cm",
@@ -1249,7 +1249,7 @@ vim.keymap.set(
 
 -- ======== vim key maps ========
 
--- vim key maps
+-- by args
 vim.keymap.set(
   "n",
   "<space>km",
@@ -1259,7 +1259,7 @@ vim.keymap.set(
 
 -- ======== file explorer ========
 
--- file explorer
+-- by args
 vim.keymap.set(
   "n",
   "<space>xp",
