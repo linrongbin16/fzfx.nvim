@@ -221,5 +221,3 @@ They're the powerful **command group**:
 - It has multiple action keys to exit fzf and invoke lua callbacks with selected lines.
 - (Optionally) It has multiple interactive keys to do something without quit fzf.
 - (Optionally) It has some extra fzf options and other options for some specific abilities.
-
-> See [schema.lua - Config](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
