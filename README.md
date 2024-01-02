@@ -172,7 +172,7 @@ Please always avoid whitespaces in directories and file names.
 
 > [!IMPORTANT]
 >
-> Please specify a version/tag (such as 'v4.\*') to avoid break changes between major version!
+> Please specify a version/tag (such as 'v5.\*') to avoid break changes between major version!
 
 <details>
 <summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
@@ -182,17 +182,15 @@ require("lazy").setup({
   -- optional for icons
   { "nvim-tree/nvim-web-devicons" },
 
-  -- optional for the `fzf` command
   {
     "junegunn/fzf",
     build = function()
       vim.fn["fzf#install"]()
     end,
   },
-
   {
     "linrongbin16/fzfx.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    dependencies = { "nvim-tree/nvim-web-devicons", 'junegunn/fzf' },
 
     -- specify version to avoid break changes
     version = 'v5.*',
@@ -214,14 +212,12 @@ return require("packer").startup(function(use)
   -- optional for icons
   use({ "nvim-tree/nvim-web-devicons" })
 
-  -- optional for the `fzf` command
   use({
     "junegunn/fzf",
     run = function()
       vim.fn["fzf#install"]()
     end,
   })
-
   use({
     "linrongbin16/fzfx.nvim",
 
@@ -246,7 +242,6 @@ call plug#begin()
 " optional for icons
 Plug 'nvim-tree/nvim-web-devicons'
 
-" optional for the `fzf` command
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 " specify version to avoid break changes
