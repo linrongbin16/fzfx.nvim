@@ -203,7 +203,7 @@ A **pipeline** binds a provider with a previewer, with an interaction to switch 
 
 The **provider-interaction-previewer** is a (dataflow) pipeline.
 
-## Commands Group
+## Command Group
 
 The real-world command we're using, say `FzfxLiveGrep`, actually contains multiple variants:
 
@@ -214,7 +214,7 @@ The real-world command we're using, say `FzfxLiveGrep`, actually contains multip
 - Resume previous search variant: `resume`, feed with previous search query content.
 - And combine with other multiple data sources, e.g. restricted/unrestricted for live grep.
 
-They're the powerful search **command**:
+They're the powerful **command group**:
 
 - It has multiple data sources from different providers, switch by different interactive keys.
 - It has multiple previewers, each bind to a specific provider.
