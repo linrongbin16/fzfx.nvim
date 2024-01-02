@@ -26,9 +26,10 @@ They're all defined in the `fzfx.cfg.live_grep` module, it's called a commands g
 
 Each commands group contains below components:
 
-- `commands`
-  - For only 1 command, it's a single [`fzfx.CommandConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/aa5eac85d5e9dcb020cd4237814ec0b305945193/lua/fzfx/schema.lua?plain=1#L133).
-  - For multiple commands, it's a `fzfx.CommandConfig` list .
+- `command`: a [`fzfx.CommandConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/53b8a79981c8aa5a5c8a15bea7efeb21d1ca6de7/lua/fzfx/schema.lua?plain=1#L116) that defines the command name and description.
+- `variants`
+  - For only 1 variant, it's a single [`fzfx.VariantConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/53b8a79981c8aa5a5c8a15bea7efeb21d1ca6de7/lua/fzfx/schema.lua?plain=1#L114).
+  - For multiple variants, it's a `fzfx.VariantConfig` list .
 - `providers`
   - For only 1 provider(data source), it's a single [`fzfx.ProviderConfig`](https://github.com/linrongbin16/fzfx.nvim/blob/aa5eac85d5e9dcb020cd4237814ec0b305945193/lua/fzfx/schema.lua?plain=1#L119).
   - For multiple providers(data sources), it's a `fzfx.ProviderConfig` map.
