@@ -926,16 +926,16 @@ nnoremap <space>gf :\<C-U>FzfxGFiles args<CR>
 
 " ======== git live grep ========
 
-" git live grep
-nnoremap <space>gl :\<C-U>FzfxGLiveGrep<CR>
+" by args
+nnoremap <space>gl :\<C-U>FzfxGLiveGrep args<CR>
 " by visual select
-xnoremap <space>gl :\<C-U>FzfxGLiveGrepV<CR>
+xnoremap <space>gl :\<C-U>FzfxGLiveGrep visual<CR>
 " by cursor word
-nnoremap <space>wgl :\<C-U>FzfxGLiveGrepW<CR>
+nnoremap <space>wgl :\<C-U>FzfxGLiveGrep cword<CR>
 " by yank text
-nnoremap <space>pgl :\<C-U>FzfxGLiveGrepP<CR>
+nnoremap <space>pgl :\<C-U>FzfxGLiveGrep put<CR>
 " by resume
-nnoremap <space>rgl :\<C-U>FzfxGLiveGrepR<CR>
+nnoremap <space>rgl :\<C-U>FzfxGLiveGrep resume<CR>
 
 " ======== git changed files (status) ========
 
