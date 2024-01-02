@@ -153,7 +153,7 @@ end
 --- @param query string?
 --- @param context fzfx.PipelineContext?
 function ProviderSwitch:provide(query, context)
-  local provider_config = self.provider_configs[self.pipeline]
+  local provider_config = self.provider_configs[self.pipeline] --[[@as fzfx.ProviderConfig]]
   -- log.debug(
   --     "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
   --     vim.inspect(self.pipeline),
