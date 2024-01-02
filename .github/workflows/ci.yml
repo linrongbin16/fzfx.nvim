@@ -35,20 +35,20 @@ jobs:
           cp ~/.commons.nvim/version.txt ./lua/fzfx/commons/version.txt
           cd ./lua/fzfx/commons
           find . -type f -name '*.lua' -exec sed -i 's/require("commons/require("fzfx.commons/g' {} \;
+      - uses: JohnnyMorganz/stylua-action@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --config-path .stylua.toml ./lua ./test ./bin
+      - uses: lunarmodules/luacheck@v1
+        with:
+          args: lua --config .luacheckrc
       - uses: stevearc/nvim-typecheck-action@v1
         with:
           path: lua
           level: Information
           configpath: ".luarc.json"
           neodev-version: stable
-      - uses: lunarmodules/luacheck@v1
-        with:
-          args: lua --config .luacheckrc
-      - uses: JohnnyMorganz/stylua-action@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: latest
-          args: --config-path .stylua.toml ./lua ./test ./bin
       - uses: stefanzweifel/git-auto-commit-action@v4
         if: ${{ github.ref != 'refs/heads/main' }}
         with:
