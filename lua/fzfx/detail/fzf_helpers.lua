@@ -294,12 +294,7 @@ end
 local function fzf_exec()
   local exe_list = {}
   table.insert(exe_list, conf.get_config().env.fzf)
-  if type(vim.fn["fzf#exec"]) == "function" then
-    local ok, result = pcall(vim.fn["fzf#exec"])
-    if ok then
-      table.insert(exe_list, result)
-    end
-  end
+  table.insert(exe_list, vim.fn["fzf#exec"]())
   table.insert(exe_list, "fzf")
   for _, e in ipairs(exe_list) do
     if e ~= nil and vim.fn.executable(e) > 0 then
