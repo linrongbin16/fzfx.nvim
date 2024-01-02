@@ -348,21 +348,27 @@ local PreviewerSwitch = {}
 --- @return fzfx.PreviewerSwitch
 function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
   local previewer_configs_map = {}
-  if schema.is_previewer_config(previewer_configs) then
-    previewer_configs.previewer_type =
-      schema.get_previewer_type_or_default(previewer_configs)
+  if
+    schema.is_previewer_config(previewer_configs --[[@as fzfx.PreviewerConfig]])
+  then
+    previewer_configs.previewer_type = schema.get_previewer_type_or_default(
+      previewer_configs --[[@as fzfx.PreviewerConfig]]
+    )
     previewer_configs_map[DEFAULT_PIPELINE] = previewer_configs
   else
     for previewer_name, previewer_opts in pairs(previewer_configs) do
       log.ensure(
-        schema.is_previewer_config(previewer_opts),
+        schema.is_previewer_config(
+          previewer_opts --[[@as fzfx.PreviewerConfig]]
+        ),
         "%s (%s) is not a valid previewer! %s",
         vim.inspect(previewer_name),
         vim.inspect(name),
         vim.inspect(previewer_opts)
       )
-      previewer_opts.previewer_type =
-        schema.get_previewer_type_or_default(previewer_opts)
+      previewer_opts.previewer_type = schema.get_previewer_type_or_default(
+        previewer_opts --[[@as fzfx.PreviewerConfig]]
+      )
       previewer_configs_map[previewer_name] = previewer_opts
     end
   end
