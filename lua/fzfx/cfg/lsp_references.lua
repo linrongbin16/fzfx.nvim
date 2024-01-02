@@ -12,7 +12,7 @@ M.command = {
   desc = "Search lsp references",
 }
 
-M.commands = {
+M.variants = {
   name = "args",
   feed = CommandFeedEnum.ARGS,
 }
