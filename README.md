@@ -1277,10 +1277,10 @@ vim.keymap.set(
 To configure options, please use:
 
 ```lua
-require('fzfx').setup(option)
+require('fzfx').setup(opts)
 ```
 
-The `option` is an optional lua table that override the default options.
+The `opts` is an optional lua table that override the default options.
 
 For complete default options, please see [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
