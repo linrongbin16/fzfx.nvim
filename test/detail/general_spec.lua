@@ -225,6 +225,39 @@ describe("detail.general", function()
         assert_eq(result1, jsons.encode({ "ls", "-1" }))
       end
     end)
+    it("creates list provider", function()
+      local ps = general.ProviderSwitch:new("single_test", "pipeline", {
+        key = "ctrl-k",
+        provider = function()
+          return { "ls", "-1" }
+        end,
+        provider_type = "list",
+      })
+      assert_eq(type(ps), "table")
+      assert_false(tables.tbl_empty(ps))
+      assert_eq(type(ps.provider_configs.default), "table")
+      assert_false(tables.tbl_empty(ps.provider_configs.default))
+      assert_eq(ps.provider_configs.default.key, "ctrl-k")
+      assert_true(
+        vim.deep_equal(ps.provider_configs.default.provider(), { "ls", "-1" })
+      )
+      assert_eq(ps.provider_configs.default.provider_type, "list")
+      assert_eq(ps:switch("default"), nil)
+      assert_eq(ps:provide("hello", {}), "list")
+      if not github_actions then
+        local meta1 =
+          fileios.readfile(general._provider_metafile(), { trim = true })
+        local result1 =
+          fileios.readfile(general._provider_resultfile(), { trim = true })
+        print(string.format("metafile1:%s\n", meta1))
+        local metajson1 = jsons.decode(meta1) --[[@as table]]
+        assert_eq(type(metajson1), "table")
+        assert_eq(metajson1.pipeline, "default")
+        assert_eq(metajson1.provider_type, "list")
+        print(string.format("resultfile1:%s\n", result1))
+        assert_eq(result1, "ls\n-1")
+      end
+    end)
   end)
   describe("[PreviewerSwitch:preview]", function()
     local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
