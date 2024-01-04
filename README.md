@@ -1293,24 +1293,20 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/c704e5b2-d82a-45f2-8920
 require("fzfx").setup({
   users = {
     ls = {
-      --- @type CommandConfig[]
-      commands = {
+      --- @type CommandConfig
+      command = {
+        name = "FzfxLs",
+        desc = "File Explorer (ls -1)",
+      },
+      variants = {
         {
           name = "FzfxLs",
           feed = "args",
-          opts = {
-            bang = true,
-            desc = "ls -1",
-          },
           default_provider = "filter_hiddens",
         },
         {
           name = "FzfxLsU",
           feed = "args",
-          opts = {
-            bang = true,
-            desc = "ls -1a",
-          },
           default_provider = "include_hiddens",
         },
       },
