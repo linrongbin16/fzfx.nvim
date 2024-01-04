@@ -60,6 +60,7 @@ M.setup = function(opts)
     vim.tbl_deep_extend("force", vim.deepcopy(Defaults), opts or {})
   require("fzfx.commons.logging").setup({
     name = "fzfx",
+    level = configs.level,
     console_log = configs.console_log,
     file_log = configs.file_log,
     file_log_name = "fzfx.log",
