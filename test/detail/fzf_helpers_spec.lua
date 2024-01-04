@@ -14,6 +14,8 @@ describe("detail.fzf_helpers", function()
     end
   end)
 
+  local jsons = require("fzfx.commons.jsons")
+  local fileios = require("fzfx.commons.fileios")
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -43,33 +45,50 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual2.query, "query")
       assert_eq(actual2.default_provider, "provider")
     end)
+    it("has value if exists cache file", function()
+      local cache_file = fzf_helpers.last_query_cache_name("test2")
+      local input =
+        jsons.encode({ query = "query2", default_provider = "provider3" })
+      fileios.writefile(cache_file, input)
+      local actual = fzf_helpers.get_last_query_cache("test2")
+      assert_eq(type(actual), "table")
+      assert_eq(actual.query, "query2")
+      assert_eq(actual.default_provider, "provider3")
+    end)
   end)
 
   describe("[get_command_feed]", function()
     it("get normal args feed", function()
       local expect = "expect"
-      local actual1, actual2 =
+      local actual =
         fzf_helpers.get_command_feed(CommandFeedEnum.ARGS, "expect", "test")
-      assert_eq(expect, actual1)
-      assert_true(actual2 == nil)
+      assert_eq(type(actual), "table")
+      assert_eq(expect, actual.query)
+      assert_eq(actual.default_provider, nil)
     end)
     it("get visual select feed", function()
-      local actual1, actual2 =
+      local actual =
         fzf_helpers.get_command_feed(CommandFeedEnum.VISUAL, "", "test")
-      assert_eq(type(actual1), "string")
-      assert_true(actual2 == nil)
+      assert_eq(type(actual), "table")
+      assert_eq(type(actual.query), "string")
+      assert_eq(actual.default_provider, nil)
     end)
     it("get cword feed", function()
-      local actual1, actual2 =
+      local actual =
         fzf_helpers.get_command_feed(CommandFeedEnum.CWORD, "", "test")
-      assert_eq(type(actual1), "string")
-      assert_true(actual2 == nil)
+      assert_eq(type(actual), "table")
+      assert_eq(type(actual.query), "string")
+      assert_eq(actual.default_provider, nil)
     end)
     it("get resume feed", function()
-      local actual1, actual2 =
+      local actual =
         fzf_helpers.get_command_feed(CommandFeedEnum.RESUME, "", "test")
-      assert_eq(type(actual1), "string")
-      assert_true(actual2 == nil or type(actual2) == "string")
+      assert_eq(type(actual), "table")
+      assert_eq(type(actual.query), "string")
+      assert_true(
+        actual.default_provider == nil
+          or type(actual.default_provider) == "string"
+      )
     end)
   end)
 
