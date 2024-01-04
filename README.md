@@ -310,25 +310,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>(unres_)args</td>
+    <td><code>(unres_)args</code></td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>(unres_)visual</td>
+    <td><code>(unres_)visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>(unres_)cword</td>
+    <td><code>(unres_)cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(unres_)put</td>
+    <td><code>(unres_)put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(unres_)resume</td>
+    <td><code>(unres_)resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -351,25 +351,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>args</td>
+    <td><code>args</code></td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>visual</td>
+    <td><code>visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>cword</td>
+    <td><code>cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>put</td>
+    <td><code>put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>resume</td>
+    <td><code>resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -397,25 +397,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>(unres_/buf_)args</td>
+    <td><code>(unres_/buf_)args</code></td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>(unres_/buf_)visual</td>
+    <td><code>(unres_/buf_)visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>(unres_/buf_)cword</td>
+    <td><code>(unres_/buf_)cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(unres_/buf_)put</td>
+    <td><code>(unres_/buf_)put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(unres_/buf_)resume</td>
+    <td><code>(unres_/buf_)resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -439,25 +439,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>args</td>
+    <td><code>args</code></td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>visual</td>
+    <td><code>visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>cword</td>
+    <td><code>cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>put</td>
+    <td><code>put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>resume</td>
+    <td><code>resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -483,25 +483,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>(cwd_)args</td>
+    <td><code>(cwd_)args</code></td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>(cwd_)visual</td>
+    <td><code>(cwd_)visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>(cwd_)cword</td>
+    <td><code>(cwd_)cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(cwd_)put</td>
+    <td><code>(cwd_)put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(cwd_)resume</td>
+    <td><code>(cwd_)resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -525,25 +525,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>(cwd_)args</td>
+    <td><code>(cwd_)args</code></td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>(cwd_)visual</td>
+    <td><code>(cwd_)visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>(cwd_)cword</td>
+    <td><code>(cwd_)cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(cwd_)put</td>
+    <td><code>(cwd_)put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(cwd_)resume</td>
+    <td><code>(cwd_)resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -567,25 +567,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>(remote_)args</td>
+    <td><code>(remote_)args</code></td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>(remote_)visual</td>
+    <td><code>(remote_)visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>(remote_)cword</td>
+    <td><code>(remote_)cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(remote_)put</td>
+    <td><code>(remote_)put<code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(remote_)resume</td>
+    <td><code>(remote_)resume<code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -609,25 +609,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>(buf_)args</td>
+    <td><code>(buf_)args</code></td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>(buf_)visual</td>
+    <td><code>(buf_)visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>(buf_)cword</td>
+    <td><code>(buf_)cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(buf_)put</td>
+    <td><code>(buf_)put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(buf_)resume</td>
+    <td><code>(buf_)resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -650,25 +650,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>args</td>
+    <td><code>args</code></td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>visual</td>
+    <td><code>visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>cword</td>
+    <td><code>cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>put</td>
+    <td><code>put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>resume</td>
+    <td><code>resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -687,6 +687,10 @@ This is a group of several commands (and related LSP protocol methods):
 - `FzfxLspIncomingCalls` ([callHierarchy/incomingCalls](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_incomingCalls)).
 - `FzfxLspOutgoingCalls` ([callHierarchy/outgoingCalls](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_outgoingCalls)).
 
+> [!NOTE]
+>
+> 1. The `args` variant has a different behavior, it always use cursor word instead of command arguments. Because most use cases are navigating symbol locations, for example mapping `gd/gt/gi/gr` to go to definitions/type definitions/implementations/references.
+
 <table>
 <thead>
   <tr>
@@ -698,7 +702,7 @@ This is a group of several commands (and related LSP protocol methods):
 </thead>
 <tbody>
   <tr>
-    <td>args</td>
+    <td><code>args</code></td>
     <td>N</td>
     <td rowspan="6">Yes</td>
     <td rowspan="6">Yes</td>
@@ -724,25 +728,25 @@ This is a group of several commands (and related LSP protocol methods):
 </thead>
 <tbody>
   <tr>
-    <td>(buf_)args</td>
+    <td><code>(buf_)args</code></td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>(buf_)visual</td>
+    <td><code>(buf_)visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>(buf_)cword</td>
+    <td><code>(buf_)cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(buf_)put</td>
+    <td><code>(buf_)put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(buf_)resume</td>
+    <td><code>(buf_)resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -769,25 +773,25 @@ This is a group of several commands (and related LSP protocol methods):
 </thead>
 <tbody>
   <tr>
-    <td>(ex_/user_)args</td>
+    <td><code>(ex_/user_)args</code></td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>(ex_/user_)visual</td>
+    <td><code>(ex_/user_)visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>(ex_/user_)cword</td>
+    <td><code>(ex_/user_)cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(ex_/user_)put</td>
+    <td><code>(ex_/user_)put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(ex_/user_)resume</td>
+    <td><code>(ex_/user_)resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -813,25 +817,25 @@ This is a group of several commands (and related LSP protocol methods):
 </thead>
 <tbody>
   <tr>
-    <td>(n_mode_/i_mode_/v_mode_)args</td>
+    <td><code>(n_mode_/i_mode_/v_mode_)args</code></td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>(n_mode_/i_mode_/v_mode_)visual</td>
+    <td><code>(n_mode_/i_mode_/v_mode_)visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>(n_mode_/i_mode_/v_mode_)cword</td>
+    <td><code>(n_mode_/i_mode_/v_mode_)cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(n_mode_/i_mode_/v_mode_)put</td>
+    <td><code>(n_mode_/i_mode_/v_mode_)put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(n_mode_/i_mode_/v_mode_)resume</td>
+    <td><code>(n_mode_/i_mode_/v_mode_)resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
@@ -856,25 +860,25 @@ This is a group of several commands (and related LSP protocol methods):
 </thead>
 <tbody>
   <tr>
-    <td>(hidden_)args</td>
+    <td><code>(hidden_)args</code></td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>(hidden_)visual</td>
+    <td><code>(hidden_)visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td>(hidden_)cword</td>
+    <td><code>(hidden_)cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(hidden_)put</td>
+    <td><code>(hidden_)put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td>(hidden_)resume</td>
+    <td><code>(hidden_)resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
