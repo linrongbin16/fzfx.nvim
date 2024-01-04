@@ -294,7 +294,9 @@ end
 local function fzf_exec()
   local exe_list = {}
   table.insert(exe_list, conf.get_config().env.fzf)
-  table.insert(exe_list, vim.fn["fzf#exec"]())
+  if vim.fn.exists("*fzf#exec") > 0 then
+    table.insert(exe_list, vim.fn["fzf#exec"]())
+  end
   table.insert(exe_list, "fzf")
   for _, e in ipairs(exe_list) do
     if e ~= nil and vim.fn.executable(e) > 0 then
