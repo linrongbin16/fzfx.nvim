@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.2](https://github.com/linrongbin16/fzfx.nvim/compare/v5.0.1...v5.0.2) (2024-01-04)
+
+
+### Performance Improvements
+
+* **feed:** use isolated memory space for resume across different nvim instances ([#549](https://github.com/linrongbin16/fzfx.nvim/issues/549)) ([5c29cc4](https://github.com/linrongbin16/fzfx.nvim/commit/5c29cc404f5a2096543f7941efc2c54ef87efc1b))
+
 ## [5.0.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.0.0...v5.0.1) (2024-01-04)
 
 
