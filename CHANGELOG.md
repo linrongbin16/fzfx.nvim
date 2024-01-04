@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v4.1.5...v5.0.0) (2024-01-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* **sub commands:** merge variants into sub commands ([#534](https://github.com/linrongbin16/fzfx.nvim/issues/534))
+
+### Performance Improvements
+
+* **sub commands:** merge variants into sub commands ([#534](https://github.com/linrongbin16/fzfx.nvim/issues/534)) ([20368d8](https://github.com/linrongbin16/fzfx.nvim/commit/20368d8c23a22c0dce9c398d4ab346a4f5e66c2a))
+
 ## [4.1.5](https://github.com/linrongbin16/fzfx.nvim/compare/v4.1.4...v4.1.5) (2023-12-31)
 
 
