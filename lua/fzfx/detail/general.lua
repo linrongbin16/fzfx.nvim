@@ -841,8 +841,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     previewer_switch:preview(line_params, context)
   end
 
-  local provide_rpc_id = rpcserver.get_instance():register(provide_rpc)
-  local preview_rpc_id = rpcserver.get_instance():register(preview_rpc)
+  local provide_rpc_id =
+    rpcserver.get_instance():register(provide_rpc, "provide_rpc")
+  local preview_rpc_id =
+    rpcserver.get_instance():register(preview_rpc, "preview_rpc")
   table.insert(rpc_registries, provide_rpc_id)
   table.insert(rpc_registries, preview_rpc_id)
 
@@ -924,15 +926,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       local action = interaction_opts.interaction
 
       local function interaction_rpc(line_params)
-        -- log.debug(
-        --     "|fzfx.general - general.interaction_rpc| line_params:%s",
-        --     vim.inspect(line_params)
-        -- )
+        log.debug(
+          "|general.interaction_rpc| line_params:%s",
+          vim.inspect(line_params)
+        )
         action(line_params, context)
       end
 
       local interaction_rpc_id =
-        rpcserver.get_instance():register(interaction_rpc)
+        rpcserver.get_instance():register(interaction_rpc, "interaction_rpc")
       table.insert(rpc_registries, interaction_rpc_id)
 
       local action_command = string.format(
@@ -963,7 +965,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch:switch(pipeline)
       end
 
-      local switch_rpc_id = rpcserver.get_instance():register(switch_rpc)
+      local switch_rpc_id =
+        rpcserver.get_instance():register(switch_rpc, "switch_rpc")
       table.insert(rpc_registries, switch_rpc_id)
 
       local switch_command = string.format(
