@@ -3,6 +3,7 @@ local termcolors = require("fzfx.commons.termcolors")
 local strings = require("fzfx.commons.strings")
 local jsons = require("fzfx.commons.jsons")
 local fileios = require("fzfx.commons.fileios")
+local tables = require("fzfx.commons.tables")
 
 local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
@@ -88,61 +89,91 @@ end
 
 -- visual select }
 
+-- command feed {
+
+--- @alias fzfx.LastQueryCacheObj {default_provider:string,query:string}
+--- @type table<string, fzfx.LastQueryCacheObj>
+local LAST_QUERY_CACHES = {}
+
 --- @param name string
-local function make_last_query_cache(name)
+local function last_query_cache_name(name)
   return paths.join(
     conf.get_config().cache.dir,
     string.format("_%s_last_query_cache", name)
   )
 end
 
+--- @param name string
+--- @return fzfx.LastQueryCacheObj?
+local function get_last_query_cache(name)
+  if LAST_QUERY_CACHES[name] == nil then
+    local cache_filename = last_query_cache_name(name)
+    local data = fileios.readfile(cache_filename, { trim = true }) --[[@as string]]
+    if strings.not_empty(data) then
+      --- @type boolean, fzfx.LastQueryCacheObj?
+      local ok, data_obj = pcall(jsons.decode, data)
+      if
+        ok
+        and tables.tbl_not_empty(data_obj)
+        and strings.not_empty(tables.tbl_get(data_obj, "default_provider"))
+      then
+        LAST_QUERY_CACHES[name] = {
+          ---@diagnostic disable-next-line: need-check-nil
+          default_provider = data_obj.default_provider,
+          ---@diagnostic disable-next-line: need-check-nil
+          query = data_obj.query or "",
+        }
+      end
+    end
+  end
+  return LAST_QUERY_CACHES[name]
+end
+
+--- @param name string
+--- @param query string
+--- @param default_provider string
+local function save_last_query_cache(name, query, default_provider)
+  log.ensure(
+    strings.not_empty(default_provider),
+    "|save_last_query_cache| %s default_provider must not be empty:%s, query:%s",
+    vim.inspect(name),
+    vim.inspect(default_provider),
+    vim.inspect(query)
+  )
+  LAST_QUERY_CACHES[name] = {
+    default_provider = default_provider,
+    query = query or "",
+  }
+end
+
 --- @param feed_type fzfx.CommandFeed
 --- @param input_args string?
 --- @param pipeline_name string
---- @return string, string?
+--- @return {query:string, default_provider:string?}
 local function get_command_feed(feed_type, input_args, pipeline_name)
   feed_type = string.lower(feed_type)
   if feed_type == "args" then
-    return input_args or "", nil
+    return { query = input_args or "" }
   elseif feed_type == "visual" then
-    return _visual_select()
+    return { query = _visual_select() }
   elseif feed_type == "cword" then
     ---@diagnostic disable-next-line: return-type-mismatch
-    return vim.fn.expand("<cword>"), nil
+    return { query = vim.fn.expand("<cword>") }
   elseif feed_type == "put" then
     local y = yanks.get_yank()
-    return (y ~= nil and type(y.regtext) == "string") and y.regtext or "", nil
+    return {
+      query = (y ~= nil and type(y.regtext) == "string") and y.regtext or "",
+    }
   elseif feed_type == "resume" then
-    local cache = make_last_query_cache(pipeline_name)
-    local data = fileios.readfile(cache, { trim = true })
-    -- log.debug(
-    --     "|fzfx.fzf_helpers - get_command_feed| pipeline %s cache:%s",
-    --     vim.inspect(pipeline_name),
-    --     vim.inspect(data)
-    -- )
-    if
-      type(data) ~= "string"
-      or string.len(data) == 0
-      or not strings.startswith(data, "{")
-      or not strings.endswith(data, "}")
-    then
-      return "", nil
-    end
-    --- @alias fzfx.LastQueryCacheObj {default_provider:string,query:string}
-    local ok, obj = pcall(jsons.decode, data) --[[@as fzfx.LastQueryCacheObj]]
-    if ok and type(obj) == "table" then
-      return obj.query or "", obj.default_provider
-    else
-      return "", nil
-    end
+    local last_cache_obj = get_last_query_cache(pipeline_name) --[[@as fzfx.LastQueryCacheObj]]
+    return last_cache_obj or { query = "" }
   else
-    log.throw(
-      "|get_command_feed| invalid command feed type! %s",
-      vim.inspect(feed_type)
-    )
-    return ""
+    log.throw("invalid command feed type: %s", vim.inspect(feed_type))
+    return { query = "" }
   end
 end
+
+-- command feed }
 
 -- fzf opts {
 
@@ -383,7 +414,9 @@ end
 local M = {
   _get_visual_lines = _get_visual_lines,
   _visual_select = _visual_select,
-  make_last_query_cache = make_last_query_cache,
+  last_query_cache_name = last_query_cache_name,
+  get_last_query_cache = get_last_query_cache,
+  save_last_query_cache = save_last_query_cache,
   get_command_feed = get_command_feed,
   preprocess_fzf_opts = preprocess_fzf_opts,
   _generate_fzf_color_opts = _generate_fzf_color_opts,

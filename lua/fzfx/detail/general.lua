@@ -1061,7 +1061,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       for _, rpc_id in ipairs(rpc_registries) do
         rpcserver.get_instance():unregister(rpc_id)
       end
-      local last_query_cache = fzf_helpers.make_last_query_cache(name)
+      local last_query_cache = fzf_helpers.last_query_cache_name(name)
+      fzf_helpers.save_last_query_cache(
+        name,
+        last_query,
+        provider_switch.pipeline
+      )
       local content = jsons.encode({
         default_provider = provider_switch.pipeline,
         query = last_query,
@@ -1126,12 +1131,19 @@ local function _make_user_command(
     local other_args = first_space_pos ~= nil
         and strings.trim(string.sub(input_args, first_space_pos))
       or ""
-    local query, last_provider =
-      fzf_helpers.get_command_feed(varcfg.feed, other_args, name)
+    local feed_obj = fzf_helpers.get_command_feed(varcfg.feed, other_args, name)
+      or { query = "" }
 
-    local default_provider = last_provider or varcfg.default_provider
+    local default_provider = feed_obj.default_provider
+      or varcfg.default_provider
 
-    return general(name, query, opts.bang, group_config, default_provider)
+    return general(
+      name,
+      feed_obj.query,
+      opts.bang,
+      group_config,
+      default_provider
+    )
   end, {
     nargs = "*",
     range = true,
