@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.0.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.0.0...v5.0.1) (2024-01-04)
+
+
+### Bug Fixes
+
+* **log:** fix logging initialize ([#543](https://github.com/linrongbin16/fzfx.nvim/issues/543)) ([f1ff933](https://github.com/linrongbin16/fzfx.nvim/commit/f1ff9339d2d95b40ebb9a0bccaf48906ef5cd9eb))
+
+
+### Performance Improvements
+
+* **install:** drop off 'junegunn/fzf' dependecy ([#545](https://github.com/linrongbin16/fzfx.nvim/issues/545)) ([a80282e](https://github.com/linrongbin16/fzfx.nvim/commit/a80282ed04074a94e42d7d522f058a80948217b3))
+
 ## [5.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v4.1.5...v5.0.0) (2024-01-04)
 
 
