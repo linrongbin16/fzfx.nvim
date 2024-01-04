@@ -71,7 +71,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [bat](https://github.com/sharkdp/bat) (optional for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
 - [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (optional for preview window labels).
 - [delta](https://github.com/dandavison/delta) (optional for preview git **diff, show, blame**).
-- [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer** commands, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
+- [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer**, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
 ### Windows
 
