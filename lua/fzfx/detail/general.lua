@@ -1061,7 +1061,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       for _, rpc_id in ipairs(rpc_registries) do
         rpcserver.get_instance():unregister(rpc_id)
       end
-      local last_query_cache = fzf_helpers.make_last_query_cache(name)
+      local last_query_cache = fzf_helpers.last_query_cache_name(name)
+      fzf_helpers.save_last_query_cache(
+        name,
+        last_query,
+        provider_switch.pipeline
+      )
       local content = jsons.encode({
         default_provider = provider_switch.pipeline,
         query = last_query,
