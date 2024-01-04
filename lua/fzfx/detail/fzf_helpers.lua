@@ -110,7 +110,7 @@ local function get_last_query_cache(name)
     local cache_filename = last_query_cache_name(name)
     local data = fileios.readfile(cache_filename, { trim = true }) --[[@as string]]
     if strings.not_empty(data) then
-      local ok, data_obj = pcall(jsons.decode, data) --[[@as {[1]=boolean, [2]=fzfx.LastQueryCacheObj}]]
+      local ok, data_obj = pcall(jsons.decode, data) --[[@as {[1]:boolean,[2]:fzfx.LastQueryCacheObj}]]
       if
         ok
         and tables.tbl_not_empty(data_obj)
