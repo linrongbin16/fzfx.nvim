@@ -78,7 +78,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 While still recommend Windows users install linux shell commands, since utils like `echo`, `curl` are internally used by somewhere.
 
 <details>
-<summary><i>Click here to see how to install linux commands on Windows</i></summary>
+<summary><i>Click here to see how to install linux commands</i></summary>
 <br/>
 
 There're many ways to install portable linux shell and builtin commands on Windows, but personally I would recommend below two methods.
@@ -130,7 +130,7 @@ Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\W
 ### Whitespace Escaping Issue
 
 <details>
-<summary><i>Click here to see how whitespace affect escaping characters on path</i></summary>
+<summary><i>Click here to see how whitespace affect characters escaping</i></summary>
 <br/>
 
 This plugin internally extends `nvim`, `fzf` and lua scripts to full path when launching command.
