@@ -62,7 +62,16 @@ function RpcServer:register(callback)
     vim.inspect(callback)
   )
   local registry_id = tostring(numbers.auto_incremental_id())
-  self.registry[registry_id] = callback
+  self.registry[registry_id] = function(params)
+    local ok, err = pcall(callback, params)
+    if not ok then
+      log.err(
+        "failed to invoke interaction with param:%s, error:%s",
+        vim.inspect(params),
+        vim.inspect(err)
+      )
+    end
+  end
   return registry_id
 end
 
