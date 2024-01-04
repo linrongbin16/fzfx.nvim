@@ -189,7 +189,7 @@ require("lazy").setup({
   -- optional for icons
   { "nvim-tree/nvim-web-devicons" },
 
-  -- optional for install the fzf command
+  -- optional for the 'fzf' command
   {
     "junegunn/fzf",
     build = function()
@@ -221,7 +221,7 @@ return require("packer").startup(function(use)
   -- optional for icons
   use({ "nvim-tree/nvim-web-devicons" })
 
-  -- optional for install the fzf command
+  -- optional for the 'fzf' command
   use({
     "junegunn/fzf",
     run = function()
@@ -253,7 +253,7 @@ call plug#begin()
 " optional for icons
 Plug 'nvim-tree/nvim-web-devicons'
 
-" optional for install the fzf command
+" optional for the 'fzf' command
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 " specify version to avoid break changes
