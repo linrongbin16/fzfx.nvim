@@ -270,7 +270,7 @@ All commands are named with prefix `Fzfx`, the sub commands e.g. the variants ar
 >
 > The `args` sub command can be omitted, which means no arguments. For example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
 >
-> But if you want to specify query content, for example `fzfx`, you have to type `:FzfxFiles args fzfx<CR>`.
+> But if you want to specify query content, for example `fzfx`, you will have to type `:FzfxFiles args fzfx<CR>`.
 
 Below keys are binded by default:
 
