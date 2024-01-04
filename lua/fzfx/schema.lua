@@ -1,10 +1,6 @@
 -- ========== Context ==========
 --
---- @class fzfx.PipelineContext
---- @field bufnr integer
---- @field winnr integer
---- @field tabnr integer
---
+--- @alias fzfx.PipelineContext {bufnr:integer,winnr:integer,tabnr:integer}
 --- @alias fzfx.PipelineContextMaker fun():fzfx.PipelineContext
 --
 --
@@ -69,13 +65,6 @@ local PreviewerLabelTypeEnum = {
 -- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
 --
 --
--- ========== Command Option ==========
---
---- @alias fzfx.CommandOptKey "nargs"|"bang"|"complete"|"desc"|"range"
---- @alias fzfx.CommandOptValue string|boolean
---- @alias fzfx.CommandOpt table<fzfx.CommandOptKey, fzfx.CommandOptValue>
---
---
 -- ========== Command Feed ==========
 --
 --- @alias fzfx.CommandFeed "args"|"visual"|"cword"|"put"|"resume"
@@ -110,49 +99,32 @@ local CommandFeedEnum = {
 --
 -- ========== Config ==========
 --
---- @class fzfx.ProviderConfig
---- @field key fzfx.ActionKey
---- @field provider fzfx.Provider
---- @field provider_type fzfx.ProviderType? by default "plain"
---- @field provider_decorator fzfx.ProviderDecorator?
+--- @alias fzfx.ProviderConfig {key:fzfx.ActionKey,provider:fzfx.Provider,provider_type:fzfx.ProviderType?,provider_decorator:fzfx.ProviderDecorator?}
+--- The 'provider_type' by default is "plain"
 
---- @class fzfx.PreviewerConfig
---- @field previewer fzfx.Previewer
---- @field previewer_type fzfx.PreviewerType?
---- @field previewer_label fzfx.PreviewerLabel?
---- @field previewer_label_type fzfx.PreviewerLabelType?
+--- @alias fzfx.PreviewerConfig {previewer:fzfx.Previewer,previewer_type:fzfx.PreviewerType?,previewer_label:fzfx.PreviewerLabel?,previewer_label_type:fzfx.PreviewerLabelType?}
 
---- @alias fzfx.PipelineName string a pipeline name is a provider name, a previewer name
---- @class fzfx.CommandConfig
---- @field name string
---- @field feed fzfx.CommandFeed
---- @field opts fzfx.CommandOpt
---- @field default_provider fzfx.PipelineName?
-
+--- @alias fzfx.PipelineName string
+-- a pipeline name is a provider name, a previewer name
+--
 --- @alias fzfx.InteractionName string
 --
---- @class fzfx.InteractionConfig
---- @field key fzfx.ActionKey
---- @field interaction fzfx.Interaction
---- @field reload_after_execute boolean?
+--- @alias fzfx.InteractionConfig {key:fzfx.ActionKey,interaction:fzfx.Interaction,reload_after_execute:boolean?}
+--
+--- @alias fzfx.VariantConfig {name:string,feed:fzfx.CommandFeed,default_provider:fzfx.PipelineName?}
+--
+--- @alias fzfx.CommandConfig {name:string,desc:string?}
+--
+--- @alias fzfx.GroupConfig {command:fzfx.CommandConfig,variants:fzfx.VariantConfig[],providers:fzfx.ProviderConfig|table<fzfx.PipelineName,fzfx.ProviderConfig>,previewers:fzfx.PreviewerConfig|table<fzfx.PipelineName,fzfx.PreviewerConfig>,actions:table<fzfx.ActionKey,fzfx.Action>,interactions:table<fzfx.InteractionName,fzfx.InteractionConfig>?,fzf_opts:fzfx.FzfOpt[]?}
 
---- @class fzfx.GroupConfig
---- @field commands fzfx.CommandConfig|fzfx.CommandConfig[]
---- @field providers fzfx.ProviderConfig|table<fzfx.PipelineName, fzfx.ProviderConfig>
---- @field previewers fzfx.PreviewerConfig|table<fzfx.PipelineName, fzfx.PreviewerConfig>
---- @field interactions table<fzfx.InteractionName, fzfx.InteractionConfig>?
---- @field actions table<fzfx.ActionKey, fzfx.Action>
---- @field fzf_opts fzfx.FzfOpt[]?
-
---- @param cfg fzfx.CommandConfig?
+--- @param cfg fzfx.VariantConfig?
 --- @return boolean
-local function is_command_config(cfg)
+local function is_variant_config(cfg)
   return type(cfg) == "table"
     and type(cfg.name) == "string"
     and string.len(cfg.name) > 0
     and type(cfg.feed) == "string"
     and string.len(cfg.feed) > 0
-    and type(cfg.opts) == "table"
 end
 
 --- @param cfg fzfx.ProviderConfig?
@@ -218,7 +190,7 @@ local M = {
   PreviewerLabelTypeEnum = PreviewerLabelTypeEnum,
   CommandFeedEnum = CommandFeedEnum,
 
-  is_command_config = is_command_config,
+  is_variant_config = is_variant_config,
   is_provider_config = is_provider_config,
   is_previewer_config = is_previewer_config,
 

@@ -26,6 +26,12 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - [Whitespace Escaping Issue](#whitespace-escaping-issue)
 - [Install](#-install)
 - [Commands](#-commands)
+  - [Files & Buffers](#files--buffers)
+  - [Grep](#grep)
+  - [Git](#git)
+  - [Lsp & Diagnostics](#lsp--diagnostics)
+  - [Vim](#vim)
+  - [Misc](#misc)
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
   - [Create Your Own Command](#create-your-own-command)
@@ -165,8 +171,8 @@ Please always avoid whitespaces in directories and file names.
 ## 📦 Install
 
 > [!IMPORTANT]
-> 
-> The upgrade of major version means there's a break change, please specify a version/tag to avoid!
+>
+> Please specify a version/tag (such as 'v5.\*') to avoid break changes between major versions!
 
 <details>
 <summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
@@ -176,19 +182,19 @@ require("lazy").setup({
   -- optional for icons
   { "nvim-tree/nvim-web-devicons" },
 
-  -- mandatory
   {
     "junegunn/fzf",
     build = function()
       vim.fn["fzf#install"]()
     end,
   },
+
   {
     "linrongbin16/fzfx.nvim",
-    dependencies = { "junegunn/fzf", "nvim-tree/nvim-web-devicons" },
+    dependencies = { "nvim-tree/nvim-web-devicons", 'junegunn/fzf' },
 
     -- specify version to avoid break changes
-    version = 'v4.*',
+    version = 'v5.*',
 
     config = function()
       require("fzfx").setup()
@@ -207,18 +213,18 @@ return require("packer").startup(function(use)
   -- optional for icons
   use({ "nvim-tree/nvim-web-devicons" })
 
-  -- mandatory
   use({
     "junegunn/fzf",
     run = function()
       vim.fn["fzf#install"]()
     end,
   })
+
   use({
     "linrongbin16/fzfx.nvim",
 
     -- specify version to avoid break changes
-    version = 'v4.1.3',
+    version = 'v5.0.0',
 
     config = function()
       require("fzfx").setup()
@@ -238,11 +244,10 @@ call plug#begin()
 " optional for icons
 Plug 'nvim-tree/nvim-web-devicons'
 
-" mandatory
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 " specify version to avoid break changes
-Plug 'linrongbin16/fzfx.nvim', { 'tag': 'v4.1.3' }
+Plug 'linrongbin16/fzfx.nvim', { 'tag': 'v5.0.0' }
 
 call plug#end()
 
@@ -253,48 +258,46 @@ lua require('fzfx').setup()
 
 ## 🚀 Commands
 
-Commands are named following below rules:
+All commands are named with prefix `Fzfx`, the sub commands e.g. the variants are usually named with below rules:
 
-- All commands are named with prefix `Fzfx`.
-- The main command name has no suffix.
-- **Visual select** variant is named with `V` suffix.
-- **Cursor word** variant is named with `W` suffix.
-- **Yank text** variant is named with `P` suffix (just like press the `p` key).
-- **Resume last search** variant is named with `R` suffix.
+- **Basic** variant is named with `args`, accepts the following arguments as query content.
+- **Visual select** variant is named with `visual`, uses visual selection as query content.
+- **Cursor word** variant is named with `cword`, uses the word text under cursor as query content.
+- **Put** (e.g. yank text) variant is named with `put` (just like press the `p` key), uses the yank text as query content.
+- **Resume last search** variant is named with `resume`, uses the last search content as query content.
 
 > [!NOTE]
 >
-> Command and sub command names can be configured, see [Configuration](#-configuration).
+> The `args` sub command can be omitted, which means no arguments. For example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
+>
+> But when you want to use `config` as query input, you have to type `:FzfxFiles args config<CR>` to specify the command arguments.
 
 Below keys are binded by default:
 
-- Exit keys (fzf `--expect` option)
+- **Exit** keys (fzf `--expect` option)
   - `esc`: quit.
   - `double-click`/`enter`: open/jump to file (behave different on some specific commands).
-- Preview keys
+- **Preview** keys
   - `alt-p`: toggle preview.
   - `ctrl-f`: preview half page down.
   - `ctrl-b`: preview half page up.
-- Select keys
+- **Select** keys
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
 
+### Files & Buffers
+
+#### `FzfxFiles` (Find Files)
+
 > [!NOTE]
 >
-> Builtin keys can be configured, see [Configuration](#-configuration).
-
-<details>
-<summary><b>Files & Buffers</b></summary>
-
-#### Files
-
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Unrestricted** variant is named with `U` suffix.
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Unrestricted** variant is named with `unres_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -302,38 +305,40 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxFiles(U)</td>
+    <td>(unres_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxFiles(U)V</td>
+    <td>(unres_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxFiles(U)W</td>
+    <td>(unres_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxFiles(U)P</td>
+    <td>(unres_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxFiles(U)R</td>
+    <td>(unres_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Buffers
+#### `FzfxBuffers` (Find Buffers)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -341,46 +346,45 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxBuffers</td>
+    <td>args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxBuffersV</td>
+    <td>visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxBuffersW</td>
+    <td>cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxBuffersP</td>
+    <td>put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxBuffersR</td>
+    <td>resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-</details>
+### Grep
 
-<details>
-<summary><b>Grep</b></summary>
+#### `FzfxLiveGrep` (Live Grep)
 
-#### Live Grep
-
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
-3. **Unrestricted** variant is named with `U` suffix.
-4. **Current buffer** variant is named with `B` suffix.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
+> 3. **Unrestricted** variant is named with `unres_` suffix.
+> 4. **Current buffer (only)** variant is named with `buf_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -388,39 +392,41 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxLiveGrep(B/U)</td>
+    <td>(unres_/buf_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(B/U)V</td>
+    <td>(unres_/buf_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(B/U)W</td>
+    <td>(unres_/buf_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(B/U)P</td>
+    <td>(unres_/buf_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxLiveGrep(B/U)R</td>
+    <td>(unres_/buf_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Git Live Grep
+#### `FzfxGLiveGrep` (Live Git Grep)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. Use `--` flag to pass raw options to search command (`git grep`).
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. Use `--` flag to pass raw options to search command (`git grep`).
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -428,44 +434,43 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGLiveGrep</td>
+    <td>args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGLiveGrepV</td>
+    <td>visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGLiveGrepW</td>
+    <td>cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGLiveGrepP</td>
+    <td>put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGLiveGrepR</td>
+    <td>resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-</details>
+### Git
 
-<details>
-<summary><b>Git</b></summary>
+#### `FzfxGFiles` (Find Git Files)
 
-#### Git Files
-
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Current directory** variant is named with `C` suffix.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Current directory (only)** variant is named with `cwd_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -473,39 +478,41 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGFiles(C)</td>
+    <td>(cwd_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)V</td>
+    <td>(cwd_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)W</td>
+    <td>(cwd_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)P</td>
+    <td>(cwd_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGFiles(C)R</td>
+    <td>(cwd_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Git Status (Changed Files)
+#### `FzfxGStatus` (Search Git Status, e.g. Git Changed Files)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Current directory** variant is named with `C` suffix.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Current directory (only)** variant is named with `cwd_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -513,39 +520,41 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGStatus(C)</td>
+    <td>(cwd_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGStatus(C)V</td>
+    <td>(cwd_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGStatus(C)W</td>
+    <td>(cwd_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGStatus(C)P</td>
+    <td>(cwd_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGStatus(C)R</td>
+    <td>(cwd_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Git Branches
+#### `FzfxGBranches` (Find Git Branches)
 
-1. Use `enter` to checkout branch.
-2. **Remote branch** variant is named with `R` suffix.
+> [!NOTE]
+>
+> 1. Use `enter` to checkout branch.
+> 2. **Remote branch** variant is named with `remote_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -553,39 +562,41 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGBranches(R)</td>
+    <td>(remote_)args</td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGBranches(R)V</td>
+    <td>(remote_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGBranches(R)W</td>
+    <td>(remote_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGBranches(R)P</td>
+    <td>(remote_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGBranches(R)R</td>
+    <td>(remote_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Git Commits
+#### `FzfxGCommits` (Search Git Commits)
 
-1. Use `enter` to copy git commit SHA.
-2. **Current buffer** variant is named with `B` suffix.
+> [!NOTE]
+>
+> 1. Use `enter` to copy git commit SHA.
+> 2. **Current buffer (only)** variant is named with `buf_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -593,38 +604,40 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGCommits(B)</td>
+    <td>(buf_)args</td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGCommits(B)V</td>
+    <td>(buf_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGCommits(B)W</td>
+    <td>(buf_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGCommits(B)P</td>
+    <td>(buf_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGCommits(B)R</td>
+    <td>(buf_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Git Blame
+#### `FzfxGBlame` (Search Git Blame)
 
-1. Use `enter` to copy git commit SHA.
+> [!NOTE]
+>
+> 1. Use `enter` to copy git commit SHA.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -632,50 +645,47 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxGBlame</td>
+    <td>args</td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxGBlameV</td>
+    <td>visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxGBlameW</td>
+    <td>cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGBlameP</td>
+    <td>put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxGBlameR</td>
+    <td>resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-</details>
+### Lsp & Diagnostics
 
-<details>
-<summary><b>Lsp & Diagnostics</b></summary>
+#### `FzfxLsp{Locations}` (Search Lsp Locations)
 
-#### Lsp Locations
+This is a group of several commands (and related LSP protocol methods):
 
-Lsp methods:
-
-- FzfxLspDefinitions: "textDocument/definition".
-- FzfxLspTypeDefinitions: "textDocument/type_definition".
-- FzfxLspReferences: "textDocument/references".
-- FzfxLspImplementations: "textDocument/implementation".
-- FzfxLspIncomingCalls: "textDocument/incomingCalls".
-- FzfxLspOutgoingCalls: "textDocument/outgoingCalls".
+- `FzfxLspDefinitions` ([textDocument/definition](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_definition)).
+- `FzfxLspTypeDefinitions` ([textDocument/typeDefinition](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_typeDefinition)).
+- `FzfxLspReferences` ([textDocument/references](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_references)).
+- `FzfxLspImplementations` ([textDocument/implementation](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_implementation)).
+- `FzfxLspIncomingCalls` ([callHierarchy/incomingCalls](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_incomingCalls)).
+- `FzfxLspOutgoingCalls` ([callHierarchy/outgoingCalls](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_outgoingCalls)).
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -683,43 +693,25 @@ Lsp methods:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxLspDefinitions</td>
+    <td>args</td>
     <td>N</td>
     <td rowspan="6">Yes</td>
     <td rowspan="6">Yes</td>
   </tr>
-  <tr>
-    <td>FzfxLspTypeDefinitions</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLspReferences</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLspImplementations</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLspIncomingCalls</td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td>FzfxLspOutgoingCalls</td>
-    <td>N</td>
-  </tr>
 </tbody>
 </table>
 
-#### Diagnostics
+#### `FzfxLspDiagnostics` (Search Diagnostics)
 
-1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-2. **Current buffer** variant is named with `B` suffix.
+> [!NOTE]
+>
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Current buffer (only)** variant is named with `buf_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -727,45 +719,44 @@ Lsp methods:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxLspDiagnostics(B)</td>
+    <td>(buf_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxLspDiagnostics(B)V</td>
+    <td>(buf_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxLspDiagnostics(B)W</td>
+    <td>(buf_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxLspDiagnostics(B)P</td>
+    <td>(buf_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxLspDiagnostics(B)R</td>
+    <td>(buf_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-</details>
+### Vim
 
-<details>
-<summary><b>Vim</b></summary>
+#### `FzfxCommands` (Search Vim Commands)
 
-#### Commands
-
-1. Use `enter` to input vim command.
-2. **Ex(builtin) commands** variant is named with `E` suffix.
-3. **User commands** variant is named with `U` suffix.
+> [!NOTE]
+>
+> 1. Use `enter` to input vim command.
+> 2. **Ex (builtin) commands** variant is named with `ex_` suffix.
+> 3. **User commands** variant is named with `user_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -773,41 +764,43 @@ Lsp methods:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxCommands(E/U)</td>
+    <td>(ex_/user_)args</td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxCommands(E/U)V</td>
+    <td>(ex_/user_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxCommands(E/U)W</td>
+    <td>(ex_/user_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxCommands(E/U)P</td>
+    <td>(ex_/user_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxCommands(E/U)R</td>
+    <td>(ex_/user_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-#### Key Maps
+#### `FzfxKeyMaps` (Search Vim Key Mappings)
 
-1. Use `enter` to execute vim key.
-2. **Normal mode** variant is named with `N` suffix.
-3. **Insert mode** variant is named with `I` suffix.
-4. **Visual/select mode** variant is named with `V` suffix.
+> [!NOTE]
+>
+> 1. Use `enter` to execute vim key.
+> 2. **Normal mode** variant is named with `n_mode_` suffix.
+> 3. **Insert mode** variant is named with `i_mode_` suffix.
+> 4. **Visual/select mode** variant is named with `v_mode_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -815,43 +808,42 @@ Lsp methods:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxKeMaps(N/I/V)</td>
+    <td>(n_mode_/i_mode_/v_mode_)args</td>
     <td>N</td>
     <td rowspan="5">No</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxKeyMaps(N/I/V)V</td>
+    <td>(n_mode_/i_mode_/v_mode_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxKeyMaps(N/I/V)W</td>
+    <td>(n_mode_/i_mode_/v_mode_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxKeyMaps(N/I/V)P</td>
+    <td>(n_mode_/i_mode_/v_mode_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxKeyMaps(N/I/V)R</td>
+    <td>(n_mode_/i_mode_/v_mode_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
 
-</details>
+### Misc
 
-<details>
-<summary><b>Misc</b></summary>
+#### `FzfxFileExplorer` (Search File Explorer)
 
-#### File Explorer
-
-> 1. **Unrestricted** variant is named with `U` suffix.
+> [!NOTE]
+>
+> 1. **Include hidden** variant is named with `hidden_` suffix.
 
 <table>
 <thead>
   <tr>
-    <th>Command</th>
+    <th>Variant</th>
     <th>Mode</th>
     <th>Select Keys</th>
     <th>Preview Keys</th>
@@ -859,31 +851,29 @@ Lsp methods:
 </thead>
 <tbody>
   <tr>
-    <td>FzfxFileExplorer(U)</td>
+    <td>(hidden_)args</td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td>FzfxFileExplorer(U)V</td>
+    <td>(hidden_)visual</td>
     <td>V</td>
   </tr>
   <tr>
-    <td>FzfxFileExplorer(U)W</td>
+    <td>(hidden_)cword</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxFileExplorer(U)P</td>
+    <td>(hidden_)put</td>
     <td>N</td>
   </tr>
   <tr>
-    <td>FzfxFileExplorer(U)R</td>
+    <td>(hidden_)resume</td>
     <td>N</td>
   </tr>
 </tbody>
 </table>
-
-</details>
 
 ## 📌 Recommended Key Mappings
 
@@ -892,81 +882,81 @@ Lsp methods:
 <br/>
 
 ```vim
-" ======== files ========
+" ======== FzfxFiles (Find Files) ========
 
-" find files
+" by args
 nnoremap <space>f :\<C-U>FzfxFiles<CR>
 " by visual select
-xnoremap <space>f :\<C-U>FzfxFilesV<CR>
+xnoremap <space>f :\<C-U>FzfxFiles visual<CR>
 " by cursor word
-nnoremap <space>wf :\<C-U>FzfxFilesW<CR>
+nnoremap <space>wf :\<C-U>FzfxFiles cword<CR>
 " by yank text
-nnoremap <space>pf :\<C-U>FzfxFilesP<CR>
+nnoremap <space>pf :\<C-U>FzfxFiles put<CR>
 " by resume
-nnoremap <space>rf :\<C-U>FzfxFilesR<CR>
+nnoremap <space>rf :\<C-U>FzfxFiles resume<CR>
 
-" ======== live grep ========
+" ======== FzfxLiveGrep (Live Grep) ========
 
-" live grep
+" by args
 nnoremap <space>l :\<C-U>FzfxLiveGrep<CR>
 " by visual select
-xnoremap <space>l :\<C-U>FzfxLiveGrepV<CR>
+xnoremap <space>l :\<C-U>FzfxLiveGrep visual<CR>
 " by cursor word
-nnoremap <space>wl :\<C-U>FzfxLiveGrepW<CR>
+nnoremap <space>wl :\<C-U>FzfxLiveGrep cword<CR>
 " by yank text
-nnoremap <space>pl :\<C-U>FzfxLiveGrepP<CR>
+nnoremap <space>pl :\<C-U>FzfxLiveGrep put<CR>
 " by resume
-nnoremap <space>rl :\<C-U>FzfxLiveGrepR<CR>
+nnoremap <space>rl :\<C-U>FzfxLiveGrep resume<CR>
 
-" ======== buffers ========
+" ======== FzfxBuffers (Find Buffers) ========
 
-" buffers
+" by args
 nnoremap <space>bf :\<C-U>FzfxBuffers<CR>
 
-" ======== git files ========
+" ======== FzfxGFiles (Find Git Files) ========
 
-" git files
+" by args
 nnoremap <space>gf :\<C-U>FzfxGFiles<CR>
 
 " ======== git live grep ========
 
-" git live grep
+" by args
 nnoremap <space>gl :\<C-U>FzfxGLiveGrep<CR>
 " by visual select
-xnoremap <space>gl :\<C-U>FzfxGLiveGrepV<CR>
+xnoremap <space>gl :\<C-U>FzfxGLiveGrep visual<CR>
 " by cursor word
-nnoremap <space>wgl :\<C-U>FzfxGLiveGrepW<CR>
+nnoremap <space>wgl :\<C-U>FzfxGLiveGrep cword<CR>
 " by yank text
-nnoremap <space>pgl :\<C-U>FzfxGLiveGrepP<CR>
+nnoremap <space>pgl :\<C-U>FzfxGLiveGrep put<CR>
 " by resume
-nnoremap <space>rgl :\<C-U>FzfxGLiveGrepR<CR>
+nnoremap <space>rgl :\<C-U>FzfxGLiveGrep resume<CR>
 
 " ======== git changed files (status) ========
 
-" git files
+" by args
 nnoremap <space>gs :\<C-U>FzfxGStatus<CR>
 
 " ======== git branches ========
 
-" git branches
+" by args
 nnoremap <space>br :\<C-U>FzfxGBranches<CR>
 
 " ======== git commits ========
 
-" git commits
+" by args
 nnoremap <space>gc :\<C-U>FzfxGCommits<CR>
 
 " ======== git blame ========
 
-" git blame
+" by args
 nnoremap <space>gb :\<C-U>FzfxGBlame<CR>
 
 " ======== lsp diagnostics ========
 
-" lsp diagnostics
+" by args
 nnoremap <space>dg :\<C-U>FzfxLspDiagnostics<CR>
 
-" ======== lsp symbols ========
+" ======== lsp locations ========
 
 " lsp definitions
 nnoremap gd :\<C-U>FzfxLspDefinitions<CR>
@@ -988,17 +978,17 @@ nnoremap gO :\<C-U>FzfxLspOutgoingCalls<CR>
 
 " ======== vim commands ========
 
-" vim commands
+" by args
 nnoremap <space>cm :\<C-U>FzfxCommands<CR>
 
 " ======== vim key maps ========
 
-" vim key maps
+" by args
 nnoremap <space>km :\<C-U>FzfxKeyMaps<CR>
 
 " ======== file explorer ========
 
-" file explorer
+" by args
 nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 ```
 
@@ -1011,7 +1001,7 @@ nnoremap <space>xp :\<C-U>FzfxFileExplorer<CR>
 ```lua
 -- ======== files ========
 
--- find files
+-- by args
 vim.keymap.set(
   "n",
   "<space>f",
@@ -1022,28 +1012,28 @@ vim.keymap.set(
 vim.keymap.set(
   "x",
   "<space>f",
-  "<cmd>FzfxFilesV<CR>",
+  "<cmd>FzfxFiles visual<CR>",
   { silent = true, noremap = true, desc = "Find files" }
 )
 -- by cursor word
 vim.keymap.set(
   "n",
   "<space>wf",
-  "<cmd>FzfxFilesW<cr>",
+  "<cmd>FzfxFiles cword<cr>",
   { silent = true, noremap = true, desc = "Find files by cursor word" }
 )
 -- by yank text
 vim.keymap.set(
   "n",
   "<space>pf",
-  "<cmd>FzfxFilesP<cr>",
+  "<cmd>FzfxFiles put<cr>",
   { silent = true, noremap = true, desc = "Find files by yank text" }
 )
 -- by resume
 vim.keymap.set(
   "n",
   "<space>rf",
-  "<cmd>FzfxFilesR<cr>",
+  "<cmd>FzfxFiles resume<cr>",
   { silent = true, noremap = true, desc = "Find files by resume last" }
 )
 
@@ -1060,34 +1050,34 @@ vim.keymap.set(
 vim.keymap.set(
   "x",
   "<space>l",
-  "<cmd>FzfxLiveGrepV<cr>",
+  "<cmd>FzfxLiveGrep visual<cr>",
   { silent = true, noremap = true, desc = "Live grep" }
 )
 -- by cursor word
 vim.keymap.set(
   "n",
   "<space>wl",
-  "<cmd>FzfxLiveGrepW<cr>",
+  "<cmd>FzfxLiveGrep cword<cr>",
   { silent = true, noremap = true, desc = "Live grep by cursor word" }
 )
 -- by yank text
 vim.keymap.set(
   "n",
   "<space>pl",
-  "<cmd>FzfxLiveGrepP<cr>",
+  "<cmd>FzfxLiveGrep put<cr>",
   { silent = true, noremap = true, desc = "Live grep by yank text" }
 )
 -- by resume
 vim.keymap.set(
   "n",
   "<space>rl",
-  "<cmd>FzfxLiveGrepR<cr>",
+  "<cmd>FzfxLiveGrep resume<cr>",
   { silent = true, noremap = true, desc = "Live grep by resume last" }
 )
 
 -- ======== buffers ========
 
--- buffers
+-- by args
 vim.keymap.set(
   "n",
   "<space>bf",
@@ -1097,7 +1087,7 @@ vim.keymap.set(
 
 -- ======== git files ========
 
--- git files
+-- by args
 vim.keymap.set(
   "n",
   "<space>gf",
@@ -1107,7 +1097,7 @@ vim.keymap.set(
 
 -- ======== git live grep ========
 
--- git live grep
+-- by args
 vim.keymap.set(
   "n",
   "<space>gl",
@@ -1118,34 +1108,34 @@ vim.keymap.set(
 vim.keymap.set(
   "x",
   "<space>gl",
-  "<cmd>FzfxGLiveGrepV<cr>",
+  "<cmd>FzfxGLiveGrep visual<cr>",
   { silent = true, noremap = true, desc = "Git live grep" }
 )
 -- by cursor word
 vim.keymap.set(
   "n",
   "<space>wgl",
-  "<cmd>FzfxGLiveGrepW<cr>",
+  "<cmd>FzfxGLiveGrep cword<cr>",
   { silent = true, noremap = true, desc = "Git live grep by cursor word" }
 )
 -- by yank text
 vim.keymap.set(
   "n",
   "<space>pgl",
-  "<cmd>FzfxGLiveGrepP<cr>",
+  "<cmd>FzfxGLiveGrep put<cr>",
   { silent = true, noremap = true, desc = "Git live grep by yank text" }
 )
 -- by resume
 vim.keymap.set(
   "n",
   "<space>rgl",
-  "<cmd>FzfxGLiveGrepR<cr>",
+  "<cmd>FzfxGLiveGrep resume<cr>",
   { silent = true, noremap = true, desc = "Git live grep by resume last" }
 )
 
 -- ======== git changed files (status) ========
 
--- git status
+-- by args
 vim.keymap.set(
   "n",
   "<space>gs",
@@ -1155,7 +1145,7 @@ vim.keymap.set(
 
 -- ======== git branches ========
 
--- git branches
+-- by args
 vim.keymap.set(
   "n",
   "<space>br",
@@ -1165,7 +1155,7 @@ vim.keymap.set(
 
 -- ======== git commits ========
 
--- git commits
+-- by args
 vim.keymap.set(
   "n",
   "<space>gc",
@@ -1175,7 +1165,7 @@ vim.keymap.set(
 
 -- ======== git blame ========
 
--- git blame
+-- by args
 vim.keymap.set(
   "n",
   "<space>gb",
@@ -1185,7 +1175,7 @@ vim.keymap.set(
 
 -- ======== lsp diagnostics ========
 
--- lsp diagnostics
+-- by args
 vim.keymap.set(
   "n",
   "<space>dg",
@@ -1245,7 +1235,7 @@ vim.keymap.set(
 
 -- ======== vim commands ========
 
--- vim commands
+-- by args
 vim.keymap.set(
   "n",
   "<space>cm",
@@ -1255,7 +1245,7 @@ vim.keymap.set(
 
 -- ======== vim key maps ========
 
--- vim key maps
+-- by args
 vim.keymap.set(
   "n",
   "<space>km",
@@ -1265,7 +1255,7 @@ vim.keymap.set(
 
 -- ======== file explorer ========
 
--- file explorer
+-- by args
 vim.keymap.set(
   "n",
   "<space>xp",
@@ -1281,10 +1271,10 @@ vim.keymap.set(
 To configure options, please use:
 
 ```lua
-require('fzfx').setup(option)
+require('fzfx').setup(opts)
 ```
 
-The `option` is an optional lua table that override the default options.
+The `opts` is an optional lua table that override the default options.
 
 For complete default options, please see [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 

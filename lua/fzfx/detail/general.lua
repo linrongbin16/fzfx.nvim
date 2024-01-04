@@ -153,7 +153,7 @@ end
 --- @param query string?
 --- @param context fzfx.PipelineContext?
 function ProviderSwitch:provide(query, context)
-  local provider_config = self.provider_configs[self.pipeline]
+  local provider_config = self.provider_configs[self.pipeline] --[[@as fzfx.ProviderConfig]]
   -- log.debug(
   --     "|fzfx.general - ProviderSwitch:provide| pipeline:%s, provider_config:%s, context:%s",
   --     vim.inspect(self.pipeline),
@@ -348,21 +348,27 @@ local PreviewerSwitch = {}
 --- @return fzfx.PreviewerSwitch
 function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
   local previewer_configs_map = {}
-  if schema.is_previewer_config(previewer_configs) then
-    previewer_configs.previewer_type =
-      schema.get_previewer_type_or_default(previewer_configs)
+  if
+    schema.is_previewer_config(previewer_configs --[[@as fzfx.PreviewerConfig]])
+  then
+    previewer_configs.previewer_type = schema.get_previewer_type_or_default(
+      previewer_configs --[[@as fzfx.PreviewerConfig]]
+    )
     previewer_configs_map[DEFAULT_PIPELINE] = previewer_configs
   else
     for previewer_name, previewer_opts in pairs(previewer_configs) do
       log.ensure(
-        schema.is_previewer_config(previewer_opts),
+        schema.is_previewer_config(
+          previewer_opts --[[@as fzfx.PreviewerConfig]]
+        ),
         "%s (%s) is not a valid previewer! %s",
         vim.inspect(previewer_name),
         vim.inspect(name),
         vim.inspect(previewer_opts)
       )
-      previewer_opts.previewer_type =
-        schema.get_previewer_type_or_default(previewer_opts)
+      previewer_opts.previewer_type = schema.get_previewer_type_or_default(
+        previewer_opts --[[@as fzfx.PreviewerConfig]]
+      )
       previewer_configs_map[previewer_name] = previewer_opts
     end
   end
@@ -1070,18 +1076,81 @@ end
 
 --- @param name string
 --- @param command_config fzfx.CommandConfig
+--- @param variant_configs fzfx.VariantConfig[]
 --- @param group_config fzfx.GroupConfig
-local function _make_user_command(name, command_config, group_config)
-  vim.api.nvim_create_user_command(command_config.name, function(opts)
+local function _make_user_command(
+  name,
+  command_config,
+  variant_configs,
+  group_config
+)
+  local command_name = command_config.name
+  local command_desc = command_config.desc
+
+  vim.api.nvim_create_user_command(command_name, function(opts)
+    log.debug(
+      "|_make_user_command| command_name:%s, opts:%s",
+      vim.inspect(command_name),
+      vim.inspect(opts)
+    )
+    local input_args = strings.trim(opts.args or "")
+    if strings.empty(input_args) then
+      input_args = variant_configs[1].name
+    end
+    log.ensure(
+      strings.not_empty(input_args),
+      "missing args in command: %s",
+      vim.inspect(command_name),
+      vim.inspect(input_args)
+    )
+
+    --- @type fzfx.VariantConfig
+    local varcfg = nil
+    local first_space_pos = strings.find(input_args, " ")
+    local first_arg = first_space_pos ~= nil
+        and string.sub(input_args, 1, first_space_pos - 1)
+      or input_args
+    for i, variant in ipairs(variant_configs) do
+      if first_arg == variant.name then
+        varcfg = variant
+        break
+      end
+    end
+    log.ensure(
+      varcfg ~= nil,
+      "unknown command (%s) variant: %s",
+      vim.inspect(command_name),
+      vim.inspect(input_args)
+    )
+
+    local other_args = first_space_pos ~= nil
+        and strings.trim(string.sub(input_args, first_space_pos))
+      or ""
     local query, last_provider =
-      fzf_helpers.get_command_feed(command_config.feed, opts.args, name)
-    local default_provider = last_provider or command_config.default_provider
+      fzf_helpers.get_command_feed(varcfg.feed, other_args, name)
+
+    local default_provider = last_provider or varcfg.default_provider
+
     return general(name, query, opts.bang, group_config, default_provider)
-  end, command_config.opts)
+  end, {
+    nargs = "*",
+    range = true,
+    bang = true,
+    desc = command_desc,
+    complete = function(ArgLead, CmdLine, CursorPos)
+      local sub_commands = {}
+      for i, variant in ipairs(variant_configs) do
+        if strings.not_empty(variant.name) then
+          table.insert(sub_commands, variant.name)
+        end
+      end
+      return sub_commands
+    end,
+  })
 end
 
 --- @param name string
---- @param pipeline_configs fzfx.Options?
+--- @param pipeline_configs fzfx.GroupConfig?
 local function setup(name, pipeline_configs)
   if not pipeline_configs then
     return
@@ -1091,14 +1160,14 @@ local function setup(name, pipeline_configs)
   --     "|fzfx.general - setup| pipeline_configs:%s",
   --     vim.inspect(pipeline_configs)
   -- )
-  -- User commands
-  if schema.is_command_config(pipeline_configs.commands) then
-    _make_user_command(name, pipeline_configs.commands, pipeline_configs)
-  else
-    for _, command_configs in pairs(pipeline_configs.commands) do
-      _make_user_command(name, command_configs, pipeline_configs)
-    end
-  end
+  _make_user_command(
+    name,
+    pipeline_configs.command,
+    schema.is_variant_config(pipeline_configs.variants)
+        and { pipeline_configs.variants }
+      or pipeline_configs.variants,
+    pipeline_configs
+  )
 end
 
 local M = {

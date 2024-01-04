@@ -62,7 +62,7 @@ local function setup(options)
   general.setup("lsp_diagnostics", configs.lsp_diagnostics)
 
   -- vim
-  general.setup("vim_commands", configs.commands or configs.vim_commands)
+  general.setup("vim_commands", configs.vim_commands)
   general.setup("vim_keymaps", configs.vim_keymaps)
 
   -- file explorer

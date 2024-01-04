@@ -15,53 +15,36 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
-  -- normal
+M.command = {
+  name = "FzfxGLiveGrep",
+  desc = "Live git grep",
+}
+
+M.variants = {
+  -- args
   {
-    name = "FzfxGLiveGrep",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "*",
-      desc = "Git live grep",
-    },
   },
   -- visual
   {
-    name = "FzfxGLiveGrepV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Git live grep by visual select",
-    },
   },
   -- cword
   {
-    name = "FzfxGLiveGrepW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Git live grep by cursor word",
-    },
   },
   -- put
   {
-    name = "FzfxGLiveGrepP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Git live grep by yank text",
-    },
   },
   -- resume
   {
-    name = "FzfxGLiveGrepR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Git live grep by resume last",
-    },
   },
 }
 
@@ -117,7 +100,7 @@ M.fzf_opts = {
   consts.FZF_OPTS.DISABLED,
   consts.FZF_OPTS.DELIMITER,
   consts.FZF_OPTS.GREP_PREVIEW_WINDOW,
-  { "--prompt", "Git Live Grep > " },
+  { "--prompt", "Live Git Grep > " },
 }
 
 M.other_opts = {

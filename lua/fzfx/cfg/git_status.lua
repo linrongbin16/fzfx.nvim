@@ -15,106 +15,65 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
-  -- normal
+M.command = {
+  name = "FzfxGStatus",
+  desc = "Find changed git files (git status)",
+}
+
+M.variants = {
+  -- args
   {
-    name = "FzfxGStatus",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "Find changed git files (status)",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGStatusC",
+    name = "cwd_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "Find changed git files (status) in current directory",
-    },
     default_provider = "current_folder",
   },
   -- visual
   {
-    name = "FzfxGStatusV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find changed git files (status) by visual select",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGStatusCV",
+    name = "cwd_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find changed git files (status) in current directory by visual select",
-    },
     default_provider = "current_folder",
   },
   -- cword
   {
-    name = "FzfxGStatusW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find changed git files (status) by cursor word",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGStatusCW",
+    name = "cwd_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find changed git files (status) in current directory by cursor word",
-    },
     default_provider = "current_folder",
   },
   -- put
   {
-    name = "FzfxGStatusP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find changed git files (status) by yank text",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGStatusCP",
+    name = "cwd_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find changed git files (status) in current directory by yank text",
-    },
     default_provider = "current_folder",
   },
   -- resume
   {
-    name = "FzfxGStatusR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find changed git files (status) by resume last",
-    },
     default_provider = "workspace",
   },
   {
-    name = "FzfxGStatusCR",
+    name = "cwd_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find changed git files (status) in current directory by resume last",
-    },
     default_provider = "current_folder",
   },
 }

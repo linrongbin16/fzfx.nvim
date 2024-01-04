@@ -11,106 +11,70 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
-  -- normal
+M.command = {
+  name = "FzfxFiles",
+  desc = "Find files",
+}
+
+M.variants = {
+  -- args
   {
-    name = "FzfxFiles",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "Find files",
-    },
     default_provider = "restricted_mode",
   },
+  -- unrestricted args
   {
-    name = "FzfxFilesU",
+    name = "unres_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "dir",
-      desc = "Find files",
-    },
     default_provider = "unrestricted_mode",
   },
   -- visual
   {
-    name = "FzfxFilesV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find files by visual select",
-    },
     default_provider = "restricted_mode",
   },
+  -- unrestricted visual
   {
-    name = "FzfxFilesUV",
+    name = "unres_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find files unrestricted by visual select",
-    },
     default_provider = "unrestricted_mode",
   },
   -- cword
   {
-    name = "FzfxFilesW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find files by cursor word",
-    },
     default_provider = "restricted_mode",
   },
+  -- unrestricted cword
   {
-    name = "FzfxFilesUW",
+    name = "unres_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find files unrestricted by cursor word",
-    },
     default_provider = "unrestricted_mode",
   },
   -- put
   {
-    name = "FzfxFilesP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find files by yank text",
-    },
     default_provider = "restricted_mode",
   },
+  -- unrestricted put
   {
-    name = "FzfxFilesUP",
+    name = "unres_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find files unrestricted by yank text",
-    },
     default_provider = "unrestricted_mode",
   },
   -- resume
   {
-    name = "FzfxFilesR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find files by resume last",
-    },
     default_provider = "restricted_mode",
   },
+  -- unrestricted resume
   {
-    name = "FzfxFilesUR",
+    name = "unres_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find files unrestricted by resume last",
-    },
     default_provider = "unrestricted_mode",
   },
 }

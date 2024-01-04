@@ -151,21 +151,6 @@ local PreviewerLabelTypeEnum = {
 -- Note: the 1st parameter 'line' is the current selected line.
 ```
 
-## Command Option
-
-A **command option** is directly passing to the [nvim_create_user_command()](<https://neovim.io/doc/user/api.html#nvim_create_user_command()>) API and create nvim user commands.
-
-```lua
---- @alias fzfx.CommandOptKey "nargs"|"bang"|"complete"|"desc"|"range"
---- @alias fzfx.CommandOptValue string|boolean
---- @alias fzfx.CommandOpt table<fzfx.CommandOptKey, fzfx.CommandOptValue>
-```
-
-References:
-
-- https://neovim.io/doc/user/api.html#nvim_create_user_command()
-- https://neovim.io/doc/user/map.html#command-attributes
-
 ## Command Feed
 
 A **command feed** defines what to feed to the search commands, e.g. the multiple variants.
@@ -218,76 +203,21 @@ A **pipeline** binds a provider with a previewer, with an interaction to switch 
 
 The **provider-interaction-previewer** is a (dataflow) pipeline.
 
-> See [Config](#config).
-
-## Commands Group
+## Command Group
 
 The real-world command we're using, say `FzfxLiveGrep`, actually contains multiple variants:
 
-- Main command: `FzfxLiveGrep`.
-- Visual select variant: `FzfxLiveGrepV` feed via virual selection.
-- Cursor word variant: `FzfxLiveGrepW` feed via vim `cword`.
-- Yank text (put) variant: `FzfxLiveGrepP` feed via vim yank text.
-- Resume previous search variant: `FzfxLiveGrepR` feed via user input query in previous search.
+- Basic variant: `args`, feed with command arguments.
+- Visual select variant: `visual`, feed with visual selection.
+- Cursor word variant: `cword`, feed with cursor word.
+- Put (yank text) variant: `put`, feed with yank text.
+- Resume previous search variant: `resume`, feed with previous search query content.
 - And combine with other multiple data sources, e.g. restricted/unrestricted for live grep.
 
-They're the powerful **commands group**:
+They're the powerful **command group**:
 
 - It has multiple data sources from different providers, switch by different interactive keys.
 - It has multiple previewers, each bind to a specific provider.
 - It has multiple action keys to exit fzf and invoke lua callbacks with selected lines.
 - (Optionally) It has multiple interactive keys to do something without quit fzf.
 - (Optionally) It has some extra fzf options and other options for some specific abilities.
-
-> See [Config](#config).
-
-## Config
-
-```lua
--- Annotations for 'fzfx.config'.
---
--- ======== Provider ========
---
---- @class fzfx.ProviderConfig
---- @field key fzfx.ActionKey
---- @field provider fzfx.Provider
---- @field provider_type fzfx.ProviderType? by default "plain"|"plain_list"
---
--- ======== Previewer ========
---
---- @class fzfx.PreviewerConfig
---- @field previewer fzfx.Previewer
---- @field previewer_type fzfx.PreviewerType?
---- @field previewer_label fzfx.PreviewerLabel?
---- @field previewer_label_type fzfx.PreviewerLabelType?
---
---- @alias fzfx.PipelineName string
---                           a pipeline name is also a provider name, a previewer name
---
--- ======== Command ========
---
---- @class fzfx.CommandConfig
---- @field name string
---- @field feed fzfx.CommandFeed
---- @field opts fzfx.CommandOpt
---- @field default_provider fzfx.PipelineName?
---
---- @alias fzfx.InteractionName string
---
--- ======== Interaction ========
---
---- @class fzfx.InteractionConfig
---- @field key fzfx.ActionKey
---- @field interaction fzfx.Interaction
---- @field reload_after_execute boolean?
---
--- ======== Group ========
---
---- @class fzfx.GroupConfig
---- @field commands fzfx.CommandConfig|fzfx.CommandConfig[]
---- @field providers fzfx.ProviderConfig|table<fzfx.PipelineName, fzfx.ProviderConfig>
---- @field previewers fzfx.PreviewerConfig|table<fzfx.PipelineName, fzfx.PreviewerConfig>
---- @field interactions table<fzfx.InteractionName, fzfx.InteractionConfig>?
---- @field actions table<fzfx.ActionKey, fzfx.Action>
---- @field fzf_opts fzfx.FzfOpt[]?
-```

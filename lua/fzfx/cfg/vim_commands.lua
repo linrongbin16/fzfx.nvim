@@ -21,154 +21,90 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
-  -- normal
+M.command = {
+  name = "FzfxCommands",
+  desc = "Search commands",
+}
+
+M.variants = {
+  -- args
   {
-    name = "FzfxCommands",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "command",
-      desc = "Find vim commands",
-    },
     default_provider = "all_commands",
   },
   {
-    name = "FzfxCommandsE",
+    name = "ex_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "command",
-      desc = "Find vim ex(builtin) commands",
-    },
     default_provider = "ex_commands",
   },
   {
-    name = "FzfxCommandsU",
+    name = "user_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "command",
-      desc = "Find vim user commands",
-    },
     default_provider = "user_commands",
   },
   -- visual
   {
-    name = "FzfxCommandsV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find vim commands by visual select",
-    },
     default_provider = "all_commands",
   },
   {
-    name = "FzfxCommandsEV",
+    name = "ex_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find vim ex(builtin) commands by visual select",
-    },
     default_provider = "ex_commands",
   },
   {
-    name = "FzfxCommandsUV",
+    name = "user_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find vim user commands by visual select",
-    },
     default_provider = "uesr_commands",
   },
   -- cword
   {
-    name = "FzfxCommandsW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find vim commands by cursor word",
-    },
     default_provider = "all_commands",
   },
   {
-    name = "FzfxCommandsEW",
+    name = "ex_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find vim ex(builtin) commands by cursor word",
-    },
     default_provider = "ex_commands",
   },
   {
-    name = "FzfxCommandsUW",
+    name = "user_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find vim user commands by cursor word",
-    },
     default_provider = "user_commands",
   },
   -- put
   {
-    name = "FzfxCommandsP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find vim commands by yank text",
-    },
     default_provider = "all_commands",
   },
   {
-    name = "FzfxCommandsEP",
+    name = "ex_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find vim ex(builtin) commands by yank text",
-    },
     default_provider = "ex_commands",
   },
   {
-    name = "FzfxCommandsUP",
+    name = "user_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find vim user commands by yank text",
-    },
     default_provider = "user_commands",
   },
   -- resume
   {
-    name = "FzfxCommandsR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find vim commands by resume last",
-    },
     default_provider = "all_commands",
   },
   {
-    name = "FzfxCommandsER",
+    name = "ex_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find vim ex(builtin) commands by resume last",
-    },
     default_provider = "ex_commands",
   },
   {
-    name = "FzfxCommandsUR",
+    name = "user_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find vim user commands by resume last",
-    },
     default_provider = "user_commands",
   },
 }

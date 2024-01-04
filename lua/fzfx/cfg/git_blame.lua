@@ -13,53 +13,36 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
-  -- normal
+M.command = {
+  name = "FzfxGBlame",
+  desc = "Search git blame",
+}
+
+M.variants = {
+  -- args
   {
-    name = "FzfxGBlame",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      desc = "Search git commits",
-    },
   },
   -- visual
   {
-    name = "FzfxGBlameV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Search git commits by visual select",
-    },
   },
   -- cword
   {
-    name = "FzfxGBlameW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Search git commits by cursor word",
-    },
   },
   -- put
   {
-    name = "FzfxGBlameP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Search git commits by yank text",
-    },
   },
   -- resume
   {
-    name = "FzfxGBlameR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Search git commits by resume last",
-    },
   },
 }
 

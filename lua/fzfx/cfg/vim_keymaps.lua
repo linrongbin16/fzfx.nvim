@@ -18,202 +18,115 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-M.commands = {
-  -- normal
+M.command = {
+  name = "FzfxKeyMaps",
+  desc = "Search key mappings",
+}
+
+M.variants = {
+  -- args
   {
-    name = "FzfxKeyMaps",
+    name = "args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "mapping",
-      desc = "Find vim keymaps",
-    },
     default_provider = "all_mode",
   },
   {
-    name = "FzfxKeyMapsN",
+    name = "n_mode_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "mapping",
-      desc = "Find vim normal(n) mode keymaps ",
-    },
     default_provider = "n_mode",
   },
   {
-    name = "FzfxKeyMapsI",
+    name = "i_mode_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "mapping",
-      desc = "Find vim insert(i) mode keymaps ",
-    },
     default_provider = "i_mode",
   },
   {
-    name = "FzfxKeyMapsV",
+    name = "v_mode_args",
     feed = CommandFeedEnum.ARGS,
-    opts = {
-      bang = true,
-      nargs = "?",
-      complete = "mapping",
-      desc = "Find vim visual(v/s/x) mode keymaps ",
-    },
     default_provider = "v_mode",
   },
   -- visual
   {
-    name = "FzfxKeyMapsV",
+    name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find vim keymaps by visual select",
-    },
     default_provider = "all_mode",
   },
   {
-    name = "FzfxKeyMapsNV",
+    name = "n_mode_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find vim normal(n) mode keymaps by visual select",
-    },
     default_provider = "n_mode",
   },
   {
-    name = "FzfxKeyMapsIV",
+    name = "i_mode_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find vim insert(i) mode keymaps by visual select",
-    },
     default_provider = "i_mode",
   },
   {
-    name = "FzfxKeyMapsVV",
+    name = "v_mode_visual",
     feed = CommandFeedEnum.VISUAL,
-    opts = {
-      bang = true,
-      range = true,
-      desc = "Find vim visual(v/s/x) mode keymaps by visual select",
-    },
     default_provider = "v_mode",
   },
   -- cword
   {
-    name = "FzfxKeyMapsW",
+    name = "cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find vim keymaps by cursor word",
-    },
     default_provider = "all_mode",
   },
   {
-    name = "FzfxKeyMapsNW",
+    name = "n_mode_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find vim normal(n) mode keymaps by cursor word",
-    },
     default_provider = "n_mode",
   },
   {
-    name = "FzfxKeyMapsIW",
+    name = "i_mode_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find vim insert(i) mode keymaps by cursor word",
-    },
     default_provider = "i_mode",
   },
   {
-    name = "FzfxKeyMapsVW",
+    name = "v_mode_cword",
     feed = CommandFeedEnum.CWORD,
-    opts = {
-      bang = true,
-      desc = "Find vim visual(v/s/x) mode keymaps by cursor word",
-    },
     default_provider = "v_mode",
   },
   -- put
   {
-    name = "FzfxKeyMapsP",
+    name = "put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find vim keymaps by yank text",
-    },
     default_provider = "all_mode",
   },
   {
-    name = "FzfxKeyMapsNP",
+    name = "n_mode_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find vim normal(n) mode keymaps by yank text",
-    },
     default_provider = "n_mode",
   },
   {
-    name = "FzfxKeyMapsIP",
+    name = "i_mode_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find vim insert(i) mode keymaps by yank text",
-    },
     default_provider = "i_mode",
   },
   {
-    name = "FzfxKeyMapsVP",
+    name = "v_mode_put",
     feed = CommandFeedEnum.PUT,
-    opts = {
-      bang = true,
-      desc = "Find vim visual(v/s/x) mode keymaps by yank text",
-    },
     default_provider = "v_mode",
   },
   -- resume
   {
-    name = "FzfxKeyMapsR",
+    name = "resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find vim keymaps by resume last",
-    },
     default_provider = "all_mode",
   },
   {
-    name = "FzfxKeyMapsNR",
+    name = "n_mode_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find vim normal(n) mode keymaps by resume last",
-    },
     default_provider = "n_mode",
   },
   {
-    name = "FzfxKeyMapsIR",
+    name = "i_mode_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find vim insert(i) mode keymaps by resume last",
-    },
     default_provider = "i_mode",
   },
   {
-    name = "FzfxKeyMapsVR",
+    name = "v_mode_resume",
     feed = CommandFeedEnum.RESUME,
-    opts = {
-      bang = true,
-      desc = "Find vim visual(v/s/x) mode keymaps by resume last",
-    },
     default_provider = "v_mode",
   },
 }
