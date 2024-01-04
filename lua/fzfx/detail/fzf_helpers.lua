@@ -146,29 +146,27 @@ end
 --- @param feed_type fzfx.CommandFeed
 --- @param input_args string?
 --- @param pipeline_name string
---- @return string, string?
+--- @return {query:string, default_provider:string?}
 local function get_command_feed(feed_type, input_args, pipeline_name)
   feed_type = string.lower(feed_type)
   if feed_type == "args" then
-    return input_args or "", nil
+    return { query = input_args or "" }
   elseif feed_type == "visual" then
-    return _visual_select(), nil
+    return { query = _visual_select() }
   elseif feed_type == "cword" then
     ---@diagnostic disable-next-line: return-type-mismatch
-    return vim.fn.expand("<cword>"), nil
+    return { query = vim.fn.expand("<cword>") }
   elseif feed_type == "put" then
     local y = yanks.get_yank()
-    return (y ~= nil and type(y.regtext) == "string") and y.regtext or "", nil
+    return {
+      query = (y ~= nil and type(y.regtext) == "string") and y.regtext or "",
+    }
   elseif feed_type == "resume" then
     local last_cache_obj = get_last_query_cache(pipeline_name) --[[@as fzfx.LastQueryCacheObj]]
-    if tables.tbl_not_empty(last_cache_obj) then
-      return last_cache_obj.query, last_cache_obj.default_provider
-    else
-      return "", nil
-    end
+    return last_cache_obj or { query = "" }
   else
     log.throw("invalid command feed type: %s", vim.inspect(feed_type))
-    return "", nil
+    return { query = "" }
   end
 end
 

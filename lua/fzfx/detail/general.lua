@@ -1131,12 +1131,19 @@ local function _make_user_command(
     local other_args = first_space_pos ~= nil
         and strings.trim(string.sub(input_args, first_space_pos))
       or ""
-    local query, last_provider =
-      fzf_helpers.get_command_feed(varcfg.feed, other_args, name)
+    local feed_obj = fzf_helpers.get_command_feed(varcfg.feed, other_args, name)
+      or { query = "" }
 
-    local default_provider = last_provider or varcfg.default_provider
+    local default_provider = feed_obj.default_provider
+      or varcfg.default_provider
 
-    return general(name, query, opts.bang, group_config, default_provider)
+    return general(
+      name,
+      feed_obj.query,
+      opts.bang,
+      group_config,
+      default_provider
+    )
   end, {
     nargs = "*",
     range = true,
