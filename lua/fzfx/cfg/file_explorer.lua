@@ -140,12 +140,12 @@ end
 M.providers = {
   filter_hidden = {
     key = "ctrl-r",
-    provider = M._make_file_explorer_provider("-lh"),
+    provider = M._make_file_explorer_provider("-l"),
     provider_type = ProviderTypeEnum.COMMAND,
   },
   include_hidden = {
     key = "ctrl-u",
-    provider = M._make_file_explorer_provider("-lha"),
+    provider = M._make_file_explorer_provider("-la"),
     provider_type = ProviderTypeEnum.COMMAND,
   },
 }
@@ -268,14 +268,7 @@ M.fzf_opts = {
   consts.FZF_OPTS.MULTI,
   { "--prompt", paths.shorten() .. " > " },
   function()
-    local n = 0
-    if consts.HAS_LSD or consts.HAS_EZA or consts.HAS_LS then
-      n = n + 1
-    end
-    if consts.HAS_ECHO then
-      n = n + 1
-    end
-    return n > 0 and string.format("--header-lines=%d", n) or nil
+    return consts.HAS_ECHO and "--header-lines=1" or nil
   end,
 }
 
