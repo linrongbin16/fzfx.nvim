@@ -79,7 +79,7 @@ M.variants = {
   },
 }
 
---- @param ls_args "-lh"|"-lha"
+--- @param ls_args "-l"|"-la"
 --- @return fun(query:string, context:fzfx.FileExplorerPipelineContext):string?
 M._make_file_explorer_provider = function(ls_args)
   --- @param query string
@@ -90,13 +90,13 @@ M._make_file_explorer_provider = function(ls_args)
     if consts.HAS_LSD then
       return consts.HAS_ECHO
           and string.format(
-            "echo %s && lsd %s --color=always --header -- %s",
+            "echo %s && lsd %s --color=always -- %s",
             shells.shellescape(cwd --[[@as string]]),
             ls_args,
             shells.shellescape(cwd --[[@as string]])
           )
         or string.format(
-          "lsd %s --color=always --header -- %s",
+          "lsd %s --color=always -- %s",
           ls_args,
           shells.shellescape(cwd --[[@as string]])
         )
