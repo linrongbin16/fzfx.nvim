@@ -843,7 +843,7 @@ This is a group of several commands (and related LSP protocol methods):
 
 ### Misc
 
-#### `FzfxFileExplorer` (Search File Explorer)
+#### `FzfxFileExplorer` (File Explorer)
 
 > [!NOTE]
 >

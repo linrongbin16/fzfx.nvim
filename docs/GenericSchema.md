@@ -1,4 +1,6 @@
-# A General Schema for Creating FZF Command
+<!-- markdownlint-disable MD013 MD034 MD033 MD038 MD051 MD040 MD036 -->
+
+# A Generic Schema for Creating FZF Command
 
 ## Introduction
 
