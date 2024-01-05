@@ -2,6 +2,8 @@ local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
+local strings = require("fzfx.commons.strings")
+
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -101,6 +103,9 @@ M._make_file_explorer_provider = function(ls_args)
           shells.shellescape(cwd --[[@as string]])
         )
     elseif consts.HAS_EZA then
+      if strings.endswith(ls_args, "a") then
+        ls_args = ls_args .. "a"
+      end
       return consts.HAS_ECHO
           and string.format(
             "echo %s && %s --color=always %s -- %s",
@@ -228,8 +233,15 @@ end
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 M._upper_file_explorer = function(line, context)
+  log.debug(
+    "|_upper_file_explorer| line:%s, context:%s",
+    vim.inspect(line),
+    vim.inspect(context)
+  )
   local cwd = fileios.readfile(context.cwd) --[[@as string]]
+  log.debug("|_upper_file_explorer| cwd:%s", vim.inspect(cwd))
   local target = vim.fn.fnamemodify(cwd, ":h") --[[@as string]]
+  log.debug("|_upper_file_explorer| target:%s", vim.inspect(target))
   -- Windows root folder: `C:\`
   -- Unix/linux root folder: `/`
   local root_len = consts.IS_WINDOWS and 3 or 1
@@ -262,10 +274,10 @@ M.fzf_opts = {
   { "--prompt", paths.shorten() .. " > " },
   function()
     local n = 0
-    if consts.HAS_LSD or consts.HAS_EZA or consts.HAS_LS then
+    if consts.HAS_ECHO then
       n = n + 1
     end
-    if consts.HAS_ECHO then
+    if consts.HAS_LSD or consts.HAS_EZA or consts.HAS_LS then
       n = n + 1
     end
     return n > 0 and string.format("--header-lines=%d", n) or nil

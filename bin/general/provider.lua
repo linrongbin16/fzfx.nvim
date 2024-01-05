@@ -21,10 +21,10 @@ local registry_id = _G.arg[1]
 local metafile = _G.arg[2]
 local resultfile = _G.arg[3]
 local query = _G.arg[4]
-shell_helpers.log_debug("registry_id:[%s]", registry_id)
-shell_helpers.log_debug("metafile:[%s]", metafile)
-shell_helpers.log_debug("resultfile:[%s]", resultfile)
-shell_helpers.log_debug("query:[%s]", query)
+-- shell_helpers.log_debug("registry_id:[%s]", registry_id)
+-- shell_helpers.log_debug("metafile:[%s]", metafile)
+-- shell_helpers.log_debug("resultfile:[%s]", resultfile)
+-- shell_helpers.log_debug("query:[%s]", query)
 
 local channel_id = vim.fn.sockconnect("pipe", SOCKET_ADDRESS, { rpc = true })
 -- shell_helpers.log_debug("channel_id:%s", vim.inspect(channel_id))
@@ -59,7 +59,7 @@ shell_helpers.log_ensure(
 )
 --- @type fzfx.ProviderMetaOpts
 local metaopts = jsons.decode(metajsonstring) --[[@as fzfx.ProviderMetaOpts]]
-shell_helpers.log_debug("metaopt:[%s]", vim.inspect(metaopts))
+-- shell_helpers.log_debug("metaopt:[%s]", vim.inspect(metaopts))
 
 -- decorator
 
@@ -118,7 +118,7 @@ end
 if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
   --- @type string
   local cmd = fileios.readfile(resultfile, { trim = true }) --[[@as string]]
-  shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
+  -- shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
   if strings.empty(cmd) then
     os.exit(0)
     return
@@ -141,7 +141,7 @@ elseif
   or metaopts.provider_type == "command_list"
 then
   local cmd = fileios.readfile(resultfile, { trim = true }) --[[@as string]]
-  shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
+  -- shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
   if strings.empty(cmd) then
     os.exit(0)
     return

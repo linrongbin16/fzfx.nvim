@@ -12,6 +12,7 @@ shell_helpers.log_ensure(
   type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
   "error! SOCKET_ADDRESS must not be empty!"
 )
+shell_helpers.log_debug("_G.arg:%s", vim.inspect(_G.arg))
 local registry_id = _G.arg[1]
 local params = nil
 if #_G.arg >= 2 then
