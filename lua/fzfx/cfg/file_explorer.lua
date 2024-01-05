@@ -247,7 +247,11 @@ M._cd_file_explorer = function(line, context)
       vim.inspect(dir_empty)
     )
     if dir_empty then
-      log.echo(LogLevels.INFO, "%s(dir) is empty", vim.inspect(parsed.filename))
+      log.echo(
+        LogLevels.INFO,
+        "%s(dir) is empty",
+        vim.inspect(vim.fn.fnamemodify(parsed.filename, ":t"))
+      )
     else
       fileios.writefile(context.cwd, parsed.filename)
     end
