@@ -1372,7 +1372,7 @@ require("fzfx").setup({
 
 You can also use the `require("fzfx").register("ls", {...})` api to do that.
 
-For detailed explanation of each components, please see [A Generic Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema.md) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
+For detailed explanation of each components, please see [A Generic Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
 ### API References
 
@@ -1384,11 +1384,11 @@ To help easier customizing/integrating, fzfx provides below builtin modules and 
 
   > The **commons** lua library was originally part of the **fzfx.lib** modules, since I found they're so commonly useful that I need them for most of my Neovim plugins, I extracted them from **fzfx.lib** and come up with this **commons** lua library.
 
-Please see [API References](https://linrongbin16.github.io/fzfx.nvim/#/ApiReferences.md) for more details.
+Please see [API References](https://linrongbin16.github.io/fzfx.nvim/#/ApiReferences) for more details.
 
 ## 🪲 Known Issues
 
-Please see [Known Issues](https://linrongbin16.github.io/fzfx.nvim/#/KnownIssues.md) if you encountered any issue.
+Please see [Known Issues](https://linrongbin16.github.io/fzfx.nvim/#/KnownIssues) if you encountered any issue.
 
 ## 🍀 Credit
 
