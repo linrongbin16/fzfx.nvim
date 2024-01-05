@@ -214,23 +214,6 @@ M.previewers = {
   },
 }
 
---- @param dirname
---- @return boolean
-M._directory_empty = function(dirname)
-  local scan_fs = uv.fs_scandir(dirname)
-  log.debug("|_directory_empty| scan_fd:%s", vim.inspect(scan_fs))
-  if scan_fs == nil then
-    return true
-  end
-  local next1, next2 = uv.fs_scandir_next(scan_fs)
-  log.debug(
-    "|_directory_empty| next1:%s, next2:%s",
-    vim.inspect(next1),
-    vim.inspect(next2)
-  )
-  return next1 == nil and next2 == nil
-end
-
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 M._cd_file_explorer = function(line, context)
@@ -240,21 +223,7 @@ M._cd_file_explorer = function(line, context)
       or parsers_helper.parse_ls(line, context)
     )
   if vim.fn.isdirectory(parsed.filename) > 0 then
-    local dir_empty = M._directory_empty(parsed.filename)
-    log.debug(
-      "|_cd_file_explorer| dir:%s, empty:%s",
-      vim.inspect(parsed.filename),
-      vim.inspect(dir_empty)
-    )
-    if dir_empty then
-      log.echo(
-        LogLevels.INFO,
-        "%s(dir) is empty",
-        vim.inspect(vim.fn.fnamemodify(parsed.filename, ":t"))
-      )
-    else
-      fileios.writefile(context.cwd, parsed.filename)
-    end
+    fileios.writefile(context.cwd, parsed.filename)
   end
 end
 
