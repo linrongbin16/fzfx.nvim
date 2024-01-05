@@ -18,7 +18,7 @@ describe("detail.popup", function()
   local strings = require("fzfx.commons.strings")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local popup = require("fzfx.detail.popup")
-  require("fzfx.config").setup()
+  require("fzfx").setup()
 
   local WIN_OPTS = {
     height = 0.85,
