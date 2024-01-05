@@ -2,6 +2,8 @@ local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
+local uv = require("fzfx.commons.uv")
+
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -211,6 +213,22 @@ M.previewers = {
     previewer_label = previewer_label,
   },
 }
+
+--- @param dirname
+--- @return boolean
+M._directory_empty = function(dirname)
+  local scan_fs = uv.fs_scandir(dirname)
+  log.debug("|_directory_empty| scan_fd:%s", vim.inspect(scan_fs))
+  if scan_fs == nil then
+    return true
+  end
+  local next1, next2 = uv.fs_scandir_next(scan_fs)
+  log.debug(
+    "|_directory_empty| next1:%s, next2:%s",
+    vim.inspect(next1),
+    vim.inspect(next2)
+  )
+end
 
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
