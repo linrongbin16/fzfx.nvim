@@ -1384,7 +1384,7 @@ To help easier customizing/integrating, fzfx provides below builtin modules and 
 
   > The **commons** lua library was originally part of the **fzfx.lib** modules, since I found they're so commonly useful that I need them for most of my Neovim plugins, I extracted them from **fzfx.lib** and come up with this **commons** lua library.
 
-Please see [API References](https://linrongbin16.github.io/fzfx.nvim) for more details.
+Please see [API References](https://linrongbin16.github.io/fzfx.nvim/#/ApiReferences.md) for more details.
 
 ## 🪲 Known Issues
 
