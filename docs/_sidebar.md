@@ -3,4 +3,4 @@
 - [Home](/)
 - [Generic Schema](/GenericSchema.md)
 - [API References](/ApiReferences.md)
-- [KnownIssues](/KnownIssues.md)
+- [Known Issues](/KnownIssues.md)
