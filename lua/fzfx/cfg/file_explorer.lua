@@ -2,6 +2,7 @@ local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
+local strings = require("fzfx.commons.strings")
 
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -102,6 +103,9 @@ M._make_file_explorer_provider = function(ls_args)
             shells.shellescape(cwd --[[@as string]])
           )
     elseif consts.HAS_EZA then
+      if strings.endswith(ls_args, 'a') then
+        ls_args = ls_args .. 'a'
+      end
       return consts.HAS_ECHO
           and string.format(
             "echo %s && %s --color=always %s -- %s",
