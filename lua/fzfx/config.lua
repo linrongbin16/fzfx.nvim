@@ -179,8 +179,8 @@ local Defaults = {
   -- unicode: https://symbl.cc/en/
   icons = {
     -- nerd fonts:
-    --     nf-fa-file_text_o               \uf0f6 (default)
-    --     nf-fa-file_o                    \uf016
+    --     nf-fa-file_text_o               \uf0f6
+    --     nf-fa-file_o                    \uf016 (default)
     unknown_file = "",
 
     -- nerd fonts:

@@ -205,11 +205,17 @@ local function _generate_fzf_icon_opts()
   if type(conf.get_config().icons) ~= "table" then
     return {}
   end
-  local icon_configs = conf.get_config().icons
-  return {
-    { "--pointer", icon_configs.fzf_pointer },
-    { "--marker", icon_configs.fzf_marker },
-  }
+  local opts = {}
+  local fzf_icons = conf.get_config().icons
+  local pointer = tables.tbl_get(fzf_icons, "fzf_pointer")
+  if strings.not_empty(pointer) then
+    table.insert(opts, { "--pointer", pointer })
+  end
+  local marker = tables.tbl_get(fzf_icons, "fzf_marker")
+  if strings.not_empty(marker) then
+    table.insert(opts, { "--marker", marker })
+  end
+  return opts
 end
 
 --- @param opts fzfx.FzfOpt[]
@@ -280,7 +286,7 @@ local function make_fzf_default_opts_impl()
     end
   end
   local icon_opts = _generate_fzf_icon_opts()
-  if type(icon_opts) == "table" and #icon_opts > 0 then
+  if tables.list_not_empty(icon_opts) then
     for _, o in ipairs(icon_opts) do
       append_fzf_opt(result, o)
     end
