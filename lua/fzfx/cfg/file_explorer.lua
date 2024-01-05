@@ -97,14 +97,14 @@ M._make_file_explorer_provider = function(ls_args)
             ls_args,
             shells.shellescape(cwd --[[@as string]])
           )
-          or string.format(
-            "lsd %s --color=always --header -- %s",
-            ls_args,
-            shells.shellescape(cwd --[[@as string]])
-          )
+        or string.format(
+          "lsd %s --color=always --header -- %s",
+          ls_args,
+          shells.shellescape(cwd --[[@as string]])
+        )
     elseif consts.HAS_EZA then
-      if strings.endswith(ls_args, 'a') then
-        ls_args = ls_args .. 'a'
+      if strings.endswith(ls_args, "a") then
+        ls_args = ls_args .. "a"
       end
       return consts.HAS_ECHO
           and string.format(
@@ -114,12 +114,12 @@ M._make_file_explorer_provider = function(ls_args)
             ls_args,
             shells.shellescape(cwd --[[@as string]])
           )
-          or string.format(
-            "%s --color=always %s -- %s",
-            consts.EZA,
-            ls_args,
-            shells.shellescape(cwd --[[@as string]])
-          )
+        or string.format(
+          "%s --color=always %s -- %s",
+          consts.EZA,
+          ls_args,
+          shells.shellescape(cwd --[[@as string]])
+        )
     elseif consts.HAS_LS then
       return consts.HAS_ECHO
           and string.format(
@@ -128,11 +128,11 @@ M._make_file_explorer_provider = function(ls_args)
             ls_args,
             shells.shellescape(cwd --[[@as string]])
           )
-          or string.format(
-            "ls --color=always %s %s",
-            ls_args,
-            shells.shellescape(cwd --[[@as string]])
-          )
+        or string.format(
+          "ls --color=always %s %s",
+          ls_args,
+          shells.shellescape(cwd --[[@as string]])
+        )
     else
       log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
       return nil
@@ -188,10 +188,10 @@ end
 --- @return string[]|nil
 M._file_explorer_previewer = function(line, context)
   local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line, context)
-      or (
-        consts.HAS_EZA and parsers_helper.parse_eza(line, context)
-        or parsers_helper.parse_ls(line, context)
-      )
+    or (
+      consts.HAS_EZA and parsers_helper.parse_eza(line, context)
+      or parsers_helper.parse_ls(line, context)
+    )
   if vim.fn.filereadable(parsed.filename) > 0 then
     return previewers_helper.preview_files(parsed.filename)
   elseif vim.fn.isdirectory(parsed.filename) > 0 then
@@ -202,7 +202,7 @@ M._file_explorer_previewer = function(line, context)
 end
 
 local previewer_label = consts.HAS_LSD and labels_helper.label_lsd
-    or (consts.HAS_EZA and labels_helper.label_eza or labels_helper.label_ls)
+  or (consts.HAS_EZA and labels_helper.label_eza or labels_helper.label_ls)
 
 M.previewers = {
   filter_hidden = {
@@ -221,10 +221,10 @@ M.previewers = {
 --- @param context fzfx.FileExplorerPipelineContext
 M._cd_file_explorer = function(line, context)
   local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line, context)
-      or (
-        consts.HAS_EZA and parsers_helper.parse_eza(line, context)
-        or parsers_helper.parse_ls(line, context)
-      )
+    or (
+      consts.HAS_EZA and parsers_helper.parse_eza(line, context)
+      or parsers_helper.parse_ls(line, context)
+    )
   if vim.fn.isdirectory(parsed.filename) > 0 then
     fileios.writefile(context.cwd, parsed.filename)
   end
