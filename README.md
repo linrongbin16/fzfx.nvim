@@ -36,7 +36,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [Configuration](#-configuration)
   - [Create Your Own Command](#create-your-own-command)
   - [API References](#api-references)
-- [Known Issues](#known-issues)
+- [Known Issues](#-known-issues)
 - [Credit](#-credit)
 - [Development](#-development)
 - [Contribute](#-contribute)
