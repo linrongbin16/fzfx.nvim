@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.3](https://github.com/linrongbin16/fzfx.nvim/compare/v5.0.2...v5.0.3) (2024-01-05)
+
+
+### Bug Fixes
+
+* **icons:** fix fzf pointer/marker icons disable ([#552](https://github.com/linrongbin16/fzfx.nvim/issues/552)) ([65acce9](https://github.com/linrongbin16/fzfx.nvim/commit/65acce96d23f06896915ca89f9b7de668bbd9f88))
+
 ## [5.0.2](https://github.com/linrongbin16/fzfx.nvim/compare/v5.0.1...v5.0.2) (2024-01-04)
 
 
