@@ -228,6 +228,7 @@ M._directory_empty = function(dirname)
     vim.inspect(next1),
     vim.inspect(next2)
   )
+  return false
 end
 
 --- @param line string
@@ -239,6 +240,12 @@ M._cd_file_explorer = function(line, context)
       or parsers_helper.parse_ls(line, context)
     )
   if vim.fn.isdirectory(parsed.filename) > 0 then
+    local dirempty = M._directory_empty(parsed.filename)
+    log.debug(
+      "|_cd_file_explorer| dir:%s, empty:%s",
+      vim.inspect(parsed.filename),
+      vim.inspect(dirempty)
+    )
     fileios.writefile(context.cwd, parsed.filename)
   end
 end
