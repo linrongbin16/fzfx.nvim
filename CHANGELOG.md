@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.4](https://github.com/linrongbin16/fzfx.nvim/compare/v5.0.3...v5.0.4) (2024-01-05)
+
+
+### Bug Fixes
+
+* **file explorer:** record cannot go upper (ctrl-h) issue in empty dir ([#551](https://github.com/linrongbin16/fzfx.nvim/issues/551)) ([918bd78](https://github.com/linrongbin16/fzfx.nvim/commit/918bd7816e0e7693d337f968b2df92fde9cf0b96))
+
 ## [5.0.3](https://github.com/linrongbin16/fzfx.nvim/compare/v5.0.2...v5.0.3) (2024-01-05)
 
 
