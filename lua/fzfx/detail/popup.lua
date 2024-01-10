@@ -145,56 +145,43 @@ local function _make_cursor_config(opts)
   }
 end
 
---- @param maxsize integer
+--- @param total_size integer
 --- @param size integer
---- @param offset number
-local function _make_window_center_shift(maxsize, size, offset)
-  local base = math.floor((maxsize - size) * 0.5)
-  if offset >= 0 then
-    local shift = offset < 1 and math.floor((maxsize - size) * offset) or offset
-    return numbers.bound(base + shift, 0, maxsize - size)
+--- @param shift number
+--- @return number
+local function _shift_window_pos(total_size, size, shift)
+  local left_size = total_size - size
+  local half_left_size = math.floor(left_size * 0.5)
+  if shift >= 0 then
+    local offset = shift < 1 and math.floor(left_size * shift) or shift
+    return numbers.bound(half_left_size + offset, 0, left_size)
   else
-    local shift = offset > -1 and math.ceil((maxsize - size) * offset) or offset
-    return numbers.bound(base + shift, 0, maxsize - size)
+    local offset = shift > -1 and math.floor(left_size * shift) or shift
+    return numbers.bound(half_left_size + offset, 0, left_size)
   end
 end
 
---- @param win_opts fzfx.WindowOpts
+--- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_center_config(win_opts)
-  local relative = win_opts.relative or "editor" --[[@as "editor"|"win"]]
-  local total_width = vim.o.columns
-  local total_height = vim.o.lines
-  if relative == "win" then
-    total_width = vim.api.nvim_win_get_width(0)
-    total_height = vim.api.nvim_win_get_height(0)
-  end
+local function _make_center_config(opts)
+  local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
+  local total_width = relative == "editor" and vim.o.columns
+    or vim.api.nvim_win_get_width(0)
+  local total_height = relative == "editor" and vim.o.lines
+    or vim.api.nvim_win_get_height(0)
+  local width = _get_window_size(opts.width, total_width)
+  local height = _get_window_size(opts.height, total_height)
 
-  local width = _get_window_size(win_opts.width, total_width)
-  local height = _get_window_size(win_opts.height, total_height)
-
-  if
-    (win_opts.row > -1 and win_opts.row < -0.5)
-    or (win_opts.row > 0.5 and win_opts.row < 1)
-  then
-    log.throw("invalid option (win_opts.row): %s!", vim.inspect(win_opts))
-  end
-  local row = _make_window_center_shift(total_height, height, win_opts.row)
-  -- log.debug(
-  --     "|fzfx.popup - make_popup_window_opts_relative_to_center| row:%s, win_opts:%s, total_height:%s, height:%s",
-  --     vim.inspect(row),
-  --     vim.inspect(opts),
-  --     vim.inspect(total_height),
-  --     vim.inspect(height)
-  -- )
-
-  if
-    (win_opts.col > -1 and win_opts.col < -0.5)
-    or (win_opts.col > 0.5 and win_opts.col < 1)
-  then
-    log.throw("invalid option (win_opts.col): %s!", vim.inspect(win_opts))
-  end
-  local col = _make_window_center_shift(total_width, width, win_opts.col)
+  log.ensure(
+    (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
+    "window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]"
+  )
+  log.ensure(
+    (opts.col >= -0.5 and opts.col <= 0.5) or opts.col <= -1 or opts.col >= 1,
+    "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]"
+  )
+  local row = _shift_window_pos(total_height, height, opts.row)
+  local col = _shift_window_pos(total_width, width, opts.col)
 
   --- @type fzfx.PopupWindowConfig
   local pw_config = {
@@ -205,8 +192,8 @@ local function _make_center_config(win_opts)
     row = row,
     col = col,
     style = "minimal",
-    border = win_opts.border,
-    zindex = win_opts.zindex,
+    border = opts.border,
+    zindex = opts.zindex,
   }
   -- log.debug(
   --     "|fzfx.popup - make_popup_window_opts_relative_to_center| (origin) win_opts:%s, pw_config:%s",
@@ -573,7 +560,7 @@ end
 
 local M = {
   _make_window_size = _get_window_size,
-  _make_window_center_shift = _make_window_center_shift,
+  _make_window_center_shift = _shift_window_pos,
   _make_cursor_config = _make_cursor_config,
   _make_center_config = _make_center_config,
   _make_window_config = _make_window_config,
