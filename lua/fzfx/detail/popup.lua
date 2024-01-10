@@ -174,11 +174,13 @@ local function _make_center_config(opts)
 
   log.ensure(
     (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
-    "window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]"
+    "window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+    vim.inspect(opts)
   )
   log.ensure(
     (opts.col >= -0.5 and opts.col <= 0.5) or opts.col <= -1 or opts.col >= 1,
-    "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]"
+    "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+    vim.inspect(opts)
   )
   local row = _shift_window_pos(total_height, height, opts.row)
   local col = _shift_window_pos(total_width, width, opts.col)
@@ -560,7 +562,7 @@ end
 
 local M = {
   _make_window_size = _get_window_size,
-  _make_window_center_shift = _shift_window_pos,
+  _shift_window_pos = _shift_window_pos,
   _make_cursor_config = _make_cursor_config,
   _make_center_config = _make_center_config,
   _make_window_config = _make_window_config,
