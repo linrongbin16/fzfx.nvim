@@ -22,8 +22,8 @@ describe("detail.general", function()
   local paths = require("fzfx.commons.paths")
 
   local schema = require("fzfx.schema")
-  local conf = require("fzfx.config")
-  conf.setup()
+  local config = require("fzfx.config")
+  config.setup()
 
   local general = require("fzfx.detail.general")
 
@@ -561,10 +561,7 @@ describe("detail.general", function()
       vim.env._FZFX_NVIM_DEBUG_ENABLE = 1
       assert_eq(
         general._make_cache_filename("provider", "switch", "meta", "live_grep"),
-        paths.join(
-          conf.get_config().cache.dir,
-          "provider_switch_meta_live_grep"
-        )
+        paths.join(config.get().cache.dir, "provider_switch_meta_live_grep")
       )
     end)
     it("is not debug mode", function()
@@ -641,9 +638,9 @@ describe("detail.general", function()
     it("makes", function()
       local actual = general._make_user_command(
         "live_grep_test",
-        conf.get_config().live_grep.command,
-        conf.get_config().live_grep.variants,
-        conf.get_config().live_grep
+        config.get().live_grep.command,
+        config.get().live_grep.variants,
+        config.get().live_grep
       )
       assert_true(actual == nil)
     end)

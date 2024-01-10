@@ -4,7 +4,7 @@ local paths = require("fzfx.commons.paths")
 local log = require("fzfx.lib.log")
 local bufs = require("fzfx.lib.bufs")
 
-local conf = require("fzfx.config")
+local config = require("fzfx.config")
 
 local M = {}
 
@@ -125,8 +125,7 @@ end
 
 M.setup = function()
   M._YankHistoryInstance = YankHistory:new(
-    env.debug_enabled() and 10
-      or conf.get_config().yank_history.other_opts.maxsize
+    env.debug_enabled() and 10 or config.get().yank_history.other_opts.maxsize
   )
   vim.api.nvim_create_autocmd("TextYankPost", {
     pattern = { "*" },

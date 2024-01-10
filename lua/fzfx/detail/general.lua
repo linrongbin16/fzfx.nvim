@@ -11,7 +11,7 @@ local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
 local shells = require("fzfx.lib.shells")
 
-local conf = require("fzfx.config")
+local config = require("fzfx.config")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
@@ -27,7 +27,7 @@ local DEFAULT_PIPELINE = "default"
 --- @return string
 local function _make_cache_filename(...)
   if env.debug_enabled() then
-    return paths.join(conf.get_config().cache.dir, table.concat({ ... }, "_"))
+    return paths.join(config.get().cache.dir, table.concat({ ... }, "_"))
   else
     return vim.fn.tempname() --[[@as string]]
   end
@@ -1011,7 +1011,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
   fzf_opts = vim.list_extend(
     fzf_opts,
-    vim.deepcopy(conf.get_config().override_fzf_opts or {})
+    vim.deepcopy(config.get().override_fzf_opts or {})
   )
   fzf_opts = fzf_helpers.preprocess_fzf_opts(fzf_opts)
 
@@ -1019,11 +1019,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local actions = pipeline_configs.actions
 
   -- win_opts
-  local config_win_opts = tables.tbl_get(conf.get_config(), "popup", "win_opts")
+  local config_win_opts = tables.tbl_get(config.get(), "popup", "win_opts")
   local win_opts = nil
   if type(config_win_opts) == "function" then
     win_opts =
-      vim.deepcopy(tables.tbl_get(conf.get_defaults(), "popup", "win_opts"))
+      vim.deepcopy(tables.tbl_get(config.get_defaults(), "popup", "win_opts"))
     win_opts = vim.tbl_deep_extend(
       "force",
       vim.deepcopy(win_opts or {}),

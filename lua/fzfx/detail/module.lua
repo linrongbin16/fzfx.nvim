@@ -1,6 +1,5 @@
 local log = require("fzfx.lib.log")
-
-local conf = require("fzfx.config")
+local config = require("fzfx.config")
 
 local M = {}
 
@@ -33,7 +32,7 @@ local function search_module_path(plugin, path)
 end
 
 M.setup = function()
-  local configs = conf.get_config()
+  local configs = config.get()
 
   -- debug
   vim.env._FZFX_NVIM_DEBUG_ENABLE = configs.debug.enable and 1 or 0

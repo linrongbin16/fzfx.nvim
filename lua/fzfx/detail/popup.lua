@@ -204,7 +204,6 @@ end
 --- @return fzfx.PopupWindowConfig
 local function _make_window_config(opts)
   local relative = opts.relative or "editor"
-
   log.ensure(
     relative == "cursor" or relative == "editor" or relative == "win",
     "window relative (%s) must be editor/win/cursor",
@@ -248,14 +247,31 @@ function PopupWindow:new(win_opts)
   apis.set_buf_option(bufnr, "buflisted", false)
   apis.set_buf_option(bufnr, "filetype", "fzf")
 
-  local popup_window_config = _make_window_config(win_opts or {})
+  --- @type integer
+  local preview_bufnr = vim.api.nvim_create_buf(false, true)
+  -- setlocal bufhidden=wipe nobuflisted
+  -- setft=fzf
+  apis.set_buf_option(preview_bufnr, "bufhidden", "wipe")
+  apis.set_buf_option(preview_bufnr, "buflisted", false)
 
-  local total_width = popup_window_config.width
-  popup_window_config.width = math.floor(total_width / 2)
+  local left_win_opts = vim.deepcopy(win_opts)
+  left_win_opts.col = -0.25
+  left_win_opts.width = left_win_opts.width / 2
+  local right_win_opts = vim.deepcopy(win_opts)
+  right_win_opts.col = 0.25
+  right_win_opts.width = right_win_opts.width / 2
+  local popup_window_config = _make_window_config(left_win_opts)
+  local preview_popup_window_config = _make_window_config(right_win_opts)
+
+  local preview_winnr =
+    vim.api.nvim_open_win(preview_bufnr, true, preview_popup_window_config)
+
+  apis.set_win_option(preview_winnr, "spell", false)
+  apis.set_win_option(preview_winnr, "number", false)
+  apis.set_win_option(preview_winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  apis.set_win_option(preview_winnr, "colorcolumn", "")
+
   local winnr = vim.api.nvim_open_win(bufnr, true, popup_window_config)
-  local previewer_winnr =
-    vim.api.nvim_open_win(bufnr, true, popup_window_config)
-
   --- setlocal nospell nonumber
   --- set winhighlight='Pmenu:,Normal:Normal'
   --- set colorcolumn=''

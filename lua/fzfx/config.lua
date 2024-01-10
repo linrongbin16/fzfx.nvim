@@ -308,8 +308,13 @@ M.setup = function(opts)
 end
 
 --- @return fzfx.Options
-M.get_config = function()
+M.get = function()
   return Configs
+end
+
+--- @param opts fzfx.Options
+M.set = function(opts)
+  Configs = opts
 end
 
 --- @return fzfx.Options
