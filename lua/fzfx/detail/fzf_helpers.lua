@@ -399,6 +399,34 @@ function FzfOptEventBinder:build()
   return { "--bind", self.event .. ":" .. table.concat(self.opts, "+") }
 end
 
+-- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
+--- @param opts fzfx.Options?
+--- @return fzfx.Options?
+local function parse_fzf_preview_window_opts(opts)
+  if opts == nil then
+    return nil
+  end
+  log.ensure(
+    type(opts) == "table" or type(opts) == "string",
+    "invalid fzf opts:%s",
+    vim.inspect(opts)
+  )
+  --- @type string[]
+  local split_opts = nil
+  if type(opts) == "table" then
+    split_opts = strings.split(opts[2], ",")
+  else
+    local split_opts_value = strings.split(opts, "=")
+    log.ensure(
+      type(split_opts_value) == "table" and #split_opts_value >= 2,
+      "invalid fzf opts:%s",
+      vim.inspect(opts)
+    )
+    local opts_value = split_opts_value[2]
+    split_opts = strings.split(opts_value[2], ",")
+  end
+end
+
 local function setup()
   local recalculating = false
   vim.api.nvim_create_autocmd("ColorScheme", {
