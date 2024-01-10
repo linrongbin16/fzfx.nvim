@@ -1,7 +1,12 @@
---- @param options fzfx.Options?
-local function setup(options)
+local tables = require("fzfx.commons.tables")
+
+--- @param opts fzfx.Options?
+local function setup(opts)
+  if tables.tbl_get(opts, "debug", "enable") then
+    opts.popup.win_opts.border = "single"
+  end
   -- configs
-  local configs = require("fzfx.config").setup(options)
+  local configs = require("fzfx.config").setup(opts)
 
   local log = require("fzfx.lib.log")
   local LogLevels = require("fzfx.lib.log").LogLevels
