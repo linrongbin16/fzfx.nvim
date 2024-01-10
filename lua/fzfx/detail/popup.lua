@@ -200,22 +200,20 @@ end
 
 --- @alias fzfx.PopupWindowConfig {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?}
 --
---- @param win_opts fzfx.WindowOpts
+--- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_window_config(win_opts)
-  --- @type "editor"|"win"|"cursor"
-  local relative = win_opts.relative or "editor"
+local function _make_window_config(opts)
+  local relative = opts.relative or "editor"
 
+  log.ensure(
+    relative == "cursor" or relative == "editor" or relative == "win",
+    "window relative (%s) must be editor/win/cursor",
+    vim.inspect(relative)
+  )
   if relative == "cursor" then
-    return _make_cursor_config(win_opts)
-  elseif relative == "editor" or relative == "win" then
-    return _make_center_config(win_opts)
+    return _make_cursor_config(opts)
   else
-    log.throw(
-      "failed to make popup window opts, unsupported relative value %s.",
-      vim.inspect(relative)
-    )
-    ---@diagnostic disable-next-line: missing-return
+    return _make_center_config(opts)
   end
 end
 
