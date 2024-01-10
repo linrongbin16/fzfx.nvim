@@ -392,9 +392,9 @@ end
 --- @param fzf_opts fzfx.Options
 --- @param actions fzfx.Options
 --- @param context fzfx.PipelineContext
---- @param on_popup_exit fzfx.OnPopupExit?
+--- @param on_close fzfx.OnPopupExit?
 --- @return fzfx.Popup
-function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
+function Popup:new(win_opts, source, fzf_opts, actions, context, on_close)
   local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
   local popup_window = PopupWindow:new(win_opts)
@@ -476,9 +476,9 @@ function Popup:new(win_opts, source, fzf_opts, actions, context, on_popup_exit)
     else
       log.err("unknown action key: %s", vim.inspect(action_key))
     end
-    if type(on_popup_exit) == "function" then
+    if type(on_close) == "function" then
       vim.schedule(function()
-        on_popup_exit(last_query)
+        on_close(last_query)
       end)
     end
   end
