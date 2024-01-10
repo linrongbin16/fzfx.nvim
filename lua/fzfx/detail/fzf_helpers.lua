@@ -401,6 +401,7 @@ end
 
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
+--
 --- @param opts fzfx.Options?
 --- @return fzfx.Options?
 local function parse_fzf_preview_window_opts(opts)
