@@ -36,14 +36,16 @@ local ProviderTypeEnum = {
 --
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
+--- @alias fzfx.BuiltinPreviewer fun(line:string?,context:fzfx.PipelineContext?):table?
 --- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer
 ---
---- @alias fzfx.PreviewerType "command"|"command_list"|"list"
+--- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"builtin"
 --- @enum fzfx.PreviewerTypeEnum
 local PreviewerTypeEnum = {
   COMMAND = "command",
   COMMAND_LIST = "command_list",
   LIST = "list",
+  BUILTIN = "builtin",
 }
 --
 -- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
