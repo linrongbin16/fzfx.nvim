@@ -402,15 +402,50 @@ end
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
 --
---- @alias fzfx.FzfPreviewWindowOptsNoAlternative {position:"up"|"down"|"left"|"right"|nil,size:integer?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:integer?,scroll_mode:"base"|"extra"|nil,offset:integer?,denom:integer?,header_lines:integer?}
---- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right"|nil,size:integer?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:integer?,scroll_mode:"base"|"extra"|nil,offset:integer?,denom:integer?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
---
---- @param opts fzfx.Options?
---- @return fzfx.Options?
-local function parse_fzf_preview_window_opts(opts)
-  if opts == nil then
-    return nil
+--- @alias fzfx.FzfPreviewWindowOptsNoAlternative {position:"up"|"down"|"left"|"right"|nil,size:integer?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?}
+--- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right"|nil,size:integer?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
+
+--- @param split_opts string[]
+--- @return fzfx.FzfPreviewWindowOptsNoAlternative
+local function parse_fzf_preview_window_opts_no_alternative(split_opts)
+  local parsed = {
+    position = "right",
+    size = 50,
+    border = "border-rounded",
+    wrap = false,
+    follow = false,
+    cycle = false,
+    hidden = false,
+    scroll = nil,
+    header_lines = nil,
+  }
+  for i, o in ipairs(split_opts) do
+    if o == "up" or o == "down" or o == "left" or o == "right" then
+      parsed.position = o
+    elseif strings.endswith(o, "%") then
+      parsed.size = tonumber(string.sub(o, 1, #o - 1))
+    elseif strings.startswith(o, "border-") then
+      parsed.border = o
+    elseif o == "nowrap" or o == "wrap" then
+      parsed.wrap = o == "wrap"
+    elseif o == "nofollow" or o == "follow" then
+      parsed.follow = o == "follow"
+    elseif o == "nocycle" or o == "cycle" then
+      parsed.cycle = o == "cycle"
+    elseif o == "nohidden" or o == "hidden" then
+      parsed.hidden = o == "hidden"
+    elseif strings.startswith(o, "+") or strings.startswith(o, "-") then
+      parsed.scroll = o
+    elseif strings.startswith(o, "~") then
+      parsed.header_lines = tonumber(string.sub(o, 2))
+    end
   end
+  return parsed
+end
+
+--- @param opts fzfx.Options?
+--- @return fzfx.FzfPreviewWindowOpts
+local function parse_fzf_preview_window_opts(opts)
   log.ensure(
     type(opts) == "table" or type(opts) == "string",
     "invalid fzf opts:%s",
@@ -441,8 +476,43 @@ local function parse_fzf_preview_window_opts(opts)
     vim.inspect(split_opts)
   )
 
-  local parsed = {}
+  local split_opts_alternative = nil
+  local split_opts_no_alternative = {}
   for _, o in ipairs(split_opts) do
+    if strings.startswith(o, "<") then
+      split_opts_alternative = o
+    else
+      table.insert(split_opts_no_alternative, o)
+    end
+  end
+
+  --- @type fzfx.FzfPreviewWindowOpts
+  local parsed =
+    parse_fzf_preview_window_opts_no_alternative(split_opts_no_alternative) --[[@as fzfx.FzfPreviewWindowOpts]]
+  parsed.size_threshold = nil
+  parsed.alternative_layout = nil
+  if split_opts_alternative then
+    local first_lbracket_pos = strings.find(split_opts_alternative, "(", 2)
+    log.ensure(
+      type(first_lbracket_pos) == "number" and first_lbracket_pos > 2,
+      "invalid fzf preview window opts(size_threshold): %s",
+      vim.inspect(opts)
+    )
+    log.ensure(
+      strings.endswith(split_opts_alternative, ")"),
+      "invalid fzf preview window opts(size_threshold): %s",
+      vim.inspect(opts)
+    )
+    parsed.size_threshold =
+      tonumber(string.sub(split_opts_alternative, 2, first_lbracket_pos - 1))
+    local split_alternatives = string.sub(
+      split_opts_alternative,
+      first_lbracket_pos + 1,
+      #split_opts_alternative - 1
+    )
+    parsed.alternative_layout = parse_fzf_preview_window_opts_no_alternative(
+      strings.split(split_alternatives, ",")
+    )
   end
   return parsed
 end
@@ -480,6 +550,7 @@ local M = {
   nvim_exec = nvim_exec,
   fzf_exec = fzf_exec,
   make_lua_command = make_lua_command,
+  parse_fzf_preview_window_opts = parse_fzf_preview_window_opts,
   setup = setup,
 }
 
