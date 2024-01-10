@@ -10,7 +10,6 @@ local consts = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
 local shells = require("fzfx.lib.shells")
-
 local config = require("fzfx.config")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum

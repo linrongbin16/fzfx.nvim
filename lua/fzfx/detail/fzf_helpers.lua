@@ -8,7 +8,6 @@ local tables = require("fzfx.commons.tables")
 local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
 local yanks = require("fzfx.detail.yanks")
-
 local config = require("fzfx.config")
 
 -- visual select {

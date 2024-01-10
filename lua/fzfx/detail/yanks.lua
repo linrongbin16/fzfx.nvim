@@ -3,7 +3,6 @@ local ringbuf = require("fzfx.commons.ringbuf")
 local paths = require("fzfx.commons.paths")
 local log = require("fzfx.lib.log")
 local bufs = require("fzfx.lib.bufs")
-
 local config = require("fzfx.config")
 
 local M = {}
