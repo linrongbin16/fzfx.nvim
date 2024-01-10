@@ -1054,6 +1054,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   end
 
   local p = Popup:new(
+    true,
     win_opts or {},
     query_command,
     fzf_opts,
