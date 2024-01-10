@@ -102,17 +102,6 @@ end
 
 -- ShellOptsContext }
 
---- @class fzfx.PopupWindowConfig
---- @field anchor "NW"|nil
---- @field relative "editor"|"win"|"cursor"|nil
---- @field width integer?
---- @field height integer?
---- @field row integer?
---- @field col integer?
---- @field style "minimal"|nil
---- @field border "none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil
---- @field zindex integer?
-
 --- @package
 --- @param value number
 --- @param size integer
@@ -135,17 +124,15 @@ local function _make_cursor_config(opts)
     "window row (%s) opts must >= 0!",
     vim.inspect(opts)
   )
-  local row = opts.row
-
   log.ensure(
     opts.row >= 0,
     "window col (%s) opts must >= 0!",
     vim.inspect(opts)
   )
+  local row = opts.row
   local col = opts.col
 
-  --- @type fzfx.PopupWindowConfig
-  local pw_config = {
+  return {
     anchor = "NW",
     relative = relative,
     width = width,
@@ -156,12 +143,6 @@ local function _make_cursor_config(opts)
     border = opts.border,
     zindex = opts.zindex,
   }
-  -- log.debug(
-  --     "|fzfx.popup - make_popup_window_opts_relative_to_cursor| (origin) win_opts:%s, pw_config:%s",
-  --     vim.inspect(opts),
-  --     vim.inspect(pw_config)
-  -- )
-  return pw_config
 end
 
 --- @param maxsize integer
@@ -235,6 +216,8 @@ local function _make_center_config(win_opts)
   return pw_config
 end
 
+--- @alias fzfx.PopupWindowConfig {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?}
+--
 --- @param win_opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
 local function _make_window_config(win_opts)
