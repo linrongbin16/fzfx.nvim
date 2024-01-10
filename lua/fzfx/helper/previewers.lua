@@ -82,6 +82,12 @@ M.preview_files_find = function(line)
   return M.preview_files(parsed.filename)
 end
 
+--- @param line string
+--- @return table
+M.builtin_preview_files_find = function(line) 
+
+end
+
 -- files }
 
 -- live grep {

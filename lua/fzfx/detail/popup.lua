@@ -127,11 +127,11 @@ local function _make_window_size(value, base, minimal)
   )
 end
 
---- @param opts fzfx.Options
+--- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
 local function _make_cursor_window_config(opts)
   --- @type "cursor"
-  local relative = opts.relative
+  local relative = opts.relative --[[@as "cursor"]]
   local total_width = vim.api.nvim_win_get_width(0)
   local total_height = vim.api.nvim_win_get_height(0)
 
@@ -181,11 +181,11 @@ local function _make_window_center_shift(maxsize, size, offset)
   end
 end
 
---- @param opts fzfx.Options
+--- @param win_opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_center_window_config(opts)
+local function _make_center_window_config(win_opts)
   --- @type "editor"|"win"
-  local relative = opts.relative or "editor"
+  local relative = win_opts.relative or "editor" --[[@as "editor"|"win"]]
 
   local total_width = vim.o.columns
   local total_height = vim.o.lines
@@ -194,15 +194,16 @@ local function _make_center_window_config(opts)
     total_height = vim.api.nvim_win_get_height(0)
   end
 
-  local width = _make_window_size(opts.width, total_width)
-  local height = _make_window_size(opts.height, total_height)
+  local width = _make_window_size(win_opts.width, total_width)
+  local height = _make_window_size(win_opts.height, total_height)
 
   if
-    (opts.row > -1 and opts.row < -0.5) or (opts.row > 0.5 and opts.row < 1)
+    (win_opts.row > -1 and win_opts.row < -0.5)
+    or (win_opts.row > 0.5 and win_opts.row < 1)
   then
-    log.throw("invalid option (win_opts.row): %s!", vim.inspect(opts))
+    log.throw("invalid option (win_opts.row): %s!", vim.inspect(win_opts))
   end
-  local row = _make_window_center_shift(total_height, height, opts.row)
+  local row = _make_window_center_shift(total_height, height, win_opts.row)
   -- log.debug(
   --     "|fzfx.popup - make_popup_window_opts_relative_to_center| row:%s, win_opts:%s, total_height:%s, height:%s",
   --     vim.inspect(row),
@@ -212,11 +213,12 @@ local function _make_center_window_config(opts)
   -- )
 
   if
-    (opts.col > -1 and opts.col < -0.5) or (opts.col > 0.5 and opts.col < 1)
+    (win_opts.col > -1 and win_opts.col < -0.5)
+    or (win_opts.col > 0.5 and win_opts.col < 1)
   then
-    log.throw("invalid option (win_opts.col): %s!", vim.inspect(opts))
+    log.throw("invalid option (win_opts.col): %s!", vim.inspect(win_opts))
   end
-  local col = _make_window_center_shift(total_width, width, opts.col)
+  local col = _make_window_center_shift(total_width, width, win_opts.col)
 
   --- @type fzfx.PopupWindowConfig
   local pw_config = {
@@ -227,8 +229,8 @@ local function _make_center_window_config(opts)
     row = row,
     col = col,
     style = "minimal",
-    border = opts.border,
-    zindex = opts.zindex,
+    border = win_opts.border,
+    zindex = win_opts.zindex,
   }
   -- log.debug(
   --     "|fzfx.popup - make_popup_window_opts_relative_to_center| (origin) win_opts:%s, pw_config:%s",
@@ -238,7 +240,7 @@ local function _make_center_window_config(opts)
   return pw_config
 end
 
---- @param win_opts fzfx.Options
+--- @param win_opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
 local function _make_window_config(win_opts)
   --- @type "editor"|"win"|"cursor"
@@ -268,8 +270,9 @@ local PopupWindowInstances = {}
 --- @field _resizing boolean
 local PopupWindow = {}
 
+--- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
 --- @package
---- @param win_opts fzfx.Options
+--- @param win_opts fzfx.WindowOpts
 --- @return fzfx.PopupWindow
 function PopupWindow:new(win_opts)
   -- check executable: nvim, fzf
@@ -407,7 +410,7 @@ local function _make_fzf_command(fzf_opts, actions, result)
 end
 
 --- @alias fzfx.OnPopupExit fun(last_query:string):nil
---- @param win_opts fzfx.Options
+--- @param win_opts fzfx.WindowOpts
 --- @param source string
 --- @param fzf_opts fzfx.Options
 --- @param actions fzfx.Options
