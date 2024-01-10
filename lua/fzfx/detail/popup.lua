@@ -200,9 +200,10 @@ end
 
 --- @alias fzfx.PopupWindowConfig {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
 --
---- @param opts fzfx.WindowOpts
+--- @param win_opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_window_config(opts)
+local function _make_window_config(win_opts)
+  local opts = vim.deepcopy(win_opts)
   local relative = opts.relative or "editor"
   log.ensure(
     relative == "cursor" or relative == "editor" or relative == "win",
@@ -214,6 +215,40 @@ local function _make_window_config(opts)
   else
     return _make_center_config(opts)
   end
+end
+
+--- @param win_opts fzfx.WindowOpts
+--- @return fzfx.PopupWindowConfig
+local function _make_provider_cursor_config(win_opts) end
+
+--- @param win_opts fzfx.WindowOpts
+--- @return fzfx.PopupWindowConfig
+local function _make_provider_center_config(win_opts) end
+
+--- @param win_opts fzfx.WindowOpts
+--- @return fzfx.PopupWindowConfig
+local function _make_provider_window_config_for_builtin(win_opts)
+  local opts = vim.deepcopy(win_opts)
+  local relative = opts.relative or "editor"
+  log.ensure(
+    relative == "cursor" or relative == "editor" or relative == "win",
+    "window relative (%s) must be editor/win/cursor",
+    vim.inspect(opts)
+  )
+  local provider_opts = vim.deepcopy(opts)
+  provider_opts.col = -0.25
+  provider_opts.width = provider_opts.width / 2
+  if relative == "cursor" then
+    return _make_provider_cursor_config(opts)
+  else
+    return _make_provider_center_config(opts)
+  end
+end
+
+--- @param win_opts fzfx.WindowOpts
+--- @return fzfx.PopupWindowConfig
+local function _make_previewer_window_config_for_builtin(win_opts)
+  local opts = vim.deepcopy(win_opts)
 end
 
 --- @type table<integer, fzfx.PopupWindow>
@@ -230,11 +265,9 @@ local PopupWindow = {}
 --- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
 --- @package
 --- @param win_opts fzfx.WindowOpts
---- @param builtin_previewer boolean?
+--- @param builtin_preview_win_opts fzfx.WindowOpts?
 --- @return fzfx.PopupWindow
-function PopupWindow:new(win_opts, builtin_previewer)
-  builtin_previewer = builtin_previewer or false
-
+function PopupWindow:new(win_opts, builtin_preview_win_opts)
   -- check executable: nvim, fzf
   fzf_helpers.nvim_exec()
   fzf_helpers.fzf_exec()
@@ -264,12 +297,20 @@ function PopupWindow:new(win_opts, builtin_previewer)
   local right_win_opts = vim.deepcopy(win_opts)
   right_win_opts.col = 0.25
   right_win_opts.width = right_win_opts.width / 2
-  local popup_window_config = _make_window_config(left_win_opts)
-  local preview_popup_window_config = _make_window_config(right_win_opts)
-  preview_popup_window_config.focusable = false
+
+  local popup_window_config = nil
+  local preview_window_config = nil
+  if builtin_preview_win_opts then
+    popup_window_config = _make_provider_window_config_for_builtin(win_opts)
+    preview_window_config =
+      _make_previewer_window_config_for_builtin(builtin_preview_win_opts)
+    preview_window_config.focusable = false
+  else
+    popup_window_config = _make_window_config(win_opts)
+  end
 
   local preview_winnr =
-    vim.api.nvim_open_win(preview_bufnr, true, preview_popup_window_config)
+    vim.api.nvim_open_win(preview_bufnr, true, preview_window_config)
 
   apis.set_win_option(preview_winnr, "spell", false)
   apis.set_win_option(preview_winnr, "number", false)
