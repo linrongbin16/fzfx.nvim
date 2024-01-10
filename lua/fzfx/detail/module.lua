@@ -1,6 +1,5 @@
 local log = require("fzfx.lib.log")
-
-local conf = require("fzfx.config")
+local config = require("fzfx.config")
 
 local M = {}
 
@@ -33,21 +32,19 @@ local function search_module_path(plugin, path)
 end
 
 M.setup = function()
-  local configs = conf.get_config()
-
   -- debug
-  vim.env._FZFX_NVIM_DEBUG_ENABLE = configs.debug.enable and 1 or 0
+  vim.env._FZFX_NVIM_DEBUG_ENABLE = config.get().debug.enable and 1 or 0
 
   -- icon
-  if type(configs.icons) == "table" then
+  if type(config.get().icons) == "table" then
     local devicons_path =
       search_module_path("nvim-web-devicons", "nvim%-web%-devicons")
     -- log.debug("|fzfx.module - setup| devicons path:%s", devicons_path)
     if type(devicons_path) == "string" and string.len(devicons_path) > 0 then
       vim.env._FZFX_NVIM_DEVICONS_PATH = devicons_path
-      vim.env._FZFX_NVIM_UNKNOWN_FILE_ICON = configs.icons.unknown_file
-      vim.env._FZFX_NVIM_FILE_FOLDER_ICON = configs.icons.folder
-      vim.env._FZFX_NVIM_FILE_FOLDER_OPEN_ICON = configs.icons.folder_open
+      vim.env._FZFX_NVIM_UNKNOWN_FILE_ICON = config.get().icons.unknown_file
+      vim.env._FZFX_NVIM_FILE_FOLDER_ICON = config.get().icons.folder
+      vim.env._FZFX_NVIM_FILE_FOLDER_OPEN_ICON = config.get().icons.folder_open
       -- else
       -- log.debug(
       --     "|fzfx.module - setup| you have configured 'icons' while cannot find 'nvim-web-devicons' plugin!"

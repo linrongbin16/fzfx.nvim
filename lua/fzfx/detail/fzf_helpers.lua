@@ -8,8 +8,7 @@ local tables = require("fzfx.commons.tables")
 local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
 local yanks = require("fzfx.detail.yanks")
-
-local conf = require("fzfx.config")
+local config = require("fzfx.config")
 
 -- visual select {
 
@@ -98,7 +97,7 @@ local LAST_QUERY_CACHES = {}
 --- @param name string
 local function last_query_cache_name(name)
   return paths.join(
-    conf.get_config().cache.dir,
+    config.get().cache.dir,
     string.format("_%s_last_query_cache", name)
   )
 end
@@ -179,10 +178,10 @@ end
 
 --- @return fzfx.FzfOpt[]
 local function _generate_fzf_color_opts()
-  if type(conf.get_config().fzf_color_opts) ~= "table" then
+  if type(config.get().fzf_color_opts) ~= "table" then
     return {}
   end
-  local fzf_colors = conf.get_config().fzf_color_opts
+  local fzf_colors = config.get().fzf_color_opts
   local builder = {}
   for name, opts in pairs(fzf_colors) do
     for i = 2, #opts do
@@ -202,11 +201,11 @@ end
 
 --- @return fzfx.FzfOpt[]
 local function _generate_fzf_icon_opts()
-  if type(conf.get_config().icons) ~= "table" then
+  if type(config.get().icons) ~= "table" then
     return {}
   end
   local opts = {}
-  local fzf_icons = conf.get_config().icons
+  local fzf_icons = config.get().icons
   local pointer = tables.tbl_get(fzf_icons, "fzf_pointer")
   if strings.not_empty(pointer) then
     table.insert(opts, { "--pointer", pointer })
@@ -272,7 +271,7 @@ local CACHED_FZF_DEFAULT_OPTS = nil
 
 --- @return string?
 local function make_fzf_default_opts_impl()
-  local opts = conf.get_config().fzf_opts
+  local opts = config.get().fzf_opts
   local result = {}
   if type(opts) == "table" and #opts > 0 then
     for _, o in ipairs(opts) do
@@ -314,7 +313,7 @@ end
 --- @return string?
 local function nvim_exec()
   local exe_list = {}
-  table.insert(exe_list, conf.get_config().env.nvim)
+  table.insert(exe_list, config.get().env.nvim)
   table.insert(exe_list, vim.v.argv[1])
   table.insert(exe_list, vim.env.VIM)
   table.insert(exe_list, "nvim")
@@ -330,7 +329,7 @@ end
 --- @return string?
 local function fzf_exec()
   local exe_list = {}
-  table.insert(exe_list, conf.get_config().env.fzf)
+  table.insert(exe_list, config.get().env.fzf)
   if vim.fn.exists("*fzf#exec") > 0 then
     table.insert(exe_list, vim.fn["fzf#exec"]())
   end
