@@ -198,11 +198,7 @@ local function _make_center_config(opts)
   }
 end
 
---- @alias fzfx.PopupWindowConfigAnchor "NW"
---- @alias fzfx.PopupWindowConfigRelative "editor"|"win"|"cursor"
---- @alias fzfx.PopupWindowConfigStyle "minimal"
---- @alias fzfx.PopupWindowConfigBorder "none"|"single"|"double"|"rounded"|"solid"|"shadow"
---- @alias fzfx.PopupWindowConfig {anchor:fzfx.PopupWindowConfigAnchor?,relative:fzfx.PopupWindowConfigRelative?,width:integer?,height:integer?,row:integer?,col:integer?,style:fzfx.PopupWindowConfigStyle?,border:fzfx.PopupWindowConfigBorder?,zindex:integer?}
+--- @alias fzfx.PopupWindowConfig {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?}
 --
 --- @param win_opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
