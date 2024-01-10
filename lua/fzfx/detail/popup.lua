@@ -185,8 +185,7 @@ local function _make_center_config(opts)
   local row = _shift_window_pos(total_height, height, opts.row)
   local col = _shift_window_pos(total_width, width, opts.col)
 
-  --- @type fzfx.PopupWindowConfig
-  local pw_config = {
+  return {
     anchor = "NW",
     relative = relative,
     width = width,
@@ -197,12 +196,6 @@ local function _make_center_config(opts)
     border = opts.border,
     zindex = opts.zindex,
   }
-  -- log.debug(
-  --     "|fzfx.popup - make_popup_window_opts_relative_to_center| (origin) win_opts:%s, pw_config:%s",
-  --     vim.inspect(opts),
-  --     vim.inspect(pw_config)
-  -- )
-  return pw_config
 end
 
 --- @alias fzfx.PopupWindowConfig {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?}
