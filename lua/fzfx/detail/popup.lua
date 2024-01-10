@@ -115,28 +115,21 @@ end
 
 --- @package
 --- @param value number
---- @param base integer
---- @param minimal integer?
+--- @param size integer
 --- @return integer
-local function _make_window_size(value, base, minimal)
-  minimal = minimal or 3
-  return numbers.bound(
-    value > 1 and value or math.floor(base * value),
-    minimal,
-    base
-  )
+local function _get_window_size(value, size)
+  return numbers.bound(value > 1 and value or math.floor(size * value), 3, size)
 end
 
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_cursor_window_config(opts)
-  --- @type "cursor"
-  local relative = opts.relative --[[@as "cursor"]]
+local function _make_cursor_config(opts)
+  local relative = "cursor"
   local total_width = vim.api.nvim_win_get_width(0)
   local total_height = vim.api.nvim_win_get_height(0)
 
-  local width = _make_window_size(opts.width, total_width)
-  local height = _make_window_size(opts.height, total_height)
+  local width = _get_window_size(opts.width, total_width)
+  local height = _get_window_size(opts.height, total_height)
   if opts.row < 0 then
     log.throw("invalid option (win_opts.row < 0): %s!", vim.inspect(opts))
   end
@@ -183,10 +176,8 @@ end
 
 --- @param win_opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_center_window_config(win_opts)
-  --- @type "editor"|"win"
+local function _make_center_config(win_opts)
   local relative = win_opts.relative or "editor" --[[@as "editor"|"win"]]
-
   local total_width = vim.o.columns
   local total_height = vim.o.lines
   if relative == "win" then
@@ -194,8 +185,8 @@ local function _make_center_window_config(win_opts)
     total_height = vim.api.nvim_win_get_height(0)
   end
 
-  local width = _make_window_size(win_opts.width, total_width)
-  local height = _make_window_size(win_opts.height, total_height)
+  local width = _get_window_size(win_opts.width, total_width)
+  local height = _get_window_size(win_opts.height, total_height)
 
   if
     (win_opts.row > -1 and win_opts.row < -0.5)
@@ -247,9 +238,9 @@ local function _make_window_config(win_opts)
   local relative = win_opts.relative or "editor"
 
   if relative == "cursor" then
-    return _make_cursor_window_config(win_opts)
+    return _make_cursor_config(win_opts)
   elseif relative == "editor" or relative == "win" then
-    return _make_center_window_config(win_opts)
+    return _make_center_config(win_opts)
   else
     log.throw(
       "failed to make popup window opts, unsupported relative value %s.",
@@ -266,7 +257,7 @@ local PopupWindowInstances = {}
 --- @field window_opts_context fzfx.WindowOptsContext?
 --- @field bufnr integer?
 --- @field winnr integer?
---- @field _saved_win_opts fzfx.Options
+--- @field _saved_win_opts fzfx.WindowOpts
 --- @field _resizing boolean
 local PopupWindow = {}
 
@@ -292,8 +283,11 @@ function PopupWindow:new(win_opts)
 
   local popup_window_config = _make_window_config(win_opts or {})
 
-  --- @type integer
+  local total_width = popup_window_config.width
+  popup_window_config.width = math.floor(total_width / 2)
   local winnr = vim.api.nvim_open_win(bufnr, true, popup_window_config)
+  local previewer_winnr =
+    vim.api.nvim_open_win(bufnr, true, popup_window_config)
 
   --- setlocal nospell nonumber
   --- set winhighlight='Pmenu:,Normal:Normal'
@@ -591,10 +585,10 @@ local function setup()
 end
 
 local M = {
-  _make_window_size = _make_window_size,
+  _make_window_size = _get_window_size,
   _make_window_center_shift = _make_window_center_shift,
-  _make_cursor_window_config = _make_cursor_window_config,
-  _make_center_window_config = _make_center_window_config,
+  _make_cursor_config = _make_cursor_config,
+  _make_center_config = _make_center_config,
   _make_window_config = _make_window_config,
   _get_all_popup_window_instances = _get_all_popup_window_instances,
   _remove_all_popup_window_instances = _remove_all_popup_window_instances,
