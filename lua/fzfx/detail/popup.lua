@@ -127,17 +127,21 @@ local function _make_cursor_config(opts)
   local relative = "cursor"
   local total_width = vim.api.nvim_win_get_width(0)
   local total_height = vim.api.nvim_win_get_height(0)
-
   local width = _get_window_size(opts.width, total_width)
   local height = _get_window_size(opts.height, total_height)
-  if opts.row < 0 then
-    log.throw("invalid option (win_opts.row < 0): %s!", vim.inspect(opts))
-  end
+
+  log.ensure(
+    opts.row >= 0,
+    "window row (%s) opts must >= 0!",
+    vim.inspect(opts)
+  )
   local row = opts.row
 
-  if opts.col < 0 then
-    log.throw("invalid option (win_opts.col < 0): %s!", vim.inspect(opts))
-  end
+  log.ensure(
+    opts.row >= 0,
+    "window col (%s) opts must >= 0!",
+    vim.inspect(opts)
+  )
   local col = opts.col
 
   --- @type fzfx.PopupWindowConfig
