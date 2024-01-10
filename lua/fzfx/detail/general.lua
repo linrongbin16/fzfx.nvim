@@ -1054,7 +1054,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   end
 
   local p = Popup:new(
-    true,
     win_opts or {},
     query_command,
     fzf_opts,
@@ -1077,7 +1076,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       fileios.asyncwritefile(last_query_cache, content, function(bytes)
         log.debug("|general| dump last query:%s", vim.inspect(bytes))
       end)
-    end
+    end,
+    true
   )
   return p
 end

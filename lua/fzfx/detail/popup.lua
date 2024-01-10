@@ -198,7 +198,7 @@ local function _make_center_config(opts)
   }
 end
 
---- @alias fzfx.PopupWindowConfig {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?}
+--- @alias fzfx.PopupWindowConfig {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
 --
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
@@ -230,8 +230,11 @@ local PopupWindow = {}
 --- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
 --- @package
 --- @param win_opts fzfx.WindowOpts
+--- @param builtin_previewer boolean?
 --- @return fzfx.PopupWindow
-function PopupWindow:new(win_opts)
+function PopupWindow:new(win_opts, builtin_previewer)
+  builtin_previewer = builtin_previewer or false
+
   -- check executable: nvim, fzf
   fzf_helpers.nvim_exec()
   fzf_helpers.fzf_exec()
@@ -253,6 +256,7 @@ function PopupWindow:new(win_opts)
   -- setft=fzf
   apis.set_buf_option(preview_bufnr, "bufhidden", "wipe")
   apis.set_buf_option(preview_bufnr, "buflisted", false)
+  apis.set_buf_option(preview_bufnr, "filetype", "fzf_previewer")
 
   local left_win_opts = vim.deepcopy(win_opts)
   left_win_opts.col = -0.25
@@ -262,6 +266,7 @@ function PopupWindow:new(win_opts)
   right_win_opts.width = right_win_opts.width / 2
   local popup_window_config = _make_window_config(left_win_opts)
   local preview_popup_window_config = _make_window_config(right_win_opts)
+  preview_popup_window_config.focusable = false
 
   local preview_winnr =
     vim.api.nvim_open_win(preview_bufnr, true, preview_popup_window_config)
@@ -396,17 +401,17 @@ end
 --- @param on_close fzfx.OnPopupExit?
 --- @return fzfx.Popup
 function Popup:new(
-  builtin_previewer,
   win_opts,
   source,
   fzf_opts,
   actions,
   context,
-  on_close
+  on_close,
+  builtin_previewer
 )
   local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
-  local popup_window = PopupWindow:new(win_opts)
+  local popup_window = PopupWindow:new(win_opts, builtin_previewer)
 
   local function on_fzf_exit(jobid2, exitcode, event)
     log.debug(
