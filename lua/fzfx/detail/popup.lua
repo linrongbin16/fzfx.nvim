@@ -366,8 +366,6 @@ local PopupWindowInstances = {}
 --- @field _resizing boolean
 local PopupWindow = {}
 
---- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
---- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
 --- @package
 --- @param win_opts fzfx.WindowOpts
 --- @param builtin_preview_win_opts fzfx.WindowOpts?
@@ -471,6 +469,9 @@ function PopupWindow:resize()
   end)
 end
 
+--- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
+--- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
+--
 --- @class fzfx.Popup
 --- @field popup_window fzfx.PopupWindow?
 --- @field source string|string[]|nil

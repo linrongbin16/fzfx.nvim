@@ -98,4 +98,129 @@ M.make_opts = function(win_opts)
   end
 end
 
+--- @type table<integer, fzfx.FzfPopupWindow>
+local FzfPopupWindowInstances = {}
+
+-- FzfPopupWindow {
+
+--- @class fzfx.FzfPopupWindow
+--- @field window_opts_context fzfx.WindowOptsContext?
+--- @field bufnr integer?
+--- @field winnr integer?
+--- @field _saved_win_opts fzfx.WindowOpts
+--- @field _resizing boolean
+local FzfPopupWindow = {}
+
+--- @package
+--- @param win_opts fzfx.WindowOpts
+--- @param builtin_preview_win_opts fzfx.WindowOpts?
+--- @return fzfx.FzfPopupWindow
+function FzfPopupWindow:new(win_opts, builtin_preview_win_opts)
+  -- check executable: nvim, fzf
+  fzf_helpers.nvim_exec()
+  fzf_helpers.fzf_exec()
+
+  -- save current window context
+  local window_opts_context = fzf_helpers.WindowOptsContext:save()
+
+  --- @type integer
+  local bufnr = vim.api.nvim_create_buf(false, true)
+  -- setlocal bufhidden=wipe nobuflisted
+  -- setft=fzf
+  apis.set_buf_option(bufnr, "bufhidden", "wipe")
+  apis.set_buf_option(bufnr, "buflisted", false)
+  apis.set_buf_option(bufnr, "filetype", "fzf")
+
+  local nvim_float_win_opts = = M.make_opts(win_opts)
+
+  local winnr = vim.api.nvim_open_win(bufnr, true, nvim_float_win_opts)
+  --- setlocal nospell nonumber
+  --- set winhighlight='Pmenu:,Normal:Normal'
+  --- set colorcolumn=''
+  apis.set_win_option(winnr, "spell", false)
+  apis.set_win_option(winnr, "number", false)
+  apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  apis.set_win_option(winnr, "colorcolumn", "")
+
+  local o = {
+    window_opts_context = window_opts_context,
+    bufnr = bufnr,
+    winnr = winnr,
+    _saved_win_opts = win_opts,
+    _resizing = false,
+  }
+  setmetatable(o, self)
+  self.__index = self
+
+  FzfPopupWindowInstances[winnr] = o
+  return o
+end
+
+function FzfPopupWindow:close()
+  -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
+
+  if vim.api.nvim_win_is_valid(self.winnr) then
+    vim.api.nvim_win_close(self.winnr, true)
+    -- else
+    --     log.debug(
+    --         "cannot close invalid popup window! %s",
+    --         vim.inspect(self.winnr)
+    --     )
+  end
+
+  ---@diagnostic disable-next-line: undefined-field
+  self.window_opts_context:restore()
+
+  local instance = FzfPopupWindowInstances[self.winnr]
+  if instance then
+    FzfPopupWindowInstances[self.winnr] = nil
+  end
+end
+
+function FzfPopupWindow:resize()
+  if self._resizing then
+    return
+  end
+  self._resizing = true
+  local nvim_float_win_opts = = M.make_opts(self._saved_win_opts)
+  vim.api.nvim_win_set_config(self.winnr, nvim_float_win_opts)
+  vim.schedule(function()
+    self._resizing = false
+  end)
+end
+
+M.FzfPopupWindow = FzfPopupWindow
+
+-- FzfPopupWindow }
+
+--- @return table<integer, fzfx.PopupWindow>
+M._get_instances = function()
+  return FzfPopupWindowInstances
+end
+
+M._clear_instances = function()
+  FzfPopupWindowInstances = {}
+end
+
+--- @return integer
+M._count_instances = function()
+  local n = 0
+  for _, p in pairs(FzfPopupWindowInstances) do
+    n = n + 1
+  end
+  return n
+end
+
+M.resize_instances = function()
+  -- log.debug(
+  --     "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
+  --     vim.inspect(PopupWindowInstances)
+  -- )
+  for winnr, popup_win in pairs(FzfPopupWindowInstances) do
+    if winnr and popup_win then
+      popup_win:resize()
+    end
+  end
+end
+
 return M
