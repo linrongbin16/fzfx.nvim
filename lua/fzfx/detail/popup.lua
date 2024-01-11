@@ -148,8 +148,9 @@ end
 --- @param total_size integer
 --- @param size integer
 --- @param shift number
+--- @param additional_offset integer?
 --- @return number
-local function _shift_window_pos(total_size, size, shift)
+local function _shift_window_pos(total_size, size, shift, additional_offset)
   local left_size = total_size - size
   local half_left_size = math.floor(left_size * 0.5)
   if shift >= 0 then
@@ -217,13 +218,48 @@ local function _make_window_config(win_opts)
   end
 end
 
---- @param win_opts fzfx.WindowOpts
+--- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_provider_cursor_config(win_opts) end
+local function _make_provider_cursor_config(opts) end
 
---- @param win_opts fzfx.WindowOpts
+--- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_provider_center_config(win_opts) end
+local function _make_provider_center_config(opts)
+  local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
+  opts.width = opts.width / 2
+
+  local total_width = relative == "editor" and vim.o.columns
+    or vim.api.nvim_win_get_width(0)
+  local total_height = relative == "editor" and vim.o.lines
+    or vim.api.nvim_win_get_height(0)
+  local width = _get_window_size(opts.width, total_width)
+  local height = _get_window_size(opts.height, total_height)
+
+  log.ensure(
+    (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
+    "window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+    vim.inspect(opts)
+  )
+  log.ensure(
+    (opts.col >= -0.5 and opts.col <= 0.5) or opts.col <= -1 or opts.col >= 1,
+    "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+    vim.inspect(opts)
+  )
+  local row = _shift_window_pos(total_height, height, opts.row)
+  local col = _shift_window_pos(total_width, width, opts.col)
+
+  return {
+    anchor = "NW",
+    relative = relative,
+    width = width,
+    height = height,
+    row = row,
+    col = col,
+    style = "minimal",
+    border = opts.border,
+    zindex = opts.zindex,
+  }
+end
 
 --- @param win_opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
@@ -235,9 +271,6 @@ local function _make_provider_window_config_for_builtin(win_opts)
     "window relative (%s) must be editor/win/cursor",
     vim.inspect(opts)
   )
-  local provider_opts = vim.deepcopy(opts)
-  provider_opts.col = -0.25
-  provider_opts.width = provider_opts.width / 2
   if relative == "cursor" then
     return _make_provider_cursor_config(opts)
   else
