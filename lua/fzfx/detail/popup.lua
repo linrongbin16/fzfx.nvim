@@ -112,7 +112,7 @@ end
 
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_cursor_config(opts)
+local function _make_cursor_window_config(opts)
   local relative = "cursor"
   local total_width = vim.api.nvim_win_get_width(0)
   local total_height = vim.api.nvim_win_get_height(0)
@@ -151,20 +151,29 @@ end
 --- @param additional_offset integer?
 --- @return number
 local function _shift_window_pos(total_size, size, shift, additional_offset)
+  additional_offset = additional_offset or 0
   local left_size = total_size - size
   local half_left_size = math.floor(left_size * 0.5)
   if shift >= 0 then
     local offset = shift < 1 and math.floor(left_size * shift) or shift
-    return numbers.bound(half_left_size + offset, 0, left_size)
+    return numbers.bound(
+      half_left_size + offset + additional_offset,
+      0,
+      left_size
+    )
   else
     local offset = shift > -1 and math.floor(left_size * shift) or shift
-    return numbers.bound(half_left_size + offset, 0, left_size)
+    return numbers.bound(
+      half_left_size + offset + additional_offset,
+      0,
+      left_size
+    )
   end
 end
 
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_center_config(opts)
+local function _make_center_window_config(opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
   local total_width = relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(0)
@@ -212,19 +221,21 @@ local function _make_window_config(win_opts)
     vim.inspect(relative)
   )
   if relative == "cursor" then
-    return _make_cursor_config(opts)
+    return _make_cursor_window_config(opts)
   else
-    return _make_center_config(opts)
+    return _make_center_window_config(opts)
   end
 end
 
---- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
-local function _make_provider_cursor_config(opts) end
+-- builtin provider/previewer window {
 
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_provider_center_config(opts)
+local function _make_provider_cursor_window_config(opts) end
+
+--- @param opts fzfx.WindowOpts
+--- @return fzfx.PopupWindowConfig
+local function _make_provider_center_window_config(opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
   opts.width = opts.width / 2
 
@@ -246,7 +257,8 @@ local function _make_provider_center_config(opts)
     vim.inspect(opts)
   )
   local row = _shift_window_pos(total_height, height, opts.row)
-  local col = _shift_window_pos(total_width, width, opts.col)
+  local col =
+    _shift_window_pos(total_width, width, opts.col, -math.floor(width / 2))
 
   return {
     anchor = "NW",
@@ -263,7 +275,7 @@ end
 
 --- @param win_opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_provider_window_config_for_builtin(win_opts)
+local function _make_provider_window_config(win_opts)
   local opts = vim.deepcopy(win_opts)
   local relative = opts.relative or "editor"
   log.ensure(
@@ -272,17 +284,74 @@ local function _make_provider_window_config_for_builtin(win_opts)
     vim.inspect(opts)
   )
   if relative == "cursor" then
-    return _make_provider_cursor_config(opts)
+    return _make_provider_cursor_window_config(opts)
   else
-    return _make_provider_center_config(opts)
+    return _make_provider_center_window_config(opts)
   end
+end
+
+--- @param opts fzfx.WindowOpts
+--- @return fzfx.PopupWindowConfig
+local function _make_previewer_cursor_window_config(opts) end
+
+--- @param opts fzfx.WindowOpts
+--- @return fzfx.PopupWindowConfig
+local function _make_previewer_center_window_config(opts)
+  local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
+  opts.width = opts.width / 2
+
+  local total_width = relative == "editor" and vim.o.columns
+    or vim.api.nvim_win_get_width(0)
+  local total_height = relative == "editor" and vim.o.lines
+    or vim.api.nvim_win_get_height(0)
+  local width = _get_window_size(opts.width, total_width)
+  local height = _get_window_size(opts.height, total_height)
+
+  log.ensure(
+    (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
+    "window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+    vim.inspect(opts)
+  )
+  log.ensure(
+    (opts.col >= -0.5 and opts.col <= 0.5) or opts.col <= -1 or opts.col >= 1,
+    "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+    vim.inspect(opts)
+  )
+  local row = _shift_window_pos(total_height, height, opts.row)
+  local col =
+    _shift_window_pos(total_width, width, opts.col, math.floor(width / 2))
+
+  return {
+    anchor = "NW",
+    relative = relative,
+    width = width,
+    height = height,
+    row = row,
+    col = col,
+    style = "minimal",
+    border = opts.border,
+    zindex = opts.zindex,
+  }
 end
 
 --- @param win_opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
-local function _make_previewer_window_config_for_builtin(win_opts)
+local function _make_previewer_window_config(win_opts)
   local opts = vim.deepcopy(win_opts)
+  local relative = opts.relative or "editor"
+  log.ensure(
+    relative == "cursor" or relative == "editor" or relative == "win",
+    "window relative (%s) must be editor/win/cursor",
+    vim.inspect(opts)
+  )
+  if relative == "cursor" then
+    return _make_previewer_cursor_window_config(opts)
+  else
+    return _make_previewer_center_window_config(opts)
+  end
 end
+
+-- builtin provider/previewer window }
 
 --- @type table<integer, fzfx.PopupWindow>
 local PopupWindowInstances = {}
@@ -334,9 +403,9 @@ function PopupWindow:new(win_opts, builtin_preview_win_opts)
   local popup_window_config = nil
   local preview_window_config = nil
   if builtin_preview_win_opts then
-    popup_window_config = _make_provider_window_config_for_builtin(win_opts)
+    popup_window_config = _make_provider_window_config(win_opts)
     preview_window_config =
-      _make_previewer_window_config_for_builtin(builtin_preview_win_opts)
+      _make_previewer_window_config(builtin_preview_win_opts)
     preview_window_config.focusable = false
   else
     popup_window_config = _make_window_config(win_opts)
@@ -658,8 +727,8 @@ end
 local M = {
   _make_window_size = _get_window_size,
   _shift_window_pos = _shift_window_pos,
-  _make_cursor_config = _make_cursor_config,
-  _make_center_config = _make_center_config,
+  _make_cursor_config = _make_cursor_window_config,
+  _make_center_config = _make_center_window_config,
   _make_window_config = _make_window_config,
   _get_all_popup_window_instances = _get_all_popup_window_instances,
   _remove_all_popup_window_instances = _remove_all_popup_window_instances,
