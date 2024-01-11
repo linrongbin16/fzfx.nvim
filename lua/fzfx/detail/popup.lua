@@ -6,6 +6,8 @@ local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
+local fzf_popup_window = require("fzfx.detail.popup.fzf_popup_window")
+
 -- WindowOptsContext {
 
 --- @class fzfx.WindowOptsContext
@@ -394,13 +396,6 @@ function PopupWindow:new(win_opts, builtin_preview_win_opts)
   apis.set_buf_option(preview_bufnr, "buflisted", false)
   apis.set_buf_option(preview_bufnr, "filetype", "fzf_previewer")
 
-  local left_win_opts = vim.deepcopy(win_opts)
-  left_win_opts.col = -0.25
-  left_win_opts.width = left_win_opts.width / 2
-  local right_win_opts = vim.deepcopy(win_opts)
-  right_win_opts.col = 0.25
-  right_win_opts.width = right_win_opts.width / 2
-
   local popup_window_config = nil
   local preview_window_config = nil
   if builtin_preview_win_opts then
@@ -409,7 +404,7 @@ function PopupWindow:new(win_opts, builtin_preview_win_opts)
       _make_previewer_window_config(builtin_preview_win_opts)
     preview_window_config.focusable = false
   else
-    popup_window_config = _make_window_config(win_opts)
+    popup_window_config = fzf_popup_window.make_opts(win_opts)
   end
 
   local preview_winnr =

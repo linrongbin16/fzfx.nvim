@@ -11,7 +11,7 @@ local M = {}
 
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_cursor_window_config = function(opts)
+M._make_cursor_opts = function(opts)
   local relative = "cursor"
   local total_width = vim.api.nvim_win_get_width(0)
   local total_height = vim.api.nvim_win_get_height(0)
@@ -46,7 +46,7 @@ end
 
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_center_window_config = function(opts)
+M._make_center_opts = function(opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
   local total_width = relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(0)
@@ -83,7 +83,7 @@ end
 
 --- @param win_opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_window_config = function(win_opts)
+M.make_opts = function(win_opts)
   local opts = vim.deepcopy(win_opts)
   local relative = opts.relative or "editor"
   log.ensure(
@@ -92,8 +92,10 @@ M._make_window_config = function(win_opts)
     vim.inspect(relative)
   )
   if relative == "cursor" then
-    return M._make_cursor_window_config(opts)
+    return M._make_cursor_opts(opts)
   else
-    return M._make_center_window_config(opts)
+    return M._make_center_opts(opts)
   end
 end
+
+return M
