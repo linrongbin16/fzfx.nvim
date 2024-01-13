@@ -131,7 +131,7 @@ function FzfPopupWindow:new(win_opts, builtin_preview_win_opts)
   apis.set_buf_option(bufnr, "buflisted", false)
   apis.set_buf_option(bufnr, "filetype", "fzf")
 
-  local nvim_float_win_opts = = M.make_opts(win_opts)
+  local nvim_float_win_opts = M.make_opts(win_opts)
 
   local winnr = vim.api.nvim_open_win(bufnr, true, nvim_float_win_opts)
   --- setlocal nospell nonumber
@@ -182,7 +182,7 @@ function FzfPopupWindow:resize()
     return
   end
   self._resizing = true
-  local nvim_float_win_opts = = M.make_opts(self._saved_win_opts)
+  local nvim_float_win_opts = M.make_opts(self._saved_win_opts)
   vim.api.nvim_win_set_config(self.winnr, nvim_float_win_opts)
   vim.schedule(function()
     self._resizing = false
