@@ -212,37 +212,34 @@ function Popup:new(
     --     vim.inspect(action_key),
     --     vim.inspect(action_lines)
     -- )
-    if actions[action_key] ~= nil then
-      vim.schedule(function()
-        local action_callback = actions[action_key]
-        assert(
-          type(action_callback) == "function",
-          string.format(
-            "wrong action type on key: %s, must be function(%s): %s",
-            vim.inspect(action_key),
-            type(action_callback),
-            vim.inspect(action_callback)
-          )
-        )
-        local ok, cb_err = pcall(action_callback, action_lines, context)
-        assert(
-          ok,
-          string.format(
-            "failed to run action on callback(%s) with lines(%s)! %s",
-            vim.inspect(action_callback),
-            vim.inspect(action_lines),
-            vim.inspect(cb_err)
-          )
-        )
-      end)
-    else
-      log.err("unknown action key: %s", vim.inspect(action_key))
-    end
-    if type(on_close) == "function" then
-      vim.schedule(function()
-        on_close(last_query)
-      end)
-    end
+    vim.schedule(function()
+      log.ensure(
+        actions[action_key] ~= nil,
+        "unknown action key: %s",
+        vim.inspect(action_key)
+      )
+      local action_callback = actions[action_key]
+      log.ensure(
+        type(action_callback) == "function",
+        "wrong action type on key: %s, must be function(%s): %s",
+        vim.inspect(action_key),
+        type(action_callback),
+        vim.inspect(action_callback)
+      )
+      local ok, cb_err = pcall(action_callback, action_lines, context)
+      log.ensure(
+        ok,
+        "failed to run action on callback(%s) with lines(%s)! %s",
+        vim.inspect(action_callback),
+        vim.inspect(action_lines),
+        vim.inspect(cb_err)
+      )
+      if type(on_close) == "function" then
+        vim.schedule(function()
+          on_close(last_query)
+        end)
+      end
+    end)
   end
 
   -- save shell opts
