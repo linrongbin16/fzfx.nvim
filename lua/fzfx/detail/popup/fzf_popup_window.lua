@@ -113,7 +113,7 @@ local FzfPopupWindow = {}
 --- @return fzfx.FzfPopupWindow
 function FzfPopupWindow:new(win_opts)
   -- save current window context
-  local window_opts_context = fzf_helpers.WindowOptsContext:save()
+  local window_opts_context = popup_helpers.WindowOptsContext:save()
 
   --- @type integer
   local bufnr = vim.api.nvim_create_buf(false, true)
