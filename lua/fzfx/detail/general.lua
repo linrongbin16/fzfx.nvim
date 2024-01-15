@@ -833,7 +833,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     == PreviewerTypeEnum.BUILTIN_FILE
 
   --- @type fzfx.PipelineContext
-
   local context_maker = (
     type(pipeline_configs.other_opts) == "table"
     and type(pipeline_configs.other_opts.context_maker) == "function"
