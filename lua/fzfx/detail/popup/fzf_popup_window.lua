@@ -156,20 +156,9 @@ function FzfPopupWindow:close()
 
   if vim.api.nvim_win_is_valid(self.winnr) then
     vim.api.nvim_win_close(self.winnr, true)
-    -- else
-    --     log.debug(
-    --         "cannot close invalid popup window! %s",
-    --         vim.inspect(self.winnr)
-    --     )
   end
 
-  ---@diagnostic disable-next-line: undefined-field
   self.window_opts_context:restore()
-
-  local instance = FzfPopupWindowInstances[self.winnr]
-  if instance then
-    FzfPopupWindowInstances[self.winnr] = nil
-  end
 end
 
 function FzfPopupWindow:resize()
