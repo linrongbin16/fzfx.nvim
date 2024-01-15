@@ -29,18 +29,25 @@ function PopupWindow:new(win_opts, window_type)
 
   local fzf_popup_win = nil
   local buffer_popup_win = nil
-  if window_type == 'fzf' then
+  if window_type == "fzf" then
     fzf_popup_win = fzf_popup_window.FzfPopupWindow:new(win_opts)
-  elseif window_type == 'buffer' then
+  elseif window_type == "buffer" then
     buffer_popup_win = buffer_popup_window.BufferPopupWindow:new(win_opts)
   end
 
   local o = {
+    fzf_popup_win = fzf_popup_win,
+    buffer_popup_win = buffer_popup_win,
   }
   setmetatable(o, self)
   self.__index = self
 
-  PopupWindowInstances[winnr] = o
+  if fzf_popup_win then
+    PopupWindowInstances[fzf_popup_win:handle()] = self
+  elseif buffer_popup_win then
+    PopupWindowInstances[buffer_popup_win:handle()] = self
+  end
+
   return o
 end
 
