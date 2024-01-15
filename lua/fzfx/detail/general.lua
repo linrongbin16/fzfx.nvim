@@ -793,7 +793,7 @@ end
 --- @return fzfx.Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
   local fzf_port_file = _fzf_port_file()
-  local focused_line_file = _focused_linefile()
+  local focused_line_file = _focused_linefile(name)
   local pipeline_size = get_pipeline_size(pipeline_configs)
 
   local default_provider_key = nil
@@ -923,15 +923,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   fzf_start_binder:append(
     string.format("execute-silent(%s)", dump_fzf_port_command)
   )
-  local dump_focused_line_command = nil
-  if consts.IS_WINDOWS then
-    dump_focused_line_command =
-      string.format("cmd.exe /C echo {}>%s", focused_line_file)
-  else
-    dump_focused_line_command = string.format("echo {}>%s", focused_line_file)
-  end
   local fzf_focus_binder = nil
   if use_builtin_previewer then
+    local dump_focused_line_command = nil
+    if consts.IS_WINDOWS then
+      dump_focused_line_command =
+        string.format("cmd.exe /C echo {}>%s", focused_line_file)
+    else
+      dump_focused_line_command = string.format("echo {}>%s", focused_line_file)
+    end
     fzf_focus_binder = fzf_helpers.FzfOptEventBinder:new("focus")
     fzf_focus_binder:append(
       string.format("execute-silent(%s)", dump_focused_line_command)
@@ -1037,6 +1037,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     })
   end
   table.insert(fzf_opts, fzf_start_binder:build())
+  if fzf_focus_binder then
+    table.insert(fzf_opts, fzf_focus_binder:build())
+  end
 
   -- fzf_opts
   fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
