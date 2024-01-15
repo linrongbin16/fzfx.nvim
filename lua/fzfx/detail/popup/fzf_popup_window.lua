@@ -98,9 +98,6 @@ M.make_opts = function(win_opts)
   end
 end
 
---- @type table<integer, fzfx.FzfPopupWindow>
-local FzfPopupWindowInstances = {}
-
 -- FzfPopupWindow {
 
 --- @class fzfx.FzfPopupWindow
@@ -146,8 +143,6 @@ function FzfPopupWindow:new(win_opts)
   }
   setmetatable(o, self)
   self.__index = self
-
-  FzfPopupWindowInstances[winnr] = o
   return o
 end
 
