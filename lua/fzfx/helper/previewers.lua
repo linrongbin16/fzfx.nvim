@@ -75,17 +75,19 @@ M.preview_files = function(filename, lineno)
   end
 end
 
+-- preview files with nvim builtin buffer.
+--
+--- @param filename string
+--- @param lineno integer?
+--- @param column integer?
+--- @return table
+M.builtin_preview_files = function(filename, lineno, column) end
+
 --- @param line string
 --- @return string[]
 M.preview_files_find = function(line)
   local parsed = parsers_helper.parse_find(line)
   return M.preview_files(parsed.filename)
-end
-
---- @param line string
---- @return table
-M.builtin_preview_files_find = function(line) 
-
 end
 
 -- files }
