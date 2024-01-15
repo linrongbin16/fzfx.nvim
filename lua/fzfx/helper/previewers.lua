@@ -92,6 +92,13 @@ M.preview_files_find = function(line)
   return M.preview_files(parsed.filename)
 end
 
+--- @param line string
+--- @return table
+M.builtin_preview_files_find = function(line)
+  local parsed = parsers_helper.parse_find(line)
+  return M.builtin_preview_files(parsed.filename)
+end
+
 -- files }
 
 -- live grep {

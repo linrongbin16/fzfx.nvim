@@ -53,21 +53,11 @@ function PopupWindow:close()
     self.instance:close()
     self.instance = nil
   end
-
-  if self.buffer_popup_win then
-    PopupWindowInstances[self.buffer_popup_win:handle()] = nil
-    self.buffer_popup_win:close()
-    self.buffer_popup_win = nil
-  end
 end
 
 function PopupWindow:resize()
   if self.instance then
     self.instance:resize()
-  end
-
-  if self.buffer_popup_win then
-    self.buffer_popup_win:resize()
   end
 end
 

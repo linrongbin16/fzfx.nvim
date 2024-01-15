@@ -100,12 +100,12 @@ M.providers = {
 M.previewers = {
   restricted_mode = {
     previewer = previewers_helper.preview_files_find,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+    previewer_type = PreviewerTypeEnum.BUILTIN_FILE,
     previewer_label = labels_helper.label_find,
   },
   unrestricted_mode = {
     previewer = previewers_helper.preview_files_find,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+    previewer_type = PreviewerTypeEnum.BUILTIN_FILE,
     previewer_label = labels_helper.label_find,
   },
 }
