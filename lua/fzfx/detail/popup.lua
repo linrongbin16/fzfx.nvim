@@ -1,6 +1,7 @@
 local numbers = require("fzfx.commons.numbers")
 local apis = require("fzfx.commons.apis")
 local fileios = require("fzfx.commons.fileios")
+local paths = require("fzfx.commons.paths")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -191,7 +192,7 @@ function Popup:new(
     -- vim.api.nvim_feedkeys(esc_key, "x", false)
 
     log.ensure(
-      vim.fn.filereadable(result) > 0,
+      paths.isfile(result),
       "|Popup:new.on_fzf_exit| result %s must be readable",
       vim.inspect(result)
     )
