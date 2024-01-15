@@ -1,11 +1,5 @@
-local tables = require("fzfx.commons.tables")
-
 --- @param opts fzfx.Options?
 local function setup(opts)
-  if tables.tbl_get(opts, "debug", "enable") then
-    opts.popup.win_opts.border = "single"
-  end
-
   -- configs
   local configs = require("fzfx.config").setup(opts)
 

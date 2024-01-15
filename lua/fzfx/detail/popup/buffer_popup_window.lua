@@ -183,19 +183,15 @@ function BufferPopupWindow:new(provider_win_opts, previewer_win_opts)
 
   --- @type integer
   local provider_bufnr = vim.api.nvim_create_buf(false, true)
-  -- setlocal bufhidden=wipe nobuflisted
-  -- setft=fzf
   apis.set_buf_option(provider_bufnr, "bufhidden", "wipe")
   apis.set_buf_option(provider_bufnr, "buflisted", false)
   apis.set_buf_option(provider_bufnr, "filetype", "fzf")
 
   --- @type integer
   local previewer_bufnr = vim.api.nvim_create_buf(false, true)
-  -- setlocal bufhidden=wipe nobuflisted
-  -- setft=fzf
   apis.set_buf_option(previewer_bufnr, "bufhidden", "wipe")
   apis.set_buf_option(previewer_bufnr, "buflisted", false)
-  apis.set_buf_option(previewer_bufnr, "filetype", "fzf_previewer")
+  apis.set_buf_option(previewer_bufnr, "filetype", "fzf")
 
   local provider_nvim_float_win_opts = M.make_provider_opts(provider_win_opts)
   local previewer_nvim_float_win_opts =
@@ -211,9 +207,6 @@ function BufferPopupWindow:new(provider_win_opts, previewer_win_opts)
 
   local provider_winnr =
     vim.api.nvim_open_win(provider_bufnr, true, provider_nvim_float_win_opts)
-  --- setlocal nospell nonumber
-  --- set winhighlight='Pmenu:,Normal:Normal'
-  --- set colorcolumn=''
   apis.set_win_option(provider_winnr, "spell", false)
   apis.set_win_option(provider_winnr, "number", false)
   apis.set_win_option(provider_winnr, "winhighlight", "Pmenu:,Normal:Normal")
