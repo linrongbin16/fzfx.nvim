@@ -194,8 +194,10 @@ function BufferPopupWindow:new(provider_win_opts, previewer_win_opts)
   apis.set_buf_option(previewer_bufnr, "filetype", "fzf")
 
   local provider_nvim_float_win_opts = M.make_provider_opts(provider_win_opts)
+  provider_nvim_float_win_opts.border = "single"
   local previewer_nvim_float_win_opts =
     M.make_previewer_opts(previewer_win_opts)
+  previewer_nvim_float_win_opts.border = "single"
   previewer_nvim_float_win_opts.focusable = false
 
   local previewer_winnr =
