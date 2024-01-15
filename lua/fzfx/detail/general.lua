@@ -385,6 +385,18 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
   return o
 end
 
+--- @return fzfx.PreviewerType
+function PreviewerSwitch:current_previewer_type()
+  local previewer_config = self.previewer_configs[self.pipeline]
+  log.ensure(
+    type(previewer_config) == "table",
+    "invalid previewer config in %s! previewer config: %s",
+    vim.inspect(self.pipeline),
+    vim.inspect(previewer_config)
+  )
+  return previewer_config.previewer_type
+end
+
 --- @param next_pipeline fzfx.PipelineName
 --- @return nil
 function PreviewerSwitch:switch(next_pipeline)
@@ -1052,6 +1064,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       { height = 1, width = 1, row = 0, col = 0 }
     )
   end
+  if
+    previewer_switch:current_previewer_type() == PreviewerTypeEnum.BUILTIN_FILE
+  then
+    table.insert(fzf_opts, { "--preview-window", "hidden" })
+  end
 
   local p = Popup:new(
     win_opts or {},
@@ -1077,7 +1094,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         log.debug("|general| dump last query:%s", vim.inspect(bytes))
       end)
     end,
-    true
+    pipeline_configs.previewers[default_pipeline].previewer_type
+      == "builtin_file"
   )
   return p
 end

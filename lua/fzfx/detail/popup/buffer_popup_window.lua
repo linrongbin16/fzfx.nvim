@@ -51,7 +51,7 @@ M._make_provider_center_opts = function(opts)
     total_width,
     width,
     opts.col,
-    -math.floor(width / 2)
+    -math.floor(width / 2) - 1
   )
 
   return {
@@ -95,7 +95,7 @@ M._make_previewer_center_opts = function(opts)
     total_width,
     width,
     opts.col,
-    math.floor(width / 2)
+    math.floor(width / 2) + 1
   )
 
   return {
