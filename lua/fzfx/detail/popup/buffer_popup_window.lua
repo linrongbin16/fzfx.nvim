@@ -77,8 +77,8 @@ M._make_previewer_center_opts = function(opts)
     or vim.api.nvim_win_get_width(0)
   local total_height = relative == "editor" and vim.o.lines
     or vim.api.nvim_win_get_height(0)
-  local width = popup_helpers._get_window_size(opts.width, total_width)
-  local height = popup_helpers._get_window_size(opts.height, total_height)
+  local width = popup_helpers.get_window_size(opts.width, total_width)
+  local height = popup_helpers.get_window_size(opts.height, total_height)
 
   log.ensure(
     (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
