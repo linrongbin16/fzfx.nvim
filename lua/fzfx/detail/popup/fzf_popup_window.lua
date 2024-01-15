@@ -113,9 +113,8 @@ local FzfPopupWindow = {}
 
 --- @package
 --- @param win_opts fzfx.WindowOpts
---- @param builtin_preview_win_opts fzfx.WindowOpts?
 --- @return fzfx.FzfPopupWindow
-function FzfPopupWindow:new(win_opts, builtin_preview_win_opts)
+function FzfPopupWindow:new(win_opts)
   -- save current window context
   local window_opts_context = fzf_helpers.WindowOptsContext:save()
 

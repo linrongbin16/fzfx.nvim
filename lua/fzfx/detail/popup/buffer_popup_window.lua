@@ -155,27 +155,22 @@ end
 
 -- previewer window }
 
---- @type table<integer, fzfx.BufferPopupWindow>
-local BufferPopupWindowInstances = {}
-
 -- BufferPopupWindow {
 
 --- @class fzfx.BufferPopupWindow
 --- @field window_opts_context fzfx.WindowOptsContext?
 --- @field provider_bufnr integer?
 --- @field provider_winnr integer?
---- @field _saved_provider_win_opts fzfx.WindowOpts
 --- @field previewer_bufnr integer?
 --- @field previewer_winnr integer?
---- @field _saved_previewer_win_opts fzfx.WindowOpts
+--- @field _saved_win_opts fzfx.WindowOpts
 --- @field _resizing boolean
 local BufferPopupWindow = {}
 
 --- @package
---- @param provider_win_opts fzfx.WindowOpts
---- @param previewer_win_opts fzfx.WindowOpts
+--- @param win_opts fzfx.WindowOpts
 --- @return fzfx.BufferPopupWindow
-function BufferPopupWindow:new(provider_win_opts, previewer_win_opts)
+function BufferPopupWindow:new(win_opts)
   -- save current window context
   local window_opts_context = popup_helpers.WindowOptsContext:save()
 
@@ -191,10 +186,9 @@ function BufferPopupWindow:new(provider_win_opts, previewer_win_opts)
   apis.set_buf_option(previewer_bufnr, "buflisted", false)
   apis.set_buf_option(previewer_bufnr, "filetype", "fzf")
 
-  local provider_nvim_float_win_opts = M.make_provider_opts(provider_win_opts)
+  local provider_nvim_float_win_opts = M.make_provider_opts(win_opts)
   provider_nvim_float_win_opts.border = "single"
-  local previewer_nvim_float_win_opts =
-    M.make_previewer_opts(previewer_win_opts)
+  local previewer_nvim_float_win_opts = M.make_previewer_opts(win_opts)
   previewer_nvim_float_win_opts.border = "single"
   previewer_nvim_float_win_opts.focusable = false
 
@@ -215,16 +209,13 @@ function BufferPopupWindow:new(provider_win_opts, previewer_win_opts)
     window_opts_context = window_opts_context,
     provider_bufnr = provider_bufnr,
     provider_winnr = provider_winnr,
-    _saved_provider_win_opts = provider_win_opts,
     previewer_bufnr = previewer_bufnr,
     previewer_winnr = previewer_winnr,
-    _saved_previewer_win_opts = previewer_win_opts,
+    _saved_win_opts = win_opts,
     _resizing = false,
   }
   setmetatable(o, self)
   self.__index = self
-
-  BufferPopupWindowInstances[provider_winnr] = o
   return o
 end
 
@@ -239,11 +230,6 @@ function BufferPopupWindow:close()
   end
 
   self.window_opts_context:restore()
-
-  local instance = BufferPopupWindowInstances[self.provider_winnr]
-  if instance then
-    BufferPopupWindowInstances[self.provider_winnr] = nil
-  end
 end
 
 function BufferPopupWindow:resize()
@@ -252,9 +238,9 @@ function BufferPopupWindow:resize()
   end
   self._resizing = true
   local provider_nvim_float_win_opts =
-    M.make_provider_opts(self._saved_provider_win_opts)
+    M.make_provider_opts(self._saved_win_opts)
   local previewer_nvim_float_win_opts =
-    M.make_previewer_opts(self._saved_previewer_win_opts)
+    M.make_previewer_opts(self._saved_win_opts)
   vim.api.nvim_win_set_config(self.provider_winnr, provider_nvim_float_win_opts)
   vim.api.nvim_win_set_config(
     self.previewer_winnr,

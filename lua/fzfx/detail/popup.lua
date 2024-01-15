@@ -14,67 +14,28 @@ local buffer_popup_window = require("fzfx.detail.popup.buffer_popup_window")
 local PopupWindowInstances = {}
 
 --- @class fzfx.PopupWindow
---- @field fzf_popup_window fzfx.FzfPopupWindow?
---- @field buffer_popup_window fzfx.BufferPopupWindow?
+--- @field fzf_popup_win fzfx.FzfPopupWindow?
+--- @field buffer_popup_win fzfx.BufferPopupWindow?
 local PopupWindow = {}
 
 --- @package
 --- @param win_opts fzfx.WindowOpts
+--- @param window_type "fzf"|"buffer"
 --- @return fzfx.PopupWindow
-function PopupWindow:new(win_opts)
-  -- check executable: nvim, fzf
+function PopupWindow:new(win_opts, window_type)
+  -- check executables
   fzf_helpers.nvim_exec()
   fzf_helpers.fzf_exec()
 
-  --- @type integer
-  local bufnr = vim.api.nvim_create_buf(false, true)
-  -- setlocal bufhidden=wipe nobuflisted
-  -- setft=fzf
-  apis.set_buf_option(bufnr, "bufhidden", "wipe")
-  apis.set_buf_option(bufnr, "buflisted", false)
-  apis.set_buf_option(bufnr, "filetype", "fzf")
-
-  --- @type integer
-  local preview_bufnr = vim.api.nvim_create_buf(false, true)
-  -- setlocal bufhidden=wipe nobuflisted
-  -- setft=fzf
-  apis.set_buf_option(preview_bufnr, "bufhidden", "wipe")
-  apis.set_buf_option(preview_bufnr, "buflisted", false)
-  apis.set_buf_option(preview_bufnr, "filetype", "fzf_previewer")
-
-  local popup_window_config = nil
-  local preview_window_config = nil
-  if builtin_preview_win_opts then
-    popup_window_config = _make_provider_window_config(win_opts)
-    preview_window_config =
-      _make_previewer_window_config(builtin_preview_win_opts)
-    preview_window_config.focusable = false
-  else
-    popup_window_config = fzf_popup_window.make_opts(win_opts)
+  local fzf_popup_win = nil
+  local buffer_popup_win = nil
+  if window_type == 'fzf' then
+    fzf_popup_win = fzf_popup_window.FzfPopupWindow:new(win_opts)
+  elseif window_type == 'buffer' then
+    buffer_popup_win = buffer_popup_window.BufferPopupWindow:new(win_opts)
   end
 
-  local preview_winnr =
-    vim.api.nvim_open_win(preview_bufnr, true, preview_window_config)
-
-  apis.set_win_option(preview_winnr, "spell", false)
-  apis.set_win_option(preview_winnr, "number", false)
-  apis.set_win_option(preview_winnr, "winhighlight", "Pmenu:,Normal:Normal")
-  apis.set_win_option(preview_winnr, "colorcolumn", "")
-
-  local winnr = vim.api.nvim_open_win(bufnr, true, popup_window_config)
-  --- setlocal nospell nonumber
-  --- set winhighlight='Pmenu:,Normal:Normal'
-  --- set colorcolumn=''
-  apis.set_win_option(winnr, "spell", false)
-  apis.set_win_option(winnr, "number", false)
-  apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
-  apis.set_win_option(winnr, "colorcolumn", "")
-
   local o = {
-    bufnr = bufnr,
-    winnr = winnr,
-    _saved_win_opts = win_opts,
-    _resizing = false,
   }
   setmetatable(o, self)
   self.__index = self
@@ -86,26 +47,26 @@ end
 function PopupWindow:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 
-  if self.fzf_popup_window then
-    PopupWindowInstances[self.fzf_popup_window:handle()] = nil
-    self.fzf_popup_window:close()
-    self.fzf_popup_window = nil
+  if self.fzf_popup_win then
+    PopupWindowInstances[self.fzf_popup_win:handle()] = nil
+    self.fzf_popup_win:close()
+    self.fzf_popup_win = nil
   end
 
-  if self.buffer_popup_window then
-    PopupWindowInstances[self.buffer_popup_window:handle()] = nil
-    self.buffer_popup_window:close()
-    self.buffer_popup_window = nil
+  if self.buffer_popup_win then
+    PopupWindowInstances[self.buffer_popup_win:handle()] = nil
+    self.buffer_popup_win:close()
+    self.buffer_popup_win = nil
   end
 end
 
 function PopupWindow:resize()
-  if self.fzf_popup_window then
-    self.fzf_popup_window:resize()
+  if self.fzf_popup_win then
+    self.fzf_popup_win:resize()
   end
 
-  if self.buffer_popup_window then
-    self.buffer_popup_window:resize()
+  if self.buffer_popup_win then
+    self.buffer_popup_win:resize()
   end
 end
 
@@ -364,12 +325,6 @@ local function setup()
 end
 
 local M = {
-  _make_window_size = _get_window_size,
-  _shift_window_pos = _shift_window_pos,
-  _make_cursor_config = _make_cursor_window_config,
-  _make_center_config = _make_center_window_config,
-  _make_window_config = _make_window_config,
-
   _get_instances = _get_instances,
   _clear_instances = _clear_instances,
   _count_instances = _count_instances,
@@ -378,6 +333,7 @@ local M = {
   _make_expect_keys = _make_expect_keys,
   _merge_fzf_actions = _merge_fzf_actions,
   _make_fzf_command = _make_fzf_command,
+
   PopupWindow = PopupWindow,
   Popup = Popup,
   setup = setup,
