@@ -46,8 +46,8 @@ M._make_provider_center_opts = function(opts)
     "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
     vim.inspect(opts)
   )
-  local row = popup_helpers._shift_window_pos(total_height, height, opts.row)
-  local col = popup_helpers._shift_window_pos(
+  local row = popup_helpers.shift_window_pos(total_height, height, opts.row)
+  local col = popup_helpers.shift_window_pos(
     total_width,
     width,
     opts.col,
@@ -90,8 +90,8 @@ M._make_previewer_center_opts = function(opts)
     "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
     vim.inspect(opts)
   )
-  local row = popup_helpers._shift_window_pos(total_height, height, opts.row)
-  local col = popup_helpers._shift_window_pos(
+  local row = popup_helpers.shift_window_pos(total_height, height, opts.row)
+  local col = popup_helpers.shift_window_pos(
     total_width,
     width,
     opts.col,
