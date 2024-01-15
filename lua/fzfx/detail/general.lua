@@ -57,6 +57,11 @@ local function _fzf_port_file()
   return _make_cache_filename("fzf", "port", "file")
 end
 
+--- @return string
+local function _focused_linefile(name)
+  return _make_cache_filename(name, "focused", "linefile")
+end
+
 --- @class fzfx.ProviderMetaOpts
 --- @field pipeline fzfx.PipelineName
 --- @field provider_type fzfx.ProviderType
@@ -788,6 +793,7 @@ end
 --- @return fzfx.Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
   local fzf_port_file = _fzf_port_file()
+  local focused_line_file = _focused_linefile()
   local pipeline_size = get_pipeline_size(pipeline_configs)
 
   local default_provider_key = nil
@@ -917,6 +923,20 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   fzf_start_binder:append(
     string.format("execute-silent(%s)", dump_fzf_port_command)
   )
+  local dump_focused_line_command = nil
+  if consts.IS_WINDOWS then
+    dump_focused_line_command =
+      string.format("cmd.exe /C echo {}>%s", focused_line_file)
+  else
+    dump_focused_line_command = string.format("echo {}>%s", focused_line_file)
+  end
+  local fzf_focus_binder = nil
+  if use_builtin_previewer then
+    fzf_focus_binder = fzf_helpers.FzfOptEventBinder:new("focus")
+    fzf_focus_binder:append(
+      string.format("execute-silent(%s)", dump_focused_line_command)
+    )
+  end
 
   local header_switch =
     HeaderSwitch:new(pipeline_configs.providers, pipeline_configs.interactions)
