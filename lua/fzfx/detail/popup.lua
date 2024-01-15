@@ -6,6 +6,7 @@ local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
+local popup_helpers = require("fzfx.detail.popup.helpers")
 local fzf_popup_window = require("fzfx.detail.popup.fzf_popup_window")
 local buffer_popup_window = require("fzfx.detail.popup.buffer_popup_window")
 
@@ -24,9 +25,6 @@ function PopupWindow:new(win_opts)
   -- check executable: nvim, fzf
   fzf_helpers.nvim_exec()
   fzf_helpers.fzf_exec()
-
-  -- save current window context
-  local window_opts_context = WindowOptsContext:save()
 
   --- @type integer
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -280,7 +278,7 @@ function Popup:new(
   end
 
   -- save shell opts
-  local shell_opts_context = ShellOptsContext:save()
+  local shell_opts_context = popup_helpers.ShellOptsContext:save()
   local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
   local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
   vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()

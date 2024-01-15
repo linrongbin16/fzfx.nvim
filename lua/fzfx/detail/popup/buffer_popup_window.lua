@@ -12,11 +12,11 @@ local M = {}
 -- cursor window {
 
 --- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
+--- @return fzfx.NvimFloatWinOpts
 M._make_provider_cursor_opts = function(opts) end
 
 --- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
+--- @return fzfx.NvimFloatWinOpts
 M._make_previewer_cursor_opts = function(opts) end
 
 -- cursor window }
@@ -24,7 +24,7 @@ M._make_previewer_cursor_opts = function(opts) end
 -- center window {
 
 --- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
+--- @return fzfx.NvimFloatWinOpts
 M._make_provider_center_opts = function(opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
   opts.width = opts.width / 2
@@ -68,7 +68,7 @@ M._make_provider_center_opts = function(opts)
 end
 
 --- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
+--- @return fzfx.NvimFloatWinOpts
 M._make_previewer_center_opts = function(opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
   opts.width = opts.width / 2
@@ -116,7 +116,7 @@ end
 -- provider window {
 
 --- @param win_opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
+--- @return fzfx.NvimFloatWinOpts
 M.make_provider_opts = function(win_opts)
   local opts = vim.deepcopy(win_opts)
   local relative = opts.relative or "editor"
@@ -137,7 +137,7 @@ end
 -- previewer window {
 
 --- @param win_opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
+--- @return fzfx.NvimFloatWinOpts
 M.make_previewer_opts = function(win_opts)
   local opts = vim.deepcopy(win_opts)
   local relative = opts.relative or "editor"
