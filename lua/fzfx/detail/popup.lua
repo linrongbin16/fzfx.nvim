@@ -7,370 +7,20 @@ local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
 local fzf_popup_window = require("fzfx.detail.popup.fzf_popup_window")
-
--- WindowOptsContext {
-
---- @class fzfx.WindowOptsContext
---- @field bufnr integer
---- @field tabnr integer
---- @field winnr integer
-local WindowOptsContext = {}
-
---- @return fzfx.WindowOptsContext
-function WindowOptsContext:save()
-  local o = {
-    bufnr = vim.api.nvim_get_current_buf(),
-    winnr = vim.api.nvim_get_current_win(),
-    tabnr = vim.api.nvim_get_current_tabpage(),
-  }
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
-
-function WindowOptsContext:restore()
-  if vim.api.nvim_tabpage_is_valid(self.tabnr) then
-    vim.api.nvim_set_current_tabpage(self.tabnr)
-  end
-  if vim.api.nvim_win_is_valid(self.winnr) then
-    vim.api.nvim_set_current_win(self.winnr)
-  end
-end
-
--- WindowOptsContext }
-
--- ShellOptsContext {
-
---- @class fzfx.ShellOptsContext
---- @field shell string?
---- @field shellslash string?
---- @field shellcmdflag string?
---- @field shellxquote string?
---- @field shellquote string?
---- @field shellredir string?
---- @field shellpipe string?
---- @field shellxescape string?
-local ShellOptsContext = {}
-
---- @return fzfx.ShellOptsContext
-function ShellOptsContext:save()
-  local o = constants.IS_WINDOWS
-      and {
-        shell = vim.o.shell,
-        shellslash = vim.o.shellslash,
-        shellcmdflag = vim.o.shellcmdflag,
-        shellxquote = vim.o.shellxquote,
-        shellquote = vim.o.shellquote,
-        shellredir = vim.o.shellredir,
-        shellpipe = vim.o.shellpipe,
-        shellxescape = vim.o.shellxescape,
-      }
-    or {
-      shell = vim.o.shell,
-    }
-  setmetatable(o, self)
-  self.__index = self
-
-  if constants.IS_WINDOWS then
-    vim.o.shell = "cmd.exe"
-    vim.o.shellslash = false
-    vim.o.shellcmdflag = "/s /c"
-    vim.o.shellxquote = '"'
-    vim.o.shellquote = ""
-    vim.o.shellredir = ">%s 2>&1"
-    vim.o.shellpipe = "2>&1| tee"
-    vim.o.shellxescape = ""
-  else
-    vim.o.shell = "sh"
-  end
-
-  return o
-end
-
-function ShellOptsContext:restore()
-  if constants.IS_WINDOWS then
-    vim.o.shell = self.shell
-    vim.o.shellslash = self.shellslash
-    vim.o.shellcmdflag = self.shellcmdflag
-    vim.o.shellxquote = self.shellxquote
-    vim.o.shellquote = self.shellquote
-    vim.o.shellredir = self.shellredir
-    vim.o.shellpipe = self.shellpipe
-    vim.o.shellxescape = self.shellxescape
-  else
-    vim.o.shell = self.shell
-  end
-end
-
--- ShellOptsContext }
-
---- @package
---- @param value number
---- @param size integer
---- @return integer
-local function _get_window_size(value, size)
-  return numbers.bound(value > 1 and value or math.floor(size * value), 3, size)
-end
-
---- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
-local function _make_cursor_window_config(opts)
-  local relative = "cursor"
-  local total_width = vim.api.nvim_win_get_width(0)
-  local total_height = vim.api.nvim_win_get_height(0)
-  local width = _get_window_size(opts.width, total_width)
-  local height = _get_window_size(opts.height, total_height)
-
-  log.ensure(
-    opts.row >= 0,
-    "window row (%s) opts must >= 0!",
-    vim.inspect(opts)
-  )
-  log.ensure(
-    opts.row >= 0,
-    "window col (%s) opts must >= 0!",
-    vim.inspect(opts)
-  )
-  local row = opts.row
-  local col = opts.col
-
-  return {
-    anchor = "NW",
-    relative = relative,
-    width = width,
-    height = height,
-    row = row,
-    col = col,
-    style = "minimal",
-    border = opts.border,
-    zindex = opts.zindex,
-  }
-end
-
---- @param total_size integer
---- @param size integer
---- @param shift number
---- @param additional_offset integer?
---- @return number
-local function _shift_window_pos(total_size, size, shift, additional_offset)
-  additional_offset = additional_offset or 0
-  local left_size = total_size - size
-  local half_left_size = math.floor(left_size * 0.5)
-  if shift >= 0 then
-    local offset = shift < 1 and math.floor(left_size * shift) or shift
-    return numbers.bound(
-      half_left_size + offset + additional_offset,
-      0,
-      left_size
-    )
-  else
-    local offset = shift > -1 and math.floor(left_size * shift) or shift
-    return numbers.bound(
-      half_left_size + offset + additional_offset,
-      0,
-      left_size
-    )
-  end
-end
-
---- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
-local function _make_center_window_config(opts)
-  local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
-  local total_width = relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(0)
-  local total_height = relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(0)
-  local width = _get_window_size(opts.width, total_width)
-  local height = _get_window_size(opts.height, total_height)
-
-  log.ensure(
-    (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
-    "window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-    vim.inspect(opts)
-  )
-  log.ensure(
-    (opts.col >= -0.5 and opts.col <= 0.5) or opts.col <= -1 or opts.col >= 1,
-    "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-    vim.inspect(opts)
-  )
-  local row = _shift_window_pos(total_height, height, opts.row)
-  local col = _shift_window_pos(total_width, width, opts.col)
-
-  return {
-    anchor = "NW",
-    relative = relative,
-    width = width,
-    height = height,
-    row = row,
-    col = col,
-    style = "minimal",
-    border = opts.border,
-    zindex = opts.zindex,
-  }
-end
-
---- @alias fzfx.PopupWindowConfig {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
---
---- @param win_opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
-local function _make_window_config(win_opts)
-  local opts = vim.deepcopy(win_opts)
-  local relative = opts.relative or "editor"
-  log.ensure(
-    relative == "cursor" or relative == "editor" or relative == "win",
-    "window relative (%s) must be editor/win/cursor",
-    vim.inspect(relative)
-  )
-  if relative == "cursor" then
-    return _make_cursor_window_config(opts)
-  else
-    return _make_center_window_config(opts)
-  end
-end
-
--- builtin provider/previewer window {
-
---- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
-local function _make_provider_cursor_window_config(opts) end
-
---- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
-local function _make_provider_center_window_config(opts)
-  local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
-  opts.width = opts.width / 2
-
-  local total_width = relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(0)
-  local total_height = relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(0)
-  local width = _get_window_size(opts.width, total_width)
-  local height = _get_window_size(opts.height, total_height)
-
-  log.ensure(
-    (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
-    "window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-    vim.inspect(opts)
-  )
-  log.ensure(
-    (opts.col >= -0.5 and opts.col <= 0.5) or opts.col <= -1 or opts.col >= 1,
-    "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-    vim.inspect(opts)
-  )
-  local row = _shift_window_pos(total_height, height, opts.row)
-  local col =
-    _shift_window_pos(total_width, width, opts.col, -math.floor(width / 2))
-
-  return {
-    anchor = "NW",
-    relative = relative,
-    width = width,
-    height = height,
-    row = row,
-    col = col,
-    style = "minimal",
-    border = opts.border,
-    zindex = opts.zindex,
-  }
-end
-
---- @param win_opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
-local function _make_provider_window_config(win_opts)
-  local opts = vim.deepcopy(win_opts)
-  local relative = opts.relative or "editor"
-  log.ensure(
-    relative == "cursor" or relative == "editor" or relative == "win",
-    "window relative (%s) must be editor/win/cursor",
-    vim.inspect(opts)
-  )
-  if relative == "cursor" then
-    return _make_provider_cursor_window_config(opts)
-  else
-    return _make_provider_center_window_config(opts)
-  end
-end
-
---- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
-local function _make_previewer_cursor_window_config(opts) end
-
---- @param opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
-local function _make_previewer_center_window_config(opts)
-  local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
-  opts.width = opts.width / 2
-
-  local total_width = relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(0)
-  local total_height = relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(0)
-  local width = _get_window_size(opts.width, total_width)
-  local height = _get_window_size(opts.height, total_height)
-
-  log.ensure(
-    (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
-    "window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-    vim.inspect(opts)
-  )
-  log.ensure(
-    (opts.col >= -0.5 and opts.col <= 0.5) or opts.col <= -1 or opts.col >= 1,
-    "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-    vim.inspect(opts)
-  )
-  local row = _shift_window_pos(total_height, height, opts.row)
-  local col =
-    _shift_window_pos(total_width, width, opts.col, math.floor(width / 2))
-
-  return {
-    anchor = "NW",
-    relative = relative,
-    width = width,
-    height = height,
-    row = row,
-    col = col,
-    style = "minimal",
-    border = opts.border,
-    zindex = opts.zindex,
-  }
-end
-
---- @param win_opts fzfx.WindowOpts
---- @return fzfx.PopupWindowConfig
-local function _make_previewer_window_config(win_opts)
-  local opts = vim.deepcopy(win_opts)
-  local relative = opts.relative or "editor"
-  log.ensure(
-    relative == "cursor" or relative == "editor" or relative == "win",
-    "window relative (%s) must be editor/win/cursor",
-    vim.inspect(opts)
-  )
-  if relative == "cursor" then
-    return _make_previewer_cursor_window_config(opts)
-  else
-    return _make_previewer_center_window_config(opts)
-  end
-end
-
--- builtin provider/previewer window }
+local buffer_popup_window = require("fzfx.detail.popup.buffer_popup_window")
 
 --- @type table<integer, fzfx.PopupWindow>
 local PopupWindowInstances = {}
 
 --- @class fzfx.PopupWindow
---- @field window_opts_context fzfx.WindowOptsContext?
---- @field bufnr integer?
---- @field winnr integer?
---- @field _saved_win_opts fzfx.WindowOpts
---- @field _resizing boolean
+--- @field fzf_popup_window fzfx.FzfPopupWindow?
+--- @field buffer_popup_window fzfx.BufferPopupWindow?
 local PopupWindow = {}
 
 --- @package
 --- @param win_opts fzfx.WindowOpts
---- @param builtin_preview_win_opts fzfx.WindowOpts?
 --- @return fzfx.PopupWindow
-function PopupWindow:new(win_opts, builtin_preview_win_opts)
+function PopupWindow:new(win_opts)
   -- check executable: nvim, fzf
   fzf_helpers.nvim_exec()
   fzf_helpers.fzf_exec()
@@ -423,7 +73,6 @@ function PopupWindow:new(win_opts, builtin_preview_win_opts)
   apis.set_win_option(winnr, "colorcolumn", "")
 
   local o = {
-    window_opts_context = window_opts_context,
     bufnr = bufnr,
     winnr = winnr,
     _saved_win_opts = win_opts,
@@ -439,34 +88,27 @@ end
 function PopupWindow:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 
-  if vim.api.nvim_win_is_valid(self.winnr) then
-    vim.api.nvim_win_close(self.winnr, true)
-    -- else
-    --     log.debug(
-    --         "cannot close invalid popup window! %s",
-    --         vim.inspect(self.winnr)
-    --     )
+  if self.fzf_popup_window then
+    PopupWindowInstances[self.fzf_popup_window:handle()] = nil
+    self.fzf_popup_window:close()
+    self.fzf_popup_window = nil
   end
 
-  ---@diagnostic disable-next-line: undefined-field
-  self.window_opts_context:restore()
-
-  local instance = PopupWindowInstances[self.winnr]
-  if instance then
-    PopupWindowInstances[self.winnr] = nil
+  if self.buffer_popup_window then
+    PopupWindowInstances[self.buffer_popup_window:handle()] = nil
+    self.buffer_popup_window:close()
+    self.buffer_popup_window = nil
   end
 end
 
 function PopupWindow:resize()
-  if self._resizing then
-    return
+  if self.fzf_popup_window then
+    self.fzf_popup_window:resize()
   end
-  self._resizing = true
-  local new_popup_window_config = _make_window_config(self._saved_win_opts)
-  vim.api.nvim_win_set_config(self.winnr, new_popup_window_config)
-  vim.schedule(function()
-    self._resizing = false
-  end)
+
+  if self.buffer_popup_window then
+    self.buffer_popup_window:resize()
+  end
 end
 
 --- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
@@ -678,17 +320,19 @@ function Popup:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 end
 
+-- PopupWindowInstances {
+
 --- @return table<integer, fzfx.PopupWindow>
-local function _get_all_popup_window_instances()
+local function _get_instances()
   return PopupWindowInstances
 end
 
-local function _remove_all_popup_window_instances()
+local function _clear_instances()
   PopupWindowInstances = {}
 end
 
 --- @return integer
-local function _count_all_popup_window_instances()
+local function _count_instances()
   local n = 0
   for _, p in pairs(PopupWindowInstances) do
     n = n + 1
@@ -696,27 +340,25 @@ local function _count_all_popup_window_instances()
   return n
 end
 
-local function resize_all_popup_window_instances()
-  -- log.debug(
-  --     "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
-  --     vim.inspect(PopupWindowInstances)
-  -- )
-  for winnr, popup_win in pairs(PopupWindowInstances) do
-    if winnr and popup_win then
+local function _resize_instances()
+  for _, popup_win in pairs(PopupWindowInstances) do
+    if popup_win then
       popup_win:resize()
     end
   end
 end
 
+-- PopupWindowInstances }
+
 local function setup()
   vim.api.nvim_create_autocmd({ "VimResized" }, {
     pattern = { "*" },
-    callback = resize_all_popup_window_instances,
+    callback = _resize_instances,
   })
   if vim.fn.has("nvim-0.9") > 0 then
     vim.api.nvim_create_autocmd({ "WinResized" }, {
       pattern = { "*" },
-      callback = resize_all_popup_window_instances,
+      callback = _resize_instances,
     })
   end
 end
@@ -727,9 +369,12 @@ local M = {
   _make_cursor_config = _make_cursor_window_config,
   _make_center_config = _make_center_window_config,
   _make_window_config = _make_window_config,
-  _get_all_popup_window_instances = _get_all_popup_window_instances,
-  _remove_all_popup_window_instances = _remove_all_popup_window_instances,
-  _count_all_popup_window_instances = _count_all_popup_window_instances,
+
+  _get_instances = _get_instances,
+  _clear_instances = _clear_instances,
+  _count_instances = _count_instances,
+  _resize_instances = _resize_instances,
+
   _make_expect_keys = _make_expect_keys,
   _merge_fzf_actions = _merge_fzf_actions,
   _make_fzf_command = _make_fzf_command,

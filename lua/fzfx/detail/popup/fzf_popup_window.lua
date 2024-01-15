@@ -116,10 +116,6 @@ local FzfPopupWindow = {}
 --- @param builtin_preview_win_opts fzfx.WindowOpts?
 --- @return fzfx.FzfPopupWindow
 function FzfPopupWindow:new(win_opts, builtin_preview_win_opts)
-  -- check executable: nvim, fzf
-  fzf_helpers.nvim_exec()
-  fzf_helpers.fzf_exec()
-
   -- save current window context
   local window_opts_context = fzf_helpers.WindowOptsContext:save()
 
@@ -189,38 +185,13 @@ function FzfPopupWindow:resize()
   end)
 end
 
+--- @return integer
+function FzfPopupWindow:handle()
+  return self.winnr
+end
+
 M.FzfPopupWindow = FzfPopupWindow
 
 -- FzfPopupWindow }
-
---- @return table<integer, fzfx.FzfPopupWindow>
-M._get_instances = function()
-  return FzfPopupWindowInstances
-end
-
-M._clear_instances = function()
-  FzfPopupWindowInstances = {}
-end
-
---- @return integer
-M._instances_count = function()
-  local n = 0
-  for _, p in pairs(FzfPopupWindowInstances) do
-    n = n + 1
-  end
-  return n
-end
-
-M.resize_instances = function()
-  -- log.debug(
-  --     "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
-  --     vim.inspect(PopupWindowInstances)
-  -- )
-  for winnr, popup_win in pairs(FzfPopupWindowInstances) do
-    if winnr and popup_win then
-      popup_win:resize()
-    end
-  end
-end
 
 return M

@@ -176,10 +176,6 @@ local BufferPopupWindow = {}
 --- @param previewer_win_opts fzfx.WindowOpts
 --- @return fzfx.BufferPopupWindow
 function BufferPopupWindow:new(provider_win_opts, previewer_win_opts)
-  -- check executable: nvim, fzf
-  fzf_helpers.nvim_exec()
-  fzf_helpers.fzf_exec()
-
   -- save current window context
   local window_opts_context = popup_helpers.WindowOptsContext:save()
 
@@ -269,38 +265,13 @@ function BufferPopupWindow:resize()
   end)
 end
 
+--- @return integer
+function BufferPopupWindow:handle()
+  return self.provider_winnr
+end
+
 M.BufferPopupWindow = BufferPopupWindow
 
 -- BufferPopupWindow }
-
---- @return table<integer, fzfx.BufferPopupWindow>
-M._get_instances = function()
-  return BufferPopupWindowInstances
-end
-
-M._clear_instances = function()
-  BufferPopupWindowInstances = {}
-end
-
---- @return integer
-M._instances_count = function()
-  local n = 0
-  for _, p in pairs(BufferPopupWindowInstances) do
-    n = n + 1
-  end
-  return n
-end
-
-M.resize_instances = function()
-  -- log.debug(
-  --     "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
-  --     vim.inspect(PopupWindowInstances)
-  -- )
-  for winnr, popup_win in pairs(BufferPopupWindowInstances) do
-    if winnr and popup_win then
-      popup_win:resize()
-    end
-  end
-end
 
 return M
