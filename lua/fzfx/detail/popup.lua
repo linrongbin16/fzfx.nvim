@@ -47,7 +47,6 @@ function PopupWindow:new(win_opts, window_type)
   elseif buffer_popup_win then
     PopupWindowInstances[buffer_popup_win:handle()] = self
   end
-
   return o
 end
 

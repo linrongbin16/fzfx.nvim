@@ -204,6 +204,7 @@ function BufferPopupWindow:new(win_opts)
   apis.set_win_option(provider_winnr, "number", false)
   apis.set_win_option(provider_winnr, "winhighlight", "Pmenu:,Normal:Normal")
   apis.set_win_option(provider_winnr, "colorcolumn", "")
+  vim.api.nvim_set_current_win(provider_winnr)
 
   local o = {
     window_opts_context = window_opts_context,
