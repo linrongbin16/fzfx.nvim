@@ -139,13 +139,13 @@ local function _make_fzf_command(fzf_opts, actions, result)
 end
 
 --- @alias fzfx.OnPopupExit fun(last_query:string):nil
---- @param builtin_previewer boolean
 --- @param win_opts fzfx.WindowOpts
 --- @param source string
 --- @param fzf_opts fzfx.Options
 --- @param actions fzfx.Options
 --- @param context fzfx.PipelineContext
 --- @param on_close fzfx.OnPopupExit?
+--- @param builtin_previewer boolean?
 --- @return fzfx.Popup
 function Popup:new(
   win_opts,
@@ -158,7 +158,8 @@ function Popup:new(
 )
   local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
-  local popup_window = PopupWindow:new(win_opts, builtin_previewer)
+  local popup_window =
+    PopupWindow:new(win_opts, builtin_previewer and "buffer" or "fzf")
 
   local function on_fzf_exit(jobid2, exitcode, event)
     log.debug(
