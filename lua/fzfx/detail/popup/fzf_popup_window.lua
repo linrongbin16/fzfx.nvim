@@ -193,7 +193,7 @@ M.FzfPopupWindow = FzfPopupWindow
 
 -- FzfPopupWindow }
 
---- @return table<integer, fzfx.PopupWindow>
+--- @return table<integer, fzfx.FzfPopupWindow>
 M._get_instances = function()
   return FzfPopupWindowInstances
 end
