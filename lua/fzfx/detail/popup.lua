@@ -15,8 +15,7 @@ local buffer_popup_window = require("fzfx.detail.popup.buffer_popup_window")
 local PopupWindowInstances = {}
 
 --- @class fzfx.PopupWindow
---- @field fzf_popup_win fzfx.FzfPopupWindow?
---- @field buffer_popup_win fzfx.BufferPopupWindow?
+--- @field instance fzfx.FzfPopupWindow|fzfx.BufferPopupWindow
 local PopupWindow = {}
 
 --- @package
@@ -28,36 +27,31 @@ function PopupWindow:new(win_opts, window_type)
   fzf_helpers.nvim_exec()
   fzf_helpers.fzf_exec()
 
-  local fzf_popup_win = nil
-  local buffer_popup_win = nil
+  --- @type fzfx.FzfPopupWindow|fzfx.BufferPopupWindow
+  local instance = nil
   if window_type == "fzf" then
-    fzf_popup_win = fzf_popup_window.FzfPopupWindow:new(win_opts)
+    instance = fzf_popup_window.FzfPopupWindow:new(win_opts)
   elseif window_type == "buffer" then
-    buffer_popup_win = buffer_popup_window.BufferPopupWindow:new(win_opts)
+    instance = buffer_popup_window.BufferPopupWindow:new(win_opts)
   end
+  PopupWindowInstances[instance:handle()] = self
 
   local o = {
-    fzf_popup_win = fzf_popup_win,
-    buffer_popup_win = buffer_popup_win,
+    instance = instance,
   }
   setmetatable(o, self)
   self.__index = self
 
-  if fzf_popup_win then
-    PopupWindowInstances[fzf_popup_win:handle()] = self
-  elseif buffer_popup_win then
-    PopupWindowInstances[buffer_popup_win:handle()] = self
-  end
   return o
 end
 
 function PopupWindow:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 
-  if self.fzf_popup_win then
-    PopupWindowInstances[self.fzf_popup_win:handle()] = nil
-    self.fzf_popup_win:close()
-    self.fzf_popup_win = nil
+  if self.instance then
+    PopupWindowInstances[self.instance:handle()] = nil
+    self.instance:close()
+    self.instance = nil
   end
 
   if self.buffer_popup_win then
@@ -68,8 +62,8 @@ function PopupWindow:close()
 end
 
 function PopupWindow:resize()
-  if self.fzf_popup_win then
-    self.fzf_popup_win:resize()
+  if self.instance then
+    self.instance:resize()
   end
 
   if self.buffer_popup_win then

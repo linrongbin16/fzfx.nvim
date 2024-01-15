@@ -81,8 +81,8 @@ end
 --- @param lineno integer?
 --- @param column integer?
 --- @return table
-M.builtin_preview_files = function(filename, lineno, column) 
-
+M.builtin_preview_files = function(filename, lineno, column)
+  return { filename = filename, lineno = lineno, column = column }
 end
 
 --- @param line string
