@@ -332,8 +332,10 @@ end
 --- @return integer
 local function _count_instances()
   local n = 0
-  for _, p in pairs(PopupWindowInstances) do
-    n = n + 1
+  for _, popup_win in pairs(PopupWindowInstances) do
+    if popup_win then
+      n = n + 1
+    end
   end
   return n
 end
