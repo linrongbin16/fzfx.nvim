@@ -829,6 +829,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     pipeline_configs.previewers,
     fzf_port_file
   )
+  local use_builtin_file_previewer = previewer_switch:current_previewer_type()
+    == PreviewerTypeEnum.BUILTIN_FILE
 
   --- @type fzfx.PipelineContext
 
@@ -1065,8 +1067,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
-  local use_builtin_file_previewer = previewer_switch:current_previewer_type()
-    == PreviewerTypeEnum.BUILTIN_FILE
   if use_builtin_file_previewer then
     table.insert(fzf_opts, { "--preview-window", "hidden" })
   end
