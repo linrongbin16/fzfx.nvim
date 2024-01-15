@@ -1064,9 +1064,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       { height = 1, width = 1, row = 0, col = 0 }
     )
   end
-  if
-    previewer_switch:current_previewer_type() == PreviewerTypeEnum.BUILTIN_FILE
-  then
+
+  local builtin_file_previewer = previewer_switch:current_previewer_type()
+    == PreviewerTypeEnum.BUILTIN_FILE
+  if builtin_file_previewer then
     table.insert(fzf_opts, { "--preview-window", "hidden" })
   end
 
@@ -1094,8 +1095,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         log.debug("|general| dump last query:%s", vim.inspect(bytes))
       end)
     end,
-    pipeline_configs.previewers[default_pipeline].previewer_type
-      == "builtin_file"
+    builtin_file_previewer
   )
   return p
 end
