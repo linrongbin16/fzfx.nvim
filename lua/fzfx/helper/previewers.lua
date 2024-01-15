@@ -75,13 +75,15 @@ M.preview_files = function(filename, lineno)
   end
 end
 
--- preview files with nvim builtin buffer.
+-- preview files with nvim buffer.
 --
 --- @param filename string
 --- @param lineno integer?
 --- @param column integer?
 --- @return table
-M.builtin_preview_files = function(filename, lineno, column) end
+M.builtin_preview_files = function(filename, lineno, column) 
+
+end
 
 --- @param line string
 --- @return string[]
