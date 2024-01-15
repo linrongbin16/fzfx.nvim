@@ -9,23 +9,19 @@ local popup_helpers = require("fzfx.detail.popup.helpers")
 
 local M = {}
 
--- provider cursor window {
+-- cursor window {
 
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
 M._make_provider_cursor_opts = function(opts) end
 
--- provider cursor window }
-
--- previewer cursor window {
-
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
 M._make_previewer_cursor_opts = function(opts) end
 
--- previewer cursor window }
+-- cursor window }
 
--- provider center window {
+-- center window {
 
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
@@ -71,10 +67,6 @@ M._make_provider_center_opts = function(opts)
   }
 end
 
--- provider center window }
-
--- previewer center window {
-
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.PopupWindowConfig
 M._make_previewer_center_opts = function(opts)
@@ -119,7 +111,7 @@ M._make_previewer_center_opts = function(opts)
   }
 end
 
--- previewer center window }
+-- center window }
 
 -- provider window {
 
@@ -205,20 +197,20 @@ function BufferPopupWindow:new(provider_win_opts, previewer_win_opts)
   apis.set_buf_option(previewer_bufnr, "buflisted", false)
   apis.set_buf_option(previewer_bufnr, "filetype", "fzf_previewer")
 
-  local provider_window_config = M.make_provider_opts(provider_win_opts)
-  local previewer_window_config = M.make_previewer_opts(previewer_win_opts)
-  previewer_window_config.focusable = false
+  local provider_nvim_float_win_opts = M.make_provider_opts(provider_win_opts)
+  local previewer_nvim_float_win_opts =
+    M.make_previewer_opts(previewer_win_opts)
+  previewer_nvim_float_win_opts.focusable = false
 
   local previewer_winnr =
-    vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_opts)
-
+    vim.api.nvim_open_win(previewer_bufnr, true, previewer_nvim_float_win_opts)
+  apis.set_win_option(previewer_winnr, "number", true)
   apis.set_win_option(previewer_winnr, "spell", false)
-  apis.set_win_option(previewer_winnr, "number", false)
   apis.set_win_option(previewer_winnr, "winhighlight", "Pmenu:,Normal:Normal")
   apis.set_win_option(previewer_winnr, "colorcolumn", "")
 
   local provider_winnr =
-    vim.api.nvim_open_win(provider_bufnr, true, provider_win_opts)
+    vim.api.nvim_open_win(provider_bufnr, true, provider_nvim_float_win_opts)
   --- setlocal nospell nonumber
   --- set winhighlight='Pmenu:,Normal:Normal'
   --- set colorcolumn=''
