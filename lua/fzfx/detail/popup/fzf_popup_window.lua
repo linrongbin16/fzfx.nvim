@@ -203,7 +203,7 @@ M._clear_instances = function()
 end
 
 --- @return integer
-M._count_instances = function()
+M._instances_count = function()
   local n = 0
   for _, p in pairs(FzfPopupWindowInstances) do
     n = n + 1

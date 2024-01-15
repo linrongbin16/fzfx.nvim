@@ -158,6 +158,8 @@ end
 --- @type table<integer, fzfx.BufferPopupWindow>
 local BufferPopupWindowInstances = {}
 
+-- BufferPopupWindow {
+
 --- @class fzfx.BufferPopupWindow
 --- @field window_opts_context fzfx.WindowOptsContext?
 --- @field provider_bufnr integer?
@@ -218,6 +220,9 @@ function BufferPopupWindow:new(provider_win_opts, previewer_win_opts)
     provider_bufnr = provider_bufnr,
     provider_winnr = provider_winnr,
     _saved_provider_win_opts = provider_win_opts,
+    previewer_bufnr = previewer_bufnr,
+    previewer_winnr = previewer_winnr,
+    _saved_previewer_win_opts = previewer_win_opts,
     _resizing = false,
   }
   setmetatable(o, self)
@@ -232,14 +237,11 @@ function BufferPopupWindow:close()
 
   if vim.api.nvim_win_is_valid(self.provider_winnr) then
     vim.api.nvim_win_close(self.provider_winnr, true)
-    -- else
-    --     log.debug(
-    --         "cannot close invalid popup window! %s",
-    --         vim.inspect(self.winnr)
-    --     )
+  end
+  if vim.api.nvim_win_is_valid(self.previewer_winnr) then
+    vim.api.nvim_win_close(self.previewer_winnr, true)
   end
 
-  ---@diagnostic disable-next-line: undefined-field
   self.window_opts_context:restore()
 
   local instance = BufferPopupWindowInstances[self.provider_winnr]
@@ -253,9 +255,52 @@ function BufferPopupWindow:resize()
     return
   end
   self._resizing = true
-  local new_popup_window_config = _make_window_config(self._saved_win_opts)
-  vim.api.nvim_win_set_config(self.provider_winnr, new_popup_window_config)
+  local provider_nvim_float_win_opts =
+    M.make_provider_opts(self._saved_provider_win_opts)
+  local previewer_nvim_float_win_opts =
+    M.make_previewer_opts(self._saved_previewer_win_opts)
+  vim.api.nvim_win_set_config(self.provider_winnr, provider_nvim_float_win_opts)
+  vim.api.nvim_win_set_config(
+    self.previewer_winnr,
+    previewer_nvim_float_win_opts
+  )
   vim.schedule(function()
     self._resizing = false
   end)
 end
+
+M.BufferPopupWindow = BufferPopupWindow
+
+-- BufferPopupWindow }
+
+--- @return table<integer, fzfx.BufferPopupWindow>
+M._get_instances = function()
+  return BufferPopupWindowInstances
+end
+
+M._clear_instances = function()
+  BufferPopupWindowInstances = {}
+end
+
+--- @return integer
+M._instances_count = function()
+  local n = 0
+  for _, p in pairs(BufferPopupWindowInstances) do
+    n = n + 1
+  end
+  return n
+end
+
+M.resize_instances = function()
+  -- log.debug(
+  --     "|fzfx.popup - resize_all_popup_window_instances| instances:%s",
+  --     vim.inspect(PopupWindowInstances)
+  -- )
+  for winnr, popup_win in pairs(BufferPopupWindowInstances) do
+    if winnr and popup_win then
+      popup_win:resize()
+    end
+  end
+end
+
+return M
