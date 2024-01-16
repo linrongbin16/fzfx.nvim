@@ -5,6 +5,7 @@ local strings = require("fzfx.commons.strings")
 local termcolors = require("fzfx.commons.termcolors")
 local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
+local uv = require("fzfx.commons.uv")
 
 local consts = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
@@ -58,8 +59,8 @@ local function _fzf_port_file()
 end
 
 --- @return string
-local function _focused_linefile(name)
-  return _make_cache_filename(name, "focused", "linefile")
+local function _focused_linefile()
+  return _make_cache_filename("focused", "line", "file")
 end
 
 --- @class fzfx.ProviderMetaOpts
@@ -792,11 +793,17 @@ end
 --- @param default_pipeline fzfx.PipelineName?
 --- @return fzfx.Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
-  local fzf_port_file = _fzf_port_file()
-  local focused_line_file = _focused_linefile(name)
   local pipeline_size = get_pipeline_size(pipeline_configs)
 
-  local default_provider_key = nil
+  --- cache files
+  local fzf_port_file = _fzf_port_file()
+  local focused_line_file = _focused_linefile()
+  local focused_line_fsevent, focused_line_fsevent_err
+
+  --- @type fzfx.Popup
+  local popup = nil
+
+  local default_provider_action_key = nil
   if
     default_pipeline == nil
     or pipeline_configs.providers[default_pipeline] == nil
@@ -818,10 +825,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       pipeline, provider_opts = next(pipeline_configs.providers)
     end
     default_pipeline = pipeline
-    default_provider_key = provider_opts.key
+    default_provider_action_key = provider_opts.key
   else
     local provider_opts = pipeline_configs.providers[default_pipeline]
-    default_provider_key = provider_opts.key
+    default_provider_action_key = provider_opts.key
   end
 
   --- @type fzfx.ProviderSwitch
@@ -923,6 +930,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   fzf_start_binder:append(
     string.format("execute-silent(%s)", dump_fzf_port_command)
   )
+
+  -- builtin previewer use local file cache to detect fzf pointer movement
+  local builtin_previewers_queue = {}
   local fzf_focus_binder = nil
   if use_builtin_previewer then
     local dump_focused_line_command = nil
@@ -935,6 +945,50 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     fzf_focus_binder = fzf_helpers.FzfOptEventBinder:new("focus")
     fzf_focus_binder:append(
       string.format("execute-silent(%s)", dump_focused_line_command)
+    )
+    focused_line_fsevent, focused_line_fsevent_err = uv.new_fs_event() --[[@as uv_fs_event_t]]
+    log.ensure(
+      focused_line_fsevent ~= nil,
+      string.format(
+        "failed to create new fs event for %s, error: %s",
+        vim.inspect(name),
+        vim.inspect(focused_line_fsevent_err)
+      )
+    )
+    focused_line_fsevent:start(
+      focused_line_file,
+      {},
+      function(focused_err, focused_file, events)
+        log.debug(
+          "|general.focused_line_fsevent:start| focused_err:%s, focused_file:%s, events:%s",
+          vim.inspect(focused_err),
+          vim.inspect(focused_file),
+          vim.inspect(events)
+        )
+        if focused_err then
+          log.err(
+            "failed to trigger focused line on cache file %s, error:%s",
+            vim.inspect(focused_line_file),
+            vim.inspect(focused_err)
+          )
+          return
+        end
+
+        if focused_file ~= focused_line_file then
+          return
+        end
+        fileios.asyncreadfile(focused_file, function(focused_data)
+          table.insert(builtin_previewers_queue, focused_data)
+          vim.defer_fn(function()
+            if #builtin_previewers_queue == 0 then
+              return
+            end
+            local last_line =
+              builtin_previewers_queue[#builtin_previewers_queue]
+            builtin_previewers_queue = {}
+          end, 200)
+        end, { trim = true })
+      end
     )
   end
 
@@ -1025,7 +1079,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         bind_builder,
       })
     end
-    fzf_start_binder:append(string.format("unbind(%s)", default_provider_key))
+    fzf_start_binder:append(
+      string.format("unbind(%s)", default_provider_action_key)
+    )
   end
   if
     type(pipeline_configs.other_opts) == "table"
@@ -1092,7 +1148,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     table.insert(fzf_opts, { "--preview-window", "hidden" })
   end
 
-  local p = Popup:new(
+  popup = Popup:new(
     win_opts or {},
     query_command,
     fzf_opts,
@@ -1118,7 +1174,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end,
     use_builtin_previewer
   )
-  return p
+  return popup
 end
 
 --- @param name string
