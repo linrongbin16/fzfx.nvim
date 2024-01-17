@@ -6,6 +6,7 @@ local termcolors = require("fzfx.commons.termcolors")
 local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 local uv = require("fzfx.commons.uv")
+local apis = require("fzfx.commons.apis")
 
 local consts = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
@@ -1019,7 +1020,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 vim.inspect(previewer_config),
                 vim.inspect(result)
               )
-              if popup and result then
+              if
+                popup
+                and popup.popup_window.instance.previewer_bufnr
+                and result
+              then
                 -- set file lines on popup's buffer
                 fileios.asyncreadfile(result.filename, function(result_data)
                   if type(result_data) ~= "string" then
@@ -1039,16 +1044,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     local last_nvim_text =
                       builtin_previewers_nvim_text_queue[#builtin_previewers_nvim_text_queue]
                     builtin_previewers_nvim_text_queue = {}
-                    log.debug(
-                      "|general.focused_line_fsevent:start.asyncreadfile| last_nvim_text:%s",
-                      vim.inspect(last_nvim_text)
-                    )
                     vim.api.nvim_buf_set_lines(
                       last_nvim_text.bufnr,
                       0,
                       #last_nvim_text.replacement,
                       false,
                       last_nvim_text.replacement
+                    )
+                    apis.set_buf_option(
+                      last_nvim_text.bufnr,
+                      "filetype",
+                      vim.fn.fnamemodify(result.filename, ":e")
                     )
                   end)
                 end)
