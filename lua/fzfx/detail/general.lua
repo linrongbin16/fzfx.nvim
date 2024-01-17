@@ -59,7 +59,7 @@ local function _fzf_port_file()
 end
 
 --- @return string
-local function _focused_linefile()
+local function _focused_line_file()
   return _make_cache_filename("focused", "line", "file")
 end
 
@@ -797,7 +797,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   --- cache files
   local fzf_port_file = _fzf_port_file()
-  local focused_line_file = _focused_linefile()
+  local focused_line_file = _focused_line_file()
   local focused_line_fsevent, focused_line_fsevent_err
 
   --- @type fzfx.Popup
@@ -970,14 +970,48 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           return
         end
         fileios.asyncreadfile(focused_file, function(focused_data)
-          table.insert(builtin_previewers_queue, focused_data)
+          table.insert(
+            builtin_previewers_queue,
+            { previewer_switch:current_previewer_config(), focused_data }
+          )
           vim.defer_fn(function()
             if #builtin_previewers_queue == 0 then
               return
             end
-            local last_line =
+            local last_item =
               builtin_previewers_queue[#builtin_previewers_queue]
             builtin_previewers_queue = {}
+
+            local previewer_config = last_item[1]
+            local focused_line = last_item[2]
+            local ok, result =
+              pcall(previewer_config.previewer, focused_line, context)
+            -- log.debug(
+            --     "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
+            --     vim.inspect(ok),
+            --     vim.inspect(result)
+            -- )
+            if not ok then
+              fileios.writefile(previewer_config.resultfile, "")
+              log.err(
+                "failed to call pipeline %s builtin previewer %s! line:%s, context:%s, error:%s",
+                vim.inspect(previewer_config.pipeline),
+                vim.inspect(previewer_config.previewer),
+                vim.inspect(focused_line),
+                vim.inspect(context),
+                vim.inspect(result)
+              )
+            else
+              log.ensure(
+                result == nil or type(result) == "table",
+                "|general.focused_line_fsevent.asyncreadfile| builtin previewer result must be table! previewer_config:%s, result:%s",
+                vim.inspect(previewer_config),
+                vim.inspect(result)
+              )
+              if popup and result then
+                -- open file on popup's buffer
+              end
+            end
           end, 200)
         end, { trim = true })
       end
