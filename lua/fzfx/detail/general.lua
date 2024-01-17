@@ -1051,13 +1051,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     vim.api.nvim_buf_set_lines(
                       popup.popup_window.instance.previewer_bufnr,
                       0,
-                      win_height,
-                      false,
-                      { "" }
-                    )
-                    vim.api.nvim_buf_set_lines(
-                      popup.popup_window.instance.previewer_bufnr,
-                      0,
                       math.max(#lines, win_height),
                       false,
                       lines
