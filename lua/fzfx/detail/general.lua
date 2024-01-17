@@ -926,7 +926,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   -- builtin previewer use local file cache to detect fzf pointer movement
   local builtin_previewers_queue = {}
-  local builtin_previewers_nvim_text_queue = {}
   local fzf_focus_binder = nil
   if use_builtin_previewer then
     local dump_focused_line_command = nil
@@ -1033,18 +1032,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     result_data = result_data:gsub("\r\n", "\n")
                     lines = strings.split(result_data, "\n")
                   end
-                  -- table.insert(builtin_previewers_nvim_text_queue, {
-                  --   bufnr = popup.popup_window.instance.previewer_bufnr,
-                  --   winnr = popup.popup_window.instance.previewer_winnr,
-                  --   replacement = lines,
-                  -- })
                   vim.schedule(function()
-                    -- if #builtin_previewers_nvim_text_queue == 0 then
-                    --   return
-                    -- end
-                    -- local last_nvim_text_item =
-                    --   builtin_previewers_nvim_text_queue[#builtin_previewers_nvim_text_queue]
-                    -- builtin_previewers_nvim_text_queue = {}
                     local win_height = vim.api.nvim_win_get_height(
                       popup.popup_window.instance.previewer_winnr
                     )
