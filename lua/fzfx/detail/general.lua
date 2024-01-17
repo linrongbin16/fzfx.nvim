@@ -991,13 +991,22 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             if #builtin_previewers_queue == 0 then
               return
             end
+            local previewer_winnr1 = tables.tbl_get(
+              popup,
+              "popup_window",
+              "instance",
+              "previewer_winnr"
+            )
+            local previewer_bufnr1 = tables.tbl_get(
+              popup,
+              "popup_window",
+              "instance",
+              "previewer_bufnr"
+            )
             if
-              not tables.tbl_get(
-                popup,
-                "popup_window",
-                "instance",
-                "previewer_winnr"
-              )
+              type(previewer_winnr1) ~= "number"
+              or not vim.api.nvim_win_is_valid(previewer_winnr1)
+              or type(previewer_bufnr1) ~= "number"
             then
               return
             end
@@ -1040,6 +1049,25 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 if #builtin_previewers_results_queue == 0 then
                   return
                 end
+                local previewer_winnr2 = tables.tbl_get(
+                  popup,
+                  "popup_window",
+                  "instance",
+                  "previewer_winnr"
+                )
+                local previewer_bufnr2 = tables.tbl_get(
+                  popup,
+                  "popup_window",
+                  "instance",
+                  "previewer_bufnr"
+                )
+                if
+                  type(previewer_winnr2) ~= "number"
+                  or not vim.api.nvim_win_is_valid(previewer_winnr2)
+                  or type(previewer_bufnr2) ~= "number"
+                then
+                  return
+                end
                 local last_result =
                   builtin_previewers_results_queue[#builtin_previewers_results_queue]
                 builtin_previewers_results_queue = {}
@@ -1047,16 +1075,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 fileios.asyncreadfile(
                   last_result.filename,
                   function(result_data)
-                    if
-                      not tables.tbl_get(
-                        popup,
-                        "popup_window",
-                        "instance",
-                        "previewer_bufnr"
-                      )
-                    then
-                      return
-                    end
                     local lines = {}
                     if type(result_data) == "string" then
                       result_data = result_data:gsub("\r\n", "\n")
@@ -1072,25 +1090,36 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       if #builtin_previewers_results_queue > 0 then
                         return
                       end
+                      local previewer_winnr = tables.tbl_get(
+                        popup,
+                        "popup_window",
+                        "instance",
+                        "previewer_winnr"
+                      )
+                      local previewer_bufnr = tables.tbl_get(
+                        popup,
+                        "popup_window",
+                        "instance",
+                        "previewer_bufnr"
+                      )
                       if
-                        not tables.tbl_get(
-                          popup,
-                          "popup_window",
-                          "instance",
-                          "previewer_bufnr"
-                        )
+                        type(previewer_winnr) ~= "number"
+                        or not vim.api.nvim_win_is_valid(previewer_winnr)
+                        or type(previewer_bufnr) ~= "number"
                       then
                         return
                       end
+                      local win_height =
+                        vim.api.nvim_win_get_height(previewer_winnr)
                       vim.api.nvim_buf_set_lines(
-                        popup.popup_window.instance.previewer_bufnr,
+                        previewer_bufnr,
                         0,
-                        #lines,
+                        win_height,
                         false,
                         lines
                       )
                       apis.set_buf_option(
-                        popup.popup_window.instance.previewer_bufnr,
+                        previewer_bufnr,
                         "filetype",
                         vim.fn.fnamemodify(last_result.filename, ":e")
                       )
