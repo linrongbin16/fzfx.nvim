@@ -1003,7 +1003,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             --     vim.inspect(result)
             -- )
             if not ok then
-              fileios.writefile(previewer_config.resultfile, "")
               log.err(
                 "failed to call pipeline %s builtin previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(previewer_config.pipeline),
