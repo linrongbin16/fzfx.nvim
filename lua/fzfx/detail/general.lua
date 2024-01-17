@@ -952,10 +952,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       {},
       function(focused_err, focused_file, events)
         log.debug(
-          "|general.focused_line_fsevent:start| focused_err:%s, focused_file:%s, events:%s",
+          "|general.focused_line_fsevent:start| focused_err:%s, focused_file:%s, events:%s, focused_line_file:%s",
           vim.inspect(focused_err),
           vim.inspect(focused_file),
-          vim.inspect(events)
+          vim.inspect(events),
+          vim.inspect(focused_line_file)
         )
         if focused_err then
           log.err(
@@ -966,10 +967,20 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           return
         end
 
-        if focused_file ~= focused_line_file then
+        if not strings.find(focused_line_file, focused_file) then
           return
         end
-        fileios.asyncreadfile(focused_file, function(focused_data)
+        log.debug(
+          "|general.focused_line_fsevent:start| start read focused_file:%s",
+          vim.inspect(focused_file)
+        )
+        fileios.asyncreadfile(focused_line_file, function(focused_data)
+          log.debug(
+            "|general.focused_line_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
+            vim.inspect(focused_file),
+            vim.inspect(focused_data),
+            vim.inspect(builtin_previewers_queue)
+          )
           table.insert(
             builtin_previewers_queue,
             { previewer_switch:current_previewer_config(), focused_data }
@@ -1209,6 +1220,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       fileios.asyncwritefile(last_query_cache, content, function(bytes)
         log.debug("|general| dump last query:%s", vim.inspect(bytes))
       end)
+      if focused_line_fsevent then
+        focused_line_fsevent:stop()
+      end
     end,
     use_builtin_previewer
   )
