@@ -1116,6 +1116,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                         0,
                         win_height,
                         false,
+                        {}
+                      )
+                      vim.api.nvim_buf_set_lines(
+                        previewer_bufnr,
+                        0,
+                        win_height,
+                        false,
                         lines
                       )
                       apis.set_buf_option(
