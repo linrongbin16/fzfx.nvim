@@ -1050,6 +1050,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     vim.api.nvim_buf_set_lines(
                       last_nvim_text_item.bufnr,
                       0,
+                      0,
+                      false,
+                      {}
+                    )
+                    vim.api.nvim_buf_set_lines(
+                      last_nvim_text_item.bufnr,
+                      0,
                       math.max(#last_nvim_text_item.replacement, win_height),
                       false,
                       last_nvim_text_item.replacement
@@ -1250,6 +1257,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       end)
       if focused_line_fsevent then
         focused_line_fsevent:stop()
+        focused_line_fsevent = nil
       end
     end,
     use_builtin_previewer
