@@ -1023,6 +1023,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               if
                 popup
                 and popup.popup_window.instance.previewer_bufnr
+                and popup.popup_window.instance.previewer_winnr
                 and result
               then
                 -- set file lines on popup's buffer
@@ -1041,18 +1042,20 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     if #builtin_previewers_nvim_text_queue == 0 then
                       return
                     end
-                    local last_nvim_text =
+                    local last_nvim_text_item =
                       builtin_previewers_nvim_text_queue[#builtin_previewers_nvim_text_queue]
                     builtin_previewers_nvim_text_queue = {}
+                    local win_height =
+                      vim.api.nvim_win_get_height(last_nvim_text_item.winnr)
                     vim.api.nvim_buf_set_lines(
-                      last_nvim_text.bufnr,
+                      last_nvim_text_item.bufnr,
                       0,
-                      #last_nvim_text.replacement,
+                      math.max(#last_nvim_text_item.replacement, win_height),
                       false,
-                      last_nvim_text.replacement
+                      last_nvim_text_item.replacement
                     )
                     apis.set_buf_option(
-                      last_nvim_text.bufnr,
+                      last_nvim_text_item.bufnr,
                       "filetype",
                       vim.fn.fnamemodify(result.filename, ":e")
                     )
