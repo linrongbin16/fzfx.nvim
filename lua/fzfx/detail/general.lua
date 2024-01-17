@@ -1047,12 +1047,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 fileios.asyncreadfile(
                   last_result.filename,
                   function(result_data)
-                    if #builtin_previewers_queue > 0 then
-                      return
-                    end
-                    if #builtin_previewers_results_queue > 0 then
-                      return
-                    end
                     if
                       not tables.tbl_get(
                         popup,
@@ -1073,6 +1067,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       --   popup.popup_window.instance.previewer_winnr
                       -- )
                       if #builtin_previewers_queue > 0 then
+                        return
+                      end
+                      if #builtin_previewers_results_queue > 0 then
                         return
                       end
                       if
