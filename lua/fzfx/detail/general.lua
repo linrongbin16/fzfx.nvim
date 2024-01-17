@@ -990,6 +990,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             if #builtin_previewers_queue == 0 then
               return
             end
+            if
+              not tables.tbl_get(
+                popup,
+                "popup_window",
+                "instance",
+                "previewer_bufnr"
+              )
+            then
+              return
+            end
             local last_item =
               builtin_previewers_queue[#builtin_previewers_queue]
             builtin_previewers_queue = {}
@@ -1030,6 +1040,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                   if #builtin_previewers_queue > 0 then
                     return
                   end
+                  if
+                    not tables.tbl_get(
+                      popup,
+                      "popup_window",
+                      "instance",
+                      "previewer_bufnr"
+                    )
+                  then
+                    return
+                  end
                   local lines = {}
                   if type(result_data) == "string" then
                     result_data = result_data:gsub("\r\n", "\n")
@@ -1040,6 +1060,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     --   popup.popup_window.instance.previewer_winnr
                     -- )
                     if #builtin_previewers_queue > 0 then
+                      return
+                    end
+                    if
+                      not tables.tbl_get(
+                        popup,
+                        "popup_window",
+                        "instance",
+                        "previewer_bufnr"
+                      )
+                    then
                       return
                     end
                     vim.api.nvim_buf_set_lines(
