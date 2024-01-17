@@ -988,9 +988,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             { previewer_switch:current_previewer_config(), focused_data }
           )
           vim.defer_fn(function()
-            if #builtin_previewers_queue == 0 then
-              return
-            end
             local previewer_winnr1 = tables.tbl_get(
               popup,
               "popup_window",
@@ -1008,6 +1005,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               or not vim.api.nvim_win_is_valid(previewer_winnr1)
               or type(previewer_bufnr1) ~= "number"
             then
+              return
+            end
+            if #builtin_previewers_queue == 0 then
               return
             end
             local last_item =
@@ -1043,12 +1043,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 table.insert(builtin_previewers_results_queue, result)
               end
               vim.defer_fn(function()
-                if #builtin_previewers_queue > 0 then
-                  return
-                end
-                if #builtin_previewers_results_queue == 0 then
-                  return
-                end
                 local previewer_winnr2 = tables.tbl_get(
                   popup,
                   "popup_window",
@@ -1066,6 +1060,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                   or not vim.api.nvim_win_is_valid(previewer_winnr2)
                   or type(previewer_bufnr2) ~= "number"
                 then
+                  return
+                end
+                if #builtin_previewers_queue > 0 then
+                  return
+                end
+                if #builtin_previewers_results_queue == 0 then
                   return
                 end
                 local last_result =
