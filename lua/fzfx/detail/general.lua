@@ -925,6 +925,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   -- builtin previewer use local file cache to detect fzf pointer movement
   local builtin_previewers_queue = {}
+  local builtin_previewers_nvim_text_queue = {}
   local fzf_focus_binder = nil
   if use_builtin_previewer then
     local dump_focused_line_command = nil
@@ -1019,19 +1020,38 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 vim.inspect(result)
               )
               if popup and result then
-                -- open file on popup's buffer
-                vim.api.nvim_buf_call(
-                  popup.popup_window.instance.previewer_bufnr,
-                  function()
-                    vim.api.nvim_command(
-                      string.format(
-                        [[edit! +%d %s]],
-                        result.lineno or 1,
-                        result.filename
-                      )
-                    )
+                -- set file lines on popup's buffer
+                fileios.asyncreadfile(result.filename, function(result_data)
+                  if type(result_data) ~= "string" then
+                    return
                   end
-                )
+                  result_data = result_data:gsub("\r\n", "\n")
+                  local lines = strings.split(result_data, "\n")
+                  table.insert(builtin_previewers_nvim_text_queue, {
+                    bufnr = popup.popup_window.instance.previewer_bufnr,
+                    winnr = popup.popup_window.instance.previewer_winnr,
+                    replacement = lines,
+                  })
+                  vim.schedule(function()
+                    if #builtin_previewers_nvim_text_queue == 0 then
+                      return
+                    end
+                    local last_nvim_text =
+                      builtin_previewers_nvim_text_queue[#builtin_previewers_nvim_text_queue]
+                    builtin_previewers_nvim_text_queue = {}
+                    log.debug(
+                      "|general.focused_line_fsevent:start.asyncreadfile| last_nvim_text:%s",
+                      vim.inspect(last_nvim_text)
+                    )
+                    vim.api.nvim_buf_set_lines(
+                      last_nvim_text.bufnr,
+                      0,
+                      #last_nvim_text.replacement,
+                      false,
+                      last_nvim_text.replacement
+                    )
+                  end)
+                end)
               end
             end
           end, 200)
