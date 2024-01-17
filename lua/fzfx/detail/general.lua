@@ -927,6 +927,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   -- builtin previewer use local file cache to detect fzf pointer movement
   local builtin_previewers_queue = {}
   local builtin_previewers_results_queue = {}
+  local builtin_previewers_results_lines_queue = {}
   local fzf_focus_binder = nil
   if use_builtin_previewer then
     local dump_focused_line_command = nil
@@ -1080,16 +1081,22 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       result_data = result_data:gsub("\r\n", "\n")
                       lines = strings.split(result_data, "\n")
                     end
+                    table.insert(
+                      builtin_previewers_results_lines_queue,
+                      { lines = lines, last_result = last_result }
+                    )
                     vim.schedule(function()
-                      -- local win_height = vim.api.nvim_win_get_height(
-                      --   popup.popup_window.instance.previewer_winnr
-                      -- )
                       if #builtin_previewers_queue > 0 then
                         return
                       end
                       if #builtin_previewers_results_queue > 0 then
                         return
                       end
+                      if #builtin_previewers_results_lines_queue == 0 then
+                        return
+                      end
+                      local last_lines_item =
+                        builtin_previewers_results_lines_queue[#builtin_previewers_results_lines_queue]
                       local previewer_winnr = tables.tbl_get(
                         popup,
                         "popup_window",
@@ -1116,19 +1123,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                         0,
                         win_height,
                         false,
-                        {}
-                      )
-                      vim.api.nvim_buf_set_lines(
-                        previewer_bufnr,
-                        0,
-                        win_height,
-                        false,
-                        lines
+                        last_lines_item.lines
                       )
                       apis.set_buf_option(
                         previewer_bufnr,
                         "filetype",
-                        vim.fn.fnamemodify(last_result.filename, ":e")
+                        vim.fn.fnamemodify(
+                          last_lines_item.last_result.filename,
+                          ":e"
+                        )
                       )
                     end)
                   end
