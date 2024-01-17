@@ -391,8 +391,8 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
   return o
 end
 
---- @return fzfx.PreviewerType
-function PreviewerSwitch:current_previewer_type()
+--- @return fzfx.PreviewerConfig
+function PreviewerSwitch:current_previewer_config()
   local previewer_config = self.previewer_configs[self.pipeline]
   log.ensure(
     type(previewer_config) == "table",
@@ -400,7 +400,7 @@ function PreviewerSwitch:current_previewer_type()
     vim.inspect(self.pipeline),
     vim.inspect(previewer_config)
   )
-  return previewer_config.previewer_type
+  return previewer_config
 end
 
 --- @param next_pipeline fzfx.PipelineName
@@ -842,7 +842,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     pipeline_configs.previewers,
     fzf_port_file
   )
-  local use_builtin_previewer = previewer_switch:current_previewer_type()
+  local use_builtin_previewer = previewer_switch:current_previewer_config().previewer_type
     == PreviewerTypeEnum.BUILTIN_FILE
 
   local context_maker = (
