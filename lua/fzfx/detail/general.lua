@@ -1028,41 +1028,42 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               then
                 -- set file lines on popup's buffer
                 fileios.asyncreadfile(result.filename, function(result_data)
-                  if type(result_data) ~= "string" then
-                    return
+                  local lines = {}
+                  if type(result_data) == "string" then
+                    result_data = result_data:gsub("\r\n", "\n")
+                    lines = strings.split(result_data, "\n")
                   end
-                  result_data = result_data:gsub("\r\n", "\n")
-                  local lines = strings.split(result_data, "\n")
-                  table.insert(builtin_previewers_nvim_text_queue, {
-                    bufnr = popup.popup_window.instance.previewer_bufnr,
-                    winnr = popup.popup_window.instance.previewer_winnr,
-                    replacement = lines,
-                  })
+                  -- table.insert(builtin_previewers_nvim_text_queue, {
+                  --   bufnr = popup.popup_window.instance.previewer_bufnr,
+                  --   winnr = popup.popup_window.instance.previewer_winnr,
+                  --   replacement = lines,
+                  -- })
                   vim.schedule(function()
-                    if #builtin_previewers_nvim_text_queue == 0 then
-                      return
-                    end
-                    local last_nvim_text_item =
-                      builtin_previewers_nvim_text_queue[#builtin_previewers_nvim_text_queue]
-                    builtin_previewers_nvim_text_queue = {}
-                    local win_height =
-                      vim.api.nvim_win_get_height(last_nvim_text_item.winnr)
-                    vim.api.nvim_buf_set_lines(
-                      last_nvim_text_item.bufnr,
-                      0,
-                      0,
-                      false,
-                      {}
+                    -- if #builtin_previewers_nvim_text_queue == 0 then
+                    --   return
+                    -- end
+                    -- local last_nvim_text_item =
+                    --   builtin_previewers_nvim_text_queue[#builtin_previewers_nvim_text_queue]
+                    -- builtin_previewers_nvim_text_queue = {}
+                    local win_height = vim.api.nvim_win_get_height(
+                      popup.popup_window.instance.previewer_winnr
                     )
                     vim.api.nvim_buf_set_lines(
-                      last_nvim_text_item.bufnr,
+                      popup.popup_window.instance.previewer_bufnr,
                       0,
-                      math.max(#last_nvim_text_item.replacement, win_height),
+                      win_height,
                       false,
-                      last_nvim_text_item.replacement
+                      { "" }
+                    )
+                    vim.api.nvim_buf_set_lines(
+                      popup.popup_window.instance.previewer_bufnr,
+                      0,
+                      math.max(#lines, win_height),
+                      false,
+                      lines
                     )
                     apis.set_buf_option(
-                      last_nvim_text_item.bufnr,
+                      popup.popup_window.instance.previewer_bufnr,
                       "filetype",
                       vim.fn.fnamemodify(result.filename, ":e")
                     )
