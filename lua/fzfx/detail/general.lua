@@ -1033,13 +1033,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     lines = strings.split(result_data, "\n")
                   end
                   vim.schedule(function()
-                    local win_height = vim.api.nvim_win_get_height(
-                      popup.popup_window.instance.previewer_winnr
-                    )
+                    -- local win_height = vim.api.nvim_win_get_height(
+                    --   popup.popup_window.instance.previewer_winnr
+                    -- )
                     vim.api.nvim_buf_set_lines(
                       popup.popup_window.instance.previewer_bufnr,
                       0,
-                      math.max(#lines, win_height),
+                      #lines,
                       false,
                       lines
                     )
