@@ -1031,97 +1031,79 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 vim.inspect(result)
               )
               if result then
-                table.insert(builtin_previewers_results_queue, {
-                  winnr = popup.popup_window.instance.previewer_winnr,
-                  result = result,
-                })
+                table.insert(builtin_previewers_results_queue, result)
               end
-              vim.schedule(function()
+              vim.defer_fn(function()
                 if #builtin_previewers_queue > 0 then
                   return
                 end
                 if #builtin_previewers_results_queue == 0 then
                   return
                 end
-                local last_result_item =
+                local last_result =
                   builtin_previewers_results_queue[#builtin_previewers_results_queue]
                 builtin_previewers_results_queue = {}
-                if
-                  type(last_result_item.winnr) ~= "number"
-                  or not vim.api.nvim_win_is_valid(last_result_item.winnr)
-                then
-                  return
-                end
-                local bufnr = vim.api.nvim_create_buf(false, true)
-                vim.api.nvim_buf_call(bufnr, function()
-                  vim.cmd(string.format([[edit! %s]], result.filename))
-                end)
-                apis.set_buf_option(bufnr, "bufhidden", "wipe")
-                apis.set_buf_option(bufnr, "buflisted", false)
-                vim.api.nvim_win_set_buf(last_result_item.winnr, bufnr)
-                apis.set_win_option(last_result_item.winnr, "number", true)
-                if
-                  type(tables.tbl_get(popup, "popup_window", "instance"))
-                  == "table"
-                then
-                  popup.popup_window.instance.previewer_bufnr = bufnr
-                end
-              end)
-
-              -- -- set file lines on popup's buffer
-              -- fileios.asyncreadfile(result.filename, function(result_data)
-              --   if #builtin_previewers_queue > 0 then
-              --     return
-              --   end
-              --   if
-              --     not tables.tbl_get(
-              --       popup,
-              --       "popup_window",
-              --       "instance",
-              --       "previewer_bufnr"
-              --     )
-              --   then
-              --     return
-              --   end
-              --   local lines = {}
-              --   if type(result_data) == "string" then
-              --     result_data = result_data:gsub("\r\n", "\n")
-              --     lines = strings.split(result_data, "\n")
-              --   end
-              --   vim.schedule(function()
-              --     -- local win_height = vim.api.nvim_win_get_height(
-              --     --   popup.popup_window.instance.previewer_winnr
-              --     -- )
-              --     if #builtin_previewers_queue > 0 then
-              --       return
-              --     end
-              --     if
-              --       not tables.tbl_get(
-              --         popup,
-              --         "popup_window",
-              --         "instance",
-              --         "previewer_bufnr"
-              --       )
-              --     then
-              --       return
-              --     end
-              --     vim.api.nvim_buf_set_lines(
-              --       popup.popup_window.instance.previewer_bufnr,
-              --       0,
-              --       #lines,
-              --       false,
-              --       lines
-              --     )
-              --     apis.set_buf_option(
-              --       popup.popup_window.instance.previewer_bufnr,
-              --       "filetype",
-              --       vim.fn.fnamemodify(result.filename, ":e")
-              --     )
-              --   end)
-              -- end)
+                -- set file lines on popup's buffer
+                fileios.asyncreadfile(
+                  last_result.filename,
+                  function(result_data)
+                    if #builtin_previewers_queue > 0 then
+                      return
+                    end
+                    if #builtin_previewers_results_queue > 0 then
+                      return
+                    end
+                    if
+                      not tables.tbl_get(
+                        popup,
+                        "popup_window",
+                        "instance",
+                        "previewer_bufnr"
+                      )
+                    then
+                      return
+                    end
+                    local lines = {}
+                    if type(result_data) == "string" then
+                      result_data = result_data:gsub("\r\n", "\n")
+                      lines = strings.split(result_data, "\n")
+                    end
+                    vim.schedule(function()
+                      -- local win_height = vim.api.nvim_win_get_height(
+                      --   popup.popup_window.instance.previewer_winnr
+                      -- )
+                      if #builtin_previewers_queue > 0 then
+                        return
+                      end
+                      if
+                        not tables.tbl_get(
+                          popup,
+                          "popup_window",
+                          "instance",
+                          "previewer_bufnr"
+                        )
+                      then
+                        return
+                      end
+                      vim.api.nvim_buf_set_lines(
+                        popup.popup_window.instance.previewer_bufnr,
+                        0,
+                        #lines,
+                        false,
+                        lines
+                      )
+                      apis.set_buf_option(
+                        popup.popup_window.instance.previewer_bufnr,
+                        "filetype",
+                        vim.fn.fnamemodify(last_result.filename, ":e")
+                      )
+                    end)
+                  end
+                )
+              end, 100)
               -- end
             end
-          end, 200)
+          end, 100)
         end, { trim = true })
       end
     )
