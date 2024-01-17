@@ -1010,6 +1010,18 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               )
               if popup and result then
                 -- open file on popup's buffer
+                vim.api.nvim_buf_call(
+                  popup.popup_window.instance.previewer_bufnr,
+                  function()
+                    vim.api.nvim_command(
+                      string.format(
+                        [[edit! +%d %s]],
+                        result.lineno or 1,
+                        result.filename
+                      )
+                    )
+                  end
+                )
               end
             end
           end, 200)
