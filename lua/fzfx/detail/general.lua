@@ -989,6 +989,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             { previewer_switch:current_previewer_config(), focused_data }
           )
           vim.defer_fn(function()
+            if #builtin_previewers_queue == 0 then
+              return
+            end
+            local last_item =
+              builtin_previewers_queue[#builtin_previewers_queue]
+            builtin_previewers_queue = {}
             local previewer_winnr1 = tables.tbl_get(
               popup,
               "popup_window",
@@ -1003,17 +1009,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             )
             if
               type(previewer_winnr1) ~= "number"
-              or not vim.api.nvim_win_is_valid(previewer_winnr1)
               or type(previewer_bufnr1) ~= "number"
             then
               return
             end
-            if #builtin_previewers_queue == 0 then
-              return
-            end
-            local last_item =
-              builtin_previewers_queue[#builtin_previewers_queue]
-            builtin_previewers_queue = {}
 
             local previewer_config = last_item[1]
             local focused_line = last_item[2]
@@ -1044,6 +1043,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 table.insert(builtin_previewers_results_queue, result)
               end
               vim.defer_fn(function()
+                if #builtin_previewers_queue > 0 then
+                  return
+                end
+                if #builtin_previewers_results_queue == 0 then
+                  return
+                end
+                local last_result =
+                  builtin_previewers_results_queue[#builtin_previewers_results_queue]
+                builtin_previewers_results_queue = {}
                 local previewer_winnr2 = tables.tbl_get(
                   popup,
                   "popup_window",
@@ -1058,20 +1066,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 )
                 if
                   type(previewer_winnr2) ~= "number"
-                  or not vim.api.nvim_win_is_valid(previewer_winnr2)
                   or type(previewer_bufnr2) ~= "number"
                 then
                   return
                 end
-                if #builtin_previewers_queue > 0 then
-                  return
-                end
-                if #builtin_previewers_results_queue == 0 then
-                  return
-                end
-                local last_result =
-                  builtin_previewers_results_queue[#builtin_previewers_results_queue]
-                builtin_previewers_results_queue = {}
+
                 -- set file lines on popup's buffer
                 fileios.asyncreadfile(
                   last_result.filename,
@@ -1111,7 +1110,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       )
                       if
                         type(previewer_winnr) ~= "number"
-                        or not vim.api.nvim_win_is_valid(previewer_winnr)
                         or type(previewer_bufnr) ~= "number"
                       then
                         return
