@@ -448,25 +448,25 @@ M.get_custom_theme = function()
     strings.not_empty(normal.fg) and normal.fg
       or DEFAULT_BASE16_COLORS.EMBEDDED_FOREGROUND
   )
-  local exception = termcolors.retrieve("Exception")
+  local error1 = termcolors.retrieve("Error")
   payload = payload:gsub(
     "{ILLEGAL_BACKGROUND}",
-    strings.not_empty(exception.bg) and exception.bg
+    strings.not_empty(error1.bg) and error1.bg
       or DEFAULT_BASE16_COLORS.ILLEGAL_BACKGROUND
   )
   payload = payload:gsub(
     "{ILLEGAL_FOREGROUND}",
-    strings.not_empty(exception.fg) and exception.fg
+    strings.not_empty(error1.fg) and error1.fg
       or DEFAULT_BASE16_COLORS.ILLEGAL_FOREGROUND
   )
   payload = payload:gsub(
     "{BROKEN_BACKGROUND}",
-    strings.not_empty(exception.bg) and exception.bg
+    strings.not_empty(error1.bg) and error1.bg
       or DEFAULT_BASE16_COLORS.BROKEN_BACKGROUND
   )
   payload = payload:gsub(
     "{BROKEN_FOREGROUND}",
-    strings.not_empty(exception.fg) and exception.fg
+    strings.not_empty(error1.fg) and error1.fg
       or DEFAULT_BASE16_COLORS.BROKEN_FOREGROUND
   )
   payload = payload:gsub(
@@ -489,7 +489,6 @@ M.get_custom_theme = function()
     strings.not_empty(comment.fg) and comment.fg
       or DEFAULT_BASE16_COLORS.UNIMPLEMENTED_FOREGROUND
   )
-
   return {
     name = name,
     payload = payload,
