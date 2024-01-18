@@ -1114,12 +1114,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       then
                         return
                       end
-                      local win_height =
-                        vim.api.nvim_win_get_height(previewer_winnr)
                       vim.api.nvim_buf_set_lines(
                         previewer_bufnr,
                         0,
-                        win_height,
+                        -1,
                         false,
                         last_lines_item.lines
                       )
