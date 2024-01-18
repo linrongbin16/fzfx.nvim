@@ -185,9 +185,13 @@ local function _generate_fzf_color_opts()
   local builder = {}
   for name, opts in pairs(fzf_colors) do
     for i = 2, #opts do
-      local c = termcolors.retrieve(opts[1], opts[i])
-      if type(c) == "string" and string.len(c) > 0 then
-        table.insert(builder, string.format("%s:%s", name:gsub("_", "%-"), c))
+      local attr = opts[1]
+      local c = termcolors.retrieve(opts[i])
+      if type(tables.tbl_get(c, attr)) == "number" then
+        table.insert(
+          builder,
+          string.format("%s:#%06x", name:gsub("_", "%-"), c[attr])
+        )
         break
       end
     end
