@@ -39,7 +39,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
-          args: --config-path .stylua.toml ./lua ./test ./bin
+          args: --config-path .stylua.toml ./lua ./spec ./bin
       - uses: lunarmodules/luacheck@v1
         with:
           args: lua --config .luacheckrc
@@ -73,17 +73,41 @@ jobs:
         with:
           luaVersion: "luajit-2.1.0-beta3"
       - uses: leafo/gh-actions-luarocks@v4
-      - name: Run test cases
+      - name: Run Tests
         shell: bash
         run: |
           luarocks install luacheck
-          luarocks install luacov
-          luarocks install cluacov
           luarocks install vusted
           git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
           ~/.fzf/install
           export PATH="$HOME/.fzf/bin:$PATH"
-          vusted --coverage --shuffle ./test
+          vusted --shuffle ./spec
+  code_coverage:
+    name: Code Coverage
+    needs:
+      - luacheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rhysd/action-setup-vim@v1
+        id: vim
+        with:
+          neovim: true
+          version: stable
+      - uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "luajit-2.1.0-beta3"
+      - uses: leafo/gh-actions-luarocks@v4
+      - name: Run Tests
+        shell: bash
+        run: |
+          luarocks install luacheck
+          luarocks install luacov
+          luarocks install vusted
+          git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+          ~/.fzf/install
+          export PATH="$HOME/.fzf/bin:$PATH"
+          vusted --coverage ./spec
       - name: Generate coverage reports
         shell: bash
         run: |
@@ -104,6 +128,7 @@ jobs:
     name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
+      - code_coverage
       - unit_test
     runs-on: ubuntu-latest
     steps:
