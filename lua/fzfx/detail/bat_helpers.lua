@@ -47,7 +47,7 @@ M._normalize_name = function(name)
     end
     local ns = {}
     for i, v in
-      ipairs(s --[[@as string[] ]])
+      ipairs(s --[[@as table]])
     do
       if strings.find(v, delimiter) then
         local splits = strings.split(v, delimiter, { trimempty = true })
