@@ -156,9 +156,13 @@ local DEFAULT_BASE16_COLORS = {
 --- @return {name:string,payload:string}
 M.get_custom_theme = function()
   local name = M._normalize_theme_name(vim.g.colors_name)
-  local payload = string.format([[
-
-]])
+  local template_path = paths.join(
+    vim.env._FZFX_NVIM_SELF_PATH --[[@as string]],
+    "assets",
+    "bat",
+    "theme_template.tmTheme"
+  )
+  local payload = fileios.readfile(template_path, { trim = true })
   return {
     name = name,
     payload = payload,
