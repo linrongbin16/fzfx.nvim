@@ -63,7 +63,6 @@ M._normalize_name = function(name)
   result = normalize_by(name, "_")
   result = normalize_by(name, " ")
   result = normalize_by(name, ".")
-
   return result
 end
 
@@ -101,14 +100,14 @@ M.get_custom_theme_name = function()
   local function upper_firsts(names)
     log.ensure(
       type(names) == "table" and #names > 0,
-      "|_normalize_theme_name.upper_firsts| invalid names:%s",
+      "|get_custom_theme_name.upper_firsts| invalid names:%s",
       vim.inspect(names)
     )
     local new_names = {}
     for i, n in ipairs(names) do
       log.ensure(
         type(n) == "string" and string.len(n) > 0,
-        "|_normalize_theme_name.upper_firsts| invalid name(%d):%s",
+        "|get_custom_theme_name.upper_firsts| invalid name(%d):%s",
         vim.inspect(i),
         vim.inspect(n)
       )
