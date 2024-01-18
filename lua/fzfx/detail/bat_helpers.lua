@@ -14,6 +14,7 @@ local config = require("fzfx.config")
 
 local M = {}
 
+--- @type table<string, string[]>
 local BAT_BUILTIN_THEMES = {}
 
 M.get_bat_builtin_themes = function()
@@ -68,9 +69,10 @@ M._normalize_name = function(name)
   return result
 end
 
+--- @return string?
 M.get_matched_theme = function()
   local color_name_splits = M._normalize_name(vim.g.colors_name)
-  for builtin_theme, builtin_theme_splits in ipairs(BAT_BUILTIN_THEMES) do
+  for builtin_theme, builtin_theme_splits in pairs(BAT_BUILTIN_THEMES) do
     for p, c in ipairs(color_name_splits) do
       for q, b in ipairs(builtin_theme_splits) do
         if
