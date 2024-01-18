@@ -94,14 +94,14 @@ end
 --
 -- And default value is replaced with placeholders, this mapping table is the real value.
 local DEFAULT_BASE16_COLORS = {
-  BASE_BACKGROUND = "#00000000",
-  BASE_CARET = "#07000000",
-  BASE_FOREGROUND = "#07000000",
-  BASE_INVISIBLES = "#08000000",
-  BASE_LINE_HIGHLIGHT = "#08000000",
-  BASE_SELECTION = "#0b000000",
-  BASE_GUTTER = "#0a000000",
-  BASE_GUTTER_FOREGROUND = "#08000000",
+  BACKGROUND = "#00000000",
+  CARET = "#07000000",
+  FOREGROUND = "#07000000",
+  INVISIBLES = "#08000000",
+  LINE_HIGHLIGHT = "#08000000",
+  SELECTION = "#0b000000",
+  GUTTER = "#0a000000",
+  GUTTER_FOREGROUND = "#08000000",
   TEXT_FOREGROUND = "#07000000",
   COMMENT_FOREGROUND = "#08000000",
   PUNCTUATION_FOREGROUND = "#07000000",
@@ -162,7 +162,52 @@ M.get_custom_theme = function()
     "bat",
     "theme_template.tmTheme"
   )
-  local payload = fileios.readfile(template_path, { trim = true })
+  local payload = fileios.readfile(template_path, { trim = true }) --[[@as string]]
+  payload = payload:gsub("{NAME}", name)
+
+  local normal = termcolors.retrieve("Normal")
+  payload = payload:gsub(
+    "{BACKGROUND}",
+    strings.not_empty(normal.bg) and normal.bg
+      or DEFAULT_BASE16_COLORS.BACKGROUND
+  )
+  payload = payload:gsub(
+    "{FOREGROUND}",
+    strings.not_empty(normal.fg) and normal.fg
+      or DEFAULT_BASE16_COLORS.FOREGROUND
+  )
+  payload = payload:gsub(
+    "{CARET}",
+    strings.not_empty(normal.fg) and normal.fg or DEFAULT_BASE16_COLORS.CARET
+  )
+  payload = payload:gsub(
+    "{INVISIBLES}",
+    strings.not_empty(normal.bg) and normal.bg
+      or DEFAULT_BASE16_COLORS.INVISIBLES
+  )
+  local cursor_line = termcolors.retrieve("CursorLine")
+  payload = payload:gsub(
+    "{LINE_HIGHLIGHT}",
+    strings.not_empty(cursor_line.fg) and cursor_line.fg
+      or DEFAULT_BASE16_COLORS.LINE_HIGHLIGHT
+  )
+  local visual = termcolors.retrieve("Visual")
+  payload = payload:gsub(
+    "{SELECTION}",
+    strings.not_empty(visual.fg) and visual.fg
+      or DEFAULT_BASE16_COLORS.SELECTION
+  )
+  local line_nr = termcolors.retrieve("LineNr")
+  payload = payload:gsub(
+    "{GUTTER}",
+    strings.not_empty(line_nr.bg) and line_nr.bg or DEFAULT_BASE16_COLORS.GUTTER
+  )
+  payload = payload:gsub(
+    "{GUTTER_FOREGROUND}",
+    strings.not_empty(line_nr.fg) and line_nr.fg
+      or DEFAULT_BASE16_COLORS.GUTTER_FOREGROUND
+  )
+
   return {
     name = name,
     payload = payload,

@@ -26,21 +26,21 @@
                 <key>settings</key>
                 <dict>
                     <key>background</key>
-                    <string>{BASE_BACKGROUND}</string>
+                    <string>{BACKGROUND}</string>
                     <key>caret</key>
-                    <string>{BASE_CARET}</string>
+                    <string>{CARET}</string>
                     <key>foreground</key>
-                    <string>{BASE_FOREGROUND}</string>
+                    <string>{FOREGROUND}</string>
                     <key>invisibles</key>
-                    <string>{BASE_INVISIBLES}</string>
+                    <string>{INVISIBLES}</string>
                     <key>lineHighlight</key>
-                    <string>{BASE_LINE_HIGHLIGHT}</string>
+                    <string>{LINE_HIGHLIGHT}</string>
                     <key>selection</key>
-                    <string>{BASE_SELECTION}</string>
+                    <string>{SELECTION}</string>
                     <key>gutter</key>
-                    <string>{BASE_GUTTER}</string>
+                    <string>{GUTTER}</string>
                     <key>gutterForeground</key>
-                    <string>{BASE_GUTTER_FOREGROUND}</string>
+                    <string>{GUTTER_FOREGROUND}</string>
                 </dict>
             </dict>
             <dict>
