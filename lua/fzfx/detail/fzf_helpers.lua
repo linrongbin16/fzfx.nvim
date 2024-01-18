@@ -399,18 +399,17 @@ function FzfOptEventBinder:build()
   return { "--bind", self.event .. ":" .. table.concat(self.opts, "+") }
 end
 
+local calculating_fzf_colors = false
 local function setup()
-  local recalculating = false
   vim.api.nvim_create_autocmd("ColorScheme", {
-    pattern = { "*" },
     callback = function()
-      if recalculating then
+      if calculating_fzf_colors then
         return
       end
-      recalculating = true
+      calculating_fzf_colors = true
       make_fzf_default_opts(true)
       vim.schedule(function()
-        recalculating = false
+        calculating_fzf_colors = false
       end)
     end,
   })
