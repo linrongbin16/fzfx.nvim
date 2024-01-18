@@ -26,21 +26,21 @@
                 <key>settings</key>
                 <dict>
                     <key>background</key>
-                    <string>{BACKGROUND}</string>
+                    <string>{BASE_BACKGROUND}</string>
                     <key>caret</key>
-                    <string>{CARET}</string>
+                    <string>{BASE_CARET}</string>
                     <key>foreground</key>
-                    <string>{FOREGROUND}</string>
+                    <string>{BASE_FOREGROUND}</string>
                     <key>invisibles</key>
-                    <string>{INVISIBLES}</string>
+                    <string>{BASE_INVISIBLES}</string>
                     <key>lineHighlight</key>
-                    <string>{LINE_HIGHLIGHT}</string>
+                    <string>{BASE_LINE_HIGHLIGHT}</string>
                     <key>selection</key>
-                    <string>{SELECTION}</string>
+                    <string>{BASE_SELECTION}</string>
                     <key>gutter</key>
-                    <string>{GUTTER}</string>
+                    <string>{BASE_GUTTER}</string>
                     <key>gutterForeground</key>
-                    <string>{GUTTER_FOREGROUND}</string>
+                    <string>{BASE_GUTTER_FOREGROUND}</string>
                 </dict>
             </dict>
             <dict>
@@ -341,7 +341,7 @@
                     <key>fontStyle</key>
                     <string>bold</string>
                     <key>foreground</key>
-                    <string>{FONT_BOLD_FOREGROUND}</string>
+                    <string>{BOLD_FOREGROUND}</string>
                 </dict>
             </dict>
             <dict>
@@ -354,7 +354,7 @@
                     <key>fontStyle</key>
                     <string>italic</string>
                     <key>foreground</key>
-                    <string>{FONT_ITALIC_FOREGROUND}</string>
+                    <string>{ITALIC_FOREGROUND}</string>
                 </dict>
             </dict>
             <dict>
@@ -376,7 +376,7 @@
                 <key>settings</key>
                 <dict>
                     <key>foreground</key>
-                    <string>{LINK_FOREGROUND}</string>
+                    <string>{LINK_TEXT_FOREGROUND}</string>
                 </dict>
             </dict>
             <dict>
