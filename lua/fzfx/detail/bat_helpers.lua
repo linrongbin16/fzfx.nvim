@@ -14,6 +14,25 @@ local config = require("fzfx.config")
 
 local M = {}
 
+local BAT_BUILTIN_THEMES = {}
+
+M.get_bat_builtin_themes = function()
+  local bat_themes = {}
+  local sp = spawn.run({ "bat", "--list-themes" }, {
+    on_stdout = function(line)
+      if strings.not_empty(line) and strings.startswith(line, "Theme:") then
+        table.insert(bat_themes, strings.trim(string.sub(line, 7)))
+      end
+    end,
+    on_stderr = function(line)
+      log.debug("|get_bat_builtin_themes| on_stderr:%s", vim.inspect(line))
+    end,
+  })
+  sp:wait()
+  log.debug("|get_bat_builtin_themes| themes:%s", vim.inspect(bat_themes))
+  return bat_themes
+end
+
 --- @return string
 M.get_bat_themes_config_dir = function()
   local bat_themes_config_dir = ""
