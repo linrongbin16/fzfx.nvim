@@ -69,7 +69,26 @@ M._normalize_name = function(name)
 end
 
 M.get_matched_theme = function()
-  local name = M._normalize_name(vim.g.colors_name)
+  local color_name_splits = M._normalize_name(vim.g.colors_name)
+  for builtin_theme, builtin_theme_splits in ipairs(BAT_BUILTIN_THEMES) do
+    for p, c in ipairs(color_name_splits) do
+      for q, b in ipairs(builtin_theme_splits) do
+        if
+          strings.not_empty(c)
+          and strings.not_empty(b)
+          and (
+            strings.startswith(c, b)
+            or strings.endswith(c, b)
+            or strings.startswith(b, c)
+            or strings.endswith(b, c)
+          )
+        then
+          return builtin_theme
+        end
+      end
+    end
+  end
+  return nil
 end
 
 --- @return string
