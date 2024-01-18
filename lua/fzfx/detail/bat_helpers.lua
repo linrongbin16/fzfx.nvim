@@ -66,6 +66,8 @@ M._normalize_name = function(name)
   result = normalize_by(name, "_")
   result = normalize_by(name, " ")
   result = normalize_by(name, ".")
+  result = normalize_by(name, "(")
+  result = normalize_by(name, ")")
   return result
 end
 
