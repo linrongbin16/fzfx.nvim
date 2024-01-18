@@ -33,6 +33,44 @@ M.get_bat_builtin_themes = function()
   return bat_themes
 end
 
+--- @param name string
+--- @return string[]
+M._normalize_name = function(name)
+  --- @param s string|string[]
+  --- @param delimiter string
+  --- @return string[]
+  local function normalize_by(s, delimiter)
+    if strings.not_empty(s) then
+      s = {
+        s --[[@as string]],
+      }
+    end
+    local ns = {}
+    for i, v in ipairs(s) do
+      if strings.find(v, delimiter) then
+        local splits = strings.split(v, delimiter, { trimempty = true })
+        for j, sp in ipairs(splits) do
+          table.insert(ns, sp:lower())
+        end
+      else
+        table.insert(ns, v:lower())
+      end
+    end
+  end
+
+  local result = normalize_by(name, "-")
+  result = normalize_by(name, "+")
+  result = normalize_by(name, "_")
+  result = normalize_by(name, " ")
+  result = normalize_by(name, ".")
+
+  return result
+end
+
+M.get_matched_theme = function()
+  local name = M._normalize_name(vim.g.colors_name)
+end
+
 --- @return string
 M.get_bat_themes_config_dir = function()
   local bat_themes_config_dir = ""
@@ -54,14 +92,9 @@ M.get_bat_themes_config_dir = function()
   return bat_themes_config_dir
 end
 
---- @param name string
 --- @return string
-M._normalize_theme_name = function(name)
-  log.ensure(
-    type(name) == "string" and string.len(name) > 0,
-    "|_normalize_theme_name| invalid name:%s",
-    vim.inspect(name)
-  )
+M.get_custom_theme_name = function()
+  local name = vim.g.colors_name
 
   --- @param names string[]
   --- @return string[]
@@ -174,7 +207,7 @@ local DEFAULT_BASE16_COLORS = {
 
 --- @return {name:string,payload:string}
 M.get_custom_theme = function()
-  local name = M._normalize_theme_name(vim.g.colors_name)
+  local name = M.get_custom_theme_name()
   local template_path = paths.join(
     vim.env._FZFX_NVIM_SELF_PATH --[[@as string]],
     "assets",
