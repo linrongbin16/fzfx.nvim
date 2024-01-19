@@ -226,10 +226,9 @@ local COLOR_CONFIGS = {
   },
   STRING_REGEXP_FOREGROUND = {
     group = {
-      "DiffDelete",
-      "DiffRemoved",
-      "ErrorMsg",
-      "Special",
+      "DiagnosticWarn",
+      "LspDiagnosticsDefaultWarning",
+      "WarningMsg",
     },
     attr = "fg",
     default = "#ab4642",
