@@ -262,7 +262,7 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#7cafc2",
   },
-  CLASSES_FOREGROUND = {
+  ENTITY_NAME_CLASS_FOREGROUND = {
     group = "Type",
     attr = "fg",
     default = "#7cafc2",
@@ -280,12 +280,42 @@ local COLOR_CONFIGS = {
   ENTITY_FUNCTION_NAME_FOREGROUND = {
     group = "Function",
     attr = "fg",
-    default = "#a1b56c",
+    default = "#dc9656",
   },
   ENTITY_NAME_TAG_FOREGROUND = {
     group = { "SpecialKey", "Tag" },
     attr = "fg",
+    default = "#7cafc2",
+  },
+  ENTITY_OTHER_ATTRIBUTE_NAME_FOREGROUND = {
+    group = { "Tag" },
+    attr = "fg",
+    default = "#a1b56c",
+  },
+  SUPPORT_FUNCTION_FOREGROUND = {
+    group = { "Function" },
+    attr = "fg",
+    default = "#86c1b9",
+  },
+  SUPPORT_CONSTANT_FOREGROUND = {
+    group = "Constant",
+    attr = "fg",
     default = "#dc9656",
+  },
+  SUPPORT_TYPE_AND_CLASS_FOREGROUND = {
+    group = "Type",
+    attr = "fg",
+    default = "#7cafc2",
+  },
+  SUPPORT_OTHER_NAMESPACE_FOREGROUND = {
+    group = {
+      "SpecialComment",
+      "DiagnosticSignInfo",
+      "LspDiagnosticsSignInfo",
+      "Tag",
+    },
+    attr = "fg",
+    default = "#7cafc2",
   },
 
   TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
@@ -330,11 +360,6 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#7cafc2",
   },
-  SUPPORT_FOREGROUND = {
-    group = "Include",
-    attr = "fg",
-    default = "#86c1b9",
-  },
   OTHER_SYMBOLS_FOREGROUND = {
     group = { "Directory", "String" },
     attr = "fg",
@@ -344,11 +369,6 @@ local COLOR_CONFIGS = {
   BOOLEAN_FOREGROUND = { group = "Boolean", attr = "fg", default = "#dc9656" },
   CONSTANTS_FOREGROUND = {
     group = "Constant",
-    attr = "fg",
-    default = "#dc9656",
-  },
-  ATTRIBUTES_FOREGROUND = {
-    group = "PreProc",
     attr = "fg",
     default = "#dc9656",
   },
