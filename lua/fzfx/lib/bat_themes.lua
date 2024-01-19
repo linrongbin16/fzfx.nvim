@@ -78,11 +78,11 @@ M.get_custom_theme_name = function(name)
 
   if CUSTOMS_THEME_NAME_MAPPINGS[name] == nil then
     local result = name
-    result = normalize_by(result, "-")
-    result = normalize_by(result, "+")
-    result = normalize_by(result, "_")
-    result = normalize_by(result, ".")
-    result = normalize_by(result, " ")
+    result = M._normalize_by(result, "-")
+    result = M._normalize_by(result, "+")
+    result = M._normalize_by(result, "_")
+    result = M._normalize_by(result, ".")
+    result = M._normalize_by(result, " ")
     CUSTOMS_THEME_NAME_MAPPINGS[name] = "FzfxNvim" .. result
   end
 
@@ -370,7 +370,7 @@ local COLOR_CONFIGS = {
 }
 
 --- @return {name:string,payload:string}
-M.get_custom_theme = function()
+M.calculate_custom_theme = function()
   local theme_name = M.get_custom_theme_name()
   local template_path = paths.join(
     vim.env._FZFX_NVIM_SELF_PATH --[[@as string]],
@@ -413,41 +413,6 @@ M.get_custom_theme = function()
     name = theme_name,
     payload = payload,
   }
-end
-
-local building_bat_theme = false
-M.build_theme = function()
-  if building_bat_theme then
-    return
-  end
-  building_bat_theme = true
-  local theme = M.get_custom_theme()
-  local theme_dir = M.get_bat_themes_config_dir()
-  spawn
-    .run({ "mkdir", "-p", theme_dir }, {
-      on_stdout = function() end,
-      on_stderr = function() end,
-    })
-    :wait()
-  fileios.writefile(M.get_custom_theme_file(), theme.payload)
-  spawn
-    .run({ "bat", "cache", "--build" }, {
-      on_stdout = function(line)
-        log.debug("|setup| bat cache on_stderr:%s", vim.inspect(line))
-      end,
-      on_stderr = function(line)
-        log.debug("|setup| bat cache on_stderr:%s", vim.inspect(line))
-      end,
-    })
-    :wait()
-  vim.schedule(function()
-    building_bat_theme = false
-  end)
-end
-
-M.setup = function()
-  M.build_theme()
-  vim.api.nvim_create_autocmd("ColorScheme", { callback = M.build_theme })
 end
 
 return M
