@@ -223,6 +223,32 @@
         <string>{CLASSES_FOREGROUND}</string>
 			</dict>
 		</dict>
+    <dict>
+			<key>name</key>
+			<string>Meta Path</string>
+			<key>scope</key>
+			<string>meta.path</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>underline</string>
+				<key>foreground</key>
+        <string>{META_PATH_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>Inherited class</string>
+			<key>scope</key>
+			<string>entity.other.inherited-class</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>italic underline</string>
+				<key>foreground</key>
+				<string>#8be9fd</string>
+			</dict>
+		</dict>
 		<dict>
 			<key>name</key>
 			<string>Text</string>
@@ -364,17 +390,6 @@
 			<dict>
 				<key>foreground</key>
         <string>{SUPPORT_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Strings, Inherited Class</string>
-			<key>scope</key>
-			<string>string, string.quoted, entity.other.inherited-class</string>
-			<key>settings</key>
-			<dict>
-				<key>foreground</key>
-        <string>{STRINGS_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>

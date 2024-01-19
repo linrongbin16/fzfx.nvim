@@ -265,7 +265,17 @@ local COLOR_CONFIGS = {
   CLASSES_FOREGROUND = {
     group = "Type",
     attr = "fg",
-    default = "#f7ca88",
+    default = "#7cafc2",
+  },
+  META_PATH_FOREGROUND = {
+    group = "helpHyperTextJump",
+    attr = "fg",
+    default = "#7cafc2",
+  },
+  ENTITY_OTHER_INHERITED_CLASS = {
+    group = { "DiagnosticInfo", "LspDiagnosticsDefaultInformation", "Tag" },
+    attr = "fg",
+    default = "#7cafc2",
   },
 
   TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
