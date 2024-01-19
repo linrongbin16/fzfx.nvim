@@ -244,7 +244,7 @@
 			<key>name</key>
 			<string>Strings, Inherited Class</string>
 			<key>scope</key>
-			<string>string, entity.other.inherited-class</string>
+			<string>string, string.quoted, entity.other.inherited-class</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
