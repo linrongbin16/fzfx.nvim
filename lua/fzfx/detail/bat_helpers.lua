@@ -26,8 +26,7 @@ M.get_bat_themes_config_dir = function()
     end,
   })
   sp:wait()
-  bat_themes_config_dir = bat_themes_config_dir
-    .. (constants.IS_WINDOWS and "\\themes" or "/themes")
+  bat_themes_config_dir = paths.join(bat_themes_config_dir, "themes")
   log.debug(
     "|get_bat_themes_config_dir| config dir:%s",
     vim.inspect(bat_themes_config_dir)
@@ -382,8 +381,22 @@ M.setup = function()
         return
       end
       calculating_bat_colors = true
+      local theme = M.get_custom_theme()
+      local theme_dir = M.get_bat_themes_config_dir()
+      fileios.writefile(paths.join(theme_dir, theme.name), theme.payload)
+      local sp = spawn.run({ "bat", "cache", "--build" }, {
+        on_stdout = function(line)
+          log.debug("|setup| on_stderr:%s", vim.inspect(line))
+        end,
+        on_stderr = function(line)
+          log.debug("|setup| on_stderr:%s", vim.inspect(line))
+        end,
+      })
+      sp:wait()
       vim.schedule(function()
-        calculating_bat_colors = false
+        vim.schedule(function()
+          calculating_bat_colors = false
+        end)
       end)
     end,
   })
