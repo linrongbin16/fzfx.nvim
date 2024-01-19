@@ -1,4 +1,5 @@
 local strings = require("fzfx.commons.strings")
+local paths = require("fzfx.commons.paths")
 
 local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -8,6 +9,7 @@ local parsers_helper = require("fzfx.helper.parsers")
 local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
+local bat_helper = require("fzfx.detail.bat_helpers")
 
 local M = {}
 
@@ -28,6 +30,8 @@ M._bat_style_theme = function()
     and string.len(vim.env["BAT_THEME"]) > 0
   then
     theme = vim.env["BAT_THEME"]
+  elseif paths.isfile(bat_helper.get_custom_theme_file()) then
+    theme = bat_helper.get_custom_theme_name()
   end
   return style, theme
 end

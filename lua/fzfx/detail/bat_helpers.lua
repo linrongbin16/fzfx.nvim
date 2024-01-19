@@ -14,25 +14,33 @@ local config = require("fzfx.config")
 
 local M = {}
 
+local THEMES_CONFIG_DIR = nil
+
 --- @return string
 M.get_bat_themes_config_dir = function()
-  local bat_themes_config_dir = ""
-  local sp = spawn.run({ "bat", "--config-dir" }, {
-    on_stdout = function(line)
-      bat_themes_config_dir = bat_themes_config_dir .. line
-    end,
-    on_stderr = function(line)
-      log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
-    end,
-  })
-  sp:wait()
-  bat_themes_config_dir = paths.join(bat_themes_config_dir, "themes")
-  log.debug(
-    "|get_bat_themes_config_dir| config dir:%s",
-    vim.inspect(bat_themes_config_dir)
-  )
-  return bat_themes_config_dir
+  if THEMES_CONFIG_DIR == nil then
+    local bat_themes_config_dir = ""
+    local sp = spawn.run({ "bat", "--config-dir" }, {
+      on_stdout = function(line)
+        bat_themes_config_dir = bat_themes_config_dir .. line
+      end,
+      on_stderr = function(line)
+        log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
+      end,
+    })
+    sp:wait()
+    THEMES_CONFIG_DIR = paths.join(bat_themes_config_dir, "themes")
+    log.debug(
+      "|get_bat_themes_config_dir| config dir:%s",
+      vim.inspect(THEMES_CONFIG_DIR)
+    )
+  end
+  return THEMES_CONFIG_DIR
 end
+
+-- Vim colorscheme name => bat theme name
+--- @type table<string, string>
+local CUSTOMS_THEME_NAME_MAPPINGS = {}
 
 --- @return string
 M.get_custom_theme_name = function()
@@ -76,23 +84,24 @@ M.get_custom_theme_name = function()
     end
   end
 
-  local result = name
-  log.debug(
-    "|get_custom_theme_name| name:%s, 1-result:%s",
-    vim.inspect(name),
-    vim.inspect(result)
-  )
-  result = normalize_by(result, "-")
-  log.debug("|get_custom_theme_name| 2-result:%s", vim.inspect(result))
-  result = normalize_by(result, "+")
-  log.debug("|get_custom_theme_name| 3-result:%s", vim.inspect(result))
-  result = normalize_by(result, "_")
-  log.debug("|get_custom_theme_name| 4-result:%s", vim.inspect(result))
-  result = normalize_by(result, ".")
-  log.debug("|get_custom_theme_name| 5-result:%s", vim.inspect(result))
-  result = normalize_by(result, " ")
-  log.debug("|get_custom_theme_name| 6-result:%s", vim.inspect(result))
-  return "FzfxNvim" .. result
+  if CUSTOMS_THEME_NAME_MAPPINGS[name] == nil then
+    local result = name
+    result = normalize_by(result, "-")
+    result = normalize_by(result, "+")
+    result = normalize_by(result, "_")
+    result = normalize_by(result, ".")
+    result = normalize_by(result, " ")
+    CUSTOMS_THEME_NAME_MAPPINGS[name] = "FzfxNvim" .. result
+  end
+
+  return CUSTOMS_THEME_NAME_MAPPINGS[name]
+end
+
+--- @return string
+M.get_custom_theme_file = function()
+  local theme_dir = M.get_bat_themes_config_dir()
+  local theme_name = M.get_custom_theme_file()
+  return paths.join(theme_dir, theme_name .. ".tmTheme")
 end
 
 -- The 'theme_template.tmTheme' is forked from: https://github.com/sharkdp/bat/blob/98a2b6bc177050c845f2e12133458826ad1fca72/assets/themes/base16.tmTheme
@@ -428,10 +437,7 @@ M.build_theme = function()
       on_stderr = function() end,
     })
     :wait()
-  fileios.writefile(
-    paths.join(theme_dir, theme.name .. ".tmTheme"),
-    theme.payload
-  )
+  fileios.writefile(M.get_custom_theme_file(), theme.payload)
   spawn
     .run({ "bat", "cache", "--build" }, {
       on_stdout = function(line)
