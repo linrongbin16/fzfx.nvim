@@ -224,6 +224,16 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#ab4642",
   },
+  STRING_REGEXP_FOREGROUND = {
+    group = {
+      "DiffDelete",
+      "DiffRemoved",
+      "ErrorMsg",
+      "Special",
+    },
+    attr = "fg",
+    default = "#ab4642",
+  },
   KEYWORDS_FOREGROUND = {
     group = "Keyword",
     attr = "fg",
@@ -416,114 +426,6 @@ local COLOR_CONFIGS = {
     group = "Operator",
     attr = "fg",
     default = "#d8d8d8",
-  },
-  OTHER_KEYWORDS_FOREGROUND = {
-    group = { "PreProc", "Function" },
-    attr = "fg",
-    default = "#7cafc2",
-  },
-  METHODS_FOREGROUND = {
-    group = "Function",
-    attr = "fg",
-    default = "#7cafc2",
-  },
-  OTHER_SYMBOLS_FOREGROUND = {
-    group = { "Directory", "String" },
-    attr = "fg",
-    default = "#a1b56c",
-  },
-  FLOATS_FOREGROUND = { group = "Float", attr = "fg", default = "#dc9656" },
-  BOOLEAN_FOREGROUND = { group = "Boolean", attr = "fg", default = "#dc9656" },
-  CONSTANTS_FOREGROUND = {
-    group = "Constant",
-    attr = "fg",
-    default = "#dc9656",
-  },
-  ATTRIBUTE_IDS_FOREGROUND = {
-    group = "Macro",
-    attr = "fg",
-    default = "#7cafc2",
-  },
-  SELECTOR_FOREGROUND = { group = "Operator", attr = "fg", default = "#ba8baf" },
-  VALUES_FOREGROUND = { group = "Constant", attr = "fg", default = "#dc9656" },
-  HEADINGS_FOREGROUND = { group = "Title", attr = "fg", default = "#7cafc2" },
-  UNITS_FOREGROUND = {
-    group = { "PreProc", "Function" },
-    attr = "fg",
-    default = "#dc9656",
-  },
-  BOLD_FOREGROUND = { group = "Search", attr = "fg", default = "#f7ca88" },
-  ITALIC_FOREGROUND = {
-    group = "Conditional",
-    attr = "fg",
-    default = "#ba8baf",
-  },
-  CODE_FOREGROUND = { group = "String", attr = "fg", default = "#a1b56c" },
-  LINK_TEXT_FOREGROUND = {
-    group = "WildMenu",
-    attr = "fg",
-    default = "#ab4642",
-  },
-  LINK_URL_FOREGROUND = {
-    group = "Constant",
-    attr = "fg",
-    default = "#dc9656",
-  },
-  LISTS_FOREGROUND = { group = "Character", attr = "fg", default = "#ab4642" },
-  QUOTES_FOREGROUND = {
-    group = "Constant",
-    attr = "fg",
-    default = "#dc9656",
-  },
-  SEPARATOR_BACKGROUND = {
-    group = "StatusLine",
-    attr = "bg",
-    default = "#383838",
-  },
-  SEPARATOR_FOREGROUND = {
-    group = "StatusLine",
-    attr = "fg",
-    default = "#d8d8d8",
-  },
-  COLORS_FOREGROUND = {
-    group = "FoldColumn",
-    attr = "fg",
-    default = "#86c1b9",
-  },
-  REGULAR_EXPRESSIONS_FOREGROUND = {
-    group = "Special",
-    attr = "fg",
-    default = "#86c1b9",
-  },
-  ESCAPE_CHARACTERS_FOREGROUND = {
-    group = "Special",
-    attr = "fg",
-    default = "#86c1b9",
-  },
-  EMBEDDED_FOREGROUND = {
-    group = "Define",
-    attr = "fg",
-    default = "#ba8baf",
-  },
-  BROKEN_BACKGROUND = {
-    group = { "WarningMsg", "IncSearch" },
-    attr = "bg",
-    default = "#dc9656",
-  },
-  BROKEN_FOREGROUND = {
-    group = { "WarningMsg", "IncSearch" },
-    attr = "fg",
-    default = "#dc9656",
-  },
-  UNIMPLEMENTED_BACKGROUND = {
-    group = "Comment",
-    attr = "bg",
-    default = "#585858",
-  },
-  UNIMPLEMENTED_FOREGROUND = {
-    group = "Comment",
-    attr = "fg",
-    default = "#f8f8f8",
   },
 }
 
