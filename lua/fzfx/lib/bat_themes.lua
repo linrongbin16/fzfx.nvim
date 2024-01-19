@@ -441,7 +441,7 @@ M.calculate_custom_theme = function()
     "theme_template.tmTheme"
   )
   local payload = fileios.readfile(template_path, { trim = true }) --[[@as string]]
-  payload = payload:gsub("{NAME}", theme_name)
+  payload = payload:gsub("{NAME}", theme_name --[[@as string]])
 
   local hl_caches = {}
 
