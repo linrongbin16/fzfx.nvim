@@ -186,6 +186,43 @@
         <string>{STORAGE_TYPE_FOREGROUND}</string>
 			</dict>
 		</dict>
+    <dict>
+			<key>name</key>
+			<string>Storage Type Namespace</string>
+			<key>scope</key>
+			<string>storage.type.namespace</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>italic</string>
+				<key>foreground</key>
+				<string>{STORAGE_TYPE_NAMESPACE_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Storage Type Class</string>
+			<key>scope</key>
+			<string>storage.type.class</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>italic</string>
+				<key>foreground</key>
+        <string>{STORAGE_TYPE_CLASS_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Classes</string>
+			<key>scope</key>
+			<string>entity.name.class</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{CLASSES_FOREGROUND}</string>
+			</dict>
+		</dict>
 		<dict>
 			<key>name</key>
 			<string>Text</string>
@@ -267,7 +304,7 @@
 			<key>name</key>
 			<string>Classes</string>
 			<key>scope</key>
-			<string>support.class, entity.name.class, entity.name.type.class</string>
+			<string>entity.name.class</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>

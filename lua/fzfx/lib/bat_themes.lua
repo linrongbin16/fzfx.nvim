@@ -244,6 +244,29 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#7cafc2",
   },
+  STORAGE_TYPE_NAMESPACE_FOREGROUND = {
+    group = {
+      "SpecialComment",
+      "DiagnosticSignInfo",
+      "LspDiagnosticsSignInfo",
+      "Tag",
+    },
+    attr = "fg",
+    default = "#7cafc2",
+  },
+  STORAGE_TYPE_CLASS_FOREGROUND = {
+    group = {
+      "Typedef",
+      "SpecialKey",
+    },
+    attr = "fg",
+    default = "#7cafc2",
+  },
+  CLASSES_FOREGROUND = {
+    group = "Type",
+    attr = "fg",
+    default = "#f7ca88",
+  },
 
   TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
   PUNCTUATION_FOREGROUND = {
@@ -272,11 +295,6 @@ local COLOR_CONFIGS = {
     default = "#7cafc2",
   },
   LABELS_FOREGROUND = { group = "Label", attr = "fg", default = "#a16946" },
-  CLASSES_FOREGROUND = {
-    group = "Type",
-    attr = "fg",
-    default = "#f7ca88",
-  },
   META_CLASSES_FOREGROUND = {
     group = "Type",
     attr = "fg",
