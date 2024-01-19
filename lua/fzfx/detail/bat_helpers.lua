@@ -423,12 +423,8 @@ M.build_theme = function()
   local theme = M.get_custom_theme()
   local theme_dir = M.get_bat_themes_config_dir()
   local sp1 = spawn.run({ "mkdir", "-p", theme_dir }, {
-    on_stdout = function(line)
-      log.debug("|setup| mkdir on_stderr:%s", vim.inspect(line))
-    end,
-    on_stderr = function(line)
-      log.debug("|setup| mkdir on_stderr:%s", vim.inspect(line))
-    end,
+    on_stdout = function() end,
+    on_stderr = function() end,
   })
   sp1:wait()
   fileios.writefile(
