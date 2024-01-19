@@ -84,43 +84,43 @@ M.get_custom_theme_name = function()
   return "FzfxNvim" .. result
 end
 
--- The 'theme_template.tmTheme' is forked from:
--- https://github.com/sharkdp/bat/blob/98a2b6bc177050c845f2e12133458826ad1fca72/assets/themes/base16.tmTheme
+-- The 'theme_template.tmTheme' is forked from: https://github.com/sharkdp/bat/blob/98a2b6bc177050c845f2e12133458826ad1fca72/assets/themes/base16.tmTheme
+-- default color is forked from: https://github.com/chriskempson/base16-textmate/blob/0e51ddd568bdbe17189ac2a07eb1c5f55727513e/Themes/base16-default-dark.tmTheme
 local COLOR_CONFIGS = {
   BACKGROUND = {
     group = "Normal",
     attr = "bg",
-    default = "#00000000" --[[#000000]],
+    default = "black",
   },
   FOREGROUND = {
     group = "Normal",
     attr = "fg",
-    default = "#07000000" --[[#070000]],
+    default = "white",
   },
   CARET = {
     group = "Normal",
     attr = "fg",
-    default = "#07000000",
+    default = "white",
   },
   INVISIBLES = {
     group = "Normal",
     attr = "bg",
-    default = "#08000000" --[[##080000]],
+    default = "grey25",
   },
-  LINE_HIGHLIGHT = { group = "CursorLine", attr = "fg", default = "#08000000" },
+  LINE_HIGHLIGHT = { group = "CursorLine", attr = "bg", default = "grey" },
   SELECTION = {
     group = "Visual",
     attr = "bg",
-    default = "#0b000000" --[[#0b0000]],
+    default = "yellow",
   },
   GUTTER = {
     group = "LineNr",
     attr = "bg",
-    default = "#0a000000" --[[##0a0000]],
+    default = "black",
   },
-  GUTTER_FOREGROUND = { group = "LineNr", attr = "fg", default = "#08000000" },
-  TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#07000000" },
-  COMMENT_FOREGROUND = { group = "Comment", attr = "fg", default = "#08000000" },
+  GUTTER_FOREGROUND = { group = "LineNr", attr = "fg", default = "grey" },
+  TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "white" },
+  COMMENT_FOREGROUND = { group = "Comment", attr = "fg", default = "grey" },
   PUNCTUATION_FOREGROUND = {
     group = "Normal",
     attr = "fg",
