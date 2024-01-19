@@ -30,8 +30,8 @@ M._bat_style_theme = function()
     and string.len(vim.env["BAT_THEME"]) > 0
   then
     theme = vim.env["BAT_THEME"]
-  elseif paths.isfile(bat_themes.get_custom_theme_file()) then
-    theme = bat_themes.get_custom_theme_name()
+  elseif paths.isfile(bat_themes.get_custom_theme_file() or "") then
+    theme = bat_themes.get_custom_theme_name() --[[@as string]]
   end
   return style, theme
 end

@@ -73,9 +73,12 @@ M._normalize_by = function(s, delimiter)
 end
 
 --- @param name string?
---- @return string
+--- @return string?
 M.get_custom_theme_name = function(name)
   name = name or vim.g.colors_name
+  if strings.empty(name) then
+    return nil
+  end
 
   if CUSTOMS_THEME_NAME_MAPPINGS[name] == nil then
     local result = name
@@ -90,10 +93,13 @@ M.get_custom_theme_name = function(name)
   return CUSTOMS_THEME_NAME_MAPPINGS[name]
 end
 
---- @return string
+--- @return string?
 M.get_custom_theme_file = function()
-  local theme_dir = M.get_bat_themes_config_dir()
   local theme_name = M.get_custom_theme_name()
+  if strings.empty(theme_name) then
+    return nil
+  end
+  local theme_dir = M.get_bat_themes_config_dir()
   return paths.join(theme_dir, theme_name .. ".tmTheme")
 end
 
