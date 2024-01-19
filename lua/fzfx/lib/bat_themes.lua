@@ -23,7 +23,8 @@ M.get_bat_themes_config_dir = function()
       end,
     })
     sp:wait()
-    THEMES_CONFIG_DIR = paths.join(bat_themes_config_dir, "themes")
+    THEMES_CONFIG_DIR =
+      paths.join(strings.trim(bat_themes_config_dir), "themes")
     log.debug(
       "|get_bat_themes_config_dir| config dir:%s",
       vim.inspect(THEMES_CONFIG_DIR)
@@ -36,47 +37,44 @@ end
 --- @type table<string, string>
 local CUSTOMS_THEME_NAME_MAPPINGS = {}
 
---- @return string
-M.get_custom_theme_name = function()
-  local name = vim.g.colors_name
-
-  --- @param names string[]
-  --- @return string[]
-  local function upper_firsts(names)
+--- @param names string[]
+--- @return string[]
+M._upper_first_chars = function(names)
+  log.ensure(
+    type(names) == "table" and #names > 0,
+    "|_upper_firsts| invalid names:%s",
+    vim.inspect(names)
+  )
+  local new_names = {}
+  for i, n in ipairs(names) do
     log.ensure(
-      type(names) == "table" and #names > 0,
-      "|get_custom_theme_name.upper_firsts| invalid names:%s",
-      vim.inspect(names)
+      type(n) == "string" and string.len(n) > 0,
+      "|_upper_firsts| invalid name(%d):%s",
+      vim.inspect(i),
+      vim.inspect(n)
     )
-    local new_names = {}
-    for i, n in ipairs(names) do
-      log.ensure(
-        type(n) == "string" and string.len(n) > 0,
-        "|get_custom_theme_name.upper_firsts| invalid name(%d):%s",
-        vim.inspect(i),
-        vim.inspect(n)
-      )
-      local new_name = string.sub(n, 1, 1):upper()
-        .. (string.len(n) > 1 and string.sub(n, 2) or "")
-      table.insert(new_names, new_name)
-    end
-    return new_names
+    local new_name = string.sub(n, 1, 1):upper()
+      .. (string.len(n) > 1 and string.sub(n, 2) or "")
+    table.insert(new_names, new_name)
   end
+  return new_names
+end
 
-  --- @param s string
-  --- @param delimiter string
-  --- @return string
-  local function normalize_by(s, delimiter)
-    if strings.find(s, delimiter) then
-      local splits = strings.split(s, delimiter, { trimempty = true })
-      splits = upper_firsts(splits)
-      return table.concat(splits, "")
-    else
-      local splits = { s }
-      splits = upper_firsts(splits)
-      return table.concat(splits, "")
-    end
-  end
+--- @param s string
+--- @param delimiter string
+--- @return string
+M._normalize_by = function(s, delimiter)
+  local splits = strings.find(s, delimiter)
+      and strings.split(s, delimiter, { trimempty = true })
+    or { s }
+  splits = M._upper_first_chars(splits)
+  return table.concat(splits, "")
+end
+
+--- @param name string?
+--- @return string
+M.get_custom_theme_name = function(name)
+  name = name or vim.g.colors_name
 
   if CUSTOMS_THEME_NAME_MAPPINGS[name] == nil then
     local result = name
