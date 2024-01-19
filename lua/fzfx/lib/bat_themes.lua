@@ -108,29 +108,14 @@ end
 local COLOR_CONFIGS = {
   -- gutterSettings
   GUTTER_BACKGROUND = {
-    group = "LineNr",
-    attr = "bg",
-    default = "#282828",
-  },
-  GUTTER_DIVIDER = {
-    group = "LineNr",
+    group = "Pmenu",
     attr = "bg",
     default = "#282828",
   },
   GUTTER_FOREGROUND = {
-    group = "LineNr",
+    group = "Pmenu",
     attr = "fg",
     default = "#585858",
-  },
-  GUTTER_SELECTION_FOREGROUND = {
-    group = "CursorLineNr",
-    attr = "fg",
-    default = "#b8b8b8",
-  },
-  GUTTER_SELECTION_BACKGROUND = {
-    group = "CursorLineNr",
-    attr = "bg",
-    default = "#383838",
   },
   -- settings
   BACKGROUND = {
