@@ -90,8 +90,8 @@ end
 -- And default value is replaced with placeholders, this mapping table is the real value.
 local DEFAULT_BASE16_COLORS = {
   BACKGROUND = "#00000000",
-  CARET = "#07000000",
   FOREGROUND = "#07000000",
+  CARET = "#07000000",
   INVISIBLES = "#08000000",
   LINE_HIGHLIGHT = "#08000000",
   SELECTION = "#0b000000",
@@ -148,6 +148,198 @@ local DEFAULT_BASE16_COLORS = {
   UNIMPLEMENTED_FOREGROUND = "#0f000000",
 }
 
+local COLOR_CONFIGS = {
+  BACKGROUND = { group = "Normal", attr = "bg", default = "#00000000" },
+  FOREGROUND = { group = "Normal", attr = "fg", default = "#07000000" },
+  CARET = { group = "Normal", attr = "fg", default = "#07000000" },
+  INVISIBLES = { group = "Normal", attr = "bg", default = "#08000000" },
+  LINE_HIGHLIGHT = { group = "CursorLine", attr = "fg", default = "#08000000" },
+  SELECTION = { group = "Visual", attr = "bg", default = "#0b000000" },
+  GUTTER = { group = "LineNr", attr = "bg", default = "#0a000000" },
+  GUTTER_FOREGROUND = { group = "LineNr", attr = "fg", default = "#08000000" },
+  TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#07000000" },
+  COMMENT_FOREGROUND = { group = "Comment", attr = "fg", default = "#08000000" },
+  PUNCTUATION_FOREGROUND = {
+    group = "Normal",
+    attr = "fg",
+    default = "#07000000",
+  },
+  DELIMITERS_FOREGROUND = {
+    group = "Delimiter",
+    attr = "fg",
+    default = "#07000000",
+  },
+  OPERATORS_FOREGROUND = {
+    group = "Operator",
+    attr = "fg",
+    default = "#07000000",
+  },
+  KEYWORDS_FOREGROUND = {
+    group = "Keyword",
+    attr = "fg",
+    default = "#05000000",
+  },
+  VARIABLES_FOREGROUND = {
+    group = "Identifier",
+    attr = "fg",
+    default = "#07000000",
+  },
+  FUNCTIONS_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = "#04000000",
+  },
+  LABELS_FOREGROUND = { group = "Label", attr = "fg", default = "#0e000000" },
+  CLASSES_FOREGROUND = {
+    group = "Structure",
+    attr = "fg",
+    default = "#03000000",
+  },
+  META_CLASSES_FOREGROUND = {
+    group = "Type",
+    attr = "fg",
+    default = "#0f000000",
+  },
+  METHODS_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = "#04000000",
+  },
+  STORAGE_FOREGROUND = {
+    group = "StorageClass",
+    attr = "fg",
+    default = "#05000000",
+  },
+  SUPPORT_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = "#06000000",
+  },
+  STRINGS_FOREGROUND = { group = "String", attr = "fg", default = "#02000000" },
+  INTEGERS_FOREGROUND = { group = "Number", attr = "fg", default = "#09000000" },
+  FLOATS_FOREGROUND = { group = "Float", attr = "fg", default = "#09000000" },
+  BOOLEAN_FOREGROUND = { group = "Boolean", attr = "fg", default = "#09000000" },
+  CONSTANTS_FOREGROUND = {
+    group = "Constant",
+    attr = "fg",
+    default = "#09000000",
+  },
+  TAGS_FOREGROUND = { group = "Tag", attr = "fg", default = "#01000000" },
+  ATTRIBUTES_FOREGROUND = {
+    group = "Macro",
+    attr = "fg",
+    default = "#09000000",
+  },
+  ATTRIBUTE_IDS_FOREGROUND = {
+    group = "PreProc",
+    attr = "fg",
+    default = "#04000000",
+  },
+  SELECTOR_FOREGROUND = { group = "Visual", attr = "fg", default = "#05000000" },
+  VALUES_FOREGROUND = { group = "Constant", attr = "fg", default = "#09000000" },
+  HEADINGS_FOREGROUND = { group = "Title", attr = "fg", default = "#04000000" },
+  UNITS_FOREGROUND = { group = "Keyword", attr = "fg", default = "#09000000" },
+  BOLD_FOREGROUND = { group = "Title", attr = "fg", default = "#03000000" },
+  ITALIC_FOREGROUND = { group = "Normal", attr = "fg", default = "#05000000" },
+  CODE_FOREGROUND = { group = "Normal", attr = "fg", default = "#02000000" },
+  LINK_TEXT_FOREGROUND = {
+    group = "helpCommand",
+    attr = "fg",
+    default = "#01000000",
+  },
+  LINK_URL_FOREGROUND = {
+    group = "helpHyperTextJump",
+    attr = "fg",
+    default = "#09000000",
+  },
+  QUOTES_FOREGROUND = {
+    group = "Character",
+    attr = "fg",
+    default = "#09000000",
+  },
+  SEPARATOR_BACKGROUND = {
+    group = "TabLine",
+    attr = "bg",
+    default = "#0b000000",
+  },
+  SEPARATOR_FOREGROUND = {
+    group = "TabLine",
+    attr = "fg",
+    default = "#07000000",
+  },
+  INSERTED_FOREGROUND = {
+    group = { "DiffAdd", "DiffAdded" },
+    attr = "fg",
+    default = "#02000000",
+  },
+  DELETED_FOREGROUND = { group = { "DiffDelete", "DiffRemoved" }, attr = "fg" },
+  CHANGED_FOREGROUND = {
+    group = "DiffChange",
+    attr = "fg",
+    default = "#01000000",
+  },
+  COLORS_FOREGROUND = {
+    group = "ColorColumn",
+    attr = "fg",
+    default = "#06000000",
+  },
+  REGULAR_EXPRESSIONS_FOREGROUND = {
+    group = "String",
+    attr = "fg",
+    default = "#06000000",
+  },
+  ESCAPE_CHARACTERS_FOREGROUND = {
+    group = "Special",
+    attr = "fg",
+    default = "#06000000",
+  },
+  EMBEDDED_FOREGROUND = {
+    group = "Statement",
+    attr = "fg",
+    default = "#05000000",
+  },
+  ILLEGAL_BACKGROUND = {
+    group = { "Exception", "Error" },
+    attr = "bg",
+    default = "#01000000",
+  },
+  ILLEGAL_FOREGROUND = {
+    group = { "Exception", "Error" },
+    attr = "fg",
+    default = "#0f000000",
+  },
+  BROKEN_BACKGROUND = {
+    group = { "Exception", "Error" },
+    attr = "bg",
+    default = "#09000000",
+  },
+  BROKEN_FOREGROUND = {
+    group = { "Exception", "Error" },
+    attr = "fg",
+    default = "#00000000",
+  },
+  DEPRECATED_BACKGROUND = {
+    group = "Comment",
+    attr = "bg",
+    default = "#0e000000",
+  },
+  DEPRECATED_FOREGROUND = {
+    group = "Comment",
+    attr = "fg",
+    default = "#0f000000",
+  },
+  UNIMPLEMENTED_BACKGROUND = {
+    group = "Comment",
+    attr = "bg",
+    default = "#08000000",
+  },
+  UNIMPLEMENTED_FOREGROUND = {
+    group = "Comment",
+    attr = "fg",
+    default = "#0f000000",
+  },
+}
+
 --- @return {name:string,payload:string}
 M.get_custom_theme = function()
   local name = M.get_custom_theme_name()
@@ -159,6 +351,22 @@ M.get_custom_theme = function()
   )
   local payload = fileios.readfile(template_path, { trim = true }) --[[@as string]]
   payload = payload:gsub("{NAME}", name)
+
+  local hl_caches = {}
+  for placeholder, configs in pairs(COLOR_CONFIGS) do
+    local group = type(configs.group) == "string" and { configs.group }
+      or configs.group --[[@as string[] ]]
+    local attr = configs.attr
+    local default = configs.default
+    for i, g in ipairs(group) do
+      local codes = termcolors.retrieve(g)
+      if type(codes) == "table" and strings.not_empty(codes[attr]) then
+        payload = payload:gsub(string.format("{%s}", placeholder), codes[attr])
+      else
+        payload = payload:gsub(string.format("{%s}", placeholder), default)
+      end
+    end
+  end
 
   local normal = termcolors.retrieve("Normal")
   payload = payload:gsub(
