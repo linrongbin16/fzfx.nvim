@@ -170,8 +170,53 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#d8d8d8",
   },
-  TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
+  BRACKETS_FOREGROUND = {
+    group = { "Normal" },
+    attr = "fg",
+    default = "#d8d8d8",
+  },
+  BRACKET_CONTENTS_FOREGROUND = {
+    group = { "Normal" },
+    attr = "fg",
+    default = "#d8d8d8",
+  },
+
   COMMENT_FOREGROUND = { group = "Comment", attr = "fg", default = "#585858" },
+  STRINGS_FOREGROUND = { group = "String", attr = "fg", default = "#a1b56c" },
+  NUMBERS_FOREGROUND = { group = "Number", attr = "fg", default = "#dc9656" },
+
+  CONSTANT_LANGUAGE_FOREGROUND = {
+    group = "Constant",
+    attr = "fg",
+    default = "#dc9656",
+  },
+  CONSTANT_CHARACTER_OTHER_FOREGROUND = {
+    group = "Constant",
+    attr = "fg",
+    default = "#dc9656",
+  },
+
+  VARIABLE_FOREGROUND = {
+    group = "Identifier",
+    attr = "fg",
+    default = "#ab4642",
+  },
+  VARIABLE_OTHER_READWRITE_INSTANCE_FOREGROUND = {
+    group = {
+      "DiagnosticSignWarn",
+      "LspDiagnosticsSignWarn",
+      "WarningMsg",
+    },
+    attr = "fg",
+    default = "#ab4642",
+  },
+  STRING_INTERPOLATION = {
+    group = { "SpecialKey", "Special" },
+    attr = "fg",
+    default = "#ba8baf",
+  },
+
+  TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
   PUNCTUATION_FOREGROUND = {
     group = "Normal",
     attr = "fg",
@@ -191,11 +236,6 @@ local COLOR_CONFIGS = {
     group = "Keyword",
     attr = "fg",
     default = "#ba8baf",
-  },
-  VARIABLES_FOREGROUND = {
-    group = "Identifier",
-    attr = "fg",
-    default = "#ab4642",
   },
   ENTITY_NAME_FOREGROUND = {
     group = "Pmenu",
@@ -248,13 +288,11 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#86c1b9",
   },
-  STRINGS_FOREGROUND = { group = "String", attr = "fg", default = "#a1b56c" },
   OTHER_SYMBOLS_FOREGROUND = {
     group = { "Directory", "String" },
     attr = "fg",
     default = "#a1b56c",
   },
-  INTEGERS_FOREGROUND = { group = "Number", attr = "fg", default = "#dc9656" },
   FLOATS_FOREGROUND = { group = "Float", attr = "fg", default = "#dc9656" },
   BOOLEAN_FOREGROUND = { group = "Boolean", attr = "fg", default = "#dc9656" },
   CONSTANTS_FOREGROUND = {

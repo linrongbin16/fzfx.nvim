@@ -46,6 +46,98 @@
         <string>{FIND_HIGHLIGHT}</string>
 				<key>findHighlightForeground</key>
         <string>{FIND_HIGHLIGHT_FOREGROUND}</string>
+        <key>bracketsForeground</key>
+        <string>{BRACKETS_FOREGROUND}</string>
+        <key>bracketContentsForeground</key>
+        <string>{BRACKET_CONTENTS_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Comments</string>
+			<key>scope</key>
+			<string>comment</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{COMMENT_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Strings</string>
+			<key>scope</key>
+			<string>string, string.quoted</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{STRINGS_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Numbers</string>
+			<key>scope</key>
+			<string>constant.numeric</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{NUMBERS_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Built-in Constants</string>
+			<key>scope</key>
+			<string>constant.language</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{CONSTANT_LANGUAGE_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>User-Defined Constants</string>
+			<key>scope</key>
+			<string>constant.character, constant.other</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{CONSTANT_CHARACTER_OTHER_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Variables</string>
+			<key>scope</key>
+			<string>variable</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{VARIABLE_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>Ruby's @variable</string>
+			<key>scope</key>
+			<string>variable.other.readwrite.instance</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{VARIABLE_OTHER_READWRITE_INSTANCE_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>String Interpolation</string>
+			<key>scope</key>
+			<string>constant.character.escaped, constant.character.escape, string source, string source.ruby</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{STRING_INTERPOLATION}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -57,17 +149,6 @@
 			<dict>
 				<key>foreground</key>
         <string>{TEXT_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Comments</string>
-			<key>scope</key>
-			<string>comment, punctuation.definition.comment</string>
-			<key>settings</key>
-			<dict>
-				<key>foreground</key>
-        <string>{COMMENT_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -112,17 +193,6 @@
 			<dict>
 				<key>foreground</key>
         <string>{KEYWORDS_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Variables</string>
-			<key>scope</key>
-			<string>variable</string>
-			<key>settings</key>
-			<dict>
-				<key>foreground</key>
-        <string>{VARIABLES_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -266,17 +336,6 @@
 			<dict>
 				<key>foreground</key>
         <string>{OTHER_SYMBOLS_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Integers</string>
-			<key>scope</key>
-			<string>constant.numeric</string>
-			<key>settings</key>
-			<dict>
-				<key>foreground</key>
-        <string>{INTEGERS_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
