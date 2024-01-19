@@ -258,12 +258,12 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>{KEYWORDS_FOREGROUND}</string>
+          <string>{KEYWORD_CONTROL_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>
         <key>name</key>
-        <string>Operators</string>
+        <string>Keyword Operator</string>
         <key>scope</key>
         <string>keyword.operator</string>
         <key>settings</key>
@@ -272,8 +272,20 @@
           <string>{KEYWORD_OPERATOR_FOREGROUND}</string>
         </dict>
       </dict>
+      <dict>
+        <key>name</key>
+        <string>Keyword Other</string>
+        <key>scope</key>
+        <string>keyword.other</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{KEYWORD_OTHER_FOREGROUND}</string>
+        </dict>
+      </dict>
       <!-- keyword } -->
 
+      <!-- storage { -->
       <dict>
         <key>name</key>
         <string>Storage</string>
@@ -324,6 +336,8 @@
           <string>{STORAGE_TYPE_CLASS_FOREGROUND}</string>
         </dict>
       </dict>
+      <!-- storage } -->
+
       <dict>
         <key>name</key>
         <string>Classes</string>

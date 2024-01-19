@@ -288,8 +288,9 @@ local COLOR_CONFIGS = {
     default = BASE16_COLORS.red,
   },
 
+  -- keyword
   KEYWORDS_FOREGROUND = {
-    group = "Keyword",
+    group = "Define",
     attr = "fg",
     default = BASE16_COLORS.magenta,
   },
@@ -303,21 +304,22 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = BASE16_COLORS.white,
   },
-
-  STORAGE_FOREGROUND = {
-    group = { "StorageClass", "SpecialKey" },
+  KEYWORD_OTHER_FOREGROUND = {
+    group = "PreProc",
     attr = "fg",
-    default = "#ba8baf",
+    default = BASE16_COLORS.white,
+  },
+
+  -- storage
+  STORAGE_FOREGROUND = {
+    group = { "Identifier", "StorageClass" },
+    attr = "fg",
+    default = BASE16_COLORS.orange,
   },
   STORAGE_TYPE_FOREGROUND = {
-    group = {
-      "SpecialComment",
-      "DiagnosticSignInfo",
-      "LspDiagnosticsSignInfo",
-      "Tag",
-    },
+    group = { "Identifier", "StorageClass" },
     attr = "fg",
-    default = "#7cafc2",
+    default = BASE16_COLORS.orange,
   },
   STORAGE_TYPE_NAMESPACE_FOREGROUND = {
     group = {
