@@ -87,13 +87,37 @@ end
 -- The 'theme_template.tmTheme' is forked from:
 -- https://github.com/sharkdp/bat/blob/98a2b6bc177050c845f2e12133458826ad1fca72/assets/themes/base16.tmTheme
 local COLOR_CONFIGS = {
-  BACKGROUND = { group = "Normal", attr = "bg", default = "#00000000" },
-  FOREGROUND = { group = "Normal", attr = "fg", default = "#07000000" },
-  CARET = { group = "Normal", attr = "fg", default = "#07000000" },
-  INVISIBLES = { group = "Normal", attr = "bg", default = "#08000000" },
+  BACKGROUND = {
+    group = "Normal",
+    attr = "bg",
+    default = "#00000000" --[[#000000]],
+  },
+  FOREGROUND = {
+    group = "Normal",
+    attr = "fg",
+    default = "#07000000" --[[#070000]],
+  },
+  CARET = {
+    group = "Normal",
+    attr = "fg",
+    default = "#07000000",
+  },
+  INVISIBLES = {
+    group = "Normal",
+    attr = "bg",
+    default = "#08000000" --[[##080000]],
+  },
   LINE_HIGHLIGHT = { group = "CursorLine", attr = "fg", default = "#08000000" },
-  SELECTION = { group = "Visual", attr = "bg", default = "#0b000000" },
-  GUTTER = { group = "LineNr", attr = "bg", default = "#0a000000" },
+  SELECTION = {
+    group = "Visual",
+    attr = "bg",
+    default = "#0b000000" --[[#0b0000]],
+  },
+  GUTTER = {
+    group = "LineNr",
+    attr = "bg",
+    default = "#0a000000" --[[##0a0000]],
+  },
   GUTTER_FOREGROUND = { group = "LineNr", attr = "fg", default = "#08000000" },
   TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#07000000" },
   COMMENT_FOREGROUND = { group = "Comment", attr = "fg", default = "#08000000" },
