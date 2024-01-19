@@ -1,6 +1,4 @@
 local paths = require("fzfx.commons.paths")
-local termcolors = require("fzfx.commons.termcolors")
-local strings = require("fzfx.commons.strings")
 local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 
