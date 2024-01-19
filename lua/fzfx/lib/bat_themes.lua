@@ -160,6 +160,16 @@ local COLOR_CONFIGS = {
   },
   LINE_HIGHLIGHT = { group = "CursorLine", attr = "bg", default = "#58585855" },
   SELECTION = { group = "Visual", attr = "bg", default = "#383838" },
+  FIND_HIGHLIGHT = {
+    group = { "Search", "IncSearch" },
+    attr = "bg",
+    default = "#dc9656",
+  },
+  FIND_HIGHLIGHT_FOREGROUND = {
+    group = { "Search", "IncSearch" },
+    attr = "fg",
+    default = "#d8d8d8",
+  },
   TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
   COMMENT_FOREGROUND = { group = "Comment", attr = "fg", default = "#585858" },
   PUNCTUATION_FOREGROUND = {

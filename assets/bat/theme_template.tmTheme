@@ -42,6 +42,10 @@
         <string>{LINE_HIGHLIGHT}</string>
 				<key>selection</key>
         <string>{SELECTION}</string>
+				<key>findHighlight</key>
+        <string>{SELECTION}</string>
+				<key>findHighlightForeground</key>
+        <string>{SELECTION}</string>
 			</dict>
 		</dict>
 		<dict>
