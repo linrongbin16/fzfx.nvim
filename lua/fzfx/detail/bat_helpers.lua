@@ -70,16 +70,28 @@ M.get_custom_theme_name = function()
       splits = upper_firsts(splits)
       return table.concat(splits, "")
     else
-      return s
+      local splits = { s }
+      splits = upper_firsts(splits)
+      return table.concat(splits, "")
     end
   end
 
   local result = name
+  log.debug(
+    "|get_custom_theme_name| name:%s, 1-result:%s",
+    vim.inspect(name),
+    vim.inspect(result)
+  )
   result = normalize_by(result, "-")
+  log.debug("|get_custom_theme_name| 2-result:%s", vim.inspect(result))
   result = normalize_by(result, "+")
+  log.debug("|get_custom_theme_name| 3-result:%s", vim.inspect(result))
   result = normalize_by(result, "_")
+  log.debug("|get_custom_theme_name| 4-result:%s", vim.inspect(result))
   result = normalize_by(result, ".")
+  log.debug("|get_custom_theme_name| 5-result:%s", vim.inspect(result))
   result = normalize_by(result, " ")
+  log.debug("|get_custom_theme_name| 6-result:%s", vim.inspect(result))
   return "FzfxNvim" .. result
 end
 
@@ -373,33 +385,46 @@ M.get_custom_theme = function()
   }
 end
 
-local calculating_bat_colors = false
-M.setup = function()
-  vim.api.nvim_create_autocmd("ColorScheme", {
-    callback = function()
-      if calculating_bat_colors then
-        return
-      end
-      calculating_bat_colors = true
-      local theme = M.get_custom_theme()
-      local theme_dir = M.get_bat_themes_config_dir()
-      fileios.writefile(paths.join(theme_dir, theme.name), theme.payload)
-      local sp = spawn.run({ "bat", "cache", "--build" }, {
-        on_stdout = function(line)
-          log.debug("|setup| on_stderr:%s", vim.inspect(line))
-        end,
-        on_stderr = function(line)
-          log.debug("|setup| on_stderr:%s", vim.inspect(line))
-        end,
-      })
-      sp:wait()
-      vim.schedule(function()
-        vim.schedule(function()
-          calculating_bat_colors = false
-        end)
-      end)
+local building_bat_theme = false
+M.build_theme = function()
+  if building_bat_theme then
+    return
+  end
+  building_bat_theme = true
+  local theme = M.get_custom_theme()
+  local theme_dir = M.get_bat_themes_config_dir()
+  local sp1 = spawn.run({ "mkdir", "-p", theme_dir }, {
+    on_stdout = function(line)
+      log.debug("|setup| mkdir on_stderr:%s", vim.inspect(line))
+    end,
+    on_stderr = function(line)
+      log.debug("|setup| mkdir on_stderr:%s", vim.inspect(line))
     end,
   })
+  sp1:wait()
+  fileios.writefile(
+    paths.join(theme_dir, theme.name .. ".tmTheme"),
+    theme.payload
+  )
+  local sp2 = spawn.run({ "bat", "cache", "--build" }, {
+    on_stdout = function(line)
+      log.debug("|setup| bat cache on_stderr:%s", vim.inspect(line))
+    end,
+    on_stderr = function(line)
+      log.debug("|setup| bat cache on_stderr:%s", vim.inspect(line))
+    end,
+  })
+  sp2:wait()
+  vim.schedule(function()
+    vim.schedule(function()
+      building_bat_theme = false
+    end)
+  end)
+end
+
+M.setup = function()
+  M.build_theme()
+  vim.api.nvim_create_autocmd("ColorScheme", { callback = M.build_theme })
 end
 
 return M
