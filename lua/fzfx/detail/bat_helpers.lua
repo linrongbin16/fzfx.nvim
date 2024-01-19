@@ -131,7 +131,7 @@ local COLOR_CONFIGS = {
     default = "#181818",
   },
   CARET = {
-    group = "Normal",
+    group = "Cursor",
     attr = "fg",
     default = "#d8d8d8",
   },
@@ -173,6 +173,11 @@ local COLOR_CONFIGS = {
     group = "Identifier",
     attr = "fg",
     default = "#ab4642",
+  },
+  ENTITY_NAME_FOREGROUND = {
+    group = "Pmenu",
+    attr = "fg",
+    default = "#7cafc2",
   },
   FUNCTIONS_FOREGROUND = {
     group = "Function",

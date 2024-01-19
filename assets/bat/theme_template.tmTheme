@@ -121,6 +121,17 @@
 		</dict>
 		<dict>
 			<key>name</key>
+			<string>Entity Name</string>
+			<key>scope</key>
+			<string>entity.name</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{ENTITY_NAME_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
 			<string>Functions</string>
 			<key>scope</key>
 			<string>entity.name.function, meta.require, support.function.any-method, variable.function, variable.annotation, support.macro</string>
