@@ -141,7 +141,7 @@ local COLOR_CONFIGS = {
     default = "#d8d8d8",
   },
   INVISIBLES = {
-    group = "CursorLine",
+    group = "NonText",
     attr = "bg",
     default = "#585858",
   },
@@ -211,6 +211,11 @@ local COLOR_CONFIGS = {
     default = "#86c1b9",
   },
   STRINGS_FOREGROUND = { group = "String", attr = "fg", default = "#a1b56c" },
+  OTHER_SYMBOLS_FOREGROUND = {
+    group = { "Directory", "String" },
+    attr = "fg",
+    default = "#a1b56c",
+  },
   INTEGERS_FOREGROUND = { group = "Number", attr = "fg", default = "#dc9656" },
   FLOATS_FOREGROUND = { group = "Float", attr = "fg", default = "#dc9656" },
   BOOLEAN_FOREGROUND = { group = "Boolean", attr = "fg", default = "#dc9656" },

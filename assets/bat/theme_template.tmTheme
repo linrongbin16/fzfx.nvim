@@ -211,11 +211,22 @@
 			<key>name</key>
 			<string>Strings, Inherited Class</string>
 			<key>scope</key>
-			<string>string, constant.other.symbol, entity.other.inherited-class</string>
+			<string>string, entity.other.inherited-class</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
         <string>{STRINGS_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Other Symbols</string>
+			<key>scope</key>
+			<string>constant.other.symbol</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{OTHER_SYMBOLS_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
