@@ -161,161 +161,170 @@ local COLOR_CONFIGS = {
   VARIABLES_FOREGROUND = {
     group = "Identifier",
     attr = "fg",
-    default = "#07000000",
+    default = "#ab4642",
   },
   FUNCTIONS_FOREGROUND = {
     group = "Function",
     attr = "fg",
-    default = "#04000000",
+    default = "#7cafc2",
   },
-  LABELS_FOREGROUND = { group = "Label", attr = "fg", default = "#0e000000" },
+  LABELS_FOREGROUND = { group = "Label", attr = "fg", default = "#a16946" },
   CLASSES_FOREGROUND = {
-    group = "Structure",
+    group = "StorageClass",
     attr = "fg",
-    default = "#03000000",
+    default = "#f7ca88",
   },
   META_CLASSES_FOREGROUND = {
     group = "Type",
     attr = "fg",
-    default = "#0f000000",
+    default = "#f8f8f8",
   },
   METHODS_FOREGROUND = {
     group = "Function",
     attr = "fg",
-    default = "#04000000",
+    default = "#7cafc2",
   },
   STORAGE_FOREGROUND = {
-    group = "StorageClass",
+    group = "Structure",
     attr = "fg",
-    default = "#05000000",
+    default = "#ba8baf",
   },
   SUPPORT_FOREGROUND = {
-    group = "Function",
+    group = "Include",
     attr = "fg",
-    default = "#06000000",
+    default = "#86c1b9",
   },
-  STRINGS_FOREGROUND = { group = "String", attr = "fg", default = "#02000000" },
-  INTEGERS_FOREGROUND = { group = "Number", attr = "fg", default = "#09000000" },
-  FLOATS_FOREGROUND = { group = "Float", attr = "fg", default = "#09000000" },
-  BOOLEAN_FOREGROUND = { group = "Boolean", attr = "fg", default = "#09000000" },
+  STRINGS_FOREGROUND = { group = "String", attr = "fg", default = "#a1b56c" },
+  INTEGERS_FOREGROUND = { group = "Number", attr = "fg", default = "#dc9656" },
+  FLOATS_FOREGROUND = { group = "Float", attr = "fg", default = "#dc9656" },
+  BOOLEAN_FOREGROUND = { group = "Boolean", attr = "fg", default = "#dc9656" },
   CONSTANTS_FOREGROUND = {
     group = "Constant",
     attr = "fg",
-    default = "#09000000",
+    default = "#dc9656",
   },
-  TAGS_FOREGROUND = { group = "Tag", attr = "fg", default = "#01000000" },
+  TAGS_FOREGROUND = { group = "Tag", attr = "fg", default = "#ab4642" },
   ATTRIBUTES_FOREGROUND = {
-    group = "Macro",
-    attr = "fg",
-    default = "#09000000",
-  },
-  ATTRIBUTE_IDS_FOREGROUND = {
     group = "PreProc",
     attr = "fg",
-    default = "#04000000",
+    default = "#dc9656",
   },
-  SELECTOR_FOREGROUND = { group = "Visual", attr = "fg", default = "#05000000" },
-  VALUES_FOREGROUND = { group = "Constant", attr = "fg", default = "#09000000" },
-  HEADINGS_FOREGROUND = { group = "Title", attr = "fg", default = "#04000000" },
-  UNITS_FOREGROUND = { group = "Keyword", attr = "fg", default = "#09000000" },
-  BOLD_FOREGROUND = { group = "Title", attr = "fg", default = "#03000000" },
-  ITALIC_FOREGROUND = { group = "Normal", attr = "fg", default = "#05000000" },
-  CODE_FOREGROUND = { group = "Normal", attr = "fg", default = "#02000000" },
-  LINK_TEXT_FOREGROUND = {
-    group = "helpCommand",
+  ATTRIBUTE_IDS_FOREGROUND = {
+    group = "Macro",
     attr = "fg",
-    default = "#01000000",
+    default = "#7cafc2",
+  },
+  SELECTOR_FOREGROUND = { group = "Operator", attr = "fg", default = "#ba8baf" },
+  VALUES_FOREGROUND = { group = "Constant", attr = "fg", default = "#dc9656" },
+  HEADINGS_FOREGROUND = { group = "Title", attr = "fg", default = "#7cafc2" },
+  UNITS_FOREGROUND = { group = "Keyword", attr = "fg", default = "#dc9656" },
+  BOLD_FOREGROUND = { group = "Search", attr = "fg", default = "#f7ca88" },
+  ITALIC_FOREGROUND = {
+    group = "Conditional",
+    attr = "fg",
+    default = "#ba8baf",
+  },
+  CODE_FOREGROUND = { group = "String", attr = "fg", default = "#a1b56c" },
+  LINK_TEXT_FOREGROUND = {
+    group = "WildMenu",
+    attr = "fg",
+    default = "#ab4642",
   },
   LINK_URL_FOREGROUND = {
-    group = "helpHyperTextJump",
+    group = "Constant",
     attr = "fg",
-    default = "#09000000",
+    default = "#dc9656",
   },
+  LISTS_FOREGROUND = { group = "Character", attr = "fg", default = "#ab4642" },
   QUOTES_FOREGROUND = {
-    group = "Character",
+    group = "Constant",
     attr = "fg",
-    default = "#09000000",
+    default = "#dc9656",
   },
   SEPARATOR_BACKGROUND = {
-    group = "TabLine",
+    group = "StatusLine",
     attr = "bg",
-    default = "#0b000000",
+    default = "#383838",
   },
   SEPARATOR_FOREGROUND = {
-    group = "TabLine",
+    group = "StatusLine",
     attr = "fg",
-    default = "#07000000",
+    default = "#d8d8d8",
   },
   INSERTED_FOREGROUND = {
-    group = { "DiffAdd", "DiffAdded" },
+    group = { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded" },
     attr = "fg",
-    default = "#02000000",
+    default = "#a1b56c",
   },
-  DELETED_FOREGROUND = { group = { "DiffDelete", "DiffRemoved" }, attr = "fg" },
-  CHANGED_FOREGROUND = {
-    group = "DiffChange",
+  DELETED_FOREGROUND = {
+    group = { "GitSignsDelete", "GitGutterDelete", "DiffDelete", "DiffRemoved" },
     attr = "fg",
-    default = "#01000000",
+    default = "#ab4642",
+  },
+  CHANGED_FOREGROUND = {
+    group = { "GitGutterChange", "GitSignsChange", "DiffChange" },
+    attr = "fg",
+    default = "#ba8baf",
   },
   COLORS_FOREGROUND = {
-    group = "ColorColumn",
+    group = "FoldColumn",
     attr = "fg",
-    default = "#06000000",
+    default = "#86c1b9",
   },
   REGULAR_EXPRESSIONS_FOREGROUND = {
-    group = "String",
+    group = "Special",
     attr = "fg",
-    default = "#06000000",
+    default = "#86c1b9",
   },
   ESCAPE_CHARACTERS_FOREGROUND = {
     group = "Special",
     attr = "fg",
-    default = "#06000000",
+    default = "#86c1b9",
   },
   EMBEDDED_FOREGROUND = {
-    group = "Statement",
+    group = "Define",
     attr = "fg",
-    default = "#05000000",
+    default = "#ba8baf",
   },
   ILLEGAL_BACKGROUND = {
-    group = { "Exception", "Error" },
+    group = { "Exception", "ErrorMsg", "Error" },
     attr = "bg",
-    default = "#01000000",
+    default = "#ab4642",
   },
   ILLEGAL_FOREGROUND = {
-    group = { "Exception", "Error" },
+    group = { "Exception", "ErrorMsg", "Error" },
     attr = "fg",
-    default = "#0f000000",
+    default = "#ab4642",
   },
   BROKEN_BACKGROUND = {
-    group = { "Exception", "Error" },
+    group = { "WarningMsg", "IncSearch" },
     attr = "bg",
-    default = "#09000000",
+    default = "#dc9656",
   },
   BROKEN_FOREGROUND = {
-    group = { "Exception", "Error" },
+    group = { "WarningMsg", "IncSearch" },
     attr = "fg",
-    default = "#00000000",
+    default = "#dc9656",
   },
   DEPRECATED_BACKGROUND = {
-    group = "Comment",
+    group = "Delimiter",
     attr = "bg",
-    default = "#0e000000",
+    default = "#a16946",
   },
   DEPRECATED_FOREGROUND = {
-    group = "Comment",
+    group = "Delimiter",
     attr = "fg",
-    default = "#0f000000",
+    default = "#f8f8f8",
   },
   UNIMPLEMENTED_BACKGROUND = {
     group = "Comment",
     attr = "bg",
-    default = "#08000000",
+    default = "#585858",
   },
   UNIMPLEMENTED_FOREGROUND = {
     group = "Comment",
     attr = "fg",
-    default = "#0f000000",
+    default = "#f8f8f8",
   },
 }
 
@@ -346,13 +355,17 @@ M.get_custom_theme = function()
     local attr = configs.attr
     local default = configs.default
     local placeholder = string.format("{%s}", config_name)
+    local found_match = false
     for i, g in ipairs(group) do
       local codes = cached_retrieve(g)
       if strings.not_empty(codes[attr]) then
         payload = payload:gsub(string.format("%s", placeholder), codes[attr])
-      else
-        payload = payload:gsub(string.format("%s", placeholder), default)
+        found_match = true
+        break
       end
+    end
+    if not found_match then
+      payload = payload:gsub(string.format("%s", placeholder), default)
     end
   end
   return {
