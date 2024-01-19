@@ -217,9 +217,9 @@ local COLOR_CONFIGS = {
   },
   RUBY_REGEXP_FOREGROUND = {
     group = {
-      "DiffDelete",
-      "DiffRemoved",
-      "ErrorMsg",
+      "DiagnosticWarn",
+      "LspDiagnosticsDefaultWarning",
+      "WarningMsg",
     },
     attr = "fg",
     default = "#ab4642",
