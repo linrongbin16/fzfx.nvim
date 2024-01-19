@@ -422,24 +422,26 @@ M.build_theme = function()
   building_bat_theme = true
   local theme = M.get_custom_theme()
   local theme_dir = M.get_bat_themes_config_dir()
-  local sp1 = spawn.run({ "mkdir", "-p", theme_dir }, {
-    on_stdout = function() end,
-    on_stderr = function() end,
-  })
-  sp1:wait()
+  spawn
+    .run({ "mkdir", "-p", theme_dir }, {
+      on_stdout = function() end,
+      on_stderr = function() end,
+    })
+    :wait()
   fileios.writefile(
     paths.join(theme_dir, theme.name .. ".tmTheme"),
     theme.payload
   )
-  local sp2 = spawn.run({ "bat", "cache", "--build" }, {
-    on_stdout = function(line)
-      log.debug("|setup| bat cache on_stderr:%s", vim.inspect(line))
-    end,
-    on_stderr = function(line)
-      log.debug("|setup| bat cache on_stderr:%s", vim.inspect(line))
-    end,
-  })
-  sp2:wait()
+  spawn
+    .run({ "bat", "cache", "--build" }, {
+      on_stdout = function(line)
+        log.debug("|setup| bat cache on_stderr:%s", vim.inspect(line))
+      end,
+      on_stderr = function(line)
+        log.debug("|setup| bat cache on_stderr:%s", vim.inspect(line))
+      end,
+    })
+    :wait()
   vim.schedule(function()
     vim.schedule(function()
       building_bat_theme = false
