@@ -443,9 +443,7 @@ M.build_theme = function()
     })
     :wait()
   vim.schedule(function()
-    vim.schedule(function()
-      building_bat_theme = false
-    end)
+    building_bat_theme = false
   end)
 end
 
