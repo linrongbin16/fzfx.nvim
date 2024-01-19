@@ -251,6 +251,28 @@
 		</dict>
 		<dict>
 			<key>name</key>
+			<string>Function Name</string>
+			<key>scope</key>
+			<string>entity.name.function</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{FUNCTIONS_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Tags</string>
+			<key>scope</key>
+			<string>entity.name.tag</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{ENTITY_NAME_TAG_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
 			<string>Text</string>
 			<key>scope</key>
 			<string>variable.parameter.function</string>
@@ -434,17 +456,6 @@
 			<dict>
 				<key>foreground</key>
         <string>{CONSTANTS_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Tags</string>
-			<key>scope</key>
-			<string>entity.name.tag</string>
-			<key>settings</key>
-			<dict>
-				<key>foreground</key>
-        <string>{TAGS_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>

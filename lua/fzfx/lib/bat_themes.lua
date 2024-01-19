@@ -277,6 +277,16 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#7cafc2",
   },
+  ENTITY_FUNCTION_NAME_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = "#a1b56c",
+  },
+  ENTITY_NAME_TAG_FOREGROUND = {
+    group = { "SpecialKey", "Tag" },
+    attr = "fg",
+    default = "#dc9656",
+  },
 
   TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
   PUNCTUATION_FOREGROUND = {
@@ -296,11 +306,6 @@ local COLOR_CONFIGS = {
   },
   ENTITY_NAME_FOREGROUND = {
     group = "Pmenu",
-    attr = "fg",
-    default = "#7cafc2",
-  },
-  FUNCTIONS_FOREGROUND = {
-    group = "Function",
     attr = "fg",
     default = "#7cafc2",
   },
@@ -342,7 +347,6 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#dc9656",
   },
-  TAGS_FOREGROUND = { group = "Tag", attr = "fg", default = "#ab4642" },
   ATTRIBUTES_FOREGROUND = {
     group = "PreProc",
     attr = "fg",
