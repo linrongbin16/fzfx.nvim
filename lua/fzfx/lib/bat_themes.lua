@@ -168,7 +168,28 @@ local COLOR_CONFIGS = {
   },
 
   COMMENT_FOREGROUND = { group = "Comment", attr = "fg", default = "#585858" },
-  STRINGS_FOREGROUND = { group = "String", attr = "fg", default = "#a1b56c" },
+
+  -- string
+  STRING_FOREGROUND = { group = "String", attr = "fg", default = "#a1b56c" },
+  STRING_REGEXP_FOREGROUND = {
+    group = {
+      "DiagnosticWarn",
+      "LspDiagnosticsDefaultWarning",
+      "WarningMsg",
+    },
+    attr = "fg",
+    default = "#ab4642",
+  },
+  RUBY_REGEXP_FOREGROUND = {
+    group = {
+      "DiagnosticWarn",
+      "LspDiagnosticsDefaultWarning",
+      "WarningMsg",
+    },
+    attr = "fg",
+    default = "#ab4642",
+  },
+
   NUMBERS_FOREGROUND = { group = "Number", attr = "fg", default = "#dc9656" },
 
   CONSTANT_LANGUAGE_FOREGROUND = {
@@ -198,24 +219,6 @@ local COLOR_CONFIGS = {
   },
   STRING_INTERPOLATION_FOREGROUND = {
     group = { "Character" },
-    attr = "fg",
-    default = "#ab4642",
-  },
-  RUBY_REGEXP_FOREGROUND = {
-    group = {
-      "DiagnosticWarn",
-      "LspDiagnosticsDefaultWarning",
-      "WarningMsg",
-    },
-    attr = "fg",
-    default = "#ab4642",
-  },
-  STRING_REGEXP_FOREGROUND = {
-    group = {
-      "DiagnosticWarn",
-      "LspDiagnosticsDefaultWarning",
-      "WarningMsg",
-    },
     attr = "fg",
     default = "#ab4642",
   },

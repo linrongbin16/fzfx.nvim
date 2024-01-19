@@ -78,7 +78,32 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>{STRINGS_FOREGROUND}</string>
+          <string>{STRING_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>String Regexp</string>
+        <key>scope</key>
+        <string>string.regexp</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{STRING_REGEXP_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Ruby String Regexp</string>
+        <key>scope</key>
+        <string
+          >source.ruby string.regexp.classic.ruby,source.ruby
+          string.regexp.mod-r.ruby</string
+        >
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{RUBY_REGEXP_FOREGROUND}</string>
         </dict>
       </dict>
       <!-- string } -->
@@ -150,31 +175,6 @@
         <dict>
           <key>foreground</key>
           <string>{STRING_INTERPOLATION_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Ruby Regexp</string>
-        <key>scope</key>
-        <string
-          >source.ruby string.regexp.classic.ruby,source.ruby
-          string.regexp.mod-r.ruby</string
-        >
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{RUBY_REGEXP_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>String Regexp</string>
-        <key>scope</key>
-        <string>string.regexp</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{STRING_REGEXP_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>
