@@ -112,11 +112,12 @@ local BASE16_COLORS = {
   darkgrey = "#282828",
   grey = "#585858",
   white = "#d8d8d8",
-  yellow = "",
-  orange = "#dc9656",
+  yellow = "#dc9656",
+  orange = "##a16946",
   green = "#a1b56c",
   red = "#ab4642",
   blue = "#7cafc2",
+  cyan = "#7cafc2",
   magenta = "#ba8baf",
 }
 
@@ -165,11 +166,15 @@ local COLOR_CONFIGS = {
     attr = "bg",
     default = BASE16_COLORS.lightgrey_sRGB,
   },
-  SELECTION = { group = "Visual", attr = "bg", default = "#dc9656" },
+  SELECTION = {
+    group = "Visual",
+    attr = "bg",
+    default = BASE16_COLORS.yellow,
+  },
   FIND_HIGHLIGHT = {
     group = "Search",
     attr = "bg",
-    default = BASE16_COLORS.orange,
+    default = BASE16_COLORS.yellow,
   },
   FIND_HIGHLIGHT_FOREGROUND = {
     group = "Search",
@@ -224,24 +229,24 @@ local COLOR_CONFIGS = {
   STRING_INTERPOLATION_FOREGROUND = {
     group = { "Boolean" },
     attr = "fg",
-    default = BASE16_COLORS.orange,
+    default = BASE16_COLORS.yellow,
   },
 
   -- constant
   CONSTANT_NUMERIC_FOREGROUND = {
     group = { "Number" },
     attr = "fg",
-    default = BASE16_COLORS.orange,
+    default = BASE16_COLORS.yellow,
   },
   CONSTANT_LANGUAGE_FOREGROUND = {
     group = { "Boolean" },
     attr = "fg",
-    default = BASE16_COLORS.orange,
+    default = BASE16_COLORS.yellow,
   },
   CONSTANT_CHARACTER_OTHER_FOREGROUND = {
     group = "Character",
     attr = "fg",
-    default = BASE16_COLORS.orange,
+    default = BASE16_COLORS.yellow,
   },
 
   -- variable
@@ -261,7 +266,7 @@ local COLOR_CONFIGS = {
   VARIABLE_FUNCTION_FOREGROUND = {
     group = "Function",
     attr = "fg",
-    default = BASE16_COLORS.blue,
+    default = BASE16_COLORS.cyan,
   },
   VARIABLE_PARAMETER_FOREGROUND = {
     group = { "@parameter", "Normal" },
@@ -276,7 +281,7 @@ local COLOR_CONFIGS = {
   -- VARIABLE_OTHER_CONSTANT_FOREGROUND = {
   --   group = "Boolean",
   --   attr = "fg",
-  --   default = BASE16_COLORS.orange,
+  --   default = BASE16_COLORS.yellow,
   -- },
   VARIABLE_OTHER_READWRITE_INSTANCE_FOREGROUND = {
     group = {
@@ -312,62 +317,61 @@ local COLOR_CONFIGS = {
 
   -- storage
   STORAGE_FOREGROUND = {
-    group = { "Identifier", "StorageClass" },
+    group = { "Boolean" },
     attr = "fg",
-    default = BASE16_COLORS.orange,
+    default = BASE16_COLORS.yellow,
   },
   STORAGE_TYPE_FOREGROUND = {
     group = { "Identifier", "StorageClass" },
     attr = "fg",
-    default = BASE16_COLORS.orange,
+    default = BASE16_COLORS.magenta,
   },
-  STORAGE_TYPE_NAMESPACE_FOREGROUND = {
-    group = {
-      "SpecialComment",
-      "DiagnosticSignInfo",
-      "LspDiagnosticsSignInfo",
-      "Tag",
-    },
+
+  -- entity
+  ENTITY_NAME_FOREGROUND = {
+    group = "Pmenu",
     attr = "fg",
-    default = "#7cafc2",
-  },
-  STORAGE_TYPE_CLASS_FOREGROUND = {
-    group = {
-      "Typedef",
-      "SpecialKey",
-    },
-    attr = "fg",
-    default = "#7cafc2",
+    default = BASE16_COLORS.cyan,
   },
   ENTITY_NAME_CLASS_FOREGROUND = {
     group = "Type",
     attr = "fg",
-    default = "#7cafc2",
+    default = BASE16_COLORS.cyan,
   },
-  META_PATH_FOREGROUND = {
-    group = "helpHyperTextJump",
+  EENTITY_OTHER_INHERITED_CLASS_FOREGROUND = {
+    group = { "Tag", "Type" },
     attr = "fg",
-    default = "#7cafc2",
+    default = BASE16_COLORS.cyan,
   },
-  ENTITY_OTHER_INHERITED_CLASS = {
-    group = { "DiagnosticInfo", "LspDiagnosticsDefaultInformation", "Tag" },
-    attr = "fg",
-    default = "#7cafc2",
-  },
-  ENTITY_FUNCTION_NAME_FOREGROUND = {
+  ENTITY_NAME_FUNCTION_FOREGROUND = {
     group = "Function",
     attr = "fg",
-    default = "#7cafc2",
+    default = BASE16_COLORS.cyan,
+  },
+  ENTITY_NAME_LABEL_FOREGROUND = {
+    group = "Label",
+    attr = "fg",
+    default = BASE16_COLORS.orange,
   },
   ENTITY_NAME_TAG_FOREGROUND = {
-    group = { "SpecialKey", "Tag" },
+    group = { "Tag" },
     attr = "fg",
-    default = "#7cafc2",
+    default = BASE16_COLORS.orange,
   },
   ENTITY_OTHER_ATTRIBUTE_NAME_FOREGROUND = {
     group = { "Tag" },
     attr = "fg",
     default = "#a1b56c",
+  },
+  FUNCTIONS_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = BASE16_COLORS.cyan,
+  },
+  META_PATH_FOREGROUND = {
+    group = "helpHyperTextJump",
+    attr = "fg",
+    default = "#7cafc2",
   },
   SUPPORT_FUNCTION_FOREGROUND = {
     group = { "Function" },
@@ -458,16 +462,6 @@ local COLOR_CONFIGS = {
     group = "Normal",
     attr = "fg",
     default = "#d8d8d8",
-  },
-  ENTITY_NAME_FOREGROUND = {
-    group = "Pmenu",
-    attr = "fg",
-    default = "#7cafc2",
-  },
-  ENTITY_NAME_LABEL_FOREGROUND = {
-    group = "Label",
-    attr = "fg",
-    default = "#a16946",
   },
   META_CLASS_FOREGROUND = {
     group = "Type",

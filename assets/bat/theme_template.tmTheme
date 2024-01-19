@@ -310,56 +310,29 @@
           <string>{STORAGE_TYPE_FOREGROUND}</string>
         </dict>
       </dict>
-      <dict>
-        <key>name</key>
-        <string>Storage Type Namespace</string>
-        <key>scope</key>
-        <string>storage.type.namespace</string>
-        <key>settings</key>
-        <dict>
-          <key>fontStyle</key>
-          <string>italic</string>
-          <key>foreground</key>
-          <string>{STORAGE_TYPE_NAMESPACE_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Storage Type Class</string>
-        <key>scope</key>
-        <string>storage.type.class</string>
-        <key>settings</key>
-        <dict>
-          <key>fontStyle</key>
-          <string>italic</string>
-          <key>foreground</key>
-          <string>{STORAGE_TYPE_CLASS_FOREGROUND}</string>
-        </dict>
-      </dict>
       <!-- storage } -->
 
+      <!-- entity { -->
       <dict>
         <key>name</key>
-        <string>Classes</string>
+        <string>Entity Name</string>
+        <key>scope</key>
+        <string>entity.name</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{ENTITY_NAME_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Entity Name Class</string>
         <key>scope</key>
         <string>entity.name.class</string>
         <key>settings</key>
         <dict>
           <key>foreground</key>
           <string>{ENTITY_NAME_CLASS_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Meta Path</string>
-        <key>scope</key>
-        <string>meta.path</string>
-        <key>settings</key>
-        <dict>
-          <key>fontStyle</key>
-          <string>underline</string>
-          <key>foreground</key>
-          <string>{META_PATH_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>
@@ -372,7 +345,7 @@
           <key>fontStyle</key>
           <string>italic underline</string>
           <key>foreground</key>
-          <string>{ENTITY_OTHER_INHERITED_CLASS}</string>
+          <string>{ENTITY_OTHER_INHERITED_CLASS_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>
@@ -383,7 +356,18 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>{FUNCTIONS_FOREGROUND}</string>
+          <string>{ENTITY_NAME_FUNCTION_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Entity Name Label</string>
+        <key>scope</key>
+        <string>entity.name.label</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{ENTITY_NAME_LABEL_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>
@@ -406,6 +390,21 @@
         <dict>
           <key>foreground</key>
           <string>{ENTITY_OTHER_ATTRIBUTE_NAME_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <!-- entity } -->
+
+      <dict>
+        <key>name</key>
+        <string>Meta Path</string>
+        <key>scope</key>
+        <string>meta.path</string>
+        <key>settings</key>
+        <dict>
+          <key>fontStyle</key>
+          <string>underline</string>
+          <key>foreground</key>
+          <string>{META_PATH_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>
@@ -596,17 +595,6 @@
       </dict>
       <dict>
         <key>name</key>
-        <string>Entity Name</string>
-        <key>scope</key>
-        <string>entity.name</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{ENTITY_NAME_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
         <string>Functions</string>
         <key>scope</key>
         <string
@@ -616,18 +604,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>{ENTITY_FUNCTION_NAME_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Labels</string>
-        <key>scope</key>
-        <string>entity.name.label</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{ENTITY_NAME_LABEL_FOREGROUND}</string>
+          <string>{FUNCTIONS_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>
