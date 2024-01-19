@@ -364,16 +364,7 @@ local COLOR_CONFIGS = {
     default = BASE16_COLORS.orange,
   },
 
-  FUNCTIONS_FOREGROUND = {
-    group = "Function",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  META_PATH_FOREGROUND = {
-    group = "helpHyperTextJump",
-    attr = "fg",
-    default = "#7cafc2",
-  },
+  -- support
   SUPPORT_FUNCTION_FOREGROUND = {
     group = { "Function" },
     attr = "fg",
@@ -396,6 +387,17 @@ local COLOR_CONFIGS = {
       "LspDiagnosticsSignInfo",
       "Tag",
     },
+    attr = "fg",
+    default = "#7cafc2",
+  },
+
+  FUNCTIONS_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = BASE16_COLORS.cyan,
+  },
+  META_PATH_FOREGROUND = {
+    group = "helpHyperTextJump",
     attr = "fg",
     default = "#7cafc2",
   },
