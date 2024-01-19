@@ -87,59 +87,76 @@ end
 -- The 'theme_template.tmTheme' is forked from: https://github.com/sharkdp/bat/blob/98a2b6bc177050c845f2e12133458826ad1fca72/assets/themes/base16.tmTheme
 -- default color is forked from: https://github.com/chriskempson/base16-textmate/blob/0e51ddd568bdbe17189ac2a07eb1c5f55727513e/Themes/base16-default-dark.tmTheme
 local COLOR_CONFIGS = {
+  -- gutterSettings
+  GUTTER_BACKGROUND = {
+    group = "LineNr",
+    attr = "bg",
+    default = "#282828",
+  },
+  GUTTER_DIVIDER = {
+    group = "LineNr",
+    attr = "bg",
+    default = "#282828",
+  },
+  GUTTER_FOREGROUND = {
+    group = "LineNr",
+    attr = "fg",
+    default = "#585858",
+  },
+  GUTTER_SELECTION_FOREGROUND = {
+    group = "CursorLineNr",
+    attr = "fg",
+    default = "#b8b8b8",
+  },
+  GUTTER_SELECTION_BACKGROUND = {
+    group = "CursorLineNr",
+    attr = "bg",
+    default = "#383838",
+  },
+  -- settings
   BACKGROUND = {
     group = "Normal",
     attr = "bg",
-    default = "black",
-  },
-  FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = "white",
+    default = "#181818",
   },
   CARET = {
     group = "Normal",
     attr = "fg",
-    default = "white",
+    default = "#d8d8d8",
+  },
+  FOREGROUND = {
+    group = "Normal",
+    attr = "fg",
+    default = "#d8d8d8",
   },
   INVISIBLES = {
-    group = "Normal",
+    group = "CursorLine",
     attr = "bg",
-    default = "grey25",
+    default = "#585858",
   },
-  LINE_HIGHLIGHT = { group = "CursorLine", attr = "bg", default = "grey" },
-  SELECTION = {
-    group = "Visual",
-    attr = "bg",
-    default = "yellow",
-  },
-  GUTTER = {
-    group = "LineNr",
-    attr = "bg",
-    default = "black",
-  },
-  GUTTER_FOREGROUND = { group = "LineNr", attr = "fg", default = "grey" },
-  TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "white" },
-  COMMENT_FOREGROUND = { group = "Comment", attr = "fg", default = "grey" },
+  LINE_HIGHLIGHT = { group = "CursorLine", attr = "bg", default = "#58585855" },
+  SELECTION = { group = "Visual", attr = "bg", default = "#383838" },
+  TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
+  COMMENT_FOREGROUND = { group = "Comment", attr = "fg", default = "#585858" },
   PUNCTUATION_FOREGROUND = {
     group = "Normal",
     attr = "fg",
-    default = "#07000000",
+    default = "#d8d8d8",
   },
   DELIMITERS_FOREGROUND = {
     group = "Delimiter",
     attr = "fg",
-    default = "#07000000",
+    default = "#d8d8d8",
   },
   OPERATORS_FOREGROUND = {
     group = "Operator",
     attr = "fg",
-    default = "#07000000",
+    default = "#d8d8d8",
   },
   KEYWORDS_FOREGROUND = {
     group = "Keyword",
     attr = "fg",
-    default = "#05000000",
+    default = "#ba8baf",
   },
   VARIABLES_FOREGROUND = {
     group = "Identifier",
