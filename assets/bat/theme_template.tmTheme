@@ -43,9 +43,9 @@
 				<key>selection</key>
         <string>{SELECTION}</string>
 				<key>findHighlight</key>
-        <string>{SELECTION}</string>
+        <string>{FIND_HIGHLIGHT}</string>
 				<key>findHighlightForeground</key>
-        <string>{SELECTION}</string>
+        <string>{FIND_HIGHLIGHT_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
