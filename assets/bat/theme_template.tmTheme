@@ -394,19 +394,7 @@
       </dict>
       <!-- entity } -->
 
-      <dict>
-        <key>name</key>
-        <string>Meta Path</string>
-        <key>scope</key>
-        <string>meta.path</string>
-        <key>settings</key>
-        <dict>
-          <key>fontStyle</key>
-          <string>underline</string>
-          <key>foreground</key>
-          <string>{META_PATH_FOREGROUND}</string>
-        </dict>
-      </dict>
+      <!-- support { -->
       <dict>
         <key>name</key>
         <string>Library function</string>
@@ -470,6 +458,8 @@
           <string>{SUPPORT_OTHER_NAMESPACE_FOREGROUND}</string>
         </dict>
       </dict>
+      <!-- support } -->
+
       <dict>
         <key>name</key>
         <string>Invalid</string>
@@ -558,6 +548,19 @@
         <dict>
           <key>foreground</key>
           <string>{PUNCTUATION_ACCESSOR_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Meta Path</string>
+        <key>scope</key>
+        <string>meta.path</string>
+        <key>settings</key>
+        <dict>
+          <key>fontStyle</key>
+          <string>underline</string>
+          <key>foreground</key>
+          <string>{META_PATH_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>

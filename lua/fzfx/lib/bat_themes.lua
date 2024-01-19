@@ -361,7 +361,7 @@ local COLOR_CONFIGS = {
   ENTITY_OTHER_ATTRIBUTE_NAME_FOREGROUND = {
     group = { "Tag" },
     attr = "fg",
-    default = "#a1b56c",
+    default = BASE16_COLORS.orange,
   },
   FUNCTIONS_FOREGROUND = {
     group = "Function",
