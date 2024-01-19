@@ -117,6 +117,7 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#585858",
   },
+
   -- settings
   BACKGROUND = {
     group = "Normal",
@@ -144,14 +145,14 @@ local COLOR_CONFIGS = {
     default = "#585858",
   },
   LINE_HIGHLIGHT = { group = "CursorLine", attr = "bg", default = "#58585855" },
-  SELECTION = { group = "Visual", attr = "bg", default = "#383838" },
+  SELECTION = { group = "Visual", attr = "bg", default = "#dc9656" },
   FIND_HIGHLIGHT = {
-    group = { "Search", "IncSearch" },
+    group = "Search",
     attr = "bg",
     default = "#dc9656",
   },
   FIND_HIGHLIGHT_FOREGROUND = {
-    group = { "Search", "IncSearch" },
+    group = "Search",
     attr = "fg",
     default = "#d8d8d8",
   },
