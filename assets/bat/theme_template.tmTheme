@@ -103,7 +103,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>{RUBY_REGEXP_FOREGROUND}</string>
+          <string>{RUBY_STRING_REGEXP_FOREGROUND}</string>
         </dict>
       </dict>
       <!-- string } -->
