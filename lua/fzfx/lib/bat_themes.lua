@@ -217,11 +217,11 @@ local COLOR_CONFIGS = {
   },
   RUBY_REGEXP_FOREGROUND = {
     group = {
-      "ErrorMsg",
       "GitSignsDelete",
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
+      "ErrorMsg",
     },
     attr = "fg",
     default = "#86c1b9",
