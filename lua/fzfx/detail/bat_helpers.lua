@@ -195,6 +195,11 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#f8f8f8",
   },
+  CONTROL_KEYWORDS_FOREGROUND = {
+    group = { "Statement", "Keyword" },
+    attr = "fg",
+    default = "#ba8baf",
+  },
   OTHER_KEYWORDS_FOREGROUND = {
     group = { "PreProc", "Function" },
     attr = "fg",
@@ -206,7 +211,12 @@ local COLOR_CONFIGS = {
     default = "#7cafc2",
   },
   STORAGE_FOREGROUND = {
-    group = "Structure",
+    group = "StorageClass",
+    attr = "fg",
+    default = "#ba8baf",
+  },
+  STORAGE_TYPE_FOREGROUND = {
+    group = "StorageClass",
     attr = "fg",
     default = "#ba8baf",
   },
@@ -243,7 +253,11 @@ local COLOR_CONFIGS = {
   SELECTOR_FOREGROUND = { group = "Operator", attr = "fg", default = "#ba8baf" },
   VALUES_FOREGROUND = { group = "Constant", attr = "fg", default = "#dc9656" },
   HEADINGS_FOREGROUND = { group = "Title", attr = "fg", default = "#7cafc2" },
-  UNITS_FOREGROUND = { group = "Keyword", attr = "fg", default = "#dc9656" },
+  UNITS_FOREGROUND = {
+    group = { "PreProc", "Function" },
+    attr = "fg",
+    default = "#dc9656",
+  },
   BOLD_FOREGROUND = { group = "Search", attr = "fg", default = "#f7ca88" },
   ITALIC_FOREGROUND = {
     group = "Conditional",

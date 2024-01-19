@@ -176,6 +176,17 @@
 		</dict>
 		<dict>
 			<key>name</key>
+			<string>Control Keywords</string>
+			<key>scope</key>
+			<string>keyword.control</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{OTHER_KEYWORDS_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
 			<string>Other Keywords</string>
 			<key>scope</key>
 			<string>keyword.other</string>
@@ -205,6 +216,17 @@
 			<dict>
 				<key>foreground</key>
         <string>{STORAGE_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Storage Type</string>
+			<key>scope</key>
+			<string>storage.type</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{STORAGE_TYPE_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
