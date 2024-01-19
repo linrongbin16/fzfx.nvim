@@ -221,6 +221,11 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = BASE16_COLORS.red,
   },
+  STRING_INTERPOLATION_FOREGROUND = {
+    group = { "Character" },
+    attr = "fg",
+    default = "#ab4642",
+  },
 
   -- constant
   CONSTANT_NUMERIC_FOREGROUND = {
@@ -258,6 +263,21 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = BASE16_COLORS.blue,
   },
+  VARIABLE_PARAMETER_FOREGROUND = {
+    group = { "@parameter", "Normal" },
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
+  VARIABLE_OTHER_FOREGROUND = {
+    group = "Normal",
+    attr = "fg",
+    default = "#d8d8d8",
+  },
+  -- VARIABLE_OTHER_CONSTANT_FOREGROUND = {
+  --   group = "Boolean",
+  --   attr = "fg",
+  --   default = BASE16_COLORS.orange,
+  -- },
   VARIABLE_OTHER_READWRITE_INSTANCE_FOREGROUND = {
     group = {
       "DiagnosticSignWarn",
@@ -268,11 +288,6 @@ local COLOR_CONFIGS = {
     default = "#ab4642",
   },
 
-  STRING_INTERPOLATION_FOREGROUND = {
-    group = { "Character" },
-    attr = "fg",
-    default = "#ab4642",
-  },
   KEYWORDS_FOREGROUND = {
     group = "Keyword",
     attr = "fg",
@@ -427,11 +442,6 @@ local COLOR_CONFIGS = {
     default = "#d8d8d8",
   },
   PUNCTUATION_SECTION_BLOCK_END_FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = "#d8d8d8",
-  },
-  VARIABLE_OTHER_FOREGROUND = {
     group = "Normal",
     attr = "fg",
     default = "#d8d8d8",

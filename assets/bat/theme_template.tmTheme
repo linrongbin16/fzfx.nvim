@@ -106,6 +106,20 @@
           <string>{RUBY_STRING_REGEXP_FOREGROUND}</string>
         </dict>
       </dict>
+      <dict>
+        <key>name</key>
+        <string>String Interpolation</string>
+        <key>scope</key>
+        <string
+          >constant.character.escaped, constant.character.escape, string source,
+          string source.ruby</string
+        >
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{STRING_INTERPOLATION_FOREGROUND}</string>
+        </dict>
+      </dict>
       <!-- string } -->
 
       <!-- constant { -->
@@ -180,6 +194,39 @@
       </dict>
       <dict>
         <key>name</key>
+        <string>Variable Parameter</string>
+        <key>scope</key>
+        <string>variable.parameter</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{VARIABLE_PARAMETER_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Variable Other</string>
+        <key>scope</key>
+        <string>variable.other</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{VARIABLE_OTHER_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <!-- <dict> -->
+      <!--   <key>name</key> -->
+      <!--   <string>Variable Other Constant</string> -->
+      <!--   <key>scope</key> -->
+      <!--   <string>variable.other.constant</string> -->
+      <!--   <key>settings</key> -->
+      <!--   <dict> -->
+      <!--     <key>foreground</key> -->
+      <!--     <string>{VARIABLE_OTHER_CONSTANT_FOREGROUND}</string> -->
+      <!--   </dict> -->
+      <!-- </dict> -->
+      <dict>
+        <key>name</key>
         <string>Ruby's @variable</string>
         <key>scope</key>
         <string>variable.other.readwrite.instance</string>
@@ -191,20 +238,6 @@
       </dict>
       <!-- variable } -->
 
-      <dict>
-        <key>name</key>
-        <string>String Interpolation</string>
-        <key>scope</key>
-        <string
-          >constant.character.escaped, constant.character.escape, string source,
-          string source.ruby</string
-        >
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{STRING_INTERPOLATION_FOREGROUND}</string>
-        </dict>
-      </dict>
       <dict>
         <key>name</key>
         <string>Keywords</string>
@@ -520,17 +553,6 @@
         <dict>
           <key>foreground</key>
           <string>{PUNCTUATION_SECTION_BLOCK_END_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Variable Other</string>
-        <key>scope</key>
-        <string>variable.other</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{VARIABLE_OTHER_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>
