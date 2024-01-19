@@ -143,6 +143,11 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#d8d8d8",
   },
+  BLOCK_CARET = {
+    group = "Cursor",
+    attr = "fg",
+    default = "#d8d8d8",
+  },
   FOREGROUND = {
     group = "Normal",
     attr = "fg",

@@ -32,6 +32,8 @@
         <string>{BACKGROUND}</string>
 				<key>caret</key>
         <string>{CARET}</string>
+				<key>block_caret</key>
+        <string>{BLOCK_CARET}</string>
 				<key>foreground</key>
         <string>{FOREGROUND}</string>
 				<key>invisibles</key>
