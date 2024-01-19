@@ -376,9 +376,12 @@ local COLOR_CONFIGS = {
   },
 }
 
---- @return {name:string,payload:string}
+--- @return {name:string,payload:string}?
 M.calculate_custom_theme = function()
   local theme_name = M.get_custom_theme_name()
+  if strings.empty(theme_name) then
+    return nil
+  end
   local template_path = paths.join(
     vim.env._FZFX_NVIM_SELF_PATH --[[@as string]],
     "assets",
