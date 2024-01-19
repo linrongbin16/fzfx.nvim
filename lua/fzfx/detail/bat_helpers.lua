@@ -186,7 +186,7 @@ local COLOR_CONFIGS = {
   },
   LABELS_FOREGROUND = { group = "Label", attr = "fg", default = "#a16946" },
   CLASSES_FOREGROUND = {
-    group = "StorageClass",
+    group = "Type",
     attr = "fg",
     default = "#f7ca88",
   },
