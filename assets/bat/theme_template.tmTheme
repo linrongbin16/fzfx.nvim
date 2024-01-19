@@ -144,6 +144,7 @@
       </dict>
       <!-- constant } -->
 
+      <!-- variable { -->
       <dict>
         <key>name</key>
         <string>Variables</string>
@@ -166,6 +167,8 @@
           <string>{VARIABLE_OTHER_READWRITE_INSTANCE_FOREGROUND}</string>
         </dict>
       </dict>
+      <!-- variable } -->
+
       <dict>
         <key>name</key>
         <string>String Interpolation</string>

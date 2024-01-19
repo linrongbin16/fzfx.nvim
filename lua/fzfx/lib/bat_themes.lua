@@ -103,74 +103,100 @@ M.get_custom_theme_file = function()
   return paths.join(theme_dir, theme_name .. ".tmTheme")
 end
 
+-- default base16
+-- forked from: https://github.com/chriskempson/base16-textmate/blob/0e51ddd568bdbe17189ac2a07eb1c5f55727513e/Themes/base16-default-dark.tmTheme
+local BASE16_COLORS = {
+  black = "#181818",
+  lightgrey_sRGB = "#58585855",
+  lightgrey = "#585858",
+  darkgrey = "#282828",
+  grey = "#585858",
+  white = "#d8d8d8",
+  yellow = "",
+  orange = "#dc9656",
+  green = "#a1b56c",
+  red = "#ab4642",
+}
+
 -- The 'theme_template.tmTheme' is forked from: https://github.com/sharkdp/bat/blob/98a2b6bc177050c845f2e12133458826ad1fca72/assets/themes/base16.tmTheme
--- default color is forked from: https://github.com/chriskempson/base16-textmate/blob/0e51ddd568bdbe17189ac2a07eb1c5f55727513e/Themes/base16-default-dark.tmTheme
 local COLOR_CONFIGS = {
   -- gutterSettings
   GUTTER_BACKGROUND = {
     group = "Pmenu",
     attr = "bg",
-    default = "#282828",
+    default = BASE16_COLORS.darkgrey,
   },
   GUTTER_FOREGROUND = {
     group = "Pmenu",
     attr = "fg",
-    default = "#585858",
+    default = BASE16_COLORS.grey,
   },
 
   -- settings
   BACKGROUND = {
     group = "Normal",
     attr = "bg",
-    default = "#181818",
+    default = BASE16_COLORS.black,
   },
   CARET = {
     group = "Cursor",
     attr = "fg",
-    default = "#d8d8d8",
+    default = BASE16_COLORS.white,
   },
   BLOCK_CARET = {
     group = "Cursor",
     attr = "fg",
-    default = "#d8d8d8",
+    default = BASE16_COLORS.white,
   },
   FOREGROUND = {
     group = "Normal",
     attr = "fg",
-    default = "#d8d8d8",
+    default = BASE16_COLORS.white,
   },
   INVISIBLES = {
     group = "NonText",
     attr = "bg",
-    default = "#585858",
+    default = BASE16_COLORS.grey,
   },
-  LINE_HIGHLIGHT = { group = "CursorLine", attr = "bg", default = "#58585855" },
+  LINE_HIGHLIGHT = {
+    group = "CursorLine",
+    attr = "bg",
+    default = BASE16_COLORS.lightgrey_sRGB,
+  },
   SELECTION = { group = "Visual", attr = "bg", default = "#dc9656" },
   FIND_HIGHLIGHT = {
     group = "Search",
     attr = "bg",
-    default = "#dc9656",
+    default = BASE16_COLORS.orange,
   },
   FIND_HIGHLIGHT_FOREGROUND = {
     group = "Search",
     attr = "fg",
-    default = "#d8d8d8",
+    default = BASE16_COLORS.white,
   },
   BRACKETS_FOREGROUND = {
     group = { "Normal" },
     attr = "fg",
-    default = "#d8d8d8",
+    default = BASE16_COLORS.white,
   },
   BRACKET_CONTENTS_FOREGROUND = {
     group = { "Normal" },
     attr = "fg",
-    default = "#d8d8d8",
+    default = BASE16_COLORS.white,
   },
 
-  COMMENT_FOREGROUND = { group = "Comment", attr = "fg", default = "#585858" },
+  COMMENT_FOREGROUND = {
+    group = "Comment",
+    attr = "fg",
+    default = BASE16_COLORS.grey,
+  },
 
   -- string
-  STRING_FOREGROUND = { group = "String", attr = "fg", default = "#a1b56c" },
+  STRING_FOREGROUND = {
+    group = "String",
+    attr = "fg",
+    default = BASE16_COLORS.green,
+  },
   STRING_REGEXP_FOREGROUND = {
     group = {
       "rubyRegexp",
@@ -180,7 +206,7 @@ local COLOR_CONFIGS = {
       "WarningMsg",
     },
     attr = "fg",
-    default = "#ab4642",
+    default = BASE16_COLORS.red,
   },
   RUBY_STRING_REGEXP_FOREGROUND = {
     group = {
@@ -191,30 +217,31 @@ local COLOR_CONFIGS = {
       "WarningMsg",
     },
     attr = "fg",
-    default = "#ab4642",
+    default = BASE16_COLORS.red,
   },
 
   -- constant
   CONSTANT_NUMERIC_FOREGROUND = {
     group = { "Number" },
     attr = "fg",
-    default = "#dc9656",
+    default = BASE16_COLORS.orange,
   },
   CONSTANT_LANGUAGE_FOREGROUND = {
     group = { "Boolean" },
     attr = "fg",
-    default = "#dc9656",
+    default = BASE16_COLORS.orange,
   },
   CONSTANT_CHARACTER_OTHER_FOREGROUND = {
     group = "Character",
     attr = "fg",
-    default = "#dc9656",
+    default = BASE16_COLORS.orange,
   },
 
+  -- variable
   VARIABLE_FOREGROUND = {
-    group = "Identifier",
+    group = "Normal",
     attr = "fg",
-    default = "#ab4642",
+    default = BASE16_COLORS.red,
   },
   VARIABLE_OTHER_READWRITE_INSTANCE_FOREGROUND = {
     group = {
