@@ -224,6 +224,26 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#ab4642",
   },
+  KEYWORDS_FOREGROUND = {
+    group = "Keyword",
+    attr = "fg",
+    default = "#ba8baf",
+  },
+  STORAGE_FOREGROUND = {
+    group = { "StorageClass", "SpecialKey" },
+    attr = "fg",
+    default = "#ba8baf",
+  },
+  STORAGE_TYPE_FOREGROUND = {
+    group = {
+      "SpecialComment",
+      "DiagnosticSignInfo",
+      "LspDiagnosticsSignInfo",
+      "Tag",
+    },
+    attr = "fg",
+    default = "#7cafc2",
+  },
 
   TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
   PUNCTUATION_FOREGROUND = {
@@ -240,11 +260,6 @@ local COLOR_CONFIGS = {
     group = "Operator",
     attr = "fg",
     default = "#d8d8d8",
-  },
-  KEYWORDS_FOREGROUND = {
-    group = "Keyword",
-    attr = "fg",
-    default = "#ba8baf",
   },
   ENTITY_NAME_FOREGROUND = {
     group = "Pmenu",
@@ -281,16 +296,6 @@ local COLOR_CONFIGS = {
     group = "Function",
     attr = "fg",
     default = "#7cafc2",
-  },
-  STORAGE_FOREGROUND = {
-    group = "StorageClass",
-    attr = "fg",
-    default = "#ba8baf",
-  },
-  STORAGE_TYPE_FOREGROUND = {
-    group = "StorageClass",
-    attr = "fg",
-    default = "#ba8baf",
   },
   SUPPORT_FOREGROUND = {
     group = "Include",
