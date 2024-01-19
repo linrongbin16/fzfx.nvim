@@ -222,7 +222,7 @@ local COLOR_CONFIGS = {
       "ErrorMsg",
     },
     attr = "fg",
-    default = "#86c1b9",
+    default = "#ab4642",
   },
 
   TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
