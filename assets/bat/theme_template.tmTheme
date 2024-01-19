@@ -137,7 +137,18 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-        <string>{STRING_INTERPOLATION}</string>
+        <string>{STRING_INTERPOLATION_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>Ruby Regexp</string>
+			<key>scope</key>
+			<string>source.ruby string.regexp.classic.ruby,source.ruby string.regexp.mod-r.ruby</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{RUBY_REGEXP_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>

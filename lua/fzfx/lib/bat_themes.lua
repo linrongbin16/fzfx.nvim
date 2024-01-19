@@ -210,10 +210,21 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#ab4642",
   },
-  STRING_INTERPOLATION = {
-    group = { "SpecialKey", "Special" },
+  STRING_INTERPOLATION_FOREGROUND = {
+    group = { "Character" },
     attr = "fg",
-    default = "#ba8baf",
+    default = "#ab4642",
+  },
+  RUBY_REGEXP_FOREGROUND = {
+    group = {
+      "ErrorMsg",
+      "GitSignsDelete",
+      "GitGutterDelete",
+      "DiffDelete",
+      "DiffRemoved",
+    },
+    attr = "fg",
+    default = "#86c1b9",
   },
 
   TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
