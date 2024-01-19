@@ -108,6 +108,7 @@
       </dict>
       <!-- string } -->
 
+      <!-- constant { -->
       <dict>
         <key>name</key>
         <string>Numbers</string>
@@ -116,7 +117,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>{NUMBERS_FOREGROUND}</string>
+          <string>{CONSTANT_NUMERIC_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>
@@ -141,6 +142,8 @@
           <string>{CONSTANT_CHARACTER_OTHER_FOREGROUND}</string>
         </dict>
       </dict>
+      <!-- constant } -->
+
       <dict>
         <key>name</key>
         <string>Variables</string>

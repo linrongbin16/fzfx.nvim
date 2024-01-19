@@ -173,6 +173,8 @@ local COLOR_CONFIGS = {
   STRING_FOREGROUND = { group = "String", attr = "fg", default = "#a1b56c" },
   STRING_REGEXP_FOREGROUND = {
     group = {
+      "rubyRegexp",
+      "rubyRegexpDelimiter",
       "DiagnosticWarn",
       "LspDiagnosticsDefaultWarning",
       "WarningMsg",
@@ -180,8 +182,10 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#ab4642",
   },
-  RUBY_REGEXP_FOREGROUND = {
+  RUBY_STRING_REGEXP_FOREGROUND = {
     group = {
+      "rubyRegexp",
+      "rubyRegexpDelimiter",
       "DiagnosticWarn",
       "LspDiagnosticsDefaultWarning",
       "WarningMsg",
@@ -190,15 +194,19 @@ local COLOR_CONFIGS = {
     default = "#ab4642",
   },
 
-  NUMBERS_FOREGROUND = { group = "Number", attr = "fg", default = "#dc9656" },
-
+  -- constant
+  CONSTANT_NUMERIC_FOREGROUND = {
+    group = { "Number" },
+    attr = "fg",
+    default = "#dc9656",
+  },
   CONSTANT_LANGUAGE_FOREGROUND = {
-    group = "Constant",
+    group = { "Boolean" },
     attr = "fg",
     default = "#dc9656",
   },
   CONSTANT_CHARACTER_OTHER_FOREGROUND = {
-    group = "Constant",
+    group = "Character",
     attr = "fg",
     default = "#dc9656",
   },
