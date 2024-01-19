@@ -363,6 +363,7 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = BASE16_COLORS.orange,
   },
+
   FUNCTIONS_FOREGROUND = {
     group = "Function",
     attr = "fg",
