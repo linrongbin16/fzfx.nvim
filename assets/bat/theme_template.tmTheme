@@ -246,7 +246,7 @@
 				<key>fontStyle</key>
 				<string>italic underline</string>
 				<key>foreground</key>
-				<string>#8be9fd</string>
+        <string>{ENTITY_OTHER_INHERITED_CLASS}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -347,46 +347,158 @@
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>Text</string>
+			<string>Invalid</string>
 			<key>scope</key>
-			<string>variable.parameter.function</string>
+			<string>invalid</string>
 			<key>settings</key>
 			<dict>
+				<key>background</key>
+        <string>{INVALID_BACKGROUND}</string>
 				<key>foreground</key>
-        <string>{TEXT_FOREGROUND}</string>
+        <string>{INVALID_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>Punctuation</string>
+			<string>Deprecated</string>
 			<key>scope</key>
-			<string>punctuation.definition.string, punctuation.definition.variable, punctuation.definition.string, punctuation.definition.parameters, punctuation.definition.string, punctuation.definition.array</string>
+			<string>invalid.deprecated</string>
+			<key>settings</key>
+			<dict>
+				<key>background</key>
+        <string>{INVALID_DEPRECATED_BACKGROUND}</string>
+				<key>foreground</key>
+        <string>{INVALID_DEPRECATED_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>diff.header</string>
+			<key>scope</key>
+			<string>meta.diff, meta.diff.header</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-        <string>{PUNCTUATION_FOREGROUND}</string>
+				<string>#6272a4</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>diff.deleted</string>
+			<key>scope</key>
+			<string>markup.deleted</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{MARKUP_DELETED_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>diff.inserted</string>
+			<key>scope</key>
+			<string>markup.inserted</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{MARKUP_INSERTED_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>Delimiters</string>
+			<string>diff.changed</string>
 			<key>scope</key>
-			<string>none</string>
+			<string>markup.changed</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-        <string>{DELIMITERS_FOREGROUND}</string>
+        <string>{MARKUP_CHANGED_FOREGROUND}</string>
 			</dict>
 		</dict>
-		<dict>
-			<key>name</key>
-			<string>Operators</string>
+    <dict>
 			<key>scope</key>
-			<string>keyword.operator</string>
+			<string>entity.name.filename</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-        <string>{OPERATORS_FOREGROUND}</string>
+        <string>{ENTITY_NAME_FILENAME_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>Punctuation Accessor</string>
+			<key>scope</key>
+			<string>punctuation.accessor</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{PUNCTUATION_ACCESSOR_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>Meta Function Return Type</string>
+			<key>scope</key>
+			<string>meta.function.return-type</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{META_FUNCTION_RETURN_TYPE_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>Punctuation Section Block Begin</string>
+			<key>scope</key>
+			<string>punctuation.section.block.begin</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{PUNCTUATION_SECTION_BLOCK_BEGIN_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>Punctuation Section Block End</string>
+			<key>scope</key>
+			<string>punctuation.section.block.end</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{PUNCTUATION_SECTION_BLOCK_END_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>Variable Function</string>
+			<key>scope</key>
+			<string>variable.function</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{VARIABLE_FUNCTION_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>Variable Other</string>
+			<key>scope</key>
+			<string>variable.other</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{VARIABLE_OTHER_FOREGROUND}</string>
+			</dict>
+		</dict>
+    <dict>
+			<key>name</key>
+			<string>Variable Language</string>
+			<key>scope</key>
+			<string>variable.language</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{VARIABLE_LANGUAGE_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -408,7 +520,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-        <string>{FUNCTIONS_FOREGROUND}</string>
+        <string>{ENTITY_FUNCTION_NAME_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -419,40 +531,29 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-        <string>{LABELS_FOREGROUND}</string>
+        <string>{ENTITY_NAME_LABEL_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>Classes</string>
-			<key>scope</key>
-			<string>entity.name.class</string>
-			<key>settings</key>
-			<dict>
-				<key>foreground</key>
-        <string>{ENTITY_NAME_CLASS_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Classes</string>
+			<string>Meta Class</string>
 			<key>scope</key>
 			<string>meta.class</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-        <string>{META_CLASSES_FOREGROUND}</string>
+        <string>{META_CLASS_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>Control Keywords</string>
+			<string>Operators</string>
 			<key>scope</key>
-			<string>keyword.control</string>
+			<string>keyword.operator</string>
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-        <string>{OTHER_KEYWORDS_FOREGROUND}</string>
+        <string>{KEYWORD_OPERATOR_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -663,39 +764,6 @@
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>Inserted</string>
-			<key>scope</key>
-			<string>markup.inserted</string>
-			<key>settings</key>
-			<dict>
-				<key>foreground</key>
-        <string>{INSERTED_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Deleted</string>
-			<key>scope</key>
-			<string>markup.deleted</string>
-			<key>settings</key>
-			<dict>
-				<key>foreground</key>
-        <string>{DELETED_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Changed</string>
-			<key>scope</key>
-			<string>markup.changed</string>
-			<key>settings</key>
-			<dict>
-				<key>foreground</key>
-        <string>{CHANGED_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
 			<string>Colors</string>
 			<key>scope</key>
 			<string>constant.other.color</string>
@@ -736,45 +804,6 @@
 			<dict>
 				<key>foreground</key>
         <string>{EMBEDDED_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Illegal</string>
-			<key>scope</key>
-			<string>invalid.illegal</string>
-			<key>settings</key>
-			<dict>
-				<key>background</key>
-        <string>{ILLEGAL_BACKGROUND}</string>
-				<key>foreground</key>
-        <string>{ILLEGAL_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Broken</string>
-			<key>scope</key>
-			<string>invalid.broken</string>
-			<key>settings</key>
-			<dict>
-				<key>background</key>
-        <string>{BROKEN_BACKGROUND}</string>
-				<key>foreground</key>
-        <string>{BROKEN_FOREGROUND}</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Deprecated</string>
-			<key>scope</key>
-			<string>invalid.deprecated</string>
-			<key>settings</key>
-			<dict>
-				<key>background</key>
-        <string>{DEPRECATED_BACKGROUND}</string>
-				<key>foreground</key>
-        <string>{DEPRECATED_FOREGROUND}</string>
 			</dict>
 		</dict>
 		<dict>

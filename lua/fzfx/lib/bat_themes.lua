@@ -280,7 +280,7 @@ local COLOR_CONFIGS = {
   ENTITY_FUNCTION_NAME_FOREGROUND = {
     group = "Function",
     attr = "fg",
-    default = "#dc9656",
+    default = "#7cafc2",
   },
   ENTITY_NAME_TAG_FOREGROUND = {
     group = { "SpecialKey", "Tag" },
@@ -317,38 +317,105 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#7cafc2",
   },
-
-  TEXT_FOREGROUND = { group = "Normal", attr = "fg", default = "#d8d8d8" },
-  PUNCTUATION_FOREGROUND = {
+  INVALID_BACKGROUND = {
+    group = { "Exception", "Error" },
+    attr = "bg",
+    default = "#ab4642",
+  },
+  INVALID_FOREGROUND = {
+    group = { "Exception", "Error" },
+    attr = "fg",
+    default = "#ab4642",
+  },
+  INVALID_DEPRECATED_BACKGROUND = {
+    group = { "Directory", "helpCommand" },
+    attr = "bg",
+    default = "#a16946",
+  },
+  INVALID_DEPRECATED_FOREGROUND = {
+    group = { "Directory", "helpCommand" },
+    attr = "fg",
+    default = "#f8f8f8",
+  },
+  DIFF_HEADER_FOREGROUND = {
+    group = { "LineNr", "SignColumn", "Comment" },
+    attr = "fg",
+    default = "#585858",
+  },
+  MARKUP_DELETED_FOREGROUND = {
+    group = { "GitSignsDelete", "GitGutterDelete", "DiffDelete", "DiffRemoved" },
+    attr = "fg",
+    default = "#ab4642",
+  },
+  MARKUP_INSERTED_FOREGROUND = {
+    group = { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded" },
+    attr = "fg",
+    default = "#a1b56c",
+  },
+  MARKUP_CHANGED_FOREGROUND = {
+    group = { "GitGutterChange", "GitSignsChange", "DiffChange" },
+    attr = "fg",
+    default = "#ba8baf",
+  },
+  ENTITY_NAME_FILENAME_FOREGROUND = {
+    group = { "Directory", "Tag" },
+    attr = "fg",
+    default = "#a1b56c",
+  },
+  PUNCTUATION_ACCESSOR_FOREGROUND = {
+    group = { "SpecialKey", "Character", "Special" },
+    attr = "fg",
+    default = "#ba8baf",
+  },
+  META_FUNCTION_RETURN_TYPE_FOREGROUND = {
+    group = { "PreProc", "Macro", "Special" },
+    attr = "fg",
+    default = "#ba8baf",
+  },
+  PUNCTUATION_SECTION_BLOCK_BEGIN_FOREGROUND = {
     group = "Normal",
     attr = "fg",
     default = "#d8d8d8",
   },
-  DELIMITERS_FOREGROUND = {
-    group = "Delimiter",
+  PUNCTUATION_SECTION_BLOCK_END_FOREGROUND = {
+    group = "Normal",
     attr = "fg",
     default = "#d8d8d8",
   },
-  OPERATORS_FOREGROUND = {
-    group = "Operator",
+  VARIABLE_FUNCTION_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = "#7cafc2",
+  },
+  VARIABLE_OTHER_FOREGROUND = {
+    group = "Normal",
     attr = "fg",
     default = "#d8d8d8",
+  },
+  VARIABLE_LANGUAGE_FOREGROUND = {
+    group = { "WildMenu", "helpCommand" },
+    attr = "fg",
+    default = "#dc9656",
   },
   ENTITY_NAME_FOREGROUND = {
     group = "Pmenu",
     attr = "fg",
     default = "#7cafc2",
   },
-  LABELS_FOREGROUND = { group = "Label", attr = "fg", default = "#a16946" },
-  META_CLASSES_FOREGROUND = {
+  ENTITY_NAME_LABEL_FOREGROUND = {
+    group = "Label",
+    attr = "fg",
+    default = "#a16946",
+  },
+  META_CLASS_FOREGROUND = {
     group = "Type",
     attr = "fg",
     default = "#f8f8f8",
   },
-  CONTROL_KEYWORDS_FOREGROUND = {
-    group = { "Statement", "Keyword" },
+  KEYWORD_OPERATOR_FOREGROUND = {
+    group = "Operator",
     attr = "fg",
-    default = "#ba8baf",
+    default = "#d8d8d8",
   },
   OTHER_KEYWORDS_FOREGROUND = {
     group = { "PreProc", "Function" },
@@ -418,21 +485,6 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#d8d8d8",
   },
-  INSERTED_FOREGROUND = {
-    group = { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded" },
-    attr = "fg",
-    default = "#a1b56c",
-  },
-  DELETED_FOREGROUND = {
-    group = { "GitSignsDelete", "GitGutterDelete", "DiffDelete", "DiffRemoved" },
-    attr = "fg",
-    default = "#ab4642",
-  },
-  CHANGED_FOREGROUND = {
-    group = { "GitGutterChange", "GitSignsChange", "DiffChange" },
-    attr = "fg",
-    default = "#ba8baf",
-  },
   COLORS_FOREGROUND = {
     group = "FoldColumn",
     attr = "fg",
@@ -453,16 +505,6 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#ba8baf",
   },
-  ILLEGAL_BACKGROUND = {
-    group = { "Exception", "ErrorMsg", "Error" },
-    attr = "bg",
-    default = "#ab4642",
-  },
-  ILLEGAL_FOREGROUND = {
-    group = { "Exception", "ErrorMsg", "Error" },
-    attr = "fg",
-    default = "#ab4642",
-  },
   BROKEN_BACKGROUND = {
     group = { "WarningMsg", "IncSearch" },
     attr = "bg",
@@ -472,16 +514,6 @@ local COLOR_CONFIGS = {
     group = { "WarningMsg", "IncSearch" },
     attr = "fg",
     default = "#dc9656",
-  },
-  DEPRECATED_BACKGROUND = {
-    group = "Delimiter",
-    attr = "bg",
-    default = "#a16946",
-  },
-  DEPRECATED_FOREGROUND = {
-    group = "Delimiter",
-    attr = "fg",
-    default = "#f8f8f8",
   },
   UNIMPLEMENTED_BACKGROUND = {
     group = "Comment",
