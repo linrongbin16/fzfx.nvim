@@ -158,6 +158,28 @@
       </dict>
       <dict>
         <key>name</key>
+        <string>Variable Language</string>
+        <key>scope</key>
+        <string>variable.language</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{VARIABLE_LANGUAGE_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Variable Function</string>
+        <key>scope</key>
+        <string>variable.function</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{VARIABLE_FUNCTION_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
         <string>Ruby's @variable</string>
         <key>scope</key>
         <string>variable.other.readwrite.instance</string>
@@ -502,17 +524,6 @@
       </dict>
       <dict>
         <key>name</key>
-        <string>Variable Function</string>
-        <key>scope</key>
-        <string>variable.function</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{VARIABLE_FUNCTION_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
         <string>Variable Other</string>
         <key>scope</key>
         <string>variable.other</string>
@@ -520,17 +531,6 @@
         <dict>
           <key>foreground</key>
           <string>{VARIABLE_OTHER_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Variable Language</string>
-        <key>scope</key>
-        <string>variable.language</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{VARIABLE_LANGUAGE_FOREGROUND}</string>
         </dict>
       </dict>
       <dict>

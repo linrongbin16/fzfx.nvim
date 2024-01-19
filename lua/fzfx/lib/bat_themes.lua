@@ -116,6 +116,8 @@ local BASE16_COLORS = {
   orange = "#dc9656",
   green = "#a1b56c",
   red = "#ab4642",
+  blue = "#7cafc2",
+  cyan = "#7cafc2",
 }
 
 -- The 'theme_template.tmTheme' is forked from: https://github.com/sharkdp/bat/blob/98a2b6bc177050c845f2e12133458826ad1fca72/assets/themes/base16.tmTheme
@@ -241,7 +243,20 @@ local COLOR_CONFIGS = {
   VARIABLE_FOREGROUND = {
     group = "Normal",
     attr = "fg",
+    default = BASE16_COLORS.white,
+  },
+  VARIABLE_LANGUAGE_FOREGROUND = {
+    group = {
+      "@variable.builtin",
+      "ErrorMsg",
+    },
+    attr = "fg",
     default = BASE16_COLORS.red,
+  },
+  VARIABLE_FUNCTION_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = BASE16_COLORS.blue,
   },
   VARIABLE_OTHER_READWRITE_INSTANCE_FOREGROUND = {
     group = {
@@ -252,6 +267,7 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#ab4642",
   },
+
   STRING_INTERPOLATION_FOREGROUND = {
     group = { "Character" },
     attr = "fg",
@@ -415,20 +431,10 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#d8d8d8",
   },
-  VARIABLE_FUNCTION_FOREGROUND = {
-    group = "Function",
-    attr = "fg",
-    default = "#7cafc2",
-  },
   VARIABLE_OTHER_FOREGROUND = {
     group = "Normal",
     attr = "fg",
     default = "#d8d8d8",
-  },
-  VARIABLE_LANGUAGE_FOREGROUND = {
-    group = { "WildMenu", "helpCommand" },
-    attr = "fg",
-    default = "#dc9656",
   },
   ENTITY_NAME_FOREGROUND = {
     group = "Pmenu",
