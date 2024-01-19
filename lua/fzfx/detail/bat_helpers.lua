@@ -353,13 +353,21 @@ M.get_custom_theme = function()
   payload = payload:gsub("{NAME}", name)
 
   local hl_caches = {}
+
+  local function cached_retrieve(hl)
+    if hl_caches[hl] == nil then
+      hl_caches[hl] = termcolors.retrieve(hl)
+    end
+    return hl_caches[hl]
+  end
+
   for placeholder, configs in pairs(COLOR_CONFIGS) do
     local group = type(configs.group) == "string" and { configs.group }
       or configs.group --[[@as string[] ]]
     local attr = configs.attr
     local default = configs.default
     for i, g in ipairs(group) do
-      local codes = termcolors.retrieve(g)
+      local codes = cached_retrieve(g)
       if type(codes) == "table" and strings.not_empty(codes[attr]) then
         payload = payload:gsub(string.format("{%s}", placeholder), codes[attr])
       else
