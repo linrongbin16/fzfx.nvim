@@ -238,6 +238,7 @@
       </dict>
       <!-- variable } -->
 
+      <!-- keyword { -->
       <dict>
         <key>name</key>
         <string>Keywords</string>
@@ -249,6 +250,30 @@
           <string>{KEYWORDS_FOREGROUND}</string>
         </dict>
       </dict>
+      <dict>
+        <key>name</key>
+        <string>Keyword Control</string>
+        <key>scope</key>
+        <string>keyword.control</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{KEYWORDS_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Operators</string>
+        <key>scope</key>
+        <string>keyword.operator</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{KEYWORD_OPERATOR_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <!-- keyword } -->
+
       <dict>
         <key>name</key>
         <string>Storage</string>
@@ -600,17 +625,6 @@
         <dict>
           <key>foreground</key>
           <string>{META_CLASS_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Operators</string>
-        <key>scope</key>
-        <string>keyword.operator</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{KEYWORD_OPERATOR_FOREGROUND}</string>
         </dict>
       </dict>
     </array>

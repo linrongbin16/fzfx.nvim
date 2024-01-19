@@ -117,7 +117,7 @@ local BASE16_COLORS = {
   green = "#a1b56c",
   red = "#ab4642",
   blue = "#7cafc2",
-  cyan = "#7cafc2",
+  magenta = "#ba8baf",
 }
 
 -- The 'theme_template.tmTheme' is forked from: https://github.com/sharkdp/bat/blob/98a2b6bc177050c845f2e12133458826ad1fca72/assets/themes/base16.tmTheme
@@ -224,7 +224,7 @@ local COLOR_CONFIGS = {
   STRING_INTERPOLATION_FOREGROUND = {
     group = { "Boolean" },
     attr = "fg",
-    default = "#ab4642",
+    default = BASE16_COLORS.orange,
   },
 
   -- constant
@@ -271,7 +271,7 @@ local COLOR_CONFIGS = {
   VARIABLE_OTHER_FOREGROUND = {
     group = "Normal",
     attr = "fg",
-    default = "#d8d8d8",
+    default = BASE16_COLORS.white,
   },
   -- VARIABLE_OTHER_CONSTANT_FOREGROUND = {
   --   group = "Boolean",
@@ -285,14 +285,25 @@ local COLOR_CONFIGS = {
       "WarningMsg",
     },
     attr = "fg",
-    default = "#ab4642",
+    default = BASE16_COLORS.red,
   },
 
   KEYWORDS_FOREGROUND = {
     group = "Keyword",
     attr = "fg",
-    default = "#ba8baf",
+    default = BASE16_COLORS.magenta,
   },
+  KEYWORD_CONTROL_FOREGROUND = {
+    group = { "Conditional" },
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
+  KEYWORD_OPERATOR_FOREGROUND = {
+    group = "Operator",
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
+
   STORAGE_FOREGROUND = {
     group = { "StorageClass", "SpecialKey" },
     attr = "fg",
@@ -460,11 +471,6 @@ local COLOR_CONFIGS = {
     group = "Type",
     attr = "fg",
     default = "#f8f8f8",
-  },
-  KEYWORD_OPERATOR_FOREGROUND = {
-    group = "Operator",
-    attr = "fg",
-    default = "#d8d8d8",
   },
 }
 
