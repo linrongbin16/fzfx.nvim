@@ -195,6 +195,11 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = "#f8f8f8",
   },
+  OTHER_KEYWORDS_FOREGROUND = {
+    group = { "PreProc", "Function" },
+    attr = "fg",
+    default = "#7cafc2",
+  },
   METHODS_FOREGROUND = {
     group = "Function",
     attr = "fg",

@@ -176,6 +176,17 @@
 		</dict>
 		<dict>
 			<key>name</key>
+			<string>Other Keywords</string>
+			<key>scope</key>
+			<string>keyword.other</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+        <string>{OTHER_KEYWORDS_FOREGROUND}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
 			<string>Methods</string>
 			<key>scope</key>
 			<string>keyword.other.special-method</string>
