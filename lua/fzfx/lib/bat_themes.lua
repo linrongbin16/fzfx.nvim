@@ -222,7 +222,7 @@ local COLOR_CONFIGS = {
     default = BASE16_COLORS.red,
   },
   STRING_INTERPOLATION_FOREGROUND = {
-    group = { "Character" },
+    group = { "Boolean" },
     attr = "fg",
     default = "#ab4642",
   },
