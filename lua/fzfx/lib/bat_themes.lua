@@ -4,7 +4,7 @@ local strings = require("fzfx.commons.strings")
 local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 
-local log = require("fzfx.lib.log")
+-- local log = require("fzfx.lib.log")
 
 local M = {}
 
@@ -19,16 +19,16 @@ M.get_bat_themes_config_dir = function()
         bat_themes_config_dir = bat_themes_config_dir .. line
       end,
       on_stderr = function(line)
-        log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
+        -- log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
       end,
     })
     sp:wait()
     THEMES_CONFIG_DIR =
       paths.join(strings.trim(bat_themes_config_dir), "themes")
-    log.debug(
-      "|get_bat_themes_config_dir| config dir:%s",
-      vim.inspect(THEMES_CONFIG_DIR)
-    )
+    -- log.debug(
+    --   "|get_bat_themes_config_dir| config dir:%s",
+    --   vim.inspect(THEMES_CONFIG_DIR)
+    -- )
   end
   return THEMES_CONFIG_DIR
 end
@@ -40,18 +40,19 @@ local CUSTOMS_THEME_NAME_MAPPINGS = {}
 --- @param names string[]
 --- @return string[]
 M._upper_first_chars = function(names)
-  log.ensure(
+  assert(
     type(names) == "table" and #names > 0,
-    "|_upper_firsts| invalid names:%s",
-    vim.inspect(names)
+    string.format("|_upper_firsts| invalid names:%s", vim.inspect(names))
   )
   local new_names = {}
   for i, n in ipairs(names) do
-    log.ensure(
+    assert(
       type(n) == "string" and string.len(n) > 0,
-      "|_upper_firsts| invalid name(%d):%s",
-      vim.inspect(i),
-      vim.inspect(n)
+      string.format(
+        "|_upper_firsts| invalid name(%d):%s",
+        vim.inspect(i),
+        vim.inspect(n)
+      )
     )
     local new_name = string.sub(n, 1, 1):upper()
       .. (string.len(n) > 1 and string.sub(n, 2) or "")
@@ -92,7 +93,7 @@ end
 --- @return string
 M.get_custom_theme_file = function()
   local theme_dir = M.get_bat_themes_config_dir()
-  local theme_name = M.get_custom_theme_file()
+  local theme_name = M.get_custom_theme_name()
   return paths.join(theme_dir, theme_name .. ".tmTheme")
 end
 
