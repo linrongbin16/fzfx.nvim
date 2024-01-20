@@ -191,10 +191,16 @@ local COLOR_CONFIGS = {
     default = BASE16_COLORS.white,
   },
 
+  -- comment
   COMMENT_FOREGROUND = {
     group = "Comment",
     attr = "fg",
     default = BASE16_COLORS.grey,
+  },
+  COMMENT_BACKGROUND = {
+    group = "Comment",
+    attr = "bg",
+    default = BASE16_COLORS.black,
   },
 
   -- string

@@ -60,6 +60,8 @@
         <dict>
           <key>foreground</key>
           <string>{COMMENT_FOREGROUND}</string>
+          <key>background</key>
+          <string>{COMMENT_BACKGROUND}</string>
         </dict>
       </dict>
 
