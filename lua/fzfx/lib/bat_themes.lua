@@ -135,19 +135,20 @@ function _BatTmThemeGlobalRenderer:render()
 end
 
 -- renderer for tmTheme scope
-local TmScopeRenderer = {}
+--- @class fzfx._BatTmThemeScopeRenderer
+local _BatTmThemeScopeRenderer = {}
 
 --- @param hl string
 --- @param tm_name string
 --- @param tm_scope string
 --- @param tm_settings {foreground:string?,background:string?,fontStyle:string?,[string]:string}
 --- @return TmScopeRenderer
-function TmScopeRenderer:new(hl, tm_name, tm_scope, tm_settings)
+function _BatTmThemeScopeRenderer:new(hl, tm_name, tm_scope, tm_settings)
   local hlopts = termcolors.retrieve(hl)
 end
 
 --- @return string
-function TmScopeRenderer:render()
+function _BatTmThemeScopeRenderer:render()
   return string.format([[
 
 ]])
