@@ -203,6 +203,28 @@ local COLOR_CONFIGS = {
     default = BASE16_COLORS.black,
   },
 
+  -- constant
+  CONSTANT_NUMERIC_FOREGROUND = {
+    group = { "Number" },
+    attr = "fg",
+    default = BASE16_COLORS.yellow,
+  },
+  CONSTANT_NUMERIC_FLOAT_FOREGROUND = {
+    group = { "Float" },
+    attr = "fg",
+    default = BASE16_COLORS.yellow,
+  },
+  CONSTANT_LANGUAGE_FOREGROUND = {
+    group = { "Boolean" },
+    attr = "fg",
+    default = BASE16_COLORS.yellow,
+  },
+  CONSTANT_CHARACTER_OTHER_FOREGROUND = {
+    group = "Character",
+    attr = "fg",
+    default = BASE16_COLORS.yellow,
+  },
+
   -- string
   STRING_FOREGROUND = {
     group = "String",
@@ -233,23 +255,6 @@ local COLOR_CONFIGS = {
   },
   STRING_INTERPOLATION_FOREGROUND = {
     group = { "Boolean" },
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
-
-  -- constant
-  CONSTANT_NUMERIC_FOREGROUND = {
-    group = { "Number" },
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
-  CONSTANT_LANGUAGE_FOREGROUND = {
-    group = { "Boolean" },
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
-  CONSTANT_CHARACTER_OTHER_FOREGROUND = {
-    group = "Character",
     attr = "fg",
     default = BASE16_COLORS.yellow,
   },

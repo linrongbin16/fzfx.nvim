@@ -51,6 +51,7 @@
       </dict>
       <!-- basic settings } -->
 
+      <!-- comment { -->
       <dict>
         <key>name</key>
         <string>Comments</string>
@@ -64,6 +65,54 @@
           <string>{COMMENT_BACKGROUND}</string>
         </dict>
       </dict>
+      <!-- comment } -->
+
+      <!-- constant { -->
+      <dict>
+        <key>name</key>
+        <string>Constant Numeric</string>
+        <key>scope</key>
+        <string>constant.numeric</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{CONSTANT_NUMERIC_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Constant Numeric Float</string>
+        <key>scope</key>
+        <string>constant.numeric.float</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{CONSTANT_NUMERIC_FLOAT_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Built-in Constants</string>
+        <key>scope</key>
+        <string>constant.language</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{CONSTANT_LANGUAGE_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>User-Defined Constants</string>
+        <key>scope</key>
+        <string>constant.character, constant.other</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{CONSTANT_CHARACTER_OTHER_FOREGROUND}</string>
+        </dict>
+      </dict>
+      <!-- constant } -->
 
       <!-- string { -->
       <dict>
@@ -117,42 +166,6 @@
         </dict>
       </dict>
       <!-- string } -->
-
-      <!-- constant { -->
-      <dict>
-        <key>name</key>
-        <string>Numbers</string>
-        <key>scope</key>
-        <string>constant.numeric</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{CONSTANT_NUMERIC_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Built-in Constants</string>
-        <key>scope</key>
-        <string>constant.language</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{CONSTANT_LANGUAGE_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>User-Defined Constants</string>
-        <key>scope</key>
-        <string>constant.character, constant.other</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{CONSTANT_CHARACTER_OTHER_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <!-- constant } -->
 
       <!-- variable { -->
       <dict>
