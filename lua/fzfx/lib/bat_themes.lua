@@ -166,6 +166,11 @@ local COLOR_CONFIGS = {
     attr = "bg",
     default = BASE16_COLORS.lightgrey_sRGB,
   },
+  MISSPELLING = {
+    group = { "SpellBad", "Normal" },
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
   SELECTION = {
     group = "Visual",
     attr = "bg",
