@@ -123,11 +123,11 @@ local BASE16_COLORS = {
 
 -- The 'theme_template.tmTheme' is forked from: https://github.com/sharkdp/bat/blob/98a2b6bc177050c845f2e12133458826ad1fca72/assets/themes/base16.tmTheme
 local COLOR_CONFIGS = {
-  -- gutterSettings
+  -- gutter
   GUTTER_BACKGROUND = {
     group = "Pmenu",
     attr = "bg",
-    default = BASE16_COLORS.darkgrey,
+    default = BASE16_COLORS.black,
   },
   GUTTER_FOREGROUND = {
     group = "Pmenu",
@@ -141,18 +141,18 @@ local COLOR_CONFIGS = {
     attr = "bg",
     default = BASE16_COLORS.black,
   },
+  FOREGROUND = {
+    group = "Normal",
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
   CARET = {
     group = "Cursor",
     attr = "fg",
-    default = BASE16_COLORS.white,
+    default = BASE16_COLORS.black,
   },
   BLOCK_CARET = {
     group = "Cursor",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  FOREGROUND = {
-    group = "Normal",
     attr = "fg",
     default = BASE16_COLORS.white,
   },
