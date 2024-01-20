@@ -159,7 +159,7 @@ local COLOR_CONFIGS = {
   INVISIBLES = {
     group = "NonText",
     attr = "bg",
-    default = BASE16_COLORS.grey,
+    default = BASE16_COLORS.black,
   },
   LINE_HIGHLIGHT = {
     group = "CursorLine",
