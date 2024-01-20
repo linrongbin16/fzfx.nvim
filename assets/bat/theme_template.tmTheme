@@ -47,10 +47,6 @@
           <string>{FIND_HIGHLIGHT}</string>
           <key>findHighlightForeground</key>
           <string>{FIND_HIGHLIGHT_FOREGROUND}</string>
-          <key>bracketsForeground</key>
-          <string>{BRACKETS_FOREGROUND}</string>
-          <key>bracketContentsForeground</key>
-          <string>{BRACKET_CONTENTS_FOREGROUND}</string>
         </dict>
       </dict>
       <!-- basic settings } -->

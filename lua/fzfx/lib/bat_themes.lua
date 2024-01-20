@@ -190,16 +190,6 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = BASE16_COLORS.white,
   },
-  BRACKETS_FOREGROUND = {
-    group = { "Normal" },
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  BRACKET_CONTENTS_FOREGROUND = {
-    group = { "Normal" },
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
 
   COMMENT_FOREGROUND = {
     group = "Comment",
