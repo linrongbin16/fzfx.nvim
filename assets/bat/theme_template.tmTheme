@@ -41,6 +41,8 @@
           <string>{GUTTER_FOREGROUND}</string>
           <key>selection</key>
           <string>{SELECTION}</string>
+          <key>selection_foreground</key>
+          <string>{SELECTION_FOREGROUND}</string>
           <key>findHighlight</key>
           <string>{FIND_HIGHLIGHT}</string>
           <key>findHighlightForeground</key>

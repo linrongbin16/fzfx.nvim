@@ -175,6 +175,11 @@ local COLOR_CONFIGS = {
     attr = "bg",
     default = BASE16_COLORS.yellow,
   },
+  SELECTION_FOREGROUND = {
+    group = "Visual",
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
   FIND_HIGHLIGHT = {
     group = "Search",
     attr = "bg",
