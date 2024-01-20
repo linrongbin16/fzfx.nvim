@@ -14,16 +14,6 @@
     <key>colorSpaceName</key>
     <string>sRGB</string>
 
-    <!-- gutter settings { -->
-    <key>gutterSettings</key>
-    <dict>
-      <key>background</key>
-      <string>{GUTTER_BACKGROUND}</string>
-      <key>foreground</key>
-      <string>{GUTTER_FOREGROUND}</string>
-    </dict>
-    <!-- gutter settings } -->
-
     <!-- settings { -->
     <key>settings</key>
     <array>
@@ -45,6 +35,10 @@
           <string>{LINE_HIGHLIGHT}</string>
           <key>misspelling</key>
           <string>{MISSPELLING}</string>
+          <key>gutter</key>
+          <string>{GUTTER}</string>
+          <key>gutter_foreground</key>
+          <string>{GUTTER_FOREGROUND}</string>
           <key>selection</key>
           <string>{SELECTION}</string>
           <key>findHighlight</key>

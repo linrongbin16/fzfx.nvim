@@ -123,17 +123,6 @@ local BASE16_COLORS = {
 
 -- The 'theme_template.tmTheme' is forked from: https://github.com/sharkdp/bat/blob/98a2b6bc177050c845f2e12133458826ad1fca72/assets/themes/base16.tmTheme
 local COLOR_CONFIGS = {
-  -- gutter
-  GUTTER_BACKGROUND = {
-    group = "Pmenu",
-    attr = "bg",
-    default = BASE16_COLORS.black,
-  },
-  GUTTER_FOREGROUND = {
-    group = "Pmenu",
-    attr = "fg",
-    default = BASE16_COLORS.grey,
-  },
 
   -- settings
   BACKGROUND = {
@@ -170,6 +159,16 @@ local COLOR_CONFIGS = {
     group = { "SpellBad", "Normal" },
     attr = "fg",
     default = BASE16_COLORS.white,
+  },
+  GUTTER = {
+    group = "Pmenu",
+    attr = "bg",
+    default = BASE16_COLORS.black,
+  },
+  GUTTER_FOREGROUND = {
+    group = "Pmenu",
+    attr = "fg",
+    default = BASE16_COLORS.grey,
   },
   SELECTION = {
     group = "Visual",
