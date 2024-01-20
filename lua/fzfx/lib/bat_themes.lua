@@ -219,6 +219,11 @@ local COLOR_CONFIGS = {
     attr = "fg",
     default = BASE16_COLORS.yellow,
   },
+  CONSTANT_CHARACTER_ESCAPE_FOREGROUND = {
+    group = { "SpecialChar", "Constant" },
+    attr = "fg",
+    default = BASE16_COLORS.magenta,
+  },
   CONSTANT_CHARACTER_OTHER_FOREGROUND = {
     group = "Character",
     attr = "fg",
