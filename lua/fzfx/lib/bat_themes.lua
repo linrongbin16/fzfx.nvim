@@ -105,6 +105,8 @@ end
 
 -- renderer for tmTheme globals
 --- @class fzfx._BatTmThemeGlobalRenderer
+--- @field key string
+--- @field value string
 local _BatTmThemeGlobalRenderer = {}
 
 --- @param hl string
@@ -136,15 +138,31 @@ end
 
 -- renderer for tmTheme scope
 --- @class fzfx._BatTmThemeScopeRenderer
+--- @field name string
+--- @field scope string
+--- @field foreground string?
+--- @field background string?
+--- @field bold boolean?
+--- @field italic boolean?
 local _BatTmThemeScopeRenderer = {}
 
 --- @param hl string
 --- @param tm_name string
 --- @param tm_scope string
---- @param tm_settings {foreground:string?,background:string?,fontStyle:string?,[string]:string}
 --- @return TmScopeRenderer
-function _BatTmThemeScopeRenderer:new(hl, tm_name, tm_scope, tm_settings)
-  local hlopts = termcolors.retrieve(hl)
+function _BatTmThemeScopeRenderer:new(hl, tm_name, tm_scope)
+  local hlvalues = termcolors.retrieve(hl)
+  local o = {
+    name = tm_name,
+    scope = tm_scope,
+    foreground = hlvalues.fg or nil,
+    background = hlvalues.bg or nil,
+    bold = hlvalues.bold or nil,
+    italic = hlvalues.italic or nil,
+  }
+  setmetatable(o, self)
+  self.__index = self
+  return o
 end
 
 --- @return string
