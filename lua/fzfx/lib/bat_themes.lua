@@ -161,12 +161,12 @@ local COLOR_CONFIGS = {
     default = BASE16_COLORS.white,
   },
   GUTTER = {
-    group = "Pmenu",
+    group = "LineNr",
     attr = "bg",
     default = BASE16_COLORS.black,
   },
   GUTTER_FOREGROUND = {
-    group = "Pmenu",
+    group = "LineNr",
     attr = "fg",
     default = BASE16_COLORS.grey,
   },
