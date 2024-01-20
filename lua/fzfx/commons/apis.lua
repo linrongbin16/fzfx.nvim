@@ -71,12 +71,11 @@ M.get_hl = function(hl)
   else
     local rgb_hldef = vim.api.nvim_get_hl_by_name(hl, true)
     local cterm_hldef = vim.api.nvim_get_hl_by_name(hl, false)
-    return {
-      fg = rgb_hldef.foreground,
-      bg = rgb_hldef.background,
+    return vim.tbl_deep_extend("force", rgb_hldef, {
       ctermfg = cterm_hldef.foreground,
       ctermbg = cterm_hldef.background,
-    }
+      cterm = cterm_hldef,
+    })
   end
 end
 
