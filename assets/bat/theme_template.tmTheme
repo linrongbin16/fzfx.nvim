@@ -44,7 +44,7 @@
           <key>lineHighlight</key>
           <string>{LINE_HIGHLIGHT}</string>
           <key>misspelling</key>
-          <string>{INVISIBLES}</string>
+          <string>{MISSPELLING}</string>
           <key>selection</key>
           <string>{SELECTION}</string>
           <key>findHighlight</key>
