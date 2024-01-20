@@ -103,6 +103,55 @@ M.get_custom_theme_file = function()
   return paths.join(theme_dir, theme_name .. ".tmTheme")
 end
 
+-- renderer for tmTheme globals
+local TmGlobalRenderer = {}
+
+--- @param hl string
+--- @param tm_key string
+--- @param attr "fg"|"bg"
+--- @return TmGlobalRenderer
+function TmGlobalRenderer:new(hl, tm_key, attr)
+  local hlvalues = termcolors.retrieve(hl)
+  local o = {
+    key = tm_key,
+    value = attr == "fg" and hlvalues.fg or hlvalues.bg,
+  }
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+--- @return string
+function TmGlobalRenderer:render()
+  return string.format(
+    [[
+          <key>%s</key>
+          <string>%s</string>
+]],
+    self.key,
+    self.value
+  )
+end
+
+-- renderer for tmTheme scope
+local TmScopeRenderer = {}
+
+--- @param hl string
+--- @param tm_name string
+--- @param tm_scope string
+--- @param tm_settings {foreground:string?,background:string?,fontStyle:string?,[string]:string}
+--- @return TmScopeRenderer
+function TmScopeRenderer:new(hl, tm_name, tm_scope, tm_settings)
+  local hlopts = termcolors.retrieve(hl)
+end
+
+--- @return string
+function TmScopeRenderer:render()
+  return string.format([[
+
+]])
+end
+
 -- default base16
 -- forked from: https://github.com/chriskempson/base16-textmate/blob/0e51ddd568bdbe17189ac2a07eb1c5f55727513e/Themes/base16-default-dark.tmTheme
 local BASE16_COLORS = {
