@@ -210,7 +210,7 @@ local COLOR_CONFIGS = {
     default = BASE16_COLORS.yellow,
   },
   CONSTANT_NUMERIC_FLOAT_FOREGROUND = {
-    group = { "Float" },
+    group = { "Float", "Number" },
     attr = "fg",
     default = BASE16_COLORS.yellow,
   },
