@@ -148,12 +148,12 @@ local COLOR_CONFIGS = {
   },
   CARET = {
     group = "Cursor",
-    attr = "fg",
-    default = BASE16_COLORS.black,
+    attr = "bg",
+    default = BASE16_COLORS.white,
   },
   BLOCK_CARET = {
     group = "Cursor",
-    attr = "fg",
+    attr = "bg",
     default = BASE16_COLORS.white,
   },
   INVISIBLES = {
