@@ -104,13 +104,14 @@ M.get_custom_theme_file = function()
 end
 
 -- renderer for tmTheme globals
-local TmGlobalRenderer = {}
+--- @class fzfx._BatTmThemeGlobalRenderer
+local _BatTmThemeGlobalRenderer = {}
 
 --- @param hl string
 --- @param tm_key string
 --- @param attr "fg"|"bg"
---- @return TmGlobalRenderer
-function TmGlobalRenderer:new(hl, tm_key, attr)
+--- @return fzfx._BatTmThemeGlobalRenderer
+function _BatTmThemeGlobalRenderer:new(hl, tm_key, attr)
   local hlvalues = termcolors.retrieve(hl)
   local o = {
     key = tm_key,
@@ -122,7 +123,7 @@ function TmGlobalRenderer:new(hl, tm_key, attr)
 end
 
 --- @return string
-function TmGlobalRenderer:render()
+function _BatTmThemeGlobalRenderer:render()
   return string.format(
     [[
           <key>%s</key>
