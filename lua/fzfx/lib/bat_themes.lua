@@ -302,26 +302,42 @@ local GLOBAL_RENDERERS = {
 
 local SCOPE_RENDERERS = {
   -- comment
-  _BatTmThemeScopeRenderer:new("Comment", "comment", true),
+  _BatTmThemeScopeRenderer:new({ "@comment", "Comment" }, "comment", true),
 
   -- constant
-  _BatTmThemeScopeRenderer:new("Constant", "constant", true),
-  _BatTmThemeScopeRenderer:new("Number", "constant.numeric", true),
-  _BatTmThemeScopeRenderer:new("Float", "constant.numeric.float", true),
-  _BatTmThemeScopeRenderer:new("Boolean", "constant.language", true),
+  _BatTmThemeScopeRenderer:new({ "@constant", "Constant" }, "constant", true),
   _BatTmThemeScopeRenderer:new(
-    "Character",
+    { "@number", "Number" },
+    "constant.numeric",
+    true
+  ),
+  _BatTmThemeScopeRenderer:new(
+    { "@float", "Float" },
+    "constant.numeric.float",
+    true
+  ),
+  _BatTmThemeScopeRenderer:new(
+    { "@boolean", "Boolean" },
+    "constant.language",
+    true
+  ),
+  _BatTmThemeScopeRenderer:new(
+    { "@character", "Character" },
     { "constant.character", "constant.other" },
     true
   ),
   _BatTmThemeScopeRenderer:new(
-    "SpecialChar",
+    { "@string.escape", "SpecialChar" },
     { "constant.character.escaped", "constant.character.escape" },
     true
   ),
 
   -- string
-  _BatTmThemeScopeRenderer:new("String", { "string", "string.quoted" }, true),
+  _BatTmThemeScopeRenderer:new(
+    { "@string", "String" },
+    { "string", "string.quoted" },
+    true
+  ),
   _BatTmThemeScopeRenderer:new(
     { "DiagnosticWarn", "LspDiagnosticsDefaultWarning", "WarningMsg" },
     { "string.regexp" },
@@ -329,44 +345,90 @@ local SCOPE_RENDERERS = {
   ),
 
   -- variable
-  _BatTmThemeScopeRenderer:new("Function", "variable.function", true),
+  _BatTmThemeScopeRenderer:new(
+    { "@function", "Function" },
+    "variable.function",
+    true
+  ),
 
   -- keyword
-  _BatTmThemeScopeRenderer:new("Keyword", "keyword", true),
+  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword", true),
   _BatTmThemeScopeRenderer:new(
-    "Conditional",
+    { "@conditional", "Conditional" },
     "keyword.control.conditional",
     true
   ),
-  _BatTmThemeScopeRenderer:new("Operator", "keyword.operator", true),
+  _BatTmThemeScopeRenderer:new(
+    { "@operator", "Operator" },
+    "keyword.operator",
+    true
+  ),
 
   -- storage
-  _BatTmThemeScopeRenderer:new("StorageClass", "storage.type", true),
-  -- _BatTmThemeScopeRenderer:new("Type", "storage.type", true),
-  _BatTmThemeScopeRenderer:new("StorageClass", "storage.modifier", true),
+  -- _BatTmThemeScopeRenderer:new({"", "StorageClass" }, "storage.type", true),
+  _BatTmThemeScopeRenderer:new({ "@type", "Type" }, "storage.type", true),
+  _BatTmThemeScopeRenderer:new(
+    { "@storageclass", "StorageClass" },
+    "storage.modifier",
+    true
+  ),
 
   -- entity
-  _BatTmThemeScopeRenderer:new("Structure", {
+  _BatTmThemeScopeRenderer:new({
+    "@structure",
+    "Structure",
+  }, {
     "entity.name.enum",
     "entity.name.union",
   }, true),
-  _BatTmThemeScopeRenderer:new("Typedef", "entity.other.inherited-class", true),
-  _BatTmThemeScopeRenderer:new("Title", "entity.name.section", true),
-  _BatTmThemeScopeRenderer:new("Function", "entity.name.function", true),
-  _BatTmThemeScopeRenderer:new("Label", "entity.name.label", true),
-  _BatTmThemeScopeRenderer:new("htmlTag", "entity.name.tag", true),
+  _BatTmThemeScopeRenderer:new({
+    "@type.definition",
+    "Typedef",
+  }, "entity.other.inherited-class", true),
+  _BatTmThemeScopeRenderer:new({
+    "@text.title",
+    "Title",
+  }, "entity.name.section", true),
+  _BatTmThemeScopeRenderer:new({
+    "@function",
+    "Function",
+  }, "entity.name.function", true),
+  _BatTmThemeScopeRenderer:new({
+    "@label",
+    "Label",
+  }, "entity.name.label", true),
+  _BatTmThemeScopeRenderer:new({
+    "htmlTag",
+  }, "entity.name.tag", true),
 
   -- support
-  _BatTmThemeScopeRenderer:new("Function", "support.function", true),
-  _BatTmThemeScopeRenderer:new("Constant", "support.constant", true),
-  _BatTmThemeScopeRenderer:new("Type", "support.type", true),
-  _BatTmThemeScopeRenderer:new("Typedef", "support.class", true),
+  _BatTmThemeScopeRenderer:new({
+    "@function",
+    "Function",
+  }, "support.function", true),
+  _BatTmThemeScopeRenderer:new({
+    "@constant",
+    "Constant",
+  }, "support.constant", true),
+  _BatTmThemeScopeRenderer:new({
+    "@type",
+    "Type",
+  }, "support.type", true),
+  _BatTmThemeScopeRenderer:new({
+    "@type.definition",
+    "Typedef",
+  }, "support.class", true),
 
   -- invalid
-  _BatTmThemeScopeRenderer:new("Error", "invalid.illegal"),
+  _BatTmThemeScopeRenderer:new({
+    "Error",
+  }, "invalid.illegal"),
 
   -- markup
-  _BatTmThemeScopeRenderer:new({ "Title" }, "markup.heading"),
+  _BatTmThemeScopeRenderer:new({
+    "@text.title",
+    "Title",
+  }, "markup.heading"),
   _BatTmThemeScopeRenderer:new(
     { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded", "Added" },
     "markup.inserted"
