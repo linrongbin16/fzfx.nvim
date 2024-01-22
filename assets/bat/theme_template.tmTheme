@@ -22,7 +22,6 @@
       <!-- scope -->
       {SCOPE}
     </array>
-    <!-- settings } -->
     <key>uuid</key>
     <string>uuid</string>
   </dict>
