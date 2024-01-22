@@ -247,7 +247,7 @@ function _BatTmThemeScopeRenderer:render()
     )
   end
   if #self.font_style > 0 then
-    table.insert(builder, "          <key>font_style</key>")
+    table.insert(builder, "          <key>fontStyle</key>")
     table.insert(
       builder,
       string.format(
