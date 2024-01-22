@@ -293,11 +293,11 @@ local GLOBAL_RENDERERS = {
   _BatTmThemeGlobalRenderer:new("NonText", "invisibles", "fg"),
   _BatTmThemeGlobalRenderer:new("CursorLine", "lineHighlight", "bg"),
   _BatTmThemeGlobalRenderer:new("LineNr", "gutter", "bg"),
-  _BatTmThemeGlobalRenderer:new("LineNr", "gutter_foreground", "fg"),
+  _BatTmThemeGlobalRenderer:new("LineNr", "gutterForeground", "fg"),
   _BatTmThemeGlobalRenderer:new("Visual", "selection", "bg"),
-  _BatTmThemeGlobalRenderer:new("Visual", "selection_foreground", "fg"),
-  _BatTmThemeGlobalRenderer:new("Search", "find_highlight", "bg"),
-  _BatTmThemeGlobalRenderer:new("Search", "find_highlight_foreground", "fg"),
+  _BatTmThemeGlobalRenderer:new("Visual", "selectionForeground", "fg"),
+  _BatTmThemeGlobalRenderer:new("Search", "findHighlight", "bg"),
+  _BatTmThemeGlobalRenderer:new("Search", "findHighlightForeground", "fg"),
 }
 
 local SCOPE_RENDERERS = {
@@ -341,6 +341,7 @@ local SCOPE_RENDERERS = {
     true
   ),
   _BatTmThemeScopeRenderer:new({ "Operator" }, "keyword.operator"),
+  _BatTmThemeScopeRenderer:new({ "Statement" }, "keyword.other"),
 
   -- storage
   -- _BatTmThemeScopeRenderer:new({"", "StorageClass" }, "storage.type"),
