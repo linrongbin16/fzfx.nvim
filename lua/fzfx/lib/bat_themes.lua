@@ -355,7 +355,7 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new("Error", "invalid.illegal"),
 
   -- markup
-  _BatTmThemeScopeRenderer:new({ "htmlTitle", "Title" }, "markup.heading"),
+  _BatTmThemeScopeRenderer:new({ "Title" }, "markup.heading"),
   _BatTmThemeScopeRenderer:new(
     { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded" },
     "markup.inserted"
