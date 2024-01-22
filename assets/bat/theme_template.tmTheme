@@ -14,109 +14,16 @@
     <key>colorSpaceName</key>
     <string>sRGB</string>
 
-    <!-- settings { -->
     <key>settings</key>
     <array>
       <dict>
-        <!-- basic settings { -->
+        <!-- globals { -->
         <key>settings</key>
-        <dict>
-          {GLOBALS}
-          <key>invisibles</key>
-          <string>{INVISIBLES}</string>
-          <key>lineHighlight</key>
-          <string>{LINE_HIGHLIGHT}</string>
-          <key>misspelling</key>
-          <string>{MISSPELLING}</string>
-          <key>gutter</key>
-          <string>{GUTTER}</string>
-          <key>gutter_foreground</key>
-          <string>{GUTTER_FOREGROUND}</string>
-          <key>selection</key>
-          <string>{SELECTION}</string>
-          <key>selection_foreground</key>
-          <string>{SELECTION_FOREGROUND}</string>
-          <key>findHighlight</key>
-          <string>{FIND_HIGHLIGHT}</string>
-          <key>findHighlightForeground</key>
-          <string>{FIND_HIGHLIGHT_FOREGROUND}</string>
-        </dict>
+        <dict> {GLOBAL} </dict>
       </dict>
-      <!-- basic settings } -->
 
-      <!-- comment { -->
-      <dict>
-        <key>name</key>
-        <string>Comments</string>
-        <key>scope</key>
-        <string>comment</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{COMMENT_FOREGROUND}</string>
-          <key>background</key>
-          <string>{COMMENT_BACKGROUND}</string>
-        </dict>
-      </dict>
-      <!-- comment } -->
-
-      <!-- constant { -->
-      <dict>
-        <key>name</key>
-        <string>Constant Numeric</string>
-        <key>scope</key>
-        <string>constant.numeric</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{CONSTANT_NUMERIC_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Constant Numeric Float</string>
-        <key>scope</key>
-        <string>constant.numeric.float</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{CONSTANT_NUMERIC_FLOAT_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Built-in Constants</string>
-        <key>scope</key>
-        <string>constant.language</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{CONSTANT_LANGUAGE_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>String Interpolation</string>
-        <key>scope</key>
-        <string>constant.character.escaped, constant.character.escape</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{CONSTANT_CHARACTER_ESCAPE_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>User-Defined Constants</string>
-        <key>scope</key>
-        <string>constant.character, constant.other</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{CONSTANT_CHARACTER_OTHER_FOREGROUND}</string>
-        </dict>
-      </dict>
-      <!-- constant } -->
+      <!-- scope -->
+      {SCOPE}
 
       <!-- string { -->
       <dict>

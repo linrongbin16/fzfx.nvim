@@ -152,13 +152,23 @@ end
 --- @field bold boolean?
 --- @field italic boolean?
 --- @field empty boolean?
+--- @field no_background boolean?
 local _BatTmThemeScopeRenderer = {}
 
---- @param hl string
+--- @param hl string|string[]
 --- @param tm_scope string|string[]
+--- @param no_background boolean?
 --- @return fzfx._BatTmThemeScopeRenderer
-function _BatTmThemeScopeRenderer:new(hl, tm_scope)
-  local values = apis.get_hl(hl)
+function _BatTmThemeScopeRenderer:new(hl, tm_scope, no_background)
+  local hls = type(hl) == "table" and hl or { hl } --[[@as string[] ]]
+
+  local values = {}
+  for _, h in ipairs(hls) do
+    values = apis.get_hl(h)
+    if tables.tbl_not_empty(values) then
+      break
+    end
+  end
   local o = {
     scope = tm_scope,
     foreground = values.fg and string.format("#%06x", values.fg) or nil,
@@ -168,6 +178,7 @@ function _BatTmThemeScopeRenderer:new(hl, tm_scope)
     italic = values.italic,
     underline = values.underline,
     empty = tables.tbl_empty(values),
+    no_background = no_background,
   }
   if values.bold then
     table.insert(o.font_style, "bold")
@@ -218,7 +229,7 @@ function _BatTmThemeScopeRenderer:render()
       string.format("          <string>%s</string>", self.foreground)
     )
   end
-  if self.background then
+  if not self.no_background and self.background then
     table.insert(builder, "          <key>background</key>")
     table.insert(
       builder,
@@ -637,50 +648,289 @@ local GLOBAL_CONFIGS = {
   _BatTmThemeGlobalRenderer:new("Cursor", "caret", "bg"),
   _BatTmThemeGlobalRenderer:new("Cursor", "block_caret", "bg"),
   _BatTmThemeGlobalRenderer:new("NonText", "invisibles", "fg"),
-  _BatTmThemeGlobalRenderer:new("CursorLine", "line_highlight", "fg"),
-  LINE_HIGHLIGHT = {
-    group = "CursorLine",
-    attr = "bg",
-    default = BASE16_COLORS.grey_sRGB,
-  },
-  MISSPELLING = {
-    group = { "SpellBad", "Normal" },
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  GUTTER = {
-    group = "LineNr",
-    attr = "bg",
-    default = BASE16_COLORS.black,
-  },
-  GUTTER_FOREGROUND = {
-    group = "LineNr",
-    attr = "fg",
-    default = BASE16_COLORS.grey,
-  },
-  SELECTION = {
-    group = "Visual",
-    attr = "bg",
-    default = BASE16_COLORS.yellow,
-  },
-  SELECTION_FOREGROUND = {
-    group = "Visual",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  FIND_HIGHLIGHT = {
-    group = "Search",
-    attr = "bg",
-    default = BASE16_COLORS.yellow,
-  },
-  FIND_HIGHLIGHT_FOREGROUND = {
-    group = "Search",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
+  _BatTmThemeGlobalRenderer:new("CursorLine", "line_highlight", "bg"),
+  _BatTmThemeGlobalRenderer:new("LineNr", "gutter", "bg"),
+  _BatTmThemeGlobalRenderer:new("LineNr", "gutter_foreground", "fg"),
+  _BatTmThemeGlobalRenderer:new("Visual", "selection", "bg"),
+  _BatTmThemeGlobalRenderer:new("Visual", "selection_foreground", "fg"),
+  _BatTmThemeGlobalRenderer:new("Search", "find_highlight", "bg"),
+  _BatTmThemeGlobalRenderer:new("Search", "find_highlight_foreground", "fg"),
 }
 
-local SCOPE_CONFIGS = {}
+local SCOPE_CONFIGS = {
+  -- comment
+  _BatTmThemeScopeRenderer:new("Comment", "comment_foreground", true),
+
+  -- constant
+  _BatTmThemeScopeRenderer:new("Constant", "constant", true),
+  -- constant.numeric
+  _BatTmThemeScopeRenderer:new("Number", "constant.numeric", true),
+  -- constant.numeric.float
+  _BatTmThemeScopeRenderer:new("Float", "constant.numeric.float", true),
+
+  -- -- constant.language
+  -- _BatTmThemeScopeRenderer:new("Boolean", "constant.language", true),
+
+  -- constant.character, constant.other
+  _BatTmThemeScopeRenderer:new(
+    "Character",
+    { "constant.character", "constant.other" },
+    true
+  ),
+  -- constant.character.escaped, constant.character.escape
+  _BatTmThemeScopeRenderer:new(
+    "SpecialChar",
+    { "constant.character.escaped", "constant.character.escape" },
+    true
+  ),
+
+  -- string, string.quoted
+  _BatTmThemeScopeRenderer:new("String", { "string", "string.quoted" }, true),
+  _BatTmThemeScopeRenderer:new(
+    { "DiagnosticWarn", "LspDiagnosticsDefaultWarning", "WarningMsg" },
+    { "string.regexp" },
+    true
+  ),
+  RUBY_STRING_REGEXP_FOREGROUND = {
+    group = {
+      "rubyRegexp",
+      "rubyRegexpDelimiter",
+      "DiagnosticWarn",
+      "LspDiagnosticsDefaultWarning",
+      "WarningMsg",
+    },
+    attr = "fg",
+    default = BASE16_COLORS.red,
+  },
+  STRING_INTERPOLATION_FOREGROUND = {
+    group = { "Boolean" },
+    attr = "fg",
+    default = BASE16_COLORS.yellow,
+  },
+
+  -- variable
+  VARIABLE_FOREGROUND = {
+    group = "Normal",
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
+  VARIABLE_LANGUAGE_FOREGROUND = {
+    group = {
+      "@variable.builtin",
+      "ErrorMsg",
+    },
+    attr = "fg",
+    default = BASE16_COLORS.red,
+  },
+  VARIABLE_FUNCTION_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = BASE16_COLORS.cyan,
+  },
+  VARIABLE_PARAMETER_FOREGROUND = {
+    group = { "@parameter", "Normal" },
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
+  VARIABLE_OTHER_FOREGROUND = {
+    group = "Normal",
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
+  -- VARIABLE_OTHER_CONSTANT_FOREGROUND = {
+  --   group = "Boolean",
+  --   attr = "fg",
+  --   default = BASE16_COLORS.yellow,
+  -- },
+  VARIABLE_OTHER_READWRITE_INSTANCE_FOREGROUND = {
+    group = {
+      "DiagnosticSignWarn",
+      "LspDiagnosticsSignWarn",
+      "WarningMsg",
+    },
+    attr = "fg",
+    default = BASE16_COLORS.red,
+  },
+
+  -- keyword
+  KEYWORDS_FOREGROUND = {
+    group = "Define",
+    attr = "fg",
+    default = BASE16_COLORS.magenta,
+  },
+  KEYWORD_CONTROL_FOREGROUND = {
+    group = { "Conditional" },
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
+  KEYWORD_OPERATOR_FOREGROUND = {
+    group = "Operator",
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
+  KEYWORD_OTHER_FOREGROUND = {
+    group = "PreProc",
+    attr = "fg",
+    default = BASE16_COLORS.white,
+  },
+
+  -- storage
+  STORAGE_FOREGROUND = {
+    group = { "Boolean" },
+    attr = "fg",
+    default = BASE16_COLORS.yellow,
+  },
+  STORAGE_TYPE_FOREGROUND = {
+    group = { "Identifier", "StorageClass" },
+    attr = "fg",
+    default = BASE16_COLORS.magenta,
+  },
+
+  -- entity
+  ENTITY_NAME_FOREGROUND = {
+    group = "Pmenu",
+    attr = "fg",
+    default = BASE16_COLORS.cyan,
+  },
+  ENTITY_NAME_CLASS_FOREGROUND = {
+    group = "Type",
+    attr = "fg",
+    default = BASE16_COLORS.cyan,
+  },
+  EENTITY_OTHER_INHERITED_CLASS_FOREGROUND = {
+    group = { "Tag", "Type" },
+    attr = "fg",
+    default = BASE16_COLORS.cyan,
+  },
+  ENTITY_NAME_FUNCTION_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = BASE16_COLORS.cyan,
+  },
+  ENTITY_NAME_LABEL_FOREGROUND = {
+    group = "Label",
+    attr = "fg",
+    default = BASE16_COLORS.orange,
+  },
+  ENTITY_NAME_TAG_FOREGROUND = {
+    group = { "Tag" },
+    attr = "fg",
+    default = BASE16_COLORS.orange,
+  },
+  ENTITY_OTHER_ATTRIBUTE_NAME_FOREGROUND = {
+    group = { "Tag" },
+    attr = "fg",
+    default = BASE16_COLORS.orange,
+  },
+
+  -- support
+  SUPPORT_FUNCTION_FOREGROUND = {
+    group = { "Function" },
+    attr = "fg",
+    default = "#86c1b9",
+  },
+  SUPPORT_CONSTANT_FOREGROUND = {
+    group = "Constant",
+    attr = "fg",
+    default = "#dc9656",
+  },
+  SUPPORT_TYPE_AND_CLASS_FOREGROUND = {
+    group = "Type",
+    attr = "fg",
+    default = "#7cafc2",
+  },
+  SUPPORT_OTHER_NAMESPACE_FOREGROUND = {
+    group = {
+      "SpecialComment",
+      "DiagnosticSignInfo",
+      "LspDiagnosticsSignInfo",
+      "Tag",
+    },
+    attr = "fg",
+    default = "#7cafc2",
+  },
+
+  FUNCTIONS_FOREGROUND = {
+    group = "Function",
+    attr = "fg",
+    default = BASE16_COLORS.cyan,
+  },
+  META_PATH_FOREGROUND = {
+    group = "helpHyperTextJump",
+    attr = "fg",
+    default = "#7cafc2",
+  },
+  INVALID_BACKGROUND = {
+    group = { "Exception", "Error" },
+    attr = "bg",
+    default = "#ab4642",
+  },
+  INVALID_FOREGROUND = {
+    group = { "Exception", "Error" },
+    attr = "fg",
+    default = "#ab4642",
+  },
+  INVALID_DEPRECATED_BACKGROUND = {
+    group = { "Directory", "helpCommand" },
+    attr = "bg",
+    default = "#a16946",
+  },
+  INVALID_DEPRECATED_FOREGROUND = {
+    group = { "Directory", "helpCommand" },
+    attr = "fg",
+    default = "#f8f8f8",
+  },
+  DIFF_HEADER_FOREGROUND = {
+    group = { "LineNr", "SignColumn", "Comment" },
+    attr = "fg",
+    default = "#585858",
+  },
+  MARKUP_DELETED_FOREGROUND = {
+    group = { "GitSignsDelete", "GitGutterDelete", "DiffDelete", "DiffRemoved" },
+    attr = "fg",
+    default = "#ab4642",
+  },
+  MARKUP_INSERTED_FOREGROUND = {
+    group = { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded" },
+    attr = "fg",
+    default = "#a1b56c",
+  },
+  MARKUP_CHANGED_FOREGROUND = {
+    group = { "GitGutterChange", "GitSignsChange", "DiffChange" },
+    attr = "fg",
+    default = "#ba8baf",
+  },
+  ENTITY_NAME_FILENAME_FOREGROUND = {
+    group = { "Directory", "Tag" },
+    attr = "fg",
+    default = "#a1b56c",
+  },
+  PUNCTUATION_ACCESSOR_FOREGROUND = {
+    group = { "SpecialKey", "Character", "Special" },
+    attr = "fg",
+    default = "#ba8baf",
+  },
+  META_FUNCTION_RETURN_TYPE_FOREGROUND = {
+    group = { "PreProc", "Macro", "Special" },
+    attr = "fg",
+    default = "#ba8baf",
+  },
+  PUNCTUATION_SECTION_BLOCK_BEGIN_FOREGROUND = {
+    group = "Normal",
+    attr = "fg",
+    default = "#d8d8d8",
+  },
+  PUNCTUATION_SECTION_BLOCK_END_FOREGROUND = {
+    group = "Normal",
+    attr = "fg",
+    default = "#d8d8d8",
+  },
+  META_CLASS_FOREGROUND = {
+    group = "Type",
+    attr = "fg",
+    default = "#f8f8f8",
+  },
+}
 
 --- @return {name:string,payload:string}?
 M.calculate_custom_theme = function()
