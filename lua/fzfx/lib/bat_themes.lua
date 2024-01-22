@@ -183,7 +183,7 @@ function _BatTmThemeScopeRenderer:render()
     return "\n"
   end
   local builder = {
-    "      <dict>",
+    "\n      <dict>",
   }
   local name = type(self.scope) == "table" and self.scope[1] or self.scope --[[@as string]]
   table.insert(
@@ -237,22 +237,8 @@ function _BatTmThemeScopeRenderer:render()
     )
   end
   table.insert(builder, "        </dict>")
-  table.insert(builder, "      </dict>")
-  return string.format([[
-      <dict>
-        <key>name</key>
-        <string>Comments</string>
-        <key>scope</key>
-        <string>comment</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>{COMMENT_FOREGROUND}</string>
-          <key>background</key>
-          <string>{COMMENT_BACKGROUND}</string>
-        </dict>
-      </dict>
-]])
+  table.insert(builder, "      </dict>\n")
+  return table.concat(builder, "\n")
 end
 
 -- default base16
