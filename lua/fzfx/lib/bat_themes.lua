@@ -157,10 +157,21 @@ function _BatTmThemeScopeRenderer:new(hl, tm_scope)
     scope = tm_scope,
     foreground = values.fg and string.format("#%06x", values.fg) or nil,
     background = values.bg and string.format("#%06x", values.bg) or nil,
-    bold = values.bold or nil,
-    italic = values.italic or nil,
+    font_style = {},
+    bold = values.bold,
+    italic = values.italic,
+    underline = values.underline,
     empty = tables.tbl_empty(values),
   }
+  if values.bold then
+    table.insert(o.font_style, "bold")
+  end
+  if values.italic then
+    table.insert(o.font_style, "italic")
+  end
+  if values.underline then
+    table.insert(o.font_style, "underline")
+  end
   setmetatable(o, self)
   self.__index = self
   return o
@@ -213,6 +224,16 @@ function _BatTmThemeScopeRenderer:render()
     table.insert(
       builder,
       string.format("          <string>%s</string>", self.background)
+    )
+  end
+  if #self.font_style > 0 then
+    table.insert(builder, "          <key>font_style</key>")
+    table.insert(
+      builder,
+      string.format(
+        "          <string>%s</string>",
+        table.concat(self.font_style, ", ")
+      )
     )
   end
   table.insert(builder, "        </dict>")
