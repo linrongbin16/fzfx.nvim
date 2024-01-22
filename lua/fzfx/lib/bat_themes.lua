@@ -636,12 +636,8 @@ local GLOBAL_CONFIGS = {
   _BatTmThemeGlobalRenderer:new("Normal", "foreground", "fg"),
   _BatTmThemeGlobalRenderer:new("Cursor", "caret", "bg"),
   _BatTmThemeGlobalRenderer:new("Cursor", "block_caret", "bg"),
-  _BatTmThemeGlobalRenderer:new("NonText", "block_caret", "bg"),
-  INVISIBLES = {
-    group = "NonText",
-    attr = "bg",
-    default = BASE16_COLORS.black,
-  },
+  _BatTmThemeGlobalRenderer:new("NonText", "invisibles", "fg"),
+  _BatTmThemeGlobalRenderer:new("CursorLine", "line_highlight", "fg"),
   LINE_HIGHLIGHT = {
     group = "CursorLine",
     attr = "bg",
