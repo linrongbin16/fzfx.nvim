@@ -1,9 +1,9 @@
 local paths = require("fzfx.commons.paths")
-local termcolors = require("fzfx.commons.termcolors")
 local strings = require("fzfx.commons.strings")
 local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 local apis = require("fzfx.commons.apis")
+local tables = require("fzfx.commons.tables")
 
 -- local log = require("fzfx.lib.log")
 
@@ -140,16 +140,17 @@ end
 -- renderer for tmTheme scope
 --- @class fzfx._BatTmThemeScopeRenderer
 --- @field name string
---- @field scope string
+--- @field scope string|string[]
 --- @field foreground string?
 --- @field background string?
 --- @field bold boolean?
 --- @field italic boolean?
+--- @field empty boolean?
 local _BatTmThemeScopeRenderer = {}
 
 --- @param hl string
 --- @param tm_name string
---- @param tm_scope string
+--- @param tm_scope string|string[]
 --- @return fzfx._BatTmThemeScopeRenderer
 function _BatTmThemeScopeRenderer:new(hl, tm_name, tm_scope)
   local values = apis.get_hl(hl)
@@ -160,6 +161,7 @@ function _BatTmThemeScopeRenderer:new(hl, tm_name, tm_scope)
     background = values.bg and string.format("#%06x", values.bg) or nil,
     bold = values.bold or nil,
     italic = values.italic or nil,
+    empty = tables.tbl_empty(values),
   }
   setmetatable(o, self)
   self.__index = self
@@ -168,8 +170,65 @@ end
 
 --- @return string
 function _BatTmThemeScopeRenderer:render()
+  local builder = {
+    "      <dict>",
+  }
+  table.insert(
+    builder,
+    string.format(
+      [[        <key>name</key>
+        <string>%s</string>]],
+      self.name
+    )
+  )
+  table.insert(
+    builder,
+    string.format(
+      [[        <key>scope</key>
+        <string>%s</string>]],
+      type(self.scope) == "table" and table.concat(self.scope, ", ")
+        or self.scope
+    )
+  )
+  table.insert(builder, "        <key>settings</key>")
+  table.insert(builder, "        <dict>")
+  if self.foreground then
+    table.insert(builder, "          <key>foreground</key>")
+    table.insert(
+      builder,
+      string.format("          <string>%s</string>", self.foreground)
+    )
+  end
+  if self.background then
+    table.insert(builder, "          <key>background</key>")
+    table.insert(
+      builder,
+      string.format("          <string>%s</string>", self.background)
+    )
+  end
+  if self.background then
+    table.insert(builder, "          <key>background</key>")
+    table.insert(
+      builder,
+      string.format("          <string>%s</string>", self.background)
+    )
+  end
+  table.insert(builder, "        </dict>")
+  table.insert(builder, "      </dict>")
   return string.format([[
-
+      <dict>
+        <key>name</key>
+        <string>Comments</string>
+        <key>scope</key>
+        <string>comment</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>{COMMENT_FOREGROUND}</string>
+          <key>background</key>
+          <string>{COMMENT_BACKGROUND}</string>
+        </dict>
+      </dict>
 ]])
 end
 
