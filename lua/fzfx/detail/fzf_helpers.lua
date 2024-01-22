@@ -4,6 +4,7 @@ local strings = require("fzfx.commons.strings")
 local jsons = require("fzfx.commons.jsons")
 local fileios = require("fzfx.commons.fileios")
 local tables = require("fzfx.commons.tables")
+local apis = require("fzfx.commons.apis")
 
 local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
@@ -186,11 +187,11 @@ local function _generate_fzf_color_opts()
   for name, opts in pairs(fzf_colors) do
     for i = 2, #opts do
       local attr = opts[1]
-      local c = termcolors.retrieve(opts[i])
-      if strings.not_empty(c[attr]) then
+      local codes = apis.get_hl(opts[i])
+      if type(codes[attr]) == "number" then
         table.insert(
           builder,
-          string.format("%s:%s", name:gsub("_", "%-"), c[attr])
+          string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr])
         )
         break
       end

@@ -3,6 +3,7 @@ local termcolors = require("fzfx.commons.termcolors")
 local strings = require("fzfx.commons.strings")
 local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
+local apis = require("fzfx.commons.apis")
 
 -- local log = require("fzfx.lib.log")
 
@@ -114,10 +115,10 @@ local _BatTmThemeGlobalRenderer = {}
 --- @param attr "fg"|"bg"
 --- @return fzfx._BatTmThemeGlobalRenderer
 function _BatTmThemeGlobalRenderer:new(hl, tm_key, attr)
-  local hlvalues = termcolors.retrieve(hl)
+  local hlvalues = apis.get_hl(hl)
   local o = {
     key = tm_key,
-    value = attr == "fg" and hlvalues.fg or hlvalues.bg,
+    value = string.format("#%06x", attr == "fg" and hlvalues.fg or hlvalues.bg),
   }
   setmetatable(o, self)
   self.__index = self
@@ -151,12 +152,12 @@ local _BatTmThemeScopeRenderer = {}
 --- @param tm_scope string
 --- @return TmScopeRenderer
 function _BatTmThemeScopeRenderer:new(hl, tm_name, tm_scope)
-  local hlvalues = termcolors.retrieve(hl)
+  local hlvalues = apis.get_hl(hl)
   local o = {
     name = tm_name,
     scope = tm_scope,
-    foreground = hlvalues.fg or nil,
-    background = hlvalues.bg or nil,
+    foreground = hlvalues.fg and string.format("#%06x", hlvalues.fg) or nil,
+    background = hlvalues.bg and string.format("#%06x", hlvalues.bg) or nil,
     bold = hlvalues.bold or nil,
     italic = hlvalues.italic or nil,
   }
@@ -575,9 +576,6 @@ M.calculate_custom_theme = function()
   local hl_caches = {}
 
   local function cached_retrieve(hl)
-    if hl_caches[hl] == nil then
-      hl_caches[hl] = termcolors.retrieve(hl)
-    end
     return hl_caches[hl]
   end
 
