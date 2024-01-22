@@ -12,11 +12,9 @@ local M = {}
 -- cursor window {
 
 --- @param opts fzfx.WindowOpts
---- @return fzfx.NvimFloatWinOpts
 M._make_provider_cursor_opts = function(opts) end
 
 --- @param opts fzfx.WindowOpts
---- @return fzfx.NvimFloatWinOpts
 M._make_previewer_cursor_opts = function(opts) end
 
 -- cursor window }
