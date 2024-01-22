@@ -170,6 +170,9 @@ end
 
 --- @return string
 function _BatTmThemeScopeRenderer:render()
+  if self.empty then
+    return "\n"
+  end
   local builder = {
     "      <dict>",
   }
