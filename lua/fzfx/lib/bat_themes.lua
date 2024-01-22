@@ -329,14 +329,16 @@ local SCOPE_RENDERERS = {
   ),
 
   -- variable
-  _BatTmThemeScopeRenderer:new(
-    { "@function", "Function" },
-    "variable.function"
-  ),
-  _BatTmThemeScopeRenderer:new(
-    { "@parameter", "Identifier" },
-    "variable.parameter"
-  ),
+  _BatTmThemeScopeRenderer:new({
+    "@lsp.type.function",
+    "@function",
+    "Function",
+  }, "variable.function"),
+  _BatTmThemeScopeRenderer:new({
+    "@lsp.type.parameter",
+    "@parameter",
+    "Identifier",
+  }, "variable.parameter"),
 
   -- keyword
   _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword", true),
@@ -349,7 +351,11 @@ local SCOPE_RENDERERS = {
 
   -- storage
   -- _BatTmThemeScopeRenderer:new({"", "StorageClass" }, "storage.type"),
-  _BatTmThemeScopeRenderer:new({ "@type", "Type" }, "storage.type"),
+  _BatTmThemeScopeRenderer:new({
+    "@lsp.type.type",
+    "@type",
+    "Type",
+  }, "storage.type"),
   _BatTmThemeScopeRenderer:new(
     { "@storageclass", "StorageClass" },
     "storage.modifier"
@@ -357,6 +363,7 @@ local SCOPE_RENDERERS = {
 
   -- entity
   _BatTmThemeScopeRenderer:new({
+    "@lsp.type.enum",
     "@structure",
     "Structure",
   }, {
@@ -364,6 +371,7 @@ local SCOPE_RENDERERS = {
     "entity.name.union",
   }),
   _BatTmThemeScopeRenderer:new({
+    "@lsp.type.type",
     "@type.definition",
     "Typedef",
   }, "entity.other.inherited-class"),
@@ -372,6 +380,7 @@ local SCOPE_RENDERERS = {
     "Title",
   }, "entity.name.section"),
   _BatTmThemeScopeRenderer:new({
+    "@lsp.type.function",
     "@function",
     "Function",
   }, "entity.name.function"),
@@ -385,6 +394,7 @@ local SCOPE_RENDERERS = {
 
   -- support
   _BatTmThemeScopeRenderer:new({
+    "@lsp.type.function",
     "@function",
     "Function",
   }, "support.function"),
@@ -393,10 +403,12 @@ local SCOPE_RENDERERS = {
     "Constant",
   }, "support.constant"),
   _BatTmThemeScopeRenderer:new({
+    "@lsp.type.type",
     "@type",
     "Type",
   }, "support.type"),
   _BatTmThemeScopeRenderer:new({
+    "@lsp.type.typeParameter",
     "@type.definition",
     "Typedef",
   }, "support.class"),
