@@ -347,13 +347,11 @@ local SCOPE_RENDERERS = {
   -- variable
   _BatTmThemeScopeRenderer:new(
     { "@function", "Function" },
-    "variable.function",
-    true
+    "variable.function"
   ),
   _BatTmThemeScopeRenderer:new(
     { "@parameter", "Identifier" },
-    "variable.parameter",
-    true
+    "variable.parameter"
   ),
 
   -- keyword
@@ -363,19 +361,14 @@ local SCOPE_RENDERERS = {
     "keyword.control.conditional",
     true
   ),
-  _BatTmThemeScopeRenderer:new(
-    { "@operator", "Operator" },
-    "keyword.operator",
-    true
-  ),
+  _BatTmThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
 
   -- storage
-  -- _BatTmThemeScopeRenderer:new({"", "StorageClass" }, "storage.type", true),
-  _BatTmThemeScopeRenderer:new({ "@type", "Type" }, "storage.type", true),
+  -- _BatTmThemeScopeRenderer:new({"", "StorageClass" }, "storage.type"),
+  _BatTmThemeScopeRenderer:new({ "@type", "Type" }, "storage.type"),
   _BatTmThemeScopeRenderer:new(
     { "@storageclass", "StorageClass" },
-    "storage.modifier",
-    true
+    "storage.modifier"
   ),
 
   -- entity
@@ -385,44 +378,44 @@ local SCOPE_RENDERERS = {
   }, {
     "entity.name.enum",
     "entity.name.union",
-  }, true),
+  }),
   _BatTmThemeScopeRenderer:new({
     "@type.definition",
     "Typedef",
-  }, "entity.other.inherited-class", true),
+  }, "entity.other.inherited-class"),
   _BatTmThemeScopeRenderer:new({
     "@text.title",
     "Title",
-  }, "entity.name.section", true),
+  }, "entity.name.section"),
   _BatTmThemeScopeRenderer:new({
     "@function",
     "Function",
-  }, "entity.name.function", true),
+  }, "entity.name.function"),
   _BatTmThemeScopeRenderer:new({
     "@label",
     "Label",
-  }, "entity.name.label", true),
+  }, "entity.name.label"),
   _BatTmThemeScopeRenderer:new({
     "htmlTag",
-  }, "entity.name.tag", true),
+  }, "entity.name.tag"),
 
   -- support
   _BatTmThemeScopeRenderer:new({
     "@function",
     "Function",
-  }, "support.function", true),
+  }, "support.function"),
   _BatTmThemeScopeRenderer:new({
     "@constant",
     "Constant",
-  }, "support.constant", true),
+  }, "support.constant"),
   _BatTmThemeScopeRenderer:new({
     "@type",
     "Type",
-  }, "support.type", true),
+  }, "support.type"),
   _BatTmThemeScopeRenderer:new({
     "@type.definition",
     "Typedef",
-  }, "support.class", true),
+  }, "support.class"),
 
   -- invalid
   _BatTmThemeScopeRenderer:new({
