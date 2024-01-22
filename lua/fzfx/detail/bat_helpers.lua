@@ -47,7 +47,7 @@ end
 M.setup = function()
   M.build_custom_theme()
   vim.api.nvim_create_autocmd(
-    { "ColorScheme", "BufEnter", "BufReadPost" },
+    { "ColorScheme" },
     { callback = M.build_custom_theme }
   )
 end
