@@ -157,7 +157,6 @@ local _BatTmThemeScopeRenderer = {}
 
 --- @param hl string
 --- @param tm_scope string|string[]
---- @param fallback string
 --- @return fzfx._BatTmThemeScopeRenderer
 function _BatTmThemeScopeRenderer:new(hl, tm_scope)
   local values = apis.get_hl(hl)
