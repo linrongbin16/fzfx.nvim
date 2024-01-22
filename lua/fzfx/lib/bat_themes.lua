@@ -302,46 +302,30 @@ local GLOBAL_RENDERERS = {
 
 local SCOPE_RENDERERS = {
   -- comment
-  _BatTmThemeScopeRenderer:new({ "@comment", "Comment" }, "comment", true),
+  _BatTmThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
 
   -- constant
-  _BatTmThemeScopeRenderer:new({ "@constant", "Constant" }, "constant", true),
-  _BatTmThemeScopeRenderer:new(
-    { "@number", "Number" },
-    "constant.numeric",
-    true
-  ),
-  _BatTmThemeScopeRenderer:new(
-    { "@float", "Float" },
-    "constant.numeric.float",
-    true
-  ),
-  _BatTmThemeScopeRenderer:new(
-    { "@boolean", "Boolean" },
-    "constant.language",
-    true
-  ),
+  _BatTmThemeScopeRenderer:new({ "@constant", "Constant" }, "constant"),
+  _BatTmThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
+  _BatTmThemeScopeRenderer:new({ "@float", "Float" }, "constant.numeric.float"),
+  _BatTmThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
   _BatTmThemeScopeRenderer:new(
     { "@character", "Character" },
-    { "constant.character", "constant.other" },
-    true
+    { "constant.character", "constant.other" }
   ),
   _BatTmThemeScopeRenderer:new(
     { "@string.escape", "SpecialChar" },
-    { "constant.character.escaped", "constant.character.escape" },
-    true
+    { "constant.character.escaped", "constant.character.escape" }
   ),
 
   -- string
   _BatTmThemeScopeRenderer:new(
     { "@string", "String" },
-    { "string", "string.quoted" },
-    true
+    { "string", "string.quoted" }
   ),
   _BatTmThemeScopeRenderer:new(
     { "DiagnosticWarn", "LspDiagnosticsDefaultWarning", "WarningMsg" },
-    { "string.regexp" },
-    true
+    { "string.regexp" }
   ),
 
   -- variable
