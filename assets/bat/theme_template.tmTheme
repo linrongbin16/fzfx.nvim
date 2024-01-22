@@ -3,14 +3,11 @@
 <plist version="1.0">
   <dict>
     <key>author</key>
-    <string
-      >Template: Chris Kempson, Scheme: Chris Kempson
-      (http://chriskempson.com)</string
-    >
+    <string>Lin Rongbin(linrongbin16@outlook.com)</string>
     <key>name</key>
-    <string>Base16 Default Dark</string>
+    <string>{NAME}</string>
     <key>semanticClass</key>
-    <string>theme.base16.default-dark</string>
+    <string>{NAME}</string>
     <key>colorSpaceName</key>
     <string>sRGB</string>
 
