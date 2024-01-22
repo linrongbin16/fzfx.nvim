@@ -302,27 +302,24 @@ local GLOBAL_RENDERERS = {
 
 local SCOPE_RENDERERS = {
   -- comment
-  _BatTmThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
+  _BatTmThemeScopeRenderer:new({ "Comment" }, "comment"),
 
   -- constant
-  _BatTmThemeScopeRenderer:new({ "@constant", "Constant" }, "constant"),
-  _BatTmThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
-  _BatTmThemeScopeRenderer:new({ "@float", "Float" }, "constant.numeric.float"),
-  _BatTmThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
+  _BatTmThemeScopeRenderer:new({ "Constant" }, "constant"),
+  _BatTmThemeScopeRenderer:new({ "Number" }, "constant.numeric"),
+  _BatTmThemeScopeRenderer:new({ "Float" }, "constant.numeric.float"),
+  _BatTmThemeScopeRenderer:new({ "Boolean" }, "constant.language"),
   _BatTmThemeScopeRenderer:new(
-    { "@character", "Character" },
+    { "Character" },
     { "constant.character", "constant.other" }
   ),
   _BatTmThemeScopeRenderer:new(
-    { "@string.escape", "SpecialChar" },
+    { "SpecialChar" },
     { "constant.character.escaped", "constant.character.escape" }
   ),
 
   -- string
-  _BatTmThemeScopeRenderer:new(
-    { "@string", "String" },
-    { "string", "string.quoted" }
-  ),
+  _BatTmThemeScopeRenderer:new({ "String" }, { "string", "string.quoted" }),
   _BatTmThemeScopeRenderer:new(
     { "DiagnosticWarn", "LspDiagnosticsDefaultWarning", "WarningMsg" },
     { "string.regexp" }
@@ -330,62 +327,45 @@ local SCOPE_RENDERERS = {
 
   -- variable
   _BatTmThemeScopeRenderer:new({
-    "@lsp.type.function",
-    "@function",
     "Function",
   }, "variable.function"),
   _BatTmThemeScopeRenderer:new({
-    "@lsp.type.parameter",
-    "@parameter",
     "Identifier",
   }, "variable.parameter"),
 
   -- keyword
-  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword", true),
+  _BatTmThemeScopeRenderer:new({ "Keyword" }, "keyword", true),
   _BatTmThemeScopeRenderer:new(
-    { "@conditional", "Conditional" },
+    { "Conditional" },
     "keyword.control.conditional",
     true
   ),
-  _BatTmThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+  _BatTmThemeScopeRenderer:new({ "Operator" }, "keyword.operator"),
 
   -- storage
   -- _BatTmThemeScopeRenderer:new({"", "StorageClass" }, "storage.type"),
   _BatTmThemeScopeRenderer:new({
-    "@lsp.type.type",
-    "@type",
     "Type",
   }, "storage.type"),
-  _BatTmThemeScopeRenderer:new(
-    { "@storageclass", "StorageClass" },
-    "storage.modifier"
-  ),
+  _BatTmThemeScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
 
   -- entity
   _BatTmThemeScopeRenderer:new({
-    "@lsp.type.enum",
-    "@structure",
     "Structure",
   }, {
     "entity.name.enum",
     "entity.name.union",
   }),
   _BatTmThemeScopeRenderer:new({
-    "@lsp.type.type",
-    "@type.definition",
     "Typedef",
   }, "entity.other.inherited-class"),
   _BatTmThemeScopeRenderer:new({
-    "@text.title",
     "Title",
   }, "entity.name.section"),
   _BatTmThemeScopeRenderer:new({
-    "@lsp.type.function",
-    "@function",
     "Function",
   }, "entity.name.function"),
   _BatTmThemeScopeRenderer:new({
-    "@label",
     "Label",
   }, "entity.name.label"),
   _BatTmThemeScopeRenderer:new({
@@ -394,22 +374,15 @@ local SCOPE_RENDERERS = {
 
   -- support
   _BatTmThemeScopeRenderer:new({
-    "@lsp.type.function",
-    "@function",
     "Function",
   }, "support.function"),
   _BatTmThemeScopeRenderer:new({
-    "@constant",
     "Constant",
   }, "support.constant"),
   _BatTmThemeScopeRenderer:new({
-    "@lsp.type.type",
-    "@type",
     "Type",
   }, "support.type"),
   _BatTmThemeScopeRenderer:new({
-    "@lsp.type.typeParameter",
-    "@type.definition",
     "Typedef",
   }, "support.class"),
 
@@ -420,7 +393,6 @@ local SCOPE_RENDERERS = {
 
   -- markup
   _BatTmThemeScopeRenderer:new({
-    "@text.title",
     "Title",
   }, "markup.heading"),
   _BatTmThemeScopeRenderer:new(
