@@ -107,16 +107,14 @@ end
 -- renderer for tmTheme globals
 --- @class fzfx._BatTmThemeGlobalRenderer
 --- @field key string
---- @field value string?
---- @field fallback string
+--- @field value string
 local _BatTmThemeGlobalRenderer = {}
 
 --- @param hl string
 --- @param tm_key string
 --- @param attr "fg"|"bg"
---- @param fallback string
 --- @return fzfx._BatTmThemeGlobalRenderer
-function _BatTmThemeGlobalRenderer:new(hl, tm_key, attr, fallback)
+function _BatTmThemeGlobalRenderer:new(hl, tm_key, attr)
   local values = apis.get_hl(hl)
   local fg = type(values.fg) == "number" and string.format("#%06x", values.fg)
     or nil
@@ -125,7 +123,6 @@ function _BatTmThemeGlobalRenderer:new(hl, tm_key, attr, fallback)
   local o = {
     key = tm_key,
     value = attr == "fg" and fg or bg,
-    fallback = fallback,
   }
   setmetatable(o, self)
   self.__index = self
@@ -140,7 +137,7 @@ function _BatTmThemeGlobalRenderer:render()
           <string>%s</string>
 ]],
     self.key,
-    self.value or self.fallback
+    self.value
   )
 end
 
@@ -632,8 +629,7 @@ local COLOR_CONFIGS = {
   },
 }
 
-local VIM_COLOR_CONFIGS = {
-  -- global
+local GLOBAL_CONFIGS = {
   ["Normal"] = {},
   BACKGROUND = {
     group = "Normal",
@@ -700,303 +696,9 @@ local VIM_COLOR_CONFIGS = {
     attr = "fg",
     default = BASE16_COLORS.white,
   },
-
-  -- comment
-  COMMENT_FOREGROUND = {
-    group = "Comment",
-    attr = "fg",
-    default = BASE16_COLORS.grey,
-  },
-  COMMENT_BACKGROUND = {
-    group = "Comment",
-    attr = "bg",
-    default = BASE16_COLORS.black,
-  },
-
-  -- constant
-  CONSTANT_NUMERIC_FOREGROUND = {
-    group = { "Number" },
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
-  CONSTANT_NUMERIC_FLOAT_FOREGROUND = {
-    group = { "Float", "Number" },
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
-  CONSTANT_LANGUAGE_FOREGROUND = {
-    group = { "Boolean" },
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
-  CONSTANT_CHARACTER_ESCAPE_FOREGROUND = {
-    group = { "SpecialChar", "Constant" },
-    attr = "fg",
-    default = BASE16_COLORS.magenta,
-  },
-  CONSTANT_CHARACTER_OTHER_FOREGROUND = {
-    group = "Character",
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
-
-  -- string
-  STRING_FOREGROUND = {
-    group = "String",
-    attr = "fg",
-    default = BASE16_COLORS.green,
-  },
-  STRING_REGEXP_FOREGROUND = {
-    group = {
-      "rubyRegexp",
-      "rubyRegexpDelimiter",
-      "DiagnosticWarn",
-      "LspDiagnosticsDefaultWarning",
-      "WarningMsg",
-    },
-    attr = "fg",
-    default = BASE16_COLORS.red,
-  },
-  RUBY_STRING_REGEXP_FOREGROUND = {
-    group = {
-      "rubyRegexp",
-      "rubyRegexpDelimiter",
-      "DiagnosticWarn",
-      "LspDiagnosticsDefaultWarning",
-      "WarningMsg",
-    },
-    attr = "fg",
-    default = BASE16_COLORS.red,
-  },
-  STRING_INTERPOLATION_FOREGROUND = {
-    group = { "Boolean" },
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
-
-  -- variable
-  VARIABLE_FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  VARIABLE_LANGUAGE_FOREGROUND = {
-    group = {
-      "@variable.builtin",
-      "ErrorMsg",
-    },
-    attr = "fg",
-    default = BASE16_COLORS.red,
-  },
-  VARIABLE_FUNCTION_FOREGROUND = {
-    group = "Function",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  VARIABLE_PARAMETER_FOREGROUND = {
-    group = { "@parameter", "Normal" },
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  VARIABLE_OTHER_FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  -- VARIABLE_OTHER_CONSTANT_FOREGROUND = {
-  --   group = "Boolean",
-  --   attr = "fg",
-  --   default = BASE16_COLORS.yellow,
-  -- },
-  VARIABLE_OTHER_READWRITE_INSTANCE_FOREGROUND = {
-    group = {
-      "DiagnosticSignWarn",
-      "LspDiagnosticsSignWarn",
-      "WarningMsg",
-    },
-    attr = "fg",
-    default = BASE16_COLORS.red,
-  },
-
-  -- keyword
-  KEYWORDS_FOREGROUND = {
-    group = "Define",
-    attr = "fg",
-    default = BASE16_COLORS.magenta,
-  },
-  KEYWORD_CONTROL_FOREGROUND = {
-    group = { "Conditional" },
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  KEYWORD_OPERATOR_FOREGROUND = {
-    group = "Operator",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  KEYWORD_OTHER_FOREGROUND = {
-    group = "PreProc",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-
-  -- storage
-  STORAGE_FOREGROUND = {
-    group = { "Boolean" },
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
-  STORAGE_TYPE_FOREGROUND = {
-    group = { "Identifier", "StorageClass" },
-    attr = "fg",
-    default = BASE16_COLORS.magenta,
-  },
-
-  -- entity
-  ENTITY_NAME_FOREGROUND = {
-    group = "Pmenu",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  ENTITY_NAME_CLASS_FOREGROUND = {
-    group = "Type",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  EENTITY_OTHER_INHERITED_CLASS_FOREGROUND = {
-    group = { "Tag", "Type" },
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  ENTITY_NAME_FUNCTION_FOREGROUND = {
-    group = "Function",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  ENTITY_NAME_LABEL_FOREGROUND = {
-    group = "Label",
-    attr = "fg",
-    default = BASE16_COLORS.orange,
-  },
-  ENTITY_NAME_TAG_FOREGROUND = {
-    group = { "Tag" },
-    attr = "fg",
-    default = BASE16_COLORS.orange,
-  },
-  ENTITY_OTHER_ATTRIBUTE_NAME_FOREGROUND = {
-    group = { "Tag" },
-    attr = "fg",
-    default = BASE16_COLORS.orange,
-  },
-
-  -- support
-  SUPPORT_FUNCTION_FOREGROUND = {
-    group = { "Function" },
-    attr = "fg",
-    default = "#86c1b9",
-  },
-  SUPPORT_CONSTANT_FOREGROUND = {
-    group = "Constant",
-    attr = "fg",
-    default = "#dc9656",
-  },
-  SUPPORT_TYPE_AND_CLASS_FOREGROUND = {
-    group = "Type",
-    attr = "fg",
-    default = "#7cafc2",
-  },
-  SUPPORT_OTHER_NAMESPACE_FOREGROUND = {
-    group = {
-      "SpecialComment",
-      "DiagnosticSignInfo",
-      "LspDiagnosticsSignInfo",
-      "Tag",
-    },
-    attr = "fg",
-    default = "#7cafc2",
-  },
-
-  FUNCTIONS_FOREGROUND = {
-    group = "Function",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  META_PATH_FOREGROUND = {
-    group = "helpHyperTextJump",
-    attr = "fg",
-    default = "#7cafc2",
-  },
-  INVALID_BACKGROUND = {
-    group = { "Exception", "Error" },
-    attr = "bg",
-    default = "#ab4642",
-  },
-  INVALID_FOREGROUND = {
-    group = { "Exception", "Error" },
-    attr = "fg",
-    default = "#ab4642",
-  },
-  INVALID_DEPRECATED_BACKGROUND = {
-    group = { "Directory", "helpCommand" },
-    attr = "bg",
-    default = "#a16946",
-  },
-  INVALID_DEPRECATED_FOREGROUND = {
-    group = { "Directory", "helpCommand" },
-    attr = "fg",
-    default = "#f8f8f8",
-  },
-  DIFF_HEADER_FOREGROUND = {
-    group = { "LineNr", "SignColumn", "Comment" },
-    attr = "fg",
-    default = "#585858",
-  },
-  MARKUP_DELETED_FOREGROUND = {
-    group = { "GitSignsDelete", "GitGutterDelete", "DiffDelete", "DiffRemoved" },
-    attr = "fg",
-    default = "#ab4642",
-  },
-  MARKUP_INSERTED_FOREGROUND = {
-    group = { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded" },
-    attr = "fg",
-    default = "#a1b56c",
-  },
-  MARKUP_CHANGED_FOREGROUND = {
-    group = { "GitGutterChange", "GitSignsChange", "DiffChange" },
-    attr = "fg",
-    default = "#ba8baf",
-  },
-  ENTITY_NAME_FILENAME_FOREGROUND = {
-    group = { "Directory", "Tag" },
-    attr = "fg",
-    default = "#a1b56c",
-  },
-  PUNCTUATION_ACCESSOR_FOREGROUND = {
-    group = { "SpecialKey", "Character", "Special" },
-    attr = "fg",
-    default = "#ba8baf",
-  },
-  META_FUNCTION_RETURN_TYPE_FOREGROUND = {
-    group = { "PreProc", "Macro", "Special" },
-    attr = "fg",
-    default = "#ba8baf",
-  },
-  PUNCTUATION_SECTION_BLOCK_BEGIN_FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = "#d8d8d8",
-  },
-  PUNCTUATION_SECTION_BLOCK_END_FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = "#d8d8d8",
-  },
-  META_CLASS_FOREGROUND = {
-    group = "Type",
-    attr = "fg",
-    default = "#f8f8f8",
-  },
 }
+
+local SCOPE_CONFIGS = {}
 
 --- @return {name:string,payload:string}?
 M.calculate_custom_theme = function()
