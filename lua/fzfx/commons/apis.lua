@@ -67,15 +67,22 @@ end
 --- @return {fg:integer?,bg:integer?,ctermfg:integer?,ctermbg:integer?}
 M.get_hl = function(hl)
   if NVIM_VERSION_0_9 then
-    return vim.api.nvim_get_hl(0, { name = hl })
+    return vim.api.nvim_get_hl(0, { name = hl, link = false })
   else
     local rgb_hldef = vim.api.nvim_get_hl_by_name(hl, true)
     local cterm_hldef = vim.api.nvim_get_hl_by_name(hl, false)
-    return vim.tbl_deep_extend("force", rgb_hldef, {
+    local result = vim.tbl_deep_extend("force", rgb_hldef, {
       ctermfg = cterm_hldef.foreground,
       ctermbg = cterm_hldef.background,
       cterm = cterm_hldef,
     })
+    result.cterm.foreground = nil
+    result.cterm.background = nil
+    result.sp = result.special
+    result.special = nil
+    result.cterm.sp = result.cterm.special
+    result.cterm.special = nil
+    return result
   end
 end
 
