@@ -149,13 +149,11 @@ end
 local _BatTmThemeScopeRenderer = {}
 
 --- @param hl string
---- @param tm_name string
 --- @param tm_scope string|string[]
 --- @return fzfx._BatTmThemeScopeRenderer
-function _BatTmThemeScopeRenderer:new(hl, tm_name, tm_scope)
+function _BatTmThemeScopeRenderer:new(hl, tm_scope)
   local values = apis.get_hl(hl)
   local o = {
-    name = tm_name,
     scope = tm_scope,
     foreground = values.fg and string.format("#%06x", values.fg) or nil,
     background = values.bg and string.format("#%06x", values.bg) or nil,
@@ -176,12 +174,13 @@ function _BatTmThemeScopeRenderer:render()
   local builder = {
     "      <dict>",
   }
+  local name = type(self.scope) == "table" and self.scope[1] or self.scope
   table.insert(
     builder,
     string.format(
       [[        <key>name</key>
         <string>%s</string>]],
-      self.name
+      name
     )
   )
   table.insert(
