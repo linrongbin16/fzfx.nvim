@@ -21,14 +21,7 @@
         <!-- basic settings { -->
         <key>settings</key>
         <dict>
-          <key>background</key>
-          <string>{BACKGROUND}</string>
-          <key>caret</key>
-          <string>{CARET}</string>
-          <key>block_caret</key>
-          <string>{BLOCK_CARET}</string>
-          <key>foreground</key>
-          <string>{FOREGROUND}</string>
+          {GLOBALS}
           <key>invisibles</key>
           <string>{INVISIBLES}</string>
           <key>lineHighlight</key>

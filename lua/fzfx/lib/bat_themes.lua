@@ -108,6 +108,7 @@ end
 --- @class fzfx._BatTmThemeGlobalRenderer
 --- @field key string
 --- @field value string
+--- @field empty boolean
 local _BatTmThemeGlobalRenderer = {}
 
 --- @param hl string
@@ -123,6 +124,7 @@ function _BatTmThemeGlobalRenderer:new(hl, tm_key, attr)
   local o = {
     key = tm_key,
     value = attr == "fg" and fg or bg,
+    empty = tables.tbl_empty(values),
   }
   setmetatable(o, self)
   self.__index = self
@@ -131,14 +133,14 @@ end
 
 --- @return string
 function _BatTmThemeGlobalRenderer:render()
-  return string.format(
-    [[
-          <key>%s</key>
-          <string>%s</string>
-]],
-    self.key,
-    self.value
-  )
+  if self.empty then
+    return "\n"
+  end
+  local builder = {
+    string.format("\n          <key>%s</key>", self.key),
+    string.format("          <string>%s</string>", self.value),
+  }
+  return table.concat(builder, "\n")
 end
 
 -- renderer for tmTheme scope
@@ -630,27 +632,11 @@ local COLOR_CONFIGS = {
 }
 
 local GLOBAL_CONFIGS = {
-  ["Normal"] = _BatTmThemeGlobalRenderer:new("Normal", "background", "bg"),
-  BACKGROUND = {
-    group = "Normal",
-    attr = "bg",
-    default = BASE16_COLORS.black,
-  },
-  FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  CARET = {
-    group = "Cursor",
-    attr = "bg",
-    default = BASE16_COLORS.white,
-  },
-  BLOCK_CARET = {
-    group = "Cursor",
-    attr = "bg",
-    default = BASE16_COLORS.white,
-  },
+  _BatTmThemeGlobalRenderer:new("Normal", "background", "bg"),
+  _BatTmThemeGlobalRenderer:new("Normal", "foreground", "fg"),
+  _BatTmThemeGlobalRenderer:new("Cursor", "caret", "bg"),
+  _BatTmThemeGlobalRenderer:new("Cursor", "block_caret", "bg"),
+  _BatTmThemeGlobalRenderer:new("NonText", "block_caret", "bg"),
   INVISIBLES = {
     group = "NonText",
     attr = "bg",
