@@ -137,7 +137,7 @@ function _BatTmThemeGlobalRenderer:render()
     return "\n"
   end
   local builder = {
-    string.format("\n          <key>%s</key>", self.key),
+    string.format("          <key>%s</key>", self.key),
     string.format("          <string>%s</string>", self.value),
   }
   return table.concat(builder, "\n")
@@ -200,7 +200,7 @@ function _BatTmThemeScopeRenderer:render()
     return "\n"
   end
   local builder = {
-    "\n      <dict>",
+    "      <dict>",
   }
   local name = type(self.scope) == "table" and self.scope[1] or self.scope --[[@as string]]
   table.insert(
