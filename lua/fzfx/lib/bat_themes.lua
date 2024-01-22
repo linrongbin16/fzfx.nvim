@@ -630,7 +630,7 @@ local COLOR_CONFIGS = {
 }
 
 local GLOBAL_CONFIGS = {
-  ["Normal"] = {},
+  ["Normal"] = _BatTmThemeGlobalRenderer:new("Normal", "background", "bg"),
   BACKGROUND = {
     group = "Normal",
     attr = "bg",
