@@ -357,19 +357,18 @@ local SCOPE_RENDERERS = {
   -- markup
   _BatTmThemeScopeRenderer:new({ "Title" }, "markup.heading"),
   _BatTmThemeScopeRenderer:new(
-    { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded" },
+    { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded", "Added" },
     "markup.inserted"
   ),
+  _BatTmThemeScopeRenderer:new({
+    "GitSignsDelete",
+    "GitGutterDelete",
+    "DiffDelete",
+    "DiffRemoved",
+    "Removed",
+  }, "markup.deleted"),
   _BatTmThemeScopeRenderer:new(
-    { "GitSignsDelete", "GitGutterDelete", "DiffDelete", "DiffRemoved" },
-    "markup.deleted"
-  ),
-  _BatTmThemeScopeRenderer:new(
-    { "GitSignsDelete", "GitGutterDelete", "DiffDelete", "DiffRemoved" },
-    "markup.deleted"
-  ),
-  _BatTmThemeScopeRenderer:new(
-    { "GitGutterChange", "GitSignsChange", "DiffChange" },
+    { "GitGutterChange", "GitSignsChange", "DiffChange", "Changed" },
     "diff.changed"
   ),
 }
