@@ -292,7 +292,7 @@ local GLOBAL_RENDERERS = {
 
 local SCOPE_RENDERERS = {
   -- comment
-  _BatTmThemeScopeRenderer:new("Comment", "comment_foreground", true),
+  _BatTmThemeScopeRenderer:new("Comment", "comment", true),
 
   -- constant
   _BatTmThemeScopeRenderer:new("Constant", "constant", true),
