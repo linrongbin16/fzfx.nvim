@@ -152,14 +152,14 @@ local _BatTmThemeScopeRenderer = {}
 --- @param tm_scope string
 --- @return fzfx._BatTmThemeScopeRenderer
 function _BatTmThemeScopeRenderer:new(hl, tm_name, tm_scope)
-  local hlvalues = apis.get_hl(hl)
+  local values = apis.get_hl(hl)
   local o = {
     name = tm_name,
     scope = tm_scope,
-    foreground = hlvalues.fg and string.format("#%06x", hlvalues.fg) or nil,
-    background = hlvalues.bg and string.format("#%06x", hlvalues.bg) or nil,
-    bold = hlvalues.bold or nil,
-    italic = hlvalues.italic or nil,
+    foreground = values.fg and string.format("#%06x", values.fg) or nil,
+    background = values.bg and string.format("#%06x", values.bg) or nil,
+    bold = values.bold or nil,
+    italic = values.italic or nil,
   }
   setmetatable(o, self)
   self.__index = self
