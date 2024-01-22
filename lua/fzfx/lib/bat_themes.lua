@@ -115,10 +115,10 @@ local _BatTmThemeGlobalRenderer = {}
 --- @param attr "fg"|"bg"
 --- @return fzfx._BatTmThemeGlobalRenderer
 function _BatTmThemeGlobalRenderer:new(hl, tm_key, attr)
-  local hlvalues = apis.get_hl(hl)
+  local values = apis.get_hl(hl)
   local o = {
     key = tm_key,
-    value = string.format("#%06x", attr == "fg" and hlvalues.fg or hlvalues.bg),
+    value = string.format("#%06x", attr == "fg" and values.fg or values.bg),
   }
   setmetatable(o, self)
   self.__index = self
@@ -150,7 +150,7 @@ local _BatTmThemeScopeRenderer = {}
 --- @param hl string
 --- @param tm_name string
 --- @param tm_scope string
---- @return TmScopeRenderer
+--- @return fzfx._BatTmThemeScopeRenderer
 function _BatTmThemeScopeRenderer:new(hl, tm_name, tm_scope)
   local hlvalues = apis.get_hl(hl)
   local o = {
