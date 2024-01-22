@@ -663,30 +663,22 @@ local SCOPE_CONFIGS = {
 
   -- constant
   _BatTmThemeScopeRenderer:new("Constant", "constant", true),
-  -- constant.numeric
   _BatTmThemeScopeRenderer:new("Number", "constant.numeric", true),
-  -- constant.numeric.float
   _BatTmThemeScopeRenderer:new("Float", "constant.numeric.float", true),
-
-  -- -- constant.language
   -- _BatTmThemeScopeRenderer:new("Boolean", "constant.language", true),
-
-  -- constant.character, constant.other
   _BatTmThemeScopeRenderer:new(
     "Character",
     { "constant.character", "constant.other" },
     true
   ),
-  -- constant.character.escaped, constant.character.escape
   _BatTmThemeScopeRenderer:new(
     "SpecialChar",
     { "constant.character.escaped", "constant.character.escape" },
     true
   ),
 
-  -- string, string.quoted
+  -- string
   _BatTmThemeScopeRenderer:new("String", { "string", "string.quoted" }, true),
-  -- string.regexp
   _BatTmThemeScopeRenderer:new(
     { "DiagnosticWarn", "LspDiagnosticsDefaultWarning", "WarningMsg" },
     { "string.regexp" },
@@ -710,149 +702,43 @@ local SCOPE_CONFIGS = {
   _BatTmThemeScopeRenderer:new("StorageClass", "storage.modifier", true),
 
   -- entity
-  ENTITY_NAME_FOREGROUND = {
-    group = "Pmenu",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  ENTITY_NAME_CLASS_FOREGROUND = {
-    group = "Type",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  EENTITY_OTHER_INHERITED_CLASS_FOREGROUND = {
-    group = { "Tag", "Type" },
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  ENTITY_NAME_FUNCTION_FOREGROUND = {
-    group = "Function",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  ENTITY_NAME_LABEL_FOREGROUND = {
-    group = "Label",
-    attr = "fg",
-    default = BASE16_COLORS.orange,
-  },
-  ENTITY_NAME_TAG_FOREGROUND = {
-    group = { "Tag" },
-    attr = "fg",
-    default = BASE16_COLORS.orange,
-  },
-  ENTITY_OTHER_ATTRIBUTE_NAME_FOREGROUND = {
-    group = { "Tag" },
-    attr = "fg",
-    default = BASE16_COLORS.orange,
-  },
+  _BatTmThemeScopeRenderer:new("Structure", {
+    "entity.name.enum",
+    "entity.name.union",
+  }, true),
+  _BatTmThemeScopeRenderer:new("Typedef", "entity.other.inherited-class", true),
+  _BatTmThemeScopeRenderer:new("Title", "entity.name.section", true),
+  _BatTmThemeScopeRenderer:new("Function", "entity.name.function", true),
+  _BatTmThemeScopeRenderer:new("Label", "entity.name.label", true),
+  _BatTmThemeScopeRenderer:new("htmlTag", "entity.name.tag", true),
 
   -- support
-  SUPPORT_FUNCTION_FOREGROUND = {
-    group = { "Function" },
-    attr = "fg",
-    default = "#86c1b9",
-  },
-  SUPPORT_CONSTANT_FOREGROUND = {
-    group = "Constant",
-    attr = "fg",
-    default = "#dc9656",
-  },
-  SUPPORT_TYPE_AND_CLASS_FOREGROUND = {
-    group = "Type",
-    attr = "fg",
-    default = "#7cafc2",
-  },
-  SUPPORT_OTHER_NAMESPACE_FOREGROUND = {
-    group = {
-      "SpecialComment",
-      "DiagnosticSignInfo",
-      "LspDiagnosticsSignInfo",
-      "Tag",
-    },
-    attr = "fg",
-    default = "#7cafc2",
-  },
+  _BatTmThemeScopeRenderer:new("Function", "support.function", true),
+  _BatTmThemeScopeRenderer:new("Constant", "support.constant", true),
+  _BatTmThemeScopeRenderer:new("Type", "support.type", true),
+  _BatTmThemeScopeRenderer:new("Typedef", "support.class", true),
 
-  FUNCTIONS_FOREGROUND = {
-    group = "Function",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  META_PATH_FOREGROUND = {
-    group = "helpHyperTextJump",
-    attr = "fg",
-    default = "#7cafc2",
-  },
-  INVALID_BACKGROUND = {
-    group = { "Exception", "Error" },
-    attr = "bg",
-    default = "#ab4642",
-  },
-  INVALID_FOREGROUND = {
-    group = { "Exception", "Error" },
-    attr = "fg",
-    default = "#ab4642",
-  },
-  INVALID_DEPRECATED_BACKGROUND = {
-    group = { "Directory", "helpCommand" },
-    attr = "bg",
-    default = "#a16946",
-  },
-  INVALID_DEPRECATED_FOREGROUND = {
-    group = { "Directory", "helpCommand" },
-    attr = "fg",
-    default = "#f8f8f8",
-  },
-  DIFF_HEADER_FOREGROUND = {
-    group = { "LineNr", "SignColumn", "Comment" },
-    attr = "fg",
-    default = "#585858",
-  },
-  MARKUP_DELETED_FOREGROUND = {
-    group = { "GitSignsDelete", "GitGutterDelete", "DiffDelete", "DiffRemoved" },
-    attr = "fg",
-    default = "#ab4642",
-  },
-  MARKUP_INSERTED_FOREGROUND = {
-    group = { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded" },
-    attr = "fg",
-    default = "#a1b56c",
-  },
-  MARKUP_CHANGED_FOREGROUND = {
-    group = { "GitGutterChange", "GitSignsChange", "DiffChange" },
-    attr = "fg",
-    default = "#ba8baf",
-  },
-  ENTITY_NAME_FILENAME_FOREGROUND = {
-    group = { "Directory", "Tag" },
-    attr = "fg",
-    default = "#a1b56c",
-  },
-  PUNCTUATION_ACCESSOR_FOREGROUND = {
-    group = { "SpecialKey", "Character", "Special" },
-    attr = "fg",
-    default = "#ba8baf",
-  },
-  META_FUNCTION_RETURN_TYPE_FOREGROUND = {
-    group = { "PreProc", "Macro", "Special" },
-    attr = "fg",
-    default = "#ba8baf",
-  },
-  PUNCTUATION_SECTION_BLOCK_BEGIN_FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = "#d8d8d8",
-  },
-  PUNCTUATION_SECTION_BLOCK_END_FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = "#d8d8d8",
-  },
-  META_CLASS_FOREGROUND = {
-    group = "Type",
-    attr = "fg",
-    default = "#f8f8f8",
-  },
+  -- invalid
+  _BatTmThemeScopeRenderer:new("Error", "invalid.illegal"),
+
+  -- markup
+  _BatTmThemeScopeRenderer:new({ "htmlTitle", "Title" }, "markup.heading"),
+  _BatTmThemeScopeRenderer:new(
+    { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded" },
+    "markup.inserted"
+  ),
+  _BatTmThemeScopeRenderer:new(
+    { "GitSignsDelete", "GitGutterDelete", "DiffDelete", "DiffRemoved" },
+    "markup.deleted"
+  ),
+  _BatTmThemeScopeRenderer:new(
+    { "GitSignsDelete", "GitGutterDelete", "DiffDelete", "DiffRemoved" },
+    "markup.deleted"
+  ),
+  _BatTmThemeScopeRenderer:new(
+    { "GitGutterChange", "GitSignsChange", "DiffChange" },
+    "diff.changed"
+  ),
 }
 
 --- @return {name:string,payload:string}?
