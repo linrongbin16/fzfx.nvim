@@ -174,13 +174,13 @@ function _BatTmThemeScopeRenderer:render()
   local builder = {
     "      <dict>",
   }
-  local name = type(self.scope) == "table" and self.scope[1] or self.scope
+  local name = type(self.scope) == "table" and self.scope[1] or self.scope --[[@as string]]
   table.insert(
     builder,
     string.format(
       [[        <key>name</key>
         <string>%s</string>]],
-      name
+      table.concat(strings.split(name, ","), " ")
     )
   )
   table.insert(
