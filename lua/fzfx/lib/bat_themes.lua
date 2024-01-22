@@ -160,7 +160,9 @@ local _BatTmThemeScopeRenderer = {}
 --- @param no_background boolean?
 --- @return fzfx._BatTmThemeScopeRenderer
 function _BatTmThemeScopeRenderer:new(hl, tm_scope, no_background)
-  local hls = type(hl) == "table" and hl or { hl } --[[@as string[] ]]
+  local hls = type(hl) == "table" and hl or {
+    hl --[[@as string]],
+  } --[[@as string[] ]]
 
   local values = {}
   for _, h in ipairs(hls) do
