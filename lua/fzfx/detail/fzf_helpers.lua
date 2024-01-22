@@ -443,7 +443,7 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
   return parsed
 end
 
---- @param opts fzfx.Options?
+--- @param opts fzfx.FzfOpt?
 --- @return fzfx.FzfPreviewWindowOpts
 local function parse_fzf_preview_window_opts(opts)
   log.ensure(
@@ -456,7 +456,7 @@ local function parse_fzf_preview_window_opts(opts)
   if type(opts) == "table" then
     split_opts = strings.split(opts[2], ",")
   else
-    local split_opts_value = strings.split(opts, "=")
+    local split_opts_value = strings.split(opts --[[@as string]], "=")
     log.ensure(
       type(split_opts_value) == "table" and #split_opts_value >= 2,
       "invalid fzf opts:%s",
