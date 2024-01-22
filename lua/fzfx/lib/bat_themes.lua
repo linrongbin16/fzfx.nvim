@@ -298,7 +298,7 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new("Constant", "constant", true),
   _BatTmThemeScopeRenderer:new("Number", "constant.numeric", true),
   _BatTmThemeScopeRenderer:new("Float", "constant.numeric.float", true),
-  -- _BatTmThemeScopeRenderer:new("Boolean", "constant.language", true),
+  _BatTmThemeScopeRenderer:new("Boolean", "constant.language", true),
   _BatTmThemeScopeRenderer:new(
     "Character",
     { "constant.character", "constant.other" },
