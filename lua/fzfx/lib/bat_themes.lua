@@ -350,6 +350,11 @@ local SCOPE_RENDERERS = {
     "variable.function",
     true
   ),
+  _BatTmThemeScopeRenderer:new(
+    { "@parameter", "Identifier" },
+    "variable.parameter",
+    true
+  ),
 
   -- keyword
   _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword", true),
