@@ -245,9 +245,9 @@ end
 -- forked from: https://github.com/chriskempson/base16-textmate/blob/0e51ddd568bdbe17189ac2a07eb1c5f55727513e/Themes/base16-default-dark.tmTheme
 local BASE16_COLORS = {
   black = "#181818",
-  darkgrey = "#282828",
   grey_sRGB = "#58585855",
   grey = "#585858",
+  darkgrey = "#282828",
   white = "#d8d8d8",
   yellow = "#dc9656",
   orange = "##a16946",
