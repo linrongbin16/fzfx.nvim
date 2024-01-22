@@ -162,7 +162,7 @@ local _BatTmThemeScopeRenderer = {}
 function _BatTmThemeScopeRenderer:new(hl, tm_scope, no_background)
   local hls = type(hl) == "table" and hl or {
     hl --[[@as string]],
-  } --[[@as string[] ]]
+  }
 
   local values = {}
   for _, h in ipairs(hls) do
@@ -218,7 +218,8 @@ function _BatTmThemeScopeRenderer:render()
     string.format(
       [[        <key>scope</key>
         <string>%s</string>]],
-      type(self.scope) == "table" and table.concat(self.scope, ", ")
+      type(self.scope) == "table"
+          and table.concat(self.scope --[[@as string[] ]], ", ")
         or self.scope
     )
   )
