@@ -16,11 +16,14 @@
       <dict>
         <!-- globals { -->
         <key>settings</key>
-        <dict> {GLOBAL} </dict>
+        <dict>
+          {GLOBAL}
+        </dict>
       </dict>
 
       <!-- scope -->
       {SCOPE}
+
     </array>
     <key>uuid</key>
     <string>uuid</string>
