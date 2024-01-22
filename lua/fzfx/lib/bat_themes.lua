@@ -686,105 +686,28 @@ local SCOPE_CONFIGS = {
 
   -- string, string.quoted
   _BatTmThemeScopeRenderer:new("String", { "string", "string.quoted" }, true),
+  -- string.regexp
   _BatTmThemeScopeRenderer:new(
     { "DiagnosticWarn", "LspDiagnosticsDefaultWarning", "WarningMsg" },
     { "string.regexp" },
     true
   ),
-  RUBY_STRING_REGEXP_FOREGROUND = {
-    group = {
-      "rubyRegexp",
-      "rubyRegexpDelimiter",
-      "DiagnosticWarn",
-      "LspDiagnosticsDefaultWarning",
-      "WarningMsg",
-    },
-    attr = "fg",
-    default = BASE16_COLORS.red,
-  },
-  STRING_INTERPOLATION_FOREGROUND = {
-    group = { "Boolean" },
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
 
   -- variable
-  VARIABLE_FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  VARIABLE_LANGUAGE_FOREGROUND = {
-    group = {
-      "@variable.builtin",
-      "ErrorMsg",
-    },
-    attr = "fg",
-    default = BASE16_COLORS.red,
-  },
-  VARIABLE_FUNCTION_FOREGROUND = {
-    group = "Function",
-    attr = "fg",
-    default = BASE16_COLORS.cyan,
-  },
-  VARIABLE_PARAMETER_FOREGROUND = {
-    group = { "@parameter", "Normal" },
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  VARIABLE_OTHER_FOREGROUND = {
-    group = "Normal",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  -- VARIABLE_OTHER_CONSTANT_FOREGROUND = {
-  --   group = "Boolean",
-  --   attr = "fg",
-  --   default = BASE16_COLORS.yellow,
-  -- },
-  VARIABLE_OTHER_READWRITE_INSTANCE_FOREGROUND = {
-    group = {
-      "DiagnosticSignWarn",
-      "LspDiagnosticsSignWarn",
-      "WarningMsg",
-    },
-    attr = "fg",
-    default = BASE16_COLORS.red,
-  },
+  _BatTmThemeScopeRenderer:new("Function", "variable.function", true),
 
   -- keyword
-  KEYWORDS_FOREGROUND = {
-    group = "Define",
-    attr = "fg",
-    default = BASE16_COLORS.magenta,
-  },
-  KEYWORD_CONTROL_FOREGROUND = {
-    group = { "Conditional" },
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  KEYWORD_OPERATOR_FOREGROUND = {
-    group = "Operator",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
-  KEYWORD_OTHER_FOREGROUND = {
-    group = "PreProc",
-    attr = "fg",
-    default = BASE16_COLORS.white,
-  },
+  _BatTmThemeScopeRenderer:new("Keyword", "keyword", true),
+  _BatTmThemeScopeRenderer:new(
+    "Conditional",
+    "keyword.control.conditional",
+    true
+  ),
+  _BatTmThemeScopeRenderer:new("Operator", "keyword.operator", true),
 
   -- storage
-  STORAGE_FOREGROUND = {
-    group = { "Boolean" },
-    attr = "fg",
-    default = BASE16_COLORS.yellow,
-  },
-  STORAGE_TYPE_FOREGROUND = {
-    group = { "Identifier", "StorageClass" },
-    attr = "fg",
-    default = BASE16_COLORS.magenta,
-  },
+  _BatTmThemeScopeRenderer:new("Type", "storage.type", true),
+  _BatTmThemeScopeRenderer:new("StorageClass", "storage.modifier", true),
 
   -- entity
   ENTITY_NAME_FOREGROUND = {
