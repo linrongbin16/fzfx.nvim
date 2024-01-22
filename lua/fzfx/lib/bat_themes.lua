@@ -116,7 +116,10 @@ local _BatTmThemeGlobalRenderer = {}
 --- @param attr "fg"|"bg"
 --- @return fzfx._BatTmThemeGlobalRenderer
 function _BatTmThemeGlobalRenderer:new(hl, tm_key, attr)
-  local values = apis.get_hl(hl)
+  local ok, values = pcall(apis.get_hl, hl)
+  if not ok then
+    values = {}
+  end
   local fg = type(values.fg) == "number" and string.format("#%06x", values.fg)
     or nil
   local bg = type(values.bg) == "number" and string.format("#%06x", values.bg)
@@ -164,9 +167,13 @@ function _BatTmThemeScopeRenderer:new(hl, tm_scope, no_background)
     hl --[[@as string]],
   }
 
+  local ok
   local values = {}
   for _, h in ipairs(hls) do
-    values = apis.get_hl(h)
+    ok, values = pcall(apis.get_hl, h)
+    if not ok then
+      values = {}
+    end
     if tables.tbl_not_empty(values) then
       break
     end
