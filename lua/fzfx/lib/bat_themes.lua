@@ -341,7 +341,8 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new("Operator", "keyword.operator", true),
 
   -- storage
-  _BatTmThemeScopeRenderer:new("Type", "storage.type", true),
+  _BatTmThemeScopeRenderer:new("StorageClass", "storage.type", true),
+  -- _BatTmThemeScopeRenderer:new("Type", "storage.type", true),
   _BatTmThemeScopeRenderer:new("StorageClass", "storage.modifier", true),
 
   -- entity
