@@ -284,7 +284,7 @@ local GLOBAL_RENDERERS = {
   _BatTmThemeGlobalRenderer:new("Cursor", "caret", "bg"),
   _BatTmThemeGlobalRenderer:new("Cursor", "block_caret", "bg"),
   _BatTmThemeGlobalRenderer:new("NonText", "invisibles", "fg"),
-  _BatTmThemeGlobalRenderer:new("CursorLine", "line_highlight", "bg"),
+  _BatTmThemeGlobalRenderer:new("CursorLine", "lineHighlight", "bg"),
   _BatTmThemeGlobalRenderer:new("LineNr", "gutter", "bg"),
   _BatTmThemeGlobalRenderer:new("LineNr", "gutter_foreground", "fg"),
   _BatTmThemeGlobalRenderer:new("Visual", "selection", "bg"),
