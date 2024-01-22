@@ -1126,7 +1126,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       vim.api.nvim_buf_set_lines(
                         previewer_bufnr,
                         0,
-                        win_height - 1,
+                        #last_lines_item.lines,
                         false,
                         last_lines_item.lines
                       )
