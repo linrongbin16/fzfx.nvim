@@ -332,6 +332,9 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new({
     "Identifier",
   }, { "variable.parameter" }),
+  -- _BatTmThemeScopeRenderer:new({
+  --   "Identifier",
+  -- }, { "variable.other.member" }),
 
   -- keyword
   _BatTmThemeScopeRenderer:new({ "Keyword" }, "keyword", true),
@@ -413,6 +416,9 @@ local SCOPE_RENDERERS = {
   ),
 
   -- meta
+  -- _BatTmThemeScopeRenderer:new({
+  --   "Function",
+  -- }, "meta.function-call"),
   _BatTmThemeScopeRenderer:new({
     "htmlTag",
   }, "meta.tag"),
