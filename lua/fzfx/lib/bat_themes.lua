@@ -331,7 +331,7 @@ local SCOPE_RENDERERS = {
   }, "variable.function"),
   _BatTmThemeScopeRenderer:new({
     "Identifier",
-  }, "variable.parameter"),
+  }, { "variable.parameter" }),
 
   -- keyword
   _BatTmThemeScopeRenderer:new({ "Keyword" }, "keyword", true),
@@ -411,6 +411,11 @@ local SCOPE_RENDERERS = {
     { "GitGutterChange", "GitSignsChange", "DiffChange", "Changed" },
     "diff.changed"
   ),
+
+  -- meta
+  _BatTmThemeScopeRenderer:new({
+    "htmlTag",
+  }, "meta.tag"),
 }
 
 --- @return {name:string,payload:string}?
