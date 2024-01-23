@@ -119,6 +119,7 @@ M.actions = {
 
 M.fzf_opts = {
   consts.FZF_OPTS.MULTI,
+  "--border=none",
   function()
     return { "--prompt", paths.shorten() .. " > " }
   end,
