@@ -1,3 +1,4 @@
+---@diagnostic disable: missing-return
 local numbers = require("fzfx.commons.numbers")
 local apis = require("fzfx.commons.apis")
 local fileios = require("fzfx.commons.fileios")
@@ -12,9 +13,11 @@ local M = {}
 -- cursor window {
 
 --- @param opts fzfx.WindowOpts
+--- @return fzfx.NvimFloatWinOpts
 M._make_provider_cursor_opts = function(opts) end
 
 --- @param opts fzfx.WindowOpts
+--- @return fzfx.NvimFloatWinOpts
 M._make_previewer_cursor_opts = function(opts) end
 
 -- cursor window }
