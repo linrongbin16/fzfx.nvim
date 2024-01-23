@@ -1094,17 +1094,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       { lines = lines, last_result = last_result }
                     )
                     vim.schedule(function()
-                      if #builtin_previewers_queue > 0 then
-                        return
-                      end
-                      if #builtin_previewers_results_queue > 0 then
-                        return
-                      end
-                      if #builtin_previewers_results_lines_queue == 0 then
-                        return
-                      end
-                      local last_lines_item =
-                        builtin_previewers_results_lines_queue[#builtin_previewers_results_lines_queue]
                       local previewer_winnr = tables.tbl_get(
                         popup,
                         "popup_window",
@@ -1123,19 +1112,25 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       then
                         return
                       end
+                      if #builtin_previewers_queue > 0 then
+                        return
+                      end
+                      if #builtin_previewers_results_queue > 0 then
+                        return
+                      end
+                      if #builtin_previewers_results_lines_queue == 0 then
+                        return
+                      end
+                      local last_lines_item =
+                        builtin_previewers_results_lines_queue[#builtin_previewers_results_lines_queue]
+                      builtin_previewers_results_lines_queue = {}
+
                       vim.api.nvim_buf_set_lines(
                         previewer_bufnr,
                         0,
                         -1,
                         false,
                         {}
-                      )
-                      vim.api.nvim_buf_set_lines(
-                        previewer_bufnr,
-                        0,
-                        #last_lines_item.lines,
-                        false,
-                        last_lines_item.lines
                       )
                       vim.api.nvim_buf_set_name(
                         previewer_bufnr,
@@ -1144,13 +1139,48 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       vim.api.nvim_buf_call(previewer_bufnr, function()
                         vim.api.nvim_command([[filetype detect]])
                       end)
+
+                      local line_index = 1
+                      local line_count = 10
+
+                      local function set_buf_lines()
+                        vim.schedule(function()
+                          if #builtin_previewers_queue > 0 then
+                            return
+                          end
+                          if #builtin_previewers_results_queue > 0 then
+                            return
+                          end
+                          if #builtin_previewers_results_lines_queue > 0 then
+                            return
+                          end
+                          vim.api.nvim_buf_set_lines(
+                            previewer_bufnr,
+                            line_index - 1,
+                            line_index - 1 + line_count,
+                            false,
+                            {
+                              unpack(
+                                last_lines_item.lines,
+                                line_index,
+                                line_index + line_count
+                              ),
+                            }
+                          )
+                          line_index = line_index + line_count
+                          if line_index <= #last_lines_item.lines then
+                            set_buf_lines()
+                          end
+                        end)
+                      end
+                      set_buf_lines()
                     end)
                   end
                 )
               end, 100)
               -- end
             end
-          end, 200)
+          end, 100)
         end, { trim = true })
       end
     )
