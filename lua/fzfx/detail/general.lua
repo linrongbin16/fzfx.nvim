@@ -1154,18 +1154,18 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                           if #builtin_previewers_results_lines_queue > 0 then
                             return
                           end
+                          local buf_lines = {}
+                          for i = line_index, line_index + line_count do
+                            if i <= #last_lines_item.lines then
+                              table.insert(buf_lines, last_lines_item.lines[i])
+                            end
+                          end
                           vim.api.nvim_buf_set_lines(
                             previewer_bufnr,
                             line_index - 1,
                             line_index - 1 + line_count,
                             false,
-                            {
-                              unpack(
-                                last_lines_item.lines,
-                                line_index,
-                                line_index + line_count
-                              ),
-                            }
+                            buf_lines
                           )
                           line_index = line_index + line_count
                           if line_index <= #last_lines_item.lines then
