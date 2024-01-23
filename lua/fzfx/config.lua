@@ -115,7 +115,7 @@ local Defaults = {
     "--ansi",
     "--info=inline",
     "--layout=reverse",
-    "--border=rounded",
+    "--border=none",
     "--height=100%",
     consts.FZF_OPTS.TOGGLE,
     consts.FZF_OPTS.TOGGLE_ALL,
