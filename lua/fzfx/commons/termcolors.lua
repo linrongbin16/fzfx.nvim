@@ -49,24 +49,6 @@ local CSS_COLORS = {
   steelblue = M.escape("fg", "#4682B4"),
 }
 
---- @param attr "fg"|"bg"
---- @param hl string
---- @return string?
-M.retrieve = function(attr, hl)
-  assert(type(hl) == "string")
-  assert(attr == "bg" or attr == "fg")
-
-  local gui = vim.fn.has("termguicolors") > 0 and vim.o.termguicolors
-  local family = gui and "gui" or "cterm"
-  local pattern = gui and "^#[%l%d]+" or "^[%d]+$"
-  local code =
-    vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(hl)), attr, family) --[[@as string]]
-  if string.find(code, pattern) then
-    return code
-  end
-  return nil
-end
-
 --- @param text string    the text content to be rendered
 --- @param name string    the ANSI color name or RGB color codes
 --- @param hl string?     the highlighting group name
@@ -75,10 +57,12 @@ M.render = function(text, name, hl)
   local strings = require("fzfx.commons.strings")
 
   local fgfmt = nil
-  local fgcode = strings.not_empty(hl) and M.retrieve("fg", hl --[[@as string]])
+  local hlcodes = strings.not_empty(hl)
+      and require("fzfx.commons.apis").get_hl(hl --[[@as string]])
     or nil
-  if type(fgcode) == "string" then
-    fgfmt = M.escape("fg", fgcode)
+  local fgcode = type(hlcodes) == "table" and hlcodes.fg or nil
+  if type(fgcode) == "number" then
+    fgfmt = M.escape("fg", string.format("#%06x", fgcode))
   elseif CSS_COLORS[name] then
     fgfmt = CSS_COLORS[name]
   else
@@ -86,10 +70,9 @@ M.render = function(text, name, hl)
   end
 
   local fmt = nil
-  local bgcode = strings.not_empty(hl) and M.retrieve("bg", hl --[[@as string]])
-    or nil
-  if type(bgcode) == "string" then
-    local bgcolor = M.escape("bg", bgcode)
+  local bgcode = type(hlcodes) == "table" and hlcodes.bg or nil
+  if type(bgcode) == "number" then
+    local bgcolor = M.escape("bg", string.format("#%06x", bgcode))
     fmt = string.format("%s;%s", fgfmt, bgcolor)
   else
     fmt = fgfmt
