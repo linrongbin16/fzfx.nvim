@@ -27,11 +27,12 @@ local DEFAULT_PIPELINE = "default"
 --- @param ... string
 --- @return string
 local function _make_cache_filename(...)
-  if env.debug_enabled() then
-    return paths.join(config.get().cache.dir, table.concat({ ... }, "_"))
-  else
-    return vim.fn.tempname() --[[@as string]]
-  end
+  return vim.fn.tempname() --[[@as string]]
+  -- if env.debug_enabled() then
+  --   return paths.join(config.get().cache.dir, table.concat({ ... }, "_"))
+  -- else
+  --   return vim.fn.tempname() --[[@as string]]
+  -- end
 end
 
 --- @return string
@@ -1351,11 +1352,11 @@ local function _make_user_command(
   local command_desc = command_config.desc
 
   vim.api.nvim_create_user_command(command_name, function(opts)
-    log.debug(
-      "|_make_user_command| command_name:%s, opts:%s",
-      vim.inspect(command_name),
-      vim.inspect(opts)
-    )
+    -- log.debug(
+    --   "|_make_user_command| command_name:%s, opts:%s",
+    --   vim.inspect(command_name),
+    --   vim.inspect(opts)
+    -- )
     local input_args = strings.trim(opts.args or "")
     if strings.empty(input_args) then
       input_args = variant_configs[1].name
