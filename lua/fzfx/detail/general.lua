@@ -985,6 +985,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             vim.inspect(focused_data),
             vim.inspect(builtin_previewers_queue)
           )
+          if consts.IS_WINDOWS then
+            if strings.startswith(focused_data, '"') then
+              focused_data = string.sub(focused_data, 2)
+            end
+            if strings.endswith(focused_data, '"') then
+              focused_data = string.sub(focused_data, 1, #focused_data - 1)
+            end
+          end
           table.insert(
             builtin_previewers_queue,
             { previewer_switch:current_previewer_config(), focused_data }
@@ -1040,7 +1048,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 vim.inspect(previewer_config),
                 vim.inspect(result)
               )
-              if result then
+              if result and strings.not_empty(result.filename) then
                 table.insert(builtin_previewers_results_queue, result)
               end
               vim.defer_fn(function()

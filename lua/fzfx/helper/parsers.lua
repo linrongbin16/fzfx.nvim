@@ -6,6 +6,7 @@ local paths = require("fzfx.commons.paths")
 
 local consts = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
+local log = require("fzfx.lib.log")
 
 local M = {}
 
@@ -25,9 +26,17 @@ local M = {}
 --- @return {filename:string}
 M.parse_find = function(line)
   local filename = nil
+  if strings.empty(line) then
+    return { filename = nil }
+  end
   if env.icon_enabled() then
     local first_icon_pos = strings.find(line, " ")
-    assert(type(first_icon_pos) == "number")
+    log.ensure(
+      type(first_icon_pos) == "number",
+      "failed to parse filename, cannot find first icon pos:%s, line:%s",
+      vim.inspect(first_icon_pos),
+      vim.inspect(line)
+    )
     filename = line:sub(first_icon_pos + 1)
   else
     filename = line
