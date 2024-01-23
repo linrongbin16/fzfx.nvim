@@ -938,6 +938,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     else
       dump_focused_line_command = string.format("echo {}>%s", focused_line_file)
     end
+    fileios.writefile(focused_line_file, "")
     fzf_focus_binder = fzf_helpers.FzfOptEventBinder:new("focus")
     fzf_focus_binder:append(
       string.format("execute-silent(%s)", dump_focused_line_command)
@@ -951,7 +952,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         vim.inspect(focused_line_fsevent_err)
       )
     )
-    focused_line_fsevent:start(
+    local focused_line_fsevent_start_result, focused_line_fsevent_start_err = focused_line_fsevent:start(
       focused_line_file,
       {},
       function(focused_err, focused_file, events)
@@ -1146,6 +1147,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           end, 200)
         end, { trim = true })
       end
+    )
+    log.ensure(
+      focused_line_fsevent_start_result ~= nil,
+      "failed to start watching fsevent on %s, error: %s",
+      vim.inspect(focused_line_file),
+      vim.inspect(focused_line_fsevent_start_err)
     )
   end
 
