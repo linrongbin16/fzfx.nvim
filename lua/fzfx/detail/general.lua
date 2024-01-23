@@ -1129,14 +1129,21 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                         false,
                         last_lines_item.lines
                       )
-                      apis.set_buf_option(
+                      vim.api.nvim_buf_set_name(
                         previewer_bufnr,
-                        "filetype",
-                        vim.fn.fnamemodify(
-                          last_lines_item.last_result.filename,
-                          ":e"
-                        )
+                        last_lines_item.last_result.filename
                       )
+                      vim.api.nvim_buf_call(previewer_bufnr, function()
+                        vim.api.nvim_command([[filetype detect]])
+                      end)
+                      -- apis.set_buf_option(
+                      --   previewer_bufnr,
+                      --   "filetype",
+                      --   vim.fn.fnamemodify(
+                      --     last_lines_item.last_result.filename,
+                      --     ":e"
+                      --   )
+                      -- )
                     end)
                   end
                 )
