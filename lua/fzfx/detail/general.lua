@@ -1136,14 +1136,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       vim.api.nvim_buf_call(previewer_bufnr, function()
                         vim.api.nvim_command([[filetype detect]])
                       end)
-                      -- apis.set_buf_option(
-                      --   previewer_bufnr,
-                      --   "filetype",
-                      --   vim.fn.fnamemodify(
-                      --     last_lines_item.last_result.filename,
-                      --     ":e"
-                      --   )
-                      -- )
                     end)
                   end
                 )
