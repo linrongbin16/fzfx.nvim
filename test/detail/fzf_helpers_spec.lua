@@ -578,7 +578,7 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual1.alternative_layout.header_lines, 3)
       local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window",
-        "~3,+{2}+3/2,<90(~5,+{1}+4/3)",
+        "~3,+{2}+3/2,<90(~5,+{1}+4/3),nohidden",
       })
       print(
         string.format(
@@ -598,6 +598,7 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual2.alternative_layout.size_is_percent, true)
       assert_eq(actual2.alternative_layout.header_lines, 5)
       assert_eq(actual2.alternative_layout.scroll, "+{1}+4/3")
+      assert_eq(actual2.hidden, false)
       local actual3 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window",
         "<20(nohidden,nofollow,~5,+{1}+4/3)",
