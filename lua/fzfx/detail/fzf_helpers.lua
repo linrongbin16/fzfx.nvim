@@ -544,11 +544,10 @@ local function parse_fzf_preview_window_opts(opts)
     end
   end
 
-  --- @type fzfx.FzfPreviewWindowOpts
-  local parsed =
+  local result =
     parse_fzf_preview_window_opts_no_alternative(split_opts_no_alternative) --[[@as fzfx.FzfPreviewWindowOpts]]
-  parsed.size_threshold = nil
-  parsed.alternative_layout = nil
+  result.size_threshold = nil
+  result.alternative_layout = nil
   if split_opts_alternative then
     local lbracket_pos = strings.find(split_opts_alternative, "(", 2)
     log.ensure(
@@ -561,18 +560,18 @@ local function parse_fzf_preview_window_opts(opts)
       "invalid fzf preview window opts(size_threshold): %s",
       vim.inspect(opts)
     )
-    parsed.size_threshold =
+    result.size_threshold =
       tonumber(string.sub(split_opts_alternative, 2, lbracket_pos - 1))
     local split_alternatives = string.sub(
       split_opts_alternative,
       lbracket_pos + 1,
       #split_opts_alternative - 1
     )
-    parsed.alternative_layout = parse_fzf_preview_window_opts_no_alternative(
+    result.alternative_layout = parse_fzf_preview_window_opts_no_alternative(
       _spilt_fzf_preview_window_opts(split_alternatives)
     )
   end
-  return parsed
+  return result
 end
 
 local function setup()
