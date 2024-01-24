@@ -170,9 +170,9 @@ local BufferPopupWindow = {}
 
 --- @package
 --- @param win_opts fzfx.WindowOpts
---- @param fzf_opts fzfx.FzfOpt[]
+--- @param fzf_preview_window_opts fzfx.FzfOpt?
 --- @return fzfx.BufferPopupWindow
-function BufferPopupWindow:new(win_opts, fzf_opts)
+function BufferPopupWindow:new(win_opts, fzf_preview_window_opts)
   -- save current window context
   local window_opts_context = popup_helpers.WindowOptsContext:save()
 

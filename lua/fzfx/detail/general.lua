@@ -1370,7 +1370,23 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
+  local fzf_preview_window_opts = nil
   if use_builtin_previewer then
+    for _, o in ipairs(fzf_opts) do
+      if
+        type(o) == "table"
+        and strings.not_empty(o[1])
+        and strings.startswith(o[1], "--preview-window")
+      then
+        fzf_preview_window_opts = o
+        break
+      elseif
+        strings.not_empty(o) and strings.startswith(o, "--preview-window")
+      then
+        fzf_preview_window_opts = o
+        break
+      end
+    end
     table.insert(fzf_opts, { "--preview-window", "hidden" })
   end
 
@@ -1402,7 +1418,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         focused_line_fsevent = nil
       end
     end,
-    use_builtin_previewer
+    use_builtin_previewer,
+    fzf_preview_window_opts
   )
   return popup
 end
