@@ -13,20 +13,23 @@ local M = {}
 -- cursor window {
 
 --- @param opts fzfx.WindowOpts
+--- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_provider_cursor_opts = function(opts) end
+M._make_provider_cursor_opts = function(opts, fzf_preview_window_opts) end
 
 --- @param opts fzfx.WindowOpts
+--- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_previewer_cursor_opts = function(opts) end
+M._make_previewer_cursor_opts = function(opts, fzf_preview_window_opts) end
 
 -- cursor window }
 
 -- center window {
 
 --- @param opts fzfx.WindowOpts
+--- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_provider_center_opts = function(opts)
+M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
   opts.width = opts.width / 2
 
@@ -69,8 +72,9 @@ M._make_provider_center_opts = function(opts)
 end
 
 --- @param opts fzfx.WindowOpts
+--- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_previewer_center_opts = function(opts)
+M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
   opts.width = opts.width / 2
 
@@ -117,8 +121,9 @@ end
 -- provider window {
 
 --- @param win_opts fzfx.WindowOpts
+--- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M.make_provider_opts = function(win_opts)
+M.make_provider_opts = function(win_opts, fzf_preview_window_opts)
   local opts = vim.deepcopy(win_opts)
   local relative = opts.relative or "editor"
   log.ensure(
@@ -127,9 +132,9 @@ M.make_provider_opts = function(win_opts)
     vim.inspect(opts)
   )
   if relative == "cursor" then
-    return M._make_provider_cursor_opts(opts)
+    return M._make_provider_cursor_opts(opts, fzf_preview_window_opts)
   else
-    return M._make_provider_center_opts(opts)
+    return M._make_provider_center_opts(opts, fzf_preview_window_opts)
   end
 end
 
@@ -138,8 +143,9 @@ end
 -- previewer window {
 
 --- @param win_opts fzfx.WindowOpts
+--- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M.make_previewer_opts = function(win_opts)
+M.make_previewer_opts = function(win_opts, fzf_preview_window_opts)
   local opts = vim.deepcopy(win_opts)
   local relative = opts.relative or "editor"
   log.ensure(
@@ -148,9 +154,9 @@ M.make_previewer_opts = function(win_opts)
     vim.inspect(opts)
   )
   if relative == "cursor" then
-    return M._make_previewer_cursor_opts(opts)
+    return M._make_previewer_cursor_opts(opts, fzf_preview_window_opts)
   else
-    return M._make_previewer_center_opts(opts)
+    return M._make_previewer_center_opts(opts, fzf_preview_window_opts)
   end
 end
 
@@ -170,7 +176,7 @@ local BufferPopupWindow = {}
 
 --- @package
 --- @param win_opts fzfx.WindowOpts
---- @param fzf_preview_window_opts fzfx.FzfOpt?
+--- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
 --- @return fzfx.BufferPopupWindow
 function BufferPopupWindow:new(win_opts, fzf_preview_window_opts)
   -- save current window context
@@ -188,9 +194,11 @@ function BufferPopupWindow:new(win_opts, fzf_preview_window_opts)
   apis.set_buf_option(previewer_bufnr, "buflisted", false)
   apis.set_buf_option(previewer_bufnr, "filetype", "fzf")
 
-  local provider_nvim_float_win_opts = M.make_provider_opts(win_opts)
+  local provider_nvim_float_win_opts =
+    M.make_provider_opts(win_opts, fzf_preview_window_opts)
   provider_nvim_float_win_opts.border = "rounded"
-  local previewer_nvim_float_win_opts = M.make_previewer_opts(win_opts)
+  local previewer_nvim_float_win_opts =
+    M.make_previewer_opts(win_opts, fzf_preview_window_opts)
   previewer_nvim_float_win_opts.border = "rounded"
   previewer_nvim_float_win_opts.focusable = false
 

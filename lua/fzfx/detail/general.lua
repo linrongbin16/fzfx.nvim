@@ -1370,6 +1370,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
+  --- @type fzfx.FzfOpt
   local fzf_preview_window_opts = nil
   if use_builtin_previewer then
     for _, o in ipairs(fzf_opts) do
@@ -1387,6 +1388,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         break
       end
     end
+    fzf_preview_window_opts = fzf_helpers.parse_fzf_preview_window_opts(
+      fzf_preview_window_opts or { "--preview-window", "right,50%" }
+    )
+
     table.insert(fzf_opts, { "--preview-window", "hidden" })
   end
 
