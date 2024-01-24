@@ -480,7 +480,11 @@ local function parse_fzf_preview_window_opts(opts)
     )
     local opts_value =
       string.sub(opts --[[@as string]], string.len("--preview-window") + 2)
-    split_opts = strings.split(opts_value[2], ",")
+    log.debug(
+      "|parse_fzf_preview_window_opts| opts_value:%s",
+      vim.inspect(opts_value)
+    )
+    split_opts = strings.split(opts_value, ",")
   end
   log.ensure(
     type(split_opts) == "table",

@@ -20,8 +20,12 @@ describe("detail.fzf_helpers", function()
   local strings = require("fzfx.commons.strings")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-  require("fzfx.config").setup()
-  require("fzfx.detail.module").setup()
+  require("fzfx").setup({
+    debug = {
+      enable = true,
+      file_log = true,
+    },
+  })
 
   describe("[last_query_cache_name]", function()
     it("test", function()
