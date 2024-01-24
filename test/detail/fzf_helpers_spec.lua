@@ -438,5 +438,44 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual8.cycle, false)
       assert_eq(actual8.hidden, false)
     end)
+    it("scroll", function()
+      local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "+{2}-5",
+      })
+      print(
+        string.format("parse fzf --preview-window-15:%s", vim.inspect(actual1))
+      )
+      assert_eq(actual1.position, "right")
+      assert_eq(actual1.size, 50)
+      assert_eq(actual1.size_is_percent, true)
+      assert_eq(actual1.border, "border-rounded")
+      assert_eq(actual1.scroll, "+{2}-5")
+      local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "~3,+{2}+3/2",
+      })
+      print(
+        string.format("parse fzf --preview-window-16:%s", vim.inspect(actual2))
+      )
+      assert_eq(actual2.position, "right")
+      assert_eq(actual2.size, 50)
+      assert_eq(actual2.size_is_percent, true)
+      assert_eq(actual2.border, "border-rounded")
+      assert_eq(actual2.scroll, "+{2}+3/2")
+      assert_eq(actual2.header_lines, 3)
+      local actual3 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "+{2}-/2",
+      })
+      print(
+        string.format("parse fzf --preview-window-17:%s", vim.inspect(actual3))
+      )
+      assert_eq(actual3.position, "right")
+      assert_eq(actual3.size, 50)
+      assert_eq(actual3.size_is_percent, true)
+      assert_eq(actual3.border, "border-rounded")
+      assert_eq(actual3.scroll, "+{2}-/2")
+    end)
   end)
 end)
