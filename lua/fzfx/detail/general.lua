@@ -1370,27 +1370,32 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
-  --- @type fzfx.FzfOpt
-  local fzf_preview_window_opts = nil
+  --- @type fzfx.FzfPreviewWindowOpts
+  local fzf_preview_window_opts = fzf_helpers.parse_fzf_preview_window_opts({
+    "--preview-window",
+    "right,50%",
+  })
   if use_builtin_previewer then
+    local fzf_pw_opts = {}
     for _, o in ipairs(fzf_opts) do
       if
         type(o) == "table"
         and strings.not_empty(o[1])
         and strings.startswith(o[1], "--preview-window")
       then
-        fzf_preview_window_opts = o
-        break
+        table.insert(fzf_pw_opts, o)
       elseif
-        strings.not_empty(o) and strings.startswith(o, "--preview-window")
+        strings.not_empty(o)
+        and strings.startswith(o --[[@as string]], "--preview-window")
       then
-        fzf_preview_window_opts = o
-        break
+        table.insert(fzf_pw_opts, o)
       end
     end
-    fzf_preview_window_opts = fzf_helpers.parse_fzf_preview_window_opts(
-      fzf_preview_window_opts or { "--preview-window", "right,50%" }
-    )
+    for _, o in ipairs(fzf_pw_opts) do
+      local parsed_o = fzf_helpers.parse_fzf_preview_window_opts(o)
+      fzf_preview_window_opts =
+        vim.tbl_deep_extend("force", fzf_preview_window_opts, parsed_o)
+    end
 
     table.insert(fzf_opts, { "--preview-window", "hidden" })
   end
@@ -1424,7 +1429,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       end
     end,
     use_builtin_previewer,
-    fzf_preview_window_opts
+    fzf_preview_window_opts --[[@as fzfx.FzfPreviewWindowOpts]]
   )
   return popup
 end
