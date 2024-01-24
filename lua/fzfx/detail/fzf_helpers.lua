@@ -480,7 +480,7 @@ local function _spilt_fzf_preview_window_opts(opts_value)
         vim.inspect(next_lbracket_pos),
         vim.inspect(opts_value)
       )
-      table.insert(results, string.sub(opts_value, i, next_rbracket_pos - 1))
+      table.insert(results, string.sub(opts_value, i, next_rbracket_pos))
       i = next_rbracket_pos + 1
     elseif type(strings.find(opts_value, ",", i)) == "number" then
       local next_comma_pos = strings.find(opts_value, ",", i) --[[@as integer]]
