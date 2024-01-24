@@ -282,8 +282,8 @@ describe("detail.fzf_helpers", function()
       assert_true(strings.startswith(actual[2], "focus:a+b"))
     end)
   end)
-  describe("[parse_fzf_preview_window_opts]", function()
-    it("no-alternative 1", function()
+  describe("[parse_fzf_preview_window_opts-no-alternative]", function()
+    it("position", function()
       local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window",
         "up,30%",
@@ -301,20 +301,48 @@ describe("detail.fzf_helpers", function()
       print(
         string.format("parse fzf --preview-window-2:%s", vim.inspect(actual2))
       )
-      assert_eq(actual1.position, "down")
+      assert_eq(actual2.position, "down")
       assert_eq(actual2.size, 3)
-      assert_eq(actual2.size_is_percent, true)
+      assert_eq(actual2.size_is_percent, false)
       local actual3 =
         fzf_helpers.parse_fzf_preview_window_opts("--preview-window=left,50%")
       print(
         string.format("parse fzf --preview-window-3:%s", vim.inspect(actual3))
       )
+      assert_eq(actual3.position, "left")
+      assert_eq(actual3.size, 50)
+      assert_eq(actual3.size_is_percent, true)
       local actual4 =
         fzf_helpers.parse_fzf_preview_window_opts("--preview-window=right,50")
       print(
         string.format("parse fzf --preview-window-4:%s", vim.inspect(actual4))
       )
+      assert_eq(actual4.position, "right")
+      assert_eq(actual4.size, 50)
+      assert_eq(actual4.size_is_percent, false)
     end)
-    it("no-alternative 2", function() end)
+    it("border", function()
+      local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "up,30%,border-block",
+      })
+      print(
+        string.format("parse fzf --preview-window-5:%s", vim.inspect(actual1))
+      )
+      assert_eq(actual1.position, "up")
+      assert_eq(actual1.size, 30)
+      assert_eq(actual1.size_is_percent, true)
+      assert_eq(actual1.border, "border-block")
+      local actual2 = fzf_helpers.parse_fzf_preview_window_opts(
+        "--preview-window=down,3,border-bold"
+      )
+      print(
+        string.format("parse fzf --preview-window-6:%s", vim.inspect(actual2))
+      )
+      assert_eq(actual2.position, "down")
+      assert_eq(actual2.size, 3)
+      assert_eq(actual2.size_is_percent, false)
+      assert_eq(actual2.border, "border-bold")
+    end)
   end)
 end)
