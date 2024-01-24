@@ -46,7 +46,7 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
     or fzf_preview_window_opts.position == "right"
   then
     local old_width = width
-    local sign = fzf_preview_window_opts.position == "left" and -1 or 1
+    local sign = fzf_preview_window_opts.position == "right" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
       width = math.floor(width - (width / 100 * fzf_preview_window_opts.size))
     else
@@ -59,7 +59,7 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
     or fzf_preview_window_opts.position == "down"
   then
     local old_height = height
-    local sign = fzf_preview_window_opts.position == "up" and -1 or 1
+    local sign = fzf_preview_window_opts.position == "down" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
       height =
         math.floor(height - (height / 100 * fzf_preview_window_opts.size))
