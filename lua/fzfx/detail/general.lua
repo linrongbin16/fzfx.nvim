@@ -1094,21 +1094,21 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       { lines = lines, last_result = last_result }
                     )
                     vim.schedule(function()
-                      local previewer_winnr = tables.tbl_get(
+                      local previewer_winnr3 = tables.tbl_get(
                         popup,
                         "popup_window",
                         "instance",
                         "previewer_winnr"
                       )
-                      local previewer_bufnr = tables.tbl_get(
+                      local previewer_bufnr3 = tables.tbl_get(
                         popup,
                         "popup_window",
                         "instance",
                         "previewer_bufnr"
                       )
                       if
-                        type(previewer_winnr) ~= "number"
-                        or type(previewer_bufnr) ~= "number"
+                        type(previewer_winnr3) ~= "number"
+                        or type(previewer_bufnr3) ~= "number"
                       then
                         return
                       end
@@ -1126,17 +1126,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       builtin_previewers_results_lines_queue = {}
 
                       vim.api.nvim_buf_set_lines(
-                        previewer_bufnr,
+                        previewer_bufnr3,
                         0,
                         -1,
                         false,
                         {}
                       )
                       vim.api.nvim_buf_set_name(
-                        previewer_bufnr,
+                        previewer_bufnr3,
                         last_lines_item.last_result.filename
                       )
-                      vim.api.nvim_buf_call(previewer_bufnr, function()
+                      vim.api.nvim_buf_call(previewer_bufnr3, function()
                         vim.api.nvim_command([[filetype detect]])
                       end)
 
@@ -1144,7 +1144,25 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       local line_count = 10
 
                       local function set_buf_lines()
-                        vim.schedule(function()
+                        vim.defer_fn(function()
+                          local previewer_winnr4 = tables.tbl_get(
+                            popup,
+                            "popup_window",
+                            "instance",
+                            "previewer_winnr"
+                          )
+                          local previewer_bufnr4 = tables.tbl_get(
+                            popup,
+                            "popup_window",
+                            "instance",
+                            "previewer_bufnr"
+                          )
+                          if
+                            type(previewer_winnr4) ~= "number"
+                            or type(previewer_bufnr4) ~= "number"
+                          then
+                            return
+                          end
                           if #builtin_previewers_queue > 0 then
                             return
                           end
@@ -1161,7 +1179,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                             end
                           end
                           vim.api.nvim_buf_set_lines(
-                            previewer_bufnr,
+                            previewer_bufnr4,
                             line_index - 1,
                             line_index - 1 + line_count,
                             false,
@@ -1171,7 +1189,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                           if line_index <= #last_lines_item.lines then
                             set_buf_lines()
                           end
-                        end)
+                        end, 10)
                       end
                       set_buf_lines()
                     end)
