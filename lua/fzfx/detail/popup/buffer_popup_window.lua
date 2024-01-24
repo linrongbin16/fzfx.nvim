@@ -32,24 +32,35 @@ M._make_previewer_cursor_opts = function(opts, fzf_preview_window_opts) end
 M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
 
+  local additional_row_offset = 0
+  local additional_col_offset = 0
   if
     fzf_preview_window_opts.position == "left"
     or fzf_preview_window_opts.position == "right"
   then
+    local old_width = opts.width
+    local sign = fzf_preview_window_opts.position == "left" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
-      opts.width = opts.width / 100 * fzf_preview_window_opts.size
+      opts.width = math.floor(opts.width / 100 * fzf_preview_window_opts.size)
     else
       opts.width = opts.width - fzf_preview_window_opts.size
     end
+    additional_col_offset = math.floor(math.abs(old_width - opts.width)) * sign
+      + sign
   elseif
     fzf_preview_window_opts.position == "up"
     or fzf_preview_window_opts.position == "down"
   then
+    local old_height = opts.height
+    local sign = fzf_preview_window_opts.position == "up" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
-      opts.height = opts.height / 100 * fzf_preview_window_opts.size
+      opts.height = math.floor(opts.height / 100 * fzf_preview_window_opts.size)
     else
       opts.height = opts.height - fzf_preview_window_opts.size
     end
+    additional_row_offset = math.floor(math.abs(old_height - opts.height))
+        * sign
+      + sign
   end
 
   local total_width = relative == "editor" and vim.o.columns
@@ -69,7 +80,12 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
     "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
     vim.inspect(opts)
   )
-  local row = popup_helpers.shift_window_pos(total_height, height, opts.row)
+  local row = popup_helpers.shift_window_pos(
+    total_height,
+    height,
+    opts.row,
+    additional_row_offset
+  )
   local col = popup_helpers.shift_window_pos(
     total_width,
     width,
