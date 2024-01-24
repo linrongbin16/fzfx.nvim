@@ -350,20 +350,45 @@ describe("detail.fzf_helpers", function()
         "wrap",
       })
       print(
-        string.format("parse fzf --preview-window-5:%s", vim.inspect(actual1))
+        string.format("parse fzf --preview-window-7:%s", vim.inspect(actual1))
       )
       assert_eq(actual1.wrap, true)
       local actual2 = fzf_helpers.parse_fzf_preview_window_opts(
         "--preview-window=down,3,border-bold,nowrap"
       )
       print(
-        string.format("parse fzf --preview-window-6:%s", vim.inspect(actual2))
+        string.format("parse fzf --preview-window-8:%s", vim.inspect(actual2))
       )
       assert_eq(actual2.position, "down")
       assert_eq(actual2.size, 3)
       assert_eq(actual2.size_is_percent, false)
       assert_eq(actual2.border, "border-bold")
       assert_eq(actual2.wrap, false)
+    end)
+    it("(no)follow", function()
+      local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "nofollow",
+      })
+      print(
+        string.format("parse fzf --preview-window-9:%s", vim.inspect(actual1))
+      )
+      assert_eq(actual1.position, "right")
+      assert_eq(actual1.size, 50)
+      assert_eq(actual1.size_is_percent, true)
+      assert_eq(actual1.follow, false)
+      local actual2 = fzf_helpers.parse_fzf_preview_window_opts(
+        "--preview-window=down,3,border-bold,nowrap,follow"
+      )
+      print(
+        string.format("parse fzf --preview-window-10:%s", vim.inspect(actual2))
+      )
+      assert_eq(actual2.position, "down")
+      assert_eq(actual2.size, 3)
+      assert_eq(actual2.size_is_percent, false)
+      assert_eq(actual2.border, "border-bold")
+      assert_eq(actual2.wrap, false)
+      assert_eq(actual2.follow, true)
     end)
   end)
 end)
