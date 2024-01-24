@@ -154,7 +154,7 @@ M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
     if fzf_preview_window_opts.size_is_percent then
       height = math.floor(height / 100 * fzf_preview_window_opts.size)
     else
-      height = fzf_preview_window_opts.size --[[@as integer]]
+      height = fzf_preview_window_opts.size
     end
     additional_row_offset = math.floor(math.abs(old_height - height)) * sign
       + sign
