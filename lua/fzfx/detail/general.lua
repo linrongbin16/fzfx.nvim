@@ -1052,7 +1052,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 vim.inspect(result)
               )
               if result and strings.not_empty(result.filename) then
-                -- popup.popup_window:cancel_current_preview_file_job()
                 popup.popup_window:preview_file(result)
               end
             end

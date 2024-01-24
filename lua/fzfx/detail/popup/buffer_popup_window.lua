@@ -270,7 +270,6 @@ end
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
 --- @field _resizing boolean
---- @field cancel_preview_files boolean
 --- @field preview_files_queue fzfx.BuiltinFilePreviewerResult[]
 --- @field preview_file_contents_queue {lines:string[],preview_result:fzfx.BuiltinFilePreviewerResult}[]
 local BufferPopupWindow = {}
@@ -326,7 +325,6 @@ function BufferPopupWindow:new(win_opts, fzf_preview_window_opts)
     _saved_win_opts = win_opts,
     _saved_fzf_preview_window_opts = fzf_preview_window_opts,
     _resizing = false,
-    cancel_preview_files = false,
     preview_files_queue = {},
     preview_file_contents_queue = {},
   }
@@ -425,11 +423,6 @@ function BufferPopupWindow:preview_file(previewer_result)
     if self:preview_files_queue_empty() then
       return
     end
-    if self.cancel_preview_files then
-      self.cancel_preview_files = false
-      self:preview_files_queue_clear()
-      return
-    end
 
     local last_result = self:preview_files_queue_last()
     self:preview_files_queue_clear()
@@ -437,11 +430,6 @@ function BufferPopupWindow:preview_file(previewer_result)
     -- read file content
     fileios.asyncreadfile(last_result.filename, function(file_content)
       if not self:preview_files_queue_empty() then
-        return
-      end
-      if self.cancel_preview_files then
-        self.cancel_preview_files = false
-        self:preview_files_queue_clear()
         return
       end
 
@@ -464,12 +452,6 @@ function BufferPopupWindow:preview_file(previewer_result)
           return
         end
         if self:preview_file_contents_queue_empty() then
-          return
-        end
-        if self.cancel_preview_files then
-          self.cancel_preview_files = false
-          self:preview_files_queue_clear()
-          self:preview_file_contents_queue_clear()
           return
         end
 
@@ -508,12 +490,6 @@ function BufferPopupWindow:preview_file(previewer_result)
             if not self:preview_file_contents_queue_empty() then
               return
             end
-            if self.cancel_preview_files then
-              self.cancel_preview_files = false
-              self:preview_files_queue_clear()
-              self:preview_file_contents_queue_clear()
-              return
-            end
 
             local buf_lines = {}
             for i = line_index, line_index + LINE_COUNT do
@@ -538,10 +514,6 @@ function BufferPopupWindow:preview_file(previewer_result)
       end, 25)
     end)
   end, 80)
-end
-
-function BufferPopupWindow:cancel_current_preview_file_job()
-  self.cancel_preview_files = true
 end
 
 M.BufferPopupWindow = BufferPopupWindow
