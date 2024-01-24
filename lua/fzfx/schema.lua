@@ -36,7 +36,8 @@ local ProviderTypeEnum = {
 --
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.BuiltinFilePreviewer fun(line:string?,context:fzfx.PipelineContext?):{filename:string,lineno:integer?,column:integer?}?
+--- @alias fzfx.BuiltinFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
+--- @alias fzfx.BuiltinFilePreviewer fun(line:string?,context:fzfx.PipelineContext?):fzfx.BuiltinFilePreviewerResult?
 --- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer|fzfx.BuiltinFilePreviewer
 ---
 --- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"builtin_file"

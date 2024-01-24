@@ -2,6 +2,8 @@
 local numbers = require("fzfx.commons.numbers")
 local apis = require("fzfx.commons.apis")
 local fileios = require("fzfx.commons.fileios")
+local tables = require("fzfx.commons.tables")
+local strings = require("fzfx.commons.strings")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -266,7 +268,11 @@ end
 --- @field previewer_bufnr integer?
 --- @field previewer_winnr integer?
 --- @field _saved_win_opts fzfx.WindowOpts
+--- @field _saved_fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
 --- @field _resizing boolean
+--- @field cancel_preview_files boolean
+--- @field preview_files_queue fzfx.BuiltinFilePreviewerResult[]
+--- @field preview_file_contents_queue {lines:string[],preview_result:fzfx.BuiltinFilePreviewerResult}[]
 local BufferPopupWindow = {}
 
 --- @package
@@ -318,7 +324,11 @@ function BufferPopupWindow:new(win_opts, fzf_preview_window_opts)
     previewer_bufnr = previewer_bufnr,
     previewer_winnr = previewer_winnr,
     _saved_win_opts = win_opts,
+    _saved_fzf_preview_window_opts = fzf_preview_window_opts,
     _resizing = false,
+    cancel_preview_files = false,
+    preview_files_queue = {},
+    preview_file_contents_queue = {},
   }
   setmetatable(o, self)
   self.__index = self
@@ -347,10 +357,14 @@ function BufferPopupWindow:resize()
     return
   end
   self._resizing = true
-  local provider_nvim_float_win_opts =
-    M.make_provider_opts(self._saved_win_opts)
-  local previewer_nvim_float_win_opts =
-    M.make_previewer_opts(self._saved_win_opts)
+  local provider_nvim_float_win_opts = M.make_provider_opts(
+    self._saved_win_opts,
+    self._saved_fzf_preview_window_opts
+  )
+  local previewer_nvim_float_win_opts = M.make_previewer_opts(
+    self._saved_win_opts,
+    self._saved_fzf_preview_window_opts
+  )
   vim.api.nvim_win_set_config(self.provider_winnr, provider_nvim_float_win_opts)
   vim.api.nvim_win_set_config(
     self.previewer_winnr,
@@ -364,6 +378,170 @@ end
 --- @return integer
 function BufferPopupWindow:handle()
   return self.provider_winnr
+end
+
+function BufferPopupWindow:preview_files_queue_empty()
+  return #self.preview_files_queue == 0
+end
+
+function BufferPopupWindow:preview_files_queue_last()
+  return self.preview_files_queue[#self.preview_files_queue]
+end
+
+function BufferPopupWindow:preview_files_queue_clear()
+  self.preview_files_queue = {}
+end
+
+function BufferPopupWindow:preview_file_contents_queue_empty()
+  return #self.preview_file_contents_queue == 0
+end
+
+function BufferPopupWindow:preview_file_contents_queue_last()
+  return self.preview_file_contents_queue[#self.preview_file_contents_queue]
+end
+
+function BufferPopupWindow:preview_file_contents_queue_clear()
+  self.preview_file_contents_queue = {}
+end
+
+function BufferPopupWindow:is_valid()
+  return type(self.previewer_winnr) == "number"
+    and vim.api.nvim_win_is_valid(self.previewer_winnr)
+    and type(self.previewer_bufnr) == "number"
+    and vim.api.nvim_buf_is_valid(self.previewer_bufnr)
+end
+
+--- @param previewer_result fzfx.BuiltinFilePreviewerResult
+function BufferPopupWindow:preview_file(previewer_result)
+  if strings.empty(tables.tbl_get(previewer_result, "filename")) then
+    return
+  end
+  table.insert(self.preview_files_queue, previewer_result)
+
+  vim.defer_fn(function()
+    if not self:is_valid() then
+      return
+    end
+    if self:preview_files_queue_empty() then
+      return
+    end
+    if self.cancel_preview_files then
+      self.cancel_preview_files = false
+      self:preview_files_queue_clear()
+      return
+    end
+
+    local last_result = self:preview_files_queue_last()
+    self:preview_files_queue_clear()
+
+    -- read file content
+    fileios.asyncreadfile(last_result.filename, function(file_content)
+      if not self:preview_files_queue_empty() then
+        return
+      end
+      if self.cancel_preview_files then
+        self.cancel_preview_files = false
+        self:preview_files_queue_clear()
+        return
+      end
+
+      local lines = {}
+      if strings.not_empty(file_content) then
+        file_content = file_content:gsub("\r\n", "\n")
+        lines = strings.split(file_content, "\n")
+      end
+      table.insert(
+        self.preview_file_contents_queue,
+        { lines = lines, preview_result = last_result }
+      )
+
+      -- show file contents by lines
+      vim.defer_fn(function()
+        if not self:is_valid() then
+          return
+        end
+        if not self:preview_files_queue_empty() then
+          return
+        end
+        if self:preview_file_contents_queue_empty() then
+          return
+        end
+        if self.cancel_preview_files then
+          self.cancel_preview_files = false
+          self:preview_files_queue_clear()
+          self:preview_file_contents_queue_clear()
+          return
+        end
+
+        local last_lines = self:preview_file_contents_queue_last()
+        self:preview_file_contents_queue_clear()
+
+        vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
+        local set_name_ok, set_name_err = pcall(
+          vim.api.nvim_buf_set_name,
+          self.previewer_bufnr,
+          last_lines.preview_result.filename
+        )
+        if not set_name_ok then
+          log.debug(
+            "|BufferPopupWindow:preview_file.asyncreadfile| failed to set name for previewer buffer:%s(%s), error:%s",
+            vim.inspect(last_lines.preview_result.filename),
+            vim.inspect(self.previewer_bufnr),
+            vim.inspect(set_name_err)
+          )
+        end
+        vim.api.nvim_buf_call(self.previewer_bufnr, function()
+          vim.api.nvim_command([[filetype detect]])
+        end)
+
+        local LINE_COUNT = 5
+        local line_index = 1
+
+        local function set_buf_lines()
+          vim.defer_fn(function()
+            if not self:is_valid() then
+              return
+            end
+            if not self:preview_files_queue_empty() then
+              return
+            end
+            if not self:preview_file_contents_queue_empty() then
+              return
+            end
+            if self.cancel_preview_files then
+              self.cancel_preview_files = false
+              self:preview_files_queue_clear()
+              self:preview_file_contents_queue_clear()
+              return
+            end
+
+            local buf_lines = {}
+            for i = line_index, line_index + LINE_COUNT do
+              if i <= #last_lines.lines then
+                table.insert(buf_lines, last_lines.lines[i])
+              end
+            end
+            vim.api.nvim_buf_set_lines(
+              self.previewer_bufnr,
+              line_index - 1,
+              line_index - 1 + LINE_COUNT,
+              false,
+              buf_lines
+            )
+            line_index = line_index + LINE_COUNT
+            if line_index <= #last_lines.lines then
+              set_buf_lines()
+            end
+          end, 25)
+        end
+        set_buf_lines()
+      end, 25)
+    end)
+  end, 80)
+end
+
+function BufferPopupWindow:cancel_current_preview_file_job()
+  self.cancel_preview_files = true
 end
 
 M.BufferPopupWindow = BufferPopupWindow

@@ -925,9 +925,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   )
 
   -- builtin previewer use local file cache to detect fzf pointer movement
-  local builtin_previewers_queue = {}
-  local builtin_previewers_results_queue = {}
-  local builtin_previewers_results_lines_queue = {}
+  local builtin_file_previewers_queue = {}
   local fzf_focus_binder = nil
   local fzf_load_binder = nil
   if use_builtin_previewer then
@@ -988,7 +986,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             "|general.focused_line_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
             vim.inspect(focused_file),
             vim.inspect(focused_data),
-            vim.inspect(builtin_previewers_queue)
+            vim.inspect(builtin_file_previewers_queue)
           )
           if consts.IS_WINDOWS then
             if strings.startswith(focused_data, '"') then
@@ -999,16 +997,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end
           end
           table.insert(
-            builtin_previewers_queue,
+            builtin_file_previewers_queue,
             { previewer_switch:current_previewer_config(), focused_data }
           )
           vim.defer_fn(function()
-            if #builtin_previewers_queue == 0 then
+            if #builtin_file_previewers_queue == 0 then
               return
             end
             local last_item =
-              builtin_previewers_queue[#builtin_previewers_queue]
-            builtin_previewers_queue = {}
+              builtin_file_previewers_queue[#builtin_file_previewers_queue]
+            builtin_file_previewers_queue = {}
             local previewer_winnr1 = tables.tbl_get(
               popup,
               "popup_window",
@@ -1054,162 +1052,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 vim.inspect(result)
               )
               if result and strings.not_empty(result.filename) then
-                table.insert(builtin_previewers_results_queue, result)
+                -- popup.popup_window:cancel_current_preview_file_job()
+                popup.popup_window:preview_file(result)
               end
-              vim.defer_fn(function()
-                if #builtin_previewers_queue > 0 then
-                  return
-                end
-                if #builtin_previewers_results_queue == 0 then
-                  return
-                end
-                local last_result =
-                  builtin_previewers_results_queue[#builtin_previewers_results_queue]
-                builtin_previewers_results_queue = {}
-                local previewer_winnr2 = tables.tbl_get(
-                  popup,
-                  "popup_window",
-                  "instance",
-                  "previewer_winnr"
-                )
-                local previewer_bufnr2 = tables.tbl_get(
-                  popup,
-                  "popup_window",
-                  "instance",
-                  "previewer_bufnr"
-                )
-                if
-                  type(previewer_winnr2) ~= "number"
-                  or type(previewer_bufnr2) ~= "number"
-                then
-                  return
-                end
-
-                -- set file lines on popup's buffer
-                fileios.asyncreadfile(
-                  last_result.filename,
-                  function(result_data)
-                    local lines = {}
-                    if type(result_data) == "string" then
-                      result_data = result_data:gsub("\r\n", "\n")
-                      lines = strings.split(result_data, "\n")
-                    end
-                    table.insert(
-                      builtin_previewers_results_lines_queue,
-                      { lines = lines, last_result = last_result }
-                    )
-                    vim.defer_fn(function()
-                      local previewer_winnr3 = tables.tbl_get(
-                        popup,
-                        "popup_window",
-                        "instance",
-                        "previewer_winnr"
-                      )
-                      local previewer_bufnr3 = tables.tbl_get(
-                        popup,
-                        "popup_window",
-                        "instance",
-                        "previewer_bufnr"
-                      )
-                      if
-                        type(previewer_winnr3) ~= "number"
-                        or type(previewer_bufnr3) ~= "number"
-                      then
-                        return
-                      end
-                      if #builtin_previewers_queue > 0 then
-                        return
-                      end
-                      if #builtin_previewers_results_queue > 0 then
-                        return
-                      end
-                      if #builtin_previewers_results_lines_queue == 0 then
-                        return
-                      end
-                      local last_lines_item =
-                        builtin_previewers_results_lines_queue[#builtin_previewers_results_lines_queue]
-                      builtin_previewers_results_lines_queue = {}
-
-                      vim.api.nvim_buf_set_lines(
-                        previewer_bufnr3,
-                        0,
-                        -1,
-                        false,
-                        {}
-                      )
-                      local ok2, err2 = pcall(
-                        vim.api.nvim_buf_set_name,
-                        previewer_bufnr3,
-                        last_lines_item.last_result.filename
-                      )
-                      if not ok2 then
-                        log.debug(
-                          "failed to set name for previewer buffer:%s, error:%s",
-                          vim.inspect(previewer_bufnr3),
-                          vim.inspect(err2)
-                        )
-                      end
-                      vim.api.nvim_buf_call(previewer_bufnr3, function()
-                        vim.api.nvim_command([[filetype detect]])
-                      end)
-
-                      local line_index = 1
-                      local line_count = 5
-
-                      local function set_buf_lines()
-                        vim.defer_fn(function()
-                          local previewer_winnr4 = tables.tbl_get(
-                            popup,
-                            "popup_window",
-                            "instance",
-                            "previewer_winnr"
-                          )
-                          local previewer_bufnr4 = tables.tbl_get(
-                            popup,
-                            "popup_window",
-                            "instance",
-                            "previewer_bufnr"
-                          )
-                          if
-                            type(previewer_winnr4) ~= "number"
-                            or type(previewer_bufnr4) ~= "number"
-                          then
-                            return
-                          end
-                          if #builtin_previewers_queue > 0 then
-                            return
-                          end
-                          if #builtin_previewers_results_queue > 0 then
-                            return
-                          end
-                          if #builtin_previewers_results_lines_queue > 0 then
-                            return
-                          end
-                          local buf_lines = {}
-                          for i = line_index, line_index + line_count do
-                            if i <= #last_lines_item.lines then
-                              table.insert(buf_lines, last_lines_item.lines[i])
-                            end
-                          end
-                          vim.api.nvim_buf_set_lines(
-                            previewer_bufnr4,
-                            line_index - 1,
-                            line_index - 1 + line_count,
-                            false,
-                            buf_lines
-                          )
-                          line_index = line_index + line_count
-                          if line_index <= #last_lines_item.lines then
-                            set_buf_lines()
-                          end
-                        end, 25)
-                      end
-                      set_buf_lines()
-                    end, 25)
-                  end
-                )
-              end, 80)
-              -- end
             end
           end, 80)
         end, { trim = true })
