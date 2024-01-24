@@ -52,8 +52,8 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
     else
       width = width - fzf_preview_window_opts.size
     end
-    additional_col_offset = math.floor(math.abs(old_width - width)) * sign
-      + sign
+    additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign
+    -- + sign
   elseif
     fzf_preview_window_opts.position == "up"
     or fzf_preview_window_opts.position == "down"
@@ -66,8 +66,8 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
     else
       height = height - fzf_preview_window_opts.size
     end
-    additional_row_offset = math.floor(math.abs(old_height - height)) * sign
-      + sign
+    additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign
+    -- + sign
   end
   log.debug(
     "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
@@ -145,7 +145,7 @@ M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
     else
       width = fzf_preview_window_opts.size
     end
-    additional_col_offset = math.floor(math.abs(old_width - width)) * sign
+    additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign
       + sign
   elseif
     fzf_preview_window_opts.position == "up"
@@ -158,7 +158,7 @@ M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
     else
       height = fzf_preview_window_opts.size
     end
-    additional_row_offset = math.floor(math.abs(old_height - height)) * sign
+    additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign
       + sign
   end
   log.debug(
