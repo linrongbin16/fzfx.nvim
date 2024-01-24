@@ -461,18 +461,13 @@ local function parse_fzf_preview_window_opts(opts)
   if type(opts) == "table" then
     split_opts = strings.split(opts[2], ",")
   else
-    local split_opts_value = strings.split(opts --[[@as string]], "=")
     log.ensure(
-      type(split_opts_value) == "table" and #split_opts_value >= 2,
-      "invalid fzf opts:%s",
+      type(opts) == "string" and strings.startswith(opts, "--preview-window"),
+      "invalid fzf preview window opts:%s",
       vim.inspect(opts)
     )
-    log.ensure(
-      split_opts_value[1] == "--preview-window",
-      "invalid fzf opts:%s",
-      vim.inspect(opts)
-    )
-    local opts_value = split_opts_value[2]
+    local opts_value =
+      string.sub(opts --[[@as string]], string.len("--preview-window") + 2)
     split_opts = strings.split(opts_value[2], ",")
   end
   log.ensure(
