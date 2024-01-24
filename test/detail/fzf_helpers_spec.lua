@@ -344,7 +344,7 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual2.size_is_percent, false)
       assert_eq(actual2.border, "border-bold")
     end)
-    it("(no)wrap", function()
+    it("wrap/follow/cycle/hidden", function()
       local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window",
         "wrap",
@@ -364,31 +364,79 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual2.size_is_percent, false)
       assert_eq(actual2.border, "border-bold")
       assert_eq(actual2.wrap, false)
-    end)
-    it("(no)follow", function()
-      local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
+      local actual3 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window",
         "nofollow",
       })
       print(
-        string.format("parse fzf --preview-window-9:%s", vim.inspect(actual1))
+        string.format("parse fzf --preview-window-9:%s", vim.inspect(actual3))
       )
-      assert_eq(actual1.position, "right")
-      assert_eq(actual1.size, 50)
-      assert_eq(actual1.size_is_percent, true)
-      assert_eq(actual1.follow, false)
-      local actual2 = fzf_helpers.parse_fzf_preview_window_opts(
+      assert_eq(actual3.position, "right")
+      assert_eq(actual3.size, 50)
+      assert_eq(actual3.size_is_percent, true)
+      assert_eq(actual3.follow, false)
+      local actual4 = fzf_helpers.parse_fzf_preview_window_opts(
         "--preview-window=down,3,border-bold,nowrap,follow"
       )
       print(
-        string.format("parse fzf --preview-window-10:%s", vim.inspect(actual2))
+        string.format("parse fzf --preview-window-10:%s", vim.inspect(actual4))
       )
-      assert_eq(actual2.position, "down")
-      assert_eq(actual2.size, 3)
-      assert_eq(actual2.size_is_percent, false)
-      assert_eq(actual2.border, "border-bold")
-      assert_eq(actual2.wrap, false)
-      assert_eq(actual2.follow, true)
+      assert_eq(actual4.position, "down")
+      assert_eq(actual4.size, 3)
+      assert_eq(actual4.size_is_percent, false)
+      assert_eq(actual4.border, "border-bold")
+      assert_eq(actual4.wrap, false)
+      assert_eq(actual4.follow, true)
+      local actual5 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "nofollow",
+      })
+      print(
+        string.format("parse fzf --preview-window-11:%s", vim.inspect(actual5))
+      )
+      assert_eq(actual5.position, "right")
+      assert_eq(actual5.size, 50)
+      assert_eq(actual5.size_is_percent, true)
+      assert_eq(actual5.follow, false)
+      local actual6 = fzf_helpers.parse_fzf_preview_window_opts(
+        "--preview-window=down,3,border-bold,nowrap,follow"
+      )
+      print(
+        string.format("parse fzf --preview-window-12:%s", vim.inspect(actual6))
+      )
+      assert_eq(actual6.position, "down")
+      assert_eq(actual6.size, 3)
+      assert_eq(actual6.size_is_percent, false)
+      assert_eq(actual6.border, "border-bold")
+      assert_eq(actual6.wrap, false)
+      assert_eq(actual6.follow, true)
+      local actual7 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "nofollow,cycle,hidden",
+      })
+      print(
+        string.format("parse fzf --preview-window-13:%s", vim.inspect(actual7))
+      )
+      assert_eq(actual7.position, "right")
+      assert_eq(actual7.size, 50)
+      assert_eq(actual7.size_is_percent, true)
+      assert_eq(actual7.follow, false)
+      assert_eq(actual7.cycle, true)
+      assert_eq(actual7.hidden, true)
+      local actual8 = fzf_helpers.parse_fzf_preview_window_opts(
+        "--preview-window=down,3,border-bold,nowrap,follow,nocycle,nohidden"
+      )
+      print(
+        string.format("parse fzf --preview-window-14:%s", vim.inspect(actual8))
+      )
+      assert_eq(actual8.position, "down")
+      assert_eq(actual8.size, 3)
+      assert_eq(actual8.size_is_percent, false)
+      assert_eq(actual8.border, "border-bold")
+      assert_eq(actual8.wrap, false)
+      assert_eq(actual8.follow, true)
+      assert_eq(actual8.cycle, false)
+      assert_eq(actual8.hidden, false)
     end)
   end)
 end)
