@@ -1149,7 +1149,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       end)
 
                       local line_index = 1
-                      local line_count = 10
+                      local line_count = 5
 
                       local function set_buf_lines()
                         vim.defer_fn(function()
