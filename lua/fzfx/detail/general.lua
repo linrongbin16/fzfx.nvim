@@ -929,6 +929,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local builtin_previewers_results_queue = {}
   local builtin_previewers_results_lines_queue = {}
   local fzf_focus_binder = nil
+  local fzf_load_binder = nil
   if use_builtin_previewer then
     local dump_focused_line_command = nil
     if consts.IS_WINDOWS then
@@ -940,6 +941,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     fileios.writefile(focused_line_file, "")
     fzf_focus_binder = fzf_helpers.FzfOptEventBinder:new("focus")
     fzf_focus_binder:append(
+      string.format("execute-silent(%s)", dump_focused_line_command)
+    )
+    fzf_load_binder = fzf_helpers.FzfOptEventBinder:new("load")
+    fzf_load_binder:append(
       string.format("execute-silent(%s)", dump_focused_line_command)
     )
     focused_line_fsevent, focused_line_fsevent_err = uv.new_fs_event() --[[@as uv_fs_event_t]]
@@ -1321,6 +1326,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   table.insert(fzf_opts, fzf_start_binder:build())
   if fzf_focus_binder then
     table.insert(fzf_opts, fzf_focus_binder:build())
+  end
+  if fzf_load_binder then
+    table.insert(fzf_opts, fzf_load_binder:build())
   end
 
   -- fzf_opts
