@@ -534,38 +534,38 @@ local function parse_fzf_preview_window_opts(opts)
     vim.inspect(split_opts)
   )
 
-  local split_opts_alternative = nil
-  local split_opts_no_alternative = {}
+  local opts_alternative_layout = nil
+  local opts_no_alternative_layout = {}
   for _, o in ipairs(split_opts) do
     if strings.startswith(o, "<") then
-      split_opts_alternative = o
+      opts_alternative_layout = o
     else
-      table.insert(split_opts_no_alternative, o)
+      table.insert(opts_no_alternative_layout, o)
     end
   end
 
   local result =
-    parse_fzf_preview_window_opts_no_alternative(split_opts_no_alternative) --[[@as fzfx.FzfPreviewWindowOpts]]
+    parse_fzf_preview_window_opts_no_alternative(opts_no_alternative_layout) --[[@as fzfx.FzfPreviewWindowOpts]]
   result.size_threshold = nil
   result.alternative_layout = nil
-  if split_opts_alternative then
-    local lbracket_pos = strings.find(split_opts_alternative, "(", 2)
+  if opts_alternative_layout then
+    local lbracket_pos = strings.find(opts_alternative_layout, "(", 2)
     log.ensure(
       type(lbracket_pos) == "number" and lbracket_pos > 2,
       "invalid fzf preview window opts(size_threshold): %s",
-      vim.inspect(split_opts_alternative)
+      vim.inspect(opts_alternative_layout)
     )
     log.ensure(
-      strings.endswith(split_opts_alternative, ")"),
+      strings.endswith(opts_alternative_layout, ")"),
       "invalid fzf preview window opts(size_threshold): %s",
       vim.inspect(opts)
     )
     result.size_threshold =
-      tonumber(string.sub(split_opts_alternative, 2, lbracket_pos - 1))
+      tonumber(string.sub(opts_alternative_layout, 2, lbracket_pos - 1))
     local split_alternatives = string.sub(
-      split_opts_alternative,
+      opts_alternative_layout,
       lbracket_pos + 1,
-      #split_opts_alternative - 1
+      #opts_alternative_layout - 1
     )
     result.alternative_layout = parse_fzf_preview_window_opts_no_alternative(
       _spilt_fzf_preview_window_opts(split_alternatives)
