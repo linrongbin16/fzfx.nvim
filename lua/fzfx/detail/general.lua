@@ -1125,20 +1125,54 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                         builtin_previewers_results_lines_queue[#builtin_previewers_results_lines_queue]
                       builtin_previewers_results_lines_queue = {}
 
-                      vim.api.nvim_buf_set_lines(
+                      local ok1, err1 = pcall(
+                        vim.api.nvim_buf_set_lines,
                         previewer_bufnr3,
                         0,
                         -1,
                         false,
                         {}
                       )
-                      vim.api.nvim_buf_set_name(
+                      if not ok1 then
+                        log.err(
+                          "failed to set lines for previewer buffer:%s, error:%s",
+                          vim.inspect(previewer_bufnr3),
+                          vim.inspect(err1)
+                        )
+                        return
+                      end
+                      local bufname =
+                        vim.api.nvim_buf_get_name(previewer_bufnr3)
+                      if bufname ~= last_lines_item.last_result.filename then
+                        local ok2, err2 = pcall(
+                          vim.api.nvim_buf_set_name,
+                          previewer_bufnr3,
+                          last_lines_item.last_result.filename
+                        )
+                        if not ok2 then
+                          log.err(
+                            "failed to set name for previewer buffer:%s, error:%s",
+                            vim.inspect(previewer_bufnr3),
+                            vim.inspect(err2)
+                          )
+                          return
+                        end
+                      end
+                      local ok3, err3 = pcall(
+                        vim.api.nvim_buf_call,
                         previewer_bufnr3,
-                        last_lines_item.last_result.filename
+                        function()
+                          vim.api.nvim_command([[filetype detect]])
+                        end
                       )
-                      vim.api.nvim_buf_call(previewer_bufnr3, function()
-                        vim.api.nvim_command([[filetype detect]])
-                      end)
+                      if not ok3 then
+                        log.err(
+                          "failed to call command in previewer buffer:%s, error:%s",
+                          vim.inspect(previewer_bufnr3),
+                          vim.inspect(err3)
+                        )
+                        return
+                      end
 
                       local line_index = 1
                       local line_count = 10
