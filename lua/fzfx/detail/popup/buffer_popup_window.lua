@@ -62,6 +62,13 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
         * sign
       + sign
   end
+  log.debug(
+    "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, additional_row_offset:%s, additional_col_offset:%s",
+    vim.inspect(opts),
+    vim.inspect(fzf_preview_window_opts),
+    vim.inspect(additional_row_offset),
+    vim.inspect(additional_col_offset)
+  )
 
   local total_width = relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(0)
@@ -90,10 +97,10 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
     total_width,
     width,
     opts.col,
-    -math.floor(width / 2) - 1
+    additional_col_offset
   )
 
-  return {
+  local result = {
     anchor = "NW",
     relative = relative,
     width = width,
@@ -104,6 +111,8 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
     border = opts.border,
     zindex = opts.zindex,
   }
+  log.debug("|_make_provider_center_opts| result:%s", vim.inspect(result))
+  return result
 end
 
 --- @param opts fzfx.WindowOpts
