@@ -70,11 +70,13 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
       + sign
   end
   log.debug(
-    "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s, width:%s, additional_row_offset:%s, additional_col_offset:%s",
+    "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
     vim.inspect(opts),
     vim.inspect(fzf_preview_window_opts),
     vim.inspect(height),
+    vim.inspect(total_height),
     vim.inspect(width),
+    vim.inspect(total_width),
     vim.inspect(additional_row_offset),
     vim.inspect(additional_col_offset)
   )
@@ -160,11 +162,13 @@ M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
       + sign
   end
   log.debug(
-    "|_make_previewer_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s, width:%s, additional_row_offset:%s, additional_col_offset:%s",
+    "|_make_previewer_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
     vim.inspect(opts),
     vim.inspect(fzf_preview_window_opts),
     vim.inspect(height),
+    vim.inspect(total_height),
     vim.inspect(width),
+    vim.inspect(total_width),
     vim.inspect(additional_row_offset),
     vim.inspect(additional_col_offset)
   )
@@ -192,7 +196,7 @@ M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
     additional_col_offset
   )
 
-  return {
+  local result = {
     anchor = "NW",
     relative = relative,
     width = width,
@@ -203,6 +207,8 @@ M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
     border = opts.border,
     zindex = opts.zindex,
   }
+  log.debug("|_make_previewer_center_opts| result:%s", vim.inspect(result))
+  return result
 end
 
 -- center window }
