@@ -1093,7 +1093,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                       builtin_previewers_results_lines_queue,
                       { lines = lines, last_result = last_result }
                     )
-                    vim.schedule(function()
+                    vim.defer_fn(function()
                       local previewer_winnr3 = tables.tbl_get(
                         popup,
                         "popup_window",
@@ -1200,7 +1200,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                         end, 20)
                       end
                       set_buf_lines()
-                    end)
+                    end, 20)
                   end
                 )
               end, 100)
