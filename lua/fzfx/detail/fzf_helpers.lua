@@ -408,8 +408,7 @@ end
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
 --
 --- @alias fzfx.FzfPreviewWindowOptsNoAlternative {position:"up"|"down"|"left"|"right"|nil,size:integer?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?}
---- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right"|nil,size:integer?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
-
+--
 --- @param split_opts string[]
 --- @return fzfx.FzfPreviewWindowOptsNoAlternative
 local function parse_fzf_preview_window_opts_no_alternative(split_opts)
@@ -448,6 +447,10 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
   return parsed
 end
 
+-- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
+-- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
+--- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right"|nil,size:integer?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
+--
 --- @param opts fzfx.FzfOpt?
 --- @return fzfx.FzfPreviewWindowOpts
 local function parse_fzf_preview_window_opts(opts)
