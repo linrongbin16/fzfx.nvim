@@ -21,8 +21,9 @@ local PopupWindow = {}
 --- @package
 --- @param win_opts fzfx.WindowOpts
 --- @param window_type "fzf"|"buffer"
+--- @param fzf_opts fzfx.FzfOpt[]
 --- @return fzfx.PopupWindow
-function PopupWindow:new(win_opts, window_type)
+function PopupWindow:new(win_opts, window_type, fzf_opts)
   -- check executables
   fzf_helpers.nvim_exec()
   fzf_helpers.fzf_exec()
@@ -32,7 +33,7 @@ function PopupWindow:new(win_opts, window_type)
   if window_type == "fzf" then
     instance = fzf_popup_window.FzfPopupWindow:new(win_opts)
   elseif window_type == "buffer" then
-    instance = buffer_popup_window.BufferPopupWindow:new(win_opts)
+    instance = buffer_popup_window.BufferPopupWindow:new(win_opts, fzf_opts)
   end
   PopupWindowInstances[instance:handle()] = self
 
@@ -126,7 +127,7 @@ end
 --- @alias fzfx.OnPopupExit fun(last_query:string):nil
 --- @param win_opts fzfx.WindowOpts
 --- @param source string
---- @param fzf_opts fzfx.Options
+--- @param fzf_opts fzfx.FzfOpt[]
 --- @param actions fzfx.Options
 --- @param context fzfx.PipelineContext
 --- @param on_close fzfx.OnPopupExit?
@@ -144,7 +145,7 @@ function Popup:new(
   local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
   local popup_window =
-    PopupWindow:new(win_opts, builtin_previewer and "buffer" or "fzf")
+    PopupWindow:new(win_opts, builtin_previewer and "buffer" or "fzf", fzf_opts)
 
   local function on_fzf_exit(jobid2, exitcode, event)
     log.debug(

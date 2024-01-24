@@ -170,8 +170,9 @@ local BufferPopupWindow = {}
 
 --- @package
 --- @param win_opts fzfx.WindowOpts
+--- @param fzf_opts fzfx.FzfOpt[]
 --- @return fzfx.BufferPopupWindow
-function BufferPopupWindow:new(win_opts)
+function BufferPopupWindow:new(win_opts, fzf_opts)
   -- save current window context
   local window_opts_context = popup_helpers.WindowOptsContext:save()
 
@@ -226,11 +227,15 @@ function BufferPopupWindow:close()
 
   if vim.api.nvim_win_is_valid(self.provider_winnr) then
     vim.api.nvim_win_close(self.provider_winnr, true)
+    self.provider_winnr = nil
   end
   if vim.api.nvim_win_is_valid(self.previewer_winnr) then
     vim.api.nvim_win_close(self.previewer_winnr, true)
+    self.previewer_winnr = nil
   end
 
+  self.provider_bufnr = nil
+  self.previewer_bufnr = nil
   self.window_opts_context:restore()
 end
 

@@ -151,8 +151,10 @@ function FzfPopupWindow:close()
 
   if vim.api.nvim_win_is_valid(self.winnr) then
     vim.api.nvim_win_close(self.winnr, true)
+    self.winnr = nil
   end
 
+  self.bufnr = nil
   self.window_opts_context:restore()
 end
 
