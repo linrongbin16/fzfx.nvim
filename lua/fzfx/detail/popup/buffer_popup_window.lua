@@ -41,7 +41,9 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
     local old_width = opts.width
     local sign = fzf_preview_window_opts.position == "left" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
-      opts.width = math.floor(opts.width / 100 * fzf_preview_window_opts.size)
+      opts.width = math.floor(
+        opts.width - (opts.width / 100 * fzf_preview_window_opts.size)
+      )
     else
       opts.width = opts.width - fzf_preview_window_opts.size
     end
@@ -54,7 +56,9 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
     local old_height = opts.height
     local sign = fzf_preview_window_opts.position == "up" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
-      opts.height = math.floor(opts.height / 100 * fzf_preview_window_opts.size)
+      opts.height = math.floor(
+        opts.height - (opts.height / 100 * fzf_preview_window_opts.size)
+      )
     else
       opts.height = opts.height - fzf_preview_window_opts.size
     end
@@ -120,6 +124,45 @@ end
 --- @return fzfx.NvimFloatWinOpts
 M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
+
+  local additional_row_offset = 0
+  local additional_col_offset = 0
+  if
+    fzf_preview_window_opts.position == "left"
+    or fzf_preview_window_opts.position == "right"
+  then
+    local old_width = opts.width
+    local sign = fzf_preview_window_opts.position == "left" and -1 or 1
+    if fzf_preview_window_opts.size_is_percent then
+      opts.width = math.floor(opts.width / 100 * fzf_preview_window_opts.size)
+    else
+      opts.width = fzf_preview_window_opts.size
+    end
+    additional_col_offset = math.floor(math.abs(old_width - opts.width)) * sign
+      + sign
+  elseif
+    fzf_preview_window_opts.position == "up"
+    or fzf_preview_window_opts.position == "down"
+  then
+    local old_height = opts.height
+    local sign = fzf_preview_window_opts.position == "up" and -1 or 1
+    if fzf_preview_window_opts.size_is_percent then
+      opts.height = math.floor(opts.height / 100 * fzf_preview_window_opts.size)
+    else
+      opts.height = fzf_preview_window_opts.size
+    end
+    additional_row_offset = math.floor(math.abs(old_height - opts.height))
+        * sign
+      + sign
+  end
+  log.debug(
+    "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, additional_row_offset:%s, additional_col_offset:%s",
+    vim.inspect(opts),
+    vim.inspect(fzf_preview_window_opts),
+    vim.inspect(additional_row_offset),
+    vim.inspect(additional_col_offset)
+  )
+
   opts.width = opts.width / 2
 
   local total_width = relative == "editor" and vim.o.columns
