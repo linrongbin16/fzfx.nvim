@@ -279,6 +279,32 @@ describe("detail.fzf_helpers", function()
     end)
   end)
   describe("[parse_fzf_preview_window_opts]", function()
-    it("test", function() end)
+    it("no-alternative 1", function()
+      local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "up,30%",
+      })
+      print(
+        string.format("parse fzf --preview-window-1:%s", vim.inspect(actual1))
+      )
+      local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "down,3",
+      })
+      print(
+        string.format("parse fzf --preview-window-2:%s", vim.inspect(actual2))
+      )
+      local actual3 =
+        fzf_helpers.parse_fzf_preview_window_opts("--preview-window=left,50%")
+      print(
+        string.format("parse fzf --preview-window-3:%s", vim.inspect(actual3))
+      )
+      local actual4 =
+        fzf_helpers.parse_fzf_preview_window_opts("--preview-window=right,50")
+      print(
+        string.format("parse fzf --preview-window-4:%s", vim.inspect(actual4))
+      )
+    end)
+    it("no-alternative 2", function() end)
   end)
 end)

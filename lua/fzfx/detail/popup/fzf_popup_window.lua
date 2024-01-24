@@ -5,7 +5,7 @@ local fileios = require("fzfx.commons.fileios")
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
-local popup_helpers = require("fzfx.detail.popup.helpers")
+local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 
 local M = {}
 

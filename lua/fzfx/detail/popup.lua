@@ -7,7 +7,7 @@ local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
-local popup_helpers = require("fzfx.detail.popup.helpers")
+local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local fzf_popup_window = require("fzfx.detail.popup.fzf_popup_window")
 local buffer_popup_window = require("fzfx.detail.popup.buffer_popup_window")
 

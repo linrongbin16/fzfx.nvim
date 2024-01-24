@@ -108,6 +108,7 @@ M.ShellOptsContext = ShellOptsContext
 
 -- ShellOptsContext }
 
+-- calculate window size by percentage (0.0 < value < 1.0) or integer (value >= 1.0)
 --- @package
 --- @param value number
 --- @param size integer
@@ -116,6 +117,7 @@ M.get_window_size = function(value, size)
   return numbers.bound(value > 1 and value or math.floor(size * value), 3, size)
 end
 
+-- calculate window position shift by offset and (optional) additional_offset
 --- @param total_size integer
 --- @param size integer
 --- @param shift number
