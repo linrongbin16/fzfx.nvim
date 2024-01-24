@@ -123,50 +123,51 @@ end
 M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
 
-  local additional_row_offset = 0
-  local additional_col_offset = 0
-  if
-    fzf_preview_window_opts.position == "left"
-    or fzf_preview_window_opts.position == "right"
-  then
-    local old_width = opts.width
-    local sign = fzf_preview_window_opts.position == "left" and -1 or 1
-    if fzf_preview_window_opts.size_is_percent then
-      opts.width = math.floor(opts.width / 100 * fzf_preview_window_opts.size)
-    else
-      opts.width = fzf_preview_window_opts.size
-    end
-    additional_col_offset = math.floor(math.abs(old_width - opts.width)) * sign
-      + sign
-  elseif
-    fzf_preview_window_opts.position == "up"
-    or fzf_preview_window_opts.position == "down"
-  then
-    local old_height = opts.height
-    local sign = fzf_preview_window_opts.position == "up" and -1 or 1
-    if fzf_preview_window_opts.size_is_percent then
-      opts.height = math.floor(opts.height / 100 * fzf_preview_window_opts.size)
-    else
-      opts.height = fzf_preview_window_opts.size
-    end
-    additional_row_offset = math.floor(math.abs(old_height - opts.height))
-        * sign
-      + sign
-  end
-  log.debug(
-    "|_make_previewer_center_opts| opts:%s, fzf_preview_window_opts:%s, additional_row_offset:%s, additional_col_offset:%s",
-    vim.inspect(opts),
-    vim.inspect(fzf_preview_window_opts),
-    vim.inspect(additional_row_offset),
-    vim.inspect(additional_col_offset)
-  )
-
   local total_width = relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(0)
   local total_height = relative == "editor" and vim.o.lines
     or vim.api.nvim_win_get_height(0)
   local width = popup_helpers.get_window_size(opts.width, total_width)
   local height = popup_helpers.get_window_size(opts.height, total_height)
+
+  local additional_row_offset = 0
+  local additional_col_offset = 0
+  if
+    fzf_preview_window_opts.position == "left"
+    or fzf_preview_window_opts.position == "right"
+  then
+    local old_width = width
+    local sign = fzf_preview_window_opts.position == "left" and -1 or 1
+    if fzf_preview_window_opts.size_is_percent then
+      width = math.floor(width / 100 * fzf_preview_window_opts.size)
+    else
+      width = fzf_preview_window_opts.size
+    end
+    additional_col_offset = math.floor(math.abs(old_width - width)) * sign
+      + sign
+  elseif
+    fzf_preview_window_opts.position == "up"
+    or fzf_preview_window_opts.position == "down"
+  then
+    local old_height = height
+    local sign = fzf_preview_window_opts.position == "up" and -1 or 1
+    if fzf_preview_window_opts.size_is_percent then
+      height = math.floor(height / 100 * fzf_preview_window_opts.size)
+    else
+      height = fzf_preview_window_opts.size --[[@as integer]]
+    end
+    additional_row_offset = math.floor(math.abs(old_height - height)) * sign
+      + sign
+  end
+  log.debug(
+    "|_make_previewer_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s, width:%s, additional_row_offset:%s, additional_col_offset:%s",
+    vim.inspect(opts),
+    vim.inspect(fzf_preview_window_opts),
+    vim.inspect(height),
+    vim.inspect(width),
+    vim.inspect(additional_row_offset),
+    vim.inspect(additional_col_offset)
+  )
 
   log.ensure(
     (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,

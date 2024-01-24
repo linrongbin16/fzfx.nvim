@@ -407,7 +407,7 @@ end
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
 --
---- @alias fzfx.FzfPreviewWindowOptsNoAlternative {position:"up"|"down"|"left"|"right"|nil,size:integer?,size_is_percent:boolean?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?}
+--- @alias fzfx.FzfPreviewWindowOptsNoAlternative {position:"up"|"down"|"left"|"right",size:integer,size_is_percent:boolean,border:string,wrap:boolean,follow:boolean,cycle:boolean,hidden:boolean,scroll:string?,header_lines:integer?}
 --
 --- @param split_opts string[]
 --- @return fzfx.FzfPreviewWindowOptsNoAlternative
@@ -498,7 +498,7 @@ end
 
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
---- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right"|nil,size:integer?,size_is_percent:boolean?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
+--- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right",size:integer,size_is_percent:boolean,border:string,wrap:boolean,follow:boolean,cycle:boolean,hidden:boolean,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
 --
 --- @param opts fzfx.FzfOpt?
 --- @return fzfx.FzfPreviewWindowOpts
