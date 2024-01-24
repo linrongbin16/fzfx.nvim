@@ -31,7 +31,26 @@ M._make_previewer_cursor_opts = function(opts, fzf_preview_window_opts) end
 --- @return fzfx.NvimFloatWinOpts
 M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
-  opts.width = opts.width / 2
+
+  if
+    fzf_preview_window_opts.position == "left"
+    or fzf_preview_window_opts.position == "right"
+  then
+    if fzf_preview_window_opts.size_is_percent then
+      opts.width = opts.width / 100 * fzf_preview_window_opts.size
+    else
+      opts.width = opts.width - fzf_preview_window_opts.size
+    end
+  elseif
+    fzf_preview_window_opts.position == "up"
+    or fzf_preview_window_opts.position == "down"
+  then
+    if fzf_preview_window_opts.size_is_percent then
+      opts.height = opts.height / 100 * fzf_preview_window_opts.size
+    else
+      opts.height = opts.height - fzf_preview_window_opts.size
+    end
+  end
 
   local total_width = relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(0)
