@@ -458,18 +458,17 @@ end
 
 --- @param opts_value string
 --- @return string[]
-local function spilt_fzf_preview_window_opts(opts_value)
+local function _spilt_fzf_preview_window_opts(opts_value)
   local i = 1
   local n = string.len(opts_value)
   local results = {}
   while i <= n do
-    local next_comma_pos = strings.find(opts_value, ",", i)
     if string.sub(opts_value, i, i) == "<" then
       local next_lbracket_pos = strings.find(opts_value, "(", i + 1)
       log.ensure(
         type(next_lbracket_pos) == "number" and next_lbracket_pos > i + 1,
         "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
-        vim.inspect(next_comma_pos),
+        vim.inspect(i),
         vim.inspect(opts_value)
       )
       local next_rbracket_pos =
@@ -481,10 +480,13 @@ local function spilt_fzf_preview_window_opts(opts_value)
         vim.inspect(next_lbracket_pos),
         vim.inspect(opts_value)
       )
-      next_comma_pos = strings.find(opts_value, ",", next_rbracket_pos + 1)
-    end
-    if type(next_comma_pos) == "number" then
-      table.insert(results, string.sub(opts_value, i, next_comma_pos - 1))
+      table.insert(results, string.sub(opts_value, i, next_rbracket_pos - 1))
+      i = next_rbracket_pos + 1
+    elseif type(strings.find(opts_value, ",", i)) == "number" then
+      local next_comma_pos = strings.find(opts_value, ",", i) --[[@as integer]]
+      if next_comma_pos > i then
+        table.insert(results, string.sub(opts_value, i, next_comma_pos - 1))
+      end
       i = next_comma_pos + 1
     else
       table.insert(results, string.sub(opts_value, i))
@@ -622,6 +624,7 @@ local M = {
   nvim_exec = nvim_exec,
   fzf_exec = fzf_exec,
   make_lua_command = make_lua_command,
+  _spilt_fzf_preview_window_opts = _spilt_fzf_preview_window_opts,
   parse_fzf_preview_window_opts = parse_fzf_preview_window_opts,
   setup = setup,
 }
