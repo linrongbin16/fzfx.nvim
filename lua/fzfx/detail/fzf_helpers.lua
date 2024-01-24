@@ -523,23 +523,7 @@ local function parse_fzf_preview_window_opts(opts)
   end
 
   --- @type string[]
-  local split_opts = nil
-  if type(opts) == "table" then
-    split_opts = strings.split(opts[2], ",")
-  else
-    log.ensure(
-      type(opts) == "string" and strings.startswith(opts, "--preview-window"),
-      "invalid fzf preview window opts:%s",
-      vim.inspect(opts)
-    )
-    local opts_value =
-      string.sub(opts --[[@as string]], string.len("--preview-window") + 2)
-    log.debug(
-      "|parse_fzf_preview_window_opts| opts_value:%s",
-      vim.inspect(opts_value)
-    )
-    split_opts = strings.split(opts_value, ",")
-  end
+  local split_opts = _spilt_fzf_preview_window_opts(opts_value)
   log.ensure(
     type(split_opts) == "table",
     "failed to split preview window opts into list: %s",
@@ -566,9 +550,9 @@ local function parse_fzf_preview_window_opts(opts)
   parsed.size_threshold = nil
   parsed.alternative_layout = nil
   if split_opts_alternative then
-    local first_lbracket_pos = strings.find(split_opts_alternative, "(", 2)
+    local lbracket_pos = strings.find(split_opts_alternative, "(", 2)
     log.ensure(
-      type(first_lbracket_pos) == "number" and first_lbracket_pos > 2,
+      type(lbracket_pos) == "number" and lbracket_pos > 2,
       "invalid fzf preview window opts(size_threshold): %s",
       vim.inspect(split_opts_alternative)
     )
@@ -578,14 +562,14 @@ local function parse_fzf_preview_window_opts(opts)
       vim.inspect(opts)
     )
     parsed.size_threshold =
-      tonumber(string.sub(split_opts_alternative, 2, first_lbracket_pos - 1))
+      tonumber(string.sub(split_opts_alternative, 2, lbracket_pos - 1))
     local split_alternatives = string.sub(
       split_opts_alternative,
-      first_lbracket_pos + 1,
+      lbracket_pos + 1,
       #split_opts_alternative - 1
     )
     parsed.alternative_layout = parse_fzf_preview_window_opts_no_alternative(
-      strings.split(split_alternatives, ",")
+      _spilt_fzf_preview_window_opts(split_alternatives)
     )
   end
   return parsed
