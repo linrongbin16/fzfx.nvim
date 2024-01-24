@@ -1208,10 +1208,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     end, 25)
                   end
                 )
-              end, 80)
+              end, 100)
               -- end
             end
-          end, 80)
+          end, 100)
         end, { trim = true })
       end
     )
