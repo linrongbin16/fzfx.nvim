@@ -614,6 +614,23 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual3.alternative_layout.follow, false)
       assert_eq(actual3.alternative_layout.header_lines, 5)
       assert_eq(actual3.alternative_layout.scroll, "+{1}+4/3")
+      local actual4 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "~3,+{2}+3/2,<90(),nohidden",
+      })
+      print(
+        string.format(
+          "parse fzf --preview-window-22:%s\n",
+          vim.inspect(actual4)
+        )
+      )
+      assert_eq(actual4.header_lines, 3)
+      assert_eq(actual4.scroll, "+{2}+3/2")
+      assert_eq(actual4.size_threshold, 90)
+      assert_eq(actual4.alternative_layout.position, "right")
+      assert_eq(actual4.alternative_layout.size, 50)
+      assert_eq(actual4.alternative_layout.size_is_percent, true)
+      assert_eq(actual4.hidden, false)
     end)
   end)
 end)
