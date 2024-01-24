@@ -407,14 +407,15 @@ end
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
 --
---- @alias fzfx.FzfPreviewWindowOptsNoAlternative {position:"up"|"down"|"left"|"right"|nil,size:integer?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?}
+--- @alias fzfx.FzfPreviewWindowOptsNoAlternative {position:"up"|"down"|"left"|"right"|nil,size:integer?,size_is_percent:boolean?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?}
 --
 --- @param split_opts string[]
 --- @return fzfx.FzfPreviewWindowOptsNoAlternative
 local function parse_fzf_preview_window_opts_no_alternative(split_opts)
-  local parsed = {
+  local result = {
     position = "right",
     size = 50,
+    size_is_percent = true,
     border = "border-rounded",
     wrap = false,
     follow = false,
@@ -425,31 +426,39 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
   }
   for i, o in ipairs(split_opts) do
     if o == "up" or o == "down" or o == "left" or o == "right" then
-      parsed.position = o
+      result.position = o
     elseif strings.endswith(o, "%") then
-      parsed.size = tonumber(string.sub(o, 1, #o - 1))
+      result.size = tonumber(string.sub(o, 1, #o - 1))
+    elseif
+      not strings.startswith(o, "+")
+      and not strings.startswith(o, "-")
+      and not strings.startswith(o, "~")
+      and type(tonumber(o)) == "number"
+    then
+      result.size = tonumber(o)
+      result.size_is_percent = false
     elseif strings.startswith(o, "border-") then
-      parsed.border = o
+      result.border = o
     elseif o == "nowrap" or o == "wrap" then
-      parsed.wrap = o == "wrap"
+      result.wrap = o == "wrap"
     elseif o == "nofollow" or o == "follow" then
-      parsed.follow = o == "follow"
+      result.follow = o == "follow"
     elseif o == "nocycle" or o == "cycle" then
-      parsed.cycle = o == "cycle"
+      result.cycle = o == "cycle"
     elseif o == "nohidden" or o == "hidden" then
-      parsed.hidden = o == "hidden"
+      result.hidden = o == "hidden"
     elseif strings.startswith(o, "+") or strings.startswith(o, "-") then
-      parsed.scroll = o
+      result.scroll = o
     elseif strings.startswith(o, "~") then
-      parsed.header_lines = tonumber(string.sub(o, 2))
+      result.header_lines = tonumber(string.sub(o, 2))
     end
   end
-  return parsed
+  return result
 end
 
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
---- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right"|nil,size:integer?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
+--- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right"|nil,size:integer?,size_is_percent:boolean?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
 --
 --- @param opts fzfx.FzfOpt?
 --- @return fzfx.FzfPreviewWindowOpts
