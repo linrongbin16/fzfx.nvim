@@ -456,6 +456,44 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
   return result
 end
 
+--- @param opts_value string
+--- @return string[]
+local function spilt_fzf_preview_window_opts(opts_value)
+  local i = 1
+  local n = string.len(opts_value)
+  local results = {}
+  while i <= n do
+    local next_comma_pos = strings.find(opts_value, ",", i)
+    if string.sub(opts_value, i, i) == "<" then
+      local next_lbracket_pos = strings.find(opts_value, "(", i + 1)
+      log.ensure(
+        type(next_lbracket_pos) == "number" and next_lbracket_pos > i + 1,
+        "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
+        vim.inspect(next_comma_pos),
+        vim.inspect(opts_value)
+      )
+      local next_rbracket_pos =
+        strings.find(opts_value, ")", next_lbracket_pos + 1)
+      log.ensure(
+        type(next_rbracket_pos) == "number"
+          and next_rbracket_pos > next_lbracket_pos,
+        "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
+        vim.inspect(next_lbracket_pos),
+        vim.inspect(opts_value)
+      )
+      next_comma_pos = strings.find(opts_value, ",", next_rbracket_pos + 1)
+    end
+    if type(next_comma_pos) == "number" then
+      table.insert(results, string.sub(opts_value, i, next_comma_pos - 1))
+      i = next_comma_pos + 1
+    else
+      table.insert(results, string.sub(opts_value, i))
+      break
+    end
+  end
+  return results
+end
+
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
 --- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right"|nil,size:integer?,size_is_percent:boolean?,border:string?,wrap:boolean?,follow:boolean?,cycle:boolean?,hidden:boolean?,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
@@ -468,6 +506,20 @@ local function parse_fzf_preview_window_opts(opts)
     "invalid fzf opts:%s",
     vim.inspect(opts)
   )
+  local opts_value = nil
+  if type(opts) == "table" then
+    opts_value = strings.trim(opts[2])
+  else
+    log.ensure(
+      type(opts) == "string" and strings.startswith(opts, "--preview-window"),
+      "invalid fzf preview window opts:%s",
+      vim.inspect(opts)
+    )
+    opts_value = strings.trim(
+      string.sub(opts --[[@as string]], string.len("--preview-window") + 2)
+    )
+  end
+
   --- @type string[]
   local split_opts = nil
   if type(opts) == "table" then
@@ -491,6 +543,10 @@ local function parse_fzf_preview_window_opts(opts)
     "failed to split preview window opts into list: %s",
     vim.inspect(split_opts)
   )
+  log.debug(
+    "|parse_fzf_preview_window_opts| split_opts:%s",
+    vim.inspect(split_opts)
+  )
 
   local split_opts_alternative = nil
   local split_opts_no_alternative = {}
@@ -512,7 +568,7 @@ local function parse_fzf_preview_window_opts(opts)
     log.ensure(
       type(first_lbracket_pos) == "number" and first_lbracket_pos > 2,
       "invalid fzf preview window opts(size_threshold): %s",
-      vim.inspect(opts)
+      vim.inspect(split_opts_alternative)
     )
     log.ensure(
       strings.endswith(split_opts_alternative, ")"),
