@@ -156,14 +156,12 @@ M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
       + sign
   end
   log.debug(
-    "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, additional_row_offset:%s, additional_col_offset:%s",
+    "|_make_previewer_center_opts| opts:%s, fzf_preview_window_opts:%s, additional_row_offset:%s, additional_col_offset:%s",
     vim.inspect(opts),
     vim.inspect(fzf_preview_window_opts),
     vim.inspect(additional_row_offset),
     vim.inspect(additional_col_offset)
   )
-
-  opts.width = opts.width / 2
 
   local total_width = relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(0)
@@ -182,12 +180,17 @@ M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
     "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
     vim.inspect(opts)
   )
-  local row = popup_helpers.shift_window_pos(total_height, height, opts.row)
+  local row = popup_helpers.shift_window_pos(
+    total_height,
+    height,
+    opts.row,
+    additional_row_offset
+  )
   local col = popup_helpers.shift_window_pos(
     total_width,
     width,
     opts.col,
-    math.floor(width / 2) + 1
+    additional_col_offset
   )
 
   return {
