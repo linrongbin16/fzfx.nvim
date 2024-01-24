@@ -291,6 +291,9 @@ describe("detail.fzf_helpers", function()
       print(
         string.format("parse fzf --preview-window-1:%s", vim.inspect(actual1))
       )
+      assert_eq(actual1.position, "up")
+      assert_eq(actual1.size, 30)
+      assert_eq(actual1.size_is_percent, true)
       local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window",
         "down,3",
@@ -298,6 +301,9 @@ describe("detail.fzf_helpers", function()
       print(
         string.format("parse fzf --preview-window-2:%s", vim.inspect(actual2))
       )
+      assert_eq(actual1.position, "down")
+      assert_eq(actual2.size, 3)
+      assert_eq(actual2.size_is_percent, true)
       local actual3 =
         fzf_helpers.parse_fzf_preview_window_opts("--preview-window=left,50%")
       print(

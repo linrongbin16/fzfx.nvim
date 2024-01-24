@@ -425,7 +425,15 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
     header_lines = nil,
   }
   for i, o in ipairs(split_opts) do
-    if o == "up" or o == "down" or o == "left" or o == "right" then
+    if
+      type(o) == "string"
+      and (
+        string.lower(o) == "up"
+        or string.lower(o) == "down"
+        or string.lower(o) == "left"
+        or string.lower(o) == "right"
+      )
+    then
       result.position = o
     elseif strings.endswith(o, "%") then
       result.size = tonumber(string.sub(o, 1, #o - 1))
