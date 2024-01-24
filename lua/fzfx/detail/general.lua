@@ -1197,10 +1197,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                           if line_index <= #last_lines_item.lines then
                             set_buf_lines()
                           end
-                        end, 20)
+                        end, 25)
                       end
                       set_buf_lines()
-                    end, 20)
+                    end, 25)
                   end
                 )
               end, 80)
