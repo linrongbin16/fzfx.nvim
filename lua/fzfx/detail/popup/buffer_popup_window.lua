@@ -272,8 +272,7 @@ end
 --- @field previewer_bufnr integer?
 --- @field previewer_winnr integer?
 --- @field _saved_win_opts fzfx.WindowOpts
---- @field _saved_fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
---- @field _saved_fzf_border_opts string
+--- @field _saved_builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 --- @field _resizing boolean
 --- @field preview_files_queue fzfx.BuiltinFilePreviewerResult[]
 --- @field preview_file_contents_queue {lines:string[],preview_result:fzfx.BuiltinFilePreviewerResult}[]
@@ -299,15 +298,11 @@ function BufferPopupWindow:new(win_opts, builtin_previewer_opts)
   apis.set_buf_option(previewer_bufnr, "buflisted", false)
   apis.set_buf_option(previewer_bufnr, "filetype", "fzf")
 
-  local provider_nvim_float_win_opts = M.make_provider_opts(
-    win_opts,
-    builtin_previewer_opts.fzf_preview_window_opts
-  )
+  local provider_nvim_float_win_opts =
+    M.make_provider_opts(win_opts, builtin_previewer_opts)
   provider_nvim_float_win_opts.border = "rounded"
-  local previewer_nvim_float_win_opts = M.make_previewer_opts(
-    win_opts,
-    builtin_previewer_opts.fzf_preview_window_opts
-  )
+  local previewer_nvim_float_win_opts =
+    M.make_previewer_opts(win_opts, builtin_previewer_opts)
   previewer_nvim_float_win_opts.focusable = false
 
   local previewer_winnr =
@@ -331,8 +326,7 @@ function BufferPopupWindow:new(win_opts, builtin_previewer_opts)
     previewer_bufnr = previewer_bufnr,
     previewer_winnr = previewer_winnr,
     _saved_win_opts = win_opts,
-    _saved_fzf_preview_window_opts = builtin_previewer_opts.fzf_preview_window_opts,
-    _saved_fzf_border_opts = builtin_previewer_opts.fzf_border_opts,
+    _saved_builtin_previewer_opts = builtin_previewer_opts,
     _resizing = false,
     preview_files_queue = {},
     preview_file_contents_queue = {},
@@ -366,11 +360,11 @@ function BufferPopupWindow:resize()
   self._resizing = true
   local provider_nvim_float_win_opts = M.make_provider_opts(
     self._saved_win_opts,
-    self._saved_fzf_preview_window_opts
+    self._saved_builtin_previewer_opts
   )
   local previewer_nvim_float_win_opts = M.make_previewer_opts(
     self._saved_win_opts,
-    self._saved_fzf_preview_window_opts
+    self._saved_builtin_previewer_opts
   )
   vim.api.nvim_win_set_config(self.provider_winnr, provider_nvim_float_win_opts)
   vim.api.nvim_win_set_config(
