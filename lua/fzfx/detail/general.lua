@@ -893,24 +893,27 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     "|general| reload_query_command:%s",
     vim.inspect(reload_query_command)
   )
-  local preview_command = string.format(
-    "%s %s %s %s {}",
-    fzf_helpers.make_lua_command("general", "previewer.lua"),
-    preview_rpc_id,
-    previewer_switch.metafile,
-    previewer_switch.resultfile
-  )
-  log.debug("|general| preview_command:%s", vim.inspect(preview_command))
 
   local fzf_opts = {
     "--print-query",
     "--listen",
     { "--query", query },
-    {
+  }
+
+  if not use_builtin_previewer then
+    local preview_command = string.format(
+      "%s %s %s %s {}",
+      fzf_helpers.make_lua_command("general", "previewer.lua"),
+      preview_rpc_id,
+      previewer_switch.metafile,
+      previewer_switch.resultfile
+    )
+    log.debug("|general| preview_command:%s", vim.inspect(preview_command))
+    table.insert(fzf_opts, {
       "--preview",
       preview_command,
-    },
-  }
+    })
+  end
 
   local dump_fzf_port_command = nil
   if consts.IS_WINDOWS then
