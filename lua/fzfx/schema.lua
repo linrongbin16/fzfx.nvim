@@ -36,17 +36,17 @@ local ProviderTypeEnum = {
 --
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.BuiltinFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
---- @alias fzfx.BuiltinFilePreviewer fun(line:string?,context:fzfx.PipelineContext?):fzfx.BuiltinFilePreviewerResult?
---- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer|fzfx.BuiltinFilePreviewer
+--- @alias fzfx.BufferFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
+--- @alias fzfx.BufferFilePreviewer fun(line:string?,context:fzfx.PipelineContext?):fzfx.BufferFilePreviewerResult?
+--- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer|fzfx.BufferFilePreviewer
 ---
---- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"builtin_file"
+--- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"buffer_file"
 --- @enum fzfx.PreviewerTypeEnum
 local PreviewerTypeEnum = {
   COMMAND = "command",
   COMMAND_LIST = "command_list",
   LIST = "list",
-  BUILTIN_FILE = "builtin_file",
+  BUFFER_FILE = "buffer_file",
 }
 --
 -- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.

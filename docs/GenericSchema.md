@@ -122,11 +122,11 @@ We have below types of previewers:
 ```lua
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.BuiltinFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
---- @alias fzfx.BuiltinFilePreviewer fun(line:string?,context:fzfx.PipelineContext?):fzfx.BuiltinFilePreviewerResult?
---- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer|fzfx.BuiltinFilePreviewer
+--- @alias fzfx.BufferFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
+--- @alias fzfx.BufferFilePreviewer fun(line:string?,context:fzfx.PipelineContext?):fzfx.BufferFilePreviewerResult?
+--- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer|fzfx.BufferFilePreviewer
 ---
---- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"builtin_file"
+--- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"buffer_file"
 --
 -- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
 ```

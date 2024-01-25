@@ -843,8 +843,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     pipeline_configs.previewers,
     fzf_port_file
   )
-  local use_builtin_previewer = previewer_switch:current_previewer_config().previewer_type
-    == PreviewerTypeEnum.BUILTIN_FILE
+  local use_buffer_previewer = previewer_switch:current_previewer_config().previewer_type
+    == PreviewerTypeEnum.BUFFER_FILE
 
   local context_maker = (
     type(pipeline_configs.other_opts) == "table"
@@ -897,7 +897,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     previewer_switch:preview(line_params, context)
   end
 
-  if not use_builtin_previewer then
+  if not use_buffer_previewer then
     local preview_rpc_id =
       rpcserver.get_instance():register(preview_rpc, "preview_rpc")
     table.insert(rpc_registries, preview_rpc_id)
@@ -944,7 +944,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   local fzf_focus_binder = nil
   local fzf_load_binder = nil
-  if use_builtin_previewer then
+  if use_buffer_previewer then
     local dump_focused_line_command = nil
     if consts.IS_WINDOWS then
       dump_focused_line_command =
@@ -1259,7 +1259,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     },
   })
   local fzf_border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
-  if use_builtin_previewer then
+  if use_buffer_previewer then
     local fzf_pw_opts = {}
     local base_config_fzf_opts =
       fzf_helpers.preprocess_fzf_opts(vim.deepcopy(config.get().fzf_opts or {}))
@@ -1348,7 +1348,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         focused_line_fsevent = nil
       end
     end,
-    use_builtin_previewer,
+    use_buffer_previewer,
     {
       fzf_preview_window_opts = fzf_preview_window_opts,
       fzf_border_opts = fzf_border_opts,
