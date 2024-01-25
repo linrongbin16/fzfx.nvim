@@ -7,6 +7,7 @@ local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 local uv = require("fzfx.commons.uv")
 local apis = require("fzfx.commons.apis")
+local numbers = require("fzfx.commons.numbers")
 
 local consts = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
@@ -928,7 +929,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   )
 
   -- buffer previewer use local file cache to detect fzf pointer movement
+  --- @type {previewer_config:fzfx.PreviewerConfig,focused_line:string?,job_id:integer}[]
   local buffer_preview_files_queue = {}
+  local buffer_preview_job_id = numbers.auto_incremental_id()
 
   local function buffer_preview_files_queue_empty()
     return #buffer_preview_files_queue == 0
@@ -993,6 +996,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         if not strings.find(focused_line_file, focused_file) then
           return
         end
+
+        buffer_preview_job_id = numbers.auto_incremental_id()
         log.debug(
           "|general.focused_line_fsevent:start| start read focused_file:%s",
           vim.inspect(focused_file)
@@ -1001,7 +1006,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           if not popup.popup_window:is_valid() then
             return
           end
-          popup.popup_window:clear_pending_preview_file_jobs()
+          popup.popup_window:set_preview_file_job_id(buffer_preview_job_id)
 
           log.debug(
             "|general.focused_line_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
@@ -1017,10 +1022,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               focused_data = string.sub(focused_data, 1, #focused_data - 1)
             end
           end
-          table.insert(
-            buffer_preview_files_queue,
-            { previewer_switch:current_previewer_config(), focused_data }
-          )
+          table.insert(buffer_preview_files_queue, {
+            previewer_config = previewer_switch:current_previewer_config(),
+            focused_line = focused_data,
+            job_id = buffer_preview_job_id,
+          })
           vim.defer_fn(function()
             if not popup.popup_window:is_valid() then
               return
@@ -1030,11 +1036,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end
             local last_preview_file_job = buffer_preview_files_queue_last()
             buffer_preview_files_queue_clear()
+            if last_preview_file_job.job_id < buffer_preview_job_id then
+              return
+            end
 
-            popup.popup_window:clear_pending_preview_file_jobs()
+            popup.popup_window:set_preview_file_job_id(
+              last_preview_file_job.job_id
+            )
 
-            local previewer_config = last_preview_file_job[1]
-            local focused_line = last_preview_file_job[2]
+            local previewer_config = last_preview_file_job.previewer_config
+            local focused_line = last_preview_file_job.focused_line
+            local last_preview_file_job_id = last_preview_file_job.job_id
             local previewer_ok, previewer_result =
               pcall(previewer_config.previewer, focused_line, context)
             -- log.debug(
@@ -1064,8 +1076,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 previewer_label_ok = true
                 previewer_label_result = previewer_config.previewer_label
               elseif type(previewer_config.previewer_label) == "function" then
-                previewer_label_ok, previewer_label_result =
-                  pcall(previewer_config.previewer_label, focused_line, context)
+                previewer_label_ok, previewer_label_result = pcall(
+                  previewer_config.previewer_label --[[@as function]],
+                  focused_line,
+                  context
+                )
                 if not previewer_label_ok then
                   log.err(
                     "failed to call previewer label(%s) on buffer previewer! focused_line:%s, context:%s, error:%s",
@@ -1079,6 +1094,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               end
               if previewer_result then
                 popup.popup_window:preview_file(
+                  last_preview_file_job_id,
                   previewer_result,
                   previewer_label_result
                 )

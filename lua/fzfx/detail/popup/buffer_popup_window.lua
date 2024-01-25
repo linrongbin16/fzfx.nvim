@@ -279,8 +279,9 @@ end
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @field _resizing boolean
---- @field preview_files_queue {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}[]
---- @field preview_file_contents_queue {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}[]
+--- @field preview_files_queue {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}[]
+--- @field preview_file_contents_queue {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}[]
+--- @field preview_file_job_id integer
 local BufferPopupWindow = {}
 
 local function _set_default_buf_options(bufnr)
@@ -344,6 +345,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _resizing = false,
     preview_files_queue = {},
     preview_file_contents_queue = {},
+    preview_file_job_id = 0,
   }
   setmetatable(o, self)
   self.__index = self
@@ -399,7 +401,7 @@ function BufferPopupWindow:preview_files_queue_empty()
   return #self.preview_files_queue == 0
 end
 
---- @return {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
+--- @return {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}
 function BufferPopupWindow:preview_files_queue_last()
   return self.preview_files_queue[#self.preview_files_queue]
 end
@@ -412,7 +414,7 @@ function BufferPopupWindow:preview_file_contents_queue_empty()
   return #self.preview_file_contents_queue == 0
 end
 
---- @return {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
+--- @return {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}
 function BufferPopupWindow:preview_file_contents_queue_last()
   return self.preview_file_contents_queue[#self.preview_file_contents_queue]
 end
@@ -424,6 +426,11 @@ end
 function BufferPopupWindow:clear_pending_preview_file_jobs()
   self:preview_files_queue_clear()
   self:preview_file_contents_queue_clear()
+end
+
+--- @param job_id integer
+function BufferPopupWindow:set_preview_file_job_id(job_id)
+  self.preview_file_job_id = job_id
 end
 
 function BufferPopupWindow:is_valid()
@@ -438,18 +445,24 @@ function BufferPopupWindow:is_valid()
   end
 end
 
+--- @param job_id integer
 --- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
 function BufferPopupWindow:preview_file(
+  job_id,
   previewer_result,
   previewer_label_result
 )
   if strings.empty(tables.tbl_get(previewer_result, "filename")) then
     return
   end
+  if job_id < self.preview_file_job_id then
+    return
+  end
   table.insert(self.preview_files_queue, {
     previewer_result = previewer_result,
     previewer_label_result = previewer_label_result,
+    job_id = job_id,
   })
 
   vim.defer_fn(function()
@@ -462,6 +475,9 @@ function BufferPopupWindow:preview_file(
 
     local last_job = self:preview_files_queue_last()
     self:preview_files_queue_clear()
+    if last_job.job_id < self.preview_file_job_id then
+      return
+    end
 
     -- read file content
     fileios.asyncreadfile(
@@ -471,6 +487,9 @@ function BufferPopupWindow:preview_file(
           return
         end
         if not self:preview_files_queue_empty() then
+          return
+        end
+        if last_job.job_id < self.preview_file_job_id then
           return
         end
 
@@ -483,6 +502,7 @@ function BufferPopupWindow:preview_file(
           lines = lines,
           previewer_result = last_job.previewer_result,
           previewer_label_result = last_job.previewer_label_result,
+          job_id = last_job.job_id,
         })
 
         -- show file contents by lines
@@ -499,6 +519,9 @@ function BufferPopupWindow:preview_file(
 
           local last_contents = self:preview_file_contents_queue_last()
           self:preview_file_contents_queue_clear()
+          if last_contents.job_id < self.preview_file_job_id then
+            return
+          end
 
           vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
           local set_name_ok, set_name_err = pcall(
@@ -552,6 +575,9 @@ function BufferPopupWindow:preview_file(
             if not self:preview_file_contents_queue_empty() then
               return
             end
+            if last_contents.job_id < self.preview_file_job_id then
+              return
+            end
 
             local title_opts = {
               title = last_contents.previewer_label_result,
@@ -596,6 +622,9 @@ function BufferPopupWindow:preview_file(
               if not self:preview_file_contents_queue_empty() then
                 return
               end
+              if last_contents.job_id < self.preview_file_job_id then
+                return
+              end
 
               local buf_lines = {}
               for i = line_index, line_index + LINE_COUNT do
@@ -619,10 +648,10 @@ function BufferPopupWindow:preview_file(
               if line_index >= SHOW_PREVIEW_LABEL_COUNT then
                 vim.schedule(set_win_title)
               end
-            end, 10)
+            end, 5)
           end
           set_buf_lines()
-        end, 35)
+        end, 50)
       end
     )
   end, 80)
