@@ -6,6 +6,7 @@ local fileios = require("fzfx.commons.fileios")
 local tables = require("fzfx.commons.tables")
 local apis = require("fzfx.commons.apis")
 
+local constants = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
 local yanks = require("fzfx.detail.yanks")
@@ -404,6 +405,31 @@ function FzfOptEventBinder:build()
   return { "--bind", self.event .. ":" .. table.concat(self.opts, "+") }
 end
 
+-- nvim_open_win border opts see:
+--
+--  * https://neovim.io/doc/user/api.html#nvim_open_win()
+--  * https://github.com/neovim/neovim/blob/4e59422e1d4950a3042bad41a7b81c8db4f8b648/src/nvim/api/win_config.c?plain=1#L536-L540
+--
+-- { "double", { "╔", "═", "╗", "║", "╝", "═", "╚", "║" }, false },
+-- { "single", { "┌", "─", "┐", "│", "┘", "─", "└", "│" }, false },
+-- { "shadow", { "", "", " ", " ", " ", " ", " ", "" }, true },
+-- { "rounded", { "╭", "─", "╮", "│", "╯", "─", "╰", "│" }, false },
+-- { "solid", { " ", " ", " ", " ", " ", " ", " ", " " }, false },
+local FZF_BORDER_OPTS_MAP = {
+  ["border-rounded"] = "rounded",
+  ["border-sharp"] = "single",
+  ["border-bold"] = "double",
+  ["border-double"] = "double",
+  ["border-block"] = "double",
+  ["border-thinblock"] = "single",
+  ["border-horizontal"] = { "─", "─", "─", " ", "─", "─", "─", " " },
+  ["border-top"] = { "─", "─", "─", " ", " ", " ", " ", " " },
+  ["border-bottom"] = { " ", " ", " ", " ", "─", "─", "─", " " },
+  ["border-vertical"] = { "║", " ", "║", "║", "║", " ", "║", "║" },
+  ["border-left"] = { "║", " ", " ", " ", " ", " ", "║", "║" },
+  ["border-right"] = { " ", " ", "║", "║", "║", " ", " ", " " },
+}
+
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
 --
@@ -416,7 +442,7 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
     position = "right",
     size = 50,
     size_is_percent = true,
-    border = "rounded",
+    border = constants.IS_WINDOWS and "single" or "rounded",
     wrap = false,
     follow = false,
     cycle = false,
@@ -438,7 +464,8 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
       result.size = tonumber(o)
       result.size_is_percent = false
     elseif strings.startswith(o, "border-") then
-      result.border = string.sub(o, string.len("border-") + 1)
+      result.border = FZF_BORDER_OPTS_MAP[o]
+        or FZF_BORDER_OPTS_MAP["border-rounded"]
     elseif o == "nowrap" or o == "wrap" then
       result.wrap = o == "wrap"
     elseif o == "nofollow" or o == "follow" then
