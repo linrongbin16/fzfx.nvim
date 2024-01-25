@@ -532,8 +532,12 @@ function BufferPopupWindow:preview_file(
           local LINE_COUNT = 5
           local SHOW_PREVIEW_LABEL_COUNT = math.min(30, TOTAL_LINES)
           local line_index = 1
+          local set_win_title_done = false
 
           local function set_win_title()
+            if set_win_title_done then
+              return
+            end
             if strings.empty(last_contents.previewer_label_result) then
               return
             end
@@ -574,6 +578,7 @@ function BufferPopupWindow:preview_file(
                 vim.inspect(set_opts_err)
               )
             end
+            set_win_title_done = true
           end
 
           local function set_buf_lines()
