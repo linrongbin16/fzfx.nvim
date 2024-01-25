@@ -416,7 +416,7 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
     position = "right",
     size = 50,
     size_is_percent = true,
-    border = "border-rounded",
+    border = "rounded",
     wrap = false,
     follow = false,
     cycle = false,
@@ -438,7 +438,7 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
       result.size = tonumber(o)
       result.size_is_percent = false
     elseif strings.startswith(o, "border-") then
-      result.border = o
+      result.border = string.sub(o, string.len("border-") + 1)
     elseif o == "nowrap" or o == "wrap" then
       result.wrap = o == "wrap"
     elseif o == "nofollow" or o == "follow" then
