@@ -403,10 +403,15 @@ function BufferPopupWindow:preview_file_contents_queue_clear()
 end
 
 function BufferPopupWindow:is_valid()
-  return type(self.previewer_winnr) == "number"
-    and vim.api.nvim_win_is_valid(self.previewer_winnr)
-    and type(self.previewer_bufnr) == "number"
-    and vim.api.nvim_buf_is_valid(self.previewer_bufnr)
+  if vim.in_fast_event() then
+    return type(self.previewer_winnr) == "number"
+      and type(self.previewer_bufnr) == "number"
+  else
+    return type(self.previewer_winnr) == "number"
+      and vim.api.nvim_win_is_valid(self.previewer_winnr)
+      and type(self.previewer_bufnr) == "number"
+      and vim.api.nvim_buf_is_valid(self.previewer_bufnr)
+  end
 end
 
 --- @param previewer_result fzfx.BuiltinFilePreviewerResult
@@ -429,6 +434,9 @@ function BufferPopupWindow:preview_file(previewer_result)
 
     -- read file content
     fileios.asyncreadfile(last_result.filename, function(file_content)
+      if self:is_valid() then
+        return
+      end
       if not self:preview_files_queue_empty() then
         return
       end
