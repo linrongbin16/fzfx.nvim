@@ -454,9 +454,6 @@ local SCOPE_RENDERERS = {
   ),
 
   -- meta
-  -- _BatTmThemeScopeRenderer:new({
-  --   "Function",
-  -- }, "meta.function-call"),
   _BatTmThemeScopeRenderer:new({
     "htmlTag",
   }, "meta.tag"),
