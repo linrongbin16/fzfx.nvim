@@ -302,26 +302,37 @@ local GLOBAL_RENDERERS = {
 
 local SCOPE_RENDERERS = {
   -- comment
-  _BatTmThemeScopeRenderer:new({ "Comment" }, "comment"),
+  _BatTmThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
 
   -- constant
-  _BatTmThemeScopeRenderer:new({ "Constant" }, "constant"),
-  _BatTmThemeScopeRenderer:new({ "Number" }, "constant.numeric"),
-  _BatTmThemeScopeRenderer:new({ "Float" }, "constant.numeric.float"),
-  _BatTmThemeScopeRenderer:new({ "Boolean" }, "constant.language"),
+  _BatTmThemeScopeRenderer:new({ "@constant", "Constant" }, "constant"),
+  _BatTmThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
   _BatTmThemeScopeRenderer:new(
-    { "Character" },
+    { "@number.float", "Float" },
+    "constant.numeric.float"
+  ),
+  _BatTmThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
+  _BatTmThemeScopeRenderer:new(
+    { "@character", "Character" },
     { "constant.character", "constant.other" }
   ),
   _BatTmThemeScopeRenderer:new(
-    { "SpecialChar" },
+    { "@string.escape", "SpecialChar" },
     { "constant.character.escaped", "constant.character.escape" }
   ),
 
   -- string
-  _BatTmThemeScopeRenderer:new({ "String" }, { "string", "string.quoted" }),
   _BatTmThemeScopeRenderer:new(
-    { "DiagnosticWarn", "LspDiagnosticsDefaultWarning", "WarningMsg" },
+    { "@string", "String" },
+    { "string", "string.quoted" }
+  ),
+  _BatTmThemeScopeRenderer:new(
+    {
+      "@string.regexp",
+      "DiagnosticWarn",
+      "LspDiagnosticsDefaultWarning",
+      "WarningMsg",
+    },
     { "string.regexp" }
   ),
 
@@ -337,7 +348,7 @@ local SCOPE_RENDERERS = {
   -- }, { "variable.other.member" }),
 
   -- keyword
-  _BatTmThemeScopeRenderer:new({ "Keyword" }, "keyword", true),
+  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword", true),
   _BatTmThemeScopeRenderer:new(
     { "Conditional" },
     "keyword.control.conditional",
@@ -351,7 +362,7 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new({
     "Type",
   }, "storage.type"),
-  _BatTmThemeScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
+  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "storage.modifier"),
 
   -- entity
   _BatTmThemeScopeRenderer:new({
