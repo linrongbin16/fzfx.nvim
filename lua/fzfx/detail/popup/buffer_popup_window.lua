@@ -578,7 +578,9 @@ function BufferPopupWindow:preview_file(
                 vim.inspect(set_opts_err)
               )
             end
-            set_win_title_done = true
+            vim.schedule(function()
+              set_win_title_done = true
+            end)
           end
 
           local function set_buf_lines()
