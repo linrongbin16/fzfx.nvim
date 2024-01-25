@@ -120,7 +120,6 @@ M.actions = {
 M.fzf_opts = {
   consts.FZF_OPTS.MULTI,
   "--border=none",
-  { "--preview-window", "down,25" },
   function()
     return { "--prompt", paths.shorten() .. " > " }
   end,
