@@ -664,5 +664,62 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual4.alternative_layout.size_is_percent, true)
       assert_eq(actual4.hidden, false)
     end)
+    it("override multiples", function()
+      local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
+        {
+          "--preview-window",
+          "+{2}-5,right,border-left,<30(up,30%,border-bottom,~3)",
+        },
+        "--preview-window=left,30",
+      })
+      print(
+        string.format(
+          "parse fzf --preview-window-23:%s\n",
+          vim.inspect(actual1)
+        )
+      )
+      assert_eq(actual1.position, "left")
+      assert_eq(actual1.size, 30)
+      assert_eq(actual1.size_is_percent, false)
+      assert_eq(actual1.border, "border-left")
+      assert_eq(actual1.scroll, "+{2}-5")
+      assert_eq(actual1.size_threshold, 30)
+      assert_eq(actual1.alternative_layout.position, "up")
+      assert_eq(actual1.alternative_layout.size, 30)
+      assert_eq(actual1.alternative_layout.size_is_percent, true)
+      assert_eq(actual1.alternative_layout.border, "border-bottom")
+      assert_eq(actual1.alternative_layout.header_lines, 3)
+      local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
+        {
+          "--preview-window",
+          "~3,+{2}+3/2,<90(~5,+{1}+4/3),nohidden",
+        },
+        {
+          "--preview-window",
+          "hidden,wrap,follow",
+        },
+      })
+      print(
+        string.format(
+          "parse fzf --preview-window-24:%s\n",
+          vim.inspect(actual2)
+        )
+      )
+      assert_eq(actual2.position, "right")
+      assert_eq(actual2.size, 50)
+      assert_eq(actual2.size_is_percent, true)
+      assert_eq(actual2.border, "border-rounded")
+      assert_eq(actual2.scroll, "+{2}+3/2")
+      assert_eq(actual2.header_lines, 3)
+      assert_eq(actual2.size_threshold, 90)
+      assert_eq(actual2.alternative_layout.position, "right")
+      assert_eq(actual2.alternative_layout.size, 50)
+      assert_eq(actual2.alternative_layout.size_is_percent, true)
+      assert_eq(actual2.alternative_layout.header_lines, 5)
+      assert_eq(actual2.alternative_layout.scroll, "+{1}+4/3")
+      assert_eq(actual2.hidden, true)
+      assert_eq(actual2.wrap, true)
+      assert_eq(actual2.follow, true)
+    end)
   end)
 end)
