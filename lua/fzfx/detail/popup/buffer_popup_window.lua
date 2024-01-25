@@ -439,7 +439,7 @@ function BufferPopupWindow:preview_file(previewer_result)
 
     -- read file content
     fileios.asyncreadfile(last_result.filename, function(file_content)
-      if self:is_valid() then
+      if not self:is_valid() then
         return
       end
       if not self:preview_files_queue_empty() then
