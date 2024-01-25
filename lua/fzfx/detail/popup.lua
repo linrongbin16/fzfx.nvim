@@ -70,6 +70,10 @@ function PopupWindow:preview_file(previewer_result)
   self.instance:preview_file(previewer_result)
 end
 
+function PopupWindow:is_valid()
+  return self.instance:is_valid()
+end
+
 --- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
 --- @alias fzfx.WindowOpts {relative:"editor"|"win"|"cursor",win:integer?,row:number,col:number,height:integer,width:integer,zindex:integer,border:string,title:string?,title_pos:string?,noautocmd:boolean?}
 --

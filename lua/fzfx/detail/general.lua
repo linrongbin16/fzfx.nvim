@@ -925,7 +925,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   )
 
   -- builtin previewer use local file cache to detect fzf pointer movement
-  local builtin_file_previewers_queue = {}
+  local previewer_builtin_files_queue = {}
   local fzf_focus_binder = nil
   local fzf_load_binder = nil
   if use_builtin_previewer then
@@ -986,7 +986,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             "|general.focused_line_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
             vim.inspect(focused_file),
             vim.inspect(focused_data),
-            vim.inspect(builtin_file_previewers_queue)
+            vim.inspect(previewer_builtin_files_queue)
           )
           if consts.IS_WINDOWS then
             if strings.startswith(focused_data, '"') then
@@ -997,34 +997,19 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end
           end
           table.insert(
-            builtin_file_previewers_queue,
+            previewer_builtin_files_queue,
             { previewer_switch:current_previewer_config(), focused_data }
           )
           vim.defer_fn(function()
-            if #builtin_file_previewers_queue == 0 then
+            if not popup.popup_window:is_valid() then
+              return
+            end
+            if #previewer_builtin_files_queue == 0 then
               return
             end
             local last_item =
-              builtin_file_previewers_queue[#builtin_file_previewers_queue]
-            builtin_file_previewers_queue = {}
-            local previewer_winnr1 = tables.tbl_get(
-              popup,
-              "popup_window",
-              "instance",
-              "previewer_winnr"
-            )
-            local previewer_bufnr1 = tables.tbl_get(
-              popup,
-              "popup_window",
-              "instance",
-              "previewer_bufnr"
-            )
-            if
-              type(previewer_winnr1) ~= "number"
-              or type(previewer_bufnr1) ~= "number"
-            then
-              return
-            end
+              previewer_builtin_files_queue[#previewer_builtin_files_queue]
+            previewer_builtin_files_queue = {}
 
             local previewer_config = last_item[1]
             local focused_line = last_item[2]
