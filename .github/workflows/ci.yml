@@ -7,11 +7,11 @@ on:
     branches:
       - main
 concurrency:
-  group: ${{ github.ref }}-ci
+  group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
 jobs:
-  pr_conventional_commit:
-    name: PR Conventional Commit
+  conventional_commit:
+    name: Conventional Commits
     if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
@@ -71,17 +71,37 @@ jobs:
         with:
           luaVersion: "luajit-2.1.0-beta3"
       - uses: leafo/gh-actions-luarocks@v4
-      - name: Run test cases
-        shell: bash
+      - name: Run Tests
         run: |
-          luarocks install luacheck
-          luarocks install luacov
-          luarocks install cluacov
           luarocks install vusted
           git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
           ~/.fzf/install
           export PATH="$HOME/.fzf/bin:$PATH"
-          vusted --coverage --shuffle ./test
+          vusted --shuffle ./test
+  code_coverage:
+    name: Code Coverage
+    needs:
+      - luacheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rhysd/action-setup-vim@v1
+        id: vim
+        with:
+          neovim: true
+          version: stable
+      - uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "luajit-2.1.0-beta3"
+      - uses: leafo/gh-actions-luarocks@v4
+      - name: Run Tests
+        run: |
+          luarocks install luacov
+          luarocks install vusted
+          git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+          ~/.fzf/install
+          export PATH="$HOME/.fzf/bin:$PATH"
+          vusted --coverage ./test
       - name: Generate coverage reports
         shell: bash
         run: |
@@ -103,6 +123,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - unit_test
+      - code_coverage
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
