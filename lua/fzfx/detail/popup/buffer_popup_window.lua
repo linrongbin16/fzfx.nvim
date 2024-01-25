@@ -52,7 +52,7 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
     if fzf_preview_window_opts.size_is_percent then
       width = math.floor(width - (width / 100 * fzf_preview_window_opts.size))
     else
-      width = width - fzf_preview_window_opts.size
+      width = math.max(width - fzf_preview_window_opts.size, 1)
     end
     additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign
     -- + sign
@@ -66,7 +66,7 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
       height =
         math.floor(height - (height / 100 * fzf_preview_window_opts.size))
     else
-      height = height - fzf_preview_window_opts.size
+      height = math.max(height - fzf_preview_window_opts.size, 1)
     end
     additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign
     -- + sign
