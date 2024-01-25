@@ -530,7 +530,7 @@ function BufferPopupWindow:preview_file(
 
           local TOTAL_LINES = #last_contents.lines
           local LINE_COUNT = 5
-          local SHOW_PREVIEW_LABEL_COUNT = math.min(30, TOTAL_LINES)
+          local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
           local line_index = 1
           local set_win_title_done = false
 
