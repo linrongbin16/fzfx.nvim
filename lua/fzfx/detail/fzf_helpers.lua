@@ -189,7 +189,7 @@ local function _generate_fzf_color_opts()
     local attr = opts[1]
     for i = 2, #opts do
       local c = apis.get_hl(opts[i])
-      if type(c) == "table" and type(c[attr]) == "number" then
+      if type(tables.tbl_get(c, "attr")) == "number" then
         table.insert(
           builder,
           string.format("%s:#%06x", name:gsub("_", "%-"), c[attr])
