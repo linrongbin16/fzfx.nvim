@@ -301,7 +301,6 @@ function BufferPopupWindow:new(win_opts, builtin_previewer_opts)
 
   local provider_nvim_float_win_opts =
     M.make_provider_opts(win_opts, builtin_previewer_opts)
-  provider_nvim_float_win_opts.border = "rounded"
   local previewer_nvim_float_win_opts =
     M.make_previewer_opts(win_opts, builtin_previewer_opts)
   previewer_nvim_float_win_opts.focusable = false
