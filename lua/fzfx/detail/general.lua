@@ -927,7 +927,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     string.format("execute-silent(%s)", dump_fzf_port_command)
   )
 
-  -- builtin previewer use local file cache to detect fzf pointer movement
+  -- buffer previewer use local file cache to detect fzf pointer movement
   local buffer_preview_files_queue = {}
 
   local function buffer_preview_files_queue_empty()
@@ -1044,7 +1044,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             -- )
             if not previewer_ok then
               log.err(
-                "failed to call pipeline %s builtin previewer %s! line:%s, context:%s, error:%s",
+                "failed to call pipeline %s buffer previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(previewer_config.pipeline),
                 vim.inspect(previewer_config.previewer),
                 vim.inspect(focused_line),
@@ -1054,7 +1054,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             else
               log.ensure(
                 previewer_result == nil or type(previewer_result) == "table",
-                "|general.focused_line_fsevent.asyncreadfile| builtin previewer result must be table! previewer_config:%s, result:%s",
+                "|general.focused_line_fsevent.asyncreadfile| buffer previewer result must be table! previewer_config:%s, result:%s",
                 vim.inspect(previewer_config),
                 vim.inspect(previewer_result)
               )
@@ -1068,7 +1068,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                   pcall(previewer_config.previewer_label, focused_line, context)
                 if not previewer_label_ok then
                   log.err(
-                    "failed to call previewer label(%s) on builtin previewer! focused_line:%s, context:%s, error:%s",
+                    "failed to call previewer label(%s) on buffer previewer! focused_line:%s, context:%s, error:%s",
                     vim.inspect(previewer_config),
                     vim.inspect(focused_line),
                     vim.inspect(context),

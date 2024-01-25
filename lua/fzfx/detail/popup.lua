@@ -21,9 +21,9 @@ local PopupWindow = {}
 --- @package
 --- @param win_opts fzfx.WindowOpts
 --- @param window_type "fzf"|"buffer"
---- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
+--- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @return fzfx.PopupWindow
-function PopupWindow:new(win_opts, window_type, builtin_previewer_opts)
+function PopupWindow:new(win_opts, window_type, buffer_previewer_opts)
   -- check executables
   fzf_helpers.nvim_exec()
   fzf_helpers.fzf_exec()
@@ -33,10 +33,8 @@ function PopupWindow:new(win_opts, window_type, builtin_previewer_opts)
   if window_type == "fzf" then
     instance = fzf_popup_window.FzfPopupWindow:new(win_opts)
   elseif window_type == "buffer" then
-    instance = buffer_popup_window.BufferPopupWindow:new(
-      win_opts,
-      builtin_previewer_opts
-    )
+    instance =
+      buffer_popup_window.BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   end
   PopupWindowInstances[instance:handle()] = self
 
@@ -148,8 +146,8 @@ end
 --- @param actions fzfx.Options
 --- @param context fzfx.PipelineContext
 --- @param on_close fzfx.OnPopupExit?
---- @param builtin_previewer boolean?
---- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
+--- @param buffer_previewer boolean?
+--- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @return fzfx.Popup
 function Popup:new(
   win_opts,
@@ -158,15 +156,15 @@ function Popup:new(
   actions,
   context,
   on_close,
-  builtin_previewer,
-  builtin_previewer_opts
+  buffer_previewer,
+  buffer_previewer_opts
 )
   local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
   local popup_window = PopupWindow:new(
     win_opts,
-    builtin_previewer and "buffer" or "fzf",
-    builtin_previewer_opts
+    buffer_previewer and "buffer" or "fzf",
+    buffer_previewer_opts
   )
 
   local function on_fzf_exit(jobid2, exitcode, event)

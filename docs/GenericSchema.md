@@ -117,7 +117,7 @@ We have below types of previewers:
 
 - Command previewer: a lua function to run and returns a shell command (as a string or a string list), then execute and generate the preview contents for fzf.
 - List previewer: a lua function to run and directly returns the preview contents for fzf.
-- Builtin file previewer: a builtin nvim buffer to show the file contents.
+- Buffer file previewer: a nvim buffer to show the file contents.
 
 ```lua
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?

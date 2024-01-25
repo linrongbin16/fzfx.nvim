@@ -82,7 +82,7 @@ M.preview_files_find = function(line)
   return M.preview_files(parsed.filename)
 end
 
--- preview files with builtin nvim buffer.
+-- preview files with nvim buffer.
 --- @param line string
 --- @return table
 M.buffer_preview_files_find = function(line)
