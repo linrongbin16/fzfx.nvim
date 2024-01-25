@@ -6,7 +6,7 @@
 
 Yes, this is a technical limitation for previewer. Since the gap between nvim buffer and fzf's previewer is quite big, the whole architecture is different, so switching across these two types requires a lot of effort.
 
-While we usually only need the buffer previewer to preview file contents, so it should not be a serious issue. Please avoid such kind of configurations.
+While we usually only need nvim buffer to preview files, so it should not be a serious issue. Please avoid such kind of configurations.
 
 ## File Explorer
 
