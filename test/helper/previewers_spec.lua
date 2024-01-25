@@ -72,9 +72,15 @@ describe("helper.previewers", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
       }
-      for _, line in ipairs(lines) do
+      for i, line in ipairs(lines) do
         local actual = previewers.preview_files_find(line)
-        print(string.format("_preview_files_find:%s\n", vim.inspect(actual)))
+        print(
+          string.format(
+            "preview_files_find-%s:%s\n",
+            vim.inspect(i),
+            vim.inspect(actual)
+          )
+        )
         if actual[1] == "bat" then
           assert_eq(actual[1], "bat")
           assert_eq(actual[2], "--style=numbers,changes")
@@ -93,6 +99,35 @@ describe("helper.previewers", function()
             paths.normalize(line, { double_backslash = true, expand = true })
           )
         end
+      end
+    end)
+  end)
+
+  describe("[builtin_preview_files_find]", function()
+    it("test", function()
+      local lines = {
+        "~/github/linrongbin16/fzfx.nvim/README.md",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
+      }
+      for i, line in ipairs(lines) do
+        local actual = previewers.builtin_preview_files_find(line)
+        print(
+          string.format(
+            "builtin_preview_files_find-%s:%s\n",
+            vim.inspect(i),
+            vim.inspect(actual)
+          )
+        )
+        assert_eq(type(actual), "table")
+        assert_true(
+          strings.endswith(
+            paths.normalize(line, { expand = true }),
+            actual.filename
+          )
+        )
       end
     end)
   end)
