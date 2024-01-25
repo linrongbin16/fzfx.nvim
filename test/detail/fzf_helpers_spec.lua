@@ -323,8 +323,10 @@ describe("detail.fzf_helpers", function()
   describe("[parse_fzf_preview_window_opts]", function()
     it("position", function()
       local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "up,30%",
+        {
+          "--preview-window",
+          "up,30%",
+        },
       })
       print(
         string.format("parse fzf --preview-window-1:%s\n", vim.inspect(actual1))
@@ -333,8 +335,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual1.size, 30)
       assert_eq(actual1.size_is_percent, true)
       local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "down,3",
+        {
+          "--preview-window",
+          "down,3",
+        },
       })
       print(
         string.format("parse fzf --preview-window-2:%s\n", vim.inspect(actual2))
@@ -342,16 +346,18 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual2.position, "down")
       assert_eq(actual2.size, 3)
       assert_eq(actual2.size_is_percent, false)
-      local actual3 =
-        fzf_helpers.parse_fzf_preview_window_opts("--preview-window=left,50%")
+      local actual3 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=left,50%",
+      })
       print(
         string.format("parse fzf --preview-window-3:%s\n", vim.inspect(actual3))
       )
       assert_eq(actual3.position, "left")
       assert_eq(actual3.size, 50)
       assert_eq(actual3.size_is_percent, true)
-      local actual4 =
-        fzf_helpers.parse_fzf_preview_window_opts("--preview-window=right,50")
+      local actual4 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=right,50",
+      })
       print(
         string.format("parse fzf --preview-window-4:%s\n", vim.inspect(actual4))
       )
@@ -361,8 +367,10 @@ describe("detail.fzf_helpers", function()
     end)
     it("border", function()
       local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "up,30%,border-block",
+        {
+          "--preview-window",
+          "up,30%,border-block",
+        },
       })
       print(
         string.format("parse fzf --preview-window-5:%s\n", vim.inspect(actual1))
@@ -371,9 +379,9 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual1.size, 30)
       assert_eq(actual1.size_is_percent, true)
       assert_eq(actual1.border, "border-block")
-      local actual2 = fzf_helpers.parse_fzf_preview_window_opts(
-        "--preview-window=down,3,border-bold"
-      )
+      local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=down,3,border-bold",
+      })
       print(
         string.format("parse fzf --preview-window-6:%s\n", vim.inspect(actual2))
       )
@@ -384,16 +392,18 @@ describe("detail.fzf_helpers", function()
     end)
     it("wrap/follow/cycle/hidden", function()
       local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "wrap",
+        {
+          "--preview-window",
+          "wrap",
+        },
       })
       print(
         string.format("parse fzf --preview-window-7:%s\n", vim.inspect(actual1))
       )
       assert_eq(actual1.wrap, true)
-      local actual2 = fzf_helpers.parse_fzf_preview_window_opts(
-        "--preview-window=down,3,border-bold,nowrap"
-      )
+      local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=down,3,border-bold,nowrap",
+      })
       print(
         string.format("parse fzf --preview-window-8:%s\n", vim.inspect(actual2))
       )
@@ -403,8 +413,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual2.border, "border-bold")
       assert_eq(actual2.wrap, false)
       local actual3 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "nofollow",
+        {
+          "--preview-window",
+          "nofollow",
+        },
       })
       print(
         string.format("parse fzf --preview-window-9:%s\n", vim.inspect(actual3))
@@ -413,9 +425,9 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual3.size, 50)
       assert_eq(actual3.size_is_percent, true)
       assert_eq(actual3.follow, false)
-      local actual4 = fzf_helpers.parse_fzf_preview_window_opts(
-        "--preview-window=down,3,border-bold,nowrap,follow"
-      )
+      local actual4 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=down,3,border-bold,nowrap,follow",
+      })
       print(
         string.format(
           "parse fzf --preview-window-10:%s\n",
@@ -429,8 +441,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual4.wrap, false)
       assert_eq(actual4.follow, true)
       local actual5 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "nofollow",
+        {
+          "--preview-window",
+          "nofollow",
+        },
       })
       print(
         string.format(
@@ -442,9 +456,9 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual5.size, 50)
       assert_eq(actual5.size_is_percent, true)
       assert_eq(actual5.follow, false)
-      local actual6 = fzf_helpers.parse_fzf_preview_window_opts(
-        "--preview-window=down,3,border-bold,nowrap,follow"
-      )
+      local actual6 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=down,3,border-bold,nowrap,follow",
+      })
       print(
         string.format(
           "parse fzf --preview-window-12:%s\n",
@@ -458,8 +472,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual6.wrap, false)
       assert_eq(actual6.follow, true)
       local actual7 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "nofollow,cycle,hidden",
+        {
+          "--preview-window",
+          "nofollow,cycle,hidden",
+        },
       })
       print(
         string.format(
@@ -473,9 +489,9 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual7.follow, false)
       assert_eq(actual7.cycle, true)
       assert_eq(actual7.hidden, true)
-      local actual8 = fzf_helpers.parse_fzf_preview_window_opts(
-        "--preview-window=down,3,border-bold,nowrap,follow,nocycle,nohidden"
-      )
+      local actual8 = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=down,3,border-bold,nowrap,follow,nocycle,nohidden",
+      })
       print(
         string.format(
           "parse fzf --preview-window-14:%s\n",
@@ -493,8 +509,10 @@ describe("detail.fzf_helpers", function()
     end)
     it("scroll/header_lines", function()
       local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "+{2}-5",
+        {
+          "--preview-window",
+          "+{2}-5",
+        },
       })
       print(
         string.format(
@@ -508,8 +526,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual1.border, "border-rounded")
       assert_eq(actual1.scroll, "+{2}-5")
       local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "~3,+{2}+3/2",
+        {
+          "--preview-window",
+          "~3,+{2}+3/2",
+        },
       })
       print(
         string.format(
@@ -524,8 +544,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual2.scroll, "+{2}+3/2")
       assert_eq(actual2.header_lines, 3)
       local actual3 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "+{2}-/2",
+        {
+          "--preview-window",
+          "+{2}-/2",
+        },
       })
       print(
         string.format(
@@ -539,8 +561,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual3.border, "border-rounded")
       assert_eq(actual3.scroll, "+{2}-/2")
       local actual4 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "~3",
+        {
+          "--preview-window",
+          "~3",
+        },
       })
       print(
         string.format(
@@ -556,8 +580,10 @@ describe("detail.fzf_helpers", function()
     end)
     it("size_threshold/alternative_layout", function()
       local actual1 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "+{2}-5,right,border-left,<30(up,30%,border-bottom,~3)",
+        {
+          "--preview-window",
+          "+{2}-5,right,border-left,<30(up,30%,border-bottom,~3)",
+        },
       })
       print(
         string.format(
@@ -577,8 +603,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual1.alternative_layout.border, "border-bottom")
       assert_eq(actual1.alternative_layout.header_lines, 3)
       local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "~3,+{2}+3/2,<90(~5,+{1}+4/3),nohidden",
+        {
+          "--preview-window",
+          "~3,+{2}+3/2,<90(~5,+{1}+4/3),nohidden",
+        },
       })
       print(
         string.format(
@@ -600,8 +628,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual2.alternative_layout.scroll, "+{1}+4/3")
       assert_eq(actual2.hidden, false)
       local actual3 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "<20(nohidden,nofollow,~5,+{1}+4/3)",
+        {
+          "--preview-window",
+          "<20(nohidden,nofollow,~5,+{1}+4/3)",
+        },
       })
       print(
         string.format(
@@ -615,8 +645,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual3.alternative_layout.header_lines, 5)
       assert_eq(actual3.alternative_layout.scroll, "+{1}+4/3")
       local actual4 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "~3,+{2}+3/2,<90(),nohidden",
+        {
+          "--preview-window",
+          "~3,+{2}+3/2,<90(),nohidden",
+        },
       })
       print(
         string.format(

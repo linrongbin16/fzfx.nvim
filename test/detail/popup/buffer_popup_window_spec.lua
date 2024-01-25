@@ -34,8 +34,10 @@ describe("detail.popup.buffer_popup_window", function()
   describe("[BufferPopupWindow]", function()
     it("new right,50%", function()
       local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "right,50%",
+        {
+          "--preview-window",
+          "right,50%",
+        },
       })
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts)
@@ -86,8 +88,10 @@ describe("detail.popup.buffer_popup_window", function()
     end)
     it("new down,50%", function()
       local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "down,50%",
+        {
+          "--preview-window",
+          "down,50%",
+        },
       })
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts)
@@ -138,8 +142,10 @@ describe("detail.popup.buffer_popup_window", function()
     end)
     it("close", function()
       local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window",
-        "left,50",
+        {
+          "--preview-window",
+          "left,50",
+        },
       })
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts)
@@ -167,7 +173,7 @@ describe("detail.popup.buffer_popup_window", function()
     end)
     it("preview_files_queue", function()
       local pw_opts =
-        fzf_helpers.parse_fzf_preview_window_opts("--preview-window=up,50")
+        fzf_helpers.parse_fzf_preview_window_opts({ "--preview-window=up,50" })
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts)
       assert_true(actual:preview_files_queue_empty())
@@ -178,8 +184,9 @@ describe("detail.popup.buffer_popup_window", function()
       assert_true(actual:preview_files_queue_empty())
     end)
     it("preview_file_contents_queue", function()
-      local pw_opts =
-        fzf_helpers.parse_fzf_preview_window_opts("--preview-window=right,50")
+      local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=right,50",
+      })
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts)
       assert_true(actual:preview_file_contents_queue_empty())
@@ -190,8 +197,9 @@ describe("detail.popup.buffer_popup_window", function()
       assert_true(actual:preview_file_contents_queue_empty())
     end)
     it("clear_pending_preview_file_jobs", function()
-      local pw_opts =
-        fzf_helpers.parse_fzf_preview_window_opts("--preview-window=right,50")
+      local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=right,50",
+      })
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts)
       table.insert(actual.preview_files_queue, 1)
@@ -201,8 +209,9 @@ describe("detail.popup.buffer_popup_window", function()
       assert_true(actual:preview_file_contents_queue_empty())
     end)
     it("preview_file", function()
-      local pw_opts =
-        fzf_helpers.parse_fzf_preview_window_opts("--preview-window=right,50")
+      local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=right,50",
+      })
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts)
       actual:preview_file({ filename = "README.md" })
