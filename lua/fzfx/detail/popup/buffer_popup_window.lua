@@ -493,37 +493,6 @@ function BufferPopupWindow:preview_file(
           self:preview_file_contents_queue_clear()
 
           vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
-
-          if strings.not_empty(last_contents.previewer_label_result) then
-            local title_opts = {
-              title = last_contents.previewer_label_result,
-              title_pos = "center",
-            }
-            local set_config_ok, set_config_err = pcall(
-              vim.api.nvim_win_set_config,
-              self.previewer_winnr,
-              title_opts
-            )
-            if not set_config_ok then
-              log.debug(
-                "|BufferPopupWindow:preview_file.asyncreadfile| failed to set title for previewer window:%s(%s), error:%s",
-                vim.inspect(last_contents.previewer_result.filename),
-                vim.inspect(self.previewer_winnr),
-                vim.inspect(set_config_err)
-              )
-            end
-            local set_opts_ok, set_opts_err =
-              pcall(_set_default_win_options, self.previewer_winnr)
-            if not set_opts_ok then
-              log.debug(
-                "|BufferPopupWindow:preview_file.asyncreadfile| failed to reset default opts for previewer window:%s(%s), error:%s",
-                vim.inspect(last_contents.previewer_result.filename),
-                vim.inspect(self.previewer_winnr),
-                vim.inspect(set_opts_err)
-              )
-            end
-          end
-
           local set_name_ok, set_name_err = pcall(
             vim.api.nvim_buf_set_name,
             self.previewer_bufnr,
@@ -556,6 +525,49 @@ function BufferPopupWindow:preview_file(
           local LINE_COUNT = 5
           local line_index = 1
 
+          local function set_win_title()
+            if strings.empty(previewer_label_result) then
+              return
+            end
+            if not self:is_valid() then
+              return
+            end
+            if not self:preview_files_queue_empty() then
+              return
+            end
+            if not self:preview_file_contents_queue_empty() then
+              return
+            end
+
+            local title_opts = {
+              title = last_contents.previewer_label_result,
+              title_pos = "center",
+            }
+            local set_config_ok, set_config_err = pcall(
+              vim.api.nvim_win_set_config,
+              self.previewer_winnr,
+              title_opts
+            )
+            if not set_config_ok then
+              log.debug(
+                "|BufferPopupWindow:preview_file.asyncreadfile| failed to set title for previewer window:%s(%s), error:%s",
+                vim.inspect(last_contents.previewer_result.filename),
+                vim.inspect(self.previewer_winnr),
+                vim.inspect(set_config_err)
+              )
+            end
+            local set_opts_ok, set_opts_err =
+              pcall(_set_default_win_options, self.previewer_winnr)
+            if not set_opts_ok then
+              log.debug(
+                "|BufferPopupWindow:preview_file.asyncreadfile| failed to reset default opts for previewer window:%s(%s), error:%s",
+                vim.inspect(last_contents.previewer_result.filename),
+                vim.inspect(self.previewer_winnr),
+                vim.inspect(set_opts_err)
+              )
+            end
+          end
+
           local function set_buf_lines()
             vim.defer_fn(function()
               if not self:is_valid() then
@@ -572,6 +584,8 @@ function BufferPopupWindow:preview_file(
               for i = line_index, line_index + LINE_COUNT do
                 if i <= #last_contents.lines then
                   table.insert(buf_lines, last_contents.lines[i])
+                else
+                  break
                 end
               end
               vim.api.nvim_buf_set_lines(
@@ -584,6 +598,8 @@ function BufferPopupWindow:preview_file(
               line_index = line_index + LINE_COUNT
               if line_index <= #last_contents.lines then
                 set_buf_lines()
+              else
+                vim.defer_fn(set_win_title, 25)
               end
             end, 25)
           end
