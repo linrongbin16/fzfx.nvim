@@ -24,8 +24,6 @@ describe("detail.popup", function()
     width = 0.85,
     row = 0,
     col = 0,
-    border = "none",
-    zindex = 51,
   }
   describe("[PopupWindowInstances]", function()
     it("_get_instances", function()

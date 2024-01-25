@@ -12,6 +12,8 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 
 local M = {}
 
+local FLOAT_WIN_DEFAULT_ZINDEX = 60
+
 --- @alias fzfx.BuiltinFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 
 -- cursor window {
@@ -120,7 +122,7 @@ M._make_provider_center_opts = function(opts, builtin_previewer_opts)
     style = "minimal",
     border = fzf_helpers.FZF_BORDER_OPTS_MAP[builtin_previewer_opts.fzf_border_opts]
       or fzf_helpers.FZF_DEFAULT_BORDER_OPTS,
-    zindex = opts.zindex,
+    zindex = opts.zindex or FLOAT_WIN_DEFAULT_ZINDEX,
   }
   log.debug("|_make_provider_center_opts| result:%s", vim.inspect(result))
   return result
@@ -214,7 +216,7 @@ M._make_previewer_center_opts = function(opts, builtin_previewer_opts)
     col = col,
     style = "minimal",
     border = fzf_preview_window_opts.border,
-    zindex = opts.zindex,
+    zindex = opts.zindex or FLOAT_WIN_DEFAULT_ZINDEX,
   }
   log.debug("|_make_previewer_center_opts| result:%s", vim.inspect(result))
   return result
