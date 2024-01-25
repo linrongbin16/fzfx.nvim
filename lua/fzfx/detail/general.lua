@@ -542,7 +542,7 @@ function PreviewerSwitch:preview(line, context)
     )
   end
 
-  self:preview_label(line, context)
+  self:_preview_label(line, context)
 
   return previewer_config.previewer_type
 end
@@ -590,7 +590,7 @@ end
 --- @param line string?
 --- @param context fzfx.PipelineContext
 --- @return string?
-function PreviewerSwitch:preview_label(line, context)
+function PreviewerSwitch:_preview_label(line, context)
   local previewer_config = self.previewer_configs[self.pipeline]
   -- log.debug(
   --     "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
