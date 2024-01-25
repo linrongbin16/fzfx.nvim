@@ -1032,31 +1032,53 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
             local previewer_config = last_preview_file_job[1]
             local focused_line = last_preview_file_job[2]
-            local ok, result =
+            local previewer_ok, previewer_result =
               pcall(previewer_config.previewer, focused_line, context)
             -- log.debug(
             --     "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
             --     vim.inspect(ok),
             --     vim.inspect(result)
             -- )
-            if not ok then
+            if not previewer_ok then
               log.err(
                 "failed to call pipeline %s builtin previewer %s! line:%s, context:%s, error:%s",
                 vim.inspect(previewer_config.pipeline),
                 vim.inspect(previewer_config.previewer),
                 vim.inspect(focused_line),
                 vim.inspect(context),
-                vim.inspect(result)
+                vim.inspect(previewer_result)
               )
             else
               log.ensure(
-                result == nil or type(result) == "table",
+                previewer_result == nil or type(previewer_result) == "table",
                 "|general.focused_line_fsevent.asyncreadfile| builtin previewer result must be table! previewer_config:%s, result:%s",
                 vim.inspect(previewer_config),
-                vim.inspect(result)
+                vim.inspect(previewer_result)
               )
-              if result then
-                popup.popup_window:preview_file(result)
+              local previewer_label_ok
+              local previewer_label_result
+              if type(previewer_config.previewer_label) == "string" then
+                previewer_label_ok = true
+                previewer_label_result = previewer_config.previewer_label
+              elseif type(previewer_config.previewer_label) == "function" then
+                previewer_label_ok, previewer_label_result =
+                  pcall(previewer_config.previewer_label, focused_line, context)
+                if not previewer_label_ok then
+                  log.err(
+                    "failed to call previewer label(%s) on builtin previewer! focused_line:%s, context:%s, error:%s",
+                    vim.inspect(previewer_config),
+                    vim.inspect(focused_line),
+                    vim.inspect(context),
+                    vim.inspect(previewer_label_result)
+                  )
+                  previewer_label_result = nil
+                end
+              end
+              if previewer_result then
+                popup.popup_window:preview_file(
+                  previewer_result,
+                  previewer_label_result
+                )
               end
             end
           end, 80)

@@ -275,8 +275,8 @@ end
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 --- @field _resizing boolean
---- @field preview_files_queue fzfx.BuiltinFilePreviewerResult[]
---- @field preview_file_contents_queue {lines:string[],preview_result:fzfx.BuiltinFilePreviewerResult}[]
+--- @field preview_files_queue {previewer_result:fzfx.BuiltinFilePreviewerResult,previewer_label_result:string?}[]
+--- @field preview_file_contents_queue {lines:string[],previewer_result:fzfx.BuiltinFilePreviewerResult,previewer_label_result:string?}[]
 local BufferPopupWindow = {}
 
 --- @package
@@ -385,6 +385,7 @@ function BufferPopupWindow:preview_files_queue_empty()
   return #self.preview_files_queue == 0
 end
 
+--- @return {previewer_result:fzfx.BuiltinFilePreviewerResult,previewer_label_result:string?}
 function BufferPopupWindow:preview_files_queue_last()
   return self.preview_files_queue[#self.preview_files_queue]
 end
@@ -397,6 +398,7 @@ function BufferPopupWindow:preview_file_contents_queue_empty()
   return #self.preview_file_contents_queue == 0
 end
 
+--- @return {lines:string[],previewer_result:fzfx.BuiltinFilePreviewerResult,previewer_label_result:string?}
 function BufferPopupWindow:preview_file_contents_queue_last()
   return self.preview_file_contents_queue[#self.preview_file_contents_queue]
 end
@@ -423,11 +425,18 @@ function BufferPopupWindow:is_valid()
 end
 
 --- @param previewer_result fzfx.BuiltinFilePreviewerResult
-function BufferPopupWindow:preview_file(previewer_result)
+--- @param previewer_label_result string?
+function BufferPopupWindow:preview_file(
+  previewer_result,
+  previewer_label_result
+)
   if strings.empty(tables.tbl_get(previewer_result, "filename")) then
     return
   end
-  table.insert(self.preview_files_queue, previewer_result)
+  table.insert(self.preview_files_queue, {
+    previewer_result = previewer_result,
+    previewer_label_result = previewer_label_result,
+  })
 
   vim.defer_fn(function()
     if not self:is_valid() then
@@ -437,110 +446,129 @@ function BufferPopupWindow:preview_file(previewer_result)
       return
     end
 
-    local last_result = self:preview_files_queue_last()
+    local last_job = self:preview_files_queue_last()
     self:preview_files_queue_clear()
 
     -- read file content
-    fileios.asyncreadfile(last_result.filename, function(file_content)
-      if not self:is_valid() then
-        return
-      end
-      if not self:preview_files_queue_empty() then
-        return
-      end
-
-      local lines = {}
-      if strings.not_empty(file_content) then
-        file_content = file_content:gsub("\r\n", "\n")
-        lines = strings.split(file_content, "\n")
-      end
-      table.insert(
-        self.preview_file_contents_queue,
-        { lines = lines, preview_result = last_result }
-      )
-
-      -- show file contents by lines
-      vim.defer_fn(function()
+    fileios.asyncreadfile(
+      last_job.previewer_result.filename,
+      function(file_content)
         if not self:is_valid() then
           return
         end
         if not self:preview_files_queue_empty() then
           return
         end
-        if self:preview_file_contents_queue_empty() then
-          return
-        end
 
-        local last_lines = self:preview_file_contents_queue_last()
-        self:preview_file_contents_queue_clear()
-
-        vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
-        local set_name_ok, set_name_err = pcall(
-          vim.api.nvim_buf_set_name,
-          self.previewer_bufnr,
-          last_lines.preview_result.filename
-        )
-        if not set_name_ok then
-          log.debug(
-            "|BufferPopupWindow:preview_file.asyncreadfile| failed to set name for previewer buffer:%s(%s), error:%s",
-            vim.inspect(last_lines.preview_result.filename),
-            vim.inspect(self.previewer_bufnr),
-            vim.inspect(set_name_err)
-          )
+        local lines = {}
+        if strings.not_empty(file_content) then
+          file_content = file_content:gsub("\r\n", "\n")
+          lines = strings.split(file_content, "\n")
         end
-        local buf_call_ok, buf_call_err = pcall(
-          vim.api.nvim_buf_call,
-          self.previewer_bufnr,
-          function()
-            vim.api.nvim_command([[filetype detect]])
+        table.insert(self.preview_file_contents_queue, {
+          lines = lines,
+          previewer_result = last_job.previewer_result,
+          previewer_label_result = last_job.previewer_label_result,
+        })
+
+        -- show file contents by lines
+        vim.defer_fn(function()
+          if not self:is_valid() then
+            return
           end
-        )
-        if not buf_call_ok then
-          log.debug(
-            "|BufferPopupWindow:preview_file.asyncreadfile| failed to detect filetype for previewer buffer:%s(%s), error:%s",
-            vim.inspect(last_lines.preview_result.filename),
-            vim.inspect(self.previewer_bufnr),
-            vim.inspect(buf_call_err)
+          if not self:preview_files_queue_empty() then
+            return
+          end
+          if self:preview_file_contents_queue_empty() then
+            return
+          end
+
+          local last_contents = self:preview_file_contents_queue_last()
+          self:preview_file_contents_queue_clear()
+
+          vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
+          local set_name_ok, set_name_err = pcall(
+            vim.api.nvim_buf_set_name,
+            self.previewer_bufnr,
+            last_contents.previewer_result.filename
           )
-        end
-
-        local LINE_COUNT = 5
-        local line_index = 1
-
-        local function set_buf_lines()
-          vim.defer_fn(function()
-            if not self:is_valid() then
-              return
-            end
-            if not self:preview_files_queue_empty() then
-              return
-            end
-            if not self:preview_file_contents_queue_empty() then
-              return
-            end
-
-            local buf_lines = {}
-            for i = line_index, line_index + LINE_COUNT do
-              if i <= #last_lines.lines then
-                table.insert(buf_lines, last_lines.lines[i])
-              end
-            end
-            vim.api.nvim_buf_set_lines(
-              self.previewer_bufnr,
-              line_index - 1,
-              line_index - 1 + LINE_COUNT,
-              false,
-              buf_lines
+          if not set_name_ok then
+            log.debug(
+              "|BufferPopupWindow:preview_file.asyncreadfile| failed to set name for previewer buffer:%s(%s), error:%s",
+              vim.inspect(last_contents.previewer_result.filename),
+              vim.inspect(self.previewer_bufnr),
+              vim.inspect(set_name_err)
             )
-            line_index = line_index + LINE_COUNT
-            if line_index <= #last_lines.lines then
-              set_buf_lines()
+          end
+          local buf_call_ok, buf_call_err = pcall(
+            vim.api.nvim_buf_call,
+            self.previewer_bufnr,
+            function()
+              vim.api.nvim_command([[filetype detect]])
             end
-          end, 25)
-        end
-        set_buf_lines()
-      end, 25)
-    end)
+          )
+          if not buf_call_ok then
+            log.debug(
+              "|BufferPopupWindow:preview_file.asyncreadfile| failed to detect filetype for previewer buffer:%s(%s), error:%s",
+              vim.inspect(last_contents.previewer_result.filename),
+              vim.inspect(self.previewer_bufnr),
+              vim.inspect(buf_call_err)
+            )
+          end
+          if strings.not_empty(last_contents.previewer_label_result) then
+            local set_config_ok, set_config_err = pcall(
+              vim.api.nvim_win_set_config,
+              self.previewer_winnr,
+              { title = last_contents.previewer_label_result }
+            )
+            if not set_config_ok then
+              log.debug(
+                "|BufferPopupWindow:preview_file.asyncreadfile| failed to set title for previewer window:%s(%s), error:%s",
+                vim.inspect(last_contents.previewer_result.filename),
+                vim.inspect(self.previewer_winnr),
+                vim.inspect(set_config_err)
+              )
+            end
+          end
+
+          local LINE_COUNT = 5
+          local line_index = 1
+
+          local function set_buf_lines()
+            vim.defer_fn(function()
+              if not self:is_valid() then
+                return
+              end
+              if not self:preview_files_queue_empty() then
+                return
+              end
+              if not self:preview_file_contents_queue_empty() then
+                return
+              end
+
+              local buf_lines = {}
+              for i = line_index, line_index + LINE_COUNT do
+                if i <= #last_contents.lines then
+                  table.insert(buf_lines, last_contents.lines[i])
+                end
+              end
+              vim.api.nvim_buf_set_lines(
+                self.previewer_bufnr,
+                line_index - 1,
+                line_index - 1 + LINE_COUNT,
+                false,
+                buf_lines
+              )
+              line_index = line_index + LINE_COUNT
+              if line_index <= #last_contents.lines then
+                set_buf_lines()
+              end
+            end, 25)
+          end
+          set_buf_lines()
+        end, 25)
+      end
+    )
   end, 80)
 end
 
