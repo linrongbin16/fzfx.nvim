@@ -55,7 +55,7 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
       width = math.max(width - fzf_preview_window_opts.size, 1)
     end
     additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign
-      + sign
+    -- + sign
   elseif
     fzf_preview_window_opts.position == "up"
     or fzf_preview_window_opts.position == "down"
@@ -69,7 +69,7 @@ M._make_provider_center_opts = function(opts, fzf_preview_window_opts)
       height = math.max(height - fzf_preview_window_opts.size, 1)
     end
     additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign
-      + sign
+    -- + sign
   end
   log.debug(
     "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
@@ -206,7 +206,7 @@ M._make_previewer_center_opts = function(opts, fzf_preview_window_opts)
     row = row,
     col = col,
     style = "minimal",
-    border = opts.border,
+    border = fzf_preview_window_opts.border,
     zindex = opts.zindex,
   }
   log.debug("|_make_previewer_center_opts| result:%s", vim.inspect(result))

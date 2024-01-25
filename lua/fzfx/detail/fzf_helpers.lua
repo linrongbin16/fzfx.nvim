@@ -623,6 +623,7 @@ local function parse_fzf_preview_window_opts(opts)
       _spilt_fzf_preview_window_opts(split_alternatives)
     )
   end
+  log.debug("|parse_fzf_preview_window_opts| result:%s", vim.inspect(result))
   return result
 end
 
