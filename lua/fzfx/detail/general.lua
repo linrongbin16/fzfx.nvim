@@ -1233,8 +1233,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       "right,50%",
     },
   })
+  local fzf_border_opts = consts.IS_WINDOWS and "sharp" or "rounded"
   if use_builtin_previewer then
     local fzf_pw_opts = {}
+    local fzf_border_opts = nil
     for _, o in ipairs(fzf_opts) do
       if
         type(o) == "table"
@@ -1248,6 +1250,19 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       then
         table.insert(fzf_pw_opts, o)
       end
+      if
+        type(o) == "table"
+        and strings.not_empty(o[1])
+        and strings.startswith(o[1], "--border")
+      then
+        fzf_border_opts = o[2]
+      elseif
+        strings.not_empty(o)
+        and strings.startswith(o --[[@as string]], "--border")
+      then
+        fzf_border_opts =
+          string.sub(o --[[@as string]], string.len("--border") + 2)
+      end
     end
     log.debug("|general| extract fzf_pw_opts:%s", vim.inspect(fzf_pw_opts))
     if #fzf_pw_opts > 0 then
@@ -1256,6 +1271,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
 
     table.insert(fzf_opts, { "--preview-window", "hidden" })
+    table.insert(fzf_opts, "--border=none")
   end
 
   popup = Popup:new(
@@ -1287,7 +1303,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       end
     end,
     use_builtin_previewer,
-    fzf_preview_window_opts --[[@as fzfx.FzfPreviewWindowOpts]]
+    {
+      fzf_preview_window_opts = fzf_preview_window_opts,
+      fzf_border_opts = fzf_border_opts,
+    }
   )
   return popup
 end
