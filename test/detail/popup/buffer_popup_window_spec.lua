@@ -214,22 +214,6 @@ describe("detail.popup.buffer_popup_window", function()
       actual:preview_file_contents_queue_clear()
       assert_true(actual:preview_file_contents_queue_empty())
     end)
-    it("clear_pending_preview_file_jobs", function()
-      local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window=right,50",
-      })
-      local builtin_opts = {
-        fzf_preview_window_opts = pw_opts,
-        fzf_border_opts = "rounded",
-      }
-      local actual =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      table.insert(actual.preview_files_queue, 1)
-      table.insert(actual.preview_file_contents_queue, 2)
-      actual:clear_pending_preview_file_jobs()
-      assert_true(actual:preview_files_queue_empty())
-      assert_true(actual:preview_file_contents_queue_empty())
-    end)
     it("preview_file", function()
       local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window=right,50",
@@ -240,7 +224,7 @@ describe("detail.popup.buffer_popup_window", function()
       }
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      actual:preview_file({ filename = "README.md" })
+      actual:preview_file(1, { filename = "README.md" })
       vim.wait(10000, function()
         return actual:preview_files_queue_empty()
           and actual:preview_file_contents_queue_empty()

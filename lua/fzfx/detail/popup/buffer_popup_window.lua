@@ -423,11 +423,6 @@ function BufferPopupWindow:preview_file_contents_queue_clear()
   self.preview_file_contents_queue = {}
 end
 
-function BufferPopupWindow:clear_pending_preview_file_jobs()
-  self:preview_files_queue_clear()
-  self:preview_file_contents_queue_clear()
-end
-
 --- @param job_id integer
 function BufferPopupWindow:set_preview_file_job_id(job_id)
   self.preview_file_job_id = job_id

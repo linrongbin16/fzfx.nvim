@@ -78,10 +78,6 @@ function PopupWindow:is_valid()
   return self.instance:is_valid()
 end
 
-function PopupWindow:clear_pending_preview_file_jobs()
-  self.instance:clear_pending_preview_file_jobs()
-end
-
 --- @param job_id integer
 function PopupWindow:set_preview_file_job_id(job_id)
   self.instance:set_preview_file_job_id(job_id)
