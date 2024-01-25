@@ -406,9 +406,11 @@ function FzfOptEventBinder:build()
 end
 
 -- nvim_open_win border opts see:
---
 --  * https://neovim.io/doc/user/api.html#nvim_open_win()
 --  * https://github.com/neovim/neovim/blob/4e59422e1d4950a3042bad41a7b81c8db4f8b648/src/nvim/api/win_config.c?plain=1#L536-L540
+--
+-- fzf border opts see:
+--  * https://github.com/junegunn/fzf/blob/da752fc9a4b3cb9dd08cc80614a491f980436b46/src/tui/tui.go#L369
 --
 -- { "double", { "╔", "═", "╗", "║", "╝", "═", "╚", "║" }, false },
 -- { "single", { "┌", "─", "┐", "│", "┘", "─", "└", "│" }, false },
@@ -418,10 +420,19 @@ end
 local FZF_BORDER_OPTS_MAP = {
   ["border-rounded"] = "rounded",
   ["border-sharp"] = "single",
-  ["border-bold"] = "double",
   ["border-double"] = "double",
-  ["border-block"] = "double",
-  ["border-thinblock"] = "single",
+  ["border-bold"] = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },
+  ["border-block"] = { "▛", "▀", "▜", "▐", "▟", "▄", "▙", "▌" },
+  ["border-thinblock"] = {
+    "🭽",
+    "▔",
+    "🭾",
+    "▕",
+    "🭿",
+    "▁",
+    "🭼",
+    "▏",
+  },
   ["border-horizontal"] = { "─", "─", "─", " ", "─", "─", "─", " " },
   ["border-top"] = { "─", "─", "─", " ", " ", " ", " ", " " },
   ["border-bottom"] = { " ", " ", " ", " ", "─", "─", "─", " " },
