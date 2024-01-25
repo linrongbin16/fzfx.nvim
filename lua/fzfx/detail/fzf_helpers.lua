@@ -500,26 +500,37 @@ end
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
 --- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right",size:integer,size_is_percent:boolean,border:string,wrap:boolean,follow:boolean,cycle:boolean,hidden:boolean,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
 --
---- @param opts fzfx.FzfOpt?
+--- @param opts fzfx.FzfOpt[]
 --- @return fzfx.FzfPreviewWindowOpts
 local function parse_fzf_preview_window_opts(opts)
   log.ensure(
-    type(opts) == "table" or type(opts) == "string",
-    "invalid fzf opts:%s",
+    type(opts) == "table",
+    "invalid fzf preview window opts list:%s",
     vim.inspect(opts)
   )
-  local opts_value = nil
-  if type(opts) == "table" then
-    opts_value = strings.trim(opts[2])
-  else
+  local opts_value = ""
+  for _, o in ipairs(opts) do
     log.ensure(
-      type(opts) == "string" and strings.startswith(opts, "--preview-window"),
+      type(o) == "table" or type(o) == "string",
       "invalid fzf preview window opts:%s",
-      vim.inspect(opts)
+      vim.inspect(o)
     )
-    opts_value = strings.trim(
-      string.sub(opts --[[@as string]], string.len("--preview-window") + 2)
-    )
+    if type(o) == "table" then
+      opts_value = opts_value
+        .. (string.len(opts_value) > 0 and "," or "")
+        .. strings.trim(o[2])
+    else
+      log.ensure(
+        type(o) == "string" and strings.startswith(o, "--preview-window"),
+        "invalid fzf preview window opts:%s",
+        vim.inspect(o)
+      )
+      opts_value = opts_value
+        .. (string.len(opts_value) > 0 and "," or "")
+        .. strings.trim(
+          string.sub(o --[[@as string]], string.len("--preview-window") + 2)
+        )
+    end
   end
 
   --- @type string[]

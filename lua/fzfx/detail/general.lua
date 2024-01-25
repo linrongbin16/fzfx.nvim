@@ -1247,10 +1247,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         table.insert(fzf_pw_opts, o)
       end
     end
-    for _, o in ipairs(fzf_pw_opts) do
-      local parsed_o = fzf_helpers.parse_fzf_preview_window_opts(o)
+    if #fzf_pw_opts > 0 then
       fzf_preview_window_opts =
-        vim.tbl_deep_extend("force", fzf_preview_window_opts, parsed_o)
+        fzf_helpers.parse_fzf_preview_window_opts(fzf_pw_opts)
     end
 
     table.insert(fzf_opts, { "--preview-window", "hidden" })
