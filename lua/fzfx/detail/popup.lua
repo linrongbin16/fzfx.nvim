@@ -74,8 +74,8 @@ function PopupWindow:is_valid()
   return self.instance:is_valid()
 end
 
-function PopupWindow:cancel_current_preview_file_job()
-  self.instance:clear_preview_file_job()
+function PopupWindow:clear_pending_preview_file_jobs()
+  self.instance:clear_pending_preview_file_jobs()
 end
 
 --- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}

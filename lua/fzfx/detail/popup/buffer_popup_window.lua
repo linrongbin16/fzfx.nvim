@@ -402,7 +402,7 @@ function BufferPopupWindow:preview_file_contents_queue_clear()
   self.preview_file_contents_queue = {}
 end
 
-function BufferPopupWindow:cancel_current_preview_file_job()
+function BufferPopupWindow:clear_pending_preview_file_jobs()
   self:preview_files_queue_clear()
   self:preview_file_contents_queue_clear()
 end
