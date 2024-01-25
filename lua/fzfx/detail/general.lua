@@ -1236,7 +1236,23 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local fzf_border_opts = consts.IS_WINDOWS and "sharp" or "rounded"
   if use_builtin_previewer then
     local fzf_pw_opts = {}
-    local fzf_border_opts = nil
+    local base_config_fzf_opts =
+      fzf_helpers.preprocess_fzf_opts(vim.deepcopy(config.get().fzf_opts or {}))
+    for _, o in ipairs(base_config_fzf_opts) do
+      if
+        type(o) == "table"
+        and strings.not_empty(o[1])
+        and strings.startswith(o[1], "--border")
+      then
+        fzf_border_opts = o[2]
+      elseif
+        strings.not_empty(o)
+        and strings.startswith(o --[[@as string]], "--border")
+      then
+        fzf_border_opts =
+          string.sub(o --[[@as string]], string.len("--border") + 2)
+      end
+    end
     for _, o in ipairs(fzf_opts) do
       if
         type(o) == "table"
@@ -1264,7 +1280,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           string.sub(o --[[@as string]], string.len("--border") + 2)
       end
     end
-    log.debug("|general| extract fzf_pw_opts:%s", vim.inspect(fzf_pw_opts))
+    log.debug(
+      "|general| extract fzf_pw_opts:%s, fzf_border_opts:%s, fzf_opts:%s",
+      vim.inspect(fzf_pw_opts),
+      vim.inspect(fzf_border_opts),
+      vim.inspect(fzf_opts)
+    )
     if #fzf_pw_opts > 0 then
       fzf_preview_window_opts =
         fzf_helpers.parse_fzf_preview_window_opts(fzf_pw_opts)
