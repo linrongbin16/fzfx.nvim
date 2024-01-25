@@ -9,6 +9,9 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 
 local M = {}
 
+local FLOAT_WIN_DEFAULT_BORDER = "none"
+local FLOAT_WIN_DEFAULT_ZINDEX = 60
+
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
 M._make_cursor_opts = function(opts)
@@ -39,8 +42,8 @@ M._make_cursor_opts = function(opts)
     row = row,
     col = col,
     style = "minimal",
-    border = opts.border,
-    zindex = opts.zindex,
+    border = FLOAT_WIN_DEFAULT_BORDER,
+    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
   }
 end
 
@@ -76,8 +79,8 @@ M._make_center_opts = function(opts)
     row = row,
     col = col,
     style = "minimal",
-    border = opts.border,
-    zindex = opts.zindex,
+    border = FLOAT_WIN_DEFAULT_BORDER,
+    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
   }
 end
 

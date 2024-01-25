@@ -442,6 +442,8 @@ local FZF_BORDER_OPTS_MAP = {
   ["none"] = "solid",
 }
 
+local FZF_DEFAULT_BORDER_OPTS = constants.IS_WINDOWS and "single" or "rounded"
+
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
 --
@@ -454,7 +456,7 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
     position = "right",
     size = 50,
     size_is_percent = true,
-    border = constants.IS_WINDOWS and "single" or "rounded",
+    border = FZF_DEFAULT_BORDER_OPTS,
     wrap = false,
     follow = false,
     cycle = false,
@@ -662,6 +664,8 @@ local M = {
   make_lua_command = make_lua_command,
   _spilt_fzf_preview_window_opts = _spilt_fzf_preview_window_opts,
   parse_fzf_preview_window_opts = parse_fzf_preview_window_opts,
+  FZF_BORDER_OPTS_MAP = FZF_BORDER_OPTS_MAP,
+  FZF_DEFAULT_BORDER_OPTS = FZF_DEFAULT_BORDER_OPTS,
   setup = setup,
 }
 

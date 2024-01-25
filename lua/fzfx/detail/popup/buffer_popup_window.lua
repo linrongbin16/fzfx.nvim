@@ -116,7 +116,8 @@ M._make_provider_center_opts = function(opts, builtin_previewer_opts)
     row = row,
     col = col,
     style = "minimal",
-    border = opts.border,
+    border = fzf_helpers.FZF_BORDER_OPTS_MAP[builtin_previewer_opts.fzf_border_opts]
+      or fzf_helpers.FZF_DEFAULT_BORDER_OPTS,
     zindex = opts.zindex,
   }
   log.debug("|_make_provider_center_opts| result:%s", vim.inspect(result))

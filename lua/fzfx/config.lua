@@ -269,8 +269,6 @@ local Defaults = {
       --
       row = 0,
       col = 0,
-      border = "none",
-      zindex = 51,
     },
   },
 
