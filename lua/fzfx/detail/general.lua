@@ -1233,7 +1233,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       "right,50%",
     },
   })
-  local fzf_border_opts = consts.IS_WINDOWS and "sharp" or "rounded"
+  local fzf_border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
   if use_builtin_previewer then
     local fzf_pw_opts = {}
     local base_config_fzf_opts =
