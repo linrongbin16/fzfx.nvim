@@ -485,9 +485,21 @@ function BufferPopupWindow:preview_file(previewer_result)
             vim.inspect(set_name_err)
           )
         end
-        vim.api.nvim_buf_call(self.previewer_bufnr, function()
-          vim.api.nvim_command([[filetype detect]])
-        end)
+        local buf_call_ok, buf_call_err = pcall(
+          vim.api.nvim_buf_call,
+          self.previewer_bufnr,
+          function()
+            vim.api.nvim_command([[filetype detect]])
+          end
+        )
+        if not buf_call_ok then
+          log.debug(
+            "|BufferPopupWindow:preview_file.asyncreadfile| failed to detect filetype for previewer buffer:%s(%s), error:%s",
+            vim.inspect(last_lines.preview_result.filename),
+            vim.inspect(self.previewer_bufnr),
+            vim.inspect(buf_call_err)
+          )
+        end
 
         local LINE_COUNT = 5
         local line_index = 1
