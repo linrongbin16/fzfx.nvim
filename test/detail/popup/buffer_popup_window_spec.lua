@@ -13,9 +13,11 @@ describe("detail.popup.buffer_popup_window", function()
 
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
+  local numbers = require("fzfx.commons.numbers")
   local buffer_popup_window = require("fzfx.detail.popup.buffer_popup_window")
   local popup_helpers = require("fzfx.detail.popup.popup_helpers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
+
   require("fzfx").setup({
     debug = {
       enable = true,
@@ -224,7 +226,10 @@ describe("detail.popup.buffer_popup_window", function()
       }
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      actual:preview_file(1, { filename = "README.md" })
+      actual:preview_file(
+        numbers.auto_incremental_id(),
+        { filename = "README.md" }
+      )
       vim.wait(10000, function()
         return actual:preview_files_queue_empty()
           and actual:preview_file_contents_queue_empty()
