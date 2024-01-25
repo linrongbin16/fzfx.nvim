@@ -1095,8 +1095,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               if previewer_result then
                 popup.popup_window:preview_file(
                   last_preview_file_job_id,
-                  previewer_result,
-                  previewer_label_result
+                  previewer_result --[[@as fzfx.BufferFilePreviewerResult]],
+                  previewer_label_result --[[@as string?]]
                 )
               end
             end
