@@ -342,16 +342,20 @@ local SCOPE_RENDERERS = {
     "@type.definition",
     "Identifier",
   }, { "variable.parameter" }),
-  -- _BatTmThemeScopeRenderer:new({
-  --   "Identifier",
-  -- }, { "variable.other.member" }),
+  _BatTmThemeScopeRenderer:new({
+    "@variable",
+    "Variable",
+  }, { "variable.other" }),
+  _BatTmThemeScopeRenderer:new({
+    "@constant",
+    "Constant",
+  }, { "variable.other.constant" }),
 
   -- keyword
-  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword", true),
+  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
   _BatTmThemeScopeRenderer:new(
     { "@keyword.conditional", "Conditional" },
-    "keyword.control",
-    true
+    "keyword.control"
   ),
   _BatTmThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
   _BatTmThemeScopeRenderer:new(
@@ -363,11 +367,18 @@ local SCOPE_RENDERERS = {
   -- storage
   -- _BatTmThemeScopeRenderer:new({"", "StorageClass" }, "storage.type"),
   _BatTmThemeScopeRenderer:new({
+    "@type",
     "Type",
   }, "storage.type"),
   _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "storage.modifier"),
 
   -- entity
+  _BatTmThemeScopeRenderer:new({
+    "@type",
+    "Type",
+  }, {
+    "entity.name.type",
+  }),
   _BatTmThemeScopeRenderer:new({
     "Structure",
   }, {
@@ -375,33 +386,46 @@ local SCOPE_RENDERERS = {
     "entity.name.union",
   }),
   _BatTmThemeScopeRenderer:new({
-    "Typedef",
+    "@type",
+    "Type",
   }, "entity.other.inherited-class"),
   _BatTmThemeScopeRenderer:new({
+    "@markup.heading",
     "Title",
   }, "entity.name.section"),
   _BatTmThemeScopeRenderer:new({
+    "@function",
     "Function",
   }, "entity.name.function"),
   _BatTmThemeScopeRenderer:new({
+    "@label",
     "Label",
   }, "entity.name.label"),
   _BatTmThemeScopeRenderer:new({
+    "@tag",
     "htmlTag",
   }, "entity.name.tag"),
+  _BatTmThemeScopeRenderer:new({
+    "@constant",
+    "Constant",
+  }, "entity.name.constant"),
 
   -- support
   _BatTmThemeScopeRenderer:new({
+    "@function",
     "Function",
   }, "support.function"),
   _BatTmThemeScopeRenderer:new({
+    "@constant",
     "Constant",
   }, "support.constant"),
   _BatTmThemeScopeRenderer:new({
+    "@type",
     "Type",
   }, "support.type"),
   _BatTmThemeScopeRenderer:new({
-    "Typedef",
+    "@type",
+    "Type",
   }, "support.class"),
 
   -- invalid
@@ -436,6 +460,9 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new({
     "htmlTag",
   }, "meta.tag"),
+  _BatTmThemeScopeRenderer:new({
+    "@function.call",
+  }, "meta.function-call"),
 }
 
 --- @return {name:string,payload:string}?
