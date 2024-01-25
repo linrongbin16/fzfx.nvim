@@ -1228,8 +1228,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   --- @type fzfx.FzfPreviewWindowOpts
   local fzf_preview_window_opts = fzf_helpers.parse_fzf_preview_window_opts({
-    "--preview-window",
-    "right,50%",
+    {
+      "--preview-window",
+      "right,50%",
+    },
   })
   if use_builtin_previewer then
     local fzf_pw_opts = {}
@@ -1247,6 +1249,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         table.insert(fzf_pw_opts, o)
       end
     end
+    log.debug("|general| extract fzf_pw_opts:%s", vim.inspect(fzf_pw_opts))
     if #fzf_pw_opts > 0 then
       fzf_preview_window_opts =
         fzf_helpers.parse_fzf_preview_window_opts(fzf_pw_opts)
