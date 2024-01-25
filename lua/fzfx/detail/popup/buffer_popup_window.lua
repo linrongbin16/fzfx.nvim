@@ -287,8 +287,14 @@ local function _set_default_buf_options(bufnr)
   apis.set_buf_option(bufnr, "filetype", "fzf")
 end
 
-local function _set_default_win_options(winnr)
+local function _set_default_previewer_win_options(winnr)
   apis.set_win_option(winnr, "number", true)
+  apis.set_win_option(winnr, "spell", false)
+  apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+end
+
+local function _set_default_provider_win_options(winnr)
+  apis.set_win_option(winnr, "number", false)
   apis.set_win_option(winnr, "spell", false)
   apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
 end
@@ -317,11 +323,11 @@ function BufferPopupWindow:new(win_opts, builtin_previewer_opts)
 
   local previewer_winnr =
     vim.api.nvim_open_win(previewer_bufnr, true, previewer_nvim_float_win_opts)
-  _set_default_win_options(previewer_winnr)
+  _set_default_previewer_win_options(previewer_winnr)
 
   local provider_winnr =
     vim.api.nvim_open_win(provider_bufnr, true, provider_nvim_float_win_opts)
-  _set_default_win_options(provider_winnr)
+  _set_default_provider_win_options(provider_winnr)
   apis.set_win_option(provider_winnr, "colorcolumn", "")
   vim.api.nvim_set_current_win(provider_winnr)
 
@@ -522,11 +528,13 @@ function BufferPopupWindow:preview_file(
             )
           end
 
+          local TOTAL_LINES = #last_contents.lines
           local LINE_COUNT = 5
+          local SHOW_PREVIEW_LABEL_COUNT = math.min(30, TOTAL_LINES)
           local line_index = 1
 
           local function set_win_title()
-            if strings.empty(previewer_label_result) then
+            if strings.empty(last_contents.previewer_label_result) then
               return
             end
             if not self:is_valid() then
@@ -557,7 +565,7 @@ function BufferPopupWindow:preview_file(
               )
             end
             local set_opts_ok, set_opts_err =
-              pcall(_set_default_win_options, self.previewer_winnr)
+              pcall(_set_default_previewer_win_options, self.previewer_winnr)
             if not set_opts_ok then
               log.debug(
                 "|BufferPopupWindow:preview_file.asyncreadfile| failed to reset default opts for previewer window:%s(%s), error:%s",
@@ -582,7 +590,7 @@ function BufferPopupWindow:preview_file(
 
               local buf_lines = {}
               for i = line_index, line_index + LINE_COUNT do
-                if i <= #last_contents.lines then
+                if i <= TOTAL_LINES then
                   table.insert(buf_lines, last_contents.lines[i])
                 else
                   break
@@ -596,10 +604,11 @@ function BufferPopupWindow:preview_file(
                 buf_lines
               )
               line_index = line_index + LINE_COUNT
-              if line_index <= #last_contents.lines then
+              if line_index <= TOTAL_LINES then
                 set_buf_lines()
-              else
-                vim.defer_fn(set_win_title, 25)
+              end
+              if line_index >= SHOW_PREVIEW_LABEL_COUNT then
+                vim.schedule(set_win_title)
               end
             end, 25)
           end
