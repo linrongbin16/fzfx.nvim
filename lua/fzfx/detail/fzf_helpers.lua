@@ -428,6 +428,7 @@ local FZF_BORDER_OPTS_MAP = {
   ["border-vertical"] = { "║", " ", "║", "║", "║", " ", "║", "║" },
   ["border-left"] = { "║", " ", " ", " ", " ", " ", "║", "║" },
   ["border-right"] = { " ", " ", "║", "║", "║", " ", " ", " " },
+  ["border-none"] = "solid",
 }
 
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
