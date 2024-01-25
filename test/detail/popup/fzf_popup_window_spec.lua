@@ -20,8 +20,6 @@ describe("detail.popup.fzf_popup_window", function()
     width = 0.85,
     row = 0,
     col = 0,
-    border = "none",
-    zindex = 51,
   }
   describe("[_make_cursor_opts]", function()
     it("test", function()
@@ -39,8 +37,6 @@ describe("detail.popup.fzf_popup_window", function()
       local expect_height =
         popup_helpers.get_window_size(WIN_OPTS.height, win_height)
       assert_eq(actual.anchor, "NW")
-      assert_eq(actual.border, WIN_OPTS.border)
-      assert_eq(actual.zindex, WIN_OPTS.zindex)
       assert_eq(type(actual.height), "number")
       assert_eq(actual.height, expect_height)
       assert_eq(type(actual.width), "number")
@@ -74,8 +70,6 @@ describe("detail.popup.fzf_popup_window", function()
       local expect_col =
         popup_helpers.shift_window_pos(total_width, expect_width, WIN_OPTS.col)
       assert_eq(actual.anchor, "NW")
-      assert_eq(actual.border, WIN_OPTS.border)
-      assert_eq(actual.zindex, WIN_OPTS.zindex)
       assert_eq(type(actual.height), "number")
       assert_eq(actual.height, expect_height)
       assert_eq(type(actual.width), "number")
@@ -94,8 +88,6 @@ describe("detail.popup.fzf_popup_window", function()
         string.format("fzf_popup_window.make_opts:%s\n", vim.inspect(actual1))
       )
       assert_eq(actual1.anchor, "NW")
-      assert_eq(actual1.border, WIN_OPTS.border)
-      assert_eq(actual1.zindex, WIN_OPTS.zindex)
       assert_eq(type(actual1.height), "number")
       assert_eq(type(actual2.height), "number")
       assert_eq(actual1.height, actual2.height)
