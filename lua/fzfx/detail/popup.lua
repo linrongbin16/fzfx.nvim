@@ -74,7 +74,7 @@ function PopupWindow:is_valid()
   return self.instance:is_valid()
 end
 
-function PopupWindow:clear_preview_file_job()
+function PopupWindow:cancel_current_preview_file_job()
   self.instance:clear_preview_file_job()
 end
 
