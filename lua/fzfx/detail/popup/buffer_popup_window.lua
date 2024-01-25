@@ -12,15 +12,17 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 
 local M = {}
 
+--- @alias fzfx.BuiltinFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+
 -- cursor window {
 
 --- @param opts fzfx.WindowOpts
---- @param builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
 M._make_provider_cursor_opts = function(opts, builtin_previewer_opts) end
 
 --- @param opts fzfx.WindowOpts
---- @param builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
 M._make_previewer_cursor_opts = function(opts, builtin_previewer_opts) end
 
@@ -29,7 +31,7 @@ M._make_previewer_cursor_opts = function(opts, builtin_previewer_opts) end
 -- center window {
 
 --- @param opts fzfx.WindowOpts
---- @param builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
 M._make_provider_center_opts = function(opts, builtin_previewer_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
@@ -125,7 +127,7 @@ M._make_provider_center_opts = function(opts, builtin_previewer_opts)
 end
 
 --- @param opts fzfx.WindowOpts
---- @param builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
 M._make_previewer_center_opts = function(opts, builtin_previewer_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
@@ -223,7 +225,7 @@ end
 -- provider window {
 
 --- @param win_opts fzfx.WindowOpts
---- @param builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
 M.make_provider_opts = function(win_opts, builtin_previewer_opts)
   local opts = vim.deepcopy(win_opts)
@@ -245,7 +247,7 @@ end
 -- previewer window {
 
 --- @param win_opts fzfx.WindowOpts
---- @param builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
 M.make_previewer_opts = function(win_opts, builtin_previewer_opts)
   local opts = vim.deepcopy(win_opts)
@@ -279,9 +281,21 @@ end
 --- @field preview_file_contents_queue {lines:string[],previewer_result:fzfx.BuiltinFilePreviewerResult,previewer_label_result:string?}[]
 local BufferPopupWindow = {}
 
+local function _set_default_buf_options(bufnr)
+  apis.set_buf_option(bufnr, "bufhidden", "wipe")
+  apis.set_buf_option(bufnr, "buflisted", false)
+  apis.set_buf_option(bufnr, "filetype", "fzf")
+end
+
+local function _set_default_win_options(winnr)
+  apis.set_win_option(winnr, "number", true)
+  apis.set_win_option(winnr, "spell", false)
+  apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+end
+
 --- @package
 --- @param win_opts fzfx.WindowOpts
---- @param builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
 --- @return fzfx.BufferPopupWindow
 function BufferPopupWindow:new(win_opts, builtin_previewer_opts)
   -- save current window context
@@ -289,15 +303,11 @@ function BufferPopupWindow:new(win_opts, builtin_previewer_opts)
 
   --- @type integer
   local provider_bufnr = vim.api.nvim_create_buf(false, true)
-  apis.set_buf_option(provider_bufnr, "bufhidden", "wipe")
-  apis.set_buf_option(provider_bufnr, "buflisted", false)
-  apis.set_buf_option(provider_bufnr, "filetype", "fzf")
+  _set_default_buf_options(provider_bufnr)
 
   --- @type integer
   local previewer_bufnr = vim.api.nvim_create_buf(false, true)
-  apis.set_buf_option(previewer_bufnr, "bufhidden", "wipe")
-  apis.set_buf_option(previewer_bufnr, "buflisted", false)
-  apis.set_buf_option(previewer_bufnr, "filetype", "fzf")
+  _set_default_buf_options(previewer_bufnr)
 
   local provider_nvim_float_win_opts =
     M.make_provider_opts(win_opts, builtin_previewer_opts)
@@ -307,15 +317,11 @@ function BufferPopupWindow:new(win_opts, builtin_previewer_opts)
 
   local previewer_winnr =
     vim.api.nvim_open_win(previewer_bufnr, true, previewer_nvim_float_win_opts)
-  apis.set_win_option(previewer_winnr, "number", true)
-  apis.set_win_option(previewer_winnr, "spell", false)
-  apis.set_win_option(previewer_winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  _set_default_win_options(previewer_winnr)
 
   local provider_winnr =
     vim.api.nvim_open_win(provider_bufnr, true, provider_nvim_float_win_opts)
-  apis.set_win_option(provider_winnr, "spell", false)
-  apis.set_win_option(provider_winnr, "number", false)
-  apis.set_win_option(provider_winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  _set_default_win_options(provider_winnr)
   apis.set_win_option(provider_winnr, "colorcolumn", "")
   vim.api.nvim_set_current_win(provider_winnr)
 
@@ -487,6 +493,37 @@ function BufferPopupWindow:preview_file(
           self:preview_file_contents_queue_clear()
 
           vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
+
+          if strings.not_empty(last_contents.previewer_label_result) then
+            local title_opts = {
+              title = last_contents.previewer_label_result,
+              title_pos = "center",
+            }
+            local set_config_ok, set_config_err = pcall(
+              vim.api.nvim_win_set_config,
+              self.previewer_winnr,
+              title_opts
+            )
+            if not set_config_ok then
+              log.debug(
+                "|BufferPopupWindow:preview_file.asyncreadfile| failed to set title for previewer window:%s(%s), error:%s",
+                vim.inspect(last_contents.previewer_result.filename),
+                vim.inspect(self.previewer_winnr),
+                vim.inspect(set_config_err)
+              )
+            end
+            local set_opts_ok, set_opts_err =
+              pcall(_set_default_win_options, self.previewer_winnr)
+            if not set_opts_ok then
+              log.debug(
+                "|BufferPopupWindow:preview_file.asyncreadfile| failed to reset default opts for previewer window:%s(%s), error:%s",
+                vim.inspect(last_contents.previewer_result.filename),
+                vim.inspect(self.previewer_winnr),
+                vim.inspect(set_opts_err)
+              )
+            end
+          end
+
           local set_name_ok, set_name_err = pcall(
             vim.api.nvim_buf_set_name,
             self.previewer_bufnr,
@@ -514,21 +551,6 @@ function BufferPopupWindow:preview_file(
               vim.inspect(self.previewer_bufnr),
               vim.inspect(buf_call_err)
             )
-          end
-          if strings.not_empty(last_contents.previewer_label_result) then
-            local set_config_ok, set_config_err = pcall(
-              vim.api.nvim_win_set_config,
-              self.previewer_winnr,
-              { title = last_contents.previewer_label_result }
-            )
-            if not set_config_ok then
-              log.debug(
-                "|BufferPopupWindow:preview_file.asyncreadfile| failed to set title for previewer window:%s(%s), error:%s",
-                vim.inspect(last_contents.previewer_result.filename),
-                vim.inspect(self.previewer_winnr),
-                vim.inspect(set_config_err)
-              )
-            end
           end
 
           local LINE_COUNT = 5

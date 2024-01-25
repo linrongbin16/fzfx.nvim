@@ -21,7 +21,7 @@ local PopupWindow = {}
 --- @package
 --- @param win_opts fzfx.WindowOpts
 --- @param window_type "fzf"|"buffer"
---- @param builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
 --- @return fzfx.PopupWindow
 function PopupWindow:new(win_opts, window_type, builtin_previewer_opts)
   -- check executables
@@ -149,7 +149,7 @@ end
 --- @param context fzfx.PipelineContext
 --- @param on_close fzfx.OnPopupExit?
 --- @param builtin_previewer boolean?
---- @param builtin_previewer_opts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @param builtin_previewer_opts fzfx.BuiltinFilePreviewerOpts
 --- @return fzfx.Popup
 function Popup:new(
   win_opts,
