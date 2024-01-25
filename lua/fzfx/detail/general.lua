@@ -892,12 +892,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     { "--query", query },
   }
 
-  if not use_builtin_previewer then
-    --- @param line_params string
-    local function preview_rpc(line_params)
-      previewer_switch:preview(line_params, context)
-    end
+  --- @param line_params string
+  local function preview_rpc(line_params)
+    previewer_switch:preview(line_params, context)
+  end
 
+  if not use_builtin_previewer then
     local preview_rpc_id =
       rpcserver.get_instance():register(preview_rpc, "preview_rpc")
     table.insert(rpc_registries, preview_rpc_id)
