@@ -33,12 +33,12 @@ describe("detail.popup.buffer_popup_window", function()
   }
   describe("[BufferPopupWindow]", function()
     it("new right,50%", function()
-      local pw_opts1 = fzf_helpers.parse_fzf_preview_window_opts({
+      local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window",
         "right,50%",
       })
       local actual =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts1)
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts)
       print(
         string.format(
           "BufferPopupWindow:new right,50%%:%s\n",
@@ -53,6 +53,7 @@ describe("detail.popup.buffer_popup_window", function()
       assert_true(previewer_winnr > 0)
       assert_true(provider_bufnr > 0)
       assert_true(previewer_bufnr > 0)
+      assert_true(actual:is_valid())
 
       local provider_height = vim.api.nvim_win_get_height(provider_winnr)
       local provider_width = vim.api.nvim_win_get_width(provider_winnr)
@@ -83,15 +84,15 @@ describe("detail.popup.buffer_popup_window", function()
       )
     end)
     it("new down,50%", function()
-      local pw_opts1 = fzf_helpers.parse_fzf_preview_window_opts({
+      local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window",
         "down,50%",
       })
       local actual =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts1)
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts)
       print(
         string.format(
-          "BufferPopupWindow:new right,50%%:%s\n",
+          "BufferPopupWindow:new down,50%%:%s\n",
           vim.inspect(actual)
         )
       )
@@ -103,6 +104,7 @@ describe("detail.popup.buffer_popup_window", function()
       assert_true(previewer_winnr > 0)
       assert_true(provider_bufnr > 0)
       assert_true(previewer_bufnr > 0)
+      assert_true(actual:is_valid())
 
       local provider_height = vim.api.nvim_win_get_height(provider_winnr)
       local provider_width = vim.api.nvim_win_get_width(provider_winnr)
@@ -113,7 +115,7 @@ describe("detail.popup.buffer_popup_window", function()
       local expect_total_width = vim.o.columns * WIN_OPTS.width
       print(
         string.format(
-          "BufferPopupWindow:new right,50%%, provider:%s/%s, previewer:%s/%s, epxect total:%s/%s\n",
+          "BufferPopupWindow:new down,50%%, provider:%s/%s, previewer:%s/%s, epxect total:%s/%s\n",
           vim.inspect(provider_height),
           vim.inspect(provider_width),
           vim.inspect(previewer_height),
@@ -131,6 +133,33 @@ describe("detail.popup.buffer_popup_window", function()
         expect_total_width - 10 <= provider_width
           and provider_width <= expect_total_width + 10
       )
+    end)
+    it("close", function()
+      local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window",
+        "left,50",
+      })
+      local actual =
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, pw_opts)
+      print(
+        string.format("BufferPopupWindow:new left,50:%s\n", vim.inspect(actual))
+      )
+      local provider_winnr = actual.provider_winnr
+      local previewer_winnr = actual.previewer_winnr
+      local provider_bufnr = actual.provider_winnr
+      local previewer_bufnr = actual.previewer_winnr
+      assert_true(provider_winnr > 0)
+      assert_true(previewer_winnr > 0)
+      assert_true(provider_bufnr > 0)
+      assert_true(previewer_bufnr > 0)
+      assert_true(actual:is_valid())
+
+      actual:close()
+      assert_eq(actual.provider_winnr, nil)
+      assert_eq(actual.previewer_winnr, nil)
+      assert_eq(actual.provider_bufnr, nil)
+      assert_eq(actual.previewer_bufnr, nil)
+      assert_false(actual:is_valid())
     end)
   end)
 end)
