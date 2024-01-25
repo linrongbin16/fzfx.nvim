@@ -622,7 +622,7 @@ function BufferPopupWindow:preview_file(
             end, 10)
           end
           set_buf_lines()
-        end, 10)
+        end, 35)
       end
     )
   end, 80)
