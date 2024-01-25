@@ -326,21 +326,20 @@ local SCOPE_RENDERERS = {
     { "@string", "String" },
     { "string", "string.quoted" }
   ),
-  _BatTmThemeScopeRenderer:new(
-    {
-      "@string.regexp",
-      "DiagnosticWarn",
-      "LspDiagnosticsDefaultWarning",
-      "WarningMsg",
-    },
-    { "string.regexp" }
-  ),
+  _BatTmThemeScopeRenderer:new({
+    "@string.regexp",
+    "DiagnosticWarn",
+    "LspDiagnosticsDefaultWarning",
+    "WarningMsg",
+  }, { "string.regexp" }),
 
   -- variable
   _BatTmThemeScopeRenderer:new({
+    "@function",
     "Function",
   }, "variable.function"),
   _BatTmThemeScopeRenderer:new({
+    "@type.definition",
     "Identifier",
   }, { "variable.parameter" }),
   -- _BatTmThemeScopeRenderer:new({
@@ -350,11 +349,15 @@ local SCOPE_RENDERERS = {
   -- keyword
   _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword", true),
   _BatTmThemeScopeRenderer:new(
-    { "Conditional" },
-    "keyword.control.conditional",
+    { "@keyword.conditional", "Conditional" },
+    "keyword.control",
     true
   ),
-  _BatTmThemeScopeRenderer:new({ "Operator" }, "keyword.operator"),
+  _BatTmThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+  _BatTmThemeScopeRenderer:new(
+    { "@keyword.operator" },
+    "keyword.operator.word"
+  ),
   _BatTmThemeScopeRenderer:new({ "Statement" }, "keyword.other"),
 
   -- storage
