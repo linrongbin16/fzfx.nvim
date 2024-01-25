@@ -998,6 +998,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           if not popup.popup_window:is_valid() then
             return
           end
+          popup.popup_window:clear_preview_file_job()
+
           log.debug(
             "|general.focused_line_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
             vim.inspect(focused_file),
@@ -1026,6 +1028,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             local last_preview_file_job = previewer_builtin_files_queue_last()
             previewer_builtin_files_queue_clear()
 
+            popup.popup_window:clear_preview_file_job()
+
             local previewer_config = last_preview_file_job[1]
             local focused_line = last_preview_file_job[2]
             local ok, result =
@@ -1051,7 +1055,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 vim.inspect(previewer_config),
                 vim.inspect(result)
               )
-              if result and strings.not_empty(result.filename) then
+              if result then
                 popup.popup_window:preview_file(result)
               end
             end

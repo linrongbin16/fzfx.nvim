@@ -402,6 +402,11 @@ function BufferPopupWindow:preview_file_contents_queue_clear()
   self.preview_file_contents_queue = {}
 end
 
+function BufferPopupWindow:clear_preview_file_job()
+  self:preview_files_queue_clear()
+  self:preview_file_contents_queue_clear()
+end
+
 function BufferPopupWindow:is_valid()
   if vim.in_fast_event() then
     return type(self.previewer_winnr) == "number"
