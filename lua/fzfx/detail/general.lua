@@ -861,17 +861,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch:provide(query_params, context)
   end
 
-  --- @param line_params string
-  local function preview_rpc(line_params)
-    previewer_switch:preview(line_params, context)
-  end
-
   local provide_rpc_id =
     rpcserver.get_instance():register(provide_rpc, "provide_rpc")
-  local preview_rpc_id =
-    rpcserver.get_instance():register(preview_rpc, "preview_rpc")
   table.insert(rpc_registries, provide_rpc_id)
-  table.insert(rpc_registries, preview_rpc_id)
 
   local query_command = string.format(
     "%s %s %s %s %s",
@@ -901,6 +893,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   }
 
   if not use_builtin_previewer then
+    --- @param line_params string
+    local function preview_rpc(line_params)
+      previewer_switch:preview(line_params, context)
+    end
+
+    local preview_rpc_id =
+      rpcserver.get_instance():register(preview_rpc, "preview_rpc")
+    table.insert(rpc_registries, preview_rpc_id)
     local preview_command = string.format(
       "%s %s %s %s {}",
       fzf_helpers.make_lua_command("general", "previewer.lua"),
