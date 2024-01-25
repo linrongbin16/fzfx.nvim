@@ -998,6 +998,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         end
 
         buffer_preview_job_id = numbers.auto_incremental_id()
+        popup.popup_window:set_preview_file_job_id(buffer_preview_job_id)
         log.debug(
           "|general.focused_line_fsevent:start| start read focused_file:%s",
           vim.inspect(focused_file)
@@ -1006,7 +1007,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           if not popup.popup_window:is_valid() then
             return
           end
-          popup.popup_window:set_preview_file_job_id(buffer_preview_job_id)
 
           log.debug(
             "|general.focused_line_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
