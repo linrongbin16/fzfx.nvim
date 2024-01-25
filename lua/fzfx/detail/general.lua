@@ -928,18 +928,18 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   )
 
   -- builtin previewer use local file cache to detect fzf pointer movement
-  local previewer_builtin_files_queue = {}
+  local buffer_preview_files_queue = {}
 
-  local function previewer_builtin_files_queue_empty()
-    return #previewer_builtin_files_queue == 0
+  local function buffer_preview_files_queue_empty()
+    return #buffer_preview_files_queue == 0
   end
 
-  local function previewer_builtin_files_queue_last()
-    return previewer_builtin_files_queue[#previewer_builtin_files_queue]
+  local function buffer_preview_files_queue_last()
+    return buffer_preview_files_queue[#buffer_preview_files_queue]
   end
 
-  local function previewer_builtin_files_queue_clear()
-    previewer_builtin_files_queue = {}
+  local function buffer_preview_files_queue_clear()
+    buffer_preview_files_queue = {}
   end
 
   local fzf_focus_binder = nil
@@ -1007,7 +1007,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             "|general.focused_line_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
             vim.inspect(focused_file),
             vim.inspect(focused_data),
-            vim.inspect(previewer_builtin_files_queue)
+            vim.inspect(buffer_preview_files_queue)
           )
           if consts.IS_WINDOWS then
             if strings.startswith(focused_data, '"') then
@@ -1018,18 +1018,18 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end
           end
           table.insert(
-            previewer_builtin_files_queue,
+            buffer_preview_files_queue,
             { previewer_switch:current_previewer_config(), focused_data }
           )
           vim.defer_fn(function()
             if not popup.popup_window:is_valid() then
               return
             end
-            if previewer_builtin_files_queue_empty() then
+            if buffer_preview_files_queue_empty() then
               return
             end
-            local last_preview_file_job = previewer_builtin_files_queue_last()
-            previewer_builtin_files_queue_clear()
+            local last_preview_file_job = buffer_preview_files_queue_last()
+            buffer_preview_files_queue_clear()
 
             popup.popup_window:clear_pending_preview_file_jobs()
 

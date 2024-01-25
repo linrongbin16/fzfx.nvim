@@ -101,15 +101,15 @@ M.previewers = {
   restricted_mode = {
     -- previewer = previewers_helper.preview_files_find,
     -- previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer = previewers_helper.builtin_preview_files_find,
-    previewer_type = PreviewerTypeEnum.BUILTIN_FILE,
+    previewer = previewers_helper.buffer_preview_files_find,
+    previewer_type = PreviewerTypeEnum.BUFFER_FILE,
     previewer_label = labels_helper.label_find,
   },
   unrestricted_mode = {
     -- previewer = previewers_helper.preview_files_find,
     -- previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer = previewers_helper.builtin_preview_files_find,
-    previewer_type = PreviewerTypeEnum.BUILTIN_FILE,
+    previewer = previewers_helper.buffer_preview_files_find,
+    previewer_type = PreviewerTypeEnum.BUFFER_FILE,
     previewer_label = labels_helper.label_find,
   },
 }

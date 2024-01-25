@@ -103,7 +103,7 @@ describe("helper.previewers", function()
     end)
   end)
 
-  describe("[builtin_preview_files_find]", function()
+  describe("[buffer_preview_files_find]", function()
     it("test", function()
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md",
@@ -113,10 +113,10 @@ describe("helper.previewers", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt",
       }
       for i, line in ipairs(lines) do
-        local actual = previewers.builtin_preview_files_find(line)
+        local actual = previewers.buffer_preview_files_find(line)
         print(
           string.format(
-            "builtin_preview_files_find-%s:%s\n",
+            "buffer_preview_files_find-%s:%s\n",
             vim.inspect(i),
             vim.inspect(actual)
           )

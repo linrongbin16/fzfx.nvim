@@ -85,7 +85,7 @@ end
 -- preview files with builtin nvim buffer.
 --- @param line string
 --- @return table
-M.builtin_preview_files_find = function(line)
+M.buffer_preview_files_find = function(line)
   local parsed = parsers_helper.parse_find(line)
   return { filename = parsed.filename }
 end

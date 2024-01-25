@@ -65,7 +65,7 @@ function PopupWindow:resize()
   end
 end
 
---- @param previewer_result fzfx.BuiltinFilePreviewerResult
+--- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
 function PopupWindow:preview_file(previewer_result, previewer_label_result)
   self.instance:preview_file(previewer_result, previewer_label_result)
