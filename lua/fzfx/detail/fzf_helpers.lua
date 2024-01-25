@@ -476,8 +476,10 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
       result.size = tonumber(o)
       result.size_is_percent = false
     elseif strings.startswith(o, "border-") then
-      result.border = FZF_BORDER_OPTS_MAP[o]
-        or FZF_BORDER_OPTS_MAP["border-rounded"]
+      result.border = FZF_BORDER_OPTS_MAP[string.sub(
+        o,
+        string.len("border-") + 1
+      )] or "rounded"
     elseif o == "nowrap" or o == "wrap" then
       result.wrap = o == "wrap"
     elseif o == "nofollow" or o == "follow" then
