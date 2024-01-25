@@ -926,6 +926,19 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   -- builtin previewer use local file cache to detect fzf pointer movement
   local previewer_builtin_files_queue = {}
+
+  local function previewer_builtin_files_queue_empty()
+    return #previewer_builtin_files_queue == 0
+  end
+
+  local function previewer_builtin_files_queue_last()
+    return previewer_builtin_files_queue[#previewer_builtin_files_queue]
+  end
+
+  local function previewer_builtin_files_queue_clear()
+    previewer_builtin_files_queue = {}
+  end
+
   local fzf_focus_binder = nil
   local fzf_load_binder = nil
   if use_builtin_previewer then
@@ -982,6 +995,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           vim.inspect(focused_file)
         )
         fileios.asyncreadfile(focused_line_file, function(focused_data)
+          if not popup.popup_window:is_valid() then
+            return
+          end
           log.debug(
             "|general.focused_line_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
             vim.inspect(focused_file),
@@ -1004,15 +1020,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             if not popup.popup_window:is_valid() then
               return
             end
-            if #previewer_builtin_files_queue == 0 then
+            if previewer_builtin_files_queue_empty() then
               return
             end
-            local last_item =
-              previewer_builtin_files_queue[#previewer_builtin_files_queue]
-            previewer_builtin_files_queue = {}
+            local last_preview_file_job = previewer_builtin_files_queue_last()
+            previewer_builtin_files_queue_clear()
 
-            local previewer_config = last_item[1]
-            local focused_line = last_item[2]
+            local previewer_config = last_preview_file_job[1]
+            local focused_line = last_preview_file_job[2]
             local ok, result =
               pcall(previewer_config.previewer, focused_line, context)
             -- log.debug(
