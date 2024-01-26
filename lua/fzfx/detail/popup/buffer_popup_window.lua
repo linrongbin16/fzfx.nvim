@@ -144,8 +144,6 @@ M._make_provider_center_opts_with_hidden_previewer = function(
   local width = popup_helpers.get_window_size(opts.width, total_width)
   local height = popup_helpers.get_window_size(opts.height, total_height)
 
-  local fzf_preview_window_opts = buffer_previewer_opts.fzf_preview_window_opts
-
   log.ensure(
     (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
     "buffer provider window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
