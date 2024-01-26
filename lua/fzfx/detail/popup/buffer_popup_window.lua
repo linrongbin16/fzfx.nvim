@@ -652,6 +652,22 @@ function BufferPopupWindow:preview_file(
   end, 80)
 end
 
+function BufferPopupWindow:show_preview()
+  if not self:is_valid() then
+    return
+  end
+  vim.api.nvim_win_set_config(self.previewer_winnr, { hide = false })
+  _set_default_previewer_win_options(self.previewer_winnr)
+end
+
+function BufferPopupWindow:hide_preview()
+  if not self:is_valid() then
+    return
+  end
+  vim.api.nvim_win_set_config(self.previewer_winnr, { hide = true })
+  self:set_preview_file_job_id(numbers.auto_incremental_id())
+end
+
 function BufferPopupWindow:toggle_preview()
   if not self:is_valid() then
     return
@@ -659,12 +675,10 @@ function BufferPopupWindow:toggle_preview()
   local preview_win_confs = vim.api.nvim_win_get_config(self.previewer_winnr)
   -- already hide, show it
   if preview_win_confs.hide then
-    vim.api.nvim_win_set_config(self.previewer_winnr, { hide = false })
-    _set_default_previewer_win_options(self.previewer_winnr)
+    self:show_preview()
   else
     -- not hide, hide it
-    vim.api.nvim_win_set_config(self.previewer_winnr, { hide = true })
-    self:set_preview_file_job_id(numbers.auto_incremental_id())
+    self:hide_preview()
   end
 end
 
