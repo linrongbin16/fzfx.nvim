@@ -314,10 +314,10 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
   _BatTmThemeScopeRenderer:new(
     { "@character", "Character" },
-    { "constant.character", "constant.other" }
+    { "constant.character" }
   ),
   _BatTmThemeScopeRenderer:new(
-    { "@string.escape", "SpecialChar" },
+    { "@string.escape" },
     { "constant.character.escaped", "constant.character.escape" }
   ),
 
