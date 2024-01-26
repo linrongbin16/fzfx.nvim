@@ -177,7 +177,6 @@ M._make_provider_center_opts_with_hidden_previewer = function(
     border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
       or fzf_helpers.FZF_DEFAULT_BORDER_OPTS,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
-    noautocmd = true,
   }
   log.debug("|_make_provider_center_opts| result:%s", vim.inspect(result))
   return result
@@ -272,7 +271,6 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     style = "minimal",
     border = fzf_preview_window_opts.border,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
-    noautocmd = true,
   }
   log.debug("|_make_previewer_center_opts| result:%s", vim.inspect(result))
   return result
@@ -418,6 +416,15 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
 
   -- set cursor at provider window
   vim.api.nvim_set_current_win(provider_winnr)
+
+  vim.api.nvim_create_autocmd("BufEnter", {
+    buffer = provider_bufnr,
+    nested = true,
+    callback = function()
+      log.debug("|BufferPopupWindow:new| enter provider buffer")
+      vim.cmd("startinsert")
+    end,
+  })
 
   local o = {
     window_opts_context = window_opts_context,
@@ -841,18 +848,11 @@ function BufferPopupWindow:preview_half_page_down()
   end)
   vim.api.nvim_set_current_win(self.provider_winnr)
   vim.api.nvim_set_current_buf(self.provider_bufnr)
-  _set_default_buf_options(self.provider_bufnr)
-  _set_default_provider_win_options(self.provider_winnr)
   log.debug(
     "|BufferPopupWindow:preview_half_page_down| call - buftype: %s, filetype: %s",
     vim.inspect(vim.o.buftype),
     vim.inspect(vim.o.filetype)
   )
-  if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
-    -- vim.api.nvim_feedkeys("i", "x", false)
-    -- vim.cmd([[ execute "normal! i" ]])
-    vim.cmd([[ startinsert ]])
-  end
   log.debug(
     "|BufferPopupWindow:preview_half_page_down| call - done: %s",
     vim.inspect(self)
@@ -878,18 +878,11 @@ function BufferPopupWindow:preview_half_page_up()
   end)
   vim.api.nvim_set_current_win(self.provider_winnr)
   vim.api.nvim_set_current_buf(self.provider_bufnr)
-  _set_default_buf_options(self.provider_bufnr)
-  _set_default_provider_win_options(self.provider_winnr)
   log.debug(
     "|BufferPopupWindow:preview_half_page_up| call - buftype: %s, filetype: %s",
     vim.inspect(vim.o.buftype),
     vim.inspect(vim.o.filetype)
   )
-  if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
-    -- vim.api.nvim_feedkeys("i", "x", false)
-    vim.cmd([[ startinsert ]])
-    -- vim.cmd([[ execute "normal! i" ]])
-  end
   log.debug(
     "|BufferPopupWindow:preview_half_page_up| call - done: %s",
     vim.inspect(self)
