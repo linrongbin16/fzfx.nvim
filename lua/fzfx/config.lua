@@ -126,11 +126,19 @@ local Defaults = {
 
   buffer_previewer_opts = {
     -- alt-p:toggle-preview
-    ["<A-p>"] = function(previewer_bufnr, previewer_winnr) end,
+    --
+    --- @param context fzfx.BufferFilePreviewerContext
+    ["<A-p>"] = function(context) end,
+
     -- ctrl-f:preview-half-page-down
-    ["<C-f>"] = function(previewer_bufnr, previewer_winnr) end,
+    --
+    --- @param context fzfx.BufferFilePreviewerContext
+    ["<C-f>"] = function(context) end,
+
     -- ctrl-b:preview-half-page-up
-    ["<C-b>"] = function(previewer_bufnr, previewer_winnr) end,
+    --
+    --- @param context fzfx.BufferFilePreviewerContext
+    ["<C-b>"] = function(context) end,
   },
 
   -- global fzf opts with highest priority.
