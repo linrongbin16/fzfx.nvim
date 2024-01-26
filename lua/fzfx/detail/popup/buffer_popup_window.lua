@@ -453,6 +453,9 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
           vim.inspect(rhs),
           vim.inspect(action_err)
         )
+        vim.schedule(function()
+          vim.api.nvim_set_current_win(provider_winnr)
+        end)
       end, {
         buffer = provider_bufnr,
         silent = true,
