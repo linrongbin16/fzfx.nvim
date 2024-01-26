@@ -756,6 +756,7 @@ function BufferPopupWindow:show_preview()
   end
   vim.api.nvim_win_set_config(self.previewer_winnr, { hide = false })
   _set_default_previewer_win_options(self.previewer_winnr)
+  self:resize()
 end
 
 function BufferPopupWindow:hide_preview()
@@ -764,6 +765,7 @@ function BufferPopupWindow:hide_preview()
   end
   vim.api.nvim_win_set_config(self.previewer_winnr, { hide = true })
   self:set_preview_file_job_id(numbers.auto_incremental_id())
+  self:resize()
 end
 
 function BufferPopupWindow:toggle_preview()
