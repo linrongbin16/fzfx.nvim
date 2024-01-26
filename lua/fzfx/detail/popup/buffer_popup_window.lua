@@ -826,8 +826,8 @@ function BufferPopupWindow:preview_half_page_down()
   end
   log.debug("|BufferPopupWindow:preview_half_page_down| call")
   vim.api.nvim_win_call(self.previewer_winnr, function()
-    -- local ctrl_d = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
-    vim.api.nvim_feedkeys("<C-d>", "x", false)
+    local ctrl_d = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
+    vim.api.nvim_feedkeys(ctrl_d, "x", false)
   end)
 end
 
@@ -839,7 +839,8 @@ function BufferPopupWindow:preview_half_page_up()
   end
   log.debug("|BufferPopupWindow:preview_half_page_up| call")
   vim.api.nvim_win_call(self.previewer_winnr, function()
-    vim.api.nvim_feedkeys("<C-u>", "x", false)
+    local ctrl_u = vim.api.nvim_replace_termcodes("<C-u>", true, false, true)
+    vim.api.nvim_feedkeys(ctrl_u, "x", false)
   end)
 end
 
