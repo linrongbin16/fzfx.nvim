@@ -129,24 +129,22 @@ local Defaults = {
     --
     --- @param buffer_popup_win fzfx.BufferPopupWindow
     ["<A-p>"] = function(buffer_popup_win)
-      local current_win_confs =
-        vim.api.nvim_win_get_config(buffer_popup_win.previewer_winnr)
-      -- if already hide, show it
-      if current_win_confs.hide then
-      else
-        -- if not hide, hide it
-      end
+      buffer_popup_win:toggle_preview()
     end,
 
     -- ctrl-f:preview-half-page-down
     --
     --- @param buffer_popup_win fzfx.BufferPopupWindow
-    ["<C-f>"] = function(buffer_popup_win) end,
+    ["<C-f>"] = function(buffer_popup_win)
+      buffer_popup_win:preview_half_page_down()
+    end,
 
     -- ctrl-b:preview-half-page-up
     --
     --- @param buffer_popup_win fzfx.BufferPopupWindow
-    ["<C-b>"] = function(buffer_popup_win) end,
+    ["<C-b>"] = function(buffer_popup_win)
+      buffer_popup_win:preview_half_page_up()
+    end,
   },
 
   -- global fzf opts with highest priority.

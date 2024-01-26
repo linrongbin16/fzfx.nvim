@@ -652,6 +652,12 @@ function BufferPopupWindow:preview_file(
   end, 80)
 end
 
+function BufferPopupWindow:toggle_preview() end
+
+function BufferPopupWindow:preview_half_page_down() end
+
+function BufferPopupWindow:preview_half_page_up() end
+
 M.BufferPopupWindow = BufferPopupWindow
 
 -- BufferPopupWindow }
