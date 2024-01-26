@@ -26,6 +26,15 @@ M._make_provider_cursor_opts = function(opts, buffer_previewer_opts) end
 --- @param opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
+M._make_provider_cursor_opts_with_hidden_previewer = function(
+  opts,
+  buffer_previewer_opts
+)
+end
+
+--- @param opts fzfx.WindowOpts
+--- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @return fzfx.NvimFloatWinOpts
 M._make_previewer_cursor_opts = function(opts, buffer_previewer_opts) end
 
 -- cursor window }
@@ -289,6 +298,33 @@ M.make_provider_opts = function(win_opts, buffer_previewer_opts)
   end
 end
 
+--- @param win_opts fzfx.WindowOpts
+--- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @return fzfx.NvimFloatWinOpts
+M.make_provider_opts_with_hidden_previewer = function(
+  win_opts,
+  buffer_previewer_opts
+)
+  local opts = vim.deepcopy(win_opts)
+  local relative = opts.relative or "editor"
+  log.ensure(
+    relative == "cursor" or relative == "editor" or relative == "win",
+    "window relative (%s) must be editor/win/cursor",
+    vim.inspect(opts)
+  )
+  if relative == "cursor" then
+    return M._make_provider_cursor_opts_with_hidden_previewer(
+      opts,
+      buffer_previewer_opts
+    )
+  else
+    return M._make_provider_center_opts_with_hidden_previewer(
+      opts,
+      buffer_previewer_opts
+    )
+  end
+end
+
 -- provider window }
 
 -- previewer window {
@@ -424,19 +460,24 @@ function BufferPopupWindow:resize()
 
   self._resizing = true
 
-  local provider_nvim_float_win_opts = M.make_provider_opts(
-    self._saved_win_opts,
-    self._saved_buffer_previewer_opts
-  )
-  local previewer_nvim_float_win_opts = M.make_previewer_opts(
-    self._saved_win_opts,
-    self._saved_buffer_previewer_opts
-  )
-  vim.api.nvim_win_set_config(self.provider_winnr, provider_nvim_float_win_opts)
-  vim.api.nvim_win_set_config(
-    self.previewer_winnr,
-    previewer_nvim_float_win_opts
-  )
+  if self:preview_is_hide() then
+    local provider_win_confs = M.make_provider_opts_with_hidden_previewer(
+      self._saved_win_opts,
+      self._saved_buffer_previewer_opts
+    )
+    vim.api.nvim_win_set_config(self.provider_winnr, provider_win_confs)
+  else
+    local provider_win_confs = M.make_provider_opts(
+      self._saved_win_opts,
+      self._saved_buffer_previewer_opts
+    )
+    vim.api.nvim_win_set_config(self.provider_winnr, provider_win_confs)
+    local previewer_win_confs = M.make_previewer_opts(
+      self._saved_win_opts,
+      self._saved_buffer_previewer_opts
+    )
+    vim.api.nvim_win_set_config(self.previewer_winnr, previewer_win_confs)
+  end
 
   vim.schedule(function()
     self._resizing = false
@@ -704,7 +745,7 @@ function BufferPopupWindow:preview_file(
 end
 
 --- @return boolean
-function BufferPopupWindow:hidden()
+function BufferPopupWindow:preview_is_hide()
   local preview_win_confs = vim.api.nvim_win_get_config(self.previewer_winnr)
   return preview_win_confs.hide or false
 end
@@ -730,7 +771,7 @@ function BufferPopupWindow:toggle_preview()
     return
   end
   -- already hide, show it
-  if self:hidden() then
+  if self:preview_is_hide() then
     self:show_preview()
   else
     -- not hide, hide it
