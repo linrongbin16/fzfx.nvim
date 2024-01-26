@@ -131,6 +131,53 @@ end
 --- @param opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
+M._make_provider_center_opts_with_hidden_previewer = function(
+  opts,
+  buffer_previewer_opts
+)
+  local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
+
+  local total_width = relative == "editor" and vim.o.columns
+    or vim.api.nvim_win_get_width(0)
+  local total_height = relative == "editor" and vim.o.lines
+    or vim.api.nvim_win_get_height(0)
+  local width = popup_helpers.get_window_size(opts.width, total_width)
+  local height = popup_helpers.get_window_size(opts.height, total_height)
+
+  local fzf_preview_window_opts = buffer_previewer_opts.fzf_preview_window_opts
+
+  log.ensure(
+    (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
+    "buffer provider window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+    vim.inspect(opts)
+  )
+  log.ensure(
+    (opts.col >= -0.5 and opts.col <= 0.5) or opts.col <= -1 or opts.col >= 1,
+    "buffer provider window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+    vim.inspect(opts)
+  )
+  local row = popup_helpers.shift_window_pos(total_height, height, opts.row)
+  local col = popup_helpers.shift_window_pos(total_width, width, opts.col)
+
+  local result = {
+    anchor = "NW",
+    relative = relative,
+    width = width,
+    height = height,
+    row = row,
+    col = col,
+    style = "minimal",
+    border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
+      or fzf_helpers.FZF_DEFAULT_BORDER_OPTS,
+    zindex = opts.zindex or FLOAT_WIN_DEFAULT_ZINDEX,
+  }
+  log.debug("|_make_provider_center_opts| result:%s", vim.inspect(result))
+  return result
+end
+
+--- @param opts fzfx.WindowOpts
+--- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @return fzfx.NvimFloatWinOpts
 M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
 
