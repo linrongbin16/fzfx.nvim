@@ -646,13 +646,24 @@ function BufferPopupWindow:preview_file(
             end, 5)
           end
           set_buf_lines()
-        end, 50)
+        end, 20)
       end
     )
   end, 80)
 end
 
-function BufferPopupWindow:toggle_preview() end
+function BufferPopupWindow:toggle_preview()
+  if not self:is_valid() then
+    return
+  end
+  local preview_win_confs = vim.api.nvim_win_get_config(self.previewer_winnr)
+  -- already hide, show it
+  if preview_win_confs.hide then
+  else
+    -- not hide, hide it
+    self:set_preview_file_job_id(numbers.auto_incremental_id())
+  end
+end
 
 function BufferPopupWindow:preview_half_page_down() end
 

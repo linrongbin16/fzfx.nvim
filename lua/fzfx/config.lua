@@ -127,23 +127,23 @@ local Defaults = {
   buffer_previewer_opts = {
     -- alt-p:toggle-preview
     --
-    --- @param buffer_popup_win fzfx.BufferPopupWindow
-    ["<A-p>"] = function(buffer_popup_win)
-      buffer_popup_win:toggle_preview()
+    --- @param popup_win fzfx.BufferPopupWindow
+    ["<A-p>"] = function(popup_win)
+      popup_win:toggle_preview()
     end,
 
     -- ctrl-f:preview-half-page-down
     --
-    --- @param buffer_popup_win fzfx.BufferPopupWindow
-    ["<C-f>"] = function(buffer_popup_win)
-      buffer_popup_win:preview_half_page_down()
+    --- @param popup_win fzfx.BufferPopupWindow
+    ["<C-f>"] = function(popup_win)
+      popup_win:preview_half_page_down()
     end,
 
     -- ctrl-b:preview-half-page-up
     --
-    --- @param buffer_popup_win fzfx.BufferPopupWindow
-    ["<C-b>"] = function(buffer_popup_win)
-      buffer_popup_win:preview_half_page_up()
+    --- @param popup_win fzfx.BufferPopupWindow
+    ["<C-b>"] = function(popup_win)
+      popup_win:preview_half_page_up()
     end,
   },
 
