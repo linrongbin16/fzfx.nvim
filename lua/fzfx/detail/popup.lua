@@ -152,7 +152,7 @@ end
 --- @param actions fzfx.Options
 --- @param context fzfx.PipelineContext
 --- @param on_close fzfx.OnPopupExit?
---- @param buffer_previewer boolean?
+--- @param use_buffer_previewer boolean?
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @return fzfx.Popup
 function Popup:new(
@@ -162,14 +162,14 @@ function Popup:new(
   actions,
   context,
   on_close,
-  buffer_previewer,
+  use_buffer_previewer,
   buffer_previewer_opts
 )
   local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
   local popup_window = PopupWindow:new(
     win_opts,
-    buffer_previewer and "buffer" or "fzf",
+    use_buffer_previewer and "buffer" or "fzf",
     buffer_previewer_opts
   )
 

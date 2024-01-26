@@ -124,7 +124,7 @@ local Defaults = {
     "--bind=ctrl-b:preview-half-page-up",
   },
 
-  buffer_previewer_opts = {
+  buffer_previewer_keys = {
     -- alt-p:toggle-preview
     --
     --- @param popup_win fzfx.BufferPopupWindow

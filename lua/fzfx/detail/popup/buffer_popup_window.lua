@@ -14,7 +14,7 @@ local M = {}
 
 local FLOAT_WIN_DEFAULT_ZINDEX = 60
 
---- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+--- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string,fzf_preview_action_opts:table<string,function>}
 
 -- cursor window {
 
@@ -413,6 +413,28 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     vim.api.nvim_open_win(provider_bufnr, true, provider_nvim_float_win_opts)
   _set_default_provider_win_options(provider_winnr)
   apis.set_win_option(provider_winnr, "colorcolumn", "")
+
+  if type(buffer_previewer_opts.fzf_preview_action_opts) == "table" then
+    for lhs, rhs in pairs(buffer_previewer_opts.fzf_preview_action_opts) do
+      vim.keymap.set({ "t" }, lhs, function()
+        vim.schedule(function()
+          local ok, action_err = pcall(rhs, self)
+          log.ensure(
+            ok,
+            "failed to call buffer previewer action keys(%s): %s, error: %s",
+            vim.inspect(lhs),
+            vim.inspect(rhs),
+            vim.inspect(action_err)
+          )
+        end)
+      end, {
+        buffer = previewer_bufnr,
+        noremap = true,
+      })
+    end
+  end
+
+  -- set cursor at provider window
   vim.api.nvim_set_current_win(provider_winnr)
 
   local o = {

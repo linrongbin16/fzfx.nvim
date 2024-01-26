@@ -1334,6 +1334,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     table.insert(fzf_opts, { "--preview-window", "hidden" })
     table.insert(fzf_opts, "--border=none")
+
+    -- local removed_preview_keys_fzf_opts = {}
   end
 
   popup = Popup:new(
@@ -1368,6 +1370,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     {
       fzf_preview_window_opts = fzf_preview_window_opts,
       fzf_border_opts = fzf_border_opts,
+      fzf_preview_action_opts = config.get().buffer_previewer_keys,
     }
   )
   return popup
