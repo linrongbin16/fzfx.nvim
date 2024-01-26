@@ -125,6 +125,8 @@ local Defaults = {
   },
 
   buffer_previewer_opts = {
+    --- @alias fzfx.BufferFilePreviewerContext {previewer:{bufnr:integer,winnr:integer},provider:{bufnr:integer,winnr:integer}}
+
     -- alt-p:toggle-preview
     --
     --- @param context fzfx.BufferFilePreviewerContext

@@ -49,10 +49,6 @@ local PreviewerTypeEnum = {
   BUFFER_FILE = "buffer_file",
 }
 --
--- When the previewer is buffer previewer, we also need provide context for key mappings to control it.
---
---- @alias fzfx.BufferFilePreviewerContext {previewer_bufnr:integer,previewer_winnr:integer,provider_bufnr:integer,provider_winnr:integer}
---
 -- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
 --
 --
