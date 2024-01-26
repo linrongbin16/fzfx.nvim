@@ -663,37 +663,20 @@ local function parse_fzf_preview_window_opts(opts)
   return result
 end
 
-local FZF_PREVIEW_ACTIONS = {
-  ["hide-preview"] = true,
-  ["show-preview"] = true,
-  ["refresh-preview"] = true,
-  ["preview-down"] = true,
-  ["preview-up"] = true,
-  ["preview-page-down"] = true,
-  ["preview-page-up"] = true,
-  ["preview-half-page-down"] = true,
-  ["preview-half-page-up"] = true,
-  ["preview-bottom"] = true,
-  ["toggle-preview"] = true,
-  ["toggle-preview-wrap"] = true,
-}
-
---- @param opts fzfx.FzfOpt[]
---- @return fzfx.FzfOpt[]
-local function remove_fzf_preview_action_opts(opts)
-  local result = {}
-  for i, o in ipairs(opts) do
-    assert(
-      type(o) == "string" or (type(o) == "table" and #o == 2),
-      string.format("invalid fzf opts(%s): %s", vim.inspect(i), vim.inspect(o))
-    )
-    if type(o) == "string" then
-      -- if strings.endswith()
-    elseif type(o) == "table" then
-    end
-  end
-  return result
-end
+-- local FZF_PREVIEW_ACTIONS = {
+--   ["hide-preview"] = true,
+--   ["show-preview"] = true,
+--   ["refresh-preview"] = true,
+--   ["preview-down"] = true,
+--   ["preview-up"] = true,
+--   ["preview-page-down"] = true,
+--   ["preview-page-up"] = true,
+--   ["preview-half-page-down"] = true,
+--   ["preview-half-page-up"] = true,
+--   ["preview-bottom"] = true,
+--   ["toggle-preview"] = true,
+--   ["toggle-preview-wrap"] = true,
+-- }
 
 local function setup()
   local recalculating = false
@@ -732,8 +715,8 @@ local M = {
   parse_fzf_preview_window_opts = parse_fzf_preview_window_opts,
   FZF_BORDER_OPTS_MAP = FZF_BORDER_OPTS_MAP,
   FZF_DEFAULT_BORDER_OPTS = FZF_DEFAULT_BORDER_OPTS,
-  FZF_PREVIEW_ACTIONS = FZF_PREVIEW_ACTIONS,
-  remove_fzf_preview_action_opts = remove_fzf_preview_action_opts,
+  -- FZF_PREVIEW_ACTIONS = FZF_PREVIEW_ACTIONS,
+  -- remove_fzf_preview_action_opts = remove_fzf_preview_action_opts,
   setup = setup,
 }
 
