@@ -453,9 +453,6 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
           vim.inspect(rhs),
           vim.inspect(action_err)
         )
-        vim.schedule(function()
-          vim.api.nvim_set_current_win(provider_winnr)
-        end)
       end, {
         buffer = provider_bufnr,
         silent = true,
@@ -832,6 +829,7 @@ function BufferPopupWindow:preview_half_page_down()
     local ctrl_d = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
     vim.api.nvim_feedkeys(ctrl_d, "x", false)
   end)
+  vim.api.nvim_set_current_win(self.provider_winnr)
 end
 
 function BufferPopupWindow:preview_half_page_up()
@@ -845,6 +843,7 @@ function BufferPopupWindow:preview_half_page_up()
     local ctrl_u = vim.api.nvim_replace_termcodes("<C-u>", true, false, true)
     vim.api.nvim_feedkeys(ctrl_u, "x", false)
   end)
+  vim.api.nvim_set_current_win(self.provider_winnr)
 end
 
 M.BufferPopupWindow = BufferPopupWindow
