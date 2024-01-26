@@ -420,7 +420,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
       vim.inspect(buffer_previewer_opts.fzf_preview_action_opts)
     )
     for lhs, rhs in pairs(buffer_previewer_opts.fzf_preview_action_opts) do
-      vim.keymap.set({ "t", "n", "i" }, lhs, function()
+      vim.keymap.set("t", lhs, function()
         log.debug(
           "|BufferPopupWindow:new| trigger key mappings for %s, %s",
           vim.inspect(lhs),
@@ -430,7 +430,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
           local ok, action_err = pcall(rhs, self)
           log.ensure(
             ok,
-            "failed to call buffer previewer action keys(%s): %s, error: %s",
+            "failed to call buffer previewer action key mappings(%s): %s, error: %s",
             vim.inspect(lhs),
             vim.inspect(rhs),
             vim.inspect(action_err)
@@ -438,6 +438,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
         end)
       end, {
         buffer = previewer_bufnr,
+        silent = true,
         noremap = true,
       })
     end
