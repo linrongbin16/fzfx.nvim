@@ -153,31 +153,30 @@ M.readfile = function(filename, opts)
   return opts.trim and vim.trim(content) or content
 end
 
---- @param filename string                    file name.
---- @param on_complete fun(data:string?):nil  callback on read complete.
----                                             1. `data`: the file content.
---- @param opts {trim:boolean?}?              options:
----                                             1. `trim`: whether to trim whitespaces around text content, by default `false`.
+--- @param filename string
+--- @param on_complete fun(data:string?):any
+--- @param opts {trim:boolean?}?
 M.asyncreadfile = function(filename, on_complete, opts)
   local uv = require("fzfx.commons.uv")
   opts = opts or { trim = false }
   opts.trim = type(opts.trim) == "boolean" and opts.trim or false
 
-  uv.fs_open(filename, "r", 438, function(open_err, fd)
-    if open_err then
-      error(
-        string.format(
-          "failed to open(r) file %s: %s",
-          vim.inspect(filename),
-          vim.inspect(open_err)
+  local open_result, open_err = uv.fs_open(
+    filename,
+    "r",
+    438,
+    function(open_err, fd)
+      if open_err then
+        error(
+          string.format(
+            "failed to open(r) file %s: %s",
+            vim.inspect(filename),
+            vim.inspect(open_err)
+          )
         )
-      )
-      return
-    end
-    uv.fs_fstat(
-      ---@diagnostic disable-next-line: param-type-mismatch
-      fd,
-      function(fstat_err, stat)
+        return
+      end
+      uv.fs_fstat(fd --[[@as integer]], function(fstat_err, stat)
         if fstat_err then
           error(
             string.format(
@@ -198,8 +197,7 @@ M.asyncreadfile = function(filename, on_complete, opts)
           )
           return
         end
-        ---@diagnostic disable-next-line: param-type-mismatch
-        uv.fs_read(fd, stat.size, 0, function(read_err, data)
+        uv.fs_read(fd --[[@as integer]], stat.size, 0, function(read_err, data)
           if read_err then
             error(
               string.format(
@@ -210,8 +208,7 @@ M.asyncreadfile = function(filename, on_complete, opts)
             )
             return
           end
-          ---@diagnostic disable-next-line: param-type-mismatch
-          uv.fs_close(fd, function(close_err)
+          uv.fs_close(fd --[[@as integer]], function(close_err)
             on_complete(
               (opts.trim and type(data) == "string") and vim.trim(data) or data
             )
@@ -226,9 +223,17 @@ M.asyncreadfile = function(filename, on_complete, opts)
             end
           end)
         end)
-      end
+      end)
+    end
+  )
+  assert(
+    open_result ~= nil,
+    string.format(
+      "failed to open(read) file: %s, error: %s",
+      vim.inspect(filename),
+      vim.inspect(open_err)
     )
-  end)
+  )
 end
 
 --- @param filename string
@@ -245,6 +250,142 @@ M.readlines = function(filename)
   reader:close()
   return results
 end
+
+--- @param filename string
+--- @param opts {on_line:fun(line:string):any,on_complete:fun(bytes:integer):any,on_error:fun(err:string?):any,batchsize:integer?}
+M.asyncreadlines = function(filename, opts)
+  assert(type(opts) == "table")
+  assert(type(opts.on_line) == "function")
+  local batchsize = opts.batchsize or 4096
+
+  local function _handle_error(err, msg)
+    if type(opts.on_error) == "function" then
+      opts.on_error(err)
+    else
+      error(
+        string.format(
+          "failed to async read file(%s): %s, error: %s",
+          vim.inspect(msg),
+          vim.inspect(filename),
+          vim.inspect(err)
+        )
+      )
+    end
+  end
+
+  local uv = require("fzfx.commons.uv")
+  local open_result, open_err = uv.fs_open(
+    filename,
+    "r",
+    438,
+    function(open_complete_err, fd)
+      if open_complete_err then
+        _handle_error(open_complete_err, "fs_open complete")
+        return
+      end
+      local fstat_result, fstat_err = uv.fs_fstat(
+        fd --[[@as integer]],
+        function(fstat_complete_err, stat)
+          if fstat_complete_err then
+            _handle_error(fstat_complete_err, "fs_fstat complete")
+            return
+          end
+          if stat == nil then
+            _handle_error("stat is nil", "fs_fstat complete")
+            return
+          end
+
+          local fsize = stat.size
+          local offset = 0
+          local buffer = nil
+
+          local function _process(buf, fn_line_processor)
+            local strings = require("fzfx.commons.strings")
+
+            local i = 1
+            while i <= #buf do
+              local newline_pos = strings.find(buf, "\n", i)
+              if not newline_pos then
+                break
+              end
+              local line = buf:sub(i, newline_pos - 1)
+              fn_line_processor(line)
+              i = newline_pos + 1
+            end
+            return i
+          end
+
+          local function _chunk_read()
+            local read_result, read_err = uv.fs_read(
+              fd --[[@as integer]],
+              batchsize,
+              offset,
+              function(read_complete_err, data)
+                if read_complete_err then
+                  _handle_error(read_complete_err, "fs_read complete")
+                  return
+                end
+
+                if data then
+                  offset = offset + #data
+
+                  buffer = buffer and (buffer .. data) or data --[[@as string]]
+                  buffer = buffer:gsub("\r\n", "\n")
+                  local pos = _process(buffer, opts.on_line)
+                  -- truncate the processed lines if still exists any
+                  buffer = pos <= #buffer and buffer:sub(pos, #buffer) or nil
+                else
+                  -- no more data
+
+                  -- if buffer still has not been processed
+                  if buffer then
+                    local pos = _process(buffer, opts.on_line)
+                    buffer = pos <= #buffer and buffer:sub(pos, #buffer) or nil
+
+                    -- process all the left buffer till the end of file
+                    if buffer then
+                      opts.on_line(buffer)
+                    end
+                  end
+
+                  -- close file
+                  local close_result, close_err = uv.fs_close(
+                    fd --[[@as integer]],
+                    function(close_complete_err)
+                      if close_complete_err then
+                        _handle_error(close_complete_err, "fs_close complete")
+                      end
+                      if type(opts.on_complete) == "function" then
+                        opts.on_complete(fsize)
+                      end
+                    end
+                  )
+                  if close_result == nil then
+                    _handle_error(close_err, "fs_close")
+                  end
+                end
+              end
+            )
+            if read_result == nil then
+              _handle_error(read_err, "fs_read")
+            end
+          end
+
+          _chunk_read()
+        end
+      )
+
+      if fstat_result == nil then
+        _handle_error(fstat_err, "fs_fstat")
+      end
+    end
+  )
+  if open_result == nil then
+    _handle_error(open_err, "fs_open")
+  end
+end
+
+-- AsyncFileLineReader }
 
 --- @param filename string  file name.
 --- @param content string   file content.
