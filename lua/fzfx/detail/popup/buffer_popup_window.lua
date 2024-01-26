@@ -460,7 +460,7 @@ function BufferPopupWindow:resize()
 
   self._resizing = true
 
-  if self:preview_is_hide() then
+  if self:preview_hidden() then
     local provider_win_confs = M.make_provider_opts_with_hidden_previewer(
       self._saved_win_opts,
       self._saved_buffer_previewer_opts
@@ -745,7 +745,7 @@ function BufferPopupWindow:preview_file(
 end
 
 --- @return boolean
-function BufferPopupWindow:preview_is_hide()
+function BufferPopupWindow:preview_hidden()
   local preview_win_confs = vim.api.nvim_win_get_config(self.previewer_winnr)
   return preview_win_confs.hide or false
 end
@@ -771,7 +771,7 @@ function BufferPopupWindow:toggle_preview()
     return
   end
   -- already hide, show it
-  if self:preview_is_hide() then
+  if self:preview_hidden() then
     self:show_preview()
   else
     -- not hide, hide it
