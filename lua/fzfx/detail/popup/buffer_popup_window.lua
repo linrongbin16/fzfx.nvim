@@ -781,9 +781,24 @@ function BufferPopupWindow:toggle_preview()
   end
 end
 
-function BufferPopupWindow:preview_half_page_down() end
+function BufferPopupWindow:preview_half_page_down()
+  if not self:is_valid() then
+    return
+  end
+  vim.api.nvim_win_call(self.previewer_winnr, function()
+    -- local ctrl_d = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
+    vim.api.nvim_feedkeys("<C-d>", "x", false)
+  end)
+end
 
-function BufferPopupWindow:preview_half_page_up() end
+function BufferPopupWindow:preview_half_page_up()
+  if not self:is_valid() then
+    return
+  end
+  vim.api.nvim_win_call(self.previewer_winnr, function()
+    vim.api.nvim_feedkeys("<C-u>", "x", false)
+  end)
+end
 
 M.BufferPopupWindow = BufferPopupWindow
 
