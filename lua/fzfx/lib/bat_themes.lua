@@ -374,11 +374,22 @@ local SCOPE_RENDERERS = {
 
   -- entity
   _BatTmThemeScopeRenderer:new({
+    "@function",
+    "Function",
+  }, "entity.name.function"),
+  _BatTmThemeScopeRenderer:new({
     "@type",
     "Type",
   }, {
     "entity.name.type",
   }),
+  _BatTmThemeScopeRenderer:new({
+    "@tag",
+  }, "entity.name.tag"),
+  _BatTmThemeScopeRenderer:new({
+    "@markup.heading",
+    "htmlTitle",
+  }, "entity.name.section"),
   _BatTmThemeScopeRenderer:new({
     "Structure",
   }, {
@@ -390,21 +401,9 @@ local SCOPE_RENDERERS = {
     "Type",
   }, "entity.other.inherited-class"),
   _BatTmThemeScopeRenderer:new({
-    "@markup.heading",
-    "Title",
-  }, "entity.name.section"),
-  _BatTmThemeScopeRenderer:new({
-    "@function",
-    "Function",
-  }, "entity.name.function"),
-  _BatTmThemeScopeRenderer:new({
     "@label",
     "Label",
   }, "entity.name.label"),
-  _BatTmThemeScopeRenderer:new({
-    "@tag",
-    "htmlTag",
-  }, "entity.name.tag"),
   _BatTmThemeScopeRenderer:new({
     "@constant",
     "Constant",
