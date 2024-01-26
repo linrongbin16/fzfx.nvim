@@ -738,10 +738,10 @@ function BufferPopupWindow:preview_file(
             end, 5)
           end
           set_buf_lines()
-        end, 30)
+        end, 50)
       end
     )
-  end, 80)
+  end, 50)
 end
 
 --- @return boolean
