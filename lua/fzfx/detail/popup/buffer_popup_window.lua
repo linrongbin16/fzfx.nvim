@@ -177,6 +177,7 @@ M._make_provider_center_opts_with_hidden_previewer = function(
     border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
       or fzf_helpers.FZF_DEFAULT_BORDER_OPTS,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    noautocmd = true,
   }
   log.debug("|_make_provider_center_opts| result:%s", vim.inspect(result))
   return result
@@ -271,6 +272,7 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     style = "minimal",
     border = fzf_preview_window_opts.border,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    noautocmd = true,
   }
   log.debug("|_make_previewer_center_opts| result:%s", vim.inspect(result))
   return result
@@ -838,6 +840,10 @@ function BufferPopupWindow:preview_half_page_down()
     vim.api.nvim_feedkeys(ctrl_d, "x", false)
   end)
   vim.api.nvim_set_current_win(self.provider_winnr)
+  vim.api.nvim_set_current_buf(self.provider_bufnr)
+  _set_default_buf_options(self.provider_bufnr)
+  _set_default_provider_win_options(self.provider_winnr)
+  vim.cmd([[ startinsert ]])
   log.debug(
     "|BufferPopupWindow:preview_half_page_down| call - done: %s",
     vim.inspect(self)
@@ -862,6 +868,10 @@ function BufferPopupWindow:preview_half_page_up()
     vim.api.nvim_feedkeys(ctrl_u, "x", false)
   end)
   vim.api.nvim_set_current_win(self.provider_winnr)
+  vim.api.nvim_set_current_buf(self.provider_bufnr)
+  _set_default_buf_options(self.provider_bufnr)
+  _set_default_provider_win_options(self.provider_winnr)
+  vim.cmd([[ startinsert ]])
   log.debug(
     "|BufferPopupWindow:preview_half_page_up| call - done: %s",
     vim.inspect(self)
