@@ -415,8 +415,17 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   apis.set_win_option(provider_winnr, "colorcolumn", "")
 
   if type(buffer_previewer_opts.fzf_preview_action_opts) == "table" then
+    log.debug(
+      "|BufferPopupWindow:new| set key mappings for fzf_preview_action_opts:%s",
+      vim.inspect(buffer_previewer_opts.fzf_preview_action_opts)
+    )
     for lhs, rhs in pairs(buffer_previewer_opts.fzf_preview_action_opts) do
-      vim.keymap.set({ "t" }, lhs, function()
+      vim.keymap.set({ "t", "n", "i" }, lhs, function()
+        log.debug(
+          "|BufferPopupWindow:new| trigger key mappings for %s, %s",
+          vim.inspect(lhs),
+          vim.inspect(rhs)
+        )
         vim.schedule(function()
           local ok, action_err = pcall(rhs, self)
           log.ensure(
