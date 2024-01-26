@@ -117,11 +117,20 @@ local Defaults = {
     "--layout=reverse",
     "--border=rounded",
     "--height=100%",
-    consts.FZF_OPTS.TOGGLE,
-    consts.FZF_OPTS.TOGGLE_ALL,
-    consts.FZF_OPTS.TOGGLE_PREVIEW,
-    consts.FZF_OPTS.PREVIEW_HALF_PAGE_UP,
-    consts.FZF_OPTS.PREVIEW_HALF_PAGE_DOWN,
+    "--bind=ctrl-e:toggle",
+    "--bind=ctrl-a:toggle-all",
+    "--bind=alt-p:toggle-preview",
+    "--bind=ctrl-f:preview-half-page-down",
+    "--bind=ctrl-b:preview-half-page-up",
+  },
+
+  buffer_previewer_opts = {
+    -- alt-p:toggle-preview
+    ["<A-p>"] = function(previewer_bufnr, previewer_winnr) end,
+    -- ctrl-f:preview-half-page-down
+    ["<C-f>"] = function(previewer_bufnr, previewer_winnr) end,
+    -- ctrl-b:preview-half-page-up
+    ["<C-b>"] = function(previewer_bufnr, previewer_winnr) end,
   },
 
   -- global fzf opts with highest priority.

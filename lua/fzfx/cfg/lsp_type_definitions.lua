@@ -28,9 +28,9 @@ M.providers = {
 }
 
 M.fzf_opts = {
-  consts.FZF_OPTS.MULTI,
-  consts.FZF_OPTS.LSP_PREVIEW_WINDOW,
-  consts.FZF_OPTS.DELIMITER,
+  "--multi",
+  { "--delimiter", ":" },
+  { "--preview-window", "left,65%,+{2}-/2" },
   "--border=none",
   { "--prompt", "TypeDefinitions > " },
 }

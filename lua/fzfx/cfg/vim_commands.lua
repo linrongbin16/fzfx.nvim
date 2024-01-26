@@ -598,8 +598,8 @@ M.actions = {
 }
 
 M.fzf_opts = {
-  consts.FZF_OPTS.NO_MULTI,
-  consts.FZF_OPTS.HEADER_LINES,
+  "--no-multi",
+  "--header-lines=1",
   { "--preview-window", "~1" },
   { "--prompt", "Commands > " },
 }

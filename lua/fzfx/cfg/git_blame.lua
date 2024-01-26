@@ -96,7 +96,7 @@ M.actions = {
 }
 
 M.fzf_opts = {
-  consts.FZF_OPTS.NO_MULTI,
+  "--no-multi",
   { "--prompt", "Git Blame > " },
 }
 
