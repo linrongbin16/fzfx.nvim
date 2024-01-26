@@ -843,8 +843,14 @@ function BufferPopupWindow:preview_half_page_down()
   vim.api.nvim_set_current_buf(self.provider_bufnr)
   _set_default_buf_options(self.provider_bufnr)
   _set_default_provider_win_options(self.provider_winnr)
+  log.debug(
+    "|BufferPopupWindow:preview_half_page_down| call - buftype: %s, filetype: %s",
+    vim.inspect(vim.o.buftype),
+    vim.inspect(vim.o.filetype)
+  )
   if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
-    vim.api.nvim_feedkeys("i", "x", false)
+    -- vim.api.nvim_feedkeys("i", "x", false)
+    -- vim.cmd([[ execute "normal! i" ]])
     vim.cmd([[ startinsert ]])
   end
   log.debug(
@@ -874,9 +880,15 @@ function BufferPopupWindow:preview_half_page_up()
   vim.api.nvim_set_current_buf(self.provider_bufnr)
   _set_default_buf_options(self.provider_bufnr)
   _set_default_provider_win_options(self.provider_winnr)
+  log.debug(
+    "|BufferPopupWindow:preview_half_page_up| call - buftype: %s, filetype: %s",
+    vim.inspect(vim.o.buftype),
+    vim.inspect(vim.o.filetype)
+  )
   if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
-    vim.api.nvim_feedkeys("i", "x", false)
+    -- vim.api.nvim_feedkeys("i", "x", false)
     vim.cmd([[ startinsert ]])
+    -- vim.cmd([[ execute "normal! i" ]])
   end
   log.debug(
     "|BufferPopupWindow:preview_half_page_up| call - done: %s",
