@@ -437,7 +437,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
           )
         end)
       end, {
-        buffer = previewer_bufnr,
+        buffer = provider_bufnr,
         silent = true,
         noremap = true,
       })
