@@ -124,29 +124,6 @@ local Defaults = {
     "--bind=ctrl-b:preview-half-page-up",
   },
 
-  buffer_previewer_keys = {
-    -- alt-p:toggle-preview
-    --
-    --- @param popup_win fzfx.BufferPopupWindow
-    ["<A-p>"] = function(popup_win)
-      popup_win:toggle_preview()
-    end,
-
-    -- ctrl-f:preview-half-page-down
-    --
-    --- @param popup_win fzfx.BufferPopupWindow
-    ["<C-f>"] = function(popup_win)
-      popup_win:preview_half_page_down()
-    end,
-
-    -- ctrl-b:preview-half-page-up
-    --
-    --- @param popup_win fzfx.BufferPopupWindow
-    ["<C-b>"] = function(popup_win)
-      popup_win:preview_half_page_up()
-    end,
-  },
-
   -- global fzf opts with highest priority.
   --
   -- there're two 'fzf_opts' configs: root level, commands level, for example if the configs is:
