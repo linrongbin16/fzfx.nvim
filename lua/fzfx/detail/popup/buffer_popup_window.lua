@@ -14,7 +14,7 @@ local M = {}
 
 local FLOAT_WIN_DEFAULT_ZINDEX = 60
 
---- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string,fzf_preview_action_opts:table<string,function>}
+--- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 
 -- cursor window {
 
@@ -441,36 +441,6 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   }
   setmetatable(o, self)
   self.__index = self
-
-  if type(buffer_previewer_opts.fzf_preview_action_opts) == "table" then
-    log.debug(
-      "|BufferPopupWindow:new| set key mappings for fzf_preview_action_opts:%s",
-      vim.inspect(buffer_previewer_opts.fzf_preview_action_opts)
-    )
-    for lhs, rhs in pairs(buffer_previewer_opts.fzf_preview_action_opts) do
-      vim.keymap.set("t", lhs, function()
-        vim.schedule(function()
-          log.debug(
-            "|BufferPopupWindow:new| trigger key mappings for %s, %s",
-            vim.inspect(lhs),
-            vim.inspect(rhs)
-          )
-          local ok, action_err = pcall(rhs, o)
-          log.ensure(
-            ok,
-            "failed to call buffer previewer action key mappings(%s): %s, error: %s",
-            vim.inspect(lhs),
-            vim.inspect(rhs),
-            vim.inspect(action_err)
-          )
-        end)
-      end, {
-        buffer = provider_bufnr,
-        silent = true,
-        noremap = true,
-      })
-    end
-  end
 
   return o
 end
