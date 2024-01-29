@@ -359,7 +359,9 @@ local SCOPE_RENDERERS = {
     "@constant",
     "Constant",
   }, "entity.name.constant"),
-
+  _BatTmThemeScopeRenderer:new({
+    "@module",
+  }, "entity.name.namespace"),
   -- entity }
 
   -- invalid {
@@ -455,6 +457,7 @@ local SCOPE_RENDERERS = {
     "keyword.declaration.enum",
   }),
   _BatTmThemeScopeRenderer:new({
+    "@type.builtin",
     "@type",
     "Type",
   }, { "storage.type", "keyword.declaration.type" }),
@@ -488,6 +491,9 @@ local SCOPE_RENDERERS = {
     "@type",
     "Type",
   }, "support.class"),
+  _BatTmThemeScopeRenderer:new({
+    "@module",
+  }, "support.module"),
   -- support }
 
   -- variable {
@@ -503,6 +509,13 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new({
     "@constant",
   }, { "variable.other.constant" }),
+  _BatTmThemeScopeRenderer:new({
+    "@variable",
+    "Identifier",
+  }, "variable"),
+  _BatTmThemeScopeRenderer:new({
+    "@variable.member",
+  }, "variable.other.member"),
   -- variable }
 
   -- punctuation {
@@ -527,6 +540,12 @@ local SCOPE_RENDERERS = {
   }, {
     "punctuation.separator",
     "punctuation.terminator",
+  }),
+  _BatTmThemeScopeRenderer:new({
+    "@tag.delimiter",
+  }, {
+    "punctuation.definition.generic.begin",
+    "punctuation.definition.generic.end",
   }),
   -- punctuation }
 }
