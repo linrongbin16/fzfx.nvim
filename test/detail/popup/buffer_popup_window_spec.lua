@@ -235,5 +235,28 @@ describe("detail.popup.buffer_popup_window", function()
           and actual:preview_file_contents_queue_empty()
       end)
     end)
+    it("preview_action", function()
+      local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
+        "--preview-window=right,50",
+      })
+      local builtin_opts = {
+        fzf_preview_window_opts = pw_opts,
+        fzf_border_opts = "rounded",
+      }
+      local actual =
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      actual:preview_file(
+        numbers.auto_incremental_id(),
+        { filename = "README.md" }
+      )
+      vim.wait(10000, function()
+        return actual:preview_files_queue_empty()
+          and actual:preview_file_contents_queue_empty()
+      end)
+      actual:preview_action("preview-half-page-down")
+      actual:preview_action("preview-half-page-up")
+      actual:preview_action("preview-page-down")
+      actual:preview_action("preview-page-up")
+    end)
   end)
 end)
