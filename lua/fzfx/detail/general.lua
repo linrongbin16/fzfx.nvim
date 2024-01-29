@@ -1420,21 +1420,26 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             if not split_pos then
               split_pos = strings.find(o --[[@as string]], " ")
             end
-            log.debug(
-              "|general - use_buffer_previewer| o:%s, split_pos:%s",
-              vim.inspect(o),
-              vim.inspect(split_pos)
-            )
             if type(split_pos) == "number" and split_pos > 1 then
               split_o = {}
-              table.insert(
-                split_o,
+              local o1 =
                 strings.trim(string.sub(o --[[@as string]], 1, split_pos - 1))
+              log.debug(
+                "|general - use_buffer_previewer| o:%s, split_pos:%s, o1:%s",
+                vim.inspect(o),
+                vim.inspect(split_pos),
+                vim.inspect(o1)
               )
-              table.insert(
-                split_o,
+              local o2 =
                 strings.trim(string.sub(o --[[@as string]], split_pos + 1))
+              log.debug(
+                "|general - use_buffer_previewer| o:%s, split_pos:%s, o2:%s",
+                vim.inspect(o),
+                vim.inspect(split_pos),
+                vim.inspect(o2)
               )
+              table.insert(split_o, o1)
+              table.insert(split_o, o2)
             end
           end
         end
