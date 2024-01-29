@@ -7,7 +7,7 @@ local M = {}
 --- @alias fzfx.AsyncSpawnOnExit fun(completed:vim.SystemCompleted):nil
 --- @async
 --- @type fun(cmd:string[],opts:fzfx.AsyncSpawnOpts):vim.SystemCompleted
-M.aspawn = async.wrap(function(cmd, opts, callback)
+M.spawn = async.wrap(function(cmd, opts, callback)
   return spawn.run(cmd, opts, callback)
 end, 3)
 

@@ -4,6 +4,7 @@ local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 local apis = require("fzfx.commons.apis")
 local tables = require("fzfx.commons.tables")
+local asyncs = require("fzfx.lib.asyncs")
 
 -- local log = require("fzfx.lib.log")
 
@@ -11,25 +12,30 @@ local M = {}
 
 local THEMES_CONFIG_DIR = nil
 
+local getting_themes_config_dir = false
+
 --- @return string
 M.get_bat_themes_config_dir = function()
   if THEMES_CONFIG_DIR == nil then
-    local bat_themes_config_dir = ""
-    local sp = spawn.run({ "bat", "--config-dir" }, {
-      on_stdout = function(line)
-        bat_themes_config_dir = bat_themes_config_dir .. line
-      end,
-      on_stderr = function(line)
-        -- log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
-      end,
-    })
-    sp:wait()
-    THEMES_CONFIG_DIR =
-      paths.join(strings.trim(bat_themes_config_dir), "themes")
-    -- log.debug(
-    --   "|get_bat_themes_config_dir| config dir:%s",
-    --   vim.inspect(THEMES_CONFIG_DIR)
-    -- )
+    if not getting_themes_config_dir then
+      getting_themes_config_dir = true
+      local bat_themes_config_dir = ""
+      spawn.run({ "bat", "--config-dir" }, {
+        on_stdout = function(line)
+          bat_themes_config_dir = bat_themes_config_dir .. line
+        end,
+        on_stderr = function(line)
+          -- log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
+        end,
+      }, function()
+        THEMES_CONFIG_DIR =
+          paths.join(strings.trim(bat_themes_config_dir), "themes")
+
+        vim.schedule(function()
+          getting_themes_config_dir = false
+        end)
+      end)
+    end
   end
   return THEMES_CONFIG_DIR
 end
