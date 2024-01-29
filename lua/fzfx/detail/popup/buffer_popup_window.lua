@@ -756,6 +756,9 @@ function BufferPopupWindow:preview_file(
   end, 30)
 end
 
+--- @param action_name string
+function BufferPopupWindow:preview_action(action_name) end
+
 --- @return boolean
 function BufferPopupWindow:preview_hidden()
   local preview_win_confs = vim.api.nvim_win_get_config(self.previewer_winnr)

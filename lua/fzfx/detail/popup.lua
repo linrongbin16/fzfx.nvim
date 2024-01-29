@@ -74,6 +74,11 @@ function PopupWindow:preview_file(
   self.instance:preview_file(job_id, previewer_result, previewer_label_result)
 end
 
+--- @param action_name string
+function PopupWindow:preview_action(action_name)
+  self.instance:preview_action(action_name)
+end
+
 function PopupWindow:is_valid()
   return self.instance:is_valid()
 end

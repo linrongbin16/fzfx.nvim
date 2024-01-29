@@ -1154,6 +1154,24 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         if not strings.find(buffer_previewer_actions_file, actions_file) then
           return
         end
+        fileios.asyncreadfile(
+          buffer_previewer_actions_file,
+          function(actions_data)
+            if not popup.popup_window:is_valid() then
+              return
+            end
+            if consts.IS_WINDOWS then
+              if strings.startswith(actions_data, '"') then
+                actions_data = string.sub(actions_data, 2)
+              end
+              if strings.endswith(actions_data, '"') then
+                actions_data = string.sub(actions_data, 1, #actions_data - 1)
+              end
+            end
+            popup.popup_window:preview_action(actions_data)
+          end,
+          { trim = true }
+        )
       end
     )
     log.ensure(
