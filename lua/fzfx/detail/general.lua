@@ -1054,7 +1054,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
               local previewer_config = last_preview_job.previewer_config
               local focused_line = last_preview_job.focused_line
-              local last_preview_file_job_id = last_preview_job.job_id
+              local last_preview_job_id = last_preview_job.job_id
               local previewer_ok, previewer_result =
                 pcall(previewer_config.previewer, focused_line, context)
               -- log.debug(
@@ -1102,7 +1102,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 end
                 if previewer_result then
                   popup.popup_window:preview_file(
-                    last_preview_file_job_id,
+                    last_preview_job_id,
                     previewer_result --[[@as fzfx.BufferFilePreviewerResult]],
                     previewer_label_result --[[@as string?]]
                   )
