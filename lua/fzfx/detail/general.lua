@@ -1348,25 +1348,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     })
   local buffer_previewer_fzf_border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
   if use_buffer_previewer then
+    local new_fzf_opts = {}
     local fzf_pw_opts = {}
-    local base_config_fzf_opts =
-      fzf_helpers.preprocess_fzf_opts(vim.deepcopy(config.get().fzf_opts or {}))
-    for _, o in ipairs(base_config_fzf_opts) do
-      if
-        type(o) == "table"
-        and strings.not_empty(o[1])
-        and strings.startswith(o[1], "--border")
-      then
-        buffer_previewer_fzf_border_opts = o[2]
-      elseif
-        strings.not_empty(o)
-        and strings.startswith(o --[[@as string]], "--border")
-      then
-        buffer_previewer_fzf_border_opts =
-          string.sub(o --[[@as string]], string.len("--border") + 2)
-      end
-    end
     for _, o in ipairs(fzf_opts) do
+      -- preview-window
       if
         type(o) == "table"
         and strings.not_empty(o[1])
@@ -1379,6 +1364,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       then
         table.insert(fzf_pw_opts, o)
       end
+
+      -- border
       if
         type(o) == "table"
         and strings.not_empty(o[1])
@@ -1391,6 +1378,19 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       then
         buffer_previewer_fzf_border_opts =
           string.sub(o --[[@as string]], string.len("--border") + 2)
+      end
+
+      -- preview actions
+      local actions_mocked = false
+      if type(o) == "table" and strings.not_empty(o[2]) then
+        for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
+        end
+      elseif strings.not_empty(o) then
+        for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
+        end
+      end
+      if not actions_mocked then
+        table.insert(new_fzf_opts, o)
       end
     end
     log.debug(
