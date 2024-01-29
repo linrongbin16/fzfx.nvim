@@ -307,7 +307,6 @@ local SCOPE_RENDERERS = {
   -- comment }
 
   -- constant {
-  _BatTmThemeScopeRenderer:new({ "@constant", "Constant" }, "constant"),
   _BatTmThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
   _BatTmThemeScopeRenderer:new(
     { "@number.float", "Float" },
@@ -322,6 +321,7 @@ local SCOPE_RENDERERS = {
     { "@string.escape" },
     { "constant.character.escaped", "constant.character.escape" }
   ),
+  _BatTmThemeScopeRenderer:new({ "@constant", "Constant" }, "constant.other"),
   -- constant }
 
   -- entity {
