@@ -893,11 +893,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     vim.inspect(reload_query_command)
   )
 
-  local fzf_opts = {
-    "--print-query",
-    "--listen",
-    { "--query", query },
-  }
+  local fzf_opts = vim.deepcopy(config.get().fzf_opts)
+  fzf_opts = vim.list_extend(
+    fzf_opts,
+    { "--print-query", "--listen", { "--query", query } }
+  )
 
   --- @param line_params string
   local function preview_rpc(line_params)
