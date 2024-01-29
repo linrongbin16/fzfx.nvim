@@ -792,6 +792,143 @@ local function default_context_maker()
   }
 end
 
+--- @param action_name string
+--- @param action_file string
+--- @return string
+local function dump_action_command(action_name, action_file)
+  if consts.IS_WINDOWS then
+    return string.format(
+      'execute-silent(cmd.exe /C echo "%s">%s)',
+      action_name,
+      action_file
+    )
+  else
+    return string.format(
+      "execute-silent(echo '%s'>%s)",
+      action_name,
+      action_file
+    )
+  end
+end
+
+--- @param fzf_opts fzfx.FzfOpt[]
+--- @param fzf_action_file string
+--- @return fzfx.FzfOpt[], fzfx.BufferFilePreviewerOpts
+local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
+  local new_fzf_opts = {}
+
+  local border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
+
+  local pw_opts = {}
+  for _, o in ipairs(fzf_opts) do
+    local mocked = false
+
+    if
+      type(o) == "table"
+      and strings.not_empty(o[1])
+      and strings.startswith(o[1], "--preview-window")
+    then
+      table.insert(pw_opts, o)
+      mocked = true
+    elseif
+      strings.not_empty(o)
+      and strings.startswith(o --[[@as string]], "--preview-window")
+    then
+      table.insert(pw_opts, o)
+      mocked = true
+    end
+
+    if
+      type(o) == "table"
+      and strings.not_empty(o[1])
+      and strings.startswith(o[1], "--border")
+    then
+      border_opts = o[2]
+      mocked = true
+    elseif
+      strings.not_empty(o)
+      and strings.startswith(o --[[@as string]], "--border")
+    then
+      border_opts = string.sub(o --[[@as string]], string.len("--border") + 2)
+      mocked = true
+    end
+
+    -- preview actions
+    local split_o = nil
+    if type(o) == "table" and strings.not_empty(o[2]) then
+      for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
+        if strings.find(o[2], action_name) then
+          split_o = o
+        end
+      end
+    elseif strings.not_empty(o) then
+      for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
+        if
+          strings.find(o --[[@as string]], action_name)
+        then
+          local split_pos = strings.find(o --[[@as string]], "=")
+          if not split_pos then
+            split_pos = strings.find(o --[[@as string]], " ")
+          end
+          if type(split_pos) == "number" and split_pos > 1 then
+            split_o = {}
+            local o1 =
+              strings.trim(string.sub(o --[[@as string]], 1, split_pos - 1))
+            log.debug(
+              "|general - use_buffer_previewer| o:%s, split_pos:%s, o1:%s",
+              vim.inspect(o),
+              vim.inspect(split_pos),
+              vim.inspect(o1)
+            )
+            local o2 =
+              strings.trim(string.sub(o --[[@as string]], split_pos + 1))
+            log.debug(
+              "|general - use_buffer_previewer| o:%s, split_pos:%s, o2:%s",
+              vim.inspect(o),
+              vim.inspect(split_pos),
+              vim.inspect(o2)
+            )
+            table.insert(split_o, o1)
+            table.insert(split_o, o2)
+          end
+        end
+      end
+    end
+
+    if type(split_o) == "table" and #split_o == 2 then
+      for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
+        if strings.find(split_o[2], action_name) then
+          local new_o2 = strings.replace(
+            split_o[2],
+            action_name,
+            dump_action_command(action_name, fzf_action_file)
+          )
+          table.insert(new_fzf_opts, { split_o[1], new_o2 })
+          mocked = true
+        end
+      end
+    end
+
+    if not mocked then
+      table.insert(new_fzf_opts, o)
+    end
+  end
+
+  local preview_window_opts =
+    fzf_helpers.parse_fzf_preview_window_opts(#pw_opts > 0 and pw_opts or {
+      {
+        "--preview-window",
+        "right,50%",
+      },
+    })
+
+  return new_fzf_opts,
+    {
+      fzf_border_opts = border_opts,
+      fzf_preview_window_opts = preview_window_opts,
+    }
+end
+
 --- @param name string
 --- @param query string
 --- @param bang boolean
@@ -1338,143 +1475,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
-  --- @param action_name string
-  --- @return string
-  local function dump_action_command(action_name)
-    if consts.IS_WINDOWS then
-      return string.format(
-        'execute-silent(cmd.exe /C echo "%s">%s)',
-        action_name,
-        buffer_previewer_actions_file
-      )
-    else
-      return string.format(
-        "execute-silent(echo '%s'>%s)",
-        action_name,
-        buffer_previewer_actions_file
-      )
-    end
-  end
-
-  --- @type fzfx.FzfPreviewWindowOpts
-  local buffer_previewer_fzf_preview_window_opts =
-    fzf_helpers.parse_fzf_preview_window_opts({
-      {
-        "--preview-window",
-        "right,50%",
-      },
-    })
-  local buffer_previewer_fzf_border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
-
+  local buffer_previewer_opts = {}
   if use_buffer_previewer then
-    local new_fzf_opts = {}
-    local fzf_pw_opts = {}
-    for _, o in ipairs(fzf_opts) do
-      local mocked = false
-
-      if
-        type(o) == "table"
-        and strings.not_empty(o[1])
-        and strings.startswith(o[1], "--preview-window")
-      then
-        table.insert(fzf_pw_opts, o)
-        mocked = true
-      elseif
-        strings.not_empty(o)
-        and strings.startswith(o --[[@as string]], "--preview-window")
-      then
-        table.insert(fzf_pw_opts, o)
-        mocked = true
-      end
-
-      if
-        type(o) == "table"
-        and strings.not_empty(o[1])
-        and strings.startswith(o[1], "--border")
-      then
-        buffer_previewer_fzf_border_opts = o[2]
-        mocked = true
-      elseif
-        strings.not_empty(o)
-        and strings.startswith(o --[[@as string]], "--border")
-      then
-        buffer_previewer_fzf_border_opts =
-          string.sub(o --[[@as string]], string.len("--border") + 2)
-        mocked = true
-      end
-
-      -- preview actions
-      local split_o = nil
-      if type(o) == "table" and strings.not_empty(o[2]) then
-        for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
-          if strings.find(o[2], action_name) then
-            split_o = o
-          end
-        end
-      elseif strings.not_empty(o) then
-        for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
-          if
-            strings.find(o --[[@as string]], action_name)
-          then
-            local split_pos = strings.find(o --[[@as string]], "=")
-            if not split_pos then
-              split_pos = strings.find(o --[[@as string]], " ")
-            end
-            if type(split_pos) == "number" and split_pos > 1 then
-              split_o = {}
-              local o1 =
-                strings.trim(string.sub(o --[[@as string]], 1, split_pos - 1))
-              log.debug(
-                "|general - use_buffer_previewer| o:%s, split_pos:%s, o1:%s",
-                vim.inspect(o),
-                vim.inspect(split_pos),
-                vim.inspect(o1)
-              )
-              local o2 =
-                strings.trim(string.sub(o --[[@as string]], split_pos + 1))
-              log.debug(
-                "|general - use_buffer_previewer| o:%s, split_pos:%s, o2:%s",
-                vim.inspect(o),
-                vim.inspect(split_pos),
-                vim.inspect(o2)
-              )
-              table.insert(split_o, o1)
-              table.insert(split_o, o2)
-            end
-          end
-        end
-      end
-
-      if type(split_o) == "table" and #split_o == 2 then
-        for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
-          if strings.find(split_o[2], action_name) then
-            local new_o2 = strings.replace(
-              split_o[2],
-              action_name,
-              dump_action_command(action_name)
-            )
-            table.insert(new_fzf_opts, { split_o[1], new_o2 })
-            mocked = true
-          end
-        end
-      end
-
-      if not mocked then
-        table.insert(new_fzf_opts, o)
-      end
-    end
-    log.debug(
-      "|general| extract fzf_pw_opts:%s, fzf_border_opts:%s, fzf_opts:%s",
-      vim.inspect(fzf_pw_opts),
-      vim.inspect(buffer_previewer_fzf_border_opts),
-      vim.inspect(fzf_opts)
-    )
-    if #fzf_pw_opts > 0 then
-      buffer_previewer_fzf_preview_window_opts =
-        fzf_helpers.parse_fzf_preview_window_opts(fzf_pw_opts)
-    end
-
-    fzf_opts = new_fzf_opts
+    fzf_opts, buffer_previewer_opts =
+      mock_buffer_previewer_fzf_opts(fzf_opts, buffer_previewer_actions_file)
   end
 
   popup = Popup:new(
@@ -1506,10 +1510,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       end
     end,
     use_buffer_previewer,
-    {
-      fzf_preview_window_opts = buffer_previewer_fzf_preview_window_opts,
-      fzf_border_opts = buffer_previewer_fzf_border_opts,
-    }
+    buffer_previewer_opts
   )
   return popup
 end
