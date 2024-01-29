@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>author</key>
+    <string>Lin Rongbin(linrongbin16@outlook.com)</string>
+    <key>name</key>
+    <string>{NAME}</string>
+    <key>semanticClass</key>
+    <string>{NAME}</string>
+    <key>colorSpaceName</key>
+    <string>sRGB</string>
+
+    <key>settings</key>
+    <array>
+      <dict>
+        <!-- globals { -->
+        <key>settings</key>
+        <dict>
+          {GLOBAL}
+        </dict>
+      </dict>
+
+      <!-- scope -->
+      {SCOPE}
+
+    </array>
+    <key>uuid</key>
+    <string>uuid</string>
+  </dict>
+</plist>

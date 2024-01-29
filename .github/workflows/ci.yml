@@ -37,7 +37,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
-          args: --config-path .stylua.toml ./lua ./test ./bin
+          args: --config-path .stylua.toml ./lua ./spec ./bin
       - uses: lunarmodules/luacheck@v1
         with:
           args: lua --config .luacheckrc
@@ -77,7 +77,7 @@ jobs:
           git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
           ~/.fzf/install
           export PATH="$HOME/.fzf/bin:$PATH"
-          vusted --shuffle ./test
+          vusted --shuffle ./spec
   code_coverage:
     name: Code Coverage
     needs:
@@ -101,7 +101,7 @@ jobs:
           git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
           ~/.fzf/install
           export PATH="$HOME/.fzf/bin:$PATH"
-          vusted --coverage ./test
+          vusted --coverage ./spec
       - name: Generate coverage reports
         shell: bash
         run: |

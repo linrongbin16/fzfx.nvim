@@ -187,11 +187,11 @@ local function _generate_fzf_color_opts()
   for name, opts in pairs(fzf_colors) do
     local attr = opts[1]
     for i = 2, #opts do
-      local c = apis.get_hl(opts[i])
-      if type(tables.tbl_get(c, "attr")) == "number" then
+      local codes = apis.get_hl(opts[i])
+      if type(tables.tbl_get(codes, "attr")) == "number" then
         table.insert(
           builder,
-          string.format("%s:#%06x", name:gsub("_", "%-"), c[attr])
+          string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr])
         )
         break
       end

@@ -1,5 +1,7 @@
 local strings = require("fzfx.commons.strings")
+local paths = require("fzfx.commons.paths")
 
+local bat_themes = require("fzfx.lib.bat_themes")
 local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -28,6 +30,11 @@ M._bat_style_theme = function()
     and string.len(vim.env["BAT_THEME"]) > 0
   then
     theme = vim.env["BAT_THEME"]
+  elseif
+    vim.opt.termguicolors
+    and paths.isfile(bat_themes.get_custom_theme_template_file() or "")
+  then
+    theme = bat_themes.get_custom_theme_name() --[[@as string]]
   end
   return style, theme
 end
