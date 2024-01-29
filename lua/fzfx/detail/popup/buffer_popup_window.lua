@@ -622,7 +622,6 @@ function BufferPopupWindow:preview_file(
             return
           end
 
-          vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
           local set_name_ok, set_name_err = pcall(
             vim.api.nvim_buf_set_name,
             self.previewer_bufnr,
@@ -743,6 +742,14 @@ function BufferPopupWindow:preview_file(
               line_index = line_index + LINE_COUNT
               if line_index <= TOTAL_LINES then
                 set_buf_lines()
+              else
+                vim.api.nvim_buf_set_lines(
+                  self.previewer_bufnr,
+                  TOTAL_LINES,
+                  -1,
+                  false,
+                  {}
+                )
               end
               if line_index >= SHOW_PREVIEW_LABEL_COUNT then
                 vim.schedule(set_win_title)
