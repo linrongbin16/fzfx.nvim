@@ -80,7 +80,7 @@ function PopupWindow:preview_action(action_name)
 end
 
 function PopupWindow:is_valid()
-  return self.instance:is_valid()
+  return self.instance ~= nil and self.instance:is_valid()
 end
 
 --- @param job_id integer
@@ -297,6 +297,10 @@ end
 
 function Popup:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
+end
+
+function Popup:is_valid()
+  return self.popup_window ~= nil and self.popup_window:is_valid()
 end
 
 -- PopupWindowInstances {

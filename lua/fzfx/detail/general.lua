@@ -1137,6 +1137,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         if not strings.find(buffer_previewer_focused_file, focused_file) then
           return
         end
+        if not popup or not popup:is_valid() then
+          return
+        end
 
         buffer_preview_job_id = numbers.auto_incremental_id()
         popup.popup_window:set_preview_file_job_id(buffer_preview_job_id)
@@ -1153,7 +1156,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             --   vim.inspect(focused_data),
             --   vim.inspect(buffer_preview_files_queue)
             -- )
-            if not popup.popup_window:is_valid() then
+            if not popup or not popup:is_valid() then
               return
             end
             if consts.IS_WINDOWS then
@@ -1171,7 +1174,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               job_id = buffer_preview_job_id,
             })
             vim.defer_fn(function()
-              if not popup.popup_window:is_valid() then
+              if not popup or not popup:is_valid() then
                 return
               end
               if buffer_preview_files_queue_empty() then
@@ -1271,7 +1274,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       )
     )
     local actions_fsevent_start_result, actions_fsevent_start_err = buffer_previewer_actions_fsevent:start(
-      buffer_previewer_focused_file,
+      buffer_previewer_actions_file,
       {},
       function(actions_fsevent_start_complete_err, actions_file, events)
         log.debug(
@@ -1292,6 +1295,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         if not strings.find(buffer_previewer_actions_file, actions_file) then
           return
         end
+        if not popup or not popup:is_valid() then
+          return
+        end
+
         fileios.asyncreadfile(
           buffer_previewer_actions_file,
           function(actions_data)
@@ -1300,7 +1307,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               vim.inspect(actions_file),
               vim.inspect(actions_data)
             )
-            if not popup.popup_window:is_valid() then
+            if not popup or not popup:is_valid() then
               return
             end
             if consts.IS_WINDOWS then
@@ -1311,7 +1318,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 actions_data = string.sub(actions_data, 1, #actions_data - 1)
               end
             end
-            popup.popup_window:preview_action(actions_data)
+            if popup then
+              popup.popup_window:preview_action(actions_data)
+            end
           end,
           { trim = true }
         )
