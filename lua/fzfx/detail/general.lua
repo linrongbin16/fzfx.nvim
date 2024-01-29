@@ -61,8 +61,13 @@ local function _fzf_port_file()
 end
 
 --- @return string
-local function _focused_line_file()
+local function _buffer_previewer_focused_file()
   return _make_cache_filename("focused", "line", "file")
+end
+
+--- @return string
+local function _buffer_previewer_actions_file()
+  return _make_cache_filename("buffer", "previewer", "actions", "file")
 end
 
 --- @class fzfx.ProviderMetaOpts
@@ -799,8 +804,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   --- cache files
   local fzf_port_file = _fzf_port_file()
-  local focused_line_file = _focused_line_file()
-  local focused_line_fsevent, focused_line_fsevent_err
+  local buffer_previewer_focused_file = _buffer_previewer_focused_file()
+  local buffer_previewer_focused_fsevent, buffer_previewer_focused_fsevent_err
 
   --- @type fzfx.Popup
   local popup = nil
@@ -951,11 +956,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local dump_focused_line_command = nil
     if consts.IS_WINDOWS then
       dump_focused_line_command =
-        string.format("cmd.exe /C echo {}>%s", focused_line_file)
+        string.format("cmd.exe /C echo {}>%s", buffer_previewer_focused_file)
     else
-      dump_focused_line_command = string.format("echo {}>%s", focused_line_file)
+      dump_focused_line_command =
+        string.format("echo {}>%s", buffer_previewer_focused_file)
     end
-    fileios.writefile(focused_line_file, "")
+    fileios.writefile(buffer_previewer_focused_file, "")
     fzf_focus_binder = fzf_helpers.FzfOptEventBinder:new("focus")
     fzf_focus_binder:append(
       string.format("execute-silent(%s)", dump_focused_line_command)
@@ -964,151 +970,156 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     fzf_load_binder:append(
       string.format("execute-silent(%s)", dump_focused_line_command)
     )
-    focused_line_fsevent, focused_line_fsevent_err = uv.new_fs_event() --[[@as uv_fs_event_t]]
+    buffer_previewer_focused_fsevent, buffer_previewer_focused_fsevent_err =
+      uv.new_fs_event() --[[@as uv_fs_event_t]]
     log.ensure(
-      focused_line_fsevent ~= nil,
+      buffer_previewer_focused_fsevent ~= nil,
       string.format(
-        "failed to create new fs event for %s, error: %s",
+        "|general| failed to create new fs event for %s, error: %s",
         vim.inspect(name),
-        vim.inspect(focused_line_fsevent_err)
+        vim.inspect(buffer_previewer_focused_fsevent_err)
       )
     )
-    local focused_line_fsevent_start_result, focused_line_fsevent_start_err = focused_line_fsevent:start(
-      focused_line_file,
+    local fsevent_start_result, fsevent_start_err = buffer_previewer_focused_fsevent:start(
+      buffer_previewer_focused_file,
       {},
-      function(focused_err, focused_file, events)
-        log.debug(
-          "|general.focused_line_fsevent:start| focused_err:%s, focused_file:%s, events:%s, focused_line_file:%s",
-          vim.inspect(focused_err),
-          vim.inspect(focused_file),
-          vim.inspect(events),
-          vim.inspect(focused_line_file)
-        )
-        if focused_err then
+      function(fsevent_start_complete_err, fsevent_file, events)
+        -- log.debug(
+        --   "|general - buffer_previewer_focused_fsevent:start| failed to complete fsevent, fsevent_file:%s, events:%s, focused_file:%s, error:%s",
+        --   vim.inspect(fsevent_file),
+        --   vim.inspect(events),
+        --   vim.inspect(buffer_previewer_focused_file),
+        --   vim.inspect(fsevent_start_complete_err)
+        -- )
+        if fsevent_start_complete_err then
           log.err(
-            "failed to trigger focused line on cache file %s, error:%s",
-            vim.inspect(focused_line_file),
-            vim.inspect(focused_err)
+            "|general - buffer_previewer_focused_fsevent:start| failed to trigger fsevent on focused_file %s, error:%s",
+            vim.inspect(buffer_previewer_focused_file),
+            vim.inspect(fsevent_start_complete_err)
           )
           return
         end
 
-        if not strings.find(focused_line_file, focused_file) then
+        if not strings.find(buffer_previewer_focused_file, fsevent_file) then
           return
         end
 
         buffer_preview_job_id = numbers.auto_incremental_id()
         popup.popup_window:set_preview_file_job_id(buffer_preview_job_id)
         log.debug(
-          "|general.focused_line_fsevent:start| start read focused_file:%s",
-          vim.inspect(focused_file)
+          "|general - buffer_previewer_focused_fsevent:start| start read focused_file:%s",
+          vim.inspect(fsevent_file)
         )
-        fileios.asyncreadfile(focused_line_file, function(focused_data)
-          if not popup.popup_window:is_valid() then
-            return
-          end
-
-          log.debug(
-            "|general.focused_line_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
-            vim.inspect(focused_file),
-            vim.inspect(focused_data),
-            vim.inspect(buffer_preview_files_queue)
-          )
-          if consts.IS_WINDOWS then
-            if strings.startswith(focused_data, '"') then
-              focused_data = string.sub(focused_data, 2)
-            end
-            if strings.endswith(focused_data, '"') then
-              focused_data = string.sub(focused_data, 1, #focused_data - 1)
-            end
-          end
-          table.insert(buffer_preview_files_queue, {
-            previewer_config = previewer_switch:current(),
-            focused_line = focused_data,
-            job_id = buffer_preview_job_id,
-          })
-          vim.defer_fn(function()
+        fileios.asyncreadfile(
+          buffer_previewer_focused_file,
+          function(focused_data)
             if not popup.popup_window:is_valid() then
               return
             end
-            if buffer_preview_files_queue_empty() then
-              return
-            end
-            local last_preview_file_job = buffer_preview_files_queue_last()
-            buffer_preview_files_queue_clear()
-            if last_preview_file_job.job_id < buffer_preview_job_id then
-              return
-            end
 
-            popup.popup_window:set_preview_file_job_id(
-              last_preview_file_job.job_id
+            log.debug(
+              "|general - buffer_previewer_focused_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
+              vim.inspect(fsevent_file),
+              vim.inspect(focused_data),
+              vim.inspect(buffer_preview_files_queue)
             )
+            if consts.IS_WINDOWS then
+              if strings.startswith(focused_data, '"') then
+                focused_data = string.sub(focused_data, 2)
+              end
+              if strings.endswith(focused_data, '"') then
+                focused_data = string.sub(focused_data, 1, #focused_data - 1)
+              end
+            end
+            table.insert(buffer_preview_files_queue, {
+              previewer_config = previewer_switch:current(),
+              focused_line = focused_data,
+              job_id = buffer_preview_job_id,
+            })
+            vim.defer_fn(function()
+              if not popup.popup_window:is_valid() then
+                return
+              end
+              if buffer_preview_files_queue_empty() then
+                return
+              end
+              local last_preview_file_job = buffer_preview_files_queue_last()
+              buffer_preview_files_queue_clear()
+              if last_preview_file_job.job_id < buffer_preview_job_id then
+                return
+              end
 
-            local previewer_config = last_preview_file_job.previewer_config
-            local focused_line = last_preview_file_job.focused_line
-            local last_preview_file_job_id = last_preview_file_job.job_id
-            local previewer_ok, previewer_result =
-              pcall(previewer_config.previewer, focused_line, context)
-            -- log.debug(
-            --     "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
-            --     vim.inspect(ok),
-            --     vim.inspect(result)
-            -- )
-            if not previewer_ok then
-              log.err(
-                "failed to call pipeline %s buffer previewer %s! line:%s, context:%s, error:%s",
-                vim.inspect(previewer_config.pipeline),
-                vim.inspect(previewer_config.previewer),
-                vim.inspect(focused_line),
-                vim.inspect(context),
-                vim.inspect(previewer_result)
+              popup.popup_window:set_preview_file_job_id(
+                last_preview_file_job.job_id
               )
-            else
-              log.ensure(
-                previewer_result == nil or type(previewer_result) == "table",
-                "|general.focused_line_fsevent.asyncreadfile| buffer previewer result must be table! previewer_config:%s, result:%s",
-                vim.inspect(previewer_config),
-                vim.inspect(previewer_result)
-              )
-              local previewer_label_ok
-              local previewer_label_result
-              if type(previewer_config.previewer_label) == "string" then
-                previewer_label_ok = true
-                previewer_label_result = previewer_config.previewer_label
-              elseif type(previewer_config.previewer_label) == "function" then
-                previewer_label_ok, previewer_label_result = pcall(
-                  previewer_config.previewer_label --[[@as function]],
-                  focused_line,
-                  context
+
+              local previewer_config = last_preview_file_job.previewer_config
+              local focused_line = last_preview_file_job.focused_line
+              local last_preview_file_job_id = last_preview_file_job.job_id
+              local previewer_ok, previewer_result =
+                pcall(previewer_config.previewer, focused_line, context)
+              -- log.debug(
+              --     "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
+              --     vim.inspect(ok),
+              --     vim.inspect(result)
+              -- )
+              if not previewer_ok then
+                log.err(
+                  "failed to call pipeline %s buffer previewer %s! line:%s, context:%s, error:%s",
+                  vim.inspect(previewer_config.pipeline),
+                  vim.inspect(previewer_config.previewer),
+                  vim.inspect(focused_line),
+                  vim.inspect(context),
+                  vim.inspect(previewer_result)
                 )
-                if not previewer_label_ok then
-                  log.err(
-                    "failed to call previewer label(%s) on buffer previewer! focused_line:%s, context:%s, error:%s",
-                    vim.inspect(previewer_config),
-                    vim.inspect(focused_line),
-                    vim.inspect(context),
-                    vim.inspect(previewer_label_result)
+              else
+                log.ensure(
+                  previewer_result == nil or type(previewer_result) == "table",
+                  "|general - buffer_previewer_focused_fsevent.asyncreadfile| buffer previewer result must be table! previewer_config:%s, result:%s",
+                  vim.inspect(previewer_config),
+                  vim.inspect(previewer_result)
+                )
+                local previewer_label_ok
+                local previewer_label_result
+                if type(previewer_config.previewer_label) == "string" then
+                  previewer_label_ok = true
+                  previewer_label_result = previewer_config.previewer_label
+                elseif type(previewer_config.previewer_label) == "function" then
+                  previewer_label_ok, previewer_label_result = pcall(
+                    previewer_config.previewer_label --[[@as function]],
+                    focused_line,
+                    context
                   )
-                  previewer_label_result = nil
+                  if not previewer_label_ok then
+                    log.err(
+                      "failed to call previewer label(%s) on buffer previewer! focused_line:%s, context:%s, error:%s",
+                      vim.inspect(previewer_config),
+                      vim.inspect(focused_line),
+                      vim.inspect(context),
+                      vim.inspect(previewer_label_result)
+                    )
+                    previewer_label_result = nil
+                  end
+                end
+                if previewer_result then
+                  popup.popup_window:preview_file(
+                    last_preview_file_job_id,
+                    previewer_result --[[@as fzfx.BufferFilePreviewerResult]],
+                    previewer_label_result --[[@as string?]]
+                  )
                 end
               end
-              if previewer_result then
-                popup.popup_window:preview_file(
-                  last_preview_file_job_id,
-                  previewer_result --[[@as fzfx.BufferFilePreviewerResult]],
-                  previewer_label_result --[[@as string?]]
-                )
-              end
-            end
-          end, 50)
-        end, { trim = true })
+            end, 50)
+          end,
+          { trim = true }
+        )
       end
     )
     log.ensure(
-      focused_line_fsevent_start_result ~= nil,
+      fsevent_start_result ~= nil,
       "failed to start watching fsevent on %s, error: %s",
-      vim.inspect(focused_line_file),
-      vim.inspect(focused_line_fsevent_start_err)
+      vim.inspect(buffer_previewer_focused_file),
+      vim.inspect(fsevent_start_err)
     )
   end
 
@@ -1361,9 +1372,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       fileios.asyncwritefile(last_query_cache, content, function(bytes)
         log.debug("|general| dump last query:%s", vim.inspect(bytes))
       end)
-      if focused_line_fsevent then
-        focused_line_fsevent:stop()
-        focused_line_fsevent = nil
+      if buffer_previewer_focused_fsevent then
+        buffer_previewer_focused_fsevent:stop()
+        buffer_previewer_focused_fsevent = nil
       end
     end,
     use_buffer_previewer,
@@ -1487,7 +1498,7 @@ local M = {
   _previewer_metafile = _previewer_metafile,
   _previewer_resultfile = _previewer_resultfile,
   _fzf_port_file = _fzf_port_file,
-  _focused_line_file = _focused_line_file,
+  _focused_line_file = _buffer_previewer_focused_file,
   make_provider_meta_opts = make_provider_meta_opts,
   make_previewer_meta_opts = make_previewer_meta_opts,
   ProviderSwitch = ProviderSwitch,
