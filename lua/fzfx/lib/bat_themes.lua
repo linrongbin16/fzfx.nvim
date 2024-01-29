@@ -351,14 +351,14 @@ local SCOPE_RENDERERS = {
     "@type",
     "Type",
   }, "entity.other.inherited-class"),
-  -- _BatTmThemeScopeRenderer:new({
-  --   "@label",
-  --   "Label",
-  -- }, "entity.name.label"),
-  -- _BatTmThemeScopeRenderer:new({
-  --   "@constant",
-  --   "Constant",
-  -- }, "entity.name.constant"),
+  _BatTmThemeScopeRenderer:new({
+    "@label",
+    "Label",
+  }, "entity.name.label"),
+  _BatTmThemeScopeRenderer:new({
+    "@constant",
+    "Constant",
+  }, "entity.name.constant"),
 
   -- entity }
 
