@@ -753,7 +753,55 @@ describe("detail.general", function()
       assert_eq(actual22.fzf_preview_window_opts.size, 50)
       assert_eq(actual22.fzf_preview_window_opts.size_is_percent, false)
     end)
-    it("border", function() end)
-    it("preview-half-page-down/preview-half-page-up", function() end)
+    it("border", function()
+      local fzf_opts1 = {
+        "--preview-window=left,50%",
+        "--border=double",
+      }
+      local actual11, actual12 =
+        general.mock_buffer_previewer_fzf_opts(fzf_opts1, ACTIONS_FILE)
+      print(
+        string.format(
+          "mock-3:%s, %s\n",
+          vim.inspect(actual11),
+          vim.inspect(actual12)
+        )
+      )
+      assert_eq(#actual11, 0)
+      assert_eq(actual12.fzf_preview_window_opts.position, "left")
+      assert_eq(actual12.fzf_preview_window_opts.size, 50)
+      assert_eq(actual12.fzf_border_opts, "double")
+    end)
+    it("preview-half-page-down/preview-half-page-up", function()
+      local fzf_opts1 = {
+        "--preview-window=left,50%",
+        "--border=double",
+        "--bind=ctrl-f:preview-half-page-down",
+        "--bind=ctrl-b:preview-half-page-up",
+      }
+      local actual11, actual12 =
+        general.mock_buffer_previewer_fzf_opts(fzf_opts1, ACTIONS_FILE)
+      print(
+        string.format(
+          "mock-4:%s, %s\n",
+          vim.inspect(actual11),
+          vim.inspect(actual12)
+        )
+      )
+      assert_eq(#actual11, 2)
+      local first_bind = actual11[1]
+      local second_bind = actual11[2]
+      assert_eq(first_bind[1], "--bind")
+      assert_true(
+        strings.startswith(first_bind[2], "ctrl-f:execute-silent(echo")
+      )
+      assert_eq(second_bind[1], "--bind")
+      assert_true(
+        strings.startswith(second_bind[2], "ctrl-b:execute-silent(echo")
+      )
+      assert_eq(actual12.fzf_preview_window_opts.position, "left")
+      assert_eq(actual12.fzf_preview_window_opts.size, 50)
+      assert_eq(actual12.fzf_border_opts, "double")
+    end)
   end)
 end)
