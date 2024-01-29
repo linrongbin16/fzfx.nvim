@@ -1319,7 +1319,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               end
             end
 
-            popup.popup_window:preview_action(actions_data)
+            vim.schedule(function()
+              if not popup or not popup:is_valid() then
+                return
+              end
+              popup.popup_window:preview_action(actions_data)
+            end)
           end,
           { trim = true }
         )
