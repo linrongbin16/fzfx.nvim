@@ -437,6 +437,9 @@ local SCOPE_RENDERERS = {
   -- _BatTmThemeScopeRenderer:new({
   --   "@keyword.function",
   -- }, "meta.function"),
+  -- _BatTmThemeScopeRenderer:new({
+  --   "@punctuation.bracket",
+  -- }, { "meta.block", "meta.braces" }),
   -- meta }
 
   -- storage {
@@ -501,6 +504,31 @@ local SCOPE_RENDERERS = {
     "@constant",
   }, { "variable.other.constant" }),
   -- variable }
+
+  -- punctuation {
+  _BatTmThemeScopeRenderer:new({
+    "@punctuation.bracket",
+  }, {
+    "punctuation.section.brackets.begin",
+    "punctuation.section.brackets.end",
+    "punctuation.section.braces.begin",
+    "punctuation.section.braces.end",
+    "punctuation.section.parens.begin",
+    "punctuation.section.parens.end",
+  }),
+  _BatTmThemeScopeRenderer:new({
+    "@punctuation.special",
+  }, {
+    "punctuation.section.interpolation.begin",
+    "punctuation.section.interpolation.end",
+  }),
+  _BatTmThemeScopeRenderer:new({
+    "@punctuation.delimiter",
+  }, {
+    "punctuation.separator",
+    "punctuation.terminator",
+  }),
+  -- punctuation }
 }
 
 --- @return {name:string,payload:string}?
