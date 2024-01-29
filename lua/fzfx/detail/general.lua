@@ -859,7 +859,9 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
           split_o = o
         end
       elseif strings.not_empty(o) then
-        if strings.find(o, action_name) then
+        if
+          strings.find(o --[[@as string]], action_name)
+        then
           local split_pos = strings.find(o --[[@as string]], "=")
           if not split_pos then
             split_pos = strings.find(o --[[@as string]], " ")
