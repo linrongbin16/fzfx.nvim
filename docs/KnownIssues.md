@@ -1,5 +1,13 @@
 # Known Issues
 
+## Previewer
+
+### 1. Cannot use both nvim buffer previewer and fzf's builtin-previewer in the same command?
+
+Yes, this is a limitation for previewer: the technical gap between nvim buffer and fzf builtin preview window is quite big, the whole architecture is different, switching previewers across these two types requires a lot of effort.
+
+While we usually only need nvim buffer to preview files, so it should not be a serious issue. Please avoid such kind of configurations.
+
 ## File Explorer
 
 ### 1. Cannot go upper in empty directory?

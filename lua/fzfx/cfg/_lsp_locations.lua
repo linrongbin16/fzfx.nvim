@@ -521,8 +521,6 @@ M.win_opts = {
   width = 1,
   row = 1,
   col = 0,
-  border = "none",
-  zindex = 51,
 }
 
 M.other_opts = {

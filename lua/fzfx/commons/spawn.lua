@@ -54,7 +54,7 @@ M.run = function(cmd, opts, on_exit)
       stdout_buffer = stdout_buffer and (stdout_buffer .. data) or data
       -- search buffer and process each line
       local i = _process(stdout_buffer, opts.on_stdout)
-      -- truncate the printed lines if found any
+      -- truncate the processed lines if still exists any
       stdout_buffer = i <= #stdout_buffer
           and stdout_buffer:sub(i, #stdout_buffer)
         or nil

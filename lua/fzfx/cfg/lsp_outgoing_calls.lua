@@ -36,9 +36,9 @@ M.win_opts = _lsp_locations.win_opts
 M.other_opts = _lsp_locations.other_opts
 
 M.fzf_opts = {
-  consts.FZF_OPTS.MULTI,
-  consts.FZF_OPTS.LSP_PREVIEW_WINDOW,
-  consts.FZF_OPTS.DELIMITER,
+  "--multi",
+  { "--delimiter", ":" },
+  { "--preview-window", "left,65%,+{2}-/2" },
   "--border=none",
   { "--prompt", "Outgoing Calls > " },
 }

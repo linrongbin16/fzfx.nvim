@@ -117,14 +117,16 @@ We have below types of previewers:
 
 - Command previewer: a lua function to run and returns a shell command (as a string or a string list), then execute and generate the preview contents for fzf.
 - List previewer: a lua function to run and directly returns the preview contents for fzf.
-- Buffer previewer (todo): a nvim buffer to show the preview contents. (the biggest benefits are nvim builtin highlightings and allow navigate to the buffer and edit directly)
+- Buffer file previewer: a nvim buffer to show the file contents.
 
 ```lua
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
---- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer
+--- @alias fzfx.BufferFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
+--- @alias fzfx.BufferFilePreviewer fun(line:string?,context:fzfx.PipelineContext?):fzfx.BufferFilePreviewerResult?
+--- @alias fzfx.Previewer fzfx.CommandPreviewer|fzfx.ListPreviewer|fzfx.BufferFilePreviewer
 ---
---- @alias fzfx.PreviewerType "command"|"command_list"|"list"
+--- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"buffer_file"
 --
 -- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
 ```

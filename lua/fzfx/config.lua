@@ -117,11 +117,11 @@ local Defaults = {
     "--layout=reverse",
     "--border=rounded",
     "--height=100%",
-    consts.FZF_OPTS.TOGGLE,
-    consts.FZF_OPTS.TOGGLE_ALL,
-    consts.FZF_OPTS.TOGGLE_PREVIEW,
-    consts.FZF_OPTS.PREVIEW_HALF_PAGE_UP,
-    consts.FZF_OPTS.PREVIEW_HALF_PAGE_DOWN,
+    "--bind=ctrl-e:toggle",
+    "--bind=ctrl-a:toggle-all",
+    "--bind=alt-p:toggle-preview",
+    "--bind=ctrl-f:preview-half-page-down",
+    "--bind=ctrl-b:preview-half-page-up",
   },
 
   -- global fzf opts with highest priority.
@@ -269,8 +269,6 @@ local Defaults = {
       --
       row = 0,
       col = 0,
-      border = "none",
-      zindex = 51,
     },
   },
 
@@ -310,6 +308,11 @@ end
 --- @return fzfx.Options
 M.get = function()
   return Configs
+end
+
+--- @param opts fzfx.Options
+M.set = function(opts)
+  Configs = opts
 end
 
 --- @return fzfx.Options

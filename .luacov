@@ -2,6 +2,7 @@ modules = {
     ["fzfx"] = "lua/fzfx.lua",
     ["fzfx.*"] = "lua",
     ["fzfx.*.*"] = "lua",
+    ["fzfx.*.*.*"] = "lua",
 }
 exclude = {
     "lua/fzfx/commons/*.lua",

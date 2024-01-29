@@ -270,7 +270,7 @@ M.actions = {
 }
 
 M.fzf_opts = {
-  consts.FZF_OPTS.MULTI,
+  "--multi",
   { "--prompt", paths.shorten() .. " > " },
   function()
     local n = 0

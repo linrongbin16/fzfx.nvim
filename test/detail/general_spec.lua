@@ -410,7 +410,7 @@ describe("detail.general", function()
       assert_eq(ps:switch("p2"), nil)
     end)
   end)
-  describe("[PreviewerSwitch:preview_label]", function()
+  describe("[PreviewerSwitch:_preview_label]", function()
     local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
     it("not previews label", function()
       local name = "label_test1"
@@ -429,9 +429,9 @@ describe("detail.general", function()
         },
       }, FZFPORTFILE)
       print(string.format("GITHUB_ACTIONS:%s\n", os.getenv("GITHUB_ACTIONS")))
-      assert_true(ps:preview_label("hello", {}) == nil)
+      assert_true(ps:_preview_label("hello", {}) == nil)
       ps:switch("p2")
-      assert_true(ps:preview_label("world", {}) == nil)
+      assert_true(ps:_preview_label("world", {}) == nil)
     end)
     it("previews label", function()
       local name = "label_test2"
@@ -456,9 +456,31 @@ describe("detail.general", function()
         },
       }, FZFPORTFILE)
       print(string.format("GITHUB_ACTIONS:%s\n", os.getenv("GITHUB_ACTIONS")))
-      assert_true(ps:preview_label("hello", {}) == "p1")
+      assert_true(ps:_preview_label("hello", {}) == "p1")
       ps:switch("p2")
-      assert_true(ps:preview_label("world", {}) == "p2")
+      assert_true(ps:_preview_label("world", {}) == "p2")
+    end)
+  end)
+  describe("[PreviewerSwitch:current]", function()
+    local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
+    it("test", function()
+      local name = "current1"
+      fileios.writefile(FZFPORTFILE, "12345")
+      local ps = general.PreviewerSwitch:new(name, "p1", {
+        p1 = {
+          previewer = function()
+            return "ls -lh"
+          end,
+        },
+        p2 = {
+          previewer = function()
+            return { "ls", "-lha", "~" }
+          end,
+          previewer_type = "command_list",
+        },
+      }, FZFPORTFILE)
+      local actual = ps:current()
+      assert_eq(actual.previewer(), "ls -lh")
     end)
   end)
   describe("[_render_help]", function()
@@ -672,6 +694,10 @@ describe("detail.general", function()
     it("_fzf_port_file", function()
       local actual1 = general._fzf_port_file()
       assert_true(strings.endswith(actual1, "fzf_port_file"))
+    end)
+    it("_focused_line_file", function()
+      local actual1 = general._focused_line_file()
+      assert_true(strings.endswith(actual1, "focused_line_file"))
     end)
   end)
 end)

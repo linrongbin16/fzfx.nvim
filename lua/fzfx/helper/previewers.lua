@@ -82,6 +82,14 @@ M.preview_files_find = function(line)
   return M.preview_files(parsed.filename)
 end
 
+-- preview files with nvim buffer.
+--- @param line string
+--- @return table
+M.buffer_preview_files_find = function(line)
+  local parsed = parsers_helper.parse_find(line)
+  return { filename = parsed.filename }
+end
+
 -- files }
 
 -- live grep {
