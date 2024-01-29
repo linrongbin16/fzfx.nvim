@@ -853,17 +853,13 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
 
     -- preview actions
     local split_o = nil
-    if type(o) == "table" and strings.not_empty(o[2]) then
-      for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
+    for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
+      if type(o) == "table" and strings.not_empty(o[2]) then
         if strings.find(o[2], action_name) then
           split_o = o
         end
-      end
-    elseif strings.not_empty(o) then
-      for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
-        if
-          strings.find(o --[[@as string]], action_name)
-        then
+      elseif strings.not_empty(o) then
+        if strings.find(o, action_name) then
           local split_pos = strings.find(o --[[@as string]], "=")
           if not split_pos then
             split_pos = strings.find(o --[[@as string]], " ")
@@ -891,10 +887,8 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
           end
         end
       end
-    end
 
-    if type(split_o) == "table" and #split_o == 2 then
-      for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
+      if type(split_o) == "table" and #split_o == 2 then
         if strings.find(split_o[2], action_name) then
           local new_o2 = strings.replace(
             split_o[2],
@@ -905,6 +899,8 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
           mocked = true
         end
       end
+
+      split_o = nil
     end
 
     if not mocked then
