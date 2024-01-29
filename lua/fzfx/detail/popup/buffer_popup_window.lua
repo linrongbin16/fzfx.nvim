@@ -822,11 +822,10 @@ function BufferPopupWindow:toggle_preview()
 end
 
 function BufferPopupWindow:preview_half_page_down()
-  log.debug("|BufferPopupWindow:preview_half_page_down| %s", vim.inspect(self))
   if not self:is_valid() then
     log.debug(
       "|BufferPopupWindow:preview_half_page_down| invalid: %s",
-      vim.inspect(self)
+      vim.inspect(self.previewer_winnr)
     )
     return
   end
@@ -836,37 +835,25 @@ function BufferPopupWindow:preview_half_page_down()
   end)
   log.debug(
     "|BufferPopupWindow:preview_half_page_down| call - done: %s",
-    vim.inspect(self)
+    vim.inspect(self.previewer_winnr)
   )
 end
 
 function BufferPopupWindow:preview_half_page_up()
-  log.debug("|BufferPopupWindow:preview_half_page_up| %s", vim.inspect(self))
   if not self:is_valid() then
     log.debug(
       "|BufferPopupWindow:preview_half_page_up| invalid: %s",
-      vim.inspect(self)
+      vim.inspect(self.previewer_winnr)
     )
     return
   end
-  log.debug(
-    "|BufferPopupWindow:preview_half_page_up| call: %s",
-    vim.inspect(self)
-  )
   vim.api.nvim_win_call(self.previewer_winnr, function()
     local ctrl_u = vim.api.nvim_replace_termcodes("<C-u>", true, false, true)
     vim.api.nvim_feedkeys(ctrl_u, "x", false)
   end)
-  vim.api.nvim_set_current_win(self.provider_winnr)
-  vim.api.nvim_set_current_buf(self.provider_bufnr)
-  log.debug(
-    "|BufferPopupWindow:preview_half_page_up| call - buftype: %s, filetype: %s",
-    vim.inspect(vim.o.buftype),
-    vim.inspect(vim.o.filetype)
-  )
   log.debug(
     "|BufferPopupWindow:preview_half_page_up| call - done: %s",
-    vim.inspect(self)
+    vim.inspect(self.previewer_winnr)
   )
 end
 
