@@ -757,7 +757,26 @@ function BufferPopupWindow:preview_file(
 end
 
 --- @param action_name string
-function BufferPopupWindow:preview_action(action_name) end
+function BufferPopupWindow:preview_action(action_name)
+  local actions_map = {
+    ["hide-preview"] = function() end,
+    ["show-preview"] = function() end,
+    ["refresh-preview"] = function() end,
+    ["preview-down"] = function() end,
+    ["preview-up"] = function() end,
+    ["preview-page-down"] = function() end,
+    ["preview-page-up"] = function() end,
+    ["preview-half-page-down"] = function()
+      self:preview_half_page_down()
+    end,
+    ["preview-half-page-up"] = function()
+      self:preview_half_page_up()
+    end,
+    ["preview-bottom"] = function() end,
+    ["toggle-preview"] = function() end,
+    ["toggle-preview-wrap"] = function() end,
+  }
+end
 
 --- @return boolean
 function BufferPopupWindow:preview_hidden()
@@ -811,21 +830,10 @@ function BufferPopupWindow:preview_half_page_down()
     )
     return
   end
-  log.debug(
-    "|BufferPopupWindow:preview_half_page_down| call: %s",
-    vim.inspect(self)
-  )
   vim.api.nvim_win_call(self.previewer_winnr, function()
     local ctrl_d = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
     vim.api.nvim_feedkeys(ctrl_d, "x", false)
   end)
-  vim.api.nvim_set_current_win(self.provider_winnr)
-  vim.api.nvim_set_current_buf(self.provider_bufnr)
-  log.debug(
-    "|BufferPopupWindow:preview_half_page_down| call - buftype: %s, filetype: %s",
-    vim.inspect(vim.o.buftype),
-    vim.inspect(vim.o.filetype)
-  )
   log.debug(
     "|BufferPopupWindow:preview_half_page_down| call - done: %s",
     vim.inspect(self)
