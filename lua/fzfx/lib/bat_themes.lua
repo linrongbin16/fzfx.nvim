@@ -376,6 +376,10 @@ local SCOPE_RENDERERS = {
     { "@keyword.conditional", "Conditional" },
     "keyword.control.conditional"
   ),
+  _BatTmThemeScopeRenderer:new(
+    { "@keyword.operator" },
+    "keyword.operator.word"
+  ),
   _BatTmThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
   _BatTmThemeScopeRenderer:new(
     { "@keyword.operator" },
@@ -405,6 +409,9 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new({
     "@markup.raw",
   }, "markup.raw"),
+  _BatTmThemeScopeRenderer:new({
+    "@markup.quote",
+  }, "markup.quote"),
   _BatTmThemeScopeRenderer:new(
     { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded", "Added" },
     "markup.inserted"
@@ -423,16 +430,21 @@ local SCOPE_RENDERERS = {
   -- markup }
 
   -- meta {
+  -- _BatTmThemeScopeRenderer:new({
+  --   "@keyword.function",
+  -- }, "meta.function"),
+  -- meta }
+
+  -- storage {
   _BatTmThemeScopeRenderer:new({
     "@keyword.function",
-  }, "meta.function"),
-  -- _BatTmThemeScopeRenderer:new({
-  --   "htmlTag",
-  -- }, "meta.tag"),
-  -- _BatTmThemeScopeRenderer:new({
-  --   "@function.call",
-  -- }, "meta.function-call"),
-  -- meta }
+  }, "storage.type.function"),
+  _BatTmThemeScopeRenderer:new({
+    "@type",
+    "Type",
+  }, "storage.type"),
+  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "storage.modifier"),
+  -- storage }
 
   -- string
   _BatTmThemeScopeRenderer:new(
@@ -460,14 +472,6 @@ local SCOPE_RENDERERS = {
     "@constant",
     "Constant",
   }, { "variable.other.constant" }),
-
-  -- storage
-  -- _BatTmThemeScopeRenderer:new({"", "StorageClass" }, "storage.type"),
-  _BatTmThemeScopeRenderer:new({
-    "@type",
-    "Type",
-  }, "storage.type"),
-  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "storage.modifier"),
 
   -- support
   _BatTmThemeScopeRenderer:new({
