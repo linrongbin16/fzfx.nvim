@@ -816,9 +816,8 @@ end
 --- @return fzfx.FzfOpt[], fzfx.BufferFilePreviewerOpts
 local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
   local new_fzf_opts = {}
-
   local border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
-  local pw_opts = {}
+  local preview_window_opts = {}
   for _, o in ipairs(fzf_opts) do
     local mocked = false
 
@@ -827,13 +826,13 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
       and strings.not_empty(o[1])
       and strings.startswith(o[1], "--preview-window")
     then
-      table.insert(pw_opts, o)
+      table.insert(preview_window_opts, o)
       mocked = true
     elseif
       strings.not_empty(o)
       and strings.startswith(o --[[@as string]], "--preview-window")
     then
-      table.insert(pw_opts, o)
+      table.insert(preview_window_opts, o)
       mocked = true
     end
 
@@ -913,13 +912,15 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
     end
   end
 
-  local preview_window_opts =
-    fzf_helpers.parse_fzf_preview_window_opts(#pw_opts > 0 and pw_opts or {
-      {
-        "--preview-window",
-        "right,50%",
-      },
-    })
+  local preview_window_opts = fzf_helpers.parse_fzf_preview_window_opts(
+    #preview_window_opts > 0 and preview_window_opts
+      or {
+        {
+          "--preview-window",
+          "right,50%",
+        },
+      }
+  )
 
   return new_fzf_opts,
     {
