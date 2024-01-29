@@ -328,9 +328,6 @@ local SCOPE_RENDERERS = {
   ),
   _BatTmThemeScopeRenderer:new({
     "@string.regexp",
-    "DiagnosticWarn",
-    "LspDiagnosticsDefaultWarning",
-    "WarningMsg",
   }, { "string.regexp" }),
 
   -- variable
