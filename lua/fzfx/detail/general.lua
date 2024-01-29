@@ -1657,6 +1657,8 @@ local M = {
   _should_skip_help = _should_skip_help,
   _make_help_doc = _make_help_doc,
   HeaderSwitch = HeaderSwitch,
+  dump_action_command = dump_action_command,
+  mock_buffer_previewer_fzf_opts = mock_buffer_previewer_fzf_opts,
 }
 
 return M
