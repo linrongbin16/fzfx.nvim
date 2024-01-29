@@ -363,9 +363,9 @@ local SCOPE_RENDERERS = {
   -- entity }
 
   -- invalid {
-  -- _BatTmThemeScopeRenderer:new({
-  --   "Error",
-  -- }, "invalid.illegal"),
+  _BatTmThemeScopeRenderer:new({
+    "Error",
+  }, "invalid.illegal"),
   -- invalid }
 
   -- keyword {
