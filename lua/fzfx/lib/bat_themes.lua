@@ -300,6 +300,7 @@ local GLOBAL_RENDERERS = {
   _BatTmThemeGlobalRenderer:new("Search", "findHighlightForeground", "fg"),
 }
 
+-- tm theme name conversions: https://macromates.com/manual/en/language_grammars#naming_conventions
 local SCOPE_RENDERERS = {
   -- comment
   _BatTmThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
@@ -320,6 +321,43 @@ local SCOPE_RENDERERS = {
     { "@string.escape" },
     { "constant.character.escaped", "constant.character.escape" }
   ),
+
+  -- entity
+  _BatTmThemeScopeRenderer:new({
+    "@function",
+    "Function",
+  }, "entity.name.function"),
+  _BatTmThemeScopeRenderer:new({
+    "@type",
+    "Type",
+  }, {
+    "entity.name.type",
+  }),
+  _BatTmThemeScopeRenderer:new({
+    "@tag",
+  }, "entity.name.tag"),
+  _BatTmThemeScopeRenderer:new({
+    "@markup.heading",
+    "htmlTitle",
+  }, "entity.name.section"),
+  _BatTmThemeScopeRenderer:new({
+    "Structure",
+  }, {
+    "entity.name.enum",
+    "entity.name.union",
+  }),
+  _BatTmThemeScopeRenderer:new({
+    "@type",
+    "Type",
+  }, "entity.other.inherited-class"),
+  -- _BatTmThemeScopeRenderer:new({
+  --   "@label",
+  --   "Label",
+  -- }, "entity.name.label"),
+  -- _BatTmThemeScopeRenderer:new({
+  --   "@constant",
+  --   "Constant",
+  -- }, "entity.name.constant"),
 
   -- string
   _BatTmThemeScopeRenderer:new(
@@ -368,43 +406,6 @@ local SCOPE_RENDERERS = {
     "Type",
   }, "storage.type"),
   _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "storage.modifier"),
-
-  -- entity
-  _BatTmThemeScopeRenderer:new({
-    "@function",
-    "Function",
-  }, "entity.name.function"),
-  _BatTmThemeScopeRenderer:new({
-    "@type",
-    "Type",
-  }, {
-    "entity.name.type",
-  }),
-  _BatTmThemeScopeRenderer:new({
-    "@tag",
-  }, "entity.name.tag"),
-  _BatTmThemeScopeRenderer:new({
-    "@markup.heading",
-    "htmlTitle",
-  }, "entity.name.section"),
-  _BatTmThemeScopeRenderer:new({
-    "Structure",
-  }, {
-    "entity.name.enum",
-    "entity.name.union",
-  }),
-  _BatTmThemeScopeRenderer:new({
-    "@type",
-    "Type",
-  }, "entity.other.inherited-class"),
-  _BatTmThemeScopeRenderer:new({
-    "@label",
-    "Label",
-  }, "entity.name.label"),
-  _BatTmThemeScopeRenderer:new({
-    "@constant",
-    "Constant",
-  }, "entity.name.constant"),
 
   -- support
   _BatTmThemeScopeRenderer:new({
