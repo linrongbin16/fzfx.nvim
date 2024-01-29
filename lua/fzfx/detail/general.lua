@@ -962,7 +962,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       dump_focused_line_command =
         string.format("echo {}>%s", buffer_previewer_focused_file)
     end
-    fileios.writefile(buffer_previewer_focused_file, "")
     fzf_focus_binder = fzf_helpers.FzfOptEventBinder:new("focus")
     fzf_focus_binder:append(
       string.format("execute-silent(%s)", dump_focused_line_command)
@@ -973,6 +972,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
 
     -- buffer_previewer_focused_file {
+    fileios.writefile(buffer_previewer_focused_file, "")
     buffer_previewer_focused_fsevent, buffer_previewer_focused_fsevent_err =
       uv.new_fs_event() --[[@as uv_fs_event_t]]
     log.ensure(
@@ -1127,6 +1127,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     -- buffer_previewer_focused_file }
 
     -- buffer_previewer_actions_file {
+    fileios.writefile(buffer_previewer_actions_file, "")
     buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err =
       uv.new_fs_event() --[[@as uv_fs_event_t]]
     log.ensure(
@@ -1135,7 +1136,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "|general| failed to create new fsevent for %s(buffer_previewer_actions_file:%s), error: %s",
         vim.inspect(name),
         vim.inspect(buffer_previewer_actions_fsevent),
-        vim.inspect(buffer_previewer_focused_fsevent_err)
+        vim.inspect(buffer_previewer_actions_fsevent_err)
       )
     )
     local actions_fsevent_start_result, actions_fsevent_start_err = buffer_previewer_actions_fsevent:start(
