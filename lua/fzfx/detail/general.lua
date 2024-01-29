@@ -1142,7 +1142,19 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local actions_fsevent_start_result, actions_fsevent_start_err = buffer_previewer_actions_fsevent:start(
       buffer_previewer_focused_file,
       {},
-      function(actions_fsevent_start_complete_err, fsevent_file, events) end
+      function(actions_fsevent_start_complete_err, actions_file, events)
+        if actions_fsevent_start_complete_err then
+          log.err(
+            "|general - buffer_previewer_actions_fsevent:start| failed to trigger fsevent on actions_file %s, error:%s",
+            vim.inspect(buffer_previewer_actions_file),
+            vim.inspect(actions_fsevent_start_complete_err)
+          )
+          return
+        end
+        if not strings.find(buffer_previewer_actions_file, actions_file) then
+          return
+        end
+      end
     )
     log.ensure(
       actions_fsevent_start_result ~= nil,
