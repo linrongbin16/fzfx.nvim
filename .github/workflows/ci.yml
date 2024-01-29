@@ -122,7 +122,6 @@ jobs:
     name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
-      - code_coverage
       - unit_test
       - code_coverage
     runs-on: ubuntu-latest
