@@ -4,7 +4,6 @@ local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 local apis = require("fzfx.commons.apis")
 local tables = require("fzfx.commons.tables")
-local asyncs = require("fzfx.lib.asyncs")
 
 -- local log = require("fzfx.lib.log")
 
@@ -14,7 +13,7 @@ local THEMES_CONFIG_DIR = nil
 
 local getting_themes_config_dir = false
 
---- @return string
+--- @return string?
 M.get_bat_themes_config_dir = function()
   if THEMES_CONFIG_DIR == nil then
     if not getting_themes_config_dir then
@@ -101,12 +100,15 @@ M.get_custom_theme_name = function(name)
 end
 
 --- @return string?
-M.get_custom_theme_file = function()
+M.get_custom_theme_template_file = function()
   local theme_name = M.get_custom_theme_name()
   if strings.empty(theme_name) then
     return nil
   end
   local theme_dir = M.get_bat_themes_config_dir()
+  if strings.empty(theme_dir) then
+    return nil
+  end
   return paths.join(theme_dir, theme_name .. ".tmTheme")
 end
 
@@ -558,7 +560,7 @@ local SCOPE_RENDERERS = {
 
 --- @return {name:string,payload:string}?
 M.calculate_custom_theme = function()
-  local theme_name = M.get_custom_theme_name()
+  local theme_name = M.get_custom_theme_name() --[[@as string]]
   if strings.empty(theme_name) then
     return nil
   end
@@ -569,7 +571,7 @@ M.calculate_custom_theme = function()
     "theme_template.tmTheme"
   )
   local payload = fileios.readfile(template_path, { trim = true }) --[[@as string]]
-  payload = payload:gsub("{NAME}", theme_name --[[@as string]])
+  payload = strings.replace(payload, "{NAME}", theme_name)
 
   local global_builder = {}
   for i, renderer in ipairs(GLOBAL_RENDERERS) do
@@ -579,8 +581,10 @@ M.calculate_custom_theme = function()
   for i, renderer in ipairs(SCOPE_RENDERERS) do
     table.insert(scope_builder, renderer:render())
   end
-  payload = payload:gsub("{GLOBAL}", table.concat(global_builder, "\n"))
-  payload = payload:gsub("{SCOPE}", table.concat(scope_builder, "\n"))
+  payload =
+    strings.replace(payload, "{GLOBAL}", table.concat(global_builder, "\n"))
+  payload =
+    strings.replace(payload, "{SCOPE}", table.concat(scope_builder, "\n"))
   return {
     name = theme_name,
     payload = payload,

@@ -32,7 +32,7 @@ M._bat_style_theme = function()
     theme = vim.env["BAT_THEME"]
   elseif
     vim.opt.termguicolors
-    and paths.isfile(bat_themes.get_custom_theme_file() or "")
+    and paths.isfile(bat_themes.get_custom_theme_template_file() or "")
   then
     theme = bat_themes.get_custom_theme_name() --[[@as string]]
   end
