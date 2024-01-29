@@ -321,7 +321,6 @@ local SCOPE_RENDERERS = {
     { "@string.escape" },
     { "constant.character.escaped", "constant.character.escape" }
   ),
-  _BatTmThemeScopeRenderer:new({ "@constant", "Constant" }, "constant.other"),
   -- constant }
 
   -- entity {
@@ -456,13 +455,10 @@ local SCOPE_RENDERERS = {
     "@type",
     "Type",
   }, { "storage.type", "keyword.declaration.type" }),
-  _BatTmThemeScopeRenderer:new(
-    { "@keyword", "StorageClass" },
-    "storage.modifier"
-  ),
+  _BatTmThemeScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
   -- storage }
 
-  -- string
+  -- string {
   _BatTmThemeScopeRenderer:new(
     { "@string", "String" },
     { "string", "string.quoted" }
@@ -470,26 +466,9 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new({
     "@string.regexp",
   }, { "string.regexp" }),
+  -- string }
 
-  -- variable
-  _BatTmThemeScopeRenderer:new({
-    "@function",
-    "Function",
-  }, "variable.function"),
-  _BatTmThemeScopeRenderer:new({
-    "@type.definition",
-    "Identifier",
-  }, { "variable.parameter" }),
-  _BatTmThemeScopeRenderer:new({
-    "@variable",
-    "Variable",
-  }, { "variable.other" }),
-  _BatTmThemeScopeRenderer:new({
-    "@constant",
-    "Constant",
-  }, { "variable.other.constant" }),
-
-  -- support
+  -- support {
   _BatTmThemeScopeRenderer:new({
     "@function",
     "Function",
@@ -506,6 +485,22 @@ local SCOPE_RENDERERS = {
     "@type",
     "Type",
   }, "support.class"),
+  -- support }
+
+  -- variable {
+  _BatTmThemeScopeRenderer:new({
+    "@function.call",
+  }, "variable.function"),
+  _BatTmThemeScopeRenderer:new({
+    "@variable.parameter",
+  }, { "variable.parameter" }),
+  _BatTmThemeScopeRenderer:new({
+    "@variable.builtin",
+  }, { "variable.language" }),
+  _BatTmThemeScopeRenderer:new({
+    "@constant",
+  }, { "variable.other.constant" }),
+  -- variable }
 }
 
 --- @return {name:string,payload:string}?
