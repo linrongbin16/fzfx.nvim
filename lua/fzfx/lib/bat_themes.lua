@@ -409,21 +409,29 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new({
     "@markup.quote",
   }, "markup.quote"),
-  _BatTmThemeScopeRenderer:new(
-    { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded", "Added" },
-    "markup.inserted"
-  ),
+  _BatTmThemeScopeRenderer:new({
+    "GitSignsAdd",
+    "GitGutterAdd",
+    "DiffAdd",
+    "DiffAdded",
+    "@diff.plus",
+    "Added",
+  }, "markup.inserted"),
   _BatTmThemeScopeRenderer:new({
     "GitSignsDelete",
     "GitGutterDelete",
     "DiffDelete",
     "DiffRemoved",
+    "@diff.minus",
     "Removed",
   }, "markup.deleted"),
-  _BatTmThemeScopeRenderer:new(
-    { "GitGutterChange", "GitSignsChange", "DiffChange", "Changed" },
-    "diff.changed"
-  ),
+  _BatTmThemeScopeRenderer:new({
+    "GitGutterChange",
+    "GitSignsChange",
+    "DiffChange",
+    "@diff.delta",
+    "Changed",
+  }, "diff.changed"),
   -- markup }
 
   -- meta {
@@ -435,12 +443,23 @@ local SCOPE_RENDERERS = {
   -- storage {
   _BatTmThemeScopeRenderer:new({
     "@keyword.function",
-  }, "storage.type.function"),
+  }, { "storage.type.function", "keyword.declaration.function" }),
+  _BatTmThemeScopeRenderer:new({
+    "Structure",
+  }, {
+    "storage.type.struct",
+    "storage.type.enum",
+    "keyword.declaration.struct",
+    "keyword.declaration.enum",
+  }),
   _BatTmThemeScopeRenderer:new({
     "@type",
     "Type",
-  }, "storage.type"),
-  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "storage.modifier"),
+  }, { "storage.type", "keyword.declaration.type" }),
+  _BatTmThemeScopeRenderer:new(
+    { "@keyword", "StorageClass" },
+    "storage.modifier"
+  ),
   -- storage }
 
   -- string
