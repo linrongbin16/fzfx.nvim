@@ -806,6 +806,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local fzf_port_file = _fzf_port_file()
   local buffer_previewer_focused_file = _buffer_previewer_focused_file()
   local buffer_previewer_focused_fsevent, buffer_previewer_focused_fsevent_err
+  local buffer_previewer_actions_file = _buffer_previewer_actions_file()
+  local buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err
 
   --- @type fzfx.Popup
   local popup = nil
@@ -970,20 +972,23 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     fzf_load_binder:append(
       string.format("execute-silent(%s)", dump_focused_line_command)
     )
+
+    -- buffer_previewer_focused_file {
     buffer_previewer_focused_fsevent, buffer_previewer_focused_fsevent_err =
       uv.new_fs_event() --[[@as uv_fs_event_t]]
     log.ensure(
       buffer_previewer_focused_fsevent ~= nil,
       string.format(
-        "|general| failed to create new fs event for %s, error: %s",
+        "|general| failed to create new fsevent for %s (buffer_previewer_focused_file:%s), error: %s",
         vim.inspect(name),
+        vim.inspect(buffer_previewer_focused_file),
         vim.inspect(buffer_previewer_focused_fsevent_err)
       )
     )
-    local fsevent_start_result, fsevent_start_err = buffer_previewer_focused_fsevent:start(
+    local focused_fsevent_start_result, focused_fsevent_start_err = buffer_previewer_focused_fsevent:start(
       buffer_previewer_focused_file,
       {},
-      function(fsevent_start_complete_err, fsevent_file, events)
+      function(focused_fsevent_start_complete_err, focused_file, events)
         -- log.debug(
         --   "|general - buffer_previewer_focused_fsevent:start| failed to complete fsevent, fsevent_file:%s, events:%s, focused_file:%s, error:%s",
         --   vim.inspect(fsevent_file),
@@ -991,15 +996,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         --   vim.inspect(buffer_previewer_focused_file),
         --   vim.inspect(fsevent_start_complete_err)
         -- )
-        if fsevent_start_complete_err then
+        if focused_fsevent_start_complete_err then
           log.err(
             "|general - buffer_previewer_focused_fsevent:start| failed to trigger fsevent on focused_file %s, error:%s",
             vim.inspect(buffer_previewer_focused_file),
-            vim.inspect(fsevent_start_complete_err)
+            vim.inspect(focused_fsevent_start_complete_err)
           )
           return
         end
-        if not strings.find(buffer_previewer_focused_file, fsevent_file) then
+        if not strings.find(buffer_previewer_focused_file, focused_file) then
           return
         end
 
@@ -1115,11 +1120,37 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       end
     )
     log.ensure(
-      fsevent_start_result ~= nil,
+      focused_fsevent_start_result ~= nil,
       "failed to start watching fsevent on %s, error: %s",
       vim.inspect(buffer_previewer_focused_file),
-      vim.inspect(fsevent_start_err)
+      vim.inspect(focused_fsevent_start_err)
     )
+    -- buffer_previewer_focused_file }
+
+    -- buffer_previewer_actions_file {
+    buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err =
+      uv.new_fs_event() --[[@as uv_fs_event_t]]
+    log.ensure(
+      buffer_previewer_actions_fsevent ~= nil,
+      string.format(
+        "|general| failed to create new fsevent for %s(buffer_previewer_actions_file:%s), error: %s",
+        vim.inspect(name),
+        vim.inspect(buffer_previewer_actions_fsevent),
+        vim.inspect(buffer_previewer_focused_fsevent_err)
+      )
+    )
+    local actions_fsevent_start_result, actions_fsevent_start_err = buffer_previewer_actions_fsevent:start(
+      buffer_previewer_focused_file,
+      {},
+      function(actions_fsevent_start_complete_err, fsevent_file, events) end
+    )
+    log.ensure(
+      actions_fsevent_start_result ~= nil,
+      "failed to start watching fsevent on %s, error: %s",
+      vim.inspect(buffer_previewer_actions_file),
+      vim.inspect(actions_fsevent_start_err)
+    )
+    -- buffer_previewer_actions_file }
   end
 
   local header_switch =
