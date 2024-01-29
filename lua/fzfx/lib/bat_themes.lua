@@ -371,16 +371,16 @@ local SCOPE_RENDERERS = {
 
   -- keyword {
   -- _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
+  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
   _BatTmThemeScopeRenderer:new(
     { "@keyword.conditional", "Conditional" },
-    "keyword.control"
+    "keyword.control.conditional"
   ),
   _BatTmThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
   _BatTmThemeScopeRenderer:new(
     { "@keyword.operator" },
     "keyword.operator.word"
   ),
-  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.other"),
   -- keyword }
 
   -- markup {
@@ -421,6 +421,18 @@ local SCOPE_RENDERERS = {
     "diff.changed"
   ),
   -- markup }
+
+  -- meta {
+  _BatTmThemeScopeRenderer:new({
+    "@keyword.function",
+  }, "meta.function"),
+  -- _BatTmThemeScopeRenderer:new({
+  --   "htmlTag",
+  -- }, "meta.tag"),
+  -- _BatTmThemeScopeRenderer:new({
+  --   "@function.call",
+  -- }, "meta.function-call"),
+  -- meta }
 
   -- string
   _BatTmThemeScopeRenderer:new(
@@ -474,14 +486,6 @@ local SCOPE_RENDERERS = {
     "@type",
     "Type",
   }, "support.class"),
-
-  -- meta
-  _BatTmThemeScopeRenderer:new({
-    "htmlTag",
-  }, "meta.tag"),
-  _BatTmThemeScopeRenderer:new({
-    "@function.call",
-  }, "meta.function-call"),
 }
 
 --- @return {name:string,payload:string}?
