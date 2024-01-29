@@ -23,7 +23,12 @@ describe("detail.general", function()
 
   local schema = require("fzfx.schema")
   local config = require("fzfx.config")
-  config.setup()
+  require("fzfx").setup({
+    debug = {
+      enable = true,
+      file_log = true,
+    },
+  })
 
   local general = require("fzfx.detail.general")
 
@@ -712,5 +717,43 @@ describe("detail.general", function()
       assert_true(strings.startswith(actual, "execute-silent(echo"))
       assert_true(strings.endswith(actual, "'toggle-preview'>action_file)"))
     end)
+  end)
+  describe("[mock_buffer_previewer_fzf_opts]", function()
+    local ACTIONS_FILE = "actions_file"
+    it("preview window", function()
+      local fzf_opts1 = {
+        "--preview-window=left,50%",
+      }
+      local actual11, actual12 =
+        general.mock_buffer_previewer_fzf_opts(fzf_opts1, ACTIONS_FILE)
+      print(
+        string.format(
+          "mock-1:%s, %s\n",
+          vim.inspect(actual11),
+          vim.inspect(actual12)
+        )
+      )
+      assert_eq(#actual11, 0)
+      assert_eq(actual12.fzf_preview_window_opts.position, "left")
+      assert_eq(actual12.fzf_preview_window_opts.size, 50)
+      local fzf_opts2 = {
+        { "--preview-window", "up,50" },
+      }
+      local actual21, actual22 =
+        general.mock_buffer_previewer_fzf_opts(fzf_opts2, ACTIONS_FILE)
+      print(
+        string.format(
+          "mock-2:%s, %s\n",
+          vim.inspect(actual21),
+          vim.inspect(actual22)
+        )
+      )
+      assert_eq(#actual21, 0)
+      assert_eq(actual22.fzf_preview_window_opts.position, "up")
+      assert_eq(actual22.fzf_preview_window_opts.size, 50)
+      assert_eq(actual22.fzf_preview_window_opts.size_is_percent, false)
+    end)
+    it("border", function() end)
+    it("preview-half-page-down/preview-half-page-up", function() end)
   end)
 end)
