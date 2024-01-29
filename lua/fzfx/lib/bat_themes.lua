@@ -302,10 +302,11 @@ local GLOBAL_RENDERERS = {
 
 -- tm theme name conversions: https://macromates.com/manual/en/language_grammars#naming_conventions
 local SCOPE_RENDERERS = {
-  -- comment
+  -- comment {
   _BatTmThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
+  -- comment }
 
-  -- constant
+  -- constant {
   _BatTmThemeScopeRenderer:new({ "@constant", "Constant" }, "constant"),
   _BatTmThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
   _BatTmThemeScopeRenderer:new(
@@ -321,8 +322,9 @@ local SCOPE_RENDERERS = {
     { "@string.escape" },
     { "constant.character.escaped", "constant.character.escape" }
   ),
+  -- constant }
 
-  -- entity
+  -- entity {
   _BatTmThemeScopeRenderer:new({
     "@function",
     "Function",
@@ -358,6 +360,14 @@ local SCOPE_RENDERERS = {
   --   "@constant",
   --   "Constant",
   -- }, "entity.name.constant"),
+
+  -- entity }
+
+  -- invalid {
+  _BatTmThemeScopeRenderer:new({
+    "Error",
+  }, "invalid.illegal"),
+  -- invalid }
 
   -- string
   _BatTmThemeScopeRenderer:new(
@@ -424,11 +434,6 @@ local SCOPE_RENDERERS = {
     "@type",
     "Type",
   }, "support.class"),
-
-  -- invalid
-  _BatTmThemeScopeRenderer:new({
-    "Error",
-  }, "invalid.illegal"),
 
   -- markup
   _BatTmThemeScopeRenderer:new({
