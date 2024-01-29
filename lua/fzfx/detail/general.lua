@@ -5,6 +5,8 @@ local strings = require("fzfx.commons.strings")
 local termcolors = require("fzfx.commons.termcolors")
 local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
+local uv = require("fzfx.commons.uv")
+local numbers = require("fzfx.commons.numbers")
 
 local consts = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
@@ -55,6 +57,16 @@ end
 --- @return string
 local function _fzf_port_file()
   return _make_cache_filename("fzf", "port", "file")
+end
+
+--- @return string
+local function _buffer_previewer_focused_file()
+  return _make_cache_filename("buffer", "previewer", "focused", "file")
+end
+
+--- @return string
+local function _buffer_previewer_actions_file()
+  return _make_cache_filename("buffer", "previewer", "actions", "file")
 end
 
 --- @class fzfx.ProviderMetaOpts
@@ -385,6 +397,18 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
   return o
 end
 
+--- @return fzfx.PreviewerConfig
+function PreviewerSwitch:current()
+  local previewer_config = self.previewer_configs[self.pipeline]
+  log.ensure(
+    type(previewer_config) == "table",
+    "invalid previewer config in %s! previewer config: %s",
+    vim.inspect(self.pipeline),
+    vim.inspect(previewer_config)
+  )
+  return previewer_config
+end
+
 --- @param next_pipeline fzfx.PipelineName
 --- @return nil
 function PreviewerSwitch:switch(next_pipeline)
@@ -523,7 +547,7 @@ function PreviewerSwitch:preview(line, context)
     )
   end
 
-  self:preview_label(line, context)
+  self:_preview_label(line, context)
 
   return previewer_config.previewer_type
 end
@@ -571,7 +595,7 @@ end
 --- @param line string?
 --- @param context fzfx.PipelineContext
 --- @return string?
-function PreviewerSwitch:preview_label(line, context)
+function PreviewerSwitch:_preview_label(line, context)
   local previewer_config = self.previewer_configs[self.pipeline]
   -- log.debug(
   --     "|fzfx.general - PreviewerSwitch:preview_label| pipeline:%s, previewer_config:%s, context:%s",
@@ -768,6 +792,139 @@ local function default_context_maker()
   }
 end
 
+--- @param action_name string
+--- @param action_file string
+--- @return string
+local function dump_action_command(action_name, action_file)
+  if consts.IS_WINDOWS then
+    return string.format(
+      'execute-silent(cmd.exe /C echo "%s">%s)',
+      action_name,
+      action_file
+    )
+  else
+    return string.format(
+      "execute-silent(echo '%s'>%s)",
+      action_name,
+      action_file
+    )
+  end
+end
+
+--- @param fzf_opts fzfx.FzfOpt[]
+--- @param fzf_action_file string
+--- @return fzfx.FzfOpt[], fzfx.BufferFilePreviewerOpts
+local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
+  local new_fzf_opts = {}
+  local border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
+  local pw_opts = {}
+  for _, o in ipairs(fzf_opts) do
+    local mocked = false
+
+    if
+      type(o) == "table"
+      and strings.not_empty(o[1])
+      and strings.startswith(o[1], "--preview-window")
+    then
+      table.insert(pw_opts, o)
+      mocked = true
+    elseif
+      strings.not_empty(o)
+      and strings.startswith(o --[[@as string]], "--preview-window")
+    then
+      table.insert(pw_opts, o)
+      mocked = true
+    end
+
+    if
+      type(o) == "table"
+      and strings.not_empty(o[1])
+      and strings.startswith(o[1], "--border")
+    then
+      border_opts = o[2]
+      mocked = true
+    elseif
+      strings.not_empty(o)
+      and strings.startswith(o --[[@as string]], "--border")
+    then
+      border_opts = string.sub(o --[[@as string]], string.len("--border") + 2)
+      mocked = true
+    end
+
+    -- preview actions
+    local split_o = nil
+    for action_name, _ in pairs(fzf_helpers.FZF_PREVIEW_ACTIONS) do
+      if type(o) == "table" and strings.not_empty(o[2]) then
+        if strings.find(o[2], action_name) then
+          split_o = o
+        end
+      elseif strings.not_empty(o) then
+        if
+          strings.find(o --[[@as string]], action_name)
+        then
+          local split_pos = strings.find(o --[[@as string]], "=")
+          if not split_pos then
+            split_pos = strings.find(o --[[@as string]], " ")
+          end
+          if type(split_pos) == "number" and split_pos > 1 then
+            split_o = {}
+            local o1 =
+              strings.trim(string.sub(o --[[@as string]], 1, split_pos - 1))
+            log.debug(
+              "|general - use_buffer_previewer| o:%s, split_pos:%s, o1:%s",
+              vim.inspect(o),
+              vim.inspect(split_pos),
+              vim.inspect(o1)
+            )
+            local o2 =
+              strings.trim(string.sub(o --[[@as string]], split_pos + 1))
+            log.debug(
+              "|general - use_buffer_previewer| o:%s, split_pos:%s, o2:%s",
+              vim.inspect(o),
+              vim.inspect(split_pos),
+              vim.inspect(o2)
+            )
+            table.insert(split_o, o1)
+            table.insert(split_o, o2)
+          end
+        end
+      end
+
+      if type(split_o) == "table" and #split_o == 2 then
+        if strings.find(split_o[2], action_name) then
+          local new_o2 = strings.replace(
+            split_o[2],
+            action_name,
+            dump_action_command(action_name, fzf_action_file)
+          )
+          table.insert(new_fzf_opts, { split_o[1], new_o2 })
+          mocked = true
+        end
+      end
+
+      split_o = nil
+    end
+
+    if not mocked then
+      table.insert(new_fzf_opts, o)
+    end
+  end
+
+  local preview_window_opts =
+    fzf_helpers.parse_fzf_preview_window_opts(#pw_opts > 0 and pw_opts or {
+      {
+        "--preview-window",
+        "right,50%",
+      },
+    })
+
+  return new_fzf_opts,
+    {
+      fzf_border_opts = border_opts,
+      fzf_preview_window_opts = preview_window_opts,
+    }
+end
+
 --- @param name string
 --- @param query string
 --- @param bang boolean
@@ -775,10 +932,19 @@ end
 --- @param default_pipeline fzfx.PipelineName?
 --- @return fzfx.Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
-  local fzf_port_file = _fzf_port_file()
   local pipeline_size = get_pipeline_size(pipeline_configs)
 
-  local default_provider_key = nil
+  --- cache files
+  local fzf_port_file = _fzf_port_file()
+  local buffer_previewer_focused_file = _buffer_previewer_focused_file()
+  local buffer_previewer_focused_fsevent, buffer_previewer_focused_fsevent_err
+  local buffer_previewer_actions_file = _buffer_previewer_actions_file()
+  local buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err
+
+  --- @type fzfx.Popup
+  local popup = nil
+
+  local default_provider_action_key = nil
   if
     default_pipeline == nil
     or pipeline_configs.providers[default_pipeline] == nil
@@ -800,10 +966,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       pipeline, provider_opts = next(pipeline_configs.providers)
     end
     default_pipeline = pipeline
-    default_provider_key = provider_opts.key
+    default_provider_action_key = provider_opts.key
   else
     local provider_opts = pipeline_configs.providers[default_pipeline]
-    default_provider_key = provider_opts.key
+    default_provider_action_key = provider_opts.key
   end
 
   --- @type fzfx.ProviderSwitch
@@ -817,8 +983,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     pipeline_configs.previewers,
     fzf_port_file
   )
-
-  --- @type fzfx.PipelineContext
+  local use_buffer_previewer = previewer_switch:current().previewer_type
+    == PreviewerTypeEnum.BUFFER_FILE
 
   local context_maker = (
     type(pipeline_configs.other_opts) == "table"
@@ -835,17 +1001,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch:provide(query_params, context)
   end
 
-  --- @param line_params string
-  local function preview_rpc(line_params)
-    previewer_switch:preview(line_params, context)
-  end
-
   local provide_rpc_id =
     rpcserver.get_instance():register(provide_rpc, "provide_rpc")
-  local preview_rpc_id =
-    rpcserver.get_instance():register(preview_rpc, "preview_rpc")
   table.insert(rpc_registries, provide_rpc_id)
-  table.insert(rpc_registries, preview_rpc_id)
 
   local query_command = string.format(
     "%s %s %s %s %s",
@@ -867,37 +1025,40 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     "|general| reload_query_command:%s",
     vim.inspect(reload_query_command)
   )
-  local preview_command = string.format(
-    "%s %s %s %s {}",
-    fzf_helpers.make_lua_command("general", "previewer.lua"),
-    preview_rpc_id,
-    previewer_switch.metafile,
-    previewer_switch.resultfile
-  )
-  log.debug("|general| preview_command:%s", vim.inspect(preview_command))
 
-  local fzf_opts = {
-    "--print-query",
-    "--listen",
-    { "--query", query },
-    {
+  local fzf_opts = vim.deepcopy(config.get().fzf_opts)
+  fzf_opts = vim.list_extend(
+    fzf_opts,
+    { "--print-query", "--listen", { "--query", query } }
+  )
+
+  --- @param line_params string
+  local function preview_rpc(line_params)
+    previewer_switch:preview(line_params, context)
+  end
+
+  if not use_buffer_previewer then
+    local preview_rpc_id =
+      rpcserver.get_instance():register(preview_rpc, "preview_rpc")
+    table.insert(rpc_registries, preview_rpc_id)
+    local preview_command = string.format(
+      "%s %s %s %s {}",
+      fzf_helpers.make_lua_command("general", "previewer.lua"),
+      preview_rpc_id,
+      previewer_switch.metafile,
+      previewer_switch.resultfile
+    )
+    log.debug("|general| preview_command:%s", vim.inspect(preview_command))
+    table.insert(fzf_opts, {
       "--preview",
       preview_command,
-    },
-  }
+    })
+  end
 
   local dump_fzf_port_command = nil
   if consts.IS_WINDOWS then
-    -- if vim.fn.executable("sh") > 0 or vim.fn.executable("bash") > 0 then
-    --     dump_fzf_port_command = string.format(
-    --         "%s -c '%s'",
-    --         vim.fn.executable("sh") > 0 and "sh" or "bash",
-    --         string.format("echo $FZF_PORT>%s", fzf_port_file)
-    --     )
-    -- else
     dump_fzf_port_command =
       string.format("cmd.exe /C echo %%FZF_PORT%%>%s", fzf_port_file)
-    -- end
   else
     dump_fzf_port_command = string.format("echo $FZF_PORT>%s", fzf_port_file)
   end
@@ -905,6 +1066,280 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   fzf_start_binder:append(
     string.format("execute-silent(%s)", dump_fzf_port_command)
   )
+
+  -- buffer previewer use local file cache to detect fzf pointer movement
+  --- @type {previewer_config:fzfx.PreviewerConfig,focused_line:string?,job_id:integer}[]
+  local buffer_preview_files_queue = {}
+  local buffer_preview_job_id = numbers.auto_incremental_id()
+
+  local function buffer_preview_files_queue_empty()
+    return #buffer_preview_files_queue == 0
+  end
+
+  local function buffer_preview_files_queue_last()
+    return buffer_preview_files_queue[#buffer_preview_files_queue]
+  end
+
+  local function buffer_preview_files_queue_clear()
+    buffer_preview_files_queue = {}
+  end
+
+  local fzf_focus_binder = nil
+  local fzf_load_binder = nil
+  if use_buffer_previewer then
+    local dump_focused_command = nil
+    if consts.IS_WINDOWS then
+      dump_focused_command =
+        string.format("cmd.exe /C echo {}>%s", buffer_previewer_focused_file)
+    else
+      dump_focused_command =
+        string.format("echo {}>%s", buffer_previewer_focused_file)
+    end
+    fzf_focus_binder = fzf_helpers.FzfOptEventBinder:new("focus")
+    fzf_focus_binder:append(
+      string.format("execute-silent(%s)", dump_focused_command)
+    )
+    fzf_load_binder = fzf_helpers.FzfOptEventBinder:new("load")
+    fzf_load_binder:append(
+      string.format("execute-silent(%s)", dump_focused_command)
+    )
+
+    -- buffer_previewer_focused_file {
+    fileios.writefile(buffer_previewer_focused_file, "")
+    buffer_previewer_focused_fsevent, buffer_previewer_focused_fsevent_err =
+      uv.new_fs_event() --[[@as uv_fs_event_t]]
+    log.ensure(
+      buffer_previewer_focused_fsevent ~= nil,
+      string.format(
+        "|general| failed to create new fsevent for %s (buffer_previewer_focused_file:%s), error: %s",
+        vim.inspect(name),
+        vim.inspect(buffer_previewer_focused_file),
+        vim.inspect(buffer_previewer_focused_fsevent_err)
+      )
+    )
+    local focused_fsevent_start_result, focused_fsevent_start_err = buffer_previewer_focused_fsevent:start(
+      buffer_previewer_focused_file,
+      {},
+      function(focused_fsevent_start_complete_err, focused_file, events)
+        -- log.debug(
+        --   "|general - buffer_previewer_focused_fsevent:start| complete focused fsevent, fsevent_file:%s, events:%s, focused_file:%s, error:%s",
+        --   vim.inspect(fsevent_file),
+        --   vim.inspect(events),
+        --   vim.inspect(buffer_previewer_focused_file),
+        --   vim.inspect(fsevent_start_complete_err)
+        -- )
+        if focused_fsevent_start_complete_err then
+          log.err(
+            "|general - buffer_previewer_focused_fsevent:start| failed to trigger fsevent on focused_file %s, error:%s",
+            vim.inspect(buffer_previewer_focused_file),
+            vim.inspect(focused_fsevent_start_complete_err)
+          )
+          return
+        end
+        if not strings.find(buffer_previewer_focused_file, focused_file) then
+          return
+        end
+        if not popup or not popup:is_valid() then
+          return
+        end
+
+        buffer_preview_job_id = numbers.auto_incremental_id()
+        popup.popup_window:set_preview_file_job_id(buffer_preview_job_id)
+        -- log.debug(
+        --   "|general - buffer_previewer_focused_fsevent:start| start read focused_file:%s",
+        --   vim.inspect(fsevent_file)
+        -- )
+        fileios.asyncreadfile(
+          buffer_previewer_focused_file,
+          function(focused_data)
+            -- log.debug(
+            --   "|general - buffer_previewer_focused_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
+            --   vim.inspect(fsevent_file),
+            --   vim.inspect(focused_data),
+            --   vim.inspect(buffer_preview_files_queue)
+            -- )
+            if not popup or not popup:is_valid() then
+              return
+            end
+            if consts.IS_WINDOWS then
+              if strings.startswith(focused_data, '"') then
+                focused_data = string.sub(focused_data, 2)
+              end
+              if strings.endswith(focused_data, '"') then
+                focused_data = string.sub(focused_data, 1, #focused_data - 1)
+              end
+            end
+
+            table.insert(buffer_preview_files_queue, {
+              previewer_config = previewer_switch:current(),
+              focused_line = focused_data,
+              job_id = buffer_preview_job_id,
+            })
+            vim.defer_fn(function()
+              if not popup or not popup:is_valid() then
+                return
+              end
+              if buffer_preview_files_queue_empty() then
+                return
+              end
+              local last_preview_job = buffer_preview_files_queue_last()
+              buffer_preview_files_queue_clear()
+              if last_preview_job.job_id < buffer_preview_job_id then
+                return
+              end
+
+              popup.popup_window:set_preview_file_job_id(
+                last_preview_job.job_id
+              )
+
+              local previewer_config = last_preview_job.previewer_config
+              local focused_line = last_preview_job.focused_line
+              local last_preview_job_id = last_preview_job.job_id
+              local previewer_ok, previewer_result =
+                pcall(previewer_config.previewer, focused_line, context)
+              -- log.debug(
+              --     "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
+              --     vim.inspect(ok),
+              --     vim.inspect(result)
+              -- )
+              if not previewer_ok then
+                log.err(
+                  "failed to call pipeline %s buffer previewer %s! line:%s, context:%s, error:%s",
+                  vim.inspect(previewer_config.pipeline),
+                  vim.inspect(previewer_config.previewer),
+                  vim.inspect(focused_line),
+                  vim.inspect(context),
+                  vim.inspect(previewer_result)
+                )
+              else
+                log.ensure(
+                  previewer_result == nil or type(previewer_result) == "table",
+                  "|general - buffer_previewer_focused_fsevent.asyncreadfile| buffer previewer result must be table! previewer_config:%s, result:%s",
+                  vim.inspect(previewer_config),
+                  vim.inspect(previewer_result)
+                )
+                local previewer_label_ok
+                local previewer_label_result
+                if type(previewer_config.previewer_label) == "string" then
+                  previewer_label_ok = true
+                  previewer_label_result = previewer_config.previewer_label
+                elseif type(previewer_config.previewer_label) == "function" then
+                  previewer_label_ok, previewer_label_result = pcall(
+                    previewer_config.previewer_label --[[@as function]],
+                    focused_line,
+                    context
+                  )
+                  if not previewer_label_ok then
+                    log.err(
+                      "failed to call previewer label(%s) on buffer previewer! focused_line:%s, context:%s, error:%s",
+                      vim.inspect(previewer_config),
+                      vim.inspect(focused_line),
+                      vim.inspect(context),
+                      vim.inspect(previewer_label_result)
+                    )
+                    previewer_label_result = nil
+                  end
+                end
+                if previewer_result then
+                  popup.popup_window:preview_file(
+                    last_preview_job_id,
+                    previewer_result --[[@as fzfx.BufferFilePreviewerResult]],
+                    previewer_label_result --[[@as string?]]
+                  )
+                end
+              end
+            end, 50)
+          end,
+          { trim = true }
+        )
+      end
+    )
+    log.ensure(
+      focused_fsevent_start_result ~= nil,
+      "failed to start watching fsevent on %s, error: %s",
+      vim.inspect(buffer_previewer_focused_file),
+      vim.inspect(focused_fsevent_start_err)
+    )
+    -- buffer_previewer_focused_file }
+
+    -- buffer_previewer_actions_file {
+    fileios.writefile(buffer_previewer_actions_file, "")
+    buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err =
+      uv.new_fs_event() --[[@as uv_fs_event_t]]
+    log.ensure(
+      buffer_previewer_actions_fsevent ~= nil,
+      string.format(
+        "|general| failed to create new fsevent for %s(buffer_previewer_actions_file:%s), error: %s",
+        vim.inspect(name),
+        vim.inspect(buffer_previewer_actions_fsevent),
+        vim.inspect(buffer_previewer_actions_fsevent_err)
+      )
+    )
+    local actions_fsevent_start_result, actions_fsevent_start_err = buffer_previewer_actions_fsevent:start(
+      buffer_previewer_actions_file,
+      {},
+      function(actions_fsevent_start_complete_err, actions_file, events)
+        log.debug(
+          "|general - buffer_previewer_actions_fsevent:start| complete actions fsevent, actions_file:%s, events:%s, actions_file:%s, error:%s",
+          vim.inspect(actions_file),
+          vim.inspect(events),
+          vim.inspect(buffer_previewer_actions_file),
+          vim.inspect(actions_fsevent_start_complete_err)
+        )
+        if actions_fsevent_start_complete_err then
+          log.err(
+            "|general - buffer_previewer_actions_fsevent:start| failed to trigger fsevent on actions_file %s, error:%s",
+            vim.inspect(buffer_previewer_actions_file),
+            vim.inspect(actions_fsevent_start_complete_err)
+          )
+          return
+        end
+        if not strings.find(buffer_previewer_actions_file, actions_file) then
+          return
+        end
+        if not popup or not popup:is_valid() then
+          return
+        end
+
+        fileios.asyncreadfile(
+          buffer_previewer_actions_file,
+          function(actions_data)
+            log.debug(
+              "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, data:%s",
+              vim.inspect(actions_file),
+              vim.inspect(actions_data)
+            )
+            if not popup or not popup:is_valid() then
+              return
+            end
+            if consts.IS_WINDOWS then
+              if strings.startswith(actions_data, '"') then
+                actions_data = string.sub(actions_data, 2)
+              end
+              if strings.endswith(actions_data, '"') then
+                actions_data = string.sub(actions_data, 1, #actions_data - 1)
+              end
+            end
+
+            vim.schedule(function()
+              if not popup or not popup:is_valid() then
+                return
+              end
+              popup.popup_window:preview_action(actions_data)
+            end)
+          end,
+          { trim = true }
+        )
+      end
+    )
+    log.ensure(
+      actions_fsevent_start_result ~= nil,
+      "failed to start watching fsevent on %s, error: %s",
+      vim.inspect(buffer_previewer_actions_file),
+      vim.inspect(actions_fsevent_start_err)
+    )
+    -- buffer_previewer_actions_file }
+  end
 
   local header_switch =
     HeaderSwitch:new(pipeline_configs.providers, pipeline_configs.interactions)
@@ -993,7 +1428,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         bind_builder,
       })
     end
-    fzf_start_binder:append(string.format("unbind(%s)", default_provider_key))
+    fzf_start_binder:append(
+      string.format("unbind(%s)", default_provider_action_key)
+    )
   end
   if
     type(pipeline_configs.other_opts) == "table"
@@ -1005,6 +1442,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     })
   end
   table.insert(fzf_opts, fzf_start_binder:build())
+  if fzf_focus_binder then
+    table.insert(fzf_opts, fzf_focus_binder:build())
+  end
+  if fzf_load_binder then
+    table.insert(fzf_opts, fzf_load_binder:build())
+  end
 
   -- fzf_opts
   fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
@@ -1053,7 +1496,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
-  local p = Popup:new(
+  local buffer_previewer_opts = {}
+  if use_buffer_previewer then
+    fzf_opts, buffer_previewer_opts =
+      mock_buffer_previewer_fzf_opts(fzf_opts, buffer_previewer_actions_file)
+  end
+
+  popup = Popup:new(
     win_opts or {},
     query_command,
     fzf_opts,
@@ -1076,9 +1525,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       fileios.asyncwritefile(last_query_cache, content, function(bytes)
         log.debug("|general| dump last query:%s", vim.inspect(bytes))
       end)
-    end
+      if buffer_previewer_focused_fsevent then
+        buffer_previewer_focused_fsevent:stop()
+        buffer_previewer_focused_fsevent = nil
+      end
+    end,
+    use_buffer_previewer,
+    buffer_previewer_opts
   )
-  return p
+  return popup
 end
 
 --- @param name string
@@ -1095,11 +1550,11 @@ local function _make_user_command(
   local command_desc = command_config.desc
 
   vim.api.nvim_create_user_command(command_name, function(opts)
-    log.debug(
-      "|_make_user_command| command_name:%s, opts:%s",
-      vim.inspect(command_name),
-      vim.inspect(opts)
-    )
+    -- log.debug(
+    --   "|_make_user_command| command_name:%s, opts:%s",
+    --   vim.inspect(command_name),
+    --   vim.inspect(opts)
+    -- )
     local input_args = strings.trim(opts.args or "")
     if strings.empty(input_args) then
       input_args = variant_configs[1].name
@@ -1193,6 +1648,8 @@ local M = {
   _previewer_metafile = _previewer_metafile,
   _previewer_resultfile = _previewer_resultfile,
   _fzf_port_file = _fzf_port_file,
+  _buffer_previewer_focused_file = _buffer_previewer_focused_file,
+  _buffer_previewer_actions_file = _buffer_previewer_actions_file,
   make_provider_meta_opts = make_provider_meta_opts,
   make_previewer_meta_opts = make_previewer_meta_opts,
   ProviderSwitch = ProviderSwitch,
@@ -1202,6 +1659,8 @@ local M = {
   _should_skip_help = _should_skip_help,
   _make_help_doc = _make_help_doc,
   HeaderSwitch = HeaderSwitch,
+  dump_action_command = dump_action_command,
+  mock_buffer_previewer_fzf_opts = mock_buffer_previewer_fzf_opts,
 }
 
 return M

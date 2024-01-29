@@ -132,7 +132,7 @@ M.actions = {
 }
 
 M.fzf_opts = {
-  consts.FZF_OPTS.MULTI,
+  "--multi",
   { "--prompt", "Buffers > " },
   function()
     local current_bufnr = vim.api.nvim_get_current_buf()

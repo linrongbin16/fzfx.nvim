@@ -67,20 +67,4 @@ M.ECHO = "echo"
 M.HAS_CURL = vim.fn.executable("curl") > 0
 M.CURL = "curl"
 
--- fzf options
-M.FZF_OPTS = {
-  MULTI = "--multi",
-  NO_MULTI = "--no-multi",
-  DISABLED = "--disabled",
-  HEADER_LINES = "--header-lines=1",
-  DELIMITER = { "--delimiter", ":" },
-  TOGGLE = "--bind=ctrl-e:toggle",
-  TOGGLE_ALL = "--bind=ctrl-a:toggle-all",
-  TOGGLE_PREVIEW = "--bind=alt-p:toggle-preview",
-  PREVIEW_HALF_PAGE_DOWN = "--bind=ctrl-f:preview-half-page-down",
-  PREVIEW_HALF_PAGE_UP = "--bind=ctrl-b:preview-half-page-up",
-  GREP_PREVIEW_WINDOW = { "--preview-window", "+{2}-/2" },
-  LSP_PREVIEW_WINDOW = { "--preview-window", "left,65%,+{2}-/2" },
-}
-
 return M

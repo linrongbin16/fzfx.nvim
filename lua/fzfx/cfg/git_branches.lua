@@ -169,7 +169,7 @@ M.actions = {
 }
 
 M.fzf_opts = {
-  consts.FZF_OPTS.NO_MULTI,
+  "--no-multi",
   { "--prompt", "Git Branches > " },
   function()
     local git_root_cmd = cmds.GitRootCommand:run()

@@ -7,11 +7,11 @@ on:
     branches:
       - main
 concurrency:
-  group: ${{ github.ref }}-ci
+  group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
 jobs:
-  pr_conventional_commit:
-    name: PR Conventional Commit
+  conventional_commit:
+    name: Conventional Commits
     if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
@@ -72,9 +72,7 @@ jobs:
           luaVersion: "luajit-2.1.0-beta3"
       - uses: leafo/gh-actions-luarocks@v4
       - name: Run Tests
-        shell: bash
         run: |
-          luarocks install luacheck
           luarocks install vusted
           git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
           ~/.fzf/install
@@ -97,9 +95,7 @@ jobs:
           luaVersion: "luajit-2.1.0-beta3"
       - uses: leafo/gh-actions-luarocks@v4
       - name: Run Tests
-        shell: bash
         run: |
-          luarocks install luacheck
           luarocks install luacov
           luarocks install vusted
           git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -128,6 +124,7 @@ jobs:
     needs:
       - code_coverage
       - unit_test
+      - code_coverage
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
@@ -149,3 +146,6 @@ jobs:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
         with:
           version: ${{ steps.release.outputs.tag_name }}
+          labels: |
+            neovim
+            vim

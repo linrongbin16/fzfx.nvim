@@ -155,7 +155,7 @@ M.actions = {
 }
 
 M.fzf_opts = {
-  consts.FZF_OPTS.NO_MULTI,
+  "--no-multi",
   { "--preview-window", "wrap" },
   { "--prompt", "Git Commits > " },
 }

@@ -161,7 +161,7 @@ M.actions = {
 }
 
 M.fzf_opts = {
-  consts.FZF_OPTS.MULTI,
+  "--multi",
   { "--preview-window", "wrap" },
   { "--prompt", "Git Status > " },
 }

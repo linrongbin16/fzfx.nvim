@@ -1,11 +1,11 @@
 local paths = require("fzfx.commons.paths")
-local termcolors = require("fzfx.commons.termcolors")
 local strings = require("fzfx.commons.strings")
 local jsons = require("fzfx.commons.jsons")
 local fileios = require("fzfx.commons.fileios")
 local tables = require("fzfx.commons.tables")
 local apis = require("fzfx.commons.apis")
 
+local constants = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
 local yanks = require("fzfx.detail.yanks")
@@ -185,10 +185,10 @@ local function _generate_fzf_color_opts()
   local fzf_colors = config.get().fzf_color_opts
   local builder = {}
   for name, opts in pairs(fzf_colors) do
+    local attr = opts[1]
     for i = 2, #opts do
-      local attr = opts[1]
       local codes = apis.get_hl(opts[i])
-      if type(codes[attr]) == "number" then
+      if type(tables.tbl_get(codes, "attr")) == "number" then
         table.insert(
           builder,
           string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr])
@@ -271,11 +271,8 @@ local function make_fzf_opts(opts)
   return table.concat(result, " ")
 end
 
---- @type string?
-local CACHED_FZF_DEFAULT_OPTS = nil
-
 --- @return string?
-local function make_fzf_default_opts_impl()
+local function make_fzf_default_opts()
   local opts = config.get().fzf_opts
   local result = {}
   if type(opts) == "table" and #opts > 0 then
@@ -300,17 +297,6 @@ local function make_fzf_default_opts_impl()
   --     vim.inspect(result)
   -- )
   return table.concat(result, " ")
-end
-
---- @param ignore_cache boolean?
---- @return string?
-local function make_fzf_default_opts(ignore_cache)
-  if not ignore_cache and type(CACHED_FZF_DEFAULT_OPTS) == "string" then
-    return CACHED_FZF_DEFAULT_OPTS
-  end
-  local opts = make_fzf_default_opts_impl()
-  CACHED_FZF_DEFAULT_OPTS = opts
-  return opts
 end
 
 -- fzf opts }
@@ -404,21 +390,278 @@ function FzfOptEventBinder:build()
   return { "--bind", self.event .. ":" .. table.concat(self.opts, "+") }
 end
 
-local calculating_fzf_colors = false
-local function setup()
-  vim.api.nvim_create_autocmd("ColorScheme", {
-    callback = function()
-      if calculating_fzf_colors then
-        return
-      end
-      calculating_fzf_colors = true
-      make_fzf_default_opts(true)
-      vim.schedule(function()
-        calculating_fzf_colors = false
-      end)
-    end,
-  })
+-- nvim_open_win border opts see:
+--  * https://neovim.io/doc/user/api.html#nvim_open_win()
+--  * https://github.com/neovim/neovim/blob/4e59422e1d4950a3042bad41a7b81c8db4f8b648/src/nvim/api/win_config.c?plain=1#L536-L540
+--
+-- fzf border opts see:
+--  * https://github.com/junegunn/fzf/blob/da752fc9a4b3cb9dd08cc80614a491f980436b46/src/tui/tui.go#L369
+--
+-- { "double", { "╔", "═", "╗", "║", "╝", "═", "╚", "║" }, false },
+-- { "single", { "┌", "─", "┐", "│", "┘", "─", "└", "│" }, false },
+-- { "shadow", { "", "", " ", " ", " ", " ", " ", "" }, true },
+-- { "rounded", { "╭", "─", "╮", "│", "╯", "─", "╰", "│" }, false },
+-- { "solid", { " ", " ", " ", " ", " ", " ", " ", " " }, false },
+local FZF_BORDER_OPTS_MAP = {
+  ["rounded"] = "rounded",
+  ["border-rounded"] = "rounded",
+
+  ["sharp"] = "single",
+  ["border-sharp"] = "single",
+
+  ["double"] = "double",
+  ["border-double"] = "double",
+
+  ["bold"] = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },
+  ["border-bold"] = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },
+
+  ["block"] = { "▛", "▀", "▜", "▐", "▟", "▄", "▙", "▌" },
+  ["border-block"] = { "▛", "▀", "▜", "▐", "▟", "▄", "▙", "▌" },
+
+  ["thinblock"] = {
+    "🭽",
+    "▔",
+    "🭾",
+    "▕",
+    "🭿",
+    "▁",
+    "🭼",
+    "▏",
+  },
+  ["border-thinblock"] = {
+    "🭽",
+    "▔",
+    "🭾",
+    "▕",
+    "🭿",
+    "▁",
+    "🭼",
+    "▏",
+  },
+
+  ["horizontal"] = { "─", "─", "─", " ", "─", "─", "─", " " },
+  ["border-horizontal"] = { "─", "─", "─", " ", "─", "─", "─", " " },
+
+  ["top"] = { "─", "─", "─", " ", " ", " ", " ", " " },
+  ["border-top"] = { "─", "─", "─", " ", " ", " ", " ", " " },
+
+  ["bottom"] = { " ", " ", " ", " ", "─", "─", "─", " " },
+  ["border-bottom"] = { " ", " ", " ", " ", "─", "─", "─", " " },
+
+  ["vertical"] = { "║", " ", "║", "║", "║", " ", "║", "║" },
+  ["border-vertical"] = { "║", " ", "║", "║", "║", " ", "║", "║" },
+
+  ["left"] = { "║", " ", " ", " ", " ", " ", "║", "║" },
+  ["border-left"] = { "║", " ", " ", " ", " ", " ", "║", "║" },
+
+  ["right"] = { " ", " ", "║", "║", "║", " ", " ", " " },
+  ["border-right"] = { " ", " ", "║", "║", "║", " ", " ", " " },
+
+  ["none"] = "solid",
+  ["border-none"] = "solid",
+}
+
+local FZF_DEFAULT_BORDER_OPTS = constants.IS_WINDOWS and "single" or "rounded"
+
+-- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
+-- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
+--
+--- @alias fzfx.FzfPreviewWindowOptsNoAlternative {position:"up"|"down"|"left"|"right",size:integer,size_is_percent:boolean,border:string,wrap:boolean,follow:boolean,cycle:boolean,hidden:boolean,scroll:string?,header_lines:integer?}
+--
+--- @param split_opts string[]
+--- @return fzfx.FzfPreviewWindowOptsNoAlternative
+local function parse_fzf_preview_window_opts_no_alternative(split_opts)
+  local result = {
+    position = "right",
+    size = 50,
+    size_is_percent = true,
+    border = FZF_DEFAULT_BORDER_OPTS,
+    wrap = false,
+    follow = false,
+    cycle = false,
+    hidden = false,
+    scroll = nil,
+    header_lines = nil,
+  }
+  for i, o in ipairs(split_opts) do
+    if o == "up" or o == "down" or o == "left" or o == "right" then
+      result.position = o
+    elseif strings.endswith(o, "%") then
+      result.size = tonumber(string.sub(o, 1, #o - 1))
+    elseif
+      not strings.startswith(o, "+")
+      and not strings.startswith(o, "-")
+      and not strings.startswith(o, "~")
+      and type(tonumber(o)) == "number"
+    then
+      result.size = tonumber(o)
+      result.size_is_percent = false
+    elseif strings.startswith(o, "border-") then
+      result.border = FZF_BORDER_OPTS_MAP[string.sub(
+        o,
+        string.len("border-") + 1
+      )] or "rounded"
+    elseif o == "nowrap" or o == "wrap" then
+      result.wrap = o == "wrap"
+    elseif o == "nofollow" or o == "follow" then
+      result.follow = o == "follow"
+    elseif o == "nocycle" or o == "cycle" then
+      result.cycle = o == "cycle"
+    elseif o == "nohidden" or o == "hidden" then
+      result.hidden = o == "hidden"
+    elseif strings.startswith(o, "+") or strings.startswith(o, "-") then
+      result.scroll = o
+    elseif strings.startswith(o, "~") then
+      result.header_lines = tonumber(string.sub(o, 2))
+    end
+  end
+  return result
 end
+
+--- @param opts_value string
+--- @return string[]
+local function _spilt_fzf_preview_window_opts(opts_value)
+  local i = 1
+  local n = string.len(opts_value)
+  local results = {}
+  while i <= n do
+    if string.sub(opts_value, i, i) == "<" then
+      local next_lbracket_pos = strings.find(opts_value, "(", i + 1)
+      log.ensure(
+        type(next_lbracket_pos) == "number" and next_lbracket_pos > i + 1,
+        "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
+        vim.inspect(i),
+        vim.inspect(opts_value)
+      )
+      local next_rbracket_pos =
+        strings.find(opts_value, ")", next_lbracket_pos + 1)
+      log.ensure(
+        type(next_rbracket_pos) == "number"
+          and next_rbracket_pos > next_lbracket_pos,
+        "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
+        vim.inspect(next_lbracket_pos),
+        vim.inspect(opts_value)
+      )
+      table.insert(results, string.sub(opts_value, i, next_rbracket_pos))
+      i = next_rbracket_pos + 1
+    elseif type(strings.find(opts_value, ",", i)) == "number" then
+      local next_comma_pos = strings.find(opts_value, ",", i) --[[@as integer]]
+      if next_comma_pos > i then
+        table.insert(results, string.sub(opts_value, i, next_comma_pos - 1))
+      end
+      i = next_comma_pos + 1
+    else
+      table.insert(results, string.sub(opts_value, i))
+      break
+    end
+  end
+  return results
+end
+
+-- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
+-- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
+--- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right",size:integer,size_is_percent:boolean,border:string,wrap:boolean,follow:boolean,cycle:boolean,hidden:boolean,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
+--
+--- @param opts fzfx.FzfOpt[]
+--- @return fzfx.FzfPreviewWindowOpts
+local function parse_fzf_preview_window_opts(opts)
+  log.ensure(
+    type(opts) == "table",
+    "invalid fzf preview window opts list:%s",
+    vim.inspect(opts)
+  )
+  local opts_value = ""
+  for _, o in ipairs(opts) do
+    log.ensure(
+      type(o) == "table" or type(o) == "string",
+      "invalid fzf preview window opts:%s",
+      vim.inspect(o)
+    )
+    if type(o) == "table" then
+      opts_value = opts_value
+        .. (string.len(opts_value) > 0 and "," or "")
+        .. strings.trim(o[2])
+    else
+      log.ensure(
+        type(o) == "string" and strings.startswith(o, "--preview-window"),
+        "invalid fzf preview window opts:%s",
+        vim.inspect(o)
+      )
+      opts_value = opts_value
+        .. (string.len(opts_value) > 0 and "," or "")
+        .. strings.trim(
+          string.sub(o --[[@as string]], string.len("--preview-window") + 2)
+        )
+    end
+  end
+
+  --- @type string[]
+  local split_opts = _spilt_fzf_preview_window_opts(opts_value)
+  log.ensure(
+    type(split_opts) == "table",
+    "failed to split preview window opts into list: %s",
+    vim.inspect(split_opts)
+  )
+  log.debug(
+    "|parse_fzf_preview_window_opts| split_opts:%s",
+    vim.inspect(split_opts)
+  )
+
+  local opts_alternative_layout = nil
+  local opts_no_alternative_layout = {}
+  for _, o in ipairs(split_opts) do
+    if strings.startswith(o, "<") then
+      opts_alternative_layout = o
+    else
+      table.insert(opts_no_alternative_layout, o)
+    end
+  end
+
+  local result =
+    parse_fzf_preview_window_opts_no_alternative(opts_no_alternative_layout) --[[@as fzfx.FzfPreviewWindowOpts]]
+  result.size_threshold = nil
+  result.alternative_layout = nil
+  if opts_alternative_layout then
+    local lbracket_pos = strings.find(opts_alternative_layout, "(", 2)
+    log.ensure(
+      type(lbracket_pos) == "number" and lbracket_pos > 2,
+      "invalid fzf preview window opts(size_threshold): %s",
+      vim.inspect(opts_alternative_layout)
+    )
+    log.ensure(
+      strings.endswith(opts_alternative_layout, ")"),
+      "invalid fzf preview window opts(size_threshold): %s",
+      vim.inspect(opts)
+    )
+    result.size_threshold =
+      tonumber(string.sub(opts_alternative_layout, 2, lbracket_pos - 1))
+    local split_alternatives = string.sub(
+      opts_alternative_layout,
+      lbracket_pos + 1,
+      #opts_alternative_layout - 1
+    )
+    result.alternative_layout = parse_fzf_preview_window_opts_no_alternative(
+      _spilt_fzf_preview_window_opts(split_alternatives)
+    )
+  end
+  log.debug("|parse_fzf_preview_window_opts| result:%s", vim.inspect(result))
+  return result
+end
+
+local FZF_PREVIEW_ACTIONS = {
+  ["hide-preview"] = true,
+  ["show-preview"] = true,
+  ["refresh-preview"] = true,
+  ["preview-down"] = true,
+  ["preview-up"] = true,
+  ["preview-page-down"] = true,
+  ["preview-page-up"] = true,
+  ["preview-half-page-down"] = true,
+  ["preview-half-page-up"] = true,
+  ["preview-bottom"] = true,
+  ["toggle-preview"] = true,
+  ["toggle-preview-wrap"] = true,
+}
 
 local M = {
   _get_visual_lines = _get_visual_lines,
@@ -436,7 +679,11 @@ local M = {
   nvim_exec = nvim_exec,
   fzf_exec = fzf_exec,
   make_lua_command = make_lua_command,
-  setup = setup,
+  _spilt_fzf_preview_window_opts = _spilt_fzf_preview_window_opts,
+  parse_fzf_preview_window_opts = parse_fzf_preview_window_opts,
+  FZF_BORDER_OPTS_MAP = FZF_BORDER_OPTS_MAP,
+  FZF_DEFAULT_BORDER_OPTS = FZF_DEFAULT_BORDER_OPTS,
+  FZF_PREVIEW_ACTIONS = FZF_PREVIEW_ACTIONS,
 }
 
 return M

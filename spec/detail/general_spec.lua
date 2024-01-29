@@ -23,7 +23,12 @@ describe("detail.general", function()
 
   local schema = require("fzfx.schema")
   local config = require("fzfx.config")
-  config.setup()
+  require("fzfx").setup({
+    debug = {
+      enable = true,
+      file_log = true,
+    },
+  })
 
   local general = require("fzfx.detail.general")
 
@@ -410,7 +415,7 @@ describe("detail.general", function()
       assert_eq(ps:switch("p2"), nil)
     end)
   end)
-  describe("[PreviewerSwitch:preview_label]", function()
+  describe("[PreviewerSwitch:_preview_label]", function()
     local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
     it("not previews label", function()
       local name = "label_test1"
@@ -429,9 +434,9 @@ describe("detail.general", function()
         },
       }, FZFPORTFILE)
       print(string.format("GITHUB_ACTIONS:%s\n", os.getenv("GITHUB_ACTIONS")))
-      assert_true(ps:preview_label("hello", {}) == nil)
+      assert_true(ps:_preview_label("hello", {}) == nil)
       ps:switch("p2")
-      assert_true(ps:preview_label("world", {}) == nil)
+      assert_true(ps:_preview_label("world", {}) == nil)
     end)
     it("previews label", function()
       local name = "label_test2"
@@ -456,9 +461,31 @@ describe("detail.general", function()
         },
       }, FZFPORTFILE)
       print(string.format("GITHUB_ACTIONS:%s\n", os.getenv("GITHUB_ACTIONS")))
-      assert_true(ps:preview_label("hello", {}) == "p1")
+      assert_true(ps:_preview_label("hello", {}) == "p1")
       ps:switch("p2")
-      assert_true(ps:preview_label("world", {}) == "p2")
+      assert_true(ps:_preview_label("world", {}) == "p2")
+    end)
+  end)
+  describe("[PreviewerSwitch:current]", function()
+    local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
+    it("test", function()
+      local name = "current1"
+      fileios.writefile(FZFPORTFILE, "12345")
+      local ps = general.PreviewerSwitch:new(name, "p1", {
+        p1 = {
+          previewer = function()
+            return "ls -lh"
+          end,
+        },
+        p2 = {
+          previewer = function()
+            return { "ls", "-lha", "~" }
+          end,
+          previewer_type = "command_list",
+        },
+      }, FZFPORTFILE)
+      local actual = ps:current()
+      assert_eq(actual.previewer(), "ls -lh")
     end)
   end)
   describe("[_render_help]", function()
@@ -662,16 +689,119 @@ describe("detail.general", function()
       assert_true(strings.endswith(actual1, "provider_resultfile"))
     end)
     it("_previewer_metafile", function()
-      local actual1 = general._previewer_metafile()
-      assert_true(strings.endswith(actual1, "previewer_metafile"))
+      local actual = general._previewer_metafile()
+      assert_true(strings.endswith(actual, "previewer_metafile"))
     end)
     it("_previewer_resultfile", function()
-      local actual1 = general._previewer_resultfile()
-      assert_true(strings.endswith(actual1, "previewer_resultfile"))
+      local actual = general._previewer_resultfile()
+      assert_true(strings.endswith(actual, "previewer_resultfile"))
     end)
     it("_fzf_port_file", function()
-      local actual1 = general._fzf_port_file()
-      assert_true(strings.endswith(actual1, "fzf_port_file"))
+      local actual = general._fzf_port_file()
+      assert_true(strings.endswith(actual, "fzf_port_file"))
+    end)
+    it("_buffer_previewer_focused_file", function()
+      local actual = general._buffer_previewer_focused_file()
+      assert_true(strings.endswith(actual, "buffer_previewer_focused_file"))
+    end)
+    it("_buffer_previewer_actions_file", function()
+      local actual = general._buffer_previewer_actions_file()
+      assert_true(strings.endswith(actual, "buffer_previewer_actions_file"))
+    end)
+  end)
+  describe("[dump_action_command]", function()
+    it("test", function()
+      local actual =
+        general.dump_action_command("toggle-preview", "action_file")
+      print(string.format("dump action command:%s\n", vim.inspect(actual)))
+      assert_true(strings.startswith(actual, "execute-silent(echo"))
+      assert_true(strings.endswith(actual, "'toggle-preview'>action_file)"))
+    end)
+  end)
+  describe("[mock_buffer_previewer_fzf_opts]", function()
+    local ACTIONS_FILE = "actions_file"
+    it("preview window", function()
+      local fzf_opts1 = {
+        "--preview-window=left,50%",
+      }
+      local actual11, actual12 =
+        general.mock_buffer_previewer_fzf_opts(fzf_opts1, ACTIONS_FILE)
+      print(
+        string.format(
+          "mock-1:%s, %s\n",
+          vim.inspect(actual11),
+          vim.inspect(actual12)
+        )
+      )
+      assert_eq(#actual11, 0)
+      assert_eq(actual12.fzf_preview_window_opts.position, "left")
+      assert_eq(actual12.fzf_preview_window_opts.size, 50)
+      local fzf_opts2 = {
+        { "--preview-window", "up,50" },
+      }
+      local actual21, actual22 =
+        general.mock_buffer_previewer_fzf_opts(fzf_opts2, ACTIONS_FILE)
+      print(
+        string.format(
+          "mock-2:%s, %s\n",
+          vim.inspect(actual21),
+          vim.inspect(actual22)
+        )
+      )
+      assert_eq(#actual21, 0)
+      assert_eq(actual22.fzf_preview_window_opts.position, "up")
+      assert_eq(actual22.fzf_preview_window_opts.size, 50)
+      assert_eq(actual22.fzf_preview_window_opts.size_is_percent, false)
+    end)
+    it("border", function()
+      local fzf_opts1 = {
+        "--preview-window=left,50%",
+        "--border=double",
+      }
+      local actual11, actual12 =
+        general.mock_buffer_previewer_fzf_opts(fzf_opts1, ACTIONS_FILE)
+      print(
+        string.format(
+          "mock-3:%s, %s\n",
+          vim.inspect(actual11),
+          vim.inspect(actual12)
+        )
+      )
+      assert_eq(#actual11, 0)
+      assert_eq(actual12.fzf_preview_window_opts.position, "left")
+      assert_eq(actual12.fzf_preview_window_opts.size, 50)
+      assert_eq(actual12.fzf_border_opts, "double")
+    end)
+    it("preview-half-page-down/preview-half-page-up", function()
+      local fzf_opts1 = {
+        "--preview-window=left,50%",
+        "--border=double",
+        "--bind=ctrl-f:preview-half-page-down",
+        "--bind=ctrl-b:preview-half-page-up",
+      }
+      local actual11, actual12 =
+        general.mock_buffer_previewer_fzf_opts(fzf_opts1, ACTIONS_FILE)
+      print(
+        string.format(
+          "mock-4:%s, %s\n",
+          vim.inspect(actual11),
+          vim.inspect(actual12)
+        )
+      )
+      assert_eq(#actual11, 2)
+      local first_bind = actual11[1]
+      local second_bind = actual11[2]
+      assert_eq(first_bind[1], "--bind")
+      assert_true(
+        strings.startswith(first_bind[2], "ctrl-f:execute-silent(echo")
+      )
+      assert_eq(second_bind[1], "--bind")
+      assert_true(
+        strings.startswith(second_bind[2], "ctrl-b:execute-silent(echo")
+      )
+      assert_eq(actual12.fzf_preview_window_opts.position, "left")
+      assert_eq(actual12.fzf_preview_window_opts.size, 50)
+      assert_eq(actual12.fzf_border_opts, "double")
     end)
   end)
 end)
