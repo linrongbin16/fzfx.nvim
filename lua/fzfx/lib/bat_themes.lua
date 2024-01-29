@@ -364,10 +364,63 @@ local SCOPE_RENDERERS = {
   -- entity }
 
   -- invalid {
-  _BatTmThemeScopeRenderer:new({
-    "Error",
-  }, "invalid.illegal"),
+  -- _BatTmThemeScopeRenderer:new({
+  --   "Error",
+  -- }, "invalid.illegal"),
   -- invalid }
+
+  -- keyword {
+  -- _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
+  _BatTmThemeScopeRenderer:new(
+    { "@keyword.conditional", "Conditional" },
+    "keyword.control"
+  ),
+  _BatTmThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+  _BatTmThemeScopeRenderer:new(
+    { "@keyword.operator" },
+    "keyword.operator.word"
+  ),
+  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.other"),
+  -- keyword }
+
+  -- markup {
+  _BatTmThemeScopeRenderer:new({
+    "@markup.link.url",
+  }, "markup.underline.link"),
+  _BatTmThemeScopeRenderer:new({
+    "@markup.underline",
+  }, "markup.underline"),
+  _BatTmThemeScopeRenderer:new({
+    "@markup.strong",
+  }, "markup.bold"),
+  _BatTmThemeScopeRenderer:new({
+    "@markup.italic",
+  }, "markup.italic"),
+  _BatTmThemeScopeRenderer:new({
+    "@markup.heading",
+  }, "markup.heading"),
+  _BatTmThemeScopeRenderer:new({
+    "@markup.list",
+  }, "markup.list"),
+  _BatTmThemeScopeRenderer:new({
+    "@markup.raw",
+  }, "markup.raw"),
+  _BatTmThemeScopeRenderer:new(
+    { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded", "Added" },
+    "markup.inserted"
+  ),
+  _BatTmThemeScopeRenderer:new({
+    "GitSignsDelete",
+    "GitGutterDelete",
+    "DiffDelete",
+    "DiffRemoved",
+    "Removed",
+  }, "markup.deleted"),
+  _BatTmThemeScopeRenderer:new(
+    { "GitGutterChange", "GitSignsChange", "DiffChange", "Changed" },
+    "diff.changed"
+  ),
+  -- markup }
 
   -- string
   _BatTmThemeScopeRenderer:new(
@@ -396,19 +449,6 @@ local SCOPE_RENDERERS = {
     "Constant",
   }, { "variable.other.constant" }),
 
-  -- keyword
-  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
-  _BatTmThemeScopeRenderer:new(
-    { "@keyword.conditional", "Conditional" },
-    "keyword.control"
-  ),
-  _BatTmThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
-  _BatTmThemeScopeRenderer:new(
-    { "@keyword.operator" },
-    "keyword.operator.word"
-  ),
-  _BatTmThemeScopeRenderer:new({ "Statement" }, "keyword.other"),
-
   -- storage
   -- _BatTmThemeScopeRenderer:new({"", "StorageClass" }, "storage.type"),
   _BatTmThemeScopeRenderer:new({
@@ -434,26 +474,6 @@ local SCOPE_RENDERERS = {
     "@type",
     "Type",
   }, "support.class"),
-
-  -- markup
-  _BatTmThemeScopeRenderer:new({
-    "Title",
-  }, "markup.heading"),
-  _BatTmThemeScopeRenderer:new(
-    { "GitSignsAdd", "GitGutterAdd", "DiffAdd", "DiffAdded", "Added" },
-    "markup.inserted"
-  ),
-  _BatTmThemeScopeRenderer:new({
-    "GitSignsDelete",
-    "GitGutterDelete",
-    "DiffDelete",
-    "DiffRemoved",
-    "Removed",
-  }, "markup.deleted"),
-  _BatTmThemeScopeRenderer:new(
-    { "GitGutterChange", "GitSignsChange", "DiffChange", "Changed" },
-    "diff.changed"
-  ),
 
   -- meta
   _BatTmThemeScopeRenderer:new({
