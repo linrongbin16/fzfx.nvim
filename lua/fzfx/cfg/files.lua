@@ -99,24 +99,24 @@ M.providers = {
 
 M.previewers = {
   restricted_mode = {
-    previewer = previewers_helper.preview_files_find,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+    -- previewer = previewers_helper.preview_files_find,
+    -- previewer_type = PreviewerTypeEnum.COMMAND_LIST,
 
     -- if you want to try experimental buffer previewer, please enable below configs:
     --
-    -- previewer = previewers_helper.buffer_preview_files_find,
-    -- previewer_type = PreviewerTypeEnum.BUFFER_FILE,
+    previewer = previewers_helper.buffer_preview_files_find,
+    previewer_type = PreviewerTypeEnum.BUFFER_FILE,
 
     previewer_label = labels_helper.label_find,
   },
   unrestricted_mode = {
-    previewer = previewers_helper.preview_files_find,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+    -- previewer = previewers_helper.preview_files_find,
+    -- previewer_type = PreviewerTypeEnum.COMMAND_LIST,
 
     -- if you want to try experimental buffer previewer, please enable below configs:
     --
-    -- previewer = previewers_helper.buffer_preview_files_find,
-    -- previewer_type = PreviewerTypeEnum.BUFFER_FILE,
+    previewer = previewers_helper.buffer_preview_files_find,
+    previewer_type = PreviewerTypeEnum.BUFFER_FILE,
 
     previewer_label = labels_helper.label_find,
   },
