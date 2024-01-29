@@ -762,10 +762,18 @@ function BufferPopupWindow:preview_action(action_name)
     ["hide-preview"] = function() end,
     ["show-preview"] = function() end,
     ["refresh-preview"] = function() end,
-    ["preview-down"] = function() end,
-    ["preview-up"] = function() end,
-    ["preview-page-down"] = function() end,
-    ["preview-page-up"] = function() end,
+    ["preview-down"] = function()
+      self:preview_page_down()
+    end,
+    ["preview-up"] = function()
+      self:preview_page_up()
+    end,
+    ["preview-page-down"] = function()
+      self:preview_page_down()
+    end,
+    ["preview-page-up"] = function()
+      self:preview_page_up()
+    end,
     ["preview-half-page-down"] = function()
       self:preview_half_page_down()
     end,
@@ -824,6 +832,34 @@ function BufferPopupWindow:toggle_preview()
     -- not hide, hide it
     self:hide_preview()
   end
+end
+
+function BufferPopupWindow:preview_page_down()
+  if not self:is_valid() then
+    return
+  end
+  vim.api.nvim_win_call(self.previewer_winnr, function()
+    local ctrl_f = vim.api.nvim_replace_termcodes("<C-f>", true, false, true)
+    vim.api.nvim_feedkeys(ctrl_f, "x", false)
+  end)
+  log.debug(
+    "|BufferPopupWindow:preview_page_down| call - done: %s",
+    vim.inspect(self.previewer_winnr)
+  )
+end
+
+function BufferPopupWindow:preview_page_up()
+  if not self:is_valid() then
+    return
+  end
+  vim.api.nvim_win_call(self.previewer_winnr, function()
+    local ctrl_b = vim.api.nvim_replace_termcodes("<C-b>", true, false, true)
+    vim.api.nvim_feedkeys(ctrl_b, "x", false)
+  end)
+  log.debug(
+    "|BufferPopupWindow:preview_page_up| call - done: %s",
+    vim.inspect(self.previewer_winnr)
+  )
 end
 
 function BufferPopupWindow:preview_half_page_down()
