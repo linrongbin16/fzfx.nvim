@@ -74,8 +74,13 @@ function PopupWindow:preview_file(
   self.instance:preview_file(job_id, previewer_result, previewer_label_result)
 end
 
+--- @param action_name string
+function PopupWindow:preview_action(action_name)
+  self.instance:preview_action(action_name)
+end
+
 function PopupWindow:is_valid()
-  return self.instance:is_valid()
+  return self.instance ~= nil and self.instance:is_valid()
 end
 
 --- @param job_id integer
@@ -254,12 +259,12 @@ function Popup:new(
     end)
   end
 
-  -- save shell opts
-  local shell_opts_context = popup_helpers.ShellOptsContext:save()
-  local prev_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
-  local prev_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
-  vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()
+  -- save fzf/shell context
+  local saved_shell_opts_context = popup_helpers.ShellOptsContext:save()
+  local saved_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
+  vim.env.FZF_DEFAULT_OPTS = ""
   vim.env.FZF_DEFAULT_COMMAND = source
+
   log.debug(
     "|Popup:new| $FZF_DEFAULT_OPTS:%s",
     vim.inspect(vim.env.FZF_DEFAULT_OPTS)
@@ -273,10 +278,9 @@ function Popup:new(
   -- launch
   local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]
 
-  -- restore shell opts
-  shell_opts_context:restore()
-  vim.env.FZF_DEFAULT_COMMAND = prev_fzf_default_command
-  vim.env.FZF_DEFAULT_OPTS = prev_fzf_default_opts
+  -- restore fzf/shell context
+  saved_shell_opts_context:restore()
+  vim.env.FZF_DEFAULT_COMMAND = saved_fzf_default_command
 
   vim.cmd([[ startinsert ]])
 
@@ -293,6 +297,10 @@ end
 
 function Popup:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
+end
+
+function Popup:is_valid()
+  return self.popup_window ~= nil and self.popup_window:is_valid()
 end
 
 -- PopupWindowInstances {
