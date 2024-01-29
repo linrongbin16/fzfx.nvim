@@ -394,7 +394,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
 end
 
 --- @return fzfx.PreviewerConfig
-function PreviewerSwitch:current_previewer_config()
+function PreviewerSwitch:current()
   local previewer_config = self.previewer_configs[self.pipeline]
   log.ensure(
     type(previewer_config) == "table",
@@ -844,7 +844,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     pipeline_configs.previewers,
     fzf_port_file
   )
-  local use_buffer_previewer = previewer_switch:current_previewer_config().previewer_type
+  local use_buffer_previewer = previewer_switch:current().previewer_type
     == PreviewerTypeEnum.BUFFER_FILE
 
   local context_maker = (
@@ -1023,7 +1023,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end
           end
           table.insert(buffer_preview_files_queue, {
-            previewer_config = previewer_switch:current_previewer_config(),
+            previewer_config = previewer_switch:current(),
             focused_line = focused_data,
             job_id = buffer_preview_job_id,
           })

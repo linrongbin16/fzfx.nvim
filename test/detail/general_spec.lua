@@ -461,7 +461,7 @@ describe("detail.general", function()
       assert_true(ps:_preview_label("world", {}) == "p2")
     end)
   end)
-  describe("[PreviewerSwitch:current_previewer_config]", function()
+  describe("[PreviewerSwitch:current]", function()
     local FZFPORTFILE = general._make_cache_filename("fzf_port_file")
     it("test", function()
       local name = "current1"
@@ -479,7 +479,7 @@ describe("detail.general", function()
           previewer_type = "command_list",
         },
       }, FZFPORTFILE)
-      local actual = ps:current_previewer_config()
+      local actual = ps:current()
       assert_eq(actual.previewer(), "ls -lh")
     end)
   end)
