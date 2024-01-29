@@ -999,30 +999,28 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           )
           return
         end
-
         if not strings.find(buffer_previewer_focused_file, fsevent_file) then
           return
         end
 
         buffer_preview_job_id = numbers.auto_incremental_id()
         popup.popup_window:set_preview_file_job_id(buffer_preview_job_id)
-        log.debug(
-          "|general - buffer_previewer_focused_fsevent:start| start read focused_file:%s",
-          vim.inspect(fsevent_file)
-        )
+        -- log.debug(
+        --   "|general - buffer_previewer_focused_fsevent:start| start read focused_file:%s",
+        --   vim.inspect(fsevent_file)
+        -- )
         fileios.asyncreadfile(
           buffer_previewer_focused_file,
           function(focused_data)
+            -- log.debug(
+            --   "|general - buffer_previewer_focused_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
+            --   vim.inspect(fsevent_file),
+            --   vim.inspect(focused_data),
+            --   vim.inspect(buffer_preview_files_queue)
+            -- )
             if not popup.popup_window:is_valid() then
               return
             end
-
-            log.debug(
-              "|general - buffer_previewer_focused_fsevent:start| complete read focused_file:%s, data:%s, queue:%s",
-              vim.inspect(fsevent_file),
-              vim.inspect(focused_data),
-              vim.inspect(buffer_preview_files_queue)
-            )
             if consts.IS_WINDOWS then
               if strings.startswith(focused_data, '"') then
                 focused_data = string.sub(focused_data, 2)
@@ -1031,6 +1029,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 focused_data = string.sub(focused_data, 1, #focused_data - 1)
               end
             end
+
             table.insert(buffer_preview_files_queue, {
               previewer_config = previewer_switch:current(),
               focused_line = focused_data,
@@ -1043,19 +1042,19 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               if buffer_preview_files_queue_empty() then
                 return
               end
-              local last_preview_file_job = buffer_preview_files_queue_last()
+              local last_preview_job = buffer_preview_files_queue_last()
               buffer_preview_files_queue_clear()
-              if last_preview_file_job.job_id < buffer_preview_job_id then
+              if last_preview_job.job_id < buffer_preview_job_id then
                 return
               end
 
               popup.popup_window:set_preview_file_job_id(
-                last_preview_file_job.job_id
+                last_preview_job.job_id
               )
 
-              local previewer_config = last_preview_file_job.previewer_config
-              local focused_line = last_preview_file_job.focused_line
-              local last_preview_file_job_id = last_preview_file_job.job_id
+              local previewer_config = last_preview_job.previewer_config
+              local focused_line = last_preview_job.focused_line
+              local last_preview_file_job_id = last_preview_job.job_id
               local previewer_ok, previewer_result =
                 pcall(previewer_config.previewer, focused_line, context)
               -- log.debug(
