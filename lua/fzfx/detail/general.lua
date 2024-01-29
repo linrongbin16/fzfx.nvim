@@ -818,7 +818,6 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
   local new_fzf_opts = {}
 
   local border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
-
   local pw_opts = {}
   for _, o in ipairs(fzf_opts) do
     local mocked = false
