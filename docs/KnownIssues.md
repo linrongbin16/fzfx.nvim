@@ -2,9 +2,9 @@
 
 ## Previewer
 
-### 1. Cannot use both nvim buffer previewer and fzf's previewer in the same command?
+### 1. Cannot use both nvim buffer previewer and fzf's builtin-previewer in the same command?
 
-Yes, this is a technical limitation for previewer. Since the gap between nvim buffer and fzf's previewer is quite big, the whole architecture is different, so switching across these two types requires a lot of effort.
+Yes, this is a limitation for previewer: the technical gap between nvim buffer and fzf builtin preview window is quite big, the whole architecture is different, switching previewers across these two types requires a lot of effort.
 
 While we usually only need nvim buffer to preview files, so it should not be a serious issue. Please avoid such kind of configurations.
 
