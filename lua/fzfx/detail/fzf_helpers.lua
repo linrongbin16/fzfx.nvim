@@ -272,11 +272,8 @@ local function make_fzf_opts(opts)
   return table.concat(result, " ")
 end
 
---- @type string?
-local CACHED_FZF_DEFAULT_OPTS = nil
-
 --- @return string?
-local function make_fzf_default_opts_impl()
+local function make_fzf_default_opts()
   local opts = config.get().fzf_opts
   local result = {}
   if type(opts) == "table" and #opts > 0 then
@@ -301,17 +298,6 @@ local function make_fzf_default_opts_impl()
   --     vim.inspect(result)
   -- )
   return table.concat(result, " ")
-end
-
---- @param ignore_cache boolean?
---- @return string?
-local function make_fzf_default_opts(ignore_cache)
-  if not ignore_cache and type(CACHED_FZF_DEFAULT_OPTS) == "string" then
-    return CACHED_FZF_DEFAULT_OPTS
-  end
-  local opts = make_fzf_default_opts_impl()
-  CACHED_FZF_DEFAULT_OPTS = opts
-  return opts
 end
 
 -- fzf opts }
@@ -663,37 +649,20 @@ local function parse_fzf_preview_window_opts(opts)
   return result
 end
 
--- local FZF_PREVIEW_ACTIONS = {
---   ["hide-preview"] = true,
---   ["show-preview"] = true,
---   ["refresh-preview"] = true,
---   ["preview-down"] = true,
---   ["preview-up"] = true,
---   ["preview-page-down"] = true,
---   ["preview-page-up"] = true,
---   ["preview-half-page-down"] = true,
---   ["preview-half-page-up"] = true,
---   ["preview-bottom"] = true,
---   ["toggle-preview"] = true,
---   ["toggle-preview-wrap"] = true,
--- }
-
-local function setup()
-  local recalculating = false
-  vim.api.nvim_create_autocmd("ColorScheme", {
-    pattern = { "*" },
-    callback = function()
-      if recalculating then
-        return
-      end
-      recalculating = true
-      make_fzf_default_opts(true)
-      vim.schedule(function()
-        recalculating = false
-      end)
-    end,
-  })
-end
+local FZF_PREVIEW_ACTIONS = {
+  ["hide-preview"] = true,
+  ["show-preview"] = true,
+  ["refresh-preview"] = true,
+  ["preview-down"] = true,
+  ["preview-up"] = true,
+  ["preview-page-down"] = true,
+  ["preview-page-up"] = true,
+  ["preview-half-page-down"] = true,
+  ["preview-half-page-up"] = true,
+  ["preview-bottom"] = true,
+  ["toggle-preview"] = true,
+  ["toggle-preview-wrap"] = true,
+}
 
 local M = {
   _get_visual_lines = _get_visual_lines,
@@ -715,7 +684,7 @@ local M = {
   parse_fzf_preview_window_opts = parse_fzf_preview_window_opts,
   FZF_BORDER_OPTS_MAP = FZF_BORDER_OPTS_MAP,
   FZF_DEFAULT_BORDER_OPTS = FZF_DEFAULT_BORDER_OPTS,
-  -- FZF_PREVIEW_ACTIONS = FZF_PREVIEW_ACTIONS,
+  FZF_PREVIEW_ACTIONS = FZF_PREVIEW_ACTIONS,
   -- remove_fzf_preview_action_opts = remove_fzf_preview_action_opts,
   setup = setup,
 }

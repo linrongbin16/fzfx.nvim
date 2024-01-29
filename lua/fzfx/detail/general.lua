@@ -6,7 +6,6 @@ local termcolors = require("fzfx.commons.termcolors")
 local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 local uv = require("fzfx.commons.uv")
-local apis = require("fzfx.commons.apis")
 local numbers = require("fzfx.commons.numbers")
 
 local consts = require("fzfx.lib.constants")
