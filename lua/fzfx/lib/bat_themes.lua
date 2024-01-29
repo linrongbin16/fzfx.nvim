@@ -381,6 +381,7 @@ local SCOPE_RENDERERS = {
     "keyword.operator.word"
   ),
   _BatTmThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+  _BatTmThemeScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
   -- keyword }
 
   -- markup {
