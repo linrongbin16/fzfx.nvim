@@ -817,7 +817,7 @@ end
 local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
   local new_fzf_opts = {}
   local border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
-  local preview_window_opts = {}
+  local pw_opts = {}
   for _, o in ipairs(fzf_opts) do
     local mocked = false
 
@@ -826,13 +826,13 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
       and strings.not_empty(o[1])
       and strings.startswith(o[1], "--preview-window")
     then
-      table.insert(preview_window_opts, o)
+      table.insert(pw_opts, o)
       mocked = true
     elseif
       strings.not_empty(o)
       and strings.startswith(o --[[@as string]], "--preview-window")
     then
-      table.insert(preview_window_opts, o)
+      table.insert(pw_opts, o)
       mocked = true
     end
 
@@ -908,15 +908,13 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
     end
   end
 
-  local preview_window_opts = fzf_helpers.parse_fzf_preview_window_opts(
-    #preview_window_opts > 0 and preview_window_opts
-      or {
-        {
-          "--preview-window",
-          "right,50%",
-        },
-      }
-  )
+  local preview_window_opts =
+    fzf_helpers.parse_fzf_preview_window_opts(#pw_opts > 0 and pw_opts or {
+      {
+        "--preview-window",
+        "right,50%",
+      },
+    })
 
   return new_fzf_opts,
     {
@@ -1276,6 +1274,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       buffer_previewer_focused_file,
       {},
       function(actions_fsevent_start_complete_err, actions_file, events)
+        -- log.debug(
+        --   "|general - buffer_previewer_actions_fsevent:start| failed to complete actions fsevent, actions_file:%s, events:%s, actions_file:%s, error:%s",
+        --   vim.inspect(actions_file),
+        --   vim.inspect(events),
+        --   vim.inspect(buffer_previewer_actions_file),
+        --   vim.inspect(actions_fsevent_start_complete_err)
+        -- )
         if actions_fsevent_start_complete_err then
           log.err(
             "|general - buffer_previewer_actions_fsevent:start| failed to trigger fsevent on actions_file %s, error:%s",
@@ -1290,6 +1295,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         fileios.asyncreadfile(
           buffer_previewer_actions_file,
           function(actions_data)
+            log.debug(
+              "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, data:%s",
+              vim.inspect(actions_file),
+              vim.inspect(actions_data)
+            )
             if not popup.popup_window:is_valid() then
               return
             end

@@ -776,6 +776,11 @@ function BufferPopupWindow:preview_action(action_name)
     ["toggle-preview"] = function() end,
     ["toggle-preview-wrap"] = function() end,
   }
+
+  local action = actions_map[action_name]
+  if vim.is_callable(action) then
+    action()
+  end
 end
 
 --- @return boolean
