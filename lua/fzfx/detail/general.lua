@@ -62,7 +62,7 @@ end
 
 --- @return string
 local function _buffer_previewer_focused_file()
-  return _make_cache_filename("focused", "line", "file")
+  return _make_cache_filename("buffer", "previewer", "focused", "file")
 end
 
 --- @return string
@@ -1497,7 +1497,8 @@ local M = {
   _previewer_metafile = _previewer_metafile,
   _previewer_resultfile = _previewer_resultfile,
   _fzf_port_file = _fzf_port_file,
-  _focused_line_file = _buffer_previewer_focused_file,
+  _buffer_previewer_focused_file = _buffer_previewer_focused_file,
+  _buffer_previewer_actions_file = _buffer_previewer_actions_file,
   make_provider_meta_opts = make_provider_meta_opts,
   make_previewer_meta_opts = make_previewer_meta_opts,
   ProviderSwitch = ProviderSwitch,
