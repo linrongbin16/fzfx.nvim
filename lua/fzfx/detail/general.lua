@@ -1339,13 +1339,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   end
 
   --- @type fzfx.FzfPreviewWindowOpts
-  local fzf_preview_window_opts = fzf_helpers.parse_fzf_preview_window_opts({
-    {
-      "--preview-window",
-      "right,50%",
-    },
-  })
-  local fzf_border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
+  local buffer_previewer_fzf_preview_window_opts =
+    fzf_helpers.parse_fzf_preview_window_opts({
+      {
+        "--preview-window",
+        "right,50%",
+      },
+    })
+  local buffer_previewer_fzf_border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
   if use_buffer_previewer then
     local fzf_pw_opts = {}
     local base_config_fzf_opts =
@@ -1356,12 +1357,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         and strings.not_empty(o[1])
         and strings.startswith(o[1], "--border")
       then
-        fzf_border_opts = o[2]
+        buffer_previewer_fzf_border_opts = o[2]
       elseif
         strings.not_empty(o)
         and strings.startswith(o --[[@as string]], "--border")
       then
-        fzf_border_opts =
+        buffer_previewer_fzf_border_opts =
           string.sub(o --[[@as string]], string.len("--border") + 2)
       end
     end
@@ -1383,23 +1384,23 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         and strings.not_empty(o[1])
         and strings.startswith(o[1], "--border")
       then
-        fzf_border_opts = o[2]
+        buffer_previewer_fzf_border_opts = o[2]
       elseif
         strings.not_empty(o)
         and strings.startswith(o --[[@as string]], "--border")
       then
-        fzf_border_opts =
+        buffer_previewer_fzf_border_opts =
           string.sub(o --[[@as string]], string.len("--border") + 2)
       end
     end
     log.debug(
       "|general| extract fzf_pw_opts:%s, fzf_border_opts:%s, fzf_opts:%s",
       vim.inspect(fzf_pw_opts),
-      vim.inspect(fzf_border_opts),
+      vim.inspect(buffer_previewer_fzf_border_opts),
       vim.inspect(fzf_opts)
     )
     if #fzf_pw_opts > 0 then
-      fzf_preview_window_opts =
+      buffer_previewer_fzf_preview_window_opts =
         fzf_helpers.parse_fzf_preview_window_opts(fzf_pw_opts)
     end
 
@@ -1439,8 +1440,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end,
     use_buffer_previewer,
     {
-      fzf_preview_window_opts = fzf_preview_window_opts,
-      fzf_border_opts = fzf_border_opts,
+      fzf_preview_window_opts = buffer_previewer_fzf_preview_window_opts,
+      fzf_border_opts = buffer_previewer_fzf_border_opts,
     }
   )
   return popup
