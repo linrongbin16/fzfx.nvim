@@ -1,5 +1,4 @@
 local paths = require("fzfx.commons.paths")
-local termcolors = require("fzfx.commons.termcolors")
 local strings = require("fzfx.commons.strings")
 local jsons = require("fzfx.commons.jsons")
 local fileios = require("fzfx.commons.fileios")
@@ -685,8 +684,6 @@ local M = {
   FZF_BORDER_OPTS_MAP = FZF_BORDER_OPTS_MAP,
   FZF_DEFAULT_BORDER_OPTS = FZF_DEFAULT_BORDER_OPTS,
   FZF_PREVIEW_ACTIONS = FZF_PREVIEW_ACTIONS,
-  -- remove_fzf_preview_action_opts = remove_fzf_preview_action_opts,
-  setup = setup,
 }
 
 return M
