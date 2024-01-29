@@ -1318,9 +1318,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 actions_data = string.sub(actions_data, 1, #actions_data - 1)
               end
             end
-            if popup then
-              popup.popup_window:preview_action(actions_data)
-            end
+
+            popup.popup_window:preview_action(actions_data)
           end,
           { trim = true }
         )
