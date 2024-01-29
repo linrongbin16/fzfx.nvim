@@ -10,3 +10,5 @@ local M = {}
 M.aspawn = async.wrap(function(cmd, opts, callback)
   return spawn.run(cmd, opts, callback)
 end, 3)
+
+return M
