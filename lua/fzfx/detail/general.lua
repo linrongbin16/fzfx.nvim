@@ -1120,7 +1120,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       {},
       function(focused_fsevent_start_complete_err, focused_file, events)
         -- log.debug(
-        --   "|general - buffer_previewer_focused_fsevent:start| failed to complete fsevent, fsevent_file:%s, events:%s, focused_file:%s, error:%s",
+        --   "|general - buffer_previewer_focused_fsevent:start| complete focused fsevent, fsevent_file:%s, events:%s, focused_file:%s, error:%s",
         --   vim.inspect(fsevent_file),
         --   vim.inspect(events),
         --   vim.inspect(buffer_previewer_focused_file),
@@ -1274,13 +1274,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       buffer_previewer_focused_file,
       {},
       function(actions_fsevent_start_complete_err, actions_file, events)
-        -- log.debug(
-        --   "|general - buffer_previewer_actions_fsevent:start| failed to complete actions fsevent, actions_file:%s, events:%s, actions_file:%s, error:%s",
-        --   vim.inspect(actions_file),
-        --   vim.inspect(events),
-        --   vim.inspect(buffer_previewer_actions_file),
-        --   vim.inspect(actions_fsevent_start_complete_err)
-        -- )
+        log.debug(
+          "|general - buffer_previewer_actions_fsevent:start| complete actions fsevent, actions_file:%s, events:%s, actions_file:%s, error:%s",
+          vim.inspect(actions_file),
+          vim.inspect(events),
+          vim.inspect(buffer_previewer_actions_file),
+          vim.inspect(actions_fsevent_start_complete_err)
+        )
         if actions_fsevent_start_complete_err then
           log.err(
             "|general - buffer_previewer_actions_fsevent:start| failed to trigger fsevent on actions_file %s, error:%s",
