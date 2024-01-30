@@ -70,6 +70,7 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
     end
     additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign
       + sign
+    width = width - sign
   elseif
     fzf_preview_window_opts.position == "up"
     or fzf_preview_window_opts.position == "down"
@@ -84,6 +85,7 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
     end
     additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign
       + sign
+    height = height - sign
   end
   log.debug(
     "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
@@ -152,18 +154,18 @@ M._make_provider_center_opts_with_hidden_previewer = function(
   local width = popup_helpers.get_window_size(opts.width, total_width)
   local height = popup_helpers.get_window_size(opts.height, total_height)
 
-  local fzf_preview_window_opts = buffer_previewer_opts.fzf_preview_window_opts
-  if
-    fzf_preview_window_opts.position == "left"
-    or fzf_preview_window_opts.position == "right"
-  then
-    width = width + 2
-  elseif
-    fzf_preview_window_opts.position == "up"
-    or fzf_preview_window_opts.position == "down"
-  then
-    height = height + 2
-  end
+  -- local fzf_preview_window_opts = buffer_previewer_opts.fzf_preview_window_opts
+  -- if
+  --   fzf_preview_window_opts.position == "left"
+  --   or fzf_preview_window_opts.position == "right"
+  -- then
+  --   width = width + 2
+  -- elseif
+  --   fzf_preview_window_opts.position == "up"
+  --   or fzf_preview_window_opts.position == "down"
+  -- then
+  --   height = height + 2
+  -- end
 
   log.ensure(
     (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
@@ -224,6 +226,7 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     end
     additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign
       + sign
+    width = width - sign
   elseif
     fzf_preview_window_opts.position == "up"
     or fzf_preview_window_opts.position == "down"
@@ -237,6 +240,7 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     end
     additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign
       + sign
+    height = height - sign
   end
   log.debug(
     "|_make_previewer_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
@@ -804,7 +808,8 @@ function BufferPopupWindow:preview_file_contents(file_contents)
     --   )
     -- end
     -- local set_opts_ok, set_opts_err =
-    pcall(_set_default_previewer_win_options, self.previewer_winnr)
+    -- pcall(_set_default_previewer_win_options, self.previewer_winnr)
+    apis.set_win_option(self.previewer_winnr, "number", true)
     -- if not set_opts_ok then
     --   log.debug(
     --     "|BufferPopupWindow:preview_file.asyncreadfile| failed to reset default opts for previewer window:%s(%s), error:%s",
