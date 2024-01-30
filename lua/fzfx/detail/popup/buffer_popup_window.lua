@@ -363,7 +363,7 @@ end
 --- @field preview_files_queue {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}[]
 --- @field preview_file_contents_queue {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}[]
 --- @field preview_file_job_id integer
---- @field is_hidden boolean
+--- @field previewer_is_hidden boolean
 local BufferPopupWindow = {}
 
 local function _set_default_buf_options(bufnr)
@@ -439,7 +439,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     preview_files_queue = {},
     preview_file_contents_queue = {},
     preview_file_job_id = 0,
-    is_hidden = false,
+    previewer_is_hidden = false,
   }
   setmetatable(o, self)
   self.__index = self
@@ -474,7 +474,7 @@ function BufferPopupWindow:resize()
 
   self._resizing = true
 
-  if self:preview_hidden() then
+  if self.previewer_is_hidden then
     local provider_win_confs = M.make_provider_opts_with_hidden_previewer(
       self._saved_win_opts,
       self._saved_buffer_previewer_opts
@@ -810,12 +810,6 @@ function BufferPopupWindow:preview_action(action_name)
   end
 end
 
---- @return boolean
-function BufferPopupWindow:preview_hidden()
-  local preview_win_confs = vim.api.nvim_win_get_config(self.previewer_winnr)
-  return preview_win_confs.hide or false
-end
-
 function BufferPopupWindow:show_preview()
   log.debug("|BufferPopupWindow:show_preview|")
   if not self:is_valid() then
@@ -845,7 +839,7 @@ function BufferPopupWindow:toggle_preview()
     return
   end
   -- already hide, show it
-  if self:preview_hidden() then
+  if self.previewer_is_hidden then
     self:show_preview()
   else
     -- not hide, hide it
