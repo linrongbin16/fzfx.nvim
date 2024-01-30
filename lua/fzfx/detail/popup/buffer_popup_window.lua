@@ -468,7 +468,7 @@ function BufferPopupWindow:resize()
   if self._resizing then
     return
   end
-  if not self:is_valid() then
+  if not self:provider_is_valid() then
     return
   end
 
@@ -517,26 +517,28 @@ function BufferPopupWindow:resize()
     )
     _set_default_provider_win_options(self.provider_winnr)
 
-    local old_previewer_win_confs =
-      vim.api.nvim_win_get_config(self.previewer_winnr)
-    local previewer_win_confs = M.make_previewer_opts(
-      self._saved_win_opts,
-      self._saved_buffer_previewer_opts
-    )
-    log.debug(
-      "|BufferPopupWindow:resize| not hidden, previewer - old:%s, new:%s",
-      vim.inspect(old_previewer_win_confs),
-      vim.inspect(previewer_win_confs)
-    )
-    vim.api.nvim_win_set_config(
-      self.previewer_winnr,
-      vim.tbl_deep_extend(
-        "force",
-        old_previewer_win_confs,
-        previewer_win_confs or {}
+    if self:previewer_is_valid() then
+      local old_previewer_win_confs =
+        vim.api.nvim_win_get_config(self.previewer_winnr)
+      local previewer_win_confs = M.make_previewer_opts(
+        self._saved_win_opts,
+        self._saved_buffer_previewer_opts
       )
-    )
-    _set_default_previewer_win_options(self.previewer_winnr)
+      log.debug(
+        "|BufferPopupWindow:resize| not hidden, previewer - old:%s, new:%s",
+        vim.inspect(old_previewer_win_confs),
+        vim.inspect(previewer_win_confs)
+      )
+      vim.api.nvim_win_set_config(
+        self.previewer_winnr,
+        vim.tbl_deep_extend(
+          "force",
+          old_previewer_win_confs,
+          previewer_win_confs or {}
+        )
+      )
+      _set_default_previewer_win_options(self.previewer_winnr)
+    end
   end
 
   vim.schedule(function()
@@ -580,7 +582,7 @@ function BufferPopupWindow:set_preview_file_job_id(job_id)
   self.preview_file_job_id = job_id
 end
 
-function BufferPopupWindow:is_valid()
+function BufferPopupWindow:previewer_is_valid()
   if vim.in_fast_event() then
     return type(self.previewer_winnr) == "number"
       and type(self.previewer_bufnr) == "number"
@@ -589,6 +591,18 @@ function BufferPopupWindow:is_valid()
       and vim.api.nvim_win_is_valid(self.previewer_winnr)
       and type(self.previewer_bufnr) == "number"
       and vim.api.nvim_buf_is_valid(self.previewer_bufnr)
+  end
+end
+
+function BufferPopupWindow:provider_is_valid()
+  if vim.in_fast_event() then
+    return type(self.provider_winnr) == "number"
+      and type(self.provider_bufnr) == "number"
+  else
+    return type(self.provider_winnr) == "number"
+      and vim.api.nvim_win_is_valid(self.provider_winnr)
+      and type(self.provider_bufnr) == "number"
+      and vim.api.nvim_buf_is_valid(self.provider_bufnr)
   end
 end
 
@@ -613,7 +627,7 @@ function BufferPopupWindow:preview_file(
   })
 
   vim.defer_fn(function()
-    if not self:is_valid() then
+    if not self:previewer_is_valid() then
       return
     end
     if self:preview_files_queue_empty() then
@@ -630,7 +644,7 @@ function BufferPopupWindow:preview_file(
     fileios.asyncreadfile(
       last_job.previewer_result.filename,
       function(file_content)
-        if not self:is_valid() then
+        if not self:previewer_is_valid() then
           return
         end
         if not self:preview_files_queue_empty() then
@@ -654,7 +668,7 @@ function BufferPopupWindow:preview_file(
 
         -- show file contents by lines
         vim.defer_fn(function()
-          if not self:is_valid() then
+          if not self:previewer_is_valid() then
             return
           end
           if not self:preview_files_queue_empty() then
@@ -722,7 +736,7 @@ function BufferPopupWindow:preview_file(
             if strings.empty(last_contents.previewer_label_result) then
               return
             end
-            if not self:is_valid() then
+            if not self:previewer_is_valid() then
               return
             end
             if not self:preview_files_queue_empty() then
@@ -769,7 +783,7 @@ function BufferPopupWindow:preview_file(
 
           local function set_buf_lines()
             vim.defer_fn(function()
-              if not self:is_valid() then
+              if not self:previewer_is_valid() then
                 return
               end
               if not self:preview_files_queue_empty() then
@@ -865,7 +879,7 @@ function BufferPopupWindow:show_preview()
     log.debug("|BufferPopupWindow:show_preview| already show")
     return
   end
-  if not self:is_valid() then
+  if not self:previewer_is_valid() then
     log.debug("|BufferPopupWindow:show_preview| invalid")
     return
   end
@@ -888,7 +902,7 @@ function BufferPopupWindow:hide_preview()
     log.debug("|BufferPopupWindow:hide_preview| already hidden")
     return
   end
-  if not self:is_valid() then
+  if not self:previewer_is_valid() then
     log.debug("|BufferPopupWindow:hide_preview| invalid")
     return
   end
@@ -901,7 +915,7 @@ end
 
 function BufferPopupWindow:toggle_preview()
   log.debug("|BufferPopupWindow:toggle_preview|")
-  if not self:is_valid() then
+  if not self:previewer_is_valid() then
     log.debug("|BufferPopupWindow:toggle_preview| invalid")
     return
   end
@@ -915,7 +929,7 @@ function BufferPopupWindow:toggle_preview()
 end
 
 function BufferPopupWindow:preview_page_down()
-  if not self:is_valid() then
+  if not self:previewer_is_valid() then
     return
   end
   vim.api.nvim_win_call(self.previewer_winnr, function()
@@ -929,7 +943,7 @@ function BufferPopupWindow:preview_page_down()
 end
 
 function BufferPopupWindow:preview_page_up()
-  if not self:is_valid() then
+  if not self:previewer_is_valid() then
     return
   end
   vim.api.nvim_win_call(self.previewer_winnr, function()
@@ -943,7 +957,7 @@ function BufferPopupWindow:preview_page_up()
 end
 
 function BufferPopupWindow:preview_half_page_down()
-  if not self:is_valid() then
+  if not self:previewer_is_valid() then
     log.debug(
       "|BufferPopupWindow:preview_half_page_down| invalid: %s",
       vim.inspect(self.previewer_winnr)
@@ -961,7 +975,7 @@ function BufferPopupWindow:preview_half_page_down()
 end
 
 function BufferPopupWindow:preview_half_page_up()
-  if not self:is_valid() then
+  if not self:previewer_is_valid() then
     log.debug(
       "|BufferPopupWindow:preview_half_page_up| invalid: %s",
       vim.inspect(self.previewer_winnr)
