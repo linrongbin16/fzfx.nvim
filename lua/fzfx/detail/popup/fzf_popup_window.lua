@@ -136,6 +136,7 @@ function FzfPopupWindow:new(win_opts)
   apis.set_win_option(winnr, "number", false)
   apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
   apis.set_win_option(winnr, "colorcolumn", "")
+  apis.set_win_option(winnr, "wrap", false)
 
   local o = {
     window_opts_context = window_opts_context,

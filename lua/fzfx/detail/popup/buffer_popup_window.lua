@@ -384,6 +384,7 @@ local function _set_default_provider_win_options(winnr)
   apis.set_win_option(winnr, "spell", false)
   apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
   apis.set_win_option(winnr, "colorcolumn", "")
+  apis.set_win_option(winnr, "wrap", false)
 end
 
 --- @package
