@@ -916,6 +916,7 @@ function BufferPopupWindow:show_preview()
   -- restore last file preview contents
   vim.schedule(function()
     if tables.tbl_not_empty(self._saved_preview_file_contents) then
+      self:preview_file_contents(self._saved_preview_file_contents)
     end
   end)
 end
