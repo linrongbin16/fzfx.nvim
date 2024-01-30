@@ -852,8 +852,12 @@ end
 --- @param action_name string
 function BufferPopupWindow:preview_action(action_name)
   local actions_map = {
-    ["hide-preview"] = function() end,
-    ["show-preview"] = function() end,
+    ["hide-preview"] = function()
+      self:hide_preview()
+    end,
+    ["show-preview"] = function()
+      self:show_preview()
+    end,
     ["refresh-preview"] = function() end,
     ["preview-down"] = function()
       self:preview_page_down()
