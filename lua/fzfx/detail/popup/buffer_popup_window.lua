@@ -893,7 +893,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
       if line_index >= SHOW_PREVIEW_LABEL_COUNT then
         vim.schedule(set_win_title)
       end
-    end, 5)
+    end, 3)
   end
   set_buf_lines()
 end
