@@ -363,6 +363,7 @@ end
 --- @field preview_files_queue {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}[]
 --- @field preview_file_contents_queue {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}[]
 --- @field preview_file_job_id integer
+--- @field is_hidden boolean
 local BufferPopupWindow = {}
 
 local function _set_default_buf_options(bufnr)
@@ -438,6 +439,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     preview_files_queue = {},
     preview_file_contents_queue = {},
     preview_file_job_id = 0,
+    is_hidden = false,
   }
   setmetatable(o, self)
   self.__index = self
