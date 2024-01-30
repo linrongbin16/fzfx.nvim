@@ -693,7 +693,7 @@ function BufferPopupWindow:preview_file(
 
           self._saved_preview_file_contents = last_contents
           self:preview_file_contents(last_contents)
-        end, 20)
+        end, 30)
       end
     )
   end, 30)
@@ -873,7 +873,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
       if line_index >= SHOW_PREVIEW_LABEL_COUNT then
         vim.schedule(set_win_title)
       end
-    end, 3)
+    end, 5)
   end
   set_buf_lines()
 end
