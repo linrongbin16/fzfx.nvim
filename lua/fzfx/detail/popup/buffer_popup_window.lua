@@ -913,7 +913,10 @@ function BufferPopupWindow:hide_preview()
 end
 
 function BufferPopupWindow:toggle_preview()
-  log.debug("|BufferPopupWindow:toggle_preview|")
+  log.debug(
+    "|BufferPopupWindow:toggle_preview| previewer_is_hidden:%s",
+    vim.inspect(self.previewer_is_hidden)
+  )
   -- already hide, show it
   if self.previewer_is_hidden then
     self:show_preview()

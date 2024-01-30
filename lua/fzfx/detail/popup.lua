@@ -83,6 +83,10 @@ function PopupWindow:previewer_is_valid()
   return self.instance ~= nil and self.instance:previewer_is_valid()
 end
 
+function PopupWindow:provider_is_valid()
+  return self.instance ~= nil and self.instance:provider_is_valid()
+end
+
 --- @param job_id integer
 function PopupWindow:set_preview_file_job_id(job_id)
   self.instance:set_preview_file_job_id(job_id)
@@ -301,6 +305,10 @@ end
 
 function Popup:previewer_is_valid()
   return self.popup_window ~= nil and self.popup_window:previewer_is_valid()
+end
+
+function Popup:provider_is_valid()
+  return self.popup_window ~= nil and self.popup_window:provider_is_valid()
 end
 
 -- PopupWindowInstances {

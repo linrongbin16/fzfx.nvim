@@ -1309,7 +1309,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               vim.inspect(actions_file),
               vim.inspect(actions_data)
             )
-            if not popup or not popup:previewer_is_valid() then
+            if not popup or not popup:provider_is_valid() then
               return
             end
             if consts.IS_WINDOWS then
@@ -1322,7 +1322,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             end
 
             vim.schedule(function()
-              if not popup or not popup:previewer_is_valid() then
+              if not popup or not popup:provider_is_valid() then
                 return
               end
               popup.popup_window:preview_action(actions_data)
