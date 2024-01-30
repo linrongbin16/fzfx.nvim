@@ -631,7 +631,7 @@ function BufferPopupWindow:preview_file(
           )
           if not set_name_ok then
             log.debug(
-              "|BufferPopupWindow:preview_file.asyncreadfile| failed to set name for previewer buffer:%s(%s), error:%s",
+              "|BufferPopupWindow:preview_file - asyncreadfile| failed to set name for previewer buffer:%s(%s), error:%s",
               vim.inspect(last_contents.previewer_result.filename),
               vim.inspect(self.previewer_bufnr),
               vim.inspect(set_name_err)
@@ -646,13 +646,22 @@ function BufferPopupWindow:preview_file(
           )
           if not buf_call_ok then
             log.debug(
-              "|BufferPopupWindow:preview_file.asyncreadfile| failed to detect filetype for previewer buffer:%s(%s), error:%s",
+              "|BufferPopupWindow:preview_file - asyncreadfile| failed to detect filetype for previewer buffer:%s(%s), error:%s",
               vim.inspect(last_contents.previewer_result.filename),
               vim.inspect(self.previewer_bufnr),
               vim.inspect(buf_call_err)
             )
           end
-          vim.api.nvim_win_set_cursor(self.previewer_winnr, { 1, 0 })
+          local set_cursor_ok, set_cursor_err =
+            pcall(vim.api.nvim_win_set_cursor, self.previewer_winnr, { 1, 0 })
+          if not set_cursor_ok then
+            log.debug(
+              "|BufferPopupWindow:preview_file - asyncreadfile| failed to set cursor at top of file for previewer buffer:%s(%s), error: %s",
+              vim.inspect(last_contents.previewer_result.filename),
+              vim.inspect(self.previewer_bufnr),
+              vim.inspect(set_cursor_err)
+            )
+          end
 
           local TOTAL_LINES = #last_contents.lines
           local LINE_COUNT = 5
