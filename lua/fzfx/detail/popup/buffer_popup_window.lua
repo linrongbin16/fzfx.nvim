@@ -766,9 +766,9 @@ function BufferPopupWindow:preview_file_contents(file_contents)
   -- end
 
   local TOTAL_LINES = #last_contents.lines
-  local LINE_COUNT = 1
   local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
   local line_index = 1
+  local line_count = 1
   local set_win_title_done = false
 
   local function set_win_title()
@@ -860,7 +860,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
       --   vim.inspect(self.preview_file_job_id)
       -- )
       local buf_lines = {}
-      for i = line_index, line_index + LINE_COUNT do
+      for i = line_index, line_index + line_count do
         if i <= TOTAL_LINES then
           table.insert(buf_lines, last_contents.lines[i])
         else
@@ -870,12 +870,13 @@ function BufferPopupWindow:preview_file_contents(file_contents)
       vim.api.nvim_buf_set_lines(
         self.previewer_bufnr,
         line_index - 1,
-        line_index - 1 + LINE_COUNT,
+        line_index - 1 + line_count,
         false,
         buf_lines
       )
-      line_index = line_index + LINE_COUNT
+      line_index = line_index + line_count
       if line_index <= TOTAL_LINES then
+        line_count = line_count * 2
         set_buf_lines()
       else
         vim.api.nvim_buf_set_lines(

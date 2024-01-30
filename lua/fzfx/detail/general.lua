@@ -798,16 +798,12 @@ end
 local function dump_action_command(action_name, action_file)
   if consts.IS_WINDOWS then
     return string.format(
-      'execute-silent(cmd.exe /C echo "%s">%s)',
+      "execute-silent(cmd.exe /C echo %s>%s)",
       action_name,
       action_file
     )
   else
-    return string.format(
-      "execute-silent(echo '%s'>%s)",
-      action_name,
-      action_file
-    )
+    return string.format("execute-silent(echo %s>%s)", action_name, action_file)
   end
 end
 
