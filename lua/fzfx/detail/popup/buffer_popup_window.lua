@@ -5,7 +5,6 @@ local fileios = require("fzfx.commons.fileios")
 local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
 
-local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
@@ -70,7 +69,7 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
       width = math.max(width - fzf_preview_window_opts.size, 1)
     end
     additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign
-    -- + sign
+      + sign
   elseif
     fzf_preview_window_opts.position == "up"
     or fzf_preview_window_opts.position == "down"
@@ -84,7 +83,7 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
       height = math.max(height - fzf_preview_window_opts.size, 1)
     end
     additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign
-    -- + sign
+      + sign
   end
   log.debug(
     "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
@@ -152,6 +151,19 @@ M._make_provider_center_opts_with_hidden_previewer = function(
     or vim.api.nvim_win_get_height(0)
   local width = popup_helpers.get_window_size(opts.width, total_width)
   local height = popup_helpers.get_window_size(opts.height, total_height)
+
+  local fzf_preview_window_opts = buffer_previewer_opts.fzf_preview_window_opts
+  if
+    fzf_preview_window_opts.position == "left"
+    or fzf_preview_window_opts.position == "right"
+  then
+    width = width + 1
+  elseif
+    fzf_preview_window_opts.position == "up"
+    or fzf_preview_window_opts.position == "down"
+  then
+    height = height + 1
+  end
 
   log.ensure(
     (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
@@ -359,11 +371,13 @@ end
 --- @field previewer_winnr integer?
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @field _saved_preview_file_contents fzfx.BufferPopupWindowPreviewFileContents
 --- @field _resizing boolean
 --- @field preview_files_queue {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}[]
---- @field preview_file_contents_queue {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}[]
+--- @field preview_file_contents_queue fzfx.BufferPopupWindowPreviewFileContents[]
 --- @field preview_file_job_id integer
---- @field is_hidden boolean
+--- @field previewer_is_hidden boolean
+--- @field _scrolling_preview_page boolean
 local BufferPopupWindow = {}
 
 local function _set_default_buf_options(bufnr)
@@ -376,12 +390,19 @@ local function _set_default_previewer_win_options(winnr)
   apis.set_win_option(winnr, "number", true)
   apis.set_win_option(winnr, "spell", false)
   apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  apis.set_win_option(winnr, "wrap", false)
+  apis.set_win_option(winnr, "scrolloff", 0)
+  apis.set_win_option(winnr, "sidescrolloff", 0)
 end
 
 local function _set_default_provider_win_options(winnr)
   apis.set_win_option(winnr, "number", false)
   apis.set_win_option(winnr, "spell", false)
   apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  apis.set_win_option(winnr, "colorcolumn", "")
+  apis.set_win_option(winnr, "wrap", false)
+  apis.set_win_option(winnr, "scrolloff", 0)
+  apis.set_win_option(winnr, "sidescrolloff", 0)
 end
 
 --- @package
@@ -400,20 +421,19 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   local previewer_bufnr = vim.api.nvim_create_buf(false, true)
   _set_default_buf_options(previewer_bufnr)
 
-  local provider_nvim_float_win_opts =
+  local provider_win_confs =
     M.make_provider_opts(win_opts, buffer_previewer_opts)
-  local previewer_nvim_float_win_opts =
+  local previewer_win_confs =
     M.make_previewer_opts(win_opts, buffer_previewer_opts)
-  previewer_nvim_float_win_opts.focusable = false
+  previewer_win_confs.focusable = false
 
   local previewer_winnr =
-    vim.api.nvim_open_win(previewer_bufnr, true, previewer_nvim_float_win_opts)
+    vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
   _set_default_previewer_win_options(previewer_winnr)
 
   local provider_winnr =
-    vim.api.nvim_open_win(provider_bufnr, true, provider_nvim_float_win_opts)
+    vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs)
   _set_default_provider_win_options(provider_winnr)
-  apis.set_win_option(provider_winnr, "colorcolumn", "")
 
   -- set cursor at provider window
   vim.api.nvim_set_current_win(provider_winnr)
@@ -435,11 +455,13 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     previewer_winnr = previewer_winnr,
     _saved_win_opts = win_opts,
     _saved_buffer_previewer_opts = buffer_previewer_opts,
+    _saved_preview_file_contents = nil,
     _resizing = false,
     preview_files_queue = {},
     preview_file_contents_queue = {},
     preview_file_job_id = 0,
-    is_hidden = false,
+    previewer_is_hidden = false,
+    _scrolling_preview_page = false,
   }
   setmetatable(o, self)
   self.__index = self
@@ -468,29 +490,77 @@ function BufferPopupWindow:resize()
   if self._resizing then
     return
   end
-  if not self:is_valid() then
+  if not self:provider_is_valid() then
     return
   end
 
   self._resizing = true
 
-  if self:preview_hidden() then
+  if self.previewer_is_hidden then
+    local old_provider_win_confs =
+      vim.api.nvim_win_get_config(self.provider_winnr)
     local provider_win_confs = M.make_provider_opts_with_hidden_previewer(
       self._saved_win_opts,
       self._saved_buffer_previewer_opts
     )
-    vim.api.nvim_win_set_config(self.provider_winnr, provider_win_confs)
+    log.debug(
+      "|BufferPopupWindow:resize| is hidden, provider - old:%s, new:%s",
+      vim.inspect(old_provider_win_confs),
+      vim.inspect(provider_win_confs)
+    )
+    vim.api.nvim_win_set_config(
+      self.provider_winnr,
+      vim.tbl_deep_extend(
+        "force",
+        old_provider_win_confs,
+        provider_win_confs or {}
+      )
+    )
+    _set_default_provider_win_options(self.provider_winnr)
   else
+    local old_provider_win_confs =
+      vim.api.nvim_win_get_config(self.provider_winnr)
     local provider_win_confs = M.make_provider_opts(
       self._saved_win_opts,
       self._saved_buffer_previewer_opts
     )
-    vim.api.nvim_win_set_config(self.provider_winnr, provider_win_confs)
-    local previewer_win_confs = M.make_previewer_opts(
-      self._saved_win_opts,
-      self._saved_buffer_previewer_opts
+    log.debug(
+      "|BufferPopupWindow:resize| not hidden, provider - old:%s, new:%s",
+      vim.inspect(old_provider_win_confs),
+      vim.inspect(provider_win_confs)
     )
-    vim.api.nvim_win_set_config(self.previewer_winnr, previewer_win_confs)
+    vim.api.nvim_win_set_config(
+      self.provider_winnr,
+      vim.tbl_deep_extend(
+        "force",
+        old_provider_win_confs,
+        provider_win_confs or {}
+      )
+    )
+    _set_default_provider_win_options(self.provider_winnr)
+
+    if self:previewer_is_valid() then
+      local old_previewer_win_confs =
+        vim.api.nvim_win_get_config(self.previewer_winnr)
+      local previewer_win_confs = M.make_previewer_opts(
+        self._saved_win_opts,
+        self._saved_buffer_previewer_opts
+      )
+      log.debug(
+        "|BufferPopupWindow:resize| not hidden, previewer - old:%s, new:%s",
+        vim.inspect(old_previewer_win_confs),
+        vim.inspect(previewer_win_confs)
+      )
+      vim.api.nvim_win_set_config(
+        self.previewer_winnr,
+        vim.tbl_deep_extend(
+          "force",
+          old_previewer_win_confs,
+          previewer_win_confs or {}
+        )
+      )
+      _set_default_previewer_win_options(self.previewer_winnr)
+    end
   end
 
   vim.schedule(function()
@@ -534,7 +604,7 @@ function BufferPopupWindow:set_preview_file_job_id(job_id)
   self.preview_file_job_id = job_id
 end
 
-function BufferPopupWindow:is_valid()
+function BufferPopupWindow:previewer_is_valid()
   if vim.in_fast_event() then
     return type(self.previewer_winnr) == "number"
       and type(self.previewer_bufnr) == "number"
@@ -543,6 +613,18 @@ function BufferPopupWindow:is_valid()
       and vim.api.nvim_win_is_valid(self.previewer_winnr)
       and type(self.previewer_bufnr) == "number"
       and vim.api.nvim_buf_is_valid(self.previewer_bufnr)
+  end
+end
+
+function BufferPopupWindow:provider_is_valid()
+  if vim.in_fast_event() then
+    return type(self.provider_winnr) == "number"
+      and type(self.provider_bufnr) == "number"
+  else
+    return type(self.provider_winnr) == "number"
+      and vim.api.nvim_win_is_valid(self.provider_winnr)
+      and type(self.provider_bufnr) == "number"
+      and vim.api.nvim_buf_is_valid(self.provider_bufnr)
   end
 end
 
@@ -567,7 +649,7 @@ function BufferPopupWindow:preview_file(
   })
 
   vim.defer_fn(function()
-    if not self:is_valid() then
+    if not self:previewer_is_valid() then
       return
     end
     if self:preview_files_queue_empty() then
@@ -584,7 +666,7 @@ function BufferPopupWindow:preview_file(
     fileios.asyncreadfile(
       last_job.previewer_result.filename,
       function(file_content)
-        if not self:is_valid() then
+        if not self:previewer_is_valid() then
           return
         end
         if not self:preview_files_queue_empty() then
@@ -608,7 +690,7 @@ function BufferPopupWindow:preview_file(
 
         -- show file contents by lines
         vim.defer_fn(function()
-          if not self:is_valid() then
+          if not self:previewer_is_valid() then
             return
           end
           if not self:preview_files_queue_empty() then
@@ -624,162 +706,204 @@ function BufferPopupWindow:preview_file(
             return
           end
 
-          local set_name_ok, set_name_err = pcall(
-            vim.api.nvim_buf_set_name,
-            self.previewer_bufnr,
-            last_contents.previewer_result.filename
-          )
-          if not set_name_ok then
-            log.debug(
-              "|BufferPopupWindow:preview_file - asyncreadfile| failed to set name for previewer buffer:%s(%s), error:%s",
-              vim.inspect(last_contents.previewer_result.filename),
-              vim.inspect(self.previewer_bufnr),
-              vim.inspect(set_name_err)
-            )
-          end
-          local buf_call_ok, buf_call_err = pcall(
-            vim.api.nvim_buf_call,
-            self.previewer_bufnr,
-            function()
-              vim.api.nvim_command([[filetype detect]])
-            end
-          )
-          if not buf_call_ok then
-            log.debug(
-              "|BufferPopupWindow:preview_file - asyncreadfile| failed to detect filetype for previewer buffer:%s(%s), error:%s",
-              vim.inspect(last_contents.previewer_result.filename),
-              vim.inspect(self.previewer_bufnr),
-              vim.inspect(buf_call_err)
-            )
-          end
-          local set_cursor_ok, set_cursor_err =
-            pcall(vim.api.nvim_win_set_cursor, self.previewer_winnr, { 1, 0 })
-          if not set_cursor_ok then
-            log.debug(
-              "|BufferPopupWindow:preview_file - asyncreadfile| failed to set cursor at top of file for previewer buffer:%s(%s), error: %s",
-              vim.inspect(last_contents.previewer_result.filename),
-              vim.inspect(self.previewer_bufnr),
-              vim.inspect(set_cursor_err)
-            )
-          end
-
-          local TOTAL_LINES = #last_contents.lines
-          local LINE_COUNT = 5
-          local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
-          local line_index = 1
-          local set_win_title_done = false
-
-          local function set_win_title()
-            if set_win_title_done then
-              return
-            end
-            if strings.empty(last_contents.previewer_label_result) then
-              return
-            end
-            if not self:is_valid() then
-              return
-            end
-            if not self:preview_files_queue_empty() then
-              return
-            end
-            if not self:preview_file_contents_queue_empty() then
-              return
-            end
-            if last_contents.job_id < self.preview_file_job_id then
-              return
-            end
-
-            local title_opts = {
-              title = last_contents.previewer_label_result,
-              title_pos = "center",
-            }
-            local set_config_ok, set_config_err = pcall(
-              vim.api.nvim_win_set_config,
-              self.previewer_winnr,
-              title_opts
-            )
-            if not set_config_ok then
-              log.debug(
-                "|BufferPopupWindow:preview_file.asyncreadfile| failed to set title for previewer window:%s(%s), error:%s",
-                vim.inspect(last_contents.previewer_result.filename),
-                vim.inspect(self.previewer_winnr),
-                vim.inspect(set_config_err)
-              )
-            end
-            local set_opts_ok, set_opts_err =
-              pcall(_set_default_previewer_win_options, self.previewer_winnr)
-            if not set_opts_ok then
-              log.debug(
-                "|BufferPopupWindow:preview_file.asyncreadfile| failed to reset default opts for previewer window:%s(%s), error:%s",
-                vim.inspect(last_contents.previewer_result.filename),
-                vim.inspect(self.previewer_winnr),
-                vim.inspect(set_opts_err)
-              )
-            end
-            vim.schedule(function()
-              set_win_title_done = true
-            end)
-          end
-
-          local function set_buf_lines()
-            vim.defer_fn(function()
-              if not self:is_valid() then
-                return
-              end
-              if not self:preview_files_queue_empty() then
-                return
-              end
-              if not self:preview_file_contents_queue_empty() then
-                return
-              end
-              if last_contents.job_id < self.preview_file_job_id then
-                return
-              end
-
-              local buf_lines = {}
-              for i = line_index, line_index + LINE_COUNT do
-                if i <= TOTAL_LINES then
-                  table.insert(buf_lines, last_contents.lines[i])
-                else
-                  break
-                end
-              end
-              vim.api.nvim_buf_set_lines(
-                self.previewer_bufnr,
-                line_index - 1,
-                line_index - 1 + LINE_COUNT,
-                false,
-                buf_lines
-              )
-              line_index = line_index + LINE_COUNT
-              if line_index <= TOTAL_LINES then
-                set_buf_lines()
-              else
-                vim.api.nvim_buf_set_lines(
-                  self.previewer_bufnr,
-                  TOTAL_LINES,
-                  -1,
-                  false,
-                  {}
-                )
-              end
-              if line_index >= SHOW_PREVIEW_LABEL_COUNT then
-                vim.schedule(set_win_title)
-              end
-            end, 3)
-          end
-          set_buf_lines()
-        end, 20)
+          self._saved_preview_file_contents = last_contents
+          self:preview_file_contents(last_contents)
+        end, 30)
       end
     )
   end, 30)
 end
 
+--- @alias fzfx.BufferPopupWindowPreviewFileContents {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}
+--- @param file_contents fzfx.BufferPopupWindowPreviewFileContents?
+function BufferPopupWindow:preview_file_contents(file_contents)
+  -- log.debug(
+  --   "|BufferPopupWindow:preview_file_contents| file_contents:%s, empty:%s",
+  --   vim.inspect(file_contents),
+  --   vim.inspect(tables.tbl_empty(file_contents))
+  -- )
+  if tables.tbl_empty(file_contents) then
+    return
+  end
+
+  local last_contents = file_contents --[[@as fzfx.BufferPopupWindowPreviewFileContents]]
+
+  -- local set_name_ok, set_name_err =
+  pcall(
+    vim.api.nvim_buf_set_name,
+    self.previewer_bufnr,
+    last_contents.previewer_result.filename
+  )
+  -- if not set_name_ok then
+  --   log.debug(
+  --     "|BufferPopupWindow:preview_file - asyncreadfile| failed to set name for previewer buffer:%s(%s), error:%s",
+  --     vim.inspect(last_contents.previewer_result.filename),
+  --     vim.inspect(self.previewer_bufnr),
+  --     vim.inspect(set_name_err)
+  --   )
+  -- end
+  -- local buf_call_ok, buf_call_err =
+  pcall(vim.api.nvim_buf_call, self.previewer_bufnr, function()
+    vim.api.nvim_command([[filetype detect]])
+  end)
+  -- if not buf_call_ok then
+  --   log.debug(
+  --     "|BufferPopupWindow:preview_file - asyncreadfile| failed to detect filetype for previewer buffer:%s(%s), error:%s",
+  --     vim.inspect(last_contents.previewer_result.filename),
+  --     vim.inspect(self.previewer_bufnr),
+  --     vim.inspect(buf_call_err)
+  --   )
+  -- end
+  -- local set_cursor_ok, set_cursor_err =
+  pcall(vim.api.nvim_win_set_cursor, self.previewer_winnr, { 1, 0 })
+  -- if not set_cursor_ok then
+  --   log.debug(
+  --     "|BufferPopupWindow:preview_file - asyncreadfile| failed to set cursor at top of file for previewer buffer:%s(%s), error: %s",
+  --     vim.inspect(last_contents.previewer_result.filename),
+  --     vim.inspect(self.previewer_bufnr),
+  --     vim.inspect(set_cursor_err)
+  --   )
+  -- end
+
+  local TOTAL_LINES = #last_contents.lines
+  local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
+  local line_index = 1
+  local line_count = 1
+  local set_win_title_done = false
+
+  local function set_win_title()
+    if set_win_title_done then
+      return
+    end
+    if strings.empty(last_contents.previewer_label_result) then
+      return
+    end
+    if not self:previewer_is_valid() then
+      return
+    end
+    if not self:preview_files_queue_empty() then
+      return
+    end
+    if not self:preview_file_contents_queue_empty() then
+      return
+    end
+    if last_contents.job_id < self.preview_file_job_id then
+      return
+    end
+
+    local title_opts = {
+      title = last_contents.previewer_label_result,
+      title_pos = "center",
+    }
+    -- local set_config_ok, set_config_err =
+    pcall(vim.api.nvim_win_set_config, self.previewer_winnr, title_opts)
+    -- if not set_config_ok then
+    --   log.debug(
+    --     "|BufferPopupWindow:preview_file.asyncreadfile| failed to set title for previewer window:%s(%s), error:%s",
+    --     vim.inspect(last_contents.previewer_result.filename),
+    --     vim.inspect(self.previewer_winnr),
+    --     vim.inspect(set_config_err)
+    --   )
+    -- end
+    -- local set_opts_ok, set_opts_err =
+    -- pcall(_set_default_previewer_win_options, self.previewer_winnr)
+    apis.set_win_option(self.previewer_winnr, "number", true)
+    -- if not set_opts_ok then
+    --   log.debug(
+    --     "|BufferPopupWindow:preview_file.asyncreadfile| failed to reset default opts for previewer window:%s(%s), error:%s",
+    --     vim.inspect(last_contents.previewer_result.filename),
+    --     vim.inspect(self.previewer_winnr),
+    --     vim.inspect(set_opts_err)
+    --   )
+    -- end
+    vim.schedule(function()
+      set_win_title_done = true
+    end)
+  end
+
+  local function set_buf_lines()
+    -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
+    vim.defer_fn(function()
+      if not self:previewer_is_valid() then
+        -- log.debug(
+        --   "|BufferPopupWindow:preview_file_contents| set_buf_lines, previewer_is_valid:%s",
+        --   vim.inspect(self:previewer_is_valid())
+        -- )
+        return
+      end
+      if not self:preview_files_queue_empty() then
+        -- log.debug(
+        --   "|BufferPopupWindow:preview_file_contents| set_buf_lines, preview_files_queue_empty:%s",
+        --   vim.inspect(self:preview_files_queue_empty())
+        -- )
+        return
+      end
+      if not self:preview_file_contents_queue_empty() then
+        -- log.debug(
+        --   "|BufferPopupWindow:preview_file_contents| set_buf_lines, preview_file_contents_queue_empty:%s",
+        --   vim.inspect(self:preview_file_contents_queue_empty())
+        -- )
+        return
+      end
+      if last_contents.job_id < self.preview_file_job_id then
+        -- log.debug(
+        --   "|BufferPopupWindow:preview_file_contents| set_buf_lines, last_contents_job:%s, preview_file_job_id:%s",
+        --   vim.inspect(last_contents.job_id),
+        --   vim.inspect(self.preview_file_job_id)
+        -- )
+        return
+      end
+
+      -- log.debug(
+      --   "|BufferPopupWindow:preview_file_contents| set_buf_lines - start",
+      --   vim.inspect(last_contents.job_id),
+      --   vim.inspect(self.preview_file_job_id)
+      -- )
+      local buf_lines = {}
+      for i = line_index, line_index + line_count do
+        if i <= TOTAL_LINES then
+          table.insert(buf_lines, last_contents.lines[i])
+        else
+          break
+        end
+      end
+      vim.api.nvim_buf_set_lines(
+        self.previewer_bufnr,
+        line_index - 1,
+        line_index - 1 + line_count,
+        false,
+        buf_lines
+      )
+      line_index = line_index + line_count
+      if line_index <= TOTAL_LINES then
+        line_count = line_count * 2
+        set_buf_lines()
+      else
+        vim.api.nvim_buf_set_lines(
+          self.previewer_bufnr,
+          TOTAL_LINES,
+          -1,
+          false,
+          {}
+        )
+      end
+      if line_index >= SHOW_PREVIEW_LABEL_COUNT then
+        vim.schedule(set_win_title)
+      end
+    end, 3)
+  end
+  set_buf_lines()
+end
+
 --- @param action_name string
 function BufferPopupWindow:preview_action(action_name)
   local actions_map = {
-    ["hide-preview"] = function() end,
-    ["show-preview"] = function() end,
+    ["hide-preview"] = function()
+      self:hide_preview()
+    end,
+    ["show-preview"] = function()
+      self:show_preview()
+    end,
     ["refresh-preview"] = function() end,
     ["preview-down"] = function()
       self:preview_page_down()
@@ -800,8 +924,12 @@ function BufferPopupWindow:preview_action(action_name)
       self:preview_half_page_up()
     end,
     ["preview-bottom"] = function() end,
-    ["toggle-preview"] = function() end,
-    ["toggle-preview-wrap"] = function() end,
+    ["toggle-preview"] = function()
+      self:toggle_preview()
+    end,
+    ["toggle-preview-wrap"] = function()
+      self:toggle_preview()
+    end,
   }
 
   local action = actions_map[action_name]
@@ -810,42 +938,72 @@ function BufferPopupWindow:preview_action(action_name)
   end
 end
 
---- @return boolean
-function BufferPopupWindow:preview_hidden()
-  local preview_win_confs = vim.api.nvim_win_get_config(self.previewer_winnr)
-  return preview_win_confs.hide or false
-end
-
 function BufferPopupWindow:show_preview()
-  log.debug("|BufferPopupWindow:show_preview|")
-  if not self:is_valid() then
-    log.debug("|BufferPopupWindow:show_preview| invalid")
+  if not self.previewer_is_hidden then
+    -- log.debug("|BufferPopupWindow:show_preview| already show")
     return
   end
-  vim.api.nvim_win_set_config(self.previewer_winnr, { hide = false })
-  _set_default_previewer_win_options(self.previewer_winnr)
+  if not self:provider_is_valid() then
+    -- log.debug("|BufferPopupWindow:show_preview| invalid")
+    return
+  end
+
+  self.previewer_is_hidden = false
+  local previewer_win_confs = M.make_previewer_opts(
+    self._saved_win_opts,
+    self._saved_buffer_previewer_opts
+  )
+  previewer_win_confs.focusable = false
+
+  self.previewer_bufnr = vim.api.nvim_create_buf(false, true)
+  _set_default_buf_options(self.previewer_bufnr)
+  self.previewer_winnr =
+    vim.api.nvim_open_win(self.previewer_bufnr, true, previewer_win_confs)
+  vim.api.nvim_set_current_win(self.provider_winnr)
+
   self:resize()
+
+  -- restore last file preview contents
+  vim.schedule(function()
+    -- log.debug(
+    --   "|BufferPopupWindow:show_preview| restore file preview contents, saved:%s, not empty:%s",
+    --   vim.inspect(self._saved_preview_file_contents),
+    --   vim.inspect(tables.tbl_not_empty(self._saved_preview_file_contents))
+    -- )
+    if tables.tbl_not_empty(self._saved_preview_file_contents) then
+      self._saved_preview_file_contents.job_id = numbers.auto_incremental_id()
+      self:preview_file_contents(self._saved_preview_file_contents)
+    end
+  end)
 end
 
 function BufferPopupWindow:hide_preview()
-  log.debug("|BufferPopupWindow:hide_preview|")
-  if not self:is_valid() then
-    log.debug("|BufferPopupWindow:hide_preview| invalid")
+  if self.previewer_is_hidden then
+    -- log.debug("|BufferPopupWindow:hide_preview| already hidden")
     return
   end
-  vim.api.nvim_win_set_config(self.previewer_winnr, { hide = true })
+  if not self:provider_is_valid() then
+    -- log.debug("|BufferPopupWindow:show_preview| invalid provider")
+    return
+  end
+  if not self:previewer_is_valid() then
+    -- log.debug("|BufferPopupWindow:hide_preview| invalid previewer")
+    return
+  end
+
+  self.previewer_is_hidden = true
+  vim.api.nvim_win_close(self.previewer_winnr, true)
   self:set_preview_file_job_id(numbers.auto_incremental_id())
   self:resize()
 end
 
 function BufferPopupWindow:toggle_preview()
-  log.debug("|BufferPopupWindow:toggle_preview|")
-  if not self:is_valid() then
-    log.debug("|BufferPopupWindow:toggle_preview| invalid")
-    return
-  end
+  -- log.debug(
+  --   "|BufferPopupWindow:toggle_preview| previewer_is_hidden:%s",
+  --   vim.inspect(self.previewer_is_hidden)
+  -- )
   -- already hide, show it
-  if self:preview_hidden() then
+  if self.previewer_is_hidden then
     self:show_preview()
   else
     -- not hide, hide it
@@ -853,68 +1011,100 @@ function BufferPopupWindow:toggle_preview()
   end
 end
 
-function BufferPopupWindow:preview_page_down()
-  if not self:is_valid() then
+local preview_page_scrolling = false
+
+-- scroll page up by percentage (1% - 100%)
+--- @param percent integer  1-100
+--- @param up boolean
+function BufferPopupWindow:scroll_by(percent, up)
+  local last_preview_contents_job_id =
+    tables.tbl_get(self._saved_preview_file_contents, "job_id")
+  if
+    type(last_preview_contents_job_id) == "number"
+    and last_preview_contents_job_id < self.preview_file_job_id
+  then
     return
   end
-  vim.api.nvim_win_call(self.previewer_winnr, function()
-    local ctrl_f = vim.api.nvim_replace_termcodes("<C-f>", true, false, true)
-    vim.api.nvim_feedkeys(ctrl_f, "x", false)
-  end)
+  if not self:previewer_is_valid() then
+    return
+  end
+  if self._scrolling_preview_page then
+    return
+  end
+
+  self._scrolling_preview_page = true
+  local down = not up
+
+  local function before_exit()
+    vim.schedule(function()
+      self._scrolling_preview_page = false
+    end)
+  end
+
+  local base_lineno = up and vim.fn.line("w0", self.previewer_winnr)
+    or vim.fn.line("w$", self.previewer_winnr)
+  if base_lineno == 1 and up then
+    before_exit()
+    return
+  end
+  local buf_lines = vim.api.nvim_buf_line_count(self.previewer_bufnr)
+  if base_lineno >= buf_lines and down then
+    before_exit()
+    return
+  end
+
+  local win_height =
+    math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
+  local diff_lines = math.max(math.floor(win_height / 100 * percent), 0)
+  if up then
+    diff_lines = -diff_lines
+  end
+  local target_lineno = numbers.bound(base_lineno + diff_lines, 1, buf_lines)
   log.debug(
-    "|BufferPopupWindow:preview_page_down| call - done: %s",
-    vim.inspect(self.previewer_winnr)
+    "|scroll_by| percent:%s, up:%s, win_height:%s, buf_lines:%s, cursor_lineno:%s, diff_lines:%s, target_lineno:%s",
+    vim.inspect(percent),
+    vim.inspect(up),
+    vim.inspect(win_height),
+    vim.inspect(buf_lines),
+    vim.inspect(base_lineno),
+    vim.inspect(diff_lines),
+    vim.inspect(target_lineno)
   )
+  vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_lineno, 0 })
+
+  before_exit()
+end
+
+function BufferPopupWindow:preview_page_down()
+  if not self:previewer_is_valid() then
+    return
+  end
+
+  self:scroll_by(100, false)
 end
 
 function BufferPopupWindow:preview_page_up()
-  if not self:is_valid() then
+  if not self:previewer_is_valid() then
     return
   end
-  vim.api.nvim_win_call(self.previewer_winnr, function()
-    local ctrl_b = vim.api.nvim_replace_termcodes("<C-b>", true, false, true)
-    vim.api.nvim_feedkeys(ctrl_b, "x", false)
-  end)
-  log.debug(
-    "|BufferPopupWindow:preview_page_up| call - done: %s",
-    vim.inspect(self.previewer_winnr)
-  )
+
+  self:scroll_by(100, true)
 end
 
 function BufferPopupWindow:preview_half_page_down()
-  if not self:is_valid() then
-    log.debug(
-      "|BufferPopupWindow:preview_half_page_down| invalid: %s",
-      vim.inspect(self.previewer_winnr)
-    )
+  if not self:previewer_is_valid() then
     return
   end
-  vim.api.nvim_win_call(self.previewer_winnr, function()
-    local ctrl_d = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
-    vim.api.nvim_feedkeys(ctrl_d, "x", false)
-  end)
-  log.debug(
-    "|BufferPopupWindow:preview_half_page_down| call - done: %s",
-    vim.inspect(self.previewer_winnr)
-  )
+
+  self:scroll_by(50, false)
 end
 
 function BufferPopupWindow:preview_half_page_up()
-  if not self:is_valid() then
-    log.debug(
-      "|BufferPopupWindow:preview_half_page_up| invalid: %s",
-      vim.inspect(self.previewer_winnr)
-    )
+  if not self:previewer_is_valid() then
     return
   end
-  vim.api.nvim_win_call(self.previewer_winnr, function()
-    local ctrl_u = vim.api.nvim_replace_termcodes("<C-u>", true, false, true)
-    vim.api.nvim_feedkeys(ctrl_u, "x", false)
-  end)
-  log.debug(
-    "|BufferPopupWindow:preview_half_page_up| call - done: %s",
-    vim.inspect(self.previewer_winnr)
-  )
+
+  self:scroll_by(50, true)
 end
 
 M.BufferPopupWindow = BufferPopupWindow

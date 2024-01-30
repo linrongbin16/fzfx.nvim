@@ -59,7 +59,7 @@ describe("detail.popup.buffer_popup_window", function()
       assert_true(previewer_winnr > 0)
       assert_true(provider_bufnr > 0)
       assert_true(previewer_bufnr > 0)
-      assert_true(actual:is_valid())
+      assert_true(actual:previewer_is_valid())
       assert_true(actual:handle() > 0)
 
       local provider_height = vim.api.nvim_win_get_height(provider_winnr)
@@ -117,7 +117,7 @@ describe("detail.popup.buffer_popup_window", function()
       assert_true(previewer_winnr > 0)
       assert_true(provider_bufnr > 0)
       assert_true(previewer_bufnr > 0)
-      assert_true(actual:is_valid())
+      assert_true(actual:previewer_is_valid())
       assert_true(actual:handle() > 0)
 
       local provider_height = vim.api.nvim_win_get_height(provider_winnr)
@@ -172,7 +172,7 @@ describe("detail.popup.buffer_popup_window", function()
       assert_true(previewer_winnr > 0)
       assert_true(provider_bufnr > 0)
       assert_true(previewer_bufnr > 0)
-      assert_true(actual:is_valid())
+      assert_true(actual:previewer_is_valid())
       assert_true(actual:handle() > 0)
 
       actual:close()
@@ -180,7 +180,7 @@ describe("detail.popup.buffer_popup_window", function()
       assert_eq(actual.previewer_winnr, nil)
       assert_eq(actual.provider_bufnr, nil)
       assert_eq(actual.previewer_bufnr, nil)
-      assert_false(actual:is_valid())
+      assert_false(actual:previewer_is_valid())
       assert_eq(actual:handle(), nil)
     end)
     it("preview_files_queue", function()
@@ -257,6 +257,38 @@ describe("detail.popup.buffer_popup_window", function()
       actual:preview_action("preview-half-page-up")
       actual:preview_action("preview-page-down")
       actual:preview_action("preview-page-up")
+    end)
+  end)
+  describe("[scroll_by]", function()
+    local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
+      {
+        "--preview-window",
+        "right,50%",
+      },
+    })
+    local builtin_opts = {
+      fzf_preview_window_opts = pw_opts,
+      fzf_border_opts = "rounded",
+    }
+    it("scroll up 100%", function()
+      local bpw =
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      bpw:scroll_by(100, true)
+    end)
+    it("scroll down 100%", function()
+      local bpw =
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      bpw:scroll_by(100, false)
+    end)
+    it("scroll up 50%", function()
+      local bpw =
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      bpw:scroll_by(50, true)
+    end)
+    it("scroll down 100%", function()
+      local bpw =
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      bpw:scroll_by(50, false)
     end)
   end)
 end)
