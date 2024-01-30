@@ -988,13 +988,39 @@ function BufferPopupWindow:toggle_preview()
   end
 end
 
+-- scroll page up by percentage (1% - 100%)
+--- @param winnr integer
+--- @param bufnr integer
+--- @param percent integer  1-100
+--- @param up boolean
+M.scroll_by = function(winnr, bufnr, percent, up)
+  local win_height = math.max(vim.api.nvim_win_get_height(winnr), 1)
+  local buf_lines = vim.api.nvim_buf_line_count(bufnr)
+  local cursor_lineno = vim.api.nvim_win_get_cursor(winnr)[1]
+  local diff_lines = math.max(math.floor(win_height / 100 * percent), 0)
+  if up then
+    diff_lines = -diff_lines
+  end
+  local target_lineno = math.min(cursor_lineno + diff_lines, buf_lines)
+  return target_lineno
+end
+
+local preview_page_scrolling = false
 function BufferPopupWindow:preview_page_down()
   if not self:previewer_is_valid() then
     return
   end
-  vim.api.nvim_win_call(self.previewer_winnr, function()
-    local ctrl_f = vim.api.nvim_replace_termcodes("<C-f>", true, false, true)
-    vim.api.nvim_feedkeys(ctrl_f, "x", false)
+  if preview_page_scrolling then
+    return
+  end
+  preview_page_scrolling = true
+
+  local target_lineno =
+    M.scroll_by(self.previewer_winnr, self.previewer_bufnr, 100, false)
+  vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_lineno, 0 })
+
+  vim.schedule(function()
+    preview_page_scrolling = false
   end)
   -- log.debug(
   --   "|BufferPopupWindow:preview_page_down| call - done: %s",
@@ -1006,50 +1032,54 @@ function BufferPopupWindow:preview_page_up()
   if not self:previewer_is_valid() then
     return
   end
-  vim.api.nvim_win_call(self.previewer_winnr, function()
-    local ctrl_b = vim.api.nvim_replace_termcodes("<C-b>", true, false, true)
-    vim.api.nvim_feedkeys(ctrl_b, "x", false)
+  if preview_page_scrolling then
+    return
+  end
+  preview_page_scrolling = true
+
+  local target_lineno =
+    M.scroll_by(self.previewer_winnr, self.previewer_bufnr, 100, true)
+  vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_lineno, 0 })
+
+  vim.schedule(function()
+    preview_page_scrolling = false
   end)
-  -- log.debug(
-  --   "|BufferPopupWindow:preview_page_up| call - done: %s",
-  --   vim.inspect(self.previewer_winnr)
-  -- )
 end
 
 function BufferPopupWindow:preview_half_page_down()
   if not self:previewer_is_valid() then
-    log.debug(
-      "|BufferPopupWindow:preview_half_page_down| invalid: %s",
-      vim.inspect(self.previewer_winnr)
-    )
     return
   end
-  vim.api.nvim_win_call(self.previewer_winnr, function()
-    local ctrl_d = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
-    vim.api.nvim_feedkeys(ctrl_d, "x", false)
+  if preview_page_scrolling then
+    return
+  end
+  preview_page_scrolling = true
+
+  local target_lineno =
+    M.scroll_by(self.previewer_winnr, self.previewer_bufnr, 50, false)
+  vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_lineno, 0 })
+
+  vim.schedule(function()
+    preview_page_scrolling = false
   end)
-  -- log.debug(
-  --   "|BufferPopupWindow:preview_half_page_down| call - done: %s",
-  --   vim.inspect(self.previewer_winnr)
-  -- )
 end
 
 function BufferPopupWindow:preview_half_page_up()
   if not self:previewer_is_valid() then
-    log.debug(
-      "|BufferPopupWindow:preview_half_page_up| invalid: %s",
-      vim.inspect(self.previewer_winnr)
-    )
     return
   end
-  vim.api.nvim_win_call(self.previewer_winnr, function()
-    local ctrl_u = vim.api.nvim_replace_termcodes("<C-u>", true, false, true)
-    vim.api.nvim_feedkeys(ctrl_u, "x", false)
+  if preview_page_scrolling then
+    return
+  end
+  preview_page_scrolling = true
+
+  local target_lineno =
+    M.scroll_by(self.previewer_winnr, self.previewer_bufnr, 50, true)
+  vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_lineno, 0 })
+
+  vim.schedule(function()
+    preview_page_scrolling = false
   end)
-  -- log.debug(
-  --   "|BufferPopupWindow:preview_half_page_up| call - done: %s",
-  --   vim.inspect(self.previewer_winnr)
-  -- )
 end
 
 M.BufferPopupWindow = BufferPopupWindow
