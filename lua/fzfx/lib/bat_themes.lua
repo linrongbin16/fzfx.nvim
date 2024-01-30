@@ -5,11 +5,13 @@ local spawn = require("fzfx.commons.spawn")
 local apis = require("fzfx.commons.apis")
 local tables = require("fzfx.commons.tables")
 
--- local log = require("fzfx.lib.log")
+local constants = require("fzfx.lib.constants")
+local log = require("fzfx.lib.log")
 
 local M = {}
 
-local THEMES_CONFIG_DIR = nil
+local THEMES_CONFIG_DIR = constants.IS_WINDOWS and nil
+  or paths.normalize("~/.config/bat/themes", { expand = true })
 
 local getting_themes_config_dir = false
 
@@ -78,14 +80,10 @@ M._normalize_by = function(s, delimiter)
   return table.concat(splits, "")
 end
 
---- @param name string?
+--- @param name string
 --- @return string?
 M.get_custom_theme_name = function(name)
-  name = name or vim.g.colors_name
-  if strings.empty(name) then
-    return nil
-  end
-
+  assert(type(name) == "string" and string.len(name) > 0)
   if CUSTOMS_THEME_NAME_MAPPINGS[name] == nil then
     local result = name
     result = M._normalize_by(result, "-")
@@ -99,9 +97,10 @@ M.get_custom_theme_name = function(name)
   return CUSTOMS_THEME_NAME_MAPPINGS[name]
 end
 
+--- @param colorname string
 --- @return string?
-M.get_custom_theme_template_file = function()
-  local theme_name = M.get_custom_theme_name()
+M.get_custom_theme_template_file = function(colorname)
+  local theme_name = M.get_custom_theme_name(colorname)
   if strings.empty(theme_name) then
     return nil
   end
@@ -381,6 +380,7 @@ local SCOPE_RENDERERS = {
   -- keyword {
   -- _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
   _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
+  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.local"),
   _BatTmThemeScopeRenderer:new(
     { "@keyword.conditional", "Conditional" },
     "keyword.control.conditional"
@@ -484,7 +484,7 @@ local SCOPE_RENDERERS = {
 
   -- support {
   _BatTmThemeScopeRenderer:new({
-    "@function.builtin",
+    "@function",
     "Function",
   }, "support.function"),
   _BatTmThemeScopeRenderer:new({
@@ -562,9 +562,10 @@ local SCOPE_RENDERERS = {
   -- punctuation }
 }
 
+--- @param colorname string
 --- @return {name:string,payload:string}?
-M.calculate_custom_theme = function()
-  local theme_name = M.get_custom_theme_name() --[[@as string]]
+M.calculate_custom_theme = function(colorname)
+  local theme_name = M.get_custom_theme_name(colorname) --[[@as string]]
   if strings.empty(theme_name) then
     return nil
   end
