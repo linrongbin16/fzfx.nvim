@@ -1005,8 +1005,6 @@ M.scroll_by = function(winnr, bufnr, percent, up)
   preview_page_scrolling = true
   local down = not up
 
-  local win_height = math.max(vim.api.nvim_win_get_height(winnr), 1)
-  local buf_lines = vim.api.nvim_buf_line_count(bufnr)
   local base_lineno = up and vim.fn.line("w0", winnr)
     or vim.fn.line("w$", winnr)
   if base_lineno == 1 and up then
@@ -1015,6 +1013,7 @@ M.scroll_by = function(winnr, bufnr, percent, up)
     end)
     return
   end
+  local buf_lines = vim.api.nvim_buf_line_count(bufnr)
   if base_lineno >= buf_lines and down then
     vim.schedule(function()
       preview_page_scrolling = false
@@ -1022,6 +1021,7 @@ M.scroll_by = function(winnr, bufnr, percent, up)
     return
   end
 
+  local win_height = math.max(vim.api.nvim_win_get_height(winnr), 1)
   local diff_lines = math.max(math.floor(win_height / 100 * percent), 0)
   if up then
     diff_lines = -diff_lines
