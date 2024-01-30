@@ -381,6 +381,7 @@ end
 --- @field preview_file_contents_queue fzfx.BufferPopupWindowPreviewFileContents[]
 --- @field preview_file_job_id integer
 --- @field previewer_is_hidden boolean
+--- @field _scrolling_preview_page boolean
 local BufferPopupWindow = {}
 
 local function _set_default_buf_options(bufnr)
@@ -464,6 +465,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     preview_file_contents_queue = {},
     preview_file_job_id = 0,
     previewer_is_hidden = false,
+    _scrolling_preview_page = false,
   }
   setmetatable(o, self)
   self.__index = self
@@ -1019,31 +1021,45 @@ local preview_page_scrolling = false
 --- @param bufnr integer
 --- @param percent integer  1-100
 --- @param up boolean
-M.scroll_by = function(winnr, bufnr, percent, up)
-  if preview_page_scrolling then
+function BufferPopupWindow:scroll_by(percent, up)
+  local last_preview_contents_job_id =
+    tables.tbl_get(self._saved_preview_file_contents, "job_id")
+  if
+    type(last_preview_contents_job_id) == "number"
+    and last_preview_contents_job_id < self.preview_file_job_id
+  then
+    return
+  end
+  if not self:previewer_is_valid() then
+    return
+  end
+  if self._scrolling_preview_page then
     return
   end
 
-  preview_page_scrolling = true
+  self._scrolling_preview_page = true
   local down = not up
 
-  local base_lineno = up and vim.fn.line("w0", winnr)
-    or vim.fn.line("w$", winnr)
-  if base_lineno == 1 and up then
+  local function before_exit()
     vim.schedule(function()
-      preview_page_scrolling = false
+      self._scrolling_preview_page = false
     end)
+  end
+
+  local base_lineno = up and vim.fn.line("w0", self.previewer_winnr)
+    or vim.fn.line("w$", self.previewer_winnr)
+  if base_lineno == 1 and up then
+    before_exit()
     return
   end
-  local buf_lines = vim.api.nvim_buf_line_count(bufnr)
+  local buf_lines = vim.api.nvim_buf_line_count(self.previewer_bufnr)
   if base_lineno >= buf_lines and down then
-    vim.schedule(function()
-      preview_page_scrolling = false
-    end)
+    before_exit()
     return
   end
 
-  local win_height = math.max(vim.api.nvim_win_get_height(winnr), 1)
+  local win_height =
+    math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
   local diff_lines = math.max(math.floor(win_height / 100 * percent), 0)
   if up then
     diff_lines = -diff_lines
@@ -1059,11 +1075,9 @@ M.scroll_by = function(winnr, bufnr, percent, up)
     vim.inspect(diff_lines),
     vim.inspect(target_lineno)
   )
-  vim.api.nvim_win_set_cursor(winnr, { target_lineno, 0 })
+  vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_lineno, 0 })
 
-  vim.schedule(function()
-    preview_page_scrolling = false
-  end)
+  before_exit()
 end
 
 function BufferPopupWindow:preview_page_down()
@@ -1071,7 +1085,7 @@ function BufferPopupWindow:preview_page_down()
     return
   end
 
-  M.scroll_by(self.previewer_winnr, self.previewer_bufnr, 100, false)
+  self:scroll_by(100, false)
 end
 
 function BufferPopupWindow:preview_page_up()
@@ -1079,7 +1093,7 @@ function BufferPopupWindow:preview_page_up()
     return
   end
 
-  M.scroll_by(self.previewer_winnr, self.previewer_bufnr, 100, true)
+  self:scroll_by(100, true)
 end
 
 function BufferPopupWindow:preview_half_page_down()
@@ -1087,7 +1101,7 @@ function BufferPopupWindow:preview_half_page_down()
     return
   end
 
-  M.scroll_by(self.previewer_winnr, self.previewer_bufnr, 50, false)
+  self:scroll_by(50, false)
 end
 
 function BufferPopupWindow:preview_half_page_up()
@@ -1095,7 +1109,7 @@ function BufferPopupWindow:preview_half_page_up()
     return
   end
 
-  M.scroll_by(self.previewer_winnr, self.previewer_bufnr, 50, true)
+  self:scroll_by(50, true)
 end
 
 M.BufferPopupWindow = BufferPopupWindow
