@@ -5,7 +5,6 @@ local fileios = require("fzfx.commons.fileios")
 local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
 
-local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
@@ -915,10 +914,6 @@ end
 
 function BufferPopupWindow:toggle_preview()
   log.debug("|BufferPopupWindow:toggle_preview|")
-  if not self:previewer_is_valid() then
-    log.debug("|BufferPopupWindow:toggle_preview| invalid")
-    return
-  end
   -- already hide, show it
   if self.previewer_is_hidden then
     self:show_preview()
