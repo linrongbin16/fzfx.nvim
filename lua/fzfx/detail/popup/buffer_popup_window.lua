@@ -652,6 +652,7 @@ function BufferPopupWindow:preview_file(
               vim.inspect(buf_call_err)
             )
           end
+          vim.api.nvim_win_set_cursor(self.previewer_winnr, { 1, 0 })
 
           local TOTAL_LINES = #last_contents.lines
           local LINE_COUNT = 5
