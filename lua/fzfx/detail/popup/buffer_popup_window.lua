@@ -701,9 +701,6 @@ function BufferPopupWindow:preview_file_contents(file_contents)
   end
 
   local last_contents = file_contents --[[@as fzfx.BufferPopupWindowPreviewFileContents]]
-  if last_contents.job_id < self.preview_file_job_id then
-    return
-  end
 
   local set_name_ok, set_name_err = pcall(
     vim.api.nvim_buf_set_name,
