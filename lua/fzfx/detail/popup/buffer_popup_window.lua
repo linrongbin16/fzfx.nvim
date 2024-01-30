@@ -878,7 +878,7 @@ function BufferPopupWindow:show_preview()
     log.debug("|BufferPopupWindow:show_preview| already show")
     return
   end
-  if not self:previewer_is_valid() then
+  if not self:provider_is_valid() then
     log.debug("|BufferPopupWindow:show_preview| invalid")
     return
   end
@@ -890,6 +890,8 @@ function BufferPopupWindow:show_preview()
   )
   previewer_win_confs.focusable = false
 
+  local previewer_bufnr = vim.api.nvim_create_buf(false, true)
+  _set_default_buf_options(previewer_bufnr)
   self.previewer_winnr =
     vim.api.nvim_open_win(self.previewer_bufnr, true, previewer_win_confs)
 
@@ -901,8 +903,12 @@ function BufferPopupWindow:hide_preview()
     log.debug("|BufferPopupWindow:hide_preview| already hidden")
     return
   end
+  if not self:provider_is_valid() then
+    log.debug("|BufferPopupWindow:show_preview| invalid provider")
+    return
+  end
   if not self:previewer_is_valid() then
-    log.debug("|BufferPopupWindow:hide_preview| invalid")
+    log.debug("|BufferPopupWindow:hide_preview| invalid previewer")
     return
   end
 
