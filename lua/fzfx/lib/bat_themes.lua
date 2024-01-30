@@ -484,7 +484,7 @@ local SCOPE_RENDERERS = {
 
   -- support {
   _BatTmThemeScopeRenderer:new({
-    "@function",
+    "@function.builtin",
     "Function",
   }, "support.function"),
   _BatTmThemeScopeRenderer:new({
@@ -514,16 +514,20 @@ local SCOPE_RENDERERS = {
   _BatTmThemeScopeRenderer:new({
     "@variable.builtin",
   }, { "variable.language" }),
-  _BatTmThemeScopeRenderer:new({
-    "@constant",
-  }, { "variable.other.constant" }),
+  -- _BatTmThemeScopeRenderer:new({
+  --   "@constant",
+  -- }, { "variable.other.constant" }),
   _BatTmThemeScopeRenderer:new({
     "@variable",
     "Identifier",
   }, "variable"),
   _BatTmThemeScopeRenderer:new({
-    "@variable.member",
-  }, "variable.other.member"),
+    "@variable",
+    "Identifier",
+  }, "variable.other"),
+  -- _BatTmThemeScopeRenderer:new({
+  --   "@variable.member",
+  -- }, "variable.other.member"),
   -- variable }
 
   -- punctuation {
