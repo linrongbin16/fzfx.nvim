@@ -475,22 +475,50 @@ function BufferPopupWindow:resize()
   self._resizing = true
 
   if self.previewer_is_hidden then
+    local old_provider_win_confs =
+      vim.api.nvim_win_get_config(self.provider_winnr)
     local provider_win_confs = M.make_provider_opts_with_hidden_previewer(
       self._saved_win_opts,
       self._saved_buffer_previewer_opts
     )
-    vim.api.nvim_win_set_config(self.provider_winnr, provider_win_confs)
+    vim.api.nvim_win_set_config(
+      self.provider_winnr,
+      vim.tbl_deep_extend(
+        "force",
+        old_provider_win_confs,
+        provider_win_confs or {}
+      )
+    )
   else
+    local old_provider_win_confs =
+      vim.api.nvim_win_get_config(self.provider_winnr)
     local provider_win_confs = M.make_provider_opts(
       self._saved_win_opts,
       self._saved_buffer_previewer_opts
     )
-    vim.api.nvim_win_set_config(self.provider_winnr, provider_win_confs)
+    vim.api.nvim_win_set_config(
+      self.provider_winnr,
+      vim.tbl_deep_extend(
+        "force",
+        old_provider_win_confs,
+        provider_win_confs or {}
+      )
+    )
+
+    local old_previewer_win_confs =
+      vim.api.nvim_win_get_config(self.previewer_winnr)
     local previewer_win_confs = M.make_previewer_opts(
       self._saved_win_opts,
       self._saved_buffer_previewer_opts
     )
-    vim.api.nvim_win_set_config(self.previewer_winnr, previewer_win_confs)
+    vim.api.nvim_win_set_config(
+      self.previewer_winnr,
+      vim.tbl_deep_extend(
+        "force",
+        old_previewer_win_confs,
+        previewer_win_confs or {}
+      )
+    )
   end
 
   vim.schedule(function()
