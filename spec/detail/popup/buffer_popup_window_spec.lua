@@ -273,42 +273,22 @@ describe("detail.popup.buffer_popup_window", function()
     it("scroll up 100%", function()
       local bpw =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      buffer_popup_window.scroll_by(
-        bpw.previewer_winnr,
-        bpw.previewer_bufnr,
-        100,
-        true
-      )
+      bpw:scroll_by(100, true)
     end)
     it("scroll down 100%", function()
       local bpw =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      buffer_popup_window.scroll_by(
-        bpw.previewer_winnr,
-        bpw.previewer_bufnr,
-        100,
-        false
-      )
+      bpw:scroll_by(100, false)
     end)
     it("scroll up 50%", function()
       local bpw =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      buffer_popup_window.scroll_by(
-        bpw.previewer_winnr,
-        bpw.previewer_bufnr,
-        50,
-        true
-      )
+      bpw:scroll_by(50, true)
     end)
     it("scroll down 100%", function()
       local bpw =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      buffer_popup_window.scroll_by(
-        bpw.previewer_winnr,
-        bpw.previewer_bufnr,
-        50,
-        false
-      )
+      bpw:scroll_by(50, false)
     end)
   end)
 end)
