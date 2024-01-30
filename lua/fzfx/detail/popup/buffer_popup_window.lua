@@ -1013,8 +1013,6 @@ end
 local preview_page_scrolling = false
 
 -- scroll page up by percentage (1% - 100%)
---- @param winnr integer
---- @param bufnr integer
 --- @param percent integer  1-100
 --- @param up boolean
 function BufferPopupWindow:scroll_by(percent, up)
