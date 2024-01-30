@@ -831,8 +831,12 @@ function BufferPopupWindow:preview_action(action_name)
       self:preview_half_page_up()
     end,
     ["preview-bottom"] = function() end,
-    ["toggle-preview"] = function() end,
-    ["toggle-preview-wrap"] = function() end,
+    ["toggle-preview"] = function()
+      self:toggle_preview()
+    end,
+    ["toggle-preview-wrap"] = function()
+      self:toggle_preview()
+    end,
   }
 
   local action = actions_map[action_name]
