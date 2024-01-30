@@ -696,6 +696,11 @@ end
 --- @alias fzfx.BufferPopupWindowPreviewFileContents {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}
 --- @param file_contents fzfx.BufferPopupWindowPreviewFileContents?
 function BufferPopupWindow:preview_file_contents(file_contents)
+  log.debug(
+    "|BufferPopupWindow:preview_file_contents| file_contents:%s, empty:%s",
+    vim.inspect(file_contents),
+    vim.inspect(tables.tbl_empty(file_contents))
+  )
   if tables.tbl_empty(file_contents) then
     return
   end
@@ -797,20 +802,43 @@ function BufferPopupWindow:preview_file_contents(file_contents)
   end
 
   local function set_buf_lines()
+    log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
     vim.defer_fn(function()
       if not self:previewer_is_valid() then
+        log.debug(
+          "|BufferPopupWindow:preview_file_contents| set_buf_lines, previewer_is_valid:%s",
+          vim.inspect(self:previewer_is_valid())
+        )
         return
       end
       if not self:preview_files_queue_empty() then
+        log.debug(
+          "|BufferPopupWindow:preview_file_contents| set_buf_lines, preview_files_queue_empty:%s",
+          vim.inspect(self:preview_files_queue_empty())
+        )
         return
       end
       if not self:preview_file_contents_queue_empty() then
+        log.debug(
+          "|BufferPopupWindow:preview_file_contents| set_buf_lines, preview_file_contents_queue_empty:%s",
+          vim.inspect(self:preview_file_contents_queue_empty())
+        )
         return
       end
       if last_contents.job_id < self.preview_file_job_id then
+        log.debug(
+          "|BufferPopupWindow:preview_file_contents| set_buf_lines, last_contents_job:%s, preview_file_job_id:%s",
+          vim.inspect(last_contents.job_id),
+          vim.inspect(self.preview_file_job_id)
+        )
         return
       end
 
+      log.debug(
+        "|BufferPopupWindow:preview_file_contents| set_buf_lines - start",
+        vim.inspect(last_contents.job_id),
+        vim.inspect(self.preview_file_job_id)
+      )
       local buf_lines = {}
       for i = line_index, line_index + LINE_COUNT do
         if i <= TOTAL_LINES then
@@ -916,7 +944,13 @@ function BufferPopupWindow:show_preview()
 
   -- restore last file preview contents
   vim.schedule(function()
+    log.debug(
+      "|BufferPopupWindow:show_preview| restore file preview contents, saved:%s, not empty:%s",
+      vim.inspect(self._saved_preview_file_contents),
+      vim.inspect(tables.tbl_not_empty(self._saved_preview_file_contents))
+    )
     if tables.tbl_not_empty(self._saved_preview_file_contents) then
+      self._saved_preview_file_contents.job_id = numbers.auto_incremental_id()
       self:preview_file_contents(self._saved_preview_file_contents)
     end
   end)
