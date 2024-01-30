@@ -145,6 +145,12 @@ jobs:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
         with:
           version: ${{ steps.release.outputs.tag_name }}
+          copy_directories: |
+            {{ neovim.plugin.dirs }}
+            assets
+            bin
+            docs
+            spec
           labels: |
             neovim
             vim
