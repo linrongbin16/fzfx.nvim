@@ -363,6 +363,7 @@ end
 --- @field preview_files_queue {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}[]
 --- @field preview_file_contents_queue {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?,job_id:integer}[]
 --- @field preview_file_job_id integer
+--- @field is_hidden boolean
 local BufferPopupWindow = {}
 
 local function _set_default_buf_options(bufnr)
@@ -438,6 +439,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     preview_files_queue = {},
     preview_file_contents_queue = {},
     preview_file_job_id = 0,
+    is_hidden = false,
   }
   setmetatable(o, self)
   self.__index = self
@@ -629,7 +631,7 @@ function BufferPopupWindow:preview_file(
           )
           if not set_name_ok then
             log.debug(
-              "|BufferPopupWindow:preview_file.asyncreadfile| failed to set name for previewer buffer:%s(%s), error:%s",
+              "|BufferPopupWindow:preview_file - asyncreadfile| failed to set name for previewer buffer:%s(%s), error:%s",
               vim.inspect(last_contents.previewer_result.filename),
               vim.inspect(self.previewer_bufnr),
               vim.inspect(set_name_err)
@@ -644,10 +646,20 @@ function BufferPopupWindow:preview_file(
           )
           if not buf_call_ok then
             log.debug(
-              "|BufferPopupWindow:preview_file.asyncreadfile| failed to detect filetype for previewer buffer:%s(%s), error:%s",
+              "|BufferPopupWindow:preview_file - asyncreadfile| failed to detect filetype for previewer buffer:%s(%s), error:%s",
               vim.inspect(last_contents.previewer_result.filename),
               vim.inspect(self.previewer_bufnr),
               vim.inspect(buf_call_err)
+            )
+          end
+          local set_cursor_ok, set_cursor_err =
+            pcall(vim.api.nvim_win_set_cursor, self.previewer_winnr, { 1, 0 })
+          if not set_cursor_ok then
+            log.debug(
+              "|BufferPopupWindow:preview_file - asyncreadfile| failed to set cursor at top of file for previewer buffer:%s(%s), error: %s",
+              vim.inspect(last_contents.previewer_result.filename),
+              vim.inspect(self.previewer_bufnr),
+              vim.inspect(set_cursor_err)
             )
           end
 
