@@ -259,4 +259,56 @@ describe("detail.popup.buffer_popup_window", function()
       actual:preview_action("preview-page-up")
     end)
   end)
+  describe("[scroll_by]", function()
+    local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
+      {
+        "--preview-window",
+        "right,50%",
+      },
+    })
+    local builtin_opts = {
+      fzf_preview_window_opts = pw_opts,
+      fzf_border_opts = "rounded",
+    }
+    it("scroll up 100%", function()
+      local bpw =
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      buffer_popup_window.scroll_by(
+        bpw.previewer_winnr,
+        bpw.previewer_bufnr,
+        100,
+        true
+      )
+    end)
+    it("scroll down 100%", function()
+      local bpw =
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      buffer_popup_window.scroll_by(
+        bpw.previewer_winnr,
+        bpw.previewer_bufnr,
+        100,
+        false
+      )
+    end)
+    it("scroll up 50%", function()
+      local bpw =
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      buffer_popup_window.scroll_by(
+        bpw.previewer_winnr,
+        bpw.previewer_bufnr,
+        50,
+        true
+      )
+    end)
+    it("scroll down 100%", function()
+      local bpw =
+        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      buffer_popup_window.scroll_by(
+        bpw.previewer_winnr,
+        bpw.previewer_bufnr,
+        50,
+        false
+      )
+    end)
+  end)
 end)
