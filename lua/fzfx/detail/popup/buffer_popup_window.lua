@@ -382,6 +382,7 @@ local function _set_default_provider_win_options(winnr)
   apis.set_win_option(winnr, "number", false)
   apis.set_win_option(winnr, "spell", false)
   apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  apis.set_win_option(winnr, "colorcolumn", "")
 end
 
 --- @package
@@ -400,20 +401,19 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   local previewer_bufnr = vim.api.nvim_create_buf(false, true)
   _set_default_buf_options(previewer_bufnr)
 
-  local provider_nvim_float_win_opts =
+  local provider_win_confs =
     M.make_provider_opts(win_opts, buffer_previewer_opts)
-  local previewer_nvim_float_win_opts =
+  local previewer_win_confs =
     M.make_previewer_opts(win_opts, buffer_previewer_opts)
-  previewer_nvim_float_win_opts.focusable = false
+  previewer_win_confs.focusable = false
 
   local previewer_winnr =
-    vim.api.nvim_open_win(previewer_bufnr, true, previewer_nvim_float_win_opts)
+    vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
   _set_default_previewer_win_options(previewer_winnr)
 
   local provider_winnr =
-    vim.api.nvim_open_win(provider_bufnr, true, provider_nvim_float_win_opts)
+    vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs)
   _set_default_provider_win_options(provider_winnr)
-  apis.set_win_option(provider_winnr, "colorcolumn", "")
 
   -- set cursor at provider window
   vim.api.nvim_set_current_win(provider_winnr)
@@ -489,6 +489,7 @@ function BufferPopupWindow:resize()
         provider_win_confs or {}
       )
     )
+    _set_default_provider_win_options(self.provider_winnr)
   else
     local old_provider_win_confs =
       vim.api.nvim_win_get_config(self.provider_winnr)
@@ -504,6 +505,7 @@ function BufferPopupWindow:resize()
         provider_win_confs or {}
       )
     )
+    _set_default_provider_win_options(self.provider_winnr)
 
     local old_previewer_win_confs =
       vim.api.nvim_win_get_config(self.previewer_winnr)
@@ -519,6 +521,7 @@ function BufferPopupWindow:resize()
         previewer_win_confs or {}
       )
     )
+    _set_default_previewer_win_options(self.previewer_winnr)
   end
 
   vim.schedule(function()
@@ -839,23 +842,40 @@ function BufferPopupWindow:preview_action(action_name)
 end
 
 function BufferPopupWindow:show_preview()
-  log.debug("|BufferPopupWindow:show_preview|")
+  if not self.previewer_is_hidden then
+    log.debug("|BufferPopupWindow:show_preview| already show")
+    return
+  end
   if not self:is_valid() then
     log.debug("|BufferPopupWindow:show_preview| invalid")
     return
   end
-  vim.api.nvim_win_set_config(self.previewer_winnr, { hide = false })
-  _set_default_previewer_win_options(self.previewer_winnr)
+
+  self.previewer_is_hidden = false
+  local previewer_win_confs = M.make_previewer_opts(
+    self._saved_win_opts,
+    self._saved_buffer_previewer_opts
+  )
+  previewer_win_confs.focusable = false
+
+  self.previewer_winnr =
+    vim.api.nvim_open_win(self.previewer_bufnr, true, previewer_win_confs)
+
   self:resize()
 end
 
 function BufferPopupWindow:hide_preview()
-  log.debug("|BufferPopupWindow:hide_preview|")
+  if self.previewer_is_hidden then
+    log.debug("|BufferPopupWindow:hide_preview| already hidden")
+    return
+  end
   if not self:is_valid() then
     log.debug("|BufferPopupWindow:hide_preview| invalid")
     return
   end
-  vim.api.nvim_win_set_config(self.previewer_winnr, { hide = true })
+
+  self.previewer_is_hidden = true
+  vim.api.nvim_win_close(self.previewer_winnr, true)
   self:set_preview_file_job_id(numbers.auto_incremental_id())
   self:resize()
 end
