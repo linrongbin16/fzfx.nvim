@@ -39,7 +39,7 @@ M._bat_style_theme = function()
       strings.not_empty(color)
       and paths.isfile(bat_helpers.get_custom_theme_template_file(color) or "")
     then
-      print(string.format("bat previewer color:%s", vim.inspect(color)))
+      -- print(string.format("bat previewer color:%s", vim.inspect(color)))
       theme = bat_helpers.get_custom_theme_name(color) --[[@as string]]
       if strings.not_empty(theme) then
         return style, theme
