@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.0...v5.1.1) (2024-01-31)
+
+
+### Bug Fixes
+
+* **colors:** fix static fzf color & icon opts ([#567](https://github.com/linrongbin16/fzfx.nvim/issues/567)) ([9a62620](https://github.com/linrongbin16/fzfx.nvim/commit/9a62620032e623fa2bc044886ac4893277eb9fa4))
+
 ## [5.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.0.4...v5.1.0) (2024-01-31)
 
 
