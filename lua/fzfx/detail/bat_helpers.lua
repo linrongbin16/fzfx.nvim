@@ -525,7 +525,7 @@ M._build_theme = function(colorname, opts)
   if strings.empty(theme_dir) then
     return
   end
-  local theme = M._render_theme(colorname, skip_injection) --[[@as string]]
+  local theme = M._render_theme(colorname, opts.skip_injection) --[[@as string]]
   -- log.debug("|build_custom_theme| theme:%s", vim.inspect(theme))
   if tables.tbl_empty(theme) then
     return
@@ -568,14 +568,14 @@ end
 M.setup = function()
   local color = vim.g.colors_name
   if strings.not_empty(color) then
-    M._build_theme(color, true)
+    M._build_theme(color, { skip_injection = true })
   end
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
-        M._build_theme(event.match, true)
+        M._build_theme(event.match, { skip_injection = true })
       end
     end,
   })
