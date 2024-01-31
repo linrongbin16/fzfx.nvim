@@ -266,7 +266,8 @@ function Popup:new(
   -- save fzf/shell context
   local saved_shell_opts_context = popup_helpers.ShellOptsContext:save()
   local saved_fzf_default_command = vim.env.FZF_DEFAULT_COMMAND
-  vim.env.FZF_DEFAULT_OPTS = ""
+  local saved_fzf_default_opts = vim.env.FZF_DEFAULT_OPTS
+  vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()
   vim.env.FZF_DEFAULT_COMMAND = source
 
   log.debug(
@@ -285,6 +286,7 @@ function Popup:new(
   -- restore fzf/shell context
   saved_shell_opts_context:restore()
   vim.env.FZF_DEFAULT_COMMAND = saved_fzf_default_command
+  vim.env.FZF_DEFAULT_OPTS = saved_fzf_default_opts
 
   vim.cmd([[ startinsert ]])
 

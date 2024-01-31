@@ -229,7 +229,7 @@ describe("detail.fzf_helpers", function()
       print(string.format("make default opts: %s\n", vim.inspect(actual)))
       assert_eq(type(actual), "string")
       assert_true(string.len(actual --[[@as string]]) > 0)
-      assert_true(strings.find(actual, "--border") > 0)
+      assert_true(strings.find(actual, "color") > 0)
     end)
   end)
 
