@@ -14,15 +14,17 @@ describe("helper.colorschemes_helper", function()
   local colorschemes_helper = require("fzfx.helper.colorschemes")
   require("fzfx").setup()
 
-  describe("[color name cache]", function()
-    it("get_color_name", function()
+  describe("[get_color_name]", function()
+    it("test", function()
       assert_true(
         type(colorschemes_helper.get_color_name()) == "string"
           or colorschemes_helper.get_color_name() == nil
       )
     end)
-    it("dump_color_name", function()
-      colorschemes_helper.dump_color_name(vim.g.colors_name)
+  end)
+  describe("[_dump_color_name]", function()
+    it("test", function()
+      colorschemes_helper._dump_color_name(vim.g.colors_name)
     end)
   end)
 end)
