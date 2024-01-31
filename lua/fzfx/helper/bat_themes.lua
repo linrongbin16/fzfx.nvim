@@ -119,7 +119,7 @@ M._normalize_by = function(s, delimiter)
 end
 
 --- @param name string
---- @return string?
+--- @return string
 M.get_theme_name = function(name)
   assert(type(name) == "string" and string.len(name) > 0)
   if THEME_NAMES_MAP[name] == nil then
@@ -139,9 +139,7 @@ end
 --- @return string?
 M.get_theme_config_file = function(colorname)
   local theme_name = M.get_theme_name(colorname)
-  if strings.empty(theme_name) then
-    return nil
-  end
+  assert(type(theme_name) == "string" and string.len(theme_name) > 0)
   local theme_dir = M.get_bat_themes_dir()
   if strings.empty(theme_dir) then
     return nil
