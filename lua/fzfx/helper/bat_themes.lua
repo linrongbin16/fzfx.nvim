@@ -112,7 +112,7 @@ end
 
 --- @param name string
 --- @return string?
-M.get_custom_theme_name = function(name)
+M.get_theme_name = function(name)
   assert(type(name) == "string" and string.len(name) > 0)
   if CUSTOMS_THEME_NAME_MAPPINGS[name] == nil then
     local result = name
@@ -130,7 +130,7 @@ end
 --- @param colorname string
 --- @return string?
 M.get_custom_theme_template_file = function(colorname)
-  local theme_name = M.get_custom_theme_name(colorname)
+  local theme_name = M.get_theme_name(colorname)
   if strings.empty(theme_name) then
     return nil
   end
@@ -600,7 +600,7 @@ M.calculate_custom_theme = function(colorname, no_treesitter)
   if strings.empty(colorname) then
     return nil
   end
-  local theme_name = M.get_custom_theme_name(colorname) --[[@as string]]
+  local theme_name = M.get_theme_name(colorname) --[[@as string]]
   if strings.empty(theme_name) then
     return nil
   end

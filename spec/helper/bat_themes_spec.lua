@@ -80,7 +80,7 @@ describe("detail.bat_helpers", function()
       )
     end)
   end)
-  describe("[get_custom_theme_name]", function()
+  describe("[get_theme_name]", function()
     it("test", function()
       local inputs = {
         "material-lighter",
@@ -104,7 +104,7 @@ describe("detail.bat_helpers", function()
       }
 
       for i, v in ipairs(inputs) do
-        local actual = bat_themes_helper.get_custom_theme_name(v)
+        local actual = bat_themes_helper.get_theme_name(v)
         assert_eq(actual, expects[i])
       end
     end)
