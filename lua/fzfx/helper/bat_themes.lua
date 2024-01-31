@@ -233,35 +233,22 @@ function _BatTmScopeRenderer:new(hl, tm_scope)
   return o
 end
 
---- @param skip_injection boolean?
---- @return string?
-function _BatTmScopeRenderer:render(skip_injection)
-  for i, v in ipairs(self.values) do
-    local is_injected = strings.startswith(v.hl, "@")
-    if skip_injection then
-      if not is_injected then
-        return self:_render_impl(v)
-      end
-    else
-      return self:_render_impl(v)
-    end
-  end
-  return "\n"
-end
-
---- @param hl_value fzfx._BatTmScopeValue
+--- @param scope_value fzfx._BatTmScopeValue
 --- @return string
-function _BatTmScopeRenderer:_render_impl(hl_value)
-  if tables.tbl_empty(hl_value) then
+local function _render_scope(scope_value)
+  if tables.tbl_empty(scope_value) then
     return "\n"
   end
   local builder = {
     "      <dict>",
   }
 
-  local scope_str = type(hl_value.scope) == "table"
-      and table.concat(hl_value.scope --[[@as string[] ]], ", ")
-    or hl_value.scope
+  local scope_str = type(scope_value.scope) == "table"
+      and table.concat(
+        scope_value.scope --[[@as string[] ]],
+        ", "
+      )
+    or scope_value.scope
   table.insert(
     builder,
     string.format(
@@ -280,40 +267,56 @@ function _BatTmScopeRenderer:_render_impl(hl_value)
   )
   table.insert(builder, "        <key>settings</key>")
   table.insert(builder, "        <dict>")
-  if hl_value.foreground then
+  if scope_value.foreground then
     table.insert(builder, "          <key>foreground</key>")
     table.insert(
       builder,
-      string.format("          <string>%s</string>", hl_value.foreground)
+      string.format("          <string>%s</string>", scope_value.foreground)
     )
   end
-  if hl_value.background then
+  if scope_value.background then
     table.insert(builder, "          <key>background</key>")
     table.insert(
       builder,
-      string.format("          <string>%s</string>", hl_value.background)
+      string.format("          <string>%s</string>", scope_value.background)
     )
   end
-  if hl_value.background then
+  if scope_value.background then
     table.insert(builder, "          <key>background</key>")
     table.insert(
       builder,
-      string.format("          <string>%s</string>", hl_value.background)
+      string.format("          <string>%s</string>", scope_value.background)
     )
   end
-  if #hl_value.font_style > 0 then
+  if #scope_value.font_style > 0 then
     table.insert(builder, "          <key>fontStyle</key>")
     table.insert(
       builder,
       string.format(
         "          <string>%s</string>",
-        table.concat(hl_value.font_style, ", ")
+        table.concat(scope_value.font_style, ", ")
       )
     )
   end
   table.insert(builder, "        </dict>")
   table.insert(builder, "      </dict>\n")
   return table.concat(builder, "\n")
+end
+
+--- @param skip_injection boolean?
+--- @return string?
+function _BatTmScopeRenderer:render(skip_injection)
+  for i, v in ipairs(self.values) do
+    local is_injected = strings.startswith(v.hl, "@")
+    if skip_injection then
+      if not is_injected then
+        return _render_scope(v)
+      end
+    else
+      return _render_scope(v)
+    end
+  end
+  return "\n"
 end
 
 local GLOBAL_RENDERERS = {
