@@ -60,9 +60,7 @@ M.get_bat_themes_config_dir = function()
         on_stdout = function(line)
           config_dir = config_dir .. line
         end,
-        on_stderr = function(line)
-          -- log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
-        end,
+        on_stderr = function() end,
       }, function() end)
       :wait()
     M.dump_theme_dir_cache(paths.join(config_dir, "themes"))
@@ -74,9 +72,7 @@ M.get_bat_themes_config_dir = function()
         on_stdout = function(line)
           config_dir = config_dir .. line
         end,
-        on_stderr = function(line)
-          -- log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
-        end,
+        on_stderr = function() end,
       }, function()
         M.dump_theme_dir_cache(paths.join(config_dir, "themes"))
       end)
