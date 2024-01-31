@@ -61,4 +61,23 @@ describe("detail.bat_helpers", function()
       assert_true(type(actual) == "string" or actual == nil)
     end)
   end)
+  describe("[_upper_first_chars]", function()
+    it("test", function()
+      local inputs = {
+        "a",
+        "b",
+        "c",
+        "test",
+        "rose-pine",
+      }
+      local actual = bat_helpers._upper_first_chars(inputs)
+      assert_eq(type(actual), "table")
+      assert_eq(#actual, #inputs)
+      for i, a in ipairs(actual) do
+        assert_eq(a:lower(), inputs[i]:lower())
+        assert_eq(string.sub(a, 1, 1), string.sub(a:upper(), 1, 1))
+        assert_eq(string.sub(a, 2), string.sub(a:lower(), 2))
+      end
+    end)
+  end)
 end)
