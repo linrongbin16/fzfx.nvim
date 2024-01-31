@@ -175,12 +175,12 @@ local function _render_scope(scope_value)
   return table.concat(builder, "\n")
 end
 
---- @param skip_injection boolean?
+--- @param skip_lsp_semantic boolean?
 --- @return string?
-function _BatTmScopeRenderer:render(skip_injection)
+function _BatTmScopeRenderer:render(skip_lsp_semantic)
   for i, scope in ipairs(self.values) do
     local is_injected = strings.startswith(scope.hl, "@")
-    if skip_injection then
+    if skip_lsp_semantic then
       if not is_injected then
         return _render_scope(scope)
       end
@@ -462,9 +462,9 @@ local SCOPE_RENDERERS = {
 }
 
 --- @param colorname string
---- @param skip_injection boolean?
+--- @param skip_lsp_semantic boolean?
 --- @return {name:string,payload:string}?
-M._render_theme = function(colorname, skip_injection)
+M._render_theme = function(colorname, skip_lsp_semantic)
   if strings.empty(colorname) then
     return nil
   end
@@ -487,7 +487,7 @@ M._render_theme = function(colorname, skip_injection)
   end
   local scope_builder = {}
   for i, renderer in ipairs(SCOPE_RENDERERS) do
-    table.insert(scope_builder, renderer:render(skip_injection))
+    table.insert(scope_builder, renderer:render(skip_lsp_semantic))
   end
   payload =
     strings.replace(payload, "{GLOBAL}", table.concat(global_builder, "\n"))
@@ -502,11 +502,11 @@ end
 local building_bat_theme = false
 
 --- @param colorname string
---- @param opts {skip_injection:boolean?,async_build:boolean?}?
+--- @param opts {skip_lsp_semantic:boolean?,async_build:boolean?}?
 M._build_theme = function(colorname, opts)
-  opts = opts or { skip_injection = false, async_build = false }
-  opts.skip_injection = type(opts.skip_injection) == "boolean"
-      and opts.skip_injection
+  opts = opts or { skip_lsp_semantic = false, async_build = false }
+  opts.skip_lsp_semantic = type(opts.skip_lsp_semantic) == "boolean"
+      and opts.skip_lsp_semantic
     or false
   opts.async_build = type(opts.async_build) == "boolean" and opts.async_build
     or false
@@ -525,7 +525,7 @@ M._build_theme = function(colorname, opts)
   if strings.empty(theme_dir) then
     return
   end
-  local theme = M._render_theme(colorname, opts.skip_injection) --[[@as string]]
+  local theme = M._render_theme(colorname, opts.skip_lsp_semantic) --[[@as string]]
   -- log.debug("|build_custom_theme| theme:%s", vim.inspect(theme))
   if tables.tbl_empty(theme) then
     return
@@ -568,28 +568,30 @@ end
 M.setup = function()
   local color = vim.g.colors_name
   if strings.not_empty(color) then
-    M._build_theme(color)
+    M._build_theme(color, { skip_lsp_semantic = true })
   end
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
-        M._build_theme(event.match)
+        M._build_theme(event.match, { skip_lsp_semantic = true })
       end
     end,
   })
 
-  vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPre" }, {
-    callback = function()
-      vim.schedule(function()
-        local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
-        if strings.not_empty(bufcolor) then
-          M._build_theme(bufcolor)
-        end
-      end)
-    end,
-  })
+  if vim.fn.exists("##LspTokenUpdate") then
+    vim.api.nvim_create_autocmd({ "LspTokenUpdate" }, {
+      callback = function()
+        vim.schedule(function()
+          local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
+          if strings.not_empty(bufcolor) then
+            M._build_theme(bufcolor)
+          end
+        end)
+      end,
+    })
+  end
 end
 
 return M
