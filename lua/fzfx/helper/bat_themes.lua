@@ -16,7 +16,7 @@ local THEMES_CONFIG_DIR_CACHE =
   paths.join(env.cache_dir(), "_last_bat_themes_dir_cache")
 
 --- @return string?
-M.cached_theme_dir = function()
+M._cached_theme_dir = function()
   return fileios.readfile(THEMES_CONFIG_DIR_CACHE, { trim = true })
 end
 
@@ -25,32 +25,42 @@ M._dump_theme_dir = function(value)
   return fileios.asyncwritefile(THEMES_CONFIG_DIR_CACHE, value, function() end)
 end
 
+local dumping_bat_themes_dir = false
+
 --- @return string
-M.get_bat_themes_config_dir = function()
-  local theme_dir = M.cached_theme_dir() --[[@as string]]
+M.get_bat_themes_dir = function()
+  local theme_dir = M._cached_theme_dir() --[[@as string]]
   if strings.empty(theme_dir) then
-    local config_dir = ""
+    local result = ""
     spawn
       .run({ "bat", "--config-dir" }, {
         on_stdout = function(line)
-          config_dir = config_dir .. line
+          result = result .. line
         end,
         on_stderr = function() end,
       }, function() end)
       :wait()
-    M._dump_theme_dir(paths.join(config_dir, "themes"))
-    return config_dir
+    M._dump_theme_dir(paths.join(result, "themes"))
+    return result
   else
     vim.schedule(function()
-      local config_dir = ""
+      if dumping_bat_themes_dir then
+        return
+      end
+      dumping_bat_themes_dir = true
+
+      local result = ""
       spawn.run({ "bat", "--config-dir" }, {
         on_stdout = function(line)
-          config_dir = config_dir .. line
+          result = result .. line
         end,
         on_stderr = function() end,
       }, function()
         vim.schedule(function()
-          M._dump_theme_dir(paths.join(config_dir, "themes"))
+          M._dump_theme_dir(paths.join(result, "themes"))
+          vim.schedule(function()
+            dumping_bat_themes_dir = false
+          end)
         end)
       end)
     end)
@@ -121,7 +131,7 @@ M.get_custom_theme_template_file = function(colorname)
   if strings.empty(theme_name) then
     return nil
   end
-  local theme_dir = M.get_bat_themes_config_dir()
+  local theme_dir = M.get_bat_themes_dir()
   if strings.empty(theme_dir) then
     return nil
   end
@@ -632,7 +642,7 @@ M.build_custom_theme = function(colorname, no_treesitter)
   if strings.empty(theme_template) then
     return
   end
-  local theme_dir = M.get_bat_themes_config_dir() --[[@as string]]
+  local theme_dir = M.get_bat_themes_dir() --[[@as string]]
   log.debug("|build_custom_theme| theme_dir:%s", vim.inspect(theme_dir))
   if strings.empty(theme_dir) then
     return
