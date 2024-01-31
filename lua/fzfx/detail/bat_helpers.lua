@@ -17,15 +17,24 @@ M.get_color_name = function()
   return fileios.readfile(COLOR_NAME_CACHE, { trim = true })
 end
 
+local dumping_color_name = false
+
 --- @param colorname string?
 M.dump_color_name = function(colorname)
-  if strings.not_empty(colorname) then
-    fileios.asyncwritefile(
-      COLOR_NAME_CACHE,
-      colorname --[[@as string]],
-      function() end
-    )
+  if strings.empty(colorname) then
+    return
   end
+  if dumping_color_name then
+    return
+  end
+  dumping_color_name = true
+  fileios.asyncwritefile(
+    COLOR_NAME_CACHE,
+    colorname --[[@as string]],
+    function()
+      dumping_color_name = false
+    end
+  )
 end
 
 local THEMES_CONFIG_DIR_CACHE = vim.fn.tempname()
