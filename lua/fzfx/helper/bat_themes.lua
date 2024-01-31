@@ -41,20 +41,23 @@ end
 
 local saving_bat_themes_dir = false
 
---- @return string
+--- @return string?
 M.get_bat_themes_dir = function()
   local cached_result = M._cached_theme_dir() --[[@as string]]
 
   if strings.empty(cached_result) then
     local result = ""
-    spawn
-      .run({ "bat", "--config-dir" }, {
-        on_stdout = function(line)
-          result = result .. line
-        end,
-        on_stderr = function() end,
-      }, function() end)
-      :wait()
+    local ok, sp = pcall(spawn.run, { "bat", "--config-dir" }, {
+      on_stdout = function(line)
+        result = result .. line
+      end,
+      on_stderr = function() end,
+    }, function() end)
+    if not ok then
+      return nil
+    end
+
+    sp:wait()
     M._dump_theme_dir(paths.join(result, "themes"), true)
 
     return result
@@ -66,7 +69,7 @@ M.get_bat_themes_dir = function()
       saving_bat_themes_dir = true
 
       local result = ""
-      spawn.run({ "bat", "--config-dir" }, {
+      local ok, err = pcall(spawn.run, { "bat", "--config-dir" }, {
         on_stdout = function(line)
           result = result .. line
         end,
@@ -144,8 +147,10 @@ end
 --- @param colorname string
 --- @return string?
 M.get_theme_config_file = function(colorname)
-  local theme_dir = M.get_bat_themes_dir()
-  assert(type(theme_dir) == "string" and string.len(theme_dir) > 0)
+  local theme_dir = M.get_bat_themes_dir() --[[@as string]]
+  if strings.empty(theme_dir) then
+    return nil
+  end
   local theme_name = M.get_theme_name(colorname)
   assert(type(theme_name) == "string" and string.len(theme_name) > 0)
   return paths.join(theme_dir, theme_name .. ".tmTheme")
