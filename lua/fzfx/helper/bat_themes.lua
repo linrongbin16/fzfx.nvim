@@ -142,17 +142,17 @@ M.get_theme_config_file = function(colorname)
 end
 
 -- renderer for tmTheme globals
---- @class fzfx._BatTmThemeGlobalRenderer
+--- @class fzfx._BatTmGlobalRenderer
 --- @field key string
 --- @field value string
 --- @field empty boolean
-local _BatTmThemeGlobalRenderer = {}
+local _BatTmGlobalRenderer = {}
 
 --- @param hl string
 --- @param tm_key string
 --- @param attr "fg"|"bg"
---- @return fzfx._BatTmThemeGlobalRenderer
-function _BatTmThemeGlobalRenderer:new(hl, tm_key, attr)
+--- @return fzfx._BatTmGlobalRenderer
+function _BatTmGlobalRenderer:new(hl, tm_key, attr)
   local ok, values = pcall(apis.get_hl, hl)
   if not ok then
     values = {}
@@ -172,7 +172,7 @@ function _BatTmThemeGlobalRenderer:new(hl, tm_key, attr)
 end
 
 --- @return string
-function _BatTmThemeGlobalRenderer:render()
+function _BatTmGlobalRenderer:render()
   if self.empty then
     return "\n"
   end
@@ -185,15 +185,15 @@ end
 
 -- renderer for tmTheme scope
 --
---- @alias fzfx._BatTmThemeScopeValue {hl:string,scope:string[],foreground:string?,background:string?,font_style:string[],bold:boolean?,italic:boolean?,is_empty:boolean}
---- @class fzfx._BatTmThemeScopeRenderer
---- @field values fzfx._BatTmThemeScopeValue[]
-local _BatTmThemeScopeRenderer = {}
+--- @alias fzfx._BatTmScopeValue {hl:string,scope:string[],foreground:string?,background:string?,font_style:string[],bold:boolean?,italic:boolean?,is_empty:boolean}
+--- @class fzfx._BatTmScopeRenderer
+--- @field values fzfx._BatTmScopeValue[]
+local _BatTmScopeRenderer = {}
 
 --- @param hl string|string[]
 --- @param tm_scope string|string[]
---- @return fzfx._BatTmThemeScopeRenderer
-function _BatTmThemeScopeRenderer:new(hl, tm_scope)
+--- @return fzfx._BatTmScopeRenderer
+function _BatTmScopeRenderer:new(hl, tm_scope)
   local hls = type(hl) == "table" and hl or {
     hl --[[@as string]],
   }
@@ -233,13 +233,13 @@ function _BatTmThemeScopeRenderer:new(hl, tm_scope)
   return o
 end
 
---- @param no_treesitter boolean?
+--- @param skip_injection boolean?
 --- @return string?
-function _BatTmThemeScopeRenderer:render(no_treesitter)
+function _BatTmScopeRenderer:render(skip_injection)
   for i, v in ipairs(self.values) do
-    local is_treesitter = strings.startswith(v.hl, "@")
-    if no_treesitter then
-      if not is_treesitter then
+    local is_injected = strings.startswith(v.hl, "@")
+    if skip_injection then
+      if not is_injected then
         return self:_render_impl(v)
       end
     else
@@ -249,9 +249,9 @@ function _BatTmThemeScopeRenderer:render(no_treesitter)
   return "\n"
 end
 
---- @param hl_value fzfx._BatTmThemeScopeValue
+--- @param hl_value fzfx._BatTmScopeValue
 --- @return string
-function _BatTmThemeScopeRenderer:_render_impl(hl_value)
+function _BatTmScopeRenderer:_render_impl(hl_value)
   if tables.tbl_empty(hl_value) then
     return "\n"
   end
@@ -317,23 +317,19 @@ function _BatTmThemeScopeRenderer:_render_impl(hl_value)
 end
 
 local GLOBAL_RENDERERS = {
-  _BatTmThemeGlobalRenderer:new("Normal", "background", "bg"),
-  _BatTmThemeGlobalRenderer:new("Normal", "foreground", "fg"),
-  _BatTmThemeGlobalRenderer:new("Cursor", "caret", "bg"),
-  _BatTmThemeGlobalRenderer:new("Cursor", "block_caret", "bg"),
-  _BatTmThemeGlobalRenderer:new("NonText", "invisibles", "fg"),
-  _BatTmThemeGlobalRenderer:new("Visual", "lineHighlight", "bg"),
-  _BatTmThemeGlobalRenderer:new("LineNr", "gutter", "bg"),
-  _BatTmThemeGlobalRenderer:new("LineNr", "gutterForeground", "fg"),
-  _BatTmThemeGlobalRenderer:new(
-    "CursorLineNr",
-    "gutterForegroundHighlight",
-    "fg"
-  ),
-  _BatTmThemeGlobalRenderer:new("Visual", "selection", "bg"),
-  _BatTmThemeGlobalRenderer:new("Visual", "selectionForeground", "fg"),
-  _BatTmThemeGlobalRenderer:new("Search", "findHighlight", "bg"),
-  _BatTmThemeGlobalRenderer:new("Search", "findHighlightForeground", "fg"),
+  _BatTmGlobalRenderer:new("Normal", "background", "bg"),
+  _BatTmGlobalRenderer:new("Normal", "foreground", "fg"),
+  _BatTmGlobalRenderer:new("Cursor", "caret", "bg"),
+  _BatTmGlobalRenderer:new("Cursor", "block_caret", "bg"),
+  _BatTmGlobalRenderer:new("NonText", "invisibles", "fg"),
+  _BatTmGlobalRenderer:new("Visual", "lineHighlight", "bg"),
+  _BatTmGlobalRenderer:new("LineNr", "gutter", "bg"),
+  _BatTmGlobalRenderer:new("LineNr", "gutterForeground", "fg"),
+  _BatTmGlobalRenderer:new("CursorLineNr", "gutterForegroundHighlight", "fg"),
+  _BatTmGlobalRenderer:new("Visual", "selection", "bg"),
+  _BatTmGlobalRenderer:new("Visual", "selectionForeground", "fg"),
+  _BatTmGlobalRenderer:new("Search", "findHighlight", "bg"),
+  _BatTmGlobalRenderer:new("Search", "findHighlightForeground", "fg"),
 }
 
 -- tm theme:
@@ -342,114 +338,111 @@ local GLOBAL_RENDERERS = {
 -- https://www.sublimetext.com/docs/scope_naming.html#minimal-scope-coverage
 local SCOPE_RENDERERS = {
   -- comment {
-  _BatTmThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),
+  _BatTmScopeRenderer:new({ "@comment", "Comment" }, "comment"),
   -- comment }
 
   -- constant {
-  _BatTmThemeScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
-  _BatTmThemeScopeRenderer:new(
+  _BatTmScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
+  _BatTmScopeRenderer:new(
     { "@number.float", "Float" },
     "constant.numeric.float"
   ),
-  _BatTmThemeScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
-  _BatTmThemeScopeRenderer:new(
+  _BatTmScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
+  _BatTmScopeRenderer:new(
     { "@character", "Character" },
     { "constant.character" }
   ),
-  _BatTmThemeScopeRenderer:new(
+  _BatTmScopeRenderer:new(
     { "@string.escape" },
     { "constant.character.escaped", "constant.character.escape" }
   ),
   -- constant }
 
   -- entity {
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@function",
     "Function",
   }, "entity.name.function"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@type",
     "Type",
   }, {
     "entity.name.type",
   }),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@tag",
   }, "entity.name.tag"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@markup.heading",
     "htmlTitle",
   }, "entity.name.section"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "Structure",
   }, {
     "entity.name.enum",
     "entity.name.union",
   }),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@type",
     "Type",
   }, "entity.other.inherited-class"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@label",
     "Label",
   }, "entity.name.label"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@constant",
     "Constant",
   }, "entity.name.constant"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@module",
   }, "entity.name.namespace"),
   -- entity }
 
   -- invalid {
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "Error",
   }, "invalid.illegal"),
   -- invalid }
 
   -- keyword {
-  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
+  _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
   -- _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.local"),
-  _BatTmThemeScopeRenderer:new(
+  _BatTmScopeRenderer:new(
     { "@keyword.conditional", "Conditional" },
     "keyword.control.conditional"
   ),
-  _BatTmThemeScopeRenderer:new(
-    { "@keyword.operator" },
-    "keyword.operator.word"
-  ),
-  _BatTmThemeScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
-  _BatTmThemeScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
+  _BatTmScopeRenderer:new({ "@keyword.operator" }, "keyword.operator.word"),
+  _BatTmScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+  _BatTmScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
   -- keyword }
 
   -- markup {
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@markup.link.url",
   }, "markup.underline.link"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@markup.underline",
   }, "markup.underline"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@markup.strong",
   }, "markup.bold"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@markup.italic",
   }, "markup.italic"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@markup.heading",
   }, "markup.heading"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@markup.list",
   }, "markup.list"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@markup.raw",
   }, "markup.raw"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@markup.quote",
   }, "markup.quote"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "GitSignsAdd",
     "GitGutterAdd",
     "DiffAdd",
@@ -457,7 +450,7 @@ local SCOPE_RENDERERS = {
     "@diff.plus",
     "Added",
   }, "markup.inserted"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "GitSignsDelete",
     "GitGutterDelete",
     "DiffDelete",
@@ -465,7 +458,7 @@ local SCOPE_RENDERERS = {
     "@diff.minus",
     "Removed",
   }, "markup.deleted"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "GitGutterChange",
     "GitSignsChange",
     "DiffChange",
@@ -484,10 +477,10 @@ local SCOPE_RENDERERS = {
   -- meta }
 
   -- storage {
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@keyword.function",
   }, { "storage.type.function", "keyword.declaration.function" }),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "Structure",
   }, {
     "storage.type.struct",
@@ -495,64 +488,64 @@ local SCOPE_RENDERERS = {
     "keyword.declaration.struct",
     "keyword.declaration.enum",
   }),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@type.builtin",
     "@type",
     "Type",
   }, { "storage.type", "keyword.declaration.type" }),
-  _BatTmThemeScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
+  _BatTmScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
   -- storage }
 
   -- string {
-  _BatTmThemeScopeRenderer:new(
+  _BatTmScopeRenderer:new(
     { "@string", "String" },
     { "string", "string.quoted" }
   ),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@string.regexp",
   }, { "string.regexp" }),
   -- string }
 
   -- support {
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@function",
     "Function",
   }, "support.function"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@constant",
     "Constant",
   }, "support.constant"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@type",
     "Type",
   }, "support.type"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@type",
     "Type",
   }, "support.class"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@module",
   }, "support.module"),
   -- support }
 
   -- variable {
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@function.call",
   }, "variable.function"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@variable.parameter",
   }, { "variable.parameter" }),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@variable.builtin",
   }, { "variable.language" }),
   -- _BatTmThemeScopeRenderer:new({
   --   "@constant",
   -- }, { "variable.other.constant" }),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@variable",
     "Identifier",
   }, "variable"),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@variable",
     "Identifier",
   }, "variable.other"),
@@ -562,7 +555,7 @@ local SCOPE_RENDERERS = {
   -- variable }
 
   -- punctuation {
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@punctuation.bracket",
   }, {
     "punctuation.section.brackets.begin",
@@ -572,19 +565,19 @@ local SCOPE_RENDERERS = {
     "punctuation.section.parens.begin",
     "punctuation.section.parens.end",
   }),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@punctuation.special",
   }, {
     "punctuation.section.interpolation.begin",
     "punctuation.section.interpolation.end",
   }),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@punctuation.delimiter",
   }, {
     "punctuation.separator",
     "punctuation.terminator",
   }),
-  _BatTmThemeScopeRenderer:new({
+  _BatTmScopeRenderer:new({
     "@tag.delimiter",
   }, {
     "punctuation.definition.generic.begin",
