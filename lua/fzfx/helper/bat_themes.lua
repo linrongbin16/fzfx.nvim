@@ -77,7 +77,7 @@ local CUSTOMS_THEME_NAME_MAPPINGS = {}
 
 --- @param names string[]
 --- @return string[]
-M._upper_first_chars = function(names)
+M._upper_first = function(names)
   assert(
     type(names) == "table" and #names > 0,
     string.format("|_upper_firsts| invalid names:%s", vim.inspect(names))
@@ -106,7 +106,7 @@ M._normalize_by = function(s, delimiter)
   local splits = strings.find(s, delimiter)
       and strings.split(s, delimiter, { trimempty = true })
     or { s }
-  splits = M._upper_first_chars(splits)
+  splits = M._upper_first(splits)
   return table.concat(splits, "")
 end
 

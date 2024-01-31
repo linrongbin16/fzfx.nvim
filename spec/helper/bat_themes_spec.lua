@@ -20,8 +20,8 @@ describe("detail.bat_helpers", function()
   describe("[bat themes dir]", function()
     it("cached_theme_dir", function()
       assert_true(
-        type(bat_themes_helper.cached_theme_dir()) == "string"
-          or bat_themes_helper.cached_theme_dir() == nil
+        type(bat_themes_helper._cached_theme_dir()) == "string"
+          or bat_themes_helper._cached_theme_dir() == nil
       )
     end)
     it("_dump_theme_dir", function()
@@ -32,11 +32,11 @@ describe("detail.bat_helpers", function()
   end)
   describe("[get_bat_themes_config_dir]", function()
     it("test", function()
-      local actual = bat_themes_helper.get_bat_themes_config_dir()
+      local actual = bat_themes_helper.get_bat_themes_dir()
       assert_true(type(actual) == "string" or actual == nil)
     end)
   end)
-  describe("[_upper_first_chars]", function()
+  describe("[_upper_first]", function()
     it("test", function()
       local inputs = {
         "a",
@@ -45,7 +45,7 @@ describe("detail.bat_helpers", function()
         "test",
         "rose-pine",
       }
-      local actual = bat_themes_helper._upper_first_chars(inputs)
+      local actual = bat_themes_helper._upper_first(inputs)
       assert_eq(type(actual), "table")
       assert_eq(#actual, #inputs)
       for i, a in ipairs(actual) do
