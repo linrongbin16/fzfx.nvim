@@ -15,12 +15,15 @@ M._color_name_cache = function()
   return paths.join(env.cache_dir(), "_last_color_name_cache")
 end
 
+local COLOR_NAME = vim.g.colors_name
+
 --- @return string?
 M.get_color_name = function()
-  if CACHED_COLOR_NAME == nil then
-    CACHED_COLOR_NAME = fileios.readfile(M._color_name_cache(), { trim = true })
-  end
-  return CACHED_COLOR_NAME
+  -- if CACHED_COLOR_NAME == nil then
+  --   CACHED_COLOR_NAME = fileios.readfile(M._color_name_cache(), { trim = true })
+  -- end
+  -- return CACHED_COLOR_NAME
+  return COLOR_NAME
 end
 
 local dumping_color_name = false
@@ -45,15 +48,17 @@ M._dump_color_name = function(colorname)
 end
 
 M.setup = function()
-  local color = vim.g.colors_name
-  if strings.not_empty(color) then
-    M._dump_color_name(color)
-  end
+  -- local color = vim.g.colors_name
+  -- if strings.not_empty(color) then
+  --   -- M._dump_color_name(color)
+  -- end
+
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
-        M._dump_color_name(event.match)
+        -- M._dump_color_name(event.match)
+        COLOR_NAME = event.match
       end
     end,
   })
