@@ -18,9 +18,6 @@ describe("detail.bat_helpers", function()
   require("fzfx").setup()
 
   describe("[color name cache]", function()
-    it("get_color_name_cache", function()
-      assert_eq(type(bat_helpers.get_color_name_cache()), "string")
-    end)
     it("get_color_name", function()
       assert_true(
         type(bat_helpers.get_color_name()) == "string"
@@ -32,9 +29,6 @@ describe("detail.bat_helpers", function()
     end)
   end)
   describe("[bat themes dir]", function()
-    it("get_themes_config_dir_cache", function()
-      assert_eq(type(bat_helpers.get_themes_config_dir_cache()), "string")
-    end)
     it("cached_theme_dir", function()
       assert_true(
         type(bat_helpers.cached_theme_dir()) == "string"

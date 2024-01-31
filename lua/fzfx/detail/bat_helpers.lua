@@ -10,44 +10,34 @@ local log = require("fzfx.lib.log")
 
 local M = {}
 
---- @return string
-M.get_color_name_cache = function()
-  return paths.join(env.cache_dir(), "_last_color_name_cache")
-end
+local COLOR_NAME_CACHE = vim.fn.tempname()
 
 --- @return string?
 M.get_color_name = function()
-  return fileios.readfile(M.get_color_name_cache(), { trim = true })
+  return fileios.readfile(COLOR_NAME_CACHE, { trim = true })
 end
 
 --- @param colorname string?
 M.dump_color_name = function(colorname)
   if strings.not_empty(colorname) then
     fileios.asyncwritefile(
-      M.get_color_name_cache(),
+      COLOR_NAME_CACHE,
       colorname --[[@as string]],
       function() end
     )
   end
 end
 
---- @return string
-M.get_themes_config_dir_cache = function()
-  return paths.join(env.cache_dir(), "_last_bat_themes_dir_cache")
-end
+local THEMES_CONFIG_DIR_CACHE = vim.fn.tempname()
 
 --- @return string?
 M.cached_theme_dir = function()
-  return fileios.readfile(M.get_themes_config_dir_cache(), { trim = true })
+  return fileios.readfile(THEMES_CONFIG_DIR_CACHE, { trim = true })
 end
 
 --- @param value string
 M.dump_theme_dir_cache = function(value)
-  return fileios.asyncwritefile(
-    M.get_themes_config_dir_cache(),
-    value,
-    function() end
-  )
+  return fileios.asyncwritefile(THEMES_CONFIG_DIR_CACHE, value, function() end)
 end
 
 --- @return string
