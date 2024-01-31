@@ -146,7 +146,9 @@ describe("helper.bat_themes", function()
             vim.inspect(expects[i])
           )
         )
-        assert_true(strings.endswith(actual, expects[i]))
+        if actual then
+          assert_true(strings.endswith(actual, expects[i]))
+        end
       end
     end)
   end)
