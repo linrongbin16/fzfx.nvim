@@ -134,4 +134,41 @@ describe("detail.bat_helpers", function()
       end
     end)
   end)
+  describe("[get_custom_theme_template_file]", function()
+    it("test", function()
+      local inputs = {
+        "material-lighter",
+        "rose-pine",
+        "slate",
+        "solarized8_high",
+        "gruvbox-baby",
+        "vim-material",
+        "PaperColor",
+        "OceanicNext",
+      }
+      local expects = {
+        "FzfxNvimMaterialLighter.tmTheme",
+        "FzfxNvimRosePine.tmTheme",
+        "FzfxNvimSlate.tmTheme",
+        "FzfxNvimSolarized8High.tmTheme",
+        "FzfxNvimGruvboxBaby.tmTheme",
+        "FzfxNvimVimMaterial.tmTheme",
+        "FzfxNvimPaperColor.tmTheme",
+        "FzfxNvimOceanicNext.tmTheme",
+      }
+
+      for i, v in ipairs(inputs) do
+        local actual = bat_helpers.get_custom_theme_template_file(v) --[[@as string]]
+        print(
+          string.format(
+            "get bat theme file, actual:%s, expects[%d]:%s\n",
+            vim.inspect(actual),
+            vim.inspect(i),
+            vim.inspect(expects[i])
+          )
+        )
+        assert_true(strings.endswith(actual, expects[i]))
+      end
+    end)
+  end)
 end)
