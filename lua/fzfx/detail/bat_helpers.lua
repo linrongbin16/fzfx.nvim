@@ -701,7 +701,7 @@ M.setup = function()
     M.dump_color_name(color)
   end
 
-  vim.api.nvim_create_autocmd({ "BufReadPost" }, {
+  vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
     callback = function(event)
       vim.defer_fn(function()
         local bufcolor = M.get_color_name() --[[@as string]]
@@ -713,6 +713,7 @@ M.setup = function()
   })
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
+      log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
         M.build_custom_theme(event.match, true)
         M.dump_color_name(event.match)

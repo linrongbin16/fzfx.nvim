@@ -34,14 +34,13 @@ M._bat_style_theme = function()
   end
 
   if vim.opt.termguicolors then
-    local colorname = bat_helpers.get_color_name() --[[@as string]]
+    local color = bat_helpers.get_color_name() --[[@as string]]
     if
-      strings.not_empty(colorname)
-      and paths.isfile(
-        bat_helpers.get_custom_theme_template_file(colorname) or ""
-      )
+      strings.not_empty(color)
+      and paths.isfile(bat_helpers.get_custom_theme_template_file(color) or "")
     then
-      theme = bat_helpers.get_custom_theme_name(colorname) --[[@as string]]
+      print(string.format("bat previewer color:%s", vim.inspect(color)))
+      theme = bat_helpers.get_custom_theme_name(color) --[[@as string]]
       if strings.not_empty(theme) then
         return style, theme
       end
