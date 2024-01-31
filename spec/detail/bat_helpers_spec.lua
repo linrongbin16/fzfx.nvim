@@ -105,4 +105,21 @@ describe("detail.bat_helpers", function()
       )
     end)
   end)
+  describe("[get_custom_theme_name]", function()
+    it("test", function()
+      local inputs =
+        { "material-lighter", "rose-pine", "slate", "solarized8_high" }
+      local expects = {
+        "FzfxNvimMaterialLighter",
+        "FzfxNvimRosePine",
+        "FzfxNvimSlate",
+        "FzfxNvimSolarized8High",
+      }
+
+      for i, v in ipairs(inputs) do
+        local actual = bat_helpers.get_custom_theme_name(v)
+        assert_eq(actual, expects[i])
+      end
+    end)
+  end)
 end)
