@@ -11,7 +11,7 @@
 </p>
 
 <p align="center"><i>
-FZF-based fuzzy finder running on a dynamic engine that parsing user query and selection on every keystroke.
+A fzf fuzzy finder that reflects user query and selection on every keystroke.
 </i></p>
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403
