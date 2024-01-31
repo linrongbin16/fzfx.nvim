@@ -29,8 +29,9 @@ local dumping_bat_themes_dir = false
 
 --- @return string
 M.get_bat_themes_dir = function()
-  local theme_dir = M._cached_theme_dir() --[[@as string]]
-  if strings.empty(theme_dir) then
+  local cached_result = M._cached_theme_dir() --[[@as string]]
+
+  if strings.empty(cached_result) then
     local result = ""
     spawn
       .run({ "bat", "--config-dir" }, {
@@ -41,6 +42,7 @@ M.get_bat_themes_dir = function()
       }, function() end)
       :wait()
     M._dump_theme_dir(paths.join(result, "themes"))
+
     return result
   else
     vim.schedule(function()
@@ -64,7 +66,8 @@ M.get_bat_themes_dir = function()
         end)
       end)
     end)
-    return theme_dir
+
+    return cached_result
   end
 end
 
