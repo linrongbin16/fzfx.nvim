@@ -97,5 +97,12 @@ describe("detail.bat_helpers", function()
         "Solarized8High"
       )
     end)
+    it("asdf qwer", function()
+      assert_eq(bat_helpers._normalize_by("asdf qwer", " "), "AsdfQwer")
+      assert_eq(
+        bat_helpers._normalize_by("solarized8_high", "_"),
+        "Solarized8High"
+      )
+    end)
   end)
 end)
