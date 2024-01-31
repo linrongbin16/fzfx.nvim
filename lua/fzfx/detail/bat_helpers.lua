@@ -334,16 +334,24 @@ local GLOBAL_RENDERERS = {
   _BatTmThemeGlobalRenderer:new("Cursor", "caret", "bg"),
   _BatTmThemeGlobalRenderer:new("Cursor", "block_caret", "bg"),
   _BatTmThemeGlobalRenderer:new("NonText", "invisibles", "fg"),
-  _BatTmThemeGlobalRenderer:new("CursorLine", "lineHighlight", "bg"),
+  _BatTmThemeGlobalRenderer:new("Visual", "lineHighlight", "bg"),
   _BatTmThemeGlobalRenderer:new("LineNr", "gutter", "bg"),
   _BatTmThemeGlobalRenderer:new("LineNr", "gutterForeground", "fg"),
+  _BatTmThemeGlobalRenderer:new(
+    "CursorLineNr",
+    "gutterForegroundHighlight",
+    "fg"
+  ),
   _BatTmThemeGlobalRenderer:new("Visual", "selection", "bg"),
   _BatTmThemeGlobalRenderer:new("Visual", "selectionForeground", "fg"),
   _BatTmThemeGlobalRenderer:new("Search", "findHighlight", "bg"),
   _BatTmThemeGlobalRenderer:new("Search", "findHighlightForeground", "fg"),
 }
 
--- tm theme name conversions: https://macromates.com/manual/en/language_grammars#naming_conventions
+-- tm theme:
+-- https://macromates.com/manual/en/language_grammars#naming_conventions
+-- https://www.sublimetext.com/docs/color_schemes.html#global-settings
+-- https://www.sublimetext.com/docs/scope_naming.html#minimal-scope-coverage
 local SCOPE_RENDERERS = {
   -- comment {
   _BatTmThemeScopeRenderer:new({ "@comment", "Comment" }, "comment"),

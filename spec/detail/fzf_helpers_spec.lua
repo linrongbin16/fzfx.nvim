@@ -99,7 +99,7 @@ describe("detail.fzf_helpers", function()
   describe("[_get_visual_lines]", function()
     it("is v mode", function()
       vim.cmd([[
-            edit! README.md
+            noautocmd edit! README.md
             call feedkeys('V', 'n')
             ]])
       -- vim.fn.feedkeys("V", "n")

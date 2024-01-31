@@ -9,7 +9,7 @@ describe("config", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.env._FZFX_NVIM_DEVICONS_PATH = nil
-    vim.cmd([[edit README.md]])
+    vim.cmd([[noautocmd edit README.md]])
   end)
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"

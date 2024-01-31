@@ -51,7 +51,7 @@ describe("detail.yanks", function()
     it("_get_register_info", function()
       yanks.setup()
       vim.cmd([[
-            edit README.md
+            noautocmd edit README.md
             call feedkeys('V', 'n')
             ]])
       local actual = yanks._get_register_info("+")

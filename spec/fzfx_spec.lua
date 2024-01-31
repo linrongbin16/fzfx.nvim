@@ -15,7 +15,7 @@ describe("fzfx", function()
 
   describe("[setup]", function()
     it("is enabled", function()
-      vim.cmd([[edit README.md]])
+      vim.cmd([[noautocmd edit README.md]])
       local setup = require("fzfx").setup
       local ok, err = pcall(setup)
       assert_eq(type(ok), "boolean")
