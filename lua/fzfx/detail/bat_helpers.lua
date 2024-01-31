@@ -179,9 +179,9 @@ end
 --- @return string?
 function _BatTmScopeRenderer:render(skip_lsp_semantic)
   for i, scope in ipairs(self.values) do
-    local is_injected = strings.startswith(scope.hl, "@")
+    local is_lsp_semantic = strings.startswith(scope.hl, "@lsp")
     if skip_lsp_semantic then
-      if not is_injected then
+      if not is_lsp_semantic then
         return _render_scope(scope)
       end
     else
