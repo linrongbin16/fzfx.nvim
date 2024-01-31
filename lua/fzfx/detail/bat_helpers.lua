@@ -206,6 +206,25 @@ local GLOBAL_RENDERERS = {
   _BatTmGlobalRenderer:new("Search", "findHighlightForeground", "fg"),
 }
 
+-- lsp semantic highlight
+-- see: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
+--
+-- @lsp.type.class         Structure
+-- @lsp.type.decorator     Function
+-- @lsp.type.enum          Structure
+-- @lsp.type.enumMember    Constant
+-- @lsp.type.function      Function
+-- @lsp.type.interface     Structure
+-- @lsp.type.macro         Macro
+-- @lsp.type.method        Function
+-- @lsp.type.namespace     Structure
+-- @lsp.type.parameter     Identifier
+-- @lsp.type.property      Identifier
+-- @lsp.type.struct        Structure
+-- @lsp.type.type          Type
+-- @lsp.type.typeParameter TypeDef
+-- @lsp.type.variable      Identifier
+
 -- tm theme:
 -- https://macromates.com/manual/en/language_grammars#naming_conventions
 -- https://www.sublimetext.com/docs/color_schemes.html#global-settings
@@ -234,7 +253,7 @@ local SCOPE_RENDERERS = {
 
   -- entity {
   _BatTmScopeRenderer:new({
-    "@lsp.type.decorator",
+    "@lsp.type.function",
     "@function",
     "Function",
   }, "entity.name.function"),
@@ -267,12 +286,19 @@ local SCOPE_RENDERERS = {
     "Label",
   }, "entity.name.label"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.enumMember",
     "@constant",
     "Constant",
   }, "entity.name.constant"),
   _BatTmScopeRenderer:new({
     "@module",
   }, "entity.name.namespace"),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.class",
+  }, { "entity.name.class", "entity.name.struct" }),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.interface",
+  }, { "entity.name.interface" }),
   -- entity }
 
   -- invalid {
@@ -350,6 +376,14 @@ local SCOPE_RENDERERS = {
   -- _BatTmThemeScopeRenderer:new({
   --   "@punctuation.bracket",
   -- }, { "meta.block", "meta.braces" }),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.decorator",
+    "@attribute",
+  }, { "meta.annotation" }),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.macro",
+    "@constant.macro",
+  }, { "meta.preprocessor" }),
   -- meta }
 
   -- storage {
@@ -385,11 +419,12 @@ local SCOPE_RENDERERS = {
 
   -- support {
   _BatTmScopeRenderer:new({
-    "@lsp.type.decorator",
+    "@lsp.type.function",
     "@function",
     "Function",
   }, "support.function"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.enumMember",
     "@constant",
     "Constant",
   }, "support.constant"),
@@ -408,7 +443,8 @@ local SCOPE_RENDERERS = {
 
   -- variable {
   _BatTmScopeRenderer:new({
-    "@function.call",
+    "@lsp.type.method",
+    "@function.method",
   }, "variable.function"),
   _BatTmScopeRenderer:new({
     "@variable.parameter",
@@ -416,9 +452,10 @@ local SCOPE_RENDERERS = {
   _BatTmScopeRenderer:new({
     "@variable.builtin",
   }, { "variable.language" }),
-  -- _BatTmThemeScopeRenderer:new({
-  --   "@constant",
-  -- }, { "variable.other.constant" }),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.enumMember",
+    "@constant",
+  }, { "variable.other.constant" }),
   _BatTmScopeRenderer:new({
     "@variable",
     "Identifier",
@@ -427,9 +464,9 @@ local SCOPE_RENDERERS = {
     "@variable",
     "Identifier",
   }, "variable.other"),
-  -- _BatTmThemeScopeRenderer:new({
-  --   "@variable.member",
-  -- }, "variable.other.member"),
+  _BatTmScopeRenderer:new({
+    "@variable.member",
+  }, "variable.other.member"),
   -- variable }
 
   -- punctuation {
