@@ -34,6 +34,7 @@ local function setup(opts)
   require("fzfx.detail.yanks").setup()
   require("fzfx.detail.popup").setup()
   require("fzfx.detail.bat_helpers").setup()
+  require("fzfx.detail.fzf_helpers").setup()
   require("fzfx.helper.colorschemes").setup()
 
   local general = require("fzfx.detail.general")

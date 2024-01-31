@@ -188,7 +188,7 @@ local function _generate_fzf_color_opts()
     local attr = opts[1]
     for i = 2, #opts do
       local codes = apis.get_hl(opts[i])
-      if type(tables.tbl_get(codes, "attr")) == "number" then
+      if type(tables.tbl_get(codes, attr)) == "number" then
         table.insert(
           builder,
           string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr])
@@ -271,15 +271,8 @@ local function make_fzf_opts(opts)
   return table.concat(result, " ")
 end
 
---- @return string?
-local function make_fzf_default_opts()
-  local opts = config.get().fzf_opts
+local function make_fzf_color_and_icon_opts()
   local result = {}
-  if type(opts) == "table" and #opts > 0 then
-    for _, o in ipairs(opts) do
-      append_fzf_opt(result, o)
-    end
-  end
   local color_opts = _generate_fzf_color_opts()
   if type(color_opts) == "table" and #color_opts > 0 then
     for _, o in ipairs(color_opts) do
@@ -292,11 +285,22 @@ local function make_fzf_default_opts()
       append_fzf_opt(result, o)
     end
   end
-  -- log.debug(
-  --     "|fzfx.fzf_helpers - make_fzf_default_opts_impl| result:%s",
-  --     vim.inspect(result)
-  -- )
   return table.concat(result, " ")
+end
+
+local cached_fzf_default_opts = nil
+
+--- @return string?
+local function make_fzf_default_opts()
+  if strings.empty(cached_fzf_default_opts) then
+    cached_fzf_default_opts = make_fzf_color_and_icon_opts()
+  end
+  return cached_fzf_default_opts
+end
+
+--- @return string?
+local function update_fzf_default_opts()
+  cached_fzf_default_opts = make_fzf_color_and_icon_opts()
 end
 
 -- fzf opts }
@@ -663,6 +667,14 @@ local FZF_PREVIEW_ACTIONS = {
   ["toggle-preview-wrap"] = true,
 }
 
+local function setup()
+  vim.api.nvim_create_autocmd({ "ColorScheme" }, {
+    callback = function(event)
+      update_fzf_default_opts()
+    end,
+  })
+end
+
 local M = {
   _get_visual_lines = _get_visual_lines,
   _visual_select = _visual_select,
@@ -675,6 +687,7 @@ local M = {
   _generate_fzf_icon_opts = _generate_fzf_icon_opts,
   make_fzf_opts = make_fzf_opts,
   make_fzf_default_opts = make_fzf_default_opts,
+  update_fzf_default_opts = update_fzf_default_opts,
   FzfOptEventBinder = FzfOptEventBinder,
   nvim_exec = nvim_exec,
   fzf_exec = fzf_exec,
@@ -684,6 +697,7 @@ local M = {
   FZF_BORDER_OPTS_MAP = FZF_BORDER_OPTS_MAP,
   FZF_DEFAULT_BORDER_OPTS = FZF_DEFAULT_BORDER_OPTS,
   FZF_PREVIEW_ACTIONS = FZF_PREVIEW_ACTIONS,
+  setup = setup,
 }
 
 return M

@@ -28,7 +28,7 @@ local DEFAULT_PIPELINE = "default"
 --- @return string
 local function _make_cache_filename(...)
   if env.debug_enabled() then
-    return paths.join(config.get().cache.dir, table.concat({ ... }, "_"))
+    return paths.join(env.cache_dir(), table.concat({ ... }, "_"))
   else
     return vim.fn.tempname() --[[@as string]]
   end
