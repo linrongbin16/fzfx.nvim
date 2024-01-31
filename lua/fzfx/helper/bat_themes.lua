@@ -635,7 +635,7 @@ local building_bat_theme = false
 
 --- @param colorname string
 --- @param no_treesitter boolean?
-M.build_theme = function(colorname, no_treesitter)
+M._build_theme = function(colorname, no_treesitter)
   local theme_template = M.get_theme_config_file(colorname) --[[@as string]]
   log.debug(
     "|build_custom_theme| colorname:%s, theme_template:%s",
@@ -693,14 +693,14 @@ end
 M.setup = function()
   local color = vim.g.colors_name
   if strings.not_empty(color) then
-    M.build_theme(color, true)
+    M._build_theme(color, true)
   end
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
-        M.build_theme(event.match, true)
+        M._build_theme(event.match, true)
       end
     end,
   })
@@ -710,7 +710,7 @@ M.setup = function()
       vim.defer_fn(function()
         local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
         if strings.not_empty(bufcolor) then
-          M.build_theme(bufcolor)
+          M._build_theme(bufcolor)
         end
       end, 1000)
     end,
