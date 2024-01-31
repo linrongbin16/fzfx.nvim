@@ -9,7 +9,7 @@ describe("helper.prompts", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.o.swapfile = false
-    vim.cmd([[edit README.md]])
+    vim.cmd([[noautocmd edit README.md]])
   end)
 
   local prompts = require("fzfx.helper.prompts")

@@ -8,7 +8,7 @@ describe("detail.popup.buffer_popup_window", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.opt.swapfile = false
-    vim.cmd([[edit README.md]])
+    vim.cmd([[noautocmd edit README.md]])
   end)
 
   local tables = require("fzfx.commons.tables")

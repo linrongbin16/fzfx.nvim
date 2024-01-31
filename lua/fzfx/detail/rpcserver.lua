@@ -64,21 +64,21 @@ function RpcServer:register(callback, name)
   )
   local registry_id = tostring(numbers.auto_incremental_id())
   self.registry[registry_id] = function(params)
-    log.debug(
-      "|RpcServer:register| invoke rpc (%s-%s) with param:%s",
-      vim.inspect(registry_id),
-      vim.inspect(name),
-      vim.inspect(params)
-    )
+    -- log.debug(
+    --   "|RpcServer:register| invoke rpc (%s-%s) with param:%s",
+    --   vim.inspect(registry_id),
+    --   vim.inspect(name),
+    --   vim.inspect(params)
+    -- )
     local ok, err = pcall(callback, params)
-    log.debug(
-      "|RpcServer:register| invoke rpc (%s-%s) with param:%s, result(%s):%s",
-      vim.inspect(registry_id),
-      vim.inspect(name),
-      vim.inspect(params),
-      vim.inspect(ok),
-      vim.inspect(err)
-    )
+    -- log.debug(
+    --   "|RpcServer:register| invoke rpc (%s-%s) with param:%s, result(%s):%s",
+    --   vim.inspect(registry_id),
+    --   vim.inspect(name),
+    --   vim.inspect(params),
+    --   vim.inspect(ok),
+    --   vim.inspect(err)
+    -- )
     if not ok then
       log.err(
         "failed to invoke rpc (%s-%s) with param:%s, error:%s",

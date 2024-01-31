@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch, duplicate-set-field
 local cwd = vim.fn.getcwd()
 
 describe("detail.fzf_helpers", function()
@@ -100,7 +99,7 @@ describe("detail.fzf_helpers", function()
   describe("[_get_visual_lines]", function()
     it("is v mode", function()
       vim.cmd([[
-            edit! README.md
+            noautocmd edit! README.md
             call feedkeys('V', 'n')
             ]])
       -- vim.fn.feedkeys("V", "n")
@@ -110,7 +109,7 @@ describe("detail.fzf_helpers", function()
     end)
     it("is V mode", function()
       vim.cmd([[
-            edit README.md
+            noautocmd edit README.md
             call feedkeys('v', 'n')
             call feedkeys('l', 'x')
             call feedkeys('l', 'x')
@@ -125,7 +124,7 @@ describe("detail.fzf_helpers", function()
   describe("[_visual_select]", function()
     it("is v mode", function()
       vim.cmd([[
-            edit! README.md
+            noautocmd edit! README.md
             call feedkeys('V', 'n')
             ]])
       local actual = fzf_helpers._visual_select()
@@ -134,7 +133,7 @@ describe("detail.fzf_helpers", function()
     end)
     it("is V mode", function()
       vim.cmd([[
-            edit! README.md
+            noautocmd edit! README.md
             call feedkeys('v', 'n')
             call feedkeys('l', 'x')
             call feedkeys('l', 'x')

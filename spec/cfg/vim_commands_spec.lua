@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
 describe("cfg.vim_commands", function()
@@ -9,7 +8,7 @@ describe("cfg.vim_commands", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.o.swapfile = false
-    vim.cmd([[edit README.md]])
+    vim.cmd([[noautocmd edit README.md]])
   end)
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
