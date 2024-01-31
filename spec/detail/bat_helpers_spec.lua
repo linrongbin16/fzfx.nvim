@@ -17,17 +17,6 @@ describe("detail.bat_helpers", function()
   local bat_helpers = require("fzfx.detail.bat_helpers")
   require("fzfx").setup()
 
-  describe("[color name cache]", function()
-    it("get_color_name", function()
-      assert_true(
-        type(bat_helpers.get_color_name()) == "string"
-          or bat_helpers.get_color_name() == nil
-      )
-    end)
-    it("dump_color_name", function()
-      bat_helpers.dump_color_name(vim.g.colors_name)
-    end)
-  end)
   describe("[bat themes dir]", function()
     it("cached_theme_dir", function()
       assert_true(

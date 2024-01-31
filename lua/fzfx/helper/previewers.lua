@@ -5,7 +5,8 @@ local consts = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local bat_helpers = require("fzfx.detail.bat_helpers")
+local bat_themes_helper = require("fzfx.helper.bat_themes")
+local colorschemes_helper = require("fzfx.helper.colorschemes")
 local parsers_helper = require("fzfx.helper.parsers")
 local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
@@ -34,13 +35,15 @@ M._bat_style_theme = function()
   end
 
   if vim.opt.termguicolors then
-    local color = bat_helpers.get_color_name() --[[@as string]]
+    local color = colorschemes_helper.get_color_name() --[[@as string]]
     if
       strings.not_empty(color)
-      and paths.isfile(bat_helpers.get_custom_theme_template_file(color) or "")
+      and paths.isfile(
+        bat_themes_helper.get_custom_theme_template_file(color) or ""
+      )
     then
       -- print(string.format("bat previewer color:%s", vim.inspect(color)))
-      theme = bat_helpers.get_custom_theme_name(color) --[[@as string]]
+      theme = bat_themes_helper.get_custom_theme_name(color) --[[@as string]]
       if strings.not_empty(theme) then
         return style, theme
       end

@@ -8,34 +8,9 @@ local apis = require("fzfx.commons.apis")
 local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
 
+local colorschemes_helper = require("fzfx.helper.colorschemes")
+
 local M = {}
-
-local COLOR_NAME_CACHE = vim.fn.tempname()
-
---- @return string?
-M.get_color_name = function()
-  return fileios.readfile(COLOR_NAME_CACHE, { trim = true })
-end
-
-local dumping_color_name = false
-
---- @param colorname string?
-M.dump_color_name = function(colorname)
-  if strings.empty(colorname) then
-    return
-  end
-  if dumping_color_name then
-    return
-  end
-  dumping_color_name = true
-  fileios.asyncwritefile(
-    COLOR_NAME_CACHE,
-    colorname --[[@as string]],
-    function()
-      dumping_color_name = false
-    end
-  )
-end
 
 local THEMES_CONFIG_DIR_CACHE = vim.fn.tempname()
 
@@ -720,7 +695,7 @@ M.setup = function()
   vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
     callback = function()
       vim.defer_fn(function()
-        local bufcolor = M.get_color_name() --[[@as string]]
+        local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
         if strings.not_empty(bufcolor) then
           M.build_custom_theme(bufcolor)
         end
