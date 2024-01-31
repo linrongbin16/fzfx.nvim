@@ -9,12 +9,16 @@ local log = require("fzfx.lib.log")
 local M = {}
 
 local CACHED_COLOR_NAME = nil
-local COLOR_NAME_CACHE = paths.join(env.cache_dir(), "_last_color_name_cache")
+
+--- @return string
+M._color_name_cache = function()
+  return paths.join(env.cache_dir(), "_last_color_name_cache")
+end
 
 --- @return string?
 M.get_color_name = function()
   if CACHED_COLOR_NAME == nil then
-    CACHED_COLOR_NAME = fileios.readfile(COLOR_NAME_CACHE, { trim = true })
+    CACHED_COLOR_NAME = fileios.readfile(M._color_name_cache(), { trim = true })
   end
   return CACHED_COLOR_NAME
 end
@@ -32,7 +36,7 @@ M._dump_color_name = function(colorname)
   dumping_color_name = true
   pcall(
     fileios.asyncwritefile,
-    COLOR_NAME_CACHE,
+    M._color_name_cache(),
     colorname --[[@as string]],
     function()
       dumping_color_name = false

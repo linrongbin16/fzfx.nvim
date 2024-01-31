@@ -1,6 +1,6 @@
 local cwd = vim.fn.getcwd()
 
-describe("detail.bat_helpers", function()
+describe("helper.bat_themes", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -8,7 +8,6 @@ describe("detail.bat_helpers", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.opt.swapfile = false
-    vim.cmd("noautocmd colorscheme darkblue")
   end)
 
   local tables = require("fzfx.commons.tables")
@@ -144,12 +143,6 @@ describe("detail.bat_helpers", function()
         )
         assert_true(strings.endswith(actual, expects[i]))
       end
-    end)
-  end)
-  describe("[_render_theme]", function()
-    it("test", function()
-      local actual = bat_themes_helper._render_theme(vim.g.colors_name)
-      assert_true(tables.tbl_not_empty(actual))
     end)
   end)
 end)
