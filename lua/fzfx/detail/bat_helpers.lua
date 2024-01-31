@@ -178,17 +178,16 @@ end
 --- @param skip_lsp_semantic boolean?
 --- @return string?
 function _BatTmScopeRenderer:render(skip_lsp_semantic)
-  for i, scope in ipairs(self.values) do
-    local is_lsp_semantic = strings.startswith(scope.hl, "@lsp")
-    if skip_lsp_semantic then
+  if skip_lsp_semantic then
+    for i, scope in ipairs(self.values) do
+      local is_lsp_semantic = strings.startswith(scope.hl, "@lsp")
       if not is_lsp_semantic then
         return _render_scope(scope)
       end
-    else
-      return _render_scope(scope)
     end
   end
-  return "\n"
+
+  return #self.values > 0 and _render_scope(self.values[1]) or "\n"
 end
 
 local GLOBAL_RENDERERS = {
