@@ -124,7 +124,7 @@ describe("detail.fzf_helpers", function()
   describe("[_visual_select]", function()
     it("is v mode", function()
       vim.cmd([[
-            edit! README.md
+            noautocmd edit! README.md
             call feedkeys('V', 'n')
             ]])
       local actual = fzf_helpers._visual_select()
@@ -133,7 +133,7 @@ describe("detail.fzf_helpers", function()
     end)
     it("is V mode", function()
       vim.cmd([[
-            edit! README.md
+            noautocmd edit! README.md
             call feedkeys('v', 'n')
             call feedkeys('l', 'x')
             call feedkeys('l', 'x')
