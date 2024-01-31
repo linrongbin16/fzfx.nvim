@@ -291,11 +291,15 @@ local SCOPE_RENDERERS = {
     "Constant",
   }, "entity.name.constant"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.namespace",
     "@module",
   }, "entity.name.namespace"),
   _BatTmScopeRenderer:new({
     "@lsp.type.class",
-  }, { "entity.name.class", "entity.name.struct" }),
+  }, { "entity.name.class" }),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.struct",
+  }, { "entity.name.struct" }),
   _BatTmScopeRenderer:new({
     "@lsp.type.interface",
   }, { "entity.name.interface" }),
@@ -394,10 +398,15 @@ local SCOPE_RENDERERS = {
     "@lsp.type.enum",
     "Structure",
   }, {
-    "storage.type.struct",
     "storage.type.enum",
-    "keyword.declaration.struct",
     "keyword.declaration.enum",
+  }),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.struct",
+    "Structure",
+  }, {
+    "storage.type.struct",
+    "keyword.declaration.struct",
   }),
   _BatTmScopeRenderer:new({
     "@type.builtin",
@@ -437,6 +446,7 @@ local SCOPE_RENDERERS = {
     "Type",
   }, "support.class"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.namespace",
     "@module",
   }, "support.module"),
   -- support }
@@ -447,6 +457,7 @@ local SCOPE_RENDERERS = {
     "@function.method",
   }, "variable.function"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.parameter",
     "@variable.parameter",
   }, { "variable.parameter" }),
   _BatTmScopeRenderer:new({
