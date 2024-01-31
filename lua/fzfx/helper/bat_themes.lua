@@ -20,7 +20,13 @@ end
 local dumping_bat_themes_dir = false
 
 --- @param value string
-M._dump_theme_dir = function(value)
+--- @param sync boolean?
+M._dump_theme_dir = function(value, sync)
+  if sync then
+    fileios.writefile(M._theme_dir_cache(), value)
+    return
+  end
+
   if dumping_bat_themes_dir then
     return
   end
@@ -49,7 +55,7 @@ M.get_bat_themes_dir = function()
         on_stderr = function() end,
       }, function() end)
       :wait()
-    M._dump_theme_dir(paths.join(result, "themes"))
+    M._dump_theme_dir(paths.join(result, "themes"), true)
 
     return result
   else
