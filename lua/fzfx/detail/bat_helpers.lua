@@ -673,10 +673,10 @@ M.build_custom_theme = function(colorname)
 
   spawn.run({ "bat", "cache", "--build" }, {
     on_stdout = function(line)
-      log.debug("|setup| bat cache on_stderr:%s", vim.inspect(line))
+      log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
     end,
     on_stderr = function(line)
-      log.debug("|setup| bat cache on_stderr:%s", vim.inspect(line))
+      log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
     end,
   }, function()
     vim.schedule(function()
