@@ -14,25 +14,25 @@ describe("detail.bat_helpers", function()
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
-  local bat_helpers = require("fzfx.detail.bat_helpers")
+  local bat_themes_helper = require("fzfx.helper.bat_themes")
   require("fzfx").setup()
 
   describe("[bat themes dir]", function()
     it("cached_theme_dir", function()
       assert_true(
-        type(bat_helpers.cached_theme_dir()) == "string"
-          or bat_helpers.cached_theme_dir() == nil
+        type(bat_themes_helper.cached_theme_dir()) == "string"
+          or bat_themes_helper.cached_theme_dir() == nil
       )
     end)
-    it("dump_theme_dir_cache", function()
-      bat_helpers.dump_theme_dir_cache(
+    it("_dump_theme_dir", function()
+      bat_themes_helper._dump_theme_dir(
         paths.normalize("~/.config/bat/themes", { expand = true })
       )
     end)
   end)
   describe("[get_bat_themes_config_dir]", function()
     it("test", function()
-      local actual = bat_helpers.get_bat_themes_config_dir()
+      local actual = bat_themes_helper.get_bat_themes_config_dir()
       assert_true(type(actual) == "string" or actual == nil)
     end)
   end)
@@ -45,7 +45,7 @@ describe("detail.bat_helpers", function()
         "test",
         "rose-pine",
       }
-      local actual = bat_helpers._upper_first_chars(inputs)
+      local actual = bat_themes_helper._upper_first_chars(inputs)
       assert_eq(type(actual), "table")
       assert_eq(#actual, #inputs)
       for i, a in ipairs(actual) do
@@ -57,25 +57,25 @@ describe("detail.bat_helpers", function()
   end)
   describe("[_normalize_by]", function()
     it("rose-pine", function()
-      assert_eq(bat_helpers._normalize_by("rose-pine", "-"), "RosePine")
+      assert_eq(bat_themes_helper._normalize_by("rose-pine", "-"), "RosePine")
     end)
     it("ayu", function()
-      assert_eq(bat_helpers._normalize_by("ayu", "-"), "Ayu")
+      assert_eq(bat_themes_helper._normalize_by("ayu", "-"), "Ayu")
     end)
     it("solarized8_high", function()
       assert_eq(
-        bat_helpers._normalize_by("solarized8_high", "-"),
+        bat_themes_helper._normalize_by("solarized8_high", "-"),
         "Solarized8_high"
       )
       assert_eq(
-        bat_helpers._normalize_by("solarized8_high", "_"),
+        bat_themes_helper._normalize_by("solarized8_high", "_"),
         "Solarized8High"
       )
     end)
     it("asdf qwer", function()
-      assert_eq(bat_helpers._normalize_by("asdf qwer", " "), "AsdfQwer")
+      assert_eq(bat_themes_helper._normalize_by("asdf qwer", " "), "AsdfQwer")
       assert_eq(
-        bat_helpers._normalize_by("solarized8_high", "_"),
+        bat_themes_helper._normalize_by("solarized8_high", "_"),
         "Solarized8High"
       )
     end)
@@ -104,7 +104,7 @@ describe("detail.bat_helpers", function()
       }
 
       for i, v in ipairs(inputs) do
-        local actual = bat_helpers.get_custom_theme_name(v)
+        local actual = bat_themes_helper.get_custom_theme_name(v)
         assert_eq(actual, expects[i])
       end
     end)
@@ -133,7 +133,7 @@ describe("detail.bat_helpers", function()
       }
 
       for i, v in ipairs(inputs) do
-        local actual = bat_helpers.get_custom_theme_template_file(v) --[[@as string]]
+        local actual = bat_themes_helper.get_custom_theme_template_file(v) --[[@as string]]
         print(
           string.format(
             "get bat theme file, actual:%s, expects[%d]:%s\n",
@@ -148,7 +148,7 @@ describe("detail.bat_helpers", function()
   end)
   describe("[calculate_custom_theme]", function()
     it("test", function()
-      local actual = bat_helpers.calculate_custom_theme(vim.g.colors_name)
+      local actual = bat_themes_helper.calculate_custom_theme(vim.g.colors_name)
       assert_true(tables.tbl_not_empty(actual))
     end)
   end)

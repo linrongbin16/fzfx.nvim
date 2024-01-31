@@ -12,7 +12,8 @@ local colorschemes_helper = require("fzfx.helper.colorschemes")
 
 local M = {}
 
-local THEMES_CONFIG_DIR_CACHE = vim.fn.tempname()
+local THEMES_CONFIG_DIR_CACHE =
+  paths.join(env.cache_dir(), "_last_bat_themes_dir_cache")
 
 --- @return string?
 M.cached_theme_dir = function()
@@ -20,7 +21,7 @@ M.cached_theme_dir = function()
 end
 
 --- @param value string
-M.dump_theme_dir_cache = function(value)
+M._dump_theme_dir = function(value)
   return fileios.asyncwritefile(THEMES_CONFIG_DIR_CACHE, value, function() end)
 end
 
@@ -37,7 +38,7 @@ M.get_bat_themes_config_dir = function()
         on_stderr = function() end,
       }, function() end)
       :wait()
-    M.dump_theme_dir_cache(paths.join(config_dir, "themes"))
+    M._dump_theme_dir(paths.join(config_dir, "themes"))
     return config_dir
   else
     vim.schedule(function()
@@ -49,7 +50,7 @@ M.get_bat_themes_config_dir = function()
         on_stderr = function() end,
       }, function()
         vim.schedule(function()
-          M.dump_theme_dir_cache(paths.join(config_dir, "themes"))
+          M._dump_theme_dir(paths.join(config_dir, "themes"))
         end)
       end)
     end)
