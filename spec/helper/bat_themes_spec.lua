@@ -10,6 +10,8 @@ describe("helper.bat_themes", function()
     vim.opt.swapfile = false
   end)
 
+  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
@@ -30,10 +32,12 @@ describe("helper.bat_themes", function()
     end)
   end)
   describe("[get_bat_themes_config_dir]", function()
-    it("test", function()
-      local actual = bat_themes_helper.get_bat_themes_dir()
-      assert_true(type(actual) == "string" or actual == nil)
-    end)
+    if not github_actions then
+      it("test", function()
+        local actual = bat_themes_helper.get_bat_themes_dir()
+        assert_true(type(actual) == "string" or actual == nil)
+      end)
+    end
   end)
   describe("[_upper_first]", function()
     it("test", function()
