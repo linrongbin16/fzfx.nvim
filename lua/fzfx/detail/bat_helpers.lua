@@ -420,7 +420,6 @@ local SCOPE_RENDERERS = {
   -- invalid }
 
   -- keyword {
-  -- _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
   _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
   _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.local"),
   _BatTmThemeScopeRenderer:new(
