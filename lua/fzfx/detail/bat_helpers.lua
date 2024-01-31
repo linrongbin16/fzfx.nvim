@@ -196,77 +196,90 @@ function _BatTmThemeGlobalRenderer:render()
 end
 
 -- renderer for tmTheme scope
+--
+--- @alias fzfx._BatTmThemeScopeValue {hl:string,scope:string[],foreground:string?,background:string?,font_style:string[],bold:boolean?,italic:boolean?,is_empty:boolean}
 --- @class fzfx._BatTmThemeScopeRenderer
---- @field name string
---- @field scope string|string[]
---- @field foreground string?
---- @field background string?
---- @field bold boolean?
---- @field italic boolean?
---- @field empty boolean?
---- @field no_background boolean?
+--- @field values fzfx._BatTmThemeScopeValue[]
 local _BatTmThemeScopeRenderer = {}
 
 --- @param hl string|string[]
 --- @param tm_scope string|string[]
---- @param no_background boolean?
 --- @return fzfx._BatTmThemeScopeRenderer
-function _BatTmThemeScopeRenderer:new(hl, tm_scope, no_background)
+function _BatTmThemeScopeRenderer:new(hl, tm_scope)
   local hls = type(hl) == "table" and hl or {
     hl --[[@as string]],
   }
 
-  local ok
   local values = {}
-  for _, h in ipairs(hls) do
-    ok, values = pcall(apis.get_hl, h)
-    if not ok then
-      values = {}
-    end
-    if tables.tbl_not_empty(values) then
-      break
+  for i, h in ipairs(hls) do
+    local ok, hl_attr = pcall(apis.get_hl, h)
+    if ok and tables.tbl_not_empty(hl_attr) then
+      local font_style = {}
+      if hl_attr.bold then
+        table.insert(font_style, "bold")
+      end
+      if hl_attr.italic then
+        table.insert(font_style, "italic")
+      end
+      if hl_attr.underline then
+        table.insert(font_style, "underline")
+      end
+      if hl_attr.fg then
+        local v = {
+          hl = h,
+          scope = tm_scope,
+          foreground = hl_attr.fg and string.format("#%06x", hl_attr.fg) or nil,
+          background = hl_attr.bg and string.format("#%06x", hl_attr.bg) or nil,
+          font_style = font_style,
+        }
+        table.insert(values, v)
+      end
     end
   end
+
   local o = {
-    scope = tm_scope,
-    foreground = values.fg and string.format("#%06x", values.fg) or nil,
-    background = values.bg and string.format("#%06x", values.bg) or nil,
-    font_style = {},
-    bold = values.bold,
-    italic = values.italic,
-    underline = values.underline,
-    empty = tables.tbl_empty(values),
-    no_background = no_background,
+    values = values,
   }
-  if values.bold then
-    table.insert(o.font_style, "bold")
-  end
-  if values.italic then
-    table.insert(o.font_style, "italic")
-  end
-  if values.underline then
-    table.insert(o.font_style, "underline")
-  end
   setmetatable(o, self)
   self.__index = self
   return o
 end
 
+--- @param no_treesitter boolean?
+--- @return string?
+function _BatTmThemeScopeRenderer:render(no_treesitter)
+  for i, v in ipairs(self.values) do
+    local is_treesitter = strings.startswith(v.hl, "@")
+    if no_treesitter then
+      if not is_treesitter then
+        return self:_render_impl(v)
+      end
+    else
+      return self:_render_impl(v)
+    end
+  end
+  return "\n"
+end
+
+--- @param hl_value fzfx._BatTmThemeScopeValue
 --- @return string
-function _BatTmThemeScopeRenderer:render()
-  if self.empty then
+function _BatTmThemeScopeRenderer:_render_impl(hl_value)
+  if tables.tbl_empty(hl_value) then
     return "\n"
   end
   local builder = {
     "      <dict>",
   }
-  local name = type(self.scope) == "table" and self.scope[1] or self.scope --[[@as string]]
+
+  local scope_str = type(hl_value.scope) == "table"
+      and table.concat(hl_value.scope --[[@as string[] ]], ", ")
+    or hl_value.scope
   table.insert(
     builder,
     string.format(
       [[        <key>name</key>
         <string>%s</string>]],
-      table.concat(strings.split(name, ","), " ")
+      scope_str
     )
   )
   table.insert(
@@ -274,41 +287,39 @@ function _BatTmThemeScopeRenderer:render()
     string.format(
       [[        <key>scope</key>
         <string>%s</string>]],
-      type(self.scope) == "table"
-          and table.concat(self.scope --[[@as string[] ]], ", ")
-        or self.scope
+      scope_str
     )
   )
   table.insert(builder, "        <key>settings</key>")
   table.insert(builder, "        <dict>")
-  if self.foreground then
+  if hl_value.foreground then
     table.insert(builder, "          <key>foreground</key>")
     table.insert(
       builder,
-      string.format("          <string>%s</string>", self.foreground)
+      string.format("          <string>%s</string>", hl_value.foreground)
     )
   end
-  if not self.no_background and self.background then
+  if hl_value.background then
     table.insert(builder, "          <key>background</key>")
     table.insert(
       builder,
-      string.format("          <string>%s</string>", self.background)
+      string.format("          <string>%s</string>", hl_value.background)
     )
   end
-  if self.background then
+  if hl_value.background then
     table.insert(builder, "          <key>background</key>")
     table.insert(
       builder,
-      string.format("          <string>%s</string>", self.background)
+      string.format("          <string>%s</string>", hl_value.background)
     )
   end
-  if #self.font_style > 0 then
+  if #hl_value.font_style > 0 then
     table.insert(builder, "          <key>fontStyle</key>")
     table.insert(
       builder,
       string.format(
         "          <string>%s</string>",
-        table.concat(self.font_style, ", ")
+        table.concat(hl_value.font_style, ", ")
       )
     )
   end
@@ -587,8 +598,9 @@ local SCOPE_RENDERERS = {
 }
 
 --- @param colorname string
+--- @param no_treesitter boolean?
 --- @return {name:string,payload:string}?
-M.calculate_custom_theme = function(colorname)
+M.calculate_custom_theme = function(colorname, no_treesitter)
   if strings.empty(colorname) then
     return nil
   end
@@ -611,7 +623,7 @@ M.calculate_custom_theme = function(colorname)
   end
   local scope_builder = {}
   for i, renderer in ipairs(SCOPE_RENDERERS) do
-    table.insert(scope_builder, renderer:render())
+    table.insert(scope_builder, renderer:render(no_treesitter))
   end
   payload =
     strings.replace(payload, "{GLOBAL}", table.concat(global_builder, "\n"))
@@ -626,7 +638,8 @@ end
 local building_bat_theme = false
 
 --- @param colorname string
-M.build_custom_theme = function(colorname)
+--- @param no_treesitter boolean?
+M.build_custom_theme = function(colorname, no_treesitter)
   local theme_template = M.get_custom_theme_template_file(colorname) --[[@as string]]
   log.debug(
     "|build_custom_theme| colorname:%s, theme_template:%s",
@@ -641,7 +654,7 @@ M.build_custom_theme = function(colorname)
   if strings.empty(theme_dir) then
     return
   end
-  local theme = M.calculate_custom_theme(colorname) --[[@as string]]
+  local theme = M.calculate_custom_theme(colorname, no_treesitter) --[[@as string]]
   -- log.debug("|build_custom_theme| theme:%s", vim.inspect(theme))
   if tables.tbl_empty(theme) then
     return
@@ -682,17 +695,26 @@ M.build_custom_theme = function(colorname)
 end
 
 M.setup = function()
-  local colorname = vim.g.colors_name
-  if strings.not_empty(colorname) then
-    M.build_custom_theme(colorname)
-    M.dump_color_name(colorname)
+  local color = vim.g.colors_name
+  if strings.not_empty(color) then
+    M.build_custom_theme(color, true)
+    M.dump_color_name(color)
   end
+
+  vim.api.nvim_create_autocmd({ "BufReadPost" }, {
+    callback = function(event)
+      vim.defer_fn(function()
+        local bufcolor = M.get_color_name() --[[@as string]]
+        if strings.not_empty(bufcolor) then
+          M.build_custom_theme(bufcolor)
+        end
+      end, 1000)
+    end,
+  })
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
-      -- log.debug("|setup| event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
-        -- vim.g.colors_name = event.match
-        M.build_custom_theme(event.match)
+        M.build_custom_theme(event.match, true)
         M.dump_color_name(event.match)
       end
     end,
