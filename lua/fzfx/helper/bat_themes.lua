@@ -306,14 +306,14 @@ end
 --- @param skip_injection boolean?
 --- @return string?
 function _BatTmScopeRenderer:render(skip_injection)
-  for i, v in ipairs(self.values) do
-    local is_injected = strings.startswith(v.hl, "@")
+  for i, scope in ipairs(self.values) do
+    local is_injected = strings.startswith(scope.hl, "@")
     if skip_injection then
       if not is_injected then
-        return _render_scope(v)
+        return _render_scope(scope)
       end
     else
-      return _render_scope(v)
+      return _render_scope(scope)
     end
   end
   return "\n"
