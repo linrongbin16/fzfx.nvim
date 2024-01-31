@@ -502,13 +502,11 @@ end
 local building_bat_theme = false
 
 --- @param colorname string
---- @param opts {skip_lsp_semantic:boolean?,async_build:boolean?}?
+--- @param opts {skip_lsp_semantic:boolean?}?
 M._build_theme = function(colorname, opts)
-  opts = opts or { skip_lsp_semantic = false, async_build = false }
+  opts = opts or { skip_lsp_semantic = false }
   opts.skip_lsp_semantic = type(opts.skip_lsp_semantic) == "boolean"
       and opts.skip_lsp_semantic
-    or false
-  opts.async_build = type(opts.async_build) == "boolean" and opts.async_build
     or false
 
   local theme_template = bat_themes_helper.get_theme_config_file(colorname) --[[@as string]]
