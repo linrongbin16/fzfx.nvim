@@ -1,9 +1,7 @@
 local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
-local spawn = require("fzfx.commons.spawn")
 local strings = require("fzfx.commons.strings")
 local tables = require("fzfx.commons.tables")
-local apis = require("fzfx.commons.apis")
 
 local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
@@ -45,7 +43,6 @@ end
 M.setup = function()
   local color = vim.g.colors_name
   if strings.not_empty(color) then
-    M.build_custom_theme(color, true)
     M._dump_color_name(color)
   end
 
@@ -53,7 +50,6 @@ M.setup = function()
     callback = function(event)
       log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
-        M.build_custom_theme(event.match, true)
         M._dump_color_name(event.match)
       end
     end,
