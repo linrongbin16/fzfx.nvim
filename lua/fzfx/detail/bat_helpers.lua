@@ -7,6 +7,8 @@ local tables = require("fzfx.commons.tables")
 local bat_themes = require("fzfx.lib.bat_themes")
 local log = require("fzfx.lib.log")
 
+local colorschemes = require("fzfx.lib.colorschemes")
+
 local M = {}
 
 local building_bat_theme = false
@@ -71,6 +73,7 @@ M.setup = function()
   local colorname = vim.g.colors_name
   if strings.not_empty(colorname) then
     M.build_custom_theme(colorname)
+    colorschemes.dump_colors_name(colorname)
   end
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
@@ -78,6 +81,7 @@ M.setup = function()
       if strings.not_empty(tables.tbl_get(event, "match")) then
         -- vim.g.colors_name = event.match
         M.build_custom_theme(event.match)
+        colorschemes.dump_colors_name(event.match)
       end
     end,
   })

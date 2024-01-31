@@ -7,38 +7,43 @@ local tables = require("fzfx.commons.tables")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
+local config = require("fzfx.config")
 
 local M = {}
 
-local THEMES_CONFIG_DIR = constants.IS_WINDOWS and nil
-  or paths.normalize("~/.config/bat/themes", { expand = true })
-
-local getting_themes_config_dir = false
+local THEMES_CONFIG_DIR_CACHE =
+  paths.join(config.get().cache.dir, "bat", "themes", "dir")
 
 --- @return string?
+M.cached_theme_dir = function()
+  return fileios.readfile(THEMES_CONFIG_DIR_CACHE, { trim = true })
+end
+
+--- @param value string
+M.dump_theme_dir_cache = function(value)
+  return fileios.asyncwritefile(THEMES_CONFIG_DIR_CACHE, value, function() end)
+end
+
+--- @return string
 M.get_bat_themes_config_dir = function()
-  if THEMES_CONFIG_DIR == nil then
-    if not getting_themes_config_dir then
-      getting_themes_config_dir = true
-      local bat_themes_config_dir = ""
-      spawn.run({ "bat", "--config-dir" }, {
+  local theme_dir = M.cached_theme_dir() --[[@as string]]
+  if strings.empty(theme_dir) then
+    theme_dir = ""
+    spawn
+      .run({ "bat", "--config-dir" }, {
         on_stdout = function(line)
-          bat_themes_config_dir = bat_themes_config_dir .. line
+          theme_dir = theme_dir .. line
         end,
         on_stderr = function(line)
           -- log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
         end,
-      }, function()
-        THEMES_CONFIG_DIR =
-          paths.join(strings.trim(bat_themes_config_dir), "themes")
-
-        vim.schedule(function()
-          getting_themes_config_dir = false
-        end)
-      end)
-    end
+      }, function() end)
+      :wait()
+    M.dump_theme_dir_cache(theme_dir)
+    return theme_dir
+  else
+    return theme_dir
   end
-  return THEMES_CONFIG_DIR
 end
 
 -- Vim colorscheme name => bat theme name
