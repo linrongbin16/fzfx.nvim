@@ -80,4 +80,22 @@ describe("detail.bat_helpers", function()
       end
     end)
   end)
+  describe("[_normalize_by]", function()
+    it("rose-pine", function()
+      assert_eq(bat_helpers._normalize_by("rose-pine", "-"), "RosePine")
+    end)
+    it("ayu", function()
+      assert_eq(bat_helpers._normalize_by("ayu", "-"), "Ayu")
+    end)
+    it("solarized8_high", function()
+      assert_eq(
+        bat_helpers._normalize_by("solarized8_high", "-"),
+        "Solarized8_high"
+      )
+      assert_eq(
+        bat_helpers._normalize_by("solarized8_high", "_"),
+        "Solarized8High"
+      )
+    end)
+  end)
 end)
