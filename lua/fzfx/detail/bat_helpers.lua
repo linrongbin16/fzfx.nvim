@@ -415,7 +415,7 @@ local SCOPE_RENDERERS = {
 
   -- keyword {
   _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
-  _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.local"),
+  -- _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.local"),
   _BatTmThemeScopeRenderer:new(
     { "@keyword.conditional", "Conditional" },
     "keyword.control.conditional"
