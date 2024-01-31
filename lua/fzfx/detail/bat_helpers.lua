@@ -234,6 +234,7 @@ local SCOPE_RENDERERS = {
 
   -- entity {
   _BatTmScopeRenderer:new({
+    "@lsp.type.decorator",
     "@function",
     "Function",
   }, "entity.name.function"),
@@ -251,6 +252,7 @@ local SCOPE_RENDERERS = {
     "htmlTitle",
   }, "entity.name.section"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.enum",
     "Structure",
   }, {
     "entity.name.enum",
@@ -355,6 +357,7 @@ local SCOPE_RENDERERS = {
     "@keyword.function",
   }, { "storage.type.function", "keyword.declaration.function" }),
   _BatTmScopeRenderer:new({
+    "@lsp.type.enum",
     "Structure",
   }, {
     "storage.type.struct",
@@ -382,6 +385,7 @@ local SCOPE_RENDERERS = {
 
   -- support {
   _BatTmScopeRenderer:new({
+    "@lsp.type.decorator",
     "@function",
     "Function",
   }, "support.function"),
