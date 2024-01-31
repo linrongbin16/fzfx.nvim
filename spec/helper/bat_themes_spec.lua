@@ -109,7 +109,7 @@ describe("detail.bat_helpers", function()
       end
     end)
   end)
-  describe("[get_custom_theme_template_file]", function()
+  describe("[get_theme_config_file]", function()
     it("test", function()
       local inputs = {
         "material-lighter",
@@ -133,7 +133,7 @@ describe("detail.bat_helpers", function()
       }
 
       for i, v in ipairs(inputs) do
-        local actual = bat_themes_helper.get_custom_theme_template_file(v) --[[@as string]]
+        local actual = bat_themes_helper.get_theme_config_file(v) --[[@as string]]
         print(
           string.format(
             "get bat theme file, actual:%s, expects[%d]:%s\n",
@@ -146,9 +146,9 @@ describe("detail.bat_helpers", function()
       end
     end)
   end)
-  describe("[calculate_custom_theme]", function()
+  describe("[_render_theme]", function()
     it("test", function()
-      local actual = bat_themes_helper.calculate_custom_theme(vim.g.colors_name)
+      local actual = bat_themes_helper._render_theme(vim.g.colors_name)
       assert_true(tables.tbl_not_empty(actual))
     end)
   end)

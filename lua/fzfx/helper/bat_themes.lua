@@ -73,7 +73,7 @@ end
 
 -- Vim colorscheme name => bat theme name
 --- @type table<string, string>
-local CUSTOMS_THEME_NAME_MAPPINGS = {}
+local THEME_NAMES_MAP = {}
 
 --- @param names string[]
 --- @return string[]
@@ -114,22 +114,22 @@ end
 --- @return string?
 M.get_theme_name = function(name)
   assert(type(name) == "string" and string.len(name) > 0)
-  if CUSTOMS_THEME_NAME_MAPPINGS[name] == nil then
+  if THEME_NAMES_MAP[name] == nil then
     local result = name
     result = M._normalize_by(result, "-")
     result = M._normalize_by(result, "+")
     result = M._normalize_by(result, "_")
     result = M._normalize_by(result, ".")
     result = M._normalize_by(result, " ")
-    CUSTOMS_THEME_NAME_MAPPINGS[name] = "FzfxNvim" .. result
+    THEME_NAMES_MAP[name] = "FzfxNvim" .. result
   end
 
-  return CUSTOMS_THEME_NAME_MAPPINGS[name]
+  return THEME_NAMES_MAP[name]
 end
 
 --- @param colorname string
 --- @return string?
-M.get_custom_theme_template_file = function(colorname)
+M.get_theme_config_file = function(colorname)
   local theme_name = M.get_theme_name(colorname)
   if strings.empty(theme_name) then
     return nil
@@ -596,7 +596,7 @@ local SCOPE_RENDERERS = {
 --- @param colorname string
 --- @param no_treesitter boolean?
 --- @return {name:string,payload:string}?
-M.calculate_custom_theme = function(colorname, no_treesitter)
+M._render_theme = function(colorname, no_treesitter)
   if strings.empty(colorname) then
     return nil
   end
@@ -635,8 +635,8 @@ local building_bat_theme = false
 
 --- @param colorname string
 --- @param no_treesitter boolean?
-M.build_custom_theme = function(colorname, no_treesitter)
-  local theme_template = M.get_custom_theme_template_file(colorname) --[[@as string]]
+M.build_theme = function(colorname, no_treesitter)
+  local theme_template = M.get_theme_config_file(colorname) --[[@as string]]
   log.debug(
     "|build_custom_theme| colorname:%s, theme_template:%s",
     vim.inspect(colorname),
@@ -650,7 +650,7 @@ M.build_custom_theme = function(colorname, no_treesitter)
   if strings.empty(theme_dir) then
     return
   end
-  local theme = M.calculate_custom_theme(colorname, no_treesitter) --[[@as string]]
+  local theme = M._render_theme(colorname, no_treesitter) --[[@as string]]
   -- log.debug("|build_custom_theme| theme:%s", vim.inspect(theme))
   if tables.tbl_empty(theme) then
     return
@@ -693,15 +693,14 @@ end
 M.setup = function()
   local color = vim.g.colors_name
   if strings.not_empty(color) then
-    M.build_custom_theme(color, true)
-    M.dump_color_name(color)
+    M.build_theme(color, true)
   end
+
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
-        M.build_custom_theme(event.match, true)
-        M.dump_color_name(event.match)
+        M.build_theme(event.match, true)
       end
     end,
   })
@@ -711,7 +710,7 @@ M.setup = function()
       vim.defer_fn(function()
         local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
         if strings.not_empty(bufcolor) then
-          M.build_custom_theme(bufcolor)
+          M.build_theme(bufcolor)
         end
       end, 1000)
     end,
