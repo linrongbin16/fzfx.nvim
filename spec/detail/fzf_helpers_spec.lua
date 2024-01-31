@@ -109,7 +109,7 @@ describe("detail.fzf_helpers", function()
     end)
     it("is V mode", function()
       vim.cmd([[
-            edit README.md
+            noautocmd edit README.md
             call feedkeys('v', 'n')
             call feedkeys('l', 'x')
             call feedkeys('l', 'x')

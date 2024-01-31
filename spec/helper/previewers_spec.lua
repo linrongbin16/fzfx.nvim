@@ -10,7 +10,7 @@ describe("helper.previewers", function()
     vim.env._FZFX_NVIM_DEVICONS_PATH = nil
     vim.api.nvim_command("cd " .. cwd)
     vim.o.swapfile = false
-    vim.cmd([[edit README.md]])
+    vim.cmd([[noautocmd edit README.md]])
   end)
 
   local tables = require("fzfx.commons.tables")
