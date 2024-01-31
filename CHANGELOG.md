@@ -1,5 +1,22 @@
 # Changelog
 
+## [5.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.0.4...v5.1.0) (2024-01-31)
+
+
+### Features
+
+* **buffer previewer:** add 'toggle-preview' key bindings ([#562](https://github.com/linrongbin16/fzfx.nvim/issues/562)) ([09cc257](https://github.com/linrongbin16/fzfx.nvim/commit/09cc2574bb77fd9b5bbf9d680f048171a2102478))
+* **previewer:** add [@lsp](https://github.com/lsp).type support to bat theme generation ([#564](https://github.com/linrongbin16/fzfx.nvim/issues/564)) ([5c7b13c](https://github.com/linrongbin16/fzfx.nvim/commit/5c7b13cb2b4557fa41d418bbff0870d6c8bcc48d))
+* **previewer:** add buffer preview key bindings for fzf action ([#559](https://github.com/linrongbin16/fzfx.nvim/issues/559)) ([e5df3c5](https://github.com/linrongbin16/fzfx.nvim/commit/e5df3c5b4554ebdbff4cd9507930565e551c2f27))
+* **previewer:** add experimental nvim buffer previewer ([#556](https://github.com/linrongbin16/fzfx.nvim/issues/556)) ([8ffb7b3](https://github.com/linrongbin16/fzfx.nvim/commit/8ffb7b3edec0de26b81f68c2d4d70ed2cd3fbf84))
+* **previewer:** translate nvim highlights into bat theme ([#557](https://github.com/linrongbin16/fzfx.nvim/issues/557)) ([36e4c29](https://github.com/linrongbin16/fzfx.nvim/commit/36e4c298ad82f2e20d3781b125fd31b5a33104e6))
+
+
+### Bug Fixes
+
+* **buffer previewer:** reset to first line when previewing a file ([#561](https://github.com/linrongbin16/fzfx.nvim/issues/561)) ([8136ad1](https://github.com/linrongbin16/fzfx.nvim/commit/8136ad1ea7f961f3cd2292f222ebd649a6d4236c))
+* **previewer:** fix bat theme auto-generation ([#564](https://github.com/linrongbin16/fzfx.nvim/issues/564)) ([5c7b13c](https://github.com/linrongbin16/fzfx.nvim/commit/5c7b13cb2b4557fa41d418bbff0870d6c8bcc48d))
+
 ## [5.0.4](https://github.com/linrongbin16/fzfx.nvim/compare/v5.0.3...v5.0.4) (2024-01-05)
 
 
