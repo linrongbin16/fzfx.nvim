@@ -74,7 +74,9 @@ M.get_bat_themes_config_dir = function()
         end,
         on_stderr = function() end,
       }, function()
-        M.dump_theme_dir_cache(paths.join(config_dir, "themes"))
+        vim.schedule(function()
+          M.dump_theme_dir_cache(paths.join(config_dir, "themes"))
+        end)
       end)
     end)
     return theme_dir
