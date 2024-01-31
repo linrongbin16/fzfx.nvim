@@ -11,9 +11,9 @@ describe("helper.bat_themes", function()
   end)
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
-  -- if github_actions then
-  --   return
-  -- end
+  if github_actions then
+    return
+  end
 
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
