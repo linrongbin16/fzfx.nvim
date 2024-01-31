@@ -45,20 +45,15 @@ M._dump_color_name = function(colorname)
 end
 
 M.setup = function()
+  local color = vim.g.colors_name
+  if strings.not_empty(color) then
+    M._dump_color_name(color)
+  end
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
         M._dump_color_name(event.match)
-      end
-    end,
-  })
-  vim.api.nvim_create_autocmd({ "VimEnter", "UIEnter" }, {
-    callback = function(event)
-      log.debug("|setup| Vim/UI Enter event:%s", vim.inspect(event))
-      local color = vim.g.colors_name
-      if strings.not_empty(color) then
-        M._dump_color_name(color)
       end
     end,
   })
