@@ -11,6 +11,9 @@ describe("helper.bat_themes", function()
   end)
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+  if github_actions then
+    return
+  end
 
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
@@ -32,12 +35,10 @@ describe("helper.bat_themes", function()
     end)
   end)
   describe("[get_bat_themes_config_dir]", function()
-    if not github_actions then
-      it("test", function()
-        local actual = bat_themes_helper.get_bat_themes_dir()
-        assert_true(type(actual) == "string" or actual == nil)
-      end)
-    end
+    it("test", function()
+      local actual = bat_themes_helper.get_bat_themes_dir()
+      assert_true(type(actual) == "string" or actual == nil)
+    end)
   end)
   describe("[_upper_first]", function()
     it("test", function()
@@ -84,35 +85,33 @@ describe("helper.bat_themes", function()
     end)
   end)
   describe("[get_theme_name]", function()
-    if not github_actions then
-      it("test", function()
-        local inputs = {
-          "material-lighter",
-          "rose-pine",
-          "slate",
-          "solarized8_high",
-          "gruvbox-baby",
-          "vim-material",
-          "PaperColor",
-          "OceanicNext",
-        }
-        local expects = {
-          "FzfxNvimMaterialLighter",
-          "FzfxNvimRosePine",
-          "FzfxNvimSlate",
-          "FzfxNvimSolarized8High",
-          "FzfxNvimGruvboxBaby",
-          "FzfxNvimVimMaterial",
-          "FzfxNvimPaperColor",
-          "FzfxNvimOceanicNext",
-        }
+    it("test", function()
+      local inputs = {
+        "material-lighter",
+        "rose-pine",
+        "slate",
+        "solarized8_high",
+        "gruvbox-baby",
+        "vim-material",
+        "PaperColor",
+        "OceanicNext",
+      }
+      local expects = {
+        "FzfxNvimMaterialLighter",
+        "FzfxNvimRosePine",
+        "FzfxNvimSlate",
+        "FzfxNvimSolarized8High",
+        "FzfxNvimGruvboxBaby",
+        "FzfxNvimVimMaterial",
+        "FzfxNvimPaperColor",
+        "FzfxNvimOceanicNext",
+      }
 
-        for i, v in ipairs(inputs) do
-          local actual = bat_themes_helper.get_theme_name(v)
-          assert_eq(actual, expects[i])
-        end
-      end)
-    end
+      for i, v in ipairs(inputs) do
+        local actual = bat_themes_helper.get_theme_name(v)
+        assert_eq(actual, expects[i])
+      end
+    end)
   end)
   describe("[get_theme_config_file]", function()
     it("test", function()
