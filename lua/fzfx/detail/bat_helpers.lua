@@ -3,17 +3,16 @@ local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 local strings = require("fzfx.commons.strings")
 local tables = require("fzfx.commons.tables")
+local apis = require("fzfx.commons.apis")
 
 local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
-
-local config = require("fzfx.config")
 
 local M = {}
 
 --- @return string
 M.get_color_name_cache = function()
-  return paths.join(env.cache_dir(), "nvim", "colors", "name")
+  return paths.join(env.cache_dir(), "_last_color_name_cache")
 end
 
 --- @return string?
@@ -34,7 +33,7 @@ end
 
 --- @return string
 M.get_themes_config_dir_cache = function()
-  return paths.join(env.cache_dir(), "bat", "themes", "dir")
+  return paths.join(env.cache_dir(), "_last_bat_themes_dir_cache")
 end
 
 --- @return string?
