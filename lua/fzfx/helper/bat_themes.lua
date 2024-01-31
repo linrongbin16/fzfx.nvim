@@ -144,12 +144,10 @@ end
 --- @param colorname string
 --- @return string?
 M.get_theme_config_file = function(colorname)
+  local theme_dir = M.get_bat_themes_dir()
+  assert(type(theme_dir) == "string" and string.len(theme_dir) > 0)
   local theme_name = M.get_theme_name(colorname)
   assert(type(theme_name) == "string" and string.len(theme_name) > 0)
-  local theme_dir = M.get_bat_themes_dir()
-  if strings.empty(theme_dir) then
-    return nil
-  end
   return paths.join(theme_dir, theme_name .. ".tmTheme")
 end
 
