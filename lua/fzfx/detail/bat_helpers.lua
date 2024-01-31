@@ -317,23 +317,6 @@ function _BatTmThemeScopeRenderer:render()
   return table.concat(builder, "\n")
 end
 
--- default base16
--- forked from: https://github.com/chriskempson/base16-textmate/blob/0e51ddd568bdbe17189ac2a07eb1c5f55727513e/Themes/base16-default-dark.tmTheme
-local BASE16_COLORS = {
-  black = "#181818",
-  grey_sRGB = "#58585855",
-  grey = "#585858",
-  darkgrey = "#282828",
-  white = "#d8d8d8",
-  yellow = "#dc9656",
-  orange = "##a16946",
-  green = "#a1b56c",
-  red = "#ab4642",
-  blue = "#7cafc2",
-  cyan = "#7cafc2",
-  magenta = "#ba8baf",
-}
-
 local GLOBAL_RENDERERS = {
   _BatTmThemeGlobalRenderer:new("Normal", "background", "bg"),
   _BatTmThemeGlobalRenderer:new("Normal", "foreground", "fg"),
@@ -606,6 +589,9 @@ local SCOPE_RENDERERS = {
 --- @param colorname string
 --- @return {name:string,payload:string}?
 M.calculate_custom_theme = function(colorname)
+  if strings.empty(colorname) then
+    return nil
+  end
   local theme_name = M.get_custom_theme_name(colorname) --[[@as string]]
   if strings.empty(theme_name) then
     return nil
@@ -656,7 +642,7 @@ M.build_custom_theme = function(colorname)
     return
   end
   local theme = M.calculate_custom_theme(colorname) --[[@as string]]
-  log.debug("|build_custom_theme| theme:%s", vim.inspect(theme))
+  -- log.debug("|build_custom_theme| theme:%s", vim.inspect(theme))
   if tables.tbl_empty(theme) then
     return
   end
@@ -683,10 +669,10 @@ M.build_custom_theme = function(colorname)
 
   spawn.run({ "bat", "cache", "--build" }, {
     on_stdout = function(line)
-      log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
+      -- log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
     end,
     on_stderr = function(line)
-      log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
+      -- log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
     end,
   }, function()
     vim.schedule(function()

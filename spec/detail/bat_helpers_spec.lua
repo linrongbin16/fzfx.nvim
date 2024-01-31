@@ -8,22 +8,14 @@ describe("detail.bat_helpers", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.opt.swapfile = false
+    vim.cmd("noautocmd colorscheme darkblue")
   end)
 
-  local jsons = require("fzfx.commons.jsons")
-  local fileios = require("fzfx.commons.fileios")
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
-  local env = require("fzfx.lib.env")
   local bat_helpers = require("fzfx.detail.bat_helpers")
-  local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
-  require("fzfx").setup({
-    debug = {
-      enable = true,
-      file_log = true,
-    },
-  })
+  require("fzfx").setup()
 
   describe("[color name cache]", function()
     it("get_color_name_cache", function()
@@ -169,6 +161,12 @@ describe("detail.bat_helpers", function()
         )
         assert_true(strings.endswith(actual, expects[i]))
       end
+    end)
+  end)
+  describe("[calculate_custom_theme]", function()
+    it("test", function()
+      local actual = bat_helpers.calculate_custom_theme(vim.g.colors_name)
+      assert_true(tables.tbl_not_empty(actual))
     end)
   end)
 end)
