@@ -286,7 +286,7 @@ local SCOPE_RENDERERS = {
     "Label",
   }, "entity.name.label"),
   _BatTmScopeRenderer:new({
-    "@lsp.type.enumMember",
+    -- "@lsp.type.enumMember",
     "@constant",
     "Constant",
   }, "entity.name.constant"),
@@ -313,7 +313,7 @@ local SCOPE_RENDERERS = {
 
   -- keyword {
   _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
-  -- _BatTmThemeScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.local"),
+  -- _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.local"),
   _BatTmScopeRenderer:new(
     { "@keyword.conditional", "Conditional" },
     "keyword.control.conditional"
@@ -433,7 +433,7 @@ local SCOPE_RENDERERS = {
     "Function",
   }, "support.function"),
   _BatTmScopeRenderer:new({
-    "@lsp.type.enumMember",
+    -- "@lsp.type.enumMember",
     "@constant",
     "Constant",
   }, "support.constant"),
@@ -464,14 +464,16 @@ local SCOPE_RENDERERS = {
     "@variable.builtin",
   }, { "variable.language" }),
   _BatTmScopeRenderer:new({
-    "@lsp.type.enumMember",
+    -- "@lsp.type.enumMember",
     "@constant",
   }, { "variable.other.constant" }),
   _BatTmScopeRenderer:new({
+    "@lsp.type.variable",
     "@variable",
     "Identifier",
   }, "variable"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.variable",
     "@variable",
     "Identifier",
   }, "variable.other"),
