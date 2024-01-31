@@ -502,8 +502,15 @@ end
 local building_bat_theme = false
 
 --- @param colorname string
---- @param skip_injection boolean?
-M._build_theme = function(colorname, skip_injection)
+--- @param opts {skip_injection:boolean?,async_build:boolean?}?
+M._build_theme = function(colorname, opts)
+  opts = opts or { skip_injection = false, async_build = false }
+  opts.skip_injection = type(opts.skip_injection) == "boolean"
+      and opts.skip_injection
+    or false
+  opts.async_build = type(opts.async_build) == "boolean" and opts.async_build
+    or false
+
   local theme_template = bat_themes_helper.get_theme_config_file(colorname) --[[@as string]]
   log.debug(
     "|build_custom_theme| colorname:%s, theme_template:%s",
