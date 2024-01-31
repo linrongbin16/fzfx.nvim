@@ -670,7 +670,10 @@ local FZF_PREVIEW_ACTIONS = {
 local function setup()
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
-      update_fzf_default_opts()
+      log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
+      vim.schedule(function()
+        update_fzf_default_opts()
+      end)
     end,
   })
 end
