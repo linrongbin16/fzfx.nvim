@@ -568,26 +568,26 @@ end
 M.setup = function()
   local color = vim.g.colors_name
   if strings.not_empty(color) then
-    M._build_theme(color, { skip_injection = true })
+    M._build_theme(color)
   end
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
-        M._build_theme(event.match, { skip_injection = true })
+        M._build_theme(event.match)
       end
     end,
   })
 
-  vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
+  vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPre" }, {
     callback = function()
-      vim.defer_fn(function()
+      vim.schedule(function()
         local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
         if strings.not_empty(bufcolor) then
           M._build_theme(bufcolor)
         end
-      end, 1000)
+      end)
     end,
   })
 end
