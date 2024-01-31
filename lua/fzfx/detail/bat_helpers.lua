@@ -4,6 +4,7 @@ local spawn = require("fzfx.commons.spawn")
 local strings = require("fzfx.commons.strings")
 local tables = require("fzfx.commons.tables")
 local apis = require("fzfx.commons.apis")
+local versions = require("fzfx.commons.versions")
 
 local log = require("fzfx.lib.log")
 
@@ -631,7 +632,7 @@ M.setup = function()
     end,
   })
 
-  if vim.fn.exists("##LspTokenUpdate") then
+  if versions.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
     vim.api.nvim_create_autocmd({ "LspTokenUpdate" }, {
       callback = function()
         vim.schedule(function()
