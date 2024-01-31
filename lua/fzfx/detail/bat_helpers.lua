@@ -54,20 +54,33 @@ end
 M.get_bat_themes_config_dir = function()
   local theme_dir = M.cached_theme_dir() --[[@as string]]
   if strings.empty(theme_dir) then
-    theme_dir = ""
+    local config_dir = ""
     spawn
       .run({ "bat", "--config-dir" }, {
         on_stdout = function(line)
-          theme_dir = theme_dir .. line
+          config_dir = config_dir .. line
         end,
         on_stderr = function(line)
           -- log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
         end,
       }, function() end)
       :wait()
-    M.dump_theme_dir_cache(theme_dir)
-    return theme_dir
+    M.dump_theme_dir_cache(paths.join(config_dir, "themes"))
+    return config_dir
   else
+    vim.schedule(function()
+      local config_dir = ""
+      spawn.run({ "bat", "--config-dir" }, {
+        on_stdout = function(line)
+          config_dir = config_dir .. line
+        end,
+        on_stderr = function(line)
+          -- log.debug("|get_bat_themes_config_dir| on_stderr:%s", vim.inspect(line))
+        end,
+      }, function()
+        M.dump_theme_dir_cache(paths.join(config_dir, "themes"))
+      end)
+    end)
     return theme_dir
   end
 end
