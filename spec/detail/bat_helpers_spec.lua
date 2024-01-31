@@ -107,13 +107,25 @@ describe("detail.bat_helpers", function()
   end)
   describe("[get_custom_theme_name]", function()
     it("test", function()
-      local inputs =
-        { "material-lighter", "rose-pine", "slate", "solarized8_high" }
+      local inputs = {
+        "material-lighter",
+        "rose-pine",
+        "slate",
+        "solarized8_high",
+        "gruvbox-baby",
+        "vim-material",
+        "PaperColor",
+        "OceanicNext",
+      }
       local expects = {
         "FzfxNvimMaterialLighter",
         "FzfxNvimRosePine",
         "FzfxNvimSlate",
         "FzfxNvimSolarized8High",
+        "FzfxNvimGruvboxBaby",
+        "FzfxNvimVimMaterial",
+        "FzfxNvimPaperColor",
+        "FzfxNvimOceanicNext",
       }
 
       for i, v in ipairs(inputs) do
