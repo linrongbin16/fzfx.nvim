@@ -12,34 +12,16 @@ M._theme_dir_cache = function()
   return paths.join(env.cache_dir(), "_last_bat_themes_dir_cache")
 end
 
+--- @type string?
+local CACHED_THEME_DIR = nil
+
 --- @return string?
 M._cached_theme_dir = function()
-  return fileios.readfile(M._theme_dir_cache(), { trim = true })
-end
-
-local dumping_bat_themes_dir = false
-
---- @param value string
---- @param sync boolean?
-M._dump_theme_dir = function(value, sync)
-  if sync then
-    fileios.writefile(M._theme_dir_cache(), value)
-    return
+  if CACHED_THEME_DIR == nil then
+    CACHED_THEME_DIR = fileios.readfile(M._theme_dir_cache(), { trim = true })
   end
-
-  if dumping_bat_themes_dir then
-    return
-  end
-
-  dumping_bat_themes_dir = true
-  fileios.asyncwritefile(M._theme_dir_cache(), value, function()
-    vim.schedule(function()
-      dumping_bat_themes_dir = false
-    end)
-  end)
+  return CACHED_THEME_DIR
 end
-
-local saving_bat_themes_dir = false
 
 --- @return string?
 M.get_bat_themes_dir = function()
@@ -58,34 +40,12 @@ M.get_bat_themes_dir = function()
     end
 
     sp:wait()
-    M._dump_theme_dir(paths.join(result, "themes"), true)
+    fileios.writefile(M._theme_dir_cache(), paths.join(result, "themes"))
 
     return result
-  else
-    vim.schedule(function()
-      if saving_bat_themes_dir then
-        return
-      end
-      saving_bat_themes_dir = true
-
-      local result = ""
-      local ok, err = pcall(spawn.run, { "bat", "--config-dir" }, {
-        on_stdout = function(line)
-          result = result .. line
-        end,
-        on_stderr = function() end,
-      }, function()
-        vim.schedule(function()
-          M._dump_theme_dir(paths.join(result, "themes"))
-          vim.schedule(function()
-            saving_bat_themes_dir = false
-          end)
-        end)
-      end)
-    end)
-
-    return cached_result
   end
+
+  return cached_result
 end
 
 -- Vim colorscheme name => bat theme name
