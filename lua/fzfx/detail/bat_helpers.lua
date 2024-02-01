@@ -508,12 +508,11 @@ local SCOPE_RENDERERS = {
 
   -- support {
   _BatTmScopeRenderer:new({
-    "@function",
+    "@function.builtin",
     "Function",
   }, "support.function"),
   _BatTmScopeRenderer:new({
-    -- "@lsp.type.enumMember",
-    "@constant",
+    "@constant.builtin",
     "Constant",
   }, "support.constant"),
   _BatTmScopeRenderer:new({
@@ -525,7 +524,7 @@ local SCOPE_RENDERERS = {
     "Type",
   }, "support.class"),
   _BatTmScopeRenderer:new({
-    "@module",
+    "@module.builtin",
   }, "support.module"),
   -- support }
 
