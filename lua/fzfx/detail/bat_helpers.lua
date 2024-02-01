@@ -472,6 +472,7 @@ local SCOPE_RENDERERS = {
   -- storage {
   _BatTmScopeRenderer:new({
     "@keyword.function",
+    "Keyword",
   }, { "storage.type.function", "keyword.declaration.function" }),
   _BatTmScopeRenderer:new({
     "Structure",
@@ -489,7 +490,10 @@ local SCOPE_RENDERERS = {
     "@type",
     "Type",
   }, { "storage.type", "keyword.declaration.type" }),
-  _BatTmScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
+  _BatTmScopeRenderer:new(
+    { "@keyword.storage", "StorageClass" },
+    "storage.modifier"
+  ),
   -- storage }
 
   -- string {
