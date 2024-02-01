@@ -439,7 +439,7 @@ local SCOPE_RENDERERS = {
     "DiffAdded",
     "@diff.plus",
     "Added",
-  }, "markup.inserted"),
+  }, { "markup.inserted" }),
   _BatTmScopeRenderer:new({
     "GitSignsDelete",
     "GitGutterDelete",
@@ -447,14 +447,14 @@ local SCOPE_RENDERERS = {
     "DiffRemoved",
     "@diff.minus",
     "Removed",
-  }, "markup.deleted"),
+  }, { "markup.deleted" }),
   _BatTmScopeRenderer:new({
     "GitGutterChange",
     "GitSignsChange",
     "DiffChange",
     "@diff.delta",
     "Changed",
-  }, "diff.changed"),
+  }, { "markup.changed" }),
   -- markup }
 
   -- meta {
