@@ -316,6 +316,10 @@ local GLOBAL_RENDERERS = {
 local SCOPE_RENDERERS = {
   -- comment {
   _BatTmScopeRenderer:new({ "@comment", "Comment" }, "comment"),
+  _BatTmScopeRenderer:new(
+    { "@comment.documentation" },
+    "comment.block.documentation"
+  ),
   -- comment }
 
   -- constant {
@@ -356,7 +360,6 @@ local SCOPE_RENDERERS = {
     "@markup.heading",
   }, "entity.name.section"),
   _BatTmScopeRenderer:new({
-    "@lsp.type.enum",
     "Structure",
   }, {
     "entity.name.enum",
@@ -371,23 +374,12 @@ local SCOPE_RENDERERS = {
     "Label",
   }, "entity.name.label"),
   _BatTmScopeRenderer:new({
-    -- "@lsp.type.enumMember",
     "@constant",
     "Constant",
   }, "entity.name.constant"),
   _BatTmScopeRenderer:new({
-    "@lsp.type.namespace",
     "@module",
   }, "entity.name.namespace"),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.class",
-  }, { "entity.name.class" }),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.struct",
-  }, { "entity.name.struct" }),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.interface",
-  }, { "entity.name.interface" }),
   -- entity }
 
   -- invalid {
@@ -398,12 +390,14 @@ local SCOPE_RENDERERS = {
 
   -- keyword {
   _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
-  -- _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.local"),
   _BatTmScopeRenderer:new(
     { "@keyword.conditional", "Conditional" },
     "keyword.control.conditional"
   ),
-  _BatTmScopeRenderer:new({ "@keyword.operator" }, "keyword.operator.word"),
+  _BatTmScopeRenderer:new(
+    { "@keyword.operator", "Operator" },
+    "keyword.operator.word"
+  ),
   _BatTmScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
   _BatTmScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
   -- keyword }
