@@ -756,10 +756,10 @@ M._build_theme = function(colorname, opts)
   )
   fileios.asyncwritefile(theme_config_file, rendered_result.payload, function()
     vim.defer_fn(function()
-      log.debug(
-        "|_build_theme| dump theme payload, theme_template:%s",
-        vim.inspect(theme_config_file)
-      )
+      -- log.debug(
+      --   "|_build_theme| dump theme payload, theme_template:%s",
+      --   vim.inspect(theme_config_file)
+      -- )
       spawn.run({ constants.BAT, "cache", "--build" }, {
         on_stdout = function(line) end,
         on_stderr = function(line) end,
@@ -785,7 +785,7 @@ M.setup = function()
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       vim.defer_fn(function()
-        log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
+        -- log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
         if strings.not_empty(tables.tbl_get(event, "match")) then
           M._build_theme(event.match, { prefer_lsp_token = true })
         end
@@ -796,7 +796,7 @@ M.setup = function()
   if versions.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
     vim.api.nvim_create_autocmd("LspTokenUpdate", {
       callback = function(event)
-        log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
+        -- log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
         vim.defer_fn(function()
           if
             strings.not_empty(tables.tbl_get(event, "data", "token", "type"))
