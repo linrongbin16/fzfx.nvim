@@ -732,6 +732,7 @@ M._build_theme = function(colorname, opts)
     "|_build_theme| failed to get theme_name from nvim colorscheme name:%s",
     vim.inspect(colorname)
   )
+
   local renderer = _BatTmRenderer:new()
   local rendered_result = renderer:render(theme_name)
   log.ensure(
