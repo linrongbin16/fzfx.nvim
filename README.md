@@ -269,7 +269,7 @@ All commands are named with prefix `Fzfx`, the sub commands e.g. the variants ar
 
 > [!NOTE]
 >
-> The `args` sub command can be omitted, which means no arguments. For example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
+> The `args` sub command can be omitted, for example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
 >
 > But if you want to specify query content, for example `fzfx`, you will have to type `:FzfxFiles args fzfx<CR>`.
 
