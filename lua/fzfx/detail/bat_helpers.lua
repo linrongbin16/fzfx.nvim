@@ -82,6 +82,7 @@ end
 --
 --- @class fzfx._BatTmScopeRenderer
 --- @field value fzfx._BatTmScopeValue
+--- @field lsp_value fzfx._BatTmScopeValue
 local _BatTmScopeRenderer = {}
 
 --- @param hl string|string[]
@@ -93,6 +94,7 @@ function _BatTmScopeRenderer:new(hl, scope)
   }
 
   local value = nil
+  local lsp_value = nil
   for i, h in ipairs(hls) do
     local ok, hl_codes = pcall(apis.get_hl, h)
     if ok and tables.tbl_not_empty(hl_codes) then
@@ -116,7 +118,11 @@ function _BatTmScopeRenderer:new(hl, scope)
             or nil,
           font_style = font_style,
         }
-        value = v
+        if strings.startswith(h, "@lsp") then
+          lsp_value = v
+        else
+          value = v
+        end
         break
       end
     end
@@ -124,6 +130,7 @@ function _BatTmScopeRenderer:new(hl, scope)
 
   local o = {
     value = value,
+    lsp_value = lsp_value,
   }
   setmetatable(o, self)
   self.__index = self
@@ -197,66 +204,12 @@ local function _render_scope(value)
   return table.concat(builder, "\n")
 end
 
+--- @param prefer_lsp_token boolean?
 --- @return string?
-function _BatTmScopeRenderer:render()
-  return self.value and _render_scope(self.value) or nil
-end
-
--- lsp semantic tokens renderer for tmTheme scope
---
---- @class fzfx._BatTmLspScopeRenderer
---- @field value fzfx._BatTmScopeValue
-local _BatTmLspScopeRenderer = {}
-
---- @param hl string|string[]
---- @param scope string|string[]
---- @return fzfx._BatTmLspScopeRenderer
-function _BatTmLspScopeRenderer:new(hl, scope)
-  local hls = type(hl) == "table" and hl or {
-    hl --[[@as string]],
-  }
-
-  local value = nil
-  for i, h in ipairs(hls) do
-    local ok, hl_codes = pcall(apis.get_hl, h)
-    if ok and tables.tbl_not_empty(hl_codes) then
-      local font_style = {}
-      if hl_codes.bold then
-        table.insert(font_style, "bold")
-      end
-      if hl_codes.italic then
-        table.insert(font_style, "italic")
-      end
-      if hl_codes.underline then
-        table.insert(font_style, "underline")
-      end
-      if hl_codes.fg then
-        local v = {
-          hl = h,
-          scope = scope,
-          foreground = hl_codes.fg and string.format("#%06x", hl_codes.fg)
-            or nil,
-          background = hl_codes.bg and string.format("#%06x", hl_codes.bg)
-            or nil,
-          font_style = font_style,
-        }
-        value = v
-        break
-      end
-    end
+function _BatTmScopeRenderer:render(prefer_lsp_token)
+  if prefer_lsp_token and self.lsp_value then
+    return _render_scope(self.lsp_value)
   end
-
-  local o = {
-    value = value,
-  }
-
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
-
---- @return string?
-function _BatTmLspScopeRenderer:render()
   return self.value and _render_scope(self.value) or nil
 end
 
@@ -588,313 +541,19 @@ local SCOPE_RENDERERS = {
 
   -- variable {
   _BatTmScopeRenderer:new({
-    "@function",
-    "Function",
-  }, "variable.function"),
-  _BatTmScopeRenderer:new({
-    "@variable.parameter",
-    "Identifier",
-  }, { "variable.parameter" }),
-  _BatTmScopeRenderer:new({
-    "@variable.builtin",
-  }, { "variable.language" }),
-  _BatTmScopeRenderer:new({
-    "@constant",
-  }, { "variable.other.constant" }),
-  _BatTmScopeRenderer:new({
-    "@variable",
-    "Identifier",
-  }, "variable"),
-  _BatTmScopeRenderer:new({
-    "@variable",
-    "Identifier",
-  }, "variable.other"),
-  _BatTmScopeRenderer:new({
-    "@variable.member",
-  }, "variable.other.member"),
-  -- variable }
-
-  -- punctuation {
-  _BatTmScopeRenderer:new({
-    "@punctuation.bracket",
-  }, {
-    "punctuation.section.braces.begin",
-    "punctuation.section.braces.end",
-    "punctuation.section.brackets.begin",
-    "punctuation.section.brackets.end",
-    "punctuation.section.parens.begin",
-    "punctuation.section.parens.end",
-  }),
-  _BatTmScopeRenderer:new({
-    "@punctuation.special",
-  }, {
-    "punctuation.section.interpolation.begin",
-    "punctuation.section.interpolation.end",
-  }),
-  _BatTmScopeRenderer:new({
-    "@punctuation.delimiter",
-  }, {
-    "punctuation.separator",
-    "punctuation.terminator",
-  }),
-  _BatTmScopeRenderer:new({
-    "@tag.delimiter",
-  }, {
-    "punctuation.definition.generic.begin",
-    "punctuation.definition.generic.end",
-  }),
-  -- punctuation }
-}
-
--- Neovim Lsp Semantic Highlight docs:
---  * Neovim semantic highlight: https://neovim.io/doc/user/lsp.html#lsp-semantic-highlight
---  * Lsp semantic tokens: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens
---  * Lsp nvim-lspconfig: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
---  * Detailed explanation: https://gist.github.com/swarn/fb37d9eefe1bc616c2a7e476c0bc0316
---
--- `@lsp.type` is mapping to `SemanticTokenTypes` in specification.
--- `@lsp.mod` is mapping to `SemanticTokenModifiers` in specification.
---
--- lsp semnatic tokens map
-local LSP_SCOPE_RENDERERS = {
-  -- comment {
-  _BatTmScopeRenderer:new({ "@lsp.type.comment" }, "comment"),
-  -- comment }
-
-  -- constant {
-  _BatTmScopeRenderer:new({ "@lsp.type.number" }, "constant.numeric"),
-  _BatTmScopeRenderer:new({ "@lsp.type.number" }, "constant.numeric.float"),
-  _BatTmScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
-  _BatTmScopeRenderer:new(
-    { "@character", "Character" },
-    { "constant.character" }
-  ),
-  _BatTmScopeRenderer:new(
-    { "@string.escape" },
-    { "constant.character.escaped", "constant.character.escape" }
-  ),
-  -- constant }
-
-  -- entity {
-  _BatTmScopeRenderer:new({
-    "@lsp.type.function",
-  }, "entity.name.function"),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.function",
-  }, "entity.name.function.call"),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.function",
-  }, "entity.name.function.constructor"),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.type",
-  }, {
-    "entity.name.type",
-  }),
-  _BatTmScopeRenderer:new({
-    "@tag",
-  }, "entity.name.tag"),
-  _BatTmScopeRenderer:new({
-    "@markup.heading",
-    "htmlTitle",
-  }, "entity.name.section"),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.enum",
-    "Structure",
-  }, {
-    "entity.name.enum",
-    "entity.name.union",
-  }),
-  _BatTmScopeRenderer:new({
-    "@type",
-    "Type",
-  }, "entity.other.inherited-class"),
-  _BatTmScopeRenderer:new({
-    "@label",
-    "Label",
-  }, "entity.name.label"),
-  _BatTmScopeRenderer:new({
-    -- "@lsp.type.enumMember",
-    "@constant",
-    "Constant",
-  }, "entity.name.constant"),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.namespace",
-    "@module",
-  }, "entity.name.namespace"),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.class",
-  }, { "entity.name.class" }),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.struct",
-  }, { "entity.name.struct" }),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.interface",
-  }, { "entity.name.interface" }),
-  -- entity }
-
-  -- invalid {
-  _BatTmScopeRenderer:new({
-    "Error",
-  }, "invalid.illegal"),
-  -- invalid }
-
-  -- keyword {
-  _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
-  -- _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword.local"),
-  _BatTmScopeRenderer:new(
-    { "@keyword.conditional", "Conditional" },
-    "keyword.control.conditional"
-  ),
-  _BatTmScopeRenderer:new({ "@keyword.operator" }, "keyword.operator.word"),
-  _BatTmScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
-  _BatTmScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
-  -- keyword }
-
-  -- markup {
-  _BatTmScopeRenderer:new({
-    "@markup.link.url",
-  }, "markup.underline.link"),
-  _BatTmScopeRenderer:new({
-    "@markup.underline",
-  }, "markup.underline"),
-  _BatTmScopeRenderer:new({
-    "@markup.strong",
-  }, "markup.bold"),
-  _BatTmScopeRenderer:new({
-    "@markup.italic",
-  }, "markup.italic"),
-  _BatTmScopeRenderer:new({
-    "@markup.heading",
-  }, "markup.heading"),
-  _BatTmScopeRenderer:new({
-    "@markup.list",
-  }, "markup.list"),
-  _BatTmScopeRenderer:new({
-    "@markup.raw",
-  }, "markup.raw"),
-  _BatTmScopeRenderer:new({
-    "@markup.quote",
-  }, "markup.quote"),
-  _BatTmScopeRenderer:new({
-    "GitSignsAdd",
-    "GitGutterAdd",
-    "DiffAdd",
-    "DiffAdded",
-    "@diff.plus",
-    "Added",
-  }, "markup.inserted"),
-  _BatTmScopeRenderer:new({
-    "GitSignsDelete",
-    "GitGutterDelete",
-    "DiffDelete",
-    "DiffRemoved",
-    "@diff.minus",
-    "Removed",
-  }, "markup.deleted"),
-  _BatTmScopeRenderer:new({
-    "GitGutterChange",
-    "GitSignsChange",
-    "DiffChange",
-    "@diff.delta",
-    "Changed",
-  }, "diff.changed"),
-  -- markup }
-
-  -- meta {
-  -- _BatTmThemeScopeRenderer:new({
-  --   "@keyword.function",
-  -- }, "meta.function"),
-  -- _BatTmThemeScopeRenderer:new({
-  --   "@punctuation.bracket",
-  -- }, { "meta.block", "meta.braces" }),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.decorator",
-    "@attribute",
-  }, { "meta.annotation" }),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.macro",
-    "@constant.macro",
-  }, { "meta.preprocessor" }),
-  -- meta }
-
-  -- storage {
-  _BatTmScopeRenderer:new({
-    "@keyword.function",
-  }, { "storage.type.function", "keyword.declaration.function" }),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.enum",
-    "Structure",
-  }, {
-    "storage.type.enum",
-    "keyword.declaration.enum",
-  }),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.struct",
-    "Structure",
-  }, {
-    "storage.type.struct",
-    "keyword.declaration.struct",
-  }),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.class",
-  }, { "storage.type.class", "keyword.declaration.class" }),
-  _BatTmScopeRenderer:new({
-    "@type.builtin",
-    "@type",
-    "Type",
-  }, { "storage.type", "keyword.declaration.type" }),
-  _BatTmScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
-  -- storage }
-
-  -- string {
-  _BatTmScopeRenderer:new(
-    { "@string", "String" },
-    { "string", "string.quoted" }
-  ),
-  _BatTmScopeRenderer:new({
-    "@string.regexp",
-  }, { "string.regexp" }),
-  -- string }
-
-  -- support {
-  _BatTmScopeRenderer:new({
     "@lsp.type.function",
     "@function",
     "Function",
-  }, "support.function"),
-  _BatTmScopeRenderer:new({
-    -- "@lsp.type.enumMember",
-    "@constant",
-    "Constant",
-  }, "support.constant"),
-  _BatTmScopeRenderer:new({
-    "@type",
-    "Type",
-  }, "support.type"),
-  _BatTmScopeRenderer:new({
-    "@type",
-    "Type",
-  }, "support.class"),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.namespace",
-    "@module",
-  }, "support.module"),
-  -- support }
-
-  -- variable {
-  _BatTmScopeRenderer:new({
-    "@lsp.type.method",
-    "@function.method",
   }, "variable.function"),
   _BatTmScopeRenderer:new({
     "@lsp.type.parameter",
     "@variable.parameter",
+    "Identifier",
   }, { "variable.parameter" }),
   _BatTmScopeRenderer:new({
     "@variable.builtin",
   }, { "variable.language" }),
   _BatTmScopeRenderer:new({
-    -- "@lsp.type.enumMember",
     "@constant",
   }, { "variable.other.constant" }),
   _BatTmScopeRenderer:new({
@@ -908,6 +567,7 @@ local LSP_SCOPE_RENDERERS = {
     "Identifier",
   }, "variable.other"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.property",
     "@variable.member",
   }, "variable.other.member"),
   -- variable }
@@ -916,10 +576,10 @@ local LSP_SCOPE_RENDERERS = {
   _BatTmScopeRenderer:new({
     "@punctuation.bracket",
   }, {
-    "punctuation.section.brackets.begin",
-    "punctuation.section.brackets.end",
     "punctuation.section.braces.begin",
     "punctuation.section.braces.end",
+    "punctuation.section.brackets.begin",
+    "punctuation.section.brackets.end",
     "punctuation.section.parens.begin",
     "punctuation.section.parens.end",
   }),
@@ -947,9 +607,57 @@ local LSP_SCOPE_RENDERERS = {
 -- tmTheme renderer
 --
 --- @class fzfx._BatTmRenderer
+--- @field template string
 local _BatTmRenderer = {}
 
-function _BatTmRenderer:new() end
+--- @return fzfx._BatTmRenderer
+function _BatTmRenderer:new()
+  -- there're 3 components in below template:
+  -- {NAME}
+  -- {GLOBAL}
+  -- {SCOPE}
+  --
+  local template = [[
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>author</key>
+    <string>Lin Rongbin(linrongbin16@outlook.com)</string>
+    <key>name</key>
+    <string>{NAME}</string>
+    <key>semanticClass</key>
+    <string>{NAME}</string>
+    <key>colorSpaceName</key>
+    <string>sRGB</string>
+
+    <key>settings</key>
+    <array>
+      <dict>
+        <!-- globals -->
+        <key>settings</key>
+        <dict>
+          {GLOBAL}
+        </dict>
+      </dict>
+
+      <!-- scope -->
+      {SCOPE}
+
+    </array>
+    <key>uuid</key>
+    <string>uuid</string>
+  </dict>
+</plist>
+  ]]
+
+  local o = {
+    template = template,
+  }
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
 
 function _BatTmRenderer:render() end
 
