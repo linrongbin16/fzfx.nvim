@@ -751,7 +751,7 @@ M._build_theme = function(colorname, opts)
       "|_build_theme| dump theme payload, theme_template:%s",
       vim.inspect(theme_config_file)
     )
-    vim.schedule(function()
+    vim.defer_fn(function()
       spawn.run({ constants.BAT, "cache", "--build" }, {
         on_stdout = function(line) end,
         on_stderr = function(line) end,
@@ -760,7 +760,7 @@ M._build_theme = function(colorname, opts)
           building_bat_theme = false
         end)
       end)
-    end)
+    end, 10)
   end)
 end
 
