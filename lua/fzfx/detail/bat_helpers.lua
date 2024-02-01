@@ -361,7 +361,9 @@ local SCOPE_RENDERERS = {
     "@module",
   }, "entity.name.namespace"),
   _BatTmScopeRenderer:new({
-    "@lsp.type.class",
+    "@lsp.type.type",
+    "@type",
+    "Type",
   }, "entity.other.inherited-class"),
   _BatTmScopeRenderer:new({
     "@lsp.type.class",
