@@ -3,7 +3,9 @@ local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 local strings = require("fzfx.commons.strings")
 
+local constants = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
+local log = require("fzfx.lib.log")
 
 local M = {}
 
@@ -23,23 +25,27 @@ M._cached_theme_dir = function()
   return CACHED_THEME_DIR
 end
 
---- @return string?
+--- @return string
 M.get_theme_dir = function()
   local cached_result = M._cached_theme_dir() --[[@as string]]
 
   if strings.empty(cached_result) then
     local result = ""
-    local ok, sp = pcall(spawn.run, { "bat", "--config-dir" }, {
+
+    local ok, sp_or_err = pcall(spawn.run, { constants.BAT, "--config-dir" }, {
       on_stdout = function(line)
         result = result .. line
       end,
       on_stderr = function() end,
     }, function() end)
-    if not ok then
-      return nil
-    end
 
-    sp:wait()
+    log.ensure(
+      ok ~= nil,
+      "|get_theme_dir| failed to get bat config dir:%s",
+      vim.inspect(sp_or_err)
+    )
+
+    sp_or_err:wait()
     fileios.writefile(M._theme_dir_cache(), paths.join(result, "themes"))
 
     return result
@@ -105,14 +111,19 @@ M.get_theme_name = function(name)
 end
 
 --- @param colorname string
---- @return string?
+--- @return string
 M.get_theme_config_file = function(colorname)
-  local theme_dir = M.get_theme_dir() --[[@as string]]
-  if strings.empty(theme_dir) then
-    return nil
-  end
+  local theme_dir = M.get_theme_dir()
+  log.ensure(
+    strings.not_empty(theme_dir),
+    "|get_theme_config_file| failed to get bat config theme dir"
+  )
   local theme_name = M.get_theme_name(colorname)
-  assert(type(theme_name) == "string" and string.len(theme_name) > 0)
+  log.ensure(
+    strings.not_empty(theme_name),
+    "|get_theme_config_file| failed to get bat theme name from nvim colorscheme name:%s",
+    vim.inspect(colorname)
+  )
   return paths.join(theme_dir, theme_name .. ".tmTheme")
 end
 

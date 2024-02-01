@@ -54,10 +54,10 @@ function _BatTmGlobalRenderer:new(hl, key, attr)
   return o
 end
 
---- @return string
+--- @return string?
 function _BatTmGlobalRenderer:render()
   if not self.value then
-    return "\n"
+    return nil
   end
   log.ensure(
     type(self.key) == "string" and string.len(self.key) > 0,
@@ -138,10 +138,10 @@ function _BatTmScopeRenderer:new(hl, scope)
 end
 
 --- @param value fzfx._BatTmScopeValue
---- @return string
+--- @return string?
 local function _render_scope(value)
   if tables.tbl_empty(value) then
-    return "\n"
+    return nil
   end
   local builder = {
     "      <dict>",
@@ -659,40 +659,32 @@ function _BatTmRenderer:new()
   return o
 end
 
-function _BatTmRenderer:render() end
+--- @param theme_name string
+--- @param prefer_lsp_token boolean?
+--- @return {name:string,payload:string}
+function _BatTmRenderer:render(theme_name, prefer_lsp_token)
+  local payload = self.template
 
---- @param colorname string
---- @param skip_lsp_semantic boolean?
---- @return {name:string,payload:string}?
-M._render_theme = function(colorname, skip_lsp_semantic)
-  if strings.empty(colorname) then
-    return nil
-  end
-  local theme_name = bat_themes_helper.get_theme_name(colorname) --[[@as string]]
-  if strings.empty(theme_name) then
-    return nil
-  end
-  local template_path = paths.join(
-    vim.env._FZFX_NVIM_SELF_PATH --[[@as string]],
-    "assets",
-    "bat",
-    "theme_template.tmTheme"
-  )
-  local payload = fileios.readfile(template_path, { trim = true }) --[[@as string]]
   payload = strings.replace(payload, "{NAME}", theme_name)
 
-  local global_builder = {}
-  for i, renderer in ipairs(GLOBAL_RENDERERS) do
-    table.insert(global_builder, renderer:render())
+  local globals = {}
+  for i, r in ipairs(GLOBAL_RENDERERS) do
+    local result = r:render()
+    if result then
+      table.insert(globals, result)
+    end
   end
-  local scope_builder = {}
-  for i, renderer in ipairs(SCOPE_RENDERERS) do
-    table.insert(scope_builder, renderer:render(skip_lsp_semantic))
+  local scopes = {}
+  for i, r in ipairs(SCOPE_RENDERERS) do
+    local result = r:render(prefer_lsp_token)
+    if result then
+      table.insert(scopes, result)
+    end
   end
-  payload =
-    strings.replace(payload, "{GLOBAL}", table.concat(global_builder, "\n"))
-  payload =
-    strings.replace(payload, "{SCOPE}", table.concat(scope_builder, "\n"))
+
+  payload = strings.replace(payload, "{GLOBAL}", table.concat(globals, "\n"))
+  payload = strings.replace(payload, "{SCOPE}", table.concat(scopes, "\n"))
+
   return {
     name = theme_name,
     payload = payload,
@@ -709,30 +701,21 @@ M._build_theme = function(colorname, opts)
       and opts.skip_lsp_semantic
     or false
 
-  local theme_template = bat_themes_helper.get_theme_config_file(colorname) --[[@as string]]
-  -- log.debug(
-  --   "|_build_theme| colorname:%s, theme_template:%s",
-  --   vim.inspect(colorname),
-  --   vim.inspect(theme_template)
-  -- )
-  if strings.empty(theme_template) then
-    return
-  end
-  local theme_dir = bat_themes_helper.get_theme_dir() --[[@as string]]
-  -- log.debug("|_build_theme| theme_dir:%s", vim.inspect(theme_dir))
-  if strings.empty(theme_dir) then
-    return
-  end
-  local theme = M._render_theme(colorname, opts.skip_lsp_semantic) --[[@as string]]
-  -- log.debug("|_build_theme| theme:%s", vim.inspect(theme))
-  if tables.tbl_empty(theme) then
-    return
-  end
+  log.ensure(
+    strings.not_empty(colorname),
+    "|_build_theme| colorname is empty string!"
+  )
 
   if building_bat_theme then
     return
   end
   building_bat_theme = true
+
+  local theme_dir = bat_themes_helper.get_theme_dir()
+  log.ensure(
+    strings.not_empty(theme_dir),
+    "|_build_theme| failed to get bat config dir"
+  )
 
   if not paths.isdir(theme_dir) then
     spawn
@@ -743,19 +726,36 @@ M._build_theme = function(colorname, opts)
       :wait()
   end
 
-  fileios.asyncwritefile(theme_template, theme.payload, function()
+  local theme_name = bat_themes_helper.get_theme_name(colorname)
+  log.ensure(
+    strings.not_empty(theme_name),
+    "|_build_theme| failed to get theme_name from nvim colorscheme name:%s",
+    vim.inspect(colorname)
+  )
+  local renderer = _BatTmRenderer:new()
+  local rendered_result = renderer:render(theme_name)
+  log.ensure(
+    tables.tbl_not_empty(rendered_result),
+    "|_build_theme| rendered result is empty, color name:%s, theme name:%s",
+    vim.inspect(colorname),
+    vim.inspect(theme_name)
+  )
+
+  local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
+  log.ensure(
+    strings.not_empty(theme_config_file),
+    "|_build_theme| failed to get bat theme config file from nvim colorscheme name:%s",
+    vim.inspect(colorname)
+  )
+  fileios.asyncwritefile(theme_config_file, rendered_result.payload, function()
     log.debug(
       "|_build_theme| dump theme payload, theme_template:%s",
-      vim.inspect(theme_template)
+      vim.inspect(theme_config_file)
     )
     vim.schedule(function()
-      spawn.run({ "bat", "cache", "--build" }, {
-        on_stdout = function(line)
-          -- log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
-        end,
-        on_stderr = function(line)
-          -- log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
-        end,
+      spawn.run({ constants.BAT, "cache", "--build" }, {
+        on_stdout = function(line) end,
+        on_stderr = function(line) end,
       }, function()
         vim.schedule(function()
           building_bat_theme = false
