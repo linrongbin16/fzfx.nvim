@@ -694,11 +694,11 @@ end
 local building_bat_theme = false
 
 --- @param colorname string
---- @param opts {skip_lsp_semantic:boolean?}?
+--- @param opts {prefer_lsp_token:boolean?}?
 M._build_theme = function(colorname, opts)
-  opts = opts or { skip_lsp_semantic = false }
-  opts.skip_lsp_semantic = type(opts.skip_lsp_semantic) == "boolean"
-      and opts.skip_lsp_semantic
+  opts = opts or { prefer_lsp_token = false }
+  opts.prefer_lsp_token = type(opts.prefer_lsp_token) == "boolean"
+      and opts.prefer_lsp_token
     or false
 
   log.ensure(
@@ -734,7 +734,7 @@ M._build_theme = function(colorname, opts)
   )
 
   local renderer = _BatTmRenderer:new()
-  local rendered_result = renderer:render(theme_name)
+  local rendered_result = renderer:render(theme_name, opts.prefer_lsp_token)
   log.ensure(
     tables.tbl_not_empty(rendered_result),
     "|_build_theme| rendered result is empty, color name:%s, theme name:%s",
@@ -773,7 +773,7 @@ M.setup = function()
 
   local color = vim.g.colors_name
   if strings.not_empty(color) then
-    M._build_theme(color, { skip_lsp_semantic = true })
+    M._build_theme(color)
   end
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
@@ -781,7 +781,7 @@ M.setup = function()
       vim.schedule(function()
         log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
         if strings.not_empty(tables.tbl_get(event, "match")) then
-          M._build_theme(event.match, { skip_lsp_semantic = true })
+          M._build_theme(event.match)
         end
       end)
     end,
@@ -799,7 +799,7 @@ M.setup = function()
               string.format("@lsp.type.%s", event.data.token.type)
             local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
             if strings.not_empty(bufcolor) then
-              M._build_theme(bufcolor)
+              M._build_theme(bufcolor, { prefer_lsp_token = true })
             end
           end
         end)
