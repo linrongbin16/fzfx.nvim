@@ -97,6 +97,7 @@ jobs:
       - name: Run Tests
         run: |
           luarocks install luacov
+          luarocks install luacov-reporter-lcov
           luarocks install vusted
           git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
           ~/.fzf/install
@@ -108,14 +109,15 @@ jobs:
           echo "ls ."
           ls -l .
           echo "run luacov"
-          luacov
+          luacov -r lcov
           echo "ls ."
           ls -l .
           echo "tail ./luacov.report.out"
           tail -n 50 ./luacov.report.out
-      - uses: codecov/codecov-action@v3
+          mv luacov.report.out luacov.report.txt
+      - uses: codecov/codecov-action@v4
         with:
-          files: luacov.report.out
+          files: luacov.report.txt
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   release:
