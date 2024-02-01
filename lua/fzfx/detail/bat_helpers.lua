@@ -287,6 +287,29 @@ local GLOBAL_RENDERERS = {
   _BatTmGlobalRenderer:new("Visual", "selectionForeground", "fg"),
   _BatTmGlobalRenderer:new("Search", "findHighlight", "bg"),
   _BatTmGlobalRenderer:new("Search", "findHighlightForeground", "fg"),
+  _BatTmGlobalRenderer:new({
+    "GitSignsAdd",
+    "GitGutterAdd",
+    "DiffAdd",
+    "DiffAdded",
+    "@diff.plus",
+    "Added",
+  }, "lineDiffAdded", "fg"),
+  _BatTmGlobalRenderer:new({
+    "GitSignsChange",
+    "GitGutterChange",
+    "DiffChange",
+    "@diff.delta",
+    "Changed",
+  }, "lineDiffModified", "fg"),
+  _BatTmGlobalRenderer:new({
+    "GitSignsDelete",
+    "GitGutterDelete",
+    "DiffDelete",
+    "DiffRemoved",
+    "@diff.minus",
+    "Removed",
+  }, "lineDiffDeleted", "fg"),
 }
 
 -- syntax and treesitter map
@@ -314,10 +337,12 @@ local SCOPE_RENDERERS = {
 
   -- entity {
   _BatTmScopeRenderer:new({
-    "@lsp.type.function",
     "@function",
     "Function",
   }, "entity.name.function"),
+  _BatTmScopeRenderer:new({
+    "@constructor",
+  }, "entity.name.function.constructor"),
   _BatTmScopeRenderer:new({
     "@type",
     "Type",
