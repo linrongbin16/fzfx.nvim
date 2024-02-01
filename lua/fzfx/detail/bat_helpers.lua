@@ -534,6 +534,9 @@ local SCOPE_RENDERERS = {
     "keyword.declaration.struct",
   }),
   _BatTmScopeRenderer:new({
+    "@lsp.type.class",
+  }, { "storage.type.class", "keyword.declaration.class" }),
+  _BatTmScopeRenderer:new({
     "@lsp.type.type",
     "@type",
     "Type",
