@@ -308,16 +308,28 @@ local GLOBAL_RENDERERS = {
   }, "lineDiffDeleted", "fg"),
 }
 
--- Neovim highlight docs:
+-- Neovim Treesitter Highlight docs:
 --  * Basic syntax: https://neovim.io/doc/user/syntax.html#group-name
 --  * Treesitter: https://neovim.io/doc/user/treesitter.html#treesitter-highlight
+--
+-- Neovim Lsp Semantic Highlight docs:
+--  * Neovim semantic highlight: https://neovim.io/doc/user/lsp.html#lsp-semantic-highlight
+--  * Lsp semantic tokens: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens
+--  * Lsp nvim-lspconfig: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
+--  * Detailed explanation: https://gist.github.com/swarn/fb37d9eefe1bc616c2a7e476c0bc0316
+--
+-- `@lsp.type` is mapping to `SemanticTokenTypes` in specification.
+-- `@lsp.mod` is mapping to `SemanticTokenModifiers` in specification.
 --
 -- syntax and treesitter map
 local SCOPE_RENDERERS = {
   -- comment {
-  _BatTmScopeRenderer:new({ "@comment", "Comment" }, "comment"),
   _BatTmScopeRenderer:new(
-    { "@comment.documentation" },
+    { "@lsp.type.comment", "@comment", "Comment" },
+    "comment"
+  ),
+  _BatTmScopeRenderer:new(
+    { "@lsp.type.comment", "@comment.documentation" },
     "comment.block.documentation"
   ),
   -- comment }
@@ -607,12 +619,29 @@ local LSP_SCOPE_RENDERERS = {
   -- comment }
 
   -- constant {
+  _BatTmScopeRenderer:new({ "@lsp.type.number" }, "constant.numeric"),
+  _BatTmScopeRenderer:new({ "@lsp.type.number" }, "constant.numeric.float"),
+  _BatTmScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
+  _BatTmScopeRenderer:new(
+    { "@character", "Character" },
+    { "constant.character" }
+  ),
+  _BatTmScopeRenderer:new(
+    { "@string.escape" },
+    { "constant.character.escaped", "constant.character.escape" }
+  ),
   -- constant }
 
   -- entity {
   _BatTmScopeRenderer:new({
     "@lsp.type.function",
   }, "entity.name.function"),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.function",
+  }, "entity.name.function.call"),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.function",
+  }, "entity.name.function.constructor"),
   _BatTmScopeRenderer:new({
     "@lsp.type.type",
   }, {
@@ -927,21 +956,21 @@ M._build_theme = function(colorname, opts)
     or false
 
   local theme_template = bat_themes_helper.get_theme_config_file(colorname) --[[@as string]]
-  log.debug(
-    "|build_custom_theme| colorname:%s, theme_template:%s",
-    vim.inspect(colorname),
-    vim.inspect(theme_template)
-  )
+  -- log.debug(
+  --   "|_build_theme| colorname:%s, theme_template:%s",
+  --   vim.inspect(colorname),
+  --   vim.inspect(theme_template)
+  -- )
   if strings.empty(theme_template) then
     return
   end
   local theme_dir = bat_themes_helper.get_theme_dir() --[[@as string]]
-  log.debug("|build_custom_theme| theme_dir:%s", vim.inspect(theme_dir))
+  -- log.debug("|_build_theme| theme_dir:%s", vim.inspect(theme_dir))
   if strings.empty(theme_dir) then
     return
   end
   local theme = M._render_theme(colorname, opts.skip_lsp_semantic) --[[@as string]]
-  -- log.debug("|build_custom_theme| theme:%s", vim.inspect(theme))
+  -- log.debug("|_build_theme| theme:%s", vim.inspect(theme))
   if tables.tbl_empty(theme) then
     return
   end
@@ -962,7 +991,7 @@ M._build_theme = function(colorname, opts)
 
   fileios.writefile(theme_template, theme.payload)
   log.debug(
-    "|build_custom_theme| dump theme payload, theme_template:%s",
+    "|_build_theme| dump theme payload, theme_template:%s",
     vim.inspect(theme_template)
   )
 
@@ -1002,8 +1031,9 @@ M.setup = function()
   })
 
   if versions.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
-    vim.api.nvim_create_autocmd({ "LspTokenUpdate" }, {
-      callback = function()
+    vim.api.nvim_create_autocmd("LspTokenUpdate", {
+      callback = function(event)
+        log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
         vim.schedule(function()
           local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
           if strings.not_empty(bufcolor) then
