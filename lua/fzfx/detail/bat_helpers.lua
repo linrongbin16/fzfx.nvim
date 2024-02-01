@@ -335,9 +335,12 @@ local SCOPE_RENDERERS = {
   -- comment }
 
   -- constant {
-  _BatTmScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
   _BatTmScopeRenderer:new(
-    { "@number.float", "Float" },
+    { "@lsp.type.number", "@number", "Number" },
+    "constant.numeric"
+  ),
+  _BatTmScopeRenderer:new(
+    { "@lsp.type.number", "@number.float", "Float" },
     "constant.numeric.float"
   ),
   _BatTmScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
@@ -353,16 +356,20 @@ local SCOPE_RENDERERS = {
 
   -- entity {
   _BatTmScopeRenderer:new({
+    "@lsp.type.function",
     "@function",
     "Function",
   }, "entity.name.function"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.function",
     "@function.call",
   }, "entity.name.function.call"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.function",
     "@constructor",
   }, "entity.name.function.constructor"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.type",
     "@type",
     "Type",
   }, {
@@ -380,10 +387,16 @@ local SCOPE_RENDERERS = {
   _BatTmScopeRenderer:new({
     "Structure",
   }, {
-    "entity.name.enum",
     "entity.name.union",
   }),
   _BatTmScopeRenderer:new({
+    "@lsp.type.enum",
+    "Structure",
+  }, {
+    "entity.name.enum",
+  }),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.type",
     "@type",
     "Type",
   }, "entity.other.inherited-class"),
@@ -396,8 +409,12 @@ local SCOPE_RENDERERS = {
     "Constant",
   }, "entity.name.constant"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.namespace",
     "@module",
   }, "entity.name.namespace"),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.interface",
+  }, "entity.name.interface"),
   -- entity }
 
   -- invalid {
@@ -407,7 +424,10 @@ local SCOPE_RENDERERS = {
   -- invalid }
 
   -- keyword {
-  _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
+  _BatTmScopeRenderer:new(
+    { "@lsp.type.keyword", "@keyword", "Keyword" },
+    "keyword"
+  ),
   _BatTmScopeRenderer:new(
     { "@keyword.conditional", "Conditional" },
     "keyword.control"
@@ -417,8 +437,14 @@ local SCOPE_RENDERERS = {
   --   "keyword.control.conditional"
   -- ),
   _BatTmScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
-  _BatTmScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
-  _BatTmScopeRenderer:new({ "@keyword.operator" }, "keyword.operator.word"),
+  _BatTmScopeRenderer:new(
+    { "@lsp.type.operator", "@operator", "Operator" },
+    "keyword.operator"
+  ),
+  _BatTmScopeRenderer:new(
+    { "@lsp.type.operator", "@keyword.operator" },
+    "keyword.operator.word"
+  ),
   _BatTmScopeRenderer:new(
     { "@keyword.conditional.ternary" },
     "keyword.operator.ternary"
@@ -477,10 +503,13 @@ local SCOPE_RENDERERS = {
 
   -- meta {
   _BatTmScopeRenderer:new({
+    "@lsp.type.decorator",
     "@attribute",
   }, { "meta.annotation" }),
   _BatTmScopeRenderer:new({
+    "@lsp.type.macro",
     "@constant.macro",
+    "Macro",
   }, { "meta.preprocessor" }),
   -- meta }
 
@@ -490,6 +519,7 @@ local SCOPE_RENDERERS = {
     "Keyword",
   }, { "storage.type.function", "keyword.declaration.function" }),
   _BatTmScopeRenderer:new({
+    "@lsp.type.enum",
     "Structure",
   }, {
     "storage.type.enum",
@@ -539,6 +569,7 @@ local SCOPE_RENDERERS = {
     "Type",
   }, "support.class"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.namespace",
     "@module.builtin",
   }, "support.module"),
   -- support }
@@ -1037,9 +1068,15 @@ M.setup = function()
       callback = function(event)
         log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
         vim.schedule(function()
-          local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
-          if strings.not_empty(bufcolor) then
-            M._build_theme(bufcolor)
+          if
+            strings.not_empty(tables.tbl_get(event, "data", "token", "type"))
+          then
+            local lsp_type =
+              string.format("@lsp.type.%s", event.data.token.type)
+            local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
+            if strings.not_empty(bufcolor) then
+              M._build_theme(bufcolor)
+            end
           end
         end)
       end,
