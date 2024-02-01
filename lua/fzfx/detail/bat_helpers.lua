@@ -672,14 +672,14 @@ function _BatTmRenderer:render(theme_name, prefer_lsp_token)
   payload = strings.replace(payload, "{NAME}", theme_name)
 
   local globals = {}
-  for i, r in ipairs(GLOBAL_RENDERERS) do
+  for i, r in ipairs(self.globals) do
     local result = r:render()
     if result then
       table.insert(globals, result)
     end
   end
   local scopes = {}
-  for i, r in ipairs(SCOPE_RENDERERS) do
+  for i, r in ipairs(self.scopes) do
     local result = r:render(prefer_lsp_token)
     if result then
       table.insert(scopes, result)
