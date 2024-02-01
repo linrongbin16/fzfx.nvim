@@ -40,9 +40,14 @@ M._bat_style_theme = function()
       local theme_config_file = bat_themes_helper.get_theme_config_file(color)
       if paths.isfile(theme_config_file or "") then
         -- print(string.format("bat previewer color:%s", vim.inspect(color)))
-        local custom_theme = bat_themes_helper.get_theme_name(color) --[[@as string]]
-        if strings.not_empty(custom_theme) then
-          return style, custom_theme
+        local custom_theme_name = bat_themes_helper.get_theme_name(color) --[[@as string]]
+        log.debug(
+          "|_bat_style_theme| theme_config_file:%s, custom_theme_name:%s",
+          vim.inspect(theme_config_file),
+          vim.inspect(custom_theme_name)
+        )
+        if strings.not_empty(custom_theme_name) then
+          return style, custom_theme_name
         end
       end
     end
