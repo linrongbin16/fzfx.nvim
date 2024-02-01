@@ -267,10 +267,6 @@ end
 --
 -- Neovim highlight docs:
 --  * Basic syntax: https://neovim.io/doc/user/syntax.html#group-name
---  * Treesitter: https://neovim.io/doc/user/treesitter.html#treesitter-highlight
---  * Lsp: https://neovim.io/doc/user/lsp.html#lsp-semantic-highlight
---  * Lsp Semantic Tokens: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens
---  * Lsp nvim-lspconfig: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
 --
 -- syntax map
 local GLOBAL_RENDERERS = {
@@ -312,6 +308,10 @@ local GLOBAL_RENDERERS = {
   }, "lineDiffDeleted", "fg"),
 }
 
+-- Neovim highlight docs:
+--  * Basic syntax: https://neovim.io/doc/user/syntax.html#group-name
+--  * Treesitter: https://neovim.io/doc/user/treesitter.html#treesitter-highlight
+--
 -- syntax and treesitter map
 local SCOPE_RENDERERS = {
   -- comment {
@@ -341,9 +341,12 @@ local SCOPE_RENDERERS = {
 
   -- entity {
   _BatTmScopeRenderer:new({
-    "@function.method",
+    "@function",
     "Function",
   }, "entity.name.function"),
+  _BatTmScopeRenderer:new({
+    "@function.call",
+  }, "entity.name.function.call"),
   _BatTmScopeRenderer:new({
     "@constructor",
   }, "entity.name.function.constructor"),
@@ -530,27 +533,24 @@ local SCOPE_RENDERERS = {
 
   -- variable {
   _BatTmScopeRenderer:new({
-    "@lsp.type.method",
-    "@function.method",
+    "@function",
+    "Function",
   }, "variable.function"),
   _BatTmScopeRenderer:new({
-    "@lsp.type.parameter",
     "@variable.parameter",
+    "Identifier",
   }, { "variable.parameter" }),
   _BatTmScopeRenderer:new({
     "@variable.builtin",
   }, { "variable.language" }),
   _BatTmScopeRenderer:new({
-    -- "@lsp.type.enumMember",
     "@constant",
   }, { "variable.other.constant" }),
   _BatTmScopeRenderer:new({
-    "@lsp.type.variable",
     "@variable",
     "Identifier",
   }, "variable"),
   _BatTmScopeRenderer:new({
-    "@lsp.type.variable",
     "@variable",
     "Identifier",
   }, "variable.other"),
@@ -563,10 +563,10 @@ local SCOPE_RENDERERS = {
   _BatTmScopeRenderer:new({
     "@punctuation.bracket",
   }, {
-    "punctuation.section.brackets.begin",
-    "punctuation.section.brackets.end",
     "punctuation.section.braces.begin",
     "punctuation.section.braces.end",
+    "punctuation.section.brackets.begin",
+    "punctuation.section.brackets.end",
     "punctuation.section.parens.begin",
     "punctuation.section.parens.end",
   }),
@@ -591,6 +591,14 @@ local SCOPE_RENDERERS = {
   -- punctuation }
 }
 
+-- Neovim Lsp Semantic Highlight docs:
+--  * Lsp: https://neovim.io/doc/user/lsp.html#lsp-semantic-highlight
+--  * Lsp Semantic Tokens: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens
+--  * Lsp nvim-lspconfig: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
+--
+-- `@lsp.type` is mapping to `SemanticTokenTypes` in specification.
+-- `@lsp.mod` is mapping to `SemanticTokenModifiers` in specification.
+--
 -- lsp semnatic tokens map
 local LSP_SCOPE_RENDERERS = {
   -- comment {
@@ -598,31 +606,14 @@ local LSP_SCOPE_RENDERERS = {
   -- comment }
 
   -- constant {
-  _BatTmScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
-  _BatTmScopeRenderer:new(
-    { "@number.float", "Float" },
-    "constant.numeric.float"
-  ),
-  _BatTmScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
-  _BatTmScopeRenderer:new(
-    { "@character", "Character" },
-    { "constant.character" }
-  ),
-  _BatTmScopeRenderer:new(
-    { "@string.escape" },
-    { "constant.character.escaped", "constant.character.escape" }
-  ),
   -- constant }
 
   -- entity {
   _BatTmScopeRenderer:new({
     "@lsp.type.function",
-    "@function",
-    "Function",
   }, "entity.name.function"),
   _BatTmScopeRenderer:new({
-    "@type",
-    "Type",
+    "@lsp.type.type",
   }, {
     "entity.name.type",
   }),
