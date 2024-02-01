@@ -392,14 +392,19 @@ local SCOPE_RENDERERS = {
   _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
   _BatTmScopeRenderer:new(
     { "@keyword.conditional", "Conditional" },
-    "keyword.control.conditional"
+    "keyword.control"
   ),
-  _BatTmScopeRenderer:new(
-    { "@keyword.operator", "Operator" },
-    "keyword.operator.word"
-  ),
-  _BatTmScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+  -- _BatTmScopeRenderer:new(
+  --   { "@keyword.conditional", "Conditional" },
+  --   "keyword.control.conditional"
+  -- ),
   _BatTmScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
+  _BatTmScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+  _BatTmScopeRenderer:new({ "@keyword.operator" }, "keyword.operator.word"),
+  _BatTmScopeRenderer:new(
+    { "@keyword.conditional.ternary" },
+    "keyword.operator.ternary"
+  ),
   -- keyword }
 
   -- markup {
