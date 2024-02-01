@@ -515,6 +515,7 @@ local SCOPE_RENDERERS = {
 
   -- storage {
   _BatTmScopeRenderer:new({
+    "@lsp.type.function",
     "@keyword.function",
     "Keyword",
   }, { "storage.type.function", "keyword.declaration.function" }),
@@ -526,33 +527,39 @@ local SCOPE_RENDERERS = {
     "keyword.declaration.enum",
   }),
   _BatTmScopeRenderer:new({
+    "@lsp.type.struct",
     "Structure",
   }, {
     "storage.type.struct",
     "keyword.declaration.struct",
   }),
   _BatTmScopeRenderer:new({
+    "@lsp.type.type",
     "@type",
     "Type",
   }, { "storage.type", "keyword.declaration.type" }),
-  _BatTmScopeRenderer:new(
-    { "@keyword.storage", "StorageClass" },
-    "storage.modifier"
-  ),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.modifier",
+    "@keyword.storage",
+    "StorageClass",
+  }, "storage.modifier"),
   -- storage }
 
   -- string {
-  _BatTmScopeRenderer:new(
-    { "@string", "String" },
-    { "string", "string.quoted" }
-  ),
   _BatTmScopeRenderer:new({
+    "@lsp.type.string",
+    "@string",
+    "String",
+  }, { "string", "string.quoted" }),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.regexp",
     "@string.regexp",
   }, { "string.regexp" }),
   -- string }
 
   -- support {
   _BatTmScopeRenderer:new({
+    "@lsp.type.function",
     "@function.builtin",
     "Function",
   }, "support.function"),
@@ -561,10 +568,12 @@ local SCOPE_RENDERERS = {
     "Constant",
   }, "support.constant"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.type",
     "@type.builtin",
     "Type",
   }, "support.type"),
   _BatTmScopeRenderer:new({
+    "@lsp.type.type",
     "@type.builtin",
     "Type",
   }, "support.class"),
@@ -823,6 +832,9 @@ local LSP_SCOPE_RENDERERS = {
     "storage.type.struct",
     "keyword.declaration.struct",
   }),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.class",
+  }, { "storage.type.class", "keyword.declaration.class" }),
   _BatTmScopeRenderer:new({
     "@type.builtin",
     "@type",
