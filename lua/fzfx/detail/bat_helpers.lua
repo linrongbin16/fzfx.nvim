@@ -357,6 +357,9 @@ local SCOPE_RENDERERS = {
     "@tag",
   }, "entity.name.tag"),
   _BatTmScopeRenderer:new({
+    "@tag.attribute",
+  }, "entity.other.attribute-name"),
+  _BatTmScopeRenderer:new({
     "@markup.heading",
   }, "entity.name.section"),
   _BatTmScopeRenderer:new({
