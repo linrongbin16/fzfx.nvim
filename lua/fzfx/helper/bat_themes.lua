@@ -3,7 +3,9 @@ local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 local strings = require("fzfx.commons.strings")
 
+local constants = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
+local log = require("fzfx.lib.log")
 
 local M = {}
 
@@ -12,80 +14,44 @@ M._theme_dir_cache = function()
   return paths.join(env.cache_dir(), "_last_bat_themes_dir_cache")
 end
 
+--- @type string?
+local CACHED_THEME_DIR = nil
+
 --- @return string?
 M._cached_theme_dir = function()
-  return fileios.readfile(M._theme_dir_cache(), { trim = true })
+  if CACHED_THEME_DIR == nil then
+    CACHED_THEME_DIR = fileios.readfile(M._theme_dir_cache(), { trim = true })
+  end
+  return CACHED_THEME_DIR
 end
 
-local dumping_bat_themes_dir = false
-
---- @param value string
---- @param sync boolean?
-M._dump_theme_dir = function(value, sync)
-  if sync then
-    fileios.writefile(M._theme_dir_cache(), value)
-    return
-  end
-
-  if dumping_bat_themes_dir then
-    return
-  end
-
-  dumping_bat_themes_dir = true
-  fileios.asyncwritefile(M._theme_dir_cache(), value, function()
-    vim.schedule(function()
-      dumping_bat_themes_dir = false
-    end)
-  end)
-end
-
-local saving_bat_themes_dir = false
-
---- @return string?
-M.get_bat_themes_dir = function()
+--- @return string
+M.get_theme_dir = function()
   local cached_result = M._cached_theme_dir() --[[@as string]]
 
   if strings.empty(cached_result) then
     local result = ""
-    local ok, sp = pcall(spawn.run, { "bat", "--config-dir" }, {
+
+    local ok, sp_or_err = pcall(spawn.run, { constants.BAT, "--config-dir" }, {
       on_stdout = function(line)
         result = result .. line
       end,
       on_stderr = function() end,
     }, function() end)
-    if not ok then
-      return nil
-    end
 
-    sp:wait()
-    M._dump_theme_dir(paths.join(result, "themes"), true)
+    log.ensure(
+      ok ~= nil,
+      "|get_theme_dir| failed to get bat config dir:%s",
+      vim.inspect(sp_or_err)
+    )
+
+    sp_or_err:wait()
+    fileios.writefile(M._theme_dir_cache(), paths.join(result, "themes"))
 
     return result
-  else
-    vim.schedule(function()
-      if saving_bat_themes_dir then
-        return
-      end
-      saving_bat_themes_dir = true
-
-      local result = ""
-      local ok, err = pcall(spawn.run, { "bat", "--config-dir" }, {
-        on_stdout = function(line)
-          result = result .. line
-        end,
-        on_stderr = function() end,
-      }, function()
-        vim.schedule(function()
-          M._dump_theme_dir(paths.join(result, "themes"))
-          vim.schedule(function()
-            saving_bat_themes_dir = false
-          end)
-        end)
-      end)
-    end)
-
-    return cached_result
   end
+
+  return cached_result
 end
 
 -- Vim colorscheme name => bat theme name
@@ -145,14 +111,19 @@ M.get_theme_name = function(name)
 end
 
 --- @param colorname string
---- @return string?
+--- @return string
 M.get_theme_config_file = function(colorname)
-  local theme_dir = M.get_bat_themes_dir() --[[@as string]]
-  if strings.empty(theme_dir) then
-    return nil
-  end
+  local theme_dir = M.get_theme_dir()
+  log.ensure(
+    strings.not_empty(theme_dir),
+    "|get_theme_config_file| failed to get bat config theme dir"
+  )
   local theme_name = M.get_theme_name(colorname)
-  assert(type(theme_name) == "string" and string.len(theme_name) > 0)
+  log.ensure(
+    strings.not_empty(theme_name),
+    "|get_theme_config_file| failed to get bat theme name from nvim colorscheme name:%s",
+    vim.inspect(colorname)
+  )
   return paths.join(theme_dir, theme_name .. ".tmTheme")
 end
 
