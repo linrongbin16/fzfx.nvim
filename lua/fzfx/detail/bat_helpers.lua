@@ -60,6 +60,7 @@ end
 -- renderer for tmTheme scope
 --
 --- @alias fzfx._BatTmScopeValue {hl:string,scope:string[],foreground:string?,background:string?,font_style:string[],bold:boolean?,italic:boolean?,is_empty:boolean}
+--
 --- @class fzfx._BatTmScopeRenderer
 --- @field values fzfx._BatTmScopeValue[]
 local _BatTmScopeRenderer = {}
@@ -191,6 +192,16 @@ function _BatTmScopeRenderer:render(skip_lsp_semantic)
 
   return #self.values > 0 and _render_scope(self.values[1]) or "\n"
 end
+
+-- lsp semantic tokens renderer for tmTheme scope
+--
+--- @class fzfx._BatTmLspScopeRenderer
+--- @field values fzfx._BatTmScopeValue[]
+local _BatTmLspScopeRenderer = {}
+
+function _BatTmLspScopeRenderer:new() end
+
+function _BatTmLspScopeRenderer:render() end
 
 -- TextMate theme docs:
 --  * Basic description: https://macromates.com/manual/en/language_grammars#naming_conventions
@@ -503,6 +514,15 @@ local SCOPE_RENDERERS = {
   }),
   -- punctuation }
 }
+
+-- tmTheme renderer
+--
+--- @class fzfx._BatTmRenderer
+local _BatTmRenderer = {}
+
+function _BatTmRenderer:new() end
+
+function _BatTmRenderer:render() end
 
 --- @param colorname string
 --- @param skip_lsp_semantic boolean?
