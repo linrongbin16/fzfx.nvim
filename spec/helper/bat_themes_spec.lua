@@ -10,6 +10,7 @@ describe("helper.bat_themes", function()
     vim.opt.swapfile = false
   end)
 
+  local constants = require("fzfx.lib.constants")
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
@@ -26,8 +27,10 @@ describe("helper.bat_themes", function()
   end)
   describe("[get_theme_dir]", function()
     it("test", function()
-      local actual = bat_themes_helper.get_theme_dir()
-      assert_true(type(actual) == "string" or actual == nil)
+      if constants.HAS_BAT then
+        local actual = bat_themes_helper.get_theme_dir()
+        assert_true(type(actual) == "string" or actual == nil)
+      end
     end)
   end)
   describe("[_upper_first]", function()
@@ -126,18 +129,20 @@ describe("helper.bat_themes", function()
         "FzfxNvimOceanicNext.tmTheme",
       }
 
-      for i, v in ipairs(inputs) do
-        local actual = bat_themes_helper.get_theme_config_file(v) --[[@as string]]
-        print(
-          string.format(
-            "get bat theme file, actual:%s, expects[%d]:%s\n",
-            vim.inspect(actual),
-            vim.inspect(i),
-            vim.inspect(expects[i])
+      if constants.HAS_BAT then
+        for i, v in ipairs(inputs) do
+          local actual = bat_themes_helper.get_theme_config_file(v) --[[@as string]]
+          print(
+            string.format(
+              "get bat theme file, actual:%s, expects[%d]:%s\n",
+              vim.inspect(actual),
+              vim.inspect(i),
+              vim.inspect(expects[i])
+            )
           )
-        )
-        if actual then
-          assert_true(strings.endswith(actual, expects[i]))
+          if actual then
+            assert_true(strings.endswith(actual, expects[i]))
+          end
         end
       end
     end)
