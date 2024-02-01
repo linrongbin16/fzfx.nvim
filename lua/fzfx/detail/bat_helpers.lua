@@ -337,7 +337,7 @@ local SCOPE_RENDERERS = {
 
   -- entity {
   _BatTmScopeRenderer:new({
-    "@function",
+    "@function.method",
     "Function",
   }, "entity.name.function"),
   _BatTmScopeRenderer:new({
