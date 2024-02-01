@@ -43,8 +43,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 ## ✨ Features
 
-- Icons & colors.
-- Windows support.
+- Icons, colors and Windows support.
 - Lua support: preview lua defined vim commands and key mappings.
 - Parsing user query and selection on every keystroke, a typical use case is passing raw rg options via `--` flag (see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo)).
 - Multiple variants to avoid manual input:
