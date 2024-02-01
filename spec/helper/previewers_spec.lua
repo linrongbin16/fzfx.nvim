@@ -24,11 +24,13 @@ describe("helper.previewers", function()
 
   describe("[_bat_style_theme]", function()
     it("default", function()
-      vim.env.BAT_STYLE = nil
-      vim.env.BAT_THEME = nil
-      local style, theme = previewers._bat_style_theme()
-      assert_eq(style, "numbers,changes")
-      assert_eq(type(theme), "string")
+      if consts.HAS_BAT then
+        vim.env.BAT_STYLE = nil
+        vim.env.BAT_THEME = nil
+        local style, theme = previewers._bat_style_theme()
+        assert_eq(style, "numbers,changes")
+        assert_eq(type(theme), "string")
+      end
     end)
     it("overwrites", function()
       vim.env.BAT_STYLE = "numbers,changes,headers"
