@@ -43,30 +43,27 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 ## ✨ Features
 
-- Icons & colors.
-- Windows support.
-- Lua support: preview lua defined vim commands and key mappings.
-- Parsing user query and selection on every keystroke, a typical use case is passing raw rg options via `--` flag (see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo)).
+- Icons, colors, lua and windows support.
+- Updates on every keystroke of user query and selection.
 - Multiple variants to avoid manual input:
   - Search by visual select.
   - Search by cursor word.
   - Search by yank text.
   - Search by resume last search.
 - Multiple data sources to avoid restart search flow:
-  - Exclude or include the hidden/ignored files when searching files.
-  - Local or remote branches when searching git branches.
-  - Workspace or only current buffer diagnostics when searching diagnostics.
+  - Exclude or include hiddens/ignores when searching files.
+  - Local or remote when searching git branches.
+  - Whole workspace or current buffer only when searching diagnostics.
   - ...
-- Maximized configuration.
 - And a lot more.
 
-> Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more features & use cases.
+> Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more use cases.
 
 ## ✅ Requirements
 
-- Neovim &ge; v0.7.0.
+- neovim &ge; 0.7.
 - [fzf](https://github.com/junegunn/fzf).
-- [Nerd-fonts](https://www.nerdfonts.com/) (optional for icons).
+- [nerd fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
 - [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
 - [bat](https://github.com/sharkdp/bat) (optional for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
@@ -76,9 +73,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 ### Windows
 
-`grep`, `find`, `cat`, etc are unix/linux builtin commands, while on Windows we don't have a builtin shell environment, so install rust commands such as `rg`, `fd`, `bat`, etc should be better choice.
-
-While still recommend Windows users install linux shell commands, since utils like `echo`, `curl`, `mkdir` are internally used by somewhere.
+Windows users will have to install the linux shell environment, since basic linux commands such as `echo`, `curl`, `mkdir` are internally required.
 
 <details>
 <summary><i>Click here to see how to install linux commands</i></summary>
@@ -175,7 +170,7 @@ Please always avoid whitespaces in directories and file names.
 
 > [!IMPORTANT]
 >
-> Please specify a version/tag (such as 'v5.\*') to avoid break changes between major versions!
+> Specify a version/tag (such as `v5.*`) to avoid break changes between major versions!
 
 <details>
 <summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
@@ -274,9 +269,9 @@ All commands are named with prefix `Fzfx`, the sub commands e.g. the variants ar
 
 > [!NOTE]
 >
-> The `args` sub command can be omitted, which means no arguments. For example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
+> The `args` sub command can be omitted, for example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
 >
-> But if you want to specify query content, for example `fzfx`, you will have to type `:FzfxFiles args fzfx<CR>`.
+> To specify query text, for example `asdf`, you will have to type `:FzfxFiles args asdf<CR>`.
 
 Below keys are binded by default:
 
