@@ -59,6 +59,16 @@ function _BatTmGlobalRenderer:render()
   if not self.value then
     return "\n"
   end
+  log.ensure(
+    type(self.key) == "string" and string.len(self.key) > 0,
+    "|_BatTmGlobalRenderer:render| invalid key:%s",
+    vim.inspect(self)
+  )
+  log.ensure(
+    type(self.value) == "string" and string.len(self.value) > 0,
+    "|_BatTmGlobalRenderer:render| invalid value:%s",
+    vim.inspect(self)
+  )
   local builder = {
     string.format("          <key>%s</key>", self.key),
     string.format("          <string>%s</string>", self.value),
