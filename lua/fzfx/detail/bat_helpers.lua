@@ -783,7 +783,7 @@ M.setup = function()
       vim.schedule(function()
         log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
         if strings.not_empty(tables.tbl_get(event, "match")) then
-          M._build_theme(event.match)
+          M._build_theme(event.match, { prefer_lsp_token = true })
         end
       end)
     end,
