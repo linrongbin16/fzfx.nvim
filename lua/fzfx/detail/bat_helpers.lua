@@ -780,12 +780,12 @@ M.setup = function()
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
-      vim.schedule(function()
+      vim.defer_fn(function()
         log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
         if strings.not_empty(tables.tbl_get(event, "match")) then
           M._build_theme(event.match, { prefer_lsp_token = true })
         end
-      end)
+      end, 10)
     end,
   })
 
@@ -793,7 +793,7 @@ M.setup = function()
     vim.api.nvim_create_autocmd("LspTokenUpdate", {
       callback = function(event)
         log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
-        vim.schedule(function()
+        vim.defer_fn(function()
           if
             strings.not_empty(tables.tbl_get(event, "data", "token", "type"))
           then
@@ -804,7 +804,7 @@ M.setup = function()
               M._build_theme(bufcolor, { prefer_lsp_token = true })
             end
           end
-        end)
+        end, 10)
       end,
     })
   end

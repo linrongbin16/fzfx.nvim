@@ -9,6 +9,7 @@ local COLOR_NAME = vim.g.colors_name
 
 --- @return string?
 M.get_color_name = function()
+  log.debug("|get_color_name| COLOR_NAME:%s", vim.inspect(COLOR_NAME))
   return COLOR_NAME
 end
 
