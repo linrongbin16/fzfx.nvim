@@ -10,11 +10,6 @@ describe("helper.bat_themes", function()
     vim.opt.swapfile = false
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
-  -- if github_actions then
-  --   return
-  -- end
-
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
