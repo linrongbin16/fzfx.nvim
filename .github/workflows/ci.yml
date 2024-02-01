@@ -147,7 +147,6 @@ jobs:
           version: ${{ steps.release.outputs.tag_name }}
           copy_directories: |
             {{ neovim.plugin.dirs }}
-            assets
             bin
             docs
             spec
