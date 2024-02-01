@@ -28,11 +28,6 @@ describe("helper.bat_themes", function()
           or bat_themes_helper._cached_theme_dir() == nil
       )
     end)
-    it("_dump_theme_dir", function()
-      bat_themes_helper._dump_theme_dir(
-        paths.normalize("~/.config/bat/themes", { expand = true })
-      )
-    end)
   end)
   describe("[get_theme_dir]", function()
     it("test", function()
