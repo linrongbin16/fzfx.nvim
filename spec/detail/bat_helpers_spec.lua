@@ -11,6 +11,7 @@ describe("detail.bat_helpers", function()
     vim.cmd("noautocmd colorscheme darkblue")
   end)
 
+  local constants = require("fzfx.lib.constants")
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
@@ -26,7 +27,9 @@ describe("detail.bat_helpers", function()
   end)
   describe("[_build_theme]", function()
     it("test", function()
-      bat_helpers._build_theme(vim.g.colors_name)
+      if constants.HAS_BAT then
+        bat_helpers._build_theme(vim.g.colors_name)
+      end
     end)
   end)
 end)
