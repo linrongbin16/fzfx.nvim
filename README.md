@@ -61,7 +61,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 ## ✅ Requirements
 
-- neovim &ge; v0.7.
+- neovim &ge; 0.7.
 - [fzf](https://github.com/junegunn/fzf).
 - [nerd-fonts](https://www.nerdfonts.com/) (optional for icons).
 - [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
