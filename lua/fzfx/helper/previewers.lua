@@ -1,7 +1,7 @@
 local strings = require("fzfx.commons.strings")
 local paths = require("fzfx.commons.paths")
 
-local consts = require("fzfx.lib.constants")
+local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -34,7 +34,7 @@ M._bat_style_theme = function()
     return style, theme
   end
 
-  if vim.opt.termguicolors then
+  if constants.HAS_BAT and vim.opt.termguicolors then
     local color = colorschemes_helper.get_color_name() --[[@as string]]
     if
       strings.not_empty(color)
@@ -62,12 +62,12 @@ end
 --- @param lineno integer?
 --- @return string[]
 M.preview_files = function(filename, lineno)
-  if consts.HAS_BAT then
+  if constants.HAS_BAT then
     local style, theme = M._bat_style_theme()
     -- "%s --style=%s --theme=%s --color=always --pager=never --highlight-line=%s -- %s"
     return type(lineno) == "number"
         and {
-          consts.BAT,
+          constants.BAT,
           "--style=" .. style,
           "--theme=" .. theme,
           "--color=always",
@@ -77,7 +77,7 @@ M.preview_files = function(filename, lineno)
           filename,
         }
       or {
-        consts.BAT,
+        constants.BAT,
         "--style=" .. style,
         "--theme=" .. theme,
         "--color=always",
@@ -145,7 +145,7 @@ end
 --- @param commit string
 --- @return string?
 M._make_preview_git_commit = function(commit)
-  if consts.HAS_DELTA then
+  if constants.HAS_DELTA then
     local win_width = M.get_preview_window_width()
     return string.format(
       [[git show %s | delta -n --tabs 4 --width %d]],
@@ -179,10 +179,10 @@ end
 --- @return string[]
 M.preview_files_with_line_range = function(filename, lineno)
   local height = vim.api.nvim_win_get_height(0)
-  if consts.HAS_BAT then
+  if constants.HAS_BAT then
     local style, theme = M._bat_style_theme()
     return {
-      consts.BAT,
+      constants.BAT,
       "--style=" .. style,
       "--theme=" .. theme,
       "--color=always",
