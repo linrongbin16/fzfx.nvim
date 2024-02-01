@@ -113,9 +113,10 @@ jobs:
           ls -l .
           echo "tail ./luacov.report.out"
           tail -n 50 ./luacov.report.out
+          cp luacov.report.out luacov.report.txt
       - uses: codecov/codecov-action@v4
         with:
-          files: luacov.report.out
+          files: luacov.report.txt
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   release:
