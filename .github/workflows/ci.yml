@@ -113,7 +113,7 @@ jobs:
           ls -l .
           echo "tail ./luacov.report.out"
           tail -n 50 ./luacov.report.out
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           files: luacov.report.out
         env:
