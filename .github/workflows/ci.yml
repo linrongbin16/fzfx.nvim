@@ -111,8 +111,8 @@ jobs:
           luacov
           echo "ls ."
           ls -l .
-          echo "cat ./luacov.report.out"
-          cat ./luacov.report.out
+          echo "tail ./luacov.report.out"
+          tail -n 50 ./luacov.report.out
       - uses: codecov/codecov-action@v3
         with:
           files: luacov.report.out
