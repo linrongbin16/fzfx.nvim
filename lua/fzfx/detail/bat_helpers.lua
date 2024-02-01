@@ -354,7 +354,6 @@ local SCOPE_RENDERERS = {
   }, "entity.name.tag"),
   _BatTmScopeRenderer:new({
     "@markup.heading",
-    "htmlTitle",
   }, "entity.name.section"),
   _BatTmScopeRenderer:new({
     "@lsp.type.enum",
