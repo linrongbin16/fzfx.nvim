@@ -6,6 +6,7 @@ local tables = require("fzfx.commons.tables")
 local apis = require("fzfx.commons.apis")
 local versions = require("fzfx.commons.versions")
 
+local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 
 local colorschemes_helper = require("fzfx.helper.colorschemes")
@@ -572,7 +573,7 @@ M._build_theme = function(colorname, opts)
   if strings.empty(theme_template) then
     return
   end
-  local theme_dir = bat_themes_helper.get_bat_themes_dir() --[[@as string]]
+  local theme_dir = bat_themes_helper.get_theme_dir() --[[@as string]]
   log.debug("|build_custom_theme| theme_dir:%s", vim.inspect(theme_dir))
   if strings.empty(theme_dir) then
     return
@@ -618,6 +619,10 @@ M._build_theme = function(colorname, opts)
 end
 
 M.setup = function()
+  if not constants.HAS_BAT then
+    return
+  end
+
   local color = vim.g.colors_name
   if strings.not_empty(color) then
     M._build_theme(color, { skip_lsp_semantic = true })

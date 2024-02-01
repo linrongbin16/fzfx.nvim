@@ -24,7 +24,7 @@ M._cached_theme_dir = function()
 end
 
 --- @return string?
-M.get_bat_themes_dir = function()
+M.get_theme_dir = function()
   local cached_result = M._cached_theme_dir() --[[@as string]]
 
   if strings.empty(cached_result) then
@@ -107,7 +107,7 @@ end
 --- @param colorname string
 --- @return string?
 M.get_theme_config_file = function(colorname)
-  local theme_dir = M.get_bat_themes_dir() --[[@as string]]
+  local theme_dir = M.get_theme_dir() --[[@as string]]
   if strings.empty(theme_dir) then
     return nil
   end
