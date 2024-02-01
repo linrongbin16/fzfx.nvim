@@ -55,7 +55,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - Local or remote branches when searching git branches.
   - Workspace or only current buffer diagnostics when searching diagnostics.
   - ...
-- Maximized configuration.
+- Create user commands running on the same plugin engine.
 - And a lot more.
 
 > Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more features & use cases.
