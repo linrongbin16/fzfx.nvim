@@ -349,11 +349,6 @@ local SCOPE_RENDERERS = {
     "entity.name.enum",
   }),
   _BatTmScopeRenderer:new({
-    "@lsp.type.type",
-    "@type",
-    "Type",
-  }, "entity.other.inherited-class"),
-  _BatTmScopeRenderer:new({
     "@label",
     "Label",
   }, "entity.name.label"),
@@ -365,6 +360,12 @@ local SCOPE_RENDERERS = {
     "@lsp.type.namespace",
     "@module",
   }, "entity.name.namespace"),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.class",
+  }, "entity.other.inherited-class"),
+  _BatTmScopeRenderer:new({
+    "@lsp.type.class",
+  }, "entity.name.class"),
   _BatTmScopeRenderer:new({
     "@lsp.type.interface",
   }, "entity.name.interface"),
@@ -486,9 +487,6 @@ local SCOPE_RENDERERS = {
     "storage.type.struct",
     "keyword.declaration.struct",
   }),
-  _BatTmScopeRenderer:new({
-    "@lsp.type.class",
-  }, { "storage.type.class", "keyword.declaration.class" }),
   _BatTmScopeRenderer:new({
     "@lsp.type.type",
     "@type",
