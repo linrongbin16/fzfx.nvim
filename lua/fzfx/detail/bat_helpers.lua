@@ -691,6 +691,8 @@ function _BatTmRenderer:render(theme_name, prefer_lsp_token)
   }
 end
 
+M._BatTmRenderer = _BatTmRenderer
+
 local building_bat_theme = false
 
 --- @param colorname string
@@ -749,11 +751,11 @@ M._build_theme = function(colorname, opts)
     vim.inspect(colorname)
   )
   fileios.asyncwritefile(theme_config_file, rendered_result.payload, function()
-    log.debug(
-      "|_build_theme| dump theme payload, theme_template:%s",
-      vim.inspect(theme_config_file)
-    )
     vim.defer_fn(function()
+      log.debug(
+        "|_build_theme| dump theme payload, theme_template:%s",
+        vim.inspect(theme_config_file)
+      )
       spawn.run({ constants.BAT, "cache", "--build" }, {
         on_stdout = function(line) end,
         on_stderr = function(line) end,
