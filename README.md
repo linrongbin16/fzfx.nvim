@@ -57,7 +57,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - ...
 - And a lot more.
 
-> Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more features & use cases.
+> Please see [Demo](https://github.com/linrongbin16/fzfx.nvim/wiki/Demo) for more use cases.
 
 ## ✅ Requirements
 
