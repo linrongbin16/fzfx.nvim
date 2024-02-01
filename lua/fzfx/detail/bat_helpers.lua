@@ -461,18 +461,10 @@ local SCOPE_RENDERERS = {
   -- markup }
 
   -- meta {
-  -- _BatTmThemeScopeRenderer:new({
-  --   "@keyword.function",
-  -- }, "meta.function"),
-  -- _BatTmThemeScopeRenderer:new({
-  --   "@punctuation.bracket",
-  -- }, { "meta.block", "meta.braces" }),
   _BatTmScopeRenderer:new({
-    "@lsp.type.decorator",
     "@attribute",
   }, { "meta.annotation" }),
   _BatTmScopeRenderer:new({
-    "@lsp.type.macro",
     "@constant.macro",
   }, { "meta.preprocessor" }),
   -- meta }
