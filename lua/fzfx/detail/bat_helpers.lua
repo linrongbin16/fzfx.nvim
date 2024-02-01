@@ -18,27 +18,36 @@ local M = {}
 --
 --- @class fzfx._BatTmGlobalRenderer
 --- @field key string
---- @field value string
---- @field empty boolean
+--- @field value string?
 local _BatTmGlobalRenderer = {}
 
---- @param hl string
---- @param tm_key string
+--- @param hl string|string[]
+--- @param key string
 --- @param attr "fg"|"bg"
 --- @return fzfx._BatTmGlobalRenderer
-function _BatTmGlobalRenderer:new(hl, tm_key, attr)
-  local ok, values = pcall(apis.get_hl, hl)
-  if not ok then
-    values = {}
+function _BatTmGlobalRenderer:new(hl, key, attr)
+  local hls = type(hl) == "table" and hl or {
+    hl --[[@as string]],
+  }
+
+  local value = nil
+  for i, h in ipairs(hls) do
+    local ok, hl_codes = pcall(apis.get_hl, h)
+    if ok and tables.tbl_not_empty(hl_codes) then
+      if attr == "fg" and hl_codes.fg then
+        value = string.format("#%06x", hl_codes.fg)
+      elseif attr == "bg" and hl_codes.bg then
+        value = string.format("#%06x", hl_codes.bg)
+      end
+      if value then
+        break
+      end
+    end
   end
-  local fg = type(values.fg) == "number" and string.format("#%06x", values.fg)
-    or nil
-  local bg = type(values.bg) == "number" and string.format("#%06x", values.bg)
-    or nil
+
   local o = {
-    key = tm_key,
-    value = attr == "fg" and fg or bg,
-    empty = tables.tbl_empty(values),
+    key = key,
+    value = value,
   }
   setmetatable(o, self)
   self.__index = self
@@ -47,7 +56,7 @@ end
 
 --- @return string
 function _BatTmGlobalRenderer:render()
-  if self.empty then
+  if not self.value then
     return "\n"
   end
   local builder = {
@@ -75,24 +84,26 @@ function _BatTmScopeRenderer:new(hl, scope)
 
   local value = nil
   for i, h in ipairs(hls) do
-    local ok, hl_attr = pcall(apis.get_hl, h)
-    if ok and tables.tbl_not_empty(hl_attr) then
+    local ok, hl_codes = pcall(apis.get_hl, h)
+    if ok and tables.tbl_not_empty(hl_codes) then
       local font_style = {}
-      if hl_attr.bold then
+      if hl_codes.bold then
         table.insert(font_style, "bold")
       end
-      if hl_attr.italic then
+      if hl_codes.italic then
         table.insert(font_style, "italic")
       end
-      if hl_attr.underline then
+      if hl_codes.underline then
         table.insert(font_style, "underline")
       end
-      if hl_attr.fg then
+      if hl_codes.fg then
         local v = {
           hl = h,
           scope = scope,
-          foreground = hl_attr.fg and string.format("#%06x", hl_attr.fg) or nil,
-          background = hl_attr.bg and string.format("#%06x", hl_attr.bg) or nil,
+          foreground = hl_codes.fg and string.format("#%06x", hl_codes.fg)
+            or nil,
+          background = hl_codes.bg and string.format("#%06x", hl_codes.bg)
+            or nil,
           font_style = font_style,
         }
         value = v
@@ -197,24 +208,26 @@ function _BatTmLspScopeRenderer:new(hl, scope)
 
   local value = nil
   for i, h in ipairs(hls) do
-    local ok, hl_attr = pcall(apis.get_hl, h)
-    if ok and tables.tbl_not_empty(hl_attr) then
+    local ok, hl_codes = pcall(apis.get_hl, h)
+    if ok and tables.tbl_not_empty(hl_codes) then
       local font_style = {}
-      if hl_attr.bold then
+      if hl_codes.bold then
         table.insert(font_style, "bold")
       end
-      if hl_attr.italic then
+      if hl_codes.italic then
         table.insert(font_style, "italic")
       end
-      if hl_attr.underline then
+      if hl_codes.underline then
         table.insert(font_style, "underline")
       end
-      if hl_attr.fg then
+      if hl_codes.fg then
         local v = {
           hl = h,
           scope = scope,
-          foreground = hl_attr.fg and string.format("#%06x", hl_attr.fg) or nil,
-          background = hl_attr.bg and string.format("#%06x", hl_attr.bg) or nil,
+          foreground = hl_codes.fg and string.format("#%06x", hl_codes.fg)
+            or nil,
+          background = hl_codes.bg and string.format("#%06x", hl_codes.bg)
+            or nil,
           font_style = font_style,
         }
         value = v
