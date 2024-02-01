@@ -117,6 +117,7 @@ function _BatTmScopeRenderer:new(hl, scope)
           font_style = font_style,
         }
         value = v
+        break
       end
     end
   end
@@ -196,9 +197,8 @@ local function _render_scope(value)
   return table.concat(builder, "\n")
 end
 
---- @param skip_lsp_semantic boolean?
 --- @return string?
-function _BatTmScopeRenderer:render(skip_lsp_semantic)
+function _BatTmScopeRenderer:render()
   return self.value and _render_scope(self.value) or nil
 end
 
