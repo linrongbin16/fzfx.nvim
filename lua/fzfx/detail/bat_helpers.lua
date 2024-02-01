@@ -192,6 +192,17 @@ function _BatTmScopeRenderer:render(skip_lsp_semantic)
   return #self.values > 0 and _render_scope(self.values[1]) or "\n"
 end
 
+-- TextMate theme docs:
+--  * Basic description: https://macromates.com/manual/en/language_grammars#naming_conventions
+--  * Global: https://www.sublimetext.com/docs/color_schemes.html#global-settings
+--  * Scope: https://www.sublimetext.com/docs/scope_naming.html#minimal-scope-coverage
+--
+-- Neovim highlight docs:
+--  * Basic syntax: https://neovim.io/doc/user/syntax.html#group-name
+--  * Treesitter: https://neovim.io/doc/user/treesitter.html#treesitter-highlight
+--  * Lsp: https://neovim.io/doc/user/lsp.html#lsp-semantic-highlight
+--  * Lsp Semantic Tokens: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens
+--  * Lsp nvim-lspconfig: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
 local GLOBAL_RENDERERS = {
   _BatTmGlobalRenderer:new("Normal", "background", "bg"),
   _BatTmGlobalRenderer:new("Normal", "foreground", "fg"),
@@ -208,29 +219,6 @@ local GLOBAL_RENDERERS = {
   _BatTmGlobalRenderer:new("Search", "findHighlightForeground", "fg"),
 }
 
--- lsp semantic highlight
--- see: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
---
--- @lsp.type.class         Structure
--- @lsp.type.decorator     Function
--- @lsp.type.enum          Structure
--- @lsp.type.enumMember    Constant
--- @lsp.type.function      Function
--- @lsp.type.interface     Structure
--- @lsp.type.macro         Macro
--- @lsp.type.method        Function
--- @lsp.type.namespace     Structure
--- @lsp.type.parameter     Identifier
--- @lsp.type.property      Identifier
--- @lsp.type.struct        Structure
--- @lsp.type.type          Type
--- @lsp.type.typeParameter TypeDef
--- @lsp.type.variable      Identifier
-
--- tm theme:
--- https://macromates.com/manual/en/language_grammars#naming_conventions
--- https://www.sublimetext.com/docs/color_schemes.html#global-settings
--- https://www.sublimetext.com/docs/scope_naming.html#minimal-scope-coverage
 local SCOPE_RENDERERS = {
   -- comment {
   _BatTmScopeRenderer:new({ "@comment", "Comment" }, "comment"),
