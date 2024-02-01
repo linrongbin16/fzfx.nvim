@@ -592,9 +592,10 @@ local SCOPE_RENDERERS = {
 }
 
 -- Neovim Lsp Semantic Highlight docs:
---  * Lsp: https://neovim.io/doc/user/lsp.html#lsp-semantic-highlight
---  * Lsp Semantic Tokens: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens
+--  * Neovim semantic highlight: https://neovim.io/doc/user/lsp.html#lsp-semantic-highlight
+--  * Lsp semantic tokens: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens
 --  * Lsp nvim-lspconfig: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
+--  * Detailed explanation: https://gist.github.com/swarn/fb37d9eefe1bc616c2a7e476c0bc0316
 --
 -- `@lsp.type` is mapping to `SemanticTokenTypes` in specification.
 -- `@lsp.mod` is mapping to `SemanticTokenModifiers` in specification.
