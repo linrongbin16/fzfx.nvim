@@ -170,7 +170,7 @@ Please always avoid whitespaces in directories and file names.
 
 > [!IMPORTANT]
 >
-> Please specify a version/tag (such as 'v5.\*') to avoid break changes between major versions!
+> Please specify a version/tag (such as `v5.*`) to avoid break changes between major versions!
 
 <details>
 <summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
