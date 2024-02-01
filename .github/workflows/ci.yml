@@ -109,7 +109,7 @@ jobs:
           echo "ls ."
           ls -l .
           echo "run luacov"
-          luacov
+          luacov -r lcov
           echo "ls ."
           ls -l .
           echo "tail ./luacov.report.out"
