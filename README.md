@@ -51,9 +51,9 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - Search by yank text.
   - Search by resume last search.
 - Multiple data sources to avoid restart search flow:
-  - Exclude or include the hidden/ignored files when searching files.
-  - Local or remote branches when searching git branches.
-  - Workspace or only current buffer diagnostics when searching diagnostics.
+  - Exclude or include hiddens/ignores when searching files.
+  - Local or remote when searching git branches.
+  - Whole workspace or current buffer only when searching diagnostics.
   - ...
 - And a lot more.
 
