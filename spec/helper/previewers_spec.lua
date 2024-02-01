@@ -16,31 +16,31 @@ describe("helper.previewers", function()
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
-  local consts = require("fzfx.lib.constants")
+  local constants = require("fzfx.lib.constants")
   local previewers = require("fzfx.helper.previewers")
   local conf = require("fzfx.config")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
   conf.setup()
 
   describe("[_bat_style_theme]", function()
-    it("default", function()
-      if consts.HAS_BAT then
+    if constants.HAS_BAT then
+      it("default", function()
         vim.env.BAT_STYLE = nil
         vim.env.BAT_THEME = nil
         local style, theme = previewers._bat_style_theme()
         assert_eq(style, "numbers,changes")
         assert_eq(type(theme), "string")
-      end
-    end)
-    it("overwrites", function()
-      vim.env.BAT_STYLE = "numbers,changes,headers"
-      vim.env.BAT_THEME = "zenburn"
-      local style, theme = previewers._bat_style_theme()
-      assert_eq(style, vim.env.BAT_STYLE)
-      assert_eq(theme, vim.env.BAT_THEME)
-      vim.env.BAT_STYLE = nil
-      vim.env.BAT_THEME = nil
-    end)
+      end)
+      it("overwrites", function()
+        vim.env.BAT_STYLE = "numbers,changes,headers"
+        vim.env.BAT_THEME = "zenburn"
+        local style, theme = previewers._bat_style_theme()
+        assert_eq(style, vim.env.BAT_STYLE)
+        assert_eq(theme, vim.env.BAT_THEME)
+        vim.env.BAT_STYLE = nil
+        vim.env.BAT_THEME = nil
+      end)
+    end
   end)
 
   describe("[preview_files]", function()
