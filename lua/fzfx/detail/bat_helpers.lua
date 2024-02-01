@@ -62,18 +62,18 @@ end
 --- @alias fzfx._BatTmScopeValue {hl:string,scope:string[],foreground:string?,background:string?,font_style:string[],bold:boolean?,italic:boolean?,is_empty:boolean}
 --
 --- @class fzfx._BatTmScopeRenderer
---- @field values fzfx._BatTmScopeValue[]
+--- @field value fzfx._BatTmScopeValue
 local _BatTmScopeRenderer = {}
 
 --- @param hl string|string[]
---- @param tm_scope string|string[]
+--- @param scope string|string[]
 --- @return fzfx._BatTmScopeRenderer
-function _BatTmScopeRenderer:new(hl, tm_scope)
+function _BatTmScopeRenderer:new(hl, scope)
   local hls = type(hl) == "table" and hl or {
     hl --[[@as string]],
   }
 
-  local values = {}
+  local value = nil
   for i, h in ipairs(hls) do
     local ok, hl_attr = pcall(apis.get_hl, h)
     if ok and tables.tbl_not_empty(hl_attr) then
@@ -90,18 +90,18 @@ function _BatTmScopeRenderer:new(hl, tm_scope)
       if hl_attr.fg then
         local v = {
           hl = h,
-          scope = tm_scope,
+          scope = scope,
           foreground = hl_attr.fg and string.format("#%06x", hl_attr.fg) or nil,
           background = hl_attr.bg and string.format("#%06x", hl_attr.bg) or nil,
           font_style = font_style,
         }
-        table.insert(values, v)
+        value = v
       end
     end
   end
 
   local o = {
-    values = values,
+    value = value,
   }
   setmetatable(o, self)
   self.__index = self
@@ -178,16 +178,7 @@ end
 --- @param skip_lsp_semantic boolean?
 --- @return string?
 function _BatTmScopeRenderer:render(skip_lsp_semantic)
-  if skip_lsp_semantic then
-    for i, scope in ipairs(self.values) do
-      local is_lsp_semantic = strings.startswith(scope.hl, "@lsp")
-      if not is_lsp_semantic then
-        return _render_scope(scope)
-      end
-    end
-  end
-
-  return #self.values > 0 and _render_scope(self.values[1]) or "\n"
+  return self.value and _render_scope(self.value) or nil
 end
 
 -- lsp semantic tokens renderer for tmTheme scope
@@ -197,9 +188,9 @@ end
 local _BatTmLspScopeRenderer = {}
 
 --- @param hl string|string[]
---- @param tm_scope string|string[]
+--- @param scope string|string[]
 --- @return fzfx._BatTmLspScopeRenderer
-function _BatTmLspScopeRenderer:new(hl, tm_scope)
+function _BatTmLspScopeRenderer:new(hl, scope)
   local hls = type(hl) == "table" and hl or {
     hl --[[@as string]],
   }
@@ -221,7 +212,7 @@ function _BatTmLspScopeRenderer:new(hl, tm_scope)
       if hl_attr.fg then
         local v = {
           hl = h,
-          scope = tm_scope,
+          scope = scope,
           foreground = hl_attr.fg and string.format("#%06x", hl_attr.fg) or nil,
           background = hl_attr.bg and string.format("#%06x", hl_attr.bg) or nil,
           font_style = font_style,
@@ -243,10 +234,7 @@ end
 
 --- @return string?
 function _BatTmLspScopeRenderer:render()
-  if not self.value then
-    return nil
-  end
-  return _render_scope(self.value)
+  return self.value and _render_scope(self.value) or nil
 end
 
 -- TextMate theme docs:
@@ -260,6 +248,8 @@ end
 --  * Lsp: https://neovim.io/doc/user/lsp.html#lsp-semantic-highlight
 --  * Lsp Semantic Tokens: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens
 --  * Lsp nvim-lspconfig: https://github.com/neovim/neovim/blob/9f15a18fa57f540cb3d0d9d2f45d872038e6f990/src/nvim/highlight_group.c#L288
+--
+-- syntax map
 local GLOBAL_RENDERERS = {
   _BatTmGlobalRenderer:new("Normal", "background", "bg"),
   _BatTmGlobalRenderer:new("Normal", "foreground", "fg"),
@@ -276,6 +266,7 @@ local GLOBAL_RENDERERS = {
   _BatTmGlobalRenderer:new("Search", "findHighlightForeground", "fg"),
 }
 
+-- syntax and treesitter map
 local SCOPE_RENDERERS = {
   -- comment {
   _BatTmScopeRenderer:new({ "@comment", "Comment" }, "comment"),
@@ -561,6 +552,7 @@ local SCOPE_RENDERERS = {
   -- punctuation }
 }
 
+-- lsp semnatic tokens map
 local LSP_SCOPE_RENDERERS = {
   -- comment {
   _BatTmScopeRenderer:new({ "@lsp.type.comment" }, "comment"),
