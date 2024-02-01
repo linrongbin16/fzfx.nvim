@@ -989,22 +989,24 @@ M._build_theme = function(colorname, opts)
       :wait()
   end
 
-  fileios.writefile(theme_template, theme.payload)
-  log.debug(
-    "|_build_theme| dump theme payload, theme_template:%s",
-    vim.inspect(theme_template)
-  )
-
-  spawn.run({ "bat", "cache", "--build" }, {
-    on_stdout = function(line)
-      -- log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
-    end,
-    on_stderr = function(line)
-      -- log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
-    end,
-  }, function()
+  fileios.asyncwritefile(theme_template, theme.payload, function()
+    log.debug(
+      "|_build_theme| dump theme payload, theme_template:%s",
+      vim.inspect(theme_template)
+    )
     vim.schedule(function()
-      building_bat_theme = false
+      spawn.run({ "bat", "cache", "--build" }, {
+        on_stdout = function(line)
+          -- log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
+        end,
+        on_stderr = function(line)
+          -- log.debug("|setup| bat build cache on_stderr:%s", vim.inspect(line))
+        end,
+      }, function()
+        vim.schedule(function()
+          building_bat_theme = false
+        end)
+      end)
     end)
   end)
 end
