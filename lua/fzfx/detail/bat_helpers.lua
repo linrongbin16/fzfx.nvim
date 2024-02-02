@@ -85,6 +85,48 @@ end
 --- @field lsp_value fzfx._BatTmScopeValue?
 local _BatTmScopeRenderer = {}
 
+--- @param hl string
+--- @param scope string
+--- @param hl_codes table?
+--- @return fzfx._BatTmScopeValue?
+M._make_scope_value = function(hl, scope, hl_codes)
+  if tables.tbl_empty(hl_codes) then
+    return nil
+  end
+  log.ensure(
+    type(hl) == "string" and string.len(hl) > 0,
+    "|_make_scope_value| invalid hl name"
+  )
+  log.ensure(
+    type(scope) == "string" and string.len(scope) > 0,
+    "|_make_scope_value| invalid tm scope"
+  )
+
+  local font_style = {}
+  if hl_codes.bold then
+    table.insert(font_style, "bold")
+  end
+  if hl_codes.italic then
+    table.insert(font_style, "italic")
+  end
+  if hl_codes.underline then
+    table.insert(font_style, "underline")
+  end
+
+  if type(hl_codes.fg) == "number" then
+    local value = {
+      hl = hl,
+      scope = scope,
+      foreground = hl_codes.fg and string.format("#%06x", hl_codes.fg) or nil,
+      background = hl_codes.bg and string.format("#%06x", hl_codes.bg) or nil,
+      font_style = font_style,
+    }
+    return value
+  end
+
+  return nil
+end
+
 --- @param hl string|string[]
 --- @param scope string|string[]
 --- @return fzfx._BatTmScopeRenderer
@@ -140,7 +182,7 @@ end
 
 --- @param value fzfx._BatTmScopeValue
 --- @return string?
-local function _render_scope(value)
+M._render_scope = function(value)
   if tables.tbl_empty(value) then
     return nil
   end
@@ -209,18 +251,18 @@ end
 --- @return string?
 function _BatTmScopeRenderer:render(prefer_lsp_token)
   if prefer_lsp_token and self.lsp_value then
-    return _render_scope(self.lsp_value)
+    return M._render_scope(self.lsp_value)
   end
-  return self.value and _render_scope(self.value) or nil
+  return self.value and M._render_scope(self.value) or nil
 end
 
 --- @return string?
-function _BatTmScopeRenderer:lsp_highlight_name()
+function _BatTmScopeRenderer:lsp_hl_name()
   return tables.tbl_get(self.lsp_value, "hl")
 end
 
 --- @return boolean
-function _BatTmScopeRenderer:update_lsp_highlight()
+function _BatTmScopeRenderer:update_lsp_hl()
   if strings.empty(tables.tbl_get(self.lsp_value, "hl")) then
     return false
   end
@@ -257,6 +299,11 @@ function _BatTmScopeRenderer:update_lsp_highlight()
     background = hl_codes.bg and string.format("#%06x", hl_codes.bg) or nil,
     font_style = font_style,
   }
+
+  if vim.deep_equal(self.lsp_value, v) then
+    return false
+  end
+
   self.lsp_value = v
 
   return true
