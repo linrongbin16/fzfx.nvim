@@ -250,10 +250,10 @@ end
 --- @return boolean
 function _BatTmScopeRenderer:update_lsp_hl()
   if strings.empty(tables.tbl_get(self.lsp_value, "hl")) then
-    log.debug(
-      "|_BatTmScopeRenderer:update_lsp_hl| invalid self.lsp_value.hl:%s",
-      vim.inspect(self.lsp_value)
-    )
+    -- log.debug(
+    --   "|_BatTmScopeRenderer:update_lsp_hl| invalid self.lsp_value.hl:%s",
+    --   vim.inspect(self.lsp_value)
+    -- )
     return false
   end
   log.ensure(
@@ -264,31 +264,31 @@ function _BatTmScopeRenderer:update_lsp_hl()
 
   local ok, hl_codes = pcall(apis.get_hl, self.lsp_value.hl)
   if not ok or tables.tbl_empty(hl_codes) then
-    log.debug(
-      "|_BatTmScopeRenderer:update_lsp_hl| invalid hl_codes, hl:%s, error:%s",
-      vim.inspect(self.lsp_value.hl),
-      vim.inspect(hl_codes)
-    )
+    -- log.debug(
+    --   "|_BatTmScopeRenderer:update_lsp_hl| invalid hl_codes, hl:%s, error:%s",
+    --   vim.inspect(self.lsp_value.hl),
+    --   vim.inspect(hl_codes)
+    -- )
     return false
   end
 
   local new_value =
     M._make_scope_value(self.lsp_value.hl, self.lsp_value.scope, hl_codes)
   if tables.tbl_empty(new_value) then
-    log.debug(
-      "|_BatTmScopeRenderer:update_lsp_hl| empty new value, hl:%s, hl_codes:%s",
-      vim.inspect(self.lsp_value.hl),
-      vim.inspect(hl_codes)
-    )
+    -- log.debug(
+    --   "|_BatTmScopeRenderer:update_lsp_hl| empty new value, hl:%s, hl_codes:%s",
+    --   vim.inspect(self.lsp_value.hl),
+    --   vim.inspect(hl_codes)
+    -- )
     return false
   end
 
   if vim.deep_equal(self.lsp_value, new_value) then
-    log.debug(
-      "|_BatTmScopeRenderer:update_lsp_hl| new value is still same, self.lsp_value:%s, new_value:%s",
-      vim.inspect(self.lsp_value),
-      vim.inspect(new_value)
-    )
+    -- log.debug(
+    --   "|_BatTmScopeRenderer:update_lsp_hl| new value is still same, self.lsp_value:%s, new_value:%s",
+    --   vim.inspect(self.lsp_value),
+    --   vim.inspect(new_value)
+    -- )
     return false
   end
 
@@ -986,13 +986,23 @@ M.setup = function()
   if versions.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
     vim.api.nvim_create_autocmd("LspTokenUpdate", {
       callback = function(event)
-        -- log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
+        log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
         vim.defer_fn(function()
           if
             strings.not_empty(tables.tbl_get(event, "data", "token", "type"))
           then
             local lsp_type =
               string.format("@lsp.type.%s", event.data.token.type)
+            local lsp_modifiers = {}
+            local lsp_token_modifiers =
+              tables.tbl_get(event, "data", "token", "modifiers")
+            if tables.tbl_not_empty(lsp_token_modifiers) then
+              for key, val in pairs(lsp_token_modifiers) do
+                if val then
+                  table.insert(lsp_modifiers, string.format("@lsp.mod.%s", key))
+                end
+              end
+            end
             local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
             if strings.not_empty(bufcolor) then
               M._patch_theme(bufcolor, lsp_type)
