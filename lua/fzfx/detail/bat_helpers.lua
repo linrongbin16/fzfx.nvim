@@ -788,14 +788,15 @@ function _BatTmRenderer:render(theme_name)
   }
 end
 
---- @param lsp_token string
+--- @param lsp_type string
+--- @param lsp_modifiers table<string, any>?
 --- @return boolean
-function _BatTmRenderer:patch_lsp_token(lsp_token)
+function _BatTmRenderer:patch_lsp_hl(lsp_type, lsp_modifiers)
   local updated = false
   local updated_count = 0
 
   for i, r in ipairs(self.scopes) do
-    if r:lsp_hl_name() == lsp_token then
+    if r:lsp_hl_name() == lsp_type then
       local has_updates = r:update_lsp_hl()
       if has_updates then
         updated = true
@@ -888,8 +889,9 @@ M._build_theme = function(colorname)
 end
 
 --- @param colorname string
---- @param lsp_token string
-M._patch_theme = function(colorname, lsp_token)
+--- @param lsp_type string
+--- @param lsp_modifiers table<string, any>?
+M._patch_theme = function(colorname, lsp_type, lsp_modifiers)
   if not M._BatTmRendererInstance then
     return
   end
@@ -904,9 +906,9 @@ M._patch_theme = function(colorname, lsp_token)
     "|_patch_theme| colorname is empty string!"
   )
   log.ensure(
-    strings.not_empty(lsp_token) and strings.startswith(lsp_token, "@lsp"),
+    strings.not_empty(lsp_type) and strings.startswith(lsp_type, "@lsp"),
     "|_patch_theme| invalid lsp token:%s",
-    vim.inspect(lsp_token)
+    vim.inspect(lsp_type)
   )
 
   local theme_dir = bat_themes_helper.get_theme_dir()
@@ -922,7 +924,7 @@ M._patch_theme = function(colorname, lsp_token)
     vim.inspect(colorname)
   )
 
-  local updated = M._BatTmRendererInstance:patch_lsp_token(lsp_token)
+  local updated = M._BatTmRendererInstance:patch_lsp_hl(lsp_type, lsp_modifiers)
   if not updated then
     return
   end
@@ -989,19 +991,15 @@ M.setup = function()
           then
             local lsp_type =
               string.format("@lsp.type.%s", event.data.token.type)
-            local lsp_modifiers = {}
-            local lsp_token_modifiers =
-              tables.tbl_get(event, "data", "token", "modifiers")
-            if tables.tbl_not_empty(lsp_token_modifiers) then
-              for key, val in pairs(lsp_token_modifiers) do
-                if val then
-                  table.insert(lsp_modifiers, string.format("@lsp.mod.%s", key))
-                end
-              end
-            end
+            local lsp_modifiers = tables.tbl_get(
+              event,
+              "data",
+              "token",
+              "modifiers"
+            ) or {}
             local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
             if strings.not_empty(bufcolor) then
-              M._patch_theme(bufcolor, lsp_type)
+              M._patch_theme(bufcolor, lsp_type, lsp_modifiers)
             end
           end
         end, 10)
