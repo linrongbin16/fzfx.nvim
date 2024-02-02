@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.4](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.3...v5.1.4) (2024-02-02)
+
+
+### Performance Improvements
+
+* **previewer:** improve bat themes generate3 ([#579](https://github.com/linrongbin16/fzfx.nvim/issues/579)) ([a482d0e](https://github.com/linrongbin16/fzfx.nvim/commit/a482d0e726fd41904625299af062cec67f1ff8e9))
+
 ## [5.1.3](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.2...v5.1.3) (2024-02-02)
 
 
