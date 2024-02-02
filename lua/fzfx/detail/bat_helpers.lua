@@ -140,30 +140,12 @@ function _BatTmScopeRenderer:new(hl, scope)
   for i, h in ipairs(hls) do
     local ok, hl_codes = pcall(apis.get_hl, h)
     if ok and tables.tbl_not_empty(hl_codes) then
-      local font_style = {}
-      if hl_codes.bold then
-        table.insert(font_style, "bold")
-      end
-      if hl_codes.italic then
-        table.insert(font_style, "italic")
-      end
-      if hl_codes.underline then
-        table.insert(font_style, "underline")
-      end
-      if hl_codes.fg then
-        local v = {
-          hl = h,
-          scope = scope,
-          foreground = hl_codes.fg and string.format("#%06x", hl_codes.fg)
-            or nil,
-          background = hl_codes.bg and string.format("#%06x", hl_codes.bg)
-            or nil,
-          font_style = font_style,
-        }
+      local item = M._make_scope_value(h, scope, hl_codes)
+      if item then
         if strings.startswith(h, "@lsp") then
-          lsp_value = v
+          lsp_value = item
         else
-          value = v
+          value = item
         end
         break
       end
@@ -277,34 +259,17 @@ function _BatTmScopeRenderer:update_lsp_hl()
     return false
   end
 
-  if hl_codes.fg == nil then
+  local new_value =
+    M._make_scope_value(self.lsp_value.hl, self.lsp_value.scope, hl_codes)
+  if tables.tbl_empty(new_value) then
     return false
   end
 
-  local font_style = {}
-  if hl_codes.bold then
-    table.insert(font_style, "bold")
-  end
-  if hl_codes.italic then
-    table.insert(font_style, "italic")
-  end
-  if hl_codes.underline then
-    table.insert(font_style, "underline")
-  end
-
-  local v = {
-    hl = self.lsp_value.hl,
-    scope = self.lsp_value.scope,
-    foreground = hl_codes.fg and string.format("#%06x", hl_codes.fg) or nil,
-    background = hl_codes.bg and string.format("#%06x", hl_codes.bg) or nil,
-    font_style = font_style,
-  }
-
-  if vim.deep_equal(self.lsp_value, v) then
+  if vim.deep_equal(self.lsp_value, new_value) then
     return false
   end
 
-  self.lsp_value = v
+  self.lsp_value = new_value
 
   return true
 end
