@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.3](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.2...v5.1.3) (2024-02-02)
+
+
+### Bug Fixes
+
+* **previewer:** fix bat theme helper ([#576](https://github.com/linrongbin16/fzfx.nvim/issues/576)) ([28d38ac](https://github.com/linrongbin16/fzfx.nvim/commit/28d38ac613b5c1b16e911371970aca288a9415e6))
+
 ## [5.1.2](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.1...v5.1.2) (2024-02-01)
 
 
