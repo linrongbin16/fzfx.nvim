@@ -28,6 +28,7 @@ end
 --- @return string
 M.get_theme_dir = function()
   local cached_result = M._cached_theme_dir() --[[@as string]]
+  log.debug("|get_theme_dir| cached_result:%s", vim.inspect(cached_result))
 
   if strings.empty(cached_result) then
     log.ensure(
@@ -35,25 +36,26 @@ M.get_theme_dir = function()
       "|get_theme_dir| cannot find 'bat' executable"
     )
 
-    local result = ""
+    local config_dir = ""
     spawn
       .run({ constants.BAT, "--config-dir" }, {
         on_stdout = function(line)
-          result = result .. line
+          config_dir = config_dir .. line
         end,
         on_stderr = function() end,
       })
       :wait()
-    local theme_dir = paths.join(result, "themes")
-    if not paths.isdir(theme_dir) then
+    log.debug("|get_theme_dir| result:%s", vim.inspect(config_dir))
+    local result = paths.join(config_dir, "themes")
+    if not paths.isdir(result) then
       spawn
-        .run({ "mkdir", "-p", theme_dir }, {
+        .run({ "mkdir", "-p", result }, {
           on_stdout = function() end,
           on_stderr = function() end,
         })
         :wait()
     end
-    fileios.writefile(M._theme_dir_cache(), theme_dir)
+    fileios.writefile(M._theme_dir_cache(), result)
 
     return result
   end
