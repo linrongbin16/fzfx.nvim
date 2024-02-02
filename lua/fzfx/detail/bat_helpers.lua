@@ -769,7 +769,26 @@ function _BatTmRenderer:render(theme_name)
   }
 end
 
+--- @param lsp_token string
+--- @return boolean
+function _BatTmRenderer:patch_lsp_token(lsp_token)
+  local updated = false
+
+  for i, r in ipairs(self.scopes) do
+    if r:lsp_hl_name() == lsp_token then
+      local has_updates = r:update_lsp_hl()
+      if has_updates then
+        updated = true
+      end
+    end
+  end
+
+  return updated
+end
+
 M._BatTmRenderer = _BatTmRenderer
+
+M._BatTmRendererInstance = nil
 
 local building_bat_theme = false
 
@@ -779,11 +798,6 @@ M._build_theme = function(colorname)
     strings.not_empty(colorname),
     "|_build_theme| colorname is empty string!"
   )
-
-  if building_bat_theme then
-    return
-  end
-  building_bat_theme = true
 
   local theme_dir = bat_themes_helper.get_theme_dir()
   log.ensure(
@@ -808,8 +822,8 @@ M._build_theme = function(colorname)
     vim.inspect(colorname)
   )
 
-  local renderer = _BatTmRenderer:new()
-  local rendered_result = renderer:render(theme_name)
+  M._BatTmRendererInstance = _BatTmRenderer:new()
+  local rendered_result = M._BatTmRendererInstance:render(theme_name)
   log.ensure(
     tables.tbl_not_empty(rendered_result),
     "|_build_theme| rendered result is empty, color name:%s, theme name:%s",
@@ -823,6 +837,12 @@ M._build_theme = function(colorname)
     "|_build_theme| failed to get bat theme config file from nvim colorscheme name:%s",
     vim.inspect(colorname)
   )
+
+  if building_bat_theme then
+    return
+  end
+  building_bat_theme = true
+
   fileios.asyncwritefile(theme_config_file, rendered_result.payload, function()
     vim.defer_fn(function()
       -- log.debug(
@@ -842,16 +862,21 @@ M._build_theme = function(colorname)
 end
 
 --- @param colorname string
-M._patch_theme = function(colorname)
+--- @param lsp_token string
+M._patch_theme = function(colorname, lsp_token)
+  if not M._BatTmRendererInstance then
+    return
+  end
+
   log.ensure(
     strings.not_empty(colorname),
     "|_patch_theme| colorname is empty string!"
   )
-
-  if building_bat_theme then
-    return
-  end
-  building_bat_theme = true
+  log.ensure(
+    strings.not_empty(lsp_token) and strings.startswith(lsp_token, "@lsp"),
+    "|_patch_theme| invalid lsp token:%s",
+    vim.inspect(lsp_token)
+  )
 
   local theme_dir = bat_themes_helper.get_theme_dir()
   log.ensure(
@@ -866,14 +891,10 @@ M._patch_theme = function(colorname)
     vim.inspect(colorname)
   )
 
-  local renderer = _BatTmRenderer:new()
-  local rendered_result = renderer:render(theme_name)
-  log.ensure(
-    tables.tbl_not_empty(rendered_result),
-    "|_patch_theme| rendered result is empty, color name:%s, theme name:%s",
-    vim.inspect(colorname),
-    vim.inspect(theme_name)
-  )
+  local updated = M._BatTmRendererInstance:patch_lsp_token(lsp_token)
+  if not updated then
+    return
+  end
 
   local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
   log.ensure(
@@ -881,6 +902,13 @@ M._patch_theme = function(colorname)
     "|_patch_theme| failed to get bat theme config file from nvim colorscheme name:%s",
     vim.inspect(colorname)
   )
+
+  if building_bat_theme then
+    return
+  end
+  building_bat_theme = true
+
+  local rendered_result = M._BatTmRendererInstance:render(theme_name)
   fileios.asyncwritefile(theme_config_file, rendered_result.payload, function()
     vim.defer_fn(function()
       -- log.debug(
@@ -932,7 +960,7 @@ M.setup = function()
               string.format("@lsp.type.%s", event.data.token.type)
             local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
             if strings.not_empty(bufcolor) then
-              M._build_theme(bufcolor)
+              M._patch_theme(bufcolor, lsp_type)
             end
           end
         end, 10)
