@@ -238,7 +238,7 @@ function _BatTmRenderer:new()
     _BatTmGlobalRenderer:new("Cursor", "caret", "bg"),
     _BatTmGlobalRenderer:new("Cursor", "block_caret", "bg"),
     _BatTmGlobalRenderer:new("NonText", "invisibles", "fg"),
-    _BatTmGlobalRenderer:new({ "IncSearch", "Visual" }, "lineHighlight", "bg"),
+    _BatTmGlobalRenderer:new({ "Visual" }, "lineHighlight", "bg"),
     _BatTmGlobalRenderer:new("LineNr", "gutter", "bg"),
     _BatTmGlobalRenderer:new("LineNr", "gutterForeground", "fg"),
     _BatTmGlobalRenderer:new("CursorLineNr", "gutterForegroundHighlight", "fg"),
