@@ -100,7 +100,8 @@ M._make_scope_value = function(hl, scope, hl_codes)
   log.ensure(
     (type(scope) == "string" and string.len(scope) > 0)
       or (tables.tbl_not_empty(scope)),
-    "|_make_scope_value| invalid tm scope"
+    "|_make_scope_value| invalid tm scope:%s",
+    vim.inspect(scope)
   )
 
   local font_style = {}
