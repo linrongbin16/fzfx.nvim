@@ -45,7 +45,7 @@ M.get_theme_dir = function()
         on_stderr = function() end,
       })
       :wait()
-    log.debug("|get_theme_dir| result:%s", vim.inspect(config_dir))
+    log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
     local result = paths.join(config_dir, "themes")
     if not paths.isdir(result) then
       spawn
