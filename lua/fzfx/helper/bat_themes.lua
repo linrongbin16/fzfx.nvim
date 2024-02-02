@@ -25,10 +25,23 @@ M._cached_theme_dir = function()
   return CACHED_THEME_DIR
 end
 
+--- @param theme_dir string
+M._create_theme_dir = function(theme_dir)
+  if paths.isdir(theme_dir) then
+    return
+  end
+  spawn
+    .run({ "mkdir", "-p", theme_dir }, {
+      on_stdout = function() end,
+      on_stderr = function() end,
+    })
+    :wait()
+end
+
 --- @return string
 M.get_theme_dir = function()
   local cached_result = M._cached_theme_dir() --[[@as string]]
-  log.debug("|get_theme_dir| cached_result:%s", vim.inspect(cached_result))
+  -- log.debug("|get_theme_dir| cached_result:%s", vim.inspect(cached_result))
 
   if strings.empty(cached_result) then
     log.ensure(
@@ -45,21 +58,15 @@ M.get_theme_dir = function()
         on_stderr = function() end,
       })
       :wait()
-    log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
-    local result = paths.join(config_dir, "themes")
-    if not paths.isdir(result) then
-      spawn
-        .run({ "mkdir", "-p", result }, {
-          on_stdout = function() end,
-          on_stderr = function() end,
-        })
-        :wait()
-    end
-    fileios.writefile(M._theme_dir_cache(), result)
+    -- log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
+    local theme_dir = paths.join(config_dir, "themes")
+    M._create_theme_dir(theme_dir)
+    fileios.writefile(M._theme_dir_cache(), theme_dir)
 
-    return result
+    return theme_dir
   end
 
+  M._create_theme_dir(cached_result)
   return cached_result
 end
 

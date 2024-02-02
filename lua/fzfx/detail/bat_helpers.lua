@@ -81,9 +81,53 @@ end
 --- @alias fzfx._BatTmScopeValue {hl:string,scope:string[],foreground:string?,background:string?,font_style:string[],bold:boolean?,italic:boolean?,is_empty:boolean}
 --
 --- @class fzfx._BatTmScopeRenderer
---- @field value fzfx._BatTmScopeValue
---- @field lsp_value fzfx._BatTmScopeValue
+--- @field value fzfx._BatTmScopeValue?
+--- @field lsp_value fzfx._BatTmScopeValue?
 local _BatTmScopeRenderer = {}
+
+--- @param hl string
+--- @param scope string|string[]
+--- @param hl_codes table
+--- @return fzfx._BatTmScopeValue?
+M._make_scope_value = function(hl, scope, hl_codes)
+  if tables.tbl_empty(hl_codes) then
+    return nil
+  end
+  log.ensure(
+    type(hl) == "string" and string.len(hl) > 0,
+    "|_make_scope_value| invalid hl name"
+  )
+  log.ensure(
+    (type(scope) == "string" and string.len(scope) > 0)
+      or (tables.tbl_not_empty(scope)),
+    "|_make_scope_value| invalid tm scope:%s",
+    vim.inspect(scope)
+  )
+
+  local font_style = {}
+  if hl_codes.bold then
+    table.insert(font_style, "bold")
+  end
+  if hl_codes.italic then
+    table.insert(font_style, "italic")
+  end
+  if hl_codes.underline then
+    table.insert(font_style, "underline")
+  end
+
+  if type(hl_codes.fg) == "number" then
+    local value = {
+      hl = hl,
+      scope = scope,
+      foreground = hl_codes.fg and string.format("#%06x", hl_codes.fg) or nil,
+      background = hl_codes.bg and string.format("#%06x", hl_codes.bg) or nil,
+      font_style = font_style,
+    }
+    return value
+  end
+
+  return nil
+end
 
 --- @param hl string|string[]
 --- @param scope string|string[]
@@ -98,30 +142,12 @@ function _BatTmScopeRenderer:new(hl, scope)
   for i, h in ipairs(hls) do
     local ok, hl_codes = pcall(apis.get_hl, h)
     if ok and tables.tbl_not_empty(hl_codes) then
-      local font_style = {}
-      if hl_codes.bold then
-        table.insert(font_style, "bold")
-      end
-      if hl_codes.italic then
-        table.insert(font_style, "italic")
-      end
-      if hl_codes.underline then
-        table.insert(font_style, "underline")
-      end
-      if hl_codes.fg then
-        local v = {
-          hl = h,
-          scope = scope,
-          foreground = hl_codes.fg and string.format("#%06x", hl_codes.fg)
-            or nil,
-          background = hl_codes.bg and string.format("#%06x", hl_codes.bg)
-            or nil,
-          font_style = font_style,
-        }
+      local item = M._make_scope_value(h, scope, hl_codes)
+      if item then
         if strings.startswith(h, "@lsp") then
-          lsp_value = v
+          lsp_value = item
         else
-          value = v
+          value = item
         end
         break
       end
@@ -129,6 +155,7 @@ function _BatTmScopeRenderer:new(hl, scope)
   end
 
   local o = {
+    scope = scope,
     value = value,
     lsp_value = lsp_value,
   }
@@ -139,7 +166,7 @@ end
 
 --- @param value fzfx._BatTmScopeValue
 --- @return string?
-local function _render_scope(value)
+M._render_scope = function(value)
   if tables.tbl_empty(value) then
     return nil
   end
@@ -204,25 +231,78 @@ local function _render_scope(value)
   return table.concat(builder, "\n")
 end
 
---- @param prefer_lsp_token boolean?
 --- @return string?
-function _BatTmScopeRenderer:render(prefer_lsp_token)
-  if prefer_lsp_token and self.lsp_value then
-    return _render_scope(self.lsp_value)
+function _BatTmScopeRenderer:render()
+  if self.lsp_value then
+    return M._render_scope(self.lsp_value)
   end
-  return self.value and _render_scope(self.value) or nil
+  if self.value then
+    return M._render_scope(self.value)
+  end
+  return nil
 end
 
--- tmTheme renderer
---
---- @class fzfx._BatTmRenderer
---- @field template string
---- @field globals fzfx._BatTmGlobalRenderer[]
---- @field scopes fzfx._BatTmScopeRenderer[]
-local _BatTmRenderer = {}
+--- @return string?
+function _BatTmScopeRenderer:lsp_hl_name()
+  return tables.tbl_get(self.lsp_value, "hl")
+end
 
---- @return fzfx._BatTmRenderer
-function _BatTmRenderer:new()
+--- @return boolean
+function _BatTmScopeRenderer:update_lsp_hl()
+  if strings.empty(tables.tbl_get(self.lsp_value, "hl")) then
+    -- log.debug(
+    --   "|_BatTmScopeRenderer:update_lsp_hl| invalid self.lsp_value.hl:%s",
+    --   vim.inspect(self.lsp_value)
+    -- )
+    return false
+  end
+  log.ensure(
+    strings.startswith(self.lsp_value.hl, "@lsp"),
+    "|_BatTmScopeRenderer:update_lsp_highlight| invalid lsp highlight:%s",
+    vim.inspect(self.lsp_value)
+  )
+
+  local ok, hl_codes = pcall(apis.get_hl, self.lsp_value.hl)
+  if not ok or tables.tbl_empty(hl_codes) then
+    -- log.debug(
+    --   "|_BatTmScopeRenderer:update_lsp_hl| invalid hl_codes, hl:%s, error:%s",
+    --   vim.inspect(self.lsp_value.hl),
+    --   vim.inspect(hl_codes)
+    -- )
+    return false
+  end
+
+  local new_value =
+    M._make_scope_value(self.lsp_value.hl, self.lsp_value.scope, hl_codes)
+  if tables.tbl_empty(new_value) then
+    -- log.debug(
+    --   "|_BatTmScopeRenderer:update_lsp_hl| empty new value, hl:%s, hl_codes:%s",
+    --   vim.inspect(self.lsp_value.hl),
+    --   vim.inspect(hl_codes)
+    -- )
+    return false
+  end
+
+  if vim.deep_equal(self.lsp_value, new_value) then
+    -- log.debug(
+    --   "|_BatTmScopeRenderer:update_lsp_hl| new value is still same, self.lsp_value:%s, new_value:%s",
+    --   vim.inspect(self.lsp_value),
+    --   vim.inspect(new_value)
+    -- )
+    return false
+  end
+
+  self.lsp_value = new_value
+  log.debug(
+    "|_BatTmScopeRenderer:update_lsp_hl| updated lsp hl:%s",
+    vim.inspect(self.lsp_value)
+  )
+
+  return true
+end
+
+--- @return {globals:fzfx._BatTmGlobalRenderer[],scopes:fzfx._BatTmScopeRenderer[]}
+M._make_render_map = function()
   -- TextMate theme docs:
   --  * Basic description: https://macromates.com/manual/en/language_grammars#naming_conventions
   --  * Global: https://www.sublimetext.com/docs/color_schemes.html#global-settings
@@ -238,7 +318,7 @@ function _BatTmRenderer:new()
     _BatTmGlobalRenderer:new("Cursor", "caret", "bg"),
     _BatTmGlobalRenderer:new("Cursor", "block_caret", "bg"),
     _BatTmGlobalRenderer:new("NonText", "invisibles", "fg"),
-    _BatTmGlobalRenderer:new("Visual", "lineHighlight", "bg"),
+    _BatTmGlobalRenderer:new({ "Visual" }, "lineHighlight", "bg"),
     _BatTmGlobalRenderer:new("LineNr", "gutter", "bg"),
     _BatTmGlobalRenderer:new("LineNr", "gutterForeground", "fg"),
     _BatTmGlobalRenderer:new("CursorLineNr", "gutterForegroundHighlight", "fg"),
@@ -291,10 +371,10 @@ function _BatTmRenderer:new()
       { "@lsp.type.comment", "@comment", "Comment" },
       "comment"
     ),
-    _BatTmScopeRenderer:new(
-      { "@lsp.type.comment", "@comment.documentation" },
-      "comment.block.documentation"
-    ),
+    _BatTmScopeRenderer:new({
+      "@lsp.typemod.comment.documentation",
+      "@comment.documentation",
+    }, "comment.block.documentation"),
     -- comment }
 
     -- constant {
@@ -614,6 +694,22 @@ function _BatTmRenderer:new()
     -- punctuation }
   }
 
+  return {
+    globals = GLOBAL_RENDERERS,
+    scopes = SCOPE_RENDERERS,
+  }
+end
+
+-- tmTheme renderer
+--
+--- @class fzfx._BatTmRenderer
+--- @field template string
+--- @field globals fzfx._BatTmGlobalRenderer[]
+--- @field scopes fzfx._BatTmScopeRenderer[]
+local _BatTmRenderer = {}
+
+--- @return fzfx._BatTmRenderer
+function _BatTmRenderer:new()
   -- there're 3 components in below template:
   -- {NAME}
   -- {GLOBAL}
@@ -653,10 +749,12 @@ function _BatTmRenderer:new()
 </plist>
   ]]
 
+  local render_map = M._make_render_map()
+
   local o = {
     template = template,
-    globals = GLOBAL_RENDERERS,
-    scopes = SCOPE_RENDERERS,
+    globals = render_map.globals,
+    scopes = render_map.scopes,
   }
   setmetatable(o, self)
   self.__index = self
@@ -664,9 +762,8 @@ function _BatTmRenderer:new()
 end
 
 --- @param theme_name string
---- @param prefer_lsp_token boolean?
 --- @return {name:string,payload:string}
-function _BatTmRenderer:render(theme_name, prefer_lsp_token)
+function _BatTmRenderer:render(theme_name)
   local payload = self.template
 
   payload = strings.replace(payload, "{NAME}", theme_name)
@@ -680,7 +777,7 @@ function _BatTmRenderer:render(theme_name, prefer_lsp_token)
   end
   local scopes = {}
   for i, r in ipairs(self.scopes) do
-    local result = r:render(prefer_lsp_token)
+    local result = r:render()
     if result then
       table.insert(scopes, result)
     end
@@ -695,27 +792,43 @@ function _BatTmRenderer:render(theme_name, prefer_lsp_token)
   }
 end
 
+--- @param lsp_type string
+--- @param lsp_modifiers table<string, any>?
+--- @return boolean
+function _BatTmRenderer:patch_lsp_hl(lsp_type, lsp_modifiers)
+  local updated = false
+  local updated_count = 0
+
+  for i, r in ipairs(self.scopes) do
+    if r:lsp_hl_name() == lsp_type then
+      local has_updates = r:update_lsp_hl()
+      if has_updates then
+        updated = true
+        updated_count = updated_count + 1
+      end
+    end
+  end
+
+  log.debug(
+    "|_BatTmRenderer:patch_lsp_token| updated lsp hl:%s, has updated:%s",
+    vim.inspect(updated_count),
+    vim.inspect(updated)
+  )
+  return updated
+end
+
 M._BatTmRenderer = _BatTmRenderer
+
+M._BatTmRendererInstance = nil
 
 local building_bat_theme = false
 
 --- @param colorname string
---- @param opts {prefer_lsp_token:boolean?}?
-M._build_theme = function(colorname, opts)
-  opts = opts or { prefer_lsp_token = false }
-  opts.prefer_lsp_token = type(opts.prefer_lsp_token) == "boolean"
-      and opts.prefer_lsp_token
-    or false
-
+M._build_theme = function(colorname)
   log.ensure(
     strings.not_empty(colorname),
     "|_build_theme| colorname is empty string!"
   )
-
-  if building_bat_theme then
-    return
-  end
-  building_bat_theme = true
 
   local theme_dir = bat_themes_helper.get_theme_dir()
   log.ensure(
@@ -723,7 +836,7 @@ M._build_theme = function(colorname, opts)
     "|_build_theme| failed to get bat config dir"
   )
 
-  log.debug("|_build_theme| theme_dir:%s", vim.inspect(theme_dir))
+  -- log.debug("|_build_theme| theme_dir:%s", vim.inspect(theme_dir))
   if not paths.isdir(theme_dir) then
     spawn
       .run({ "mkdir", "-p", theme_dir }, {
@@ -740,8 +853,8 @@ M._build_theme = function(colorname, opts)
     vim.inspect(colorname)
   )
 
-  local renderer = _BatTmRenderer:new()
-  local rendered_result = renderer:render(theme_name, opts.prefer_lsp_token)
+  M._BatTmRendererInstance = _BatTmRenderer:new()
+  local rendered_result = M._BatTmRendererInstance:render(theme_name)
   log.ensure(
     tables.tbl_not_empty(rendered_result),
     "|_build_theme| rendered result is empty, color name:%s, theme name:%s",
@@ -755,10 +868,88 @@ M._build_theme = function(colorname, opts)
     "|_build_theme| failed to get bat theme config file from nvim colorscheme name:%s",
     vim.inspect(colorname)
   )
+
+  if building_bat_theme then
+    return
+  end
+  building_bat_theme = true
+
   fileios.asyncwritefile(theme_config_file, rendered_result.payload, function()
     vim.defer_fn(function()
       -- log.debug(
       --   "|_build_theme| dump theme payload, theme_template:%s",
+      --   vim.inspect(theme_config_file)
+      -- )
+      spawn.run({ constants.BAT, "cache", "--build" }, {
+        on_stdout = function(line) end,
+        on_stderr = function(line) end,
+      }, function()
+        vim.schedule(function()
+          building_bat_theme = false
+        end)
+      end)
+    end, 10)
+  end)
+end
+
+--- @param colorname string
+--- @param lsp_type string
+--- @param lsp_modifiers table<string, any>?
+M._patch_theme = function(colorname, lsp_type, lsp_modifiers)
+  if not M._BatTmRendererInstance then
+    return
+  end
+  -- log.debug(
+  --   "|_patch_theme| colorname:%s, lsp_token:%s",
+  --   vim.inspect(colorname),
+  --   vim.inspect(lsp_token)
+  -- )
+
+  log.ensure(
+    strings.not_empty(colorname),
+    "|_patch_theme| colorname is empty string!"
+  )
+  log.ensure(
+    strings.not_empty(lsp_type) and strings.startswith(lsp_type, "@lsp"),
+    "|_patch_theme| invalid lsp token:%s",
+    vim.inspect(lsp_type)
+  )
+
+  local theme_dir = bat_themes_helper.get_theme_dir()
+  log.ensure(
+    strings.not_empty(theme_dir),
+    "|_patch_theme| failed to get bat config dir"
+  )
+
+  local theme_name = bat_themes_helper.get_theme_name(colorname)
+  log.ensure(
+    strings.not_empty(theme_name),
+    "|_patch_theme| failed to get theme_name from nvim colorscheme name:%s",
+    vim.inspect(colorname)
+  )
+
+  local updated = M._BatTmRendererInstance:patch_lsp_hl(lsp_type, lsp_modifiers)
+  if not updated then
+    return
+  end
+
+  local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
+  log.ensure(
+    strings.not_empty(theme_config_file),
+    "|_patch_theme| failed to get bat theme config file from nvim colorscheme name:%s",
+    vim.inspect(colorname)
+  )
+
+  if building_bat_theme then
+    return
+  end
+  building_bat_theme = true
+
+  local rendered_result = M._BatTmRendererInstance:render(theme_name)
+  fileios.asyncwritefile(theme_config_file, rendered_result.payload, function()
+    vim.defer_fn(function()
+      -- log.debug(
+      --   "|_patch_theme| dump theme payload, theme_template:%s",
       --   vim.inspect(theme_config_file)
       -- )
       spawn.run({ constants.BAT, "cache", "--build" }, {
@@ -788,7 +979,7 @@ M.setup = function()
       vim.defer_fn(function()
         -- log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
         if strings.not_empty(tables.tbl_get(event, "match")) then
-          M._build_theme(event.match, { prefer_lsp_token = true })
+          M._build_theme(event.match)
         end
       end, 10)
     end,
@@ -797,16 +988,22 @@ M.setup = function()
   if versions.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
     vim.api.nvim_create_autocmd("LspTokenUpdate", {
       callback = function(event)
-        -- log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
+        log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
         vim.defer_fn(function()
           if
             strings.not_empty(tables.tbl_get(event, "data", "token", "type"))
           then
             local lsp_type =
               string.format("@lsp.type.%s", event.data.token.type)
+            local lsp_modifiers = tables.tbl_get(
+              event,
+              "data",
+              "token",
+              "modifiers"
+            ) or {}
             local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
             if strings.not_empty(bufcolor) then
-              M._build_theme(bufcolor, { prefer_lsp_token = true })
+              M._patch_theme(bufcolor, lsp_type, lsp_modifiers)
             end
           end
         end, 10)
