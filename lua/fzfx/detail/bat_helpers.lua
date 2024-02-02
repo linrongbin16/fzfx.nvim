@@ -371,10 +371,6 @@ M._make_render_map = function()
       { "@lsp.type.comment", "@comment", "Comment" },
       "comment"
     ),
-    _BatTmScopeRenderer:new(
-      { "@lsp.type.comment", "@comment.documentation" },
-      "comment.block.documentation"
-    ),
     -- comment }
 
     -- constant {
