@@ -6,4 +6,6 @@ modules = {
 }
 exclude = {
     "lua/fzfx/commons/*.lua",
+    "lua/fzfx/commons/*/*.lua",
+    "lua/fzfx/commons/*/*/*.lua",
 }
