@@ -374,7 +374,6 @@ M._make_render_map = function()
     _BatTmScopeRenderer:new({
       "@lsp.typemod.comment.documentation",
       "@comment.documentation",
-      "Comment",
     }, "comment.block.documentation"),
     -- comment }
 
