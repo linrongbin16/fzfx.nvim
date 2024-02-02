@@ -250,6 +250,10 @@ end
 --- @return boolean
 function _BatTmScopeRenderer:update_lsp_hl()
   if strings.empty(tables.tbl_get(self.lsp_value, "hl")) then
+    log.debug(
+      "|_BatTmScopeRenderer:update_lsp_hl| invalid self.lsp_value.hl:%s",
+      vim.inspect(self.lsp_value)
+    )
     return false
   end
   log.ensure(
@@ -260,16 +264,31 @@ function _BatTmScopeRenderer:update_lsp_hl()
 
   local ok, hl_codes = pcall(apis.get_hl, self.lsp_value.hl)
   if not ok or tables.tbl_empty(hl_codes) then
+    log.debug(
+      "|_BatTmScopeRenderer:update_lsp_hl| invalid hl_codes, hl:%s, error:%s",
+      vim.inspect(self.lsp_value.hl),
+      vim.inspect(hl_codes)
+    )
     return false
   end
 
   local new_value =
     M._make_scope_value(self.lsp_value.hl, self.lsp_value.scope, hl_codes)
   if tables.tbl_empty(new_value) then
+    log.debug(
+      "|_BatTmScopeRenderer:update_lsp_hl| empty new value, hl:%s, hl_codes:%s",
+      vim.inspect(self.lsp_value.hl),
+      vim.inspect(hl_codes)
+    )
     return false
   end
 
   if vim.deep_equal(self.lsp_value, new_value) then
+    log.debug(
+      "|_BatTmScopeRenderer:update_lsp_hl| new value is still same, self.lsp_value:%s, new_value:%s",
+      vim.inspect(self.lsp_value),
+      vim.inspect(new_value)
+    )
     return false
   end
 
@@ -777,20 +796,23 @@ end
 --- @return boolean
 function _BatTmRenderer:patch_lsp_token(lsp_token)
   local updated = false
+  local updated_count = 0
 
   for i, r in ipairs(self.scopes) do
     if r:lsp_hl_name() == lsp_token then
       local has_updates = r:update_lsp_hl()
-      log.debug(
-        "|_BatTmRenderer:patch_lsp_token| updated lsp hl:%s",
-        vim.inspect(r)
-      )
       if has_updates then
         updated = true
+        updated_count = updated_count + 1
       end
     end
   end
 
+  log.debug(
+    "|_BatTmRenderer:patch_lsp_token| updated lsp hl:%s, has updated:%s",
+    vim.inspect(updated_count),
+    vim.inspect(updated)
+  )
   return updated
 end
 
@@ -875,11 +897,11 @@ M._patch_theme = function(colorname, lsp_token)
   if not M._BatTmRendererInstance then
     return
   end
-  log.debug(
-    "|_patch_theme| colorname:%s, lsp_token:%s",
-    vim.inspect(colorname),
-    vim.inspect(lsp_token)
-  )
+  -- log.debug(
+  --   "|_patch_theme| colorname:%s, lsp_token:%s",
+  --   vim.inspect(colorname),
+  --   vim.inspect(lsp_token)
+  -- )
 
   log.ensure(
     strings.not_empty(colorname),
