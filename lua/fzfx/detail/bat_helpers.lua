@@ -81,8 +81,9 @@ end
 --- @alias fzfx._BatTmScopeValue {hl:string,scope:string[],foreground:string?,background:string?,font_style:string[],bold:boolean?,italic:boolean?,is_empty:boolean}
 --
 --- @class fzfx._BatTmScopeRenderer
---- @field value fzfx._BatTmScopeValue
---- @field lsp_value fzfx._BatTmScopeValue
+--- @field value fzfx._BatTmScopeValue?
+--- @field lsp_value fzfx._BatTmScopeValue?
+--- @field lsp_highlight string?
 local _BatTmScopeRenderer = {}
 
 --- @param hl string|string[]
@@ -95,6 +96,7 @@ function _BatTmScopeRenderer:new(hl, scope)
 
   local value = nil
   local lsp_value = nil
+  local lsp_highlight = nil
   for i, h in ipairs(hls) do
     local ok, hl_codes = pcall(apis.get_hl, h)
     if ok and tables.tbl_not_empty(hl_codes) then
@@ -120,6 +122,7 @@ function _BatTmScopeRenderer:new(hl, scope)
         }
         if strings.startswith(h, "@lsp") then
           lsp_value = v
+          lsp_highlight = h
         else
           value = v
         end
@@ -129,8 +132,10 @@ function _BatTmScopeRenderer:new(hl, scope)
   end
 
   local o = {
+    scope = scope,
     value = value,
     lsp_value = lsp_value,
+    lsp_highlight = lsp_highlight,
   }
   setmetatable(o, self)
   self.__index = self
@@ -211,6 +216,11 @@ function _BatTmScopeRenderer:render(prefer_lsp_token)
     return _render_scope(self.lsp_value)
   end
   return self.value and _render_scope(self.value) or nil
+end
+
+--- @return string?
+function _BatTmScopeRenderer:lsp_highlight_name()
+  return self.lsp_highlight
 end
 
 --- @return {globals:fzfx._BatTmGlobalRenderer[],scopes:fzfx._BatTmScopeRenderer[]}
