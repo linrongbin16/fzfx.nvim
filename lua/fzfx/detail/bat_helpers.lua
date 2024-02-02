@@ -83,7 +83,6 @@ end
 --- @class fzfx._BatTmScopeRenderer
 --- @field value fzfx._BatTmScopeValue?
 --- @field lsp_value fzfx._BatTmScopeValue?
---- @field lsp_highlight string?
 local _BatTmScopeRenderer = {}
 
 --- @param hl string|string[]
@@ -96,7 +95,6 @@ function _BatTmScopeRenderer:new(hl, scope)
 
   local value = nil
   local lsp_value = nil
-  local lsp_highlight = nil
   for i, h in ipairs(hls) do
     local ok, hl_codes = pcall(apis.get_hl, h)
     if ok and tables.tbl_not_empty(hl_codes) then
@@ -122,7 +120,6 @@ function _BatTmScopeRenderer:new(hl, scope)
         }
         if strings.startswith(h, "@lsp") then
           lsp_value = v
-          lsp_highlight = h
         else
           value = v
         end
@@ -135,7 +132,6 @@ function _BatTmScopeRenderer:new(hl, scope)
     scope = scope,
     value = value,
     lsp_value = lsp_value,
-    lsp_highlight = lsp_highlight,
   }
   setmetatable(o, self)
   self.__index = self
@@ -220,7 +216,50 @@ end
 
 --- @return string?
 function _BatTmScopeRenderer:lsp_highlight_name()
-  return self.lsp_highlight
+  return tables.tbl_get(self.lsp_value, "hl")
+end
+
+--- @return boolean
+function _BatTmScopeRenderer:update_lsp_highlight()
+  if strings.empty(tables.tbl_get(self.lsp_value, "hl")) then
+    return false
+  end
+  log.ensure(
+    strings.startswith(self.lsp_value.hl, "@lsp"),
+    "|_BatTmScopeRenderer:update_lsp_highlight| invalid lsp highlight:%s",
+    vim.inspect(self.lsp_value)
+  )
+
+  local ok, hl_codes = pcall(apis.get_hl, self.lsp_value.hl)
+  if not ok or tables.tbl_empty(hl_codes) then
+    return false
+  end
+
+  if hl_codes.fg == nil then
+    return false
+  end
+
+  local font_style = {}
+  if hl_codes.bold then
+    table.insert(font_style, "bold")
+  end
+  if hl_codes.italic then
+    table.insert(font_style, "italic")
+  end
+  if hl_codes.underline then
+    table.insert(font_style, "underline")
+  end
+
+  local v = {
+    hl = self.lsp_value.hl,
+    scope = self.lsp_value.scope,
+    foreground = hl_codes.fg and string.format("#%06x", hl_codes.fg) or nil,
+    background = hl_codes.bg and string.format("#%06x", hl_codes.bg) or nil,
+    font_style = font_style,
+  }
+  self.lsp_value = v
+
+  return true
 end
 
 --- @return {globals:fzfx._BatTmGlobalRenderer[],scopes:fzfx._BatTmScopeRenderer[]}
