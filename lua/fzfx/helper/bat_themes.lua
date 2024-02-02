@@ -44,7 +44,16 @@ M.get_theme_dir = function()
         on_stderr = function() end,
       })
       :wait()
-    fileios.writefile(M._theme_dir_cache(), paths.join(result, "themes"))
+    local theme_dir = paths.join(result, "themes")
+    if not paths.isdir(theme_dir) then
+      spawn
+        .run({ "mkdir", "-p", theme_dir }, {
+          on_stdout = function() end,
+          on_stderr = function() end,
+        })
+        :wait()
+    end
+    fileios.writefile(M._theme_dir_cache(), theme_dir)
 
     return result
   end
