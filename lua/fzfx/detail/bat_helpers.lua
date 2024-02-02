@@ -86,7 +86,7 @@ end
 local _BatTmScopeRenderer = {}
 
 --- @param hl string
---- @param scope string
+--- @param scope string|string[]
 --- @param hl_codes table?
 --- @return fzfx._BatTmScopeValue?
 M._make_scope_value = function(hl, scope, hl_codes)
@@ -98,7 +98,8 @@ M._make_scope_value = function(hl, scope, hl_codes)
     "|_make_scope_value| invalid hl name"
   )
   log.ensure(
-    type(scope) == "string" and string.len(scope) > 0,
+    (type(scope) == "string" and string.len(scope) > 0)
+      or (tables.tbl_not_empty(scope)),
     "|_make_scope_value| invalid tm scope"
   )
 
