@@ -87,7 +87,7 @@ local _BatTmScopeRenderer = {}
 
 --- @param hl string
 --- @param scope string|string[]
---- @param hl_codes table?
+--- @param hl_codes table
 --- @return fzfx._BatTmScopeValue?
 M._make_scope_value = function(hl, scope, hl_codes)
   if tables.tbl_empty(hl_codes) then
