@@ -723,6 +723,7 @@ M._build_theme = function(colorname, opts)
     "|_build_theme| failed to get bat config dir"
   )
 
+  log.debug("|_build_theme| theme_dir:%s", vim.inspect(theme_dir))
   if not paths.isdir(theme_dir) then
     spawn
       .run({ "mkdir", "-p", theme_dir }, {

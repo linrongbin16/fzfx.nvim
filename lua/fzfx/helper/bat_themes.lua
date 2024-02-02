@@ -28,25 +28,34 @@ end
 --- @return string
 M.get_theme_dir = function()
   local cached_result = M._cached_theme_dir() --[[@as string]]
+  log.debug("|get_theme_dir| cached_result:%s", vim.inspect(cached_result))
 
   if strings.empty(cached_result) then
-    local result = ""
-
-    local ok, sp_or_err = pcall(spawn.run, { constants.BAT, "--config-dir" }, {
-      on_stdout = function(line)
-        result = result .. line
-      end,
-      on_stderr = function() end,
-    }, function() end)
-
     log.ensure(
-      ok ~= nil,
-      "|get_theme_dir| failed to get bat config dir:%s",
-      vim.inspect(sp_or_err)
+      constants.HAS_BAT,
+      "|get_theme_dir| cannot find 'bat' executable"
     )
 
-    sp_or_err:wait()
-    fileios.writefile(M._theme_dir_cache(), paths.join(result, "themes"))
+    local config_dir = ""
+    spawn
+      .run({ constants.BAT, "--config-dir" }, {
+        on_stdout = function(line)
+          config_dir = config_dir .. line
+        end,
+        on_stderr = function() end,
+      })
+      :wait()
+    log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
+    local result = paths.join(config_dir, "themes")
+    if not paths.isdir(result) then
+      spawn
+        .run({ "mkdir", "-p", result }, {
+          on_stdout = function() end,
+          on_stderr = function() end,
+        })
+        :wait()
+    end
+    fileios.writefile(M._theme_dir_cache(), result)
 
     return result
   end
