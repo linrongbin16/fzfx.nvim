@@ -231,13 +231,15 @@ M._render_scope = function(value)
   return table.concat(builder, "\n")
 end
 
---- @param prefer_lsp_token boolean?
 --- @return string?
-function _BatTmScopeRenderer:render(prefer_lsp_token)
-  if prefer_lsp_token and self.lsp_value then
+function _BatTmScopeRenderer:render()
+  if self.lsp_value then
     return M._render_scope(self.lsp_value)
   end
-  return self.value and M._render_scope(self.value) or nil
+  if self.value then
+    return M._render_scope(self.value)
+  end
+  return nil
 end
 
 --- @return string?
@@ -737,9 +739,8 @@ function _BatTmRenderer:new()
 end
 
 --- @param theme_name string
---- @param prefer_lsp_token boolean?
 --- @return {name:string,payload:string}
-function _BatTmRenderer:render(theme_name, prefer_lsp_token)
+function _BatTmRenderer:render(theme_name)
   local payload = self.template
 
   payload = strings.replace(payload, "{NAME}", theme_name)
@@ -753,7 +754,7 @@ function _BatTmRenderer:render(theme_name, prefer_lsp_token)
   end
   local scopes = {}
   for i, r in ipairs(self.scopes) do
-    local result = r:render(prefer_lsp_token)
+    local result = r:render()
     if result then
       table.insert(scopes, result)
     end
@@ -773,13 +774,7 @@ M._BatTmRenderer = _BatTmRenderer
 local building_bat_theme = false
 
 --- @param colorname string
---- @param opts {prefer_lsp_token:boolean?}?
-M._build_theme = function(colorname, opts)
-  opts = opts or { prefer_lsp_token = false }
-  opts.prefer_lsp_token = type(opts.prefer_lsp_token) == "boolean"
-      and opts.prefer_lsp_token
-    or false
-
+M._build_theme = function(colorname)
   log.ensure(
     strings.not_empty(colorname),
     "|_build_theme| colorname is empty string!"
@@ -814,7 +809,7 @@ M._build_theme = function(colorname, opts)
   )
 
   local renderer = _BatTmRenderer:new()
-  local rendered_result = renderer:render(theme_name, opts.prefer_lsp_token)
+  local rendered_result = renderer:render(theme_name)
   log.ensure(
     tables.tbl_not_empty(rendered_result),
     "|_build_theme| rendered result is empty, color name:%s, theme name:%s",
@@ -846,6 +841,64 @@ M._build_theme = function(colorname, opts)
   end)
 end
 
+--- @param colorname string
+M._patch_theme = function(colorname)
+  log.ensure(
+    strings.not_empty(colorname),
+    "|_patch_theme| colorname is empty string!"
+  )
+
+  if building_bat_theme then
+    return
+  end
+  building_bat_theme = true
+
+  local theme_dir = bat_themes_helper.get_theme_dir()
+  log.ensure(
+    strings.not_empty(theme_dir),
+    "|_patch_theme| failed to get bat config dir"
+  )
+
+  local theme_name = bat_themes_helper.get_theme_name(colorname)
+  log.ensure(
+    strings.not_empty(theme_name),
+    "|_patch_theme| failed to get theme_name from nvim colorscheme name:%s",
+    vim.inspect(colorname)
+  )
+
+  local renderer = _BatTmRenderer:new()
+  local rendered_result = renderer:render(theme_name)
+  log.ensure(
+    tables.tbl_not_empty(rendered_result),
+    "|_patch_theme| rendered result is empty, color name:%s, theme name:%s",
+    vim.inspect(colorname),
+    vim.inspect(theme_name)
+  )
+
+  local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
+  log.ensure(
+    strings.not_empty(theme_config_file),
+    "|_patch_theme| failed to get bat theme config file from nvim colorscheme name:%s",
+    vim.inspect(colorname)
+  )
+  fileios.asyncwritefile(theme_config_file, rendered_result.payload, function()
+    vim.defer_fn(function()
+      -- log.debug(
+      --   "|_patch_theme| dump theme payload, theme_template:%s",
+      --   vim.inspect(theme_config_file)
+      -- )
+      spawn.run({ constants.BAT, "cache", "--build" }, {
+        on_stdout = function(line) end,
+        on_stderr = function(line) end,
+      }, function()
+        vim.schedule(function()
+          building_bat_theme = false
+        end)
+      end)
+    end, 10)
+  end)
+end
+
 M.setup = function()
   if not constants.HAS_BAT then
     return
@@ -861,7 +914,7 @@ M.setup = function()
       vim.defer_fn(function()
         -- log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
         if strings.not_empty(tables.tbl_get(event, "match")) then
-          M._build_theme(event.match, { prefer_lsp_token = true })
+          M._build_theme(event.match)
         end
       end, 10)
     end,
@@ -879,7 +932,7 @@ M.setup = function()
               string.format("@lsp.type.%s", event.data.token.type)
             local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
             if strings.not_empty(bufcolor) then
-              M._build_theme(bufcolor, { prefer_lsp_token = true })
+              M._build_theme(bufcolor)
             end
           end
         end, 10)
