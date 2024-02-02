@@ -15,7 +15,7 @@ end
 M.setup = function()
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
-      log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
+      -- log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       if strings.not_empty(tables.tbl_get(event, "match")) then
         COLOR_NAME = event.match
       end

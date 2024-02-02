@@ -274,6 +274,10 @@ function _BatTmScopeRenderer:update_lsp_hl()
   end
 
   self.lsp_value = new_value
+  log.debug(
+    "|_BatTmScopeRenderer:update_lsp_hl| updated lsp hl:%s",
+    vim.inspect(self.lsp_value)
+  )
 
   return true
 end
@@ -777,6 +781,10 @@ function _BatTmRenderer:patch_lsp_token(lsp_token)
   for i, r in ipairs(self.scopes) do
     if r:lsp_hl_name() == lsp_token then
       local has_updates = r:update_lsp_hl()
+      log.debug(
+        "|_BatTmRenderer:patch_lsp_token| updated lsp hl:%s",
+        vim.inspect(r)
+      )
       if has_updates then
         updated = true
       end
@@ -805,7 +813,7 @@ M._build_theme = function(colorname)
     "|_build_theme| failed to get bat config dir"
   )
 
-  log.debug("|_build_theme| theme_dir:%s", vim.inspect(theme_dir))
+  -- log.debug("|_build_theme| theme_dir:%s", vim.inspect(theme_dir))
   if not paths.isdir(theme_dir) then
     spawn
       .run({ "mkdir", "-p", theme_dir }, {
@@ -867,6 +875,11 @@ M._patch_theme = function(colorname, lsp_token)
   if not M._BatTmRendererInstance then
     return
   end
+  log.debug(
+    "|_patch_theme| colorname:%s, lsp_token:%s",
+    vim.inspect(colorname),
+    vim.inspect(lsp_token)
+  )
 
   log.ensure(
     strings.not_empty(colorname),

@@ -183,12 +183,12 @@ function Popup:new(
   )
 
   local function on_fzf_exit(jobid2, exitcode, event)
-    log.debug(
-      "|Popup:new| fzf exit, jobid2:%s, exitcode:%s, event:%s",
-      vim.inspect(jobid2),
-      vim.inspect(exitcode),
-      vim.inspect(event)
-    )
+    -- log.debug(
+    --   "|Popup:new| fzf exit, jobid2:%s, exitcode:%s, event:%s",
+    --   vim.inspect(jobid2),
+    --   vim.inspect(exitcode),
+    --   vim.inspect(event)
+    -- )
     if exitcode > 1 and (exitcode ~= 130 and exitcode ~= 129) then
       log.err(
         "command '%s' exit with code: %d, event: %s",
@@ -217,11 +217,11 @@ function Popup:new(
       vim.inspect(result)
     )
     local lines = fileios.readlines(result --[[@as string]]) --[[@as table]]
-    log.debug(
-      "|Popup:new| fzf exit, result:%s, lines:%s",
-      vim.inspect(result),
-      vim.inspect(lines)
-    )
+    -- log.debug(
+    --   "|Popup:new| fzf exit, result:%s, lines:%s",
+    --   vim.inspect(result),
+    --   vim.inspect(lines)
+    -- )
     if (exitcode == 130 or exitcode == 129) and #lines == 0 then
       return
     end

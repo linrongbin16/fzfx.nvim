@@ -633,11 +633,11 @@ function PreviewerSwitch:_preview_label(line, context)
     local label = type(previewer_config.previewer_label) == "function"
         and previewer_config.previewer_label(line, context)
       or previewer_config.previewer_label
-    log.debug(
-      "|PreviewerSwitch:preview_label| line:%s, label:%s",
-      vim.inspect(line),
-      vim.inspect(label)
-    )
+    -- log.debug(
+    --   "|PreviewerSwitch:preview_label| line:%s, label:%s",
+    --   vim.inspect(line),
+    --   vim.inspect(label)
+    -- )
     if type(label) ~= "string" then
       return
     end
@@ -1009,7 +1009,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch.resultfile,
     shells.shellescape(query)
   )
-  log.debug("|general| query_command:%s", vim.inspect(query_command))
+  -- log.debug("|general| query_command:%s", vim.inspect(query_command))
   local reload_query_command = string.format(
     "%s %s %s %s {q}",
     fzf_helpers.make_lua_command("general", "provider.lua"),
@@ -1017,10 +1017,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch.metafile,
     provider_switch.resultfile
   )
-  log.debug(
-    "|general| reload_query_command:%s",
-    vim.inspect(reload_query_command)
-  )
+  -- log.debug(
+  --   "|general| reload_query_command:%s",
+  --   vim.inspect(reload_query_command)
+  -- )
 
   local fzf_opts = vim.deepcopy(config.get().fzf_opts)
   fzf_opts = vim.list_extend(
@@ -1044,7 +1044,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       previewer_switch.metafile,
       previewer_switch.resultfile
     )
-    log.debug("|general| preview_command:%s", vim.inspect(preview_command))
+    -- log.debug("|general| preview_command:%s", vim.inspect(preview_command))
     table.insert(fzf_opts, {
       "--preview",
       preview_command,
@@ -1356,10 +1356,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       local action = interaction_opts.interaction
 
       local function interaction_rpc(line_params)
-        log.debug(
-          "|general.interaction_rpc| line_params:%s",
-          vim.inspect(line_params)
-        )
+        -- log.debug(
+        --   "|general.interaction_rpc| line_params:%s",
+        --   vim.inspect(line_params)
+        -- )
         action(line_params, context)
       end
 
@@ -1519,7 +1519,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         query = last_query,
       }) --[[@as string]]
       fileios.asyncwritefile(last_query_cache, content, function(bytes)
-        log.debug("|general| dump last query:%s", vim.inspect(bytes))
+        -- log.debug("|general| dump last query:%s", vim.inspect(bytes))
       end)
       if buffer_previewer_focused_fsevent then
         buffer_previewer_focused_fsevent:stop()

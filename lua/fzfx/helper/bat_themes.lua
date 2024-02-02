@@ -41,7 +41,7 @@ end
 --- @return string
 M.get_theme_dir = function()
   local cached_result = M._cached_theme_dir() --[[@as string]]
-  log.debug("|get_theme_dir| cached_result:%s", vim.inspect(cached_result))
+  -- log.debug("|get_theme_dir| cached_result:%s", vim.inspect(cached_result))
 
   if strings.empty(cached_result) then
     log.ensure(
@@ -58,7 +58,7 @@ M.get_theme_dir = function()
         on_stderr = function() end,
       })
       :wait()
-    log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
+    -- log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
     local theme_dir = paths.join(config_dir, "themes")
     M._create_theme_dir(theme_dir)
     fileios.writefile(M._theme_dir_cache(), theme_dir)
