@@ -1335,7 +1335,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
     -- buffer_previewer_actions_file }
 
-    -- dump current {
+    -- query fzf status {
     fileios.writefile(buffer_previewer_current_file, "")
 
     local function get_fzf_port()
@@ -1390,7 +1390,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
 
-    -- dump current }
+    -- query fzf status }
   end
 
   local header_switch =
