@@ -59,16 +59,6 @@ local function _fzf_port_file()
 end
 
 --- @return string
-local function _buffer_previewer_focused_file()
-  return _make_cache_filename("buffer", "previewer", "focused", "file")
-end
-
---- @return string
-local function _buffer_previewer_current_file()
-  return _make_cache_filename("buffer", "previewer", "current", "file")
-end
-
---- @return string
 local function _buffer_previewer_actions_file()
   return _make_cache_filename("buffer", "previewer", "actions", "file")
 end
@@ -928,12 +918,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   --- cache files
   local fzf_port_file = _fzf_port_file()
-  -- local buffer_previewer_focused_file = _buffer_previewer_focused_file()
-  -- local buffer_previewer_focused_fsevent, buffer_previewer_focused_fsevent_err
   local buffer_previewer_actions_file = _buffer_previewer_actions_file()
   local buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err
-  local buffer_previewer_current_file = _buffer_previewer_current_file()
-  local buffer_previewer_dump_current_start = false
+  local buffer_previewer_query_fzf_status_start = false
 
   --- @type fzfx.Popup
   local popup = nil
@@ -1141,17 +1128,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     -- listen fzf actions }
 
     -- query fzf status {
-    fileios.writefile(buffer_previewer_current_file, "")
-
     local function get_fzf_port()
       return fileios.readfile(fzf_port_file, { trim = true })
     end
 
     local QUERY_FZF_CURRENT_STATUS_INTERVAL = 50
-    buffer_previewer_dump_current_start = true
+    buffer_previewer_query_fzf_status_start = true
 
     local function query_fzf_status()
-      if not buffer_previewer_dump_current_start then
+      if not buffer_previewer_query_fzf_status_start then
         return
       end
 
@@ -1188,7 +1173,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         --   vim.inspect(current_payload)
         -- )
 
-        if buffer_previewer_dump_current_start then
+        if buffer_previewer_query_fzf_status_start then
           vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
         end
 
@@ -1469,7 +1454,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         buffer_previewer_actions_fsevent:stop()
         buffer_previewer_actions_fsevent = nil
       end
-      buffer_previewer_dump_current_start = false
+      buffer_previewer_query_fzf_status_start = false
     end,
     use_buffer_previewer,
     buffer_previewer_opts
@@ -1589,7 +1574,6 @@ local M = {
   _previewer_metafile = _previewer_metafile,
   _previewer_resultfile = _previewer_resultfile,
   _fzf_port_file = _fzf_port_file,
-  _buffer_previewer_focused_file = _buffer_previewer_focused_file,
   _buffer_previewer_actions_file = _buffer_previewer_actions_file,
   make_provider_meta_opts = make_provider_meta_opts,
   make_previewer_meta_opts = make_previewer_meta_opts,
