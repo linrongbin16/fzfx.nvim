@@ -746,6 +746,11 @@ function BufferPopupWindow:preview_file_contents(file_contents)
 
   local current_buf_name = vim.api.nvim_buf_get_name(self.previewer_bufnr)
   if current_buf_name == last_contents.previewer_result.filename then
+    log.debug(
+      "|BufferPopupWindow:preview_file_contents| already preview the same file content, current_buf_name:%s, last_contents.previewer_result:%s",
+      vim.inspect(current_buf_name),
+      vim.inspect(last_contents.previewer_result)
+    )
     return
   end
 
@@ -803,6 +808,17 @@ function BufferPopupWindow:preview_file_contents(file_contents)
     if not self:previewer_is_valid() then
       return
     end
+    if
+      tables.tbl_get(self._saved_preview_files, "previewer_result", "filename")
+      ~= last_contents.previewer_result.filename
+    then
+      log.debug(
+        "|BufferPopupWindow:preview_file_contents - set_win_title| has newer preview file:%s, last_contents.previewer_result:%s",
+        vim.inspect(self._saved_preview_files),
+        vim.inspect(last_contents.previewer_result)
+      )
+      return
+    end
 
     local title_opts = {
       title = last_contents.previewer_label_result,
@@ -842,6 +858,20 @@ function BufferPopupWindow:preview_file_contents(file_contents)
         --   "|BufferPopupWindow:preview_file_contents| set_buf_lines, previewer_is_valid:%s",
         --   vim.inspect(self:previewer_is_valid())
         -- )
+        return
+      end
+      if
+        tables.tbl_get(
+          self._saved_preview_files,
+          "previewer_result",
+          "filename"
+        ) ~= last_contents.previewer_result.filename
+      then
+        log.debug(
+          "|BufferPopupWindow:preview_file_contents - set_buf_lines| has newer preview file:%s, last_contents.previewer_result:%s",
+          vim.inspect(self._saved_preview_files),
+          vim.inspect(last_contents.previewer_result)
+        )
         return
       end
 
