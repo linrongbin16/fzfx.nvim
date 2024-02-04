@@ -65,6 +65,11 @@ local function _buffer_previewer_focused_file()
 end
 
 --- @return string
+local function _buffer_previewer_current_file()
+  return _make_cache_filename("buffer", "previewer", "current", "file")
+end
+
+--- @return string
 local function _buffer_previewer_actions_file()
   return _make_cache_filename("buffer", "previewer", "actions", "file")
 end
@@ -935,6 +940,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local buffer_previewer_focused_fsevent, buffer_previewer_focused_fsevent_err
   local buffer_previewer_actions_file = _buffer_previewer_actions_file()
   local buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err
+  local buffer_previewer_current_file = _buffer_previewer_current_file()
   local buffer_previewer_dump_current_start = false
 
   --- @type fzfx.Popup
@@ -1337,6 +1343,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     -- buffer_previewer_actions_file }
 
     -- dump current {
+    fileios.writefile(buffer_previewer_current_file, "")
+
     local function get_fzf_port()
       return fileios.readfile(fzf_port_file, { trim = true })
     end
@@ -1344,10 +1352,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local dump_current_command = nil
     if consts.IS_WINDOWS then
       dump_current_command =
-        string.format("cmd.exe /C echo {0}>%s", buffer_previewer_focused_file)
+        string.format("cmd.exe /C echo {}>%s", buffer_previewer_current_file)
     else
       dump_current_command =
-        string.format("echo {0}>%s", buffer_previewer_focused_file)
+        string.format("echo {}>%s", buffer_previewer_current_file)
     end
 
     buffer_previewer_dump_current_start = true
@@ -1356,6 +1364,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       if not buffer_previewer_dump_current_start then
         return
       end
+
+      local current_payload = nil
+
       spawn.run({
         "curl",
         "-s",
@@ -1363,7 +1374,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "-q",
         "-Z",
         "--parallel-immediate",
-        "--http2",
+        -- "--http2",
         -- "--retry",
         -- "0",
         -- "--connect-timeout",
@@ -1372,16 +1383,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         -- "1",
         "--noproxy",
         "*",
-        "-XPOST",
+        -- "-XPOST",
         string.format("127.0.0.1:%s", get_fzf_port()),
-        "-d",
-        string.format("exeute-silent(%s)", dump_current_command),
+        -- "-d",
+        -- string.format("exeute-silent(%s)", dump_current_command),
       }, {
         on_stdout = function(line)
           log.debug(
             "|general - use_buffer_previewer - dump_fzf_current| stdout:%s",
             vim.inspect(line)
           )
+          current_payload = current_payload and current_payload .. line or line
         end,
         on_stderr = function(line)
           log.debug(
@@ -1390,6 +1402,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           )
         end,
       }, function(completed)
+        log.debug(
+          "|general - use_buffer_previewer - dump_fzf_current| completed:%s, current_payload:%s",
+          vim.inspect(completed),
+          vim.inspect(current_payload)
+        )
         if buffer_previewer_dump_current_start then
           vim.schedule(dump_fzf_current)
         end
