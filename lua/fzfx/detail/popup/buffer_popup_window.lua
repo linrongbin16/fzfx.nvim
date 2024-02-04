@@ -597,38 +597,6 @@ function BufferPopupWindow:provider_is_valid()
   end
 end
 
--- check if the same file
---
---- @param a {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
---- @param b {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
---- @return boolean
-local function _same_preview_file_job(a, b)
-  local filename1 = tables.tbl_get(a, "previewer_result", "filename")
-  local label1 = tables.tbl_get(a, "previewer_label_result")
-  local filename2 = tables.tbl_get(b, "previewer_result", "filename")
-  local label2 = tables.tbl_get(b, "previewer_label_result")
-
-  return filename1 == filename2 and label1 == label2
-end
-
--- check if the same file contents
---
---- @param a fzfx.BufferPopupWindowPreviewFileContents
---- @param b fzfx.BufferPopupWindowPreviewFileContents
---- @return boolean
-local function _same_preview_file_contents_job(a, b)
-  local content1 = tables.tbl_get(a, "contents")
-  local result1 = tables.tbl_get(a, "previewer_result")
-  local label1 = tables.tbl_get(a, "previewer_label_result")
-  local content2 = tables.tbl_get(a, "contents")
-  local result2 = tables.tbl_get(b, "previewer_result")
-  local label2 = tables.tbl_get(b, "previewer_label_result")
-
-  return content1 == content2
-    and vim.deep_equal(result1, result2)
-    and label1 == label2
-end
-
 --- @alias fzfx.BufferPopupWindowPreviewFiles {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
@@ -1004,8 +972,6 @@ function BufferPopupWindow:toggle_preview()
     self:hide_preview()
   end
 end
-
-local preview_page_scrolling = false
 
 -- scroll page up by percentage (1% - 100%)
 --- @param percent integer  1-100
