@@ -729,7 +729,8 @@ function BufferPopupWindow:preview_file_contents(file_contents)
   end
 
   -- local set_name_ok, set_name_err =
-  vim.api.nvim_buf_set_name(
+  pcall(
+    vim.api.nvim_buf_set_name,
     self.previewer_bufnr,
     last_contents.previewer_result.filename
   )
@@ -768,7 +769,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
   local TOTAL_LINES = #LINES
   local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
   local line_index = 1
-  local line_count = 10
+  local line_count = 2
   local set_win_title_done = false
 
   local function set_win_title()
