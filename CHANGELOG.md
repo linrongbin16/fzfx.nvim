@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.5](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.4...v5.1.5) (2024-02-04)
+
+
+### Bug Fixes
+
+* **spawn:** on complete for previewer label ([#582](https://github.com/linrongbin16/fzfx.nvim/issues/582)) ([9da7df6](https://github.com/linrongbin16/fzfx.nvim/commit/9da7df6b3e605d88ef3ac4e67a7f6ff0db06f86e))
+
 ## [5.1.4](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.3...v5.1.4) (2024-02-02)
 
 
