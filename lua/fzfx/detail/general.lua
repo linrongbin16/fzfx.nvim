@@ -935,6 +935,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local buffer_previewer_focused_fsevent, buffer_previewer_focused_fsevent_err
   local buffer_previewer_actions_file = _buffer_previewer_actions_file()
   local buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err
+  local buffer_previewer_dump_current_start = false
 
   --- @type fzfx.Popup
   local popup = nil
@@ -1336,6 +1337,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     -- buffer_previewer_actions_file }
 
     -- dump current {
+    local function get_fzf_port()
+      return fileios.readfile(fzf_port_file, { trim = true })
+    end
+
     local dump_current_command = nil
     if consts.IS_WINDOWS then
       dump_current_command =
@@ -1345,7 +1350,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         string.format("echo {0}>%s", buffer_previewer_focused_file)
     end
 
+    buffer_previewer_dump_current_start = true
+
     local function dump_fzf_current()
+      if not buffer_previewer_dump_current_start then
+        return
+      end
       spawn.run({
         "curl",
         "-s",
@@ -1354,18 +1364,18 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "-Z",
         "--parallel-immediate",
         "--http2",
-        "--retry",
-        "0",
-        "--connect-timeout",
-        "1",
-        "-m",
-        "1",
+        -- "--retry",
+        -- "0",
+        -- "--connect-timeout",
+        -- "1",
+        -- "-m",
+        -- "1",
         "--noproxy",
         "*",
         "-XPOST",
-        string.format("127.0.0.1:%s", vim.trim(port)),
+        string.format("127.0.0.1:%s", get_fzf_port()),
         "-d",
-        body,
+        string.format("exeute-silent(%s)", dump_current_command),
       }, {
         on_stdout = function(line)
           log.debug(
@@ -1379,7 +1389,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             vim.inspect(line)
           )
         end,
-      }, function(completed) end)
+      }, function(completed)
+        if buffer_previewer_dump_current_start then
+          vim.schedule(dump_fzf_current)
+        end
+      end)
     end
 
     vim.schedule(dump_fzf_current)
@@ -1575,6 +1589,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         buffer_previewer_focused_fsevent:stop()
         buffer_previewer_focused_fsevent = nil
       end
+      if buffer_previewer_actions_fsevent then
+        buffer_previewer_actions_fsevent:stop()
+        buffer_previewer_actions_fsevent = nil
+      end
+      buffer_previewer_dump_current_start = false
     end,
     use_buffer_previewer,
     buffer_previewer_opts
