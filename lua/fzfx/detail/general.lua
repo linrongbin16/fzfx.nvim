@@ -1334,6 +1334,57 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       vim.inspect(actions_fsevent_start_err)
     )
     -- buffer_previewer_actions_file }
+
+    -- dump current {
+    local dump_current_command = nil
+    if consts.IS_WINDOWS then
+      dump_current_command =
+        string.format("cmd.exe /C echo {0}>%s", buffer_previewer_focused_file)
+    else
+      dump_current_command =
+        string.format("echo {0}>%s", buffer_previewer_focused_file)
+    end
+
+    local function dump_fzf_current()
+      spawn.run({
+        "curl",
+        "-s",
+        "-S",
+        "-q",
+        "-Z",
+        "--parallel-immediate",
+        "--http2",
+        "--retry",
+        "0",
+        "--connect-timeout",
+        "1",
+        "-m",
+        "1",
+        "--noproxy",
+        "*",
+        "-XPOST",
+        string.format("127.0.0.1:%s", vim.trim(port)),
+        "-d",
+        body,
+      }, {
+        on_stdout = function(line)
+          log.debug(
+            "|general - use_buffer_previewer - dump_fzf_current| stdout:%s",
+            vim.inspect(line)
+          )
+        end,
+        on_stderr = function(line)
+          log.debug(
+            "|general - use_buffer_previewer - dump_fzf_current| stderr:%s",
+            vim.inspect(line)
+          )
+        end,
+      }, function(completed) end)
+    end
+
+    vim.schedule(dump_fzf_current)
+
+    -- dump current }
   end
 
   local header_switch =
