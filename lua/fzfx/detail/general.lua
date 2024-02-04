@@ -1342,7 +1342,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       return fileios.readfile(fzf_port_file, { trim = true })
     end
 
-    local QUERY_FZF_CURRENT_STATUS_INTERVAL = 50
+    local QUERY_FZF_CURRENT_STATUS_INTERVAL = 100
     buffer_previewer_dump_current_start = true
 
     local function query_fzf_status()
@@ -1383,6 +1383,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         --   vim.inspect(current_payload)
         -- )
 
+        if buffer_previewer_dump_current_start then
+          vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
+        end
+
         if current_payload then
           local status_ok, status_data = pcall(jsons.decode, current_payload) --[[@as boolean, table]]
           if
@@ -1403,6 +1407,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               return
             end
 
+            if not buffer_preview_files_queue_empty() then
+              local last_preview_job2 = buffer_preview_files_queue_last()
+              if last_preview_job2.focused_line == current_text then
+                return
+              end
+            end
+
             buffer_preview_job_id = numbers.auto_incremental_id()
             popup.popup_window:set_preview_file_job_id(buffer_preview_job_id)
 
@@ -1412,7 +1423,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               job_id = buffer_preview_job_id,
             })
 
-            vim.defer_fn(function()
+            vim.schedule(function()
               if not popup or not popup:previewer_is_valid() then
                 return
               end
@@ -1485,13 +1496,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                   )
                 end
               end
-            end, 50)
+            end)
             -- trigger buffer previewer }
           end
-        end
-
-        if buffer_previewer_dump_current_start then
-          vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
         end
       end)
     end

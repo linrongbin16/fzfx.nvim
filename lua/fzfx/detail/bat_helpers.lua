@@ -293,10 +293,10 @@ function _BatTmScopeRenderer:update_lsp_hl()
   end
 
   self.lsp_value = new_value
-  log.debug(
-    "|_BatTmScopeRenderer:update_lsp_hl| updated lsp hl:%s",
-    vim.inspect(self.lsp_value)
-  )
+  -- log.debug(
+  --   "|_BatTmScopeRenderer:update_lsp_hl| updated lsp hl:%s",
+  --   vim.inspect(self.lsp_value)
+  -- )
 
   return true
 end
@@ -809,11 +809,11 @@ function _BatTmRenderer:patch_lsp_hl(lsp_type, lsp_modifiers)
     end
   end
 
-  log.debug(
-    "|_BatTmRenderer:patch_lsp_token| updated lsp hl:%s, has updated:%s",
-    vim.inspect(updated_count),
-    vim.inspect(updated)
-  )
+  -- log.debug(
+  --   "|_BatTmRenderer:patch_lsp_token| updated lsp hl:%s, has updated:%s",
+  --   vim.inspect(updated_count),
+  --   vim.inspect(updated)
+  -- )
   return updated
 end
 
@@ -988,7 +988,7 @@ M.setup = function()
   if versions.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
     vim.api.nvim_create_autocmd("LspTokenUpdate", {
       callback = function(event)
-        log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
+        -- log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
         vim.defer_fn(function()
           if
             strings.not_empty(tables.tbl_get(event, "data", "token", "type"))
