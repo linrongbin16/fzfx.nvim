@@ -371,11 +371,11 @@ end
 --- @field previewer_winnr integer?
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
---- @field _saved_preview_files fzfx.BufferPopupWindowPreviewFiles
---- @field _saved_preview_file_contents fzfx.BufferPopupWindowPreviewFileContents
+--- @field _current_previewing_file_job fzfx.BufferPopupWindowPreviewFileJob
+--- @field _current_previewing_file_content_job fzfx.BufferPopupWindowPreviewFileContentJob
 --- @field _resizing boolean
---- @field preview_files_queue fzfx.BufferPopupWindowPreviewFiles[]
---- @field preview_file_contents_queue fzfx.BufferPopupWindowPreviewFileContents[]
+--- @field preview_files_queue fzfx.BufferPopupWindowPreviewFileJob[]
+--- @field preview_file_contents_queue fzfx.BufferPopupWindowPreviewFileContentJob[]
 --- @field previewer_is_hidden boolean
 --- @field _scrolling_preview_page boolean
 local BufferPopupWindow = {}
@@ -455,8 +455,8 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     previewer_winnr = previewer_winnr,
     _saved_win_opts = win_opts,
     _saved_buffer_previewer_opts = buffer_previewer_opts,
-    _saved_preview_file_contents = nil,
-    _saved_preview_files = nil,
+    _current_previewing_file_job = nil,
+    _current_previewing_file_content_job = nil,
     _resizing = false,
     preview_files_queue = {},
     preview_file_contents_queue = {},
@@ -597,7 +597,29 @@ function BufferPopupWindow:provider_is_valid()
   end
 end
 
---- @alias fzfx.BufferPopupWindowPreviewFiles {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
+--- @param job fzfx.BufferPopupWindowPreviewFileJob?
+--- @return boolean
+function BufferPopupWindow:_is_current_previewing_file_job(job)
+  return tables.tbl_get(job, "previewer_result", "filename")
+    == tables.tbl_get(
+      self._current_previewing_file_job,
+      "previewer_result",
+      "filename"
+    )
+end
+
+--- @param job fzfx.BufferPopupWindowPreviewFileContentJob?
+--- @return boolean
+function BufferPopupWindow:_is_current_previewing_file_content_job(job)
+  return tables.tbl_get(job, "previewer_result", "filename")
+    == tables.tbl_get(
+      self._current_previewing_file_content_job,
+      "previewer_result",
+      "filename"
+    )
+end
+
+--- @alias fzfx.BufferPopupWindowPreviewFileJob {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
 function BufferPopupWindow:preview_file(
@@ -642,16 +664,16 @@ function BufferPopupWindow:preview_file(
     self.preview_files_queue = {}
 
     -- check if the same file
-    if vim.deep_equal(last_job, self._saved_preview_files) then
+    if self:_is_current_previewing_file_job(last_job) then
       log.debug(
         "|BufferPopupWindow:preview_file| same preview file, last_job:%s, saved_job:%s",
         vim.inspect(last_job),
-        vim.inspect(self._saved_preview_files)
+        vim.inspect(self._current_previewing_file_job)
       )
       return
     end
 
-    self._saved_preview_files = last_job
+    self._current_previewing_file_job = last_job
 
     -- read file content
     fileios.asyncreadfile(
@@ -664,16 +686,10 @@ function BufferPopupWindow:preview_file(
           )
           return
         end
-        if
-          tables.tbl_get(
-            self._saved_preview_files,
-            "previewer_result",
-            "filename"
-          ) ~= last_job.previewer_result.filename
-        then
+        if not self:_is_current_previewing_file_job(last_job) then
           log.debug(
-            "|BufferPopupWindow:preview_file - asyncreadfile| has newer _saved_preview_files:%s, last_job:%s",
-            vim.inspect(self._saved_preview_files),
+            "|BufferPopupWindow:preview_file - asyncreadfile| has newer _current_previewing_file_job:%s, last_job:%s",
+            vim.inspect(self._current_previewing_file_job),
             vim.inspect(last_job)
           )
           return
@@ -702,32 +718,24 @@ function BufferPopupWindow:preview_file(
             self.preview_file_contents_queue[#self.preview_file_contents_queue]
           self.preview_file_contents_queue = {}
 
-          if
-            vim.deep_equal(last_content, self._saved_preview_file_contents)
-          then
+          if not self:_is_current_previewing_file_job(last_content) then
             log.debug(
-              "|BufferPopupWindow:preview_file - asyncreadfile - done content| same preview file contents, last_content:%s, saved content:%s",
+              "|BufferPopupWindow:preview_file - asyncreadfile - done content| has newer preview file job, last_content:%s, current job:%s",
               vim.inspect(last_content),
-              vim.inspect(self._saved_preview_file_contents)
+              vim.inspect(self._current_previewing_file_job)
             )
             return
           end
-          if
-            tables.tbl_get(
-              self._saved_preview_files,
-              "previewer_result",
-              "filename"
-            ) ~= last_content.previewer_result.filename
-          then
+          if self:_is_current_previewing_file_content_job(last_content) then
             log.debug(
-              "|BufferPopupWindow:preview_file - asyncreadfile - done content| has newer _saved_preview_files:%s, last_content.previewer_result:%s",
-              vim.inspect(self._saved_preview_files),
-              vim.inspect(last_content.previewer_result)
+              "|BufferPopupWindow:preview_file - asyncreadfile - done content| same preview file content job, last_content:%s, current job:%s",
+              vim.inspect(last_content),
+              vim.inspect(self._current_previewing_file_content_job)
             )
             return
           end
 
-          self._saved_preview_file_contents = last_content
+          self._current_previewing_file_content_job = last_content
           self:preview_file_contents(last_content)
         end, 30)
       end
@@ -735,180 +743,165 @@ function BufferPopupWindow:preview_file(
   end, 30)
 end
 
---- @alias fzfx.BufferPopupWindowPreviewFileContents {contents:string,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
---- @param file_contents fzfx.BufferPopupWindowPreviewFileContents?
-function BufferPopupWindow:preview_file_contents(file_contents)
-  if tables.tbl_empty(file_contents) then
+--- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
+--- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob?
+function BufferPopupWindow:preview_file_contents(file_content)
+  if tables.tbl_empty(file_content) then
     return
   end
 
-  local last_contents = file_contents --[[@as fzfx.BufferPopupWindowPreviewFileContents]]
+  local last_content = file_content --[[@as fzfx.BufferPopupWindowPreviewFileContentJob]]
 
   local current_buf_name = vim.api.nvim_buf_get_name(self.previewer_bufnr)
-  if current_buf_name == last_contents.previewer_result.filename then
+  if current_buf_name == last_content.previewer_result.filename then
     log.debug(
       "|BufferPopupWindow:preview_file_contents| already preview the same file content, current_buf_name:%s, last_contents.previewer_result:%s",
       vim.inspect(current_buf_name),
-      vim.inspect(last_contents.previewer_result)
+      vim.inspect(last_content.previewer_result)
     )
     return
   end
 
-  -- local set_name_ok, set_name_err =
   pcall(
     vim.api.nvim_buf_set_name,
     self.previewer_bufnr,
-    last_contents.previewer_result.filename
+    last_content.previewer_result.filename
   )
-  -- if not set_name_ok then
-  --   log.debug(
-  --     "|BufferPopupWindow:preview_file - asyncreadfile| failed to set name for previewer buffer:%s(%s), error:%s",
-  --     vim.inspect(last_contents.previewer_result.filename),
-  --     vim.inspect(self.previewer_bufnr),
-  --     vim.inspect(set_name_err)
-  --   )
-  -- end
-  -- local buf_call_ok, buf_call_err =
   vim.api.nvim_buf_call(self.previewer_bufnr, function()
     vim.api.nvim_command([[filetype detect]])
   end)
-  -- if not buf_call_ok then
-  --   log.debug(
-  --     "|BufferPopupWindow:preview_file - asyncreadfile| failed to detect filetype for previewer buffer:%s(%s), error:%s",
-  --     vim.inspect(last_contents.previewer_result.filename),
-  --     vim.inspect(self.previewer_bufnr),
-  --     vim.inspect(buf_call_err)
-  --   )
-  -- end
-  -- local set_cursor_ok, set_cursor_err =
   vim.api.nvim_win_set_cursor(self.previewer_winnr, { 1, 0 })
-  -- if not set_cursor_ok then
-  --   log.debug(
-  --     "|BufferPopupWindow:preview_file - asyncreadfile| failed to set cursor at top of file for previewer buffer:%s(%s), error: %s",
-  --     vim.inspect(last_contents.previewer_result.filename),
-  --     vim.inspect(self.previewer_bufnr),
-  --     vim.inspect(set_cursor_err)
-  --   )
-  -- end
 
-  local LINES = strings.split(last_contents.contents, "\n")
-  local TOTAL_LINES = #LINES
-  local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
-  local line_index = 1
-  local line_count = 5
-  local set_win_title_done = false
-
-  local function set_win_title()
-    if set_win_title_done then
-      return
-    end
-    if strings.empty(last_contents.previewer_label_result) then
-      return
-    end
+  vim.schedule(function()
     if not self:previewer_is_valid() then
       return
     end
-    if
-      tables.tbl_get(self._saved_preview_files, "previewer_result", "filename")
-      ~= last_contents.previewer_result.filename
-    then
+    if not self:_is_current_previewing_file_job(last_content) then
       log.debug(
-        "|BufferPopupWindow:preview_file_contents - set_win_title| has newer preview file:%s, last_contents.previewer_result:%s",
-        vim.inspect(self._saved_preview_files),
-        vim.inspect(last_contents.previewer_result)
+        "|BufferPopupWindow:preview_file_contents - schedule| has newer preview file job, last_content:%s, current job:%s",
+        vim.inspect(last_content),
+        vim.inspect(self._current_previewing_file_job)
+      )
+      return
+    end
+    if not self:_is_current_previewing_file_content_job(last_content) then
+      log.debug(
+        "|BufferPopupWindow:preview_file_contents - schedule| has newer preview file content job, last_content:%s, current job:%s",
+        vim.inspect(last_content),
+        vim.inspect(self._current_previewing_file_content_job)
       )
       return
     end
 
-    local title_opts = {
-      title = last_contents.previewer_label_result,
-      title_pos = "center",
-    }
-    -- local set_config_ok, set_config_err =
-    vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
-    -- if not set_config_ok then
-    --   log.debug(
-    --     "|BufferPopupWindow:preview_file.asyncreadfile| failed to set title for previewer window:%s(%s), error:%s",
-    --     vim.inspect(last_contents.previewer_result.filename),
-    --     vim.inspect(self.previewer_winnr),
-    --     vim.inspect(set_config_err)
-    --   )
-    -- end
-    -- local set_opts_ok, set_opts_err =
-    -- pcall(_set_default_previewer_win_options, self.previewer_winnr)
-    apis.set_win_option(self.previewer_winnr, "number", true)
-    -- if not set_opts_ok then
-    --   log.debug(
-    --     "|BufferPopupWindow:preview_file.asyncreadfile| failed to reset default opts for previewer window:%s(%s), error:%s",
-    --     vim.inspect(last_contents.previewer_result.filename),
-    --     vim.inspect(self.previewer_winnr),
-    --     vim.inspect(set_opts_err)
-    --   )
-    -- end
-    vim.schedule(function()
-      set_win_title_done = true
-    end)
-  end
+    local LINES = strings.split(last_content.contents, "\n")
+    local TOTAL_LINES = #LINES
+    local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
+    local line_index = 1
+    local line_count = 5
+    local set_win_title_done = false
 
-  local function set_buf_lines()
-    -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
-    vim.defer_fn(function()
-      if not self:previewer_is_valid() then
-        -- log.debug(
-        --   "|BufferPopupWindow:preview_file_contents| set_buf_lines, previewer_is_valid:%s",
-        --   vim.inspect(self:previewer_is_valid())
-        -- )
+    local function set_win_title()
+      if set_win_title_done then
         return
       end
-      if
-        tables.tbl_get(
-          self._saved_preview_files,
-          "previewer_result",
-          "filename"
-        ) ~= last_contents.previewer_result.filename
-      then
+      if strings.empty(last_content.previewer_label_result) then
+        return
+      end
+      if not self:previewer_is_valid() then
+        return
+      end
+      if not self:_is_current_previewing_file_job(last_content) then
         log.debug(
-          "|BufferPopupWindow:preview_file_contents - set_buf_lines| has newer preview file:%s, last_contents.previewer_result:%s",
-          vim.inspect(self._saved_preview_files),
-          vim.inspect(last_contents.previewer_result)
+          "|BufferPopupWindow:preview_file_contents - set_win_title| has newer preview file job, last_content:%s, current job:%s",
+          vim.inspect(last_content),
+          vim.inspect(self._current_previewing_file_job)
+        )
+        return
+      end
+      if not self:_is_current_previewing_file_content_job(last_content) then
+        log.debug(
+          "|BufferPopupWindow:preview_file_contents - set_win_title| has newer preview file content job, last_content:%s, current job:%s",
+          vim.inspect(last_content),
+          vim.inspect(self._current_previewing_file_content_job)
         )
         return
       end
 
-      local buf_lines = {}
-      for i = line_index, line_index + line_count do
-        if i <= TOTAL_LINES then
-          table.insert(buf_lines, LINES[i])
-        else
-          break
+      local title_opts = {
+        title = last_content.previewer_label_result,
+        title_pos = "center",
+      }
+      vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
+      apis.set_win_option(self.previewer_winnr, "number", true)
+      vim.schedule(function()
+        set_win_title_done = true
+      end)
+    end
+
+    local function set_buf_lines()
+      -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
+      vim.defer_fn(function()
+        if not self:previewer_is_valid() then
+          -- log.debug(
+          --   "|BufferPopupWindow:preview_file_contents| set_buf_lines, previewer_is_valid:%s",
+          --   vim.inspect(self:previewer_is_valid())
+          -- )
+          return
         end
-      end
-      vim.api.nvim_buf_set_lines(
-        self.previewer_bufnr,
-        line_index - 1,
-        line_index - 1 + line_count,
-        false,
-        buf_lines
-      )
-      line_index = line_index + line_count
-      if line_index <= TOTAL_LINES then
-        line_count = line_count + 5
-        set_buf_lines()
-      else
+        if not self:_is_current_previewing_file_job(last_content) then
+          log.debug(
+            "|BufferPopupWindow:preview_file_contents - set_buf_lines| has newer preview file job, last_content:%s, current job:%s",
+            vim.inspect(last_content),
+            vim.inspect(self._current_previewing_file_job)
+          )
+          return
+        end
+        if not self:_is_current_previewing_file_content_job(last_content) then
+          log.debug(
+            "|BufferPopupWindow:preview_file_contents - set_buf_lines| has newer preview file content job, last_content:%s, current job:%s",
+            vim.inspect(last_content),
+            vim.inspect(self._current_previewing_file_content_job)
+          )
+          return
+        end
+
+        local buf_lines = {}
+        for i = line_index, line_index + line_count do
+          if i <= TOTAL_LINES then
+            table.insert(buf_lines, LINES[i])
+          else
+            break
+          end
+        end
+
         vim.api.nvim_buf_set_lines(
           self.previewer_bufnr,
-          TOTAL_LINES,
-          -1,
+          line_index - 1,
+          line_index - 1 + line_count,
           false,
-          {}
+          buf_lines
         )
-      end
-      if line_index >= SHOW_PREVIEW_LABEL_COUNT then
-        vim.schedule(set_win_title)
-      end
-    end, 3)
-  end
-  set_buf_lines()
+        line_index = line_index + line_count
+        if line_index <= TOTAL_LINES then
+          line_count = line_count + 5
+          set_buf_lines()
+        else
+          vim.api.nvim_buf_set_lines(
+            self.previewer_bufnr,
+            TOTAL_LINES,
+            -1,
+            false,
+            {}
+          )
+        end
+
+        if line_index >= SHOW_PREVIEW_LABEL_COUNT then
+          vim.schedule(set_win_title)
+        end
+      end, 3)
+    end
+    set_buf_lines()
+  end)
 end
 
 --- @param action_name string
@@ -983,11 +976,11 @@ function BufferPopupWindow:show_preview()
   vim.schedule(function()
     -- log.debug(
     --   "|BufferPopupWindow:show_preview| restore file preview contents, saved:%s, not empty:%s",
-    --   vim.inspect(self._saved_preview_file_contents),
-    --   vim.inspect(tables.tbl_not_empty(self._saved_preview_file_contents))
+    --   vim.inspect(self._current_previewing_file_content_job),
+    --   vim.inspect(tables.tbl_not_empty(self._current_previewing_file_content_job))
     -- )
-    if tables.tbl_not_empty(self._saved_preview_file_contents) then
-      self:preview_file_contents(self._saved_preview_file_contents)
+    if tables.tbl_not_empty(self._current_previewing_file_content_job) then
+      self:preview_file_contents(self._current_previewing_file_content_job)
     end
   end)
 end
