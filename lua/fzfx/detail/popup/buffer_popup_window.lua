@@ -639,6 +639,7 @@ function BufferPopupWindow:preview_file(
     end
 
     local last_job = self.preview_files_queue[#self.preview_files_queue]
+    self.preview_files_queue = {}
 
     -- check if the same file
     if vim.deep_equal(last_job, self._saved_preview_files) then
@@ -647,12 +648,10 @@ function BufferPopupWindow:preview_file(
         vim.inspect(last_job),
         vim.inspect(self._saved_preview_files)
       )
-      self.preview_files_queue = {}
       return
     end
 
     self._saved_preview_files = last_job
-    self.preview_files_queue = {}
 
     -- read file content
     fileios.asyncreadfile(
@@ -769,7 +768,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
   local TOTAL_LINES = #LINES
   local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
   local line_index = 1
-  local line_count = 10
+  local line_count = 5
   local set_win_title_done = false
 
   local function set_win_title()
@@ -841,7 +840,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
       )
       line_index = line_index + line_count
       if line_index <= TOTAL_LINES then
-        -- line_count = line_count + 10
+        line_count = line_count + 5
         set_buf_lines()
       else
         vim.api.nvim_buf_set_lines(
