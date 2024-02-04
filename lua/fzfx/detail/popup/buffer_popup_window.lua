@@ -769,7 +769,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
   local TOTAL_LINES = #LINES
   local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
   local line_index = 1
-  local line_count = 2
+  local line_count = 10
   local set_win_title_done = false
 
   local function set_win_title()
@@ -841,7 +841,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
       )
       line_index = line_index + line_count
       if line_index <= TOTAL_LINES then
-        line_count = math.min(line_count * 2, 30)
+        line_count = line_count + 10
         set_buf_lines()
       else
         vim.api.nvim_buf_set_lines(
