@@ -567,13 +567,6 @@ local function _send_http_post(port, body)
     "-q",
     "-Z",
     "--parallel-immediate",
-    "--http2",
-    "--retry",
-    "0",
-    "--connect-timeout",
-    "1",
-    "-m",
-    "1",
     "--noproxy",
     "*",
     "-XPOST",
@@ -1349,15 +1342,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       return fileios.readfile(fzf_port_file, { trim = true })
     end
 
-    local dump_current_command = nil
-    if consts.IS_WINDOWS then
-      dump_current_command =
-        string.format("cmd.exe /C echo {}>%s", buffer_previewer_current_file)
-    else
-      dump_current_command =
-        string.format("echo {}>%s", buffer_previewer_current_file)
-    end
-
     buffer_previewer_dump_current_start = true
 
     local function dump_fzf_current()
@@ -1374,32 +1358,22 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "-q",
         "-Z",
         "--parallel-immediate",
-        -- "--http2",
-        -- "--retry",
-        -- "0",
-        -- "--connect-timeout",
-        -- "1",
-        -- "-m",
-        -- "1",
         "--noproxy",
         "*",
-        -- "-XPOST",
         string.format("127.0.0.1:%s", get_fzf_port()),
-        -- "-d",
-        -- string.format("exeute-silent(%s)", dump_current_command),
       }, {
         on_stdout = function(line)
-          log.debug(
-            "|general - use_buffer_previewer - dump_fzf_current| stdout:%s",
-            vim.inspect(line)
-          )
+          -- log.debug(
+          --   "|general - use_buffer_previewer - dump_fzf_current| stdout:%s",
+          --   vim.inspect(line)
+          -- )
           current_payload = current_payload and current_payload .. line or line
         end,
         on_stderr = function(line)
-          log.debug(
-            "|general - use_buffer_previewer - dump_fzf_current| stderr:%s",
-            vim.inspect(line)
-          )
+          -- log.debug(
+          --   "|general - use_buffer_previewer - dump_fzf_current| stderr:%s",
+          --   vim.inspect(line)
+          -- )
         end,
       }, function(completed)
         log.debug(
