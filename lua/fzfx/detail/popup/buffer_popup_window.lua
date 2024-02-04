@@ -791,7 +791,6 @@ function BufferPopupWindow:preview_file_contents(
       local LINES_COUNT = #LINES
 
       local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
-      local RENDER_LINE_COUNT = math.min(LINES_COUNT, WIN_HEIGHT + 5)
       local FIRST_LINE =
         math.max((last_content.previewer_result.lineno or 1) - 5, 1)
       local LAST_LINE = math.max(

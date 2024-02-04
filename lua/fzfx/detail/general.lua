@@ -1253,28 +1253,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
         vim.schedule(function()
           if current_payload then
-            local tmp11, tmp12 = uv.gettimeofday()
-            local before1 = tmp11 * 1000000 + tmp12
-            log.debug(
-              "|general.query_fzf_status| before-2 current_payload:%s",
-              vim.inspect(current_payload)
-            )
             local parse_ok, current_text =
               pcall(decode_fzf_status_current_text, current_payload) --[[@as boolean, table]]
-            local tmp13, tmp14 = uv.gettimeofday()
-            local after1 = tmp13 * 1000000 + tmp14
-            log.debug(
-              "|general.query_fzf_status| after-2, used:%s",
-              vim.inspect(after1 - before1)
-            )
             if parse_ok and strings.not_empty(current_text) then
               if current_text == buffer_previewer_fzf_current_text then
                 return
               end
 
-              local tmp21, tmp22 = uv.gettimeofday()
-              local before2 = tmp21 * 1000000 + tmp22
-              log.debug("|general.query_fzf_status| before-1")
               buffer_previewer_fzf_current_text = current_text
 
               -- log.debug(
@@ -1348,12 +1333,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     previewer_label_result --[[@as string?]]
                   )
                 end
-                local tmp23, tmp24 = uv.gettimeofday()
-                local after2 = tmp23 * 1000000 + tmp24
-                log.debug(
-                  "|general.query_fzf_status| after-1, used:%s",
-                  vim.inspect(after2 - before2)
-                )
               end
               -- trigger buffer previewer }
             end
