@@ -626,9 +626,6 @@ function BufferPopupWindow:preview_file(
     return
   end
 
-  local tmp11, tmp12 = uv.gettimeofday()
-  local before1 = tmp11 * 1000000 + tmp12
-  log.debug("|BufferPopupWindow:preview_file| before-1")
   log.debug(
     "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
     vim.inspect(previewer_result),
@@ -709,12 +706,6 @@ function BufferPopupWindow:preview_file(
       end
     )
   end, 10)
-  local tmp13, tmp14 = uv.gettimeofday()
-  local after1 = tmp13 * 1000000 + tmp14
-  log.debug(
-    "|BufferPopupWindow:preview_file| after-1, used:%s",
-    vim.inspect(after1 - before1)
-  )
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string,job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
@@ -730,21 +721,12 @@ function BufferPopupWindow:preview_file_contents(
     return
   end
 
-  local tmp11, tmp12 = uv.gettimeofday()
-  local before1 = tmp11 * 1000000 + tmp12
-  log.debug("|BufferPopupWindow:preview_file_contents| before-1")
   local last_content = file_content --[[@as fzfx.BufferPopupWindowPreviewFileContentJob]]
 
   pcall(
     vim.api.nvim_buf_set_name,
     self.previewer_bufnr,
     last_content.previewer_result.filename
-  )
-  local tmp13, tmp14 = uv.gettimeofday()
-  local after1 = tmp13 * 1000000 + tmp14
-  log.debug(
-    "|BufferPopupWindow:preview_file_contents| after-1, used:%s",
-    vim.inspect(after1 - before1)
   )
 
   vim.defer_fn(function()
@@ -755,25 +737,11 @@ function BufferPopupWindow:preview_file_contents(
       return
     end
 
-    local tmp15, tmp16 = uv.gettimeofday()
-    local before12 = tmp15 * 1000000 + tmp16
-    log.debug("|BufferPopupWindow:preview_file_contents| before-12")
-    -- apis.set_buf_option(
-    --   self.previewer_bufnr,
-    --   "filetype",
-    --   vim.fn.fnamemodify(last_content.previewer_result.filename, ":e")
-    -- )
     vim.api.nvim_buf_call(self.previewer_bufnr, function()
       vim.api.nvim_command([[filetype detect]])
     end)
 
     vim.api.nvim_win_set_cursor(self.previewer_winnr, { 1, 0 })
-    local tmp17, tmp18 = uv.gettimeofday()
-    local after12 = tmp17 * 1000000 + tmp18
-    log.debug(
-      "|BufferPopupWindow:preview_file_contents| after-12, used:%s",
-      vim.inspect(after12 - before12)
-    )
 
     vim.defer_fn(function()
       if not self:previewer_is_valid() then
@@ -782,10 +750,6 @@ function BufferPopupWindow:preview_file_contents(
       if not self:is_last_previewing_file_job_id(last_content.job_id) then
         return
       end
-
-      local tmp21, tmp22 = uv.gettimeofday()
-      local before2 = tmp21 * 1000000 + tmp22
-      log.debug("|BufferPopupWindow:preview_file_contents| before-2")
 
       local LINES = strings.split(last_content.contents, "\n")
       local LINES_COUNT = #LINES
@@ -833,11 +797,6 @@ function BufferPopupWindow:preview_file_contents(
           return
         end
 
-        local tmp31, tmp32 = uv.gettimeofday()
-        local before3 = tmp31 * 1000000 + tmp32
-        log.debug(
-          "|BufferPopupWindow:preview_file_contents - set_win_title| before-1"
-        )
         local title_opts = {
           title = last_content.previewer_label_result,
           title_pos = "center",
@@ -847,12 +806,6 @@ function BufferPopupWindow:preview_file_contents(
         vim.schedule(function()
           set_win_title_done = true
         end)
-        local tmp33, tmp34 = uv.gettimeofday()
-        local after3 = tmp33 * 1000000 + tmp34
-        log.debug(
-          "|BufferPopupWindow:preview_file_contents - set_win_title| after-1, used:%s",
-          vim.inspect(after3 - before3)
-        )
       end
 
       local function set_buf_lines()
@@ -865,11 +818,6 @@ function BufferPopupWindow:preview_file_contents(
             return
           end
 
-          local tmp41, tmp42 = uv.gettimeofday()
-          local before4 = tmp41 * 1000000 + tmp42
-          log.debug(
-            "|BufferPopupWindow:preview_file_contents - set_buf_lines| before-1"
-          )
           local buf_lines = {}
           for i = line_index, line_index + line_count do
             if i <= LAST_LINE then
@@ -894,21 +842,9 @@ function BufferPopupWindow:preview_file_contents(
           if line_index >= SHOW_PREVIEW_LABEL_COUNT then
             vim.schedule(set_win_title)
           end
-          local tmp43, tmp44 = uv.gettimeofday()
-          local after4 = tmp43 * 1000000 + tmp44
-          log.debug(
-            "|BufferPopupWindow:preview_file_contents - set_buf_lines| after-1, used:%s",
-            vim.inspect(after4 - before4)
-          )
         end, 3)
       end
       set_buf_lines()
-      local tmp23, tmp24 = uv.gettimeofday()
-      local after2 = tmp23 * 1000000 + tmp24
-      log.debug(
-        "|BufferPopupWindow:preview_file_contents| after-2, used:%s",
-        vim.inspect(after2 - before2)
-      )
     end, 10)
   end, 10)
 end
