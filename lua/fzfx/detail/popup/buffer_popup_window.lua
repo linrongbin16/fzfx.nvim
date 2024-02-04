@@ -748,10 +748,11 @@ function BufferPopupWindow:preview_file_contents(
         return
       end
 
+      local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
       local LINES = strings.split(last_content.contents, "\n")
       local LINES_COUNT = #LINES
       local FIRST_LINE = last_content.previewer_result.lineno or 1
-      local LAST_LINE = LINES_COUNT
+      local LAST_LINE = math.min(WIN_HEIGHT + 5 + FIRST_LINE, LINES_COUNT)
 
       local SHOW_LABEL_COUNT = LAST_LINE - FIRST_LINE
       local SHOW_PREVIEW_LABEL_COUNT = math.min(30, SHOW_LABEL_COUNT)
@@ -759,6 +760,15 @@ function BufferPopupWindow:preview_file_contents(
       local line_count = 5
       local set_win_title_done = false
 
+      if FIRST_LINE > 1 then
+        vim.api.nvim_buf_set_lines(
+          self.previewer_bufnr,
+          0,
+          FIRST_LINE,
+          false,
+          {}
+        )
+      end
       vim.api.nvim_buf_set_lines(self.previewer_bufnr, LAST_LINE, -1, false, {})
 
       local function set_win_title()
