@@ -762,6 +762,8 @@ function BufferPopupWindow:preview_file_contents(
       local line_count = 10
       local set_win_title_done = false
 
+      vim.api.nvim_buf_set_lines(self.previewer_bufnr, LAST_LINE, -1, false, {})
+
       local function set_win_title()
         if set_win_title_done then
           return
@@ -816,14 +818,6 @@ function BufferPopupWindow:preview_file_contents(
           line_index = line_index + line_count
           if line_index <= LAST_LINE then
             set_buf_lines()
-          else
-            vim.api.nvim_buf_set_lines(
-              self.previewer_bufnr,
-              LAST_LINE - 1,
-              -1,
-              false,
-              {}
-            )
           end
 
           if line_index >= SHOW_PREVIEW_LABEL_COUNT then
