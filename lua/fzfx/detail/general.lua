@@ -1135,6 +1135,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local QUERY_FZF_CURRENT_STATUS_INTERVAL = 50
     buffer_previewer_query_fzf_status_start = true
 
+    local buffer_previewer_fzf_current_text = nil
+
     local function query_fzf_status()
       if not buffer_previewer_query_fzf_status_start then
         return
@@ -1187,6 +1189,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               )
             then
               local current_text = status_data["current"]["text"]
+
+              if current_text == buffer_previewer_fzf_current_text then
+                return
+              end
+
+              buffer_previewer_fzf_current_text = current_text
+
               -- log.debug(
               --   "|general - use_buffer_previewer - query_fzf_status| current_text:%s",
               --   vim.inspect(current_text)
