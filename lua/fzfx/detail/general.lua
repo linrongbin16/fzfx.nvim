@@ -1345,7 +1345,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local QUERY_FZF_CURRENT_STATUS_INTERVAL = 50
     buffer_previewer_dump_current_start = true
 
-    local function dump_fzf_current()
+    local function query_fzf_status()
       if not buffer_previewer_dump_current_start then
         return
       end
@@ -1365,30 +1365,30 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       }, {
         on_stdout = function(line)
           -- log.debug(
-          --   "|general - use_buffer_previewer - dump_fzf_current| stdout:%s",
+          --   "|general - use_buffer_previewer - query_fzf_status| stdout:%s",
           --   vim.inspect(line)
           -- )
           current_payload = current_payload and current_payload .. line or line
         end,
         on_stderr = function(line)
           -- log.debug(
-          --   "|general - use_buffer_previewer - dump_fzf_current| stderr:%s",
+          --   "|general - use_buffer_previewer - query_fzf_status| stderr:%s",
           --   vim.inspect(line)
           -- )
         end,
       }, function(completed)
         log.debug(
-          "|general - use_buffer_previewer - dump_fzf_current| completed:%s, payload:%s",
+          "|general - use_buffer_previewer - query_fzf_status| completed:%s, payload:%s",
           vim.inspect(completed),
           vim.inspect(current_payload)
         )
         if buffer_previewer_dump_current_start then
-          vim.defer_fn(dump_fzf_current, QUERY_FZF_CURRENT_STATUS_INTERVAL)
+          vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
         end
       end)
     end
 
-    vim.defer_fn(dump_fzf_current, QUERY_FZF_CURRENT_STATUS_INTERVAL)
+    vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
 
     -- dump current }
   end
