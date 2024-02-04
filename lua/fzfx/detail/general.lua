@@ -1198,13 +1198,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 return
               end
 
-              -- if not buffer_preview_files_queue_empty() then
-              --   local last_preview_job2 = buffer_preview_files_queue_last()
-              --   if last_preview_job2.focused_line == current_text then
-              --     return
-              --   end
-              -- end
-
               local previewer_config = previewer_switch:current()
               local focused_line = current_text
 
