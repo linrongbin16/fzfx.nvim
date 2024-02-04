@@ -588,8 +588,7 @@ local function _send_http_post(port, body)
       --     vim.inspect(line)
       -- )
     end,
-    function(completed) end,
-  })
+  }, function(completed) end)
 end
 
 --- @param line string?
