@@ -705,10 +705,10 @@ function BufferPopupWindow:preview_file(
 
           self._current_previewing_file_content_job = last_content
           self:preview_file_contents(last_content)
-        end, 30)
+        end, 10)
       end
     )
-  end, 30)
+  end, 10)
   local tmp13, tmp14 = uv.gettimeofday()
   local after1 = tmp13 * 1000000 + tmp14
   log.info(
@@ -734,18 +734,8 @@ function BufferPopupWindow:preview_file_contents(file_content)
     self.previewer_bufnr,
     last_content.previewer_result.filename
   )
-  vim.api.nvim_buf_call(self.previewer_bufnr, function()
-    vim.api.nvim_command([[filetype detect]])
-  end)
-  vim.api.nvim_win_set_cursor(self.previewer_winnr, { 1, 0 })
-  local tmp13, tmp14 = uv.gettimeofday()
-  local after1 = tmp13 * 1000000 + tmp14
-  log.info(
-    "|BufferPopupWindow:preview_file_contents| after-1, used:%s",
-    vim.inspect(after1 - before1)
-  )
 
-  vim.schedule(function()
+  vim.defer_fn(function()
     if not self:previewer_is_valid() then
       return
     end
@@ -753,23 +743,24 @@ function BufferPopupWindow:preview_file_contents(file_content)
       return
     end
 
-    local tmp21, tmp22 = uv.gettimeofday()
-    local before2 = tmp21 * 1000000 + tmp22
-    log.info("|BufferPopupWindow:preview_file_contents| before-2")
-    local LINES = strings.split(last_content.contents, "\n")
-    local TOTAL_LINES = #LINES
-    local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
-    local line_index = 1
-    local line_count = 5
-    local set_win_title_done = false
+    apis.set_buf_option(
+      self.previewer_bufnr,
+      "filetype",
+      vim.fn.fnamemodify(last_content.previewer_result.filename, ":e")
+    )
+    -- vim.api.nvim_buf_call(self.previewer_bufnr, function()
+    --   vim.api.nvim_command([[filetype detect]])
+    -- end)
 
-    local function set_win_title()
-      if set_win_title_done then
-        return
-      end
-      if strings.empty(last_content.previewer_label_result) then
-        return
-      end
+    vim.api.nvim_win_set_cursor(self.previewer_winnr, { 1, 0 })
+    local tmp13, tmp14 = uv.gettimeofday()
+    local after1 = tmp13 * 1000000 + tmp14
+    log.info(
+      "|BufferPopupWindow:preview_file_contents| after-1, used:%s",
+      vim.inspect(after1 - before1)
+    )
+
+    vim.defer_fn(function()
       if not self:previewer_is_valid() then
         return
       end
@@ -777,31 +768,23 @@ function BufferPopupWindow:preview_file_contents(file_content)
         return
       end
 
-      local tmp31, tmp32 = uv.gettimeofday()
-      local before3 = tmp31 * 1000000 + tmp32
-      log.info(
-        "|BufferPopupWindow:preview_file_contents - set_win_title| before-1"
-      )
-      local title_opts = {
-        title = last_content.previewer_label_result,
-        title_pos = "center",
-      }
-      vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
-      apis.set_win_option(self.previewer_winnr, "number", true)
-      vim.schedule(function()
-        set_win_title_done = true
-      end)
-      local tmp33, tmp34 = uv.gettimeofday()
-      local after3 = tmp33 * 1000000 + tmp34
-      log.info(
-        "|BufferPopupWindow:preview_file_contents - set_win_title| after-1, used:%s",
-        vim.inspect(after3 - before3)
-      )
-    end
+      local tmp21, tmp22 = uv.gettimeofday()
+      local before2 = tmp21 * 1000000 + tmp22
+      log.info("|BufferPopupWindow:preview_file_contents| before-2")
+      local LINES = strings.split(last_content.contents, "\n")
+      local TOTAL_LINES = #LINES
+      local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
+      local line_index = 1
+      local line_count = 5
+      local set_win_title_done = false
 
-    local function set_buf_lines()
-      -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
-      vim.defer_fn(function()
+      local function set_win_title()
+        if set_win_title_done then
+          return
+        end
+        if strings.empty(last_content.previewer_label_result) then
+          return
+        end
         if not self:previewer_is_valid() then
           return
         end
@@ -809,60 +792,93 @@ function BufferPopupWindow:preview_file_contents(file_content)
           return
         end
 
-        local tmp41, tmp42 = uv.gettimeofday()
-        local before4 = tmp41 * 1000000 + tmp42
+        local tmp31, tmp32 = uv.gettimeofday()
+        local before3 = tmp31 * 1000000 + tmp32
         log.info(
-          "|BufferPopupWindow:preview_file_contents - set_buf_lines| before-1"
+          "|BufferPopupWindow:preview_file_contents - set_win_title| before-1"
         )
-        local buf_lines = {}
-        for i = line_index, line_index + line_count do
-          if i <= TOTAL_LINES then
-            table.insert(buf_lines, LINES[i])
-          else
-            break
-          end
-        end
+        local title_opts = {
+          title = last_content.previewer_label_result,
+          title_pos = "center",
+        }
+        vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
+        apis.set_win_option(self.previewer_winnr, "number", true)
+        vim.schedule(function()
+          set_win_title_done = true
+        end)
+        local tmp33, tmp34 = uv.gettimeofday()
+        local after3 = tmp33 * 1000000 + tmp34
+        log.info(
+          "|BufferPopupWindow:preview_file_contents - set_win_title| after-1, used:%s",
+          vim.inspect(after3 - before3)
+        )
+      end
 
-        vim.api.nvim_buf_set_lines(
-          self.previewer_bufnr,
-          line_index - 1,
-          line_index - 1 + line_count,
-          false,
-          buf_lines
-        )
-        line_index = line_index + line_count
-        if line_index <= TOTAL_LINES then
-          line_count = line_count + 5
-          set_buf_lines()
-        else
+      local function set_buf_lines()
+        -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
+        vim.defer_fn(function()
+          if not self:previewer_is_valid() then
+            return
+          end
+          if not self:is_last_previewing_file_job_id(last_content.job_id) then
+            return
+          end
+
+          local tmp41, tmp42 = uv.gettimeofday()
+          local before4 = tmp41 * 1000000 + tmp42
+          log.info(
+            "|BufferPopupWindow:preview_file_contents - set_buf_lines| before-1"
+          )
+          local buf_lines = {}
+          for i = line_index, line_index + line_count do
+            if i <= TOTAL_LINES then
+              table.insert(buf_lines, LINES[i])
+            else
+              break
+            end
+          end
+
           vim.api.nvim_buf_set_lines(
             self.previewer_bufnr,
-            TOTAL_LINES,
-            -1,
+            line_index - 1,
+            line_index - 1 + line_count,
             false,
-            {}
+            buf_lines
           )
-        end
+          line_index = line_index + line_count
+          if line_index <= TOTAL_LINES then
+            line_count = line_count + 5
+            set_buf_lines()
+          else
+            vim.api.nvim_buf_set_lines(
+              self.previewer_bufnr,
+              TOTAL_LINES,
+              -1,
+              false,
+              {}
+            )
+          end
 
-        if line_index >= SHOW_PREVIEW_LABEL_COUNT then
-          vim.schedule(set_win_title)
-        end
-        local tmp43, tmp44 = uv.gettimeofday()
-        local after4 = tmp43 * 1000000 + tmp44
-        log.info(
-          "|BufferPopupWindow:preview_file_contents - set_buf_lines| after-1, used:%s",
-          vim.inspect(after4 - before4)
-        )
-      end, 3)
-    end
-    set_buf_lines()
-    local tmp23, tmp24 = uv.gettimeofday()
-    local after2 = tmp23 * 1000000 + tmp24
-    log.info(
-      "|BufferPopupWindow:preview_file_contents| after-2, used:%s",
-      vim.inspect(after2)
-    )
-  end)
+          if line_index >= SHOW_PREVIEW_LABEL_COUNT then
+            vim.schedule(set_win_title)
+          end
+          local tmp43, tmp44 = uv.gettimeofday()
+          local after4 = tmp43 * 1000000 + tmp44
+          log.info(
+            "|BufferPopupWindow:preview_file_contents - set_buf_lines| after-1, used:%s",
+            vim.inspect(after4 - before4)
+          )
+        end, 3)
+      end
+      set_buf_lines()
+      local tmp23, tmp24 = uv.gettimeofday()
+      local after2 = tmp23 * 1000000 + tmp24
+      log.info(
+        "|BufferPopupWindow:preview_file_contents| after-2, used:%s",
+        vim.inspect(after2 - before2)
+      )
+    end, 10)
+  end, 10)
 end
 
 --- @param action_name string
