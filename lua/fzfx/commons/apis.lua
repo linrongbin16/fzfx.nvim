@@ -64,26 +64,47 @@ end
 -- highlight {
 
 --- @param hl string
---- @return {fg:integer?,bg:integer?,ctermfg:integer?,ctermbg:integer?}
+--- @return {fg:integer?,bg:integer?,[string]:any,ctermfg:integer?,ctermbg:integer?,cterm:{fg:integer?,bg:integer?,[string]:any}?}
 M.get_hl = function(hl)
   if NVIM_VERSION_0_9 then
     return vim.api.nvim_get_hl(0, { name = hl, link = false })
   else
-    local rgb_hldef = vim.api.nvim_get_hl_by_name(hl, true)
-    local cterm_hldef = vim.api.nvim_get_hl_by_name(hl, false)
+    local ok1, rgb_hldef = pcall(vim.api.nvim_get_hl_by_name, hl, true)
+    if not ok1 then
+      return vim.empty_dict()
+    end
+    local ok2, cterm_hldef = pcall(vim.api.nvim_get_hl_by_name, hl, false)
+    if not ok2 then
+      return vim.empty_dict()
+    end
     local result = vim.tbl_deep_extend("force", rgb_hldef, {
       ctermfg = cterm_hldef.foreground,
       ctermbg = cterm_hldef.background,
       cterm = cterm_hldef,
     })
-    result.cterm.foreground = nil
-    result.cterm.background = nil
     result.sp = result.special
     result.special = nil
+    result.cterm.foreground = nil
+    result.cterm.background = nil
     result.cterm.sp = result.cterm.special
     result.cterm.special = nil
     return result
   end
+end
+
+--- @param ... string?
+--- @return {fg:integer?,bg:integer?,[string]:any,ctermfg:integer?,ctermbg:integer?,cterm:{fg:integer?,bg:integer?,[string]:any}?}, integer, string?
+M.get_hl_with_fallback = function(...)
+  for i, hl in ipairs({ ... }) do
+    if type(hl) == "string" then
+      local hl_value = M.get_hl(hl)
+      if type(hl_value) == "table" and not vim.tbl_isempty(hl_value) then
+        return hl_value, i, hl
+      end
+    end
+  end
+
+  return vim.empty_dict(), -1, nil
 end
 
 -- highlight }
