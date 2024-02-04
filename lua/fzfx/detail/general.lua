@@ -1187,10 +1187,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               )
             then
               local current_text = status_data["current"]["text"]
-              log.debug(
-                "|general - use_buffer_previewer - query_fzf_status| current_text:%s",
-                vim.inspect(current_text)
-              )
+              -- log.debug(
+              --   "|general - use_buffer_previewer - query_fzf_status| current_text:%s",
+              --   vim.inspect(current_text)
+              -- )
 
               -- trigger buffer previewer {
 

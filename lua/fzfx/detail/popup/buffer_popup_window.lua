@@ -371,10 +371,10 @@ end
 --- @field previewer_winnr integer?
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
---- @field _saved_preview_file_job {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
+--- @field _saved_preview_files fzfx.BufferPopupWindowPreviewFiles
 --- @field _saved_preview_file_contents fzfx.BufferPopupWindowPreviewFileContents
 --- @field _resizing boolean
---- @field preview_files_queue {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}[]
+--- @field preview_files_queue fzfx.BufferPopupWindowPreviewFiles[]
 --- @field preview_file_contents_queue fzfx.BufferPopupWindowPreviewFileContents[]
 --- @field previewer_is_hidden boolean
 --- @field _scrolling_preview_page boolean
@@ -456,7 +456,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _saved_win_opts = win_opts,
     _saved_buffer_previewer_opts = buffer_previewer_opts,
     _saved_preview_file_contents = nil,
-    _saved_preview_file_job = nil,
+    _saved_preview_files = nil,
     _resizing = false,
     preview_files_queue = {},
     preview_file_contents_queue = {},
@@ -625,6 +625,8 @@ end
 
 -- check if the same file
 --
+--- @param a {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
+--- @param b {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @return boolean
 local function _same_preview_file_job(a, b)
   local filename1 = tables.tbl_get(a, "previewer_result", "filename")
@@ -635,6 +637,25 @@ local function _same_preview_file_job(a, b)
   return filename1 == filename2 and label1 == label2
 end
 
+-- check if the same file contents
+--
+--- @param a fzfx.BufferPopupWindowPreviewFileContents
+--- @param b fzfx.BufferPopupWindowPreviewFileContents
+--- @return boolean
+local function _same_preview_file_contents_job(a, b)
+  local content1 = tables.tbl_get(a, "contents")
+  local result1 = tables.tbl_get(a, "previewer_result")
+  local label1 = tables.tbl_get(a, "previewer_label_result")
+  local content2 = tables.tbl_get(a, "contents")
+  local result2 = tables.tbl_get(b, "previewer_result")
+  local label2 = tables.tbl_get(b, "previewer_label_result")
+
+  return content1 == content2
+    and vim.deep_equal(result1, result2)
+    and label1 == label2
+end
+
+--- @alias fzfx.BufferPopupWindowPreviewFiles {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
 function BufferPopupWindow:preview_file(
@@ -642,9 +663,18 @@ function BufferPopupWindow:preview_file(
   previewer_label_result
 )
   if strings.empty(tables.tbl_get(previewer_result, "filename")) then
+    log.debug(
+      "|BufferPopupWindow:preview_file| empty previewer_result:%s",
+      vim.inspect(previewer_result)
+    )
     return
   end
 
+  log.debug(
+    "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
+    vim.inspect(previewer_result),
+    vim.inspect(previewer_label_result)
+  )
   table.insert(self.preview_files_queue, {
     previewer_result = previewer_result,
     previewer_label_result = previewer_label_result,
@@ -652,21 +682,34 @@ function BufferPopupWindow:preview_file(
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
+      log.debug(
+        "|BufferPopupWindow:preview_file| invalid previewer:%s",
+        vim.inspect(self)
+      )
       return
     end
     if self:preview_files_queue_empty() then
+      log.debug(
+        "|BufferPopupWindow:preview_file| empty preview files queue:%s",
+        vim.inspect(self.preview_files_queue)
+      )
       return
     end
 
     local last_job = self:preview_files_queue_last()
 
     -- check if the same file
-    if _same_preview_file_job(last_job, self._saved_preview_file_job) then
+    if vim.deep_equal(last_job, self._saved_preview_files) then
+      log.debug(
+        "|BufferPopupWindow:preview_file| same preview file, last_job:%s, saved_job:%s",
+        vim.inspect(last_job),
+        vim.inspect(self._saved_preview_files)
+      )
       self:preview_files_queue_clear()
       return
     end
 
-    self._saved_preview_file_job = last_job
+    self._saved_preview_files = last_job
     self:preview_files_queue_clear()
 
     -- read file content
@@ -674,19 +717,25 @@ function BufferPopupWindow:preview_file(
       last_job.previewer_result.filename,
       function(file_content)
         if not self:previewer_is_valid() then
+          log.debug(
+            "|BufferPopupWindow:preview_file - asyncreadfile| invalid previewer:%s",
+            vim.inspect(self)
+          )
           return
         end
         if not self:preview_files_queue_empty() then
+          log.debug(
+            "|BufferPopupWindow:preview_file - asyncreadfile| empty preview files queue:%s",
+            vim.inspect(self.preview_files_queue)
+          )
           return
         end
 
-        local lines = {}
         if strings.not_empty(file_content) then
           file_content = file_content:gsub("\r\n", "\n")
-          lines = strings.split(file_content, "\n")
         end
         table.insert(self.preview_file_contents_queue, {
-          lines = lines,
+          contents = file_content,
           previewer_result = last_job.previewer_result,
           previewer_label_result = last_job.previewer_label_result,
         })
@@ -694,27 +743,44 @@ function BufferPopupWindow:preview_file(
         -- show file contents by lines
         vim.defer_fn(function()
           if not self:previewer_is_valid() then
-            return
-          end
-          if not self:preview_files_queue_empty() then
+            log.debug(
+              "|BufferPopupWindow:preview_file - asyncreadfile - done content| invalid previewer:%s",
+              vim.inspect(self)
+            )
             return
           end
           if self:preview_file_contents_queue_empty() then
+            log.debug(
+              "|BufferPopupWindow:preview_file - asyncreadfile - done content| empty preview file contents queue:%s",
+              vim.inspect(self.preview_file_contents_queue)
+            )
             return
           end
 
-          local last_contents = self:preview_file_contents_queue_last()
+          local last_content = self:preview_file_contents_queue_last()
+          if
+            vim.deep_equal(last_content, self._saved_preview_file_contents)
+          then
+            log.debug(
+              "|BufferPopupWindow:preview_file - asyncreadfile - done content| same preview file contents, last_content:%s, saved content:%s",
+              vim.inspect(last_content),
+              vim.inspect(self._saved_preview_file_contents)
+            )
+            self:preview_file_contents_queue_clear()
+            return
+          end
+
           self:preview_file_contents_queue_clear()
 
-          self._saved_preview_file_contents = last_contents
-          self:preview_file_contents(last_contents)
+          self._saved_preview_file_contents = last_content
+          self:preview_file_contents(last_content)
         end, 30)
       end
     )
   end, 30)
 end
 
---- @alias fzfx.BufferPopupWindowPreviewFileContents {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
+--- @alias fzfx.BufferPopupWindowPreviewFileContents {contents:string,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_contents fzfx.BufferPopupWindowPreviewFileContents?
 function BufferPopupWindow:preview_file_contents(file_contents)
   -- log.debug(
@@ -765,7 +831,8 @@ function BufferPopupWindow:preview_file_contents(file_contents)
   --   )
   -- end
 
-  local TOTAL_LINES = #last_contents.lines
+  local LINES = strings.split(last_contents.contents, "\n")
+  local TOTAL_LINES = #LINES
   local SHOW_PREVIEW_LABEL_COUNT = math.min(50, TOTAL_LINES)
   local line_index = 1
   local line_count = 10
@@ -846,7 +913,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
       local buf_lines = {}
       for i = line_index, line_index + line_count do
         if i <= TOTAL_LINES then
-          table.insert(buf_lines, last_contents.lines[i])
+          table.insert(buf_lines, LINES[i])
         else
           break
         end
