@@ -63,10 +63,11 @@ function PopupWindow:resize()
   end
 end
 
+--- @param job_id integer
 --- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
-function PopupWindow:preview_file(previewer_result, previewer_label_result)
-  self.instance:preview_file(previewer_result, previewer_label_result)
+function PopupWindow:preview_file(job_id, previewer_result, previewer_label_result)
+  self.instance:preview_file(job_id, previewer_result, previewer_label_result)
 end
 
 --- @param action_name string
@@ -80,6 +81,11 @@ end
 
 function PopupWindow:provider_is_valid()
   return self.instance ~= nil and self.instance:provider_is_valid()
+end
+
+--- @param jobid integer
+function PopupWindow:set_current_previewing_file_job_id(jobid)
+  self.instance:set_current_previewing_file_job_id(jobid)
 end
 
 --- @alias fzfx.NvimFloatWinOpts {anchor:"NW"?,relative:"editor"|"win"|"cursor"|nil,width:integer?,height:integer?,row:integer?,col:integer?,style:"minimal"?,border:"none"|"single"|"double"|"rounded"|"solid"|"shadow"|nil,zindex:integer?,focusable:boolean?}
