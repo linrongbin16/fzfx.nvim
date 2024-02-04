@@ -573,32 +573,6 @@ function BufferPopupWindow:handle()
   return self.provider_winnr
 end
 
-function BufferPopupWindow:preview_files_queue_empty()
-  return #self.preview_files_queue == 0
-end
-
---- @return {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
-function BufferPopupWindow:preview_files_queue_last()
-  return self.preview_files_queue[#self.preview_files_queue]
-end
-
-function BufferPopupWindow:preview_files_queue_clear()
-  self.preview_files_queue = {}
-end
-
-function BufferPopupWindow:preview_file_contents_queue_empty()
-  return #self.preview_file_contents_queue == 0
-end
-
---- @return {lines:string[],previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
-function BufferPopupWindow:preview_file_contents_queue_last()
-  return self.preview_file_contents_queue[#self.preview_file_contents_queue]
-end
-
-function BufferPopupWindow:preview_file_contents_queue_clear()
-  self.preview_file_contents_queue = {}
-end
-
 function BufferPopupWindow:previewer_is_valid()
   if vim.in_fast_event() then
     return type(self.previewer_winnr) == "number"
@@ -688,7 +662,7 @@ function BufferPopupWindow:preview_file(
       )
       return
     end
-    if self:preview_files_queue_empty() then
+    if #self.preview_files_queue == 0 then
       log.debug(
         "|BufferPopupWindow:preview_file| empty preview files queue:%s",
         vim.inspect(self.preview_files_queue)
@@ -696,7 +670,7 @@ function BufferPopupWindow:preview_file(
       return
     end
 
-    local last_job = self:preview_files_queue_last()
+    local last_job = self.preview_files_queue[#self.preview_files_queue]
 
     -- check if the same file
     if vim.deep_equal(last_job, self._saved_preview_files) then
@@ -705,12 +679,12 @@ function BufferPopupWindow:preview_file(
         vim.inspect(last_job),
         vim.inspect(self._saved_preview_files)
       )
-      self:preview_files_queue_clear()
+      self.preview_files_queue = {}
       return
     end
 
     self._saved_preview_files = last_job
-    self:preview_files_queue_clear()
+    self.preview_files_queue = {}
 
     -- read file content
     fileios.asyncreadfile(
@@ -720,13 +694,6 @@ function BufferPopupWindow:preview_file(
           log.debug(
             "|BufferPopupWindow:preview_file - asyncreadfile| invalid previewer:%s",
             vim.inspect(self)
-          )
-          return
-        end
-        if not self:preview_files_queue_empty() then
-          log.debug(
-            "|BufferPopupWindow:preview_file - asyncreadfile| empty preview files queue:%s",
-            vim.inspect(self.preview_files_queue)
           )
           return
         end
@@ -749,15 +716,9 @@ function BufferPopupWindow:preview_file(
             )
             return
           end
-          if self:preview_file_contents_queue_empty() then
-            log.debug(
-              "|BufferPopupWindow:preview_file - asyncreadfile - done content| empty preview file contents queue:%s",
-              vim.inspect(self.preview_file_contents_queue)
-            )
-            return
-          end
 
-          local last_content = self:preview_file_contents_queue_last()
+          local last_content =
+            self.preview_file_contents_queue[#self.preview_file_contents_queue]
           if
             vim.deep_equal(last_content, self._saved_preview_file_contents)
           then
@@ -766,11 +727,11 @@ function BufferPopupWindow:preview_file(
               vim.inspect(last_content),
               vim.inspect(self._saved_preview_file_contents)
             )
-            self:preview_file_contents_queue_clear()
+            self.preview_file_contents_queue = {}
             return
           end
 
-          self:preview_file_contents_queue_clear()
+          self.preview_file_contents_queue = {}
 
           self._saved_preview_file_contents = last_content
           self:preview_file_contents(last_content)
@@ -794,9 +755,13 @@ function BufferPopupWindow:preview_file_contents(file_contents)
 
   local last_contents = file_contents --[[@as fzfx.BufferPopupWindowPreviewFileContents]]
 
+  local current_buf_name = vim.api.nvim_buf_get_name(self.previewer_bufnr)
+  if current_buf_name == last_contents.previewer_result.filename then
+    return
+  end
+
   -- local set_name_ok, set_name_err =
-  pcall(
-    vim.api.nvim_buf_set_name,
+  vim.api.nvim_buf_set_name(
     self.previewer_bufnr,
     last_contents.previewer_result.filename
   )
@@ -809,7 +774,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
   --   )
   -- end
   -- local buf_call_ok, buf_call_err =
-  pcall(vim.api.nvim_buf_call, self.previewer_bufnr, function()
+  vim.api.nvim_buf_call(self.previewer_bufnr, function()
     vim.api.nvim_command([[filetype detect]])
   end)
   -- if not buf_call_ok then
@@ -821,7 +786,7 @@ function BufferPopupWindow:preview_file_contents(file_contents)
   --   )
   -- end
   -- local set_cursor_ok, set_cursor_err =
-  pcall(vim.api.nvim_win_set_cursor, self.previewer_winnr, { 1, 0 })
+  vim.api.nvim_win_set_cursor(self.previewer_winnr, { 1, 0 })
   -- if not set_cursor_ok then
   --   log.debug(
   --     "|BufferPopupWindow:preview_file - asyncreadfile| failed to set cursor at top of file for previewer buffer:%s(%s), error: %s",
@@ -848,19 +813,13 @@ function BufferPopupWindow:preview_file_contents(file_contents)
     if not self:previewer_is_valid() then
       return
     end
-    if not self:preview_files_queue_empty() then
-      return
-    end
-    if not self:preview_file_contents_queue_empty() then
-      return
-    end
 
     local title_opts = {
       title = last_contents.previewer_label_result,
       title_pos = "center",
     }
     -- local set_config_ok, set_config_err =
-    pcall(vim.api.nvim_win_set_config, self.previewer_winnr, title_opts)
+    vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
     -- if not set_config_ok then
     --   log.debug(
     --     "|BufferPopupWindow:preview_file.asyncreadfile| failed to set title for previewer window:%s(%s), error:%s",
@@ -892,20 +851,6 @@ function BufferPopupWindow:preview_file_contents(file_contents)
         -- log.debug(
         --   "|BufferPopupWindow:preview_file_contents| set_buf_lines, previewer_is_valid:%s",
         --   vim.inspect(self:previewer_is_valid())
-        -- )
-        return
-      end
-      if not self:preview_files_queue_empty() then
-        -- log.debug(
-        --   "|BufferPopupWindow:preview_file_contents| set_buf_lines, preview_files_queue_empty:%s",
-        --   vim.inspect(self:preview_files_queue_empty())
-        -- )
-        return
-      end
-      if not self:preview_file_contents_queue_empty() then
-        -- log.debug(
-        --   "|BufferPopupWindow:preview_file_contents| set_buf_lines, preview_file_contents_queue_empty:%s",
-        --   vim.inspect(self:preview_file_contents_queue_empty())
         -- )
         return
       end
