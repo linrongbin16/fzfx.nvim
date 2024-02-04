@@ -908,6 +908,71 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
     }
 end
 
+--- @param j string
+--- @return string?
+local function decode_fzf_status_current_text(j)
+  local CURRENT = '"current"'
+  local INDEX = '"index"'
+  local TEXT = '"text"'
+  local current_pos = strings.find(j, CURRENT)
+  if not current_pos then
+    return nil
+  end
+  -- log.debug(
+  --   "|decode_fzf_status_current_text| current_pos:%s",
+  --   vim.inspect(current_pos)
+  -- )
+  local index_pos =
+    strings.find(j, INDEX, current_pos + string.len(CURRENT) + 2)
+  if not index_pos then
+    return nil
+  end
+  -- log.debug(
+  --   "|decode_fzf_status_current_text| index_pos:%s",
+  --   vim.inspect(index_pos)
+  -- )
+  local text_pos = strings.find(j, TEXT, index_pos + string.len(INDEX) + 2)
+  if not text_pos then
+    return nil
+  end
+  -- log.debug(
+  --   "|decode_fzf_status_current_text| text_pos:%s",
+  --   vim.inspect(text_pos)
+  -- )
+  local lquote_pos = strings.find(j, '"', text_pos + string.len(TEXT) + 1)
+  if not lquote_pos then
+    return nil
+  end
+  -- log.debug(
+  --   "|decode_fzf_status_current_text| lquote_pos:%s",
+  --   vim.inspect(lquote_pos)
+  -- )
+  local rquote_pos = nil
+  local i = lquote_pos + 1
+  local n = string.len(j)
+  while i <= n do
+    if string.byte(j, i) == string.byte("\\") then
+      i = i + 2
+    else
+      if string.byte(j, i) == string.byte('"') then
+        rquote_pos = i
+        break
+      end
+      i = i + 1
+    end
+  end
+  -- log.debug(
+  --   "|decode_fzf_status_current_text| rquote_pos:%s",
+  --   vim.inspect(rquote_pos)
+  -- )
+  if not rquote_pos or rquote_pos - 1 < lquote_pos + 1 then
+    return nil
+  end
+  local result = string.sub(j, lquote_pos + 1, rquote_pos - 1)
+  -- log.debug("|decode_fzf_status_current_text| result:%s", vim.inspect(result))
+  return result
+end
+
 --- @param name string
 --- @param query string
 --- @param bang boolean
@@ -1190,29 +1255,26 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           if current_payload then
             local tmp11, tmp12 = uv.gettimeofday()
             local before1 = tmp11 * 1000000 + tmp12
-            log.info("|general.query_fzf_status| before-2 ")
-            local status_ok, status_data = pcall(jsons.decode, current_payload) --[[@as boolean, table]]
+            log.debug(
+              "|general.query_fzf_status| before-2 current_payload:%s",
+              vim.inspect(current_payload)
+            )
+            local parse_ok, current_text =
+              pcall(decode_fzf_status_current_text, current_payload) --[[@as boolean, table]]
             local tmp13, tmp14 = uv.gettimeofday()
             local after1 = tmp13 * 1000000 + tmp14
-            log.info(
+            log.debug(
               "|general.query_fzf_status| after-2, used:%s",
               vim.inspect(after1 - before1)
             )
-            if
-              status_ok
-              and strings.not_empty(
-                tables.tbl_get(status_data, "current", "text")
-              )
-            then
-              local current_text = status_data["current"]["text"]
-
+            if parse_ok and strings.not_empty(current_text) then
               if current_text == buffer_previewer_fzf_current_text then
                 return
               end
 
               local tmp21, tmp22 = uv.gettimeofday()
               local before2 = tmp21 * 1000000 + tmp22
-              log.info("|general.query_fzf_status| before-1")
+              log.debug("|general.query_fzf_status| before-1")
               buffer_previewer_fzf_current_text = current_text
 
               -- log.debug(
@@ -1288,7 +1350,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 end
                 local tmp23, tmp24 = uv.gettimeofday()
                 local after2 = tmp23 * 1000000 + tmp24
-                log.info(
+                log.debug(
                   "|general.query_fzf_status| after-1, used:%s",
                   vim.inspect(after2 - before2)
                 )
@@ -1608,6 +1670,7 @@ local M = {
   _previewer_resultfile = _previewer_resultfile,
   _fzf_port_file = _fzf_port_file,
   _buffer_previewer_actions_file = _buffer_previewer_actions_file,
+  decode_fzf_status_current_text = decode_fzf_status_current_text,
   make_provider_meta_opts = make_provider_meta_opts,
   make_previewer_meta_opts = make_previewer_meta_opts,
   ProviderSwitch = ProviderSwitch,

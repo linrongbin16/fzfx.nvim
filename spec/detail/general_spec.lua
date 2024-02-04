@@ -800,4 +800,16 @@ describe("detail.general", function()
       assert_eq(actual12.fzf_border_opts, "double")
     end)
   end)
+  describe("[decode_fzf_status_current_text]", function()
+    it("test", function()
+      local input1 =
+        '{"reading":false,"progress":100,"query":"f","position":0,"sort":true,"totalCount":148,"matchCount":100,"current":{"index":92,"text":" lua/fzfx.lua"},"matches":[{"index":93,"text":" lua/config.lua"}]}'
+      local actual1 = general.decode_fzf_status_current_text(input1)
+      assert_eq(actual1, " lua/fzfx.lua")
+      local input2 =
+        [[{"reading":false,"progress":100,"query":"f","position":0,"sort":true,"totalCount":148,"matchCount":100,"current":{"index":92,"text":" \"lua/fzfx.lua"},"matches":[{"index":93,"text":" lua/config.lua"}]}]]
+      local actual2 = general.decode_fzf_status_current_text(input2)
+      assert_eq(actual2, [[ \"lua/fzfx.lua]])
+    end)
+  end)
 end)
