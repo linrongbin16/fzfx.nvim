@@ -371,6 +371,7 @@ end
 --- @field previewer_winnr integer?
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @field _saved_preview_file_job {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @field _saved_preview_file_contents fzfx.BufferPopupWindowPreviewFileContents
 --- @field _resizing boolean
 --- @field preview_files_queue {previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}[]
@@ -455,6 +456,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _saved_win_opts = win_opts,
     _saved_buffer_previewer_opts = buffer_previewer_opts,
     _saved_preview_file_contents = nil,
+    _saved_preview_file_job = nil,
     _resizing = false,
     preview_files_queue = {},
     preview_file_contents_queue = {},
@@ -621,8 +623,17 @@ function BufferPopupWindow:provider_is_valid()
   end
 end
 
---- @return string?
-function BufferPopupWindow:current_preview_file() end
+-- check if the same file
+--
+--- @return boolean
+local function _same_preview_file_job(a, b)
+  local filename1 = tables.tbl_get(a, "previewer_result", "filename")
+  local label1 = tables.tbl_get(a, "previewer_label_result")
+  local filename2 = tables.tbl_get(b, "previewer_result", "filename")
+  local label2 = tables.tbl_get(b, "previewer_label_result")
+
+  return filename1 == filename2 and label1 == label2
+end
 
 --- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
@@ -633,6 +644,7 @@ function BufferPopupWindow:preview_file(
   if strings.empty(tables.tbl_get(previewer_result, "filename")) then
     return
   end
+
   table.insert(self.preview_files_queue, {
     previewer_result = previewer_result,
     previewer_label_result = previewer_label_result,
@@ -647,6 +659,14 @@ function BufferPopupWindow:preview_file(
     end
 
     local last_job = self:preview_files_queue_last()
+
+    -- check if the same file
+    if _same_preview_file_job(last_job, self._saved_preview_file_job) then
+      self:preview_files_queue_clear()
+      return
+    end
+
+    self._saved_preview_file_job = last_job
     self:preview_files_queue_clear()
 
     -- read file content
