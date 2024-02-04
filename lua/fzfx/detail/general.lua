@@ -1411,7 +1411,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               focused_line = current_text,
               job_id = buffer_preview_job_id,
             })
-            vim.schedule(function()
+
+            vim.defer_fn(function()
               if not popup or not popup:previewer_is_valid() then
                 return
               end
@@ -1484,7 +1485,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                   )
                 end
               end
-            end)
+            end, 50)
             -- trigger buffer previewer }
           end
         end
