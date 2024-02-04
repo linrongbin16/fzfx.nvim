@@ -664,6 +664,20 @@ function BufferPopupWindow:preview_file(
           )
           return
         end
+        if
+          tables.tbl_get(
+            self._saved_preview_files,
+            "previewer_result",
+            "filename"
+          ) ~= last_job.previewer_result.filename
+        then
+          log.debug(
+            "|BufferPopupWindow:preview_file - asyncreadfile| has newer _saved_preview_files:%s, last_job:%s",
+            vim.inspect(self._saved_preview_files),
+            vim.inspect(last_job)
+          )
+          return
+        end
 
         if strings.not_empty(file_content) then
           file_content = file_content:gsub("\r\n", "\n")
@@ -686,6 +700,8 @@ function BufferPopupWindow:preview_file(
 
           local last_content =
             self.preview_file_contents_queue[#self.preview_file_contents_queue]
+          self.preview_file_contents_queue = {}
+
           if
             vim.deep_equal(last_content, self._saved_preview_file_contents)
           then
@@ -694,11 +710,22 @@ function BufferPopupWindow:preview_file(
               vim.inspect(last_content),
               vim.inspect(self._saved_preview_file_contents)
             )
-            self.preview_file_contents_queue = {}
             return
           end
-
-          self.preview_file_contents_queue = {}
+          if
+            tables.tbl_get(
+              self._saved_preview_files,
+              "previewer_result",
+              "filename"
+            ) ~= last_content.previewer_result.filename
+          then
+            log.debug(
+              "|BufferPopupWindow:preview_file - asyncreadfile - done content| has newer _saved_preview_files:%s, last_content.previewer_result:%s",
+              vim.inspect(self._saved_preview_files),
+              vim.inspect(last_content.previewer_result)
+            )
+            return
+          end
 
           self._saved_preview_file_contents = last_content
           self:preview_file_contents(last_content)
@@ -711,11 +738,6 @@ end
 --- @alias fzfx.BufferPopupWindowPreviewFileContents {contents:string,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_contents fzfx.BufferPopupWindowPreviewFileContents?
 function BufferPopupWindow:preview_file_contents(file_contents)
-  -- log.debug(
-  --   "|BufferPopupWindow:preview_file_contents| file_contents:%s, empty:%s",
-  --   vim.inspect(file_contents),
-  --   vim.inspect(tables.tbl_empty(file_contents))
-  -- )
   if tables.tbl_empty(file_contents) then
     return
   end
