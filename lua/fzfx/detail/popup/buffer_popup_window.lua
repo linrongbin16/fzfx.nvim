@@ -662,49 +662,46 @@ function BufferPopupWindow:preview_file(
     end
 
     -- read file content
-    fileios.asyncreadfile(
-      last_job.previewer_result.filename,
-      function(file_content)
-        if not self:previewer_is_valid() then
-          return
-        end
-        if not self:is_last_previewing_file_job_id(last_job.job_id) then
-          return
-        end
-
-        if strings.not_empty(file_content) then
-          file_content = file_content:gsub("\r\n", "\n")
-        end
-        table.insert(self.preview_file_contents_queue, {
-          contents = file_content,
-          job_id = last_job.job_id,
-          previewer_result = last_job.previewer_result,
-          previewer_label_result = last_job.previewer_label_result,
-        })
-
-        -- show file contents by lines
-        vim.defer_fn(function()
-          if not self:previewer_is_valid() then
-            log.debug(
-              "|BufferPopupWindow:preview_file - asyncreadfile - done content| invalid previewer:%s",
-              vim.inspect(self)
-            )
-            return
-          end
-
-          local last_content =
-            self.preview_file_contents_queue[#self.preview_file_contents_queue]
-          self.preview_file_contents_queue = {}
-
-          if not self:is_last_previewing_file_job_id(last_content.job_id) then
-            return
-          end
-
-          self._saved_previewing_file_content_job = last_content
-          self:preview_file_contents(last_content)
-        end, 10)
+    fileios.asyncreadfile(last_job.previewer_result.filename, function(contents)
+      if not self:previewer_is_valid() then
+        return
       end
-    )
+      if not self:is_last_previewing_file_job_id(last_job.job_id) then
+        return
+      end
+
+      if strings.not_empty(contents) then
+        contents = contents:gsub("\r\n", "\n")
+      end
+      table.insert(self.preview_file_contents_queue, {
+        contents = contents,
+        job_id = last_job.job_id,
+        previewer_result = last_job.previewer_result,
+        previewer_label_result = last_job.previewer_label_result,
+      })
+
+      -- show file contents by lines
+      vim.defer_fn(function()
+        if not self:previewer_is_valid() then
+          log.debug(
+            "|BufferPopupWindow:preview_file - asyncreadfile - done content| invalid previewer:%s",
+            vim.inspect(self)
+          )
+          return
+        end
+
+        local last_content =
+          self.preview_file_contents_queue[#self.preview_file_contents_queue]
+        self.preview_file_contents_queue = {}
+
+        if not self:is_last_previewing_file_job_id(last_content.job_id) then
+          return
+        end
+
+        self._saved_previewing_file_content_job = last_content
+        self:preview_file_contents(last_content)
+      end, 10)
+    end)
   end, 10)
 end
 
