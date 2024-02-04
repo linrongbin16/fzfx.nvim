@@ -66,7 +66,11 @@ end
 --- @param job_id integer
 --- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
-function PopupWindow:preview_file(job_id, previewer_result, previewer_label_result)
+function PopupWindow:preview_file(
+  job_id,
+  previewer_result,
+  previewer_label_result
+)
   self.instance:preview_file(job_id, previewer_result, previewer_label_result)
 end
 
