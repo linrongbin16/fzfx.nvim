@@ -1342,6 +1342,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       return fileios.readfile(fzf_port_file, { trim = true })
     end
 
+    local QUERY_FZF_CURRENT_STATUS_INTERVAL = 50
     buffer_previewer_dump_current_start = true
 
     local function dump_fzf_current()
@@ -1377,17 +1378,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         end,
       }, function(completed)
         log.debug(
-          "|general - use_buffer_previewer - dump_fzf_current| completed:%s, current_payload:%s",
+          "|general - use_buffer_previewer - dump_fzf_current| completed:%s, payload:%s",
           vim.inspect(completed),
           vim.inspect(current_payload)
         )
         if buffer_previewer_dump_current_start then
-          vim.schedule(dump_fzf_current)
+          vim.defer_fn(dump_fzf_current, QUERY_FZF_CURRENT_STATUS_INTERVAL)
         end
       end)
     end
 
-    vim.schedule(dump_fzf_current)
+    vim.defer_fn(dump_fzf_current, QUERY_FZF_CURRENT_STATUS_INTERVAL)
 
     -- dump current }
   end
