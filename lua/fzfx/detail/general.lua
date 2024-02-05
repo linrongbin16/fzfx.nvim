@@ -1185,8 +1185,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
         vim.schedule(function()
           if strings.not_empty(tables.tbl_get(completed, "stdout")) then
-            local parse_ok, current_text = pcall(decode_fzf_status_current_text, completed.stdout) --[[@as boolean, table]]
-            if parse_ok and strings.not_empty(current_text) then
+            local parse_ok, parse_status = pcall(jsons.decode, completed.stdout) --[[@as boolean, table]]
+            if parse_ok and strings.not_empty(tables.tbl_get(parse_status, "current", "text")) then
+              local current_text = parse_status["current"]["text"]
+
               if current_text == buffer_previewer_fzf_current_text then
                 return
               end
