@@ -572,11 +572,13 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         return
       end
 
+      local lines = {}
       if strings.not_empty(contents) then
         contents = contents:gsub("\r\n", "\n")
+        lines = strings.split(contents, "\n")
       end
       table.insert(self.preview_file_contents_queue, {
-        contents = strings.split(contents, "\n"),
+        contents = lines,
         job_id = last_job.job_id,
         previewer_result = last_job.previewer_result,
         previewer_label_result = last_job.previewer_label_result,
