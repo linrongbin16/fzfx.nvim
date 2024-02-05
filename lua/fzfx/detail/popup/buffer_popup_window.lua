@@ -870,15 +870,17 @@ function BufferPopupWindow:scroll_by(percent, up)
   local target_base_lineno = numbers.bound(base_lineno + shift_lines, 1, LINES_COUNT)
 
   log.debug(
-    "|scroll_by| percent:%s, up:%s, LINES_COUNT:%s, win_height:%s, first/last/base:%s/%s/%s, shift_lines:%s, target_lineno:%s",
+    "|scroll_by| percent:%s, up:%s, LINES_COUNT:%s, win_height:%s, shift_lines:%s, first/last/base:%s/%s/%s, target first/last/base:%s",
     vim.inspect(percent),
     vim.inspect(up),
     vim.inspect(LINES_COUNT),
     vim.inspect(win_height),
+    vim.inspect(shift_lines),
     vim.inspect(first_lineno),
     vim.inspect(last_lineno),
     vim.inspect(base_lineno),
-    vim.inspect(shift_lines),
+    vim.inspect(target_first_lineno),
+    vim.inspect(target_last_lineno),
     vim.inspect(target_base_lineno)
   )
 
