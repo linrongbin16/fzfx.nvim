@@ -43,7 +43,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 ## ✨ Features
 
-- Icons/colors, Windows and modern Neovim features support.
+- Colors/icons, Windows and modern Neovim features support.
 - Updates on every keystroke of user query and selection.
 - Multiple variants to avoid manual input:
   - Search by visual select.
