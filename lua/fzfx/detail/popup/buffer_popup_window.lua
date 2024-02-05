@@ -576,7 +576,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         contents = contents:gsub("\r\n", "\n")
       end
       table.insert(self.preview_file_contents_queue, {
-        contents = contents,
+        contents = strings.split(contents, "\n"),
         job_id = last_job.job_id,
         previewer_result = last_job.previewer_result,
         previewer_label_result = last_job.previewer_label_result,
@@ -606,7 +606,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
   end, 20)
 end
 
---- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string,job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
+--- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob?
 --- @param first_line integer?
 --- @param last_line integer?
@@ -642,7 +642,7 @@ function BufferPopupWindow:preview_file_contents(file_content, first_line, last_
       end
 
       local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
-      local LINES = strings.split(last_content.contents, "\n")
+      local LINES = last_content.contents
       local LINES_COUNT = #LINES
       local FIRST_LINE = last_content.previewer_result.lineno or 1
       local LAST_LINE = math.min(WIN_HEIGHT + 5 + FIRST_LINE, LINES_COUNT)
@@ -850,8 +850,12 @@ function BufferPopupWindow:scroll_by(percent, up)
     end)
   end
 
+  local first_lineno = vim.fn.line("w0")
+  local last_lineno = vim.fn.line("w$")
+
   local base_lineno = up and vim.fn.line("w0", self.previewer_winnr)
     or vim.fn.line("w$", self.previewer_winnr)
+
   if base_lineno == 1 and up then
     before_exit()
     return
