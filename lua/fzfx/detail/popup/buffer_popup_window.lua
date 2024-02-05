@@ -650,7 +650,7 @@ function BufferPopupWindow:preview_file_contents(file_content, first_line, last_
       local SHOW_LABEL_COUNT = LAST_LINE - FIRST_LINE
       local SHOW_PREVIEW_LABEL_COUNT = math.min(30, SHOW_LABEL_COUNT)
       local line_index = FIRST_LINE
-      local line_count = 10
+      local line_count = 5
       local set_win_title_done = false
 
       if FIRST_LINE > 1 then
@@ -717,7 +717,7 @@ function BufferPopupWindow:preview_file_contents(file_content, first_line, last_
           if line_index >= SHOW_PREVIEW_LABEL_COUNT then
             vim.schedule(set_win_title)
           end
-        end, 5)
+        end, 3)
       end
       set_buf_lines()
     end, 20)
