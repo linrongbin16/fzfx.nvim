@@ -24,6 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: JohnnyMorganz/stylua-action@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --config-path .stylua.toml ./lua ./spec ./bin
       - name: Install commons.nvim
         if: ${{ github.ref != 'refs/heads/main' }}
         shell: bash
@@ -33,11 +38,6 @@ jobs:
           cp -rf ~/.commons.nvim/lua/commons ./lua/fzfx/
           cp ~/.commons.nvim/version.txt ./lua/fzfx/commons/version.txt
           find ./lua/fzfx/commons -type f -name '*.lua' -exec sed -i 's/"commons./"fzfx.commons./g' {} \;
-      - uses: JohnnyMorganz/stylua-action@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: latest
-          args: --config-path .stylua.toml ./lua ./spec ./bin
       - uses: lunarmodules/luacheck@v1
         with:
           args: lua --config .luacheckrc
