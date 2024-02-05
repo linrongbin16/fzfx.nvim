@@ -128,8 +128,8 @@ describe("helper.previewers", function()
           paths.normalize(strings.split(line, ":")[1], { double_backslash = true, expand = true })
         print(string.format("normalize:%s\n", vim.inspect(expect)))
         print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
-        if actual[1] == "bat" then
-          assert_eq(actual[1], "bat")
+        if actual[1] == constants.BAT then
+          assert_eq(actual[1], constants.BAT)
           assert_eq(actual[2], "--style=numbers,changes")
           assert_true(strings.startswith(actual[3], "--theme="))
           assert_eq(actual[4], "--color=always")

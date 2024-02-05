@@ -18,7 +18,7 @@ describe("cfg.file_explorer", function()
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
 
-  local consts = require("fzfx.lib.constants")
+  local constants = require("fzfx.lib.constants")
 
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
@@ -124,21 +124,21 @@ describe("cfg.file_explorer", function()
     end)
     it("_file_explorer_previewer", function()
       local ctx = file_explorer_cfg._file_explorer_context_maker()
-      if consts.HAS_LSD then
+      if constants.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
-            assert_true(actual[1] == "bat" or actual[1] == "cat" or actual[1] == "lsd")
+            assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "lsd")
           end
         end
-      elseif consts.HAS_EZA then
+      elseif constants.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
             assert_true(
-              actual[1] == "bat" or actual[1] == "cat" or actual[1] == "eza" or actual[1] == "exa"
+              actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == constants.EZA
             )
           end
         end
@@ -147,19 +147,19 @@ describe("cfg.file_explorer", function()
           local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
-            assert_true(actual[1] == "bat" or actual[1] == "cat" or actual[1] == "ls")
+            assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "ls")
           end
         end
       end
     end)
     it("_cd_file_explorer", function()
       local ctx = file_explorer_cfg._file_explorer_context_maker()
-      if consts.HAS_LSD then
+      if constants.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
           assert_true(actual == nil)
         end
-      elseif consts.HAS_EZA then
+      elseif constants.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
           assert_true(actual == nil)
@@ -173,12 +173,12 @@ describe("cfg.file_explorer", function()
     end)
     it("_upper_file_explorer", function()
       local ctx = file_explorer_cfg._file_explorer_context_maker()
-      if consts.HAS_LSD then
+      if constants.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = file_explorer_cfg._upper_file_explorer(line, ctx)
           assert_true(actual == nil)
         end
-      elseif consts.HAS_EZA then
+      elseif constants.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = file_explorer_cfg._upper_file_explorer(line, ctx)
           assert_true(actual == nil)
