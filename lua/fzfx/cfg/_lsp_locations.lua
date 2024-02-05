@@ -68,6 +68,27 @@ M._colorize_lsp_range = function(line, range, renderer)
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink
+--- @return string
+M._hash_lsp_location = function(loc)
+  local filename, range
+  if M._is_lsp_location(loc) then
+    filename = paths.reduce(vim.uri_to_fname(loc.uri))
+    range = loc.range
+  elseif M._is_lsp_locationlink(loc) then
+    filename = paths.reduce(vim.uri_to_fname(loc.targetUri))
+    range = loc.targetRange
+  end
+  return string.format(
+    "%s-%s:%s-%s:%s",
+    filename or "",
+    tables.tbl_get(range, "start", "line") or 0,
+    tables.tbl_get(range, "start", "character") or 0,
+    tables.tbl_get(range, "end", "line") or 0,
+    tables.tbl_get(range, "end", "character") or 0
+  )
+end
+
+--- @param loc fzfx.LspLocation|fzfx.LspLocationLink
 --- @return string?
 M._render_lsp_location_line = function(loc)
   -- log.debug("|_render_lsp_location_line| loc:%s", vim.inspect(loc))
@@ -180,6 +201,7 @@ M._make_lsp_locations_provider = function(opts)
       return nil
     end
 
+    local visited_locations = {}
     local results = {}
     for client_id, client_response in
       pairs(response --[[@as table]])
@@ -187,15 +209,23 @@ M._make_lsp_locations_provider = function(opts)
       if client_id ~= nil and tables.tbl_not_empty(tables.tbl_get(client_response, "result")) then
         local lsp_loc = client_response.result
         if M._is_lsp_location(lsp_loc) then
-          local line = M._render_lsp_location_line(lsp_loc)
-          if type(line) == "string" and string.len(line) > 0 then
-            table.insert(results, line)
+          local loc_hash = M._hash_lsp_location(lsp_loc)
+          if not visited_locations[loc_hash] then
+            visited_locations[loc_hash] = true
+            local line = M._render_lsp_location_line(lsp_loc)
+            if type(line) == "string" and string.len(line) > 0 then
+              table.insert(results, line)
+            end
           end
         else
           for _, loc in ipairs(lsp_loc) do
-            local line = M._render_lsp_location_line(loc)
-            if type(line) == "string" and string.len(line) > 0 then
-              table.insert(results, line)
+            local loc_hash = M._hash_lsp_location(lsp_loc)
+            if not visited_locations[loc_hash] then
+              visited_locations[loc_hash] = true
+              local line = M._render_lsp_location_line(loc)
+              if type(line) == "string" and string.len(line) > 0 then
+                table.insert(results, line)
+              end
             end
           end
         end
