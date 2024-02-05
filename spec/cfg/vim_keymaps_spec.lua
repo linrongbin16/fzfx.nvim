@@ -14,7 +14,7 @@ describe("cfg.vim_keymaps", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
   local strings = require("fzfx.commons.strings")
-  local consts = require("fzfx.lib.constants")
+  local constants = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -149,7 +149,7 @@ describe("cfg.vim_keymaps", function()
       for _, line in ipairs(lines) do
         local actual = vim_keymaps_cfg._vim_keymaps_previewer(line, ctx)
         assert_eq(type(actual), "table")
-        assert_true(actual[1] == "bat" or actual[1] == "cat" or actual[1] == "echo")
+        assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "echo")
       end
     end)
   end)
