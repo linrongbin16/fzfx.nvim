@@ -73,7 +73,7 @@ jobs:
       - uses: leafo/gh-actions-luarocks@v4
       - name: Run Tests
         run: |
-          sudo apt-get install -y bat
+          sudo apt-get -y -qq install bat
           luarocks install luacheck
           luarocks install vusted
           git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -98,7 +98,7 @@ jobs:
       - uses: leafo/gh-actions-luarocks@v4
       - name: Run Tests
         run: |
-          sudo apt-get install -y bat
+          sudo apt-get -y -qq install bat
           luarocks install luacov
           luarocks install luacov-reporter-lcov
           luarocks install vusted
