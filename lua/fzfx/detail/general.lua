@@ -1214,9 +1214,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         return
       end
 
-      local current_payload = nil
-
-      spawn.run({
+      -- local fzf_status_data = {}
+      spawn.system({
         "curl",
         "-s",
         "-S",
@@ -1227,19 +1226,20 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "*",
         string.format("127.0.0.1:%s?limit=0", get_fzf_port()),
       }, {
-        on_stdout = function(line)
-          -- log.debug(
-          --   "|general - use_buffer_previewer - query_fzf_status| stdout:%s",
-          --   vim.inspect(line)
-          -- )
-          current_payload = current_payload and current_payload .. line or line
-        end,
-        on_stderr = function(line)
-          -- log.debug(
-          --   "|general - use_buffer_previewer - query_fzf_status| stderr:%s",
-          --   vim.inspect(line)
-          -- )
-        end,
+        -- stdout = function(err, data)
+        --   -- log.debug(
+        --   --   "|general - use_buffer_previewer - query_fzf_status| stdout:%s",
+        --   --   vim.inspect(line)
+        --   -- )
+        --   table.insert(fzf_status_data, data)
+        -- end,
+        -- stderr = function(err, data)
+        --   -- log.debug(
+        --   --   "|general - use_buffer_previewer - query_fzf_status| stderr:%s",
+        --   --   vim.inspect(line)
+        --   -- )
+        -- end,
+        text = true,
       }, function(completed)
         -- log.debug(
         --   "|general - use_buffer_previewer - query_fzf_status| completed:%s, payload:%s",
@@ -1252,9 +1252,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         end
 
         vim.schedule(function()
-          if current_payload then
+          if strings.not_empty(tables.tbl_get(completed, "stdout")) then
             local parse_ok, current_text =
-              pcall(decode_fzf_status_current_text, current_payload) --[[@as boolean, table]]
+              pcall(decode_fzf_status_current_text, completed.stdout) --[[@as boolean, table]]
             if parse_ok and strings.not_empty(current_text) then
               if current_text == buffer_previewer_fzf_current_text then
                 return
