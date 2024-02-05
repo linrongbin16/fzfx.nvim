@@ -1,11 +1,13 @@
 local tables = require("fzfx.commons.tables")
 local term_colors = require("fzfx.commons.colors.term")
+local apis = require("fzfx.commons.apis")
 local paths = require("fzfx.commons.paths")
 
 local consts = require("fzfx.lib.constants")
 local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
+local env = require("fzfx.lib.env")
 
 local parsers_helper = require("fzfx.helper.parsers")
 local queries_helper = require("fzfx.helper.queries")
@@ -83,43 +85,42 @@ M.variants = {
   },
 }
 
+local _, _, SIGN_ERROR_HL =
+  apis.get_hl_with_fallback("DiagnosticSignError", "LspDiagnosticsSignError", "ErrorMsg")
+local _, _, SIGN_WARN_HL =
+  apis.get_hl_with_fallback("DiagnosticSignWarn", "LspDiagnosticsSignWarn", "WarningMsg")
+local _, _, SIGN_INFO_HL =
+  apis.get_hl_with_fallback("DiagnosticSignInfo", "LspDiagnosticsSignInfo", "None")
+local _, _, SIGN_HINT_HL =
+  apis.get_hl_with_fallback("DiagnosticSignHint", "LspDiagnosticsSignHint", "Comment")
+
 local LSP_DIAGNOSTICS_SIGNS = {
   [1] = {
     severity = 1,
     name = "DiagnosticSignError",
-    text = require("fzfx.lib.env").icon_enabled() and "" or "E", -- nf-fa-times \uf00d
-    texthl = vim.fn.hlexists("DiagnosticSignError") > 0 and "DiagnosticSignError"
-      or (
-        vim.fn.hlexists("LspDiagnosticsSignError") > 0 and "LspDiagnosticsSignError"
-        or "ErrorMsg"
-      ),
+    text = env.icon_enabled() and "" or "E", -- nf-fa-times \uf00d
+    texthl = SIGN_ERROR_HL,
     textcolor = "red",
   },
   [2] = {
     severity = 2,
     name = "DiagnosticSignWarn",
-    text = require("fzfx.lib.env").icon_enabled() and "" or "W", -- nf-fa-warning \uf071
-    texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0 and "DiagnosticSignWarn"
-      or (
-        vim.fn.hlexists("LspDiagnosticsSignWarn") > 0 and "LspDiagnosticsSignWarn"
-        or "WarningMsg"
-      ),
+    text = env.icon_enabled() and "" or "W", -- nf-fa-warning \uf071
+    texthl = SIGN_WARN_HL,
     textcolor = "orange",
   },
   [3] = {
     severity = 3,
     name = "DiagnosticSignInfo",
-    text = require("fzfx.lib.env").icon_enabled() and "" or "I", -- nf-fa-info_circle \uf05a
-    texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0 and "DiagnosticSignInfo"
-      or (vim.fn.hlexists("LspDiagnosticsSignInfo") > 0 and "LspDiagnosticsSignInfo" or "None"),
-    textcolor = "green",
+    text = env.icon_enabled() and "" or "I", -- nf-fa-info_circle \uf05a
+    texthl = SIGN_INFO_HL,
+    textcolor = "cyan",
   },
   [4] = {
     severity = 4,
     name = "DiagnosticSignHint",
-    text = require("fzfx.lib.env").icon_enabled() and "" or "H", -- nf-fa-bell \uf0f3
-    texthl = vim.fn.hlexists("DiagnosticSignHint") > 0 and "DiagnosticSignHint"
-      or (vim.fn.hlexists("LspDiagnosticsSignHint") > 0 and "LspDiagnosticsSignHint" or "Comment"),
+    text = env.icon_enabled() and "" or "H", -- nf-fa-bell \uf0f3
+    texthl = SIGN_HINT_HL,
     textcolor = "grey",
   },
 }
