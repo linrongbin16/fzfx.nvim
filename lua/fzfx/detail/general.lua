@@ -1225,7 +1225,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "--parallel-immediate",
         "--noproxy",
         "*",
-        string.format("127.0.0.1:%s", get_fzf_port()),
+        string.format("127.0.0.1:%s?limit=0", get_fzf_port()),
       }, {
         on_stdout = function(line)
           -- log.debug(
