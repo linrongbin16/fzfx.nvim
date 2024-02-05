@@ -852,11 +852,9 @@ function BufferPopupWindow:scroll_by(percent, up)
     end)
   end
 
-  local first_lineno = vim.fn.line("w0")
-  local last_lineno = vim.fn.line("w$")
-
-  local base_lineno = up and vim.fn.line("w0", self.previewer_winnr)
-    or vim.fn.line("w$", self.previewer_winnr)
+  local first_lineno = vim.fn.line("w0", self.previewer_winnr)
+  local last_lineno = vim.fn.line("w$", self.previewer_winnr)
+  local base_lineno = math.floor((first_lineno + last_lineno) / 2)
 
   if base_lineno == 1 and up then
     before_exit()
