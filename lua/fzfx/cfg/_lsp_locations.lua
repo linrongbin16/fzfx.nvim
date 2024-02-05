@@ -2,6 +2,7 @@ local tables = require("fzfx.commons.tables")
 local term_colors = require("fzfx.commons.colors.term")
 local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
+local tables = require("fzfx.commons.tables")
 
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -24,13 +25,10 @@ local M = {}
 --- @param r fzfx.LspRange?
 --- @return boolean
 M._is_lsp_range = function(r)
-  return type(r) == "table"
-    and type(r.start) == "table"
-    and type(r.start.line) == "number"
-    and type(r.start.character) == "number"
-    and type(r["end"]) == "table"
-    and type(r["end"].line) == "number"
-    and type(r["end"].character) == "number"
+  return type(tables.tbl_get(r, "start", "line")) == "number"
+    and type(tables.tbl_get(r, "start", "character")) == "number"
+    and type(tables.tbl_get(r, "end", "line")) == "number"
+    and type(tables.tbl_get(r, "end", "character")) == "number"
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
