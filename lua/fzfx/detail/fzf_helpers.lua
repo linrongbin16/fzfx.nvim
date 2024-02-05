@@ -308,7 +308,6 @@ end
 --- @return string?
 local function nvim_exec()
   local exe_list = {}
-  table.insert(exe_list, config.get().env.nvim)
   table.insert(exe_list, vim.v.argv[1])
   table.insert(exe_list, vim.env.VIM)
   table.insert(exe_list, "nvim")
@@ -324,7 +323,6 @@ end
 --- @return string?
 local function fzf_exec()
   local exe_list = {}
-  table.insert(exe_list, config.get().env.fzf)
   if vim.fn.exists("*fzf#exec") > 0 then
     table.insert(exe_list, vim.fn["fzf#exec"]())
   end
