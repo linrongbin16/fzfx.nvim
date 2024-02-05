@@ -49,8 +49,8 @@ describe("helper.previewers", function()
       -- print(
       --     string.format("make file previewer:%s\n", vim.inspect(actual))
       -- )
-      if actual[1] == "bat" then
-        assert_eq(actual[1], "bat")
+      if actual[1] == constants.BAT then
+        assert_eq(actual[1], constants.BAT)
         assert_eq(actual[2], "--style=numbers,changes")
         assert_true(strings.startswith(actual[3], "--theme="))
         assert_eq(actual[4], "--color=always")
@@ -77,8 +77,8 @@ describe("helper.previewers", function()
       for i, line in ipairs(lines) do
         local actual = previewers.preview_files_find(line)
         print(string.format("preview_files_find-%s:%s\n", vim.inspect(i), vim.inspect(actual)))
-        if actual[1] == "bat" then
-          assert_eq(actual[1], "bat")
+        if actual[1] == constants.BAT then
+          assert_eq(actual[1], constants.BAT)
           assert_eq(actual[2], "--style=numbers,changes")
           assert_true(strings.startswith(actual[3], "--theme="))
           assert_eq(actual[4], "--color=always")
@@ -199,8 +199,8 @@ describe("helper.previewers", function()
       local actual = previewers.preview_files_with_line_range("lua/fzfx/config.lua", 135)
       assert_eq(type(actual), "table")
       print(string.format("preview_files_with_line_range:%s\n", vim.inspect(actual)))
-      if actual[1] == "bat" then
-        assert_eq(actual[1], "bat")
+      if actual[1] == constants.BAT then
+        assert_eq(actual[1], constants.BAT)
         assert_eq(actual[2], "--style=numbers,changes")
         assert_true(strings.startswith(actual[3], "--theme="))
         assert_eq(actual[4], "--color=always")
