@@ -45,9 +45,9 @@ end
 
 --- @param line string
 --- @param range fzfx.LspRange
---- @param color_renderer fun(text:string):string
+--- @param renderer fun(text:string):string
 --- @return string?
-M._colorize_lsp_range = function(line, range, color_renderer)
+M._colorize_lsp_range = function(line, range, renderer)
   local line_start = range.start.character + 1
   local line_end = range["end"].line ~= range.start.line and #line
     or math.min(range["end"].character, #line)
@@ -57,7 +57,7 @@ M._colorize_lsp_range = function(line, range, color_renderer)
   end
   local p2 = ""
   if line_start <= line_end then
-    p2 = color_renderer(line:sub(line_start, line_end))
+    p2 = renderer(line:sub(line_start, line_end))
   end
   local p3 = ""
   if line_end + 1 <= #line then
@@ -70,31 +70,34 @@ end
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink
 --- @return string?
 M._render_lsp_location_line = function(loc)
-  log.debug("|_render_lsp_location_line| loc:%s", vim.inspect(loc))
+  -- log.debug("|_render_lsp_location_line| loc:%s", vim.inspect(loc))
+
+  --- @type string
   local filename = nil
   --- @type fzfx.LspRange
   local range = nil
+
   if M._is_lsp_location(loc) then
     filename = paths.reduce(vim.uri_to_fname(loc.uri))
     range = loc.range
-    log.debug(
-      "|_render_lsp_location_line| location filename:%s, range:%s",
-      vim.inspect(filename),
-      vim.inspect(range)
-    )
+    -- log.debug(
+    --   "|_render_lsp_location_line| location filename:%s, range:%s",
+    --   vim.inspect(filename),
+    --   vim.inspect(range)
+    -- )
   elseif M._is_lsp_locationlink(loc) then
     filename = paths.reduce(vim.uri_to_fname(loc.targetUri))
     range = loc.targetRange
-    log.debug(
-      "|_render_lsp_location_line| locationlink filename:%s, range:%s",
-      vim.inspect(filename),
-      vim.inspect(range)
-    )
+    -- log.debug(
+    --   "|_render_lsp_location_line| locationlink filename:%s, range:%s",
+    --   vim.inspect(filename),
+    --   vim.inspect(range)
+    -- )
   end
   if not M._is_lsp_range(range) then
     return nil
   end
-  if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
+  if strings.empty(filename) or not paths.isfile(filename) then
     return nil
   end
   local filelines = fileios.readlines(filename)
