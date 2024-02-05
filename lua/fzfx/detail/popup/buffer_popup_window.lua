@@ -870,7 +870,7 @@ function BufferPopupWindow:scroll_by(percent, up)
   local target_base_lineno = numbers.bound(base_lineno + shift_lines, 1, LINES_COUNT)
 
   log.debug(
-    "|scroll_by| percent:%s, up:%s, LINES_COUNT:%s, win_height:%s, shift_lines:%s, first/last/base:%s/%s/%s, target first/last/base:%s",
+    "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES_COUNT:%s, win_height:%s, shift_lines:%s, first/last/base:%s/%s/%s, target first/last/base:%s/%s/%s",
     vim.inspect(percent),
     vim.inspect(up),
     vim.inspect(LINES_COUNT),
@@ -884,8 +884,8 @@ function BufferPopupWindow:scroll_by(percent, up)
     vim.inspect(target_base_lineno)
   )
 
-  local FIRST_LINE = math.max(1, target_base_lineno - win_height - 5)
-  local LAST_LINE = math.min(win_height + 5 + FIRST_LINE, LINES_COUNT)
+  local FIRST_LINE = math.max(1, target_first_lineno - 5)
+  local LAST_LINE = math.min(target_last_lineno + 5, LINES_COUNT)
 
   local line_index = FIRST_LINE
   local line_count = 5
@@ -894,10 +894,12 @@ function BufferPopupWindow:scroll_by(percent, up)
     -- log.debug("|BufferPopupWindow:scroll_by| set_buf_lines")
     vim.defer_fn(function()
       if not self:previewer_is_valid() then
+        log.debug("|BufferPopupWindow:scroll_by| invalid previewer")
         before_exit()
         return
       end
       if not self:is_last_previewing_file_job_id(last_content.job_id) then
+        log.debug("|BufferPopupWindow:scroll_by| has newer previewing job")
         before_exit()
         return
       end
