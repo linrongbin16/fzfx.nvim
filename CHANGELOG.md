@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.1.6](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.5...v5.1.6) (2024-02-05)
+
+
+### Performance Improvements
+
+* **buffer previewer:** improve performance ([#584](https://github.com/linrongbin16/fzfx.nvim/issues/584)) ([b7c580f](https://github.com/linrongbin16/fzfx.nvim/commit/b7c580f3f6f359433f101c6c3759a96d91d11541))
+* **buffer previewer:** set longer delay for buffer file previewer ([#587](https://github.com/linrongbin16/fzfx.nvim/issues/587)) ([3d69db6](https://github.com/linrongbin16/fzfx.nvim/commit/3d69db6856f04d1f3825036148baed9a66f6452d))
+* **lsp locations:** dedup lsp references results ([#587](https://github.com/linrongbin16/fzfx.nvim/issues/587)) ([3d69db6](https://github.com/linrongbin16/fzfx.nvim/commit/3d69db6856f04d1f3825036148baed9a66f6452d))
+
 ## [5.1.5](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.4...v5.1.5) (2024-02-04)
 
 
