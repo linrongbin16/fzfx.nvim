@@ -64,9 +64,7 @@ M.run = function(cmd, opts, on_exit)
       -- search buffer and process each line
       local i = _process(stdout_buffer, opts.on_stdout)
       -- truncate the processed lines if still exists any
-      stdout_buffer = i <= #stdout_buffer
-          and stdout_buffer:sub(i, #stdout_buffer)
-        or nil
+      stdout_buffer = i <= #stdout_buffer and stdout_buffer:sub(i, #stdout_buffer) or nil
     elseif stdout_buffer then
       -- foreach the data_buffer and find every line
       local i = _process(stdout_buffer, opts.on_stdout)
@@ -97,9 +95,7 @@ M.run = function(cmd, opts, on_exit)
     if data then
       stderr_buffer = stderr_buffer and (stderr_buffer .. data) or data
       local i = _process(stderr_buffer, opts.on_stderr)
-      stderr_buffer = i <= #stderr_buffer
-          and stderr_buffer:sub(i, #stderr_buffer)
-        or nil
+      stderr_buffer = i <= #stderr_buffer and stderr_buffer:sub(i, #stderr_buffer) or nil
     elseif stderr_buffer then
       local i = _process(stderr_buffer, opts.on_stderr)
       if i <= #stderr_buffer then

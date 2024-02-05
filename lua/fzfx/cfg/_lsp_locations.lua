@@ -1,4 +1,5 @@
 local tables = require("fzfx.commons.tables")
+local strings = require("fzfx.commons.strings")
 local term_colors = require("fzfx.commons.colors.term")
 local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
@@ -24,37 +25,29 @@ local M = {}
 --- @param r fzfx.LspRange?
 --- @return boolean
 M._is_lsp_range = function(r)
-  return type(r) == "table"
-    and type(r.start) == "table"
-    and type(r.start.line) == "number"
-    and type(r.start.character) == "number"
-    and type(r["end"]) == "table"
-    and type(r["end"].line) == "number"
-    and type(r["end"].character) == "number"
+  return type(tables.tbl_get(r, "start", "line")) == "number"
+    and type(tables.tbl_get(r, "start", "character")) == "number"
+    and type(tables.tbl_get(r, "end", "line")) == "number"
+    and type(tables.tbl_get(r, "end", "character")) == "number"
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_location = function(loc)
-  return type(loc) == "table" and type(loc.uri) == "string" and M._is_lsp_range(loc.range)
+  return type(tables.tbl_get(loc, "uri")) == "string"
+    and M._is_lsp_range(tables.tbl_get(loc, "range"))
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_locationlink = function(loc)
-  return type(loc) == "table"
-    and type(loc.targetUri) == "string"
-    and M._is_lsp_range(loc.targetRange)
+  return type(tables.tbl_get(loc, "targetUri")) == "string"
+    and M._is_lsp_range(tables.tbl_get(loc, "targetRange"))
 end
 
 --- @param line string
 --- @param range fzfx.LspRange
---- @param color_renderer fun(text:string):string
+--- @param renderer fun(text:string):string
 --- @return string?
-M._colorize_lsp_range = function(line, range, color_renderer)
-  -- log.debug(
-  --   "|fzfx.config - _lsp_location_render_line| range:%s, line:%s",
-  --   vim.inspect(range),
-  --   vim.inspect(line)
-  -- )
+M._colorize_lsp_range = function(line, range, renderer)
   local line_start = range.start.character + 1
   local line_end = range["end"].line ~= range.start.line and #line
     or math.min(range["end"].character, #line)
@@ -64,7 +57,7 @@ M._colorize_lsp_range = function(line, range, color_renderer)
   end
   local p2 = ""
   if line_start <= line_end then
-    p2 = color_renderer(line:sub(line_start, line_end))
+    p2 = renderer(line:sub(line_start, line_end))
   end
   local p3 = ""
   if line_end + 1 <= #line then
@@ -75,28 +68,54 @@ M._colorize_lsp_range = function(line, range, color_renderer)
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink
+--- @return string
+M._hash_lsp_location = function(loc)
+  local uri, range
+  if M._is_lsp_location(loc) then
+    uri = loc.uri
+    range = loc.range
+  elseif M._is_lsp_locationlink(loc) then
+    uri = loc.targetUri
+    range = loc.targetRange
+  end
+  local result = string.format(
+    "%s-%s:%s-%s:%s",
+    uri or "",
+    tables.tbl_get(range, "start", "line") or 0,
+    tables.tbl_get(range, "start", "character") or 0,
+    tables.tbl_get(range, "end", "line") or 0,
+    tables.tbl_get(range, "end", "character") or 0
+  )
+  log.debug("|_hash_lsp_location| loc:%s, hash:%s", vim.inspect(loc), vim.inspect(result))
+  return result
+end
+
+--- @param loc fzfx.LspLocation|fzfx.LspLocationLink
 --- @return string?
 M._render_lsp_location_line = function(loc)
-  log.debug("|_render_lsp_location_line| loc:%s", vim.inspect(loc))
+  -- log.debug("|_render_lsp_location_line| loc:%s", vim.inspect(loc))
+
+  --- @type string
   local filename = nil
   --- @type fzfx.LspRange
   local range = nil
+
   if M._is_lsp_location(loc) then
     filename = paths.reduce(vim.uri_to_fname(loc.uri))
     range = loc.range
-    log.debug(
-      "|_render_lsp_location_line| location filename:%s, range:%s",
-      vim.inspect(filename),
-      vim.inspect(range)
-    )
+    -- log.debug(
+    --   "|_render_lsp_location_line| location filename:%s, range:%s",
+    --   vim.inspect(filename),
+    --   vim.inspect(range)
+    -- )
   elseif M._is_lsp_locationlink(loc) then
     filename = paths.reduce(vim.uri_to_fname(loc.targetUri))
     range = loc.targetRange
-    log.debug(
-      "|_render_lsp_location_line| locationlink filename:%s, range:%s",
-      vim.inspect(filename),
-      vim.inspect(range)
-    )
+    -- log.debug(
+    --   "|_render_lsp_location_line| locationlink filename:%s, range:%s",
+    --   vim.inspect(filename),
+    --   vim.inspect(range)
+    -- )
   end
   if not M._is_lsp_range(range) then
     return nil
@@ -109,11 +128,11 @@ M._render_lsp_location_line = function(loc)
     return nil
   end
   local loc_line = M._colorize_lsp_range(filelines[range.start.line + 1], range, term_colors.red)
-  log.debug(
-    "|_render_lsp_location_line| range:%s, loc_line:%s",
-    vim.inspect(range),
-    vim.inspect(loc_line)
-  )
+  -- log.debug(
+  --   "|_render_lsp_location_line| range:%s, loc_line:%s",
+  --   vim.inspect(range),
+  --   vim.inspect(loc_line)
+  -- )
   local line = string.format(
     "%s:%s:%s:%s",
     providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
@@ -184,6 +203,7 @@ M._make_lsp_locations_provider = function(opts)
       return nil
     end
 
+    local visited_locations = {}
     local results = {}
     for client_id, client_response in
       pairs(response --[[@as table]])
@@ -191,15 +211,23 @@ M._make_lsp_locations_provider = function(opts)
       if client_id ~= nil and tables.tbl_not_empty(tables.tbl_get(client_response, "result")) then
         local lsp_loc = client_response.result
         if M._is_lsp_location(lsp_loc) then
-          local line = M._render_lsp_location_line(lsp_loc)
-          if type(line) == "string" and string.len(line) > 0 then
-            table.insert(results, line)
+          local loc_hash = M._hash_lsp_location(lsp_loc)
+          if visited_locations[loc_hash] == nil then
+            visited_locations[loc_hash] = true
+            local line = M._render_lsp_location_line(lsp_loc)
+            if type(line) == "string" and string.len(line) > 0 then
+              table.insert(results, line)
+            end
           end
         else
           for _, loc in ipairs(lsp_loc) do
-            local line = M._render_lsp_location_line(loc)
-            if type(line) == "string" and string.len(line) > 0 then
-              table.insert(results, line)
+            local loc_hash = M._hash_lsp_location(loc)
+            if visited_locations[loc_hash] == nil then
+              visited_locations[loc_hash] = true
+              local line = M._render_lsp_location_line(loc)
+              if type(line) == "string" and string.len(line) > 0 then
+                table.insert(results, line)
+              end
             end
           end
         end

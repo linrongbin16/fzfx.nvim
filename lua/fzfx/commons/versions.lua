@@ -64,8 +64,7 @@ M.ge = function(ver)
     if type(ver) == "string" then
       ver = M.to_list(ver)
     end
-    return vim.version.gt(vim.version(), ver)
-      or vim.version.eq(vim.version(), ver)
+    return vim.version.gt(vim.version(), ver) or vim.version.eq(vim.version(), ver)
   elseif M.HAS_VIM_VERSION and M.HAS_VIM_VERSION_GE then
     if type(ver) == "string" then
       ver = M.to_list(ver)

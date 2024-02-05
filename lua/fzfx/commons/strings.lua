@@ -142,8 +142,7 @@ M.startswith = function(s, t, opts)
   assert(type(t) == "string")
 
   opts = opts or { ignorecase = false }
-  opts.ignorecase = type(opts.ignorecase) == "boolean" and opts.ignorecase
-    or false
+  opts.ignorecase = type(opts.ignorecase) == "boolean" and opts.ignorecase or false
 
   if opts.ignorecase then
     return string.len(s) >= string.len(t) and s:sub(1, #t):lower() == t:lower()
@@ -161,12 +160,10 @@ M.endswith = function(s, t, opts)
   assert(type(t) == "string")
 
   opts = opts or { ignorecase = false }
-  opts.ignorecase = type(opts.ignorecase) == "boolean" and opts.ignorecase
-    or false
+  opts.ignorecase = type(opts.ignorecase) == "boolean" and opts.ignorecase or false
 
   if opts.ignorecase then
-    return string.len(s) >= string.len(t)
-      and s:sub(#s - #t + 1):lower() == t:lower()
+    return string.len(s) >= string.len(t) and s:sub(#s - #t + 1):lower() == t:lower()
   else
     return string.len(s) >= string.len(t) and s:sub(#s - #t + 1) == t
   end
