@@ -524,7 +524,7 @@ end
 --- @param port string
 --- @param body string
 local function _send_http_post(port, body)
-  spawn.run({
+  spawn.system({
     "curl",
     "-s",
     "-S",
@@ -537,20 +537,7 @@ local function _send_http_post(port, body)
     string.format("127.0.0.1:%s", vim.trim(port)),
     "-d",
     body,
-  }, {
-    on_stdout = function(line)
-      -- log.debug(
-      --     "|fzfx.general - send_http_post| stdout:%s",
-      --     vim.inspect(line)
-      -- )
-    end,
-    on_stderr = function(line)
-      -- log.debug(
-      --     "|fzfx.general - send_http_post| stderr:%s",
-      --     vim.inspect(line)
-      -- )
-    end,
-  }, function(completed) end)
+  }, { text = true }, function(completed) end)
 end
 
 --- @param line string?
@@ -1158,19 +1145,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "*",
         string.format("127.0.0.1:%s?limit=0", get_fzf_port()),
       }, {
-        -- stdout = function(err, data)
-        --   -- log.debug(
-        --   --   "|general - use_buffer_previewer - query_fzf_status| stdout:%s",
-        --   --   vim.inspect(line)
-        --   -- )
-        --   table.insert(fzf_status_data, data)
-        -- end,
-        -- stderr = function(err, data)
-        --   -- log.debug(
-        --   --   "|general - use_buffer_previewer - query_fzf_status| stderr:%s",
-        --   --   vim.inspect(line)
-        --   -- )
-        -- end,
         text = true,
       }, function(completed)
         -- log.debug(
