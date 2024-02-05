@@ -869,8 +869,11 @@ function BufferPopupWindow:scroll_by(percent, up)
   local target_last_lineno = math.min(last_lineno + shift_lines, LINES_COUNT)
   local target_base_lineno = numbers.bound(base_lineno + shift_lines, 1, LINES_COUNT)
 
+  local FIRST_LINE = math.max(1, target_first_lineno - 5)
+  local LAST_LINE = math.min(target_last_lineno + 5, LINES_COUNT)
+
   log.debug(
-    "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES_COUNT:%s, win_height:%s, shift_lines:%s, first/last/base:%s/%s/%s, target first/last/base:%s/%s/%s",
+    "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES_COUNT:%s, win_height:%s, shift_lines:%s, first/last/base:%s/%s/%s, target first/last/base:%s/%s/%s, FIRST/LAST:%s/%s",
     vim.inspect(percent),
     vim.inspect(up),
     vim.inspect(LINES_COUNT),
@@ -881,63 +884,73 @@ function BufferPopupWindow:scroll_by(percent, up)
     vim.inspect(base_lineno),
     vim.inspect(target_first_lineno),
     vim.inspect(target_last_lineno),
-    vim.inspect(target_base_lineno)
+    vim.inspect(target_base_lineno),
+    vim.inspect(FIRST_LINE),
+    vim.inspect(LAST_LINE)
   )
 
-  local FIRST_LINE = math.max(1, target_first_lineno - 5)
-  local LAST_LINE = math.min(target_last_lineno + 5, LINES_COUNT)
-
-  local line_index = FIRST_LINE
-  local line_count = 5
-
-  local function set_buf_lines()
-    -- log.debug("|BufferPopupWindow:scroll_by| set_buf_lines")
-    vim.defer_fn(function()
-      if not self:previewer_is_valid() then
-        log.debug("|BufferPopupWindow:scroll_by| invalid previewer")
-        before_exit()
-        return
-      end
-      if not self:is_last_previewing_file_job_id(last_content.job_id) then
-        log.debug("|BufferPopupWindow:scroll_by| has newer previewing job")
-        before_exit()
-        return
-      end
-
-      local buf_lines = {}
-      for i = line_index, line_index + line_count do
-        if i <= LAST_LINE then
-          table.insert(buf_lines, LINES[i])
-        else
-          break
-        end
-      end
-
-      vim.api.nvim_buf_set_lines(
-        self.previewer_bufnr,
-        line_index - 1,
-        line_index - 1 + line_count,
-        false,
-        buf_lines
-      )
-      line_index = line_index + line_count
-      if line_index <= LAST_LINE then
-        set_buf_lines()
-      else
-        if up and target_base_lineno <= 1 then
-          before_exit()
-          return
-        end
-        if down and target_base_lineno >= LINES_COUNT then
-          before_exit()
-          return
-        end
-        vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_base_lineno, 0 })
-        before_exit()
-      end
-    end, 3)
+  local buf_lines = {}
+  for i = FIRST_LINE, LAST_LINE do
+    table.insert(buf_lines, LINES[i])
   end
-  set_buf_lines()
+  vim.api.nvim_buf_set_lines(self.previewer_bufnr, FIRST_LINE - 1, LAST_LINE - 1, false, buf_lines)
+
+  -- local line_index = FIRST_LINE
+  -- local line_count = 5
+  -- local function set_buf_lines()
+  --   -- log.debug("|BufferPopupWindow:scroll_by| set_buf_lines")
+  --   vim.defer_fn(function()
+  --     if not self:previewer_is_valid() then
+  --       log.debug("|BufferPopupWindow:scroll_by| invalid previewer")
+  --       before_exit()
+  --       return
+  --     end
+  --
+  --     local buf_lines = {}
+  --     for i = line_index, line_index + line_count do
+  --       if i <= LAST_LINE then
+  --         table.insert(buf_lines, LINES[i])
+  --       else
+  --         break
+  --       end
+  --     end
+  --
+  --     vim.api.nvim_buf_set_lines(
+  --       self.previewer_bufnr,
+  --       line_index - 1,
+  --       line_index - 1 + line_count,
+  --       false,
+  --       buf_lines
+  --     )
+  --     line_index = line_index + line_count
+  --     if line_index <= LAST_LINE then
+  --       set_buf_lines()
+  --     else
+  --       if up and target_base_lineno <= 1 then
+  --         before_exit()
+  --         return
+  --       end
+  --       if down and target_base_lineno >= LINES_COUNT then
+  --         before_exit()
+  --         return
+  --       end
+  --       vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_base_lineno, 0 })
+  --       before_exit()
+  --     end
+  --   end, 3)
+  -- end
+  -- set_buf_lines()
+
+  if up and target_base_lineno <= 1 then
+    before_exit()
+    return
+  end
+  if down and target_base_lineno >= LINES_COUNT then
+    before_exit()
+    return
+  end
+  vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_base_lineno, 0 })
+  before_exit()
 end
 
 function BufferPopupWindow:preview_page_down()
