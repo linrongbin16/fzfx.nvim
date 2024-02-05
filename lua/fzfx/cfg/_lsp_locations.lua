@@ -70,22 +70,24 @@ end
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink
 --- @return string
 M._hash_lsp_location = function(loc)
-  local filename, range
+  local uri, range
   if M._is_lsp_location(loc) then
-    filename = paths.reduce(vim.uri_to_fname(loc.uri))
+    uri = loc.uri
     range = loc.range
   elseif M._is_lsp_locationlink(loc) then
-    filename = paths.reduce(vim.uri_to_fname(loc.targetUri))
+    uri = loc.targetUri
     range = loc.targetRange
   end
-  return string.format(
+  local result = string.format(
     "%s-%s:%s-%s:%s",
-    filename or "",
+    uri or "",
     tables.tbl_get(range, "start", "line") or 0,
     tables.tbl_get(range, "start", "character") or 0,
     tables.tbl_get(range, "end", "line") or 0,
     tables.tbl_get(range, "end", "character") or 0
   )
+  log.debug("|_hash_lsp_location| loc:%s, hash:%s", vim.inspect(loc), vim.inspect(result))
+  return result
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink
@@ -210,7 +212,7 @@ M._make_lsp_locations_provider = function(opts)
         local lsp_loc = client_response.result
         if M._is_lsp_location(lsp_loc) then
           local loc_hash = M._hash_lsp_location(lsp_loc)
-          if not visited_locations[loc_hash] then
+          if visited_locations[loc_hash] == nil then
             visited_locations[loc_hash] = true
             local line = M._render_lsp_location_line(lsp_loc)
             if type(line) == "string" and string.len(line) > 0 then
@@ -220,7 +222,7 @@ M._make_lsp_locations_provider = function(opts)
         else
           for _, loc in ipairs(lsp_loc) do
             local loc_hash = M._hash_lsp_location(lsp_loc)
-            if not visited_locations[loc_hash] then
+            if visited_locations[loc_hash] == nil then
               visited_locations[loc_hash] = true
               local line = M._render_lsp_location_line(loc)
               if type(line) == "string" and string.len(line) > 0 then
