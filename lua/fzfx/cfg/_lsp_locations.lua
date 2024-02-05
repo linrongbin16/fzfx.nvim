@@ -105,11 +105,11 @@ M._render_lsp_location_line = function(loc)
     return nil
   end
   local loc_line = M._colorize_lsp_range(filelines[range.start.line + 1], range, term_colors.red)
-  log.debug(
-    "|_render_lsp_location_line| range:%s, loc_line:%s",
-    vim.inspect(range),
-    vim.inspect(loc_line)
-  )
+  -- log.debug(
+  --   "|_render_lsp_location_line| range:%s, loc_line:%s",
+  --   vim.inspect(range),
+  --   vim.inspect(loc_line)
+  -- )
   local line = string.format(
     "%s:%s:%s:%s",
     providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
