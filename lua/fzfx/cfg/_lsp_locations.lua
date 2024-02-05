@@ -25,22 +25,25 @@ local M = {}
 --- @param r fzfx.LspRange?
 --- @return boolean
 M._is_lsp_range = function(r)
-  return type(tables.tbl_get(r, "start", "line")) == "number"
-    and type(tables.tbl_get(r, "start", "character")) == "number"
-    and type(tables.tbl_get(r, "end", "line")) == "number"
-    and type(tables.tbl_get(r, "end", "character")) == "number"
+  return type(r) == "table"
+    and type(r.start) == "table"
+    and type(r.start.line) == "number"
+    and type(r.start.character) == "number"
+    and type(r["end"]) == "table"
+    and type(r["end"].line) == "number"
+    and type(r["end"].character) == "number"
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_location = function(loc)
-  return type(tables.tbl_get(loc, "uri")) == "string"
-    and M._is_lsp_range(tables.tbl_get(loc, "range"))
+  return type(loc) == "table" and type(loc.uri) == "string" and M._is_lsp_range(loc.range)
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_locationlink = function(loc)
-  return type(tables.tbl_get(loc, "targetUri")) == "string"
-    and M._is_lsp_range(tables.tbl_get(loc, "targetRange"))
+  return type(loc) == "table"
+    and type(loc.targetUri) == "string"
+    and M._is_lsp_range(loc.targetRange)
 end
 
 --- @param line string
@@ -120,7 +123,7 @@ M._render_lsp_location_line = function(loc)
   if not M._is_lsp_range(range) then
     return nil
   end
-  if strings.empty(filename) or not paths.isfile(filename) then
+  if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return nil
   end
   local filelines = fileios.readlines(filename)
