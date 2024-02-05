@@ -14,7 +14,7 @@ This plugin internally extends `nvim`, `fzf` and lua scripts to full path when l
 
 But when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected escaping characters. Here're two typical cases:
 
-1. `C:\Program Files\Neovim\bin\nvim.exe`: nvim installed in `C:\Program Files` directory.
+1. `C:\Program Files\Neovim\bin\nvim.exe` - Neovim installed in `C:\Program Files` directory.
 
    Please add executables (`nvim.exe`, `fzf.exe`) to `%PATH%` (`$env:PATH` in PowerShell), and set the `env` configuration:
 
@@ -29,9 +29,9 @@ But when there're whitespaces on the path, launching correct shell command becom
 
    This will help avoid the shell command issue.
 
-2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe`: user name (`Lin Rongbin`) contains whitespace.
+2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe` - User name (`Lin Rongbin`) contains whitespace.
 
-   We still cannot handle the 2nd case because all lua scripts in this plugin will thus always contain whitespaces in their path.
+   !> We still cannot handle the 2nd case because all lua scripts in this plugin will thus always contain whitespaces in their path.
 
 Please always avoid whitespaces in directories and file names.
 
