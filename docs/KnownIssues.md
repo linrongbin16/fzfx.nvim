@@ -16,18 +16,7 @@ But when there're whitespaces on the path, escaping fzf command becomes quite di
 
 1. `C:\Program Files\Neovim\bin\nvim.exe` - Neovim installed in `C:\Program Files` directory.
 
-   Please add executables (`nvim.exe`, `fzf.exe`) to `%PATH%` (`$env:PATH` in PowerShell), and set the `env` configuration:
-
-   ```lua
-   require("fzfx").setup({
-     env = {
-       nvim = 'nvim',
-       fzf = 'fzf',
-     }
-   })
-   ```
-
-   This will help avoid the shell command issue.
+   Please add executables (`nvim.exe`, `fzf.exe`) to `%PATH%` (`$env:PATH` in PowerShell), so let this plugin find them.
 
 2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe` - User name (`Lin Rongbin`) contains whitespace.
 
