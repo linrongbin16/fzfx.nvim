@@ -15,5 +15,6 @@
     "undefined-doc-name",
     "lowercase-global"
   ],
+  "runtime.version": "LuaJIT",
   "workspace.checkThirdParty": "Disable"
 }
