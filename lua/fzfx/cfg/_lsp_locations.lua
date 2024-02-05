@@ -39,9 +39,8 @@ end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_locationlink = function(loc)
-  return type(loc) == "table"
-    and type(loc.targetUri) == "string"
-    and M._is_lsp_range(loc.targetRange)
+  return type(tables.tbl_get(loc, "targetUri")) == "string"
+    and M._is_lsp_range(tables.tbl_get(loc, "targetRange"))
 end
 
 --- @param line string
@@ -49,11 +48,6 @@ end
 --- @param color_renderer fun(text:string):string
 --- @return string?
 M._colorize_lsp_range = function(line, range, color_renderer)
-  -- log.debug(
-  --   "|fzfx.config - _lsp_location_render_line| range:%s, line:%s",
-  --   vim.inspect(range),
-  --   vim.inspect(line)
-  -- )
   local line_start = range.start.character + 1
   local line_end = range["end"].line ~= range.start.line and #line
     or math.min(range["end"].character, #line)
