@@ -192,12 +192,12 @@ describe("detail.popup.buffer_popup_window", function()
       }
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      assert_true(actual:preview_files_queue_empty())
+      assert_eq(#actual.preview_files_queue, 0)
       table.insert(actual.preview_files_queue, 1)
-      assert_false(actual:preview_files_queue_empty())
-      assert_eq(actual:preview_files_queue_last(), 1)
-      actual:preview_files_queue_clear()
-      assert_true(actual:preview_files_queue_empty())
+      assert_eq(#actual.preview_files_queue, 1)
+      assert_eq(actual.preview_files_queue[#actual.preview_files_queue], 1)
+      actual.preview_files_queue = {}
+      assert_eq(#actual.preview_files_queue, 0)
     end)
     it("preview_file_contents_queue", function()
       local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
@@ -209,12 +209,15 @@ describe("detail.popup.buffer_popup_window", function()
       }
       local actual =
         buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      assert_true(actual:preview_file_contents_queue_empty())
+      assert_eq(#actual.preview_file_contents_queue, 0)
       table.insert(actual.preview_file_contents_queue, 1)
-      assert_false(actual:preview_file_contents_queue_empty())
-      assert_eq(actual:preview_file_contents_queue_last(), 1)
-      actual:preview_file_contents_queue_clear()
-      assert_true(actual:preview_file_contents_queue_empty())
+      assert_eq(#actual.preview_file_contents_queue, 1)
+      assert_eq(
+        actual.preview_file_contents_queue[#actual.preview_file_contents_queue],
+        1
+      )
+      actual.preview_file_contents_queue = {}
+      assert_eq(#actual.preview_file_contents_queue, 0)
     end)
     it("preview_file", function()
       local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
@@ -231,8 +234,8 @@ describe("detail.popup.buffer_popup_window", function()
         { filename = "README.md" }
       )
       vim.wait(10000, function()
-        return actual:preview_files_queue_empty()
-          and actual:preview_file_contents_queue_empty()
+        return #actual.preview_files_queue == 0
+          and #actual.preview_file_contents_queue == 0
       end)
     end)
     it("preview_action", function()
@@ -250,8 +253,8 @@ describe("detail.popup.buffer_popup_window", function()
         { filename = "README.md" }
       )
       vim.wait(10000, function()
-        return actual:preview_files_queue_empty()
-          and actual:preview_file_contents_queue_empty()
+        return #actual.preview_files_queue == 0
+          and #actual.preview_file_contents_queue == 0
       end)
       actual:preview_action("preview-half-page-down")
       actual:preview_action("preview-half-page-up")

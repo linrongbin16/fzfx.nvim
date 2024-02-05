@@ -4,7 +4,6 @@ local apis = require("fzfx.commons.apis")
 local fileios = require("fzfx.commons.fileios")
 local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
-local uv = require("fzfx.commons.uv")
 
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
