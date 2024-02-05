@@ -707,8 +707,8 @@ end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string,job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob?
---- @param first_line integer
---- @param last_line integer
+--- @param first_line integer?
+--- @param last_line integer?
 function BufferPopupWindow:preview_file_contents(
   file_content,
   first_line,
