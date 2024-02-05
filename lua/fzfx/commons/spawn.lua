@@ -1,4 +1,13 @@
+local NVIM_VERSION_0_10 = false
+
+do
+  NVIM_VERSION_0_10 = require("fzfx.commons.versions").ge({ 0, 10 })
+end
+
 local M = {}
+
+M.system = (NVIM_VERSION_0_10 and vim.is_callable(vim.system)) and vim.system
+  or require("fzfx.commons._system").run
 
 --- @alias commons.SpawnLineProcessor fun(line:string):any
 --- @alias commons.SpawnOpts {on_stdout:commons.SpawnLineProcessor, on_stderr:commons.SpawnLineProcessor, [string]:any}
@@ -101,10 +110,7 @@ M.run = function(cmd, opts, on_exit)
     end
   end
 
-  local _system = vim.is_callable(vim.system) and vim.system
-    or require("fzfx.commons._system").run
-
-  return _system(cmd, {
+  return M.system(cmd, {
     cwd = opts.cwd,
     env = opts.env,
     clear_env = opts.clear_env,
