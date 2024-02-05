@@ -25,25 +25,22 @@ local M = {}
 --- @param r fzfx.LspRange?
 --- @return boolean
 M._is_lsp_range = function(r)
-  return type(r) == "table"
-    and type(r.start) == "table"
-    and type(r.start.line) == "number"
-    and type(r.start.character) == "number"
-    and type(r["end"]) == "table"
-    and type(r["end"].line) == "number"
-    and type(r["end"].character) == "number"
+  return type(tables.tbl_get(r, "start", "line")) == "number"
+    and type(tables.tbl_get(r, "start", "character")) == "number"
+    and type(tables.tbl_get(r, "end", "line")) == "number"
+    and type(tables.tbl_get(r, "end", "character")) == "number"
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_location = function(loc)
-  return type(loc) == "table" and type(loc.uri) == "string" and M._is_lsp_range(loc.range)
+  return type(tables.tbl_get(loc, "uri")) == "string"
+    and M._is_lsp_range(tables.tbl_get(loc, "range"))
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_locationlink = function(loc)
-  return type(loc) == "table"
-    and type(loc.targetUri) == "string"
-    and M._is_lsp_range(loc.targetRange)
+  return type(tables.tbl_get(loc, "targetUri")) == "string"
+    and M._is_lsp_range(tables.tbl_get(loc, "targetRange"))
 end
 
 --- @param line string
