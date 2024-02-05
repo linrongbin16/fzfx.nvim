@@ -23,7 +23,6 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [Features](#-features)
 - [Requirements](#-requirements)
   - [Windows](#windows)
-  - [Whitespace Escaping Issue](#whitespace-escaping-issue)
 - [Install](#-install)
 - [Commands](#-commands)
   - [Files & Buffers](#files--buffers)
@@ -79,7 +78,7 @@ Windows users will have to install the linux shell environment, since basic linu
 <summary><i>Click here to see how to install linux commands</i></summary>
 <br/>
 
-There're many ways to install portable linux shell and builtin commands on Windows, but personally I would recommend below two methods.
+There're many ways to install portable linux shell and builtin commands on Windows, but personally I would recommend below two methods:
 
 #### [Git for Windows](https://git-scm.com/download/win)
 
@@ -115,54 +114,15 @@ scoop install curl          # curl
 scoop install grep          # grep
 ```
 
-> Note: install the rust-reimplementation [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), since some (for example `ls`) GNU commands is actually broken on Windows 10 x86_64 PC.
+> [!NOTE]
+>
+> Install the rust-reimplementation [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), since some (for example `ls`) GNU commands is actually broken on Windows 10 x86_64 PC.
 
 #### Fix conflicts between embedded commands in `C:\Windows\System32` and portable linux commands
 
 Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\Windows\System32` (or `%SystemRoot%\system32`), while they are not the linux commands they are named after, but could override our installations. To fix this issue, we could prioritize the git or scoop environment variables in `%PATH%`.
 
 <img alt="windows-path" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5296429b-daae-40f6-be16-6c065ef7bf05" width="70%" />
-
-</details>
-
-### Whitespace Escaping Issue
-
-<details>
-<summary><i>Click here to see how whitespace affect characters escaping</i></summary>
-<br/>
-
-This plugin internally extends `nvim`, `fzf` and lua scripts to full path when launching command.
-
-1. Example on macOS:
-
-   `/Users/rlin/.config/nvim/lazy/fzf/bin/fzf --print-query --listen --query '' --preview 'nvim -n -u NONE --clean --headless -l /Users/rlin/.local/share/nvim/site/pack/test/start/fzfx.nvim/bin/general/previewer.lua 2 /Users/rlin/.local/share/nvim/fzfx.nvim/previewer_metafile /Users/rlin/.local/share/nvim/fzfx.nvim/previewer_resultfile {}' --bind 'start:execute-silent(echo $FZF_PORT>/Users/rlin/.local/share/nvim/fzfx.nvim/fzf_port_file)' --multi --preview-window 'left,65%,+{2}-/2' --border=none --delimiter ':' --prompt 'Incoming Calls > ' --expect 'esc' --expect 'double-click' --expect 'enter' >/var/folders/5p/j4q6bz395fbbxdf_6b95_nz80000gp/T/nvim.rlin/fIj5xA/2`
-
-2. Example on Windows 10:
-
-   `C:/Users/linrongbin/github/junegunn/fzf/bin/fzf --query "" --header ":: Press \27[38;2;255;121;198mCTRL-U\27[0m to unrestricted mode" --prompt "~/g/l/fzfx.nvim > " --bind "start:unbind(ctrl-r)" --bind "ctrl-u:unbind(ctrl-u)+execute-silent(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\rpc\\client.lua 1)+change-header(:: Press \27[38;2;255;121;198mCTRL-R\27[0m to restricted mode)+rebind(ctrl-r)+reload(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\provider.lua C:\\Users\\linrongbin\\AppData\\Local\\nvim-data\\fzfx.nvim\\switch_files_provider)" --bind "ctrl-r:unbind(ctrl-r)+execute-silent(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\rpc\\client.lua 1)+change-header(:: Press \27[38;2;255;121;198mCTRL-U\27[0m to unrestricted mode)+rebind(ctrl-u)+reload(C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\provider.lua C:\\Users\\linrongbin\\AppData\\Local\\nvim-data\\fzfx.nvim\\switch_files_provider)" --preview "C:\\Users\\linrongbin\\scoop\\apps\\neovim\\current\\bin\\nvim.exe -n --clean --headless -l C:\\Users\\linrongbin\\github\\linrongbin16\\fzfx.nvim\\bin\\files\\previewer.lua {}" --bind "ctrl-l:toggle-preview" --expect "enter" --expect "double-click" >C:\\Users\\LINRON~1\\AppData\\Local\\Temp\\nvim.0\\JSmP06\\2`
-
-But when there're whitespaces on the path, launching correct shell command becomes quite difficult, since it will seriously affected escaping characters. Here're two typical cases:
-
-1. `C:\Program Files\Neovim\bin\nvim.exe`: nvim installed in `C:\Program Files` directory.
-
-   Please add executables (`nvim.exe`, `fzf.exe`) to `%PATH%` (`$env:PATH` in PowerShell), and set the `env` configuration:
-
-   ```lua
-   require("fzfx").setup({
-     env = {
-       nvim = 'nvim',
-       fzf = 'fzf',
-     }
-   })
-   ```
-
-   This will help avoid the shell command issue.
-
-2. `C:\Users\Lin Rongbin\opt\Neovim\bin\nvim.exe`: user name (`Lin Rongbin`) contains whitespace.
-
-   We still cannot handle the 2nd case because all lua scripts in this plugin will thus always contain whitespaces in their path.
-
-Please always avoid whitespaces in directories and file names.
 
 </details>
 
