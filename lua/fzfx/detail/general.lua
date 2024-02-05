@@ -1119,7 +1119,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       return fileios.readfile(fzf_port_file, { trim = true })
     end
 
-    local QUERY_FZF_CURRENT_STATUS_INTERVAL = 50
+    local QUERY_FZF_CURRENT_STATUS_INTERVAL = 100
     buffer_previewer_query_fzf_status_start = true
 
     local buffer_previewer_fzf_current_text = nil

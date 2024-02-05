@@ -601,9 +601,9 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
 
         self._saved_previewing_file_content_job = last_content
         self:preview_file_contents(last_content)
-      end, 10)
+      end, 20)
     end)
-  end, 10)
+  end, 20)
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string,job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
@@ -717,11 +717,11 @@ function BufferPopupWindow:preview_file_contents(file_content, first_line, last_
           if line_index >= SHOW_PREVIEW_LABEL_COUNT then
             vim.schedule(set_win_title)
           end
-        end, 3)
+        end, 5)
       end
       set_buf_lines()
-    end, 10)
-  end, 10)
+    end, 20)
+  end, 20)
 end
 
 --- @param action_name string
