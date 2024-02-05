@@ -16,8 +16,7 @@ describe("detail.yanks", function()
 
   describe("[Yank]", function()
     it("creates", function()
-      local yk =
-        yanks.Yank:new("regname", "regtext", "regtype", "filename", "filetype")
+      local yk = yanks.Yank:new("regname", "regtext", "regtype", "filename", "filetype")
       assert_eq(type(yk), "table")
       assert_eq(yk.regname, "regname")
       assert_eq(yk.regtext, "regtext")

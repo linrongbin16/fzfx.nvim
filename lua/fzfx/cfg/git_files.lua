@@ -95,8 +95,7 @@ M._make_git_files_provider = function(opts)
   return impl
 end
 
-local current_folder_provider =
-  M._make_git_files_provider({ current_folder = true })
+local current_folder_provider = M._make_git_files_provider({ current_folder = true })
 local workspace_provider = M._make_git_files_provider()
 
 M.providers = {

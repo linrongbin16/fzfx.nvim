@@ -21,16 +21,8 @@ M._make_cursor_opts = function(opts)
   local width = popup_helpers.get_window_size(opts.width, total_width)
   local height = popup_helpers.get_window_size(opts.height, total_height)
 
-  log.ensure(
-    opts.row >= 0,
-    "window row (%s) opts must >= 0!",
-    vim.inspect(opts)
-  )
-  log.ensure(
-    opts.row >= 0,
-    "window col (%s) opts must >= 0!",
-    vim.inspect(opts)
-  )
+  log.ensure(opts.row >= 0, "window row (%s) opts must >= 0!", vim.inspect(opts))
+  log.ensure(opts.row >= 0, "window col (%s) opts must >= 0!", vim.inspect(opts))
   local row = opts.row
   local col = opts.col
 
@@ -51,10 +43,8 @@ end
 --- @return fzfx.NvimFloatWinOpts
 M._make_center_opts = function(opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
-  local total_width = relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(0)
-  local total_height = relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(0)
+  local total_width = relative == "editor" and vim.o.columns or vim.api.nvim_win_get_width(0)
+  local total_height = relative == "editor" and vim.o.lines or vim.api.nvim_win_get_height(0)
   local width = popup_helpers.get_window_size(opts.width, total_width)
   local height = popup_helpers.get_window_size(opts.height, total_height)
 

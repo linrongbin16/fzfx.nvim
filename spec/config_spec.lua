@@ -52,10 +52,10 @@ describe("config", function()
     it("set", function()
       config.setup()
       local actual1 = config.get()
-      actual1.env.nvim = "nvim"
+      actual1.files = "files"
       config.set(actual1)
       local actual2 = config.get()
-      assert_eq(actual1.env.nvim, actual2.env.nvim)
+      assert_eq(actual1.files, actual2.files)
     end)
   end)
   describe("[get_defaults]", function()

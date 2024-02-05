@@ -57,10 +57,7 @@ describe("schema", function()
       assert_eq(type(command.previewer), "function")
       assert_eq(command.previewer(), command_previewer())
       assert_eq(command.previewer_type, command_previewer_type)
-      assert_eq(
-        schema.get_previewer_type_or_default(command),
-        command_previewer_type
-      )
+      assert_eq(schema.get_previewer_type_or_default(command), command_previewer_type)
     end)
   end)
   describe("[VariantConfig]", function()

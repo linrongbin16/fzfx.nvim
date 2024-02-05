@@ -13,8 +13,6 @@ describe("detail.bat_helpers", function()
 
   local constants = require("fzfx.lib.constants")
   local tables = require("fzfx.commons.tables")
-  local strings = require("fzfx.commons.strings")
-  local paths = require("fzfx.commons.paths")
   local bat_helpers = require("fzfx.detail.bat_helpers")
   require("fzfx").setup()
 

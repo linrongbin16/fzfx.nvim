@@ -29,8 +29,7 @@ end
 local Promise = {}
 Promise.__index = Promise
 
-local PromiseStatus =
-  { Pending = "pending", Fulfilled = "fulfilled", Rejected = "rejected" }
+local PromiseStatus = { Pending = "pending", Fulfilled = "fulfilled", Rejected = "rejected" }
 
 local is_promise = function(v)
   return getmetatable(v) == Promise
@@ -56,20 +55,14 @@ local new_pending = function(on_fullfilled, on_rejected)
   local self = setmetatable(tbl, Promise)
 
   local userdata = new_empty_userdata()
-  self._unhandled_detector = setmetatable(
-    { [self] = userdata },
-    { __mode = "k" }
-  )
+  self._unhandled_detector = setmetatable({ [self] = userdata }, { __mode = "k" })
   getmetatable(userdata).__gc = function()
     if self._status ~= PromiseStatus.Rejected or self._handled then
       return
     end
     self._handled = true
     vim.schedule(function()
-      local values = vim.inspect(
-        { self._value:unpack() },
-        { newline = "", indent = "" }
-      )
+      local values = vim.inspect({ self._value:unpack() }, { newline = "", indent = "" })
       error("unhandled promise rejection: " .. values, 0)
     end)
   end

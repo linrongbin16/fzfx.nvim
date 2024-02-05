@@ -14,8 +14,7 @@ end
 --- @return string
 M.cache_dir = function()
   assert(
-    type(vim.env._FZFX_NVIM_CACHE_DIR) == "string"
-      and string.len(vim.env._FZFX_NVIM_CACHE_DIR) > 0
+    type(vim.env._FZFX_NVIM_CACHE_DIR) == "string" and string.len(vim.env._FZFX_NVIM_CACHE_DIR) > 0
   )
   return vim.env._FZFX_NVIM_CACHE_DIR
 end

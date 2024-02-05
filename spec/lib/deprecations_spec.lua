@@ -13,9 +13,7 @@ describe("lib.deprecations", function()
   local deprecations = require("fzfx.lib.deprecations")
   describe("[notify]", function()
     it("test without parameters", function()
-      deprecations.notify(
-        "deprecated 'GroupConfig', please use pure lua table!"
-      )
+      deprecations.notify("deprecated 'GroupConfig', please use pure lua table!")
       assert_true(true)
     end)
     it("test with parameters", function()

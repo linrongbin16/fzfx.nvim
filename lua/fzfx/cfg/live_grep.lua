@@ -114,9 +114,7 @@ M.variants = {
 --- @param bufnr integer
 --- @return string?
 M._get_buf_path = function(bufnr)
-  local bufpath = bufs.buf_is_valid(bufnr)
-      and paths.reduce(vim.api.nvim_buf_get_name(bufnr))
-    or nil
+  local bufpath = bufs.buf_is_valid(bufnr) and paths.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
   if strings.empty(bufpath) then
     log.echo(LogLevels.INFO, INVALID_BUFFER_ERROR, vim.inspect(bufnr))
     return nil
@@ -153,9 +151,7 @@ M._make_provider_rg = function(opts)
     local option = parsed.option
 
     local args = nil
-    if
-      tables.tbl_get(opts, "unrestricted") or tables.tbl_get(opts, "buffer")
-    then
+    if tables.tbl_get(opts, "unrestricted") or tables.tbl_get(opts, "buffer") then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_RG)
@@ -189,9 +185,7 @@ M._make_provider_grep = function(opts)
     local option = parsed.option
 
     local args = nil
-    if
-      tables.tbl_get(opts, "unrestricted") or tables.tbl_get(opts, "buffer")
-    then
+    if tables.tbl_get(opts, "unrestricted") or tables.tbl_get(opts, "buffer") then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
@@ -259,27 +253,22 @@ M.previewers = {
   restricted_mode = {
     previewer = previewers_helper.preview_files_grep,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = consts.HAS_RG and labels_helper.label_rg
-      or labels_helper.label_grep,
+    previewer_label = consts.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   unrestricted_mode = {
     previewer = previewers_helper.preview_files_grep,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = consts.HAS_RG and labels_helper.label_rg
-      or labels_helper.label_grep,
+    previewer_label = consts.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   buffer_mode = {
     previewer = previewers_helper.preview_files_grep,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = consts.HAS_RG and labels_helper.label_rg
-      or labels_helper.label_grep,
+    previewer_label = consts.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
 }
 
-local edit = consts.HAS_RG and actions_helper.edit_rg
-  or actions_helper.edit_grep
-local setqflist = consts.HAS_RG and actions_helper.setqflist_rg
-  or actions_helper.setqflist_grep
+local edit = consts.HAS_RG and actions_helper.edit_rg or actions_helper.edit_grep
+local setqflist = consts.HAS_RG and actions_helper.setqflist_rg or actions_helper.setqflist_grep
 
 M.actions = {
   ["esc"] = actions_helper.nop,

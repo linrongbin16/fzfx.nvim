@@ -97,10 +97,7 @@ local LAST_QUERY_CACHES = {}
 
 --- @param name string
 local function last_query_cache_name(name)
-  return paths.join(
-    config.get().cache.dir,
-    string.format("_%s_last_query_cache", name)
-  )
+  return paths.join(config.get().cache.dir, string.format("_%s_last_query_cache", name))
 end
 
 --- @param name string
@@ -189,10 +186,7 @@ local function _generate_fzf_color_opts()
     for i = 2, #opts do
       local codes = apis.get_hl(opts[i])
       if type(tables.tbl_get(codes, attr)) == "number" then
-        table.insert(
-          builder,
-          string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr])
-        )
+        table.insert(builder, string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr]))
         break
       end
     end
@@ -308,7 +302,6 @@ end
 --- @return string?
 local function nvim_exec()
   local exe_list = {}
-  table.insert(exe_list, config.get().env.nvim)
   table.insert(exe_list, vim.v.argv[1])
   table.insert(exe_list, vim.env.VIM)
   table.insert(exe_list, "nvim")
@@ -324,7 +317,6 @@ end
 --- @return string?
 local function fzf_exec()
   local exe_list = {}
-  table.insert(exe_list, config.get().env.fzf)
   if vim.fn.exists("*fzf#exec") > 0 then
     table.insert(exe_list, vim.fn["fzf#exec"]())
   end
@@ -341,14 +333,12 @@ end
 --- @return string
 local function make_lua_command(...)
   local nvim_path = nvim_exec()
-  local lua_path =
-    paths.join(vim.env._FZFX_NVIM_SELF_PATH --[[@as string]], "bin", ...)
+  local lua_path = paths.join(vim.env._FZFX_NVIM_SELF_PATH --[[@as string]], "bin", ...)
   -- log.debug(
   --     "|fzfx.fzf_helpers - make_lua_command| luascript:%s",
   --     vim.inspect(lua_path)
   -- )
-  local result =
-    string.format("%s -n -u NONE --clean --headless -l %s", nvim_path, lua_path)
+  local result = string.format("%s -n -u NONE --clean --headless -l %s", nvim_path, lua_path)
   -- log.debug(
   --     "|fzfx.fzf_helpers - make_lua_command| result:%s",
   --     vim.inspect(result)
@@ -501,10 +491,7 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
       result.size = tonumber(o)
       result.size_is_percent = false
     elseif strings.startswith(o, "border-") then
-      result.border = FZF_BORDER_OPTS_MAP[string.sub(
-        o,
-        string.len("border-") + 1
-      )] or "rounded"
+      result.border = FZF_BORDER_OPTS_MAP[string.sub(o, string.len("border-") + 1)] or "rounded"
     elseif o == "nowrap" or o == "wrap" then
       result.wrap = o == "wrap"
     elseif o == "nofollow" or o == "follow" then
@@ -537,11 +524,9 @@ local function _spilt_fzf_preview_window_opts(opts_value)
         vim.inspect(i),
         vim.inspect(opts_value)
       )
-      local next_rbracket_pos =
-        strings.find(opts_value, ")", next_lbracket_pos + 1)
+      local next_rbracket_pos = strings.find(opts_value, ")", next_lbracket_pos + 1)
       log.ensure(
-        type(next_rbracket_pos) == "number"
-          and next_rbracket_pos > next_lbracket_pos,
+        type(next_rbracket_pos) == "number" and next_rbracket_pos > next_lbracket_pos,
         "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
         vim.inspect(next_lbracket_pos),
         vim.inspect(opts_value)
@@ -569,11 +554,7 @@ end
 --- @param opts fzfx.FzfOpt[]
 --- @return fzfx.FzfPreviewWindowOpts
 local function parse_fzf_preview_window_opts(opts)
-  log.ensure(
-    type(opts) == "table",
-    "invalid fzf preview window opts list:%s",
-    vim.inspect(opts)
-  )
+  log.ensure(type(opts) == "table", "invalid fzf preview window opts list:%s", vim.inspect(opts))
   local opts_value = ""
   for _, o in ipairs(opts) do
     log.ensure(
@@ -582,9 +563,7 @@ local function parse_fzf_preview_window_opts(opts)
       vim.inspect(o)
     )
     if type(o) == "table" then
-      opts_value = opts_value
-        .. (string.len(opts_value) > 0 and "," or "")
-        .. strings.trim(o[2])
+      opts_value = opts_value .. (string.len(opts_value) > 0 and "," or "") .. strings.trim(o[2])
     else
       log.ensure(
         type(o) == "string" and strings.startswith(o, "--preview-window"),
@@ -593,9 +572,7 @@ local function parse_fzf_preview_window_opts(opts)
       )
       opts_value = opts_value
         .. (string.len(opts_value) > 0 and "," or "")
-        .. strings.trim(
-          string.sub(o --[[@as string]], string.len("--preview-window") + 2)
-        )
+        .. strings.trim(string.sub(o --[[@as string]], string.len("--preview-window") + 2))
     end
   end
 
@@ -606,10 +583,7 @@ local function parse_fzf_preview_window_opts(opts)
     "failed to split preview window opts into list: %s",
     vim.inspect(split_opts)
   )
-  log.debug(
-    "|parse_fzf_preview_window_opts| split_opts:%s",
-    vim.inspect(split_opts)
-  )
+  log.debug("|parse_fzf_preview_window_opts| split_opts:%s", vim.inspect(split_opts))
 
   local opts_alternative_layout = nil
   local opts_no_alternative_layout = {}
@@ -621,8 +595,7 @@ local function parse_fzf_preview_window_opts(opts)
     end
   end
 
-  local result =
-    parse_fzf_preview_window_opts_no_alternative(opts_no_alternative_layout) --[[@as fzfx.FzfPreviewWindowOpts]]
+  local result = parse_fzf_preview_window_opts_no_alternative(opts_no_alternative_layout) --[[@as fzfx.FzfPreviewWindowOpts]]
   result.size_threshold = nil
   result.alternative_layout = nil
   if opts_alternative_layout then
@@ -637,13 +610,9 @@ local function parse_fzf_preview_window_opts(opts)
       "invalid fzf preview window opts(size_threshold): %s",
       vim.inspect(opts)
     )
-    result.size_threshold =
-      tonumber(string.sub(opts_alternative_layout, 2, lbracket_pos - 1))
-    local split_alternatives = string.sub(
-      opts_alternative_layout,
-      lbracket_pos + 1,
-      #opts_alternative_layout - 1
-    )
+    result.size_threshold = tonumber(string.sub(opts_alternative_layout, 2, lbracket_pos - 1))
+    local split_alternatives =
+      string.sub(opts_alternative_layout, lbracket_pos + 1, #opts_alternative_layout - 1)
     result.alternative_layout = parse_fzf_preview_window_opts_no_alternative(
       _spilt_fzf_preview_window_opts(split_alternatives)
     )

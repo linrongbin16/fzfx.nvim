@@ -108,8 +108,7 @@ M._make_git_status_provider = function(opts)
   return impl
 end
 
-local current_folder_provider =
-  M._make_git_status_provider({ current_folder = true })
+local current_folder_provider = M._make_git_status_provider({ current_folder = true })
 local workspace_provider = M._make_git_status_provider()
 
 M.providers = {
@@ -137,10 +136,7 @@ M._git_status_previewer = function(line)
       win_width
     )
   else
-    return string.format(
-      [[git diff --color=always %s]],
-      shells.shellescape(parsed.filename)
-    )
+    return string.format([[git diff --color=always %s]], shells.shellescape(parsed.filename))
   end
 end
 

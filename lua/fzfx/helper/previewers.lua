@@ -19,17 +19,11 @@ local M = {}
 --- @return string, string
 M._bat_style_theme = function()
   local style = "numbers,changes"
-  if
-    type(vim.env["BAT_STYLE"]) == "string"
-    and string.len(vim.env["BAT_STYLE"]) > 0
-  then
+  if type(vim.env["BAT_STYLE"]) == "string" and string.len(vim.env["BAT_STYLE"]) > 0 then
     style = vim.env["BAT_STYLE"]
   end
   local theme = "base16"
-  if
-    type(vim.env["BAT_THEME"]) == "string"
-    and string.len(vim.env["BAT_THEME"]) > 0
-  then
+  if type(vim.env["BAT_THEME"]) == "string" and string.len(vim.env["BAT_THEME"]) > 0 then
     theme = vim.env["BAT_THEME"]
     return style, theme
   end
@@ -152,11 +146,7 @@ end
 M._make_preview_git_commit = function(commit)
   if constants.HAS_DELTA then
     local win_width = M.get_preview_window_width()
-    return string.format(
-      [[git show %s | delta -n --tabs 4 --width %d]],
-      commit,
-      win_width
-    )
+    return string.format([[git show %s | delta -n --tabs 4 --width %d]], commit, win_width)
   else
     return string.format([[git show --color=always %s]], commit)
   end

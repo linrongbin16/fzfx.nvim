@@ -193,8 +193,7 @@ function GitCurrentBranchCommand:output()
   if self:failed() then
     return nil
   end
-  return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-      and self.result.stdout[1]
+  return (type(self.result.stdout) == "table" and #self.result.stdout > 0) and self.result.stdout[1]
     or nil
 end
 
@@ -231,8 +230,7 @@ function GitRemotesCommand:output()
   if self:failed() then
     return nil
   end
-  return (type(self.result.stdout) == "table" and #self.result.stdout > 0)
-      and self.result.stdout
+  return (type(self.result.stdout) == "table" and #self.result.stdout > 0) and self.result.stdout
     or nil
 end
 

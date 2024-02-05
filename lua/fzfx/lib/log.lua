@@ -56,8 +56,7 @@ local Defaults = {
 
 --- @param opts fzfx.Options?
 M.setup = function(opts)
-  local configs =
-    vim.tbl_deep_extend("force", vim.deepcopy(Defaults), opts or {})
+  local configs = vim.tbl_deep_extend("force", vim.deepcopy(Defaults), opts or {})
   require("fzfx.commons.logging").setup({
     name = "fzfx",
     level = configs.level,
@@ -79,9 +78,7 @@ M.debug = function(fmt, ...)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging")
-    .get("fzfx")
-    :_log(dbg, M.LogLevels.DEBUG, fmt, ...)
+  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.DEBUG, fmt, ...)
 end
 
 --- @param fmt string
@@ -96,9 +93,7 @@ M.info = function(fmt, ...)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging")
-    .get("fzfx")
-    :_log(dbg, M.LogLevels.INFO, fmt, ...)
+  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.INFO, fmt, ...)
 end
 
 --- @param fmt string
@@ -113,9 +108,7 @@ M.warn = function(fmt, ...)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging")
-    .get("fzfx")
-    :_log(dbg, M.LogLevels.WARN, fmt, ...)
+  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.WARN, fmt, ...)
 end
 
 --- @param fmt string
@@ -130,9 +123,7 @@ M.err = function(fmt, ...)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging")
-    .get("fzfx")
-    :_log(dbg, M.LogLevels.ERROR, fmt, ...)
+  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, fmt, ...)
 end
 
 --- @param fmt string
@@ -147,9 +138,7 @@ M.throw = function(fmt, ...)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging")
-    .get("fzfx")
-    :_log(dbg, M.LogLevels.ERROR, fmt, ...)
+  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, fmt, ...)
   error(string.format(fmt, ...))
 end
 
@@ -167,9 +156,7 @@ M.ensure = function(cond, fmt, ...)
     dbglvl = dbglvl + 1
   end
   if not cond then
-    require("fzfx.commons.logging")
-      .get("fzfx")
-      :_log(dbg, M.LogLevels.ERROR, fmt, ...)
+    require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, fmt, ...)
   end
   assert(cond, string.format(fmt, ...))
 end

@@ -44,8 +44,7 @@ describe("cfg.git_status", function()
     end)
     it("_make_git_status_provider", function()
       local actual1 = git_status_cfg._make_git_status_provider({})()
-      local actual2 =
-        git_status_cfg._make_git_status_provider({ current_folder = true })()
+      local actual2 = git_status_cfg._make_git_status_provider({ current_folder = true })()
       -- print(
       --     string.format("git status provider1:%s\n", vim.inspect(actual1))
       -- )

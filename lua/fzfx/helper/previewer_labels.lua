@@ -26,8 +26,7 @@ M.label_rg = function(line)
     "%s:%d%s",
     vim.fn.fnamemodify(parsed.filename, ":t"),
     parsed.lineno,
-    type(parsed.column) == "number" and string.format(":%d", parsed.column)
-      or ""
+    type(parsed.column) == "number" and string.format(":%d", parsed.column) or ""
   )
 end
 
@@ -38,11 +37,7 @@ M.label_grep = function(line)
     return ""
   end
   local parsed = parsers.parse_grep(line --[[@as string]])
-  return string.format(
-    "%s:%d",
-    vim.fn.fnamemodify(parsed.filename, ":t"),
-    parsed.lineno or 1
-  )
+  return string.format("%s:%d", vim.fn.fnamemodify(parsed.filename, ":t"), parsed.lineno or 1)
 end
 
 --- @param parser fun(line:string,context:fzfx.VimCommandsPipelineContext|fzfx.VimKeyMapsPipelineContext):table|string
@@ -62,21 +57,15 @@ M._make_label_vim_command_or_keymap = function(parser, default_value)
       and strings.not_empty(parsed.filename)
       and type(parsed.lineno) == "number"
     then
-      return string.format(
-        "%s:%d",
-        vim.fn.fnamemodify(parsed.filename, ":t"),
-        parsed.lineno
-      )
+      return string.format("%s:%d", vim.fn.fnamemodify(parsed.filename, ":t"), parsed.lineno)
     end
     return default_value
   end
   return impl
 end
 
-M.label_vim_command =
-  M._make_label_vim_command_or_keymap(parsers.parse_vim_command, "Definition")
-M.label_vim_keymap =
-  M._make_label_vim_command_or_keymap(parsers.parse_vim_keymap, "Definition")
+M.label_vim_command = M._make_label_vim_command_or_keymap(parsers.parse_vim_command, "Definition")
+M.label_vim_keymap = M._make_label_vim_command_or_keymap(parsers.parse_vim_keymap, "Definition")
 
 --- @param parser fun(line:string, context:fzfx.FileExplorerPipelineContext):table
 --- @return fun(line:string, context:fzfx.FileExplorerPipelineContext):string?

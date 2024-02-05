@@ -21,10 +21,7 @@ describe("detail.module", function()
       conf.setup()
       module.setup()
       print(
-        string.format(
-          "_FZFX_NVIM_DEBUG_ENABLE:%s\n",
-          vim.inspect(vim.env._FZFX_NVIM_DEBUG_ENABLE)
-        )
+        string.format("_FZFX_NVIM_DEBUG_ENABLE:%s\n", vim.inspect(vim.env._FZFX_NVIM_DEBUG_ENABLE))
       )
       print(
         string.format(
@@ -55,12 +52,7 @@ describe("detail.module", function()
         vim.env._FZFX_NVIM_DEVICONS_PATH == nil
           or (
             type(vim.env._FZFX_NVIM_DEVICONS_PATH) == "string"
-            and type(
-                strings.find(
-                  vim.env._FZFX_NVIM_DEVICONS_PATH,
-                  "nvim-web-devicons"
-                )
-              )
+            and type(strings.find(vim.env._FZFX_NVIM_DEVICONS_PATH, "nvim-web-devicons"))
               == "number"
           )
       )

@@ -99,20 +99,14 @@ M.save_yank = function()
   --     vim.inspect(y)
   -- )
 
-  log.ensure(
-    M._YankHistoryInstance ~= nil,
-    "|save_yank| YankHistoryInstance must not be nil!"
-  )
+  log.ensure(M._YankHistoryInstance ~= nil, "|save_yank| YankHistoryInstance must not be nil!")
   ---@diagnostic disable-next-line: need-check-nil
   return M._YankHistoryInstance:push(y)
 end
 
 --- @return fzfx.Yank?
 M.get_yank = function()
-  log.ensure(
-    M._YankHistoryInstance ~= nil,
-    "|get_yank| YankHistoryInstance must not be nil!"
-  )
+  log.ensure(M._YankHistoryInstance ~= nil, "|get_yank| YankHistoryInstance must not be nil!")
   ---@diagnostic disable-next-line: need-check-nil
   return M._YankHistoryInstance:get()
 end
@@ -123,9 +117,8 @@ M._get_yank_history_instance = function()
 end
 
 M.setup = function()
-  M._YankHistoryInstance = YankHistory:new(
-    env.debug_enabled() and 10 or config.get().yank_history.other_opts.maxsize
-  )
+  M._YankHistoryInstance =
+    YankHistory:new(env.debug_enabled() and 10 or config.get().yank_history.other_opts.maxsize)
   vim.api.nvim_create_autocmd("TextYankPost", {
     pattern = { "*" },
     callback = M.save_yank,

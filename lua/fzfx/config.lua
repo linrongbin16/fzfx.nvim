@@ -272,19 +272,8 @@ local Defaults = {
     },
   },
 
-  -- environment variables
-  env = {
-    --- @type string|nil
-    nvim = nil,
-    --- @type string|nil
-    fzf = nil,
-  },
-
   cache = {
-    dir = require("fzfx.commons.paths").join(
-      vim.fn.stdpath("data"),
-      "fzfx.nvim"
-    ),
+    dir = require("fzfx.commons.paths").join(vim.fn.stdpath("data"), "fzfx.nvim"),
   },
 
   -- debug

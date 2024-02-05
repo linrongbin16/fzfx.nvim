@@ -56,14 +56,8 @@ describe("cfg.live_grep", function()
         assert_eq(actual[3], "-n")
         assert_eq(actual[4], "-H")
         assert_eq(actual[5], "-r")
-        assert_eq(
-          actual[6],
-          "--exclude-dir=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]])
-        )
-        assert_eq(
-          actual[7],
-          "--exclude=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]])
-        )
+        assert_eq(actual[6], "--exclude-dir=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]]))
+        assert_eq(actual[7], "--exclude=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]]))
         assert_eq(actual[8], "hello")
       end
     end)

@@ -183,11 +183,7 @@ M._parse_ex_command_output_lua_function_definition = function(line, start_pos)
   local lua_function_flag = "<Lua function>"
   local lua_function_pos = strings.find(line, lua_function_flag, start_pos)
   if lua_function_pos then
-    start_pos = strings.find(
-      line,
-      lua_flag,
-      lua_function_pos + string.len(lua_function_flag)
-    ) --[[@as integer]]
+    start_pos = strings.find(line, lua_flag, lua_function_pos + string.len(lua_function_flag)) --[[@as integer]]
   else
     start_pos = strings.find(line, lua_flag, start_pos) --[[@as integer]]
   end
@@ -199,10 +195,7 @@ M._parse_ex_command_output_lua_function_definition = function(line, start_pos)
   if string.len(content) > 0 and content:sub(#content) == ">" then
     content = content:sub(1, #content - 1)
   end
-  log.debug(
-    "|_parse_ex_command_output_lua_function_definition| content-2:%s",
-    vim.inspect(content)
-  )
+  log.debug("|_parse_ex_command_output_lua_function_definition| content-2:%s", vim.inspect(content))
   local content_splits = strings.split(content, ":")
   log.debug(
     "|_parse_ex_command_output_lua_function_definition| split content:%s",
@@ -290,12 +283,7 @@ M._parse_ex_command_output = function()
     if found_command_output_header then
       -- parse command name, e.g., FzfxCommands, etc.
       local idx = parsed_header.name_pos
-      log.debug(
-        "|_parse_ex_command_output| line[%d]:%s(%d)",
-        i,
-        vim.inspect(line),
-        idx
-      )
+      log.debug("|_parse_ex_command_output| line[%d]:%s(%d)", i, vim.inspect(line), idx)
       while idx <= #line and not strings.isspace(line:sub(idx, idx)) do
         -- log.debug(
         --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
@@ -315,8 +303,7 @@ M._parse_ex_command_output = function()
       local name = vim.trim(line:sub(parsed_header.name_pos, idx))
 
       idx = math.max(parsed_header.definition_pos, idx)
-      local parsed_line =
-        M._parse_ex_command_output_lua_function_definition(line, idx)
+      local parsed_line = M._parse_ex_command_output_lua_function_definition(line, idx)
       if parsed_line then
         results[name] = {
           filename = parsed_line.filename,
@@ -328,10 +315,7 @@ M._parse_ex_command_output = function()
     if M._is_ex_command_output_header(line) then
       found_command_output_header = true
       parsed_header = M._parse_ex_command_output_header(line)
-      log.debug(
-        "|_parse_ex_command_output| parsed header:%s",
-        vim.inspect(parsed_header)
-      )
+      log.debug("|_parse_ex_command_output| parsed header:%s", vim.inspect(parsed_header))
     end
   end
 
@@ -342,10 +326,7 @@ end
 M._get_vim_user_commands = function()
   local parsed_ex_commands = M._parse_ex_command_output()
   local user_commands = vim.api.nvim_get_commands({ builtin = false })
-  log.debug(
-    "|_get_vim_user_commands| user commands:%s",
-    vim.inspect(user_commands)
-  )
+  log.debug("|_get_vim_user_commands| user commands:%s", vim.inspect(user_commands))
 
   local results = {}
   for name, opts in pairs(user_commands) do
@@ -379,22 +360,13 @@ end
 M._render_vim_commands_column_opts = function(vc)
   local bang = (type(vc.opts) == "table" and vc.opts.bang) and "Y" or "N"
   local bar = (type(vc.opts) == "table" and vc.opts.bar) and "Y" or "N"
-  local nargs = (type(vc.opts) == "table" and vc.opts.nargs) and vc.opts.nargs
-    or "N/A"
-  local range = (type(vc.opts) == "table" and vc.opts.range) and vc.opts.range
-    or "N/A"
+  local nargs = (type(vc.opts) == "table" and vc.opts.nargs) and vc.opts.nargs or "N/A"
+  local range = (type(vc.opts) == "table" and vc.opts.range) and vc.opts.range or "N/A"
   local complete = (type(vc.opts) == "table" and vc.opts.complete)
       and (vc.opts.complete == "<Lua function>" and "<Lua>" or vc.opts.complete)
     or "N/A"
 
-  return string.format(
-    "%-4s|%-3s|%-5s|%-5s|%s",
-    bang,
-    bar,
-    nargs,
-    range,
-    complete
-  )
+  return string.format("%-4s|%-3s|%-5s|%-5s|%s", bang, bar, nargs, range, complete)
 end
 
 --- @param commands fzfx.VimCommand[]
@@ -444,11 +416,7 @@ M._render_vim_commands = function(commands, name_width, opts_width)
       M._render_vim_commands_column_opts(c),
       rendered_desc_or_loc(c)
     )
-    log.debug(
-      "|_render_vim_commands| rendered[%d]:%s",
-      i,
-      vim.inspect(rendered)
-    )
+    log.debug("|_render_vim_commands| rendered[%d]:%s", i, vim.inspect(rendered))
     table.insert(results, rendered)
   end
   return results
@@ -486,13 +454,8 @@ end
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return string[]
 local function vim_commands_provider(query, context)
-  local commands =
-    M._get_vim_commands({ ex_commands = true, user_commands = true })
-  return M._render_vim_commands(
-    commands,
-    context.name_width,
-    context.opts_width
-  )
+  local commands = M._get_vim_commands({ ex_commands = true, user_commands = true })
+  return M._render_vim_commands(commands, context.name_width, context.opts_width)
 end
 
 --- @param query string
@@ -500,11 +463,7 @@ end
 --- @return string[]
 local function vim_ex_commands_provider(query, context)
   local commands = M._get_vim_commands({ ex_commands = true })
-  return M._render_vim_commands(
-    commands,
-    context.name_width,
-    context.opts_width
-  )
+  return M._render_vim_commands(commands, context.name_width, context.opts_width)
 end
 
 --- @param query string
@@ -512,11 +471,7 @@ end
 --- @return string[]
 local function vim_user_commands_provider(query, context)
   local commands = M._get_vim_commands({ user_commands = true })
-  return M._render_vim_commands(
-    commands,
-    context.name_width,
-    context.opts_width
-  )
+  return M._render_vim_commands(commands, context.name_width, context.opts_width)
 end
 
 M.providers = {
@@ -557,10 +512,7 @@ M._vim_commands_previewer = function(line, context)
     --   "|fzfx.config - _vim_commands_previewer| loc:%s",
     --   vim.inspect(parsed)
     -- )
-    return previewers_helper.preview_files_with_line_range(
-      parsed.filename,
-      parsed.lineno
-    )
+    return previewers_helper.preview_files_with_line_range(parsed.filename, parsed.lineno)
   elseif consts.HAS_ECHO and tables.tbl_not_empty(parsed) then
     -- log.debug(
     --   "|fzfx.config - _vim_commands_previewer| desc:%s",
@@ -613,8 +565,7 @@ M._calculate_vim_commands_columns_width = function(commands)
   local opts_width = string.len(OPTS)
   for _, c in ipairs(commands) do
     name_width = math.max(name_width, string.len(c.name))
-    opts_width =
-      math.max(opts_width, string.len(M._render_vim_commands_column_opts(c)))
+    opts_width = math.max(opts_width, string.len(M._render_vim_commands_column_opts(c)))
   end
   return name_width, opts_width
 end
@@ -627,10 +578,8 @@ M._vim_commands_context_maker = function()
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
-  local commands =
-    M._get_vim_commands({ ex_commands = true, user_commands = true })
-  local name_width, opts_width =
-    M._calculate_vim_commands_columns_width(commands)
+  local commands = M._get_vim_commands({ ex_commands = true, user_commands = true })
+  local name_width, opts_width = M._calculate_vim_commands_columns_width(commands)
   ctx.name_width = name_width
   ctx.opts_width = opts_width
   return ctx

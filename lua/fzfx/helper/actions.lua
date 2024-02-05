@@ -75,8 +75,7 @@ M._make_edit_rg = function(lines)
     table.insert(results, edit)
     if i == #lines and parsed.lineno ~= nil then
       local column = parsed.column or 1
-      local setpos =
-        string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
+      local setpos = string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
       table.insert(results, setpos)
       local center_cursor = string.format('execute "normal! zz"')
       table.insert(results, center_cursor)
@@ -138,8 +137,7 @@ M._make_edit_grep = function(lines)
     table.insert(results, edit)
     if i == #lines and parsed.lineno ~= nil then
       local column = 1
-      local setpos =
-        string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
+      local setpos = string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
       table.insert(results, setpos)
       local center_cursor = string.format('execute "normal! zz"')
       table.insert(results, center_cursor)
@@ -316,8 +314,7 @@ M._make_feed_vim_key = function(lines, context)
         strings.startswith(parsed.lhs, "<")
         and numbers.gt(strings.rfind(parsed.lhs, ">"), 0)
       then
-        local tcodes =
-          vim.api.nvim_replace_termcodes(parsed.lhs, true, false, true)
+        local tcodes = vim.api.nvim_replace_termcodes(parsed.lhs, true, false, true)
         return { fn = "feedkeys", input = tcodes, mode = "n" }
       else
         return { fn = "feedkeys", input = parsed.lhs, mode = "n" }
@@ -339,11 +336,7 @@ end
 --- @param context fzfx.VimKeyMapsPipelineContext
 M.feed_vim_key = function(lines, context)
   local parsed = M._make_feed_vim_key(lines, context) --[[@as table]]
-  if
-    tables.tbl_not_empty(parsed)
-    and parsed.fn == "cmd"
-    and strings.not_empty(parsed.input)
-  then
+  if tables.tbl_not_empty(parsed) and parsed.fn == "cmd" and strings.not_empty(parsed.input) then
     local ok, result = pcall(vim.cmd --[[@as function]], parsed.input)
     assert(ok, vim.inspect(result))
   elseif

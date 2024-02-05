@@ -31,8 +31,7 @@ describe("cfg.lsp_diagnostics", function()
         assert_eq(type(sign_item), "table")
         assert_true(sign_item.severity >= 1 and sign_item.severity <= 4)
         assert_true(
-          string.len(sign_item.name) > 0
-            and strings.startswith(sign_item.name, "DiagnosticSign")
+          string.len(sign_item.name) > 0 and strings.startswith(sign_item.name, "DiagnosticSign")
         )
         assert_true(
           strings.endswith(sign_item.name, "Error")

@@ -1,8 +1,6 @@
 local SELF_PATH = vim.env._FZFX_NVIM_SELF_PATH
 if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
-  io.write(
-    string.format("|fzfx.bin.general.previewer| error! SELF_PATH is empty!")
-  )
+  io.write(string.format("|fzfx.bin.general.previewer| error! SELF_PATH is empty!"))
 end
 vim.opt.runtimepath:append(SELF_PATH)
 
@@ -94,13 +92,8 @@ elseif metaopts.previewer_type == "command_list" then
     return
   end
 
-  local sp =
-    spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
-  shell_helpers.log_ensure(
-    sp ~= nil,
-    "failed to open async command: %s",
-    vim.inspect(cmd_splits)
-  )
+  local sp = spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
+  shell_helpers.log_ensure(sp ~= nil, "failed to open async command: %s", vim.inspect(cmd_splits))
   sp:wait()
 elseif metaopts.previewer_type == "list" then
   local f = io.open(resultfile, "r")
@@ -117,8 +110,5 @@ elseif metaopts.previewer_type == "list" then
   --- @diagnostic disable-next-line: need-check-nil
   f:close()
 else
-  shell_helpers.log_throw(
-    "unknown previewer type:%s",
-    vim.inspect(metajsonstring)
-  )
+  shell_helpers.log_throw("unknown previewer type:%s", vim.inspect(metajsonstring))
 end

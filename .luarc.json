@@ -12,7 +12,9 @@
     "inject-field",
     "deprecated",
     "luadoc-miss-module-name",
-    "undefined-doc-name"
+    "undefined-doc-name",
+    "lowercase-global"
   ],
+  "runtime.version": "LuaJIT",
   "workspace.checkThirdParty": "Disable"
 }

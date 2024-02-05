@@ -37,9 +37,7 @@ describe("detail.popup", function()
       for _, p in pairs(instances) do
         assert_eq(p.winnr, pw.winnr)
         assert_eq(p.bufnr, pw.bufnr)
-        assert_true(
-          vim.deep_equal(p.window_opts_context, pw.window_opts_context)
-        )
+        assert_true(vim.deep_equal(p.window_opts_context, pw.window_opts_context))
         assert_true(vim.deep_equal(p._saved_win_opts, pw._saved_win_opts))
         assert_eq(p._resizing, pw._resizing)
       end

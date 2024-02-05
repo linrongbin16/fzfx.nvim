@@ -49,8 +49,8 @@ describe("helper.previewers", function()
       -- print(
       --     string.format("make file previewer:%s\n", vim.inspect(actual))
       -- )
-      if actual[1] == "bat" then
-        assert_eq(actual[1], "bat")
+      if actual[1] == constants.BAT then
+        assert_eq(actual[1], constants.BAT)
         assert_eq(actual[2], "--style=numbers,changes")
         assert_true(strings.startswith(actual[3], "--theme="))
         assert_eq(actual[4], "--color=always")
@@ -76,30 +76,18 @@ describe("helper.previewers", function()
       }
       for i, line in ipairs(lines) do
         local actual = previewers.preview_files_find(line)
-        print(
-          string.format(
-            "preview_files_find-%s:%s\n",
-            vim.inspect(i),
-            vim.inspect(actual)
-          )
-        )
-        if actual[1] == "bat" then
-          assert_eq(actual[1], "bat")
+        print(string.format("preview_files_find-%s:%s\n", vim.inspect(i), vim.inspect(actual)))
+        if actual[1] == constants.BAT then
+          assert_eq(actual[1], constants.BAT)
           assert_eq(actual[2], "--style=numbers,changes")
           assert_true(strings.startswith(actual[3], "--theme="))
           assert_eq(actual[4], "--color=always")
           assert_eq(actual[5], "--pager=never")
           assert_eq(actual[6], "--")
-          assert_eq(
-            actual[7],
-            paths.normalize(line, { double_backslash = true, expand = true })
-          )
+          assert_eq(actual[7], paths.normalize(line, { double_backslash = true, expand = true }))
         else
           assert_eq(actual[1], "cat")
-          assert_eq(
-            actual[2],
-            paths.normalize(line, { double_backslash = true, expand = true })
-          )
+          assert_eq(actual[2], paths.normalize(line, { double_backslash = true, expand = true }))
         end
       end
     end)
@@ -117,19 +105,10 @@ describe("helper.previewers", function()
       for i, line in ipairs(lines) do
         local actual = previewers.buffer_preview_files_find(line)
         print(
-          string.format(
-            "buffer_preview_files_find-%s:%s\n",
-            vim.inspect(i),
-            vim.inspect(actual)
-          )
+          string.format("buffer_preview_files_find-%s:%s\n", vim.inspect(i), vim.inspect(actual))
         )
         assert_eq(type(actual), "table")
-        assert_true(
-          strings.endswith(
-            paths.normalize(line, { expand = true }),
-            actual.filename
-          )
-        )
+        assert_true(strings.endswith(paths.normalize(line, { expand = true }), actual.filename))
       end
     end)
   end)
@@ -145,14 +124,12 @@ describe("helper.previewers", function()
       }
       for _, line in ipairs(lines) do
         local actual = previewers.preview_files_grep(line)
-        local expect = paths.normalize(
-          strings.split(line, ":")[1],
-          { double_backslash = true, expand = true }
-        )
+        local expect =
+          paths.normalize(strings.split(line, ":")[1], { double_backslash = true, expand = true })
         print(string.format("normalize:%s\n", vim.inspect(expect)))
         print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
-        if actual[1] == "bat" then
-          assert_eq(actual[1], "bat")
+        if actual[1] == constants.BAT then
+          assert_eq(actual[1], constants.BAT)
           assert_eq(actual[2], "--style=numbers,changes")
           assert_true(strings.startswith(actual[3], "--theme="))
           assert_eq(actual[4], "--color=always")
@@ -219,14 +196,11 @@ describe("helper.previewers", function()
 
   describe("[preview_files_with_line_range]", function()
     it("test", function()
-      local actual =
-        previewers.preview_files_with_line_range("lua/fzfx/config.lua", 135)
+      local actual = previewers.preview_files_with_line_range("lua/fzfx/config.lua", 135)
       assert_eq(type(actual), "table")
-      print(
-        string.format("preview_files_with_line_range:%s\n", vim.inspect(actual))
-      )
-      if actual[1] == "bat" then
-        assert_eq(actual[1], "bat")
+      print(string.format("preview_files_with_line_range:%s\n", vim.inspect(actual)))
+      if actual[1] == constants.BAT then
+        assert_eq(actual[1], constants.BAT)
         assert_eq(actual[2], "--style=numbers,changes")
         assert_true(strings.startswith(actual[3], "--theme="))
         assert_eq(actual[4], "--color=always")

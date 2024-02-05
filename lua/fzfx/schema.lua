@@ -138,8 +138,7 @@ local function is_provider_config(cfg)
     and string.len(cfg.key) > 0
     and (
       (
-        type(cfg.provider) == "string"
-        and string.len(cfg.provider --[[@as string]]) > 0
+        type(cfg.provider) == "string" and string.len(cfg.provider --[[@as string]]) > 0
       )
       or (type(cfg.provider) == "table" and #cfg.provider > 0)
       or type(cfg.provider) == "function"
@@ -153,10 +152,7 @@ local function is_previewer_config(cfg)
     and type(cfg.previewer) == "function"
     and (
       cfg.previewer_type == nil
-      or (
-        type(cfg.previewer_type) == "string"
-        and string.len(cfg.previewer_type) > 0
-      )
+      or (type(cfg.previewer_type) == "string" and string.len(cfg.previewer_type) > 0)
     )
 end
 
@@ -181,8 +177,7 @@ end
 local function get_previewer_label_type_or_default(previewer_config)
   return previewer_config.previewer_label_type
     or (
-      type(previewer_config.previewer_label) == "function"
-        and PreviewerLabelTypeEnum.FUNCTION
+      type(previewer_config.previewer_label) == "function" and PreviewerLabelTypeEnum.FUNCTION
       or PreviewerLabelTypeEnum.PLAIN
     )
 end
