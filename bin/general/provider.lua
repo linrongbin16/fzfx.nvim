@@ -69,9 +69,7 @@ vim.opt.runtimepath:append(vim.fn.stdpath("config"))
 local decorator_module = nil
 if metaopts.provider_decorator ~= nil then
   if strings.not_empty(tables.tbl_get(metaopts.provider_decorator, "rtp")) then
-    vim.opt.runtimepath:append(
-      tables.tbl_get(metaopts.provider_decorator, "rtp")
-    )
+    vim.opt.runtimepath:append(tables.tbl_get(metaopts.provider_decorator, "rtp"))
   end
   shell_helpers.log_ensure(
     strings.not_empty(tables.tbl_get(metaopts.provider_decorator, "module")),
@@ -98,8 +96,7 @@ local function println(line)
   if tables.tbl_not_empty(decorator_module) then
     -- shell_helpers.log_debug("decorate line:%s", vim.inspect(line))
     vim.schedule(function()
-      local rendered_ok, rendered_line_or_err =
-        pcall(decorator_module.decorate, line)
+      local rendered_ok, rendered_line_or_err = pcall(decorator_module.decorate, line)
       if rendered_ok then
         io.write(string.format("%s\n", rendered_line_or_err))
       else
@@ -125,21 +122,14 @@ if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
   end
 
   local p = io.popen(cmd)
-  shell_helpers.log_ensure(
-    p ~= nil,
-    "failed to open pipe on provider cmd! %s",
-    vim.inspect(cmd)
-  )
+  shell_helpers.log_ensure(p ~= nil, "failed to open pipe on provider cmd! %s", vim.inspect(cmd))
   ---@diagnostic disable-next-line: need-check-nil
   for line in p:lines("*line") do
     println(line)
   end
   ---@diagnostic disable-next-line: need-check-nil
   p:close()
-elseif
-  metaopts.provider_type == "plain_list"
-  or metaopts.provider_type == "command_list"
-then
+elseif metaopts.provider_type == "plain_list" or metaopts.provider_type == "command_list" then
   local cmd = fileios.readfile(resultfile, { trim = true }) --[[@as string]]
   shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
   if strings.empty(cmd) then
@@ -153,21 +143,12 @@ then
     return
   end
 
-  local sp =
-    spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
-  shell_helpers.log_ensure(
-    sp ~= nil,
-    "failed to open async command: %s",
-    vim.inspect(cmd_splits)
-  )
+  local sp = spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
+  shell_helpers.log_ensure(sp ~= nil, "failed to open async command: %s", vim.inspect(cmd_splits))
   sp:wait()
 elseif metaopts.provider_type == "list" then
   local reader = fileios.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
-  shell_helpers.log_ensure(
-    reader ~= nil,
-    "failed to open resultfile: %s",
-    vim.inspect(resultfile)
-  )
+  shell_helpers.log_ensure(reader ~= nil, "failed to open resultfile: %s", vim.inspect(resultfile))
 
   while reader:has_next() do
     local line = reader:next()
@@ -175,8 +156,5 @@ elseif metaopts.provider_type == "list" then
   end
   reader:close()
 else
-  shell_helpers.log_throw(
-    "unknown provider type:%s",
-    vim.inspect(metajsonstring)
-  )
+  shell_helpers.log_throw("unknown provider type:%s", vim.inspect(metajsonstring))
 end

@@ -31,8 +31,7 @@ describe("cfg.git_files", function()
       end
     end)
     it("_make_git_files_provider current folder", function()
-      local f =
-        git_files_cfg._make_git_files_provider({ current_folder = true })
+      local f = git_files_cfg._make_git_files_provider({ current_folder = true })
       local actual = f()
       if actual ~= nil then
         assert_eq(type(actual), "table")

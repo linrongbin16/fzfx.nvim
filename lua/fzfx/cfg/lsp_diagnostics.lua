@@ -88,11 +88,9 @@ local LSP_DIAGNOSTICS_SIGNS = {
     severity = 1,
     name = "DiagnosticSignError",
     text = require("fzfx.lib.env").icon_enabled() and "" or "E", -- nf-fa-times \uf00d
-    texthl = vim.fn.hlexists("DiagnosticSignError") > 0
-        and "DiagnosticSignError"
+    texthl = vim.fn.hlexists("DiagnosticSignError") > 0 and "DiagnosticSignError"
       or (
-        vim.fn.hlexists("LspDiagnosticsSignError") > 0
-          and "LspDiagnosticsSignError"
+        vim.fn.hlexists("LspDiagnosticsSignError") > 0 and "LspDiagnosticsSignError"
         or "ErrorMsg"
       ),
     textcolor = "red",
@@ -103,8 +101,7 @@ local LSP_DIAGNOSTICS_SIGNS = {
     text = require("fzfx.lib.env").icon_enabled() and "" or "W", -- nf-fa-warning \uf071
     texthl = vim.fn.hlexists("DiagnosticSignWarn") > 0 and "DiagnosticSignWarn"
       or (
-        vim.fn.hlexists("LspDiagnosticsSignWarn") > 0
-          and "LspDiagnosticsSignWarn"
+        vim.fn.hlexists("LspDiagnosticsSignWarn") > 0 and "LspDiagnosticsSignWarn"
         or "WarningMsg"
       ),
     textcolor = "orange",
@@ -114,11 +111,7 @@ local LSP_DIAGNOSTICS_SIGNS = {
     name = "DiagnosticSignInfo",
     text = require("fzfx.lib.env").icon_enabled() and "" or "I", -- nf-fa-info_circle \uf05a
     texthl = vim.fn.hlexists("DiagnosticSignInfo") > 0 and "DiagnosticSignInfo"
-      or (
-        vim.fn.hlexists("LspDiagnosticsSignInfo") > 0
-          and "LspDiagnosticsSignInfo"
-        or "None"
-      ),
+      or (vim.fn.hlexists("LspDiagnosticsSignInfo") > 0 and "LspDiagnosticsSignInfo" or "None"),
     textcolor = "green",
   },
   [4] = {
@@ -126,11 +119,7 @@ local LSP_DIAGNOSTICS_SIGNS = {
     name = "DiagnosticSignHint",
     text = require("fzfx.lib.env").icon_enabled() and "" or "H", -- nf-fa-bell \uf0f3
     texthl = vim.fn.hlexists("DiagnosticSignHint") > 0 and "DiagnosticSignHint"
-      or (
-        vim.fn.hlexists("LspDiagnosticsSignHint") > 0
-          and "LspDiagnosticsSignHint"
-        or "Comment"
-      ),
+      or (vim.fn.hlexists("LspDiagnosticsSignHint") > 0 and "LspDiagnosticsSignHint" or "Comment"),
     textcolor = "grey",
   },
 }
@@ -188,9 +177,8 @@ M._make_lsp_diagnostics_provider = function(opts)
       log.echo(LogLevels.INFO, "no active lsp clients.")
       return nil
     end
-    local diag_list = vim.diagnostic.get(
-      (type(opts) == "table" and opts.buffer) and context.bufnr or nil
-    )
+    local diag_list =
+      vim.diagnostic.get((type(opts) == "table" and opts.buffer) and context.bufnr or nil)
     if tables.tbl_empty(diag_list) then
       log.echo(LogLevels.INFO, "no lsp diagnostics found.")
       return nil

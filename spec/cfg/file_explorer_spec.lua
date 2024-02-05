@@ -79,10 +79,7 @@ describe("cfg.file_explorer", function()
       assert_true(
         strings.find(
           actual1,
-          paths.normalize(
-            vim.fn.getcwd(),
-            { double_backslash = true, expand = true }
-          )
+          paths.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
         ) > 0
       )
       local f2 = file_explorer_cfg._make_file_explorer_provider("-lha")
@@ -103,16 +100,12 @@ describe("cfg.file_explorer", function()
       assert_true(
         strings.find(
           actual2,
-          paths.normalize(
-            vim.fn.getcwd(),
-            { double_backslash = true, expand = true }
-          )
+          paths.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
         ) > 0
       )
     end)
     it("_directory_previewer", function()
-      local actual =
-        file_explorer_cfg._directory_previewer("lua/fzfx/config.lua")
+      local actual = file_explorer_cfg._directory_previewer("lua/fzfx/config.lua")
       assert_eq(type(actual), "table")
       if actual[1] == "lsd" then
         assert_eq(actual[1], "lsd")
@@ -136,9 +129,7 @@ describe("cfg.file_explorer", function()
           local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
-            assert_true(
-              actual[1] == "bat" or actual[1] == "cat" or actual[1] == "lsd"
-            )
+            assert_true(actual[1] == "bat" or actual[1] == "cat" or actual[1] == "lsd")
           end
         end
       elseif consts.HAS_EZA then
@@ -147,10 +138,7 @@ describe("cfg.file_explorer", function()
           if actual ~= nil then
             assert_eq(type(actual), "table")
             assert_true(
-              actual[1] == "bat"
-                or actual[1] == "cat"
-                or actual[1] == "eza"
-                or actual[1] == "exa"
+              actual[1] == "bat" or actual[1] == "cat" or actual[1] == "eza" or actual[1] == "exa"
             )
           end
         end
@@ -159,9 +147,7 @@ describe("cfg.file_explorer", function()
           local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
-            assert_true(
-              actual[1] == "bat" or actual[1] == "cat" or actual[1] == "ls"
-            )
+            assert_true(actual[1] == "bat" or actual[1] == "cat" or actual[1] == "ls")
           end
         end
       end

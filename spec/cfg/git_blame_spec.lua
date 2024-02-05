@@ -23,20 +23,16 @@ describe("cfg.git_blame", function()
 
   describe("git_blame", function()
     it("_git_blame_provider", function()
-      local actual =
-        git_blame_cfg._git_blame_provider("", contexts.make_pipeline_context())
+      local actual = git_blame_cfg._git_blame_provider("", contexts.make_pipeline_context())
       if actual ~= nil then
         assert_eq(type(actual), "string")
         assert_true(strings.find(actual, "git blame") == 1)
         if consts.HAS_DELTA then
           assert_true(
-            strings.find(actual, "delta -n --tabs 4 --blame-format")
-              > string.len("git blame")
+            strings.find(actual, "delta -n --tabs 4 --blame-format") > string.len("git blame")
           )
         else
-          assert_true(
-            strings.find(actual, "git blame --date=short --color-lines") == 1
-          )
+          assert_true(strings.find(actual, "git blame --date=short --color-lines") == 1)
         end
       end
     end)

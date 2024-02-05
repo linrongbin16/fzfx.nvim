@@ -33,8 +33,7 @@ function PopupWindow:new(win_opts, window_type, buffer_previewer_opts)
   if window_type == "fzf" then
     instance = fzf_popup_window.FzfPopupWindow:new(win_opts)
   elseif window_type == "buffer" then
-    instance =
-      buffer_popup_window.BufferPopupWindow:new(win_opts, buffer_previewer_opts)
+    instance = buffer_popup_window.BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   end
   PopupWindowInstances[instance:handle()] = self
 
@@ -66,11 +65,7 @@ end
 --- @param job_id integer
 --- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
-function PopupWindow:preview_file(
-  job_id,
-  previewer_result,
-  previewer_label_result
-)
+function PopupWindow:preview_file(job_id, previewer_result, previewer_label_result)
   self.instance:preview_file(job_id, previewer_result, previewer_label_result)
 end
 
@@ -141,12 +136,7 @@ local function _make_fzf_command(fzf_opts, actions, result)
   --     vim.inspect(final_opts),
   --     vim.inspect(final_opts_string)
   -- )
-  local command = string.format(
-    "%s %s >%s",
-    fzf_helpers.fzf_exec(),
-    final_opts_string,
-    result
-  )
+  local command = string.format("%s %s >%s", fzf_helpers.fzf_exec(), final_opts_string, result)
   -- log.debug(
   --     "|fzfx.popup - _make_fzf_command| command:%s",
   --     vim.inspect(command)
@@ -176,11 +166,8 @@ function Popup:new(
 )
   local result = vim.fn.tempname() --[[@as string]]
   local fzf_command = _make_fzf_command(fzf_opts, actions, result)
-  local popup_window = PopupWindow:new(
-    win_opts,
-    use_buffer_previewer and "buffer" or "fzf",
-    buffer_previewer_opts
-  )
+  local popup_window =
+    PopupWindow:new(win_opts, use_buffer_previewer and "buffer" or "fzf", buffer_previewer_opts)
 
   local function on_fzf_exit(jobid2, exitcode, event)
     -- log.debug(
@@ -234,11 +221,7 @@ function Popup:new(
     --     vim.inspect(action_lines)
     -- )
     vim.schedule(function()
-      log.ensure(
-        actions[action_key] ~= nil,
-        "unknown action key: %s",
-        vim.inspect(action_key)
-      )
+      log.ensure(actions[action_key] ~= nil, "unknown action key: %s", vim.inspect(action_key))
       local action_callback = actions[action_key]
       log.ensure(
         type(action_callback) == "function",
@@ -270,14 +253,8 @@ function Popup:new(
   vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()
   vim.env.FZF_DEFAULT_COMMAND = source
 
-  log.debug(
-    "|Popup:new| $FZF_DEFAULT_OPTS:%s",
-    vim.inspect(vim.env.FZF_DEFAULT_OPTS)
-  )
-  log.debug(
-    "|Popup:new| $FZF_DEFAULT_COMMAND:%s",
-    vim.inspect(vim.env.FZF_DEFAULT_COMMAND)
-  )
+  log.debug("|Popup:new| $FZF_DEFAULT_OPTS:%s", vim.inspect(vim.env.FZF_DEFAULT_OPTS))
+  log.debug("|Popup:new| $FZF_DEFAULT_COMMAND:%s", vim.inspect(vim.env.FZF_DEFAULT_COMMAND))
   log.debug("|Popup:new| fzf_command:%s", vim.inspect(fzf_command))
 
   -- launch

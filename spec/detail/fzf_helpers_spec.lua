@@ -50,8 +50,7 @@ describe("detail.fzf_helpers", function()
     end)
     it("has value if exists cache file", function()
       local cache_file = fzf_helpers.last_query_cache_name("test2")
-      local input =
-        jsons.encode({ query = "query2", default_provider = "provider3" })
+      local input = jsons.encode({ query = "query2", default_provider = "provider3" })
       fileios.writefile(cache_file, input)
       local actual = fzf_helpers.get_last_query_cache("test2")
       assert_eq(type(actual), "table")
@@ -64,35 +63,28 @@ describe("detail.fzf_helpers", function()
   describe("[get_command_feed]", function()
     it("get normal args feed", function()
       local expect = "expect"
-      local actual =
-        fzf_helpers.get_command_feed(CommandFeedEnum.ARGS, "expect", "test")
+      local actual = fzf_helpers.get_command_feed(CommandFeedEnum.ARGS, "expect", "test")
       assert_eq(type(actual), "table")
       assert_eq(expect, actual.query)
       assert_eq(actual.default_provider, nil)
     end)
     it("get visual select feed", function()
-      local actual =
-        fzf_helpers.get_command_feed(CommandFeedEnum.VISUAL, "", "test")
+      local actual = fzf_helpers.get_command_feed(CommandFeedEnum.VISUAL, "", "test")
       assert_eq(type(actual), "table")
       assert_eq(type(actual.query), "string")
       assert_eq(actual.default_provider, nil)
     end)
     it("get cword feed", function()
-      local actual =
-        fzf_helpers.get_command_feed(CommandFeedEnum.CWORD, "", "test")
+      local actual = fzf_helpers.get_command_feed(CommandFeedEnum.CWORD, "", "test")
       assert_eq(type(actual), "table")
       assert_eq(type(actual.query), "string")
       assert_eq(actual.default_provider, nil)
     end)
     it("get resume feed", function()
-      local actual =
-        fzf_helpers.get_command_feed(CommandFeedEnum.RESUME, "", "test")
+      local actual = fzf_helpers.get_command_feed(CommandFeedEnum.RESUME, "", "test")
       assert_eq(type(actual), "table")
       assert_eq(type(actual.query), "string")
-      assert_true(
-        actual.default_provider == nil
-          or type(actual.default_provider) == "string"
-      )
+      assert_true(actual.default_provider == nil or type(actual.default_provider) == "string")
     end)
   end)
 
@@ -157,13 +149,7 @@ describe("detail.fzf_helpers", function()
   describe("[fzf_exec]", function()
     it("get fzf path", function()
       local ok, actual = pcall(fzf_helpers.fzf_exec)
-      print(
-        string.format(
-          "fzf_exec: %s, %s\n",
-          vim.inspect(ok),
-          vim.inspect(actual)
-        )
-      )
+      print(string.format("fzf_exec: %s, %s\n", vim.inspect(ok), vim.inspect(actual)))
       assert_eq(actual, "fzf")
     end)
   end)
@@ -241,9 +227,7 @@ describe("detail.fzf_helpers", function()
       assert_true(string.len(actual --[[@as string]]) > 0)
       assert_true(actual:gmatch("general") ~= nil)
       assert_true(actual:gmatch("provider") ~= nil)
-      assert_true(
-        strings.find(actual, "nvim -n -u NONE --clean --headless -l") >= 1
-      )
+      assert_true(strings.find(actual, "nvim -n -u NONE --clean --headless -l") >= 1)
     end)
   end)
 
@@ -272,17 +256,12 @@ describe("detail.fzf_helpers", function()
   describe("[_spilt_fzf_preview_window_opts]", function()
     it("no alternative_layout", function()
       local actual1 = fzf_helpers._spilt_fzf_preview_window_opts("up,30%")
-      print(
-        string.format("split --preview-window-1:%s\n", vim.inspect(actual1))
-      )
+      print(string.format("split --preview-window-1:%s\n", vim.inspect(actual1)))
       assert_eq(actual1[1], "up")
       assert_eq(actual1[2], "30%")
-      local actual2 = fzf_helpers._spilt_fzf_preview_window_opts(
-        "down,30,nohidden,cycle,follow,~3,+{2}+3/2"
-      )
-      print(
-        string.format("split --preview-window-2:%s\n", vim.inspect(actual2))
-      )
+      local actual2 =
+        fzf_helpers._spilt_fzf_preview_window_opts("down,30,nohidden,cycle,follow,~3,+{2}+3/2")
+      print(string.format("split --preview-window-2:%s\n", vim.inspect(actual2)))
       assert_eq(actual2[1], "down")
       assert_eq(actual2[2], "30")
       assert_eq(actual2[3], "nohidden")
@@ -295,9 +274,7 @@ describe("detail.fzf_helpers", function()
       local actual2 = fzf_helpers._spilt_fzf_preview_window_opts(
         "down,30%,<20(cycle,follow,~3,+{2}+3/2),cycle,follow,~3,+{2}+3/2"
       )
-      print(
-        string.format("split --preview-window-2:%s\n", vim.inspect(actual2))
-      )
+      print(string.format("split --preview-window-2:%s\n", vim.inspect(actual2)))
       assert_eq(actual2[1], "down")
       assert_eq(actual2[2], "30%")
       assert_eq(actual2[3], "<20(cycle,follow,~3,+{2}+3/2)")
@@ -315,9 +292,7 @@ describe("detail.fzf_helpers", function()
           "up,30%",
         },
       })
-      print(
-        string.format("parse fzf --preview-window-1:%s\n", vim.inspect(actual1))
-      )
+      print(string.format("parse fzf --preview-window-1:%s\n", vim.inspect(actual1)))
       assert_eq(actual1.position, "up")
       assert_eq(actual1.size, 30)
       assert_eq(actual1.size_is_percent, true)
@@ -327,27 +302,21 @@ describe("detail.fzf_helpers", function()
           "down,3",
         },
       })
-      print(
-        string.format("parse fzf --preview-window-2:%s\n", vim.inspect(actual2))
-      )
+      print(string.format("parse fzf --preview-window-2:%s\n", vim.inspect(actual2)))
       assert_eq(actual2.position, "down")
       assert_eq(actual2.size, 3)
       assert_eq(actual2.size_is_percent, false)
       local actual3 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window=left,50%",
       })
-      print(
-        string.format("parse fzf --preview-window-3:%s\n", vim.inspect(actual3))
-      )
+      print(string.format("parse fzf --preview-window-3:%s\n", vim.inspect(actual3)))
       assert_eq(actual3.position, "left")
       assert_eq(actual3.size, 50)
       assert_eq(actual3.size_is_percent, true)
       local actual4 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window=right,50",
       })
-      print(
-        string.format("parse fzf --preview-window-4:%s\n", vim.inspect(actual4))
-      )
+      print(string.format("parse fzf --preview-window-4:%s\n", vim.inspect(actual4)))
       assert_eq(actual4.position, "right")
       assert_eq(actual4.size, 50)
       assert_eq(actual4.size_is_percent, false)
@@ -359,9 +328,7 @@ describe("detail.fzf_helpers", function()
           "up,30%,border-block",
         },
       })
-      print(
-        string.format("parse fzf --preview-window-5:%s\n", vim.inspect(actual1))
-      )
+      print(string.format("parse fzf --preview-window-5:%s\n", vim.inspect(actual1)))
       assert_eq(actual1.position, "up")
       assert_eq(actual1.size, 30)
       assert_eq(actual1.size_is_percent, true)
@@ -370,9 +337,7 @@ describe("detail.fzf_helpers", function()
       local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window=down,3,border-bold",
       })
-      print(
-        string.format("parse fzf --preview-window-6:%s\n", vim.inspect(actual2))
-      )
+      print(string.format("parse fzf --preview-window-6:%s\n", vim.inspect(actual2)))
       assert_eq(actual2.position, "down")
       assert_eq(actual2.size, 3)
       assert_eq(actual2.size_is_percent, false)
@@ -386,16 +351,12 @@ describe("detail.fzf_helpers", function()
           "wrap",
         },
       })
-      print(
-        string.format("parse fzf --preview-window-7:%s\n", vim.inspect(actual1))
-      )
+      print(string.format("parse fzf --preview-window-7:%s\n", vim.inspect(actual1)))
       assert_eq(actual1.wrap, true)
       local actual2 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window=down,3,border-bold,nowrap",
       })
-      print(
-        string.format("parse fzf --preview-window-8:%s\n", vim.inspect(actual2))
-      )
+      print(string.format("parse fzf --preview-window-8:%s\n", vim.inspect(actual2)))
       assert_eq(actual2.position, "down")
       assert_eq(actual2.size, 3)
       assert_eq(actual2.size_is_percent, false)
@@ -408,9 +369,7 @@ describe("detail.fzf_helpers", function()
           "nofollow",
         },
       })
-      print(
-        string.format("parse fzf --preview-window-9:%s\n", vim.inspect(actual3))
-      )
+      print(string.format("parse fzf --preview-window-9:%s\n", vim.inspect(actual3)))
       assert_eq(actual3.position, "right")
       assert_eq(actual3.size, 50)
       assert_eq(actual3.size_is_percent, true)
@@ -418,12 +377,7 @@ describe("detail.fzf_helpers", function()
       local actual4 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window=down,3,border-bold,nowrap,follow",
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-10:%s\n",
-          vim.inspect(actual4)
-        )
-      )
+      print(string.format("parse fzf --preview-window-10:%s\n", vim.inspect(actual4)))
       assert_eq(actual4.position, "down")
       assert_eq(actual4.size, 3)
       assert_eq(actual4.size_is_percent, false)
@@ -437,12 +391,7 @@ describe("detail.fzf_helpers", function()
           "nofollow",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-11:%s\n",
-          vim.inspect(actual5)
-        )
-      )
+      print(string.format("parse fzf --preview-window-11:%s\n", vim.inspect(actual5)))
       assert_eq(actual5.position, "right")
       assert_eq(actual5.size, 50)
       assert_eq(actual5.size_is_percent, true)
@@ -450,12 +399,7 @@ describe("detail.fzf_helpers", function()
       local actual6 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window=down,3,border-bold,nowrap,follow",
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-12:%s\n",
-          vim.inspect(actual6)
-        )
-      )
+      print(string.format("parse fzf --preview-window-12:%s\n", vim.inspect(actual6)))
       assert_eq(actual6.position, "down")
       assert_eq(actual6.size, 3)
       assert_eq(actual6.size_is_percent, false)
@@ -469,12 +413,7 @@ describe("detail.fzf_helpers", function()
           "nofollow,cycle,hidden",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-13:%s\n",
-          vim.inspect(actual7)
-        )
-      )
+      print(string.format("parse fzf --preview-window-13:%s\n", vim.inspect(actual7)))
       assert_eq(actual7.position, "right")
       assert_eq(actual7.size, 50)
       assert_eq(actual7.size_is_percent, true)
@@ -484,12 +423,7 @@ describe("detail.fzf_helpers", function()
       local actual8 = fzf_helpers.parse_fzf_preview_window_opts({
         "--preview-window=down,3,border-bold,nowrap,follow,nocycle,nohidden",
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-14:%s\n",
-          vim.inspect(actual8)
-        )
-      )
+      print(string.format("parse fzf --preview-window-14:%s\n", vim.inspect(actual8)))
       assert_eq(actual8.position, "down")
       assert_eq(actual8.size, 3)
       assert_eq(actual8.size_is_percent, false)
@@ -507,12 +441,7 @@ describe("detail.fzf_helpers", function()
           "+{2}-5",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-15:%s\n",
-          vim.inspect(actual1)
-        )
-      )
+      print(string.format("parse fzf --preview-window-15:%s\n", vim.inspect(actual1)))
       assert_eq(actual1.position, "right")
       assert_eq(actual1.size, 50)
       assert_eq(actual1.size_is_percent, true)
@@ -524,12 +453,7 @@ describe("detail.fzf_helpers", function()
           "~3,+{2}+3/2",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-16:%s\n",
-          vim.inspect(actual2)
-        )
-      )
+      print(string.format("parse fzf --preview-window-16:%s\n", vim.inspect(actual2)))
       assert_eq(actual2.position, "right")
       assert_eq(actual2.size, 50)
       assert_eq(actual2.size_is_percent, true)
@@ -542,12 +466,7 @@ describe("detail.fzf_helpers", function()
           "+{2}-/2",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-17:%s\n",
-          vim.inspect(actual3)
-        )
-      )
+      print(string.format("parse fzf --preview-window-17:%s\n", vim.inspect(actual3)))
       assert_eq(actual3.position, "right")
       assert_eq(actual3.size, 50)
       assert_eq(actual3.size_is_percent, true)
@@ -559,12 +478,7 @@ describe("detail.fzf_helpers", function()
           "~3",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-18:%s\n",
-          vim.inspect(actual4)
-        )
-      )
+      print(string.format("parse fzf --preview-window-18:%s\n", vim.inspect(actual4)))
       assert_eq(actual4.position, "right")
       assert_eq(actual4.size, 50)
       assert_eq(actual4.size_is_percent, true)
@@ -578,12 +492,7 @@ describe("detail.fzf_helpers", function()
           "+{2}-5,right,border-left,<30(up,30%,border-bottom,~3)",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-19:%s\n",
-          vim.inspect(actual1)
-        )
-      )
+      print(string.format("parse fzf --preview-window-19:%s\n", vim.inspect(actual1)))
       assert_eq(actual1.position, "right")
       assert_eq(actual1.size, 50)
       assert_eq(actual1.size_is_percent, true)
@@ -603,12 +512,7 @@ describe("detail.fzf_helpers", function()
           "~3,+{2}+3/2,<90(~5,+{1}+4/3),nohidden",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-20:%s\n",
-          vim.inspect(actual2)
-        )
-      )
+      print(string.format("parse fzf --preview-window-20:%s\n", vim.inspect(actual2)))
       assert_eq(actual2.position, "right")
       assert_eq(actual2.size, 50)
       assert_eq(actual2.size_is_percent, true)
@@ -628,12 +532,7 @@ describe("detail.fzf_helpers", function()
           "<20(nohidden,nofollow,~5,+{1}+4/3)",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-21:%s\n",
-          vim.inspect(actual3)
-        )
-      )
+      print(string.format("parse fzf --preview-window-21:%s\n", vim.inspect(actual3)))
       assert_eq(actual3.size_threshold, 20)
       assert_eq(actual3.alternative_layout.hidden, false)
       assert_eq(actual3.alternative_layout.follow, false)
@@ -645,12 +544,7 @@ describe("detail.fzf_helpers", function()
           "~3,+{2}+3/2,<90(),nohidden",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-22:%s\n",
-          vim.inspect(actual4)
-        )
-      )
+      print(string.format("parse fzf --preview-window-22:%s\n", vim.inspect(actual4)))
       assert_eq(actual4.header_lines, 3)
       assert_eq(actual4.scroll, "+{2}+3/2")
       assert_eq(actual4.size_threshold, 90)
@@ -667,12 +561,7 @@ describe("detail.fzf_helpers", function()
         },
         "--preview-window=left,30",
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-23:%s\n",
-          vim.inspect(actual1)
-        )
-      )
+      print(string.format("parse fzf --preview-window-23:%s\n", vim.inspect(actual1)))
       assert_eq(actual1.position, "left")
       assert_eq(actual1.size, 30)
       assert_eq(actual1.size_is_percent, false)
@@ -696,12 +585,7 @@ describe("detail.fzf_helpers", function()
           "hidden,wrap,follow",
         },
       })
-      print(
-        string.format(
-          "parse fzf --preview-window-24:%s\n",
-          vim.inspect(actual2)
-        )
-      )
+      print(string.format("parse fzf --preview-window-24:%s\n", vim.inspect(actual2)))
       assert_eq(actual2.position, "right")
       assert_eq(actual2.size, 50)
       assert_eq(actual2.size_is_percent, true)

@@ -89,25 +89,15 @@ M._make_git_branches_provider = function(opts)
     end
     local git_current_branch_cmd = cmds.GitCurrentBranchCommand:run()
     if git_current_branch_cmd:failed() then
-      log.echo(
-        LogLevels.WARN,
-        table.concat(git_current_branch_cmd.result.stderr, " ")
-      )
+      log.echo(LogLevels.WARN, table.concat(git_current_branch_cmd.result.stderr, " "))
       return nil
     end
     local branch_results = {}
-    table.insert(
-      branch_results,
-      string.format("* %s", git_current_branch_cmd:output())
-    )
-    local git_branches_cmd = cmds.GitBranchesCommand:run(
-      tables.tbl_get(opts, "remote_branch") and true or false
-    )
+    table.insert(branch_results, string.format("* %s", git_current_branch_cmd:output()))
+    local git_branches_cmd =
+      cmds.GitBranchesCommand:run(tables.tbl_get(opts, "remote_branch") and true or false)
     if git_branches_cmd:failed() then
-      log.echo(
-        LogLevels.WARN,
-        table.concat(git_current_branch_cmd.result.stderr, " ")
-      )
+      log.echo(LogLevels.WARN, table.concat(git_current_branch_cmd.result.stderr, " "))
       return nil
     end
     for _, line in ipairs(git_branches_cmd.result.stdout) do
@@ -121,8 +111,7 @@ M._make_git_branches_provider = function(opts)
 end
 
 local local_branch_provider = M._make_git_branches_provider()
-local remote_branch_provider =
-  M._make_git_branches_provider({ remote_branch = true })
+local remote_branch_provider = M._make_git_branches_provider({ remote_branch = true })
 
 M.providers = {
   local_branch = {
@@ -137,8 +126,7 @@ M.providers = {
   },
 }
 
-local GIT_LOG_PRETTY_FORMAT =
-  "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+local GIT_LOG_PRETTY_FORMAT = "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
 --- @param line string
 --- @return string
@@ -180,9 +168,7 @@ M.fzf_opts = {
     if git_current_branch_cmd:failed() then
       return nil
     end
-    return strings.not_empty(git_current_branch_cmd:output())
-        and "--header-lines=1"
-      or nil
+    return strings.not_empty(git_current_branch_cmd:output()) and "--header-lines=1" or nil
   end,
 }
 

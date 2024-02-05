@@ -43,9 +43,7 @@ describe("cfg.vim_commands", function()
       --     )
       -- )
       assert_eq(actual["next"].name, "next")
-      assert_true(
-        vim.fn.filereadable(vim.fn.expand(actual["next"].loc.filename)) > 0
-      )
+      assert_true(vim.fn.filereadable(vim.fn.expand(actual["next"].loc.filename)) > 0)
       assert_true(tonumber(actual["next"].loc.lineno) > 0)
       assert_eq(type(actual["bnext"]), "table")
       -- print(
@@ -55,28 +53,23 @@ describe("cfg.vim_commands", function()
       --     )
       -- )
       assert_eq(actual["bnext"].name, "bnext")
-      assert_true(
-        vim.fn.filereadable(vim.fn.expand(actual["bnext"].loc.filename)) > 0
-      )
+      assert_true(vim.fn.filereadable(vim.fn.expand(actual["bnext"].loc.filename)) > 0)
       assert_true(tonumber(actual["bnext"].loc.lineno) > 0)
     end)
-    it(
-      "_is_ex_command_output_header/_parse_ex_command_output_header",
-      function()
-        local line = "Name              Args Address Complete    Definition"
-        local actual1 = vim_commands_cfg._is_ex_command_output_header("asdf")
-        local actual2 = vim_commands_cfg._is_ex_command_output_header(line)
-        assert_false(actual1)
-        assert_true(actual2)
-        local actual3 = vim_commands_cfg._parse_ex_command_output_header(line)
-        assert_eq(type(actual3), "table")
-        assert_eq(actual3.name_pos, 1)
-        assert_eq(actual3.args_pos, strings.find(line, "Args"))
-        assert_eq(actual3.address_pos, strings.find(line, "Address"))
-        assert_eq(actual3.complete_pos, strings.find(line, "Complete"))
-        assert_eq(actual3.definition_pos, strings.find(line, "Definition"))
-      end
-    )
+    it("_is_ex_command_output_header/_parse_ex_command_output_header", function()
+      local line = "Name              Args Address Complete    Definition"
+      local actual1 = vim_commands_cfg._is_ex_command_output_header("asdf")
+      local actual2 = vim_commands_cfg._is_ex_command_output_header(line)
+      assert_false(actual1)
+      assert_true(actual2)
+      local actual3 = vim_commands_cfg._parse_ex_command_output_header(line)
+      assert_eq(type(actual3), "table")
+      assert_eq(actual3.name_pos, 1)
+      assert_eq(actual3.args_pos, strings.find(line, "Args"))
+      assert_eq(actual3.address_pos, strings.find(line, "Address"))
+      assert_eq(actual3.complete_pos, strings.find(line, "Complete"))
+      assert_eq(actual3.definition_pos, strings.find(line, "Definition"))
+    end)
     it("_parse_ex_command_output_lua_function_definition", function()
       local header = "Name              Args Address Complete    Definition"
       local success_lines = {
@@ -100,10 +93,7 @@ describe("cfg.vim_commands", function()
       local def_pos = strings.find(header, "Definition")
       for _, line in ipairs(success_lines) do
         local actual =
-          vim_commands_cfg._parse_ex_command_output_lua_function_definition(
-            line,
-            def_pos
-          )
+          vim_commands_cfg._parse_ex_command_output_lua_function_definition(line, def_pos)
         -- print(
         --     string.format(
         --         "parse ex command lua function:%s\n",
@@ -117,10 +107,7 @@ describe("cfg.vim_commands", function()
       end
       for _, line in ipairs(failed_lines) do
         local actual =
-          vim_commands_cfg._parse_ex_command_output_lua_function_definition(
-            line,
-            def_pos
-          )
+          vim_commands_cfg._parse_ex_command_output_lua_function_definition(line, def_pos)
         -- print(
         --     string.format(
         --         "failed to parse ex command lua function:%s\n",
@@ -201,8 +188,7 @@ describe("cfg.vim_commands", function()
           },
         },
       }
-      local actual1, actual2 =
-        vim_commands_cfg._calculate_vim_commands_columns_width(commands)
+      local actual1, actual2 = vim_commands_cfg._calculate_vim_commands_columns_width(commands)
       -- print(
       --     string.format(
       --         "render vim command status:%s, %s\n",
@@ -237,8 +223,7 @@ describe("cfg.vim_commands", function()
       }
       local name_width, opts_width =
         vim_commands_cfg._calculate_vim_commands_columns_width(commands)
-      local actual =
-        vim_commands_cfg._render_vim_commands(commands, name_width, opts_width)
+      local actual = vim_commands_cfg._render_vim_commands(commands, name_width, opts_width)
       -- print(
       --     string.format("render vim commands:%s\n", vim.inspect(actual))
       -- )
@@ -247,11 +232,8 @@ describe("cfg.vim_commands", function()
       assert_true(strings.startswith(actual[1], "Name"))
       assert_true(strings.endswith(actual[1], "Definition/Location"))
       assert_true(strings.startswith(actual[2], "FzfxGBranches"))
-      local expect = string.format(
-        "%s:%d",
-        paths.reduce(commands[1].loc.filename),
-        commands[1].loc.lineno
-      )
+      local expect =
+        string.format("%s:%d", paths.reduce(commands[1].loc.filename), commands[1].loc.lineno)
       assert_true(strings.endswith(actual[2], expect))
       assert_true(strings.startswith(actual[3], "bnext"))
       assert_true(strings.endswith(actual[3], '"next buffer"'))

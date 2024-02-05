@@ -60,21 +60,12 @@ describe("helper.bat_themes", function()
       assert_eq(bat_themes_helper._normalize_by("ayu", "-"), "Ayu")
     end)
     it("solarized8_high", function()
-      assert_eq(
-        bat_themes_helper._normalize_by("solarized8_high", "-"),
-        "Solarized8_high"
-      )
-      assert_eq(
-        bat_themes_helper._normalize_by("solarized8_high", "_"),
-        "Solarized8High"
-      )
+      assert_eq(bat_themes_helper._normalize_by("solarized8_high", "-"), "Solarized8_high")
+      assert_eq(bat_themes_helper._normalize_by("solarized8_high", "_"), "Solarized8High")
     end)
     it("asdf qwer", function()
       assert_eq(bat_themes_helper._normalize_by("asdf qwer", " "), "AsdfQwer")
-      assert_eq(
-        bat_themes_helper._normalize_by("solarized8_high", "_"),
-        "Solarized8High"
-      )
+      assert_eq(bat_themes_helper._normalize_by("solarized8_high", "_"), "Solarized8High")
     end)
   end)
   describe("[get_theme_name]", function()

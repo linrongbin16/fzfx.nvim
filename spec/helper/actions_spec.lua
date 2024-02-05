@@ -19,8 +19,7 @@ describe("helper.actions", function()
     }
   end
 
-  local DEVICONS_PATH =
-    "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
+  local DEVICONS_PATH = "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
   local actions = require("fzfx.helper.actions")
@@ -73,10 +72,7 @@ describe("helper.actions", function()
         local first_space_pos = strings.find(line, " ")
         local expect = string.format(
           "edit! %s",
-          paths.normalize(
-            line:sub(first_space_pos + 1),
-            { double_backslash = true, expand = true }
-          )
+          paths.normalize(line:sub(first_space_pos + 1), { double_backslash = true, expand = true })
         )
         assert_eq(actual[i], expect)
       end
@@ -225,10 +221,7 @@ describe("helper.actions", function()
         local expect = string.format(
           "edit! %s",
           paths.normalize(
-            line:sub(
-              first_space_pos + 1,
-              strings.find(line, ":", first_space_pos + 1) - 1
-            ),
+            line:sub(first_space_pos + 1, strings.find(line, ":", first_space_pos + 1) - 1),
             { double_backslash = true, expand = true }
           )
         )
@@ -382,10 +375,7 @@ describe("helper.actions", function()
           local expect = string.format(
             "edit! %s",
             paths.normalize(
-              line:sub(
-                first_space_pos + 1,
-                strings.find(line, ":", first_space_pos + 1) - 1
-              ),
+              line:sub(first_space_pos + 1, strings.find(line, ":", first_space_pos + 1) - 1),
               { double_backslash = true, expand = true }
             )
           )
@@ -607,10 +597,7 @@ describe("helper.actions", function()
           assert_eq(string.format("!git checkout main"), actual)
         else
           assert_eq(
-            string.format(
-              "!git checkout %s",
-              line:sub(string.len("origin/") + 1)
-            ),
+            string.format("!git checkout %s", line:sub(string.len("origin/") + 1)),
             actions._make_git_checkout({ line }, CONTEXT)
           )
         end
@@ -644,10 +631,7 @@ describe("helper.actions", function()
           local split_pos = strings.find(line, "remotes/origin/")
           if split_pos then
             assert_eq(
-              string.format(
-                "!git checkout %s",
-                line:sub(string.len("remotes/origin/") + 1)
-              ),
+              string.format("!git checkout %s", line:sub(string.len("remotes/origin/") + 1)),
               actual
             )
           else

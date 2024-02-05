@@ -37,8 +37,7 @@ M.setup = function()
 
   -- icon
   if type(config.get().icons) == "table" then
-    local devicons_path =
-      search_module_path("nvim-web-devicons", "nvim%-web%-devicons")
+    local devicons_path = search_module_path("nvim-web-devicons", "nvim%-web%-devicons")
     -- log.debug("|fzfx.module - setup| devicons path:%s", devicons_path)
     if type(devicons_path) == "string" and string.len(devicons_path) > 0 then
       vim.env._FZFX_NVIM_DEVICONS_PATH = devicons_path

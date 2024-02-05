@@ -35,9 +35,7 @@ end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_location = function(loc)
-  return type(loc) == "table"
-    and type(loc.uri) == "string"
-    and M._is_lsp_range(loc.range)
+  return type(loc) == "table" and type(loc.uri) == "string" and M._is_lsp_range(loc.range)
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
@@ -110,11 +108,7 @@ M._render_lsp_location_line = function(loc)
   if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
     return nil
   end
-  local loc_line = M._colorize_lsp_range(
-    filelines[range.start.line + 1],
-    range,
-    term_colors.red
-  )
+  local loc_line = M._colorize_lsp_range(filelines[range.start.line + 1], range, term_colors.red)
   log.debug(
     "|_render_lsp_location_line| range:%s, loc_line:%s",
     vim.inspect(range),
@@ -194,10 +188,7 @@ M._make_lsp_locations_provider = function(opts)
     for client_id, client_response in
       pairs(response --[[@as table]])
     do
-      if
-        client_id ~= nil
-        and tables.tbl_not_empty(tables.tbl_get(client_response, "result"))
-      then
+      if client_id ~= nil and tables.tbl_not_empty(tables.tbl_get(client_response, "result")) then
         local lsp_loc = client_response.result
         if M._is_lsp_location(lsp_loc) then
           local line = M._render_lsp_location_line(lsp_loc)
@@ -281,16 +272,9 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
     vim.inspect(ranges)
   )
   local filename = nil
-  if
-    type(item.uri) == "string"
-    and string.len(item.uri) > 0
-    and M._is_lsp_range(item.range)
-  then
+  if type(item.uri) == "string" and string.len(item.uri) > 0 and M._is_lsp_range(item.range) then
     filename = paths.reduce(vim.uri_to_fname(item.uri))
-    log.debug(
-      "|_render_lsp_call_hierarchy_line| location filename:%s",
-      vim.inspect(filename)
-    )
+    log.debug("|_render_lsp_call_hierarchy_line| location filename:%s", vim.inspect(filename))
   end
   if type(ranges) ~= "table" or #ranges == 0 then
     return {}
@@ -304,8 +288,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   end
   local lines = {}
   for i, r in ipairs(ranges) do
-    local item_line =
-      M._colorize_lsp_range(filelines[r.start.line + 1], r, term_colors.red)
+    local item_line = M._colorize_lsp_range(filelines[r.start.line + 1], r, term_colors.red)
     log.debug(
       "|_render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
       vim.inspect(i),
@@ -319,11 +302,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
       tostring(r.start.character + 1),
       item_line
     )
-    log.debug(
-      "|_render_lsp_call_hierarchy_line| %s-line:%s",
-      vim.inspect(i),
-      vim.inspect(line)
-    )
+    log.debug("|_render_lsp_call_hierarchy_line| %s-line:%s", vim.inspect(i), vim.inspect(line))
     table.insert(lines, line)
   end
   return lines
@@ -444,10 +423,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
         )
         for _, lsp_hi_item in ipairs(lsp_hi_item_list) do
           local hi_item, from_ranges =
-            M._retrieve_lsp_call_hierarchy_item_and_from_ranges(
-              opts.method,
-              lsp_hi_item
-            )
+            M._retrieve_lsp_call_hierarchy_item_and_from_ranges(opts.method, lsp_hi_item)
           log.debug(
             "|_make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item:%s, hi_item:%s, from_ranges:%s",
             vim.inspect(opts.method),
@@ -455,10 +431,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
             vim.inspect(hi_item),
             vim.inspect(from_ranges)
           )
-          if
-            M._is_lsp_call_hierarchy_item(hi_item)
-            and type(from_ranges) == "table"
-          then
+          if M._is_lsp_call_hierarchy_item(hi_item) and type(from_ranges) == "table" then
             local lines = M._render_lsp_call_hierarchy_line(
               hi_item --[[@as fzfx.LspCallHierarchyItem]],
               from_ranges
@@ -495,8 +468,7 @@ M._lsp_position_context_maker = function()
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
-  context.position_params =
-    vim.lsp.util.make_position_params(context.winnr, nil)
+  context.position_params = vim.lsp.util.make_position_params(context.winnr, nil)
   context.position_params.context = {
     includeDeclaration = true,
   }

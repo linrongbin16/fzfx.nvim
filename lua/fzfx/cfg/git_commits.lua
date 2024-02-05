@@ -77,8 +77,7 @@ M.variants = {
   },
 }
 
-local GIT_LOG_PRETTY_FORMAT =
-  "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
+local GIT_LOG_PRETTY_FORMAT = "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %Creset%s"
 
 --- @param opts {buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
@@ -94,11 +93,7 @@ M._make_git_commits_provider = function(opts)
     end
     if tables.tbl_get(opts, "buffer") then
       if not bufs.buf_is_valid(context.bufnr) then
-        log.echo(
-          LogLevels.INFO,
-          "invalid buffer(%s).",
-          vim.inspect(context.bufnr)
-        )
+        log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(context.bufnr))
         return nil
       end
       return {

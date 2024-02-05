@@ -44,10 +44,7 @@ M.get_theme_dir = function()
   -- log.debug("|get_theme_dir| cached_result:%s", vim.inspect(cached_result))
 
   if strings.empty(cached_result) then
-    log.ensure(
-      constants.HAS_BAT,
-      "|get_theme_dir| cannot find 'bat' executable"
-    )
+    log.ensure(constants.HAS_BAT, "|get_theme_dir| cannot find 'bat' executable")
 
     local config_dir = ""
     spawn
@@ -85,14 +82,9 @@ M._upper_first = function(names)
   for i, n in ipairs(names) do
     assert(
       type(n) == "string" and string.len(n) > 0,
-      string.format(
-        "|_upper_firsts| invalid name(%d):%s",
-        vim.inspect(i),
-        vim.inspect(n)
-      )
+      string.format("|_upper_firsts| invalid name(%d):%s", vim.inspect(i), vim.inspect(n))
     )
-    local new_name = string.sub(n, 1, 1):upper()
-      .. (string.len(n) > 1 and string.sub(n, 2) or "")
+    local new_name = string.sub(n, 1, 1):upper() .. (string.len(n) > 1 and string.sub(n, 2) or "")
     table.insert(new_names, new_name)
   end
   return new_names
@@ -102,8 +94,7 @@ end
 --- @param delimiter string
 --- @return string
 M._normalize_by = function(s, delimiter)
-  local splits = strings.find(s, delimiter)
-      and strings.split(s, delimiter, { trimempty = true })
+  local splits = strings.find(s, delimiter) and strings.split(s, delimiter, { trimempty = true })
     or { s }
   splits = M._upper_first(splits)
   return table.concat(splits, "")

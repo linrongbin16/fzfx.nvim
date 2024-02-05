@@ -96,9 +96,7 @@ describe("cfg._lsp_locations", function()
       assert_true(ctx.position_params.position.line >= 0)
       assert_eq(type(ctx.position_params.textDocument), "table")
       assert_eq(type(ctx.position_params.textDocument.uri), "string")
-      assert_true(
-        strings.endswith(ctx.position_params.textDocument.uri, "README.md")
-      )
+      assert_true(strings.endswith(ctx.position_params.textDocument.uri, "README.md"))
     end)
     it("_make_lsp_locations_provider", function()
       local ctx = _lsp_locations._lsp_position_context_maker()
@@ -166,8 +164,7 @@ describe("cfg._lsp_locations", function()
         },
       })
       assert_false(actual3)
-      local actual4 =
-        _lsp_locations._is_lsp_call_hierarchy_item(CALL_HIERARCHY_ITEM)
+      local actual4 = _lsp_locations._is_lsp_call_hierarchy_item(CALL_HIERARCHY_ITEM)
       assert_true(actual4)
     end)
     it("_is_lsp_call_hierarchy_incoming_call", function()
@@ -191,40 +188,34 @@ describe("cfg._lsp_locations", function()
       )
       print(string.format("incoming render lines:%s\n", vim.inspect(actual1)))
       assert_true(#actual1 >= 0)
-      local actual2 = _lsp_locations._render_lsp_call_hierarchy_line(
-        OUTGOING_CALLS.to,
-        OUTGOING_CALLS.fromRanges
-      )
+      local actual2 =
+        _lsp_locations._render_lsp_call_hierarchy_line(OUTGOING_CALLS.to, OUTGOING_CALLS.fromRanges)
       print(string.format("outgoing render lines:%s\n", vim.inspect(actual2)))
       assert_true(#actual1 >= 0)
     end)
     it("_retrieve_lsp_call_hierarchy_item_and_from_ranges", function()
-      local actual11, actual12 =
-        _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
-          "callHierarchy/incomingCalls",
-          INCOMING_CALLS
-        )
+      local actual11, actual12 = _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+        "callHierarchy/incomingCalls",
+        INCOMING_CALLS
+      )
       assert_true(vim.deep_equal(actual11, INCOMING_CALLS.from))
       assert_true(vim.deep_equal(actual12, INCOMING_CALLS.fromRanges))
-      local actual21, actual22 =
-        _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
-          "callHierarchy/incomingCalls",
-          OUTGOING_CALLS
-        )
+      local actual21, actual22 = _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+        "callHierarchy/incomingCalls",
+        OUTGOING_CALLS
+      )
       assert_eq(actual21, nil)
       assert_eq(actual22, nil)
-      local actual31, actual32 =
-        _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
-          "callHierarchy/outgoingCalls",
-          INCOMING_CALLS
-        )
+      local actual31, actual32 = _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+        "callHierarchy/outgoingCalls",
+        INCOMING_CALLS
+      )
       assert_eq(actual31, nil)
       assert_eq(actual32, nil)
-      local actual41, actual42 =
-        _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
-          "callHierarchy/outgoingCalls",
-          OUTGOING_CALLS
-        )
+      local actual41, actual42 = _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+        "callHierarchy/outgoingCalls",
+        OUTGOING_CALLS
+      )
       assert_true(vim.deep_equal(actual41, OUTGOING_CALLS.to))
       assert_true(vim.deep_equal(actual42, OUTGOING_CALLS.fromRanges))
     end)

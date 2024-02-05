@@ -25,11 +25,7 @@ M._make_provider_cursor_opts = function(opts, buffer_previewer_opts) end
 --- @param opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_provider_cursor_opts_with_hidden_previewer = function(
-  opts,
-  buffer_previewer_opts
-)
-end
+M._make_provider_cursor_opts_with_hidden_previewer = function(opts, buffer_previewer_opts) end
 
 --- @param opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
@@ -46,10 +42,8 @@ M._make_previewer_cursor_opts = function(opts, buffer_previewer_opts) end
 M._make_provider_center_opts = function(opts, buffer_previewer_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
 
-  local total_width = relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(0)
-  local total_height = relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(0)
+  local total_width = relative == "editor" and vim.o.columns or vim.api.nvim_win_get_width(0)
+  local total_height = relative == "editor" and vim.o.lines or vim.api.nvim_win_get_height(0)
   local width = popup_helpers.get_window_size(opts.width, total_width)
   local height = popup_helpers.get_window_size(opts.height, total_height)
 
@@ -57,10 +51,7 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
 
   local additional_row_offset = 0
   local additional_col_offset = 0
-  if
-    fzf_preview_window_opts.position == "left"
-    or fzf_preview_window_opts.position == "right"
-  then
+  if fzf_preview_window_opts.position == "left" or fzf_preview_window_opts.position == "right" then
     local old_width = width
     local sign = fzf_preview_window_opts.position == "right" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
@@ -68,22 +59,16 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
     else
       width = math.max(width - fzf_preview_window_opts.size, 1)
     end
-    additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign
-      + sign
-  elseif
-    fzf_preview_window_opts.position == "up"
-    or fzf_preview_window_opts.position == "down"
-  then
+    additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign + sign
+  elseif fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down" then
     local old_height = height
     local sign = fzf_preview_window_opts.position == "down" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
-      height =
-        math.floor(height - (height / 100 * fzf_preview_window_opts.size))
+      height = math.floor(height - (height / 100 * fzf_preview_window_opts.size))
     else
       height = math.max(height - fzf_preview_window_opts.size, 1)
     end
-    additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign
-      + sign
+    additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign + sign
   end
   log.debug(
     "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
@@ -107,18 +92,8 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
     "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
     vim.inspect(opts)
   )
-  local row = popup_helpers.shift_window_pos(
-    total_height,
-    height,
-    opts.row,
-    additional_row_offset
-  )
-  local col = popup_helpers.shift_window_pos(
-    total_width,
-    width,
-    opts.col,
-    additional_col_offset
-  )
+  local row = popup_helpers.shift_window_pos(total_height, height, opts.row, additional_row_offset)
+  local col = popup_helpers.shift_window_pos(total_width, width, opts.col, additional_col_offset)
 
   local result = {
     anchor = "NW",
@@ -139,29 +114,18 @@ end
 --- @param opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_provider_center_opts_with_hidden_previewer = function(
-  opts,
-  buffer_previewer_opts
-)
+M._make_provider_center_opts_with_hidden_previewer = function(opts, buffer_previewer_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
 
-  local total_width = relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(0)
-  local total_height = relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(0)
+  local total_width = relative == "editor" and vim.o.columns or vim.api.nvim_win_get_width(0)
+  local total_height = relative == "editor" and vim.o.lines or vim.api.nvim_win_get_height(0)
   local width = popup_helpers.get_window_size(opts.width, total_width)
   local height = popup_helpers.get_window_size(opts.height, total_height)
 
   local fzf_preview_window_opts = buffer_previewer_opts.fzf_preview_window_opts
-  if
-    fzf_preview_window_opts.position == "left"
-    or fzf_preview_window_opts.position == "right"
-  then
+  if fzf_preview_window_opts.position == "left" or fzf_preview_window_opts.position == "right" then
     width = width + 1
-  elseif
-    fzf_preview_window_opts.position == "up"
-    or fzf_preview_window_opts.position == "down"
-  then
+  elseif fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down" then
     height = height + 1
   end
 
@@ -200,10 +164,8 @@ end
 M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
   local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
 
-  local total_width = relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(0)
-  local total_height = relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(0)
+  local total_width = relative == "editor" and vim.o.columns or vim.api.nvim_win_get_width(0)
+  local total_height = relative == "editor" and vim.o.lines or vim.api.nvim_win_get_height(0)
   local width = popup_helpers.get_window_size(opts.width, total_width)
   local height = popup_helpers.get_window_size(opts.height, total_height)
 
@@ -211,10 +173,7 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
 
   local additional_row_offset = 0
   local additional_col_offset = 0
-  if
-    fzf_preview_window_opts.position == "left"
-    or fzf_preview_window_opts.position == "right"
-  then
+  if fzf_preview_window_opts.position == "left" or fzf_preview_window_opts.position == "right" then
     local old_width = width
     local sign = fzf_preview_window_opts.position == "left" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
@@ -222,12 +181,8 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     else
       width = fzf_preview_window_opts.size
     end
-    additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign
-      + sign
-  elseif
-    fzf_preview_window_opts.position == "up"
-    or fzf_preview_window_opts.position == "down"
-  then
+    additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign + sign
+  elseif fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down" then
     local old_height = height
     local sign = fzf_preview_window_opts.position == "up" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
@@ -235,8 +190,7 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     else
       height = fzf_preview_window_opts.size
     end
-    additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign
-      + sign
+    additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign + sign
   end
   log.debug(
     "|_make_previewer_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
@@ -260,18 +214,8 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
     vim.inspect(opts)
   )
-  local row = popup_helpers.shift_window_pos(
-    total_height,
-    height,
-    opts.row,
-    additional_row_offset
-  )
-  local col = popup_helpers.shift_window_pos(
-    total_width,
-    width,
-    opts.col,
-    additional_col_offset
-  )
+  local row = popup_helpers.shift_window_pos(total_height, height, opts.row, additional_row_offset)
+  local col = popup_helpers.shift_window_pos(total_width, width, opts.col, additional_col_offset)
 
   local result = {
     anchor = "NW",
@@ -313,10 +257,7 @@ end
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @return fzfx.NvimFloatWinOpts
-M.make_provider_opts_with_hidden_previewer = function(
-  win_opts,
-  buffer_previewer_opts
-)
+M.make_provider_opts_with_hidden_previewer = function(win_opts, buffer_previewer_opts)
   local opts = vim.deepcopy(win_opts)
   local relative = opts.relative or "editor"
   log.ensure(
@@ -325,15 +266,9 @@ M.make_provider_opts_with_hidden_previewer = function(
     vim.inspect(opts)
   )
   if relative == "cursor" then
-    return M._make_provider_cursor_opts_with_hidden_previewer(
-      opts,
-      buffer_previewer_opts
-    )
+    return M._make_provider_cursor_opts_with_hidden_previewer(opts, buffer_previewer_opts)
   else
-    return M._make_provider_center_opts_with_hidden_previewer(
-      opts,
-      buffer_previewer_opts
-    )
+    return M._make_provider_center_opts_with_hidden_previewer(opts, buffer_previewer_opts)
   end
 end
 
@@ -421,18 +356,14 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   local previewer_bufnr = vim.api.nvim_create_buf(false, true)
   _set_default_buf_options(previewer_bufnr)
 
-  local provider_win_confs =
-    M.make_provider_opts(win_opts, buffer_previewer_opts)
-  local previewer_win_confs =
-    M.make_previewer_opts(win_opts, buffer_previewer_opts)
+  local provider_win_confs = M.make_provider_opts(win_opts, buffer_previewer_opts)
+  local previewer_win_confs = M.make_previewer_opts(win_opts, buffer_previewer_opts)
   previewer_win_confs.focusable = false
 
-  local previewer_winnr =
-    vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
+  local previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
   _set_default_previewer_win_options(previewer_winnr)
 
-  local provider_winnr =
-    vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs)
+  local provider_winnr = vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs)
   _set_default_provider_win_options(provider_winnr)
 
   -- set cursor at provider window
@@ -497,8 +428,7 @@ function BufferPopupWindow:resize()
   self._resizing = true
 
   if self.previewer_is_hidden then
-    local old_provider_win_confs =
-      vim.api.nvim_win_get_config(self.provider_winnr)
+    local old_provider_win_confs = vim.api.nvim_win_get_config(self.provider_winnr)
     local provider_win_confs = M.make_provider_opts_with_hidden_previewer(
       self._saved_win_opts,
       self._saved_buffer_previewer_opts
@@ -510,20 +440,13 @@ function BufferPopupWindow:resize()
     )
     vim.api.nvim_win_set_config(
       self.provider_winnr,
-      vim.tbl_deep_extend(
-        "force",
-        old_provider_win_confs,
-        provider_win_confs or {}
-      )
+      vim.tbl_deep_extend("force", old_provider_win_confs, provider_win_confs or {})
     )
     _set_default_provider_win_options(self.provider_winnr)
   else
-    local old_provider_win_confs =
-      vim.api.nvim_win_get_config(self.provider_winnr)
-    local provider_win_confs = M.make_provider_opts(
-      self._saved_win_opts,
-      self._saved_buffer_previewer_opts
-    )
+    local old_provider_win_confs = vim.api.nvim_win_get_config(self.provider_winnr)
+    local provider_win_confs =
+      M.make_provider_opts(self._saved_win_opts, self._saved_buffer_previewer_opts)
     log.debug(
       "|BufferPopupWindow:resize| not hidden, provider - old:%s, new:%s",
       vim.inspect(old_provider_win_confs),
@@ -531,21 +454,14 @@ function BufferPopupWindow:resize()
     )
     vim.api.nvim_win_set_config(
       self.provider_winnr,
-      vim.tbl_deep_extend(
-        "force",
-        old_provider_win_confs,
-        provider_win_confs or {}
-      )
+      vim.tbl_deep_extend("force", old_provider_win_confs, provider_win_confs or {})
     )
     _set_default_provider_win_options(self.provider_winnr)
 
     if self:previewer_is_valid() then
-      local old_previewer_win_confs =
-        vim.api.nvim_win_get_config(self.previewer_winnr)
-      local previewer_win_confs = M.make_previewer_opts(
-        self._saved_win_opts,
-        self._saved_buffer_previewer_opts
-      )
+      local old_previewer_win_confs = vim.api.nvim_win_get_config(self.previewer_winnr)
+      local previewer_win_confs =
+        M.make_previewer_opts(self._saved_win_opts, self._saved_buffer_previewer_opts)
       log.debug(
         "|BufferPopupWindow:resize| not hidden, previewer - old:%s, new:%s",
         vim.inspect(old_previewer_win_confs),
@@ -553,11 +469,7 @@ function BufferPopupWindow:resize()
       )
       vim.api.nvim_win_set_config(
         self.previewer_winnr,
-        vim.tbl_deep_extend(
-          "force",
-          old_previewer_win_confs,
-          previewer_win_confs or {}
-        )
+        vim.tbl_deep_extend("force", old_previewer_win_confs, previewer_win_confs or {})
       )
       _set_default_previewer_win_options(self.previewer_winnr)
     end
@@ -575,8 +487,7 @@ end
 
 function BufferPopupWindow:previewer_is_valid()
   if vim.in_fast_event() then
-    return type(self.previewer_winnr) == "number"
-      and type(self.previewer_bufnr) == "number"
+    return type(self.previewer_winnr) == "number" and type(self.previewer_bufnr) == "number"
   else
     return type(self.previewer_winnr) == "number"
       and vim.api.nvim_win_is_valid(self.previewer_winnr)
@@ -587,8 +498,7 @@ end
 
 function BufferPopupWindow:provider_is_valid()
   if vim.in_fast_event() then
-    return type(self.provider_winnr) == "number"
-      and type(self.provider_bufnr) == "number"
+    return type(self.provider_winnr) == "number" and type(self.provider_bufnr) == "number"
   else
     return type(self.provider_winnr) == "number"
       and vim.api.nvim_win_is_valid(self.provider_winnr)
@@ -612,11 +522,7 @@ end
 --- @param job_id integer
 --- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
-function BufferPopupWindow:preview_file(
-  job_id,
-  previewer_result,
-  previewer_label_result
-)
+function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_label_result)
   if strings.empty(tables.tbl_get(previewer_result, "filename")) then
     log.debug(
       "|BufferPopupWindow:preview_file| empty previewer_result:%s",
@@ -638,10 +544,7 @@ function BufferPopupWindow:preview_file(
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
-      log.debug(
-        "|BufferPopupWindow:preview_file| invalid previewer:%s",
-        vim.inspect(self)
-      )
+      log.debug("|BufferPopupWindow:preview_file| invalid previewer:%s", vim.inspect(self))
       return
     end
     if #self.preview_files_queue == 0 then
@@ -689,8 +592,7 @@ function BufferPopupWindow:preview_file(
           return
         end
 
-        local last_content =
-          self.preview_file_contents_queue[#self.preview_file_contents_queue]
+        local last_content = self.preview_file_contents_queue[#self.preview_file_contents_queue]
         self.preview_file_contents_queue = {}
 
         if not self:is_last_previewing_file_job_id(last_content.job_id) then
@@ -708,22 +610,14 @@ end
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob?
 --- @param first_line integer?
 --- @param last_line integer?
-function BufferPopupWindow:preview_file_contents(
-  file_content,
-  first_line,
-  last_line
-)
+function BufferPopupWindow:preview_file_contents(file_content, first_line, last_line)
   if tables.tbl_empty(file_content) then
     return
   end
 
   local last_content = file_content --[[@as fzfx.BufferPopupWindowPreviewFileContentJob]]
 
-  pcall(
-    vim.api.nvim_buf_set_name,
-    self.previewer_bufnr,
-    last_content.previewer_result.filename
-  )
+  pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, last_content.previewer_result.filename)
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
@@ -760,13 +654,7 @@ function BufferPopupWindow:preview_file_contents(
       local set_win_title_done = false
 
       if FIRST_LINE > 1 then
-        vim.api.nvim_buf_set_lines(
-          self.previewer_bufnr,
-          0,
-          FIRST_LINE,
-          false,
-          {}
-        )
+        vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, FIRST_LINE, false, {})
       end
       vim.api.nvim_buf_set_lines(self.previewer_bufnr, LAST_LINE, -1, false, {})
 
@@ -890,16 +778,13 @@ function BufferPopupWindow:show_preview()
   end
 
   self.previewer_is_hidden = false
-  local previewer_win_confs = M.make_previewer_opts(
-    self._saved_win_opts,
-    self._saved_buffer_previewer_opts
-  )
+  local previewer_win_confs =
+    M.make_previewer_opts(self._saved_win_opts, self._saved_buffer_previewer_opts)
   previewer_win_confs.focusable = false
 
   self.previewer_bufnr = vim.api.nvim_create_buf(false, true)
   _set_default_buf_options(self.previewer_bufnr)
-  self.previewer_winnr =
-    vim.api.nvim_open_win(self.previewer_bufnr, true, previewer_win_confs)
+  self.previewer_winnr = vim.api.nvim_open_win(self.previewer_bufnr, true, previewer_win_confs)
   vim.api.nvim_set_current_win(self.provider_winnr)
 
   self:resize()
@@ -977,8 +862,7 @@ function BufferPopupWindow:scroll_by(percent, up)
     return
   end
 
-  local win_height =
-    math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
+  local win_height = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
   local diff_lines = math.max(math.floor(win_height / 100 * percent), 0)
   if up then
     diff_lines = -diff_lines

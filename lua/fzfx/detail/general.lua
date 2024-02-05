@@ -121,8 +121,7 @@ local ProviderSwitch = {}
 function ProviderSwitch:new(name, pipeline, provider_configs)
   local provider_configs_map = {}
   if schema.is_provider_config(provider_configs) then
-    provider_configs.provider_type =
-      schema.get_provider_type_or_default(provider_configs)
+    provider_configs.provider_type = schema.get_provider_type_or_default(provider_configs)
     provider_configs_map[DEFAULT_PIPELINE] = provider_configs
   else
     for provider_name, provider_opts in pairs(provider_configs) do
@@ -133,8 +132,7 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
         vim.inspect(name),
         vim.inspect(provider_opts)
       )
-      provider_opts.provider_type =
-        schema.get_provider_type_or_default(provider_opts)
+      provider_opts.provider_type = schema.get_provider_type_or_default(provider_opts)
       provider_configs_map[provider_name] = provider_opts
     end
   end
@@ -197,8 +195,7 @@ function ProviderSwitch:provide(query, context)
 
   if provider_config.provider_type == ProviderTypeEnum.PLAIN then
     log.ensure(
-      provider_config.provider == nil
-        or type(provider_config.provider) == "string",
+      provider_config.provider == nil or type(provider_config.provider) == "string",
       "|ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
       vim.inspect(self),
       vim.inspect(provider_config)
@@ -206,15 +203,11 @@ function ProviderSwitch:provide(query, context)
     if provider_config.provider == nil then
       fileios.writefile(self.resultfile, "")
     else
-      fileios.writefile(
-        self.resultfile,
-        provider_config.provider --[[@as string]]
-      )
+      fileios.writefile(self.resultfile, provider_config.provider --[[@as string]])
     end
   elseif provider_config.provider_type == ProviderTypeEnum.PLAIN_LIST then
     log.ensure(
-      provider_config.provider == nil
-        or type(provider_config.provider) == "table",
+      provider_config.provider == nil or type(provider_config.provider) == "table",
       "|ProviderSwitch:provide| plain_list provider must be string or nil! self:%s, provider:%s",
       vim.inspect(self),
       vim.inspect(provider_config)
@@ -228,8 +221,7 @@ function ProviderSwitch:provide(query, context)
       )
     end
   elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
-    local ok, result =
-      pcall(provider_config.provider --[[@as function]], query, context)
+    local ok, result = pcall(provider_config.provider --[[@as function]], query, context)
     -- log.debug(
     --     "|fzfx.general - ProviderSwitch:provide| pcall command provider, ok:%s, result:%s",
     --     vim.inspect(ok),
@@ -259,8 +251,7 @@ function ProviderSwitch:provide(query, context)
       end
     end
   elseif provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST then
-    local ok, result =
-      pcall(provider_config.provider --[[@as function]], query, context)
+    local ok, result = pcall(provider_config.provider --[[@as function]], query, context)
     -- log.debug(
     --     "|fzfx.general - ProviderSwitch:provide| pcall command_list provider, ok:%s, result:%s",
     --     vim.inspect(ok),
@@ -286,15 +277,11 @@ function ProviderSwitch:provide(query, context)
       if tables.tbl_empty(result) then
         fileios.writefile(self.resultfile, "")
       else
-        fileios.writefile(
-          self.resultfile,
-          jsons.encode(result) --[[@as string]]
-        )
+        fileios.writefile(self.resultfile, jsons.encode(result) --[[@as string]])
       end
     end
   elseif provider_config.provider_type == ProviderTypeEnum.LIST then
-    local ok, result =
-      pcall(provider_config.provider --[[@as function]], query, context)
+    local ok, result = pcall(provider_config.provider --[[@as function]], query, context)
     -- log.debug(
     --     "|fzfx.general - ProviderSwitch:provide| pcall list provider, ok:%s, result:%s",
     --     vim.inspect(ok),
@@ -324,10 +311,7 @@ function ProviderSwitch:provide(query, context)
       end
     end
   else
-    log.throw(
-      "|ProviderSwitch:provide| invalid provider type! %s",
-      vim.inspect(self)
-    )
+    log.throw("|ProviderSwitch:provide| invalid provider type! %s", vim.inspect(self))
   end
   ---@diagnostic disable-next-line: need-check-nil
   return provider_config.provider_type
@@ -357,24 +341,20 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
   if
     schema.is_previewer_config(previewer_configs --[[@as fzfx.PreviewerConfig]])
   then
-    previewer_configs.previewer_type = schema.get_previewer_type_or_default(
-      previewer_configs --[[@as fzfx.PreviewerConfig]]
-    )
+    previewer_configs.previewer_type =
+      schema.get_previewer_type_or_default(previewer_configs --[[@as fzfx.PreviewerConfig]])
     previewer_configs_map[DEFAULT_PIPELINE] = previewer_configs
   else
     for previewer_name, previewer_opts in pairs(previewer_configs) do
       log.ensure(
-        schema.is_previewer_config(
-          previewer_opts --[[@as fzfx.PreviewerConfig]]
-        ),
+        schema.is_previewer_config(previewer_opts --[[@as fzfx.PreviewerConfig]]),
         "%s (%s) is not a valid previewer! %s",
         vim.inspect(previewer_name),
         vim.inspect(name),
         vim.inspect(previewer_opts)
       )
-      previewer_opts.previewer_type = schema.get_previewer_type_or_default(
-        previewer_opts --[[@as fzfx.PreviewerConfig]]
-      )
+      previewer_opts.previewer_type =
+        schema.get_previewer_type_or_default(previewer_opts --[[@as fzfx.PreviewerConfig]])
       previewer_configs_map[previewer_name] = previewer_opts
     end
   end
@@ -503,10 +483,7 @@ function PreviewerSwitch:preview(line, context)
       if tables.tbl_empty(result) then
         fileios.writefile(self.resultfile, "")
       else
-        fileios.writefile(
-          self.resultfile,
-          jsons.encode(result --[[@as table]]) --[[@as string]]
-        )
+        fileios.writefile(self.resultfile, jsons.encode(result --[[@as table]]) --[[@as string]])
       end
     end
   elseif previewer_config.previewer_type == PreviewerTypeEnum.LIST then
@@ -536,10 +513,7 @@ function PreviewerSwitch:preview(line, context)
       fileios.writelines(self.resultfile, result --[[@as table]])
     end
   else
-    log.throw(
-      "|PreviewerSwitch:preview| invalid previewer type! %s",
-      vim.inspect(self)
-    )
+    log.throw("|PreviewerSwitch:preview| invalid previewer type! %s", vim.inspect(self))
   end
 
   self:_preview_label(line, context)
@@ -635,8 +609,7 @@ function PreviewerSwitch:_preview_label(line, context)
       if #self.previewer_labels_queue == 0 then
         return
       end
-      local last_label =
-        self.previewer_labels_queue[#self.previewer_labels_queue]
+      local last_label = self.previewer_labels_queue[#self.previewer_labels_queue]
       self.previewer_labels_queue = {}
       if type(last_label) ~= "string" then
         return
@@ -723,13 +696,8 @@ function HeaderSwitch:new(provider_configs, interaction_configs)
     --     vim.inspect(provider_configs)
     -- )
     for provider_name, provider_opts in pairs(provider_configs) do
-      local help_builder = _make_help_doc(
-        provider_configs,
-        {},
-        { provider_name }
-      )
-      headers_map[provider_name] =
-        _make_help_doc(interaction_configs, help_builder)
+      local help_builder = _make_help_doc(provider_configs, {}, { provider_name })
+      headers_map[provider_name] = _make_help_doc(interaction_configs, help_builder)
     end
   end
 
@@ -784,11 +752,7 @@ end
 --- @return string
 local function dump_action_command(action_name, action_file)
   if consts.IS_WINDOWS then
-    return string.format(
-      "execute-silent(cmd.exe /C echo %s>%s)",
-      action_name,
-      action_file
-    )
+    return string.format("execute-silent(cmd.exe /C echo %s>%s)", action_name, action_file)
   else
     return string.format("execute-silent(echo %s>%s)", action_name, action_file)
   end
@@ -812,23 +776,17 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
       table.insert(pw_opts, o)
       mocked = true
     elseif
-      strings.not_empty(o)
-      and strings.startswith(o --[[@as string]], "--preview-window")
+      strings.not_empty(o) and strings.startswith(o --[[@as string]], "--preview-window")
     then
       table.insert(pw_opts, o)
       mocked = true
     end
 
-    if
-      type(o) == "table"
-      and strings.not_empty(o[1])
-      and strings.startswith(o[1], "--border")
-    then
+    if type(o) == "table" and strings.not_empty(o[1]) and strings.startswith(o[1], "--border") then
       border_opts = o[2]
       mocked = true
     elseif
-      strings.not_empty(o)
-      and strings.startswith(o --[[@as string]], "--border")
+      strings.not_empty(o) and strings.startswith(o --[[@as string]], "--border")
     then
       border_opts = string.sub(o --[[@as string]], string.len("--border") + 2)
       mocked = true
@@ -851,16 +809,14 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
           end
           if type(split_pos) == "number" and split_pos > 1 then
             split_o = {}
-            local o1 =
-              strings.trim(string.sub(o --[[@as string]], 1, split_pos - 1))
+            local o1 = strings.trim(string.sub(o --[[@as string]], 1, split_pos - 1))
             log.debug(
               "|general - use_buffer_previewer| o:%s, split_pos:%s, o1:%s",
               vim.inspect(o),
               vim.inspect(split_pos),
               vim.inspect(o1)
             )
-            local o2 =
-              strings.trim(string.sub(o --[[@as string]], split_pos + 1))
+            local o2 = strings.trim(string.sub(o --[[@as string]], split_pos + 1))
             log.debug(
               "|general - use_buffer_previewer| o:%s, split_pos:%s, o2:%s",
               vim.inspect(o),
@@ -922,8 +878,7 @@ local function decode_fzf_status_current_text(j)
   --   "|decode_fzf_status_current_text| current_pos:%s",
   --   vim.inspect(current_pos)
   -- )
-  local index_pos =
-    strings.find(j, INDEX, current_pos + string.len(CURRENT) + 2)
+  local index_pos = strings.find(j, INDEX, current_pos + string.len(CURRENT) + 2)
   if not index_pos then
     return nil
   end
@@ -992,10 +947,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local popup = nil
 
   local default_provider_action_key = nil
-  if
-    default_pipeline == nil
-    or pipeline_configs.providers[default_pipeline] == nil
-  then
+  if default_pipeline == nil or pipeline_configs.providers[default_pipeline] == nil then
     local pipeline = nil
     local provider_opts = nil
     if schema.is_provider_config(pipeline_configs.providers) then
@@ -1020,16 +972,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   end
 
   --- @type fzfx.ProviderSwitch
-  local provider_switch =
-    ProviderSwitch:new(name, default_pipeline, pipeline_configs.providers)
+  local provider_switch = ProviderSwitch:new(name, default_pipeline, pipeline_configs.providers)
 
   --- @type fzfx.PreviewerSwitch
-  local previewer_switch = PreviewerSwitch:new(
-    name,
-    default_pipeline,
-    pipeline_configs.previewers,
-    fzf_port_file
-  )
+  local previewer_switch =
+    PreviewerSwitch:new(name, default_pipeline, pipeline_configs.previewers, fzf_port_file)
   local use_buffer_previewer = previewer_switch:current().previewer_type
     == PreviewerTypeEnum.BUFFER_FILE
 
@@ -1048,8 +995,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     provider_switch:provide(query_params, context)
   end
 
-  local provide_rpc_id =
-    rpcserver.get_instance():register(provide_rpc, "provide_rpc")
+  local provide_rpc_id = rpcserver.get_instance():register(provide_rpc, "provide_rpc")
   table.insert(rpc_registries, provide_rpc_id)
 
   local query_command = string.format(
@@ -1074,10 +1020,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   -- )
 
   local fzf_opts = vim.deepcopy(config.get().fzf_opts)
-  fzf_opts = vim.list_extend(
-    fzf_opts,
-    { "--print-query", "--listen", { "--query", query } }
-  )
+  fzf_opts = vim.list_extend(fzf_opts, { "--print-query", "--listen", { "--query", query } })
 
   --- @param line_params string
   local function preview_rpc(line_params)
@@ -1085,8 +1028,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   end
 
   if not use_buffer_previewer then
-    local preview_rpc_id =
-      rpcserver.get_instance():register(preview_rpc, "preview_rpc")
+    local preview_rpc_id = rpcserver.get_instance():register(preview_rpc, "preview_rpc")
     table.insert(rpc_registries, preview_rpc_id)
     local preview_command = string.format(
       "%s %s %s %s {}",
@@ -1104,21 +1046,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   local dump_fzf_port_command = nil
   if consts.IS_WINDOWS then
-    dump_fzf_port_command =
-      string.format("cmd.exe /C echo %%FZF_PORT%%>%s", fzf_port_file)
+    dump_fzf_port_command = string.format("cmd.exe /C echo %%FZF_PORT%%>%s", fzf_port_file)
   else
     dump_fzf_port_command = string.format("echo $FZF_PORT>%s", fzf_port_file)
   end
   local fzf_start_binder = fzf_helpers.FzfOptEventBinder:new("start")
-  fzf_start_binder:append(
-    string.format("execute-silent(%s)", dump_fzf_port_command)
-  )
+  fzf_start_binder:append(string.format("execute-silent(%s)", dump_fzf_port_command))
 
   if use_buffer_previewer then
     -- listen fzf actions {
     fileios.writefile(buffer_previewer_actions_file, "")
-    buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err =
-      uv.new_fs_event() --[[@as uv_fs_event_t]]
+    buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err = uv.new_fs_event() --[[@as uv_fs_event_t]]
     log.ensure(
       buffer_previewer_actions_fsevent ~= nil,
       string.format(
@@ -1154,35 +1092,31 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           return
         end
 
-        fileios.asyncreadfile(
-          buffer_previewer_actions_file,
-          function(actions_data)
-            log.debug(
-              "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, data:%s",
-              vim.inspect(actions_file),
-              vim.inspect(actions_data)
-            )
+        fileios.asyncreadfile(buffer_previewer_actions_file, function(actions_data)
+          log.debug(
+            "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, data:%s",
+            vim.inspect(actions_file),
+            vim.inspect(actions_data)
+          )
+          if not popup or not popup:provider_is_valid() then
+            return
+          end
+          if consts.IS_WINDOWS then
+            if strings.startswith(actions_data, '"') then
+              actions_data = string.sub(actions_data, 2)
+            end
+            if strings.endswith(actions_data, '"') then
+              actions_data = string.sub(actions_data, 1, #actions_data - 1)
+            end
+          end
+
+          vim.schedule(function()
             if not popup or not popup:provider_is_valid() then
               return
             end
-            if consts.IS_WINDOWS then
-              if strings.startswith(actions_data, '"') then
-                actions_data = string.sub(actions_data, 2)
-              end
-              if strings.endswith(actions_data, '"') then
-                actions_data = string.sub(actions_data, 1, #actions_data - 1)
-              end
-            end
-
-            vim.schedule(function()
-              if not popup or not popup:provider_is_valid() then
-                return
-              end
-              popup.popup_window:preview_action(actions_data)
-            end)
-          end,
-          { trim = true }
-        )
+            popup.popup_window:preview_action(actions_data)
+          end)
+        end, { trim = true })
       end
     )
     log.ensure(
@@ -1204,9 +1138,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local buffer_previewer_fzf_current_text = nil
     local buffer_previewer_file_job_id = numbers.auto_incremental_id()
     if popup and popup.popup_window then
-      popup.popup_window:set_current_previewing_file_job_id(
-        buffer_previewer_file_job_id
-      )
+      popup.popup_window:set_current_previewing_file_job_id(buffer_previewer_file_job_id)
     end
 
     local function query_fzf_status()
@@ -1253,8 +1185,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
         vim.schedule(function()
           if strings.not_empty(tables.tbl_get(completed, "stdout")) then
-            local parse_ok, current_text =
-              pcall(decode_fzf_status_current_text, completed.stdout) --[[@as boolean, table]]
+            local parse_ok, current_text = pcall(decode_fzf_status_current_text, completed.stdout) --[[@as boolean, table]]
             if parse_ok and strings.not_empty(current_text) then
               if current_text == buffer_previewer_fzf_current_text then
                 return
@@ -1269,9 +1200,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               end
 
               buffer_previewer_file_job_id = numbers.auto_incremental_id()
-              popup.popup_window:set_current_previewing_file_job_id(
-                buffer_previewer_file_job_id
-              )
+              popup.popup_window:set_current_previewing_file_job_id(buffer_previewer_file_job_id)
 
               local previewer_config = previewer_switch:current()
               local focused_line = current_text
@@ -1341,8 +1270,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     -- query fzf status }
   end
 
-  local header_switch =
-    HeaderSwitch:new(pipeline_configs.providers, pipeline_configs.interactions)
+  local header_switch = HeaderSwitch:new(pipeline_configs.providers, pipeline_configs.interactions)
 
   -- have interactions or pipelines >= 2
   if type(pipeline_configs.interactions) == "table" or pipeline_size > 1 then
@@ -1376,11 +1304,9 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         fzf_helpers.make_lua_command("rpc", "request.lua"),
         interaction_rpc_id
       )
-      local bind_builder =
-        string.format("%s:execute-silent(%s)", action_key, action_command)
+      local bind_builder = string.format("%s:execute-silent(%s)", action_key, action_command)
       if interaction_opts.reload_after_execute then
-        bind_builder = bind_builder
-          .. string.format("+reload(%s)", reload_query_command)
+        bind_builder = bind_builder .. string.format("+reload(%s)", reload_query_command)
       end
       table.insert(fzf_opts, {
         "--bind",
@@ -1399,15 +1325,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         previewer_switch:switch(pipeline)
       end
 
-      local switch_rpc_id =
-        rpcserver.get_instance():register(switch_rpc, "switch_rpc")
+      local switch_rpc_id = rpcserver.get_instance():register(switch_rpc, "switch_rpc")
       table.insert(rpc_registries, switch_rpc_id)
 
-      local switch_command = string.format(
-        "%s %s",
-        fzf_helpers.make_lua_command("rpc", "request.lua"),
-        switch_rpc_id
-      )
+      local switch_command =
+        string.format("%s %s", fzf_helpers.make_lua_command("rpc", "request.lua"), switch_rpc_id)
       local bind_builder = string.format(
         "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+reload(%s)",
         switch_key,
@@ -1419,8 +1341,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       for pipeline2, provider_opts2 in pairs(pipeline_configs.providers) do
         if pipeline2 ~= pipeline then
           local switch_key2 = string.lower(provider_opts2.key)
-          bind_builder = bind_builder
-            .. string.format("+rebind(%s)", switch_key2)
+          bind_builder = bind_builder .. string.format("+rebind(%s)", switch_key2)
         end
       end
       table.insert(fzf_opts, {
@@ -1428,9 +1349,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         bind_builder,
       })
     end
-    fzf_start_binder:append(
-      string.format("unbind(%s)", default_provider_action_key)
-    )
+    fzf_start_binder:append(string.format("unbind(%s)", default_provider_action_key))
   end
   if
     type(pipeline_configs.other_opts) == "table"
@@ -1445,10 +1364,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   -- fzf_opts
   fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(pipeline_configs.fzf_opts))
-  fzf_opts = vim.list_extend(
-    fzf_opts,
-    vim.deepcopy(config.get().override_fzf_opts or {})
-  )
+  fzf_opts = vim.list_extend(fzf_opts, vim.deepcopy(config.get().override_fzf_opts or {}))
   fzf_opts = fzf_helpers.preprocess_fzf_opts(fzf_opts)
 
   -- actions
@@ -1458,13 +1374,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local config_win_opts = tables.tbl_get(config.get(), "popup", "win_opts")
   local win_opts = nil
   if type(config_win_opts) == "function" then
-    win_opts =
-      vim.deepcopy(tables.tbl_get(config.get_defaults(), "popup", "win_opts"))
-    win_opts = vim.tbl_deep_extend(
-      "force",
-      vim.deepcopy(win_opts or {}),
-      config_win_opts() or {}
-    )
+    win_opts = vim.deepcopy(tables.tbl_get(config.get_defaults(), "popup", "win_opts"))
+    win_opts = vim.tbl_deep_extend("force", vim.deepcopy(win_opts or {}), config_win_opts() or {})
   elseif type(config_win_opts) == "table" then
     win_opts = vim.deepcopy(config_win_opts)
   end
@@ -1476,11 +1387,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     elseif type(pipeline_configs.win_opts) == "table" then
       pipeline_win_opts = pipeline_configs.win_opts
     end
-    win_opts = vim.tbl_deep_extend(
-      "force",
-      vim.deepcopy(win_opts or {}),
-      pipeline_win_opts
-    )
+    win_opts = vim.tbl_deep_extend("force", vim.deepcopy(win_opts or {}), pipeline_win_opts)
   end
   if bang then
     win_opts = vim.tbl_deep_extend(
@@ -1496,38 +1403,25 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       mock_buffer_previewer_fzf_opts(fzf_opts, buffer_previewer_actions_file)
   end
 
-  popup = Popup:new(
-    win_opts or {},
-    query_command,
-    fzf_opts,
-    actions,
-    context,
-    function(last_query)
-      for _, rpc_id in ipairs(rpc_registries) do
-        rpcserver.get_instance():unregister(rpc_id)
-      end
-      local last_query_cache = fzf_helpers.last_query_cache_name(name)
-      fzf_helpers.save_last_query_cache(
-        name,
-        last_query,
-        provider_switch.pipeline
-      )
-      local content = jsons.encode({
-        default_provider = provider_switch.pipeline,
-        query = last_query,
-      }) --[[@as string]]
-      fileios.asyncwritefile(last_query_cache, content, function(bytes)
-        -- log.debug("|general| dump last query:%s", vim.inspect(bytes))
-      end)
-      if buffer_previewer_actions_fsevent then
-        buffer_previewer_actions_fsevent:stop()
-        buffer_previewer_actions_fsevent = nil
-      end
-      buffer_previewer_query_fzf_status_start = false
-    end,
-    use_buffer_previewer,
-    buffer_previewer_opts
-  )
+  popup = Popup:new(win_opts or {}, query_command, fzf_opts, actions, context, function(last_query)
+    for _, rpc_id in ipairs(rpc_registries) do
+      rpcserver.get_instance():unregister(rpc_id)
+    end
+    local last_query_cache = fzf_helpers.last_query_cache_name(name)
+    fzf_helpers.save_last_query_cache(name, last_query, provider_switch.pipeline)
+    local content = jsons.encode({
+      default_provider = provider_switch.pipeline,
+      query = last_query,
+    }) --[[@as string]]
+    fileios.asyncwritefile(last_query_cache, content, function(bytes)
+      -- log.debug("|general| dump last query:%s", vim.inspect(bytes))
+    end)
+    if buffer_previewer_actions_fsevent then
+      buffer_previewer_actions_fsevent:stop()
+      buffer_previewer_actions_fsevent = nil
+    end
+    buffer_previewer_query_fzf_status_start = false
+  end, use_buffer_previewer, buffer_previewer_opts)
   return popup
 end
 
@@ -1535,12 +1429,7 @@ end
 --- @param command_config fzfx.CommandConfig
 --- @param variant_configs fzfx.VariantConfig[]
 --- @param group_config fzfx.GroupConfig
-local function _make_user_command(
-  name,
-  command_config,
-  variant_configs,
-  group_config
-)
+local function _make_user_command(name, command_config, variant_configs, group_config)
   local command_name = command_config.name
   local command_desc = command_config.desc
 
@@ -1564,8 +1453,7 @@ local function _make_user_command(
     --- @type fzfx.VariantConfig
     local varcfg = nil
     local first_space_pos = strings.find(input_args, " ")
-    local first_arg = first_space_pos ~= nil
-        and string.sub(input_args, 1, first_space_pos - 1)
+    local first_arg = first_space_pos ~= nil and string.sub(input_args, 1, first_space_pos - 1)
       or input_args
     for i, variant in ipairs(variant_configs) do
       if first_arg == variant.name then
@@ -1583,19 +1471,11 @@ local function _make_user_command(
     local other_args = first_space_pos ~= nil
         and strings.trim(string.sub(input_args, first_space_pos))
       or ""
-    local feed_obj = fzf_helpers.get_command_feed(varcfg.feed, other_args, name)
-      or { query = "" }
+    local feed_obj = fzf_helpers.get_command_feed(varcfg.feed, other_args, name) or { query = "" }
 
-    local default_provider = feed_obj.default_provider
-      or varcfg.default_provider
+    local default_provider = feed_obj.default_provider or varcfg.default_provider
 
-    return general(
-      name,
-      feed_obj.query,
-      opts.bang,
-      group_config,
-      default_provider
-    )
+    return general(name, feed_obj.query, opts.bang, group_config, default_provider)
   end, {
     nargs = "*",
     range = true,
@@ -1627,8 +1507,7 @@ local function setup(name, pipeline_configs)
   _make_user_command(
     name,
     pipeline_configs.command,
-    schema.is_variant_config(pipeline_configs.variants)
-        and { pipeline_configs.variants }
+    schema.is_variant_config(pipeline_configs.variants) and { pipeline_configs.variants }
       or pipeline_configs.variants,
     pipeline_configs
   )

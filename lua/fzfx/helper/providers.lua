@@ -57,10 +57,8 @@ M.UNRESTRICTED_FIND = {
   "f",
 }
 
-M.provide_files_restricted_mode = consts.HAS_FD and M.RESTRICTED_FD
-  or M.RESTRICTED_FIND
-M.provide_files_unrestricted_mode = consts.HAS_FD and M.UNRESTRICTED_FD
-  or M.UNRESTRICTED_FIND
+M.provide_files_restricted_mode = consts.HAS_FD and M.RESTRICTED_FD or M.RESTRICTED_FIND
+M.provide_files_unrestricted_mode = consts.HAS_FD and M.UNRESTRICTED_FD or M.UNRESTRICTED_FIND
 
 -- files }
 
@@ -116,8 +114,7 @@ M.UNRESTRICTED_GREP = {
 -- simulate rg's filepath color, see:
 -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
 -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-M.LSP_FILENAME_COLOR = consts.IS_WINDOWS and term_colors.cyan
-  or term_colors.magenta
+M.LSP_FILENAME_COLOR = consts.IS_WINDOWS and term_colors.cyan or term_colors.magenta
 
 -- lsp }
 

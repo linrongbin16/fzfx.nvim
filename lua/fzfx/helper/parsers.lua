@@ -42,10 +42,7 @@ M.parse_find = function(line)
     filename = line
   end
   return {
-    filename = paths.normalize(
-      filename,
-      { double_backslash = true, expand = true }
-    ),
+    filename = paths.normalize(filename, { double_backslash = true, expand = true }),
   }
 end
 
@@ -165,10 +162,7 @@ M.parse_git_status = function(line)
     i = i + 1
   end
   return {
-    filename = paths.normalize(
-      line:sub(i),
-      { double_backslash = true, expand = true }
-    ),
+    filename = paths.normalize(line:sub(i), { double_backslash = true, expand = true }),
   }
 end
 
@@ -389,10 +383,7 @@ M._make_parse_ls = function(start_pos)
     local cwd = fileios.readfile(context.cwd, { trim = true })
     assert(
       strings.not_empty(cwd),
-      string.format(
-        "failed to parse file explorer context:%s",
-        vim.inspect(cwd)
-      )
+      string.format("failed to parse file explorer context:%s", vim.inspect(cwd))
     )
     local pos = 1
     for i = 1, start_pos do
@@ -401,10 +392,7 @@ M._make_parse_ls = function(start_pos)
         numbers.gt(pos, 0),
         string.format("failed to parse ls/eza/lsd lines:%s", vim.inspect(line))
       )
-      while
-        pos + 1 <= #line
-        and string.byte(line, pos + 1) == string.byte(" ")
-      do
+      while pos + 1 <= #line and string.byte(line, pos + 1) == string.byte(" ") do
         pos = pos + 1
       end
       pos = pos + 1
@@ -447,8 +435,7 @@ M.parse_vim_command = function(line, context)
     string.format("failed to parse vim command lines:%s", vim.inspect(line))
   )
   local command = vim.trim(line:sub(1, first_space_pos - 1))
-  local desc_or_loc =
-    vim.trim(line:sub(context.name_width + 1 + context.opts_width + 1 + 1))
+  local desc_or_loc = vim.trim(line:sub(context.name_width + 1 + context.opts_width + 1 + 1))
   -- log.debug(
   --     "|fzfx.helper.parsers - parse_vim_commands| desc_or_loc:%s",
   --     vim.inspect(desc_or_loc)
@@ -467,8 +454,7 @@ M.parse_vim_command = function(line, context)
     --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
-    local filename =
-      paths.normalize(splits[1], { double_backslash = true, expand = true })
+    local filename = paths.normalize(splits[1], { double_backslash = true, expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
     --     "|fzfx.helper.parsers - parse_vim_commands| filename:%s, lineno:%s",
@@ -509,8 +495,7 @@ M.parse_vim_keymap = function(line, context)
   local lhs = vim.trim(line:sub(1, first_space_pos - 1))
   local first_bar_pos = strings.find(line, "|", first_space_pos + 1)
   local mode = vim.trim(line:sub(first_space_pos + 1, first_bar_pos - 1))
-  local rhs_or_loc =
-    vim.trim(line:sub(context.key_width + 1 + context.opts_width + 1 + 1))
+  local rhs_or_loc = vim.trim(line:sub(context.key_width + 1 + context.opts_width + 1 + 1))
   -- log.debug(
   --     "|fzfx.helper.parsers - parse_vim_commands| desc_or_loc:%s",
   --     vim.inspect(desc_or_loc)
@@ -529,8 +514,7 @@ M.parse_vim_keymap = function(line, context)
     --     "|fzfx.helper.parsers - parse_vim_commands| splits:%s",
     --     vim.inspect(splits)
     -- )
-    local filename =
-      paths.normalize(splits[1], { double_backslash = true, expand = true })
+    local filename = paths.normalize(splits[1], { double_backslash = true, expand = true })
     local lineno = tonumber(splits[2])
     -- log.debug(
     --     "|fzfx.helper.parsers - parse_vim_commands| filename:%s, lineno:%s",

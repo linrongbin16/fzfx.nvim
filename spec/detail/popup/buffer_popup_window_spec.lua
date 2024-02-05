@@ -43,14 +43,8 @@ describe("detail.popup.buffer_popup_window", function()
         fzf_preview_window_opts = pw_opts,
         fzf_border_opts = "rounded",
       }
-      local actual =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      print(
-        string.format(
-          "BufferPopupWindow:new right,50%%:%s\n",
-          vim.inspect(actual)
-        )
-      )
+      local actual = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      print(string.format("BufferPopupWindow:new right,50%%:%s\n", vim.inspect(actual)))
       local provider_winnr = actual.provider_winnr
       local previewer_winnr = actual.previewer_winnr
       local provider_bufnr = actual.provider_winnr
@@ -82,8 +76,7 @@ describe("detail.popup.buffer_popup_window", function()
       )
       assert_eq(provider_height, previewer_height)
       assert_true(
-        expect_total_height - 10 <= provider_height
-          and provider_height <= expect_total_height + 10
+        expect_total_height - 10 <= provider_height and provider_height <= expect_total_height + 10
       )
       assert_true(
         expect_total_width - 10 <= provider_width + previewer_width
@@ -101,14 +94,8 @@ describe("detail.popup.buffer_popup_window", function()
         fzf_preview_window_opts = pw_opts,
         fzf_border_opts = "rounded",
       }
-      local actual =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      print(
-        string.format(
-          "BufferPopupWindow:new down,50%%:%s\n",
-          vim.inspect(actual)
-        )
-      )
+      local actual = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      print(string.format("BufferPopupWindow:new down,50%%:%s\n", vim.inspect(actual)))
       local provider_winnr = actual.provider_winnr
       local previewer_winnr = actual.previewer_winnr
       local provider_bufnr = actual.provider_winnr
@@ -144,8 +131,7 @@ describe("detail.popup.buffer_popup_window", function()
           and (provider_height + previewer_height) <= expect_total_height + 10
       )
       assert_true(
-        expect_total_width - 10 <= provider_width
-          and provider_width <= expect_total_width + 10
+        expect_total_width - 10 <= provider_width and provider_width <= expect_total_width + 10
       )
     end)
     it("close", function()
@@ -159,11 +145,8 @@ describe("detail.popup.buffer_popup_window", function()
         fzf_preview_window_opts = pw_opts,
         fzf_border_opts = "rounded",
       }
-      local actual =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      print(
-        string.format("BufferPopupWindow:new left,50:%s\n", vim.inspect(actual))
-      )
+      local actual = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      print(string.format("BufferPopupWindow:new left,50:%s\n", vim.inspect(actual)))
       local provider_winnr = actual.provider_winnr
       local previewer_winnr = actual.previewer_winnr
       local provider_bufnr = actual.provider_winnr
@@ -184,14 +167,12 @@ describe("detail.popup.buffer_popup_window", function()
       assert_eq(actual:handle(), nil)
     end)
     it("preview_files_queue", function()
-      local pw_opts =
-        fzf_helpers.parse_fzf_preview_window_opts({ "--preview-window=up,50" })
+      local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({ "--preview-window=up,50" })
       local builtin_opts = {
         fzf_preview_window_opts = pw_opts,
         fzf_border_opts = "rounded",
       }
-      local actual =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      local actual = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
       assert_eq(#actual.preview_files_queue, 0)
       table.insert(actual.preview_files_queue, 1)
       assert_eq(#actual.preview_files_queue, 1)
@@ -207,15 +188,11 @@ describe("detail.popup.buffer_popup_window", function()
         fzf_preview_window_opts = pw_opts,
         fzf_border_opts = "rounded",
       }
-      local actual =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      local actual = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
       assert_eq(#actual.preview_file_contents_queue, 0)
       table.insert(actual.preview_file_contents_queue, 1)
       assert_eq(#actual.preview_file_contents_queue, 1)
-      assert_eq(
-        actual.preview_file_contents_queue[#actual.preview_file_contents_queue],
-        1
-      )
+      assert_eq(actual.preview_file_contents_queue[#actual.preview_file_contents_queue], 1)
       actual.preview_file_contents_queue = {}
       assert_eq(#actual.preview_file_contents_queue, 0)
     end)
@@ -227,15 +204,10 @@ describe("detail.popup.buffer_popup_window", function()
         fzf_preview_window_opts = pw_opts,
         fzf_border_opts = "rounded",
       }
-      local actual =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      actual:preview_file(
-        numbers.auto_incremental_id(),
-        { filename = "README.md" }
-      )
+      local actual = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      actual:preview_file(numbers.auto_incremental_id(), { filename = "README.md" })
       vim.wait(10000, function()
-        return #actual.preview_files_queue == 0
-          and #actual.preview_file_contents_queue == 0
+        return #actual.preview_files_queue == 0 and #actual.preview_file_contents_queue == 0
       end)
     end)
     it("preview_action", function()
@@ -246,15 +218,10 @@ describe("detail.popup.buffer_popup_window", function()
         fzf_preview_window_opts = pw_opts,
         fzf_border_opts = "rounded",
       }
-      local actual =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      actual:preview_file(
-        numbers.auto_incremental_id(),
-        { filename = "README.md" }
-      )
+      local actual = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      actual:preview_file(numbers.auto_incremental_id(), { filename = "README.md" })
       vim.wait(10000, function()
-        return #actual.preview_files_queue == 0
-          and #actual.preview_file_contents_queue == 0
+        return #actual.preview_files_queue == 0 and #actual.preview_file_contents_queue == 0
       end)
       actual:preview_action("preview-half-page-down")
       actual:preview_action("preview-half-page-up")
@@ -274,23 +241,19 @@ describe("detail.popup.buffer_popup_window", function()
       fzf_border_opts = "rounded",
     }
     it("scroll up 100%", function()
-      local bpw =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      local bpw = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
       bpw:scroll_by(100, true)
     end)
     it("scroll down 100%", function()
-      local bpw =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      local bpw = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
       bpw:scroll_by(100, false)
     end)
     it("scroll up 50%", function()
-      local bpw =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      local bpw = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
       bpw:scroll_by(50, true)
     end)
     it("scroll down 100%", function()
-      local bpw =
-        buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      local bpw = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
       bpw:scroll_by(50, false)
     end)
   end)

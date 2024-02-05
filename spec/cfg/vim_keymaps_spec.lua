@@ -113,20 +113,14 @@ describe("cfg.vim_keymaps", function()
           silent = false,
         },
       }
-      local actual1, actual2 =
-        vim_keymaps_cfg._render_vim_keymaps_columns_status(keymaps)
-      assert_eq(
-        actual1,
-        math.max(string.len(keymaps[1].lhs), string.len("Lhs"))
-      )
+      local actual1, actual2 = vim_keymaps_cfg._render_vim_keymaps_columns_status(keymaps)
+      assert_eq(actual1, math.max(string.len(keymaps[1].lhs), string.len("Lhs")))
       assert_eq(actual2, string.len("Mode|Noremap|Nowait|Silent"))
     end)
     it("_render_vim_keymaps", function()
       local keymaps = vim_keymaps_cfg._get_vim_keymaps()
-      local lhs_width, opts_width =
-        vim_keymaps_cfg._render_vim_keymaps_columns_status(keymaps)
-      local actual =
-        vim_keymaps_cfg._render_vim_keymaps(keymaps, lhs_width, opts_width)
+      local lhs_width, opts_width = vim_keymaps_cfg._render_vim_keymaps_columns_status(keymaps)
+      local actual = vim_keymaps_cfg._render_vim_keymaps(keymaps, lhs_width, opts_width)
       -- print(string.format("render vim keymaps:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
       assert_true(#actual >= 1)
@@ -155,9 +149,7 @@ describe("cfg.vim_keymaps", function()
       for _, line in ipairs(lines) do
         local actual = vim_keymaps_cfg._vim_keymaps_previewer(line, ctx)
         assert_eq(type(actual), "table")
-        assert_true(
-          actual[1] == "bat" or actual[1] == "cat" or actual[1] == "echo"
-        )
+        assert_true(actual[1] == "bat" or actual[1] == "cat" or actual[1] == "echo")
       end
     end)
   end)

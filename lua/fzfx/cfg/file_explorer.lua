@@ -233,11 +233,7 @@ end
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 M._upper_file_explorer = function(line, context)
-  log.debug(
-    "|_upper_file_explorer| line:%s, context:%s",
-    vim.inspect(line),
-    vim.inspect(context)
-  )
+  log.debug("|_upper_file_explorer| line:%s, context:%s", vim.inspect(line), vim.inspect(context))
   local cwd = fileios.readfile(context.cwd) --[[@as string]]
   log.debug("|_upper_file_explorer| cwd:%s", vim.inspect(cwd))
   local target = vim.fn.fnamemodify(cwd, ":h") --[[@as string]]

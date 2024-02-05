@@ -24,9 +24,8 @@ M.HAS_RG = vim.fn.executable("rg") > 0
 M.RG = "rg"
 
 -- grep/ggrep
-M.HAS_GNU_GREP = (
-  (M.IS_WINDOWS or M.IS_LINUX) and vim.fn.executable("grep") > 0
-) or vim.fn.executable("ggrep") > 0
+M.HAS_GNU_GREP = ((M.IS_WINDOWS or M.IS_LINUX) and vim.fn.executable("grep") > 0)
+  or vim.fn.executable("ggrep") > 0
 M.GNU_GREP = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
 M.HAS_GREP = vim.fn.executable("ggrep") > 0 or vim.fn.executable("grep") > 0
 M.GREP = vim.fn.executable("ggrep") > 0 and "ggrep" or "grep"
