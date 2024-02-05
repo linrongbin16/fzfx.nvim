@@ -1262,11 +1262,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
               buffer_previewer_fzf_current_text = current_text
 
-              -- log.debug(
-              --   "|general - use_buffer_previewer - query_fzf_status| current_text:%s",
-              --   vim.inspect(current_text)
-              -- )
-
               -- trigger buffer previewer {
 
               if not popup or not popup:previewer_is_valid() then
