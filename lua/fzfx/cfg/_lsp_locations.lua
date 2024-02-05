@@ -1,8 +1,8 @@
 local tables = require("fzfx.commons.tables")
+local strings = require("fzfx.commons.strings")
 local term_colors = require("fzfx.commons.colors.term")
 local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
-local tables = require("fzfx.commons.tables")
 
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -33,7 +33,8 @@ end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_location = function(loc)
-  return type(loc) == "table" and type(loc.uri) == "string" and M._is_lsp_range(loc.range)
+  return type(tables.tbl_get(loc, "uri")) == "string"
+    and M._is_lsp_range(tables.tbl_get(loc, "range"))
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
