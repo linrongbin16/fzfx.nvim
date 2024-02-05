@@ -52,7 +52,7 @@ end
 -- parse lines from grep. looks like:
 -- ```
 -- 󰢱 bin/general/provider.lua:31:  local conf = require("fzfx.config")
--- 󰢱 bin/general/previewer.lua:57:  local colors = require("fzfx.commons.termcolors")
+-- 󰢱 bin/general/previewer.lua:57:  local colors = require("fzfx.commons.strings")
 -- ```
 --
 -- remove the prepend icon and returns **expanded** file path, line number and text.
@@ -97,7 +97,7 @@ end
 -- parse lines from rg. looks like:
 -- ```
 -- 󰢱 bin/general/provider.lua:31:2:  local conf = require("fzfx.config")
--- 󰢱 bin/general/previewer.lua:57:13:  local colors = require("fzfx.commons.termcolors")
+-- 󰢱 bin/general/previewer.lua:57:13:  local colors = require("fzfx.commons.strings")
 -- ```
 --
 -- remove the prepend icon and returns **expanded** file path, line number, column number and text.

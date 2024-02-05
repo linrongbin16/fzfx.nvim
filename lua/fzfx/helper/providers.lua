@@ -1,4 +1,4 @@
-local termcolors = require("fzfx.commons.termcolors")
+local term_colors = require("fzfx.commons.colors.term")
 local consts = require("fzfx.lib.constants")
 
 local M = {}
@@ -116,8 +116,8 @@ M.UNRESTRICTED_GREP = {
 -- simulate rg's filepath color, see:
 -- * https://github.com/BurntSushi/ripgrep/discussions/2605#discussioncomment-6881383
 -- * https://github.com/BurntSushi/ripgrep/blob/d596f6ebd035560ee5706f7c0299c4692f112e54/crates/printer/src/color.rs#L14
-M.LSP_FILENAME_COLOR = consts.IS_WINDOWS and termcolors.cyan
-  or termcolors.magenta
+M.LSP_FILENAME_COLOR = consts.IS_WINDOWS and term_colors.cyan
+  or term_colors.magenta
 
 -- lsp }
 

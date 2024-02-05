@@ -1,5 +1,5 @@
 local strings = require("fzfx.commons.strings")
-local termcolors = require("fzfx.commons.termcolors")
+local term_colors = require("fzfx.commons.colors.term")
 
 local DEVICONS_OK = nil
 local DEVICONS = nil
@@ -29,7 +29,7 @@ M._decorate = function(line, delimiter, index)
   -- remove ansi color codes
   -- see: https://stackoverflow.com/a/55324681/4438921
   if strings.not_empty(filename) then
-    filename = termcolors.erase(filename)
+    filename = term_colors.erase(filename)
   end
   local ext = vim.fn.fnamemodify(filename, ":e")
   local icon_text, icon_color = DEVICONS.get_icon_color(filename, ext)
@@ -40,7 +40,7 @@ M._decorate = function(line, delimiter, index)
   --     vim.inspect(icon_color)
   -- )
   if strings.not_empty(icon_text) then
-    local rendered_text = termcolors.render(icon_text, icon_color)
+    local rendered_text = term_colors.render(icon_text, icon_color)
     return rendered_text .. " " .. line
   else
     if vim.fn.isdirectory(filename) > 0 then

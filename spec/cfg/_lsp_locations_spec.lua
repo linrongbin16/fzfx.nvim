@@ -15,7 +15,7 @@ describe("cfg._lsp_locations", function()
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
   local strings = require("fzfx.commons.strings")
-  local termcolors = require("fzfx.commons.termcolors")
+  local term_colors = require("fzfx.commons.colors.term")
   local consts = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
@@ -59,7 +59,7 @@ describe("cfg._lsp_locations", function()
       local loc = _lsp_locations._colorize_lsp_range(
         'describe("_lsp_location_render_line", function()',
         r,
-        termcolors.red
+        term_colors.red
       )
       -- print(string.format("lsp render line:%s\n", vim.inspect(loc)))
       assert_eq(type(loc), "string")

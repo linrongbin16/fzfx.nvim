@@ -1,5 +1,5 @@
 local tables = require("fzfx.commons.tables")
-local termcolors = require("fzfx.commons.termcolors")
+local term_colors = require("fzfx.commons.colors.term")
 local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
 
@@ -113,7 +113,7 @@ M._render_lsp_location_line = function(loc)
   local loc_line = M._colorize_lsp_range(
     filelines[range.start.line + 1],
     range,
-    termcolors.red
+    term_colors.red
   )
   log.debug(
     "|_render_lsp_location_line| range:%s, loc_line:%s",
@@ -123,7 +123,7 @@ M._render_lsp_location_line = function(loc)
   local line = string.format(
     "%s:%s:%s:%s",
     providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
-    termcolors.green(tostring(range.start.line + 1)),
+    term_colors.green(tostring(range.start.line + 1)),
     tostring(range.start.character + 1),
     loc_line
   )
@@ -305,7 +305,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   local lines = {}
   for i, r in ipairs(ranges) do
     local item_line =
-      M._colorize_lsp_range(filelines[r.start.line + 1], r, termcolors.red)
+      M._colorize_lsp_range(filelines[r.start.line + 1], r, term_colors.red)
     log.debug(
       "|_render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
       vim.inspect(i),
@@ -315,7 +315,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
     local line = string.format(
       "%s:%s:%s:%s",
       providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
-      termcolors.green(tostring(r.start.line + 1)),
+      term_colors.green(tostring(r.start.line + 1)),
       tostring(r.start.character + 1),
       item_line
     )

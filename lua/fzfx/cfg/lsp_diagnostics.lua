@@ -1,5 +1,5 @@
 local tables = require("fzfx.commons.tables")
-local termcolors = require("fzfx.commons.termcolors")
+local term_colors = require("fzfx.commons.colors.term")
 local paths = require("fzfx.commons.paths")
 
 local consts = require("fzfx.lib.constants")
@@ -211,7 +211,7 @@ M._make_lsp_diagnostics_provider = function(opts)
         if type(diag.text) == "string" and string.len(diag.text) > 0 then
           if type(signs[diag.severity]) == "table" then
             local sign_item = signs[diag.severity]
-            local color_renderer = termcolors[sign_item.textcolor]
+            local color_renderer = term_colors[sign_item.textcolor]
             builder = " " .. color_renderer(sign_item.text, sign_item.texthl)
           end
           builder = builder .. " " .. diag.text
@@ -224,7 +224,7 @@ M._make_lsp_diagnostics_provider = function(opts)
         local line = string.format(
           "%s:%s:%s:%s",
           providers_helper.LSP_FILENAME_COLOR(diag.filename),
-          termcolors.green(tostring(diag.lnum)),
+          term_colors.green(tostring(diag.lnum)),
           tostring(diag.col),
           builder
         )

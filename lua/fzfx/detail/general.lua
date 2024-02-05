@@ -2,7 +2,7 @@ local tables = require("fzfx.commons.tables")
 local paths = require("fzfx.commons.paths")
 local jsons = require("fzfx.commons.jsons")
 local strings = require("fzfx.commons.strings")
-local termcolors = require("fzfx.commons.termcolors")
+local term_colors = require("fzfx.commons.colors.term")
 local fileios = require("fzfx.commons.fileios")
 local spawn = require("fzfx.commons.spawn")
 local uv = require("fzfx.commons.uv")
@@ -668,7 +668,7 @@ local HeaderSwitch = {}
 --- @param action string
 --- @return string
 local function _render_help(name, action)
-  return termcolors.magenta(string.upper(action), "Special")
+  return term_colors.magenta(string.upper(action), "Special")
     .. " to "
     .. table.concat(strings.split(name, "_"), " ")
 end
