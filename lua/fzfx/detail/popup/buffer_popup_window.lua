@@ -855,35 +855,85 @@ function BufferPopupWindow:scroll_by(percent, up)
   local first_lineno = vim.fn.line("w0", self.previewer_winnr)
   local last_lineno = vim.fn.line("w$", self.previewer_winnr)
   local base_lineno = math.floor((first_lineno + last_lineno) / 2)
-
-  if base_lineno == 1 and up then
-    before_exit()
-    return
-  end
-  local buf_lines = vim.api.nvim_buf_line_count(self.previewer_bufnr)
-  if base_lineno >= buf_lines and down then
-    before_exit()
-    return
-  end
-
   local win_height = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
-  local diff_lines = math.max(math.floor(win_height / 100 * percent), 0)
+  local shift_lines = math.max(math.floor(win_height / 100 * percent), 0)
   if up then
-    diff_lines = -diff_lines
+    shift_lines = -shift_lines
   end
-  local target_lineno = numbers.bound(base_lineno + diff_lines, 1, buf_lines)
+
+  local last_content = self._saved_previewing_file_content_job
+  local LINES = last_content.contents
+  local LINES_COUNT = #LINES
+
+  if up then
+    if base_lineno + shift_lines <= 1 then
+      before_exit()
+      return
+    end
+  end
+  if down then
+    if base_lineno + shift_lines >= LINES_COUNT then
+      before_exit()
+      return
+    end
+  end
+
+  local target_lineno = numbers.bound(base_lineno + shift_lines, 1, LINES_COUNT)
+
   log.debug(
-    "|scroll_by| percent:%s, up:%s, win_height:%s, buf_lines:%s, cursor_lineno:%s, diff_lines:%s, target_lineno:%s",
+    "|scroll_by| percent:%s, up:%s, LINES_COUNT:%s, win_height:%s, first/last/base:%s/%s/%s, shift_lines:%s, target_lineno:%s",
     vim.inspect(percent),
     vim.inspect(up),
+    vim.inspect(LINES_COUNT),
     vim.inspect(win_height),
-    vim.inspect(buf_lines),
+    vim.inspect(first_lineno),
+    vim.inspect(last_lineno),
     vim.inspect(base_lineno),
-    vim.inspect(diff_lines),
+    vim.inspect(shift_lines),
     vim.inspect(target_lineno)
   )
-  vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_lineno, 0 })
 
+  local FIRST_LINE = math.max(1, target_lineno - win_height - 5)
+  local LAST_LINE = math.min(win_height + 5 + FIRST_LINE, LINES_COUNT)
+
+  local line_index = FIRST_LINE
+  local line_count = 5
+
+  local function set_buf_lines()
+    -- log.debug("|BufferPopupWindow:scroll_by| set_buf_lines")
+    vim.defer_fn(function()
+      if not self:previewer_is_valid() then
+        return
+      end
+      if not self:is_last_previewing_file_job_id(last_content.job_id) then
+        return
+      end
+
+      local buf_lines = {}
+      for i = line_index, line_index + line_count do
+        if i <= LAST_LINE then
+          table.insert(buf_lines, LINES[i])
+        else
+          break
+        end
+      end
+
+      vim.api.nvim_buf_set_lines(
+        self.previewer_bufnr,
+        line_index - 1,
+        line_index - 1 + line_count,
+        false,
+        buf_lines
+      )
+      line_index = line_index + line_count
+      if line_index <= LAST_LINE then
+        set_buf_lines()
+      end
+    end, 3)
+  end
+  set_buf_lines()
+
+  vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_lineno, 0 })
   before_exit()
 end
 
