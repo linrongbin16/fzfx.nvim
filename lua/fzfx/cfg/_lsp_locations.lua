@@ -224,7 +224,7 @@ M._make_lsp_locations_provider = function(opts)
           end
         else
           for _, loc in ipairs(lsp_loc) do
-            local loc_hash = M._hash_lsp_location(lsp_loc)
+            local loc_hash = M._hash_lsp_location(loc)
             if visited_locations[loc_hash] == nil then
               visited_locations[loc_hash] = true
               local line = M._render_lsp_location_line(loc)
