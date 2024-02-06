@@ -633,8 +633,6 @@ function BufferPopupWindow:preview_file_contents(file_content, first_line, last_
       vim.api.nvim_command([[filetype detect]])
     end)
 
-    vim.api.nvim_win_set_cursor(self.previewer_winnr, { 1, 0 })
-
     vim.defer_fn(function()
       if not self:previewer_is_valid() then
         return
@@ -646,7 +644,7 @@ function BufferPopupWindow:preview_file_contents(file_content, first_line, last_
       local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
       local LINES = last_content.contents
       local LINES_COUNT = #LINES
-      local FIRST_LINE = last_content.previewer_result.lineno or 1
+      local FIRST_LINE = first_line or 1
       local LAST_LINE = math.min(WIN_HEIGHT + 5 + FIRST_LINE, LINES_COUNT)
 
       local SHOW_LABEL_COUNT = LAST_LINE - FIRST_LINE
@@ -659,6 +657,8 @@ function BufferPopupWindow:preview_file_contents(file_content, first_line, last_
         vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, FIRST_LINE, false, {})
       end
       vim.api.nvim_buf_set_lines(self.previewer_bufnr, LAST_LINE, -1, false, {})
+
+      vim.api.nvim_win_set_cursor(self.previewer_winnr, { 1, 0 })
 
       local function set_win_title()
         if set_win_title_done then
