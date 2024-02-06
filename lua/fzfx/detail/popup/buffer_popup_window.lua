@@ -328,6 +328,7 @@ local function _set_default_previewer_win_options(winnr)
   apis.set_win_option(winnr, "wrap", false)
   apis.set_win_option(winnr, "scrolloff", 0)
   apis.set_win_option(winnr, "sidescrolloff", 0)
+  apis.set_win_option(winnr, "foldenable", 0)
 end
 
 local function _set_default_provider_win_options(winnr)
@@ -338,6 +339,7 @@ local function _set_default_provider_win_options(winnr)
   apis.set_win_option(winnr, "wrap", false)
   apis.set_win_option(winnr, "scrolloff", 0)
   apis.set_win_option(winnr, "sidescrolloff", 0)
+  apis.set_win_option(winnr, "foldenable", 0)
 end
 
 --- @package
