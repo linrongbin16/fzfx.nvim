@@ -607,29 +607,27 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
 
         self._saved_previewing_file_content_job = last_content
         self._saved_previewing_file_content_context = { render_index = nil }
-        self:preview_file_contents(last_content)
+        self:preview_file_contents(last_content, last_content.previewer_result.lineno or 1)
       end, 20)
     end)
   end, 20)
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
---- @param last_file_content fzfx.BufferPopupWindowPreviewFileContentJob?
---- @param start_line integer?
-function BufferPopupWindow:preview_file_contents(last_file_content, start_line)
-  if tables.tbl_empty(last_file_content) then
+--- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
+--- @param start_line integer
+function BufferPopupWindow:preview_file_contents(file_content, start_line)
+  if tables.tbl_empty(file_content) then
     return
   end
 
-  start_line = start_line or 1
-  local last_content = last_file_content --[[@as fzfx.BufferPopupWindowPreviewFileContentJob]]
-  pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, last_content.previewer_result.filename)
+  pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, file_content.previewer_result.filename)
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
       return
     end
-    if not self:is_last_previewing_file_job_id(last_content.job_id) then
+    if not self:is_last_previewing_file_job_id(file_content.job_id) then
       return
     end
 
@@ -641,14 +639,14 @@ function BufferPopupWindow:preview_file_contents(last_file_content, start_line)
       if not self:previewer_is_valid() then
         return
       end
-      if not self:is_last_previewing_file_job_id(last_content.job_id) then
+      if not self:is_last_previewing_file_job_id(file_content.job_id) then
         return
       end
 
       local ctx1 = self._saved_previewing_file_content_context
 
       local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
-      local LINES = last_content.contents
+      local LINES = file_content.contents
       local LINES_COUNT = #LINES
       local FIRST_LINE = start_line
       local LAST_LINE = math.min(WIN_HEIGHT + 5 + FIRST_LINE, LINES_COUNT)
@@ -665,18 +663,18 @@ function BufferPopupWindow:preview_file_contents(last_file_content, start_line)
         if set_win_title_done then
           return
         end
-        if strings.empty(last_content.previewer_label_result) then
+        if strings.empty(file_content.previewer_label_result) then
           return
         end
         if not self:previewer_is_valid() then
           return
         end
-        if not self:is_last_previewing_file_job_id(last_content.job_id) then
+        if not self:is_last_previewing_file_job_id(file_content.job_id) then
           return
         end
 
         local title_opts = {
-          title = last_content.previewer_label_result,
+          title = file_content.previewer_label_result,
           title_pos = "center",
         }
         vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
@@ -692,7 +690,7 @@ function BufferPopupWindow:preview_file_contents(last_file_content, start_line)
           if not self:previewer_is_valid() then
             return
           end
-          if not self:is_last_previewing_file_job_id(last_content.job_id) then
+          if not self:is_last_previewing_file_job_id(file_content.job_id) then
             return
           end
 
