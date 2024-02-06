@@ -311,10 +311,10 @@ end
 --- @field _current_previewing_file_job_id integer?
 --- @field _rendering boolean
 --- @field _resizing boolean
+--- @field _scrolling boolean
 --- @field preview_files_queue fzfx.BufferPopupWindowPreviewFileJob[]
 --- @field preview_file_contents_queue fzfx.BufferPopupWindowPreviewFileContentJob[]
 --- @field previewer_is_hidden boolean
---- @field _scrolling_preview_page boolean
 local BufferPopupWindow = {}
 
 local function _set_default_buf_options(bufnr)
@@ -394,11 +394,11 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _saved_previewing_file_content_context = nil,
     _current_previewing_file_job_id = nil,
     _rendering = false,
+    _scrolling = false,
     _resizing = false,
     preview_files_queue = {},
     preview_file_contents_queue = {},
     previewer_is_hidden = false,
-    _scrolling_preview_page = false,
   }
   setmetatable(o, self)
   self.__index = self
@@ -626,9 +626,9 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line)
     return
   end
 
-  local function before_return()
+  local function falsy_rendering()
     vim.schedule(function()
-      self._rendering = fales
+      self._rendering = false
     end)
   end
 
@@ -637,11 +637,11 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line)
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
-      before_return()
+      falsy_rendering()
       return
     end
     if not self:is_last_previewing_file_job_id(file_content.job_id) then
-      before_return()
+      falsy_rendering()
       return
     end
 
@@ -651,15 +651,13 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line)
 
     vim.defer_fn(function()
       if not self:previewer_is_valid() then
-        before_return()
+        falsy_rendering()
         return
       end
       if not self:is_last_previewing_file_job_id(file_content.job_id) then
-        before_return()
+        falsy_rendering()
         return
       end
-
-      local ctx1 = self._saved_previewing_file_content_context
 
       local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
       local LINES = file_content.contents
@@ -680,19 +678,19 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line)
 
       local function set_win_title()
         if set_win_title_done then
-          before_return()
+          falsy_rendering()
           return
         end
         if strings.empty(file_content.previewer_label_result) then
-          before_return()
+          falsy_rendering()
           return
         end
         if not self:previewer_is_valid() then
-          before_return()
+          falsy_rendering()
           return
         end
         if not self:is_last_previewing_file_job_id(file_content.job_id) then
-          before_return()
+          falsy_rendering()
           return
         end
 
@@ -711,15 +709,13 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line)
         -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
         vim.defer_fn(function()
           if not self:previewer_is_valid() then
-            before_return()
+            falsy_rendering()
             return
           end
           if not self:is_last_previewing_file_job_id(file_content.job_id) then
-            before_return()
+            falsy_rendering()
             return
           end
-
-          local ctx2 = self._saved_previewing_file_content_context
 
           local LINE_INDEX = self._saved_previewing_file_content_context.render_index
           local buf_lines = {}
@@ -746,6 +742,7 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line)
             set_buf_lines()
           else
             vim.api.nvim_win_set_cursor(self.previewer_winnr, { start_line, 0 })
+            falsy_rendering()
           end
           if LINE_INDEX >= SHOW_LABEL_COUNT then
             vim.schedule(set_win_title)
@@ -870,16 +867,16 @@ function BufferPopupWindow:scroll_by(percent, up)
   if not self:previewer_is_valid() then
     return
   end
-  if self._scrolling_preview_page then
+  if self._scrolling then
     return
   end
 
-  self._scrolling_preview_page = true
   local down = not up
+  self._scrolling = true
 
-  local function before_exit()
+  local function before_return()
     vim.schedule(function()
-      self._scrolling_preview_page = false
+      self._scrolling = false
     end)
   end
 
@@ -890,8 +887,8 @@ function BufferPopupWindow:scroll_by(percent, up)
   if up then
     SHIFT_LINES = -SHIFT_LINES
   end
-  local last_content = self._saved_previewing_file_content_job
-  local LINES = last_content.contents
+  local file_content = self._saved_previewing_file_content_job
+  local LINES = file_content.contents
   local LINES_COUNT = #LINES
   local TARGET_FIRST_LINENO = math.max(FIRST_LINENO + SHIFT_LINES, 1)
   local TARGET_LAST_LINENO = math.min(LAST_LINENO + SHIFT_LINES, LINES_COUNT)
@@ -971,15 +968,15 @@ function BufferPopupWindow:scroll_by(percent, up)
   -- set_buf_lines()
 
   if up and target_base_lineno <= 1 then
-    before_exit()
+    before_return()
     return
   end
   if down and target_base_lineno >= LINES_COUNT then
-    before_exit()
+    before_return()
     return
   end
   vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_base_lineno, 0 })
-  before_exit()
+  before_return()
 end
 
 function BufferPopupWindow:preview_page_down()
