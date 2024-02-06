@@ -799,9 +799,7 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, cursor
   end
 
   local function falsy_rendering()
-    vim.schedule(function()
-      self._rendering = false
-    end)
+    self._rendering = false
   end
 
   self._rendering = true
@@ -843,11 +841,13 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, cursor
           return
         end
 
-        local LINE_INDEX = self._saved_previewing_file_content_context.render_index
+        local RENDER_START = self._saved_previewing_file_content_context.render_index
+        local RENDER_STOP = RENDER_START
         local buf_lines = {}
-        for i = LINE_INDEX, LINE_INDEX + RENDER_STEP do
+        for i = RENDER_START, RENDER_START + RENDER_STEP do
           if i <= LAST_LINE then
             table.insert(buf_lines, LINES[i])
+            RENDER_STOP = i
           else
             break
           end
@@ -855,16 +855,14 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, cursor
 
         vim.api.nvim_buf_set_lines(
           self.previewer_bufnr,
-          LINE_INDEX - 1,
-          LINE_INDEX - 1 + RENDER_STEP,
+          RENDER_START - 1,
+          RENDER_STOP - 1,
           false,
           buf_lines
         )
-        self._saved_previewing_file_content_context.render_index =
-          math.min(LINE_INDEX + RENDER_STEP, LAST_LINE)
-        LINE_INDEX = self._saved_previewing_file_content_context.render_index
 
-        if LINE_INDEX <= LAST_LINE then
+        self._saved_previewing_file_content_context.render_index = RENDER_STOP + 1
+        if self._saved_previewing_file_content_context.render_index <= LAST_LINE then
           set_buf_lines()
         else
           vim.api.nvim_win_set_cursor(self.previewer_winnr, { cursor_line, 0 })
