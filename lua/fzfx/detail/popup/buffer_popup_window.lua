@@ -855,38 +855,36 @@ function BufferPopupWindow:scroll_by(percent, up)
     end)
   end
 
-  local first_lineno = vim.fn.line("w0", self.previewer_winnr)
-  local last_lineno = vim.fn.line("w$", self.previewer_winnr)
-  local base_lineno = math.floor((first_lineno + last_lineno) / 2)
-  local win_height = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
-  local shift_lines = math.max(math.floor(win_height / 100 * percent), 0)
+  local FIRST_LINENO = vim.fn.line("w0", self.previewer_winnr)
+  local LAST_LINENO = vim.fn.line("w$", self.previewer_winnr)
+  local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
+  local SHIFT_LINES = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
   if up then
-    shift_lines = -shift_lines
+    SHIFT_LINES = -SHIFT_LINES
   end
-
   local last_content = self._saved_previewing_file_content_job
   local LINES = last_content.contents
   local LINES_COUNT = #LINES
+  local TARGET_FIRST_LINENO = math.max(FIRST_LINENO + SHIFT_LINES, 1)
+  local TARGET_LAST_LINENO = math.min(LAST_LINENO + SHIFT_LINES, LINES_COUNT)
 
-  local target_first_lineno = math.max(first_lineno + shift_lines, 1)
-  local target_last_lineno = math.min(last_lineno + shift_lines, LINES_COUNT)
-  local target_base_lineno = numbers.bound(base_lineno + shift_lines, 1, LINES_COUNT)
+  local target_base_lineno = numbers.bound(base_lineno + SHIFT_LINES, 1, LINES_COUNT)
 
-  local FIRST_LINE = math.max(1, target_first_lineno - 5)
-  local LAST_LINE = math.min(target_last_lineno + 5, LINES_COUNT)
+  local FIRST_LINE = math.max(1, TARGET_FIRST_LINENO - 5)
+  local LAST_LINE = math.min(TARGET_LAST_LINENO + 5, LINES_COUNT)
 
   log.debug(
     "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES_COUNT:%s, win_height:%s, shift_lines:%s, first/last/base:%s/%s/%s, target first/last/base:%s/%s/%s, FIRST/LAST:%s/%s",
     vim.inspect(percent),
     vim.inspect(up),
     vim.inspect(LINES_COUNT),
-    vim.inspect(win_height),
-    vim.inspect(shift_lines),
-    vim.inspect(first_lineno),
-    vim.inspect(last_lineno),
+    vim.inspect(WIN_HEIGHT),
+    vim.inspect(SHIFT_LINES),
+    vim.inspect(FIRST_LINENO),
+    vim.inspect(LAST_LINENO),
     vim.inspect(base_lineno),
-    vim.inspect(target_first_lineno),
-    vim.inspect(target_last_lineno),
+    vim.inspect(TARGET_FIRST_LINENO),
+    vim.inspect(TARGET_LAST_LINENO),
     vim.inspect(target_base_lineno),
     vim.inspect(FIRST_LINE),
     vim.inspect(LAST_LINE)
