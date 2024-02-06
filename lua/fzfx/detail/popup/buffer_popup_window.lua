@@ -614,14 +614,13 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
---- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob?
-function BufferPopupWindow:preview_file_contents(file_content)
-  if tables.tbl_empty(file_content) then
+--- @param last_file_content fzfx.BufferPopupWindowPreviewFileContentJob?
+function BufferPopupWindow:preview_file_contents(last_file_content)
+  if tables.tbl_empty(last_file_content) then
     return
   end
 
-  local last_content = file_content --[[@as fzfx.BufferPopupWindowPreviewFileContentJob]]
-
+  local last_content = last_file_content --[[@as fzfx.BufferPopupWindowPreviewFileContentJob]]
   pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, last_content.previewer_result.filename)
 
   vim.defer_fn(function()
