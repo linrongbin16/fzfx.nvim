@@ -662,10 +662,6 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line, curso
         return
       end
 
-      if not self._saved_previewing_file_content_context.render_index then
-        self._saved_previewing_file_content_context.render_index = 1
-      end
-
       vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
 
       local function set_win_title()
@@ -688,6 +684,9 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line, curso
         vim.defer_fn(set_win_title, 50)
       end
 
+      if not self._saved_previewing_file_content_context.render_index then
+        self._saved_previewing_file_content_context.render_index = 1
+      end
       self:render_file_contents(file_content, start_line, cursor_line, on_complete)
     end, 20)
   end, 20)
@@ -909,9 +908,6 @@ function BufferPopupWindow:scroll_by(percent, up)
   if self._scrolling then
     return
   end
-  if self._rendering then
-    return
-  end
 
   local down = not up
   self._scrolling = true
@@ -957,7 +953,7 @@ function BufferPopupWindow:scroll_by(percent, up)
     return
   end
 
-  self:preview_file_contents(
+  self:render_file_contents(
     file_content,
     TARGET_FIRST_LINENO,
     math.floor((TARGET_FIRST_LINENO + TARGET_LAST_LINENO) / 2),
