@@ -742,6 +742,9 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line)
             set_buf_lines()
           else
             vim.api.nvim_win_set_cursor(self.previewer_winnr, { start_line, 0 })
+            vim.api.nvim_win_call(self.previewer_winnr, function()
+              vim.cmd('execute "normal! zz"')
+            end)
             falsy_rendering()
           end
           if LINE_INDEX >= SHOW_LABEL_COUNT then
