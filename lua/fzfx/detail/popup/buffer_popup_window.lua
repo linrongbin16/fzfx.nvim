@@ -610,9 +610,8 @@ end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob?
---- @param first_line integer?
---- @param last_line integer?
-function BufferPopupWindow:preview_file_contents(file_content, first_line, last_line)
+--- @param start_line integer?
+function BufferPopupWindow:preview_file_contents(file_content, start_line)
   if tables.tbl_empty(file_content) then
     return
   end
@@ -644,20 +643,15 @@ function BufferPopupWindow:preview_file_contents(file_content, first_line, last_
       local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
       local LINES = last_content.contents
       local LINES_COUNT = #LINES
-      local FIRST_LINE = first_line or 1
+      local FIRST_LINE = start_line or 1
       local LAST_LINE = math.min(WIN_HEIGHT + 5 + FIRST_LINE, LINES_COUNT)
 
-      local SHOW_LABEL_COUNT = LAST_LINE - FIRST_LINE
-      local SHOW_PREVIEW_LABEL_COUNT = math.min(30, SHOW_LABEL_COUNT)
+      local SHOW_LABEL_COUNT = math.min(30, LAST_LINE - FIRST_LINE)
       local line_index = FIRST_LINE
       local line_count = 5
       local set_win_title_done = false
 
-      if FIRST_LINE > 1 then
-        vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, FIRST_LINE, false, {})
-      end
-      vim.api.nvim_buf_set_lines(self.previewer_bufnr, LAST_LINE, -1, false, {})
-
+      vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
       vim.api.nvim_win_set_cursor(self.previewer_winnr, { 1, 0 })
 
       local function set_win_title()
@@ -716,7 +710,7 @@ function BufferPopupWindow:preview_file_contents(file_content, first_line, last_
             set_buf_lines()
           end
 
-          if line_index >= SHOW_PREVIEW_LABEL_COUNT then
+          if line_index >= SHOW_LABEL_COUNT then
             vim.schedule(set_win_title)
           end
         end, 3)
