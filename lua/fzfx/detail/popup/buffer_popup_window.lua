@@ -609,7 +609,11 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
 
         self._saved_previewing_file_content_job = last_content
         self._saved_previewing_file_content_context = { render_index = nil }
-        self:preview_file_contents(last_content, last_content.previewer_result.lineno or 1)
+        self:preview_file_contents(
+          last_content,
+          last_content.previewer_result.lineno or 1,
+          last_content.previewer_result.lineno or 1
+        )
       end, 20)
     end)
   end, 20)
@@ -618,11 +622,12 @@ end
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
 --- @param start_line integer
---- @param on_complete fun(rendered:boolean):any|nil
-function BufferPopupWindow:preview_file_contents(file_content, start_line, on_complete)
-  local function do_complete(rendered)
+--- @param cursor_line integer
+--- @param on_complete (fun(done:boolean):any)|nil
+function BufferPopupWindow:preview_file_contents(file_content, start_line, cursor_line, on_complete)
+  local function do_complete(done)
     if type(on_complete) == "function" then
-      on_complete(rendered)
+      on_complete(done)
     end
   end
 
@@ -646,12 +651,12 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line, on_co
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
-      do_complete(true)
+      do_complete(false)
       falsy_rendering()
       return
     end
     if not self:is_last_previewing_file_job_id(file_content.job_id) then
-      do_complete(true)
+      do_complete(false)
       falsy_rendering()
       return
     end
@@ -662,12 +667,12 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line, on_co
 
     vim.defer_fn(function()
       if not self:previewer_is_valid() then
-        do_complete(true)
+        do_complete(false)
         falsy_rendering()
         return
       end
       if not self:is_last_previewing_file_job_id(file_content.job_id) then
-        do_complete(true)
+        do_complete(false)
         falsy_rendering()
         return
       end
@@ -722,12 +727,12 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line, on_co
         -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
         vim.defer_fn(function()
           if not self:previewer_is_valid() then
-            do_complete(true)
+            do_complete(false)
             falsy_rendering()
             return
           end
           if not self:is_last_previewing_file_job_id(file_content.job_id) then
-            do_complete(true)
+            do_complete(false)
             falsy_rendering()
             return
           end
@@ -756,7 +761,7 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line, on_co
           if LINE_INDEX <= LAST_LINE then
             set_buf_lines()
           else
-            vim.api.nvim_win_set_cursor(self.previewer_winnr, { start_line, 0 })
+            vim.api.nvim_win_set_cursor(self.previewer_winnr, { cursor_line, 0 })
             vim.api.nvim_win_call(self.previewer_winnr, function()
               vim.cmd('execute "normal! zz"')
             end)
@@ -928,16 +933,23 @@ function BufferPopupWindow:scroll_by(percent, up)
     vim.inspect(TARGET_LAST_LINENO)
   )
 
-  if up and target_base_lineno <= 1 then
+  if up and FIRST_LINENO <= 1 then
     falsy_scrolling()
     return
   end
-  if down and target_base_lineno >= LINES_COUNT then
+  if down and LAST_LINENO >= LINES_COUNT then
     falsy_scrolling()
     return
   end
-  vim.api.nvim_win_set_cursor(self.previewer_winnr, { target_base_lineno, 0 })
-  falsy_scrolling()
+
+  self:preview_file_contents(
+    file_content,
+    TARGET_FIRST_LINENO,
+    math.floor((TARGET_FIRST_LINENO + TARGET_LAST_LINENO) / 2),
+    function()
+      falsy_scrolling()
+    end
+  )
 end
 
 function BufferPopupWindow:preview_page_down()
