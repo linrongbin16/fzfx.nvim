@@ -307,7 +307,7 @@ end
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @field _saved_previewing_file_content_job fzfx.BufferPopupWindowPreviewFileContentJob
---- @field _saved_previewing_file_content_context {start_line:integer,render_index:integer?}
+--- @field _saved_previewing_file_content_context {render_index:integer?}
 --- @field _current_previewing_file_job_id integer?
 --- @field _resizing boolean
 --- @field preview_files_queue fzfx.BufferPopupWindowPreviewFileJob[]
@@ -606,7 +606,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         end
 
         self._saved_previewing_file_content_job = last_content
-        self._saved_previewing_file_content_context = { start_line = 1, render_index = nil }
+        self._saved_previewing_file_content_context = { render_index = nil }
         self:preview_file_contents(last_content)
       end, 20)
     end)
@@ -615,11 +615,13 @@ end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param last_file_content fzfx.BufferPopupWindowPreviewFileContentJob?
-function BufferPopupWindow:preview_file_contents(last_file_content)
+--- @param start_line integer?
+function BufferPopupWindow:preview_file_contents(last_file_content, start_line)
   if tables.tbl_empty(last_file_content) then
     return
   end
 
+  start_line = start_line or 1
   local last_content = last_file_content --[[@as fzfx.BufferPopupWindowPreviewFileContentJob]]
   pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, last_content.previewer_result.filename)
 
@@ -648,7 +650,7 @@ function BufferPopupWindow:preview_file_contents(last_file_content)
       local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
       local LINES = last_content.contents
       local LINES_COUNT = #LINES
-      local FIRST_LINE = ctx1.start_line
+      local FIRST_LINE = start_line
       local LAST_LINE = math.min(WIN_HEIGHT + 5 + FIRST_LINE, LINES_COUNT)
 
       local SHOW_LABEL_COUNT = math.min(30, LAST_LINE - FIRST_LINE)
@@ -716,7 +718,7 @@ function BufferPopupWindow:preview_file_contents(last_file_content)
           if ctx2.render_index <= LAST_LINE then
             set_buf_lines()
           else
-            vim.api.nvim_win_set_cursor(self.previewer_winnr, { ctx2.start_line, 0 })
+            vim.api.nvim_win_set_cursor(self.previewer_winnr, { start_line, 0 })
           end
           if ctx2.render_index >= SHOW_LABEL_COUNT then
             vim.schedule(set_win_title)
