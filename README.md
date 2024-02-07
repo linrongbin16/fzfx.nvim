@@ -198,6 +198,11 @@ return require("packer").startup(function(use)
     config = function()
       require("fzfx").setup()
     end,
+
+    -- enable nvim buffer previewer for better color/highlight support
+    setup = function()
+      vim.g.fzfx_enable_buffer_previewer=1
+    end
   })
 end)
 ```
@@ -220,6 +225,9 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'linrongbin16/fzfx.nvim', { 'tag': 'v5.0.0' }
 
 call plug#end()
+
+" enable nvim buffer previewer for better color/highlight support
+let g:fzfx_enable_buffer_previewer=1
 
 lua require('fzfx').setup()
 ```
