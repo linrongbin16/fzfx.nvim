@@ -162,6 +162,11 @@ require("lazy").setup({
     config = function()
       require("fzfx").setup()
     end,
+
+    -- enable nvim buffer previewer for better color/highlight support
+    init = function()
+      vim.g.fzfx_enable_buffer_previewer=1
+    end,
   },
 })
 ```
