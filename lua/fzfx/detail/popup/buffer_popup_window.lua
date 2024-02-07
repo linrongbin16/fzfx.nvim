@@ -617,6 +617,10 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
   end, 20)
 end
 
+local FIX_FILE_TYPE_MAP = {
+  md = "markdown",
+}
+
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
 --- @param top_line integer
@@ -633,9 +637,10 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
     return
   end
 
-  if strings.empty(vim.api.nvim_buf_get_name(self.previewer_bufnr)) then
-    pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, file_content.previewer_result.filename)
-  end
+  -- pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, file_content.previewer_result.filename)
+  local file_ext = vim.fn.fnamemodify(file_content.previewer_result.filename, ":e")
+  file_ext = FIX_FILE_TYPE_MAP[file_ext] and FIX_FILE_TYPE_MAP[file_ext] or file_ext
+  apis.set_buf_option(self.previewer_bufnr, "filetype", file_ext)
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
