@@ -1398,7 +1398,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
     buffer_previewer_query_fzf_status_start = false
   end, use_buffer_previewer, buffer_previewer_opts)
-  return popup
 end
 
 --- @param name string
