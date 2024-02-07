@@ -732,7 +732,6 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
     local line_step = 10
 
     local function set_buf_lines()
-      -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
       vim.defer_fn(function()
         if not self:previewer_is_valid() then
           do_complete(false)
@@ -754,10 +753,18 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
           end
         end
 
+        log.debug(
+          "|BufferPopupWindow:render_file_contents - set_buf_lines| line_index:%s, set start:%s, end:%s, FIRST_LINE/LAST_LINE:%s/%s",
+          vim.inspect(line_index),
+          vim.inspect(line_index - 1),
+          vim.inspect(math.min(line_index + line_step, LAST_LINE) - 1),
+          vim.inspect(FIRST_LINE),
+          vim.inspect(LAST_LINE)
+        )
         vim.api.nvim_buf_set_lines(
           self.previewer_bufnr,
           line_index - 1,
-          math.min(line_index + line_step, LAST_LINE) - 1,
+          math.min(line_index + line_step, LAST_LINE + 1) - 1,
           false,
           buf_lines
         )
