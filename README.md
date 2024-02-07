@@ -1249,7 +1249,7 @@ For complete default options, please see [config.lua](https://github.com/linrong
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
-To enable/disable some features:
+To globally enable/disable some features:
 
 - `fzfx_enable_buffer_previewer`: Use nvim buffer for previewing file contents.
 
