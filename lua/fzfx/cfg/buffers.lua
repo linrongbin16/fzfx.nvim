@@ -110,8 +110,8 @@ local previewer_type = switches.buffer_previewer_disabled() and PreviewerTypeEnu
   or PreviewerTypeEnum.BUFFER_FILE
 
 M.previewers = {
-  previewer = previewers_helper.preview_files_find,
-  previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+  previewer = previewer,
+  previewer_type = previewer_type,
   previewer_label = labels_helper.label_find,
 }
 
