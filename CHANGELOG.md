@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.6...v5.2.0) (2024-02-07)
+
+
+### Features
+
+* **previewer:** enable buffer previewer for files ([#591](https://github.com/linrongbin16/fzfx.nvim/issues/591)) ([8b05e76](https://github.com/linrongbin16/fzfx.nvim/commit/8b05e7625f4e6c9cf6dbf6448bd943c93b765601))
+
+
+### Performance Improvements
+
+* **buffer previewer:** improve buffer previewer performance ([#589](https://github.com/linrongbin16/fzfx.nvim/issues/589)) ([817a9a6](https://github.com/linrongbin16/fzfx.nvim/commit/817a9a6083af0103b1f86058ba3bafc912e4a988))
+
 ## [5.1.6](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.5...v5.1.6) (2024-02-05)
 
 
