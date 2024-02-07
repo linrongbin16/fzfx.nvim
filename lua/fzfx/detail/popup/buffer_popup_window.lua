@@ -652,9 +652,9 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
       return
     end
 
-    vim.api.nvim_buf_call(self.previewer_bufnr, function()
-      vim.api.nvim_command([[filetype detect]])
-    end)
+    -- vim.api.nvim_buf_call(self.previewer_bufnr, function()
+    --   vim.api.nvim_command([[filetype detect]])
+    -- end)
 
     vim.defer_fn(function()
       if not self:previewer_is_valid() then
