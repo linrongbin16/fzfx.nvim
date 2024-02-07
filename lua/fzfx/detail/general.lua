@@ -920,7 +920,6 @@ end
 --- @param bang boolean
 --- @param pipeline_configs fzfx.Options
 --- @param default_pipeline fzfx.PipelineName?
---- @return fzfx.Popup
 local function general(name, query, bang, pipeline_configs, default_pipeline)
   local pipeline_size = get_pipeline_size(pipeline_configs)
 
@@ -1398,7 +1397,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
     buffer_previewer_query_fzf_status_start = false
   end, use_buffer_previewer, buffer_previewer_opts)
-  return popup
 end
 
 --- @param name string
