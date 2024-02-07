@@ -633,7 +633,9 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
     return
   end
 
-  pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, file_content.previewer_result.filename)
+  if strings.empty(vim.api.nvim_buf_get_name(self.previewer_bufnr)) then
+    pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, file_content.previewer_result.filename)
+  end
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
