@@ -729,7 +729,6 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
     local FIRST_LINE = start_line
     local LAST_LINE = math.min(WIN_HEIGHT + FIRST_LINE, LINES_COUNT)
     local line_index = FIRST_LINE
-    local line_stop = FIRST_LINE
     local line_step = 10
 
     local function set_buf_lines()
@@ -750,7 +749,6 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
         for i = line_index, line_index + line_step do
           if i <= LAST_LINE then
             table.insert(buf_lines, LINES[i])
-            line_stop = i
           else
             break
           end
@@ -759,7 +757,7 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
         vim.api.nvim_buf_set_lines(
           self.previewer_bufnr,
           line_index - 1,
-          line_stop - 1,
+          math.min(line_index + line_step, LAST_LINE) - 1,
           false,
           buf_lines
         )
