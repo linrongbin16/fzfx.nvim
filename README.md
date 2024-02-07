@@ -1260,13 +1260,13 @@ To globally enable/disable some features:
 ```vim
 " vim scripts
 
-let g:fzfx_enable_buffer_previewer=1 " or v:true
+let g:fzfx_disable_buffer_previewer=1 " or v:true
 ```
 
 ```lua
 -- lua scripts
 
-vim.g.fzfx_enable_buffer_previewer=1 -- or true
+vim.g.fzfx_disable_buffer_previewer=1 -- or true
 ```
 
 </details>

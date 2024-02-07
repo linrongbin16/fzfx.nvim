@@ -98,47 +98,41 @@ M.providers = {
   },
 }
 
---- @return boolean
-local function buffer_previewer_enabled()
-  return (
-    type(vim.g.fzfx_enable_buffer_previewer) == "number"
-    and vim.g.fzfx_enable_buffer_previewer > 0
-  )
-    or (
-      type(vim.g.fzfx_enable_buffer_previewer) == "boolean" and vim.g.fzfx_enable_buffer_previewer
-    )
-end
+local previewer = switches.buffer_previewer_disabled()
+    and previewers_helper.buffer_preview_files_find
+  or previewers_helper.preview_files_find
+local previewer_type = switches.buffer_previewer_disabled() and PreviewerTypeEnum.BUFFER_FILE
+  or PreviewerTypeEnum.COMMAND_LIST
 
 M.previewers = {
   restricted_mode = {
-    -- if you want to use fzf-builtin previewer with bat, please enable below configs:
+    -- if you want to use fzf-builtin previewer with bat, please use below configs:
     --
     -- previewer = previewers_helper.preview_files_find,
     -- previewer_type = PreviewerTypeEnum.COMMAND_LIST,
 
-    -- if you want to use nvim buffer previewer, please enable below configs:
+    -- if you want to use nvim buffer previewer, please use below configs:
     --
     -- previewer = previewers_helper.buffer_preview_files_find,
     -- previewer_type = PreviewerTypeEnum.BUFFER_FILE,
 
-    previewer = switches.buffer_previewer_enabled() and previewers_helper.buffer_preview_files_find
-      or previewers_helper.preview_files_find,
-    previewer_type = switches.buffer_previewer_enabled() and PreviewerTypeEnum.BUFFER_FILE
-      or PreviewerTypeEnum.COMMAND_LIST,
-
+    previewer = previewer,
+    previewer_type = previewer_type,
     previewer_label = labels_helper.label_find,
   },
   unrestricted_mode = {
-    -- if you want to use fzf-builtin previewer with bat, please enable below configs:
+    -- if you want to use fzf-builtin previewer with bat, please use below configs:
     --
     -- previewer = previewers_helper.preview_files_find,
     -- previewer_type = PreviewerTypeEnum.COMMAND_LIST,
 
-    -- if you want to use nvim buffer previewer, please enable below configs:
+    -- if you want to use nvim buffer previewer, please use below configs:
     --
-    previewer = previewers_helper.buffer_preview_files_find,
-    previewer_type = PreviewerTypeEnum.BUFFER_FILE,
+    -- previewer = previewers_helper.buffer_preview_files_find,
+    -- previewer_type = PreviewerTypeEnum.BUFFER_FILE,
 
+    previewer = previewer,
+    previewer_type = previewer_type,
     previewer_label = labels_helper.label_find,
   },
 }
