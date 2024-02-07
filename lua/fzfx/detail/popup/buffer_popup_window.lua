@@ -756,21 +756,17 @@ function BufferPopupWindow:render_file_contents(file_content, top_line, on_compl
           end
         end
 
+        local set_start = line_index - 1
+        local set_end = math.min(line_index + line_step, BOTTOM_LINE + 1) - 1
         log.debug(
           "|BufferPopupWindow:render_file_contents - set_buf_lines| line_index:%s, set start:%s, end:%s, TOP_LINE/BOTTOM_LINE:%s/%s",
           vim.inspect(line_index),
-          vim.inspect(line_index - 1),
-          vim.inspect(math.min(line_index + line_step, BOTTOM_LINE) - 1),
+          vim.inspect(set_start),
+          vim.inspect(set_end),
           vim.inspect(TOP_LINE),
           vim.inspect(BOTTOM_LINE)
         )
-        vim.api.nvim_buf_set_lines(
-          self.previewer_bufnr,
-          line_index - 1,
-          math.min(line_index + line_step, BOTTOM_LINE + 1) - 1,
-          false,
-          buf_lines
-        )
+        vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_start, set_end, false, buf_lines)
 
         line_index = line_index + line_step
         if line_index <= BOTTOM_LINE then
