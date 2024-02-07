@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.3.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.2.0...v5.3.0) (2024-02-07)
+
+
+### Features
+
+* **config:** enable buffer previewer for git files ([#592](https://github.com/linrongbin16/fzfx.nvim/issues/592)) ([8199023](https://github.com/linrongbin16/fzfx.nvim/commit/8199023dad7e64bba82f98abe8de37cfa0ad2422))
+
 ## [5.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.1.6...v5.2.0) (2024-02-07)
 
 
