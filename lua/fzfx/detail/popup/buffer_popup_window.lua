@@ -964,7 +964,7 @@ function BufferPopupWindow:scroll_by(percent, up)
 
   self:render_file_contents(file_content, TARGET_FIRST_LINENO, function()
     falsy_scrolling()
-  end, 30)
+  end, math.max(WIN_HEIGHT, 30))
 end
 
 function BufferPopupWindow:preview_page_down()
