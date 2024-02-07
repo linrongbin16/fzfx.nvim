@@ -162,11 +162,6 @@ require("lazy").setup({
     config = function()
       require("fzfx").setup()
     end,
-
-    -- enable nvim buffer previewer for better color/highlight support
-    init = function()
-      vim.g.fzfx_enable_buffer_previewer=1
-    end,
   },
 })
 ```
@@ -198,11 +193,6 @@ return require("packer").startup(function(use)
     config = function()
       require("fzfx").setup()
     end,
-
-    -- enable nvim buffer previewer for better color/highlight support
-    setup = function()
-      vim.g.fzfx_enable_buffer_previewer=1
-    end
   })
 end)
 ```
@@ -225,9 +215,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'linrongbin16/fzfx.nvim', { 'tag': 'v5.0.0' }
 
 call plug#end()
-
-" enable nvim buffer previewer for better color/highlight support
-let g:fzfx_enable_buffer_previewer=1
 
 lua require('fzfx').setup()
 ```
@@ -1264,7 +1251,7 @@ For advanced configurations, please check [Advanced Configuration](https://githu
 
 To globally enable/disable some features:
 
-- `fzfx_enable_buffer_previewer`: Use nvim buffer for previewing file contents, instead of `bat`.
+- `fzfx_disable_buffer_previewer`: Disable nvim buffer for previewing file contents, use fzf builtin preview window with `bat`.
 
 <details>
 <summary><i>Click here to see how to enable them</i></summary>
