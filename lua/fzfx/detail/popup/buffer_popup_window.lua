@@ -935,6 +935,9 @@ function BufferPopupWindow:scroll_by(percent, up)
   end
   local TARGET_FIRST_LINENO = math.max(TOP_LINE + SHIFT_LINES, 1)
   local TARGET_LAST_LINENO = math.min(BOTTOM_LINE + SHIFT_LINES, LINES_COUNT)
+  if TARGET_LAST_LINENO >= LINES_COUNT then
+    TARGET_FIRST_LINENO = math.max(1, TARGET_LAST_LINENO - WIN_HEIGHT + 1)
+  end
 
   log.debug(
     "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom:%s/%s, target top/bottom:%s/%s",
