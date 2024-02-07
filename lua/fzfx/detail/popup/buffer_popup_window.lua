@@ -727,7 +727,7 @@ function BufferPopupWindow:render_file_contents(file_content, top_line, on_compl
     local TOP_LINE = top_line
     local BOTTOM_LINE = math.min(WIN_HEIGHT + TOP_LINE, LINES_COUNT)
     local line_index = TOP_LINE
-    local line_step = 10
+    local line_step = 5
 
     local function set_buf_lines()
       vim.defer_fn(function()
