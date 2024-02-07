@@ -227,33 +227,45 @@ describe("detail.popup.buffer_popup_window", function()
       actual:preview_action("preview-half-page-up")
       actual:preview_action("preview-page-down")
       actual:preview_action("preview-page-up")
+      actual:preview_action("toggle-preview")
+      actual:preview_action("toggle-preview")
+      actual:preview_action("hide-preview")
+      actual:preview_action("show-preview")
     end)
   end)
   describe("[scroll_by]", function()
-    local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
+    local PREVIEW_WINDOW_OPTS = fzf_helpers.parse_fzf_preview_window_opts({
       {
         "--preview-window",
         "right,50%",
       },
     })
+    local PREVIEWER_RESULT = {
+      filename = "README.md",
+    }
+    local PREVIEW_JOB_ID = 1
     local builtin_opts = {
-      fzf_preview_window_opts = pw_opts,
+      fzf_preview_window_opts = PREVIEW_WINDOW_OPTS,
       fzf_border_opts = "rounded",
     }
     it("scroll up 100%", function()
       local bpw = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      bpw:preview_file(PREVIEW_JOB_ID, PREVIEWER_RESULT)
       bpw:scroll_by(100, true)
     end)
     it("scroll down 100%", function()
       local bpw = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      bpw:preview_file(PREVIEW_JOB_ID, PREVIEWER_RESULT)
       bpw:scroll_by(100, false)
     end)
     it("scroll up 50%", function()
       local bpw = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      bpw:preview_file(PREVIEW_JOB_ID, PREVIEWER_RESULT)
       bpw:scroll_by(50, true)
     end)
     it("scroll down 100%", function()
       local bpw = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
+      bpw:preview_file(PREVIEW_JOB_ID, PREVIEWER_RESULT)
       bpw:scroll_by(50, false)
     end)
   end)

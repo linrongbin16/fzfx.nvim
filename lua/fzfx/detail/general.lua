@@ -797,19 +797,19 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
           if type(split_pos) == "number" and split_pos > 1 then
             split_o = {}
             local o1 = strings.trim(string.sub(o --[[@as string]], 1, split_pos - 1))
-            log.debug(
-              "|general - use_buffer_previewer| o:%s, split_pos:%s, o1:%s",
-              vim.inspect(o),
-              vim.inspect(split_pos),
-              vim.inspect(o1)
-            )
+            -- log.debug(
+            --   "|general - use_buffer_previewer| o:%s, split_pos:%s, o1:%s",
+            --   vim.inspect(o),
+            --   vim.inspect(split_pos),
+            --   vim.inspect(o1)
+            -- )
             local o2 = strings.trim(string.sub(o --[[@as string]], split_pos + 1))
-            log.debug(
-              "|general - use_buffer_previewer| o:%s, split_pos:%s, o2:%s",
-              vim.inspect(o),
-              vim.inspect(split_pos),
-              vim.inspect(o2)
-            )
+            -- log.debug(
+            --   "|general - use_buffer_previewer| o:%s, split_pos:%s, o2:%s",
+            --   vim.inspect(o),
+            --   vim.inspect(split_pos),
+            --   vim.inspect(o2)
+            -- )
             table.insert(split_o, o1)
             table.insert(split_o, o2)
           end
@@ -1057,13 +1057,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       buffer_previewer_actions_file,
       {},
       function(actions_fsevent_start_complete_err, actions_file, events)
-        log.debug(
-          "|general - buffer_previewer_actions_fsevent:start| complete actions fsevent, actions_file:%s, events:%s, actions_file:%s, error:%s",
-          vim.inspect(actions_file),
-          vim.inspect(events),
-          vim.inspect(buffer_previewer_actions_file),
-          vim.inspect(actions_fsevent_start_complete_err)
-        )
+        -- log.debug(
+        --   "|general - buffer_previewer_actions_fsevent:start| complete actions fsevent, actions_file:%s, events:%s, actions_file:%s, error:%s",
+        --   vim.inspect(actions_file),
+        --   vim.inspect(events),
+        --   vim.inspect(buffer_previewer_actions_file),
+        --   vim.inspect(actions_fsevent_start_complete_err)
+        -- )
         if actions_fsevent_start_complete_err then
           log.err(
             "|general - buffer_previewer_actions_fsevent:start| failed to trigger fsevent on actions_file %s, error:%s",
@@ -1080,11 +1080,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         end
 
         fileios.asyncreadfile(buffer_previewer_actions_file, function(actions_data)
-          log.debug(
-            "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, data:%s",
-            vim.inspect(actions_file),
-            vim.inspect(actions_data)
-          )
+          -- log.debug(
+          --   "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, data:%s",
+          --   vim.inspect(actions_file),
+          --   vim.inspect(actions_data)
+          -- )
           if not popup or not popup:provider_is_valid() then
             return
           end

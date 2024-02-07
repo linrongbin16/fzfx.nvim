@@ -253,9 +253,9 @@ function Popup:new(
   vim.env.FZF_DEFAULT_OPTS = fzf_helpers.make_fzf_default_opts()
   vim.env.FZF_DEFAULT_COMMAND = source
 
-  log.debug("|Popup:new| $FZF_DEFAULT_OPTS:%s", vim.inspect(vim.env.FZF_DEFAULT_OPTS))
-  log.debug("|Popup:new| $FZF_DEFAULT_COMMAND:%s", vim.inspect(vim.env.FZF_DEFAULT_COMMAND))
-  log.debug("|Popup:new| fzf_command:%s", vim.inspect(fzf_command))
+  -- log.debug("|Popup:new| $FZF_DEFAULT_OPTS:%s", vim.inspect(vim.env.FZF_DEFAULT_OPTS))
+  -- log.debug("|Popup:new| $FZF_DEFAULT_COMMAND:%s", vim.inspect(vim.env.FZF_DEFAULT_COMMAND))
+  -- log.debug("|Popup:new| fzf_command:%s", vim.inspect(fzf_command))
 
   -- launch
   local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]

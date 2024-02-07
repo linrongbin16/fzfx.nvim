@@ -583,7 +583,7 @@ local function parse_fzf_preview_window_opts(opts)
     "failed to split preview window opts into list: %s",
     vim.inspect(split_opts)
   )
-  log.debug("|parse_fzf_preview_window_opts| split_opts:%s", vim.inspect(split_opts))
+  -- log.debug("|parse_fzf_preview_window_opts| split_opts:%s", vim.inspect(split_opts))
 
   local opts_alternative_layout = nil
   local opts_no_alternative_layout = {}
@@ -617,7 +617,7 @@ local function parse_fzf_preview_window_opts(opts)
       _spilt_fzf_preview_window_opts(split_alternatives)
     )
   end
-  log.debug("|parse_fzf_preview_window_opts| result:%s", vim.inspect(result))
+  -- log.debug("|parse_fzf_preview_window_opts| result:%s", vim.inspect(result))
   return result
 end
 
@@ -639,7 +639,7 @@ local FZF_PREVIEW_ACTIONS = {
 local function setup()
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
-      log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
+      -- log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       vim.schedule(function()
         update_fzf_default_opts()
       end)
