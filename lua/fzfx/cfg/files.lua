@@ -104,6 +104,8 @@ M.previewers = {
     -- previewer = previewers_helper.preview_files_find,
     -- previewer_type = PreviewerTypeEnum.COMMAND_LIST,
 
+    -- if you want to use nvim buffer previewer, please enable below configs:
+    --
     previewer = previewers_helper.buffer_preview_files_find,
     previewer_type = PreviewerTypeEnum.BUFFER_FILE,
 
