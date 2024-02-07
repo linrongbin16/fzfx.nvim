@@ -1,5 +1,6 @@
-local consts = require("fzfx.lib.constants")
 local paths = require("fzfx.commons.paths")
+local constants = require("fzfx.lib.constants")
+local switches = require("fzfx.lib.switches")
 
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
@@ -79,9 +80,9 @@ M.variants = {
   },
 }
 
-local restricted_provider = consts.HAS_FD and providers_helper.RESTRICTED_FD
+local restricted_provider = constants.HAS_FD and providers_helper.RESTRICTED_FD
   or providers_helper.RESTRICTED_FIND
-local unrestricted_provider = consts.HAS_FD and providers_helper.UNRESTRICTED_FD
+local unrestricted_provider = constants.HAS_FD and providers_helper.UNRESTRICTED_FD
   or providers_helper.UNRESTRICTED_FIND
 
 M.providers = {
@@ -97,6 +98,17 @@ M.providers = {
   },
 }
 
+--- @return boolean
+local function buffer_previewer_enabled()
+  return (
+    type(vim.g.fzfx_enable_buffer_previewer) == "number"
+    and vim.g.fzfx_enable_buffer_previewer > 0
+  )
+    or (
+      type(vim.g.fzfx_enable_buffer_previewer) == "boolean" and vim.g.fzfx_enable_buffer_previewer
+    )
+end
+
 M.previewers = {
   restricted_mode = {
     -- if you want to use fzf-builtin previewer with bat, please enable below configs:
@@ -106,8 +118,13 @@ M.previewers = {
 
     -- if you want to use nvim buffer previewer, please enable below configs:
     --
-    previewer = previewers_helper.buffer_preview_files_find,
-    previewer_type = PreviewerTypeEnum.BUFFER_FILE,
+    -- previewer = previewers_helper.buffer_preview_files_find,
+    -- previewer_type = PreviewerTypeEnum.BUFFER_FILE,
+
+    previewer = switches.buffer_previewer_enabled() and previewers_helper.buffer_preview_files_find
+      or previewers_helper.preview_files_find,
+    previewer_type = switches.buffer_previewer_enabled() and PreviewerTypeEnum.BUFFER_FILE
+      or PreviewerTypeEnum.COMMAND_LIST,
 
     previewer_label = labels_helper.label_find,
   },
