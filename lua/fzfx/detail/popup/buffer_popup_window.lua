@@ -687,7 +687,8 @@ end
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
 --- @param top_line integer
 --- @param on_complete (fun(done:boolean):any)|nil
-function BufferPopupWindow:render_file_contents(file_content, top_line, on_complete)
+--- @param line_step integer?
+function BufferPopupWindow:render_file_contents(file_content, top_line, on_complete, line_step)
   local function do_complete(done)
     if type(on_complete) == "function" then
       on_complete(done)
@@ -704,7 +705,9 @@ function BufferPopupWindow:render_file_contents(file_content, top_line, on_compl
   end
 
   local function falsy_rendering()
-    self._rendering = false
+    vim.schedule(function()
+      self._rendering = false
+    end)
   end
 
   self._rendering = true
@@ -727,7 +730,7 @@ function BufferPopupWindow:render_file_contents(file_content, top_line, on_compl
     local TOP_LINE = top_line
     local BOTTOM_LINE = math.min(WIN_HEIGHT + TOP_LINE, LINES_COUNT)
     local line_index = TOP_LINE
-    local line_step = 5
+    line_step = line_step or 10
 
     local function set_buf_lines()
       vim.defer_fn(function()
@@ -933,6 +936,9 @@ function BufferPopupWindow:scroll_by(percent, up)
   end
   local TARGET_FIRST_LINENO = math.max(TOP_LINE + SHIFT_LINES, 1)
   local TARGET_LAST_LINENO = math.min(BOTTOM_LINE + SHIFT_LINES, LINES_COUNT)
+  if TARGET_LAST_LINENO >= LINES_COUNT then
+    TARGET_FIRST_LINENO = math.max(1, TARGET_LAST_LINENO - WIN_HEIGHT + 1)
+  end
 
   log.debug(
     "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom:%s/%s, target top/bottom:%s/%s",
@@ -958,7 +964,7 @@ function BufferPopupWindow:scroll_by(percent, up)
 
   self:render_file_contents(file_content, TARGET_FIRST_LINENO, function()
     falsy_scrolling()
-  end)
+  end, math.max(WIN_HEIGHT, 30))
 end
 
 function BufferPopupWindow:preview_page_down()

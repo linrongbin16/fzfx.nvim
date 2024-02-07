@@ -1,5 +1,6 @@
-local consts = require("fzfx.lib.constants")
 local paths = require("fzfx.commons.paths")
+local constants = require("fzfx.lib.constants")
+local switches = require("fzfx.lib.switches")
 
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
@@ -79,9 +80,9 @@ M.variants = {
   },
 }
 
-local restricted_provider = consts.HAS_FD and providers_helper.RESTRICTED_FD
+local restricted_provider = constants.HAS_FD and providers_helper.RESTRICTED_FD
   or providers_helper.RESTRICTED_FIND
-local unrestricted_provider = consts.HAS_FD and providers_helper.UNRESTRICTED_FD
+local unrestricted_provider = constants.HAS_FD and providers_helper.UNRESTRICTED_FD
   or providers_helper.UNRESTRICTED_FIND
 
 M.providers = {
@@ -97,27 +98,30 @@ M.providers = {
   },
 }
 
+-- if you want to use fzf-builtin previewer with bat, please use below configs:
+--
+-- previewer = previewers_helper.preview_files_find
+-- previewer_type = PreviewerTypeEnum.COMMAND_LIST
+
+-- if you want to use nvim buffer previewer, please use below configs:
+--
+-- previewer = previewers_helper.buffer_preview_files_find
+-- previewer_type = PreviewerTypeEnum.BUFFER_FILE
+
+local previewer = switches.buffer_previewer_disabled() and previewers_helper.preview_files_find
+  or previewers_helper.buffer_preview_files_find
+local previewer_type = switches.buffer_previewer_disabled() and PreviewerTypeEnum.COMMAND_LIST
+  or PreviewerTypeEnum.BUFFER_FILE
+
 M.previewers = {
   restricted_mode = {
-    previewer = previewers_helper.preview_files_find,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-
-    -- if you want to try experimental buffer previewer, please enable below configs:
-    --
-    -- previewer = previewers_helper.buffer_preview_files_find,
-    -- previewer_type = PreviewerTypeEnum.BUFFER_FILE,
-
+    previewer = previewer,
+    previewer_type = previewer_type,
     previewer_label = labels_helper.label_find,
   },
   unrestricted_mode = {
-    previewer = previewers_helper.preview_files_find,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-
-    -- if you want to try experimental buffer previewer, please enable below configs:
-    --
-    -- previewer = previewers_helper.buffer_preview_files_find,
-    -- previewer_type = PreviewerTypeEnum.BUFFER_FILE,
-
+    previewer = previewer,
+    previewer_type = previewer_type,
     previewer_label = labels_helper.label_find,
   },
 }

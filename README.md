@@ -60,6 +60,10 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 ## ✅ Requirements
 
+> [!IMPORTANT]
+>
+> Always keep fzf upgrade to the latest version, you could do that by installing as a nvim plugin (see [Install](#-install)).
+
 - neovim &ge; 0.7.
 - [fzf](https://github.com/junegunn/fzf).
 - [nerd fonts](https://www.nerdfonts.com/) (optional for icons).
@@ -130,7 +134,7 @@ Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\W
 
 > [!IMPORTANT]
 >
-> Specify a version/tag (such as `v5.*`) to avoid break changes between major versions!
+> Specify plugin version/tag (e.g. `v5.*`) to avoid break changes between major versions!
 
 <details>
 <summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
@@ -1244,6 +1248,28 @@ The `opts` is an optional lua table that override the default options.
 For complete default options, please see [config.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/config.lua).
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
+
+To globally enable/disable some features:
+
+- `fzfx_disable_buffer_previewer`: Disable nvim buffer for previewing file contents, use fzf builtin preview window with `bat`, which has the best performance.
+
+<details>
+<summary><i>Click here to see how to configure</i></summary>
+<br/>
+
+```vim
+" vim scripts
+
+let g:fzfx_disable_buffer_previewer=1 " or v:true
+```
+
+```lua
+-- lua scripts
+
+vim.g.fzfx_disable_buffer_previewer=1 -- or true
+```
+
+</details>
 
 ### Create Your Own Command
 
