@@ -307,7 +307,7 @@ end
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @field _saved_previewing_file_content_job fzfx.BufferPopupWindowPreviewFileContentJob
---- @field _saved_previewing_file_content_context {first_line:integer}
+--- @field _saved_previewing_file_content_context {top_line:integer}
 --- @field _current_previewing_file_job_id integer?
 --- @field _rendering boolean
 --- @field _resizing boolean
@@ -391,6 +391,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _saved_win_opts = win_opts,
     _saved_buffer_previewer_opts = buffer_previewer_opts,
     _saved_previewing_file_content_job = nil,
+    _saved_previewing_file_content_context = nil,
     _current_previewing_file_job_id = nil,
     _rendering = false,
     _scrolling = false,
@@ -606,8 +607,10 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
           return
         end
 
+        local target_top_line = last_content.previewer_result.lineno or 1
         self._saved_previewing_file_content_job = last_content
-        self:preview_file_contents(last_content, last_content.previewer_result.lineno or 1)
+        self._saved_previewing_file_content_context = { top_line = target_top_line }
+        self:preview_file_contents(last_content, target_top_line)
       end, 20)
     end)
   end, 20)
@@ -908,9 +911,10 @@ function BufferPopupWindow:scroll_by(percent, up)
     end)
   end
 
-  local FIRST_LINENO = vim.fn.line("w0", self.previewer_winnr)
-  local LAST_LINENO = vim.fn.line("w$", self.previewer_winnr)
   local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
+  local TOP_LINE = tables.tbl_get(self._saved_previewing_file_content_context, "top_line")
+    or vim.fn.line("w0", self.previewer_winnr)
+  local BOTTOM_LINE = vim.fn.line("w$", self.previewer_winnr)
   local SHIFT_LINES = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
   if up then
     SHIFT_LINES = -SHIFT_LINES
@@ -918,8 +922,8 @@ function BufferPopupWindow:scroll_by(percent, up)
   local file_content = self._saved_previewing_file_content_job
   local LINES = file_content.contents
   local LINES_COUNT = #LINES
-  local TARGET_FIRST_LINENO = math.max(FIRST_LINENO + SHIFT_LINES, 1)
-  local TARGET_LAST_LINENO = math.min(LAST_LINENO + SHIFT_LINES, LINES_COUNT)
+  local TARGET_FIRST_LINENO = math.max(TOP_LINE + SHIFT_LINES, 1)
+  local TARGET_LAST_LINENO = math.min(BOTTOM_LINE + SHIFT_LINES, LINES_COUNT)
 
   log.debug(
     "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, first/last:%s/%s, target first/last:%s/%s",
@@ -928,17 +932,17 @@ function BufferPopupWindow:scroll_by(percent, up)
     vim.inspect(LINES_COUNT),
     vim.inspect(WIN_HEIGHT),
     vim.inspect(SHIFT_LINES),
-    vim.inspect(FIRST_LINENO),
-    vim.inspect(LAST_LINENO),
+    vim.inspect(TOP_LINE),
+    vim.inspect(BOTTOM_LINE),
     vim.inspect(TARGET_FIRST_LINENO),
     vim.inspect(TARGET_LAST_LINENO)
   )
 
-  if up and FIRST_LINENO <= 1 then
+  if up and TOP_LINE <= 1 then
     falsy_scrolling()
     return
   end
-  if down and LAST_LINENO >= LINES_COUNT then
+  if down and BOTTOM_LINE >= LINES_COUNT then
     falsy_scrolling()
     return
   end
