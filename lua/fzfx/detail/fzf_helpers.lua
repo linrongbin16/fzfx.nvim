@@ -403,8 +403,8 @@ local FZF_BORDER_OPTS_MAP = {
   ["sharp"] = "single",
   ["border-sharp"] = "single",
 
-  ["double"] = "double",
-  ["border-double"] = "double",
+  ["double"] = { "╔", "═", "╗", "║", "╝", "═", "╚", "║" },
+  ["border-double"] = { "╔", "═", "╗", "║", "╝", "═", "╚", "║" },
 
   ["bold"] = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },
   ["border-bold"] = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },
