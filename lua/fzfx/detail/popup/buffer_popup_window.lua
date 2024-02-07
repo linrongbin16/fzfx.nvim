@@ -775,7 +775,7 @@ function BufferPopupWindow:render_file_contents(file_content, top_line, on_compl
           set_buf_lines()
         else
           vim.api.nvim_win_call(self.previewer_winnr, function()
-            vim.cmd(string.format([[call winrestview({'topline':%d})]], TOP_LINE))
+            vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], TOP_LINE))
           end)
           self._saved_previewing_file_content_context = { top_line = TOP_LINE }
           do_complete(true)
