@@ -1251,7 +1251,7 @@ For advanced configurations, please check [Advanced Configuration](https://githu
 
 To globally enable/disable some features:
 
-- `fzfx_enable_buffer_previewer`: Use nvim buffer for previewing file contents.
+- `fzfx_enable_buffer_previewer`: Use nvim buffer for previewing file contents, instead of `bat`.
 
 <details>
 <summary><i>Click here to see how to enable them</i></summary>
