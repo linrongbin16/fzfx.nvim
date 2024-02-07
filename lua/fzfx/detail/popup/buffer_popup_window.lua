@@ -911,17 +911,20 @@ function BufferPopupWindow:scroll_by(percent, up)
     end)
   end
 
+  local file_content = self._saved_previewing_file_content_job
+  local LINES = file_content.contents
+  local LINES_COUNT = #LINES
   local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
-  local TOP_LINE = tables.tbl_get(self._saved_previewing_file_content_context, "top_line")
+  local view_context = vim.api.nvim_win_call(self.previewer_winnr, function()
+    return vim.cmd(string.format([[call winsaveview()]]))
+  end)
+  local TOP_LINE = tables.tbl_get(view_context, "topline")
     or vim.fn.line("w0", self.previewer_winnr)
-  local BOTTOM_LINE = vim.fn.line("w$", self.previewer_winnr)
+  local BOTTOM_LINE = math.max(TOP_LINE + WIN_HEIGHT, LINES_COUNT)
   local SHIFT_LINES = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
   if up then
     SHIFT_LINES = -SHIFT_LINES
   end
-  local file_content = self._saved_previewing_file_content_job
-  local LINES = file_content.contents
-  local LINES_COUNT = #LINES
   local TARGET_FIRST_LINENO = math.max(TOP_LINE + SHIFT_LINES, 1)
   local TARGET_LAST_LINENO = math.min(BOTTOM_LINE + SHIFT_LINES, LINES_COUNT)
 
