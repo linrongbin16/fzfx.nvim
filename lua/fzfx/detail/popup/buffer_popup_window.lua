@@ -727,7 +727,7 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
     local FIRST_LINE = start_line
-    local LAST_LINE = math.min(WIN_HEIGHT, LINES_COUNT)
+    local LAST_LINE = math.min(WIN_HEIGHT, LINES_COUNT) + FIRST_LINE
     local line_index = FIRST_LINE
     local line_stop = FIRST_LINE
     local line_step = 10
