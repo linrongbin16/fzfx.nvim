@@ -730,7 +730,7 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
     local LAST_LINE = math.min(WIN_HEIGHT + FIRST_LINE, LINES_COUNT)
     local line_index = FIRST_LINE
     local line_stop = FIRST_LINE
-    local line_step = 5
+    local line_step = 10
 
     local function set_buf_lines()
       -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
