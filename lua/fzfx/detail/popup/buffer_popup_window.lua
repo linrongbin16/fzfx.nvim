@@ -704,7 +704,9 @@ function BufferPopupWindow:render_file_contents(file_content, top_line, on_compl
   end
 
   local function falsy_rendering()
-    self._rendering = false
+    vim.schedule(function()
+      self._rendering = false
+    end)
   end
 
   self._rendering = true
