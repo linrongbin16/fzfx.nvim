@@ -898,7 +898,11 @@ function BufferPopupWindow:scroll_by(percent, up)
   if not self:previewer_is_valid() then
     return
   end
-  if tables.tbl_get(self._saved_previewing_file_content_job, "contents") == nil then
+  if self._saved_previewing_file_content_job == nil then
+    return
+  end
+  local file_content = self._saved_previewing_file_content_job
+  if not self:is_last_previewing_file_job_id(file_content.job_id) then
     return
   end
   if self._scrolling then
@@ -917,7 +921,6 @@ function BufferPopupWindow:scroll_by(percent, up)
     end)
   end
 
-  local file_content = self._saved_previewing_file_content_job
   local LINES = file_content.contents
   local LINES_COUNT = #LINES
   local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
