@@ -98,6 +98,16 @@ M.providers = {
   },
 }
 
+-- if you want to use fzf-builtin previewer with bat, please use below configs:
+--
+-- previewer = previewers_helper.preview_files_find,
+-- previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+
+-- if you want to use nvim buffer previewer, please use below configs:
+--
+-- previewer = previewers_helper.buffer_preview_files_find,
+-- previewer_type = PreviewerTypeEnum.BUFFER_FILE,
+
 local previewer = switches.buffer_previewer_disabled()
     and previewers_helper.buffer_preview_files_find
   or previewers_helper.preview_files_find
@@ -121,15 +131,6 @@ M.previewers = {
     previewer_label = labels_helper.label_find,
   },
   unrestricted_mode = {
-    -- if you want to use fzf-builtin previewer with bat, please use below configs:
-    --
-    -- previewer = previewers_helper.preview_files_find,
-    -- previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-
-    -- if you want to use nvim buffer previewer, please use below configs:
-    --
-    -- previewer = previewers_helper.buffer_preview_files_find,
-    -- previewer_type = PreviewerTypeEnum.BUFFER_FILE,
 
     previewer = previewer,
     previewer_type = previewer_type,
