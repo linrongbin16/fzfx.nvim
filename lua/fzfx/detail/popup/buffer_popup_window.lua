@@ -678,7 +678,7 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line, curso
       end
 
       if strings.not_empty(file_content.previewer_label_result) then
-        vim.defer_fn(set_win_title, 50)
+        vim.defer_fn(set_win_title, 100)
       end
 
       self:render_file_contents(file_content, start_line, on_complete)
