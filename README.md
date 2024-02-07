@@ -1253,6 +1253,22 @@ There're several vim global variables to help you enable/disable some features:
 
 - `fzfx_enable_buffer_previewer`: Use nvim buffer for previewing file contents.
 
+<details>
+<summary><i>Click here to see how to enable them</i></summary>
+<br/>
+
+```vim
+
+let g:fzfx_enable_buffer_previewer=1 " or v:true
+```
+
+```lua
+
+vim.g.fzfx_enable_buffer_previewer=1 -- or true
+```
+
+</details>
+
 ### Create Your Own Command
 
 Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
