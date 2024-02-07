@@ -307,7 +307,6 @@ end
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @field _saved_previewing_file_content_job fzfx.BufferPopupWindowPreviewFileContentJob
---- @field _saved_previewing_file_content_context {render_index:integer?}
 --- @field _current_previewing_file_job_id integer?
 --- @field _rendering boolean
 --- @field _resizing boolean
@@ -391,7 +390,6 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _saved_win_opts = win_opts,
     _saved_buffer_previewer_opts = buffer_previewer_opts,
     _saved_previewing_file_content_job = nil,
-    _saved_previewing_file_content_context = nil,
     _current_previewing_file_job_id = nil,
     _rendering = false,
     _scrolling = false,
@@ -608,7 +606,6 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         end
 
         self._saved_previewing_file_content_job = last_content
-        self._saved_previewing_file_content_context = { render_index = nil }
         self:preview_file_contents(
           last_content,
           last_content.previewer_result.lineno or 1,
@@ -684,9 +681,6 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line, curso
         vim.defer_fn(set_win_title, 50)
       end
 
-      if not self._saved_previewing_file_content_context.render_index then
-        self._saved_previewing_file_content_context.render_index = 1
-      end
       self:render_file_contents(file_content, start_line, cursor_line, on_complete)
     end, 20)
   end, 20)
@@ -734,12 +728,10 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, cursor
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
     local FIRST_LINE = start_line
-    local LAST_LINE = math.min(WIN_HEIGHT + 5 + FIRST_LINE, LINES_COUNT)
+    local LAST_LINE = math.min(WIN_HEIGHT + FIRST_LINE, LINES_COUNT)
+    local line_index = FIRST_LINE
+    local line_stop = FIRST_LINE
     local RENDER_STEP = 5
-
-    if not self._saved_previewing_file_content_context.render_index then
-      self._saved_previewing_file_content_context.render_index = 1
-    end
 
     local function set_buf_lines()
       -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
@@ -755,13 +747,11 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, cursor
           return
         end
 
-        local RENDER_START = self._saved_previewing_file_content_context.render_index
-        local RENDER_STOP = RENDER_START
         local buf_lines = {}
-        for i = RENDER_START, RENDER_START + RENDER_STEP do
+        for i = line_index, line_index + RENDER_STEP do
           if i <= LAST_LINE then
             table.insert(buf_lines, LINES[i])
-            RENDER_STOP = i
+            line_stop = i
           else
             break
           end
@@ -769,19 +759,18 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, cursor
 
         vim.api.nvim_buf_set_lines(
           self.previewer_bufnr,
-          RENDER_START - 1,
-          RENDER_STOP - 1,
+          line_index - 1,
+          line_stop - 1,
           false,
           buf_lines
         )
 
-        self._saved_previewing_file_content_context.render_index = RENDER_STOP + 1
-        if self._saved_previewing_file_content_context.render_index <= LAST_LINE then
+        line_index = line_index + RENDER_STEP
+        if line_index <= LAST_LINE then
           set_buf_lines()
         else
-          vim.api.nvim_win_set_cursor(self.previewer_winnr, { cursor_line, 0 })
           vim.api.nvim_win_call(self.previewer_winnr, function()
-            vim.cmd('execute "normal! zz"')
+            vim.cmd(string.format([[call winrestview({'topline':%d})]], FIRST_LINE))
           end)
           do_complete(true)
           falsy_rendering()
@@ -861,7 +850,6 @@ function BufferPopupWindow:show_preview()
   vim.schedule(function()
     if tables.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
-      self._saved_previewing_file_content_context = { render_index = nil }
       self:preview_file_contents(
         last_content,
         last_content.previewer_result.lineno or 1,
