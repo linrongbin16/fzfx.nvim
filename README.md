@@ -1254,15 +1254,17 @@ To globally enable/disable some features:
 - `fzfx_disable_buffer_previewer`: Disable nvim buffer for previewing file contents, use fzf builtin preview window with `bat`, which has the best performance.
 
 <details>
-<summary><i>Click here to see how to enable them</i></summary>
+<summary><i>Click here to see configure scripts</i></summary>
 <br/>
 
 ```vim
+" vim scripts
 
 let g:fzfx_enable_buffer_previewer=1 " or v:true
 ```
 
 ```lua
+-- lua scripts
 
 vim.g.fzfx_enable_buffer_previewer=1 -- or true
 ```
