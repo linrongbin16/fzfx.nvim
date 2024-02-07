@@ -326,7 +326,7 @@ end
 local function _set_default_previewer_win_options(winnr)
   apis.set_win_option(winnr, "number", true)
   apis.set_win_option(winnr, "spell", false)
-  -- apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
   apis.set_win_option(winnr, "wrap", false)
   -- apis.set_win_option(winnr, "scrolloff", 0)
   -- apis.set_win_option(winnr, "sidescrolloff", 0)
