@@ -730,7 +730,7 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
     local LAST_LINE = math.min(WIN_HEIGHT + FIRST_LINE, LINES_COUNT)
     local line_index = FIRST_LINE
     local line_stop = FIRST_LINE
-    local RENDER_STEP = 5
+    local line_step = 5
 
     local function set_buf_lines()
       -- log.debug("|BufferPopupWindow:preview_file_contents| set_buf_lines")
@@ -747,7 +747,7 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
         end
 
         local buf_lines = {}
-        for i = line_index, line_index + RENDER_STEP do
+        for i = line_index, line_index + line_step do
           if i <= LAST_LINE then
             table.insert(buf_lines, LINES[i])
             line_stop = i
@@ -764,7 +764,7 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
           buf_lines
         )
 
-        line_index = line_index + RENDER_STEP
+        line_index = line_index + line_step
         if line_index <= LAST_LINE then
           set_buf_lines()
         else
