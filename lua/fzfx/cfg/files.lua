@@ -108,11 +108,10 @@ M.providers = {
 -- previewer = previewers_helper.buffer_preview_files_find
 -- previewer_type = PreviewerTypeEnum.BUFFER_FILE
 
-local previewer = switches.buffer_previewer_disabled()
-    and previewers_helper.buffer_preview_files_find
-  or previewers_helper.preview_files_find
-local previewer_type = switches.buffer_previewer_disabled() and PreviewerTypeEnum.BUFFER_FILE
-  or PreviewerTypeEnum.COMMAND_LIST
+local previewer = switches.buffer_previewer_disabled() and previewers_helper.preview_files_find
+  or previewers_helper.buffer_preview_files_find
+local previewer_type = switches.buffer_previewer_disabled() and PreviewerTypeEnum.COMMAND_LIST
+  or PreviewerTypeEnum.BUFFER_FILE
 
 M.previewers = {
   restricted_mode = {
