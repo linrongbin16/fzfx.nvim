@@ -898,6 +898,9 @@ function BufferPopupWindow:scroll_by(percent, up)
   if not self:previewer_is_valid() then
     return
   end
+  if tables.tbl_get(self._saved_previewing_file_content_job, "contents") == nil then
+    return
+  end
   if self._scrolling then
     return
   end
