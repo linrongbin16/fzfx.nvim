@@ -901,6 +901,9 @@ function BufferPopupWindow:scroll_by(percent, up)
   if self._scrolling then
     return
   end
+  if self._rendering then
+    return
+  end
 
   local down = not up
   self._scrolling = true
