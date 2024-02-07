@@ -681,16 +681,15 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line, curso
         vim.defer_fn(set_win_title, 50)
       end
 
-      self:render_file_contents(file_content, start_line, cursor_line, on_complete)
+      self:render_file_contents(file_content, start_line, on_complete)
     end, 20)
   end, 20)
 end
 
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
 --- @param start_line integer
---- @param cursor_line integer
 --- @param on_complete (fun(done:boolean):any)|nil
-function BufferPopupWindow:render_file_contents(file_content, start_line, cursor_line, on_complete)
+function BufferPopupWindow:render_file_contents(file_content, start_line, on_complete)
   local function do_complete(done)
     if type(on_complete) == "function" then
       on_complete(done)
@@ -947,14 +946,9 @@ function BufferPopupWindow:scroll_by(percent, up)
     return
   end
 
-  self:render_file_contents(
-    file_content,
-    TARGET_FIRST_LINENO,
-    math.floor((TARGET_FIRST_LINENO + TARGET_LAST_LINENO) / 2),
-    function()
-      falsy_scrolling()
-    end
-  )
+  self:render_file_contents(file_content, TARGET_FIRST_LINENO, function()
+    falsy_scrolling()
+  end)
 end
 
 function BufferPopupWindow:preview_page_down()
