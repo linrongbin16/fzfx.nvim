@@ -657,8 +657,6 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
         return
       end
 
-      vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
-
       local function set_win_title()
         if not self:previewer_is_valid() then
           return
@@ -720,6 +718,8 @@ function BufferPopupWindow:render_file_contents(file_content, top_line, on_compl
       falsy_rendering()
       return
     end
+
+    vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
 
     local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
     local LINES = file_content.contents
