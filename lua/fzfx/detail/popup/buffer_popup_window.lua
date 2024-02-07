@@ -920,7 +920,7 @@ function BufferPopupWindow:scroll_by(percent, up)
   end)
   local TOP_LINE = tables.tbl_get(view_context, "topline")
     or vim.fn.line("w0", self.previewer_winnr)
-  local BOTTOM_LINE = math.max(TOP_LINE + WIN_HEIGHT, LINES_COUNT)
+  local BOTTOM_LINE = math.min(TOP_LINE + WIN_HEIGHT, LINES_COUNT)
   local SHIFT_LINES = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
   if up then
     SHIFT_LINES = -SHIFT_LINES
@@ -929,7 +929,7 @@ function BufferPopupWindow:scroll_by(percent, up)
   local TARGET_LAST_LINENO = math.min(BOTTOM_LINE + SHIFT_LINES, LINES_COUNT)
 
   log.debug(
-    "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, first/last:%s/%s, target first/last:%s/%s",
+    "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom:%s/%s, target top/bottom:%s/%s",
     vim.inspect(percent),
     vim.inspect(up),
     vim.inspect(LINES_COUNT),
