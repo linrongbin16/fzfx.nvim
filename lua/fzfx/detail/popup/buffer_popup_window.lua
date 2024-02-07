@@ -607,9 +607,8 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
           return
         end
 
-        local target_top_line = last_content.previewer_result.lineno or 1
         self._saved_previewing_file_content_job = last_content
-        self._saved_previewing_file_content_context = { top_line = target_top_line }
+        local target_top_line = last_content.previewer_result.lineno or 1
         self:preview_file_contents(last_content, target_top_line)
       end, 20)
     end)
@@ -775,6 +774,7 @@ function BufferPopupWindow:render_file_contents(file_content, top_line, on_compl
           vim.api.nvim_win_call(self.previewer_winnr, function()
             vim.cmd(string.format([[call winrestview({'topline':%d})]], TOP_LINE))
           end)
+          self._saved_previewing_file_content_context = { top_line = TOP_LINE }
           do_complete(true)
           falsy_rendering()
         end
@@ -915,10 +915,7 @@ function BufferPopupWindow:scroll_by(percent, up)
   local LINES = file_content.contents
   local LINES_COUNT = #LINES
   local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
-  local view_context = vim.api.nvim_win_call(self.previewer_winnr, function()
-    return vim.cmd(string.format([[call winsaveview()]]))
-  end)
-  local TOP_LINE = tables.tbl_get(view_context, "topline")
+  local TOP_LINE = tables.tbl_get(self._saved_previewing_file_content_context, "top_line")
     or vim.fn.line("w0", self.previewer_winnr)
   local BOTTOM_LINE = math.min(TOP_LINE + WIN_HEIGHT, LINES_COUNT)
   local SHIFT_LINES = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
