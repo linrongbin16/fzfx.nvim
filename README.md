@@ -134,7 +134,7 @@ Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\W
 
 > [!IMPORTANT]
 >
-> Specify plugin version/tag (such as `v5.*`) to avoid break changes between major versions!
+> Specify plugin version/tag (e.g. `v5.*`) to avoid break changes between major versions!
 
 <details>
 <summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
