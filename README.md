@@ -62,7 +62,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 > [!IMPORTANT]
 >
-> Please always keep fzf updated to the latest version.
+> Please always keep fzf upgrade to the latest version.
 
 - neovim &ge; 0.7.
 - [fzf](https://github.com/junegunn/fzf).
