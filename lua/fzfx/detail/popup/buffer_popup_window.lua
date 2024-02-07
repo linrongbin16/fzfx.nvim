@@ -307,6 +307,7 @@ end
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @field _saved_previewing_file_content_job fzfx.BufferPopupWindowPreviewFileContentJob
+--- @field _saved_previewing_file_content_context {first_line:integer}
 --- @field _current_previewing_file_job_id integer?
 --- @field _rendering boolean
 --- @field _resizing boolean
@@ -606,11 +607,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         end
 
         self._saved_previewing_file_content_job = last_content
-        self:preview_file_contents(
-          last_content,
-          last_content.previewer_result.lineno or 1,
-          last_content.previewer_result.lineno or 1
-        )
+        self:preview_file_contents(last_content, last_content.previewer_result.lineno or 1)
       end, 20)
     end)
   end, 20)
@@ -618,10 +615,9 @@ end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
---- @param start_line integer
---- @param cursor_line integer
+--- @param top_line integer
 --- @param on_complete (fun(done:boolean):any)|nil
-function BufferPopupWindow:preview_file_contents(file_content, start_line, cursor_line, on_complete)
+function BufferPopupWindow:preview_file_contents(file_content, top_line, on_complete)
   local function do_complete(done)
     if type(on_complete) == "function" then
       on_complete(done)
@@ -681,15 +677,15 @@ function BufferPopupWindow:preview_file_contents(file_content, start_line, curso
         vim.defer_fn(set_win_title, 100)
       end
 
-      self:render_file_contents(file_content, start_line, on_complete)
+      self:render_file_contents(file_content, top_line, on_complete)
     end, 20)
   end, 20)
 end
 
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
---- @param start_line integer
+--- @param top_line integer
 --- @param on_complete (fun(done:boolean):any)|nil
-function BufferPopupWindow:render_file_contents(file_content, start_line, on_complete)
+function BufferPopupWindow:render_file_contents(file_content, top_line, on_complete)
   local function do_complete(done)
     if type(on_complete) == "function" then
       on_complete(done)
@@ -726,9 +722,9 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
     local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
-    local FIRST_LINE = start_line
-    local LAST_LINE = math.min(WIN_HEIGHT + FIRST_LINE, LINES_COUNT)
-    local line_index = FIRST_LINE
+    local TOP_LINE = top_line
+    local BOTTOM_LINE = math.min(WIN_HEIGHT + TOP_LINE, LINES_COUNT)
+    local line_index = TOP_LINE
     local line_step = 10
 
     local function set_buf_lines()
@@ -746,7 +742,7 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
 
         local buf_lines = {}
         for i = line_index, line_index + line_step do
-          if i <= LAST_LINE then
+          if i <= BOTTOM_LINE then
             table.insert(buf_lines, LINES[i])
           else
             break
@@ -754,27 +750,27 @@ function BufferPopupWindow:render_file_contents(file_content, start_line, on_com
         end
 
         log.debug(
-          "|BufferPopupWindow:render_file_contents - set_buf_lines| line_index:%s, set start:%s, end:%s, FIRST_LINE/LAST_LINE:%s/%s",
+          "|BufferPopupWindow:render_file_contents - set_buf_lines| line_index:%s, set start:%s, end:%s, TOP_LINE/BOTTOM_LINE:%s/%s",
           vim.inspect(line_index),
           vim.inspect(line_index - 1),
-          vim.inspect(math.min(line_index + line_step, LAST_LINE) - 1),
-          vim.inspect(FIRST_LINE),
-          vim.inspect(LAST_LINE)
+          vim.inspect(math.min(line_index + line_step, BOTTOM_LINE) - 1),
+          vim.inspect(TOP_LINE),
+          vim.inspect(BOTTOM_LINE)
         )
         vim.api.nvim_buf_set_lines(
           self.previewer_bufnr,
           line_index - 1,
-          math.min(line_index + line_step, LAST_LINE + 1) - 1,
+          math.min(line_index + line_step, BOTTOM_LINE + 1) - 1,
           false,
           buf_lines
         )
 
         line_index = line_index + line_step
-        if line_index <= LAST_LINE then
+        if line_index <= BOTTOM_LINE then
           set_buf_lines()
         else
           vim.api.nvim_win_call(self.previewer_winnr, function()
-            vim.cmd(string.format([[call winrestview({'topline':%d})]], FIRST_LINE))
+            vim.cmd(string.format([[call winrestview({'topline':%d})]], TOP_LINE))
           end)
           do_complete(true)
           falsy_rendering()
@@ -854,11 +850,7 @@ function BufferPopupWindow:show_preview()
   vim.schedule(function()
     if tables.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
-      self:preview_file_contents(
-        last_content,
-        last_content.previewer_result.lineno or 1,
-        last_content.previewer_result.lineno or 1
-      )
+      self:preview_file_contents(last_content, last_content.previewer_result.lineno or 1)
     end
   end)
 end
