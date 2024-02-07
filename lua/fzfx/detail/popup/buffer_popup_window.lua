@@ -968,34 +968,18 @@ function BufferPopupWindow:scroll_by(percent, up)
 end
 
 function BufferPopupWindow:preview_page_down()
-  if not self:previewer_is_valid() then
-    return
-  end
-
   self:scroll_by(100, false)
 end
 
 function BufferPopupWindow:preview_page_up()
-  if not self:previewer_is_valid() then
-    return
-  end
-
   self:scroll_by(100, true)
 end
 
 function BufferPopupWindow:preview_half_page_down()
-  if not self:previewer_is_valid() then
-    return
-  end
-
   self:scroll_by(50, false)
 end
 
 function BufferPopupWindow:preview_half_page_up()
-  if not self:previewer_is_valid() then
-    return
-  end
-
   self:scroll_by(50, true)
 end
 
