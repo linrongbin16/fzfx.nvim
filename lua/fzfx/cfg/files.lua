@@ -1,4 +1,5 @@
 local paths = require("fzfx.commons.paths")
+
 local constants = require("fzfx.lib.constants")
 local switches = require("fzfx.lib.switches")
 

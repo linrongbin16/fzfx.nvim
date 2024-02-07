@@ -1,9 +1,9 @@
-local consts = require("fzfx.lib.constants")
-local shells = require("fzfx.lib.shells")
 local paths = require("fzfx.commons.paths")
 local fileios = require("fzfx.commons.fileios")
 local strings = require("fzfx.commons.strings")
 
+local constants = require("fzfx.lib.constants")
+local shells = require("fzfx.lib.shells")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -89,8 +89,8 @@ M._make_file_explorer_provider = function(ls_args)
   --- @return string?
   local function impl(query, context)
     local cwd = fileios.readfile(context.cwd)
-    if consts.HAS_LSD then
-      return consts.HAS_ECHO
+    if constants.HAS_LSD then
+      return constants.HAS_ECHO
           and string.format(
             "echo %s && lsd %s --color=always --header -- %s",
             shells.shellescape(cwd --[[@as string]]),
@@ -102,26 +102,26 @@ M._make_file_explorer_provider = function(ls_args)
           ls_args,
           shells.shellescape(cwd --[[@as string]])
         )
-    elseif consts.HAS_EZA then
+    elseif constants.HAS_EZA then
       if strings.endswith(ls_args, "a") then
         ls_args = ls_args .. "a"
       end
-      return consts.HAS_ECHO
+      return constants.HAS_ECHO
           and string.format(
             "echo %s && %s --color=always %s -- %s",
             shells.shellescape(cwd --[[@as string]]),
-            consts.EZA,
+            constants.EZA,
             ls_args,
             shells.shellescape(cwd --[[@as string]])
           )
         or string.format(
           "%s --color=always %s -- %s",
-          consts.EZA,
+          constants.EZA,
           ls_args,
           shells.shellescape(cwd --[[@as string]])
         )
-    elseif consts.HAS_LS then
-      return consts.HAS_ECHO
+    elseif constants.HAS_LS then
+      return constants.HAS_ECHO
           and string.format(
             "echo %s && ls --color=always %s %s",
             shells.shellescape(cwd --[[@as string]]),
@@ -158,7 +158,7 @@ M.providers = {
 --- @param filename string
 --- @return string[]|nil
 M._directory_previewer = function(filename)
-  if consts.HAS_LSD then
+  if constants.HAS_LSD then
     return {
       "lsd",
       "--color=always",
@@ -167,9 +167,9 @@ M._directory_previewer = function(filename)
       "--",
       filename,
     }
-  elseif consts.HAS_EZA then
+  elseif constants.HAS_EZA then
     return {
-      consts.EZA,
+      constants.EZA,
       "--color=always",
       "-lha",
       "--",
@@ -187,9 +187,9 @@ end
 --- @param context fzfx.FileExplorerPipelineContext
 --- @return string[]|nil
 M._file_explorer_previewer = function(line, context)
-  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line, context)
+  local parsed = constants.HAS_LSD and parsers_helper.parse_lsd(line, context)
     or (
-      consts.HAS_EZA and parsers_helper.parse_eza(line, context)
+      constants.HAS_EZA and parsers_helper.parse_eza(line, context)
       or parsers_helper.parse_ls(line, context)
     )
   if vim.fn.filereadable(parsed.filename) > 0 then
@@ -201,8 +201,8 @@ M._file_explorer_previewer = function(line, context)
   end
 end
 
-local previewer_label = consts.HAS_LSD and labels_helper.label_lsd
-  or (consts.HAS_EZA and labels_helper.label_eza or labels_helper.label_ls)
+local previewer_label = constants.HAS_LSD and labels_helper.label_lsd
+  or (constants.HAS_EZA and labels_helper.label_eza or labels_helper.label_ls)
 
 M.previewers = {
   filter_hidden = {
@@ -220,9 +220,9 @@ M.previewers = {
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 M._cd_file_explorer = function(line, context)
-  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line, context)
+  local parsed = constants.HAS_LSD and parsers_helper.parse_lsd(line, context)
     or (
-      consts.HAS_EZA and parsers_helper.parse_eza(line, context)
+      constants.HAS_EZA and parsers_helper.parse_eza(line, context)
       or parsers_helper.parse_ls(line, context)
     )
   if vim.fn.isdirectory(parsed.filename) > 0 then
@@ -240,7 +240,7 @@ M._upper_file_explorer = function(line, context)
   log.debug("|_upper_file_explorer| target:%s", vim.inspect(target))
   -- Windows root folder: `C:\`
   -- Unix/linux root folder: `/`
-  local root_len = consts.IS_WINDOWS and 3 or 1
+  local root_len = constants.IS_WINDOWS and 3 or 1
   if vim.fn.isdirectory(target) > 0 and string.len(target) > root_len then
     fileios.writefile(context.cwd, target)
   end
@@ -270,10 +270,10 @@ M.fzf_opts = {
   { "--prompt", paths.shorten() .. " > " },
   function()
     local n = 0
-    if consts.HAS_ECHO then
+    if constants.HAS_ECHO then
       n = n + 1
     end
-    if consts.HAS_LSD or consts.HAS_EZA or consts.HAS_LS then
+    if constants.HAS_LSD or constants.HAS_EZA or constants.HAS_LS then
       n = n + 1
     end
     return n > 0 and string.format("--header-lines=%d", n) or nil
