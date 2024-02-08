@@ -1271,7 +1271,7 @@ vim.g.fzfx_disable_buffer_previewer=1 -- or true
 
 ### Create Your Own Command
 
-Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
+Here's a minimal example that implement the `ls -1` like `FzfxLs` command:
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/c704e5b2-d82a-45f2-8920-adeec5d3e7c2
 
