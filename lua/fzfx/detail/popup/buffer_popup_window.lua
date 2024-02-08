@@ -327,7 +327,6 @@ local function _set_default_previewer_win_options(winnr)
   apis.set_win_option(winnr, "number", true)
   apis.set_win_option(winnr, "spell", false)
   apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
-  apis.set_win_option(winnr, "wrap", false)
   -- apis.set_win_option(winnr, "scrolloff", 0)
   -- apis.set_win_option(winnr, "sidescrolloff", 0)
   apis.set_win_option(winnr, "foldenable", false)
@@ -338,7 +337,6 @@ local function _set_default_provider_win_options(winnr)
   apis.set_win_option(winnr, "spell", false)
   apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
   apis.set_win_option(winnr, "colorcolumn", "")
-  apis.set_win_option(winnr, "wrap", false)
   -- apis.set_win_option(winnr, "scrolloff", 0)
   -- apis.set_win_option(winnr, "sidescrolloff", 0)
   apis.set_win_option(winnr, "foldenable", false)
@@ -354,10 +352,12 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
 
   --- @type integer
   local provider_bufnr = vim.api.nvim_create_buf(false, true)
+  log.ensure(provider_bufnr > 0, "failed to create provider buf")
   _set_default_buf_options(provider_bufnr)
 
   --- @type integer
   local previewer_bufnr = vim.api.nvim_create_buf(false, true)
+  log.ensure(previewer_bufnr > 0, "failed to create previewer buf")
   _set_default_buf_options(previewer_bufnr)
 
   local provider_win_confs = M.make_provider_opts(win_opts, buffer_previewer_opts)
@@ -365,9 +365,11 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   previewer_win_confs.focusable = false
 
   local previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
+  log.ensure(previewer_winnr > 0, "failed to create previewer win")
   _set_default_previewer_win_options(previewer_winnr)
 
   local provider_winnr = vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs)
+  log.ensure(provider_winnr > 0, "failed to create provider win")
   _set_default_provider_win_options(provider_winnr)
 
   -- set cursor at provider window
@@ -631,7 +633,8 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
     return
   end
 
-  pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, file_content.previewer_result.filename)
+  local file_type = vim.filetype.match({ filename = file_content.previewer_result.filename }) or ""
+  apis.set_buf_option(self.previewer_bufnr, "filetype", file_type)
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
@@ -643,9 +646,9 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
       return
     end
 
-    vim.api.nvim_buf_call(self.previewer_bufnr, function()
-      vim.api.nvim_command([[filetype detect]])
-    end)
+    -- vim.api.nvim_buf_call(self.previewer_bufnr, function()
+    --   vim.api.nvim_command([[filetype detect]])
+    -- end)
 
     vim.defer_fn(function()
       if not self:previewer_is_valid() then
@@ -754,21 +757,17 @@ function BufferPopupWindow:render_file_contents(file_content, top_line, on_compl
           end
         end
 
+        local set_start = line_index - 1
+        local set_end = math.min(line_index + line_step, BOTTOM_LINE + 1) - 1
         log.debug(
           "|BufferPopupWindow:render_file_contents - set_buf_lines| line_index:%s, set start:%s, end:%s, TOP_LINE/BOTTOM_LINE:%s/%s",
           vim.inspect(line_index),
-          vim.inspect(line_index - 1),
-          vim.inspect(math.min(line_index + line_step, BOTTOM_LINE) - 1),
+          vim.inspect(set_start),
+          vim.inspect(set_end),
           vim.inspect(TOP_LINE),
           vim.inspect(BOTTOM_LINE)
         )
-        vim.api.nvim_buf_set_lines(
-          self.previewer_bufnr,
-          line_index - 1,
-          math.min(line_index + line_step, BOTTOM_LINE + 1) - 1,
-          false,
-          buf_lines
-        )
+        vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_start, set_end, false, buf_lines)
 
         line_index = line_index + line_step
         if line_index <= BOTTOM_LINE then
@@ -968,34 +967,18 @@ function BufferPopupWindow:scroll_by(percent, up)
 end
 
 function BufferPopupWindow:preview_page_down()
-  if not self:previewer_is_valid() then
-    return
-  end
-
   self:scroll_by(100, false)
 end
 
 function BufferPopupWindow:preview_page_up()
-  if not self:previewer_is_valid() then
-    return
-  end
-
   self:scroll_by(100, true)
 end
 
 function BufferPopupWindow:preview_half_page_down()
-  if not self:previewer_is_valid() then
-    return
-  end
-
   self:scroll_by(50, false)
 end
 
 function BufferPopupWindow:preview_half_page_up()
-  if not self:previewer_is_valid() then
-    return
-  end
-
   self:scroll_by(50, true)
 end
 

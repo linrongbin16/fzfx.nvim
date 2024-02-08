@@ -1,6 +1,6 @@
 local tables = require("fzfx.commons.tables")
 
-local consts = require("fzfx.lib.constants")
+local constants = require("fzfx.lib.constants")
 local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")

@@ -397,14 +397,14 @@ end
 -- { "rounded", { "╭", "─", "╮", "│", "╯", "─", "╰", "│" }, false },
 -- { "solid", { " ", " ", " ", " ", " ", " ", " ", " " }, false },
 local FZF_BORDER_OPTS_MAP = {
-  ["rounded"] = "rounded",
-  ["border-rounded"] = "rounded",
+  ["rounded"] = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+  ["border-rounded"] = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
 
-  ["sharp"] = "single",
-  ["border-sharp"] = "single",
+  ["sharp"] = { "┌", "─", "┐", "│", "┘", "─", "└", "│" },
+  ["border-sharp"] = { "┌", "─", "┐", "│", "┘", "─", "└", "│" },
 
-  ["double"] = "double",
-  ["border-double"] = "double",
+  ["double"] = { "╔", "═", "╗", "║", "╝", "═", "╚", "║" },
+  ["border-double"] = { "╔", "═", "╗", "║", "╝", "═", "╚", "║" },
 
   ["bold"] = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },
   ["border-bold"] = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },

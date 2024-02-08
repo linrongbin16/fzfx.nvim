@@ -1,4 +1,4 @@
-local consts = require("fzfx.lib.constants")
+local constants = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
@@ -61,7 +61,7 @@ M._git_blame_provider = function(query, context)
   end
   local bufname = vim.api.nvim_buf_get_name(context.bufnr)
   local bufpath = vim.fn.fnamemodify(bufname, ":~:.")
-  if consts.HAS_DELTA then
+  if constants.HAS_DELTA then
     return string.format(
       [[git blame %s | delta -n --tabs 4 --blame-format %s]],
       shells.shellescape(bufpath --[[@as string]]),

@@ -115,7 +115,7 @@ end
 if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
   --- @type string
   local cmd = fileios.readfile(resultfile, { trim = true }) --[[@as string]]
-  shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
+  -- shell_helpers.log_debug("plain/command cmd:%s", vim.inspect(cmd))
   if strings.empty(cmd) then
     os.exit(0)
     return
@@ -131,7 +131,7 @@ if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
   p:close()
 elseif metaopts.provider_type == "plain_list" or metaopts.provider_type == "command_list" then
   local cmd = fileios.readfile(resultfile, { trim = true }) --[[@as string]]
-  shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
+  -- shell_helpers.log_debug("plain_list/command_list cmd:%s", vim.inspect(cmd))
   if strings.empty(cmd) then
     os.exit(0)
     return
