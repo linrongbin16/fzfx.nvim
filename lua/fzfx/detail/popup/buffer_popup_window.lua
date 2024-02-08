@@ -59,7 +59,7 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
     else
       width = math.max(width - fzf_preview_window_opts.size, 1)
     end
-    additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign + sign
+    additional_col_offset = (math.abs(old_width - width) / 2) * sign + sign
   elseif fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down" then
     local old_height = height
     local sign = fzf_preview_window_opts.position == "down" and -1 or 1
@@ -68,7 +68,7 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
     else
       height = math.max(height - fzf_preview_window_opts.size, 1)
     end
-    additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign + sign
+    additional_row_offset = (math.abs(old_height - height) / 2) * sign + sign
   end
   -- log.debug(
   --   "|_make_provider_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
@@ -92,8 +92,11 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
     "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
     vim.inspect(opts)
   )
-  local row = popup_helpers.shift_window_pos(total_height, height, opts.row, additional_row_offset)
-  local col = popup_helpers.shift_window_pos(total_width, width, opts.col, additional_col_offset)
+  local row = math.floor(
+    popup_helpers.shift_window_pos(total_height, height, opts.row, additional_row_offset)
+  )
+  local col =
+    math.floor(popup_helpers.shift_window_pos(total_width, width, opts.col, additional_col_offset))
 
   local result = {
     anchor = "NW",
@@ -181,7 +184,7 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     else
       width = fzf_preview_window_opts.size
     end
-    additional_col_offset = math.floor(math.abs(old_width - width) / 2) * sign + sign
+    additional_col_offset = (math.abs(old_width - width) / 2) * sign + sign
   elseif fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down" then
     local old_height = height
     local sign = fzf_preview_window_opts.position == "up" and -1 or 1
@@ -190,7 +193,7 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     else
       height = fzf_preview_window_opts.size
     end
-    additional_row_offset = math.floor(math.abs(old_height - height) / 2) * sign + sign
+    additional_row_offset = (math.abs(old_height - height) / 2) * sign + sign
   end
   -- log.debug(
   --   "|_make_previewer_center_opts| opts:%s, fzf_preview_window_opts:%s, height:%s(%s), width:%s(%s), additional_row_offset:%s, additional_col_offset:%s",
@@ -214,8 +217,11 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
     vim.inspect(opts)
   )
-  local row = popup_helpers.shift_window_pos(total_height, height, opts.row, additional_row_offset)
-  local col = popup_helpers.shift_window_pos(total_width, width, opts.col, additional_col_offset)
+  local row = math.floor(
+    popup_helpers.shift_window_pos(total_height, height, opts.row, additional_row_offset)
+  )
+  local col =
+    math.floor(popup_helpers.shift_window_pos(total_width, width, opts.col, additional_col_offset))
 
   local result = {
     anchor = "NW",

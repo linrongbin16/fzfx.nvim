@@ -126,12 +126,12 @@ end
 M.shift_window_pos = function(total_size, size, shift, additional_offset)
   additional_offset = additional_offset or 0
   local left_size = total_size - size
-  local half_left_size = math.floor(left_size * 0.5)
+  local half_left_size = left_size * 0.5
   if shift >= 0 then
-    local offset = shift < 1 and math.floor(left_size * shift) or shift
+    local offset = shift < 1 and (left_size * shift) or shift
     return numbers.bound(half_left_size + offset + additional_offset, 0, left_size)
   else
-    local offset = shift > -1 and math.floor(left_size * shift) or shift
+    local offset = shift > -1 and (left_size * shift) or shift
     return numbers.bound(half_left_size + offset + additional_offset, 0, left_size)
   end
 end
