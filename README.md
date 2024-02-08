@@ -1247,27 +1247,19 @@ For complete default options, please see [config.lua](https://github.com/linrong
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
-To globally enable/disable some features:
+To enable/disable some global features:
 
 - `fzfx_disable_buffer_previewer`: Disable nvim buffer for previewing file contents, use fzf builtin preview window with `bat`, which has the best performance.
 
-<details>
-<summary><i>Click here to see how to configure</i></summary>
-<br/>
-
 ```vim
 " vim scripts
-
 let g:fzfx_disable_buffer_previewer=1 " or v:true
 ```
 
 ```lua
 -- lua scripts
-
 vim.g.fzfx_disable_buffer_previewer=1 -- or true
 ```
-
-</details>
 
 ### Create Your Own Command
 
