@@ -118,9 +118,7 @@ scoop install curl          # curl
 scoop install grep          # grep
 ```
 
-> [!NOTE]
->
-> Install the rust rewritten [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), some GNU commands (for example `ls`) is actually broken on Windows 10 x86_64 PC.
+> Note: Install the rust rewritten [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), some GNU commands (for example `ls`) is actually broken on Windows 10 x86_64 PC.
 
 #### Fix conflicts between embedded commands in `C:\Windows\System32` and portable linux commands
 
@@ -1249,31 +1247,27 @@ For complete default options, please see [config.lua](https://github.com/linrong
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
-To globally enable/disable some features:
+To enable/disable some features, please define below global variables before setup this plugin:
 
-- `fzfx_disable_buffer_previewer`: Disable nvim buffer for previewing file contents, use fzf builtin preview window with `bat`, which has the best performance.
+- `g:fzfx_disable_buffer_previewer`: Disable nvim buffer for previewing file contents, use fzf builtin preview window via `bat` with best performance.
 
-<details>
-<summary><i>Click here to see how to configure</i></summary>
-<br/>
+   <details>
+   <summary><i>Click here to see how to configure</i></summary>
+  
+   ```vim
+   " vim scripts
+   let g:fzfx_disable_buffer_previewer=1 " or v:true
+   ```
 
-```vim
-" vim scripts
-
-let g:fzfx_disable_buffer_previewer=1 " or v:true
-```
-
-```lua
--- lua scripts
-
-vim.g.fzfx_disable_buffer_previewer=1 -- or true
-```
-
-</details>
+   ```lua
+   -- lua scripts
+   vim.g.fzfx_disable_buffer_previewer=1 -- or true
+   ```
+   </details>
 
 ### Create Your Own Command
 
-Here's a minimal commands group example that implement the `ls -1` like command `FzfxLs`:
+Here's a minimal example that implement the `ls -1` like `FzfxLs` command:
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/c704e5b2-d82a-45f2-8920-adeec5d3e7c2
 
