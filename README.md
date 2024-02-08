@@ -118,9 +118,7 @@ scoop install curl          # curl
 scoop install grep          # grep
 ```
 
-> [!NOTE]
->
-> Install the rust rewritten [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), some GNU commands (for example `ls`) is actually broken on Windows 10 x86_64 PC.
+> Note: Install the rust rewritten [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), some GNU commands (for example `ls`) is actually broken on Windows 10 x86_64 PC.
 
 #### Fix conflicts between embedded commands in `C:\Windows\System32` and portable linux commands
 
