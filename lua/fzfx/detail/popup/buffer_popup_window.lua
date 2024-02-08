@@ -617,10 +617,6 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
   end, 20)
 end
 
-local FIX_FILE_TYPE_MAP = {
-  md = "markdown",
-}
-
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
 --- @param top_line integer
