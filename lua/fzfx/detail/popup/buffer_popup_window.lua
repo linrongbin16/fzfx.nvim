@@ -142,8 +142,8 @@ M._make_provider_center_opts_with_hidden_previewer = function(opts, buffer_previ
     "buffer provider window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
     vim.inspect(opts)
   )
-  local row = popup_helpers.shift_window_pos(total_height, height, opts.row)
-  local col = popup_helpers.shift_window_pos(total_width, width, opts.col)
+  local row = math.floor(popup_helpers.shift_window_pos(total_height, height, opts.row))
+  local col = math.floor(popup_helpers.shift_window_pos(total_width, width, opts.col))
 
   local result = {
     anchor = "NW",
