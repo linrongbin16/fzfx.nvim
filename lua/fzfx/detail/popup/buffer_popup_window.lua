@@ -637,10 +637,8 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
     return
   end
 
-  -- pcall(vim.api.nvim_buf_set_name, self.previewer_bufnr, file_content.previewer_result.filename)
-  local file_ext = vim.fn.fnamemodify(file_content.previewer_result.filename, ":e")
-  file_ext = FIX_FILE_TYPE_MAP[file_ext] and FIX_FILE_TYPE_MAP[file_ext] or file_ext
-  apis.set_buf_option(self.previewer_bufnr, "filetype", file_ext)
+  local file_type = vim.filetype.match({ filename = file_content.previewer_result.filename }) or ""
+  apis.set_buf_option(self.previewer_bufnr, "filetype", file_type)
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
