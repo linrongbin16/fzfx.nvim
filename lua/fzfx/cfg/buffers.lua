@@ -5,6 +5,7 @@ local paths = require("fzfx.commons.paths")
 local constants = require("fzfx.lib.constants")
 local bufs = require("fzfx.lib.bufs")
 local switches = require("fzfx.lib.switches")
+local log = require("fzfx.lib.log")
 
 local parsers_helper = require("fzfx.helper.parsers")
 local actions_helper = require("fzfx.helper.actions")
@@ -121,11 +122,17 @@ M._delete_buffer = function(line)
   local filenames = {}
   for _, bufnr in ipairs(bufnrs) do
     local bufpath = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
+    bufpath = paths.normalize(bufpath, { double_backslash = true, expand = true })
     filenames[bufpath] = bufnr
   end
   if strings.not_empty(line) then
     local parsed = parsers_helper.parse_find(line)
     local bufnr = filenames[parsed.filename]
+    -- log.debug(
+    --   "|_delete_buffer| parsed:%s, filenames:%s",
+    --   vim.inspect(parsed.filename),
+    --   vim.inspect(filenames)
+    -- )
     if type(bufnr) == "number" and bufs.buf_is_valid(bufnr) then
       vim.api.nvim_buf_delete(bufnr, {})
     end
