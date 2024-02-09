@@ -612,9 +612,9 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         self._saved_previewing_file_content_job = last_content
         local target_top_line = last_content.previewer_result.lineno or 1
         self:preview_file_contents(last_content, target_top_line)
-      end, 20)
+      end, 10)
     end)
-  end, 20)
+  end, 10)
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
@@ -650,40 +650,29 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
     --   vim.api.nvim_command([[filetype detect]])
     -- end)
 
-    vim.defer_fn(function()
+    vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
+
+    local function set_win_title()
       if not self:previewer_is_valid() then
-        do_complete(false)
         return
       end
       if not self:is_last_previewing_file_job_id(file_content.job_id) then
-        do_complete(false)
         return
       end
 
-      vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
+      local title_opts = {
+        title = file_content.previewer_label_result,
+        title_pos = "center",
+      }
+      vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
+      apis.set_win_option(self.previewer_winnr, "number", true)
+    end
 
-      local function set_win_title()
-        if not self:previewer_is_valid() then
-          return
-        end
-        if not self:is_last_previewing_file_job_id(file_content.job_id) then
-          return
-        end
+    if strings.not_empty(file_content.previewer_label_result) then
+      vim.defer_fn(set_win_title, 100)
+    end
 
-        local title_opts = {
-          title = file_content.previewer_label_result,
-          title_pos = "center",
-        }
-        vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
-        apis.set_win_option(self.previewer_winnr, "number", true)
-      end
-
-      if strings.not_empty(file_content.previewer_label_result) then
-        vim.defer_fn(set_win_title, 100)
-      end
-
-      self:render_file_contents(file_content, top_line, on_complete)
-    end, 20)
+    self:render_file_contents(file_content, top_line, on_complete)
   end, 20)
 end
 
