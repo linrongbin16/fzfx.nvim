@@ -60,10 +60,6 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 ## ✅ Requirements
 
-> [!IMPORTANT]
->
-> Always keep fzf upgrade to the latest version, you could do that by installing as a nvim plugin (see [Install](#-install)).
-
 - neovim &ge; 0.7.
 - [fzf](https://github.com/junegunn/fzf).
 - [nerd fonts](https://www.nerdfonts.com/) (optional for icons).
@@ -1253,16 +1249,17 @@ To enable/disable some features, please define below global variables before set
 
    <details>
    <summary><i>Click here to see how to configure</i></summary>
-  
-   ```vim
-   " vim scripts
-   let g:fzfx_disable_buffer_previewer=1 " or v:true
-   ```
 
-   ```lua
-   -- lua scripts
-   vim.g.fzfx_disable_buffer_previewer=1 -- or true
-   ```
+  ```vim
+  " vim scripts
+  let g:fzfx_disable_buffer_previewer=1 " or v:true
+  ```
+
+  ```lua
+  -- lua scripts
+  vim.g.fzfx_disable_buffer_previewer=1 -- or true
+  ```
+
    </details>
 
 ### Create Your Own Command
