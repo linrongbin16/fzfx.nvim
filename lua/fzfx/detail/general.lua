@@ -1263,10 +1263,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       local action = interaction_opts.interaction
 
       local function interaction_rpc(line_params)
-        -- log.debug(
-        --   "|general.interaction_rpc| line_params:%s",
-        --   vim.inspect(line_params)
-        -- )
+        -- log.debug("|general.interaction_rpc| line_params:%s", vim.inspect(line_params))
         action(line_params, context)
       end
 
