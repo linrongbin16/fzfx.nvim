@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.4.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.4.0...v5.4.1) (2024-02-09)
+
+
+### Bug Fixes
+
+* **buffers:** fix 'ctrl-d' interactions in Windows ([#600](https://github.com/linrongbin16/fzfx.nvim/issues/600)) ([dc33749](https://github.com/linrongbin16/fzfx.nvim/commit/dc33749b8cd2ee6c5f69dc59722ff80b43baa3e7))
+
+
+### Performance Improvements
+
+* **previewer:** reduce buffer previewer latency ([#598](https://github.com/linrongbin16/fzfx.nvim/issues/598)) ([603d0a5](https://github.com/linrongbin16/fzfx.nvim/commit/603d0a5daed443bbd4dba1190d7523c7b71145aa))
+
 ## [5.4.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.3.0...v5.4.0) (2024-02-08)
 
 
