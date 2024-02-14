@@ -20,7 +20,7 @@ describe("helper.previewers", function()
   local previewers = require("fzfx.helper.previewers")
   local conf = require("fzfx.config")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
-  conf.setup()
+  require("fzfx").setup()
 
   describe("[_bat_style_theme]", function()
     if constants.HAS_BAT then
