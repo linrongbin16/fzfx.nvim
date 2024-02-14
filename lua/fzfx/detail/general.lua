@@ -327,7 +327,7 @@ end
 --- @field previewer_labels_queue string[]
 --- @field metafile string
 --- @field resultfile string
---- @field fzf_port_cached_reader commons.CachedFileReader
+--- @field fzf_port_reader commons.CachedFileReader
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -364,7 +364,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
     previewer_labels_queue = {},
     metafile = _previewer_metafile(),
     resultfile = _previewer_resultfile(),
-    fzf_port_cached_reader = fileios.CachedFileReader:open(fzf_port_file),
+    fzf_port_reader = fileios.CachedFileReader:open(fzf_port_file),
   }
   setmetatable(o, self)
   self.__index = self
@@ -600,7 +600,7 @@ function PreviewerSwitch:_preview_label(line, context)
       if type(last_label) ~= "string" then
         return
       end
-      local fzf_port = self.fzf_port_cached_reader:read({ trim = true })
+      local fzf_port = self.fzf_port_reader:read({ trim = true }) --[[@as string]]
       if strings.not_empty(fzf_port) then
         _send_http_post(fzf_port, string.format("change-preview-label(%s)", vim.trim(last_label)))
       end
