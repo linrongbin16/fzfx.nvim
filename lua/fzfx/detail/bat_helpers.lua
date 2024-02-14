@@ -918,19 +918,18 @@ M.setup = function()
     return
   end
 
-  local color = vim.g.colors_name
-  if strings.not_empty(color) then
-    M._build_theme(color)
+  if strings.not_empty(vim.g.colors_name) then
+    M._build_theme(vim.g.colors_name)
   end
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
-      vim.defer_fn(function()
-        log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
-        if strings.not_empty(tables.tbl_get(event, "match")) then
-          M._build_theme(event.match)
+      log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
+      vim.schedule(function()
+        if strings.not_empty(vim.g.colors_name) then
+          M._build_theme(vim.g.colors_name)
         end
-      end, 10)
+      end)
     end,
   })
 
