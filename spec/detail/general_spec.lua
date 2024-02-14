@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
 describe("detail.general", function()
@@ -355,7 +354,7 @@ describe("detail.general", function()
       assert_eq(type(ps.previewer_configs.default.previewer), "function")
       assert_eq(ps.previewer_configs.default.previewer(), "ls -1")
       assert_eq(ps.previewer_configs.default.previewer_type, "command")
-      assert_eq(ps.fzf_port_file, FZFPORTFILE)
+      assert_eq(ps.fzf_port_reader.filename, FZFPORTFILE)
       assert_eq(ps:switch("default"), nil)
     end)
     it("creates multiple command previewer", function()

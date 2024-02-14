@@ -8,7 +8,7 @@ local spawn = require("fzfx.commons.spawn")
 local uv = require("fzfx.commons.uv")
 local numbers = require("fzfx.commons.numbers")
 
-local consts = require("fzfx.lib.constants")
+local constants = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
 local shells = require("fzfx.lib.shells")
@@ -327,8 +327,7 @@ end
 --- @field previewer_labels_queue string[]
 --- @field metafile string
 --- @field resultfile string
---- @field fzf_port_file string
---- @field fzf_port string
+--- @field fzf_port_reader commons.CachedFileReader
 local PreviewerSwitch = {}
 
 --- @param name string
@@ -365,7 +364,7 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
     previewer_labels_queue = {},
     metafile = _previewer_metafile(),
     resultfile = _previewer_resultfile(),
-    fzf_port_file = fzf_port_file,
+    fzf_port_reader = fileios.CachedFileReader:open(fzf_port_file),
   }
   setmetatable(o, self)
   self.__index = self
@@ -567,7 +566,7 @@ function PreviewerSwitch:_preview_label(line, context)
     vim.inspect(previewer_config)
   )
 
-  if not consts.HAS_CURL then
+  if not constants.HAS_CURL then
     return
   end
   if
@@ -601,13 +600,9 @@ function PreviewerSwitch:_preview_label(line, context)
       if type(last_label) ~= "string" then
         return
       end
-      self.fzf_port = strings.not_empty(self.fzf_port) and self.fzf_port
-        or fileios.readfile(self.fzf_port_file, { trim = true }) --[[@as string]]
-      if strings.not_empty(self.fzf_port) then
-        _send_http_post(
-          self.fzf_port,
-          string.format("change-preview-label(%s)", vim.trim(last_label))
-        )
+      local fzf_port = self.fzf_port_reader:read({ trim = true }) --[[@as string]]
+      if strings.not_empty(fzf_port) then
+        _send_http_post(fzf_port, string.format("change-preview-label(%s)", vim.trim(last_label)))
       end
     end, 200)
   end)
@@ -738,7 +733,7 @@ end
 --- @param action_file string
 --- @return string
 local function dump_action_command(action_name, action_file)
-  if consts.IS_WINDOWS then
+  if constants.IS_WINDOWS then
     return string.format("execute-silent(cmd.exe /C echo %s>%s)", action_name, action_file)
   else
     return string.format("execute-silent(echo %s>%s)", action_name, action_file)
@@ -1031,7 +1026,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   end
 
   local dump_fzf_port_command = nil
-  if consts.IS_WINDOWS then
+  if constants.IS_WINDOWS then
     dump_fzf_port_command = string.format("cmd.exe /C echo %%FZF_PORT%%>%s", fzf_port_file)
   else
     dump_fzf_port_command = string.format("echo $FZF_PORT>%s", fzf_port_file)
@@ -1087,7 +1082,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           if not popup or not popup:provider_is_valid() then
             return
           end
-          if consts.IS_WINDOWS then
+          if constants.IS_WINDOWS then
             if strings.startswith(actions_data, '"') then
               actions_data = string.sub(actions_data, 2)
             end
@@ -1114,10 +1109,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     -- listen fzf actions }
 
     -- query fzf status {
-    local function get_fzf_port()
-      return fileios.readfile(fzf_port_file, { trim = true })
-    end
-
+    local fzf_port_reader = fileios.CachedFileReader:open(fzf_port_file)
     local QUERY_FZF_CURRENT_STATUS_INTERVAL = 100
     buffer_previewer_query_fzf_status_start = true
 
@@ -1142,7 +1134,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "--parallel-immediate",
         "--noproxy",
         "*",
-        string.format("127.0.0.1:%s?limit=0", get_fzf_port()),
+        string.format(
+          "127.0.0.1:%s?limit=0",
+          constants.IS_WINDOWS and fileios.readfile(fzf_port_file, { trim = true }) --[[@as string]]
+            or fzf_port_reader:read({ trim = true }) --[[@as string]]
+        ),
       }, {
         text = true,
       }, function(completed)

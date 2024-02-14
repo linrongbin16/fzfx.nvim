@@ -123,15 +123,8 @@ end
 --- @return number
 M.random = function(m, n)
   local rand_result, rand_err = require("fzfx.commons.uv").random(4)
-  if rand_result == nil then
-    if m == nil and n == nil then
-      return math.random()
-    elseif m ~= nil and n == nil then
-      return math.random(m)
-    else
-      return math.random(m --[[@as integer]], n --[[@as integer]])
-    end
-  end
+  assert(rand_result ~= nil, rand_err)
+
   local bytes = {
     string.byte(rand_result --[[@as string]], 1, -1),
   }
