@@ -9,7 +9,6 @@ local versions = require("fzfx.commons.versions")
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 
-local colorschemes_helper = require("fzfx.helper.colorschemes")
 local bat_themes_helper = require("fzfx.helper.bat_themes")
 
 local M = {}
@@ -937,16 +936,15 @@ M.setup = function()
     vim.api.nvim_create_autocmd("LspTokenUpdate", {
       callback = function(event)
         log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
-        vim.defer_fn(function()
+        vim.schedule(function()
           if strings.not_empty(tables.tbl_get(event, "data", "token", "type")) then
             local lsp_type = string.format("@lsp.type.%s", event.data.token.type)
             local lsp_modifiers = tables.tbl_get(event, "data", "token", "modifiers") or {}
-            local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
-            if strings.not_empty(bufcolor) then
-              M._patch_theme(bufcolor, lsp_type, lsp_modifiers)
+            if strings.not_empty(vim.g.colors_name) then
+              M._patch_theme(vim.g.colors_name, lsp_type, lsp_modifiers)
             end
           end
-        end, 10)
+        end)
       end,
     })
   end
