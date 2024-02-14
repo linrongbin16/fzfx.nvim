@@ -327,8 +327,7 @@ end
 --- @field previewer_labels_queue string[]
 --- @field metafile string
 --- @field resultfile string
---- @field fzf_port_file string
---- @field fzf_port string
+--- @field fzf_port_cached_reader commons.CachedFileReader
 local PreviewerSwitch = {}
 
 --- @param name string
