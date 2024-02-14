@@ -926,7 +926,7 @@ M.setup = function()
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
       vim.defer_fn(function()
-        -- log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
+        log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
         if strings.not_empty(tables.tbl_get(event, "match")) then
           M._build_theme(event.match)
         end
@@ -937,7 +937,7 @@ M.setup = function()
   if versions.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
     vim.api.nvim_create_autocmd("LspTokenUpdate", {
       callback = function(event)
-        -- log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
+        log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
         vim.defer_fn(function()
           if strings.not_empty(tables.tbl_get(event, "data", "token", "type")) then
             local lsp_type = string.format("@lsp.type.%s", event.data.token.type)
