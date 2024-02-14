@@ -8,7 +8,7 @@ local spawn = require("fzfx.commons.spawn")
 local uv = require("fzfx.commons.uv")
 local numbers = require("fzfx.commons.numbers")
 
-local consts = require("fzfx.lib.constants")
+local constants = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
 local shells = require("fzfx.lib.shells")
@@ -566,7 +566,7 @@ function PreviewerSwitch:_preview_label(line, context)
     vim.inspect(previewer_config)
   )
 
-  if not consts.HAS_CURL then
+  if not constants.HAS_CURL then
     return
   end
   if
@@ -733,7 +733,7 @@ end
 --- @param action_file string
 --- @return string
 local function dump_action_command(action_name, action_file)
-  if consts.IS_WINDOWS then
+  if constants.IS_WINDOWS then
     return string.format("execute-silent(cmd.exe /C echo %s>%s)", action_name, action_file)
   else
     return string.format("execute-silent(echo %s>%s)", action_name, action_file)
@@ -1026,7 +1026,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   end
 
   local dump_fzf_port_command = nil
-  if consts.IS_WINDOWS then
+  if constants.IS_WINDOWS then
     dump_fzf_port_command = string.format("cmd.exe /C echo %%FZF_PORT%%>%s", fzf_port_file)
   else
     dump_fzf_port_command = string.format("echo $FZF_PORT>%s", fzf_port_file)
@@ -1082,7 +1082,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           if not popup or not popup:provider_is_valid() then
             return
           end
-          if consts.IS_WINDOWS then
+          if constants.IS_WINDOWS then
             if strings.startswith(actions_data, '"') then
               actions_data = string.sub(actions_data, 2)
             end
@@ -1136,7 +1136,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "*",
         string.format(
           "127.0.0.1:%s?limit=0",
-          fzf_port_reader:read({ trim = true }) --[[@as string]]
+          constants.IS_WINDOWS and fileios.readfile(fzf_port_file, { trim = true }) --[[@as string]]
+            or fzf_port_reader:read({ trim = true }) --[[@as string]]
         ),
       }, {
         text = true,
