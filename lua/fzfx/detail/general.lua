@@ -1109,10 +1109,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     -- listen fzf actions }
 
     -- query fzf status {
-    local function get_fzf_port()
-      return fileios.readfile(fzf_port_file, { trim = true })
-    end
-
+    local fzf_port_reader = fileios.CachedFileReader:open(fzf_port_file)
     local QUERY_FZF_CURRENT_STATUS_INTERVAL = 100
     buffer_previewer_query_fzf_status_start = true
 
@@ -1137,7 +1134,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "--parallel-immediate",
         "--noproxy",
         "*",
-        string.format("127.0.0.1:%s?limit=0", get_fzf_port()),
+        string.format(
+          "127.0.0.1:%s?limit=0",
+          fzf_port_reader:read({ trim = true }) --[[@as string]]
+        ),
       }, {
         text = true,
       }, function(completed)
