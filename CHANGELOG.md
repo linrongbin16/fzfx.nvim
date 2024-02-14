@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.4.2](https://github.com/linrongbin16/fzfx.nvim/compare/v5.4.1...v5.4.2) (2024-02-14)
+
+
+### Bug Fixes
+
+* **previewer:** cache fzf port & fix "Too many opened files" issue ([#604](https://github.com/linrongbin16/fzfx.nvim/issues/604)) ([13ff739](https://github.com/linrongbin16/fzfx.nvim/commit/13ff7391bf839772a464c141267ac5b0509d1b23))
+* **previewer:** fix bad colorscheme name in bat theme ([#606](https://github.com/linrongbin16/fzfx.nvim/issues/606)) ([1e187c8](https://github.com/linrongbin16/fzfx.nvim/commit/1e187c8cfe31948cb14346cc0195f5e225e98584))
+
 ## [5.4.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.4.0...v5.4.1) (2024-02-09)
 
 
