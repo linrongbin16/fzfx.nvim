@@ -9,7 +9,6 @@ local versions = require("fzfx.commons.versions")
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 
-local colorschemes_helper = require("fzfx.helper.colorschemes")
 local bat_themes_helper = require("fzfx.helper.bat_themes")
 
 local M = {}
@@ -816,6 +815,7 @@ M._build_theme = function(colorname)
   )
 
   local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
+  log.debug("|_build_theme| theme_config_file:%s", vim.inspect(theme_config_file))
   log.ensure(
     strings.not_empty(theme_config_file),
     "|_build_theme| failed to get bat theme config file from nvim colorscheme name:%s",
@@ -881,6 +881,7 @@ M._patch_theme = function(colorname, lsp_type, lsp_modifiers)
   end
 
   local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
+  log.debug("|_patch_theme| theme_config_file:%s", vim.inspect(theme_config_file))
   log.ensure(
     strings.not_empty(theme_config_file),
     "|_patch_theme| failed to get bat theme config file from nvim colorscheme name:%s",
@@ -916,36 +917,34 @@ M.setup = function()
     return
   end
 
-  local color = vim.g.colors_name
-  if strings.not_empty(color) then
-    M._build_theme(color)
+  if strings.not_empty(vim.g.colors_name) then
+    M._build_theme(vim.g.colors_name)
   end
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
-      vim.defer_fn(function()
-        -- log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
-        if strings.not_empty(tables.tbl_get(event, "match")) then
-          M._build_theme(event.match)
+      log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
+      vim.schedule(function()
+        if strings.not_empty(vim.g.colors_name) then
+          M._build_theme(vim.g.colors_name)
         end
-      end, 10)
+      end)
     end,
   })
 
   if versions.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
     vim.api.nvim_create_autocmd("LspTokenUpdate", {
       callback = function(event)
-        -- log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
-        vim.defer_fn(function()
+        log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
+        vim.schedule(function()
           if strings.not_empty(tables.tbl_get(event, "data", "token", "type")) then
             local lsp_type = string.format("@lsp.type.%s", event.data.token.type)
             local lsp_modifiers = tables.tbl_get(event, "data", "token", "modifiers") or {}
-            local bufcolor = colorschemes_helper.get_color_name() --[[@as string]]
-            if strings.not_empty(bufcolor) then
-              M._patch_theme(bufcolor, lsp_type, lsp_modifiers)
+            if strings.not_empty(vim.g.colors_name) then
+              M._patch_theme(vim.g.colors_name, lsp_type, lsp_modifiers)
             end
           end
-        end, 10)
+        end)
       end,
     })
   end
