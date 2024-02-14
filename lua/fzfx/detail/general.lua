@@ -1034,7 +1034,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   local fzf_start_binder = fzf_helpers.FzfOptEventBinder:new("start")
   fzf_start_binder:append(string.format("execute-silent(%s)", dump_fzf_port_command))
 
-  local fzf_port_reader = fileios.CachedFileReader:open(fzf_port_file)
   if use_buffer_previewer then
     -- listen fzf actions {
     fileios.writefile(buffer_previewer_actions_file, "")
@@ -1110,6 +1109,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     -- listen fzf actions }
 
     -- query fzf status {
+    local fzf_port_reader = fileios.CachedFileReader:open(fzf_port_file)
     local QUERY_FZF_CURRENT_STATUS_INTERVAL = 100
     buffer_previewer_query_fzf_status_start = true
 
