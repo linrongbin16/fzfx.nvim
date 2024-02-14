@@ -132,6 +132,11 @@ M.get_theme_config_file = function(colorname)
     "|get_theme_config_file| failed to get bat theme name from nvim colorscheme name:%s",
     vim.inspect(colorname)
   )
+  log.debug(
+    "|get_theme_config_file| theme_dir:%s, theme_name:%s",
+    vim.inspect(theme_dir),
+    vim.inspect(theme_name)
+  )
   return paths.join(theme_dir, theme_name .. ".tmTheme")
 end
 
