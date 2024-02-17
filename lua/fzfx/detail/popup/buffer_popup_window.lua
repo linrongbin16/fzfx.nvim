@@ -22,6 +22,8 @@ M._get_window_layout = function(win_opts, fzf_opts)
     or vim.api.nvim_win_get_width(0)
   local total_height = win_opts.relative == "editor" and vim.o.lines
     or vim.api.nvim_win_get_height(0)
+  local width = popup_helpers.get_window_size(win_opts.width, total_width)
+  local height = popup_helpers.get_window_size(win_opts.height, total_height)
 end
 
 -- cursor window {

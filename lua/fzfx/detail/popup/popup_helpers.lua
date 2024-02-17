@@ -114,7 +114,7 @@ M.ShellOptsContext = ShellOptsContext
 --- @param size integer
 --- @return integer
 M.get_window_size = function(value, size)
-  return numbers.bound(value > 1 and value or math.floor(size * value), 3, size)
+  return numbers.bound(value > 1 and value or math.floor(size * value), 1, size)
 end
 
 -- calculate window position shift by offset and (optional) additional_offset
