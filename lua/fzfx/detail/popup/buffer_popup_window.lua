@@ -16,8 +16,9 @@ local FLOAT_WIN_DEFAULT_ZINDEX = 60
 --- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
---- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}
-M._get_layout = function(win_opts)
+--- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
+--- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer},previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}}
+M._get_layout = function(win_opts, fzf_preview_window_opts)
   local total_width = win_opts.relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(0)
   local total_height = win_opts.relative == "editor" and vim.o.lines
@@ -65,14 +66,23 @@ M._get_layout = function(win_opts)
   local start_col = math.max(math.floor(center_col - (width / 2)), 0)
   local end_col = math.max(math.floor(center_col + (width / 2)), total_width - 1)
 
-  return {
-    height = height,
-    width = width,
-    start_row = start_row,
-    end_row = end_row,
-    start_col = start_col,
-    end_col = end_col,
-  }
+  local provider_layout = {}
+  local previewer_layout = {}
+  if fzf_preview_window_opts.position == "left" or fzf_preview_window_opts.position == "right" then
+    local sign = fzf_preview_window_opts.position == "right" and -1 or 1
+    if fzf_preview_window_opts.size_is_percent then
+      previewer_layout.width = math.floor(width - (width / 100 * fzf_preview_window_opts.size))
+    else
+      previewer_layout.width = math.max(width - fzf_preview_window_opts.size, 1)
+    end
+  elseif fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down" then
+    local sign = fzf_preview_window_opts.position == "down" and -1 or 1
+    if fzf_preview_window_opts.size_is_percent then
+      previewer_layout.height = math.floor(height - (height / 100 * fzf_preview_window_opts.size))
+    else
+      previewer_layout.height = math.max(height - fzf_preview_window_opts.size, 1)
+    end
+  end
 end
 
 -- cursor window {
