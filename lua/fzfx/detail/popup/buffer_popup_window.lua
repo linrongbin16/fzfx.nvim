@@ -16,9 +16,8 @@ local FLOAT_WIN_DEFAULT_ZINDEX = 60
 --- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
---- @param fzf_opts fzfx.FzfPreviewWindowOpts
---- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer},previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}}
-M._get_window_layout = function(win_opts, fzf_opts)
+--- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}
+M._get_layout = function(win_opts)
   local total_width = win_opts.relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(0)
   local total_height = win_opts.relative == "editor" and vim.o.lines
@@ -46,11 +45,6 @@ M._get_window_layout = function(win_opts, fzf_opts)
     vim.inspect(win_opts)
   )
 
-  local start_row
-  local end_row
-  local start_col
-  local end_col
-
   local center_row
   local center_col
   if win_opts.row >= -0.5 and win_opts.row <= 0.5 then
@@ -65,6 +59,11 @@ M._get_window_layout = function(win_opts, fzf_opts)
   else
     center_col = total_width * 0.5 + win_opts.col
   end
+
+  local start_row = math.max(math.floor(center_row - (height / 2)), 0)
+  local end_row = math.min(math.floor(center_row + (height / 2)), total_height - 1)
+  local start_col = math.max(math.floor(center_col - (width / 2)), 0)
+  local end_col = math.max(math.floor(center_col + (width / 2)), total_width - 1)
 end
 
 -- cursor window {
