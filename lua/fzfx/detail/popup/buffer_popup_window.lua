@@ -71,10 +71,11 @@ M._get_layout = function(win_opts, fzf_preview_window_opts)
   if fzf_preview_window_opts.position == "left" or fzf_preview_window_opts.position == "right" then
     local sign = fzf_preview_window_opts.position == "right" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
-      previewer_layout.width = math.floor(width - (width / 100 * fzf_preview_window_opts.size))
+      previewer_layout.width = math.floor(width - (width / 100 * fzf_preview_window_opts.size) - 1)
     else
-      previewer_layout.width = math.max(width - fzf_preview_window_opts.size, 1)
+      previewer_layout.width = math.max(width - fzf_preview_window_opts.size - 1, 1)
     end
+    provider_layout.width = math.max(width - previewer_layout.width - 2, 1)
   elseif fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down" then
     local sign = fzf_preview_window_opts.position == "down" and -1 or 1
     if fzf_preview_window_opts.size_is_percent then
