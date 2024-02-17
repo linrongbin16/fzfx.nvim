@@ -64,6 +64,15 @@ M._get_layout = function(win_opts)
   local end_row = math.min(math.floor(center_row + (height / 2)), total_height - 1)
   local start_col = math.max(math.floor(center_col - (width / 2)), 0)
   local end_col = math.max(math.floor(center_col + (width / 2)), total_width - 1)
+
+  return {
+    height = height,
+    width = width,
+    start_row = start_row,
+    end_row = end_row,
+    start_col = start_col,
+    end_col = end_col,
+  }
 end
 
 -- cursor window {
