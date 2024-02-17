@@ -1,5 +1,6 @@
 ---@diagnostic disable: missing-return
 local apis = require("fzfx.commons.apis")
+local numbers = require("fzfx.commons.numbers")
 local fileios = require("fzfx.commons.fileios")
 local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
@@ -16,14 +17,47 @@ local FLOAT_WIN_DEFAULT_ZINDEX = 60
 
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
 --- @param fzf_opts fzfx.FzfPreviewWindowOpts
---- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_column:integer,end_column:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_column:integer,end_column:integer},previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_column:integer,end_column:integer}}
+--- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer},previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}}
 M._get_window_layout = function(win_opts, fzf_opts)
   local total_width = win_opts.relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(0)
   local total_height = win_opts.relative == "editor" and vim.o.lines
     or vim.api.nvim_win_get_height(0)
-  local width = popup_helpers.get_window_size(win_opts.width, total_width)
-  local height = popup_helpers.get_window_size(win_opts.height, total_height)
+
+  local width = numbers.bound(
+    win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
+    1,
+    total_width
+  )
+  local height = numbers.bound(
+    win_opts.height > 1 and win_opts.height or math.floor(win_opts.height * total_height),
+    1,
+    total_height
+  )
+
+  log.ensure(
+    (win_opts.row >= -0.5 and win_opts.row <= 0.5) or win_opts.row <= -1 or win_opts.row >= 1,
+    "buffer provider window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+    vim.inspect(win_opts)
+  )
+  log.ensure(
+    (win_opts.col >= -0.5 and win_opts.col <= 0.5) or win_opts.col <= -1 or win_opts.col >= 1,
+    "buffer provider window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+    vim.inspect(win_opts)
+  )
+
+  local start_row
+  local end_row
+  local start_col
+  local end_col
+
+  local r
+  if win_opts.row >= -0.5 and win_opts.row <= 0.5 then
+    r = win_opts.row + 0.5
+    r = total_height * r
+  else
+    r = total_height * 0.5 + win_opts.row
+  end
 end
 
 -- cursor window {
