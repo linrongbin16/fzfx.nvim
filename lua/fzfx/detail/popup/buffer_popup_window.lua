@@ -1,5 +1,4 @@
 ---@diagnostic disable: missing-return
-local numbers = require("fzfx.commons.numbers")
 local apis = require("fzfx.commons.apis")
 local fileios = require("fzfx.commons.fileios")
 local tables = require("fzfx.commons.tables")
@@ -14,6 +13,16 @@ local M = {}
 local FLOAT_WIN_DEFAULT_ZINDEX = 60
 
 --- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
+
+--- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
+--- @param fzf_opts fzfx.FzfPreviewWindowOpts
+--- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_column:integer,end_column:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_column:integer,end_column:integer},previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_column:integer,end_column:integer}}
+M._get_window_layout = function(win_opts, fzf_opts)
+  local total_width = win_opts.relative == "editor" and vim.o.columns
+    or vim.api.nvim_win_get_width(0)
+  local total_height = win_opts.relative == "editor" and vim.o.lines
+    or vim.api.nvim_win_get_height(0)
+end
 
 -- cursor window {
 
