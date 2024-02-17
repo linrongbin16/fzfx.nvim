@@ -51,12 +51,19 @@ M._get_window_layout = function(win_opts, fzf_opts)
   local start_col
   local end_col
 
-  local r
+  local center_row
+  local center_col
   if win_opts.row >= -0.5 and win_opts.row <= 0.5 then
-    r = win_opts.row + 0.5
-    r = total_height * r
+    center_row = win_opts.row + 0.5
+    center_row = total_height * center_row
   else
-    r = total_height * 0.5 + win_opts.row
+    center_row = total_height * 0.5 + win_opts.row
+  end
+  if win_opts.col >= -0.5 and win_opts.col <= 0.5 then
+    center_col = win_opts.col + 0.5
+    center_col = total_width * center_col
+  else
+    center_col = total_width * 0.5 + win_opts.col
   end
 end
 
