@@ -188,10 +188,9 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
       or fzf_preview_window_opts.position == "right"
     then
       if fzf_preview_window_opts.size_is_percent then
-        previewer_layout.width =
-          math.floor(width - (width / 100 * fzf_preview_window_opts.size) - 1)
+        previewer_layout.width = math.floor((width / 100 * fzf_preview_window_opts.size) - 1)
       else
-        previewer_layout.width = math.max(width - fzf_preview_window_opts.size - 1, 1)
+        previewer_layout.width = math.max(fzf_preview_window_opts.size - 1, 1)
       end
       provider_layout.width = math.max(width - previewer_layout.width - 2, 1)
       provider_layout.height = height
@@ -228,10 +227,9 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
       and (fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down")
     then
       if fzf_preview_window_opts.size_is_percent then
-        previewer_layout.height =
-          math.floor(height - (height / 100 * fzf_preview_window_opts.size) - 1)
+        previewer_layout.height = math.floor((height / 100 * fzf_preview_window_opts.size) - 1)
       else
-        previewer_layout.height = math.max(height - fzf_preview_window_opts.size - 1, 1)
+        previewer_layout.height = math.max(fzf_preview_window_opts.size - 1, 1)
       end
       provider_layout.height = math.max(height - previewer_layout.height - 2, 1)
       provider_layout.width = width
