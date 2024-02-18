@@ -196,7 +196,7 @@ M.get_layout = function(win_opts, fzf_preview_window_opts)
   local start_row = math.max(math.floor(center_row - (height / 2)), 0)
   local end_row = math.min(math.floor(center_row + (height / 2)), total_height - 1)
   local start_col = math.max(math.floor(center_col - (width / 2)), 0)
-  local end_col = math.max(math.floor(center_col + (width / 2)), total_width - 1)
+  local end_col = math.min(math.floor(center_col + (width / 2)), total_width - 1)
 
   local result = {
     height = height,
