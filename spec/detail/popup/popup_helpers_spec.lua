@@ -141,7 +141,7 @@ describe("detail.popup.popup_helpers", function()
         row = 0,
         col = 0,
       }, { position = "left", size = 35, size_is_percent = true })
-      print(string.format("make_layout-1:%s\n", vim.inspect(actual)))
+      print(string.format("make_layout-4:%s\n", vim.inspect(actual)))
       local total_width = vim.o.columns
       local total_height = vim.o.lines
       local width = total_width * 0.85
@@ -172,18 +172,19 @@ describe("detail.popup.popup_helpers", function()
     it("test5 with fzf_preview_window_opts", function()
       local actual = popup_helpers.make_layout({
         relative = "win",
-        height = 0.75,
-        width = 0.85,
-        row = 0,
-        col = 0,
+        height = 1,
+        width = 1,
+        row = 1,
+        col = -2,
       }, { position = "up", size = 15 })
-      print(string.format("make_layout-1:%s\n", vim.inspect(actual)))
-      local total_width = vim.o.columns
-      local total_height = vim.o.lines
-      local width = total_width * 0.85
-      local height = total_height * 0.75
+      local total_height = vim.api.nvim_win_get_height(0)
+      local total_width = vim.api.nvim_win_get_width(0)
+      local width = total_width
+      local height = total_height
       local center_row = total_height / 2
       local center_col = total_width / 2
+      print(string.format("make_layout-5:%s\n", vim.inspect(actual)))
+
       assert_true(isclose(actual.width, width))
       assert_true(isclose(actual.height, height))
       assert_true(isclose(2 * (center_row - actual.start_row), height))
