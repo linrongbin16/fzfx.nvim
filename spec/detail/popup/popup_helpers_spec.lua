@@ -171,18 +171,18 @@ describe("detail.popup.popup_helpers", function()
     end)
     it("test5 with fzf_preview_window_opts", function()
       local actual = popup_helpers.make_layout({
-        relative = "win",
+        relative = "editor",
         height = 1,
         width = 1,
-        row = 1,
-        col = -2,
+        row = 0,
+        col = 0,
       }, { position = "up", size = 15 })
-      local total_height = vim.api.nvim_win_get_height(0)
-      local total_width = vim.api.nvim_win_get_width(0)
+      local total_height = vim.o.lines
+      local total_width = vim.o.columns
       local width = total_width
       local height = total_height
-      local center_row = total_height / 2 + 1
-      local center_col = total_width / 2 - 2
+      local center_row = total_height / 2
+      local center_col = total_width / 2
       print(
         string.format(
           "make_layout-5:%s, total(height/width):%s/%s,center(row/col):%s/%s\n",
@@ -201,19 +201,19 @@ describe("detail.popup.popup_helpers", function()
       assert_true(isclose(2 * (center_col - actual.start_col), width))
       assert_true(isclose(2 * (actual.end_col - center_col), width))
 
-      assert_true(isclose(actual.provider.width, width - 15))
-      assert_eq(actual.provider.height, height)
-      assert_eq(actual.provider.start_row, actual.start_row)
+      assert_true(isclose(actual.provider.height, height - 15 - 1))
+      assert_eq(actual.provider.width, width)
+      assert_eq(actual.provider.start_row, actual.start_row + actual.previewer.height + 1)
       assert_eq(actual.provider.end_row, actual.end_row)
-      assert_eq(actual.provider.start_col, actual.start_col + actual.previewer.width + 2)
+      assert_eq(actual.provider.start_col, actual.start_col)
       assert_eq(actual.provider.end_col, actual.end_col)
 
-      assert_true(isclose(actual.previewer.width, width * 0.35 - 1))
-      assert_eq(actual.previewer.height, height)
+      assert_true(isclose(actual.previewer.height, 15 - 1))
+      assert_eq(actual.previewer.width, width)
       assert_eq(actual.previewer.start_row, actual.start_row)
-      assert_eq(actual.previewer.end_row, actual.end_row)
+      assert_eq(actual.previewer.end_row, actual.start_row + actual.previewer.height)
       assert_eq(actual.previewer.start_col, actual.start_col)
-      assert_eq(actual.previewer.end_col, actual.start_col + actual.previewer.width)
+      assert_eq(actual.previewer.end_col, actual.end_col)
     end)
   end)
 end)
