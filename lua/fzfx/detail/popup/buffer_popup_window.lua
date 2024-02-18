@@ -16,7 +16,7 @@ local FLOAT_WIN_DEFAULT_ZINDEX = 60
 --- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
---- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts
+--- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
 --- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer},previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}}
 M._get_layout = function(win_opts, fzf_preview_window_opts)
   local total_width = win_opts.relative == "editor" and vim.o.columns
@@ -66,58 +66,79 @@ M._get_layout = function(win_opts, fzf_preview_window_opts)
   local start_col = math.max(math.floor(center_col - (width / 2)), 0)
   local end_col = math.max(math.floor(center_col + (width / 2)), total_width - 1)
 
-  local provider_layout = {}
-  local previewer_layout = {}
-  if fzf_preview_window_opts.position == "left" or fzf_preview_window_opts.position == "right" then
-    if fzf_preview_window_opts.size_is_percent then
-      previewer_layout.width = math.floor(width - (width / 100 * fzf_preview_window_opts.size) - 1)
-    else
-      previewer_layout.width = math.max(width - fzf_preview_window_opts.size - 1, 1)
-    end
-    provider_layout.width = math.max(width - previewer_layout.width - 2, 1)
+  local result = {
+    height = height,
+    width = width,
+    start_row = start_row,
+    end_row = end_row,
+    start_col = start_col,
+    end_col = end_col,
+  }
 
-    if fzf_preview_window_opts.position == "left" then
-      -- previewer | provider
-      previewer_layout.start_row = start_row
-      previewer_layout.end_row = start_row + previewer_layout.width
-      provider_layout.start_row = end_row - provider_layout.width
-      provider_layout.end_row = end_row
-    else
-      -- provider | previewer
-      provider_layout.start_row = start_row
-      provider_layout.end_row = start_row + provider_layout.width
-      previewer_layout.start_row = end_row - previewer_layout.width
-      previewer_layout.end_row = end_row
-    end
-    provider_layout.start_col = start_col
-    provider_layout.end_col = end_col
-    previewer_layout.start_col = start_col
-    previewer_layout.end_col = end_col
-  elseif fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down" then
-    if fzf_preview_window_opts.size_is_percent then
-      previewer_layout.height =
-        math.floor(height - (height / 100 * fzf_preview_window_opts.size) - 1)
-    else
-      previewer_layout.height = math.max(height - fzf_preview_window_opts.size - 1, 1)
-    end
-    provider_layout.height = math.max(height - previewer_layout.height - 2, 1)
+  if tables.tbl_not_empty(fzf_preview_window_opts) then
+    local provider_layout = {}
+    local previewer_layout = {}
+    if
+      fzf_preview_window_opts
+      and (
+        fzf_preview_window_opts.position == "left"
+        or fzf_preview_window_opts.position == "right"
+      )
+    then
+      if fzf_preview_window_opts.size_is_percent then
+        previewer_layout.width =
+          math.floor(width - (width / 100 * fzf_preview_window_opts.size) - 1)
+      else
+        previewer_layout.width = math.max(width - fzf_preview_window_opts.size - 1, 1)
+      end
+      provider_layout.width = math.max(width - previewer_layout.width - 2, 1)
 
-    if fzf_preview_window_opts.position == "up" then
-      -- previewer
-      -- ---
-      -- provider
-      previewer_layout.start_row = start_row
-      previewer_layout.end_row = start_row + previewer_layout.width
-      provider_layout.start_row = end_row - provider_layout.width
-      provider_layout.end_row = end_row
-    else
-      -- provider
-      -- ---
-      -- previewer
-      provider_layout.start_row = start_row
-      provider_layout.end_row = start_row + provider_layout.width
-      previewer_layout.start_row = end_row - previewer_layout.width
-      previewer_layout.end_row = end_row
+      if fzf_preview_window_opts.position == "left" then
+        -- previewer | provider
+        previewer_layout.start_row = start_row
+        previewer_layout.end_row = start_row + previewer_layout.width
+        provider_layout.start_row = end_row - provider_layout.width
+        provider_layout.end_row = end_row
+      else
+        -- provider | previewer
+        provider_layout.start_row = start_row
+        provider_layout.end_row = start_row + provider_layout.width
+        previewer_layout.start_row = end_row - previewer_layout.width
+        previewer_layout.end_row = end_row
+      end
+      provider_layout.start_col = start_col
+      provider_layout.end_col = end_col
+      previewer_layout.start_col = start_col
+      previewer_layout.end_col = end_col
+    elseif
+      fzf_preview_window_opts
+      and (fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down")
+    then
+      if fzf_preview_window_opts.size_is_percent then
+        previewer_layout.height =
+          math.floor(height - (height / 100 * fzf_preview_window_opts.size) - 1)
+      else
+        previewer_layout.height = math.max(height - fzf_preview_window_opts.size - 1, 1)
+      end
+      provider_layout.height = math.max(height - previewer_layout.height - 2, 1)
+
+      if fzf_preview_window_opts.position == "up" then
+        -- previewer
+        -- ---
+        -- provider
+        previewer_layout.start_row = start_row
+        previewer_layout.end_row = start_row + previewer_layout.width
+        provider_layout.start_row = end_row - provider_layout.width
+        provider_layout.end_row = end_row
+      else
+        -- provider
+        -- ---
+        -- previewer
+        provider_layout.start_row = start_row
+        provider_layout.end_row = start_row + provider_layout.width
+        previewer_layout.start_row = end_row - previewer_layout.width
+        previewer_layout.end_row = end_row
+      end
     end
   end
 end
