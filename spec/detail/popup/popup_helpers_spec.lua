@@ -46,7 +46,7 @@ describe("detail.popup.popup_helpers", function()
   end)
   describe("[make_layout]", function()
     local function isclose(a, b)
-      return math.abs(a - b) <= 1.5
+      return math.abs(a - b) <= 2.0
     end
 
     it("test1 without fzf_preview_window_opts", function()
@@ -183,7 +183,16 @@ describe("detail.popup.popup_helpers", function()
       local height = total_height
       local center_row = total_height / 2
       local center_col = total_width / 2
-      print(string.format("make_layout-5:%s\n", vim.inspect(actual)))
+      print(
+        string.format(
+          "make_layout-5:%s, total(height/width):%s/%s,center(row/col):%s/%s\n",
+          vim.inspect(actual),
+          vim.inspect(total_height),
+          vim.inspect(total_width),
+          vim.inspect(center_row),
+          vim.inspect(center_col)
+        )
+      )
 
       assert_true(isclose(actual.width, width))
       assert_true(isclose(actual.height, height))

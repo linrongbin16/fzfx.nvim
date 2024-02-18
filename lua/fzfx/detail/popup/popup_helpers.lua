@@ -236,9 +236,9 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
       -- the layout looks like
       --
       -- ----------
-      --    left
+      --    up
       -- ----------
-      --    right
+      --    down
       -- ----------
 
       if fzf_preview_window_opts.position == "up" then
