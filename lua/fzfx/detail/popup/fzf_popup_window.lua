@@ -58,11 +58,7 @@ M.make_opts = function(win_opts)
     "window relative (%s) must be editor/win/cursor",
     vim.inspect(opts)
   )
-  if opts.relative == "cursor" then
-    return M._make_cursor_opts(opts)
-  else
-    return M._make_center_opts(opts)
-  end
+  return opts.relative == "cursor" and M._make_cursor_opts(opts) or M._make_center_opts(opts)
 end
 
 -- FzfPopupWindow {
