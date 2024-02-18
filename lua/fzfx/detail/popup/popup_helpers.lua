@@ -151,7 +151,7 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
     center_col = total_width * 0.5 + win_opts.col
   end
   log.debug(
-    "|get_layout| win_opts:%s, center_row/center_col:%s/%s, height/width:%s/%s, total_height/total_width:%s/%s, start/end row:%s/%s, start/end col:%s/%s",
+    "|get_layout| win_opts:%s, center(row/col):%s/%s, height/width:%s/%s, total(height/width):%s/%s, row(start/end):%s/%s, col(start/end):%s/%s",
     vim.inspect(win_opts),
     vim.inspect(center_row),
     vim.inspect(center_col),
