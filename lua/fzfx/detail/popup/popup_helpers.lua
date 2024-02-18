@@ -235,11 +235,11 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
 
       -- the layout looks like
       --
-      -- ----------
+      -- ---------
       --    up
-      -- ----------
-      --    down
-      -- ----------
+      -- ---------
+      --   down
+      -- ---------
 
       if fzf_preview_window_opts.position == "up" then
         previewer_layout.start_row = start_row
