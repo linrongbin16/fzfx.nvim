@@ -59,7 +59,7 @@ describe("detail.popup.popup_helpers", function()
       assert_true(actual1.height <= math.ceil(vim.o.lines * 0.75))
       local center_row = vim.o.lines / 2
       local center_col = vim.o.columns / 2
-      assert_eq(center_row - actual1.start_row, )
+      -- assert_eq(center_row - actual1.start_row, )
     end)
     it("test with fzf_preview_window_opts", function() end)
   end)
