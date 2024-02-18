@@ -251,7 +251,7 @@ describe("detail.popup.popup_helpers", function()
       assert_true(isclose(2 * (actual.end_col - center_col), width, 3))
 
       if total_height > 20 then
-        assert_true(isclose(actual.provider.height, height - 15 - 1, 3))
+        assert_true(isclose(actual.provider.height, height - 15 - 1))
       end
       assert_true(isclose(actual.provider.width, width))
       assert_true(
