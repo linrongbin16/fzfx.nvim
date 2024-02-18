@@ -188,11 +188,12 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
       or fzf_preview_window_opts.position == "right"
     then
       if fzf_preview_window_opts.size_is_percent then
-        previewer_layout.width = math.floor((width / 100 * fzf_preview_window_opts.size) - 1)
+        previewer_layout.width =
+          numbers.bound(math.floor((width / 100 * fzf_preview_window_opts.size) - 1), 1, width)
       else
-        previewer_layout.width = math.max(fzf_preview_window_opts.size - 1, 1)
+        previewer_layout.width = numbers.bound(fzf_preview_window_opts.size - 1, 1, width)
       end
-      provider_layout.width = math.max(width - previewer_layout.width - 2, 1)
+      provider_layout.width = numbers.bound(width - previewer_layout.width - 2, 1, width)
       provider_layout.height = height
       previewer_layout.height = height
 
@@ -204,14 +205,14 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
 
       if fzf_preview_window_opts.position == "left" then
         previewer_layout.start_col = start_col
-        previewer_layout.end_col = start_col + previewer_layout.width
-        provider_layout.start_col = end_col - provider_layout.width
+        previewer_layout.end_col = numbers.bound(start_col + previewer_layout.width, 1, total_width)
+        provider_layout.start_col = numbers.bound(end_col - provider_layout.width, 1, total_width)
         provider_layout.end_col = end_col
       else
         -- | provider | previewer |
         provider_layout.start_col = start_col
-        provider_layout.end_col = start_col + provider_layout.width
-        previewer_layout.start_col = end_col - previewer_layout.width
+        provider_layout.end_col = numbers.bound(start_col + provider_layout.width, 1, total_width)
+        previewer_layout.start_col = numbers.bound(end_col - previewer_layout.width, 1, total_width)
         previewer_layout.end_col = end_col
       end
       provider_layout.start_row = start_row
@@ -223,11 +224,12 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
       and (fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down")
     then
       if fzf_preview_window_opts.size_is_percent then
-        previewer_layout.height = math.floor((height / 100 * fzf_preview_window_opts.size) - 1)
+        previewer_layout.height =
+          numbers.bound((height / 100 * fzf_preview_window_opts.size) - 1, 1, height)
       else
-        previewer_layout.height = math.max(fzf_preview_window_opts.size - 1, 1)
+        previewer_layout.height = numbers.bound(fzf_preview_window_opts.size - 1, 1, height)
       end
-      provider_layout.height = math.max(height - previewer_layout.height - 2, 1)
+      provider_layout.height = numbers.bound(height - previewer_layout.height - 2, 1, height)
       provider_layout.width = width
       previewer_layout.width = width
 
@@ -241,13 +243,15 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
 
       if fzf_preview_window_opts.position == "up" then
         previewer_layout.start_row = start_row
-        previewer_layout.end_row = start_row + previewer_layout.width
-        provider_layout.start_row = end_row - provider_layout.width
+        previewer_layout.end_row =
+          numbers.bound(start_row + previewer_layout.height, 1, total_height)
+        provider_layout.start_row = numbers.bound(end_row - provider_layout.height, 1, total_height)
         provider_layout.end_row = end_row
       else
         provider_layout.start_row = start_row
-        provider_layout.end_row = start_row + provider_layout.width
-        previewer_layout.start_row = end_row - previewer_layout.width
+        provider_layout.end_row = numbers.bound(start_row + provider_layout.height, 1, total_height)
+        previewer_layout.start_row =
+          numbers.bound(end_row - previewer_layout.height, 1, total_height)
         previewer_layout.end_row = end_row
       end
       provider_layout.start_col = start_col
