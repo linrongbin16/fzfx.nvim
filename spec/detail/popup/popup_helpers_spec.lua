@@ -45,9 +45,37 @@ describe("detail.popup.popup_helpers", function()
     end)
   end)
   describe("[make_layout]", function()
-    it("test without fzf_preview_window_opts", function()
-      local actual1 = popup_helpers.make_layout({
+    it("test1 without fzf_preview_window_opts", function()
+      local actual = popup_helpers.make_layout({
         relative = "editor",
+        height = 0.75,
+        width = 0.85,
+        row = 0,
+        col = 0,
+      })
+      print(string.format("make_layout-1:%s\n", vim.inspect(actual)))
+      local width_floor = math.floor(vim.o.columns * 0.85)
+      local width_ceil = math.ceil(vim.o.columns * 0.85)
+      local height_floor = math.floor(vim.o.lines * 0.75)
+      local height_ceil = math.ceil(vim.o.lines * 0.75)
+      assert_true(actual.width >= width_floor)
+      assert_true(actual.width <= width_ceil)
+      assert_true(actual.height >= height_floor)
+      assert_true(actual.height <= height_ceil)
+      local center_row = vim.o.lines / 2
+      local center_col = vim.o.columns / 2
+      assert_true(2 * (center_row - actual.start_row) >= height_floor)
+      assert_true(2 * (center_row - actual.start_row) <= height_ceil)
+      assert_true(2 * (actual.end_row - center_row) >= height_floor)
+      assert_true(2 * (actual.end_row - center_row) <= height_ceil)
+      assert_true(2 * (center_col - actual.start_col) >= width_floor)
+      assert_true(2 * (center_col - actual.start_col) <= width_ceil)
+      assert_true(2 * (actual.end_col - center_col) >= width_floor)
+      assert_true(2 * (actual.end_col - center_col) <= width_ceil)
+    end)
+    it("test2 without fzf_preview_window_opts", function()
+      local actual1 = popup_helpers.make_layout({
+        relative = "win",
         height = 0.75,
         width = 0.85,
         row = 0,
