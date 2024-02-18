@@ -333,7 +333,7 @@ M.make_opts = function(win_opts, buffer_previewer_opts)
     provider.win = 0
     previewer.win = 0
   end
-  log.debug("|make_opts| provider:%s, previewer:%s", vim.inspect(provider))
+  log.debug("|make_opts| provider:%s, previewer:%s", vim.inspect(provider), vim.inspect(previewer))
   return { provider = provider, previewer = previewer }
 end
 
