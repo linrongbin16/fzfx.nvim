@@ -230,8 +230,8 @@ M.get_layout = function(win_opts, fzf_preview_window_opts)
         provider_layout.end_col = start_col + provider_layout.width
         -- previewer_layout.start_col = start_col + provider_layout.width + 2
         -- previewer_layout.end_col = start_col + provider_layout.width + 2 + previewer_layout.width
-        previewer_layout.start_col = end_col
-        previewer_layout.end_col = end_col - previewer_layout.width
+        previewer_layout.start_col = end_col - previewer_layout.width
+        previewer_layout.end_col = end_col
       end
       provider_layout.start_row = start_row
       provider_layout.end_row = end_row
