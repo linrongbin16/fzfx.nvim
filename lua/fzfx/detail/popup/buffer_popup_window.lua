@@ -403,8 +403,11 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   log.ensure(previewer_bufnr > 0, "failed to create previewer buf")
   _set_default_buf_options(previewer_bufnr)
 
-  local provider_win_confs = M.make_provider_opts(win_opts, buffer_previewer_opts)
-  local previewer_win_confs = M.make_previewer_opts(win_opts, buffer_previewer_opts)
+  local win_confs = M.make_opts(win_opts, buffer_previewer_opts)
+  local provider_win_confs = win_confs.provider
+  local previewer_win_confs = win_confs.previewer
+  -- local provider_win_confs = M.make_provider_opts(win_opts, buffer_previewer_opts)
+  -- local previewer_win_confs = M.make_previewer_opts(win_opts, buffer_previewer_opts)
   previewer_win_confs.focusable = false
 
   local previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
