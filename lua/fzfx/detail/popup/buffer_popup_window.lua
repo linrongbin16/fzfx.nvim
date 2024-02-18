@@ -329,6 +329,10 @@ M.make_opts = function(win_opts, buffer_previewer_opts)
     border = border,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
   }
+  if relative ~= "editor" then
+    provider.win = 0
+    previewer.win = 0
+  end
   log.debug("|make_opts| provider:%s, previewer:%s", vim.inspect(provider))
   return { provider = provider, previewer = previewer }
 end
