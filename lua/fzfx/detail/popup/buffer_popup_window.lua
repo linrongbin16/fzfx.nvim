@@ -1,4 +1,3 @@
----@diagnostic disable: missing-return
 local apis = require("fzfx.commons.apis")
 local numbers = require("fzfx.commons.numbers")
 local fileios = require("fzfx.commons.fileios")
