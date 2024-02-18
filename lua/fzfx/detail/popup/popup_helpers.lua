@@ -1,10 +1,7 @@
 local numbers = require("fzfx.commons.numbers")
-local apis = require("fzfx.commons.apis")
-local fileios = require("fzfx.commons.fileios")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
-local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
 local M = {}
 
@@ -222,14 +219,14 @@ M.get_layout = function(win_opts, fzf_preview_window_opts)
       if fzf_preview_window_opts.position == "left" then
         previewer_layout.start_col = start_col
         previewer_layout.end_col = start_col + previewer_layout.width
-        provider_layout.start_col = end_col - provider_layout.width
-        provider_layout.end_col = end_col
+        provider_layout.start_col = start_col + previewer_layout.width + 2
+        provider_layout.end_col = start_col + previewer_layout.width + 2 + provider_layout.width
       else
         -- | provider | previewer |
         provider_layout.start_col = start_col
         provider_layout.end_col = start_col + provider_layout.width
-        previewer_layout.start_col = end_col - previewer_layout.width
-        previewer_layout.end_col = end_col
+        previewer_layout.start_col = start_col + provider_layout.width + 2
+        previewer_layout.end_col = start_col + provider_layout.width + 2 + previewer_layout.width
       end
       provider_layout.start_row = start_row
       provider_layout.end_row = end_row
