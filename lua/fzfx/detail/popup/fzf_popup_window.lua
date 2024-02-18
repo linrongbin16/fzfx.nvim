@@ -12,9 +12,10 @@ local M = {}
 local FLOAT_WIN_DEFAULT_BORDER = "none"
 local FLOAT_WIN_DEFAULT_ZINDEX = 60
 
---- @param opts fzfx.WindowOpts
+--- @param win_opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_cursor_opts = function(opts)
+M._make_cursor_opts = function(win_opts)
+  local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "cursor"
   local layout = popup_helpers.make_layout(opts)
 
@@ -31,9 +32,10 @@ M._make_cursor_opts = function(opts)
   }
 end
 
---- @param opts fzfx.WindowOpts
+--- @param win_opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_center_opts = function(opts)
+M._make_center_opts = function(win_opts)
+  local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "editor"
   local layout = popup_helpers.make_layout(opts)
 
