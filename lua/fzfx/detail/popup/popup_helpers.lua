@@ -254,7 +254,7 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
         previewer_layout.start_row = end_row - previewer_layout.width
         previewer_layout.end_row = end_row
       end
-      provider_layout.start = start_col
+      provider_layout.start_col = start_col
       provider_layout.end_col = end_col
       previewer_layout.start_col = start_col
       previewer_layout.end_col = end_col
