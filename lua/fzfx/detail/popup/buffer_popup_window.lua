@@ -75,8 +75,7 @@ M._get_layout = function(win_opts, fzf_preview_window_opts)
     end_col = end_col,
   }
 
-  if tables.tbl_not_empty(fzf_preview_window_opts) then
-    fzf_preview_window_opts = fzf_preview_window_opts --[[@as fzfx.FzfPreviewWindowOpts]]
+  if type(fzf_preview_window_opts) == "table" then
     local provider_layout = {}
     local previewer_layout = {}
     if
