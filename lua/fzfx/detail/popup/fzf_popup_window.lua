@@ -15,24 +15,18 @@ local FLOAT_WIN_DEFAULT_ZINDEX = 60
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
 M._make_cursor_opts = function(opts)
-  local relative = "cursor"
-  local total_width = vim.api.nvim_win_get_width(0)
-  local total_height = vim.api.nvim_win_get_height(0)
-  local width = popup_helpers.get_window_size(opts.width, total_width)
-  local height = popup_helpers.get_window_size(opts.height, total_height)
+  log.ensure(opts.row >= 0, "cursor relative row (%s) opts must >= 0!", vim.inspect(opts))
+  log.ensure(opts.row >= 0, "cursor relative col (%s) opts must >= 0!", vim.inspect(opts))
 
-  log.ensure(opts.row >= 0, "window row (%s) opts must >= 0!", vim.inspect(opts))
-  log.ensure(opts.row >= 0, "window col (%s) opts must >= 0!", vim.inspect(opts))
-  local row = opts.row
-  local col = opts.col
+  local layout = popup_helpers.get_layout(opts)
 
   return {
     anchor = "NW",
-    relative = relative,
-    width = width,
-    height = height,
-    row = row,
-    col = col,
+    relative = opts.relative,
+    width = layout.width,
+    height = layout.height,
+    row = opts.row,
+    col = opts.col,
     style = "minimal",
     border = FLOAT_WIN_DEFAULT_BORDER,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
