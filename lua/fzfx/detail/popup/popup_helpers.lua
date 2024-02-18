@@ -210,6 +210,8 @@ M.get_layout = function(win_opts, fzf_preview_window_opts)
         previewer_layout.width = math.max(width - fzf_preview_window_opts.size - 1, 1)
       end
       provider_layout.width = math.max(width - previewer_layout.width - 2, 1)
+      provider_layout.height = height
+      previewer_layout.height = height
 
       -- the layout looks like
       --
@@ -244,6 +246,8 @@ M.get_layout = function(win_opts, fzf_preview_window_opts)
         previewer_layout.height = math.max(height - fzf_preview_window_opts.size - 1, 1)
       end
       provider_layout.height = math.max(height - previewer_layout.height - 2, 1)
+      provider_layout.width = width
+      previewer_layout.width = width
 
       -- the layout looks like
       --
