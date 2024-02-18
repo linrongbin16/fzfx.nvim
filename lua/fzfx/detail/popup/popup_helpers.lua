@@ -205,14 +205,18 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
 
       if fzf_preview_window_opts.position == "left" then
         previewer_layout.start_col = start_col
-        previewer_layout.end_col = numbers.bound(start_col + previewer_layout.width, 1, total_width)
-        provider_layout.start_col = numbers.bound(end_col - provider_layout.width, 1, total_width)
+        previewer_layout.end_col =
+          numbers.bound(start_col + previewer_layout.width, 0, total_width - 1)
+        provider_layout.start_col =
+          numbers.bound(end_col - provider_layout.width, 0, total_width - 1)
         provider_layout.end_col = end_col
       else
         -- | provider | previewer |
         provider_layout.start_col = start_col
-        provider_layout.end_col = numbers.bound(start_col + provider_layout.width, 1, total_width)
-        previewer_layout.start_col = numbers.bound(end_col - previewer_layout.width, 1, total_width)
+        provider_layout.end_col =
+          numbers.bound(start_col + provider_layout.width, 0, total_width - 1)
+        previewer_layout.start_col =
+          numbers.bound(end_col - previewer_layout.width, 0, total_width - 1)
         previewer_layout.end_col = end_col
       end
       provider_layout.start_row = start_row
@@ -244,14 +248,16 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
       if fzf_preview_window_opts.position == "up" then
         previewer_layout.start_row = start_row
         previewer_layout.end_row =
-          numbers.bound(start_row + previewer_layout.height, 1, total_height)
-        provider_layout.start_row = numbers.bound(end_row - provider_layout.height, 1, total_height)
+          numbers.bound(start_row + previewer_layout.height, 0, total_height - 1)
+        provider_layout.start_row =
+          numbers.bound(end_row - provider_layout.height, 0, total_height - 1)
         provider_layout.end_row = end_row
       else
         provider_layout.start_row = start_row
-        provider_layout.end_row = numbers.bound(start_row + provider_layout.height, 1, total_height)
+        provider_layout.end_row =
+          numbers.bound(start_row + provider_layout.height, 0, total_height - 1)
         previewer_layout.start_row =
-          numbers.bound(end_row - previewer_layout.height, 1, total_height)
+          numbers.bound(end_row - previewer_layout.height, 0, total_height - 1)
         previewer_layout.end_row = end_row
       end
       provider_layout.start_col = start_col

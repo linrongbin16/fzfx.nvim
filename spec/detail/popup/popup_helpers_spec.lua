@@ -181,8 +181,8 @@ describe("detail.popup.popup_helpers", function()
       local total_width = vim.api.nvim_win_get_width(0)
       local width = total_width
       local height = total_height
-      local center_row = total_height / 2
-      local center_col = total_width / 2
+      local center_row = total_height / 2 + 1
+      local center_col = total_width / 2 - 2
       print(
         string.format(
           "make_layout-5:%s, total(height/width):%s/%s,center(row/col):%s/%s\n",
