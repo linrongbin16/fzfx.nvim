@@ -266,17 +266,13 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
 
       if fzf_preview_window_opts.position == "up" then
         previewer_layout.start_row = start_row
-        previewer_layout.end_row =
-          numbers.bound(start_row + previewer_layout.height, 0, total_height - 1)
-        provider_layout.start_row =
-          numbers.bound(end_row - provider_layout.height, 0, total_height - 1)
+        previewer_layout.end_row = bound_row(start_row + previewer_layout.height)
+        provider_layout.start_row = bound_row(end_row - provider_layout.height)
         provider_layout.end_row = end_row
       else
         provider_layout.start_row = start_row
-        provider_layout.end_row =
-          numbers.bound(start_row + provider_layout.height, 0, total_height - 1)
-        previewer_layout.start_row =
-          numbers.bound(end_row - previewer_layout.height, 0, total_height - 1)
+        provider_layout.end_row = bound_row(start_row + provider_layout.height)
+        previewer_layout.start_row = bound_row(end_row - previewer_layout.height)
         previewer_layout.end_row = end_row
       end
       provider_layout.start_col = start_col
