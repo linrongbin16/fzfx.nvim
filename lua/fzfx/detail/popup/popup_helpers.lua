@@ -178,6 +178,16 @@ M.get_layout = function(win_opts, fzf_preview_window_opts)
   else
     center_col = total_width * 0.5 + win_opts.col
   end
+  log.debug(
+    "|get_layout| win_opts:%s, center_row/center_col:%s/%s, height/width:%s/%s, total_height/total_width:%s/%s",
+    vim.inspect(win_opts),
+    vim.inspect(center_row),
+    vim.inspect(center_col),
+    vim.inspect(height),
+    vim.inspect(width),
+    vim.inspect(total_height),
+    vim.inspect(total_width)
+  )
 
   local start_row = math.max(math.floor(center_row - (height / 2)), 0)
   local end_row = math.min(math.floor(center_row + (height / 2)), total_height - 1)
