@@ -26,7 +26,18 @@ M.make_opts = function(win_opts, buffer_previewer_opts)
   local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
 
-  local provider = {
+  local result = {
+    anchor = "NW",
+    relative = relative,
+    width = layout.width,
+    height = layout.height,
+    row = layout.start_row,
+    col = layout.start_col,
+    style = FLOAT_WIN_DEFAULT_STYLE,
+    border = border,
+    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+  }
+  result.provider = {
     anchor = "NW",
     relative = relative,
     width = layout.provider.width,
@@ -37,7 +48,7 @@ M.make_opts = function(win_opts, buffer_previewer_opts)
     border = border,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
   }
-  local previewer = {
+  result.previewer = {
     anchor = "NW",
     relative = relative,
     width = layout.previewer.width,
@@ -49,11 +60,11 @@ M.make_opts = function(win_opts, buffer_previewer_opts)
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
   }
   if relative ~= "editor" then
-    provider.win = 0
-    previewer.win = 0
+    result.provider.win = 0
+    result.previewer.win = 0
   end
-  log.debug("|make_opts| provider:%s, previewer:%s", vim.inspect(provider), vim.inspect(previewer))
-  return { provider = provider, previewer = previewer }
+  log.debug("|make_opts| result:%s", vim.inspect(result))
+  return result
 end
 
 -- BufferPopupWindow {
@@ -208,7 +219,17 @@ function BufferPopupWindow:resize()
     -- )
     vim.api.nvim_win_set_config(
       self.provider_winnr,
-      vim.tbl_deep_extend("force", old_win_confs, win_confs or {})
+      vim.tbl_deep_extend("force", old_win_confs, {
+        anchor = "NW",
+        relative = win_confs.relative,
+        width = win_confs.width,
+        height = win_confs.height,
+        row = win_confs.row,
+        col = win_confs.col,
+        style = win_confs.style,
+        border = win_confs.border,
+        zindex = win_confs.zindex,
+      })
     )
     _set_default_provider_win_options(self.provider_winnr)
   else
