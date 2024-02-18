@@ -102,6 +102,37 @@ describe("detail.popup.popup_helpers", function()
       assert_true(isclose(2 * (center_col - actual.start_col), width))
       assert_true(isclose(2 * (actual.end_col - center_col), width))
     end)
+    it("test3 without fzf_preview_window_opts", function()
+      local actual = popup_helpers.make_layout({
+        relative = "editor",
+        height = 0.77,
+        width = 0.81,
+        row = -1,
+        col = 2,
+      })
+      local total_width = vim.o.columns
+      local total_height = vim.o.lines
+      local width = total_width * 0.81
+      local height = total_height * 0.77
+      local center_row = total_height / 2 - 1
+      local center_col = total_width / 2 + 2
+      print(
+        string.format(
+          "make_layout-3:%s, total(height/width):%s/%s,center(row/col):%s/%s\n",
+          vim.inspect(actual),
+          vim.inspect(total_height),
+          vim.inspect(total_width),
+          vim.inspect(center_row),
+          vim.inspect(center_col)
+        )
+      )
+      assert_true(isclose(actual.width, width))
+      assert_true(isclose(actual.height, height))
+      assert_true(isclose(2 * (center_row - actual.start_row), height))
+      assert_true(isclose(2 * (actual.end_row - center_row), height))
+      assert_true(isclose(2 * (center_col - actual.start_col), width))
+      assert_true(isclose(2 * (actual.end_col - center_col), width))
+    end)
     it("test with fzf_preview_window_opts", function() end)
   end)
 end)
