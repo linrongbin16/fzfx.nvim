@@ -46,7 +46,7 @@ describe("detail.popup.popup_helpers", function()
   end)
   describe("[make_layout]", function()
     local function isclose(a, b)
-      return math.abs(a - b) <= 2
+      return math.abs(a - b) <= 1.5
     end
 
     it("test1 without fzf_preview_window_opts", function()
