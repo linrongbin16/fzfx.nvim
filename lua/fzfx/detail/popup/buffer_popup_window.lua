@@ -76,14 +76,12 @@ M._get_layout = function(win_opts, fzf_preview_window_opts)
   }
 
   if tables.tbl_not_empty(fzf_preview_window_opts) then
+    fzf_preview_window_opts = fzf_preview_window_opts --[[@as fzfx.FzfPreviewWindowOpts]]
     local provider_layout = {}
     local previewer_layout = {}
     if
-      fzf_preview_window_opts
-      and (
-        fzf_preview_window_opts.position == "left"
-        or fzf_preview_window_opts.position == "right"
-      )
+      fzf_preview_window_opts.position == "left"
+      or fzf_preview_window_opts.position == "right"
     then
       if fzf_preview_window_opts.size_is_percent then
         previewer_layout.width =
@@ -95,21 +93,21 @@ M._get_layout = function(win_opts, fzf_preview_window_opts)
 
       if fzf_preview_window_opts.position == "left" then
         -- previewer | provider
-        previewer_layout.start_row = start_row
-        previewer_layout.end_row = start_row + previewer_layout.width
-        provider_layout.start_row = end_row - provider_layout.width
-        provider_layout.end_row = end_row
+        previewer_layout.start_col = start_col
+        previewer_layout.end_col = start_col + previewer_layout.width
+        provider_layout.start_col = end_col - provider_layout.width
+        provider_layout.end_col = end_col
       else
         -- provider | previewer
-        provider_layout.start_row = start_row
-        provider_layout.end_row = start_row + provider_layout.width
-        previewer_layout.start_row = end_row - previewer_layout.width
-        previewer_layout.end_row = end_row
+        provider_layout.start_col = start_col
+        provider_layout.end_col = start_col + provider_layout.width
+        previewer_layout.start_col = end_col - previewer_layout.width
+        previewer_layout.end_col = end_col
       end
-      provider_layout.start_col = start_col
-      provider_layout.end_col = end_col
-      previewer_layout.start_col = start_col
-      previewer_layout.end_col = end_col
+      provider_layout.start_row = start_row
+      provider_layout.end_row = end_row
+      previewer_layout.start_row = start_row
+      previewer_layout.end_row = end_row
     elseif
       fzf_preview_window_opts
       and (fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down")
@@ -139,6 +137,10 @@ M._get_layout = function(win_opts, fzf_preview_window_opts)
         previewer_layout.start_row = end_row - previewer_layout.width
         previewer_layout.end_row = end_row
       end
+      provider_layout.start = start_col
+      provider_layout.end_col = end_col
+      previewer_layout.start_col = start_col
+      previewer_layout.end_col = end_col
     end
   end
 end
