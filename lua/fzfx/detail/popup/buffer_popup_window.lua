@@ -90,14 +90,19 @@ M._get_layout = function(win_opts, fzf_preview_window_opts)
       end
       provider_layout.width = math.max(width - previewer_layout.width - 2, 1)
 
+      -- the layout looks like
+      --
+      -- |      |       |
+      -- | left | right |
+      -- |      |       |
+
       if fzf_preview_window_opts.position == "left" then
-        -- previewer | provider
         previewer_layout.start_col = start_col
         previewer_layout.end_col = start_col + previewer_layout.width
         provider_layout.start_col = end_col - provider_layout.width
         provider_layout.end_col = end_col
       else
-        -- provider | previewer
+        -- | provider | previewer |
         provider_layout.start_col = start_col
         provider_layout.end_col = start_col + provider_layout.width
         previewer_layout.start_col = end_col - previewer_layout.width
@@ -119,18 +124,20 @@ M._get_layout = function(win_opts, fzf_preview_window_opts)
       end
       provider_layout.height = math.max(height - previewer_layout.height - 2, 1)
 
+      -- the layout looks like
+      --
+      -- ----------
+      --    left
+      -- ----------
+      --    right
+      -- ----------
+
       if fzf_preview_window_opts.position == "up" then
-        -- previewer
-        -- ---
-        -- provider
         previewer_layout.start_row = start_row
         previewer_layout.end_row = start_row + previewer_layout.width
         provider_layout.start_row = end_row - provider_layout.width
         provider_layout.end_row = end_row
       else
-        -- provider
-        -- ---
-        -- previewer
         provider_layout.start_row = start_row
         provider_layout.end_row = start_row + provider_layout.width
         previewer_layout.start_row = end_row - previewer_layout.width
@@ -141,7 +148,11 @@ M._get_layout = function(win_opts, fzf_preview_window_opts)
       previewer_layout.start_col = start_col
       previewer_layout.end_col = end_col
     end
+    result.provider = provider_layout
+    result.previewer = previewer_layout
   end
+
+  return result
 end
 
 -- cursor window {
