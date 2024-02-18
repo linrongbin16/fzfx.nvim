@@ -229,18 +229,14 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
 
       if fzf_preview_window_opts.position == "left" then
         previewer_layout.start_col = start_col
-        previewer_layout.end_col =
-          numbers.bound(start_col + previewer_layout.width, 0, total_width - 1)
-        provider_layout.start_col =
-          numbers.bound(end_col - provider_layout.width, 0, total_width - 1)
+        previewer_layout.end_col = bound_col(start_col + previewer_layout.width)
+        provider_layout.start_col = bound_col(end_col - provider_layout.width)
         provider_layout.end_col = end_col
       else
         -- | provider | previewer |
         provider_layout.start_col = start_col
-        provider_layout.end_col =
-          numbers.bound(start_col + provider_layout.width, 0, total_width - 1)
-        previewer_layout.start_col =
-          numbers.bound(end_col - previewer_layout.width, 0, total_width - 1)
+        provider_layout.end_col = bound_col(start_col + provider_layout.width)
+        previewer_layout.start_col = bound_col(end_col - previewer_layout.width)
         previewer_layout.end_col = end_col
       end
       provider_layout.start_row = start_row
@@ -252,12 +248,11 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
       and (fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down")
     then
       if fzf_preview_window_opts.size_is_percent then
-        previewer_layout.height =
-          numbers.bound((height / 100 * fzf_preview_window_opts.size) - 1, 1, height)
+        previewer_layout.height = bound_height((height / 100 * fzf_preview_window_opts.size) - 1)
       else
-        previewer_layout.height = numbers.bound(fzf_preview_window_opts.size - 1, 1, height)
+        previewer_layout.height = bound_height(fzf_preview_window_opts.size - 1)
       end
-      provider_layout.height = numbers.bound(height - previewer_layout.height - 2, 1, height)
+      provider_layout.height = bound_height(height - previewer_layout.height - 2)
       provider_layout.width = width
       previewer_layout.width = width
 
