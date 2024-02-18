@@ -12,6 +12,7 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local M = {}
 
 local FLOAT_WIN_DEFAULT_ZINDEX = 60
+local FLOAT_WIN_DEFAULT_STYLE = "minimal"
 
 --- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 
@@ -74,7 +75,7 @@ M._make_provider_center_opts_with_hidden_previewer = function(opts, buffer_previ
     height = height,
     row = row,
     col = col,
-    style = "minimal",
+    style = FLOAT_WIN_DEFAULT_STYLE,
     border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
       or fzf_helpers.FZF_DEFAULT_BORDER_OPTS,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
@@ -149,7 +150,7 @@ M._make_provider_center_opts = function(opts, buffer_previewer_opts)
     height = height,
     row = row,
     col = col,
-    style = "minimal",
+    style = FLOAT_WIN_DEFAULT_STYLE,
     border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
       or fzf_helpers.FZF_DEFAULT_BORDER_OPTS,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
@@ -224,7 +225,7 @@ M._make_previewer_center_opts = function(opts, buffer_previewer_opts)
     height = height,
     row = row,
     col = col,
-    style = "minimal",
+    style = FLOAT_WIN_DEFAULT_STYLE,
     border = fzf_preview_window_opts.border,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
   }
@@ -301,6 +302,35 @@ M.make_opts = function(win_opts, buffer_previewer_opts)
   local wopts = vim.deepcopy(win_opts)
   wopts.relative = wopts.relative or "editor"
   local layout = popup_helpers.get_layout(wopts, buffer_previewer_opts.fzf_preview_window_opts)
+
+  local relative = wopts.relative
+  local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
+    or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
+
+  local provider = {
+    anchor = "NW",
+    relative = relative,
+    width = layout.provider.width,
+    height = layout.provider.height,
+    row = layout.provider.start_row,
+    col = layout.provider.start_col,
+    style = FLOAT_WIN_DEFAULT_STYLE,
+    border = border,
+    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+  }
+  local previewer = {
+    anchor = "NW",
+    relative = relative,
+    width = layout.previewer.width,
+    height = layout.previewer.height,
+    row = layout.previewer.start_row,
+    col = layout.previewer.start_col,
+    style = FLOAT_WIN_DEFAULT_STYLE,
+    border = border,
+    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+  }
+  log.debug("|make_opts| provider:%s, previewer:%s", vim.inspect(provider))
+  return { provider = provider, previewer = previewer }
 end
 
 -- previewer window }
