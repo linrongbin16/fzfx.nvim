@@ -815,7 +815,7 @@ M._build_theme = function(colorname)
   )
 
   local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
-  log.debug("|_build_theme| theme_config_file:%s", vim.inspect(theme_config_file))
+  -- log.debug("|_build_theme| theme_config_file:%s", vim.inspect(theme_config_file))
   log.ensure(
     strings.not_empty(theme_config_file),
     "|_build_theme| failed to get bat theme config file from nvim colorscheme name:%s",
@@ -881,7 +881,7 @@ M._patch_theme = function(colorname, lsp_type, lsp_modifiers)
   end
 
   local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
-  log.debug("|_patch_theme| theme_config_file:%s", vim.inspect(theme_config_file))
+  -- log.debug("|_patch_theme| theme_config_file:%s", vim.inspect(theme_config_file))
   log.ensure(
     strings.not_empty(theme_config_file),
     "|_patch_theme| failed to get bat theme config file from nvim colorscheme name:%s",
@@ -923,7 +923,7 @@ M.setup = function()
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
-      log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
+      -- log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       vim.schedule(function()
         if strings.not_empty(vim.g.colors_name) then
           M._build_theme(vim.g.colors_name)
@@ -935,7 +935,7 @@ M.setup = function()
   if versions.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
     vim.api.nvim_create_autocmd("LspTokenUpdate", {
       callback = function(event)
-        log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
+        -- log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
         vim.schedule(function()
           if strings.not_empty(tables.tbl_get(event, "data", "token", "type")) then
             local lsp_type = string.format("@lsp.type.%s", event.data.token.type)
