@@ -74,16 +74,16 @@ describe("detail.popup.popup_helpers", function()
         relative = "win",
         height = 0.47,
         width = 0.71,
-        row = -1,
-        col = 2,
+        row = 0,
+        col = 0,
       })
       print(string.format("make_layout-2:%s\n", vim.inspect(actual)))
       local total_height = vim.api.nvim_win_get_height(0)
       local total_width = vim.api.nvim_win_get_width(0)
       local center_row = vim.o.lines / 2
       local center_col = vim.o.columns / 2
-      assert_true(isclose(actual.width, total_width * 0.85))
-      assert_true(isclose(actual.height, total_height * 0.75))
+      assert_true(isclose(actual.width, total_width * 0.71))
+      assert_true(isclose(actual.height, total_height * 0.47))
       assert_true(isclose(2 * (center_row - actual.start_row), total_height))
       assert_true(isclose(2 * (actual.end_row - center_row), total_height))
       assert_true(isclose(2 * (center_col - actual.start_col), total_width))
