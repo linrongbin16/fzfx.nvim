@@ -15,10 +15,7 @@ local FLOAT_WIN_DEFAULT_ZINDEX = 60
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
 M._make_cursor_opts = function(opts)
-  log.ensure(opts.row >= 0, "cursor relative row (%s) opts must >= 0!", vim.inspect(opts))
-  log.ensure(opts.row >= 0, "cursor relative col (%s) opts must >= 0!", vim.inspect(opts))
-
-  local layout = popup_helpers.get_layout(opts)
+  local layout = popup_helpers.make_layout(opts)
 
   return {
     anchor = "NW",
@@ -36,7 +33,7 @@ end
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
 M._make_center_opts = function(opts)
-  local layout = popup_helpers.get_layout(opts)
+  local layout = popup_helpers.make_layout(opts)
 
   return {
     anchor = "NW",

@@ -20,7 +20,7 @@ local FLOAT_WIN_DEFAULT_STYLE = "minimal"
 M.make_opts = function(win_opts, buffer_previewer_opts)
   local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "editor"
-  local layout = popup_helpers.get_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
+  local layout = popup_helpers.make_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
 
   local relative = opts.relative
   local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
