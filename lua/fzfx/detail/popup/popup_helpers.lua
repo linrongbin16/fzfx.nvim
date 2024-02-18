@@ -192,6 +192,7 @@ M.get_layout = function(win_opts, fzf_preview_window_opts)
     start_col = start_col,
     end_col = end_col,
   }
+  log.debug("|get_layout| result-1:%s", vim.inspect(result))
 
   if type(fzf_preview_window_opts) == "table" then
     local provider_layout = {}
@@ -272,6 +273,7 @@ M.get_layout = function(win_opts, fzf_preview_window_opts)
     end
     result.provider = provider_layout
     result.previewer = previewer_layout
+    log.debug("|get_layout| result-2:%s", vim.inspect(result))
   end
 
   return result

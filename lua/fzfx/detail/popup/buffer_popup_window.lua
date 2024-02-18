@@ -279,24 +279,6 @@ end
 
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
---- @return fzfx.NvimFloatWinOpts
-M.make_previewer_opts = function(win_opts, buffer_previewer_opts)
-  local opts = vim.deepcopy(win_opts)
-  local relative = opts.relative or "editor"
-  log.ensure(
-    relative == "cursor" or relative == "editor" or relative == "win",
-    "window relative (%s) must be editor/win/cursor",
-    vim.inspect(opts)
-  )
-  if relative == "cursor" then
-    return M._make_previewer_cursor_opts(opts, buffer_previewer_opts)
-  else
-    return M._make_previewer_center_opts(opts, buffer_previewer_opts)
-  end
-end
-
---- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M.make_opts = function(win_opts, buffer_previewer_opts)
   local wopts = vim.deepcopy(win_opts)
