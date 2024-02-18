@@ -199,6 +199,10 @@ function BufferPopupWindow:close()
   self.window_opts_context:restore()
 end
 
+function BufferPopupWindow:is_resizing()
+  return self._resizing
+end
+
 function BufferPopupWindow:resize()
   if self._resizing then
     return
@@ -605,6 +609,9 @@ function BufferPopupWindow:show_preview()
     -- log.debug("|BufferPopupWindow:show_preview| invalid")
     return
   end
+  if self:is_resizing() then
+    return
+  end
 
   self.previewer_is_hidden = false
   local win_confs = M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts)
@@ -644,6 +651,9 @@ function BufferPopupWindow:hide_preview()
   end
   if not self:previewer_is_valid() then
     -- log.debug("|BufferPopupWindow:hide_preview| invalid previewer")
+    return
+  end
+  if self:is_resizing() then
     return
   end
 
