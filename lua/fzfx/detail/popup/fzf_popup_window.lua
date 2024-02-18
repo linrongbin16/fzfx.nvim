@@ -15,6 +15,7 @@ local FLOAT_WIN_DEFAULT_ZINDEX = 60
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
 M._make_cursor_opts = function(opts)
+  opts.relative = opts.relative or "cursor"
   local layout = popup_helpers.make_layout(opts)
 
   return {
@@ -33,6 +34,7 @@ end
 --- @param opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
 M._make_center_opts = function(opts)
+  opts.relative = opts.relative or "editor"
   local layout = popup_helpers.make_layout(opts)
 
   return {

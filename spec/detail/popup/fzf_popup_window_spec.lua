@@ -14,6 +14,12 @@ describe("detail.popup.fzf_popup_window", function()
   local strings = require("fzfx.commons.strings")
   local fzf_popup_window = require("fzfx.detail.popup.fzf_popup_window")
   local popup_helpers = require("fzfx.detail.popup.popup_helpers")
+  require("fzfx").setup({
+    debug = {
+      enable = true,
+      file_log = true,
+    },
+  })
 
   local WIN_OPTS = {
     height = 0.85,
@@ -65,7 +71,13 @@ describe("detail.popup.fzf_popup_window", function()
     it("test", function()
       local actual1 = fzf_popup_window.make_opts(WIN_OPTS)
       local actual2 = fzf_popup_window._make_center_opts(WIN_OPTS)
-      print(string.format("fzf_popup_window.make_opts:%s\n", vim.inspect(actual1)))
+      print(
+        string.format(
+          "fzf_popup_window.make_opts:%s, _make_center_opts:%s\n",
+          vim.inspect(actual1),
+          vim.inspect(actual2)
+        )
+      )
       assert_eq(actual1.anchor, "NW")
       assert_eq(type(actual1.height), "number")
       assert_eq(type(actual2.height), "number")
