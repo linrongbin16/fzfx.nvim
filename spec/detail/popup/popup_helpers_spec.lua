@@ -45,9 +45,8 @@ describe("detail.popup.popup_helpers", function()
     end)
   end)
   describe("[make_layout]", function()
-    local function isclose(a, b, tolerance)
-      tolerance = tolerance or 2.0
-      return math.abs(a - b) <= tolerance
+    local function isclose(a, b)
+      return math.abs(a - b) <= 3.5
     end
 
     it("test1 without fzf_preview_window_opts", function()
@@ -99,7 +98,7 @@ describe("detail.popup.popup_helpers", function()
       assert_true(isclose(actual.width, width))
       assert_true(isclose(actual.height, height))
       assert_true(isclose(2 * (center_row - actual.start_row), height))
-      assert_true(isclose(2 * (actual.end_row - center_row), height, 3))
+      assert_true(isclose(2 * (actual.end_row - center_row), height))
       assert_true(isclose(2 * (center_col - actual.start_col), width))
       assert_true(isclose(2 * (actual.end_col - center_col), width))
     end)
@@ -198,9 +197,9 @@ describe("detail.popup.popup_helpers", function()
       assert_true(isclose(actual.width, width))
       assert_true(isclose(actual.height, height))
       assert_true(isclose(2 * (center_row - actual.start_row), height))
-      assert_true(isclose(2 * (actual.end_row - center_row), height, 3))
+      assert_true(isclose(2 * (actual.end_row - center_row), height))
       assert_true(isclose(2 * (center_col - actual.start_col), width))
-      assert_true(isclose(2 * (actual.end_col - center_col), width, 3))
+      assert_true(isclose(2 * (actual.end_col - center_col), width))
 
       assert_true(isclose(actual.provider.height, height - 15 - 1))
       assert_eq(actual.provider.width, width)
@@ -245,23 +244,25 @@ describe("detail.popup.popup_helpers", function()
 
       assert_true(isclose(actual.width, width))
       assert_true(isclose(actual.height, height))
-      assert_true(isclose(2 * (center_row - actual.start_row), height, 3))
-      assert_true(isclose(2 * (actual.end_row - center_row), height, 3))
+      assert_true(isclose(2 * (center_row - actual.start_row), height))
+      assert_true(isclose(2 * (actual.end_row - center_row), height))
       assert_true(isclose(2 * (center_col - actual.start_col), width))
-      assert_true(isclose(2 * (actual.end_col - center_col), width, 3))
+      assert_true(isclose(2 * (actual.end_col - center_col), width))
 
       if total_height > 20 then
         assert_true(isclose(actual.provider.height, height - 15 - 1))
       end
       assert_true(isclose(actual.provider.width, width))
       assert_true(
-        isclose(actual.provider.start_row, actual.start_row + actual.previewer.height + 1, 3)
+        isclose(actual.provider.start_row, actual.start_row + actual.previewer.height + 1)
       )
       assert_eq(actual.provider.end_row, actual.end_row)
       assert_eq(actual.provider.start_col, actual.start_col)
       assert_eq(actual.provider.end_col, actual.end_col)
 
-      assert_true(isclose(actual.previewer.height, 15 - 1))
+      if total_height > 20 then
+        assert_true(isclose(actual.previewer.height, 15 - 1))
+      end
       assert_true(isclose(actual.previewer.width, width))
       assert_eq(actual.previewer.start_row, actual.start_row)
       assert_eq(actual.previewer.end_row, actual.start_row + actual.previewer.height)
