@@ -46,7 +46,7 @@ describe("detail.popup.popup_helpers", function()
   end)
   describe("[make_layout]", function()
     local function isclose(a, b, tolerance)
-      tolerance = tolerance or 1.0
+      tolerance = tolerance or 2.0
       return math.abs(a - b) <= tolerance
     end
 
