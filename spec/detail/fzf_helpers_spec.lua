@@ -182,7 +182,22 @@ describe("detail.fzf_helpers", function()
   end)
 
   describe("[make_fzf_opts]", function()
-    it("_generate_fzf_color_opts", function()
+    it("_generate_fzf_color_opts default", function()
+      local actual = fzf_helpers._generate_fzf_color_opts()
+      assert_eq(type(actual), "table")
+      assert_eq(#actual, 1)
+      assert_eq(type(actual[1]), "table")
+      assert_eq(actual[1][1], "--color")
+      assert_eq(type(actual[1][2]), "string")
+    end)
+    it("_generate_fzf_color_opts RGB colors", function()
+      local config = require("fzfx.config")
+      local confs = config.get()
+      confs.fzf_color_opts = vim.tbl_deep_extend("force", vim.deepcopy(confs.fzf_color_opts), {
+        fg = { "fg", "#ffffff" },
+        bg = { "bg", "#000000" },
+      })
+      config.set(confs)
       local actual = fzf_helpers._generate_fzf_color_opts()
       assert_eq(type(actual), "table")
       assert_eq(#actual, 1)
