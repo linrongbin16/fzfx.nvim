@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.5.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.5.0...v5.5.1) (2024-02-26)
+
+
+### Performance Improvements
+
+* **previewer:** longer intervals when rendering buffer previewer ([#617](https://github.com/linrongbin16/fzfx.nvim/issues/617)) ([59e4578](https://github.com/linrongbin16/fzfx.nvim/commit/59e45789175f5ffe91ce23d042dc0b1ac9bb01da))
+
 ## [5.5.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.4.2...v5.5.0) (2024-02-26)
 
 
