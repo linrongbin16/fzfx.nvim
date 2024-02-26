@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.5.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.4.2...v5.5.0) (2024-02-26)
+
+
+### Features
+
+* **colors:** support RGB color codes in 'fzf_color_opts' ([#614](https://github.com/linrongbin16/fzfx.nvim/issues/614)) ([f1bfc89](https://github.com/linrongbin16/fzfx.nvim/commit/f1bfc895e816ed6a638215e670de9899ef40e4c2))
+
+
+### Bug Fixes
+
+* **fzf_opts:** add 'top'/'bottom' options ([#612](https://github.com/linrongbin16/fzfx.nvim/issues/612)) ([a4272cd](https://github.com/linrongbin16/fzfx.nvim/commit/a4272cd38cf7026466c250f5071bc468b289a599))
+* **popup:** fix winopts calculation ([#609](https://github.com/linrongbin16/fzfx.nvim/issues/609)) ([5b4a003](https://github.com/linrongbin16/fzfx.nvim/commit/5b4a003707ff75ddd063cd43dfa7d573c21639cc))
+
 ## [5.4.2](https://github.com/linrongbin16/fzfx.nvim/compare/v5.4.1...v5.4.2) (2024-02-14)
 
 
