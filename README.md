@@ -36,7 +36,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - [Create Your Own Command](#create-your-own-command)
   - [API References](#api-references)
 - [Known Issues](#-known-issues)
-- [Credit](#-credit)
+- [Alternatives](#-alternatives)
 - [Development](#-development)
 - [Contribute](#-contribute)
 
@@ -1362,7 +1362,7 @@ Please see [API References](https://linrongbin16.github.io/fzfx.nvim/#/ApiRefere
 
 Please see [Known Issues](https://linrongbin16.github.io/fzfx.nvim/#/KnownIssues) if you encountered any issue.
 
-## 🍀 Credit
+## 🍀 Alternatives
 
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
@@ -1373,14 +1373,13 @@ To develop the project and make PR, please setup with:
 
 - [lua_ls](https://github.com/LuaLS/lua-language-server).
 - [stylua](https://github.com/JohnnyMorganz/StyLua).
-- [luarocks](https://luarocks.org/).
-- [luacheck](https://github.com/mpeterv/luacheck).
+- [selene](https://github.com/Kampfkarren/selene).
 
 To run unit tests, please install below dependencies:
 
 - [vusted](https://github.com/notomo/vusted).
 
-Then test with `vusted ./test`.
+Then test with `vusted ./spec`.
 
 ## 🎁 Contribute
 
