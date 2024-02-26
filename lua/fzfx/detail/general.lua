@@ -56,7 +56,8 @@ end
 
 --- @return string
 local function _fzf_port_file()
-  return _make_cache_filename("fzf", "port", "file")
+  -- return _make_cache_filename("fzf", "port", "file")
+  return vim.fn.tempname() --[[@as string]]
 end
 
 --- @return string
@@ -846,70 +847,6 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
     }
 end
 
---- @param j string
---- @return string?
-local function decode_fzf_status_current_text(j)
-  local CURRENT = '"current"'
-  local INDEX = '"index"'
-  local TEXT = '"text"'
-  local current_pos = strings.find(j, CURRENT)
-  if not current_pos then
-    return nil
-  end
-  -- log.debug(
-  --   "|decode_fzf_status_current_text| current_pos:%s",
-  --   vim.inspect(current_pos)
-  -- )
-  local index_pos = strings.find(j, INDEX, current_pos + string.len(CURRENT) + 2)
-  if not index_pos then
-    return nil
-  end
-  -- log.debug(
-  --   "|decode_fzf_status_current_text| index_pos:%s",
-  --   vim.inspect(index_pos)
-  -- )
-  local text_pos = strings.find(j, TEXT, index_pos + string.len(INDEX) + 2)
-  if not text_pos then
-    return nil
-  end
-  -- log.debug(
-  --   "|decode_fzf_status_current_text| text_pos:%s",
-  --   vim.inspect(text_pos)
-  -- )
-  local lquote_pos = strings.find(j, '"', text_pos + string.len(TEXT) + 1)
-  if not lquote_pos then
-    return nil
-  end
-  -- log.debug(
-  --   "|decode_fzf_status_current_text| lquote_pos:%s",
-  --   vim.inspect(lquote_pos)
-  -- )
-  local rquote_pos = nil
-  local i = lquote_pos + 1
-  local n = string.len(j)
-  while i <= n do
-    if string.byte(j, i) == string.byte("\\") then
-      i = i + 2
-    else
-      if string.byte(j, i) == string.byte('"') then
-        rquote_pos = i
-        break
-      end
-      i = i + 1
-    end
-  end
-  -- log.debug(
-  --   "|decode_fzf_status_current_text| rquote_pos:%s",
-  --   vim.inspect(rquote_pos)
-  -- )
-  if not rquote_pos or rquote_pos - 1 < lquote_pos + 1 then
-    return nil
-  end
-  local result = string.sub(j, lquote_pos + 1, rquote_pos - 1)
-  -- log.debug("|decode_fzf_status_current_text| result:%s", vim.inspect(result))
-  return result
-end
-
 --- @param name string
 --- @param query string
 --- @param bang boolean
@@ -1134,11 +1071,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "--parallel-immediate",
         "--noproxy",
         "*",
-        string.format(
-          "127.0.0.1:%s?limit=0",
-          constants.IS_WINDOWS and fileios.readfile(fzf_port_file, { trim = true }) --[[@as string]]
-            or fzf_port_reader:read({ trim = true }) --[[@as string]]
-        ),
+        string.format("127.0.0.1:%s?limit=0", fzf_port_reader:read({ trim = true })),
       }, {
         text = true,
       }, function(completed)
@@ -1490,7 +1423,6 @@ local M = {
   _previewer_resultfile = _previewer_resultfile,
   _fzf_port_file = _fzf_port_file,
   _buffer_previewer_actions_file = _buffer_previewer_actions_file,
-  decode_fzf_status_current_text = decode_fzf_status_current_text,
   make_provider_meta_opts = make_provider_meta_opts,
   make_previewer_meta_opts = make_previewer_meta_opts,
   ProviderSwitch = ProviderSwitch,

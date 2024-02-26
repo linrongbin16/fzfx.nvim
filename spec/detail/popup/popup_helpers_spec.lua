@@ -8,11 +8,19 @@ describe("detail.popup.popup_helpers", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.opt.swapfile = false
+    vim.cmd([[edit README.md]])
   end)
 
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
+  local numbers = require("fzfx.commons.numbers")
   local popup_helpers = require("fzfx.detail.popup.popup_helpers")
+  require("fzfx").setup({
+    debug = {
+      enable = true,
+      file_log = true,
+    },
+  })
 
   describe("[WindowOptsContext]", function()
     it("save", function()
@@ -36,48 +44,229 @@ describe("detail.popup.popup_helpers", function()
       ctx:restore()
     end)
   end)
-  describe("[get_window_size]", function()
-    it("is in range of [0, 1]", function()
-      assert_eq(5, popup_helpers.get_window_size(0.5, 10))
-      assert_eq(6, popup_helpers.get_window_size(0.6, 10))
-      assert_eq(7, popup_helpers.get_window_size(0.7, 10))
-      assert_eq(8, popup_helpers.get_window_size(0.8, 10))
-      assert_eq(9, popup_helpers.get_window_size(0.9, 10))
-      assert_eq(9, popup_helpers.get_window_size(0.91, 10))
-      assert_eq(9, popup_helpers.get_window_size(0.92, 10))
-      assert_eq(9, popup_helpers.get_window_size(0.93, 10))
-      assert_eq(9, popup_helpers.get_window_size(0.94, 10))
-      assert_eq(9, popup_helpers.get_window_size(0.95, 10))
-      assert_eq(9, popup_helpers.get_window_size(0.96, 10))
-      assert_eq(9, popup_helpers.get_window_size(0.97, 10))
-      assert_eq(9, popup_helpers.get_window_size(0.98, 10))
-      assert_eq(9, popup_helpers.get_window_size(0.99, 10))
-      assert_eq(10, popup_helpers.get_window_size(1, 10))
+  describe("[make_layout]", function()
+    local function isclose(a, b, tolerance)
+      tolerance = tolerance or 2.0
+      return math.abs(a - b) <= tolerance
+    end
+
+    it("test1 without fzf_preview_window_opts", function()
+      local actual = popup_helpers.make_layout({
+        relative = "editor",
+        height = 0.75,
+        width = 0.85,
+        row = 0,
+        col = 0,
+      })
+      print(string.format("make_layout-1:%s\n", vim.inspect(actual)))
+      local total_width = vim.o.columns
+      local total_height = vim.o.lines
+      local width = total_width * 0.85
+      local height = total_height * 0.75
+      local center_row = total_height / 2
+      local center_col = total_width / 2
+      assert_true(isclose(actual.width, width))
+      assert_true(isclose(actual.height, height))
+      assert_true(isclose(2 * (center_row - actual.start_row), height))
+      assert_true(isclose(2 * (actual.end_row - center_row), height))
+      assert_true(isclose(2 * (center_col - actual.start_col), width))
+      assert_true(isclose(2 * (actual.end_col - center_col), width))
     end)
-    it("is greater than 1", function()
-      assert_eq(3, popup_helpers.get_window_size(2, 10))
-      assert_eq(3, popup_helpers.get_window_size(2, 10))
-      assert_eq(3, popup_helpers.get_window_size(3, 10))
-      assert_eq(4, popup_helpers.get_window_size(4, 10))
-      assert_eq(8, popup_helpers.get_window_size(8, 10))
-      assert_eq(9, popup_helpers.get_window_size(9, 10))
-      assert_eq(10, popup_helpers.get_window_size(10, 10))
-      assert_eq(10, popup_helpers.get_window_size(11, 10))
-      assert_eq(10, popup_helpers.get_window_size(12, 10))
+    it("test2 without fzf_preview_window_opts", function()
+      local actual = popup_helpers.make_layout({
+        relative = "win",
+        height = 0.47,
+        width = 0.71,
+        row = 0,
+        col = 0,
+      })
+      local total_height = vim.api.nvim_win_get_height(0)
+      local total_width = vim.api.nvim_win_get_width(0)
+      local width = total_width * 0.71
+      local height = total_height * 0.47
+      local center_row = total_height / 2
+      local center_col = total_width / 2
+      print(
+        string.format(
+          "make_layout-2:%s, total(height/width):%s/%s,center(row/col):%s/%s\n",
+          vim.inspect(actual),
+          vim.inspect(total_height),
+          vim.inspect(total_width),
+          vim.inspect(center_row),
+          vim.inspect(center_col)
+        )
+      )
+      assert_true(isclose(actual.width, width))
+      assert_true(isclose(actual.height, height))
+      assert_true(isclose(2 * (center_row - actual.start_row), height))
+      assert_true(isclose(2 * (actual.end_row - center_row), height, 3))
+      assert_true(isclose(2 * (center_col - actual.start_col), width))
+      assert_true(isclose(2 * (actual.end_col - center_col), width))
     end)
-  end)
-  describe("[shift_window_pos]", function()
-    it("is in range of [0, 1]", function()
-      assert_eq(12, popup_helpers.shift_window_pos(50, 30, 0.1))
-      assert_eq(10, popup_helpers.shift_window_pos(50, 30, 0))
-      assert_eq(0, popup_helpers.shift_window_pos(50, 25, -0.5))
-      assert_eq(24, popup_helpers.shift_window_pos(50, 25, 0.5))
+    it("test3 without fzf_preview_window_opts", function()
+      local actual = popup_helpers.make_layout({
+        relative = "editor",
+        height = 0.77,
+        width = 0.81,
+        row = -1,
+        col = 2,
+      })
+      local total_width = vim.o.columns
+      local total_height = vim.o.lines
+      local width = total_width * 0.81
+      local height = total_height * 0.77
+      local center_row = total_height / 2 - 1
+      local center_col = total_width / 2 + 2
+      print(
+        string.format(
+          "make_layout-3:%s, total(height/width):%s/%s,center(row/col):%s/%s\n",
+          vim.inspect(actual),
+          vim.inspect(total_height),
+          vim.inspect(total_width),
+          vim.inspect(center_row),
+          vim.inspect(center_col)
+        )
+      )
+      assert_true(isclose(actual.width, width))
+      assert_true(isclose(actual.height, height))
+      assert_true(isclose(2 * (center_row - actual.start_row), height))
+      assert_true(isclose(2 * (actual.end_row - center_row), height))
+      assert_true(isclose(2 * (center_col - actual.start_col), width))
+      assert_true(isclose(2 * (actual.end_col - center_col), width))
     end)
-    it("is greater than 1", function()
-      assert_eq(12, popup_helpers.shift_window_pos(50, 30, 2))
-      assert_eq(10, popup_helpers.shift_window_pos(50, 30, 0))
-      assert_eq(0, popup_helpers.shift_window_pos(50, 20, -15))
-      assert_eq(30, popup_helpers.shift_window_pos(50, 20, 15))
+    it("test4 with fzf_preview_window_opts", function()
+      local actual = popup_helpers.make_layout({
+        relative = "editor",
+        height = 0.75,
+        width = 0.85,
+        row = 0,
+        col = 0,
+      }, { position = "left", size = 35, size_is_percent = true })
+      print(string.format("make_layout-4:%s\n", vim.inspect(actual)))
+      local total_width = vim.o.columns
+      local total_height = vim.o.lines
+      local width = total_width * 0.85
+      local height = total_height * 0.75
+      local center_row = total_height / 2
+      local center_col = total_width / 2
+      assert_true(isclose(actual.width, width))
+      assert_true(isclose(actual.height, height))
+      assert_true(isclose(2 * (center_row - actual.start_row), height))
+      assert_true(isclose(2 * (actual.end_row - center_row), height))
+      assert_true(isclose(2 * (center_col - actual.start_col), width))
+      assert_true(isclose(2 * (actual.end_col - center_col), width))
+
+      assert_true(isclose(actual.provider.width, width * 0.65 - 1))
+      assert_eq(actual.provider.height, height)
+      assert_eq(actual.provider.start_row, actual.start_row)
+      assert_eq(actual.provider.end_row, actual.end_row)
+      assert_eq(actual.provider.start_col, actual.start_col + actual.previewer.width + 2)
+      assert_eq(actual.provider.end_col, actual.end_col)
+
+      assert_true(isclose(actual.previewer.width, width * 0.35 - 1))
+      assert_eq(actual.previewer.height, height)
+      assert_eq(actual.previewer.start_row, actual.start_row)
+      assert_eq(actual.previewer.end_row, actual.end_row)
+      assert_eq(actual.previewer.start_col, actual.start_col)
+      assert_eq(actual.previewer.end_col, actual.start_col + actual.previewer.width)
+    end)
+    it("test5 with fzf_preview_window_opts", function()
+      local actual = popup_helpers.make_layout({
+        relative = "editor",
+        height = 1,
+        width = 1,
+        row = 0,
+        col = 0,
+      }, { position = "up", size = 15 })
+      local total_height = vim.o.lines
+      local total_width = vim.o.columns
+      local width = total_width
+      local height = total_height
+      local center_row = total_height / 2
+      local center_col = total_width / 2
+      print(
+        string.format(
+          "make_layout-5:%s, total(height/width):%s/%s,center(row/col):%s/%s\n",
+          vim.inspect(actual),
+          vim.inspect(total_height),
+          vim.inspect(total_width),
+          vim.inspect(center_row),
+          vim.inspect(center_col)
+        )
+      )
+
+      assert_true(isclose(actual.width, width))
+      assert_true(isclose(actual.height, height))
+      assert_true(isclose(2 * (center_row - actual.start_row), height))
+      assert_true(isclose(2 * (actual.end_row - center_row), height, 3))
+      assert_true(isclose(2 * (center_col - actual.start_col), width))
+      assert_true(isclose(2 * (actual.end_col - center_col), width, 3))
+
+      assert_true(isclose(actual.provider.height, height - 15 - 1))
+      assert_eq(actual.provider.width, width)
+      assert_eq(actual.provider.start_row, actual.start_row + actual.previewer.height + 1)
+      assert_eq(actual.provider.end_row, actual.end_row)
+      assert_eq(actual.provider.start_col, actual.start_col)
+      assert_eq(actual.provider.end_col, actual.end_col)
+
+      assert_true(isclose(actual.previewer.height, 15 - 1))
+      assert_eq(actual.previewer.width, width)
+      assert_eq(actual.previewer.start_row, actual.start_row)
+      assert_eq(actual.previewer.end_row, actual.start_row + actual.previewer.height)
+      assert_eq(actual.previewer.start_col, actual.start_col)
+      assert_eq(actual.previewer.end_col, actual.end_col)
+    end)
+    it("test6 with fzf_preview_window_opts", function()
+      local actual = popup_helpers.make_layout({
+        relative = "win",
+        height = 0.9,
+        width = 0.85,
+        row = 1,
+        col = -2,
+      }, { position = "up", size = 15 })
+      local total_height = vim.api.nvim_win_get_height(0)
+      local total_width = vim.api.nvim_win_get_width(0)
+      local width = total_width * 0.85
+      local height = total_height * 0.9
+      local center_row = total_height / 2 + 1
+      local center_col = total_width / 2 - 2
+      print(
+        string.format(
+          "make_layout-6:%s, total(height/width):%s/%s, height/width:%s/%s, center(row/col):%s/%s\n",
+          vim.inspect(actual),
+          vim.inspect(total_height),
+          vim.inspect(total_width),
+          vim.inspect(height),
+          vim.inspect(width),
+          vim.inspect(center_row),
+          vim.inspect(center_col)
+        )
+      )
+
+      assert_true(isclose(actual.width, width))
+      assert_true(isclose(actual.height, height))
+      assert_true(isclose(2 * (center_row - actual.start_row), height, 3))
+      assert_true(isclose(2 * (actual.end_row - center_row), height, 3))
+      assert_true(isclose(2 * (center_col - actual.start_col), width))
+      assert_true(isclose(2 * (actual.end_col - center_col), width, 3))
+
+      if total_height > 20 then
+        assert_true(isclose(actual.provider.height, height - 15 - 1))
+      end
+      assert_true(isclose(actual.provider.width, width))
+      assert_true(
+        isclose(actual.provider.start_row, actual.start_row + actual.previewer.height + 1, 3)
+      )
+      assert_eq(actual.provider.end_row, actual.end_row)
+      assert_eq(actual.provider.start_col, actual.start_col)
+      assert_eq(actual.provider.end_col, actual.end_col)
+
+      assert_true(isclose(actual.previewer.height, 15 - 1))
+      assert_true(isclose(actual.previewer.width, width))
+      assert_eq(actual.previewer.start_row, actual.start_row)
+      assert_eq(actual.previewer.end_row, actual.start_row + actual.previewer.height)
+      assert_eq(actual.previewer.start_col, actual.start_col)
+      assert_eq(actual.previewer.end_col, actual.end_col)
     end)
   end)
 end)

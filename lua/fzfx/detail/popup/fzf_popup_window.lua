@@ -12,62 +12,42 @@ local M = {}
 local FLOAT_WIN_DEFAULT_BORDER = "none"
 local FLOAT_WIN_DEFAULT_ZINDEX = 60
 
---- @param opts fzfx.WindowOpts
+--- @param win_opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_cursor_opts = function(opts)
-  local relative = "cursor"
-  local total_width = vim.api.nvim_win_get_width(0)
-  local total_height = vim.api.nvim_win_get_height(0)
-  local width = popup_helpers.get_window_size(opts.width, total_width)
-  local height = popup_helpers.get_window_size(opts.height, total_height)
-
-  log.ensure(opts.row >= 0, "window row (%s) opts must >= 0!", vim.inspect(opts))
-  log.ensure(opts.row >= 0, "window col (%s) opts must >= 0!", vim.inspect(opts))
-  local row = opts.row
-  local col = opts.col
+M._make_cursor_opts = function(win_opts)
+  local opts = vim.deepcopy(win_opts)
+  opts.relative = opts.relative or "cursor"
+  local layout = popup_helpers.make_layout(opts)
+  log.debug("|_make_cursor_opts| layout:%s", vim.inspect(layout))
 
   return {
     anchor = "NW",
-    relative = relative,
-    width = width,
-    height = height,
-    row = row,
-    col = col,
+    relative = opts.relative,
+    width = layout.width,
+    height = layout.height,
+    row = opts.row,
+    col = opts.col,
     style = "minimal",
     border = FLOAT_WIN_DEFAULT_BORDER,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
   }
 end
 
---- @param opts fzfx.WindowOpts
+--- @param win_opts fzfx.WindowOpts
 --- @return fzfx.NvimFloatWinOpts
-M._make_center_opts = function(opts)
-  local relative = opts.relative or "editor" --[[@as "editor"|"win"]]
-  local total_width = relative == "editor" and vim.o.columns or vim.api.nvim_win_get_width(0)
-  local total_height = relative == "editor" and vim.o.lines or vim.api.nvim_win_get_height(0)
-  local width = popup_helpers.get_window_size(opts.width, total_width)
-  local height = popup_helpers.get_window_size(opts.height, total_height)
-
-  log.ensure(
-    (opts.row >= -0.5 and opts.row <= 0.5) or opts.row <= -1 or opts.row >= 1,
-    "window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-    vim.inspect(opts)
-  )
-  log.ensure(
-    (opts.col >= -0.5 and opts.col <= 0.5) or opts.col <= -1 or opts.col >= 1,
-    "window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-    vim.inspect(opts)
-  )
-  local row = popup_helpers.shift_window_pos(total_height, height, opts.row)
-  local col = popup_helpers.shift_window_pos(total_width, width, opts.col)
+M._make_center_opts = function(win_opts)
+  local opts = vim.deepcopy(win_opts)
+  opts.relative = opts.relative or "editor"
+  local layout = popup_helpers.make_layout(opts)
+  log.debug("|_make_center_opts| layout:%s", vim.inspect(layout))
 
   return {
     anchor = "NW",
-    relative = relative,
-    width = width,
-    height = height,
-    row = row,
-    col = col,
+    relative = opts.relative,
+    width = layout.width,
+    height = layout.height,
+    row = layout.start_row,
+    col = layout.start_col,
     style = "minimal",
     border = FLOAT_WIN_DEFAULT_BORDER,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
@@ -78,17 +58,13 @@ end
 --- @return fzfx.NvimFloatWinOpts
 M.make_opts = function(win_opts)
   local opts = vim.deepcopy(win_opts)
-  local relative = opts.relative or "editor"
+  opts.relative = opts.relative or "editor"
   log.ensure(
-    relative == "cursor" or relative == "editor" or relative == "win",
+    opts.relative == "cursor" or opts.relative == "editor" or opts.relative == "win",
     "window relative (%s) must be editor/win/cursor",
-    vim.inspect(relative)
+    vim.inspect(opts)
   )
-  if relative == "cursor" then
-    return M._make_cursor_opts(opts)
-  else
-    return M._make_center_opts(opts)
-  end
+  return opts.relative == "cursor" and M._make_cursor_opts(opts) or M._make_center_opts(opts)
 end
 
 -- FzfPopupWindow {

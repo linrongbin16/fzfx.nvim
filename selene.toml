@@ -1,0 +1,13 @@
+std = "vim"
+
+exclude = [
+  "lua/fzfx/commons/*.lua",
+  "lua/fzfx/commons/*/*.lua",
+  "lua/fzfx/commons/*/*/*.lua",
+]
+
+[lints]
+mixed_table = "allow"
+unused_variable = "allow"
+incorrect_standard_library_use = "allow"
+global_usage = "allow"
