@@ -16,8 +16,9 @@ local FLOAT_WIN_DEFAULT_STYLE = "minimal"
 
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param relative_winnr integer?
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
-M.make_opts = function(win_opts, buffer_previewer_opts)
+M.make_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "editor"
   local layout = popup_helpers.make_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
@@ -59,9 +60,10 @@ M.make_opts = function(win_opts, buffer_previewer_opts)
     border = border,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
   }
-  if relative ~= "editor" then
-    result.provider.win = 0
-    result.previewer.win = 0
+
+  if relative ~= "editor" and type(relative_winnr) == "number" then
+    result.provider.win = relative_winnr
+    result.previewer.win = relative_winnr
   end
   log.debug("|make_opts| result:%s", vim.inspect(result))
   return result
@@ -75,6 +77,7 @@ end
 --- @field provider_winnr integer?
 --- @field previewer_bufnr integer?
 --- @field previewer_winnr integer?
+--- @field _saved_current_winnr integer
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @field _saved_previewing_file_content_job fzfx.BufferPopupWindowPreviewFileContentJob
@@ -118,6 +121,8 @@ end
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @return fzfx.BufferPopupWindow
 function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
+  local current_winnr = vim.api.nvim_get_current_win()
+
   -- save current window context
   local window_opts_context = popup_helpers.WindowOptsContext:save()
 
@@ -131,7 +136,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   log.ensure(previewer_bufnr > 0, "failed to create previewer buf")
   _set_default_buf_options(previewer_bufnr)
 
-  local win_confs = M.make_opts(win_opts, buffer_previewer_opts)
+  local win_confs = M.make_opts(win_opts, buffer_previewer_opts, current_winnr)
   local provider_win_confs = win_confs.provider
   local previewer_win_confs = win_confs.previewer
   -- local provider_win_confs = M.make_provider_opts(win_opts, buffer_previewer_opts)
@@ -170,6 +175,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     provider_winnr = provider_winnr,
     previewer_bufnr = previewer_bufnr,
     previewer_winnr = previewer_winnr,
+    _saved_current_winnr = current_winnr,
     _saved_win_opts = win_opts,
     _saved_buffer_previewer_opts = buffer_previewer_opts,
     _saved_previewing_file_content_job = nil,
@@ -221,7 +227,11 @@ function BufferPopupWindow:resize()
 
   if self.previewer_is_hidden then
     local old_win_confs = vim.api.nvim_win_get_config(self.provider_winnr)
-    local new_win_confs = M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts)
+    local new_win_confs = M.make_opts(
+      self._saved_win_opts,
+      self._saved_buffer_previewer_opts,
+      self._saved_current_winnr
+    )
     new_win_confs.provider = nil
     new_win_confs.previewer = nil
     -- log.debug(
@@ -236,7 +246,11 @@ function BufferPopupWindow:resize()
     _set_default_provider_win_options(self.provider_winnr)
   else
     local old_provider_win_confs = vim.api.nvim_win_get_config(self.provider_winnr)
-    local win_confs = M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts)
+    local win_confs = M.make_opts(
+      self._saved_win_opts,
+      self._saved_buffer_previewer_opts,
+      self._saved_current_winnr
+    )
     -- log.debug(
     --   "|BufferPopupWindow:resize| not hidden, provider - old:%s, new:%s",
     --   vim.inspect(old_provider_win_confs),
@@ -612,7 +626,8 @@ function BufferPopupWindow:show_preview()
   end
 
   self.previewer_is_hidden = false
-  local win_confs = M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts)
+  local win_confs =
+    M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts, self._saved_current_winnr)
   win_confs.previewer.focusable = false
 
   self.previewer_bufnr = vim.api.nvim_create_buf(false, true)
