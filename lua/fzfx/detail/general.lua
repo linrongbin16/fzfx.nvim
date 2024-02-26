@@ -1136,8 +1136,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         "*",
         string.format(
           "127.0.0.1:%s?limit=0",
-          constants.IS_WINDOWS and fileios.readfile(fzf_port_file, { trim = true }) --[[@as string]]
-            or fzf_port_reader:read({ trim = true }) --[[@as string]]
+          fileios.readfile(fzf_port_file, { trim = true }) --[[@as string]]
         ),
       }, {
         text = true,
