@@ -184,10 +184,22 @@ local function _generate_fzf_color_opts()
   for name, opts in pairs(fzf_colors) do
     local attr = opts[1]
     for i = 2, #opts do
-      local codes = apis.get_hl(opts[i])
-      if type(tables.tbl_get(codes, attr)) == "number" then
-        table.insert(builder, string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr]))
+      local o = opts[i]
+      if strings.startswith(o, "#") then
+        log.ensure(
+          string.len(o) == 7,
+          "invalid fzf_color_opts: RGB color codes must have 6 digits after '#': %s = %s",
+          vim.inspect(name),
+          vim.inspect(opts)
+        )
+        table.insert(builder, string.format("%s:%s", name:gsub("_", "%-"), opts[i]))
         break
+      else
+        local codes = apis.get_hl(opts[i])
+        if type(tables.tbl_get(codes, attr)) == "number" then
+          table.insert(builder, string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr]))
+          break
+        end
       end
     end
   end
