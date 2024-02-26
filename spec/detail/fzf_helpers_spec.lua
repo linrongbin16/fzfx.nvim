@@ -397,10 +397,10 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual5.size_is_percent, true)
       assert_eq(actual5.follow, false)
       local actual6 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window=down,3,border-bold,nowrap,follow",
+        "--preview-window=top,3,border-bold,nowrap,follow",
       })
       print(string.format("parse fzf --preview-window-12:%s\n", vim.inspect(actual6)))
-      assert_eq(actual6.position, "down")
+      assert_eq(actual6.position, "up")
       assert_eq(actual6.size, 3)
       assert_eq(actual6.size_is_percent, false)
       assert_eq(type(actual6.border), "table")
@@ -421,7 +421,7 @@ describe("detail.fzf_helpers", function()
       assert_eq(actual7.cycle, true)
       assert_eq(actual7.hidden, true)
       local actual8 = fzf_helpers.parse_fzf_preview_window_opts({
-        "--preview-window=down,3,border-bold,nowrap,follow,nocycle,nohidden",
+        "--preview-window=bottom,3,border-bold,nowrap,follow,nocycle,nohidden",
       })
       print(string.format("parse fzf --preview-window-14:%s\n", vim.inspect(actual8)))
       assert_eq(actual8.position, "down")
