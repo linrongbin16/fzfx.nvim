@@ -460,7 +460,7 @@ local FZF_DEFAULT_BORDER_OPTS = constants.IS_WINDOWS and "single" or "rounded"
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
 --
---- @alias fzfx.FzfPreviewWindowOptsNoAlternative {position:"up"|"down"|"left"|"right",size:integer,size_is_percent:boolean,border:string,wrap:boolean,follow:boolean,cycle:boolean,hidden:boolean,scroll:string?,header_lines:integer?}
+--- @alias fzfx.FzfPreviewWindowOptsNoAlternative {position:"top"|"bottom"|"up"|"down"|"left"|"right",size:integer,size_is_percent:boolean,border:string,wrap:boolean,follow:boolean,cycle:boolean,hidden:boolean,scroll:string?,header_lines:integer?}
 --
 --- @param split_opts string[]
 --- @return fzfx.FzfPreviewWindowOptsNoAlternative
@@ -478,8 +478,13 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
     header_lines = nil,
   }
   for i, o in ipairs(split_opts) do
-    if o == "up" or o == "down" or o == "left" or o == "right" then
+    if o == "up" or o == "down" or o == "top" or o == "bottom" or o == "left" or o == "right" then
       result.position = o
+      if o == "top" then
+        result.position = "up"
+      elseif o == "bottom" then
+        result.position = "down"
+      end
     elseif strings.endswith(o, "%") then
       result.size = tonumber(string.sub(o, 1, #o - 1))
     elseif
@@ -549,7 +554,7 @@ end
 
 -- see: https://man.archlinux.org/man/fzf.1.en#preview-window=
 -- --preview-window=[POSITION][,SIZE[%]][,border-BORDER_OPT][,[no]wrap][,[no]follow][,[no]cycle][,[no]hidden][,+SCROLL[OFFSETS][/DENOM]][,~HEADER_LINES][,default][,<SIZE_THRESHOLD(ALTERNATIVE_LAYOUT)]
---- @alias fzfx.FzfPreviewWindowOpts {position:"up"|"down"|"left"|"right",size:integer,size_is_percent:boolean,border:string,wrap:boolean,follow:boolean,cycle:boolean,hidden:boolean,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
+--- @alias fzfx.FzfPreviewWindowOpts {position:"top"|"bottom"|"up"|"down"|"left"|"right",size:integer,size_is_percent:boolean,border:string,wrap:boolean,follow:boolean,cycle:boolean,hidden:boolean,scroll:string?,header_lines:integer?,size_threshold:integer?,alternative_layout:fzfx.FzfPreviewWindowOptsNoAlternative?}
 --
 --- @param opts fzfx.FzfOpt[]
 --- @return fzfx.FzfPreviewWindowOpts
