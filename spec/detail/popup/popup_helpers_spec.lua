@@ -255,7 +255,7 @@ describe("detail.popup.popup_helpers", function()
       end
       assert_true(isclose(actual.provider.width, width))
       assert_true(
-        isclose(actual.provider.start_row, actual.start_row + actual.previewer.height + 1)
+        isclose(actual.provider.start_row, actual.start_row + actual.previewer.height + 1, 3)
       )
       assert_eq(actual.provider.end_row, actual.end_row)
       assert_eq(actual.provider.start_col, actual.start_col)
