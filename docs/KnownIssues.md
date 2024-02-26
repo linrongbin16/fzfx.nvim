@@ -1,6 +1,8 @@
 # Known Issues
 
-## Whitespace Escaping Issue
+## Common
+
+### 1. Whitespace Escaping Issue
 
 This plugin internally extends `nvim`, `fzf` and lua scripts to full path when launching the underground fzf command.
 
@@ -23,6 +25,14 @@ But when there're whitespaces on the path, escaping fzf command becomes quite di
    !> We still cannot handle the 2nd case because all lua scripts in this plugin will thus always contain whitespaces in their path.
 
 Please always avoid whitespaces in directories and file names.
+
+### 2. Too many open files
+
+Fzfx heavily uses disk caches, e.g. read/write files a lot. If you encounter an error "EMFILE: Too many open files" on Linux/MacOS, it's because fzfx opens too many files. Please set a big number in your shell profile, it's usually add below configs `.bashrc` in your home directory (or `.zshrc` for [zsh](https://www.zsh.org/)):
+
+```bash
+ulimit -n 200000
+```
 
 ## Previewer
 
