@@ -1282,12 +1282,12 @@ require("fzfx").setup({
       },
       variants = {
         {
-          name = "FzfxLs",
+          name = "args",
           feed = "args",
           default_provider = "filter_hiddens",
         },
         {
-          name = "FzfxLsU",
+          name = "hidden_args",
           feed = "args",
           default_provider = "include_hiddens",
         },
