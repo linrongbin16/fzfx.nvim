@@ -138,6 +138,12 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   -- local previewer_win_confs = M.make_previewer_opts(win_opts, buffer_previewer_opts)
   previewer_win_confs.focusable = false
 
+  log.debug(
+    "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, win_confs:%s",
+    vim.inspect(win_opts),
+    vim.inspect(buffer_previewer_opts),
+    vim.inspect(win_confs)
+  )
   local previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
   log.ensure(previewer_winnr > 0, "failed to create previewer win")
   _set_default_previewer_win_options(previewer_winnr)
@@ -215,7 +221,9 @@ function BufferPopupWindow:resize()
 
   if self.previewer_is_hidden then
     local old_win_confs = vim.api.nvim_win_get_config(self.provider_winnr)
-    local win_confs = M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts)
+    local new_win_confs = M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts)
+    new_win_confs.provider = nil
+    new_win_confs.previewer = nil
     -- log.debug(
     --   "|BufferPopupWindow:resize| is hidden, provider - old:%s, new:%s",
     --   vim.inspect(old_provider_win_confs),
@@ -223,17 +231,7 @@ function BufferPopupWindow:resize()
     -- )
     vim.api.nvim_win_set_config(
       self.provider_winnr,
-      vim.tbl_deep_extend("force", old_win_confs, {
-        anchor = "NW",
-        relative = win_confs.relative,
-        width = win_confs.width,
-        height = win_confs.height,
-        row = win_confs.row,
-        col = win_confs.col,
-        style = win_confs.style,
-        border = win_confs.border,
-        zindex = win_confs.zindex,
-      })
+      vim.tbl_deep_extend("force", old_win_confs, new_win_confs)
     )
     _set_default_provider_win_options(self.provider_winnr)
   else
