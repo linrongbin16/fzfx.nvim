@@ -112,8 +112,16 @@ end
 -- live grep {
 
 --- @param line string
+--- @param opts string
 --- @return string[]
 M.preview_files_grep = function(line)
+  local parsed = parsers_helper.parse_grep(line)
+  return M.preview_files(parsed.filename, parsed.lineno)
+end
+
+--- @param line string
+--- @return string[]
+M.preview_files_grep_no_filename = function(line)
   local parsed = parsers_helper.parse_grep(line)
   return M.preview_files(parsed.filename, parsed.lineno)
 end
