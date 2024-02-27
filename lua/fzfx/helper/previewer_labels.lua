@@ -1,5 +1,6 @@
 local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
+local paths = require("fzfx.commons.paths")
 
 local parsers = require("fzfx.helper.parsers")
 
@@ -51,10 +52,12 @@ M.label_rg_no_filename = function(line, context)
   if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
     return ""
   end
-  local parsed = parsers.parse_rg(line --[[@as string]])
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+  local parsed = parsers.parse_rg_no_filename(line --[[@as string]])
   return string.format(
     "%s:%d%s",
-    vim.fn.fnamemodify(parsed.filename, ":t"),
+    vim.fn.fnamemodify(filename, ":t"),
     parsed.lineno,
     type(parsed.column) == "number" and string.format(":%d", parsed.column) or ""
   )
