@@ -97,24 +97,17 @@ M._make_provider_rg = function(opts)
     local payload = parsed.payload
     local option = parsed.option
 
-    local args = nil
-    if tables.tbl_get(opts, "unrestricted") or tables.tbl_get(opts, "buffer") then
-      args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
-    else
-      args = vim.deepcopy(providers_helper.RESTRICTED_RG)
+    local bufpath = M._get_buf_path(context.bufnr)
+    if not bufpath then
+      return nil
     end
+
+    local args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
     args = M._append_options(args, option)
 
-    if tables.tbl_get(opts, "buffer") then
-      local bufpath = M._get_buf_path(context.bufnr)
-      if not bufpath then
-        return nil
-      end
-      table.insert(args, payload)
-      table.insert(args, bufpath)
-    else
-      table.insert(args, payload)
-    end
+    table.insert(args, "-I")
+    table.insert(args, payload)
+    table.insert(args, bufpath)
     return args
   end
   return impl
