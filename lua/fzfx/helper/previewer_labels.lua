@@ -70,8 +70,14 @@ M.label_grep_no_filename = function(line, context)
   if strings.empty(line) then
     return ""
   end
-  local parsed = parsers.parse_grep(line --[[@as string]])
-  return string.format("%s:%d", vim.fn.fnamemodify(parsed.filename, ":t"), parsed.lineno or 1)
+  local bufnr = tables.tbl_get(context, "bufnr")
+  if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
+    return ""
+  end
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+  local parsed = parsers.parse_grep_no_filename(line --[[@as string]])
+  return string.format("%s:%d", vim.fn.fnamemodify(filename, ":t"), parsed.lineno or 1)
 end
 
 --- @param parser fun(line:string,context:fzfx.VimCommandsPipelineContext|fzfx.VimKeyMapsPipelineContext):table|string
