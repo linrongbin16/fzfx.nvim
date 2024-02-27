@@ -1,5 +1,3 @@
-local consts = require("fzfx.lib.constants")
-
 local M = {}
 
 --- @alias fzfx.Options table<string, any>
