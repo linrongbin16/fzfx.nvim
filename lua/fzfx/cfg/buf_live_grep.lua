@@ -152,15 +152,11 @@ M.providers = {
   provider_type = ProviderTypeEnum.COMMAND_LIST,
 }
 
---- @param line string
---- @param context fzfx.PipelineContext
---- @return string?
-M._make_previewer_label = function(line, context) end
-
 M.previewers = {
   previewer = previewers_helper.preview_files_grep,
   previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-  previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
+  previewer_label = constants.HAS_RG and labels_helper.label_rg_no_filename
+    or labels_helper.label_grep_no_filename,
 }
 
 local edit = constants.HAS_RG and actions_helper.edit_rg or actions_helper.edit_grep
