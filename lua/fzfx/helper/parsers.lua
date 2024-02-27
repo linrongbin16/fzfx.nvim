@@ -91,6 +91,42 @@ M.parse_grep = function(line)
   return { filename = filename, lineno = lineno, text = text }
 end
 
+-- parse lines from grep without filename. looks like:
+-- ```
+-- 31:local conf = require("fzfx.config")
+-- 57:local colors = require("fzfx.commons.strings")
+-- ```
+--
+-- returns line number and text.
+--
+--- @param line string
+--- @return {lineno:integer?,text:string}
+M.parse_grep_no_filename = function(line)
+  local lineno = nil
+  local text = nil
+
+  local first_colon_pos = strings.find(line, ":")
+  if numbers.gt(first_colon_pos, 0) then
+    lineno = line:sub(1, first_colon_pos - 1)
+    text = line:sub(first_colon_pos + 1)
+  else
+    -- if failed to found the second ':', then
+    -- 1. first try to parse right hands as 'lineno'
+    -- 2. if failed, treat them as 'text'
+    local rhs = line:sub(first_colon_pos + 1)
+    if tonumber(rhs) == nil then
+      text = rhs
+    else
+      lineno = tonumber(rhs)
+    end
+  end
+
+  lineno = tonumber(lineno)
+  text = text or ""
+
+  return { lineno = lineno, text = text }
+end
+
 -- parse lines from rg. looks like:
 -- ```
 -- 󰢱 bin/general/provider.lua:31:2:  local conf = require("fzfx.config")

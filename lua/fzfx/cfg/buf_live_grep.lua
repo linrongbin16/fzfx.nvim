@@ -130,9 +130,8 @@ M._provider_grep = function(query, context)
   return args
 end
 
---- @param opts {unrestricted:boolean?,buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
-M._make_provider = function(opts)
+M._make_provider = function()
   if constants.HAS_RG then
     return M._provider_rg
   elseif constants.HAS_GREP then
@@ -147,47 +146,21 @@ M._make_provider = function(opts)
   end
 end
 
-local restricted_provider = M._make_provider()
-local unrestricted_provider = M._make_provider({ unrestricted = true })
-local buffer_provider = M._make_provider({ buffer = true })
-
 M.providers = {
-  restricted_mode = {
-    key = "ctrl-r",
-    provider = restricted_provider,
-    provider_type = ProviderTypeEnum.COMMAND_LIST,
-    provider_decorator = { module = "prepend_icon_grep", builtin = true },
-  },
-  unrestricted_mode = {
-    key = "ctrl-u",
-    provider = unrestricted_provider,
-    provider_type = ProviderTypeEnum.COMMAND_LIST,
-    provider_decorator = { module = "prepend_icon_grep", builtin = true },
-  },
-  buffer_mode = {
-    key = "ctrl-o",
-    provider = buffer_provider,
-    provider_type = ProviderTypeEnum.COMMAND_LIST,
-    provider_decorator = { module = "prepend_icon_grep", builtin = true },
-  },
+  key = "default",
+  provider = M._make_provider(),
+  provider_type = ProviderTypeEnum.COMMAND_LIST,
 }
 
+--- @param line string
+--- @param context fzfx.PipelineContext
+--- @return string?
+M._make_previewer_label = function(line, context) end
+
 M.previewers = {
-  restricted_mode = {
-    previewer = previewers_helper.preview_files_grep,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
-  },
-  unrestricted_mode = {
-    previewer = previewers_helper.preview_files_grep,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
-  },
-  buffer_mode = {
-    previewer = previewers_helper.preview_files_grep,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
-  },
+  previewer = previewers_helper.preview_files_grep,
+  previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+  previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
 }
 
 local edit = constants.HAS_RG and actions_helper.edit_rg or actions_helper.edit_grep

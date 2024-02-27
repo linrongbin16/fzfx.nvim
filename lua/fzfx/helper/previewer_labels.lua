@@ -40,6 +40,37 @@ M.label_grep = function(line)
   return string.format("%s:%d", vim.fn.fnamemodify(parsed.filename, ":t"), parsed.lineno or 1)
 end
 
+--- @param line string?
+--- @param context fzfx.PipelineContext?
+--- @return string
+M.label_rg_no_filename = function(line, context)
+  if strings.empty(line) then
+    return ""
+  end
+  local bufnr = tables.tbl_get(context, "bufnr")
+  if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
+    return ""
+  end
+  local parsed = parsers.parse_rg(line --[[@as string]])
+  return string.format(
+    "%s:%d%s",
+    vim.fn.fnamemodify(parsed.filename, ":t"),
+    parsed.lineno,
+    type(parsed.column) == "number" and string.format(":%d", parsed.column) or ""
+  )
+end
+
+--- @param line string?
+--- @param context fzfx.PipelineContext?
+--- @return string?
+M.label_grep_no_filename = function(line, context)
+  if strings.empty(line) then
+    return ""
+  end
+  local parsed = parsers.parse_grep(line --[[@as string]])
+  return string.format("%s:%d", vim.fn.fnamemodify(parsed.filename, ":t"), parsed.lineno or 1)
+end
+
 --- @param parser fun(line:string,context:fzfx.VimCommandsPipelineContext|fzfx.VimKeyMapsPipelineContext):table|string
 --- @param default_value string
 --- @return fun(line:string,context:fzfx.VimCommandsPipelineContext|fzfx.VimKeyMapsPipelineContext):string
