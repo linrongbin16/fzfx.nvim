@@ -244,7 +244,7 @@ M.providers = {
     key = "ctrl-o",
     provider = buffer_provider,
     provider_type = ProviderTypeEnum.COMMAND_LIST,
-    provider_decorator = { module = "prepend_icon_grep", builtin = true },
+    -- provider_decorator = { module = "prepend_icon_grep", builtin = true },
   },
 }
 
@@ -276,7 +276,7 @@ M.previewers = {
   buffer_mode = {
     previewer = buffer_previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
+    -- previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
 }
 
