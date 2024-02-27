@@ -161,6 +161,7 @@ M._make_provider_rg = function(opts)
       if not bufpath then
         return nil
       end
+      table.insert(args, "-I") -- no filename
       table.insert(args, payload)
       table.insert(args, bufpath)
     else
@@ -195,6 +196,7 @@ M._make_provider_grep = function(opts)
       if not bufpath then
         return nil
       end
+      table.insert(args, "-h") -- no filename
       table.insert(args, payload)
       table.insert(args, bufpath)
     else
