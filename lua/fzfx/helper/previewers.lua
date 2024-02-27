@@ -124,7 +124,7 @@ end
 M.preview_files_grep_no_filename = function(line, context)
   local parsed = parsers_helper.parse_grep_no_filename(line)
   local filename = vim.api.nvim_buf_get_name(context.bufnr)
-  return M.preview_files(filename, parsed.lineno)
+  return M.preview_files_with_line_range(filename, parsed.lineno)
 end
 
 -- live grep }
