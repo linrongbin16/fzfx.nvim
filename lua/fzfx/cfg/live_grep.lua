@@ -253,29 +253,29 @@ M.providers = {
 --- @return fun(line:string,context:fzfx.PipelineContext):string[]|nil
 M._make_previewer = function(opts)
   if tables.tbl_get(opts, "buffer") then
-    --- @param line string
-    --- @param context fzfx.PipelineContext
-    local function impl(line, context) end
-
-    return impl
+    return previewers_helper.preview_files_grep_no_filename
   else
     return previewers_helper.preview_files_grep
   end
 end
 
+local restricted_previewer = M._make_previewer()
+local unrestricted_previewer = M._make_previewer({ unrestricted = true })
+local buffer_previewer = M._make_previewer({ buffer = true })
+
 M.previewers = {
   restricted_mode = {
-    previewer = previewers_helper.preview_files_grep,
+    previewer = restricted_previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   unrestricted_mode = {
-    previewer = previewers_helper.preview_files_grep,
+    previewer = unrestricted_previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   buffer_mode = {
-    previewer = previewers_helper.preview_files_grep,
+    previewer = buffer_previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },

@@ -112,7 +112,6 @@ end
 -- live grep {
 
 --- @param line string
---- @param opts string
 --- @return string[]
 M.preview_files_grep = function(line)
   local parsed = parsers_helper.parse_grep(line)
@@ -120,10 +119,12 @@ M.preview_files_grep = function(line)
 end
 
 --- @param line string
+--- @param context fzfx.PipelineContext
 --- @return string[]
-M.preview_files_grep_no_filename = function(line)
-  local parsed = parsers_helper.parse_grep(line)
-  return M.preview_files(parsed.filename, parsed.lineno)
+M.preview_files_grep_no_filename = function(line, context)
+  local parsed = parsers_helper.parse_grep_no_filename(line)
+  local filename = vim.api.nvim_buf_get_name(context.bufnr)
+  return M.preview_files(filename, parsed.lineno)
 end
 
 -- live grep }
