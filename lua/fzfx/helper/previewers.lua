@@ -1,5 +1,6 @@
 local strings = require("fzfx.commons.strings")
 local paths = require("fzfx.commons.paths")
+local tables = require("fzfx.commons.tables")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -116,6 +117,20 @@ end
 M.preview_files_grep = function(line)
   local parsed = parsers_helper.parse_grep(line)
   return M.preview_files(parsed.filename, parsed.lineno)
+end
+
+--- @param line string
+--- @param context fzfx.PipelineContext
+--- @return string[]|nil
+M.preview_files_grep_no_filename = function(line, context)
+  local bufnr = tables.tbl_get(context, "bufnr")
+  if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
+    return nil
+  end
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+  local parsed = parsers_helper.parse_grep_no_filename(line)
+  return M.preview_files_with_line_range(filename, parsed.lineno)
 end
 
 -- live grep }
