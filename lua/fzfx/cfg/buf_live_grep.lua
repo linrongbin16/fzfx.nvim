@@ -20,8 +20,6 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
-local INVALID_BUFFER_ERROR = "invalid buffer(%s)."
-
 M.command = {
   name = "FzfxBufLiveGrep",
   desc = "Live grep on current buffer",
@@ -115,7 +113,7 @@ M.variants = {
 M._get_buf_path = function(bufnr)
   local bufpath = bufs.buf_is_valid(bufnr) and paths.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
   if strings.empty(bufpath) then
-    log.echo(LogLevels.INFO, INVALID_BUFFER_ERROR, vim.inspect(bufnr))
+    log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
     return nil
   end
   return bufpath
