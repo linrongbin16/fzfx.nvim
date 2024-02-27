@@ -181,6 +181,51 @@ M.parse_rg = function(line)
   return { filename = filename, lineno = lineno, column = column, text = text }
 end
 
+-- parse lines from rg without filename. looks like:
+-- ```
+-- 󰢱 31:2:local conf = require("fzfx.config")
+-- 󰢱 57:13:local colors = require("fzfx.commons.strings")
+-- ```
+--
+-- remove the prepend icon and returns **expanded** file path, line number, column number and text.
+--
+--- @param line string
+--- @return {lineno:integer,column:integer?,text:string}
+M.parse_rg_no_filename = function(line)
+  local lineno = nil
+  local column = nil
+  local text = nil
+
+  local first_colon_pos = strings.find(line, ":")
+  assert(
+    type(first_colon_pos) == "number",
+    string.format("failed to parse rg lines:%s", vim.inspect(line))
+  )
+  lineno = line:sub(1, first_colon_pos - 1)
+
+  local second_colon_pos = strings.find(line, ":", first_colon_pos + 1)
+  if numbers.gt(second_colon_pos, 0) then
+    column = line:sub(first_colon_pos + 1, second_colon_pos - 1)
+    text = line:sub(second_colon_pos + 1)
+  else
+    -- if failed to found the third ':', then
+    -- 1. first try to parse right hands as 'column'
+    -- 2. if failed, treat them as 'text'
+    local rhs = line:sub(first_colon_pos + 1)
+    if tonumber(rhs) == nil then
+      text = rhs
+    else
+      column = tonumber(rhs)
+    end
+  end
+
+  lineno = tonumber(lineno)
+  column = tonumber(column)
+  text = text or ""
+
+  return { lineno = lineno, column = column, text = text }
+end
+
 -- parse lines from `git status --short`. looks like:
 -- ```
 --  M lua/fzfx/helper/parsers.lua
