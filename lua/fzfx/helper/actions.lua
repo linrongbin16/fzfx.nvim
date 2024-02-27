@@ -160,6 +160,82 @@ M.edit_grep = function(lines, context)
   end)
 end
 
+--- @package
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+--- @return string[]|nil
+M._make_edit_rg_no_filename = function(lines, context)
+  local results = {}
+  if #lines == 0 then
+    return nil
+  end
+  local bufnr = tables.tbl_get(context, "bufnr")
+  if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
+    return nil
+  end
+  for i, line in ipairs(lines) do
+    local parsed = parsers.parse_rg(line)
+    local edit = string.format("edit! %s", parsed.filename)
+    table.insert(results, edit)
+    if i == #lines and parsed.lineno ~= nil then
+      local column = parsed.column or 1
+      local setpos = string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
+      table.insert(results, setpos)
+      local center_cursor = string.format('execute "normal! zz"')
+      table.insert(results, center_cursor)
+    end
+  end
+  return results
+end
+
+-- Run 'edit' command on rg results.
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+M.edit_rg_no_filename = function(lines, context)
+  local edits = M._make_edit_rg_no_filename(lines)
+  prompts.confirm_discard_modified(context.bufnr, function()
+    for i, edit in ipairs(edits) do
+      -- log.debug("|fzfx.helper.actions - edit_rg_no_filename| [%d]:[%s]", i, edit)
+      local ok, result = pcall(vim.cmd --[[@as function]], edit)
+      assert(ok, vim.inspect(result))
+    end
+  end)
+end
+
+--- @package
+--- @param lines string[]
+--- @return string[]
+M._make_edit_grep_no_filename = function(lines)
+  local results = {}
+  for i, line in ipairs(lines) do
+    local parsed = parsers.parse_grep(line)
+    local edit = string.format("edit! %s", parsed.filename)
+    table.insert(results, edit)
+    if i == #lines and parsed.lineno ~= nil then
+      local column = 1
+      local setpos = string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
+      table.insert(results, setpos)
+      local center_cursor = string.format('execute "normal! zz"')
+      table.insert(results, center_cursor)
+    end
+  end
+  return results
+end
+
+-- Run 'edit' command on grep results.
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+M.edit_grep_no_filename = function(lines, context)
+  local edits = M._make_edit_grep_no_filename(lines)
+  prompts.confirm_discard_modified(context.bufnr, function()
+    for i, edit in ipairs(edits) do
+      -- log.debug("|fzfx.helper.actions - edit_grep_no_filename| [%d]:[%s]", i, edit)
+      local ok, result = pcall(vim.cmd --[[@as function]], edit)
+      assert(ok, vim.inspect(result))
+    end
+  end)
+end
+
 --- @param lines string[]
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]
 M._make_setqflist_grep = function(lines)
