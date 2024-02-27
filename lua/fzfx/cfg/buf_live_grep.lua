@@ -86,74 +86,57 @@ M._append_options = function(args_list, option)
   return args_list
 end
 
---- @param opts {unrestricted:boolean?,buffer:boolean?}?
---- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
-M._make_provider_rg = function(opts)
-  --- @param query string
-  --- @param context fzfx.PipelineContext
-  --- @return string[]|nil
-  local function impl(query, context)
-    local parsed = queries_helper.parse_flagged(query or "")
-    local payload = parsed.payload
-    local option = parsed.option
+--- @param query string
+--- @param context fzfx.PipelineContext
+--- @return string[]|nil
+M._provider_rg = function(query, context)
+  local parsed = queries_helper.parse_flagged(query or "")
+  local payload = parsed.payload
+  local option = parsed.option
 
-    local bufpath = M._get_buf_path(context.bufnr)
-    if not bufpath then
-      return nil
-    end
-
-    local args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
-    args = M._append_options(args, option)
-
-    table.insert(args, "-I")
-    table.insert(args, payload)
-    table.insert(args, bufpath)
-    return args
+  local bufpath = M._get_buf_path(context.bufnr)
+  if not bufpath then
+    return nil
   end
-  return impl
+
+  local args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
+  args = M._append_options(args, option)
+
+  table.insert(args, "-I")
+  table.insert(args, payload)
+  table.insert(args, bufpath)
+  return args
 end
 
---- @param opts {unrestricted:boolean?,buffer:boolean?}?
---- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
-M._make_provider_grep = function(opts)
-  --- @param query string
-  --- @param context fzfx.PipelineContext
-  --- @return string[]|nil
-  local function impl(query, context)
-    local parsed = queries_helper.parse_flagged(query or "")
-    local payload = parsed.payload
-    local option = parsed.option
+--- @param query string
+--- @param context fzfx.PipelineContext
+--- @return string[]|nil
+M._provider_grep = function(query, context)
+  local parsed = queries_helper.parse_flagged(query or "")
+  local payload = parsed.payload
+  local option = parsed.option
 
-    local args = nil
-    if tables.tbl_get(opts, "unrestricted") or tables.tbl_get(opts, "buffer") then
-      args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
-    else
-      args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
-    end
-    args = M._append_options(args, option)
-
-    if tables.tbl_get(opts, "buffer") then
-      local bufpath = M._get_buf_path(context.bufnr)
-      if not bufpath then
-        return nil
-      end
-      table.insert(args, payload)
-      table.insert(args, bufpath)
-    else
-      table.insert(args, payload)
-    end
-    return args
+  local bufpath = M._get_buf_path(context.bufnr)
+  if not bufpath then
+    return nil
   end
-  return impl
+
+  local args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
+  args = M._append_options(args, option)
+
+  table.insert(args, "-h")
+  table.insert(args, payload)
+  table.insert(args, bufpath)
+  return args
 end
 
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 M._make_provider = function(opts)
   if constants.HAS_RG then
-    return M._make_provider_rg(opts)
+    return M._provider_rg
   elseif constants.HAS_GREP then
-    return M._make_provider_grep(opts)
+    return M._provider_grep
   else
     --- @return nil
     local function impl()
