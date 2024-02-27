@@ -4,7 +4,6 @@ local paths = require("fzfx.commons.paths")
 
 local constants = require("fzfx.lib.constants")
 local bufs = require("fzfx.lib.bufs")
-local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
