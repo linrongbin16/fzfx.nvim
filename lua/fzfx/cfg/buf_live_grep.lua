@@ -2,9 +2,8 @@ local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
 local paths = require("fzfx.commons.paths")
 
-local consts = require("fzfx.lib.constants")
+local constants = require("fzfx.lib.constants")
 local bufs = require("fzfx.lib.bufs")
-local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -21,9 +20,11 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
 local M = {}
 
+local INVALID_BUFFER_ERROR = "invalid buffer(%s)."
+
 M.command = {
-  name = "FzfxLiveGrep",
-  desc = "Live grep",
+  name = "FzfxBufLiveGrep",
+  desc = "Live grep on current buffer",
 }
 
 M.variants = {
@@ -114,7 +115,7 @@ M.variants = {
 M._get_buf_path = function(bufnr)
   local bufpath = bufs.buf_is_valid(bufnr) and paths.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
   if strings.empty(bufpath) then
-    log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
+    log.echo(LogLevels.INFO, INVALID_BUFFER_ERROR, vim.inspect(bufnr))
     return nil
   end
   return bufpath
@@ -208,9 +209,9 @@ end
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 M._make_provider = function(opts)
-  if consts.HAS_RG then
+  if constants.HAS_RG then
     return M._make_provider_rg(opts)
-  elseif consts.HAS_GREP then
+  elseif constants.HAS_GREP then
     return M._make_provider_grep(opts)
   else
     --- @return nil
@@ -251,22 +252,22 @@ M.previewers = {
   restricted_mode = {
     previewer = previewers_helper.preview_files_grep,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = consts.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
+    previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   unrestricted_mode = {
     previewer = previewers_helper.preview_files_grep,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = consts.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
+    previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   buffer_mode = {
     previewer = previewers_helper.preview_files_grep,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = consts.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
+    previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
 }
 
-local edit = consts.HAS_RG and actions_helper.edit_rg or actions_helper.edit_grep
-local setqflist = consts.HAS_RG and actions_helper.setqflist_rg or actions_helper.setqflist_grep
+local edit = constants.HAS_RG and actions_helper.edit_rg or actions_helper.edit_grep
+local setqflist = constants.HAS_RG and actions_helper.setqflist_rg or actions_helper.setqflist_grep
 
 M.actions = {
   ["esc"] = actions_helper.nop,
