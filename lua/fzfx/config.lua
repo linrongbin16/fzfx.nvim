@@ -13,6 +13,11 @@ local Defaults = {
   --- @type fzfx.GroupConfig
   live_grep = require("fzfx.cfg.live_grep"),
 
+  -- the 'Buf Live Grep' commands
+  --
+  --- @type fzfx.GroupConfig
+  buf_live_grep = require("fzfx.cfg.buf_live_grep"),
+
   -- the 'Buffers' commands
   --
   --- @type fzfx.GroupConfig

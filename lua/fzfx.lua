@@ -41,6 +41,7 @@ local function setup(opts)
 
   -- grep
   general.setup("live_grep", configs.live_grep)
+  general.setup("buf_live_grep", configs.buf_live_grep)
 
   -- git
   general.setup("git_files", configs.git_files)
