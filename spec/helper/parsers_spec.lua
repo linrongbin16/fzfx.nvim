@@ -106,6 +106,41 @@ describe("helper.parsers", function()
       end
     end)
   end)
+  describe("[parse_grep_no_filename]", function()
+    it("test", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "1",
+        "1:2",
+        "1: ok ok",
+        "2:3:hello",
+      }
+      for _, line in ipairs(lines) do
+        local actual = parsers_helper.parse_grep_no_filename(line)
+        print(
+          string.format(
+            "parse grep no filename, line:%s, actual:%s\n",
+            vim.inspect(line),
+            vim.inspect(actual)
+          )
+        )
+        assert_eq(type(actual), "table")
+        assert_eq(actual.filename, nil)
+        assert_eq(type(actual.lineno), "number")
+
+        local first_colon_pos = strings.find(line, ":")
+        if first_colon_pos then
+          assert_eq(actual.lineno, tonumber(line:sub(1, first_colon_pos - 1)))
+          assert_eq(actual.text, line:sub(first_colon_pos + 1))
+        else
+          assert_true(
+            (actual.lineno == tonumber(line) and actual.text == "")
+              or (actual.text == line and actual.lineno == nil)
+          )
+        end
+      end
+    end)
+  end)
 
   describe("[parse_rg]", function()
     it("test without icon", function()

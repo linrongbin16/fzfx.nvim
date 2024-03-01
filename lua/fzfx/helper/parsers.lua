@@ -110,10 +110,10 @@ M.parse_grep_no_filename = function(line)
     lineno = line:sub(1, first_colon_pos - 1)
     text = line:sub(first_colon_pos + 1)
   else
-    -- if failed to found the second ':', then
+    -- if failed to found the first ':', then
     -- 1. first try to parse right hands as 'lineno'
     -- 2. if failed, treat them as 'text'
-    local rhs = line:sub(first_colon_pos + 1)
+    local rhs = line
     if tonumber(rhs) == nil then
       text = rhs
     else
