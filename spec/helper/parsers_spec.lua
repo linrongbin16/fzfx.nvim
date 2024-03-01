@@ -162,15 +162,14 @@ describe("helper.parsers", function()
         "1:3: ok ok",
       }
       for _, line in ipairs(lines) do
-        local actual = parsers_helper.parse_rg(line)
+        local actual = parsers_helper.parse_rg_no_filename(line)
         assert_eq(type(actual), "table")
-        assert_eq(type(actual.filename), "string")
+        assert_eq(actual.filename, nil)
         assert_eq(type(actual.lineno), "number")
         assert_eq(type(actual.column), "number")
         local line_splits = strings.split(line, ":")
-        assert_eq(actual.filename, parsers_helper.parse_find(line_splits[1]).filename)
-        assert_eq(actual.lineno, tonumber(line_splits[2]))
-        assert_eq(actual.column, tonumber(line_splits[3]))
+        assert_eq(actual.lineno, tonumber(line_splits[1]))
+        assert_eq(actual.column, tonumber(line_splits[2]))
       end
     end)
   end)
