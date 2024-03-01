@@ -10,8 +10,8 @@ concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
 jobs:
-  conventional_commit:
-    name: Conventional Commits
+  commit:
+    name: Commits
     if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
