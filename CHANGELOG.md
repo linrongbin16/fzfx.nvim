@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.6.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.5.1...v5.6.0) (2024-03-01)
+
+
+### Features
+
+* **buf_live_grep:** add 'FzfxBufLiveGrep' ([#622](https://github.com/linrongbin16/fzfx.nvim/issues/622)) ([b7ec64b](https://github.com/linrongbin16/fzfx.nvim/commit/b7ec64b1d9b95d6e4d8dd1aac6ea0e8952f9b001))
+
 ## [5.5.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.5.0...v5.5.1) (2024-02-26)
 
 
