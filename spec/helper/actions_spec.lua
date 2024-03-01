@@ -406,14 +406,17 @@ describe("helper.actions", function()
     it("run", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
-        "~/github/linrongbin16/fzfx.nvim/README.md:1:hello world",
-        "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10: ok ok",
-        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81: local query = 'hello'",
-        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4: print('goodbye world')",
-        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3: hello world",
+        "1:hello world",
+        "10: ok ok",
+        "81: local query = 'hello'",
+        "4: print('goodbye world')",
+        "3: hello world",
       }
-      actions.setqflist_grep(lines)
-      assert_true(true)
+      for i, line in ipairs(lines) do
+        local ctx = contexts_helper.make_pipeline_context()
+        actions.setqflist_grep_no_filename(lines, ctx)
+        assert_true(true)
+      end
     end)
   end)
 
