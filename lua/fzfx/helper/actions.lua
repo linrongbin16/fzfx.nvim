@@ -345,7 +345,7 @@ M._make_setqflist_grep_no_filename = function(lines, context)
   for _, line in ipairs(lines) do
     local parsed = parsers.parse_grep(line)
     table.insert(qfs, {
-      filename = parsed.filename,
+      filename = filename,
       lnum = parsed.lineno,
       col = 1,
       text = parsed.text,
@@ -355,8 +355,13 @@ M._make_setqflist_grep_no_filename = function(lines, context)
 end
 
 --- @param lines string[]
-M.setqflist_grep = function(lines)
-  local qfs = M._make_setqflist_grep(lines)
+--- @param context fzfx.PipelineContext?
+M.setqflist_grep_no_filename = function(lines, context)
+  local qfs = M._make_setqflist_grep_no_filename(lines, context)
+  if not qfs then
+    return
+  end
+
   local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
   assert(ok, vim.inspect(result))
   ok, result = pcall(vim.fn.setqflist, {}, " ", {
