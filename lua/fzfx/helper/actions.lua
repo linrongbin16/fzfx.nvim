@@ -170,7 +170,7 @@ M._make_edit_rg_no_filename = function(lines, context)
     return nil
   end
   local bufnr = tables.tbl_get(context, "bufnr")
-  if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
+  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
     return nil
   end
   for i, line in ipairs(lines) do
