@@ -164,7 +164,7 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
-M._make_move_cursor_rg_no_filename = function(lines, context)
+M._make_set_cursor_rg_no_filename = function(lines, context)
   local results = {}
   if #lines == 0 then
     return nil
@@ -192,11 +192,11 @@ M._make_move_cursor_rg_no_filename = function(lines, context)
   return results
 end
 
--- Run 'edit' command on rg results.
+-- Run 'set_cursor' command on rg results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
-M.move_cursor_rg_no_filename = function(lines, context)
-  local moves = M._make_move_cursor_rg_no_filename(lines, context)
+M.set_cursor_rg_no_filename = function(lines, context)
+  local moves = M._make_set_cursor_rg_no_filename(lines, context)
   if not moves then
     return
   end
