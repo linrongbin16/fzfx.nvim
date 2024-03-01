@@ -155,11 +155,14 @@ M.previewers = {
 
 local set_cursor = constants.HAS_RG and actions_helper.set_cursor_rg_no_filename
   or actions_helper.set_cursor_grep_no_filename
+local setqflist = constants.HAS_RG and actions_helper.setqflist_rg_no_filename
+  or actions_helper.setqflist_grep_no_filename
 
 M.actions = {
   ["esc"] = actions_helper.nop,
   ["enter"] = set_cursor,
   ["double-click"] = set_cursor,
+  ["ctrl-q"] = setqflist,
 }
 
 M.fzf_opts = {
