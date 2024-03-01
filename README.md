@@ -393,25 +393,25 @@ Below keys are binded by default:
 </thead>
 <tbody>
   <tr>
-    <td><code>(unres_/buf_)args</code></td>
+    <td><code>args</code></td>
     <td>N</td>
     <td rowspan="5">Yes</td>
     <td rowspan="5">Yes</td>
   </tr>
   <tr>
-    <td><code>(unres_/buf_)visual</code></td>
+    <td><code>visual</code></td>
     <td>V</td>
   </tr>
   <tr>
-    <td><code>(unres_/buf_)cword</code></td>
+    <td><code>cword</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td><code>(unres_/buf_)put</code></td>
+    <td><code>put</code></td>
     <td>N</td>
   </tr>
   <tr>
-    <td><code>(unres_/buf_)resume</code></td>
+    <td><code>resume</code></td>
     <td>N</td>
   </tr>
 </tbody>
