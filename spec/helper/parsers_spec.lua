@@ -152,6 +152,29 @@ describe("helper.parsers", function()
     end)
   end)
 
+  describe("[parse_rg_no_filename]", function()
+    it("test", function()
+      local lines = {
+        "12:30",
+        "13:1:",
+        "13:2: hello world",
+        "1:3",
+        "1:3: ok ok",
+      }
+      for _, line in ipairs(lines) do
+        local actual = parsers_helper.parse_rg(line)
+        assert_eq(type(actual), "table")
+        assert_eq(type(actual.filename), "string")
+        assert_eq(type(actual.lineno), "number")
+        assert_eq(type(actual.column), "number")
+        local line_splits = strings.split(line, ":")
+        assert_eq(actual.filename, parsers_helper.parse_find(line_splits[1]).filename)
+        assert_eq(actual.lineno, tonumber(line_splits[2]))
+        assert_eq(actual.column, tonumber(line_splits[3]))
+      end
+    end)
+  end)
+
   describe("[parse_ls/parse_lsd/parse_eza]", function()
     local cwdtmp = vim.fn.tempname()
     fileios.writefile(cwdtmp, cwd)
