@@ -343,7 +343,7 @@ M._make_setqflist_grep_no_filename = function(lines, context)
 
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers.parse_grep(line)
+    local parsed = parsers.parse_grep_no_filename(line)
     table.insert(qfs, {
       filename = filename,
       lnum = parsed.lineno,

@@ -373,22 +373,34 @@ describe("helper.actions", function()
         "3: hello world",
       }
       local actual1 =
-        actions._make_setqflist_grep_no_filename(nil, contexts_helper.make_pipeline_context())
-      assert_eq(actual1, nil)
+        actions._make_setqflist_grep_no_filename({}, contexts_helper.make_pipeline_context())
+      assert_eq(#actual1, 0)
       local actual2 = actions._make_setqflist_grep_no_filename(lines, nil)
       assert_eq(actual2, nil)
 
-      local actual = actions._make_setqflist_grep_no_filename(lines)
-      assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines)
-      for i, act in ipairs(actual) do
-        local line = lines[i]
-        local expect = parsers.parse_grep(line)
-        assert_eq(type(act), "table")
-        assert_eq(act.filename, expect.filename)
-        assert_eq(act.lnum, expect.lineno)
-        assert_eq(act.col, 1)
-        assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
+      for i, line in ipairs(lines) do
+        local ctx = contexts_helper.make_pipeline_context()
+        local actual = actions._make_setqflist_grep_no_filename({ line }, ctx)
+        assert_eq(type(actual), "table")
+        assert_eq(#actual, 1)
+
+        local filename = vim.api.nvim_buf_get_name(ctx.bufnr)
+        filename = paths.normalize(filename, { double_backslash = true, expand = true })
+
+        local splits = strings.split(line, ":")
+        for _, act in ipairs(actual) do
+          print(
+            string.format(
+              "setqflist_grep_no_filename-1 act:%s, splits:%s\n",
+              vim.inspect(act),
+              vim.inspect(splits)
+            )
+          )
+          assert_eq(act.filename, filename)
+          assert_eq(act.lnum, tonumber(splits[1]))
+          assert_eq(act.col, 1)
+          assert_eq(act.text, line:sub(strings.find(line, ":") + 1))
+        end
       end
     end)
     it("run", function()
