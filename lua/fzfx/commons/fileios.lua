@@ -205,10 +205,14 @@ M.asyncreadfile = function(filename, on_complete, opts)
   opts = opts or { trim = false }
   opts.trim = type(opts.trim) == "boolean" and opts.trim or false
 
-  local open_result, open_err = uv.fs_open(filename, "r", 438, function(open_err, fd)
-    if open_err then
+  local open_result, open_err = uv.fs_open(filename, "r", 438, function(open_complete_err, fd)
+    if open_complete_err then
       error(
-        string.format("failed to open(r) file %s: %s", vim.inspect(filename), vim.inspect(open_err))
+        string.format(
+          "failed to complete open(r) file %s: %s",
+          vim.inspect(filename),
+          vim.inspect(open_complete_err)
+        )
       )
       return
     end
@@ -289,10 +293,13 @@ end
 M.asyncreadlines = function(filename, opts)
   assert(type(opts) == "table")
   assert(type(opts.on_line) == "function")
+  ---@diagnostic disable-next-line: undefined-field
   local batchsize = opts.batchsize or 4096
 
   local function _handle_error(err, msg)
+    ---@diagnostic disable-next-line: undefined-field
     if type(opts.on_error) == "function" then
+      ---@diagnostic disable-next-line: undefined-field
       opts.on_error(err)
     else
       error(
@@ -384,7 +391,9 @@ M.asyncreadlines = function(filename, opts)
                     if close_complete_err then
                       _handle_error(close_complete_err, "fs_close complete")
                     end
+                    ---@diagnostic disable-next-line: undefined-field
                     if type(opts.on_complete) == "function" then
+                      ---@diagnostic disable-next-line: undefined-field
                       opts.on_complete(fsize)
                     end
                   end
