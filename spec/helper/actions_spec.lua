@@ -289,13 +289,13 @@ describe("helper.actions", function()
     it("run", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
-        "~/github/linrongbin16/fzfx.nvim/README.md:38: this is fzfx",
-        "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:1",
-        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:1:hello world",
-        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
-        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:9129",
+        "38: this is fzfx",
+        "1",
+        "1:hello world",
+        "12:81: goodbye",
+        "81:72:9129",
       }
-      actions.edit_grep(lines, make_context())
+      actions.set_cursor_grep_no_filename(lines, make_context())
       assert_true(true)
     end)
   end)
@@ -454,6 +454,49 @@ describe("helper.actions", function()
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:91:94",
       }
       actions.edit_rg(lines, make_context())
+      assert_true(true)
+    end)
+  end)
+  describe("[set_cursor_rg_no_filename]", function()
+    it("make", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "1:1:ok",
+        "1:2:hello",
+        "1:3:hello world",
+        "12:81: goodbye",
+        "81:71:9129",
+      }
+      local actual = actions._make_set_cursor_rg_no_filename(lines, make_context())
+      assert_eq(type(actual), "table")
+      assert_eq(#actual, #lines + 2)
+      for i, act in ipairs(actual) do
+        if i <= #lines then
+          local expect = string.format(
+            "edit! %s",
+            paths.normalize(
+              strings.split(lines[i], ":")[1],
+              { double_backslash = true, expand = true }
+            )
+          )
+          assert_eq(act, expect)
+        elseif i == #lines + 1 then
+          assert_eq(act, "call setpos('.', [0, 81, 71])")
+        else
+          assert_eq(act, 'execute "normal! zz"')
+        end
+      end
+    end)
+    it("run", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "1:1:ok",
+        "1:2:hello",
+        "1:3:hello world",
+        "12:81: goodbye",
+        "81:71:9129",
+      }
+      actions.set_cursor_rg_no_filename(lines, make_context())
       assert_true(true)
     end)
   end)
