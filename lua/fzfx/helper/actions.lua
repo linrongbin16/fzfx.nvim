@@ -163,7 +163,7 @@ end
 --- @package
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
---- @return string[]|nil
+--- @return (string|function)[]|nil
 M._make_set_cursor_rg_no_filename = function(lines, context)
   if #lines == 0 then
     return nil
@@ -177,17 +177,13 @@ M._make_set_cursor_rg_no_filename = function(lines, context)
   local results = {}
   local line = lines[#lines]
   local parsed = parsers.parse_rg_no_filename(line)
-  table.insert(results, string.format("lua vim.api.nvim_set_current_win(%d)", winnr))
+  table.insert(results, function()
+    vim.api.nvim_set_current_win(winnr)
+  end)
   if numbers.ge(parsed.lineno, 0) then
-    table.insert(
-      results,
-      string.format(
-        "lua vim.api.nvim_win_set_cursor(%d, {%d, %d})",
-        winnr,
-        parsed.lineno,
-        parsed.column or 1
-      )
-    )
+    table.insert(results, function()
+      vim.api.nvim_win_set_cursor(winnr, { parsed.lineno, parsed.column or 1 })
+    end)
     table.insert(results, 'execute "normal! zz"')
   end
   return results
@@ -203,8 +199,10 @@ M.set_cursor_rg_no_filename = function(lines, context)
   end
   prompts.confirm_discard_modified(context.bufnr, function()
     for i, move in ipairs(moves) do
-      -- log.debug("|fzfx.helper.actions - set_cursor_rg_no_filename| [%d]:[%s]", i, edit)
-      local ok, result = pcall(vim.cmd --[[@as function]], move)
+      -- log.debug("|fzfx.helper.actions - set_cursor_rg_no_filename| [%d]:[%s]", i, vim.inspect(move))
+      local ok, result = pcall(vim.is_callable(move) and move --[[@as function]] or function()
+        vim.cmd(move --[[@as string]])
+      end)
       assert(ok, vim.inspect(result))
     end
   end)
@@ -213,7 +211,7 @@ end
 --- @package
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
---- @return string[]|nil
+--- @return (string|function)[]|nil
 M._make_set_cursor_grep_no_filename = function(lines, context)
   if #lines == 0 then
     return nil
@@ -227,12 +225,13 @@ M._make_set_cursor_grep_no_filename = function(lines, context)
   local results = {}
   local line = lines[#lines]
   local parsed = parsers.parse_grep_no_filename(line)
-  table.insert(results, string.format("lua vim.api.nvim_set_current_win(%d)", winnr))
+  table.insert(results, function()
+    vim.api.nvim_set_current_win(winnr)
+  end)
   if numbers.ge(parsed.lineno, 0) then
-    table.insert(
-      results,
-      string.format("lua vim.api.nvim_win_set_cursor(%d, {%d, %d})", winnr, parsed.lineno, 1)
-    )
+    table.insert(results, function()
+      vim.api.nvim_win_set_cursor(winnr, { parsed.lineno, 1 })
+    end)
     table.insert(results, 'execute "normal! zz"')
   end
   return results
@@ -249,7 +248,9 @@ M.set_cursor_grep_no_filename = function(lines, context)
   prompts.confirm_discard_modified(context.bufnr, function()
     for i, move in ipairs(moves) do
       -- log.debug("|fzfx.helper.actions - set_cursor_grep_no_filename| [%d]:[%s]", i, edit)
-      local ok, result = pcall(vim.cmd --[[@as function]], move)
+      local ok, result = pcall(vim.is_callable(move) and move --[[@as function]] or function()
+        vim.cmd(move --[[@as string]])
+      end)
       assert(ok, vim.inspect(result))
     end
   end)

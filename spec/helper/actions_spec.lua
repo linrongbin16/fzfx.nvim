@@ -258,7 +258,6 @@ describe("helper.actions", function()
 
   describe("[set_cursor_grep_no_filename]", function()
     it("make", function()
-      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "73",
         "1",
@@ -266,24 +265,21 @@ describe("helper.actions", function()
         "12:81: goodbye",
         "81:72:9129",
       }
-      local actual = actions._make_set_cursor_grep_no_filename(lines, make_context())
-      assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines + 2)
-      for i, act in ipairs(actual) do
-        if i <= #lines then
-          local expect = string.format(
-            "edit! %s",
-            paths.normalize(
-              strings.split(lines[i], ":")[1],
-              { double_backslash = true, expand = true }
-            )
-          )
-          assert_eq(act, expect)
-        elseif i == #lines + 1 then
-          assert_eq(act, "call setpos('.', [0, 81, 1])")
-        else
-          assert_eq(act, 'execute "normal! zz"')
-        end
+
+      local actual1 = actions._make_set_cursor_grep_no_filename({}, make_context())
+      assert_eq(actual1, nil)
+      local actual2 = actions._make_set_cursor_grep_no_filename(lines, nil)
+      assert_eq(actual2, nil)
+
+      for i, line in ipairs(lines) do
+        local ctx = make_context()
+        local actual = actions._make_set_cursor_grep_no_filename({ line }, ctx)
+        assert_eq(type(actual), "table")
+        assert_eq(#actual, 3)
+
+        assert_true(vim.is_callable(actual[1]))
+        assert_true(vim.is_callable(actual[2]))
+        assert_eq(actual[3], 'execute "normal! zz"')
       end
     end)
     it("run", function()
@@ -459,7 +455,6 @@ describe("helper.actions", function()
   end)
   describe("[set_cursor_rg_no_filename]", function()
     it("make", function()
-      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "1:1:ok",
         "1:2:hello",
@@ -467,24 +462,29 @@ describe("helper.actions", function()
         "12:81: goodbye",
         "81:71:9129",
       }
-      local actual = actions._make_set_cursor_rg_no_filename(lines, make_context())
-      assert_eq(type(actual), "table")
-      assert_eq(#actual, #lines + 2)
-      for i, act in ipairs(actual) do
-        if i <= #lines then
-          local expect = string.format(
-            "edit! %s",
-            paths.normalize(
-              strings.split(lines[i], ":")[1],
-              { double_backslash = true, expand = true }
-            )
+      local actual1 = actions._make_set_cursor_rg_no_filename({}, make_context())
+      assert_eq(actual1, nil)
+      local actual2 = actions._make_set_cursor_rg_no_filename(lines, nil)
+      assert_eq(actual2, nil)
+
+      for i, line in ipairs(lines) do
+        local ctx = make_context()
+        local actual = actions._make_set_cursor_rg_no_filename({ line }, ctx)
+        assert_eq(type(actual), "table")
+        assert_eq(#actual, 3)
+
+        assert_eq(actual[1], string.format("lua vim.api.nvim_set_current_win(%d)", ctx.winnr))
+        local splits = strings.split(line, ":")
+        assert_eq(
+          actual[2],
+          string.format(
+            "lua vim.api.nvim_win_set_cursor(%d, {%s, %s})",
+            ctx.winnr,
+            splits[1],
+            splits[2]
           )
-          assert_eq(act, expect)
-        elseif i == #lines + 1 then
-          assert_eq(act, "call setpos('.', [0, 81, 71])")
-        else
-          assert_eq(act, 'execute "normal! zz"')
-        end
+        )
+        assert_eq(actual[3], 'execute "normal! zz"')
       end
     end)
     it("run", function()
