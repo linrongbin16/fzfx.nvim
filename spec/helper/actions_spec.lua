@@ -364,7 +364,6 @@ describe("helper.actions", function()
 
   describe("[setqflist_grep_no_filename]", function()
     it("make", function()
-      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "1:hello world",
         "10: ok ok",
@@ -404,7 +403,6 @@ describe("helper.actions", function()
       end
     end)
     it("run", function()
-      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "1:hello world",
         "10: ok ok",
@@ -614,6 +612,55 @@ describe("helper.actions", function()
       }
       actions.setqflist_rg(lines)
       assert_true(true)
+    end)
+  end)
+
+  describe("[setqflist_rg_no_filename]", function()
+    it("make", function()
+      local lines = {
+        "1:3:hello world",
+        "10:83: ok ok",
+        "81:3: local query = 'hello'",
+        "4:1: print('goodbye world')",
+        "3:10: hello world",
+      }
+      local actual1 =
+        actions._make_setqflist_rg_no_filename({}, contexts_helper.make_pipeline_context())
+      assert_eq(#actual1, 0)
+      local actual2 = actions._make_setqflist_rg_no_filename(lines, nil)
+      assert_eq(actual2, nil)
+
+      for i, line in ipairs(lines) do
+        local ctx = contexts_helper.make_pipeline_context()
+        local actual = actions._make_setqflist_rg_no_filename({ line }, ctx)
+        assert_eq(type(actual), "table")
+        assert_eq(#actual, 1)
+
+        local filename = vim.api.nvim_buf_get_name(ctx.bufnr)
+        filename = paths.normalize(filename, { double_backslash = true, expand = true })
+
+        for _, act in ipairs(actual) do
+          local expect = parsers.parse_rg_no_filename(line)
+          assert_eq(type(act), "table")
+          assert_eq(act.filename, filename)
+          assert_eq(act.lnum, expect.lineno)
+          assert_eq(act.col, expect.column)
+          assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
+        end
+      end
+    end)
+    it("run", function()
+      local lines = {
+        "1:3:hello world",
+        "10:83: ok ok",
+        "81:3: local query = 'hello'",
+        "4:1: print('goodbye world')",
+        "3:10: hello world",
+      }
+      for i, line in ipairs(lines) do
+        actions.setqflist_rg_no_filename(lines, contexts_helper.make_pipeline_context())
+        assert_true(true)
+      end
     end)
   end)
 

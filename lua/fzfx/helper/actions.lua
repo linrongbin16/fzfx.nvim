@@ -190,7 +190,7 @@ M._make_setqflist_rg_no_filename = function(lines, context)
 
   local qfs = {}
   for _, line in ipairs(lines) do
-    local parsed = parsers.parse_rg(line)
+    local parsed = parsers.parse_rg_no_filename(line)
     table.insert(qfs, {
       filename = filename,
       lnum = parsed.lineno,
