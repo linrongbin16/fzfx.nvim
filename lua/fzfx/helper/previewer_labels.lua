@@ -33,16 +33,6 @@ M.label_rg = function(line)
 end
 
 --- @param line string?
---- @return string?
-M.label_grep = function(line)
-  if strings.empty(line) then
-    return ""
-  end
-  local parsed = parsers.parse_grep(line --[[@as string]])
-  return string.format("%s:%d", vim.fn.fnamemodify(parsed.filename, ":t"), parsed.lineno or 1)
-end
-
---- @param line string?
 --- @param context fzfx.PipelineContext?
 --- @return string
 M.label_rg_no_filename = function(line, context)
@@ -62,6 +52,16 @@ M.label_rg_no_filename = function(line, context)
     parsed.lineno,
     type(parsed.column) == "number" and string.format(":%d", parsed.column) or ""
   )
+end
+
+--- @param line string?
+--- @return string?
+M.label_grep = function(line)
+  if strings.empty(line) then
+    return ""
+  end
+  local parsed = parsers.parse_grep(line --[[@as string]])
+  return string.format("%s:%d", vim.fn.fnamemodify(parsed.filename, ":t"), parsed.lineno or 1)
 end
 
 --- @param line string?
