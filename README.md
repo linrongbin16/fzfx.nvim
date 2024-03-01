@@ -379,8 +379,9 @@ Below keys are binded by default:
 
 > [!NOTE]
 >
-> 1. This command has the same functionality with `FzfxLiveGrep` currently buffer (only) variant (`buf_`), while current buffer's filename is removed for better user view.
-> 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
+> 1. This command has the same functionality with `FzfxLiveGrep` currently buffer (only) variant (`buf_`), while the filename is removed for better user view.
+> 2. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 3. Use `--` flag to pass raw options to search command (`rg`/`grep`).
 
 <table>
 <thead>
