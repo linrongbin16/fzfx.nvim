@@ -21,6 +21,12 @@
   - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to open file, and open the `test/hello world.txt`, `test/goodbye world/goodbye.lua` files.
   - Both `rg` and `grep` works.
+- [ ] FzfxBufLiveGrep
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
+  - Use `-w` to match word only, use `-g *.lua` to search only lua files.
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
+  - Press `ESC` to quit, `ENTER` to open file.
+  - Both `rg` and `grep` works.
 - [ ] FzfxBuffers
   - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-D` to delete buffers, and delete the `test/hello world.txt`, `test/goodbye world/goodbye.lua` buffers.
