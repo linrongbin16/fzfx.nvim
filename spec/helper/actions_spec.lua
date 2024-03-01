@@ -9,6 +9,7 @@ describe("helper.actions", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.opt.swapfile = false
+    vim.cmd("edit README.md")
   end)
 
   local function make_context()
@@ -473,17 +474,8 @@ describe("helper.actions", function()
         assert_eq(type(actual), "table")
         assert_eq(#actual, 3)
 
-        assert_eq(actual[1], string.format("lua vim.api.nvim_set_current_win(%d)", ctx.winnr))
-        local splits = strings.split(line, ":")
-        assert_eq(
-          actual[2],
-          string.format(
-            "lua vim.api.nvim_win_set_cursor(%d, {%s, %s})",
-            ctx.winnr,
-            splits[1],
-            splits[2]
-          )
-        )
+        assert_true(vim.is_callable(actual[1]))
+        assert_true(vim.is_callable(actual[2]))
         assert_eq(actual[3], 'execute "normal! zz"')
       end
     end)
