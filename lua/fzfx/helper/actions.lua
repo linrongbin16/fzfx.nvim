@@ -177,14 +177,14 @@ M._make_set_cursor_rg_no_filename = function(lines, context)
   local results = {}
   local line = lines[#lines]
   local parsed = parsers.parse_rg_no_filename(line)
-  tables.insert(results, string.format("lua vim.api.nvim_set_current_win(%d)", winnr))
+  table.insert(results, string.format("lua vim.api.nvim_set_current_win(%d)", winnr))
   if numbers.ge(parsed.lineno, 0) then
-    tables.insert(
+    table.insert(
       results,
       string.format(
         "lua vim.api.nvim_win_set_cursor(%d, {%d, %d})",
         winnr,
-        parsers.lineno,
+        parsed.lineno,
         parsed.column or 1
       )
     )
@@ -227,11 +227,11 @@ M._make_set_cursor_grep_no_filename = function(lines, context)
   local results = {}
   local line = lines[#lines]
   local parsed = parsers.parse_grep_no_filename(line)
-  tables.insert(results, string.format("lua vim.api.nvim_set_current_win(%d)", winnr))
+  table.insert(results, string.format("lua vim.api.nvim_set_current_win(%d)", winnr))
   if numbers.ge(parsed.lineno, 0) then
-    tables.insert(
+    table.insert(
       results,
-      string.format("lua vim.api.nvim_win_set_cursor(%d, {%d, %d})", winnr, parsers.lineno, 1)
+      string.format("lua vim.api.nvim_win_set_cursor(%d, {%d, %d})", winnr, parsed.lineno, 1)
     )
     table.insert(results, 'execute "normal! zz"')
   end
