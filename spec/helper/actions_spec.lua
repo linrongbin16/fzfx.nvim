@@ -12,19 +12,12 @@ describe("helper.actions", function()
     vim.cmd("edit README.md")
   end)
 
-  local function make_context()
-    return {
-      bufnr = vim.api.nvim_get_current_buf(),
-      winnr = vim.api.nvim_get_current_win(),
-      tabnr = vim.api.nvim_get_current_tabpage(),
-    }
-  end
-
   local DEVICONS_PATH = "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
   local actions = require("fzfx.helper.actions")
   local parsers = require("fzfx.helper.parsers")
+  local contexts_helper = require("fzfx.helper.contexts")
 
   require("fzfx").setup()
 
@@ -88,7 +81,7 @@ describe("helper.actions", function()
         "lua/fzfx/test/goodbye world/world.txt",
         "lua/fzfx/test/hello world.txt",
       }
-      actions.edit_find(lines, make_context())
+      actions.edit_find(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
     it("run with icon", function()
@@ -101,7 +94,7 @@ describe("helper.actions", function()
         "󰢱 lua/fzfx/test/goodbye world/world.txt",
         "󰢱 lua/fzfx/test/hello world.txt",
       }
-      actions.edit_find(lines, make_context())
+      actions.edit_find(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
   end)
@@ -240,7 +233,7 @@ describe("helper.actions", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:9129",
       }
-      actions.edit_grep(lines, make_context())
+      actions.edit_grep(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
     it("run with icon", function()
@@ -252,7 +245,7 @@ describe("helper.actions", function()
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:83 goodbye",
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:83:82:71:world",
       }
-      actions.edit_grep(lines, make_context())
+      actions.edit_grep(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
   end)
@@ -267,13 +260,14 @@ describe("helper.actions", function()
         "81:72:9129",
       }
 
-      local actual1 = actions._make_set_cursor_grep_no_filename({}, make_context())
+      local actual1 =
+        actions._make_set_cursor_grep_no_filename({}, contexts_helper.make_pipeline_context())
       assert_eq(actual1, nil)
       local actual2 = actions._make_set_cursor_grep_no_filename(lines, nil)
       assert_eq(actual2, nil)
 
       for i, line in ipairs(lines) do
-        local ctx = make_context()
+        local ctx = contexts_helper.make_pipeline_context()
         local actual = actions._make_set_cursor_grep_no_filename({ line }, ctx)
         assert_eq(type(actual), "table")
         assert_eq(#actual, 3)
@@ -292,7 +286,7 @@ describe("helper.actions", function()
         "12:81: goodbye",
         "81:72:9129",
       }
-      actions.set_cursor_grep_no_filename(lines, make_context())
+      actions.set_cursor_grep_no_filename(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
   end)
@@ -362,6 +356,49 @@ describe("helper.actions", function()
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81: local query = 'hello'",
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4: print('goodbye world')",
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3: hello world",
+      }
+      actions.setqflist_grep(lines)
+      assert_true(true)
+    end)
+  end)
+
+  describe("[setqflist_grep_no_filename]", function()
+    it("make", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "1:hello world",
+        "10: ok ok",
+        "81: local query = 'hello'",
+        "4: print('goodbye world')",
+        "3: hello world",
+      }
+      local actual1 =
+        actions._make_setqflist_grep_no_filename(nil, contexts_helper.make_pipeline_context())
+      assert_eq(actual1, nil)
+      local actual2 = actions._make_setqflist_grep_no_filename(lines, nil)
+      assert_eq(actual2, nil)
+
+      local actual = actions._make_setqflist_grep_no_filename(lines)
+      assert_eq(type(actual), "table")
+      assert_eq(#actual, #lines)
+      for i, act in ipairs(actual) do
+        local line = lines[i]
+        local expect = parsers.parse_grep(line)
+        assert_eq(type(act), "table")
+        assert_eq(act.filename, expect.filename)
+        assert_eq(act.lnum, expect.lineno)
+        assert_eq(act.col, 1)
+        assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
+      end
+    end)
+    it("run", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "~/github/linrongbin16/fzfx.nvim/README.md:1:hello world",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:10: ok ok",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:81: local query = 'hello'",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:4: print('goodbye world')",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:3: hello world",
       }
       actions.setqflist_grep(lines)
       assert_true(true)
@@ -438,7 +475,7 @@ describe("helper.actions", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:71:9129",
       }
-      actions.edit_rg(lines, make_context())
+      actions.edit_rg(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
     it("run with icon", function()
@@ -450,7 +487,7 @@ describe("helper.actions", function()
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81:goodbye",
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:91:94",
       }
-      actions.edit_rg(lines, make_context())
+      actions.edit_rg(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
   end)
@@ -463,13 +500,14 @@ describe("helper.actions", function()
         "12:81: goodbye",
         "81:71:9129",
       }
-      local actual1 = actions._make_set_cursor_rg_no_filename({}, make_context())
+      local actual1 =
+        actions._make_set_cursor_rg_no_filename({}, contexts_helper.make_pipeline_context())
       assert_eq(actual1, nil)
       local actual2 = actions._make_set_cursor_rg_no_filename(lines, nil)
       assert_eq(actual2, nil)
 
       for i, line in ipairs(lines) do
-        local ctx = make_context()
+        local ctx = contexts_helper.make_pipeline_context()
         local actual = actions._make_set_cursor_rg_no_filename({ line }, ctx)
         assert_eq(type(actual), "table")
         assert_eq(#actual, 3)
@@ -488,7 +526,7 @@ describe("helper.actions", function()
         "12:81: goodbye",
         "81:71:9129",
       }
-      actions.set_cursor_rg_no_filename(lines, make_context())
+      actions.set_cursor_rg_no_filename(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
   end)
@@ -790,7 +828,7 @@ describe("helper.actions", function()
         " M ../test/line_helpers_spec.lua",
         "?? ../hello",
       }
-      local actual = actions.edit_git_status(lines, make_context())
+      local actual = actions.edit_git_status(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
   end)
