@@ -148,10 +148,12 @@ describe("helper.parsers", function()
         assert_eq(actual.filename, parsers_helper.parse_find(line_splits[1]).filename)
         assert_eq(actual.lineno, tonumber(line_splits[2]))
         assert_eq(actual.column, tonumber(line_splits[3]))
+        if #line_splits >= 4 then
+          assert_eq(actual.text, line_splits[4])
+        end
       end
     end)
   end)
-
   describe("[parse_rg_no_filename]", function()
     it("test", function()
       local lines = {
@@ -170,6 +172,9 @@ describe("helper.parsers", function()
         local line_splits = strings.split(line, ":")
         assert_eq(actual.lineno, tonumber(line_splits[1]))
         assert_eq(actual.column, tonumber(line_splits[2]))
+        if #line_splits >= 3 then
+          assert_eq(actual.text, line_splits[3])
+        end
       end
     end)
   end)
