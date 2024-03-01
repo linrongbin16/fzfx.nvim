@@ -164,26 +164,30 @@ end
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
-M._make_edit_rg_no_filename = function(lines, context)
+M._make_move_cursor_rg_no_filename = function(lines, context)
   local results = {}
   if #lines == 0 then
     return nil
   end
-  local bufnr = tables.tbl_get(context, "bufnr")
-  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+  local winnr = tables.tbl_get(context, "winnr")
+  if not numbers.ge(winnr, 0) or not vim.api.nvim_win_is_valid(winnr) then
+    log.echo(LogLevels.INFO, "invalid window(%s).", vim.inspect(winnr))
     return nil
   end
-  for i, line in ipairs(lines) do
-    local parsed = parsers.parse_rg(line)
-    local edit = string.format("edit! %s", parsed.filename)
-    table.insert(results, edit)
-    if i == #lines and parsed.lineno ~= nil then
-      local column = parsed.column or 1
-      local setpos = string.format("call setpos('.', [0, %d, %d])", parsed.lineno, column)
-      table.insert(results, setpos)
-      local center_cursor = string.format('execute "normal! zz"')
-      table.insert(results, center_cursor)
-    end
+  local line = lines[#lines]
+  local parsed = parsers.parse_rg(line)
+  tables.insert(results, string.format("lua vim.api.nvim_set_current_win(%d)", winnr))
+  if numbers.ge(parsed.lineno, 0) then
+    tables.insert(
+      results,
+      string.format(
+        "lua vim.api.nvim_win_set_cursor(%d, {%d, %d})",
+        winnr,
+        parsers.lineno,
+        parsed.column or 1
+      )
+    )
+    table.insert(results, 'execute "normal! zz"')
   end
   return results
 end
@@ -191,10 +195,13 @@ end
 -- Run 'edit' command on rg results.
 --- @param lines string[]
 --- @param context fzfx.PipelineContext
-M.edit_rg_no_filename = function(lines, context)
-  local edits = M._make_edit_rg_no_filename(lines)
+M.move_cursor_rg_no_filename = function(lines, context)
+  local moves = M._make_move_cursor_rg_no_filename(lines, context)
+  if not moves then
+    return
+  end
   prompts.confirm_discard_modified(context.bufnr, function()
-    for i, edit in ipairs(edits) do
+    for i, edit in ipairs(moves) do
       -- log.debug("|fzfx.helper.actions - edit_rg_no_filename| [%d]:[%s]", i, edit)
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
       assert(ok, vim.inspect(result))
