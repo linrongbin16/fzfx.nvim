@@ -199,7 +199,7 @@ M.set_cursor_rg_no_filename = function(lines, context)
   end
   prompts.confirm_discard_modified(context.bufnr, function()
     for i, move in ipairs(moves) do
-      -- log.debug("|fzfx.helper.actions - set_cursor_rg_no_filename| [%d]:[%s]", i, vim.inspect(move))
+      -- log.debug("|set_cursor_rg_no_filename| [%d]:%s", i, vim.inspect(move))
       local ok, result = pcall(vim.is_callable(move) and move --[[@as function]] or function()
         vim.cmd(move --[[@as string]])
       end)
@@ -247,7 +247,7 @@ M.set_cursor_grep_no_filename = function(lines, context)
   end
   prompts.confirm_discard_modified(context.bufnr, function()
     for i, move in ipairs(moves) do
-      -- log.debug("|fzfx.helper.actions - set_cursor_grep_no_filename| [%d]:[%s]", i, edit)
+      -- log.debug("|set_cursor_grep_no_filename| [%d]:%s", i, vim.inspect(move))
       local ok, result = pcall(vim.is_callable(move) and move --[[@as function]] or function()
         vim.cmd(move --[[@as string]])
       end)
