@@ -30,31 +30,26 @@ M.variants = {
   {
     name = "args",
     feed = CommandFeedEnum.ARGS,
-    default_provider = "restricted_mode",
   },
   -- visual
   {
     name = "visual",
     feed = CommandFeedEnum.VISUAL,
-    default_provider = "restricted_mode",
   },
   -- cword
   {
     name = "cword",
     feed = CommandFeedEnum.CWORD,
-    default_provider = "restricted_mode",
   },
   -- put
   {
     name = "put",
     feed = CommandFeedEnum.PUT,
-    default_provider = "restricted_mode",
   },
   -- resume
   {
     name = "resume",
     feed = CommandFeedEnum.RESUME,
-    default_provider = "restricted_mode",
   },
 }
 
@@ -137,7 +132,6 @@ M._make_provider = function()
   elseif constants.HAS_GREP then
     return M._provider_grep
   else
-    --- @return nil
     local function impl()
       log.echo(LogLevels.INFO, "no rg/grep command found.")
       return nil
@@ -153,28 +147,25 @@ M.providers = {
 }
 
 M.previewers = {
-  previewer = previewers_helper.preview_files_grep,
+  previewer = previewers_helper.preview_files_grep_no_filename,
   previewer_type = PreviewerTypeEnum.COMMAND_LIST,
   previewer_label = constants.HAS_RG and labels_helper.label_rg_no_filename
     or labels_helper.label_grep_no_filename,
 }
 
-local edit = constants.HAS_RG and actions_helper.edit_rg or actions_helper.edit_grep
-local setqflist = constants.HAS_RG and actions_helper.setqflist_rg or actions_helper.setqflist_grep
+local set_cursor = constants.HAS_RG and actions_helper.set_cursor_rg_no_filename
+  or actions_helper.set_cursor_grep_no_filename
 
 M.actions = {
   ["esc"] = actions_helper.nop,
-  ["enter"] = edit,
-  ["double-click"] = edit,
-  ["ctrl-q"] = setqflist,
+  ["enter"] = set_cursor,
+  ["double-click"] = set_cursor,
 }
 
 M.fzf_opts = {
   "--multi",
   "--disabled",
-  { "--delimiter", ":" },
-  { "--preview-window", "+{2}-/2" },
-  { "--prompt", "Live Grep > " },
+  { "--prompt", "Buffer Live Grep > " },
 }
 
 M.other_opts = {

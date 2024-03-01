@@ -188,7 +188,6 @@ end
 --- @param lineno integer
 --- @return string[]
 M.preview_files_with_line_range = function(filename, lineno)
-  local height = vim.api.nvim_win_get_height(0)
   if constants.HAS_BAT then
     local style, theme = M._bat_style_theme()
     return {
