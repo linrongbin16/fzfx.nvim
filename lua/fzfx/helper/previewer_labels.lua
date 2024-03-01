@@ -1,6 +1,7 @@
 local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
 local paths = require("fzfx.commons.paths")
+local numbers = require("fzfx.commons.numbers")
 
 local parsers = require("fzfx.helper.parsers")
 
@@ -49,7 +50,7 @@ M.label_rg_no_filename = function(line, context)
     return ""
   end
   local bufnr = tables.tbl_get(context, "bufnr")
-  if type(bufnr) ~= "number" or not vim.api.nvim_buf_is_valid(bufnr) then
+  if numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
     return ""
   end
   local filename = vim.api.nvim_buf_get_name(bufnr)
