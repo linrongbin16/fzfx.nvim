@@ -10,6 +10,14 @@ describe("helper.previewer_labels", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
+  local function make_context()
+    return {
+      bufnr = vim.api.nvim_get_current_buf(),
+      winnr = vim.api.nvim_get_current_win(),
+      tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+  end
+
   local strings = require("fzfx.commons.strings")
   local parsers = require("fzfx.helper.parsers")
   local labels = require("fzfx.helper.previewer_labels")
@@ -52,6 +60,28 @@ describe("helper.previewer_labels", function()
     end)
   end)
 
+  describe("[label_rg_no_filename]", function()
+    it("test", function()
+      local lines = {
+        "1:1:ok",
+        "1:2:hello",
+        "1:3:hello world",
+        "12:81: goodbye",
+        "81:71:9129",
+      }
+      for _, line in ipairs(lines) do
+        local ctx = make_context()
+        local actual = labels.label_rg_no_filename(line, ctx)
+        local splits = strings.split(line, ":")
+        assert_eq(type(actual), "string")
+        assert_true(strings.endswith(actual, string.format("%s:%s", splits[1], splits[2])))
+        assert_true(
+          strings.find(actual, vim.fn.fnamemodify(vim.api.nvim_buf_get_name(ctx.bufnr), ":t")) > 0
+        )
+      end
+    end)
+  end)
+
   describe("[label_grep]", function()
     it("test", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
@@ -67,6 +97,28 @@ describe("helper.previewer_labels", function()
         assert_eq(type(actual), "string")
         assert_eq(type(strings.find(line, actual)), "number")
         assert_true(strings.find(line, actual) > 0)
+      end
+    end)
+  end)
+
+  describe("[label_grep_no_filename]", function()
+    it("test", function()
+      local lines = {
+        "73",
+        "1",
+        "1:hello world",
+        "12:81: goodbye",
+        "81:72:9129",
+      }
+      for _, line in ipairs(lines) do
+        local ctx = make_context()
+        local actual = labels.label_grep_no_filename(line, ctx)
+        local splits = strings.split(line, ":")
+        assert_eq(type(actual), "string")
+        assert_true(strings.endswith(actual, splits[1]))
+        assert_true(
+          strings.find(actual, vim.fn.fnamemodify(vim.api.nvim_buf_get_name(ctx.bufnr), ":t")) > 0
+        )
       end
     end)
   end)

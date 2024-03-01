@@ -1,6 +1,7 @@
 local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
 local numbers = require("fzfx.commons.numbers")
+local paths = require("fzfx.commons.paths")
 
 local consts = require("fzfx.lib.constants")
 
@@ -98,6 +99,54 @@ M.edit_rg = function(lines, context)
   end)
 end
 
+--- @package
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+--- @return (string|function)[]|nil
+M._make_set_cursor_rg_no_filename = function(lines, context)
+  if #lines == 0 then
+    return nil
+  end
+  local winnr = tables.tbl_get(context, "winnr")
+  if not numbers.ge(winnr, 0) or not vim.api.nvim_win_is_valid(winnr) then
+    log.echo(LogLevels.INFO, "invalid window(%s).", vim.inspect(winnr))
+    return nil
+  end
+
+  local results = {}
+  local line = lines[#lines]
+  local parsed = parsers.parse_rg_no_filename(line)
+  table.insert(results, function()
+    vim.api.nvim_set_current_win(winnr)
+  end)
+  if numbers.ge(parsed.lineno, 0) then
+    table.insert(results, function()
+      vim.api.nvim_win_set_cursor(winnr, { parsed.lineno, parsed.column or 1 })
+    end)
+    table.insert(results, 'execute "normal! zz"')
+  end
+  return results
+end
+
+-- Run 'set_cursor' command on rg results.
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+M.set_cursor_rg_no_filename = function(lines, context)
+  local moves = M._make_set_cursor_rg_no_filename(lines, context)
+  if not moves then
+    return
+  end
+  prompts.confirm_discard_modified(context.bufnr, function()
+    for i, move in ipairs(moves) do
+      -- log.debug("|set_cursor_rg_no_filename| [%d]:%s", i, vim.inspect(move))
+      local ok, result = pcall(vim.is_callable(move) and move --[[@as function]] or function()
+        vim.cmd(move --[[@as string]])
+      end)
+      assert(ok, vim.inspect(result))
+    end
+  end)
+end
+
 --- @param lines string[]
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]
 M._make_setqflist_rg = function(lines)
@@ -117,6 +166,49 @@ end
 --- @param lines string[]
 M.setqflist_rg = function(lines)
   local qfs = M._make_setqflist_rg(lines)
+  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+  assert(ok, vim.inspect(result))
+  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+    nr = "$",
+    items = qfs,
+  })
+  assert(ok, vim.inspect(result))
+end
+
+--- @param lines string[]
+--- @param context fzfx.PipelineContext?
+--- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
+M._make_setqflist_rg_no_filename = function(lines, context)
+  local bufnr = tables.tbl_get(context, "bufnr")
+  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+    log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
+    return nil
+  end
+
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+
+  local qfs = {}
+  for _, line in ipairs(lines) do
+    local parsed = parsers.parse_rg_no_filename(line)
+    table.insert(qfs, {
+      filename = filename,
+      lnum = parsed.lineno,
+      col = parsed.column,
+      text = parsed.text,
+    })
+  end
+  return qfs
+end
+
+--- @param lines string[]
+--- @param context fzfx.PipelineContext?
+M.setqflist_rg_no_filename = function(lines, context)
+  local qfs = M._make_setqflist_rg_no_filename(lines, context)
+  if not qfs then
+    return
+  end
+
   local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
   assert(ok, vim.inspect(result))
   ok, result = pcall(vim.fn.setqflist, {}, " ", {
@@ -160,6 +252,54 @@ M.edit_grep = function(lines, context)
   end)
 end
 
+--- @package
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+--- @return (string|function)[]|nil
+M._make_set_cursor_grep_no_filename = function(lines, context)
+  if #lines == 0 then
+    return nil
+  end
+  local winnr = tables.tbl_get(context, "winnr")
+  if not numbers.ge(winnr, 0) or not vim.api.nvim_win_is_valid(winnr) then
+    log.echo(LogLevels.INFO, "invalid window(%s).", vim.inspect(winnr))
+    return nil
+  end
+
+  local results = {}
+  local line = lines[#lines]
+  local parsed = parsers.parse_grep_no_filename(line)
+  table.insert(results, function()
+    vim.api.nvim_set_current_win(winnr)
+  end)
+  if numbers.ge(parsed.lineno, 0) then
+    table.insert(results, function()
+      vim.api.nvim_win_set_cursor(winnr, { parsed.lineno, 1 })
+    end)
+    table.insert(results, 'execute "normal! zz"')
+  end
+  return results
+end
+
+-- Run 'set_cursor' command on grep results.
+--- @param lines string[]
+--- @param context fzfx.PipelineContext
+M.set_cursor_grep_no_filename = function(lines, context)
+  local moves = M._make_set_cursor_grep_no_filename(lines, context)
+  if not moves then
+    return
+  end
+  prompts.confirm_discard_modified(context.bufnr, function()
+    for i, move in ipairs(moves) do
+      -- log.debug("|set_cursor_grep_no_filename| [%d]:%s", i, vim.inspect(move))
+      local ok, result = pcall(vim.is_callable(move) and move --[[@as function]] or function()
+        vim.cmd(move --[[@as string]])
+      end)
+      assert(ok, vim.inspect(result))
+    end
+  end)
+end
+
 --- @param lines string[]
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]
 M._make_setqflist_grep = function(lines)
@@ -179,6 +319,49 @@ end
 --- @param lines string[]
 M.setqflist_grep = function(lines)
   local qfs = M._make_setqflist_grep(lines)
+  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+  assert(ok, vim.inspect(result))
+  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+    nr = "$",
+    items = qfs,
+  })
+  assert(ok, vim.inspect(result))
+end
+
+--- @param lines string[]
+--- @param context fzfx.PipelineContext?
+--- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
+M._make_setqflist_grep_no_filename = function(lines, context)
+  local bufnr = tables.tbl_get(context, "bufnr")
+  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+    log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
+    return nil
+  end
+
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+
+  local qfs = {}
+  for _, line in ipairs(lines) do
+    local parsed = parsers.parse_grep_no_filename(line)
+    table.insert(qfs, {
+      filename = filename,
+      lnum = parsed.lineno,
+      col = 1,
+      text = parsed.text,
+    })
+  end
+  return qfs
+end
+
+--- @param lines string[]
+--- @param context fzfx.PipelineContext?
+M.setqflist_grep_no_filename = function(lines, context)
+  local qfs = M._make_setqflist_grep_no_filename(lines, context)
+  if not qfs then
+    return
+  end
+
   local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
   assert(ok, vim.inspect(result))
   ok, result = pcall(vim.fn.setqflist, {}, " ", {

@@ -9,21 +9,15 @@ describe("helper.actions", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.opt.swapfile = false
+    vim.cmd("edit README.md")
   end)
-
-  local function make_context()
-    return {
-      bufnr = vim.api.nvim_get_current_buf(),
-      winnr = vim.api.nvim_get_current_win(),
-      tabnr = vim.api.nvim_get_current_tabpage(),
-    }
-  end
 
   local DEVICONS_PATH = "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
   local actions = require("fzfx.helper.actions")
   local parsers = require("fzfx.helper.parsers")
+  local contexts_helper = require("fzfx.helper.contexts")
 
   require("fzfx").setup()
 
@@ -35,8 +29,8 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[_make_edit_find]", function()
-    it("test without icon", function()
+  describe("[edit_find]", function()
+    it("make without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md",
@@ -56,7 +50,7 @@ describe("helper.actions", function()
         assert_eq(actual[i], expect)
       end
     end)
-    it("test with icon", function()
+    it("make with icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
       local lines = {
         " ~/github/linrongbin16/fzfx.nvim/README.md",
@@ -87,7 +81,7 @@ describe("helper.actions", function()
         "lua/fzfx/test/goodbye world/world.txt",
         "lua/fzfx/test/hello world.txt",
       }
-      actions.edit_find(lines, make_context())
+      actions.edit_find(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
     it("run with icon", function()
@@ -100,12 +94,12 @@ describe("helper.actions", function()
         "󰢱 lua/fzfx/test/goodbye world/world.txt",
         "󰢱 lua/fzfx/test/hello world.txt",
       }
-      actions.edit_find(lines, make_context())
+      actions.edit_find(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
   end)
-  describe("[_make_setqflist_find]", function()
-    it("test without icon", function()
+  describe("[setqflist_find]", function()
+    it("make without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md",
@@ -126,7 +120,7 @@ describe("helper.actions", function()
         assert_eq(act.col, 1)
       end
     end)
-    it("test with icon", function()
+    it("make with icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
       local lines = {
         " ~/github/linrongbin16/fzfx.nvim/README.md",
@@ -173,8 +167,8 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[_make_edit_grep]", function()
-    it("test without icon", function()
+  describe("[edit_grep]", function()
+    it("make without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md:73",
@@ -203,7 +197,7 @@ describe("helper.actions", function()
         end
       end
     end)
-    it("test with icon", function()
+    it("make with icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
       local lines = {
         " ~/github/linrongbin16/fzfx.nvim/README.md:73",
@@ -239,7 +233,7 @@ describe("helper.actions", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:9129",
       }
-      actions.edit_grep(lines, make_context())
+      actions.edit_grep(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
     it("run with icon", function()
@@ -251,12 +245,54 @@ describe("helper.actions", function()
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:83 goodbye",
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:83:82:71:world",
       }
-      actions.edit_grep(lines, make_context())
+      actions.edit_grep(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
   end)
-  describe("[_make_setqflist_grep]", function()
-    it("test without icon", function()
+
+  describe("[set_cursor_grep_no_filename]", function()
+    it("make", function()
+      local lines = {
+        "73",
+        "1",
+        "1:hello world",
+        "12:81: goodbye",
+        "81:72:9129",
+      }
+
+      local actual1 =
+        actions._make_set_cursor_grep_no_filename({}, contexts_helper.make_pipeline_context())
+      assert_eq(actual1, nil)
+      local actual2 = actions._make_set_cursor_grep_no_filename(lines, nil)
+      assert_eq(actual2, nil)
+
+      for i, line in ipairs(lines) do
+        local ctx = contexts_helper.make_pipeline_context()
+        local actual = actions._make_set_cursor_grep_no_filename({ line }, ctx)
+        assert_eq(type(actual), "table")
+        assert_eq(#actual, 3)
+
+        assert_true(vim.is_callable(actual[1]))
+        assert_true(vim.is_callable(actual[2]))
+        assert_eq(actual[3], 'execute "normal! zz"')
+      end
+    end)
+    it("run", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "38: this is fzfx",
+        "1",
+        "1:hello world",
+        "12:81: goodbye",
+        "81:72:9129",
+      }
+      actions.set_cursor_grep_no_filename(lines, contexts_helper.make_pipeline_context())
+      assert_true(true)
+    end)
+  end)
+
+  describe("[setqflist_grep]", function()
+    it("make without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md:1:hello world",
@@ -278,7 +314,7 @@ describe("helper.actions", function()
         assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
       end
     end)
-    it("test with icon", function()
+    it("make with icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
       local lines = {
         " ~/github/linrongbin16/fzfx.nvim/README.md:1:hello world",
@@ -326,8 +362,64 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[_make_edit_rg]", function()
-    it("edit without icon", function()
+  describe("[setqflist_grep_no_filename]", function()
+    it("make", function()
+      local lines = {
+        "1:hello world",
+        "10: ok ok",
+        "81: local query = 'hello'",
+        "4: print('goodbye world')",
+        "3: hello world",
+      }
+      local actual1 =
+        actions._make_setqflist_grep_no_filename({}, contexts_helper.make_pipeline_context())
+      assert_eq(#actual1, 0)
+      local actual2 = actions._make_setqflist_grep_no_filename(lines, nil)
+      assert_eq(actual2, nil)
+
+      for i, line in ipairs(lines) do
+        local ctx = contexts_helper.make_pipeline_context()
+        local actual = actions._make_setqflist_grep_no_filename({ line }, ctx)
+        assert_eq(type(actual), "table")
+        assert_eq(#actual, 1)
+
+        local filename = vim.api.nvim_buf_get_name(ctx.bufnr)
+        filename = paths.normalize(filename, { double_backslash = true, expand = true })
+
+        local splits = strings.split(line, ":")
+        for _, act in ipairs(actual) do
+          print(
+            string.format(
+              "setqflist_grep_no_filename-1 act:%s, splits:%s\n",
+              vim.inspect(act),
+              vim.inspect(splits)
+            )
+          )
+          assert_eq(act.filename, filename)
+          assert_eq(act.lnum, tonumber(splits[1]))
+          assert_eq(act.col, 1)
+          assert_eq(act.text, line:sub(strings.find(line, ":") + 1))
+        end
+      end
+    end)
+    it("run", function()
+      local lines = {
+        "1:hello world",
+        "10: ok ok",
+        "81: local query = 'hello'",
+        "4: print('goodbye world')",
+        "3: hello world",
+      }
+      for i, line in ipairs(lines) do
+        local ctx = contexts_helper.make_pipeline_context()
+        actions.setqflist_grep_no_filename(lines, ctx)
+        assert_true(true)
+      end
+    end)
+  end)
+
+  describe("[edit_rg]", function()
+    it("make without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md:1:1:ok",
@@ -356,7 +448,7 @@ describe("helper.actions", function()
         end
       end
     end)
-    it("edit rg with prepend icon", function()
+    it("make rg with icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
       local lines = {
         " ~/github/linrongbin16/fzfx.nvim/README.md:7:18",
@@ -396,7 +488,7 @@ describe("helper.actions", function()
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81: goodbye",
         "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:71:9129",
       }
-      actions.edit_rg(lines, make_context())
+      actions.edit_rg(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
     it("run with icon", function()
@@ -408,13 +500,52 @@ describe("helper.actions", function()
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:12:81:goodbye",
         "󰢱 ~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:81:72:91:94",
       }
-      actions.edit_rg(lines, make_context())
+      actions.edit_rg(lines, contexts_helper.make_pipeline_context())
+      assert_true(true)
+    end)
+  end)
+  describe("[set_cursor_rg_no_filename]", function()
+    it("make", function()
+      local lines = {
+        "1:1:ok",
+        "1:2:hello",
+        "1:3:hello world",
+        "12:81: goodbye",
+        "81:71:9129",
+      }
+      local actual1 =
+        actions._make_set_cursor_rg_no_filename({}, contexts_helper.make_pipeline_context())
+      assert_eq(actual1, nil)
+      local actual2 = actions._make_set_cursor_rg_no_filename(lines, nil)
+      assert_eq(actual2, nil)
+
+      for i, line in ipairs(lines) do
+        local ctx = contexts_helper.make_pipeline_context()
+        local actual = actions._make_set_cursor_rg_no_filename({ line }, ctx)
+        assert_eq(type(actual), "table")
+        assert_eq(#actual, 3)
+
+        assert_true(vim.is_callable(actual[1]))
+        assert_true(vim.is_callable(actual[2]))
+        assert_eq(actual[3], 'execute "normal! zz"')
+      end
+    end)
+    it("run", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "1:1:ok",
+        "1:2:hello",
+        "1:3:hello world",
+        "12:81: goodbye",
+        "81:71:9129",
+      }
+      actions.set_cursor_rg_no_filename(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
   end)
 
-  describe("[_make_setqflist_rg]", function()
-    it("test without icon", function()
+  describe("[setqflist_rg]", function()
+    it("make without icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil
       local lines = {
         "~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
@@ -436,7 +567,7 @@ describe("helper.actions", function()
         assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
       end
     end)
-    it("test with icon", function()
+    it("make with icon", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = DEVICONS_PATH
       local lines = {
         " ~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
@@ -484,12 +615,61 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[_make_feed_vim_command]", function()
+  describe("[setqflist_rg_no_filename]", function()
+    it("make", function()
+      local lines = {
+        "1:3:hello world",
+        "10:83: ok ok",
+        "81:3: local query = 'hello'",
+        "4:1: print('goodbye world')",
+        "3:10: hello world",
+      }
+      local actual1 =
+        actions._make_setqflist_rg_no_filename({}, contexts_helper.make_pipeline_context())
+      assert_eq(#actual1, 0)
+      local actual2 = actions._make_setqflist_rg_no_filename(lines, nil)
+      assert_eq(actual2, nil)
+
+      for i, line in ipairs(lines) do
+        local ctx = contexts_helper.make_pipeline_context()
+        local actual = actions._make_setqflist_rg_no_filename({ line }, ctx)
+        assert_eq(type(actual), "table")
+        assert_eq(#actual, 1)
+
+        local filename = vim.api.nvim_buf_get_name(ctx.bufnr)
+        filename = paths.normalize(filename, { double_backslash = true, expand = true })
+
+        for _, act in ipairs(actual) do
+          local expect = parsers.parse_rg_no_filename(line)
+          assert_eq(type(act), "table")
+          assert_eq(act.filename, filename)
+          assert_eq(act.lnum, expect.lineno)
+          assert_eq(act.col, expect.column)
+          assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
+        end
+      end
+    end)
+    it("run", function()
+      local lines = {
+        "1:3:hello world",
+        "10:83: ok ok",
+        "81:3: local query = 'hello'",
+        "4:1: print('goodbye world')",
+        "3:10: hello world",
+      }
+      for i, line in ipairs(lines) do
+        actions.setqflist_rg_no_filename(lines, contexts_helper.make_pipeline_context())
+        assert_true(true)
+      end
+    end)
+  end)
+
+  describe("[feed_vim_command]", function()
     local CONTEXT = {
       name_width = 17,
       opts_width = 37,
     }
-    it("test", function()
+    it("make", function()
       local actual = actions._make_feed_vim_command({
         "FzfxCommands    Y | N | N/A  ~/github/linrongbin16/fzfx.nvim/lua/fzfx/general.lua:215",
       }, CONTEXT)
@@ -500,12 +680,12 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[_make_feed_vim_key]", function()
+  describe("[feed_vim_key]", function()
     local CONTEXT = {
       key_width = 44,
       opts_width = 26,
     }
-    it("feed normal key", function()
+    it("make normal keys", function()
       local parsed = actions._make_feed_vim_key({
         '<C-Tab>                                      n   |Y      |N     |N      "<C-C><C-W>w"',
       }, CONTEXT)
@@ -522,7 +702,7 @@ describe("helper.actions", function()
       assert_true(string.len(parsed.input) > 0)
       assert_eq(parsed.mode, "n")
     end)
-    it("feed operator-pending key", function()
+    it("make operator-pending keys", function()
       -- local feedtype, input, mode = actions._make_feed_vim_key({
       local parsed = actions._make_feed_vim_key({
         '<C-Tab>                                      o   |Y      |N     |N      "<C-C><C-W>w"',
@@ -540,7 +720,7 @@ describe("helper.actions", function()
       -- assert_true(parsed.input == nil)
       -- assert_true(parsed.mode == nil)
     end)
-    it("feed <plug>", function()
+    it("make <plug>", function()
       local parsed = actions._make_feed_vim_key({
         "<Plug>(YankyCycleBackward)                   n   |Y      |N     |Y      ~/.config/nvim/lazy/yanky.nvim/lua/yanky.lua:290",
       }, CONTEXT)
@@ -559,11 +739,11 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[_make_git_checkout]", function()
+  describe("[git_checkout]", function()
     local CONTEXT = {
       remotes = { "origin" },
     }
-    it("test local", function()
+    it("make local", function()
       local lines = {
         "main",
         "master",
@@ -577,7 +757,7 @@ describe("helper.actions", function()
         )
       end
     end)
-    it("test remote", function()
+    it("make remote", function()
       local lines = {
         "origin/HEAD -> origin/main",
         "origin/main",
@@ -603,7 +783,7 @@ describe("helper.actions", function()
         end
       end
     end)
-    it("test all", function()
+    it("make all", function()
       local lines = {
         "main",
         "my-plugin-dev",
@@ -642,8 +822,8 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[_make_yank_git_commit]", function()
-    it("test", function()
+  describe("[yank_git_commit]", function()
+    it("make", function()
       local lines = {
         "3c2e32c 2023-10-10 linrongbin16 perf(schema): deprecate 'ProviderConfig' & 'PreviewerConfig' (#268)",
         "2bdcef7 2023-10-10 linrongbin16 feat(schema): add 'PreviewerConfig' detection (#266)",
@@ -660,8 +840,8 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[_make_setqflist_git_status]", function()
-    it("test", function()
+  describe("[setqflist_git_status]", function()
+    it("make", function()
       local lines = {
         " M fzfx/config.lua",
         " D fzfx/constants.lua",
@@ -683,8 +863,8 @@ describe("helper.actions", function()
     end)
   end)
 
-  describe("[_make_edit_git_status]", function()
-    it("test", function()
+  describe("[edit_git_status]", function()
+    it("make", function()
       local lines = {
         " M fzfx/config.lua",
         " D fzfx/constants.lua",
@@ -710,7 +890,7 @@ describe("helper.actions", function()
         " M ../test/line_helpers_spec.lua",
         "?? ../hello",
       }
-      local actual = actions.edit_git_status(lines, make_context())
+      local actual = actions.edit_git_status(lines, contexts_helper.make_pipeline_context())
       assert_true(true)
     end)
   end)

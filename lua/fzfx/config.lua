@@ -1,5 +1,3 @@
-local consts = require("fzfx.lib.constants")
-
 local M = {}
 
 --- @alias fzfx.Options table<string, any>
@@ -14,6 +12,11 @@ local Defaults = {
   --
   --- @type fzfx.GroupConfig
   live_grep = require("fzfx.cfg.live_grep"),
+
+  -- the 'Buf Live Grep' commands
+  --
+  --- @type fzfx.GroupConfig
+  buf_live_grep = require("fzfx.cfg.buf_live_grep"),
 
   -- the 'Buffers' commands
   --

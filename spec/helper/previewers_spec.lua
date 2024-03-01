@@ -13,6 +13,14 @@ describe("helper.previewers", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
+  local function make_context()
+    return {
+      bufnr = vim.api.nvim_get_current_buf(),
+      winnr = vim.api.nvim_get_current_win(),
+      tabnr = vim.api.nvim_get_current_tabpage(),
+    }
+  end
+
   local tables = require("fzfx.commons.tables")
   local strings = require("fzfx.commons.strings")
   local paths = require("fzfx.commons.paths")
@@ -140,6 +148,37 @@ describe("helper.previewers", function()
         else
           assert_eq(actual[1], "cat")
           assert_eq(actual[2], expect)
+        end
+      end
+    end)
+  end)
+
+  describe("[preview_files_grep_no_filename]", function()
+    it("test", function()
+      local lines = {
+        "1",
+        "2:1",
+        "3:hello",
+        "4:  local i = 1",
+      }
+      for _, line in ipairs(lines) do
+        local ctx = make_context()
+        local actual = previewers.preview_files_grep_no_filename(line, ctx)
+        local expect =
+          paths.normalize(strings.split(line, ":")[1], { double_backslash = true, expand = true })
+        print(string.format("normalize:%s\n", vim.inspect(expect)))
+        print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
+        if actual[1] == constants.BAT then
+          assert_eq(actual[1], constants.BAT)
+          assert_eq(actual[2], "--style=numbers,changes")
+          assert_true(strings.startswith(actual[3], "--theme="))
+          assert_eq(actual[4], "--color=always")
+          assert_eq(actual[5], "--pager=never")
+          assert_true(strings.startswith(actual[6], "--highlight-line"))
+          assert_eq(actual[7], "--line-range")
+          assert_eq(actual[9], "--")
+        else
+          assert_eq(actual[1], "cat")
         end
       end
     end)

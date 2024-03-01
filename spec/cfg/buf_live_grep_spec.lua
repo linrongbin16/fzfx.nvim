@@ -1,0 +1,70 @@
+local cwd = vim.fn.getcwd()
+
+describe("cfg.buf_live_grep", function()
+  local assert_eq = assert.is_equal
+  local assert_true = assert.is_true
+  local assert_false = assert.is_false
+
+  before_each(function()
+    vim.api.nvim_command("cd " .. cwd)
+    vim.o.swapfile = false
+    vim.cmd([[noautocmd edit README.md]])
+  end)
+
+  local consts = require("fzfx.lib.constants")
+  local contexts_help = require("fzfx.helper.contexts")
+  local buf_live_grep_cfg = require("fzfx.cfg.buf_live_grep")
+  require("fzfx").setup()
+
+  describe("[_get_buf_path]", function()
+    it("test", function()
+      local actual = buf_live_grep_cfg._get_buf_path(0)
+      if actual then
+        assert_eq(type(actual), "string")
+        assert_true(string.len(actual) > 0)
+      end
+    end)
+  end)
+  describe("[_append_options]", function()
+    it("test", function()
+      local actual = buf_live_grep_cfg._append_options({}, "-w -g")
+      assert_eq(actual[1], "-w")
+      assert_eq(actual[2], "-g")
+    end)
+  end)
+  describe("[_make_provider]", function()
+    it("test without context", function()
+      local f = buf_live_grep_cfg._make_provider()
+      local actual = f("hello", {})
+      -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
+      assert_eq(actual, nil)
+    end)
+    it("test with context", function()
+      local f = buf_live_grep_cfg._make_provider()
+      local ctx = contexts_help.make_pipeline_context()
+      local actual = f("hello", ctx)
+      print(string.format("buf_live_grep make_provider-1, actual:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "table")
+      if actual[1] == "rg" then
+        assert_eq(actual[1], "rg")
+        assert_eq(actual[2], "--column")
+        assert_eq(actual[3], "-n")
+        assert_eq(actual[4], "--no-heading")
+        assert_eq(actual[5], "--color=always")
+        assert_eq(actual[6], "-H")
+        assert_eq(actual[7], "-S")
+        assert_eq(actual[8], "-uu")
+        assert_eq(actual[9], "-I")
+        assert_eq(actual[10], "hello")
+      else
+        assert_eq(actual[1], consts.GREP)
+        assert_eq(actual[2], "--color=always")
+        assert_eq(actual[3], "-n")
+        assert_eq(actual[4], "-H")
+        assert_eq(actual[5], "-r")
+        assert_eq(actual[6], "-h")
+        assert_eq(actual[7], "hello")
+      end
+    end)
+  end)
+end)

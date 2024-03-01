@@ -106,6 +106,41 @@ describe("helper.parsers", function()
       end
     end)
   end)
+  describe("[parse_grep_no_filename]", function()
+    it("test", function()
+      vim.env._FZFX_NVIM_DEVICONS_PATH = nil
+      local lines = {
+        "1",
+        "1:2",
+        "1: ok ok",
+        "2:3:hello",
+      }
+      for _, line in ipairs(lines) do
+        local actual = parsers_helper.parse_grep_no_filename(line)
+        print(
+          string.format(
+            "parse grep no filename, line:%s, actual:%s\n",
+            vim.inspect(line),
+            vim.inspect(actual)
+          )
+        )
+        assert_eq(type(actual), "table")
+        assert_eq(actual.filename, nil)
+        assert_eq(type(actual.lineno), "number")
+
+        local first_colon_pos = strings.find(line, ":")
+        if first_colon_pos then
+          assert_eq(actual.lineno, tonumber(line:sub(1, first_colon_pos - 1)))
+          assert_eq(actual.text, line:sub(first_colon_pos + 1))
+        else
+          assert_true(
+            (actual.lineno == tonumber(line) and actual.text == "")
+              or (actual.text == line and actual.lineno == nil)
+          )
+        end
+      end
+    end)
+  end)
 
   describe("[parse_rg]", function()
     it("test without icon", function()
@@ -148,6 +183,33 @@ describe("helper.parsers", function()
         assert_eq(actual.filename, parsers_helper.parse_find(line_splits[1]).filename)
         assert_eq(actual.lineno, tonumber(line_splits[2]))
         assert_eq(actual.column, tonumber(line_splits[3]))
+        if #line_splits >= 4 then
+          assert_eq(actual.text, line_splits[4])
+        end
+      end
+    end)
+  end)
+  describe("[parse_rg_no_filename]", function()
+    it("test", function()
+      local lines = {
+        "12:30",
+        "13:1:",
+        "13:2: hello world",
+        "1:3",
+        "1:3: ok ok",
+      }
+      for _, line in ipairs(lines) do
+        local actual = parsers_helper.parse_rg_no_filename(line)
+        assert_eq(type(actual), "table")
+        assert_eq(actual.filename, nil)
+        assert_eq(type(actual.lineno), "number")
+        assert_eq(type(actual.column), "number")
+        local line_splits = strings.split(line, ":")
+        assert_eq(actual.lineno, tonumber(line_splits[1]))
+        assert_eq(actual.column, tonumber(line_splits[2]))
+        if #line_splits >= 3 then
+          assert_eq(actual.text, line_splits[3])
+        end
       end
     end)
   end)

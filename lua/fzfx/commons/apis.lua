@@ -69,10 +69,12 @@ M.get_hl = function(hl)
   if NVIM_VERSION_0_9 then
     return vim.api.nvim_get_hl(0, { name = hl, link = false })
   else
+    ---@diagnostic disable-next-line: undefined-field
     local ok1, rgb_value = pcall(vim.api.nvim_get_hl_by_name, hl, true)
     if not ok1 then
       return vim.empty_dict()
     end
+    ---@diagnostic disable-next-line: undefined-field
     local ok2, cterm_value = pcall(vim.api.nvim_get_hl_by_name, hl, false)
     if not ok2 then
       return vim.empty_dict()

@@ -1,5 +1,7 @@
 local tables = require("fzfx.commons.tables")
 local strings = require("fzfx.commons.strings")
+local paths = require("fzfx.commons.paths")
+local numbers = require("fzfx.commons.numbers")
 
 local parsers = require("fzfx.helper.parsers")
 
@@ -31,6 +33,28 @@ M.label_rg = function(line)
 end
 
 --- @param line string?
+--- @param context fzfx.PipelineContext?
+--- @return string
+M.label_rg_no_filename = function(line, context)
+  if strings.empty(line) then
+    return ""
+  end
+  local bufnr = tables.tbl_get(context, "bufnr")
+  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+    return ""
+  end
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+  local parsed = parsers.parse_rg_no_filename(line --[[@as string]])
+  return string.format(
+    "%s:%d%s",
+    vim.fn.fnamemodify(filename, ":t"),
+    parsed.lineno,
+    type(parsed.column) == "number" and string.format(":%d", parsed.column) or ""
+  )
+end
+
+--- @param line string?
 --- @return string?
 M.label_grep = function(line)
   if strings.empty(line) then
@@ -38,6 +62,23 @@ M.label_grep = function(line)
   end
   local parsed = parsers.parse_grep(line --[[@as string]])
   return string.format("%s:%d", vim.fn.fnamemodify(parsed.filename, ":t"), parsed.lineno or 1)
+end
+
+--- @param line string?
+--- @param context fzfx.PipelineContext?
+--- @return string?
+M.label_grep_no_filename = function(line, context)
+  if strings.empty(line) then
+    return ""
+  end
+  local bufnr = tables.tbl_get(context, "bufnr")
+  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+    return ""
+  end
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+  local parsed = parsers.parse_grep_no_filename(line --[[@as string]])
+  return string.format("%s:%d", vim.fn.fnamemodify(filename, ":t"), parsed.lineno or 1)
 end
 
 --- @param parser fun(line:string,context:fzfx.VimCommandsPipelineContext|fzfx.VimKeyMapsPipelineContext):table|string

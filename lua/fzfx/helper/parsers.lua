@@ -91,6 +91,42 @@ M.parse_grep = function(line)
   return { filename = filename, lineno = lineno, text = text }
 end
 
+-- parse lines from grep without filename. looks like:
+-- ```
+-- 31:local conf = require("fzfx.config")
+-- 57:local colors = require("fzfx.commons.strings")
+-- ```
+--
+-- returns line number and text.
+--
+--- @param line string
+--- @return {lineno:integer?,text:string}
+M.parse_grep_no_filename = function(line)
+  local lineno = nil
+  local text = nil
+
+  local first_colon_pos = strings.find(line, ":")
+  if numbers.gt(first_colon_pos, 0) then
+    lineno = line:sub(1, first_colon_pos - 1)
+    text = line:sub(first_colon_pos + 1)
+  else
+    -- if failed to found the first ':', then
+    -- 1. first try to parse right hands as 'lineno'
+    -- 2. if failed, treat them as 'text'
+    local rhs = line
+    if tonumber(rhs) == nil then
+      text = rhs
+    else
+      lineno = tonumber(rhs)
+    end
+  end
+
+  lineno = tonumber(lineno)
+  text = text or ""
+
+  return { lineno = lineno, text = text }
+end
+
 -- parse lines from rg. looks like:
 -- ```
 -- 󰢱 bin/general/provider.lua:31:2:  local conf = require("fzfx.config")
@@ -143,6 +179,51 @@ M.parse_rg = function(line)
   text = text or ""
 
   return { filename = filename, lineno = lineno, column = column, text = text }
+end
+
+-- parse lines from rg without filename. looks like:
+-- ```
+-- 󰢱 31:2:local conf = require("fzfx.config")
+-- 󰢱 57:13:local colors = require("fzfx.commons.strings")
+-- ```
+--
+-- remove the prepend icon and returns **expanded** file path, line number, column number and text.
+--
+--- @param line string
+--- @return {lineno:integer,column:integer?,text:string}
+M.parse_rg_no_filename = function(line)
+  local lineno = nil
+  local column = nil
+  local text = nil
+
+  local first_colon_pos = strings.find(line, ":")
+  assert(
+    type(first_colon_pos) == "number",
+    string.format("failed to parse rg lines:%s", vim.inspect(line))
+  )
+  lineno = line:sub(1, first_colon_pos - 1)
+
+  local second_colon_pos = strings.find(line, ":", first_colon_pos + 1)
+  if numbers.gt(second_colon_pos, 0) then
+    column = line:sub(first_colon_pos + 1, second_colon_pos - 1)
+    text = line:sub(second_colon_pos + 1)
+  else
+    -- if failed to found the second ':', then
+    -- 1. first try to parse right hands as 'column'
+    -- 2. if failed, treat them as 'text'
+    local rhs = line:sub(first_colon_pos + 1)
+    if tonumber(rhs) == nil then
+      text = rhs
+    else
+      column = tonumber(rhs)
+    end
+  end
+
+  lineno = tonumber(lineno)
+  column = tonumber(column)
+  text = text or ""
+
+  return { lineno = lineno, column = column, text = text }
 end
 
 -- parse lines from `git status --short`. looks like:

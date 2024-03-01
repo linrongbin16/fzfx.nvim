@@ -160,7 +160,7 @@ M.normalize = function(p, opts)
     -- )
   end
 
-  return result
+  return M._normalize_slash(result, opts)
 end
 
 --- @param ... any

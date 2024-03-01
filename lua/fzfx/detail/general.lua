@@ -1118,8 +1118,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               -- )
               if not previewer_ok then
                 log.err(
-                  "failed to call pipeline %s buffer previewer %s! line:%s, context:%s, error:%s",
-                  vim.inspect(previewer_config.pipeline),
+                  "failed to call buffer previewer %s! line:%s, context:%s, error:%s",
                   vim.inspect(previewer_config.previewer),
                   vim.inspect(focused_line),
                   vim.inspect(context),

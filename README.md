@@ -375,6 +375,49 @@ Below keys are binded by default:
 </tbody>
 </table>
 
+#### `FzfxBufLiveGrep` (Buffer Live Grep)
+
+> [!NOTE]
+>
+> 1. This command has the same functionality with `FzfxLiveGrep` currently buffer (only) variant (`buf_`), while the filename is removed for better user view.
+> 2. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 3. Use `--` flag to pass raw options to search command (`rg`/`grep`).
+
+<table>
+<thead>
+  <tr>
+    <th>Variant</th>
+    <th>Mode</th>
+    <th>Select Keys</th>
+    <th>Preview Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td><code>args</code></td>
+    <td>N</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
+  </tr>
+  <tr>
+    <td><code>visual</code></td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td><code>cword</code></td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td><code>put</code></td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td><code>resume</code></td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
 #### `FzfxGLiveGrep` (Live Git Grep)
 
 > [!NOTE]
