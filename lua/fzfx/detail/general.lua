@@ -1081,10 +1081,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         --   vim.inspect(current_payload)
         -- )
 
-        if buffer_previewer_query_fzf_status_start then
-          vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
-        end
-
         vim.schedule(function()
           if strings.not_empty(tables.tbl_get(completed, "stdout")) then
             local parse_ok, parse_status = pcall(jsons.decode, completed.stdout) --[[@as boolean, table]]
@@ -1161,6 +1157,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                   )
                 end
               end
+                        if buffer_previewer_query_fzf_status_start then
+          vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
+        end
+  
               -- trigger buffer previewer }
             end
           end
