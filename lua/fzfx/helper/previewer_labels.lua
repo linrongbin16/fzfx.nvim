@@ -1,7 +1,7 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
-local num = require("fzfx.commons.number")
+local num = require("fzfx.commons.num")
 
 local parsers = require("fzfx.helper.parsers")
 
