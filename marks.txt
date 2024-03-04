@@ -1,0 +1,19 @@
+
+
+mark line  col file/text
+ '    543    7 return M
+ 0     18    4 ~/.gitconfig
+ 1      7   41 README.md
+ 2      1    0 spec/contents/hello world.txt
+ 3      2    0 lua/fzfx/detail/general.lua
+ 4    315    0 lua/fzfx/config.lua
+ 5   1225   43 lua/fzfx/detail/general.lua
+ 6      2    0 lua/fzfx/detail/general.lua
+ 7      2    1 lua/fzfx/detail/general.lua
+ 8    569    9 /Users/rlin/github/linrongbin16/fzfx.nvim/lua/fzfx/detail/popup/buffer_popup_window.lua
+ 9   1164   72 lua/fzfx/detail/general.lua
+ "      6    6 local constants = require("fzfx.lib.constants")
+ [      1    0 local tbl = require("fzfx.commons.tbl")
+ ]    543    0 return M
+ ^    134   14 -- the ':marks' output looks like:
+ .    134   13 -- the ':marks' output looks like:

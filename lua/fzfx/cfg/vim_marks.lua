@@ -19,8 +19,8 @@ local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 local M = {}
 
 M.command = {
-  name = "FzfxKeyMaps",
-  desc = "Search key mappings",
+  name = "FzfxMarks",
+  desc = "Search marks",
 }
 
 M.variants = {
@@ -131,42 +131,29 @@ M.variants = {
   },
 }
 
--- the ':verbose map' output looks like:
+-- the ':marks' output looks like:
 --
 --```
---n  K           *@<Cmd>lua vim.lsp.buf.hover()<CR>
---                Show hover
---                Last set from Lua
---n  [w          *@<Lua 1213: ~/.config/nvim/lua/builtin/lsp.lua:60>
---                Previous diagnostic warning
---                Last set from Lua
---n  [e          *@<Lua 1211: ~/.config/nvim/lua/builtin/lsp.lua:60>
---                 Previous diagnostic error
---                 Last set from Lua
---n  [d          *@<Lua 1209: ~/.config/nvim/lua/builtin/lsp.lua:60>
---                 Previous diagnostic item
---                 Last set from Lua
---x  \ca         *@<Cmd>lua vim.lsp.buf.range_code_action()<CR>
---                 Code actions
---n  <CR>        *@<Lua 961: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
---                 Last set from Lua
---n  <Esc>       *@<Lua 998: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
---                 Last set from Lua
---n  .           *@<Lua 977: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
---                 Last set from Lua
---n  <           *@<Lua 987: ~/.config/nvim/lazy/neo-tree.nvim/lua/neo-tree/ui/renderer.lua:843>
---                 Last set from Lua
---v  <BS>        * d
---                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/mswin.vim line 24
---x  <Plug>NetrwBrowseXVis * :<C-U>call netrw#BrowseXVis()<CR>
---                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 90
---n  <Plug>NetrwBrowseX * :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))<CR>
---                 Last set from /opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/netrwPlugin.vim line 84
---n  <C-L>       * :nohlsearch<C-R>=has('diff')?'|diffupdate':''<CR><CR><C-L>
---                 Last set from ~/.config/nvim/lua/builtin/options.vim line 50
+--mark line  col file/text
+-- '    543    7 return M
+-- 0     18    4 ~/.gitconfig
+-- 1      7   41 README.md
+-- 2      1    0 spec/contents/hello world.txt
+-- 3      2    0 lua/fzfx/detail/general.lua
+-- 4    315    0 lua/fzfx/config.lua
+-- 5   1225   43 lua/fzfx/detail/general.lua
+-- 6      2    0 lua/fzfx/detail/general.lua
+-- 7      2    1 lua/fzfx/detail/general.lua
+-- 8    569    9 /Users/rlin/github/linrongbin16/fzfx.nvim/lua/fzfx/detail/popup/buffer_popup_window.lua
+-- 9   1164   72 lua/fzfx/detail/general.lua
+-- "      6    6 local constants = require("fzfx.lib.constants")
+-- [      1    0 local tbl = require("fzfx.commons.tbl")
+-- ]    543    0 return M
+-- ^    134   14 -- the ':marks' output looks like:
+-- .    134   13 -- the ':marks' output looks like:
 --```
 --- @param line string
---- @return fzfx.VimKeyMap
+--- @return fzfx.VimMark
 M._parse_map_command_output_line = function(line)
   local first_space_pos = 1
   while first_space_pos <= #line and not str.isspace(line:sub(first_space_pos, first_space_pos)) do
@@ -204,8 +191,8 @@ M._parse_map_command_output_line = function(line)
   return result
 end
 
---- @alias fzfx.VimKeyMap {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
---- @return fzfx.VimKeyMap[]
+--- @alias fzfx.VimMark {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
+--- @return fzfx.VimMark[]
 M._get_vim_keymaps = function()
   local tmpfile = vim.fn.tempname()
   vim.cmd(string.format(
@@ -319,7 +306,7 @@ M._get_vim_keymaps = function()
   return results
 end
 
---- @param vk fzfx.VimKeyMap
+--- @param vk fzfx.VimMark
 --- @return string
 M._render_vim_keymaps_column_opts = function(vk)
   local mode = vk.mode or ""
@@ -329,12 +316,12 @@ M._render_vim_keymaps_column_opts = function(vk)
   return string.format("%-4s|%-7s|%-6s|%-6s", mode, noremap, nowait, silent)
 end
 
---- @param keymaps fzfx.VimKeyMap[]
+--- @param keymaps fzfx.VimMark[]
 --- @param key_width integer
 --- @param opts_width integer
 --- @return string[]
 M._render_vim_keymaps = function(keymaps, key_width, opts_width)
-  --- @param r fzfx.VimKeyMap
+  --- @param r fzfx.VimMark
   --- @return string?
   local function rendered_def_or_loc(r)
     if
@@ -376,9 +363,9 @@ M._render_vim_keymaps = function(keymaps, key_width, opts_width)
   return results
 end
 
---- @param mode "n"|"i"|"v"|"all"
+--- @param mode "all"|"buffer"
 --- @return fun(query:string,context:fzfx.VimKeyMapsPipelineContext):string[]|nil
-M._make_vim_keymaps_provider = function(mode)
+M._make_vim_marks_provider = function(mode)
   --- @param query string
   --- @param context fzfx.VimKeyMapsPipelineContext
   --- @return string[]|nil
@@ -411,24 +398,14 @@ M._make_vim_keymaps_provider = function(mode)
 end
 
 M.providers = {
-  all_mode = {
+  all_marks = {
     key = "ctrl-a",
-    provider = M._make_vim_keymaps_provider("all"),
+    provider = M._make_vim_marks_provider("all"),
     provider_type = ProviderTypeEnum.LIST,
   },
-  n_mode = {
-    key = "ctrl-o",
-    provider = M._make_vim_keymaps_provider("n"),
-    provider_type = ProviderTypeEnum.LIST,
-  },
-  i_mode = {
-    key = "ctrl-i",
-    provider = M._make_vim_keymaps_provider("i"),
-    provider_type = ProviderTypeEnum.LIST,
-  },
-  v_mode = {
-    key = "ctrl-v",
-    provider = M._make_vim_keymaps_provider("v"),
+  buffer_marks = {
+    key = "ctrl-u",
+    provider = M._make_vim_marks_provider("buffer"),
     provider_type = ProviderTypeEnum.LIST,
   },
 }
@@ -502,7 +479,7 @@ M.fzf_opts = {
   { "--prompt", "Key Maps > " },
 }
 
---- @param keys fzfx.VimKeyMap[]
+--- @param keys fzfx.VimMark[]
 --- @return integer,integer
 M._render_vim_keymaps_columns_status = function(keys)
   local KEY = "Key"
