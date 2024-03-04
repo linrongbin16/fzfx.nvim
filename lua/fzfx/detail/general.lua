@@ -1047,7 +1047,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
     -- query fzf status {
     local fzf_port_reader = fileios.CachedFileReader:open(fzf_port_file)
-    local QUERY_FZF_CURRENT_STATUS_INTERVAL = 100
+    local QUERY_FZF_CURRENT_STATUS_INTERVAL = 150
     buffer_previewer_query_fzf_status_start = true
 
     local buffer_previewer_fzf_current_text = nil
