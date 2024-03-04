@@ -75,10 +75,8 @@ jobs:
       - name: Run Tests
         run: |
           sudo apt-get -y -qq install bat
+          sudo apt-get -y -qq install fzf
           luarocks install vusted
-          git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-          ~/.fzf/install
-          export PATH="$HOME/.fzf/bin:$PATH"
           vusted --shuffle ./spec
   code_coverage:
     name: Code Coverage
@@ -99,12 +97,10 @@ jobs:
       - name: Run Tests
         run: |
           sudo apt-get -y -qq install bat
+          sudo apt-get -y -qq install fzf
           luarocks install luacov
           luarocks install luacov-reporter-lcov
           luarocks install vusted
-          git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-          ~/.fzf/install
-          export PATH="$HOME/.fzf/bin:$PATH"
           vusted --coverage ./spec
       - name: Generate coverage reports
         shell: bash
