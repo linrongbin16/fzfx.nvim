@@ -397,15 +397,18 @@ M._make_vim_marks_provider = function(mode)
   return impl
 end
 
+local all_marks_provider = M._make_vim_marks_provider("all")
+local buffer_marks_provider = M._make_vim_marks_provider("buffer")
+
 M.providers = {
   all_marks = {
     key = "ctrl-a",
-    provider = M._make_vim_marks_provider("all"),
+    provider = all_marks_provider,
     provider_type = ProviderTypeEnum.LIST,
   },
   buffer_marks = {
     key = "ctrl-u",
-    provider = M._make_vim_marks_provider("buffer"),
+    provider = buffer_marks_provider,
     provider_type = ProviderTypeEnum.LIST,
   },
 }
