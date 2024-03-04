@@ -361,15 +361,15 @@ M.previewers = {
 
 M.actions = {
   ["esc"] = actions_helper.nop,
-  ["enter"] = actions_helper.feed_vim_key,
-  ["double-click"] = actions_helper.feed_vim_key,
+  ["enter"] = actions_helper.edit_vim_mark,
+  ["double-click"] = actions_helper.edit_vim_mark,
 }
 
 M.fzf_opts = {
   "--no-multi",
   "--header-lines=1",
   { "--preview-window", "~1" },
-  { "--prompt", "Key Maps > " },
+  { "--prompt", "Marks > " },
 }
 
 --- @param keys fzfx.VimMark[]
