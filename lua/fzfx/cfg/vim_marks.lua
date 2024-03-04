@@ -153,65 +153,15 @@ M.variants = {
 -- ^    134   14 -- the ':marks' output looks like:
 -- .    134   13 -- the ':marks' output looks like:
 --```
---- @param line string
---- @return fzfx.VimMark
-M._parse_map_command_output_line = function(line)
-  local first_space_pos = 1
-  while first_space_pos <= #line and not str.isspace(line:sub(first_space_pos, first_space_pos)) do
-    first_space_pos = first_space_pos + 1
-  end
-  -- local mode = vim.trim(line:sub(1, first_space_pos - 1))
-  while first_space_pos <= #line and str.isspace(line:sub(first_space_pos, first_space_pos)) do
-    first_space_pos = first_space_pos + 1
-  end
-  local second_space_pos = first_space_pos
-  while
-    second_space_pos <= #line and not str.isspace(line:sub(second_space_pos, second_space_pos))
-  do
-    second_space_pos = second_space_pos + 1
-  end
-  local lhs = vim.trim(line:sub(first_space_pos, second_space_pos - 1))
-  local result = { lhs = lhs }
-  local rhs_or_location = vim.trim(line:sub(second_space_pos))
-  local lua_definition_pos = str.find(rhs_or_location, "<Lua ")
-
-  if lua_definition_pos and str.endswith(rhs_or_location, ">") then
-    local first_colon_pos = str.find(rhs_or_location, ":", lua_definition_pos + string.len("<Lua ")) --[[@as integer]]
-    local last_colon_pos = str.rfind(rhs_or_location, ":") --[[@as integer]]
-    local filename = rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
-    local lineno = rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
-    log.debug(
-      "|_parse_map_command_output_line| lhs:%s, filename:%s, lineno:%s",
-      vim.inspect(lhs),
-      vim.inspect(filename),
-      vim.inspect(lineno)
-    )
-    result.filename = path.normalize(filename, { double_backslash = true, expand = true })
-    result.lineno = tonumber(lineno)
-  end
-  return result
-end
-
---- @return string[], {mark_pos:integer,lineno_pos:integer,col_pos:integer,file_text_pos:integer}
-M._get_vim_marks = function()
-  local tmpfile = vim.fn.tempname()
-  vim.cmd(string.format(
-    [[
-    redir! > %s
-    silent execute 'marks'
-    redir END
-    ]],
-    tmpfile
-  ))
-
-  local marks = fileio.readlines(tmpfile --[[@as string]]) --[[@as table]]
-
+--- @alias fzfx.VimMarksHeaderPosition {mark_pos:integer,lineno_pos:integer,col_pos:integer,file_text_pos:integer}
+--- @param first_line string
+--- @return fzfx.VimMarksHeaderPosition
+M._parse_mark_command_output_first_line = function(first_line)
   local MARK = "mark"
   local LINE = "line"
   local COL = "col"
   local FILE_TEXT = "file/text"
 
-  local first_line = marks[1]
   log.ensure(
     string.len(first_line) > 0,
     "invalid 'marks' first line output:%s",
@@ -242,80 +192,34 @@ M._get_vim_marks = function()
     vim.inspect(first_line)
   )
 
-  local pos = {
+  return {
     mark_pos = mark_pos,
     lineno_pos = lineno_pos,
     col_pos = col_pos,
     file_text_pos = file_text_pos,
   }
-
-  log.debug("|_get_vim_marks| results:%s", vim.inspect(marks))
-  return marks, pos
 end
 
---- @param vk fzfx.VimMark
---- @return string
-M._render_vim_keymaps_column_opts = function(vk)
-  local mode = vk.mode or ""
-  local noremap = vk.noremap and "Y" or "N"
-  local nowait = vk.nowait and "Y" or "N"
-  local silent = vk.silent and "Y" or "N"
-  return string.format("%-4s|%-7s|%-6s|%-6s", mode, noremap, nowait, silent)
-end
-
---- @param keymaps fzfx.VimMark[]
---- @param key_width integer
---- @param opts_width integer
 --- @return string[]
-M._render_vim_keymaps = function(keymaps, key_width, opts_width)
-  --- @param r fzfx.VimMark
-  --- @return string?
-  local function rendered_def_or_loc(r)
-    if
-      type(r) == "table"
-      and type(r.filename) == "string"
-      and string.len(r.filename) > 0
-      and type(r.lineno) == "number"
-      and r.lineno >= 0
-    then
-      return string.format("%s:%d", path.reduce(r.filename), r.lineno)
-    elseif type(r.rhs) == "string" and string.len(r.rhs) > 0 then
-      return string.format('"%s"', r.rhs)
-    elseif type(r.desc) == "string" and string.len(r.desc) > 0 then
-      return string.format('"%s"', r.desc)
-    else
-      return ""
-    end
-  end
+M._get_vim_marks = function()
+  local tmpfile = vim.fn.tempname()
+  vim.cmd(string.format(
+    [[
+    redir! > %s
+    silent execute 'marks'
+    redir END
+    ]],
+    tmpfile
+  ))
 
-  local KEY = "Key"
-  local OPTS = "Mode|Noremap|Nowait|Silent"
-  local DEF_OR_LOC = "Definition/Location"
-
-  local results = {}
-  local formatter = "%-" .. tostring(key_width) .. "s" .. " %-" .. tostring(opts_width) .. "s %s"
-  local header = string.format(formatter, KEY, OPTS, DEF_OR_LOC)
-  table.insert(results, header)
-  log.debug(
-    "|_render_vim_keymaps| formatter:%s, header:%s",
-    vim.inspect(formatter),
-    vim.inspect(header)
-  )
-  for i, c in ipairs(keymaps) do
-    local rendered =
-      string.format(formatter, c.lhs, M._render_vim_keymaps_column_opts(c), rendered_def_or_loc(c))
-    log.debug("|_render_vim_keymaps| rendered[%d]:%s", i, vim.inspect(rendered))
-    table.insert(results, rendered)
-  end
-  return results
+  return fileio.readlines(tmpfile --[[@as string]]) --[[@as table]]
 end
 
 --- @param query string
 --- @param context fzfx.VimMarksPipelineContext
---- @return string[]|nil
+--- @return string[]
 M._vim_marks_provider = function(query, context)
-  local marks, _ = M._get_vim_marks()
-  return marks
+  return M._get_vim_marks()
 end
 
 M.providers = {
@@ -372,25 +276,6 @@ M.fzf_opts = {
   { "--prompt", "Marks > " },
 }
 
---- @param keys fzfx.VimMark[]
---- @return integer,integer
-M._render_vim_keymaps_columns_status = function(keys)
-  local KEY = "Key"
-  local OPTS = "Mode|Noremap|Nowait|Silent"
-  local max_key = string.len(KEY)
-  local max_opts = string.len(OPTS)
-  for _, k in ipairs(keys) do
-    max_key = math.max(max_key, string.len(k.lhs))
-    max_opts = math.max(max_opts, string.len(M._render_vim_keymaps_column_opts(k)))
-  end
-  log.debug(
-    "|_render_vim_keymaps_columns_status| lhs:%s, opts:%s",
-    vim.inspect(max_key),
-    vim.inspect(max_opts)
-  )
-  return max_key, max_opts
-end
-
 --- @alias fzfx.VimMarksPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,mark_pos:integer,lineno_pos:integer,col_pos:integer,file_text_pos:integer}
 --- @return fzfx.VimMarksPipelineContext
 M._vim_marks_context_maker = function()
@@ -399,11 +284,15 @@ M._vim_marks_context_maker = function()
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
-  local _, marks_pos = M._get_vim_marks()
-  ctx.mark_pos = marks_pos.mark_pos
-  ctx.lineno_pos = marks_pos.lineno_pos
-  ctx.col_pos = marks_pos.col_pos
-  ctx.file_text_pos = marks_pos.file_text_pos
+
+  local marks = M._get_vim_marks()
+  local first_line = marks[1]
+  local pos = M._parse_mark_command_output_first_line(first_line)
+
+  ctx.mark_pos = pos.mark_pos
+  ctx.lineno_pos = pos.lineno_pos
+  ctx.col_pos = pos.col_pos
+  ctx.file_text_pos = pos.file_text_pos
   return ctx
 end
 
