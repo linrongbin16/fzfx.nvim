@@ -582,7 +582,7 @@ end
 
 --- @param lines string[]
 --- @param context fzfx.VimMarksPipelineContext
---- @return (string|function)[]|nil
+--- @return (string|function)[]
 M._make_edit_vim_mark = function(lines, context)
   local results = {}
   for i, line in ipairs(lines) do
