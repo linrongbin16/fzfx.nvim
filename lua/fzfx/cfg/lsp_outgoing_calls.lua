@@ -1,5 +1,3 @@
-local consts = require("fzfx.lib.constants")
-
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
