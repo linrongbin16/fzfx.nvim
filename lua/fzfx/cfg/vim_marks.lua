@@ -1,4 +1,5 @@
 local tbl = require("fzfx.commons.tbl")
+local num = require("fzfx.commons.num")
 local str = require("fzfx.commons.str")
 local fileio = require("fzfx.commons.fileio")
 local path = require("fzfx.commons.path")
@@ -193,30 +194,66 @@ end
 
 --- @alias fzfx.VimMark {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
 --- @return fzfx.VimMark[]
-M._get_vim_keymaps = function()
+M._get_vim_marks = function()
   local tmpfile = vim.fn.tempname()
   vim.cmd(string.format(
     [[
     redir! > %s
-    silent execute 'verbose map'
+    silent execute 'marks'
     redir END
     ]],
     tmpfile
   ))
 
-  local keys_output_map = {}
-  local map_output_lines = fileio.readlines(tmpfile --[[@as string]]) --[[@as table]]
+  local marks_output_map = {}
+  local marks_output_lines = fileio.readlines(tmpfile --[[@as string]]) --[[@as table]]
+
+  local MARK = "mark"
+  local LINE = "line"
+  local COL = "col"
+  local FILE_TEXT = "file/text"
+
+  local first_line = marks_output_lines[1]
+  log.ensure(
+    string.len(first_line) > 0,
+    "invalid 'marks' first line output:%s",
+    vim.inspect(first_line)
+  )
+  local mark_pos = str.find(first_line, MARK)
+  log.ensure(
+    num.ge(mark_pos, 0),
+    "invalid 'marks' first line, failed to find 'mark':%s",
+    vim.inspect(first_line)
+  )
+  local line_pos = str.find(first_line, LINE, mark_pos + string.len(MARK))
+  log.ensure(
+    num.ge(line_pos, 0),
+    "invalid 'marks' first line, failed to find 'line':%s",
+    vim.inspect(first_line)
+  )
+  local col_pos = str.find(first_line, COL, line_pos + string.len(LINE))
+  log.ensure(
+    num.ge(col_pos, 0),
+    "invalid 'marks' first line, failed to find 'col':%s",
+    vim.inspect(first_line)
+  )
+  local file_text_pos = str.find(first_line, FILE_TEXT, col_pos + string.len(COL))
+  log.ensure(
+    num.ge(file_text_pos, 0),
+    "invalid 'marks' first line, failed to find 'file/text':%s",
+    vim.inspect(first_line)
+  )
 
   local LAST_SET_FROM = "\tLast set from "
   local LAST_SET_FROM_LUA = "\tLast set from Lua"
   local LINE = " line "
   local last_lhs = nil
-  for i = 1, #map_output_lines do
-    local line = map_output_lines[i]
+  for i = 1, #marks_output_lines do
+    local line = marks_output_lines[i]
     if type(line) == "string" and string.len(vim.trim(line)) > 0 then
       if str.isalpha(line:sub(1, 1)) then
         local parsed = M._parse_map_command_output_line(line)
-        keys_output_map[parsed.lhs] = parsed
+        marks_output_map[parsed.lhs] = parsed
         last_lhs = parsed.lhs
       elseif
         str.startswith(line, LAST_SET_FROM)
@@ -227,9 +264,9 @@ M._get_vim_keymaps = function()
         local line_pos = str.rfind(line, LINE)
         local filename = vim.trim(line:sub(string.len(LAST_SET_FROM) + 1, line_pos - 1))
         local lineno = vim.trim(line:sub(line_pos + string.len(LINE)))
-        keys_output_map[last_lhs].filename =
+        marks_output_map[last_lhs].filename =
           path.normalize(filename, { double_backslash = true, expand = true })
-        keys_output_map[last_lhs].lineno = tonumber(lineno)
+        marks_output_map[last_lhs].lineno = tonumber(lineno)
       end
     end
   end
@@ -276,7 +313,7 @@ M._get_vim_keymaps = function()
     return nil
   end
 
-  for lhs, km in pairs(keys_output_map) do
+  for lhs, km in pairs(marks_output_map) do
     local km2 = get_key_def(api_keys_map, lhs)
     if km2 then
       km.rhs = get_string(km2.rhs, "")
@@ -294,9 +331,9 @@ M._get_vim_keymaps = function()
       km.desc = get_string(km.desc, "")
     end
   end
-  log.debug("|_get_vim_keymaps| keys_output_map2:%s", vim.inspect(keys_output_map))
+  log.debug("|_get_vim_keymaps| keys_output_map2:%s", vim.inspect(marks_output_map))
   local results = {}
-  for _, r in pairs(keys_output_map) do
+  for _, r in pairs(marks_output_map) do
     table.insert(results, r)
   end
   table.sort(results, function(a, b)
@@ -370,7 +407,7 @@ M._make_vim_marks_provider = function(mode)
   --- @param context fzfx.VimKeyMapsPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local keys = M._get_vim_keymaps()
+    local keys = M._get_vim_marks()
     local filtered_keys = {}
     if mode == "all" then
       filtered_keys = keys
@@ -509,7 +546,7 @@ M._vim_keymaps_context_maker = function()
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
-  local keys = M._get_vim_keymaps()
+  local keys = M._get_vim_marks()
   local key_width, opts_width = M._render_vim_keymaps_columns_status(keys)
   ctx.key_width = key_width
   ctx.opts_width = opts_width
