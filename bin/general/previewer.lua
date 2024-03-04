@@ -4,10 +4,10 @@ if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
 end
 vim.opt.runtimepath:append(SELF_PATH)
 
-local tables = require("fzfx.commons.tables")
-local fileios = require("fzfx.commons.fileios")
-local jsons = require("fzfx.commons.jsons")
-local strings = require("fzfx.commons.strings")
+local str = require("fzfx.commons.str")
+local tbl = require("fzfx.commons.tbl")
+local fileio = require("fzfx.commons.fileio")
+local json = require("fzfx.commons.json")
 local spawn = require("fzfx.commons.spawn")
 local shell_helpers = require("fzfx.detail.shell_helpers")
 shell_helpers.setup("previewer")
@@ -54,40 +54,40 @@ vim.rpcrequest(
 )
 vim.fn.chanclose(channel_id)
 
-local metajsonstring = fileios.readfile(metafile, { trim = true }) --[[@as string]]
+local metajsonstring = fileio.readfile(metafile, { trim = true }) --[[@as string]]
 shell_helpers.log_ensure(
   type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
   "metajsonstring is not string! %s",
   vim.inspect(metajsonstring)
 )
-local metaopts = jsons.decode(metajsonstring) --[[@as fzfx.PreviewerMetaOpts]]
+local metaopts = json.decode(metajsonstring) --[[@as fzfx.PreviewerMetaOpts]]
 shell_helpers.log_debug("metaopts:[%s]", vim.inspect(metaopts))
 
 --- @param l string?
 local function println(l)
   if type(l) == "string" and string.len(vim.trim(l)) > 0 then
-    l = strings.rtrim(l)
+    l = str.rtrim(l)
     io.write(string.format("%s\n", l))
   end
 end
 
 if metaopts.previewer_type == "command" then
-  local cmd = fileios.readfile(resultfile, { trim = true })
+  local cmd = fileio.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
-  if strings.empty(cmd) then
+  if str.empty(cmd) then
     os.exit(0)
   else
     os.execute(cmd)
   end
 elseif metaopts.previewer_type == "command_list" then
-  local cmd = fileios.readfile(resultfile, { trim = true })
+  local cmd = fileio.readfile(resultfile, { trim = true })
   shell_helpers.log_debug("cmd:%s", vim.inspect(cmd))
-  if strings.empty(cmd) then
+  if str.empty(cmd) then
     os.exit(0)
     return
   end
-  local cmd_splits = jsons.decode(cmd) --[[ @as string[] ]]
-  if tables.tbl_empty(cmd_splits) then
+  local cmd_splits = json.decode(cmd) --[[ @as string[] ]]
+  if tbl.tbl_empty(cmd_splits) then
     os.exit(0)
     return
   end
