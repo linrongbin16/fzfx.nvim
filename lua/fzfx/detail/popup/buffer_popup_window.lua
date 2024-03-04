@@ -408,7 +408,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         self:preview_file_contents(last_content, target_top_line)
       end, 10)
     end)
-  end, 10)
+  end, 20)
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
