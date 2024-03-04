@@ -911,7 +911,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
   local query_command = string.format(
     "%s %s %s %s %s",
-    fzf_helpers.make_lua_command("general", "provider.lua"),
+    fzf_helpers.make_lua_command("provider.lua"),
     provide_rpc_id,
     provider_switch.metafile,
     provider_switch.resultfile,
@@ -920,7 +920,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   -- log.debug("|general| query_command:%s", vim.inspect(query_command))
   local reload_query_command = string.format(
     "%s %s %s %s {q}",
-    fzf_helpers.make_lua_command("general", "provider.lua"),
+    fzf_helpers.make_lua_command("provider.lua"),
     provide_rpc_id,
     provider_switch.metafile,
     provider_switch.resultfile
@@ -943,7 +943,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     table.insert(rpc_registries, preview_rpc_id)
     local preview_command = string.format(
       "%s %s %s %s {}",
-      fzf_helpers.make_lua_command("general", "previewer.lua"),
+      fzf_helpers.make_lua_command("previewer.lua"),
       preview_rpc_id,
       previewer_switch.metafile,
       previewer_switch.resultfile
@@ -1194,7 +1194,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
       local action_command = string.format(
         "%s %s {}",
-        fzf_helpers.make_lua_command("rpc", "request.lua"),
+        fzf_helpers.make_lua_command("rpcrequest.lua"),
         interaction_rpc_id
       )
       local bind_builder = string.format("%s:execute-silent(%s)", action_key, action_command)
@@ -1222,7 +1222,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       table.insert(rpc_registries, switch_rpc_id)
 
       local switch_command =
-        string.format("%s %s", fzf_helpers.make_lua_command("rpc", "request.lua"), switch_rpc_id)
+        string.format("%s %s", fzf_helpers.make_lua_command("rpcrequest.lua"), switch_rpc_id)
       local bind_builder = string.format(
         "%s:unbind(%s)+execute-silent(%s)+change-header(%s)+reload(%s)",
         switch_key,
