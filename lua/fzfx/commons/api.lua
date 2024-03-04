@@ -2,8 +2,8 @@ local NVIM_VERSION_0_8 = false
 local NVIM_VERSION_0_9 = false
 
 do
-  NVIM_VERSION_0_8 = require("fzfx.commons.versions").ge({ 0, 8 })
-  NVIM_VERSION_0_9 = require("fzfx.commons.versions").ge({ 0, 9 })
+  NVIM_VERSION_0_8 = require("fzfx.commons.version").ge({ 0, 8 })
+  NVIM_VERSION_0_9 = require("fzfx.commons.version").ge({ 0, 9 })
 end
 
 local M = {}

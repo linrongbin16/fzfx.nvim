@@ -209,8 +209,8 @@ end
 M.parent = function(p)
   p = p or vim.fn.getcwd()
 
-  local strings = require("fzfx.commons.strings")
-  if strings.endswith(p, "/") or strings.endswith(p, "\\") then
+  local str = require("fzfx.commons.str")
+  if str.endswith(p, "/") or str.endswith(p, "\\") then
     p = string.sub(p, 1, #p - 1)
   end
 
