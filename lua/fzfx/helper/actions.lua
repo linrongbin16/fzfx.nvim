@@ -1,7 +1,7 @@
-local tables = require("fzfx.commons.tables")
-local strings = require("fzfx.commons.strings")
-local numbers = require("fzfx.commons.numbers")
-local paths = require("fzfx.commons.paths")
+local tbl = require("fzfx.commons.tbl")
+local str = require("fzfx.commons.str")
+local num = require("fzfx.commons.num")
+local path = require("fzfx.commons.path")
 
 local consts = require("fzfx.lib.constants")
 
@@ -107,8 +107,8 @@ M._make_set_cursor_rg_no_filename = function(lines, context)
   if #lines == 0 then
     return nil
   end
-  local winnr = tables.tbl_get(context, "winnr")
-  if not numbers.ge(winnr, 0) or not vim.api.nvim_win_is_valid(winnr) then
+  local winnr = tbl.tbl_get(context, "winnr")
+  if not num.ge(winnr, 0) or not vim.api.nvim_win_is_valid(winnr) then
     log.echo(LogLevels.INFO, "invalid window(%s).", vim.inspect(winnr))
     return nil
   end
@@ -119,7 +119,7 @@ M._make_set_cursor_rg_no_filename = function(lines, context)
   table.insert(results, function()
     vim.api.nvim_set_current_win(winnr)
   end)
-  if numbers.ge(parsed.lineno, 0) then
+  if num.ge(parsed.lineno, 0) then
     table.insert(results, function()
       vim.api.nvim_win_set_cursor(winnr, { parsed.lineno, parsed.column or 1 })
     end)
@@ -179,14 +179,14 @@ end
 --- @param context fzfx.PipelineContext?
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
 M._make_setqflist_rg_no_filename = function(lines, context)
-  local bufnr = tables.tbl_get(context, "bufnr")
-  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+  local bufnr = tbl.tbl_get(context, "bufnr")
+  if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
     log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
     return nil
   end
 
   local filename = vim.api.nvim_buf_get_name(bufnr)
-  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+  filename = path.normalize(filename, { double_backslash = true, expand = true })
 
   local qfs = {}
   for _, line in ipairs(lines) do
@@ -260,8 +260,8 @@ M._make_set_cursor_grep_no_filename = function(lines, context)
   if #lines == 0 then
     return nil
   end
-  local winnr = tables.tbl_get(context, "winnr")
-  if not numbers.ge(winnr, 0) or not vim.api.nvim_win_is_valid(winnr) then
+  local winnr = tbl.tbl_get(context, "winnr")
+  if not num.ge(winnr, 0) or not vim.api.nvim_win_is_valid(winnr) then
     log.echo(LogLevels.INFO, "invalid window(%s).", vim.inspect(winnr))
     return nil
   end
@@ -272,7 +272,7 @@ M._make_set_cursor_grep_no_filename = function(lines, context)
   table.insert(results, function()
     vim.api.nvim_set_current_win(winnr)
   end)
-  if numbers.ge(parsed.lineno, 0) then
+  if num.ge(parsed.lineno, 0) then
     table.insert(results, function()
       vim.api.nvim_win_set_cursor(winnr, { parsed.lineno, 1 })
     end)
@@ -332,14 +332,14 @@ end
 --- @param context fzfx.PipelineContext?
 --- @return {filename:string,lnum:integer,col:integer,text:string}[]|nil
 M._make_setqflist_grep_no_filename = function(lines, context)
-  local bufnr = tables.tbl_get(context, "bufnr")
-  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+  local bufnr = tbl.tbl_get(context, "bufnr")
+  if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
     log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
     return nil
   end
 
   local filename = vim.api.nvim_buf_get_name(bufnr)
-  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+  filename = path.normalize(filename, { double_backslash = true, expand = true })
 
   local qfs = {}
   for _, line in ipairs(lines) do
@@ -414,9 +414,9 @@ end
 M._make_git_checkout = function(lines, context)
   log.debug("|_make_git_checkout| lines:%s", vim.inspect(lines))
 
-  if tables.list_not_empty(lines) then
+  if tbl.list_not_empty(lines) then
     local line = lines[#lines]
-    if strings.not_empty(line) then
+    if str.not_empty(line) then
       local parsed = parsers.parse_git_branch(line, context)
       return string.format([[!git checkout %s]], parsed.local_branch)
     end
@@ -429,7 +429,7 @@ end
 --- @param context fzfx.GitBranchesPipelineContext
 M.git_checkout = function(lines, context)
   local checkout = M._make_git_checkout(lines, context) --[[@as string]]
-  if strings.not_empty(checkout) then
+  if str.not_empty(checkout) then
     local ok, result = pcall(vim.cmd --[[@as function]], checkout)
     assert(ok, vim.inspect(result))
   end
@@ -438,7 +438,7 @@ end
 --- @param lines string[]
 --- @return string?
 M._make_yank_git_commit = function(lines)
-  if tables.list_not_empty(lines) then
+  if tbl.list_not_empty(lines) then
     local line = lines[#lines]
     local parsed = parsers.parse_git_commit(line)
     return string.format("let @+ = '%s'", parsed.commit)
@@ -460,7 +460,7 @@ end
 --- @param context fzfx.VimCommandsPipelineContext
 --- @return {input:string, mode:string}?
 M._make_feed_vim_command = function(lines, context)
-  if tables.list_not_empty(lines) then
+  if tbl.list_not_empty(lines) then
     local line = lines[#lines]
     local parsed = parsers.parse_vim_command(line, context)
     return { input = string.format([[:%s]], parsed.command), mode = "n" }
@@ -472,7 +472,7 @@ end
 --- @param context fzfx.VimCommandsPipelineContext
 M.feed_vim_command = function(lines, context)
   local feed = M._make_feed_vim_command(lines, context) --[[@as table]]
-  if tables.tbl_not_empty(feed) then
+  if tbl.tbl_not_empty(feed) then
     local ok, result = pcall(vim.fn.feedkeys, feed.input, feed.mode)
     assert(ok, vim.inspect(result))
   end
@@ -483,20 +483,17 @@ end
 --- @param context fzfx.VimKeyMapsPipelineContext
 --- @return {fn:"cmd"|"feedkeys"|nil, input:string?, mode:string?}?
 M._make_feed_vim_key = function(lines, context)
-  if tables.list_not_empty(lines) then
+  if tbl.list_not_empty(lines) then
     local line = lines[#lines]
     local parsed = parsers.parse_vim_keymap(line, context)
-    if strings.find(parsed.mode, "n") ~= nil then
-      if strings.startswith(parsed.lhs, "<plug>", { ignorecase = true }) then
+    if str.find(parsed.mode, "n") ~= nil then
+      if str.startswith(parsed.lhs, "<plug>", { ignorecase = true }) then
         return {
           fn = "cmd",
           input = string.format([[execute "normal \%s"]], parsed.lhs),
           mode = "n",
         }
-      elseif
-        strings.startswith(parsed.lhs, "<")
-        and numbers.gt(strings.rfind(parsed.lhs, ">"), 0)
-      then
+      elseif str.startswith(parsed.lhs, "<") and num.gt(str.rfind(parsed.lhs, ">"), 0) then
         local tcodes = vim.api.nvim_replace_termcodes(parsed.lhs, true, false, true)
         return { fn = "feedkeys", input = tcodes, mode = "n" }
       else
@@ -519,14 +516,14 @@ end
 --- @param context fzfx.VimKeyMapsPipelineContext
 M.feed_vim_key = function(lines, context)
   local parsed = M._make_feed_vim_key(lines, context) --[[@as table]]
-  if tables.tbl_not_empty(parsed) and parsed.fn == "cmd" and strings.not_empty(parsed.input) then
+  if tbl.tbl_not_empty(parsed) and parsed.fn == "cmd" and str.not_empty(parsed.input) then
     local ok, result = pcall(vim.cmd --[[@as function]], parsed.input)
     assert(ok, vim.inspect(result))
   elseif
-    tables.tbl_not_empty(parsed)
+    tbl.tbl_not_empty(parsed)
     and parsed.fn == "feedkeys"
-    and strings.not_empty(parsed.input)
-    and strings.not_empty(parsed.mode)
+    and str.not_empty(parsed.input)
+    and str.not_empty(parsed.mode)
   then
     local ok, result = pcall(vim.fn.feedkeys, parsed.input, parsed.mode)
     assert(ok, vim.inspect(result))

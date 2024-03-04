@@ -1,7 +1,7 @@
-local tables = require("fzfx.commons.tables")
-local strings = require("fzfx.commons.strings")
-local paths = require("fzfx.commons.paths")
-local numbers = require("fzfx.commons.numbers")
+local tbl = require("fzfx.commons.tbl")
+local str = require("fzfx.commons.str")
+local path = require("fzfx.commons.path")
+local num = require("fzfx.commons.number")
 
 local parsers = require("fzfx.helper.parsers")
 
@@ -10,7 +10,7 @@ local M = {}
 --- @param line string?
 --- @return string
 M.label_find = function(line)
-  if strings.empty(line) then
+  if str.empty(line) then
     return ""
   end
   local parsed = parsers.parse_find(line --[[@as string]])
@@ -20,7 +20,7 @@ end
 --- @param line string?
 --- @return string
 M.label_rg = function(line)
-  if strings.empty(line) then
+  if str.empty(line) then
     return ""
   end
   local parsed = parsers.parse_rg(line --[[@as string]])
@@ -36,15 +36,15 @@ end
 --- @param context fzfx.PipelineContext?
 --- @return string
 M.label_rg_no_filename = function(line, context)
-  if strings.empty(line) then
+  if str.empty(line) then
     return ""
   end
-  local bufnr = tables.tbl_get(context, "bufnr")
-  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+  local bufnr = tbl.tbl_get(context, "bufnr")
+  if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
     return ""
   end
   local filename = vim.api.nvim_buf_get_name(bufnr)
-  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+  filename = path.normalize(filename, { double_backslash = true, expand = true })
   local parsed = parsers.parse_rg_no_filename(line --[[@as string]])
   return string.format(
     "%s:%d%s",
@@ -57,7 +57,7 @@ end
 --- @param line string?
 --- @return string?
 M.label_grep = function(line)
-  if strings.empty(line) then
+  if str.empty(line) then
     return ""
   end
   local parsed = parsers.parse_grep(line --[[@as string]])
@@ -68,15 +68,15 @@ end
 --- @param context fzfx.PipelineContext?
 --- @return string?
 M.label_grep_no_filename = function(line, context)
-  if strings.empty(line) then
+  if str.empty(line) then
     return ""
   end
-  local bufnr = tables.tbl_get(context, "bufnr")
-  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+  local bufnr = tbl.tbl_get(context, "bufnr")
+  if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
     return ""
   end
   local filename = vim.api.nvim_buf_get_name(bufnr)
-  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+  filename = path.normalize(filename, { double_backslash = true, expand = true })
   local parsed = parsers.parse_grep_no_filename(line --[[@as string]])
   return string.format("%s:%d", vim.fn.fnamemodify(filename, ":t"), parsed.lineno or 1)
 end
@@ -89,13 +89,13 @@ M._make_label_vim_command_or_keymap = function(parser, default_value)
   --- @param context fzfx.VimCommandsPipelineContext
   --- @return string
   local function impl(line, context)
-    if strings.empty(line) then
+    if str.empty(line) then
       return ""
     end
     local parsed = parser(line --[[@as string]], context)
     if
-      tables.tbl_not_empty(parsed)
-      and strings.not_empty(parsed.filename)
+      tbl.tbl_not_empty(parsed)
+      and str.not_empty(parsed.filename)
       and type(parsed.lineno) == "number"
     then
       return string.format("%s:%d", vim.fn.fnamemodify(parsed.filename, ":t"), parsed.lineno)
@@ -115,7 +115,7 @@ M._make_label_ls = function(parser)
   --- @param context fzfx.FileExplorerPipelineContext
   --- @return string?
   local function impl(line, context)
-    if strings.empty(line) then
+    if str.empty(line) then
       return ""
     end
     local parsed = parser(line, context) --[[@as table]]

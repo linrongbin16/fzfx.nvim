@@ -1,11 +1,9 @@
-local strings = require("fzfx.commons.strings")
-local apis = require("fzfx.commons.apis")
-local paths = require("fzfx.commons.paths")
+local str = require("fzfx.commons.str")
+local api = require("fzfx.commons.api")
+local path = require("fzfx.commons.path")
 
-local constants = require("fzfx.lib.constants")
 local bufs = require("fzfx.lib.bufs")
 local switches = require("fzfx.lib.switches")
-local log = require("fzfx.lib.log")
 
 local parsers_helper = require("fzfx.helper.parsers")
 local actions_helper = require("fzfx.helper.actions")
@@ -58,7 +56,7 @@ M._buf_valid = function(bufnr)
     ["qf"] = true,
     ["neo-tree"] = true,
   }
-  local ok, ft_or_err = pcall(apis.get_buf_option, bufnr, "filetype")
+  local ok, ft_or_err = pcall(api.get_buf_option, bufnr, "filetype")
   if not ok then
     return false
   end
@@ -73,14 +71,14 @@ M._buffers_provider = function(query, context)
   local bufpaths = {}
 
   local current_path = M._buf_valid(context.bufnr)
-      and paths.reduce(vim.api.nvim_buf_get_name(context.bufnr))
+      and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
     or nil
-  if strings.not_empty(current_path) then
+  if str.not_empty(current_path) then
     table.insert(bufpaths, current_path)
   end
 
   for _, bufnr in ipairs(bufnrs) do
-    local bufpath = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
+    local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
     if M._buf_valid(bufnr) and bufpath ~= current_path then
       table.insert(bufpaths, bufpath)
     end
@@ -121,11 +119,11 @@ M._delete_buffer = function(line)
   local bufnrs = vim.api.nvim_list_bufs()
   local filenames = {}
   for _, bufnr in ipairs(bufnrs) do
-    local bufpath = paths.reduce(vim.api.nvim_buf_get_name(bufnr))
-    bufpath = paths.normalize(bufpath, { double_backslash = true, expand = true })
+    local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
+    bufpath = path.normalize(bufpath, { double_backslash = true, expand = true })
     filenames[bufpath] = bufnr
   end
-  if strings.not_empty(line) then
+  if str.not_empty(line) then
     local parsed = parsers_helper.parse_find(line)
     local bufnr = filenames[parsed.filename]
     -- log.debug(

@@ -1,7 +1,7 @@
-local paths = require("fzfx.commons.paths")
-local fileios = require("fzfx.commons.fileios")
+local path = require("fzfx.commons.path")
+local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
-local strings = require("fzfx.commons.strings")
+local str = require("fzfx.commons.str")
 
 local constants = require("fzfx.lib.constants")
 local env = require("fzfx.lib.env")
@@ -11,7 +11,7 @@ local M = {}
 
 --- @return string
 M._theme_dir_cache = function()
-  return paths.join(env.cache_dir(), "_last_bat_themes_dir_cache")
+  return path.join(env.cache_dir(), "_last_bat_themes_dir_cache")
 end
 
 --- @type string?
@@ -21,14 +21,14 @@ local theme_dir_cached_reader = nil
 --- @return string?
 M._cached_theme_dir = function()
   if theme_dir_cached_reader == nil then
-    theme_dir_cached_reader = fileios.CachedFileReader:open(M._theme_dir_cache())
+    theme_dir_cached_reader = fileio.CachedFileReader:open(M._theme_dir_cache())
   end
   return theme_dir_cached_reader:read({ trim = true })
 end
 
 --- @param theme_dir string
 M._create_theme_dir = function(theme_dir)
-  if paths.isdir(theme_dir) then
+  if path.isdir(theme_dir) then
     return
   end
   spawn
@@ -44,7 +44,7 @@ M.get_theme_dir = function()
   local cached_result = M._cached_theme_dir() --[[@as string]]
   -- log.debug("|get_theme_dir| cached_result:%s", vim.inspect(cached_result))
 
-  if strings.empty(cached_result) then
+  if str.empty(cached_result) then
     log.ensure(constants.HAS_BAT, "|get_theme_dir| cannot find 'bat' executable")
 
     local config_dir = ""
@@ -57,9 +57,9 @@ M.get_theme_dir = function()
       })
       :wait()
     -- log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
-    local theme_dir = paths.join(config_dir, "themes")
+    local theme_dir = path.join(config_dir, "themes")
     M._create_theme_dir(theme_dir)
-    fileios.writefile(M._theme_dir_cache(), theme_dir)
+    fileio.writefile(M._theme_dir_cache(), theme_dir)
 
     return theme_dir
   end
@@ -95,8 +95,7 @@ end
 --- @param delimiter string
 --- @return string
 M._normalize_by = function(s, delimiter)
-  local splits = strings.find(s, delimiter) and strings.split(s, delimiter, { trimempty = true })
-    or { s }
+  local splits = str.find(s, delimiter) and str.split(s, delimiter, { trimempty = true }) or { s }
   splits = M._upper_first(splits)
   return table.concat(splits, "")
 end
@@ -122,13 +121,10 @@ end
 --- @return string
 M.get_theme_config_file = function(colorname)
   local theme_dir = M.get_theme_dir()
-  log.ensure(
-    strings.not_empty(theme_dir),
-    "|get_theme_config_file| failed to get bat config theme dir"
-  )
+  log.ensure(str.not_empty(theme_dir), "|get_theme_config_file| failed to get bat config theme dir")
   local theme_name = M.get_theme_name(colorname)
   log.ensure(
-    strings.not_empty(theme_name),
+    str.not_empty(theme_name),
     "|get_theme_config_file| failed to get bat theme name from nvim colorscheme name:%s",
     vim.inspect(colorname)
   )
@@ -137,7 +133,7 @@ M.get_theme_config_file = function(colorname)
   --   vim.inspect(theme_dir),
   --   vim.inspect(theme_name)
   -- )
-  return paths.join(theme_dir, theme_name .. ".tmTheme")
+  return path.join(theme_dir, theme_name .. ".tmTheme")
 end
 
 return M

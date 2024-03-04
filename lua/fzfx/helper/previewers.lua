@@ -1,7 +1,7 @@
-local strings = require("fzfx.commons.strings")
-local paths = require("fzfx.commons.paths")
-local tables = require("fzfx.commons.tables")
-local numbers = require("fzfx.commons.numbers")
+local str = require("fzfx.commons.str")
+local path = require("fzfx.commons.path")
+local tbl = require("fzfx.commons.tbl")
+local num = require("fzfx.commons.num")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -31,9 +31,9 @@ M._bat_style_theme = function()
 
   if constants.HAS_BAT and vim.opt.termguicolors then
     local colorname = vim.g.colors_name --[[@as string]]
-    if strings.not_empty(colorname) then
+    if str.not_empty(colorname) then
       local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
-      if paths.isfile(theme_config_file or "") then
+      if path.isfile(theme_config_file or "") then
         -- print(string.format("bat previewer color:%s", vim.inspect(color)))
         local custom_theme_name = bat_themes_helper.get_theme_name(colorname) --[[@as string]]
         -- log.debug(
@@ -41,7 +41,7 @@ M._bat_style_theme = function()
         --   vim.inspect(theme_config_file),
         --   vim.inspect(custom_theme_name)
         -- )
-        if strings.not_empty(custom_theme_name) then
+        if str.not_empty(custom_theme_name) then
           return style, custom_theme_name
         end
       end
@@ -124,12 +124,12 @@ end
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
 M.preview_files_grep_no_filename = function(line, context)
-  local bufnr = tables.tbl_get(context, "bufnr")
-  if not numbers.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
+  local bufnr = tbl.tbl_get(context, "bufnr")
+  if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
     return nil
   end
   local filename = vim.api.nvim_buf_get_name(bufnr)
-  filename = paths.normalize(filename, { double_backslash = true, expand = true })
+  filename = path.normalize(filename, { double_backslash = true, expand = true })
   local parsed = parsers_helper.parse_grep_no_filename(line)
   return M.preview_files_with_line_range(filename, parsed.lineno)
 end
@@ -168,10 +168,10 @@ M._make_preview_git_commit = function(commit)
 end
 
 M.preview_git_commit = function(line)
-  if strings.isspace(line:sub(1, 1)) then
+  if str.isspace(line:sub(1, 1)) then
     return nil
   end
-  local first_space_pos = strings.find(line, " ")
+  local first_space_pos = str.find(line, " ")
   local commit = line:sub(1, first_space_pos - 1)
   return M._make_preview_git_commit(commit)
 end
