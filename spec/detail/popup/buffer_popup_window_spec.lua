@@ -11,11 +11,8 @@ describe("detail.popup.buffer_popup_window", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local tables = require("fzfx.commons.tables")
-  local strings = require("fzfx.commons.strings")
-  local numbers = require("fzfx.commons.numbers")
+  local num = require("fzfx.commons.num")
   local buffer_popup_window = require("fzfx.detail.popup.buffer_popup_window")
-  local popup_helpers = require("fzfx.detail.popup.popup_helpers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
   require("fzfx").setup({
@@ -205,7 +202,7 @@ describe("detail.popup.buffer_popup_window", function()
         fzf_border_opts = "rounded",
       }
       local actual = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      actual:preview_file(numbers.auto_incremental_id(), { filename = "README.md" })
+      actual:preview_file(num.auto_incremental_id(), { filename = "README.md" })
       vim.wait(10000, function()
         return #actual.preview_files_queue == 0 and #actual.preview_file_contents_queue == 0
       end)
@@ -219,7 +216,7 @@ describe("detail.popup.buffer_popup_window", function()
         fzf_border_opts = "rounded",
       }
       local actual = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
-      actual:preview_file(numbers.auto_incremental_id(), { filename = "README.md" })
+      actual:preview_file(num.auto_incremental_id(), { filename = "README.md" })
       vim.wait(10000, function()
         return #actual.preview_files_queue == 0 and #actual.preview_file_contents_queue == 0
       end)

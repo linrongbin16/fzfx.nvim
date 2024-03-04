@@ -11,9 +11,6 @@ describe("detail.popup.popup_helpers", function()
     vim.cmd([[edit README.md]])
   end)
 
-  local tables = require("fzfx.commons.tables")
-  local strings = require("fzfx.commons.strings")
-  local numbers = require("fzfx.commons.numbers")
   local popup_helpers = require("fzfx.detail.popup.popup_helpers")
   require("fzfx").setup({
     debug = {

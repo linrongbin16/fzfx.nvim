@@ -9,8 +9,7 @@ describe("detail.module", function()
     vim.api.nvim_command("cd " .. cwd)
   end)
 
-  local strings = require("fzfx.commons.strings")
-
+  local str = require("fzfx.commons.str")
   local conf = require("fzfx.config")
   local module = require("fzfx.detail.module")
   conf.setup()
@@ -52,8 +51,7 @@ describe("detail.module", function()
         vim.env._FZFX_NVIM_DEVICONS_PATH == nil
           or (
             type(vim.env._FZFX_NVIM_DEVICONS_PATH) == "string"
-            and type(strings.find(vim.env._FZFX_NVIM_DEVICONS_PATH, "nvim-web-devicons"))
-              == "number"
+            and type(str.find(vim.env._FZFX_NVIM_DEVICONS_PATH, "nvim-web-devicons")) == "number"
           )
       )
       assert_true(vim.env._FZFX_NVIM_UNKNOWN_FILE_ICON == nil)

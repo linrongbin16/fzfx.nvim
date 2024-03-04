@@ -14,9 +14,9 @@ describe("cfg._lsp_locations", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  local strings = require("fzfx.commons.strings")
-  local term_colors = require("fzfx.commons.colors.term")
-  local consts = require("fzfx.lib.constants")
+  local str = require("fzfx.commons.str")
+  local term_color = require("fzfx.commons.color.term")
+  local constants = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -59,12 +59,12 @@ describe("cfg._lsp_locations", function()
       local loc = _lsp_locations._colorize_lsp_range(
         'describe("_lsp_location_render_line", function()',
         r,
-        term_colors.red
+        term_color.red
       )
       -- print(string.format("lsp render line:%s\n", vim.inspect(loc)))
       assert_eq(type(loc), "string")
-      assert_true(strings.startswith(loc, "describe"))
-      assert_true(strings.endswith(loc, "function()"))
+      assert_true(str.startswith(loc, "describe"))
+      assert_true(str.endswith(loc, "function()"))
     end)
     it("renders location", function()
       local actual = _lsp_locations._render_lsp_location_line(LOCATION)
@@ -96,7 +96,7 @@ describe("cfg._lsp_locations", function()
       assert_true(ctx.position_params.position.line >= 0)
       assert_eq(type(ctx.position_params.textDocument), "table")
       assert_eq(type(ctx.position_params.textDocument.uri), "string")
-      assert_true(strings.endswith(ctx.position_params.textDocument.uri, "README.md"))
+      assert_true(str.endswith(ctx.position_params.textDocument.uri, "README.md"))
     end)
     it("_make_lsp_locations_provider", function()
       local ctx = _lsp_locations._lsp_position_context_maker()
