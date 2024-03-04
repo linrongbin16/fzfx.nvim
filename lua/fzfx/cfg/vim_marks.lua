@@ -212,7 +212,15 @@ M._get_vim_marks = function()
     tmpfile
   ))
 
-  return fileio.readlines(tmpfile --[[@as string]]) --[[@as table]]
+  local marks_output_lines = fileio.readlines(tmpfile --[[@as string]]) --[[@as table]]
+  local marks_results = {}
+
+  for i, line in ipairs(marks_output_lines) do
+    if str.not_empty(line) then
+      table.insert(marks_results, line)
+    end
+  end
+  return marks_results
 end
 
 --- @param query string
