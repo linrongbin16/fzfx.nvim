@@ -310,25 +310,18 @@ M._render_vim_keymaps = function(keymaps, key_width, opts_width)
   return results
 end
 
---- @param mode "all"|"buffer"
---- @return fun(query:string,context:fzfx.VimMarksPipelineContext):string[]|nil
-M._make_vim_marks_provider = function(mode)
-  --- @param query string
-  --- @param context fzfx.VimMarksPipelineContext
-  --- @return string[]|nil
-  local function impl(query, context)
-    local marks, _ = M._get_vim_marks()
-    return marks
-  end
-  return impl
+--- @param query string
+--- @param context fzfx.VimMarksPipelineContext
+--- @return string[]|nil
+M._vim_marks_provider = function(query, context)
+  local marks, _ = M._get_vim_marks()
+  return marks
 end
-
-local all_marks_provider = M._make_vim_marks_provider("all")
 
 M.providers = {
   all_marks = {
-    key = "ctrl-a",
-    provider = all_marks_provider,
+    key = "default",
+    provider = M._vim_marks_provider,
     provider_type = ProviderTypeEnum.LIST,
   },
 }
