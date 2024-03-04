@@ -1,7 +1,6 @@
-local tables = require("fzfx.commons.tables")
-local strings = require("fzfx.commons.strings")
+local tbl = require("fzfx.commons.tbl")
+local str = require("fzfx.commons.str")
 
-local consts = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
@@ -95,7 +94,7 @@ M._make_git_branches_provider = function(opts)
     local branch_results = {}
     table.insert(branch_results, string.format("* %s", git_current_branch_cmd:output()))
     local git_branches_cmd =
-      cmds.GitBranchesCommand:run(tables.tbl_get(opts, "remote_branch") and true or false)
+      cmds.GitBranchesCommand:run(tbl.tbl_get(opts, "remote_branch") and true or false)
     if git_branches_cmd:failed() then
       log.echo(LogLevels.WARN, table.concat(git_current_branch_cmd.result.stderr, " "))
       return nil
@@ -131,7 +130,7 @@ local GIT_LOG_PRETTY_FORMAT = "%C(yellow)%h %C(cyan)%cd %C(green)%aN%C(auto)%d %
 --- @param line string
 --- @return string
 M._git_branches_previewer = function(line)
-  local branch = strings.split(line, " ")[1]
+  local branch = str.split(line, " ")[1]
   -- "git log --graph --date=short --color=always --pretty='%C(auto)%cd %h%d %s'",
   -- "git log --graph --color=always --date=relative",
   return string.format(
@@ -168,7 +167,7 @@ M.fzf_opts = {
     if git_current_branch_cmd:failed() then
       return nil
     end
-    return strings.not_empty(git_current_branch_cmd:output()) and "--header-lines=1" or nil
+    return str.not_empty(git_current_branch_cmd:output()) and "--header-lines=1" or nil
   end,
 }
 
