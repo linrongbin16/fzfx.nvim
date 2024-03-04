@@ -640,15 +640,19 @@ M.parse_vim_mark = function(line, context)
   local mark_value = string.sub(line, context.mark_pos, context.lineno_pos - 1)
   local mark = str.trim(mark_value)
   local lineno_value = string.sub(line, context.lineno_pos, context.col_pos - 1)
-  local lineno = tonumber(str.trim(lineno_value)) --[[@as integer]]
+  lineno_value = str.trim(lineno_value)
+  log.debug("|parse_vim_mark| lineno_value:%s", vim.inspect(lineno_value))
+  local lineno = tonumber(lineno_value) --[[@as integer]]
   local col_value = string.sub(line, context.col_pos, context.file_text_pos - 1)
-  local col = tonumber(str.trim(col_value))
+  col_value = str.trim(col_value)
+  log.debug("|parse_vim_mark| col_value:%s", vim.inspect(col_value))
+  local col = tonumber(col_value)
   local file_text_value = string.sub(line, context.file_text_pos)
   local file_text = str.trim(file_text_value)
   local isfile = path.isfile(file_text or "")
   local result = {
     mark = mark,
-    line = lineno,
+    lineno = lineno,
     col = col,
   }
   if isfile then

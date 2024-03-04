@@ -139,12 +139,14 @@ M.label_vim_mark = function(line, context)
   local filename = parsed.filename
   if str.empty(filename) then
     filename = vim.api.nvim_buf_get_name(context.bufnr)
-    if str.not_empty(filename) then
-      filename = vim.fn.fnamemodify(filename, ":t")
-    end
   end
   if str.not_empty(filename) then
-    return string.format("%s:%d:%d", filename, parsed.lineno or 1, parsed.col or 1)
+    return string.format(
+      "%s:%d:%d",
+      vim.fn.fnamemodify(filename, ":t"),
+      parsed.lineno or 1,
+      parsed.col or 1
+    )
   else
     return string.format("%d:%d", parsed.lineno or 1, parsed.col or 1)
   end

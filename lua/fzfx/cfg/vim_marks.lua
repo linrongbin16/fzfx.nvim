@@ -241,13 +241,23 @@ M.providers = {
 --- @return string[]|nil
 M._vim_marks_previewer = function(line, context)
   local parsed = parsers_helper.parse_vim_mark(line, context)
-  -- log.debug(
-  --   "|fzfx.config - _vim_marks_previewer| line:%s, context:%s, desc_or_loc:%s",
-  --   vim.inspect(line),
-  --   vim.inspect(context),
-  --   vim.inspect(parsed)
-  -- )
-  if tbl.tbl_not_empty(parsed) and str.not_empty(parsed.filename) and num.ge(parsed.lineno, 0) then
+  log.debug(
+    "|_vim_marks_previewer| line:%s, context:%s, parsed:%s",
+    vim.inspect(line),
+    vim.inspect(context),
+    vim.inspect(parsed)
+  )
+  log.debug(
+    "|_vim_marks_previewer| tbl_not_empty(parsed):%s, isfile:%s, lineno:%s",
+    vim.inspect(tbl.tbl_not_empty(parsed)),
+    vim.inspect(path.isfile(parsed.filename or "")),
+    vim.inspect(num.ge(parsed.lineno, 0))
+  )
+  if
+    tbl.tbl_not_empty(parsed)
+    and path.isfile(parsed.filename or "")
+    and num.ge(parsed.lineno, 0)
+  then
     -- log.debug(
     --   "|fzfx.config - _vim_marks_previewer| loc:%s",
     --   vim.inspect(parsed)
