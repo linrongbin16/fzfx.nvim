@@ -580,4 +580,46 @@ M.setqflist_git_status = function(lines)
   assert(ok, vim.inspect(result))
 end
 
+--- @param lines string[]
+--- @param context fzfx.VimMarksPipelineContext
+--- @return (string|function)[]|nil
+M._make_edit_vim_mark = function(lines, context)
+  local results = {}
+  for i, line in ipairs(lines) do
+    local parsed = parsers.parse_vim_mark(line, context)
+    if str.not_empty(parsed.filename) then
+      local edit = string.format("edit! %s", parsed.filename)
+      table.insert(results, edit)
+    end
+    if i == #lines then
+      if str.empty(parsed.filename) and vim.api.nvim_win_is_valid(context.winnr) then
+        table.insert(results, function()
+          vim.api.nvim_set_current_win(context.winnr)
+        end)
+      end
+      local setpos =
+        string.format("call setpos('.', [0, %d, %d])", parsed.lineno or 1, parsed.col or 1)
+      table.insert(results, setpos)
+      local center_cursor = string.format('execute "normal! zz"')
+      table.insert(results, center_cursor)
+    end
+  end
+  return results
+end
+
+--- @param lines string[]
+--- @param context fzfx.VimMarksPipelineContext
+M.edit_vim_mark = function(lines, context)
+  local edits = M._make_edit_vim_mark(lines, context)
+  prompts.confirm_discard_modified(context.bufnr, function()
+    for i, edit in ipairs(edits) do
+      -- log.debug("|edit_vim_mark| [%d]:%s", i, vim.inspect(edit))
+      local ok, result = pcall(vim.is_callable(edit) and edit --[[@as function]] or function()
+        vim.cmd(edit --[[@as string]])
+      end)
+      assert(ok, vim.inspect(result))
+    end
+  end)
+end
+
 return M
