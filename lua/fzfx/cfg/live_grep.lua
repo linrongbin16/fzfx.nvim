@@ -1,14 +1,12 @@
-local tables = require("fzfx.commons.tables")
-local strings = require("fzfx.commons.strings")
-local paths = require("fzfx.commons.paths")
+local tbl = require("fzfx.commons.tbl")
+local str = require("fzfx.commons.str")
+local path = require("fzfx.commons.path")
 
 local consts = require("fzfx.lib.constants")
 local bufs = require("fzfx.lib.bufs")
-local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local parsers_helper = require("fzfx.helper.parsers")
 local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
@@ -112,8 +110,8 @@ M.variants = {
 --- @param bufnr integer
 --- @return string?
 M._get_buf_path = function(bufnr)
-  local bufpath = bufs.buf_is_valid(bufnr) and paths.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
-  if strings.empty(bufpath) then
+  local bufpath = bufs.buf_is_valid(bufnr) and path.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
+  if str.empty(bufpath) then
     log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
     return nil
   end
@@ -125,10 +123,10 @@ end
 --- @return string[]
 M._append_options = function(args_list, option)
   assert(type(args_list) == "table")
-  if strings.not_empty(option) then
-    local option_splits = strings.split(option --[[@as string]], " ")
+  if str.not_empty(option) then
+    local option_splits = str.split(option --[[@as string]], " ")
     for _, o in ipairs(option_splits) do
-      if strings.not_empty(o) then
+      if str.not_empty(o) then
         table.insert(args_list, o)
       end
     end
@@ -149,14 +147,14 @@ M._make_provider_rg = function(opts)
     local option = parsed.option
 
     local args = nil
-    if tables.tbl_get(opts, "unrestricted") or tables.tbl_get(opts, "buffer") then
+    if tbl.tbl_get(opts, "unrestricted") or tbl.tbl_get(opts, "buffer") then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_RG)
     end
     args = M._append_options(args, option)
 
-    if tables.tbl_get(opts, "buffer") then
+    if tbl.tbl_get(opts, "buffer") then
       local bufpath = M._get_buf_path(context.bufnr)
       if not bufpath then
         return nil
@@ -183,14 +181,14 @@ M._make_provider_grep = function(opts)
     local option = parsed.option
 
     local args = nil
-    if tables.tbl_get(opts, "unrestricted") or tables.tbl_get(opts, "buffer") then
+    if tbl.tbl_get(opts, "unrestricted") or tbl.tbl_get(opts, "buffer") then
       args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
     else
       args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
     end
     args = M._append_options(args, option)
 
-    if tables.tbl_get(opts, "buffer") then
+    if tbl.tbl_get(opts, "buffer") then
       local bufpath = M._get_buf_path(context.bufnr)
       if not bufpath then
         return nil
