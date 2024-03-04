@@ -1,6 +1,6 @@
-local tables = require("fzfx.commons.tables")
+local tbl = require("fzfx.commons.tbl")
 
-local consts = require("fzfx.lib.constants")
+local constants = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
 local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
@@ -82,7 +82,7 @@ M.variants = {
 --- @return boolean
 M._is_current_folder_mode = function(opts)
   ---@diagnostic disable-next-line: need-check-nil
-  return tables.tbl_not_empty(opts) and opts.current_folder --[[@as boolean]]
+  return tbl.tbl_not_empty(opts) and opts.current_folder --[[@as boolean]]
 end
 
 --- @param opts {current_folder:boolean?}?
@@ -128,7 +128,7 @@ M.providers = {
 --- @return string?
 M._git_status_previewer = function(line)
   local parsed = parsers_helper.parse_git_status(line)
-  if consts.HAS_DELTA then
+  if constants.HAS_DELTA then
     local win_width = previewers_helper.get_preview_window_width()
     return string.format(
       [[git diff %s | delta -n --tabs 4 --width %d]],
