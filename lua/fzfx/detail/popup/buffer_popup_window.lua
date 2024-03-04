@@ -1,7 +1,7 @@
-local apis = require("fzfx.commons.apis")
-local fileios = require("fzfx.commons.fileios")
-local tables = require("fzfx.commons.tables")
-local strings = require("fzfx.commons.strings")
+local tbl = require("fzfx.commons.tbl")
+local str = require("fzfx.commons.str")
+local api = require("fzfx.commons.api")
+local fileio = require("fzfx.commons.fileio")
 
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -92,28 +92,28 @@ end
 local BufferPopupWindow = {}
 
 local function _set_default_buf_options(bufnr)
-  apis.set_buf_option(bufnr, "bufhidden", "wipe")
-  apis.set_buf_option(bufnr, "buflisted", false)
-  apis.set_buf_option(bufnr, "filetype", "fzf")
+  api.set_buf_option(bufnr, "bufhidden", "wipe")
+  api.set_buf_option(bufnr, "buflisted", false)
+  api.set_buf_option(bufnr, "filetype", "fzf")
 end
 
 local function _set_default_previewer_win_options(winnr)
-  apis.set_win_option(winnr, "number", true)
-  apis.set_win_option(winnr, "spell", false)
-  apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  api.set_win_option(winnr, "number", true)
+  api.set_win_option(winnr, "spell", false)
+  api.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
   -- apis.set_win_option(winnr, "scrolloff", 0)
   -- apis.set_win_option(winnr, "sidescrolloff", 0)
-  apis.set_win_option(winnr, "foldenable", false)
+  api.set_win_option(winnr, "foldenable", false)
 end
 
 local function _set_default_provider_win_options(winnr)
-  apis.set_win_option(winnr, "number", false)
-  apis.set_win_option(winnr, "spell", false)
-  apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
-  apis.set_win_option(winnr, "colorcolumn", "")
+  api.set_win_option(winnr, "number", false)
+  api.set_win_option(winnr, "spell", false)
+  api.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  api.set_win_option(winnr, "colorcolumn", "")
   -- apis.set_win_option(winnr, "scrolloff", 0)
   -- apis.set_win_option(winnr, "sidescrolloff", 0)
-  apis.set_win_option(winnr, "foldenable", false)
+  api.set_win_option(winnr, "foldenable", false)
 end
 
 --- @package
@@ -325,7 +325,7 @@ end
 --- @param previewer_result fzfx.BufferFilePreviewerResult
 --- @param previewer_label_result string?
 function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_label_result)
-  if strings.empty(tables.tbl_get(previewer_result, "filename")) then
+  if str.empty(tbl.tbl_get(previewer_result, "filename")) then
     -- log.debug(
     --   "|BufferPopupWindow:preview_file| empty previewer_result:%s",
     --   vim.inspect(previewer_result)
@@ -366,7 +366,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
     end
 
     -- read file content
-    fileios.asyncreadfile(last_job.previewer_result.filename, function(contents)
+    fileio.asyncreadfile(last_job.previewer_result.filename, function(contents)
       if not self:previewer_is_valid() then
         return
       end
@@ -375,9 +375,9 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
       end
 
       local lines = {}
-      if strings.not_empty(contents) then
+      if str.not_empty(contents) then
         contents = contents:gsub("\r\n", "\n")
-        lines = strings.split(contents, "\n")
+        lines = str.split(contents, "\n")
       end
       table.insert(self.preview_file_contents_queue, {
         contents = lines,
@@ -422,13 +422,13 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
     end
   end
 
-  if tables.tbl_empty(file_content) then
+  if tbl.tbl_empty(file_content) then
     do_complete(false)
     return
   end
 
   local file_type = vim.filetype.match({ filename = file_content.previewer_result.filename }) or ""
-  apis.set_buf_option(self.previewer_bufnr, "filetype", file_type)
+  api.set_buf_option(self.previewer_bufnr, "filetype", file_type)
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
@@ -459,10 +459,10 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
         title_pos = "center",
       }
       vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
-      apis.set_win_option(self.previewer_winnr, "number", true)
+      api.set_win_option(self.previewer_winnr, "number", true)
     end
 
-    if strings.not_empty(file_content.previewer_label_result) then
+    if str.not_empty(file_content.previewer_label_result) then
       vim.defer_fn(set_win_title, 100)
     end
 
@@ -481,7 +481,7 @@ function BufferPopupWindow:render_file_contents(file_content, top_line, on_compl
     end
   end
 
-  if tables.tbl_empty(file_content) then
+  if tbl.tbl_empty(file_content) then
     do_complete(false)
     return
   end
@@ -646,7 +646,7 @@ function BufferPopupWindow:show_preview()
       -- )
       return
     end
-    if tables.tbl_not_empty(self._saved_previewing_file_content_job) then
+    if tbl.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
       self:preview_file_contents(last_content, last_content.previewer_result.lineno or 1)
     end
@@ -722,7 +722,7 @@ function BufferPopupWindow:scroll_by(percent, up)
   local LINES = file_content.contents
   local LINES_COUNT = #LINES
   local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
-  local TOP_LINE = tables.tbl_get(self._saved_previewing_file_content_context, "top_line")
+  local TOP_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "top_line")
     or vim.fn.line("w0", self.previewer_winnr)
   local BOTTOM_LINE = math.min(TOP_LINE + WIN_HEIGHT, LINES_COUNT)
   local SHIFT_LINES = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)

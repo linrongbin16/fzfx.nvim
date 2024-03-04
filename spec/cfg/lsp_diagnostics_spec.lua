@@ -14,7 +14,7 @@ describe("cfg.lsp_diagnostics", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  local strings = require("fzfx.commons.strings")
+  local str = require("fzfx.commons.str")
   local consts = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
@@ -31,13 +31,13 @@ describe("cfg.lsp_diagnostics", function()
         assert_eq(type(sign_item), "table")
         assert_true(sign_item.severity >= 1 and sign_item.severity <= 4)
         assert_true(
-          string.len(sign_item.name) > 0 and strings.startswith(sign_item.name, "DiagnosticSign")
+          string.len(sign_item.name) > 0 and str.startswith(sign_item.name, "DiagnosticSign")
         )
         assert_true(
-          strings.endswith(sign_item.name, "Error")
-            or strings.endswith(sign_item.name, "Warn")
-            or strings.endswith(sign_item.name, "Info")
-            or strings.endswith(sign_item.name, "Hint")
+          str.endswith(sign_item.name, "Error")
+            or str.endswith(sign_item.name, "Warn")
+            or str.endswith(sign_item.name, "Info")
+            or str.endswith(sign_item.name, "Hint")
         )
       end
     end)
