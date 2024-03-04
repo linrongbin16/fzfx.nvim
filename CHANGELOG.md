@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.6.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.6.0...v5.6.1) (2024-03-04)
+
+
+### Performance Improvements
+
+* **preview:** set longer delay for buffer previewer ([#625](https://github.com/linrongbin16/fzfx.nvim/issues/625)) ([ce21696](https://github.com/linrongbin16/fzfx.nvim/commit/ce21696986478173ae52930769ebdb1ac9a9f8a0))
+
 ## [5.6.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.5.1...v5.6.0) (2024-03-01)
 
 
