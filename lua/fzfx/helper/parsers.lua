@@ -648,7 +648,13 @@ M.parse_vim_mark = function(line, context)
   log.debug("|parse_vim_mark| col_value:%s", vim.inspect(col_value))
   local col = tonumber(col_value)
   local file_text_value = string.sub(line, context.file_text_pos)
-  local file_text = str.trim(file_text_value)
+  local file_text = str.trim(file_text_value) --[[@as string?]]
+  file_text = str.not_empty(file_text)
+      and path.normalize(
+        file_text --[[@as string]],
+        { expand = true, double_backslash = true }
+      )
+    or nil
   local isfile = path.isfile(file_text or "")
   local result = {
     mark = mark,
