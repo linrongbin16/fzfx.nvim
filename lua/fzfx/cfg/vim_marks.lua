@@ -192,8 +192,7 @@ M._parse_map_command_output_line = function(line)
   return result
 end
 
---- @alias fzfx.VimMark {lhs:string,rhs:string,mode:string,noremap:boolean,nowait:boolean,silent:boolean,desc:string?,filename:string?,lineno:integer?}
---- @return fzfx.VimMark[]
+--- @return string[], {mark_pos:integer,line_pos:integer,col_pos:integer,file_text_pos:integer}
 M._get_vim_marks = function()
   local tmpfile = vim.fn.tempname()
   vim.cmd(string.format(
@@ -205,142 +204,53 @@ M._get_vim_marks = function()
     tmpfile
   ))
 
-  local marks_output_map = {}
-  local marks_output_lines = fileio.readlines(tmpfile --[[@as string]]) --[[@as table]]
+  local marks = fileio.readlines(tmpfile --[[@as string]]) --[[@as table]]
 
   local MARK = "mark"
   local LINE = "line"
   local COL = "col"
   local FILE_TEXT = "file/text"
 
-  local first_line = marks_output_lines[1]
+  local first_line = marks[1]
   log.ensure(
     string.len(first_line) > 0,
     "invalid 'marks' first line output:%s",
     vim.inspect(first_line)
   )
-  local mark_pos = str.find(first_line, MARK)
+  local mark_pos = str.find(first_line, MARK) --[[@as integer]]
   log.ensure(
     num.ge(mark_pos, 0),
     "invalid 'marks' first line, failed to find 'mark':%s",
     vim.inspect(first_line)
   )
-  local line_pos = str.find(first_line, LINE, mark_pos + string.len(MARK))
+  local line_pos = str.find(first_line, LINE, mark_pos + string.len(MARK)) --[[@as integer]]
   log.ensure(
     num.ge(line_pos, 0),
     "invalid 'marks' first line, failed to find 'line':%s",
     vim.inspect(first_line)
   )
-  local col_pos = str.find(first_line, COL, line_pos + string.len(LINE))
+  local col_pos = str.find(first_line, COL, line_pos + string.len(LINE)) --[[@as integer]]
   log.ensure(
     num.ge(col_pos, 0),
     "invalid 'marks' first line, failed to find 'col':%s",
     vim.inspect(first_line)
   )
-  local file_text_pos = str.find(first_line, FILE_TEXT, col_pos + string.len(COL))
+  local file_text_pos = str.find(first_line, FILE_TEXT, col_pos + string.len(COL)) --[[@as integer]]
   log.ensure(
     num.ge(file_text_pos, 0),
     "invalid 'marks' first line, failed to find 'file/text':%s",
     vim.inspect(first_line)
   )
 
-  local LAST_SET_FROM = "\tLast set from "
-  local LAST_SET_FROM_LUA = "\tLast set from Lua"
-  local LINE = " line "
-  local last_lhs = nil
-  for i = 1, #marks_output_lines do
-    local line = marks_output_lines[i]
-    if type(line) == "string" and string.len(vim.trim(line)) > 0 then
-      if str.isalpha(line:sub(1, 1)) then
-        local parsed = M._parse_map_command_output_line(line)
-        marks_output_map[parsed.lhs] = parsed
-        last_lhs = parsed.lhs
-      elseif
-        str.startswith(line, LAST_SET_FROM)
-        and str.rfind(line, LINE)
-        and not str.startswith(line, LAST_SET_FROM_LUA)
-        and last_lhs
-      then
-        local line_pos = str.rfind(line, LINE)
-        local filename = vim.trim(line:sub(string.len(LAST_SET_FROM) + 1, line_pos - 1))
-        local lineno = vim.trim(line:sub(line_pos + string.len(LINE)))
-        marks_output_map[last_lhs].filename =
-          path.normalize(filename, { double_backslash = true, expand = true })
-        marks_output_map[last_lhs].lineno = tonumber(lineno)
-      end
-    end
-  end
-  -- log.debug(
-  --     "|fzfx.config - _get_vim_keymaps| keys_output_map1:%s",
-  --     vim.inspect(keys_output_map)
-  -- )
-  local api_keys_list = vim.api.nvim_get_keymap("")
-  -- log.debug(
-  --     "|fzfx.config - _get_vim_keymaps| api_keys_list:%s",
-  --     vim.inspect(api_keys_list)
-  -- )
-  local api_keys_map = {}
-  for _, km in ipairs(api_keys_list) do
-    if not api_keys_map[km.lhs] then
-      api_keys_map[km.lhs] = km
-    end
-  end
+  local pos = {
+    mark_pos = mark_pos,
+    line_pos = line_pos,
+    col_pos = col_pos,
+    file_text_pos = file_text_pos,
+  }
 
-  local function get_boolean(v, default_value)
-    if type(v) == "number" then
-      return v > 0
-    elseif type(v) == "boolean" then
-      return v
-    else
-      return default_value
-    end
-  end
-  local function get_string(v, default_value)
-    if type(v) == "string" and string.len(v) > 0 then
-      return v
-    else
-      return default_value
-    end
-  end
-
-  local function get_key_def(keys, left)
-    if keys[left] then
-      return keys[left]
-    end
-    if str.startswith(left, "<Space>") or str.startswith(left, "<space>") then
-      return keys[" " .. left:sub(string.len("<Space>") + 1)]
-    end
-    return nil
-  end
-
-  for lhs, km in pairs(marks_output_map) do
-    local km2 = get_key_def(api_keys_map, lhs)
-    if km2 then
-      km.rhs = get_string(km2.rhs, "")
-      km.mode = get_string(km2.mode, "")
-      km.noremap = get_boolean(km2.noremap, false)
-      km.nowait = get_boolean(km2.nowait, false)
-      km.silent = get_boolean(km2.silent, false)
-      km.desc = get_string(km2.desc, "")
-    else
-      km.rhs = get_string(km.rhs, "")
-      km.mode = get_string(km.mode, "")
-      km.noremap = get_boolean(km.noremap, false)
-      km.nowait = get_boolean(km.nowait, false)
-      km.silent = get_boolean(km.silent, false)
-      km.desc = get_string(km.desc, "")
-    end
-  end
-  log.debug("|_get_vim_keymaps| keys_output_map2:%s", vim.inspect(marks_output_map))
-  local results = {}
-  for _, r in pairs(marks_output_map) do
-    table.insert(results, r)
-  end
-  table.sort(results, function(a, b)
-    return a.lhs < b.lhs
-  end)
-  log.debug("|_get_vim_keymaps| results:%s", vim.inspect(results))
-  return results
+  log.debug("|_get_vim_marks| results:%s", vim.inspect(marks))
+  return marks, pos
 end
 
 --- @param vk fzfx.VimMark
@@ -401,41 +311,19 @@ M._render_vim_keymaps = function(keymaps, key_width, opts_width)
 end
 
 --- @param mode "all"|"buffer"
---- @return fun(query:string,context:fzfx.VimKeyMapsPipelineContext):string[]|nil
+--- @return fun(query:string,context:fzfx.VimMarksPipelineContext):string[]|nil
 M._make_vim_marks_provider = function(mode)
   --- @param query string
-  --- @param context fzfx.VimKeyMapsPipelineContext
+  --- @param context fzfx.VimMarksPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
-    local keys = M._get_vim_marks()
-    local filtered_keys = {}
-    if mode == "all" then
-      filtered_keys = keys
-    else
-      for _, k in ipairs(keys) do
-        if k.mode == mode then
-          table.insert(filtered_keys, k)
-        elseif
-          mode == "v"
-          and (str.find(k.mode, "v") or str.find(k.mode, "s") or str.find(k.mode, "x"))
-        then
-          table.insert(filtered_keys, k)
-        elseif mode == "n" and str.find(k.mode, "n") then
-          table.insert(filtered_keys, k)
-        elseif mode == "i" and str.find(k.mode, "i") then
-          table.insert(filtered_keys, k)
-        elseif mode == "n" and string.len(k.mode) == 0 then
-          table.insert(filtered_keys, k)
-        end
-      end
-    end
-    return M._render_vim_keymaps(filtered_keys, context.key_width, context.opts_width)
+    local marks, _ = M._get_vim_marks()
+    return marks
   end
   return impl
 end
 
 local all_marks_provider = M._make_vim_marks_provider("all")
-local buffer_marks_provider = M._make_vim_marks_provider("buffer")
 
 M.providers = {
   all_marks = {
@@ -443,15 +331,10 @@ M.providers = {
     provider = all_marks_provider,
     provider_type = ProviderTypeEnum.LIST,
   },
-  buffer_marks = {
-    key = "ctrl-u",
-    provider = buffer_marks_provider,
-    provider_type = ProviderTypeEnum.LIST,
-  },
 }
 
 --- @param line string
---- @param context fzfx.VimKeyMapsPipelineContext
+--- @param context fzfx.VimMarksPipelineContext
 --- @return string[]|nil
 M._vim_keymaps_previewer = function(line, context)
   local parsed = parsers_helper.parse_vim_keymap(line, context)
@@ -484,22 +367,7 @@ M._vim_keymaps_previewer = function(line, context)
 end
 
 M.previewers = {
-  all_mode = {
-    previewer = M._vim_keymaps_previewer,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = labels_helper.label_vim_keymap,
-  },
-  n_mode = {
-    previewer = M._vim_keymaps_previewer,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = labels_helper.label_vim_keymap,
-  },
-  i_mode = {
-    previewer = M._vim_keymaps_previewer,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = labels_helper.label_vim_keymap,
-  },
-  v_mode = {
+  all_marks = {
     previewer = M._vim_keymaps_previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = labels_helper.label_vim_keymap,
@@ -538,23 +406,24 @@ M._render_vim_keymaps_columns_status = function(keys)
   return max_key, max_opts
 end
 
---- @alias fzfx.VimKeyMapsPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,key_width:integer,opts_width:integer}
---- @return fzfx.VimKeyMapsPipelineContext
-M._vim_keymaps_context_maker = function()
+--- @alias fzfx.VimMarksPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,mark_pos:integer,line_pos:integer,col_pos:integer,file_text_pos:integer}
+--- @return fzfx.VimMarksPipelineContext
+M._vim_marks_context_maker = function()
   local ctx = {
     bufnr = vim.api.nvim_get_current_buf(),
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }
-  local keys = M._get_vim_marks()
-  local key_width, opts_width = M._render_vim_keymaps_columns_status(keys)
-  ctx.key_width = key_width
-  ctx.opts_width = opts_width
+  local _, marks_pos = M._get_vim_marks()
+  ctx.mark_pos = marks_pos.mark_pos
+  ctx.line_pos = marks_pos.line_pos
+  ctx.col_pos = marks_pos.col_pos
+  ctx.file_text_pos = marks_pos.file_text_pos
   return ctx
 end
 
 M.other_opts = {
-  context_maker = M._vim_keymaps_context_maker,
+  context_maker = M._vim_marks_context_maker,
 }
 
 return M
