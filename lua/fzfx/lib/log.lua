@@ -1,4 +1,4 @@
-local numbers = require("fzfx.commons.numbers")
+local num = require("fzfx.commons.num")
 
 local M = {}
 
@@ -19,7 +19,7 @@ local LogHighlights = {
 --- @param fmt string
 --- @param ... any
 M.echo = function(level, fmt, ...)
-  level = numbers.bound(level, M.LogLevels.TRACE, M.LogLevels.OFF)
+  level = num.bound(level, M.LogLevels.TRACE, M.LogLevels.OFF)
 
   local msg = string.format(fmt, ...)
   local msg_lines = vim.split(msg, "\n", { plain = true })
