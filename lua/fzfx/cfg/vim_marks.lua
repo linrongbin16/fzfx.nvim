@@ -192,7 +192,7 @@ M._parse_map_command_output_line = function(line)
   return result
 end
 
---- @return string[], {mark_pos:integer,line_pos:integer,col_pos:integer,file_text_pos:integer}
+--- @return string[], {mark_pos:integer,lineno_pos:integer,col_pos:integer,file_text_pos:integer}
 M._get_vim_marks = function()
   local tmpfile = vim.fn.tempname()
   vim.cmd(string.format(
@@ -223,13 +223,13 @@ M._get_vim_marks = function()
     "invalid 'marks' first line, failed to find 'mark':%s",
     vim.inspect(first_line)
   )
-  local line_pos = str.find(first_line, LINE, mark_pos + string.len(MARK)) --[[@as integer]]
+  local lineno_pos = str.find(first_line, LINE, mark_pos + string.len(MARK)) --[[@as integer]]
   log.ensure(
-    num.ge(line_pos, 0),
+    num.ge(lineno_pos, 0),
     "invalid 'marks' first line, failed to find 'line':%s",
     vim.inspect(first_line)
   )
-  local col_pos = str.find(first_line, COL, line_pos + string.len(LINE)) --[[@as integer]]
+  local col_pos = str.find(first_line, COL, lineno_pos + string.len(LINE)) --[[@as integer]]
   log.ensure(
     num.ge(col_pos, 0),
     "invalid 'marks' first line, failed to find 'col':%s",
@@ -244,7 +244,7 @@ M._get_vim_marks = function()
 
   local pos = {
     mark_pos = mark_pos,
-    line_pos = line_pos,
+    lineno_pos = lineno_pos,
     col_pos = col_pos,
     file_text_pos = file_text_pos,
   }
@@ -336,30 +336,26 @@ M.providers = {
 --- @param line string
 --- @param context fzfx.VimMarksPipelineContext
 --- @return string[]|nil
-M._vim_keymaps_previewer = function(line, context)
-  local parsed = parsers_helper.parse_vim_keymap(line, context)
+M._vim_marks_previewer = function(line, context)
+  local parsed = parsers_helper.parse_vim_mark(line, context)
   -- log.debug(
-  --   "|fzfx.config - vim_keymaps_previewer| line:%s, context:%s, desc_or_loc:%s",
+  --   "|fzfx.config - _vim_marks_previewer| line:%s, context:%s, desc_or_loc:%s",
   --   vim.inspect(line),
   --   vim.inspect(context),
   --   vim.inspect(parsed)
   -- )
-  if
-    tbl.tbl_not_empty(parsed)
-    and str.not_empty(parsed.filename)
-    and type(parsed.lineno) == "number"
-  then
+  if tbl.tbl_not_empty(parsed) and str.not_empty(parsed.filename) and num.ge(parsed.lineno, 0) then
     -- log.debug(
-    --   "|fzfx.config - vim_keymaps_previewer| loc:%s",
+    --   "|fzfx.config - _vim_marks_previewer| loc:%s",
     --   vim.inspect(parsed)
     -- )
     return previewers_helper.preview_files_with_line_range(parsed.filename, parsed.lineno)
   elseif constants.HAS_ECHO and tbl.tbl_not_empty(parsed) then
     -- log.debug(
-    --   "|fzfx.config - vim_keymaps_previewer| desc:%s",
+    --   "|fzfx.config - _vim_marks_previewer| desc:%s",
     --   vim.inspect(parsed)
     -- )
-    return { "echo", parsed.definition or "" }
+    return { "echo", parsed.text or "" }
   else
     log.echo(LogLevels.INFO, "no echo command found.")
     return nil
@@ -368,7 +364,7 @@ end
 
 M.previewers = {
   all_marks = {
-    previewer = M._vim_keymaps_previewer,
+    previewer = M._vim_marks_previewer,
     previewer_type = PreviewerTypeEnum.COMMAND_LIST,
     previewer_label = labels_helper.label_vim_keymap,
   },
@@ -406,7 +402,7 @@ M._render_vim_keymaps_columns_status = function(keys)
   return max_key, max_opts
 end
 
---- @alias fzfx.VimMarksPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,mark_pos:integer,line_pos:integer,col_pos:integer,file_text_pos:integer}
+--- @alias fzfx.VimMarksPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,mark_pos:integer,lineno_pos:integer,col_pos:integer,file_text_pos:integer}
 --- @return fzfx.VimMarksPipelineContext
 M._vim_marks_context_maker = function()
   local ctx = {
@@ -416,7 +412,7 @@ M._vim_marks_context_maker = function()
   }
   local _, marks_pos = M._get_vim_marks()
   ctx.mark_pos = marks_pos.mark_pos
-  ctx.line_pos = marks_pos.line_pos
+  ctx.lineno_pos = marks_pos.lineno_pos
   ctx.col_pos = marks_pos.col_pos
   ctx.file_text_pos = marks_pos.file_text_pos
   return ctx

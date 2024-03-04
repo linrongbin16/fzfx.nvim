@@ -634,7 +634,24 @@ end
 --
 --- @param line string
 --- @param context fzfx.VimMarksPipelineContext
---- @return {mark:string,line:integer,col:integer,filename:string?,text:string?}
-M.parse_vim_mark = function(line, context) end
+--- @return {mark:string,lineno:integer?,col:integer?,filename:string?,text:string?}
+M.parse_vim_mark = function(line, context)
+  local mark = str.trim(string.sub(line, context.mark_pos, context.lineno_pos - 1))
+  local lineno = tonumber(str.trim(string.sub(line, context.lineno_pos, context.col_pos - 1)))
+  local col = tonumber(str.trim(string.sub(line, context.col_pos, context.file_text_pos - 1)))
+  local file_text = string.sub(line, context.file_text_pos)
+  local isfile = path.isfile(file_text or "")
+  local result = {
+    mark = mark,
+    line = lineno,
+    col = col,
+  }
+  if isfile then
+    result.filename = file_text
+  else
+    result.text = file_text
+  end
+  return result
+end
 
 return M
