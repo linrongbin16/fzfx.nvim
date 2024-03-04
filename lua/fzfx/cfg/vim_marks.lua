@@ -319,11 +319,9 @@ M._vim_marks_provider = function(query, context)
 end
 
 M.providers = {
-  all_marks = {
-    key = "default",
-    provider = M._vim_marks_provider,
-    provider_type = ProviderTypeEnum.LIST,
-  },
+  key = "default",
+  provider = M._vim_marks_provider,
+  provider_type = ProviderTypeEnum.LIST,
 }
 
 --- @param line string
@@ -356,11 +354,9 @@ M._vim_marks_previewer = function(line, context)
 end
 
 M.previewers = {
-  all_marks = {
-    previewer = M._vim_marks_previewer,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = labels_helper.label_vim_keymap,
-  },
+  previewer = M._vim_marks_previewer,
+  previewer_type = PreviewerTypeEnum.COMMAND_LIST,
+  previewer_label = labels_helper.label_vim_mark,
 }
 
 M.actions = {
