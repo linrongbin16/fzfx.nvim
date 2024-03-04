@@ -1,10 +1,6 @@
-local numbers = require("fzfx.commons.numbers")
-local apis = require("fzfx.commons.apis")
-local fileios = require("fzfx.commons.fileios")
+local api = require("fzfx.commons.api")
 
-local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
-local fzf_helpers = require("fzfx.detail.fzf_helpers")
 local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 
 local M = {}
@@ -88,9 +84,9 @@ function FzfPopupWindow:new(win_opts)
   local bufnr = vim.api.nvim_create_buf(false, true)
   -- setlocal bufhidden=wipe nobuflisted
   -- setft=fzf
-  apis.set_buf_option(bufnr, "bufhidden", "wipe")
-  apis.set_buf_option(bufnr, "buflisted", false)
-  apis.set_buf_option(bufnr, "filetype", "fzf")
+  api.set_buf_option(bufnr, "bufhidden", "wipe")
+  api.set_buf_option(bufnr, "buflisted", false)
+  api.set_buf_option(bufnr, "filetype", "fzf")
 
   local nvim_float_win_opts = M.make_opts(win_opts)
 
@@ -98,11 +94,11 @@ function FzfPopupWindow:new(win_opts)
   --- setlocal nospell nonumber
   --- set winhighlight='Pmenu:,Normal:Normal'
   --- set colorcolumn=''
-  apis.set_win_option(winnr, "spell", false)
-  apis.set_win_option(winnr, "number", false)
-  apis.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
-  apis.set_win_option(winnr, "colorcolumn", "")
-  apis.set_win_option(winnr, "wrap", false)
+  api.set_win_option(winnr, "spell", false)
+  api.set_win_option(winnr, "number", false)
+  api.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  api.set_win_option(winnr, "colorcolumn", "")
+  api.set_win_option(winnr, "wrap", false)
 
   local o = {
     window_opts_context = window_opts_context,

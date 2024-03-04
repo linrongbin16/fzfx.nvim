@@ -1,16 +1,12 @@
-local tables = require("fzfx.commons.tables")
-local term_colors = require("fzfx.commons.colors.term")
-local apis = require("fzfx.commons.apis")
-local paths = require("fzfx.commons.paths")
+local tbl = require("fzfx.commons.tbl")
+local api = require("fzfx.commons.api")
+local path = require("fzfx.commons.path")
+local term_color = require("fzfx.commons.color.term")
 
-local consts = require("fzfx.lib.constants")
-local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 local env = require("fzfx.lib.env")
 
-local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
 local providers_helper = require("fzfx.helper.providers")
@@ -86,13 +82,13 @@ M.variants = {
 }
 
 local _, _, SIGN_ERROR_HL =
-  apis.get_hl_with_fallback("DiagnosticSignError", "LspDiagnosticsSignError", "ErrorMsg")
+  api.get_hl_with_fallback("DiagnosticSignError", "LspDiagnosticsSignError", "ErrorMsg")
 local _, _, SIGN_WARN_HL =
-  apis.get_hl_with_fallback("DiagnosticSignWarn", "LspDiagnosticsSignWarn", "WarningMsg")
+  api.get_hl_with_fallback("DiagnosticSignWarn", "LspDiagnosticsSignWarn", "WarningMsg")
 local _, _, SIGN_INFO_HL =
-  apis.get_hl_with_fallback("DiagnosticSignInfo", "LspDiagnosticsSignInfo", "None")
+  api.get_hl_with_fallback("DiagnosticSignInfo", "LspDiagnosticsSignInfo", "None")
 local _, _, SIGN_HINT_HL =
-  apis.get_hl_with_fallback("DiagnosticSignHint", "LspDiagnosticsSignHint", "Comment")
+  api.get_hl_with_fallback("DiagnosticSignHint", "LspDiagnosticsSignHint", "Comment")
 
 local LSP_DIAGNOSTICS_SIGNS = {
   [1] = {
@@ -131,7 +127,7 @@ M._make_lsp_diagnostic_signs = function()
   for _, signs in ipairs(LSP_DIAGNOSTICS_SIGNS) do
     local sign_def = vim.fn.sign_getdefined(signs.name) --[[@as table]]
     local item = vim.deepcopy(signs)
-    if not tables.tbl_empty(sign_def) then
+    if not tbl.tbl_empty(sign_def) then
       item.text = vim.trim(sign_def[1].text)
       item.texthl = sign_def[1].texthl
     end
@@ -149,7 +145,7 @@ M._process_lsp_diagnostic_item = function(diag)
   log.debug("|_process_lsp_diagnostic_item| diag-1:%s", vim.inspect(diag))
   local result = {
     bufnr = diag.bufnr,
-    filename = paths.reduce(vim.api.nvim_buf_get_name(diag.bufnr)),
+    filename = path.reduce(vim.api.nvim_buf_get_name(diag.bufnr)),
     lnum = diag.lnum + 1,
     col = diag.col + 1,
     text = vim.trim(diag.message:gsub("\n", " ")),
@@ -174,13 +170,13 @@ M._make_lsp_diagnostics_provider = function(opts)
   local function impl(query, context)
     ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients()
-    if tables.tbl_empty(lsp_clients) then
+    if tbl.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, "no active lsp clients.")
       return nil
     end
     local diag_list =
       vim.diagnostic.get((type(opts) == "table" and opts.buffer) and context.bufnr or nil)
-    if tables.tbl_empty(diag_list) then
+    if tbl.tbl_empty(diag_list) then
       log.echo(LogLevels.INFO, "no lsp diagnostics found.")
       return nil
     end
@@ -200,7 +196,7 @@ M._make_lsp_diagnostics_provider = function(opts)
         if type(diag.text) == "string" and string.len(diag.text) > 0 then
           if type(signs[diag.severity]) == "table" then
             local sign_item = signs[diag.severity]
-            local color_renderer = term_colors[sign_item.textcolor]
+            local color_renderer = term_color[sign_item.textcolor]
             builder = " " .. color_renderer(sign_item.text, sign_item.texthl)
           end
           builder = builder .. " " .. diag.text
@@ -213,7 +209,7 @@ M._make_lsp_diagnostics_provider = function(opts)
         local line = string.format(
           "%s:%s:%s:%s",
           providers_helper.LSP_FILENAME_COLOR(diag.filename),
-          term_colors.green(tostring(diag.lnum)),
+          term_color.green(tostring(diag.lnum)),
           tostring(diag.col),
           builder
         )

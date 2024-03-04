@@ -10,10 +10,8 @@ describe("helper.bat_themes", function()
     vim.opt.swapfile = false
   end)
 
+  local str = require("fzfx.commons.str")
   local constants = require("fzfx.lib.constants")
-  local tables = require("fzfx.commons.tables")
-  local strings = require("fzfx.commons.strings")
-  local paths = require("fzfx.commons.paths")
   local bat_themes_helper = require("fzfx.helper.bat_themes")
   require("fzfx").setup()
 
@@ -132,7 +130,7 @@ describe("helper.bat_themes", function()
             )
           )
           if actual then
-            assert_true(strings.endswith(actual, expects[i]))
+            assert_true(str.endswith(actual, expects[i]))
           end
         end
       end

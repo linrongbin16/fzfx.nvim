@@ -1,18 +1,15 @@
-local tables = require("fzfx.commons.tables")
-local strings = require("fzfx.commons.strings")
-local paths = require("fzfx.commons.paths")
-local fileios = require("fzfx.commons.fileios")
+local tbl = require("fzfx.commons.tbl")
+local str = require("fzfx.commons.str")
+local path = require("fzfx.commons.path")
+local fileio = require("fzfx.commons.fileio")
 
 local consts = require("fzfx.lib.constants")
-local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
 local parsers_helper = require("fzfx.helper.parsers")
-local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
@@ -112,7 +109,7 @@ M.variants = {
 --- @param line string
 --- @return string
 M._parse_vim_ex_command_name = function(line)
-  local name_stop_pos = strings.find(line, "|", 3)
+  local name_stop_pos = str.find(line, "|", 3)
   return vim.trim(line:sub(3, name_stop_pos - 1))
 end
 
@@ -122,23 +119,23 @@ M._get_vim_ex_commands = function()
     ---@diagnostic disable-next-line: param-type-mismatch
     vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1) --[[@as table]]
   log.debug("|_get_vim_ex_commands| help docs:%s", vim.inspect(help_docs_list))
-  if tables.tbl_empty(help_docs_list) then
+  if tbl.tbl_empty(help_docs_list) then
     log.echo(LogLevels.INFO, "no 'doc/index.txt' found.")
     return {}
   end
   local results = {}
   for _, help_doc in ipairs(help_docs_list) do
-    local lines = fileios.readlines(help_doc) --[[@as table]]
+    local lines = fileio.readlines(help_doc) --[[@as table]]
     for i = 1, #lines do
       local line = lines[i]
-      if strings.startswith(line, "|:") then
+      if str.startswith(line, "|:") then
         log.debug("|_get_vim_ex_commands| line[%d]:%s", i, vim.inspect(line))
         local name = M._parse_vim_ex_command_name(line)
         if type(name) == "string" and string.len(name) > 0 then
           results[name] = {
             name = name,
             loc = {
-              filename = paths.reduce2home(help_doc),
+              filename = path.reduce2home(help_doc),
               lineno = i,
             },
           }
@@ -154,11 +151,11 @@ end
 --- @param header string
 --- @return boolean
 M._is_ex_command_output_header = function(header)
-  local name_pos = strings.find(header, "Name")
-  local args_pos = strings.find(header, "Args")
-  local address_pos = strings.find(header, "Address")
-  local complete_pos = strings.find(header, "Complete")
-  local definition_pos = strings.find(header, "Definition")
+  local name_pos = str.find(header, "Name")
+  local args_pos = str.find(header, "Args")
+  local address_pos = str.find(header, "Address")
+  local complete_pos = str.find(header, "Complete")
+  local definition_pos = str.find(header, "Definition")
   return type(name_pos) == "number"
     and type(args_pos) == "number"
     and type(address_pos) == "number"
@@ -181,22 +178,22 @@ M._parse_ex_command_output_lua_function_definition = function(line, start_pos)
   )
   local lua_flag = "<Lua "
   local lua_function_flag = "<Lua function>"
-  local lua_function_pos = strings.find(line, lua_function_flag, start_pos)
+  local lua_function_pos = str.find(line, lua_function_flag, start_pos)
   if lua_function_pos then
-    start_pos = strings.find(line, lua_flag, lua_function_pos + string.len(lua_function_flag)) --[[@as integer]]
+    start_pos = str.find(line, lua_flag, lua_function_pos + string.len(lua_function_flag)) --[[@as integer]]
   else
-    start_pos = strings.find(line, lua_flag, start_pos) --[[@as integer]]
+    start_pos = str.find(line, lua_flag, start_pos) --[[@as integer]]
   end
   if start_pos == nil then
     return nil
   end
-  local first_colon_pos = strings.find(line, ":", start_pos)
+  local first_colon_pos = str.find(line, ":", start_pos)
   local content = vim.trim(line:sub(first_colon_pos + 1))
   if string.len(content) > 0 and content:sub(#content) == ">" then
     content = content:sub(1, #content - 1)
   end
   log.debug("|_parse_ex_command_output_lua_function_definition| content-2:%s", vim.inspect(content))
-  local content_splits = strings.split(content, ":")
+  local content_splits = str.split(content, ":")
   log.debug(
     "|_parse_ex_command_output_lua_function_definition| split content:%s",
     vim.inspect(content_splits)
@@ -211,11 +208,11 @@ end
 --- @param header string
 --- @return fzfx.VimExCommandOutputHeader
 M._parse_ex_command_output_header = function(header)
-  local name_pos = strings.find(header, "Name")
-  local args_pos = strings.find(header, "Args")
-  local address_pos = strings.find(header, "Address")
-  local complete_pos = strings.find(header, "Complete")
-  local definition_pos = strings.find(header, "Definition")
+  local name_pos = str.find(header, "Name")
+  local args_pos = str.find(header, "Args")
+  local address_pos = str.find(header, "Address")
+  local complete_pos = str.find(header, "Complete")
+  local definition_pos = str.find(header, "Definition")
   return {
     name_pos = name_pos,
     args_pos = args_pos,
@@ -272,7 +269,7 @@ M._parse_ex_command_output = function()
   ))
 
   local results = {}
-  local command_outputs = fileios.readlines(tmpfile --[[@as string]]) --[[@as table]]
+  local command_outputs = fileio.readlines(tmpfile --[[@as string]]) --[[@as table]]
   local found_command_output_header = false
   --- @type fzfx.VimExCommandOutputHeader
   local parsed_header = nil
@@ -284,7 +281,7 @@ M._parse_ex_command_output = function()
       -- parse command name, e.g., FzfxCommands, etc.
       local idx = parsed_header.name_pos
       log.debug("|_parse_ex_command_output| line[%d]:%s(%d)", i, vim.inspect(line), idx)
-      while idx <= #line and not strings.isspace(line:sub(idx, idx)) do
+      while idx <= #line and not str.isspace(line:sub(idx, idx)) do
         -- log.debug(
         --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
         --     idx,
@@ -295,7 +292,7 @@ M._parse_ex_command_output = function()
         --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, isspace:%s",
         --     vim.inspect(strs.isspace(line:sub(idx, idx)))
         -- )
-        if strings.isspace(line:sub(idx, idx)) then
+        if str.isspace(line:sub(idx, idx)) then
           break
         end
         idx = idx + 1
@@ -382,7 +379,7 @@ M._render_vim_commands = function(commands, name_width, opts_width)
       and type(r.loc.filename) == "string"
       and type(r.loc.lineno) == "number"
     then
-      return string.format("%s:%d", paths.reduce(r.loc.filename), r.loc.lineno)
+      return string.format("%s:%d", path.reduce(r.loc.filename), r.loc.lineno)
     else
       return (type(r.opts) == "table" and type(r.opts.desc) == "string")
           and string.format('"%s"', r.opts.desc)
@@ -430,13 +427,13 @@ end
 M._get_vim_commands = function(opts)
   local results = {}
 
-  if tables.tbl_get(opts, "ex_commands") then
+  if tbl.tbl_get(opts, "ex_commands") then
     local tmp = M._get_vim_ex_commands()
     for _, c in pairs(tmp) do
       table.insert(results, c)
     end
   end
-  if tables.tbl_get(opts, "user_commands") then
+  if tbl.tbl_get(opts, "user_commands") then
     local tmp = M._get_vim_user_commands()
     for _, c in pairs(tmp) do
       table.insert(results, c)
@@ -504,8 +501,8 @@ M._vim_commands_previewer = function(line, context)
   --   vim.inspect(parsed)
   -- )
   if
-    tables.tbl_not_empty(parsed)
-    and strings.not_empty(parsed.filename)
+    tbl.tbl_not_empty(parsed)
+    and str.not_empty(parsed.filename)
     and type(parsed.lineno) == "number"
   then
     -- log.debug(
@@ -513,7 +510,7 @@ M._vim_commands_previewer = function(line, context)
     --   vim.inspect(parsed)
     -- )
     return previewers_helper.preview_files_with_line_range(parsed.filename, parsed.lineno)
-  elseif consts.HAS_ECHO and tables.tbl_not_empty(parsed) then
+  elseif consts.HAS_ECHO and tbl.tbl_not_empty(parsed) then
     -- log.debug(
     --   "|fzfx.config - _vim_commands_previewer| desc:%s",
     --   vim.inspect(parsed)

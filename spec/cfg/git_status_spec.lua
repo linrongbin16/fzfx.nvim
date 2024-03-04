@@ -14,7 +14,7 @@ describe("cfg.git_status", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  local strings = require("fzfx.commons.strings")
+  local str = require("fzfx.commons.str")
   local consts = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
@@ -34,11 +34,11 @@ describe("cfg.git_status", function()
       for _, line in ipairs(lines) do
         local actual = git_status_cfg._git_status_previewer(line)
         assert_eq(type(actual), "string")
-        assert_true(strings.find(actual, "git diff") > 0)
+        assert_true(str.find(actual, "git diff") > 0)
         if vim.fn.executable("delta") > 0 then
-          assert_true(strings.find(actual, "delta") > 0)
+          assert_true(str.find(actual, "delta") > 0)
         else
-          assert_true(strings.find(actual, "delta") == nil)
+          assert_true(str.find(actual, "delta") == nil)
         end
       end
     end)

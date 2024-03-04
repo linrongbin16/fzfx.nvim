@@ -13,8 +13,8 @@ describe("helper.actions", function()
   end)
 
   local DEVICONS_PATH = "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
-  local strings = require("fzfx.commons.strings")
-  local paths = require("fzfx.commons.paths")
+  local str = require("fzfx.commons.str")
+  local path = require("fzfx.commons.path")
   local actions = require("fzfx.helper.actions")
   local parsers = require("fzfx.helper.parsers")
   local contexts_helper = require("fzfx.helper.contexts")
@@ -45,7 +45,7 @@ describe("helper.actions", function()
       for i, line in ipairs(lines) do
         local expect = string.format(
           "edit! %s",
-          paths.normalize(line, { double_backslash = true, expand = true })
+          path.normalize(line, { double_backslash = true, expand = true })
         )
         assert_eq(actual[i], expect)
       end
@@ -63,10 +63,10 @@ describe("helper.actions", function()
       assert_eq(type(actual), "table")
       assert_eq(#actual, #lines)
       for i, line in ipairs(lines) do
-        local first_space_pos = strings.find(line, " ")
+        local first_space_pos = str.find(line, " ")
         local expect = string.format(
           "edit! %s",
-          paths.normalize(line:sub(first_space_pos + 1), { double_backslash = true, expand = true })
+          path.normalize(line:sub(first_space_pos + 1), { double_backslash = true, expand = true })
         )
         assert_eq(actual[i], expect)
       end
@@ -184,10 +184,7 @@ describe("helper.actions", function()
         if i <= #lines then
           local expect = string.format(
             "edit! %s",
-            paths.normalize(
-              strings.split(lines[i], ":")[1],
-              { double_backslash = true, expand = true }
-            )
+            path.normalize(str.split(lines[i], ":")[1], { double_backslash = true, expand = true })
           )
           assert_eq(act, expect)
         elseif i == #lines + 1 then
@@ -211,17 +208,17 @@ describe("helper.actions", function()
       assert_eq(#actual, #lines + 2)
       for i = 1, 5 do
         local line = lines[i]
-        local first_space_pos = strings.find(line, " ")
+        local first_space_pos = str.find(line, " ")
         local expect = string.format(
           "edit! %s",
-          paths.normalize(
-            line:sub(first_space_pos + 1, strings.find(line, ":", first_space_pos + 1) - 1),
+          path.normalize(
+            line:sub(first_space_pos + 1, str.find(line, ":", first_space_pos + 1) - 1),
             { double_backslash = true, expand = true }
           )
         )
         assert_eq(actual[i], expect)
       end
-      assert_true(strings.find(actual[6], "setpos") > 0)
+      assert_true(str.find(actual[6], "setpos") > 0)
       assert_eq(actual[7], 'execute "normal! zz"')
     end)
     it("run without icon", function()
@@ -311,7 +308,7 @@ describe("helper.actions", function()
         assert_eq(act.filename, expect.filename)
         assert_eq(act.lnum, expect.lineno)
         assert_eq(act.col, 1)
-        assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
+        assert_eq(act.text, line:sub(str.rfind(line, ":") + 1))
       end
     end)
     it("make with icon", function()
@@ -333,7 +330,7 @@ describe("helper.actions", function()
         assert_eq(act.filename, expect.filename)
         assert_eq(act.lnum, expect.lineno)
         assert_eq(act.col, 1)
-        assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
+        assert_eq(act.text, line:sub(str.rfind(line, ":") + 1))
       end
     end)
     it("run without icon", function()
@@ -384,9 +381,9 @@ describe("helper.actions", function()
         assert_eq(#actual, 1)
 
         local filename = vim.api.nvim_buf_get_name(ctx.bufnr)
-        filename = paths.normalize(filename, { double_backslash = true, expand = true })
+        filename = path.normalize(filename, { double_backslash = true, expand = true })
 
-        local splits = strings.split(line, ":")
+        local splits = str.split(line, ":")
         for _, act in ipairs(actual) do
           print(
             string.format(
@@ -398,7 +395,7 @@ describe("helper.actions", function()
           assert_eq(act.filename, filename)
           assert_eq(act.lnum, tonumber(splits[1]))
           assert_eq(act.col, 1)
-          assert_eq(act.text, line:sub(strings.find(line, ":") + 1))
+          assert_eq(act.text, line:sub(str.find(line, ":") + 1))
         end
       end
     end)
@@ -435,10 +432,7 @@ describe("helper.actions", function()
         if i <= #lines then
           local expect = string.format(
             "edit! %s",
-            paths.normalize(
-              strings.split(lines[i], ":")[1],
-              { double_backslash = true, expand = true }
-            )
+            path.normalize(str.split(lines[i], ":")[1], { double_backslash = true, expand = true })
           )
           assert_eq(act, expect)
         elseif i == #lines + 1 then
@@ -463,11 +457,11 @@ describe("helper.actions", function()
       for i, act in ipairs(actual) do
         if i <= #lines then
           local line = lines[i]
-          local first_space_pos = strings.find(line, " ")
+          local first_space_pos = str.find(line, " ")
           local expect = string.format(
             "edit! %s",
-            paths.normalize(
-              line:sub(first_space_pos + 1, strings.find(line, ":", first_space_pos + 1) - 1),
+            path.normalize(
+              line:sub(first_space_pos + 1, str.find(line, ":", first_space_pos + 1) - 1),
               { double_backslash = true, expand = true }
             )
           )
@@ -564,7 +558,7 @@ describe("helper.actions", function()
         assert_eq(act.filename, expect.filename)
         assert_eq(act.lnum, expect.lineno)
         assert_eq(act.col, expect.column)
-        assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
+        assert_eq(act.text, line:sub(str.rfind(line, ":") + 1))
       end
     end)
     it("make with icon", function()
@@ -586,7 +580,7 @@ describe("helper.actions", function()
         assert_eq(act.filename, expect.filename)
         assert_eq(act.lnum, expect.lineno)
         assert_eq(act.col, expect.column)
-        assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
+        assert_eq(act.text, line:sub(str.rfind(line, ":") + 1))
       end
     end)
     it("run without icon", function()
@@ -637,7 +631,7 @@ describe("helper.actions", function()
         assert_eq(#actual, 1)
 
         local filename = vim.api.nvim_buf_get_name(ctx.bufnr)
-        filename = paths.normalize(filename, { double_backslash = true, expand = true })
+        filename = path.normalize(filename, { double_backslash = true, expand = true })
 
         for _, act in ipairs(actual) do
           local expect = parsers.parse_rg_no_filename(line)
@@ -645,7 +639,7 @@ describe("helper.actions", function()
           assert_eq(act.filename, filename)
           assert_eq(act.lnum, expect.lineno)
           assert_eq(act.col, expect.column)
-          assert_eq(act.text, line:sub(strings.rfind(line, ":") + 1))
+          assert_eq(act.text, line:sub(str.rfind(line, ":") + 1))
         end
       end
     end)
@@ -675,7 +669,7 @@ describe("helper.actions", function()
       }, CONTEXT)
       print(string.format("feed vim command:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
-      assert_true(strings.startswith(actual.input, ":"))
+      assert_true(str.startswith(actual.input, ":"))
       assert_eq(actual.mode, "n")
     end)
   end)
@@ -734,7 +728,7 @@ describe("helper.actions", function()
       -- )
       assert_eq(parsed.fn, "cmd")
       assert_eq(type(parsed.input), "string")
-      assert_true(strings.startswith(parsed.input, [[execute "normal \]]))
+      assert_true(str.startswith(parsed.input, [[execute "normal \]]))
       assert_eq(parsed.mode, "n")
     end)
   end)
@@ -771,7 +765,7 @@ describe("helper.actions", function()
         "origin/release-please--branches--main--components--fzfx.nvim",
       }
       for i, line in ipairs(lines) do
-        if strings.find(line, "origin/main") then
+        if str.find(line, "origin/main") then
           local actual = actions._make_git_checkout({ line }, CONTEXT)
           print(string.format("git checkout remote[%d]:%s\n", i, actual))
           assert_eq(string.format("!git checkout main"), actual)
@@ -794,7 +788,7 @@ describe("helper.actions", function()
         "remotes/origin/ci-verbose",
       }
       for i, line in ipairs(lines) do
-        if strings.find(line, "main") then
+        if str.find(line, "main") then
           local actual = actions._make_git_checkout({ line }, CONTEXT)
           print(
             string.format(
@@ -808,7 +802,7 @@ describe("helper.actions", function()
         else
           local actual = actions._make_git_checkout({ line }, CONTEXT)
           print(string.format("git checkout all[%d]:%s\n", i, actual))
-          local split_pos = strings.find(line, "remotes/origin/")
+          local split_pos = str.find(line, "remotes/origin/")
           if split_pos then
             assert_eq(
               string.format("!git checkout %s", line:sub(string.len("remotes/origin/") + 1)),

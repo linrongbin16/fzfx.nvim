@@ -1,10 +1,10 @@
-local paths = require("fzfx.commons.paths")
-local fileios = require("fzfx.commons.fileios")
+local str = require("fzfx.commons.str")
+local tbl = require("fzfx.commons.tbl")
+local api = require("fzfx.commons.api")
+local path = require("fzfx.commons.path")
+local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
-local strings = require("fzfx.commons.strings")
-local tables = require("fzfx.commons.tables")
-local apis = require("fzfx.commons.apis")
-local versions = require("fzfx.commons.versions")
+local version = require("fzfx.commons.version")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -31,8 +31,8 @@ function _BatTmGlobalRenderer:new(hl, key, attr)
 
   local value = nil
   for i, h in ipairs(hls) do
-    local ok, hl_codes = pcall(apis.get_hl, h)
-    if ok and tables.tbl_not_empty(hl_codes) then
+    local ok, hl_codes = pcall(api.get_hl, h)
+    if ok and tbl.tbl_not_empty(hl_codes) then
       if attr == "fg" and hl_codes.fg then
         value = string.format("#%06x", hl_codes.fg)
       elseif attr == "bg" and hl_codes.bg then
@@ -89,12 +89,12 @@ local _BatTmScopeRenderer = {}
 --- @param hl_codes table
 --- @return fzfx._BatTmScopeValue?
 M._make_scope_value = function(hl, scope, hl_codes)
-  if tables.tbl_empty(hl_codes) then
+  if tbl.tbl_empty(hl_codes) then
     return nil
   end
   log.ensure(type(hl) == "string" and string.len(hl) > 0, "|_make_scope_value| invalid hl name")
   log.ensure(
-    (type(scope) == "string" and string.len(scope) > 0) or (tables.tbl_not_empty(scope)),
+    (type(scope) == "string" and string.len(scope) > 0) or (tbl.tbl_not_empty(scope)),
     "|_make_scope_value| invalid tm scope:%s",
     vim.inspect(scope)
   )
@@ -135,11 +135,11 @@ function _BatTmScopeRenderer:new(hl, scope)
   local value = nil
   local lsp_value = nil
   for i, h in ipairs(hls) do
-    local ok, hl_codes = pcall(apis.get_hl, h)
-    if ok and tables.tbl_not_empty(hl_codes) then
+    local ok, hl_codes = pcall(api.get_hl, h)
+    if ok and tbl.tbl_not_empty(hl_codes) then
       local item = M._make_scope_value(h, scope, hl_codes)
       if item then
-        if strings.startswith(h, "@lsp") then
+        if str.startswith(h, "@lsp") then
           lsp_value = item
         else
           value = item
@@ -162,7 +162,7 @@ end
 --- @param value fzfx._BatTmScopeValue
 --- @return string?
 M._render_scope = function(value)
-  if tables.tbl_empty(value) then
+  if tbl.tbl_empty(value) then
     return nil
   end
   local builder = {
@@ -227,12 +227,12 @@ end
 
 --- @return string?
 function _BatTmScopeRenderer:lsp_hl_name()
-  return tables.tbl_get(self.lsp_value, "hl")
+  return tbl.tbl_get(self.lsp_value, "hl")
 end
 
 --- @return boolean
 function _BatTmScopeRenderer:update_lsp_hl()
-  if strings.empty(tables.tbl_get(self.lsp_value, "hl")) then
+  if str.empty(tbl.tbl_get(self.lsp_value, "hl")) then
     -- log.debug(
     --   "|_BatTmScopeRenderer:update_lsp_hl| invalid self.lsp_value.hl:%s",
     --   vim.inspect(self.lsp_value)
@@ -240,13 +240,13 @@ function _BatTmScopeRenderer:update_lsp_hl()
     return false
   end
   log.ensure(
-    strings.startswith(self.lsp_value.hl, "@lsp"),
+    str.startswith(self.lsp_value.hl, "@lsp"),
     "|_BatTmScopeRenderer:update_lsp_highlight| invalid lsp highlight:%s",
     vim.inspect(self.lsp_value)
   )
 
-  local ok, hl_codes = pcall(apis.get_hl, self.lsp_value.hl)
-  if not ok or tables.tbl_empty(hl_codes) then
+  local ok, hl_codes = pcall(api.get_hl, self.lsp_value.hl)
+  if not ok or tbl.tbl_empty(hl_codes) then
     -- log.debug(
     --   "|_BatTmScopeRenderer:update_lsp_hl| invalid hl_codes, hl:%s, error:%s",
     --   vim.inspect(self.lsp_value.hl),
@@ -256,7 +256,7 @@ function _BatTmScopeRenderer:update_lsp_hl()
   end
 
   local new_value = M._make_scope_value(self.lsp_value.hl, self.lsp_value.scope, hl_codes)
-  if tables.tbl_empty(new_value) then
+  if tbl.tbl_empty(new_value) then
     -- log.debug(
     --   "|_BatTmScopeRenderer:update_lsp_hl| empty new value, hl:%s, hl_codes:%s",
     --   vim.inspect(self.lsp_value.hl),
@@ -724,7 +724,7 @@ end
 function _BatTmRenderer:render(theme_name)
   local payload = self.template
 
-  payload = strings.replace(payload, "{NAME}", theme_name)
+  payload = str.replace(payload, "{NAME}", theme_name)
 
   local globals = {}
   for i, r in ipairs(self.globals) do
@@ -741,8 +741,8 @@ function _BatTmRenderer:render(theme_name)
     end
   end
 
-  payload = strings.replace(payload, "{GLOBAL}", table.concat(globals, "\n"))
-  payload = strings.replace(payload, "{SCOPE}", table.concat(scopes, "\n"))
+  payload = str.replace(payload, "{GLOBAL}", table.concat(globals, "\n"))
+  payload = str.replace(payload, "{SCOPE}", table.concat(scopes, "\n"))
 
   return {
     name = theme_name,
@@ -783,13 +783,13 @@ local building_bat_theme = false
 
 --- @param colorname string
 M._build_theme = function(colorname)
-  log.ensure(strings.not_empty(colorname), "|_build_theme| colorname is empty string!")
+  log.ensure(str.not_empty(colorname), "|_build_theme| colorname is empty string!")
 
   local theme_dir = bat_themes_helper.get_theme_dir()
-  log.ensure(strings.not_empty(theme_dir), "|_build_theme| failed to get bat config dir")
+  log.ensure(str.not_empty(theme_dir), "|_build_theme| failed to get bat config dir")
 
   -- log.debug("|_build_theme| theme_dir:%s", vim.inspect(theme_dir))
-  if not paths.isdir(theme_dir) then
+  if not path.isdir(theme_dir) then
     spawn
       .run({ "mkdir", "-p", theme_dir }, {
         on_stdout = function() end,
@@ -800,7 +800,7 @@ M._build_theme = function(colorname)
 
   local theme_name = bat_themes_helper.get_theme_name(colorname)
   log.ensure(
-    strings.not_empty(theme_name),
+    str.not_empty(theme_name),
     "|_build_theme| failed to get theme_name from nvim colorscheme name:%s",
     vim.inspect(colorname)
   )
@@ -808,7 +808,7 @@ M._build_theme = function(colorname)
   M._BatTmRendererInstance = _BatTmRenderer:new()
   local rendered_result = M._BatTmRendererInstance:render(theme_name)
   log.ensure(
-    tables.tbl_not_empty(rendered_result),
+    tbl.tbl_not_empty(rendered_result),
     "|_build_theme| rendered result is empty, color name:%s, theme name:%s",
     vim.inspect(colorname),
     vim.inspect(theme_name)
@@ -817,7 +817,7 @@ M._build_theme = function(colorname)
   local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
   -- log.debug("|_build_theme| theme_config_file:%s", vim.inspect(theme_config_file))
   log.ensure(
-    strings.not_empty(theme_config_file),
+    str.not_empty(theme_config_file),
     "|_build_theme| failed to get bat theme config file from nvim colorscheme name:%s",
     vim.inspect(colorname)
   )
@@ -827,7 +827,7 @@ M._build_theme = function(colorname)
   end
   building_bat_theme = true
 
-  fileios.asyncwritefile(theme_config_file, rendered_result.payload, function()
+  fileio.asyncwritefile(theme_config_file, rendered_result.payload, function()
     vim.defer_fn(function()
       -- log.debug(
       --   "|_build_theme| dump theme payload, theme_template:%s",
@@ -858,19 +858,19 @@ M._patch_theme = function(colorname, lsp_type, lsp_modifiers)
   --   vim.inspect(lsp_token)
   -- )
 
-  log.ensure(strings.not_empty(colorname), "|_patch_theme| colorname is empty string!")
+  log.ensure(str.not_empty(colorname), "|_patch_theme| colorname is empty string!")
   log.ensure(
-    strings.not_empty(lsp_type) and strings.startswith(lsp_type, "@lsp"),
+    str.not_empty(lsp_type) and str.startswith(lsp_type, "@lsp"),
     "|_patch_theme| invalid lsp token:%s",
     vim.inspect(lsp_type)
   )
 
   local theme_dir = bat_themes_helper.get_theme_dir()
-  log.ensure(strings.not_empty(theme_dir), "|_patch_theme| failed to get bat config dir")
+  log.ensure(str.not_empty(theme_dir), "|_patch_theme| failed to get bat config dir")
 
   local theme_name = bat_themes_helper.get_theme_name(colorname)
   log.ensure(
-    strings.not_empty(theme_name),
+    str.not_empty(theme_name),
     "|_patch_theme| failed to get theme_name from nvim colorscheme name:%s",
     vim.inspect(colorname)
   )
@@ -883,7 +883,7 @@ M._patch_theme = function(colorname, lsp_type, lsp_modifiers)
   local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
   -- log.debug("|_patch_theme| theme_config_file:%s", vim.inspect(theme_config_file))
   log.ensure(
-    strings.not_empty(theme_config_file),
+    str.not_empty(theme_config_file),
     "|_patch_theme| failed to get bat theme config file from nvim colorscheme name:%s",
     vim.inspect(colorname)
   )
@@ -894,7 +894,7 @@ M._patch_theme = function(colorname, lsp_type, lsp_modifiers)
   building_bat_theme = true
 
   local rendered_result = M._BatTmRendererInstance:render(theme_name)
-  fileios.asyncwritefile(theme_config_file, rendered_result.payload, function()
+  fileio.asyncwritefile(theme_config_file, rendered_result.payload, function()
     vim.defer_fn(function()
       -- log.debug(
       --   "|_patch_theme| dump theme payload, theme_template:%s",
@@ -917,7 +917,7 @@ M.setup = function()
     return
   end
 
-  if strings.not_empty(vim.g.colors_name) then
+  if str.not_empty(vim.g.colors_name) then
     M._build_theme(vim.g.colors_name)
   end
 
@@ -925,22 +925,22 @@ M.setup = function()
     callback = function(event)
       -- log.debug("|setup| ColorScheme event:%s", vim.inspect(event))
       vim.schedule(function()
-        if strings.not_empty(vim.g.colors_name) then
+        if str.not_empty(vim.g.colors_name) then
           M._build_theme(vim.g.colors_name)
         end
       end)
     end,
   })
 
-  if versions.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
+  if version.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
     vim.api.nvim_create_autocmd("LspTokenUpdate", {
       callback = function(event)
         -- log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
         vim.schedule(function()
-          if strings.not_empty(tables.tbl_get(event, "data", "token", "type")) then
+          if str.not_empty(tbl.tbl_get(event, "data", "token", "type")) then
             local lsp_type = string.format("@lsp.type.%s", event.data.token.type)
-            local lsp_modifiers = tables.tbl_get(event, "data", "token", "modifiers") or {}
-            if strings.not_empty(vim.g.colors_name) then
+            local lsp_modifiers = tbl.tbl_get(event, "data", "token", "modifiers") or {}
+            if str.not_empty(vim.g.colors_name) then
               M._patch_theme(vim.g.colors_name, lsp_type, lsp_modifiers)
             end
           end

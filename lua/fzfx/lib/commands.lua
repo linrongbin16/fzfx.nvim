@@ -1,6 +1,6 @@
-local strings = require("fzfx.commons.strings")
+local str = require("fzfx.commons.str")
+local tbl = require("fzfx.commons.tbl")
 local spawn = require("fzfx.commons.spawn")
-local tables = require("fzfx.commons.tables")
 
 local M = {}
 
@@ -55,21 +55,21 @@ function Command:run(source)
   local result = CommandResult:new()
   local sp = spawn.run(source, {
     on_stdout = function(line)
-      if strings.not_empty(line) then
+      if str.not_empty(line) then
         table.insert(result.stdout, line)
       end
     end,
     on_stderr = function(line)
-      if strings.not_empty(line) then
+      if str.not_empty(line) then
         table.insert(result.stderr, line)
       end
     end,
   })
   local completed = sp:wait()
-  if tables.tbl_not_empty(completed) and completed.code then
+  if tbl.tbl_not_empty(completed) and completed.code then
     result.code = completed.code
   end
-  if tables.tbl_not_empty(completed) and completed.signal then
+  if tbl.tbl_not_empty(completed) and completed.signal then
     result.signal = completed.signal
   end
 

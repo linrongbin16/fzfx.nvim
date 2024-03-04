@@ -16,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ytanikin/PRConventionalCommits@1.1.0
-        with:
-          task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert","break"]'
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -75,10 +75,8 @@ jobs:
       - name: Run Tests
         run: |
           sudo apt-get -y -qq install bat
+          sudo apt-get -y -qq install fzf
           luarocks install vusted
-          git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-          ~/.fzf/install
-          export PATH="$HOME/.fzf/bin:$PATH"
           vusted --shuffle ./spec
   code_coverage:
     name: Code Coverage
@@ -99,12 +97,10 @@ jobs:
       - name: Run Tests
         run: |
           sudo apt-get -y -qq install bat
+          sudo apt-get -y -qq install fzf
           luarocks install luacov
           luarocks install luacov-reporter-lcov
           luarocks install vusted
-          git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-          ~/.fzf/install
-          export PATH="$HOME/.fzf/bin:$PATH"
           vusted --coverage ./spec
       - name: Generate coverage reports
         shell: bash

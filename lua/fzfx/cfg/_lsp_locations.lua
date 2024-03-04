@@ -1,8 +1,7 @@
-local tables = require("fzfx.commons.tables")
-local strings = require("fzfx.commons.strings")
-local term_colors = require("fzfx.commons.colors.term")
-local paths = require("fzfx.commons.paths")
-local fileios = require("fzfx.commons.fileios")
+local tbl = require("fzfx.commons.tbl")
+local path = require("fzfx.commons.path")
+local fileio = require("fzfx.commons.fileio")
+local term_color = require("fzfx.commons.color.term")
 
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -25,22 +24,21 @@ local M = {}
 --- @param r fzfx.LspRange?
 --- @return boolean
 M._is_lsp_range = function(r)
-  return type(tables.tbl_get(r, "start", "line")) == "number"
-    and type(tables.tbl_get(r, "start", "character")) == "number"
-    and type(tables.tbl_get(r, "end", "line")) == "number"
-    and type(tables.tbl_get(r, "end", "character")) == "number"
+  return type(tbl.tbl_get(r, "start", "line")) == "number"
+    and type(tbl.tbl_get(r, "start", "character")) == "number"
+    and type(tbl.tbl_get(r, "end", "line")) == "number"
+    and type(tbl.tbl_get(r, "end", "character")) == "number"
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_location = function(loc)
-  return type(tables.tbl_get(loc, "uri")) == "string"
-    and M._is_lsp_range(tables.tbl_get(loc, "range"))
+  return type(tbl.tbl_get(loc, "uri")) == "string" and M._is_lsp_range(tbl.tbl_get(loc, "range"))
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_locationlink = function(loc)
-  return type(tables.tbl_get(loc, "targetUri")) == "string"
-    and M._is_lsp_range(tables.tbl_get(loc, "targetRange"))
+  return type(tbl.tbl_get(loc, "targetUri")) == "string"
+    and M._is_lsp_range(tbl.tbl_get(loc, "targetRange"))
 end
 
 --- @param line string
@@ -81,10 +79,10 @@ M._hash_lsp_location = function(loc)
   local result = string.format(
     "%s-%s:%s-%s:%s",
     uri or "",
-    tables.tbl_get(range, "start", "line") or 0,
-    tables.tbl_get(range, "start", "character") or 0,
-    tables.tbl_get(range, "end", "line") or 0,
-    tables.tbl_get(range, "end", "character") or 0
+    tbl.tbl_get(range, "start", "line") or 0,
+    tbl.tbl_get(range, "start", "character") or 0,
+    tbl.tbl_get(range, "end", "line") or 0,
+    tbl.tbl_get(range, "end", "character") or 0
   )
   log.debug("|_hash_lsp_location| loc:%s, hash:%s", vim.inspect(loc), vim.inspect(result))
   return result
@@ -101,7 +99,7 @@ M._render_lsp_location_line = function(loc)
   local range = nil
 
   if M._is_lsp_location(loc) then
-    filename = paths.reduce(vim.uri_to_fname(loc.uri))
+    filename = path.reduce(vim.uri_to_fname(loc.uri))
     range = loc.range
     -- log.debug(
     --   "|_render_lsp_location_line| location filename:%s, range:%s",
@@ -109,7 +107,7 @@ M._render_lsp_location_line = function(loc)
     --   vim.inspect(range)
     -- )
   elseif M._is_lsp_locationlink(loc) then
-    filename = paths.reduce(vim.uri_to_fname(loc.targetUri))
+    filename = path.reduce(vim.uri_to_fname(loc.targetUri))
     range = loc.targetRange
     -- log.debug(
     --   "|_render_lsp_location_line| locationlink filename:%s, range:%s",
@@ -123,11 +121,11 @@ M._render_lsp_location_line = function(loc)
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return nil
   end
-  local filelines = fileios.readlines(filename)
+  local filelines = fileio.readlines(filename)
   if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
     return nil
   end
-  local loc_line = M._colorize_lsp_range(filelines[range.start.line + 1], range, term_colors.red)
+  local loc_line = M._colorize_lsp_range(filelines[range.start.line + 1], range, term_color.red)
   -- log.debug(
   --   "|_render_lsp_location_line| range:%s, loc_line:%s",
   --   vim.inspect(range),
@@ -136,7 +134,7 @@ M._render_lsp_location_line = function(loc)
   local line = string.format(
     "%s:%s:%s:%s",
     providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
-    term_colors.green(tostring(range.start.line + 1)),
+    term_color.green(tostring(range.start.line + 1)),
     tostring(range.start.character + 1),
     loc_line
   )
@@ -163,7 +161,7 @@ M._make_lsp_locations_provider = function(opts)
   --- @return string[]|nil
   local function impl(query, context)
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
-    if tables.tbl_empty(lsp_clients) then
+    if tbl.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, "no active lsp clients.")
       return nil
     end
@@ -198,7 +196,7 @@ M._make_lsp_locations_provider = function(opts)
       log.echo(LogLevels.ERROR, err)
       return nil
     end
-    if tables.tbl_empty(response) then
+    if tbl.tbl_empty(response) then
       log.echo(LogLevels.INFO, "no lsp locations found.")
       return nil
     end
@@ -208,7 +206,7 @@ M._make_lsp_locations_provider = function(opts)
     for client_id, client_response in
       pairs(response --[[@as table]])
     do
-      if client_id ~= nil and tables.tbl_not_empty(tables.tbl_get(client_response, "result")) then
+      if client_id ~= nil and tbl.tbl_not_empty(tbl.tbl_get(client_response, "result")) then
         local lsp_loc = client_response.result
         if M._is_lsp_location(lsp_loc) then
           local loc_hash = M._hash_lsp_location(lsp_loc)
@@ -234,7 +232,7 @@ M._make_lsp_locations_provider = function(opts)
       end
     end
 
-    if tables.tbl_empty(results) then
+    if tbl.tbl_empty(results) then
       log.echo(LogLevels.INFO, "no lsp locations found.")
       return nil
     end
@@ -301,7 +299,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   )
   local filename = nil
   if type(item.uri) == "string" and string.len(item.uri) > 0 and M._is_lsp_range(item.range) then
-    filename = paths.reduce(vim.uri_to_fname(item.uri))
+    filename = path.reduce(vim.uri_to_fname(item.uri))
     log.debug("|_render_lsp_call_hierarchy_line| location filename:%s", vim.inspect(filename))
   end
   if type(ranges) ~= "table" or #ranges == 0 then
@@ -310,13 +308,13 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return {}
   end
-  local filelines = fileios.readlines(filename)
+  local filelines = fileio.readlines(filename)
   if type(filelines) ~= "table" then
     return {}
   end
   local lines = {}
   for i, r in ipairs(ranges) do
-    local item_line = M._colorize_lsp_range(filelines[r.start.line + 1], r, term_colors.red)
+    local item_line = M._colorize_lsp_range(filelines[r.start.line + 1], r, term_color.red)
     log.debug(
       "|_render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
       vim.inspect(i),
@@ -326,7 +324,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
     local line = string.format(
       "%s:%s:%s:%s",
       providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
-      term_colors.green(tostring(r.start.line + 1)),
+      term_color.green(tostring(r.start.line + 1)),
       tostring(r.start.character + 1),
       item_line
     )
@@ -359,7 +357,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
   local function impl(query, context)
     ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
-    if tables.tbl_empty(lsp_clients) then
+    if tbl.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, "no active lsp clients.")
       return nil
     end
@@ -476,7 +474,7 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       end
     end
 
-    if tables.tbl_empty(results) then
+    if tbl.tbl_empty(results) then
       log.echo(LogLevels.INFO, "no lsp call hierarchy found.")
       return nil
     end

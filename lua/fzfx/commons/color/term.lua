@@ -54,10 +54,10 @@ local CSS_COLORS = {
 --- @param hl string?     the highlighting group name
 --- @return string
 M.render = function(text, name, hl)
-  local strings = require("fzfx.commons.strings")
+  local str = require("fzfx.commons.str")
 
   local fgfmt = nil
-  local hlcodes = strings.not_empty(hl) and require("fzfx.commons.apis").get_hl(hl --[[@as string]])
+  local hlcodes = str.not_empty(hl) and require("fzfx.commons.api").get_hl(hl --[[@as string]])
     or nil
   local fgcode = type(hlcodes) == "table" and hlcodes.fg or nil
   if type(fgcode) == "number" then

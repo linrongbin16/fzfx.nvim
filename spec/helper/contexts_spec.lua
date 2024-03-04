@@ -11,13 +11,13 @@ describe("helper.contexts", function()
     vim.opt.swapfile = false
   end)
 
-  local tables = require("fzfx.commons.tables")
+  local tbl = require("fzfx.commons.tbl")
   local contexts = require("fzfx.helper.contexts")
 
   describe("[make_pipeline_context]", function()
     it("test", function()
       local actual = contexts.make_pipeline_context()
-      assert_true(tables.tbl_not_empty(actual))
+      assert_true(tbl.tbl_not_empty(actual))
       assert_eq(type(actual.bufnr), "number")
       assert_eq(type(actual.winnr), "number")
       assert_eq(type(actual.tabnr), "number")

@@ -1,9 +1,9 @@
-local strings = require("fzfx.commons.strings")
-local term_colors = require("fzfx.commons.colors.term")
+local str = require("fzfx.commons.str")
+local term_color = require("fzfx.commons.color.term")
 
 local DEVICONS_OK = nil
 local DEVICONS = nil
-if strings.not_empty(vim.env._FZFX_NVIM_DEVICONS_PATH) then
+if str.not_empty(vim.env._FZFX_NVIM_DEVICONS_PATH) then
   vim.opt.runtimepath:append(vim.env._FZFX_NVIM_DEVICONS_PATH)
   DEVICONS_OK, DEVICONS = pcall(require, "nvim-web-devicons")
 end
@@ -20,16 +20,16 @@ M._decorate = function(line, delimiter, index)
   end
 
   local filename = nil
-  if strings.not_empty(delimiter) and type(index) == "number" then
-    local splits = strings.split(line, delimiter --[[@as string]])
+  if str.not_empty(delimiter) and type(index) == "number" then
+    local splits = str.split(line, delimiter --[[@as string]])
     filename = splits[index]
   else
     filename = line
   end
   -- remove ansi color codes
   -- see: https://stackoverflow.com/a/55324681/4438921
-  if strings.not_empty(filename) then
-    filename = term_colors.erase(filename)
+  if str.not_empty(filename) then
+    filename = term_color.erase(filename)
   end
   local ext = vim.fn.fnamemodify(filename, ":e")
   local icon_text, icon_color = DEVICONS.get_icon_color(filename, ext)
@@ -39,8 +39,8 @@ M._decorate = function(line, delimiter, index)
   --     vim.inspect(icon),
   --     vim.inspect(icon_color)
   -- )
-  if strings.not_empty(icon_text) then
-    local rendered_text = term_colors.render(icon_text, icon_color)
+  if str.not_empty(icon_text) then
+    local rendered_text = term_color.render(icon_text, icon_color)
     return rendered_text .. " " .. line
   else
     if vim.fn.isdirectory(filename) > 0 then

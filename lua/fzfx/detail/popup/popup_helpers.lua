@@ -1,4 +1,4 @@
-local numbers = require("fzfx.commons.numbers")
+local num = require("fzfx.commons.num")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -114,12 +114,12 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
   local total_height = win_opts.relative == "editor" and vim.o.lines
     or vim.api.nvim_win_get_height(0)
 
-  local width = numbers.bound(
+  local width = num.bound(
     win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
     1,
     total_width
   )
-  local height = numbers.bound(
+  local height = num.bound(
     win_opts.height > 1 and win_opts.height or math.floor(win_opts.height * total_height),
     1,
     total_height
@@ -168,25 +168,25 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
   --- @param v number
   --- @return number
   local function bound_row(v)
-    return numbers.bound(v, 0, total_height - 1)
+    return num.bound(v, 0, total_height - 1)
   end
 
   --- @param v number
   --- @return number
   local function bound_col(v)
-    return numbers.bound(v, 0, total_width - 1)
+    return num.bound(v, 0, total_width - 1)
   end
 
   --- @param v number
   --- @return number
   local function bound_height(v)
-    return numbers.bound(v, 1, height)
+    return num.bound(v, 1, height)
   end
 
   --- @param v number
   --- @return number
   local function bound_width(v)
-    return numbers.bound(v, 1, width)
+    return num.bound(v, 1, width)
   end
 
   local start_row = bound_row(math.floor(center_row - (height / 2)))

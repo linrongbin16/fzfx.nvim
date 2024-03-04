@@ -14,9 +14,8 @@ describe("cfg.file_explorer", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  require("fzfx").setup()
-  local strings = require("fzfx.commons.strings")
-  local paths = require("fzfx.commons.paths")
+  local str = require("fzfx.commons.str")
+  local path = require("fzfx.commons.path")
 
   local constants = require("fzfx.lib.constants")
 
@@ -25,6 +24,8 @@ describe("cfg.file_explorer", function()
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
   local file_explorer_cfg = require("fzfx.cfg.file_explorer")
+
+  require("fzfx").setup()
 
   describe("[file_explorer]", function()
     local LS_LINES = {
@@ -71,15 +72,14 @@ describe("cfg.file_explorer", function()
       --     )
       -- )
       assert_eq(type(actual1), "string")
-      assert_true(strings.find(actual1, "echo") > 0)
+      assert_true(str.find(actual1, "echo") > 0)
       assert_true(
-        type(strings.find(actual1, "eza")) == "number"
-          or type(strings.find(actual1, "ls")) == "number"
+        type(str.find(actual1, "eza")) == "number" or type(str.find(actual1, "ls")) == "number"
       )
       assert_true(
-        strings.find(
+        str.find(
           actual1,
-          paths.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
         ) > 0
       )
       local f2 = file_explorer_cfg._make_file_explorer_provider("-lha")
@@ -92,15 +92,14 @@ describe("cfg.file_explorer", function()
       --     )
       -- )
       assert_eq(type(actual2), "string")
-      assert_true(strings.find(actual2, "echo") > 0)
+      assert_true(str.find(actual2, "echo") > 0)
       assert_true(
-        type(strings.find(actual2, "eza")) == "number"
-          or type(strings.find(actual2, "ls")) == "number"
+        type(str.find(actual2, "eza")) == "number" or type(str.find(actual2, "ls")) == "number"
       )
       assert_true(
-        strings.find(
+        str.find(
           actual2,
-          paths.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
         ) > 0
       )
     end)

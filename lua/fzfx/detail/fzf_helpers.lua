@@ -1,9 +1,9 @@
-local paths = require("fzfx.commons.paths")
-local strings = require("fzfx.commons.strings")
-local jsons = require("fzfx.commons.jsons")
-local fileios = require("fzfx.commons.fileios")
-local tables = require("fzfx.commons.tables")
-local apis = require("fzfx.commons.apis")
+local str = require("fzfx.commons.str")
+local tbl = require("fzfx.commons.tbl")
+local api = require("fzfx.commons.api")
+local path = require("fzfx.commons.path")
+local json = require("fzfx.commons.json")
+local fileio = require("fzfx.commons.fileio")
 
 local constants = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
@@ -97,7 +97,7 @@ local LAST_QUERY_CACHES = {}
 
 --- @param name string
 local function last_query_cache_name(name)
-  return paths.join(config.get().cache.dir, string.format("_%s_last_query_cache", name))
+  return path.join(config.get().cache.dir, string.format("_%s_last_query_cache", name))
 end
 
 --- @param name string
@@ -105,14 +105,14 @@ end
 local function get_last_query_cache(name)
   if LAST_QUERY_CACHES[name] == nil then
     local cache_filename = last_query_cache_name(name)
-    local data = fileios.readfile(cache_filename, { trim = true }) --[[@as string]]
-    if strings.not_empty(data) then
+    local data = fileio.readfile(cache_filename, { trim = true }) --[[@as string]]
+    if str.not_empty(data) then
       --- @type boolean, fzfx.LastQueryCacheObj?
-      local ok, data_obj = pcall(jsons.decode, data)
+      local ok, data_obj = pcall(json.decode, data)
       if
         ok
-        and tables.tbl_not_empty(data_obj)
-        and strings.not_empty(tables.tbl_get(data_obj, "default_provider"))
+        and tbl.tbl_not_empty(data_obj)
+        and str.not_empty(tbl.tbl_get(data_obj, "default_provider"))
       then
         LAST_QUERY_CACHES[name] = {
           ---@diagnostic disable-next-line: need-check-nil
@@ -131,7 +131,7 @@ end
 --- @param default_provider string
 local function save_last_query_cache(name, query, default_provider)
   log.ensure(
-    strings.not_empty(default_provider),
+    str.not_empty(default_provider),
     "|save_last_query_cache| %s default_provider must not be empty:%s, query:%s",
     vim.inspect(name),
     vim.inspect(default_provider),
@@ -185,7 +185,7 @@ local function _generate_fzf_color_opts()
     local attr = opts[1]
     for i = 2, #opts do
       local o = opts[i]
-      if strings.startswith(o, "#") then
+      if str.startswith(o, "#") then
         log.ensure(
           string.len(o) == 7,
           "invalid fzf_color_opts: RGB color codes must have 6 digits after '#': %s = %s",
@@ -195,8 +195,8 @@ local function _generate_fzf_color_opts()
         table.insert(builder, string.format("%s:%s", name:gsub("_", "%-"), opts[i]))
         break
       else
-        local codes = apis.get_hl(opts[i])
-        if type(tables.tbl_get(codes, attr)) == "number" then
+        local codes = api.get_hl(opts[i])
+        if type(tbl.tbl_get(codes, attr)) == "number" then
           table.insert(builder, string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr]))
           break
         end
@@ -217,12 +217,12 @@ local function _generate_fzf_icon_opts()
   end
   local opts = {}
   local fzf_icons = config.get().icons
-  local pointer = tables.tbl_get(fzf_icons, "fzf_pointer")
-  if strings.not_empty(pointer) then
+  local pointer = tbl.tbl_get(fzf_icons, "fzf_pointer")
+  if str.not_empty(pointer) then
     table.insert(opts, { "--pointer", pointer })
   end
-  local marker = tables.tbl_get(fzf_icons, "fzf_marker")
-  if strings.not_empty(marker) then
+  local marker = tbl.tbl_get(fzf_icons, "fzf_marker")
+  if str.not_empty(marker) then
     table.insert(opts, { "--marker", marker })
   end
   return opts
@@ -286,7 +286,7 @@ local function make_fzf_color_and_icon_opts()
     end
   end
   local icon_opts = _generate_fzf_icon_opts()
-  if tables.list_not_empty(icon_opts) then
+  if tbl.list_not_empty(icon_opts) then
     for _, o in ipairs(icon_opts) do
       append_fzf_opt(result, o)
     end
@@ -298,7 +298,7 @@ local cached_fzf_default_opts = nil
 
 --- @return string?
 local function make_fzf_default_opts()
-  if strings.empty(cached_fzf_default_opts) then
+  if str.empty(cached_fzf_default_opts) then
     cached_fzf_default_opts = make_fzf_color_and_icon_opts()
   end
   return cached_fzf_default_opts
@@ -345,7 +345,7 @@ end
 --- @return string
 local function make_lua_command(...)
   local nvim_path = nvim_exec()
-  local lua_path = paths.join(vim.env._FZFX_NVIM_SELF_PATH --[[@as string]], "bin", ...)
+  local lua_path = path.join(vim.env._FZFX_NVIM_SELF_PATH --[[@as string]], "bin", ...)
   -- log.debug(
   --     "|fzfx.fzf_helpers - make_lua_command| luascript:%s",
   --     vim.inspect(lua_path)
@@ -380,7 +380,7 @@ end
 --- @return fzfx.FzfOptEventBinder
 function FzfOptEventBinder:append(opt)
   log.ensure(
-    strings.not_blank(opt),
+    str.not_blank(opt),
     "|FzfOptEventBinder:append| opt must not blank:%s",
     vim.inspect(opt)
   )
@@ -497,17 +497,17 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
       elseif o == "bottom" then
         result.position = "down"
       end
-    elseif strings.endswith(o, "%") then
+    elseif str.endswith(o, "%") then
       result.size = tonumber(string.sub(o, 1, #o - 1))
     elseif
-      not strings.startswith(o, "+")
-      and not strings.startswith(o, "-")
-      and not strings.startswith(o, "~")
+      not str.startswith(o, "+")
+      and not str.startswith(o, "-")
+      and not str.startswith(o, "~")
       and type(tonumber(o)) == "number"
     then
       result.size = tonumber(o)
       result.size_is_percent = false
-    elseif strings.startswith(o, "border-") then
+    elseif str.startswith(o, "border-") then
       result.border = FZF_BORDER_OPTS_MAP[string.sub(o, string.len("border-") + 1)] or "rounded"
     elseif o == "nowrap" or o == "wrap" then
       result.wrap = o == "wrap"
@@ -517,9 +517,9 @@ local function parse_fzf_preview_window_opts_no_alternative(split_opts)
       result.cycle = o == "cycle"
     elseif o == "nohidden" or o == "hidden" then
       result.hidden = o == "hidden"
-    elseif strings.startswith(o, "+") or strings.startswith(o, "-") then
+    elseif str.startswith(o, "+") or str.startswith(o, "-") then
       result.scroll = o
-    elseif strings.startswith(o, "~") then
+    elseif str.startswith(o, "~") then
       result.header_lines = tonumber(string.sub(o, 2))
     end
   end
@@ -534,14 +534,14 @@ local function _spilt_fzf_preview_window_opts(opts_value)
   local results = {}
   while i <= n do
     if string.sub(opts_value, i, i) == "<" then
-      local next_lbracket_pos = strings.find(opts_value, "(", i + 1)
+      local next_lbracket_pos = str.find(opts_value, "(", i + 1)
       log.ensure(
         type(next_lbracket_pos) == "number" and next_lbracket_pos > i + 1,
         "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
         vim.inspect(i),
         vim.inspect(opts_value)
       )
-      local next_rbracket_pos = strings.find(opts_value, ")", next_lbracket_pos + 1)
+      local next_rbracket_pos = str.find(opts_value, ")", next_lbracket_pos + 1)
       log.ensure(
         type(next_rbracket_pos) == "number" and next_rbracket_pos > next_lbracket_pos,
         "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
@@ -550,8 +550,8 @@ local function _spilt_fzf_preview_window_opts(opts_value)
       )
       table.insert(results, string.sub(opts_value, i, next_rbracket_pos))
       i = next_rbracket_pos + 1
-    elseif type(strings.find(opts_value, ",", i)) == "number" then
-      local next_comma_pos = strings.find(opts_value, ",", i) --[[@as integer]]
+    elseif type(str.find(opts_value, ",", i)) == "number" then
+      local next_comma_pos = str.find(opts_value, ",", i) --[[@as integer]]
       if next_comma_pos > i then
         table.insert(results, string.sub(opts_value, i, next_comma_pos - 1))
       end
@@ -580,16 +580,16 @@ local function parse_fzf_preview_window_opts(opts)
       vim.inspect(o)
     )
     if type(o) == "table" then
-      opts_value = opts_value .. (string.len(opts_value) > 0 and "," or "") .. strings.trim(o[2])
+      opts_value = opts_value .. (string.len(opts_value) > 0 and "," or "") .. str.trim(o[2])
     else
       log.ensure(
-        type(o) == "string" and strings.startswith(o, "--preview-window"),
+        type(o) == "string" and str.startswith(o, "--preview-window"),
         "invalid fzf preview window opts:%s",
         vim.inspect(o)
       )
       opts_value = opts_value
         .. (string.len(opts_value) > 0 and "," or "")
-        .. strings.trim(string.sub(o --[[@as string]], string.len("--preview-window") + 2))
+        .. str.trim(string.sub(o --[[@as string]], string.len("--preview-window") + 2))
     end
   end
 
@@ -605,7 +605,7 @@ local function parse_fzf_preview_window_opts(opts)
   local opts_alternative_layout = nil
   local opts_no_alternative_layout = {}
   for _, o in ipairs(split_opts) do
-    if strings.startswith(o, "<") then
+    if str.startswith(o, "<") then
       opts_alternative_layout = o
     else
       table.insert(opts_no_alternative_layout, o)
@@ -616,14 +616,14 @@ local function parse_fzf_preview_window_opts(opts)
   result.size_threshold = nil
   result.alternative_layout = nil
   if opts_alternative_layout then
-    local lbracket_pos = strings.find(opts_alternative_layout, "(", 2)
+    local lbracket_pos = str.find(opts_alternative_layout, "(", 2)
     log.ensure(
       type(lbracket_pos) == "number" and lbracket_pos > 2,
       "invalid fzf preview window opts(size_threshold): %s",
       vim.inspect(opts_alternative_layout)
     )
     log.ensure(
-      strings.endswith(opts_alternative_layout, ")"),
+      str.endswith(opts_alternative_layout, ")"),
       "invalid fzf preview window opts(size_threshold): %s",
       vim.inspect(opts)
     )

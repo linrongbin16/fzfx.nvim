@@ -1,6 +1,7 @@
-local consts = require("fzfx.lib.constants")
-local paths = require("fzfx.commons.paths")
-local numbers = require("fzfx.commons.numbers")
+local num = require("fzfx.commons.num")
+local path = require("fzfx.commons.path")
+
+local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 
 local M = {}
@@ -13,7 +14,8 @@ local RpcServer = {}
 
 --- @return fzfx.RpcServer
 function RpcServer:new()
-  local address = consts.IS_WINDOWS and vim.fn.serverstart(paths.pipename()) or vim.fn.serverstart() --[[@as string]]
+  local address = constants.IS_WINDOWS and vim.fn.serverstart(path.pipename())
+    or vim.fn.serverstart() --[[@as string]]
   -- log.debug(
   --     "|fzfx.rpcserver - RpcServer:new| start server on socket address:%s",
   --     vim.inspect(address)
@@ -61,7 +63,7 @@ function RpcServer:register(callback, name)
     type(callback),
     vim.inspect(callback)
   )
-  local registry_id = tostring(numbers.auto_incremental_id())
+  local registry_id = tostring(num.auto_incremental_id())
   self.registry[registry_id] = function(params)
     -- log.debug(
     --   "|RpcServer:register| invoke rpc (%s-%s) with param:%s",

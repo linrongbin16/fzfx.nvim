@@ -18,10 +18,11 @@ describe("helper.previewer_labels", function()
     }
   end
 
-  local strings = require("fzfx.commons.strings")
+  local str = require("fzfx.commons.str")
+  local fileio = require("fzfx.commons.fileio")
+
   local parsers = require("fzfx.helper.parsers")
   local labels = require("fzfx.helper.previewer_labels")
-  local fileios = require("fzfx.commons.fileios")
 
   describe("[label_find]", function()
     it("test", function()
@@ -36,7 +37,7 @@ describe("helper.previewer_labels", function()
       for _, line in ipairs(lines) do
         local actual = labels.label_find(line)
         assert_eq(type(actual), "string")
-        assert_true(strings.endswith(line, actual))
+        assert_true(str.endswith(line, actual))
       end
     end)
   end)
@@ -54,8 +55,8 @@ describe("helper.previewer_labels", function()
       for _, line in ipairs(lines) do
         local actual = labels.label_rg(line)
         assert_eq(type(actual), "string")
-        assert_eq(type(strings.find(line, actual)), "number")
-        assert_true(strings.find(line, actual) > 0)
+        assert_eq(type(str.find(line, actual)), "number")
+        assert_true(str.find(line, actual) > 0)
       end
     end)
   end)
@@ -72,11 +73,11 @@ describe("helper.previewer_labels", function()
       for _, line in ipairs(lines) do
         local ctx = make_context()
         local actual = labels.label_rg_no_filename(line, ctx)
-        local splits = strings.split(line, ":")
+        local splits = str.split(line, ":")
         assert_eq(type(actual), "string")
-        assert_true(strings.endswith(actual, string.format("%s:%s", splits[1], splits[2])))
+        assert_true(str.endswith(actual, string.format("%s:%s", splits[1], splits[2])))
         assert_true(
-          strings.find(actual, vim.fn.fnamemodify(vim.api.nvim_buf_get_name(ctx.bufnr), ":t")) > 0
+          str.find(actual, vim.fn.fnamemodify(vim.api.nvim_buf_get_name(ctx.bufnr), ":t")) > 0
         )
       end
     end)
@@ -95,8 +96,8 @@ describe("helper.previewer_labels", function()
       for _, line in ipairs(lines) do
         local actual = labels.label_grep(line)
         assert_eq(type(actual), "string")
-        assert_eq(type(strings.find(line, actual)), "number")
-        assert_true(strings.find(line, actual) > 0)
+        assert_eq(type(str.find(line, actual)), "number")
+        assert_true(str.find(line, actual) > 0)
       end
     end)
   end)
@@ -113,11 +114,11 @@ describe("helper.previewer_labels", function()
       for _, line in ipairs(lines) do
         local ctx = make_context()
         local actual = labels.label_grep_no_filename(line, ctx)
-        local splits = strings.split(line, ":")
+        local splits = str.split(line, ":")
         assert_eq(type(actual), "string")
-        assert_true(strings.endswith(actual, splits[1]))
+        assert_true(str.endswith(actual, splits[1]))
         assert_true(
-          strings.find(actual, vim.fn.fnamemodify(vim.api.nvim_buf_get_name(ctx.bufnr), ":t")) > 0
+          str.find(actual, vim.fn.fnamemodify(vim.api.nvim_buf_get_name(ctx.bufnr), ":t")) > 0
         )
       end
     end)
@@ -137,10 +138,10 @@ describe("helper.previewer_labels", function()
       for _, line in ipairs(lines) do
         local actual = labels.label_vim_command(line, CONTEXT)
         assert_eq(type(actual), "string")
-        local actual_splits = strings.split(actual, ":")
+        local actual_splits = str.split(actual, ":")
         assert_eq(#actual_splits, 2)
-        assert_true(strings.find(line, actual_splits[1]) > 0)
-        assert_true(strings.endswith(line, actual_splits[2]))
+        assert_true(str.find(line, actual_splits[1]) > 0)
+        assert_true(str.endswith(line, actual_splits[2]))
       end
     end)
     it("test definition", function()
@@ -169,10 +170,10 @@ describe("helper.previewer_labels", function()
       for _, line in ipairs(lines) do
         local actual = labels.label_vim_keymap(line, CONTEXT)
         assert_eq(type(actual), "string")
-        local actual_splits = strings.split(actual, ":")
+        local actual_splits = str.split(actual, ":")
         assert_eq(#actual_splits, 2)
-        assert_true(strings.find(line, actual_splits[1]) > 0)
-        assert_true(strings.endswith(line, actual_splits[2]))
+        assert_true(str.find(line, actual_splits[1]) > 0)
+        assert_true(str.endswith(line, actual_splits[2]))
       end
     end)
     it("test definition", function()
@@ -191,7 +192,7 @@ describe("helper.previewer_labels", function()
 
   describe("[label_ls/lsd/eza]", function()
     local TEMP = vim.fn.tempname()
-    fileios.writefile(TEMP --[[@as string]], vim.fn.getcwd() --[[@as string]])
+    fileio.writefile(TEMP --[[@as string]], vim.fn.getcwd() --[[@as string]])
     local CONTEXT = {
       bufnr = vim.api.nvim_get_current_buf(),
       winnr = vim.api.nvim_get_current_win(),
@@ -226,7 +227,7 @@ describe("helper.previewer_labels", function()
       for i, line in ipairs(lines) do
         local actual = labels.label_ls(line, CONTEXT)
         local expect = expects[i]
-        assert_true(strings.endswith(actual, expect))
+        assert_true(str.endswith(actual, expect))
       end
     end)
     it("lsd -lh --header --icon=never", function()
@@ -251,7 +252,7 @@ describe("helper.previewer_labels", function()
       for i, line in ipairs(lines) do
         local actual = labels.label_lsd(line, CONTEXT)
         local expect = expects[i]
-        assert_true(strings.endswith(actual, expect))
+        assert_true(str.endswith(actual, expect))
       end
     end)
     it("eza -lh for macOS/linux", function()
@@ -281,7 +282,7 @@ describe("helper.previewer_labels", function()
       for i, line in ipairs(lines) do
         local actual = labels.label_eza(line, CONTEXT)
         local expect = expects[i]
-        assert_true(strings.endswith(actual, expect))
+        assert_true(str.endswith(actual, expect))
       end
     end)
   end)

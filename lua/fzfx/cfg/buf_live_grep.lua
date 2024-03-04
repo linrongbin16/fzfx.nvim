@@ -1,6 +1,5 @@
-local tables = require("fzfx.commons.tables")
-local strings = require("fzfx.commons.strings")
-local paths = require("fzfx.commons.paths")
+local str = require("fzfx.commons.str")
+local path = require("fzfx.commons.path")
 
 local constants = require("fzfx.lib.constants")
 local bufs = require("fzfx.lib.bufs")
@@ -56,8 +55,8 @@ M.variants = {
 --- @param bufnr integer
 --- @return string?
 M._get_buf_path = function(bufnr)
-  local bufpath = bufs.buf_is_valid(bufnr) and paths.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
-  if strings.empty(bufpath) then
+  local bufpath = bufs.buf_is_valid(bufnr) and path.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
+  if str.empty(bufpath) then
     log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
     return nil
   end
@@ -69,10 +68,10 @@ end
 --- @return string[]
 M._append_options = function(args_list, option)
   assert(type(args_list) == "table")
-  if strings.not_empty(option) then
-    local option_splits = strings.split(option --[[@as string]], " ")
+  if str.not_empty(option) then
+    local option_splits = str.split(option --[[@as string]], " ")
     for _, o in ipairs(option_splits) do
-      if strings.not_empty(o) then
+      if str.not_empty(o) then
         table.insert(args_list, o)
       end
     end

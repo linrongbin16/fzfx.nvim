@@ -21,9 +21,9 @@ describe("helper.previewers", function()
     }
   end
 
-  local tables = require("fzfx.commons.tables")
-  local strings = require("fzfx.commons.strings")
-  local paths = require("fzfx.commons.paths")
+  local tbl = require("fzfx.commons.tbl")
+  local str = require("fzfx.commons.str")
+  local path = require("fzfx.commons.path")
   local constants = require("fzfx.lib.constants")
   local previewers = require("fzfx.helper.previewers")
   local conf = require("fzfx.config")
@@ -60,7 +60,7 @@ describe("helper.previewers", function()
       if actual[1] == constants.BAT then
         assert_eq(actual[1], constants.BAT)
         assert_eq(actual[2], "--style=numbers,changes")
-        assert_true(strings.startswith(actual[3], "--theme="))
+        assert_true(str.startswith(actual[3], "--theme="))
         assert_eq(actual[4], "--color=always")
         assert_eq(actual[5], "--pager=never")
         assert_eq(actual[6], "--highlight-line=135")
@@ -88,14 +88,14 @@ describe("helper.previewers", function()
         if actual[1] == constants.BAT then
           assert_eq(actual[1], constants.BAT)
           assert_eq(actual[2], "--style=numbers,changes")
-          assert_true(strings.startswith(actual[3], "--theme="))
+          assert_true(str.startswith(actual[3], "--theme="))
           assert_eq(actual[4], "--color=always")
           assert_eq(actual[5], "--pager=never")
           assert_eq(actual[6], "--")
-          assert_eq(actual[7], paths.normalize(line, { double_backslash = true, expand = true }))
+          assert_eq(actual[7], path.normalize(line, { double_backslash = true, expand = true }))
         else
           assert_eq(actual[1], "cat")
-          assert_eq(actual[2], paths.normalize(line, { double_backslash = true, expand = true }))
+          assert_eq(actual[2], path.normalize(line, { double_backslash = true, expand = true }))
         end
       end
     end)
@@ -116,7 +116,7 @@ describe("helper.previewers", function()
           string.format("buffer_preview_files_find-%s:%s\n", vim.inspect(i), vim.inspect(actual))
         )
         assert_eq(type(actual), "table")
-        assert_true(strings.endswith(paths.normalize(line, { expand = true }), actual.filename))
+        assert_true(str.endswith(path.normalize(line, { expand = true }), actual.filename))
       end
     end)
   end)
@@ -133,18 +133,18 @@ describe("helper.previewers", function()
       for _, line in ipairs(lines) do
         local actual = previewers.preview_files_grep(line)
         local expect =
-          paths.normalize(strings.split(line, ":")[1], { double_backslash = true, expand = true })
+          path.normalize(str.split(line, ":")[1], { double_backslash = true, expand = true })
         print(string.format("normalize:%s\n", vim.inspect(expect)))
         print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
         if actual[1] == constants.BAT then
           assert_eq(actual[1], constants.BAT)
           assert_eq(actual[2], "--style=numbers,changes")
-          assert_true(strings.startswith(actual[3], "--theme="))
+          assert_true(str.startswith(actual[3], "--theme="))
           assert_eq(actual[4], "--color=always")
           assert_eq(actual[5], "--pager=never")
-          assert_true(strings.startswith(actual[6], "--highlight-line"))
+          assert_true(str.startswith(actual[6], "--highlight-line"))
           assert_eq(actual[7], "--")
-          assert_true(strings.startswith(actual[8], expect))
+          assert_true(str.startswith(actual[8], expect))
         else
           assert_eq(actual[1], "cat")
           assert_eq(actual[2], expect)
@@ -165,16 +165,16 @@ describe("helper.previewers", function()
         local ctx = make_context()
         local actual = previewers.preview_files_grep_no_filename(line, ctx)
         local expect =
-          paths.normalize(strings.split(line, ":")[1], { double_backslash = true, expand = true })
+          path.normalize(str.split(line, ":")[1], { double_backslash = true, expand = true })
         print(string.format("normalize:%s\n", vim.inspect(expect)))
         print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
         if actual[1] == constants.BAT then
           assert_eq(actual[1], constants.BAT)
           assert_eq(actual[2], "--style=numbers,changes")
-          assert_true(strings.startswith(actual[3], "--theme="))
+          assert_true(str.startswith(actual[3], "--theme="))
           assert_eq(actual[4], "--color=always")
           assert_eq(actual[5], "--pager=never")
-          assert_true(strings.startswith(actual[6], "--highlight-line"))
+          assert_true(str.startswith(actual[6], "--highlight-line"))
           assert_eq(actual[7], "--line-range")
           assert_eq(actual[9], "--")
         else
@@ -202,11 +202,11 @@ describe("helper.previewers", function()
         local actual = previewers._make_preview_git_commit(line)
         if actual ~= nil then
           assert_eq(type(actual), "string")
-          assert_true(strings.find(actual, "git show") > 0)
+          assert_true(str.find(actual, "git show") > 0)
           if vim.fn.executable("delta") > 0 then
-            assert_true(strings.find(actual, "delta") > 0)
+            assert_true(str.find(actual, "delta") > 0)
           else
-            assert_true(strings.find(actual, "delta") == nil)
+            assert_true(str.find(actual, "delta") == nil)
           end
         end
       end
@@ -222,11 +222,11 @@ describe("helper.previewers", function()
         local actual = previewers.preview_git_commit(line)
         if actual ~= nil then
           assert_eq(type(actual), "string")
-          assert_true(strings.find(actual, "git show") > 0)
+          assert_true(str.find(actual, "git show") > 0)
           if vim.fn.executable("delta") > 0 then
-            assert_true(strings.find(actual, "delta") > 0)
+            assert_true(str.find(actual, "delta") > 0)
           else
-            assert_true(strings.find(actual, "delta") == nil)
+            assert_true(str.find(actual, "delta") == nil)
           end
         end
       end
@@ -241,12 +241,12 @@ describe("helper.previewers", function()
       if actual[1] == constants.BAT then
         assert_eq(actual[1], constants.BAT)
         assert_eq(actual[2], "--style=numbers,changes")
-        assert_true(strings.startswith(actual[3], "--theme="))
+        assert_true(str.startswith(actual[3], "--theme="))
         assert_eq(actual[4], "--color=always")
         assert_eq(actual[5], "--pager=never")
         assert_eq(actual[6], "--highlight-line=135")
-        assert_true(strings.startswith(actual[7], "--line-range"))
-        assert_true(strings.endswith(actual[8], ":"))
+        assert_true(str.startswith(actual[7], "--line-range"))
+        assert_true(str.endswith(actual[8], ":"))
         assert_eq(actual[9], "--")
         assert_eq(actual[10], "lua/fzfx/config.lua")
       else

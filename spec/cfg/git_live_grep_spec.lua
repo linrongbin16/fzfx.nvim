@@ -14,8 +14,8 @@ describe("cfg.git_live_grep", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  local tables = require("fzfx.commons.tables")
-  local consts = require("fzfx.lib.constants")
+  local tbl = require("fzfx.commons.tbl")
+  local constants = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")

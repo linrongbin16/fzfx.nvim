@@ -276,7 +276,7 @@ local Defaults = {
   },
 
   cache = {
-    dir = require("fzfx.commons.paths").join(vim.fn.stdpath("data"), "fzfx.nvim"),
+    dir = require("fzfx.commons.path").join(vim.fn.stdpath("data"), "fzfx.nvim"),
   },
 
   -- debug

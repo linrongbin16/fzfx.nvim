@@ -1,4 +1,4 @@
-local paths = require("fzfx.commons.paths")
+local path = require("fzfx.commons.path")
 
 local constants = require("fzfx.lib.constants")
 local switches = require("fzfx.lib.switches")
@@ -137,7 +137,7 @@ M.actions = {
 M.fzf_opts = {
   "--multi",
   function()
-    return { "--prompt", paths.shorten() .. " > " }
+    return { "--prompt", path.shorten() .. " > " }
   end,
 }
 

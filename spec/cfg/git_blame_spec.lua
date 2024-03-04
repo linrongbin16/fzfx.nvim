@@ -13,7 +13,7 @@ describe("cfg.git_blame", function()
   end)
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
-  local strings = require("fzfx.commons.strings")
+  local str = require("fzfx.commons.str")
   local consts = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
@@ -26,13 +26,13 @@ describe("cfg.git_blame", function()
       local actual = git_blame_cfg._git_blame_provider("", contexts.make_pipeline_context())
       if actual ~= nil then
         assert_eq(type(actual), "string")
-        assert_true(strings.find(actual, "git blame") == 1)
+        assert_true(str.find(actual, "git blame") == 1)
         if consts.HAS_DELTA then
           assert_true(
-            strings.find(actual, "delta -n --tabs 4 --blame-format") > string.len("git blame")
+            str.find(actual, "delta -n --tabs 4 --blame-format") > string.len("git blame")
           )
         else
-          assert_true(strings.find(actual, "git blame --date=short --color-lines") == 1)
+          assert_true(str.find(actual, "git blame --date=short --color-lines") == 1)
         end
       end
     end)

@@ -1,6 +1,5 @@
-local tables = require("fzfx.commons.tables")
+local tbl = require("fzfx.commons.tbl")
 
-local constants = require("fzfx.lib.constants")
 local bufs = require("fzfx.lib.bufs")
 local cmds = require("fzfx.lib.commands")
 local log = require("fzfx.lib.log")
@@ -91,7 +90,7 @@ M._make_git_commits_provider = function(opts)
       log.echo(LogLevels.INFO, "not in git repo.")
       return nil
     end
-    if tables.tbl_get(opts, "buffer") then
+    if tbl.tbl_get(opts, "buffer") then
       if not bufs.buf_is_valid(context.bufnr) then
         log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(context.bufnr))
         return nil
