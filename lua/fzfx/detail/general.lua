@@ -1161,7 +1161,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       end)
     end
 
-    vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
+    vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL - 50)
 
     -- query fzf status }
   end
