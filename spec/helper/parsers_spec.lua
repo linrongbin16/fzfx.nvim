@@ -579,16 +579,17 @@ describe("helper.parsers", function()
           )
         )
         assert_true(tbl.tbl_not_empty(actual))
-        local trimmed1 = str.trim(splits[1])
-        assert_eq(actual.mark, trimmed1)
-        local trimmed2 = str.trim(splits[2])
-        assert_eq(actual.lineno, tonumber(trimmed2))
-        local trimmed3 = str.trim(splits[3])
-        assert_eq(actual.col, tonumber(trimmed3))
-        local trimmed4 = str.trim(splits[4] or "") or ""
+        local expect_mark = str.trim(string.sub(line, 1, CONTEXT.lineno_pos - 1))
+        assert_eq(actual.mark, expect_mark)
+        local expect_lineno = str.trim(string.sub(line, CONTEXT.lineno_pos, CONTEXT.col_pos - 1))
+        assert_eq(actual.lineno, tonumber(expect_lineno))
+        local expect_col = str.trim(string.sub(line, CONTEXT.col_pos, CONTEXT.file_text_pos - 1))
+        assert_eq(actual.col, tonumber(expect_col))
+        local expect_file_text = str.trim(string.sub(line, CONTEXT.file_text_pos)) or ""
         assert_true(
-          actual.filename == path.normalize(trimmed4, { expand = true, double_backslash = true })
-            or actual.text == trimmed4
+          actual.filename
+              == path.normalize(expect_file_text, { expand = true, double_backslash = true })
+            or actual.text == expect_file_text
         )
       end
     end)
