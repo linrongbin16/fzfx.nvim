@@ -285,6 +285,7 @@ M.actions = {
   ["esc"] = actions_helper.nop,
   ["enter"] = actions_helper.edit_vim_mark,
   ["double-click"] = actions_helper.edit_vim_mark,
+  ["ctrl-q"] = actions_helper.setqflist_vim_mark,
 }
 
 M.fzf_opts = {
