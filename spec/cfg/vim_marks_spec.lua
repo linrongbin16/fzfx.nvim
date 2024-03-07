@@ -44,7 +44,7 @@ describe("fzfx.cfg.vim_marks", function()
   describe("[_vim_marks_provider]", function()
     it("test", function()
       local ctx = vim_marks_cfg._vim_marks_context_maker()
-      local marks = vim_marks_cfg._vim_marks_provider("", ctx) --[[@as string[] ]]
+      local marks = vim_marks_cfg._vim_marks_provider("", ctx)
       if marks then
         assert_eq(type(marks), "table")
         for _, m in ipairs(marks) do
