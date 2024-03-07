@@ -31,4 +31,27 @@ describe("fzfx.cfg.vim_marks", function()
       assert_eq(actual.file_text_pos, str.find(input, "file"))
     end)
   end)
+  describe("[_get_vim_marks]", function()
+    it("test", function()
+      local marks = vim_marks_cfg._get_vim_marks()
+      assert_eq(type(marks), "table")
+      for _, m in ipairs(marks) do
+        assert_eq(type(m), "string")
+        assert_true(str.not_empty(m))
+      end
+    end)
+  end)
+  describe("[_vim_marks_provider]", function()
+    it("test", function()
+      local ctx = vim_marks_cfg._vim_marks_context_maker()
+      local marks = vim_marks_cfg._vim_marks_provider("", ctx) --[[@as string[] ]]
+      if marks then
+        assert_eq(type(marks), "table")
+        for _, m in ipairs(marks) do
+          assert_eq(type(m), "string")
+          assert_true(str.not_empty(m))
+        end
+      end
+    end)
+  end)
 end)

@@ -225,7 +225,7 @@ end
 
 --- @param query string
 --- @param context fzfx.VimMarksPipelineContext
---- @return string[]|nil
+--- @return string[]
 M._vim_marks_provider = function(query, context)
   return context.marks
 end
