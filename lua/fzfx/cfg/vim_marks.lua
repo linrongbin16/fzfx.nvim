@@ -227,7 +227,7 @@ end
 --- @param context fzfx.VimMarksPipelineContext
 --- @return string[]|nil
 M._vim_marks_provider = function(query, context)
-  return M._get_vim_marks()
+  return context.marks
 end
 
 M.providers = {
@@ -294,7 +294,7 @@ M.fzf_opts = {
   { "--prompt", "Marks > " },
 }
 
---- @alias fzfx.VimMarksPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,mark_pos:integer,lineno_pos:integer,col_pos:integer,file_text_pos:integer}
+--- @alias fzfx.VimMarksPipelineContext {bufnr:integer,winnr:integer,tabnr:integer,marks:string[],mark_pos:integer,lineno_pos:integer,col_pos:integer,file_text_pos:integer}
 --- @return fzfx.VimMarksPipelineContext
 M._vim_marks_context_maker = function()
   local ctx = {
@@ -307,6 +307,7 @@ M._vim_marks_context_maker = function()
   local first_line = marks[1]
   local pos = M._parse_mark_command_output_first_line(first_line)
 
+  ctx.marks = marks
   ctx.mark_pos = pos.mark_pos
   ctx.lineno_pos = pos.lineno_pos
   ctx.col_pos = pos.col_pos
