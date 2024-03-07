@@ -636,16 +636,16 @@ end
 --- @param context fzfx.VimMarksPipelineContext
 --- @return {mark:string,lineno:integer?,col:integer?,filename:string?,text:string?}
 M.parse_vim_mark = function(line, context)
-  log.debug("|parse_vim_mark| line:%s, context:%s", vim.inspect(line), vim.inspect(context))
+  -- log.debug("|parse_vim_mark| line:%s, context:%s", vim.inspect(line), vim.inspect(context))
   local mark_value = string.sub(line, context.mark_pos, context.lineno_pos - 1)
   local mark = str.trim(mark_value)
   local lineno_value = string.sub(line, context.lineno_pos, context.col_pos - 1)
   lineno_value = str.trim(lineno_value)
-  log.debug("|parse_vim_mark| lineno_value:%s", vim.inspect(lineno_value))
+  -- log.debug("|parse_vim_mark| lineno_value:%s", vim.inspect(lineno_value))
   local lineno = tonumber(lineno_value) --[[@as integer]]
   local col_value = string.sub(line, context.col_pos, context.file_text_pos - 1)
   col_value = str.trim(col_value)
-  log.debug("|parse_vim_mark| col_value:%s", vim.inspect(col_value))
+  -- log.debug("|parse_vim_mark| col_value:%s", vim.inspect(col_value))
   local col = tonumber(col_value)
   local file_text_value = string.sub(line, context.file_text_pos)
   local file_text = str.trim(file_text_value) --[[@as string?]]

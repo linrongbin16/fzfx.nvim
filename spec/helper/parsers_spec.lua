@@ -591,6 +591,11 @@ describe("helper.parsers", function()
               == path.normalize(expect_file_text, { expand = true, double_backslash = true })
             or actual.text == expect_file_text
         )
+        if actual.filename then
+          assert_eq(actual.text, nil)
+        else
+          assert_eq(actual.filename, nil)
+        end
       end
     end)
   end)
