@@ -54,4 +54,36 @@ describe("fzfx.cfg.vim_marks", function()
       end
     end)
   end)
+  describe("[_vim_marks_previewer]", function()
+    it("test", function()
+      local ctx = vim_marks_cfg._vim_marks_context_maker()
+      local marks = ctx.marks
+      for i, line in ipairs(marks) do
+        local actual = vim_marks_cfg._vim_marks_previewer(line, ctx)
+        if actual then
+          assert_eq(type(actual), "table")
+          for j, act in ipairs(actual) do
+            assert_eq(type(act), "string")
+          end
+          if actual[1] == "echo" then
+            assert_eq(#actual, 2)
+            assert_eq(type(actual[2]), "string")
+            assert_true(string.len(actual[2]) >= 0)
+          else
+            assert_true(actual[1] == constants.BAT or actual[1] == constants.CAT)
+            if constants.HAS_BAT then
+              assert_true(str.startswith(actual[2], "--style="))
+              assert_true(str.startswith(actual[3], "--theme="))
+              assert_eq(actual[4], "--color=always")
+              assert_eq(actual[5], "--pager=never")
+              assert_true(str.startswith(actual[6], "--highlight-line="))
+              assert_eq(actual[7], "--line-range")
+            elseif constants.HAS_CAT then
+              assert_eq(type(actual[2]), "string")
+            end
+          end
+        end
+      end
+    end)
+  end)
 end)
