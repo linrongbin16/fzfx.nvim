@@ -662,9 +662,9 @@ M.parse_vim_mark = function(line, context)
     col = col,
   }
   if isfile then
-    result.filename = file_text
+    result.filename = file_text or ""
   else
-    result.text = file_text
+    result.text = file_text or ""
   end
   return result
 end

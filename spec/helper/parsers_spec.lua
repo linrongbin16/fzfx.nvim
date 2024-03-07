@@ -11,9 +11,12 @@ describe("helper.parsers", function()
   end)
 
   local str = require("fzfx.commons.str")
+  local num = require("fzfx.commons.num")
+  local tbl = require("fzfx.commons.tbl")
   local path = require("fzfx.commons.path")
   local fileio = require("fzfx.commons.fileio")
   local parsers_helper = require("fzfx.helper.parsers")
+  require("fzfx").setup()
 
   local DEVICONS_PATH = "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
 
@@ -480,10 +483,21 @@ describe("helper.parsers", function()
         " M ../test/line_helpers_spec.lua",
         "?? ../hello",
       }
-      for _, line in ipairs(lines) do
+      for i, line in ipairs(lines) do
         local actual = parsers_helper.parse_git_status(line)
-        local expect =
-          path.normalize(str.split(line, " ")[2], { double_backslash = true, expand = true })
+        local expect = path.normalize(
+          str.split(line, " ", { trimempty = true })[2],
+          { double_backslash = true, expand = true }
+        )
+        print(
+          string.format(
+            "parse_git_status [%s], line:%s, actual:%s, expect:%s\n",
+            vim.inspect(i),
+            vim.inspect(line),
+            vim.inspect(actual),
+            vim.inspect(expect)
+          )
+        )
         assert_eq(type(actual), "table")
         assert_eq(expect, actual.filename)
       end
@@ -537,6 +551,45 @@ describe("helper.parsers", function()
         local actual = parsers_helper.parse_git_commit(line)
         local expect = str.split(line, " ")[1]
         assert_eq(actual.commit, expect)
+      end
+    end)
+  end)
+
+  describe("[parse_vim_mark]", function()
+    local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
+    it("test", function()
+      local n = #CONTEXT.marks
+      for i = 2, n do
+        local line = CONTEXT.marks[i]
+        local actual = parsers_helper.parse_vim_mark(line, CONTEXT)
+        local tmp = str.split(line, " ", { trimempty = true, plain = true })
+        local splits = {}
+        for _, t in ipairs(tmp) do
+          if str.not_empty(t) then
+            table.insert(splits, t)
+          end
+        end
+        print(
+          string.format(
+            "parse_vim_mark [%s], line:%s, actual:%s, splits:%s\n",
+            vim.inspect(i),
+            vim.inspect(line),
+            vim.inspect(actual),
+            vim.inspect(splits)
+          )
+        )
+        assert_true(tbl.tbl_not_empty(actual))
+        local trimmed1 = str.trim(splits[1])
+        assert_eq(actual.mark, trimmed1)
+        local trimmed2 = str.trim(splits[2])
+        assert_eq(actual.lineno, tonumber(trimmed2))
+        local trimmed3 = str.trim(splits[3])
+        assert_eq(actual.col, tonumber(trimmed3))
+        local trimmed4 = str.trim(splits[4] or "") or ""
+        assert_true(
+          actual.filename == path.normalize(trimmed4, { expand = true, double_backslash = true })
+            or actual.text == trimmed4
+        )
       end
     end)
   end)

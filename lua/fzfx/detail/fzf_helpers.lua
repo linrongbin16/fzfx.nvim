@@ -580,16 +580,16 @@ local function parse_fzf_preview_window_opts(opts)
       vim.inspect(o)
     )
     if type(o) == "table" then
-      opts_value = opts_value .. (string.len(opts_value) > 0 and "," or "") .. str.trim(o[2])
+      local trimmed_o = str.trim(o[2])
+      opts_value = opts_value .. (string.len(opts_value) > 0 and "," or "") .. trimmed_o
     else
       log.ensure(
         type(o) == "string" and str.startswith(o, "--preview-window"),
         "invalid fzf preview window opts:%s",
         vim.inspect(o)
       )
-      opts_value = opts_value
-        .. (string.len(opts_value) > 0 and "," or "")
-        .. str.trim(string.sub(o --[[@as string]], string.len("--preview-window") + 2))
+      local trimmed_o = str.trim(string.sub(o --[[@as string]], string.len("--preview-window") + 2))
+      opts_value = opts_value .. (string.len(opts_value) > 0 and "," or "") .. trimmed_o
     end
   end
 
