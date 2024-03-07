@@ -130,7 +130,6 @@ M.split = function(s, sep, opts)
   }
   opts.plain = type(opts.plain) == "boolean" and opts.plain or true
   opts.trimempty = type(opts.trimempty) == "boolean" and opts.trimempty or false
-  print(string.format("opts:%s", vim.inspect(opts)))
   return vim.split(s, sep, opts)
 end
 
