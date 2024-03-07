@@ -1,7 +1,7 @@
 ---@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
-describe("cfg.buffers", function()
+describe("fzfx.cfg.buffers", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
