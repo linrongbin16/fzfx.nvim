@@ -13,6 +13,8 @@ describe("fzfx.cfg.vim_marks", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
   local str = require("fzfx.commons.str")
+  local tbl = require("fzfx.commons.tbl")
+  local num = require("fzfx.commons.num")
   local constants = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local providers = require("fzfx.helper.providers")
@@ -84,6 +86,20 @@ describe("fzfx.cfg.vim_marks", function()
           end
         end
       end
+    end)
+  end)
+  describe("[_vim_marks_context_maker]", function()
+    it("test", function()
+      local actual = vim_marks_cfg._vim_marks_context_maker()
+      assert_true(tbl.tbl_not_empty(actual))
+      assert_true(tbl.list_not_empty(actual.marks))
+      for _, m in ipairs(actual.marks) do
+        assert_true(str.not_empty(m))
+      end
+      assert_true(num.ge(actual.mark_pos, 1))
+      assert_true(num.ge(actual.lineno_pos, actual.mark_pos))
+      assert_true(num.ge(actual.col_pos, actual.lineno_pos))
+      assert_true(num.ge(actual.file_text_pos, actual.col_pos))
     end)
   end)
 end)
