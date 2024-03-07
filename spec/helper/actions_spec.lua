@@ -14,12 +14,18 @@ describe("helper.actions", function()
 
   local DEVICONS_PATH = "~/github/linrongbin16/.config/nvim/lazy/nvim-web-devicons"
   local str = require("fzfx.commons.str")
+  local tbl = require("fzfx.commons.tbl")
   local path = require("fzfx.commons.path")
   local actions = require("fzfx.helper.actions")
   local parsers = require("fzfx.helper.parsers")
   local contexts_helper = require("fzfx.helper.contexts")
 
-  require("fzfx").setup()
+  require("fzfx").setup({
+    debug = {
+      enable = true,
+      file_log = true,
+    },
+  })
 
   describe("[nop]", function()
     it("test", function()
@@ -875,6 +881,54 @@ describe("helper.actions", function()
         assert_eq(type(act), "string")
         assert_eq(act, string.format("edit! %s", parsed.filename))
       end
+    end)
+    it("run", function()
+      local lines = {
+        " M fzfx/config.lua",
+        " D fzfx/constants.lua",
+        " M fzfx/line_helpers.lua",
+        " M ../test/line_helpers_spec.lua",
+        "?? ../hello",
+      }
+      local actual = actions.edit_git_status(lines, contexts_helper.make_pipeline_context())
+      assert_true(true)
+    end)
+  end)
+
+  describe("[edit_vim_mark]", function()
+    local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
+    it("make", function()
+      local lines = tbl.List
+        :copy(CONTEXT.marks)
+        :filter(function(v, i)
+          return i > 1 and str.not_empty(v)
+        end)
+        :data()
+      local actual = actions._make_edit_vim_mark(lines, CONTEXT)
+      assert_eq(type(actual), "table")
+      print(
+        string.format(
+          "edit_vim_mark, #actual:%s, #lines:%s\n",
+          vim.inspect(#actual),
+          vim.inspect(#lines)
+        )
+      )
+      assert_true(#actual >= 2)
+      for i, act in ipairs(actual) do
+        if str.not_empty(act) then
+          assert_true(
+            str.startswith(act, "edit!")
+              or str.startswith(act, "call setpos")
+              or str.startswith(act, "execute")
+          )
+        else
+          assert_eq(type(act), "function")
+        end
+      end
+      local last1 = actual[#actual]
+      local last2 = actual[#actual - 1]
+      assert_true(str.startswith(last2, "call setpos('.', "))
+      assert_eq(last1, 'execute "normal! zz"')
     end)
     it("run", function()
       local lines = {

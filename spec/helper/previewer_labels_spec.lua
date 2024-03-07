@@ -24,6 +24,13 @@ describe("helper.previewer_labels", function()
   local parsers = require("fzfx.helper.parsers")
   local labels = require("fzfx.helper.previewer_labels")
 
+  require("fzfx").setup({
+    debug = {
+      enable = true,
+      file_log = true,
+    },
+  })
+
   describe("[label_find]", function()
     it("test", function()
       vim.env._FZFX_NVIM_DEVICONS_PATH = nil

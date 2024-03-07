@@ -240,6 +240,9 @@ M.providers = {
 --- @param context fzfx.VimMarksPipelineContext
 --- @return string[]|nil
 M._vim_marks_previewer = function(line, context)
+  if str.empty(line) then
+    return nil
+  end
   local parsed = parsers_helper.parse_vim_mark(line, context)
   log.debug(
     "|_vim_marks_previewer| line:%s, context:%s, parsed:%s",
