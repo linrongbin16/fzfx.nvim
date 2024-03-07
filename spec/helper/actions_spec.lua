@@ -898,12 +898,7 @@ describe("helper.actions", function()
   describe("[edit_vim_mark]", function()
     local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
     it("make", function()
-      local lines = tbl.List
-        :copy(CONTEXT.marks)
-        :filter(function(v, i)
-          return i > 1 and str.not_empty(v)
-        end)
-        :data()
+      local lines = CONTEXT.marks
       local actual = actions._make_edit_vim_mark(lines, CONTEXT)
       assert_eq(type(actual), "table")
       print(
@@ -931,15 +926,8 @@ describe("helper.actions", function()
       assert_eq(last1, 'execute "normal! zz"')
     end)
     it("run", function()
-      local lines = {
-        " M fzfx/config.lua",
-        " D fzfx/constants.lua",
-        " M fzfx/line_helpers.lua",
-        " M ../test/line_helpers_spec.lua",
-        "?? ../hello",
-      }
-      local actual = actions.edit_git_status(lines, contexts_helper.make_pipeline_context())
-      assert_true(true)
+      local lines = CONTEXT.marks
+      actions.edit_vim_mark(lines, CONTEXT)
     end)
   end)
 end)
