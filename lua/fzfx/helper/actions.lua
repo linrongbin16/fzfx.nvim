@@ -622,4 +622,42 @@ M.edit_vim_mark = function(lines, context)
   end)
 end
 
+--- @param lines string[]
+--- @param context fzfx.VimMarksPipelineContext
+--- @return {filename:string,lnum:integer,col:integer,text:string}[]
+M._make_setqflist_vim_mark = function(lines, context)
+  local qfs = {}
+  for _, line in ipairs(lines) do
+    local parsed = parsers.parse_vim_mark(line, context)
+    local filename = parsed.filename
+    if str.empty(filename) then
+      local bufnr = tbl.tbl_get(context, "bufnr")
+      if num.ge(bufnr, 0) and vim.api.nvim_buf_is_valid(bufnr) then
+        filename = vim.api.nvim_buf_get_name(bufnr)
+        filename = path.normalize(filename, { double_backslash = true, expand = true })
+      end
+    end
+    table.insert(qfs, {
+      filename = filename or "",
+      lnum = parsed.lineno,
+      col = parsed.col,
+      text = parsed.text or "",
+    })
+  end
+  return qfs
+end
+
+--- @param lines string[]
+--- @param context fzfx.VimMarksPipelineContext
+M.setqflist_vim_mark = function(lines, context)
+  local qfs = M._make_setqflist_vim_mark(lines, context)
+  local ok, result = pcall(vim.cmd --[[@as function]], ":copen")
+  assert(ok, vim.inspect(result))
+  ok, result = pcall(vim.fn.setqflist, {}, " ", {
+    nr = "$",
+    items = qfs,
+  })
+  assert(ok, vim.inspect(result))
+end
+
 return M
