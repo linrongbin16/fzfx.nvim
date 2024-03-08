@@ -140,7 +140,9 @@ M.label_vim_mark = function(line, context)
   if str.empty(filename) then
     filename = vim.api.nvim_buf_get_name(context.bufnr)
   end
-  if str.not_empty(filename) then
+  if
+    str.not_empty(filename) and path.isfile(filename --[[@as string]])
+  then
     return string.format(
       "%s:%d:%d",
       vim.fn.fnamemodify(filename, ":t"),
