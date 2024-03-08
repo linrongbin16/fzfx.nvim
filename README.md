@@ -263,7 +263,7 @@ Below keys are binded by default:
         <details>
           <summary>Find files.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -319,7 +319,7 @@ Below keys are binded by default:
         <details>
           <summary>Find buffers.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -371,7 +371,7 @@ Below keys are binded by default:
         <details>
           <summary>Find git files.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -425,7 +425,7 @@ Below keys are binded by default:
         <details>
           <summary>Live grep.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -487,7 +487,7 @@ Below keys are binded by default:
         <details>
           <summary>Live grep only on current buffer.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 This command has the same functionality with
                 <code>FzfxLiveGrep</code> currently buffer variant
@@ -547,7 +547,7 @@ Below keys are binded by default:
         <details>
           <summary>Live grep with git grep.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -601,7 +601,7 @@ Below keys are binded by default:
         <details>
           <summary>Search git status (changed files).</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -655,7 +655,7 @@ Below keys are binded by default:
         <details>
           <summary>Search git branches.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>Use <code>enter</code> to checkout branch.</li>
               <li>
                 <bold>Remote branch</bold> variant is named with
@@ -706,7 +706,7 @@ Below keys are binded by default:
         <details>
           <summary>Search git commits.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>Use <code>enter</code> to copy git commit SHA.</li>
               <li>
                 <bold>Current buffer</bold> variant is named with
@@ -757,7 +757,7 @@ Below keys are binded by default:
         <details>
           <summary>Search git blame.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>Use <code>enter</code> to copy git commit SHA.</li>
             </ol>
             <table>
@@ -804,7 +804,7 @@ Below keys are binded by default:
         <details>
           <summary>Search definitions.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -846,7 +846,7 @@ Below keys are binded by default:
         <details>
           <summary>Search type definitions.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -888,7 +888,7 @@ Below keys are binded by default:
         <details>
           <summary>Search implementations.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -930,7 +930,7 @@ Below keys are binded by default:
         <details>
           <summary>Search references.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -972,7 +972,7 @@ Below keys are binded by default:
         <details>
           <summary>Search incoming calls.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -1014,7 +1014,7 @@ Below keys are binded by default:
         <details>
           <summary>Search outgoing calls.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -1056,7 +1056,7 @@ Below keys are binded by default:
         <details>
           <summary>Search diagnostics.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -1110,7 +1110,7 @@ Below keys are binded by default:
         <details>
           <summary>Search vim commands.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>Use <code>enter</code> to input command.</li>
               <li>
                 <bold>Ex (builtin) commands</bold> variant is named with
@@ -1165,7 +1165,7 @@ Below keys are binded by default:
         <details>
           <summary>Search vim key mappings.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>Use <code>enter</code> to execute key mapping.</li>
               <li>
                 <bold>Normal mode</bold> variant is named with
@@ -1224,7 +1224,7 @@ Below keys are binded by default:
         <details>
           <summary>Search vim marks.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -1274,7 +1274,7 @@ Below keys are binded by default:
         <details>
           <summary>Navigate around file explorer.</summary>
           <small>
-            <ol style="color:grey;">
+            <ol>
               <li>
                 <bold>Include hidden</bold> variant is named with
                 <code>hidden_</code> suffix.
