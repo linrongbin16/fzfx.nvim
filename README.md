@@ -251,17 +251,17 @@ Below keys are binded by default:
   <thead>
     <tr>
       <th>Name</th>
-      <th>Description</th>
       <th>Details</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><code>FzfxFiles</code></td>
-      <td>Find files.</td>
+      <td>
+        <code>FzfxFiles</code>
+      </td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Find files.</summary>
           <small>
             <ol>
               <li>
@@ -312,11 +312,12 @@ Below keys are binded by default:
       </td>
     </tr>
     <tr>
-      <td><code>FzfxBuffers</code></td>
-      <td>Find buffers.</td>
+      <td>
+        <code>FzfxBuffers</code>
+      </td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Find buffers.</summary>
           <small>
             <ol>
               <li>
@@ -363,11 +364,12 @@ Below keys are binded by default:
       </td>
     </tr>
     <tr>
-      <td><code>FzfxGFiles</code></td>
-      <td>Find git files.</td>
+      <td>
+        <code>FzfxGFiles</code>
+      </td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Find git files.</summary>
           <small>
             <ol>
               <li>
@@ -419,10 +421,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxLiveGrep</code></td>
-      <td>Live grep.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Live grep.</summary>
           <small>
             <ol>
               <li>
@@ -482,10 +483,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxBufLiveGrep</code></td>
-      <td>Live grep only on current buffer.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Live grep only on current buffer.</summary>
           <small>
             <ol>
               <li>
@@ -543,10 +543,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxGLiveGrep</code></td>
-      <td>Live grep with git grep.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Live grep with git grep.</summary>
           <small>
             <ol>
               <li>
@@ -598,10 +597,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxGStatus</code></td>
-      <td>Search git status (changed files).</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search git status (changed files).</summary>
           <small>
             <ol>
               <li>
@@ -653,10 +651,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxGBranches</code></td>
-      <td>Search git branches.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search git branches.</summary>
           <small>
             <ol>
               <li>Use <code>enter</code> to checkout branch.</li>
@@ -705,10 +702,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxGCommits</code></td>
-      <td>Search git commits.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search git commits.</summary>
           <small>
             <ol>
               <li>Use <code>enter</code> to copy git commit SHA.</li>
@@ -757,10 +753,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxGBlame</code></td>
-      <td>Search git blame.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search git blame.</summary>
           <small>
             <ol>
               <li>Use <code>enter</code> to copy git commit SHA.</li>
@@ -805,10 +800,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxLspDefinitions</code></td>
-      <td>Search definitions.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search definitions.</summary>
           <small>
             <ol>
               <li>
@@ -848,10 +842,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxLspTypeDefinitions</code></td>
-      <td>Search type definitions.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search type definitions.</summary>
           <small>
             <ol>
               <li>
@@ -891,10 +884,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxLspImplementations</code></td>
-      <td>Search implementations.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search implementations.</summary>
           <small>
             <ol>
               <li>
@@ -934,10 +926,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxLspReferences</code></td>
-      <td>Search references.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search references.</summary>
           <small>
             <ol>
               <li>
@@ -977,10 +968,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxLspIncomingCalls</code></td>
-      <td>Search incoming calls.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search incoming calls.</summary>
           <small>
             <ol>
               <li>
@@ -1020,10 +1010,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxLspOutgoingCalls</code></td>
-      <td>Search outgoing calls.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search outgoing calls.</summary>
           <small>
             <ol>
               <li>
@@ -1063,10 +1052,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxLspDiagnostics</code></td>
-      <td>Search diagnostics.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search diagnostics.</summary>
           <small>
             <ol>
               <li>
@@ -1118,10 +1106,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxCommands</code></td>
-      <td>Search vim commands.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search vim commands.</summary>
           <small>
             <ol>
               <li>Use <code>enter</code> to input command.</li>
@@ -1174,10 +1161,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxKeyMaps</code></td>
-      <td>Search vim key mappings.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search vim key mappings.</summary>
           <small>
             <ol>
               <li>Use <code>enter</code> to execute key mapping.</li>
@@ -1234,10 +1220,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxMarks</code></td>
-      <td>Search vim marks.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Search vim marks.</summary>
           <small>
             <ol>
               <li>
@@ -1285,10 +1270,9 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxFileExplorer</code></td>
-      <td>Navigate around file explorer.</td>
       <td>
         <details>
-          <summary><i>Click here to expand.</i></summary>
+          <summary>Navigate around file explorer.</summary>
           <small>
             <ol>
               <li>

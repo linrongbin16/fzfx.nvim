@@ -248,7 +248,8 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
       and (fzf_preview_window_opts.position == "up" or fzf_preview_window_opts.position == "down")
     then
       if fzf_preview_window_opts.size_is_percent then
-        previewer_layout.height = bound_height((height / 100 * fzf_preview_window_opts.size) - 1)
+        previewer_layout.height =
+          bound_height(math.floor(height / 100 * fzf_preview_window_opts.size) - 1)
       else
         previewer_layout.height = bound_height(fzf_preview_window_opts.size - 1)
       end
