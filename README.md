@@ -482,7 +482,7 @@ Below keys are binded by default:
     </tr>
     <tr>
       <td><code>FzfxBufLiveGrep</code></td>
-      <td>Live grep on only current buffer.</td>
+      <td>Live grep only on current buffer.</td>
       <td>
         <details>
           <summary><i>Click here to expand.</i></summary>
@@ -1232,102 +1232,110 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+    <tr>
+      <td><code>FzfxMarks</code></td>
+      <td>Search vim marks.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">No</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxFileExplorer</code></td>
+      <td>Navigate around file explorer.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>
+                <bold>Include hidden</bold> variant is named with
+                <code>hidden_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(hidden_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(hidden_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(hidden_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(hidden_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(hidden_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
   </tbody>
 </table>
-
-### Vim
-
-#### `FzfxMarks`
-
-<details>
-<summary><i>Click here to search vim marks.</i></summary>
-<br/>
-
-> 1. Use ctrl-q to send selected lines to quickfix window and quit.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>args</code></td>
-    <td>N</td>
-    <td rowspan="5">No</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-### Misc
-
-#### `FzfxFileExplorer`
-
-<details>
-<summary><i>Click here to search file explorer.</i></summary>
-<br/>
-
-> 1. **Include hidden** variant is named with `hidden_` suffix.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(hidden_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(hidden_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(hidden_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(hidden_)put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(hidden_)resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
 
 ## 📌 Recommended Key Mappings
 
