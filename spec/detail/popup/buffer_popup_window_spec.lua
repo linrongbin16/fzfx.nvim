@@ -99,6 +99,13 @@ describe("detail.popup.buffer_popup_window", function()
         fzf_preview_window_opts = pw_opts,
         fzf_border_opts = "rounded",
       }
+      print(
+        string.format(
+          "BufferPopupWindow:new down,50%%, pw_opts:%s, builtin_opts:%s\n",
+          vim.inspect(pw_opts),
+          vim.inspect(builtin_opts)
+        )
+      )
       local actual = buffer_popup_window.BufferPopupWindow:new(WIN_OPTS, builtin_opts)
       print(string.format("BufferPopupWindow:new down,50%%:%s\n", vim.inspect(actual)))
       local provider_winnr = actual.provider_winnr
