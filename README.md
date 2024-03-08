@@ -263,50 +263,50 @@ Below keys are binded by default:
         <details>
           <summary><i>Click here to expand.</i></summary>
           <small>
-          <ol>
-            <li>
-              Use <code>ctrl-q</code> to send selected lines to quickfix window
-              and quit.
-            </li>
-            <li>
-              <bold>Unrestricted</bold> variant is named with
-              <code>unres_</code> suffix.
-            </li>
-          </ol>
-          <table>
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Mode</th>
-                <th>Select Keys</th>
-                <th>Preview Keys</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>(unres_)args</code></td>
-                <td>N</td>
-                <td rowspan="5">Yes</td>
-                <td rowspan="5">Yes</td>
-              </tr>
-              <tr>
-                <td><code>(unres_)visual</code></td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td><code>(unres_)cword</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(unres_)put</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(unres_)resume</code></td>
-                <td>N</td>
-              </tr>
-            </tbody>
-          </table>
+            <ol>
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+              <li>
+                <bold>Unrestricted</bold> variant is named with
+                <code>unres_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(unres_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
           </small>
         </details>
       </td>
@@ -317,46 +317,48 @@ Below keys are binded by default:
       <td>
         <details>
           <summary><i>Click here to expand.</i></summary>
-          <ol>
-            <li>
-              Use <code>ctrl-q</code> to send selected lines to quickfix window
-              and quit.
-            </li>
-          </ol>
-          <table>
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Mode</th>
-                <th>Select Keys</th>
-                <th>Preview Keys</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>args</code></td>
-                <td>N</td>
-                <td rowspan="5">Yes</td>
-                <td rowspan="5">Yes</td>
-              </tr>
-              <tr>
-                <td><code>visual</code></td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td><code>cword</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>put</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>resume</code></td>
-                <td>N</td>
-              </tr>
-            </tbody>
-          </table>
+          <small>
+            <ol>
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
@@ -366,50 +368,52 @@ Below keys are binded by default:
       <td>
         <details>
           <summary><i>Click here to expand.</i></summary>
-          <ol>
-            <li>
-              Use <code>ctrl-q</code> to send selected lines to quickfix window
-              and quit.
-            </li>
-            <li>
-              <bold>Current directory (only)</bold> variant is named with
-              <code>cwd_</code> suffix.
-            </li>
-          </ol>
-          <table>
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Mode</th>
-                <th>Select Keys</th>
-                <th>Preview Keys</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>(cwd_)args</code></td>
-                <td>N</td>
-                <td rowspan="5">Yes</td>
-                <td rowspan="5">Yes</td>
-              </tr>
-              <tr>
-                <td><code>(cwd_)visual</code></td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td><code>(cwd_)cword</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(cwd_)put</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(cwd_)resume</code></td>
-                <td>N</td>
-              </tr>
-            </tbody>
-          </table>
+          <small>
+            <ol>
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+              <li>
+                <bold>Current directory (only)</bold> variant is named with
+                <code>cwd_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(cwd_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(cwd_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(cwd_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(cwd_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(cwd_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
@@ -419,170 +423,176 @@ Below keys are binded by default:
       <td>
         <details>
           <summary><i>Click here to expand.</i></summary>
-          <ol>
-            <li>
-              Use <code>ctrl-q</code> to send selected lines to quickfix window
-              and quit.
-            </li>
-            <li>
-              Use <code>--</code> flag to pass raw options to search command
-              (<code>rg</code>/<code>grep</code>).
-            </li>
-            <li>
-              <bold>Unrestricted</bold> variant is named with
-              <code>unres_</code> suffix.
-            </li>
-            <li>
-              <bold>Current buffer (only)</bold> variant is named with
-              <code>buf_</code> suffix.
-            </li>
-          </ol>
-          <table>
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Mode</th>
-                <th>Select Keys</th>
-                <th>Preview Keys</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>(unres_/buf_)args</code></td>
-                <td>N</td>
-                <td rowspan="5">Yes</td>
-                <td rowspan="5">Yes</td>
-              </tr>
-              <tr>
-                <td><code>(unres_/buf_)visual</code></td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td><code>(unres_/buf_)cword</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(unres_/buf_)put</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(unres_/buf_)resume</code></td>
-                <td>N</td>
-              </tr>
-            </tbody>
-          </table>
+          <small>
+            <ol>
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+              <li>
+                Use <code>--</code> flag to pass raw options to search command
+                (<code>rg</code>/<code>grep</code>).
+              </li>
+              <li>
+                <bold>Unrestricted</bold> variant is named with
+                <code>unres_</code> suffix.
+              </li>
+              <li>
+                <bold>Current buffer (only)</bold> variant is named with
+                <code>buf_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(unres_/buf_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_/buf_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_/buf_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_/buf_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_/buf_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
     <tr>
       <td><code>FzfxBufLiveGrep</code></td>
-      <td>Live grep only on current buffer.</td>
+      <td>Live grep on only current buffer.</td>
       <td>
         <details>
           <summary><i>Click here to expand.</i></summary>
-          <ol>
-            <li>
-              This command has the same functionality with
-              <code>FzfxLiveGrep</code> currently buffer variant
-              (<code>buf_</code>), while the filename is removed for better user
-              view.
-            </li>
-            <li>
-              Use <code>ctrl-q</code> to send selected lines to quickfix window
-              and quit.
-            </li>
-            <li>
-              Use <code>--</code> flag to pass raw options to search command
-              (<code>rg</code>/<code>grep</code>).
-            </li>
-          </ol>
-          <table>
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Mode</th>
-                <th>Select Keys</th>
-                <th>Preview Keys</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>args</code></td>
-                <td>N</td>
-                <td rowspan="5">Yes</td>
-                <td rowspan="5">Yes</td>
-              </tr>
-              <tr>
-                <td><code>visual</code></td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td><code>cword</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>put</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>resume</code></td>
-                <td>N</td>
-              </tr>
-            </tbody>
-          </table>
+          <small>
+            <ol>
+              <li>
+                This command has the same functionality with
+                <code>FzfxLiveGrep</code> currently buffer variant
+                (<code>buf_</code>), while the filename is removed for better
+                user view.
+              </li>
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+              <li>
+                Use <code>--</code> flag to pass raw options to search command
+                (<code>rg</code>/<code>grep</code>).
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
     <tr>
       <td><code>FzfxGLiveGrep</code></td>
-      <td>Git live grep.</td>
+      <td>Live grep with git grep.</td>
       <td>
         <details>
           <summary><i>Click here to expand.</i></summary>
-          <ol>
-            <li>
-              Use <code>ctrl-q</code> to send selected lines to quickfix window
-              and quit.
-            </li>
-            <li>
-              Use <code>--</code> flag to pass raw options to search command
-              (<code>git grep</code>).
-            </li>
-          </ol>
-          <table>
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Mode</th>
-                <th>Select Keys</th>
-                <th>Preview Keys</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>args</code></td>
-                <td>N</td>
-                <td rowspan="5">Yes</td>
-                <td rowspan="5">Yes</td>
-              </tr>
-              <tr>
-                <td><code>visual</code></td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td><code>cword</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>put</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>resume</code></td>
-                <td>N</td>
-              </tr>
-            </tbody>
-          </table>
+          <small>
+            <ol>
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+              <li>
+                Use <code>--</code> flag to pass raw options to search command
+                (<code>git grep</code>).
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
@@ -592,50 +602,52 @@ Below keys are binded by default:
       <td>
         <details>
           <summary><i>Click here to expand.</i></summary>
-          <ol>
-            <li>
-              Use <code>ctrl-q</code> to send selected lines to quickfix window
-              and quit.
-            </li>
-            <li>
-              <bold>Current directory (only)</bold> variant is named with
-              <code>cwd_</code> suffix.
-            </li>
-          </ol>
-          <table>
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Mode</th>
-                <th>Select Keys</th>
-                <th>Preview Keys</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>(cwd_)args</code></td>
-                <td>N</td>
-                <td rowspan="5">Yes</td>
-                <td rowspan="5">Yes</td>
-              </tr>
-              <tr>
-                <td><code>(cwd_)visual</code></td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td><code>(cwd_)cword</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(cwd_)put</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(cwd_)resume</code></td>
-                <td>N</td>
-              </tr>
-            </tbody>
-          </table>
+          <small>
+            <ol>
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+              <li>
+                <bold>Current directory (only)</bold> variant is named with
+                <code>cwd_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(cwd_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(cwd_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(cwd_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(cwd_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(cwd_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
@@ -645,47 +657,49 @@ Below keys are binded by default:
       <td>
         <details>
           <summary><i>Click here to expand.</i></summary>
-          <ol>
-            <li>Use <code>enter</code> to checkout branch.</li>
-            <li>
-              <bold>Remote branch</bold> variant is named with
-              <code>remote_</code> suffix.
-            </li>
-          </ol>
-          <table>
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Mode</th>
-                <th>Select Keys</th>
-                <th>Preview Keys</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>(remote_)args</code></td>
-                <td>N</td>
-                <td rowspan="5">No</td>
-                <td rowspan="5">Yes</td>
-              </tr>
-              <tr>
-                <td><code>(remote_)visual</code></td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td><code>(remote_)cword</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(remote_)put</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(remote_)resume</code></td>
-                <td>N</td>
-              </tr>
-            </tbody>
-          </table>
+          <small>
+            <ol>
+              <li>Use <code>enter</code> to checkout branch.</li>
+              <li>
+                <bold>Remote branch</bold> variant is named with
+                <code>remote_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(remote_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">No</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(remote_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(remote_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(remote_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(remote_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
@@ -695,47 +709,49 @@ Below keys are binded by default:
       <td>
         <details>
           <summary><i>Click here to expand.</i></summary>
-          <ol>
-            <li>Use <code>enter</code> to copy git commit SHA.</li>
-            <li>
-              <bold>Current buffer</bold> variant is named with
-              <code>buf_</code> suffix.
-            </li>
-          </ol>
-          <table>
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Mode</th>
-                <th>Select Keys</th>
-                <th>Preview Keys</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>(buf_)args</code></td>
-                <td>N</td>
-                <td rowspan="5">No</td>
-                <td rowspan="5">Yes</td>
-              </tr>
-              <tr>
-                <td><code>(buf_)visual</code></td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td><code>(buf_)cword</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(buf_)put</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>(buf_)resume</code></td>
-                <td>N</td>
-              </tr>
-            </tbody>
-          </table>
+          <small>
+            <ol>
+              <li>Use <code>enter</code> to copy git commit SHA.</li>
+              <li>
+                <bold>Current buffer</bold> variant is named with
+                <code>buf_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(buf_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">No</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(buf_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(buf_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(buf_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(buf_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
@@ -745,232 +761,481 @@ Below keys are binded by default:
       <td>
         <details>
           <summary><i>Click here to expand.</i></summary>
-          <br />
-          <ol>
-            <li>Use <code>enter</code> to copy git commit SHA.</li>
-          </ol>
-          <table>
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Mode</th>
-                <th>Select Keys</th>
-                <th>Preview Keys</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>args</code></td>
-                <td>N</td>
-                <td rowspan="5">No</td>
-                <td rowspan="5">Yes</td>
-              </tr>
-              <tr>
-                <td><code>visual</code></td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td><code>cword</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>put</code></td>
-                <td>N</td>
-              </tr>
-              <tr>
-                <td><code>resume</code></td>
-                <td>N</td>
-              </tr>
-            </tbody>
-          </table>
+          <small>
+            <ol>
+              <li>Use <code>enter</code> to copy git commit SHA.</li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">No</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxLspDefinitions</code></td>
+      <td>Search definitions.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>
+                The <code>args</code> variant always use cursor word as query
+                content (not command arguments), because the scenario is
+                navigating symbols, e.g. go to definitions.
+              </li>
+              <li>
+                Use protocol
+                <a
+                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_definition"
+                  >textDocument/definition</a
+                >.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="6">Yes</td>
+                  <td rowspan="6">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxLspTypeDefinitions</code></td>
+      <td>Search type definitions.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>
+                The <code>args</code> variant always use cursor word as query
+                content (not command arguments), because the scenario is
+                navigating symbols, e.g. go to type definitions.
+              </li>
+              <li>
+                Use protocol
+                <a
+                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_typeDefinition"
+                  >textDocument/typeDefinition</a
+                >.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="6">Yes</td>
+                  <td rowspan="6">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxLspImplementations</code></td>
+      <td>Search implementations.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>
+                The <code>args</code> variant always use cursor word as query
+                content (not command arguments), because the scenario is
+                navigating symbols, e.g. go to implementations.
+              </li>
+              <li>
+                Use protocol
+                <a
+                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_implementation"
+                  >textDocument/implementation</a
+                >.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="6">Yes</td>
+                  <td rowspan="6">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxLspReferences</code></td>
+      <td>Search references.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>
+                The <code>args</code> variant always use cursor word as query
+                content (not command arguments), because the scenario is
+                navigating symbols, e.g. go to references.
+              </li>
+              <li>
+                Use protocol
+                <a
+                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_references"
+                  >textDocument/references</a
+                >.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="6">Yes</td>
+                  <td rowspan="6">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxLspIncomingCalls</code></td>
+      <td>Search incoming calls.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>
+                The <code>args</code> variant always use cursor word as query
+                content (not command arguments), because the scenario is
+                navigating symbols, e.g. go to incoming calls.
+              </li>
+              <li>
+                Use protocol
+                <a
+                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_incomingCalls"
+                  >callHierarchy/incomingCalls</a
+                >.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="6">Yes</td>
+                  <td rowspan="6">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxLspOutgoingCalls</code></td>
+      <td>Search outgoing calls.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>
+                The <code>args</code> variant always use cursor word as query
+                content (not command arguments), because the scenario is
+                navigating symbols, e.g. go to outgoing calls.
+              </li>
+              <li>
+                Use protocol
+                <a
+                  href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_outgoingCalls"
+                  >callHierarchy/outgoingCalls</a
+                >.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="6">Yes</td>
+                  <td rowspan="6">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxLspDiagnostics</code></td>
+      <td>Search diagnostics.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+              <li>
+                <bold>Current buffer (only)</bold> variant is named with
+                <code>buf_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(buf_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(buf_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(buf_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(buf_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(buf_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxCommands</code></td>
+      <td>Search vim commands.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>Use <code>enter</code> to input command.</li>
+              <li>
+                <bold>Ex (builtin) commands</bold> variant is named with
+                <code>ex_</code> suffix.
+              </li>
+              <li>
+                <bold>User commands</bold> variant is named with
+                <code>user_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(ex_/user_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">No</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(ex_/user_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(ex_/user_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(ex_/user_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(ex_/user_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxKeyMaps</code></td>
+      <td>Search vim key mappings.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+            <ol>
+              <li>Use <code>enter</code> to execute key mapping.</li>
+              <li>
+                <bold>Normal mode</bold> variant is named with
+                <code>n_mode_</code> suffix.
+              </li>
+              <li>
+                <bold>Insert mode</bold> variant is named with
+                <code>i_mode_</code> suffix.
+              </li>
+              <li>
+                <bold>Visual/select mode</bold> variant is named with
+                <code>v_mode_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(n_mode_/i_mode_/v_mode_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">No</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(n_mode_/i_mode_/v_mode_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(n_mode_/i_mode_/v_mode_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(n_mode_/i_mode_/v_mode_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(n_mode_/i_mode_/v_mode_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
   </tbody>
 </table>
 
-### Lsp & Diagnostics
-
-#### `FzfxLsp{Locations}`
-
-<details>
-<summary><i>Click here to search lsp locations.</i></summary>
-<br/>
-
-This is a group of several commands (and related LSP protocol methods):
-
-- `FzfxLspDefinitions` ([textDocument/definition](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_definition)).
-- `FzfxLspTypeDefinitions` ([textDocument/typeDefinition](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_typeDefinition)).
-- `FzfxLspReferences` ([textDocument/references](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_references)).
-- `FzfxLspImplementations` ([textDocument/implementation](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_implementation)).
-- `FzfxLspIncomingCalls` ([callHierarchy/incomingCalls](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_incomingCalls)).
-- `FzfxLspOutgoingCalls` ([callHierarchy/outgoingCalls](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_outgoingCalls)).
-
-> 1. The `args` variant has a different behavior, it always use cursor word instead of command arguments. Because most use cases are navigating symbol locations, for example mapping `gd/gt/gi/gr` to go to definitions/type definitions/implementations/references.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>args</code></td>
-    <td>N</td>
-    <td rowspan="6">Yes</td>
-    <td rowspan="6">Yes</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-#### `FzfxLspDiagnostics`
-
-<details>
-<summary><i>Click here to search diagnostics.</i></summary>
-<br/>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Current buffer (only)** variant is named with `buf_` suffix.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(buf_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(buf_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(buf_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(buf_)put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(buf_)resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
 ### Vim
-
-#### `FzfxCommands`
-
-<details>
-<summary><i>Click here to search vim commands.</i></summary>
-<br/>
-
-> 1. Use `enter` to input vim command.
-> 2. **Ex (builtin) commands** variant is named with `ex_` suffix.
-> 3. **User commands** variant is named with `user_` suffix.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(ex_/user_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">No</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(ex_/user_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(ex_/user_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(ex_/user_)put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(ex_/user_)resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-#### `FzfxKeyMaps`
-
-<details>
-<summary><i>Click here to search vim key mappings.</i></summary>
-<br/>
-
-> 1. Use `enter` to execute vim key.
-> 2. **Normal mode** variant is named with `n_mode_` suffix.
-> 3. **Insert mode** variant is named with `i_mode_` suffix.
-> 4. **Visual/select mode** variant is named with `v_mode_` suffix.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(n_mode_/i_mode_/v_mode_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">No</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(n_mode_/i_mode_/v_mode_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(n_mode_/i_mode_/v_mode_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(n_mode_/i_mode_/v_mode_)put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(n_mode_/i_mode_/v_mode_)resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
 
 #### `FzfxMarks`
 
