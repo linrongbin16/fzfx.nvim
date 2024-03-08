@@ -14,7 +14,7 @@
 --- @alias fzfx.ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
 --- @enum fzfx.ProviderTypeEnum
 local ProviderTypeEnum = {
-  -- A simple lua string/list, which presents a shell command, run it and generate the lines for fzf.
+  -- A lua string/list, which presents a shell command, run it and generate the lines for fzf.
   PLAIN = "plain",
   PLAIN_LIST = "plain_list",
   -- A lua function that can be run and generate the lua string/list, which then is a shell command, run it and generate the lines for fzf.
