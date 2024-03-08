@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.7.2](https://github.com/linrongbin16/fzfx.nvim/compare/v5.7.1...v5.7.2) (2024-03-08)
+
+
+### Bug Fixes
+
+* **marks:** only show filename when file exists ([#632](https://github.com/linrongbin16/fzfx.nvim/issues/632)) ([7ccb1b2](https://github.com/linrongbin16/fzfx.nvim/commit/7ccb1b27bb6fd996b731915ab268492cd66541d2))
+
 ## [5.7.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.7.0...v5.7.1) (2024-03-08)
 
 
