@@ -14,6 +14,8 @@ describe("detail.popup.popup_helpers", function()
     if github_actions then
       vim.cmd("set lines=30")
       vim.cmd("set columns=140")
+      vim.api.nvim_win_set_height(0, 30)
+      vim.api.nvim_win_set_width(0, 140)
     end
   end)
 
