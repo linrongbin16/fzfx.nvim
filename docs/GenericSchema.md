@@ -68,13 +68,16 @@ We have below types of providers:
 --- @alias fzfx.ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
 --- @enum fzfx.ProviderTypeEnum
 local ProviderTypeEnum = {
-  -- A simple lua string/list, which presents a shell command, run it and generate the lines for fzf.
+  -- A lua string/list.
+  -- It presents a shell command, run it and generate the lines for fzf.
   PLAIN = "plain",
   PLAIN_LIST = "plain_list",
-  -- A lua function that can be run and generate the lua string/list, which then is a shell command, run it and generate the lines for fzf.
+  -- A lua function.
+  -- It can be run and generate a lua string/list, which then is a shell command, run and generate the lines for fzf.
   COMMAND = "command",
   COMMAND_LIST = "command_list",
-  -- A lua function that can be run and directly generate the lines for fzf.
+  -- A lua function.
+  -- It can be run and directly generate the lines for fzf.
   LIST = "list",
 }
 ```
