@@ -86,6 +86,10 @@
   - Press `CTRL-O`/`CTRL-I`/`CTRL-A`/`CTRL-V` to switch between normal/insert/visual/all vim key mappings.
   - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
   - Press `ESC` to quit, `ENTER` to feed vim keys.
+- [ ] FzfxMarks
+  - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
+  - Use `V`/`W`/`P`/`R` variants (visual selection, cursor word, yank text, resume last).
+  - Press `ESC` to quit, `ENTER` to open file.
 - [ ] FzfxFileExplorer
   - Press `CTRL-J`/`CTRL-K` to move down/up and preview contents.
   - Press `CTRL-U`/`CTRL-R` to switch between filter/include hidden files mode.
