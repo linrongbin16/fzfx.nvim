@@ -26,7 +26,11 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [Install](#-install)
 - [Commands](#-commands)
   - [Files & Buffers](#files--buffers)
+    - [`FzfxFiles`](#fzfxfiles)
+    - [`FzfxBuffers`](#fzfxbuffers)
   - [Grep](#grep)
+    - [`FzfxLiveGrep`](#fzfxlivegrep)
+    - [`FzfxBufLiveGrep`](#fzfxbuflivegrep)
   - [Git](#git)
   - [Lsp & Diagnostics](#lsp--diagnostics)
   - [Vim](#vim)
@@ -246,10 +250,12 @@ Below keys are binded by default:
 
 ### Files & Buffers
 
-#### `FzfxFiles` (Find Files)
+#### `FzfxFiles`
 
-> [!NOTE]
->
+<details>
+<summary><i>Click here to expand.</i></summary>
+<br/>
+
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. **Unrestricted** variant is named with `unres_` suffix.
 
@@ -288,10 +294,14 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-#### `FzfxBuffers` (Find Buffers)
+</details>
 
-> [!NOTE]
->
+#### `FzfxBuffers`
+
+<details>
+<summary><i>Click here to expand.</i></summary>
+<br/>
+
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 
 <table>
@@ -329,12 +339,16 @@ Below keys are binded by default:
 </tbody>
 </table>
 
+</details>
+
 ### Grep
 
-#### `FzfxLiveGrep` (Live Grep)
+#### `FzfxLiveGrep`
 
-> [!NOTE]
->
+<details>
+<summary><i>Click here to expand.</i></summary>
+<br/>
+
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
 > 3. **Unrestricted** variant is named with `unres_` suffix.
@@ -375,10 +389,14 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-#### `FzfxBufLiveGrep` (Buffer Live Grep)
+</details>
 
-> [!NOTE]
->
+#### `FzfxBufLiveGrep`
+
+<details>
+<summary><i>Click here to expand.</i></summary>
+<br/>
+
 > 1. This command has the same functionality with `FzfxLiveGrep` currently buffer (only) variant (`buf_`), while the filename is removed for better user view.
 > 2. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 3. Use `--` flag to pass raw options to search command (`rg`/`grep`).
@@ -417,6 +435,8 @@ Below keys are binded by default:
   </tr>
 </tbody>
 </table>
+
+</details>
 
 #### `FzfxGLiveGrep` (Live Git Grep)
 
