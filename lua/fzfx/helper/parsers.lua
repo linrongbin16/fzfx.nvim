@@ -609,4 +609,64 @@ M.parse_vim_keymap = function(line, context)
   end
 end
 
+-- parse vim marks, looks like:
+-- ```
+-- mark line  col file/text
+--  '    543    7 return M
+--  0     18    4 ~/.gitconfig
+--  1      7   41 README.md
+--  2      1    0 spec/contents/hello world.txt
+--  3      2    0 lua/fzfx/detail/general.lua
+--  4    315    0 lua/fzfx/config.lua
+--  5   1225   43 lua/fzfx/detail/general.lua
+--  6      2    0 lua/fzfx/detail/general.lua
+--  7      2    1 lua/fzfx/detail/general.lua
+--  8    569    9 /Users/rlin/github/linrongbin16/fzfx.nvim/lua/fzfx/detail/popup/buffer_popup_window.lua
+--  9   1164   72 lua/fzfx/detail/general.lua
+--  "      6    6 local constants = require("fzfx.lib.constants")
+--  [      1    0 local tbl = require("fzfx.commons.tbl")
+--  ]    543    0 return M
+--  ^    134   14 -- the ':marks' output looks like:
+--  .    134   13 -- the ':marks' output looks like:
+-- ```
+--
+-- returns mark/line/col with **expanded** file path, or with text.
+--
+--- @param line string
+--- @param context fzfx.VimMarksPipelineContext
+--- @return {mark:string,lineno:integer?,col:integer?,filename:string?,text:string?}
+M.parse_vim_mark = function(line, context)
+  log.debug("|parse_vim_mark| line:%s, context:%s", vim.inspect(line), vim.inspect(context))
+  local mark_value = string.sub(line, context.mark_pos, context.lineno_pos - 1)
+  local mark = str.trim(mark_value)
+  local lineno_value = string.sub(line, context.lineno_pos, context.col_pos - 1)
+  lineno_value = str.trim(lineno_value)
+  -- log.debug("|parse_vim_mark| lineno_value:%s", vim.inspect(lineno_value))
+  local lineno = tonumber(lineno_value) --[[@as integer]]
+  local col_value = string.sub(line, context.col_pos, context.file_text_pos - 1)
+  col_value = str.trim(col_value)
+  -- log.debug("|parse_vim_mark| col_value:%s", vim.inspect(col_value))
+  local col = tonumber(col_value)
+  local file_text_value = string.sub(line, context.file_text_pos)
+  local file_text = str.trim(file_text_value) --[[@as string?]]
+  file_text = str.not_empty(file_text)
+      and path.normalize(
+        file_text --[[@as string]],
+        { expand = true, double_backslash = true }
+      )
+    or nil
+  local isfile = path.isfile(file_text or "")
+  local result = {
+    mark = mark,
+    lineno = lineno,
+    col = col,
+  }
+  if isfile then
+    result.filename = file_text or ""
+  else
+    result.text = file_text or ""
+  end
+  return result
+end
+
 return M

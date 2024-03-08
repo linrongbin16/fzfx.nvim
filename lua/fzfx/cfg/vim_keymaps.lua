@@ -3,7 +3,7 @@ local str = require("fzfx.commons.str")
 local fileio = require("fzfx.commons.fileio")
 local path = require("fzfx.commons.path")
 
-local consts = require("fzfx.lib.constants")
+local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
@@ -454,7 +454,7 @@ M._vim_keymaps_previewer = function(line, context)
     --   vim.inspect(parsed)
     -- )
     return previewers_helper.preview_files_with_line_range(parsed.filename, parsed.lineno)
-  elseif consts.HAS_ECHO and tbl.tbl_not_empty(parsed) then
+  elseif constants.HAS_ECHO and tbl.tbl_not_empty(parsed) then
     -- log.debug(
     --   "|fzfx.config - vim_keymaps_previewer| desc:%s",
     --   vim.inspect(parsed)

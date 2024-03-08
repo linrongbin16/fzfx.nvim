@@ -63,9 +63,23 @@ We have below types of providers:
 --- @alias fzfx.ListProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
 --- @alias fzfx.Provider fzfx.PlainProvider|fzfx.CommandProvider|fzfx.ListProvider
 ---
+--- Note: the 1st parameter 'query' is the user input query in fzf prompt.
+---
 --- @alias fzfx.ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
---
--- Note: the 1st parameter 'query' is the user input query in fzf prompt.
+--- @enum fzfx.ProviderTypeEnum
+local ProviderTypeEnum = {
+  -- A lua string/list.
+  -- It presents a shell command, run it and generate the lines for fzf.
+  PLAIN = "plain",
+  PLAIN_LIST = "plain_list",
+  -- A lua function.
+  -- It can be run and generate a lua string/list, which then is a shell command, run and generate the lines for fzf.
+  COMMAND = "command",
+  COMMAND_LIST = "command_list",
+  -- A lua function.
+  -- It can be run and directly generate the lines for fzf.
+  LIST = "list",
+}
 ```
 
 ### Provider Decorator

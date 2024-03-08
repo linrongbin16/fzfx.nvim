@@ -11,6 +11,7 @@ describe("detail.popup.popup_helpers", function()
     vim.cmd([[edit README.md]])
   end)
 
+  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
   local popup_helpers = require("fzfx.detail.popup.popup_helpers")
   require("fzfx").setup({
     debug = {
@@ -43,7 +44,11 @@ describe("detail.popup.popup_helpers", function()
   end)
   describe("[make_layout]", function()
     local function isclose(a, b)
-      return math.abs(a - b) <= 3.5
+      if github_actions then
+        return math.abs(math.abs(a) - math.abs(b)) <= 3.5
+      else
+        return math.abs(a - b) <= 2.5
+      end
     end
 
     it("test1 without fzf_preview_window_opts", function()

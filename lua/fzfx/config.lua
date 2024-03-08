@@ -63,6 +63,11 @@ local Defaults = {
   --- @type fzfx.GroupConfig
   vim_keymaps = require("fzfx.cfg.vim_keymaps"),
 
+  -- the 'Vim Marks' commands
+  --
+  --- @type fzfx.GroupConfig
+  vim_marks = require("fzfx.cfg.vim_marks"),
+
   -- the 'Lsp Diagnostics' command
   --
   --- @type fzfx.GroupConfig

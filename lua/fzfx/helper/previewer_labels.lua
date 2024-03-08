@@ -128,4 +128,28 @@ M.label_ls = M._make_label_ls(parsers.parse_ls)
 M.label_lsd = M._make_label_ls(parsers.parse_lsd)
 M.label_eza = M._make_label_ls(parsers.parse_eza)
 
+--- @param line string?
+--- @param context fzfx.VimMarksPipelineContext
+--- @return string
+M.label_vim_mark = function(line, context)
+  if str.empty(line) then
+    return ""
+  end
+  local parsed = parsers.parse_vim_mark(line --[[@as string]], context)
+  local filename = parsed.filename
+  if str.empty(filename) then
+    filename = vim.api.nvim_buf_get_name(context.bufnr)
+  end
+  if str.not_empty(filename) then
+    return string.format(
+      "%s:%d:%d",
+      vim.fn.fnamemodify(filename, ":t"),
+      parsed.lineno or 1,
+      parsed.col or 1
+    )
+  else
+    return string.format("%d:%d", parsed.lineno or 1, parsed.col or 1)
+  end
+end
+
 return M

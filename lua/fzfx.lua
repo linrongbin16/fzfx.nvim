@@ -63,6 +63,7 @@ local function setup(opts)
   -- vim
   general.setup("vim_commands", configs.vim_commands)
   general.setup("vim_keymaps", configs.vim_keymaps)
+  general.setup("vim_marks", configs.vim_marks)
 
   -- file explorer
   general.setup("file_explorer", configs.file_explorer)
