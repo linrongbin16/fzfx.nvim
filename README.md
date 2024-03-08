@@ -251,7 +251,7 @@ Below keys are binded by default:
   <thead>
     <tr>
       <th>Name</th>
-      <th>Description</th>
+      <th>Details</th>
     </tr>
   </thead>
   <tbody>
@@ -261,55 +261,53 @@ Below keys are binded by default:
       </td>
       <td>
         <details>
-          <summary>
-            Find files.
-          </summary>
-            <small>
-              <ol>
-                <li>
-                  Use <code>ctrl-q</code> to send selected lines to quickfix
-                  window and quit.
-                </li>
-                <li>
-                  <bold>Unrestricted</bold> variant is named with
-                  <code>unres_</code> suffix.
-                </li>
-              </ol>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Variant</th>
-                    <th>Mode</th>
-                    <th>Select Keys</th>
-                    <th>Preview Keys</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code>(unres_)args</code></td>
-                    <td>N</td>
-                    <td rowspan="5">Yes</td>
-                    <td rowspan="5">Yes</td>
-                  </tr>
-                  <tr>
-                    <td><code>(unres_)visual</code></td>
-                    <td>V</td>
-                  </tr>
-                  <tr>
-                    <td><code>(unres_)cword</code></td>
-                    <td>N</td>
-                  </tr>
-                  <tr>
-                    <td><code>(unres_)put</code></td>
-                    <td>N</td>
-                  </tr>
-                  <tr>
-                    <td><code>(unres_)resume</code></td>
-                    <td>N</td>
-                  </tr>
-                </tbody>
-              </table>
-            </small>
+          <summary>Find files.</summary>
+          <small>
+            <ol style="color:grey;">
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+              <li>
+                <bold>Unrestricted</bold> variant is named with
+                <code>unres_</code> suffix.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>(unres_)args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_)visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_)cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_)put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>(unres_)resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
@@ -319,51 +317,49 @@ Below keys are binded by default:
       </td>
       <td>
         <details>
-          <summary>
-            Find buffers.
-          </summary>
-            <small>
-              <ol>
-                <li>
-                  Use <code>ctrl-q</code> to send selected lines to quickfix
-                  window and quit.
-                </li>
-              </ol>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Variant</th>
-                    <th>Mode</th>
-                    <th>Select Keys</th>
-                    <th>Preview Keys</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code>args</code></td>
-                    <td>N</td>
-                    <td rowspan="5">Yes</td>
-                    <td rowspan="5">Yes</td>
-                  </tr>
-                  <tr>
-                    <td><code>visual</code></td>
-                    <td>V</td>
-                  </tr>
-                  <tr>
-                    <td><code>cword</code></td>
-                    <td>N</td>
-                  </tr>
-                  <tr>
-                    <td><code>put</code></td>
-                    <td>N</td>
-                  </tr>
-                  <tr>
-                    <td><code>resume</code></td>
-                    <td>N</td>
-                  </tr>
-                </tbody>
-              </table>
-            </small>
+          <summary>Find buffers.</summary>
+          <small>
+            <ol style="color:grey;">
+              <li>
+                Use <code>ctrl-q</code> to send selected lines to quickfix
+                window and quit.
+              </li>
+            </ol>
+            <table>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th>Mode</th>
+                  <th>Select Keys</th>
+                  <th>Preview Keys</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>args</code></td>
+                  <td>N</td>
+                  <td rowspan="5">Yes</td>
+                  <td rowspan="5">Yes</td>
+                </tr>
+                <tr>
+                  <td><code>visual</code></td>
+                  <td>V</td>
+                </tr>
+                <tr>
+                  <td><code>cword</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>put</code></td>
+                  <td>N</td>
+                </tr>
+                <tr>
+                  <td><code>resume</code></td>
+                  <td>N</td>
+                </tr>
+              </tbody>
+            </table>
+          </small>
         </details>
       </td>
     </tr>
@@ -375,7 +371,7 @@ Below keys are binded by default:
         <details>
           <summary>Find git files.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -427,9 +423,9 @@ Below keys are binded by default:
       <td><code>FzfxLiveGrep</code></td>
       <td>
         <details>
-          <summary><i>Live grep.</i></summary>
+          <summary>Live grep.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -489,9 +485,9 @@ Below keys are binded by default:
       <td><code>FzfxBufLiveGrep</code></td>
       <td>
         <details>
-          <summary><i>Live grep only on current buffer.</i></summary>
+          <summary>Live grep only on current buffer.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 This command has the same functionality with
                 <code>FzfxLiveGrep</code> currently buffer variant
@@ -549,9 +545,9 @@ Below keys are binded by default:
       <td><code>FzfxGLiveGrep</code></td>
       <td>
         <details>
-          <summary><i>Live grep with git grep.</i></summary>
+          <summary>Live grep with git grep.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -603,9 +599,9 @@ Below keys are binded by default:
       <td><code>FzfxGStatus</code></td>
       <td>
         <details>
-          <summary><i>Search git status (changed files).</i></summary>
+          <summary>Search git status (changed files).</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -657,9 +653,9 @@ Below keys are binded by default:
       <td><code>FzfxGBranches</code></td>
       <td>
         <details>
-          <summary><i>Search git branches.</i></summary>
+          <summary>Search git branches.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>Use <code>enter</code> to checkout branch.</li>
               <li>
                 <bold>Remote branch</bold> variant is named with
@@ -708,9 +704,9 @@ Below keys are binded by default:
       <td><code>FzfxGCommits</code></td>
       <td>
         <details>
-          <summary><i>Search git commits.</i></summary>
+          <summary>Search git commits.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>Use <code>enter</code> to copy git commit SHA.</li>
               <li>
                 <bold>Current buffer</bold> variant is named with
@@ -759,9 +755,9 @@ Below keys are binded by default:
       <td><code>FzfxGBlame</code></td>
       <td>
         <details>
-          <summary><i>Search git blame.</i></summary>
+          <summary>Search git blame.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>Use <code>enter</code> to copy git commit SHA.</li>
             </ol>
             <table>
@@ -806,9 +802,9 @@ Below keys are binded by default:
       <td><code>FzfxLspDefinitions</code></td>
       <td>
         <details>
-          <summary><i>Search definitions.</i></summary>
+          <summary>Search definitions.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -848,9 +844,9 @@ Below keys are binded by default:
       <td><code>FzfxLspTypeDefinitions</code></td>
       <td>
         <details>
-          <summary><i>Search type definitions.</i></summary>
+          <summary>Search type definitions.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -890,9 +886,9 @@ Below keys are binded by default:
       <td><code>FzfxLspImplementations</code></td>
       <td>
         <details>
-          <summary><i>Search implementations.</i></summary>
+          <summary>Search implementations.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -932,9 +928,9 @@ Below keys are binded by default:
       <td><code>FzfxLspReferences</code></td>
       <td>
         <details>
-          <summary><i>Search references.</i></summary>
+          <summary>Search references.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -974,9 +970,9 @@ Below keys are binded by default:
       <td><code>FzfxLspIncomingCalls</code></td>
       <td>
         <details>
-          <summary><i>Search incoming calls.</i></summary>
+          <summary>Search incoming calls.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -1016,9 +1012,9 @@ Below keys are binded by default:
       <td><code>FzfxLspOutgoingCalls</code></td>
       <td>
         <details>
-          <summary><i>Search outgoing calls.</i></summary>
+          <summary>Search outgoing calls.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
@@ -1058,9 +1054,9 @@ Below keys are binded by default:
       <td><code>FzfxLspDiagnostics</code></td>
       <td>
         <details>
-          <summary><i>Search diagnostics.</i></summary>
+          <summary>Search diagnostics.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -1112,9 +1108,9 @@ Below keys are binded by default:
       <td><code>FzfxCommands</code></td>
       <td>
         <details>
-          <summary><i>Search vim commands.</i></summary>
+          <summary>Search vim commands.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>Use <code>enter</code> to input command.</li>
               <li>
                 <bold>Ex (builtin) commands</bold> variant is named with
@@ -1167,9 +1163,9 @@ Below keys are binded by default:
       <td><code>FzfxKeyMaps</code></td>
       <td>
         <details>
-          <summary><i>Search vim key mappings.</i></summary>
+          <summary>Search vim key mappings.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>Use <code>enter</code> to execute key mapping.</li>
               <li>
                 <bold>Normal mode</bold> variant is named with
@@ -1226,9 +1222,9 @@ Below keys are binded by default:
       <td><code>FzfxMarks</code></td>
       <td>
         <details>
-          <summary><i>Search vim marks.</i></summary>
+          <summary>Search vim marks.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 Use <code>ctrl-q</code> to send selected lines to quickfix
                 window and quit.
@@ -1276,9 +1272,9 @@ Below keys are binded by default:
       <td><code>FzfxFileExplorer</code></td>
       <td>
         <details>
-          <summary><i>Navigate around file explorer.</i></summary>
+          <summary>Navigate around file explorer.</summary>
           <small>
-            <ol>
+            <ol style="color:grey;">
               <li>
                 <bold>Include hidden</bold> variant is named with
                 <code>hidden_</code> suffix.
