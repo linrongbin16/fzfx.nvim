@@ -253,7 +253,7 @@ Below keys are binded by default:
 #### `FzfxFiles`
 
 <details>
-<summary><i>Click here to expand.</i></summary>
+<summary><i>Click here to find files.</i></summary>
 <br/>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
@@ -299,7 +299,7 @@ Below keys are binded by default:
 #### `FzfxBuffers`
 
 <details>
-<summary><i>Click here to expand.</i></summary>
+<summary><i>Click here to find buffers.</i></summary>
 <br/>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
@@ -346,7 +346,7 @@ Below keys are binded by default:
 #### `FzfxLiveGrep`
 
 <details>
-<summary><i>Click here to expand.</i></summary>
+<summary><i>Click here to live grep.</i></summary>
 <br/>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
@@ -394,10 +394,10 @@ Below keys are binded by default:
 #### `FzfxBufLiveGrep`
 
 <details>
-<summary><i>Click here to expand.</i></summary>
+<summary><i>Click here to live grep only on current buffer.</i></summary>
 <br/>
 
-> 1. This command has the same functionality with `FzfxLiveGrep` currently buffer (only) variant (`buf_`), while the filename is removed for better user view.
+> 1. This command has the same functionality with `FzfxLiveGrep` currently buffer variant (`buf_`), while the filename is removed for better user view.
 > 2. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 3. Use `--` flag to pass raw options to search command (`rg`/`grep`).
 
@@ -438,10 +438,12 @@ Below keys are binded by default:
 
 </details>
 
-#### `FzfxGLiveGrep` (Live Git Grep)
+#### `FzfxGLiveGrep`
 
-> [!NOTE]
->
+<details>
+<summary><i>Click here to expand.</i></summary>
+<br/>
+
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. Use `--` flag to pass raw options to search command (`git grep`).
 
@@ -479,6 +481,8 @@ Below keys are binded by default:
   </tr>
 </tbody>
 </table>
+
+</details>
 
 ### Git
 
