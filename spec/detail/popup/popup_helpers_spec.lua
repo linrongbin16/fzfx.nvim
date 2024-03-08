@@ -265,6 +265,16 @@ describe("detail.popup.popup_helpers", function()
       assert_true(isclose(actual.width, width))
       assert_true(isclose(actual.height, height))
       assert_true(isclose(2 * (center_row - actual.start_row), height))
+      print(
+        string.format(
+          "make_layout-6, (end_row(%s) - center_row(%s)) * 2 (%s) == height:%s: %s",
+          vim.inspect(actual.end_row),
+          vim.inspect(center_row),
+          vim.inspect(2 * (actual.end_row - center_row)),
+          vim.inspect(height),
+          vim.inspect(isclose(2 * (actual.end_row - center_row), height))
+        )
+      )
       assert_true(isclose(2 * (actual.end_row - center_row), height))
       assert_true(isclose(2 * (center_col - actual.start_col), width))
       assert_true(isclose(2 * (actual.end_col - center_col), width))
