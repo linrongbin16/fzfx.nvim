@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.7.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.7.0...v5.7.1) (2024-03-08)
+
+
+### Bug Fixes
+
+* **popup:** fix height calculation on up/down direction ([#630](https://github.com/linrongbin16/fzfx.nvim/issues/630)) ([9a9f175](https://github.com/linrongbin16/fzfx.nvim/commit/9a9f175d463a5a4a50c24b0c7f23e18dbef25060))
+
 ## [5.7.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.6.1...v5.7.0) (2024-03-08)
 
 
