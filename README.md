@@ -838,6 +838,43 @@ This is a group of several commands (and related LSP protocol methods):
 </tbody>
 </table>
 
+#### `FzfxMarks` (Search Vim Marks)
+
+<table>
+<thead>
+  <tr>
+    <th>Variant</th>
+    <th>Mode</th>
+    <th>Select Keys</th>
+    <th>Preview Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td><code>args</code></td>
+    <td>N</td>
+    <td rowspan="5">No</td>
+    <td rowspan="5">Yes</td>
+  </tr>
+  <tr>
+    <td><code>visual</code></td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td><code>cword</code></td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td><code>put</code></td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td><code>resume</code></td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
 ### Misc
 
 #### `FzfxFileExplorer` (File Explorer)
