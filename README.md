@@ -28,13 +28,25 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - [Files & Buffers](#files--buffers)
     - [`FzfxFiles`](#fzfxfiles)
     - [`FzfxBuffers`](#fzfxbuffers)
+    - [`FzfxGFiles`](#fzfxgfiles)
   - [Grep](#grep)
     - [`FzfxLiveGrep`](#fzfxlivegrep)
     - [`FzfxBufLiveGrep`](#fzfxbuflivegrep)
+    - [`FzfxGLiveGrep`](#fzfxglivegrep)
   - [Git](#git)
+    - [`FzfxGStatus`](#fzfxgstatus)
+    - [`FzfxGBranches`](#fzfxgbranches)
+    - [`FzfxGCommits`](#fzfxgcommits)
+    - [`FzfxGBlame`](#fzfxgblame)
   - [Lsp & Diagnostics](#lsp--diagnostics)
+    - [`FzfxLsp{Locations}`](#fzfxlsplocations)
+    - [`FzfxLspDiagnostics`](#fzfxlspdiagnostics)
   - [Vim](#vim)
+    - [`FzfxCommands`](#fzfxcommands)
+    - [`FzfxKeyMaps`](#fzfxkeymaps)
+    - [`FzfxMarks`](#fzfxmarks)
   - [Misc](#misc)
+    - [`FzfxFileExplorer`](#fzfxfileexplorer)
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
   - [Create Your Own Command](#create-your-own-command)
@@ -341,6 +353,52 @@ Below keys are binded by default:
 
 </details>
 
+#### `FzfxGFiles`
+
+<details>
+<summary><i>Click here to find git files.</i></summary>
+<br/>
+
+> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
+> 2. **Current directory (only)** variant is named with `cwd_` suffix.
+
+<table>
+<thead>
+  <tr>
+    <th>Variant</th>
+    <th>Mode</th>
+    <th>Select Keys</th>
+    <th>Preview Keys</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td><code>(cwd_)args</code></td>
+    <td>N</td>
+    <td rowspan="5">Yes</td>
+    <td rowspan="5">Yes</td>
+  </tr>
+  <tr>
+    <td><code>(cwd_)visual</code></td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td><code>(cwd_)cword</code></td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td><code>(cwd_)put</code></td>
+    <td>N</td>
+  </tr>
+  <tr>
+    <td><code>(cwd_)resume</code></td>
+    <td>N</td>
+  </tr>
+</tbody>
+</table>
+
+</details>
+
 ### Grep
 
 #### `FzfxLiveGrep`
@@ -441,7 +499,7 @@ Below keys are binded by default:
 #### `FzfxGLiveGrep`
 
 <details>
-<summary><i>Click here to expand.</i></summary>
+<summary><i>Click here to live git grep.</i></summary>
 <br/>
 
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
@@ -486,10 +544,12 @@ Below keys are binded by default:
 
 ### Git
 
-#### `FzfxGFiles` (Find Git Files)
+#### `FzfxGStatus`
 
-> [!NOTE]
->
+<details>
+<summary><i>Click here to search git status (changed files).</i></summary>
+<br/>
+
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. **Current directory (only)** variant is named with `cwd_` suffix.
 
@@ -528,52 +588,14 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-#### `FzfxGStatus` (Search Git Status, e.g. Git Changed Files)
+</details>
 
-> [!NOTE]
->
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Current directory (only)** variant is named with `cwd_` suffix.
+#### `FzfxGBranches`
 
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(cwd_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
+<details>
+<summary><i>Click here to search git branches.</i></summary>
+<br/>
 
-#### `FzfxGBranches` (Find Git Branches)
-
-> [!NOTE]
->
 > 1. Use `enter` to checkout branch.
 > 2. **Remote branch** variant is named with `remote_` suffix.
 
@@ -612,10 +634,14 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-#### `FzfxGCommits` (Search Git Commits)
+</details>
 
-> [!NOTE]
->
+#### `FzfxGCommits`
+
+<details>
+<summary><i>Click here to search git commits.</i></summary>
+<br/>
+
 > 1. Use `enter` to copy git commit SHA.
 > 2. **Current buffer (only)** variant is named with `buf_` suffix.
 
@@ -654,10 +680,14 @@ Below keys are binded by default:
 </tbody>
 </table>
 
-#### `FzfxGBlame` (Search Git Blame)
+</details>
 
-> [!NOTE]
->
+#### `FzfxGBlame`
+
+<details>
+<summary><i>Click here to search git blame.</i></summary>
+<br/>
+
 > 1. Use `enter` to copy git commit SHA.
 
 <table>
@@ -695,9 +725,15 @@ Below keys are binded by default:
 </tbody>
 </table>
 
+</details>
+
 ### Lsp & Diagnostics
 
-#### `FzfxLsp{Locations}` (Search Lsp Locations)
+#### `FzfxLsp{Locations}`
+
+<details>
+<summary><i>Click here to search lsp locations.</i></summary>
+<br/>
 
 This is a group of several commands (and related LSP protocol methods):
 
@@ -708,8 +744,6 @@ This is a group of several commands (and related LSP protocol methods):
 - `FzfxLspIncomingCalls` ([callHierarchy/incomingCalls](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_incomingCalls)).
 - `FzfxLspOutgoingCalls` ([callHierarchy/outgoingCalls](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_outgoingCalls)).
 
-> [!NOTE]
->
 > 1. The `args` variant has a different behavior, it always use cursor word instead of command arguments. Because most use cases are navigating symbol locations, for example mapping `gd/gt/gi/gr` to go to definitions/type definitions/implementations/references.
 
 <table>
@@ -731,10 +765,14 @@ This is a group of several commands (and related LSP protocol methods):
 </tbody>
 </table>
 
-#### `FzfxLspDiagnostics` (Search Diagnostics)
+</details>
 
-> [!NOTE]
->
+#### `FzfxLspDiagnostics`
+
+<details>
+<summary><i>Click here to search diagnostics.</i></summary>
+<br/>
+
 > 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
 > 2. **Current buffer (only)** variant is named with `buf_` suffix.
 
@@ -773,12 +811,16 @@ This is a group of several commands (and related LSP protocol methods):
 </tbody>
 </table>
 
+</details>
+
 ### Vim
 
-#### `FzfxCommands` (Search Vim Commands)
+#### `FzfxCommands`
 
-> [!NOTE]
->
+<details>
+<summary><i>Click here to search vim commands.</i></summary>
+<br/>
+
 > 1. Use `enter` to input vim command.
 > 2. **Ex (builtin) commands** variant is named with `ex_` suffix.
 > 3. **User commands** variant is named with `user_` suffix.
@@ -818,10 +860,14 @@ This is a group of several commands (and related LSP protocol methods):
 </tbody>
 </table>
 
-#### `FzfxKeyMaps` (Search Vim Key Mappings)
+</details>
 
-> [!NOTE]
->
+#### `FzfxKeyMaps`
+
+<details>
+<summary><i>Click here to search vim key mappings.</i></summary>
+<br/>
+
 > 1. Use `enter` to execute vim key.
 > 2. **Normal mode** variant is named with `n_mode_` suffix.
 > 3. **Insert mode** variant is named with `i_mode_` suffix.
@@ -862,7 +908,15 @@ This is a group of several commands (and related LSP protocol methods):
 </tbody>
 </table>
 
-#### `FzfxMarks` (Search Vim Marks)
+</details>
+
+#### `FzfxMarks`
+
+<details>
+<summary><i>Click here to search vim marks.</i></summary>
+<br/>
+
+> 1. Use ctrl-q to send selected lines to quickfix window and quit.
 
 <table>
 <thead>
@@ -899,12 +953,16 @@ This is a group of several commands (and related LSP protocol methods):
 </tbody>
 </table>
 
+</details>
+
 ### Misc
 
-#### `FzfxFileExplorer` (File Explorer)
+#### `FzfxFileExplorer`
 
-> [!NOTE]
->
+<details>
+<summary><i>Click here to search file explorer.</i></summary>
+<br/>
+
 > 1. **Include hidden** variant is named with `hidden_` suffix.
 
 <table>
@@ -941,6 +999,8 @@ This is a group of several commands (and related LSP protocol methods):
   </tr>
 </tbody>
 </table>
+
+</details>
 
 ## 📌 Recommended Key Mappings
 
