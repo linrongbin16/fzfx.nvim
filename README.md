@@ -24,29 +24,10 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [Requirements](#-requirements)
   - [For Windows](#for-windows)
 - [Install](#-install)
-- [Commands](#-commands)
-  - [Files & Buffers](#files--buffers)
-    - [`FzfxFiles`](#fzfxfiles)
-    - [`FzfxBuffers`](#fzfxbuffers)
-    - [`FzfxGFiles`](#fzfxgfiles)
-  - [Grep](#grep)
-    - [`FzfxLiveGrep`](#fzfxlivegrep)
-    - [`FzfxBufLiveGrep`](#fzfxbuflivegrep)
-    - [`FzfxGLiveGrep`](#fzfxglivegrep)
-  - [Git](#git)
-    - [`FzfxGStatus`](#fzfxgstatus)
-    - [`FzfxGBranches`](#fzfxgbranches)
-    - [`FzfxGCommits`](#fzfxgcommits)
-    - [`FzfxGBlame`](#fzfxgblame)
-  - [Lsp & Diagnostics](#lsp--diagnostics)
-    - [`FzfxLsp{Locations}`](#fzfxlsplocations)
-    - [`FzfxLspDiagnostics`](#fzfxlspdiagnostics)
-  - [Vim](#vim)
-    - [`FzfxCommands`](#fzfxcommands)
-    - [`FzfxKeyMaps`](#fzfxkeymaps)
-    - [`FzfxMarks`](#fzfxmarks)
-  - [Misc](#misc)
-    - [`FzfxFileExplorer`](#fzfxfileexplorer)
+- [Usage](#-usage)
+  - [Naming Rules](#naming-rules)
+  - [Key Bindings](#key-bindings)
+  - [Commands](#commands)
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
   - [Create Your Own Command](#create-your-own-command)
@@ -231,7 +212,9 @@ lua require('fzfx').setup()
 
 </details>
 
-## 🚀 Commands
+## 🚀 Usage
+
+### Naming Rules
 
 All commands are named with prefix `Fzfx`, the sub commands e.g. the variants are usually named with below rules:
 
@@ -247,485 +230,564 @@ All commands are named with prefix `Fzfx`, the sub commands e.g. the variants ar
 >
 > To specify query text, for example `asdf`, you will have to type `:FzfxFiles args asdf<CR>`.
 
+### Key Bindings
+
 Below keys are binded by default:
 
-- **Exit** keys (fzf `--expect` option)
+- Exit keys (fzf `--expect` option)
   - `esc`: quit.
   - `double-click`/`enter`: open/jump to file (behave different on some specific commands).
-- **Preview** keys
+- Preview keys
   - `alt-p`: toggle preview.
   - `ctrl-f`: preview half page down.
   - `ctrl-b`: preview half page up.
-- **Select** keys
+- Select keys
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
 
-### Files & Buffers
-
-#### `FzfxFiles`
-
-<details>
-<summary><i>Click here to find files.</i></summary>
-<br/>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Unrestricted** variant is named with `unres_` suffix.
+### Commands
 
 <table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(unres_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(unres_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(unres_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(unres_)put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(unres_)resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>FzfxFiles</code></td>
+      <td>Find files.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <small>
+          <ol>
+            <li>
+              Use <code>ctrl-q</code> to send selected lines to quickfix window
+              and quit.
+            </li>
+            <li>
+              <bold>Unrestricted</bold> variant is named with
+              <code>unres_</code> suffix.
+            </li>
+          </ol>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Mode</th>
+                <th>Select Keys</th>
+                <th>Preview Keys</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>(unres_)args</code></td>
+                <td>N</td>
+                <td rowspan="5">Yes</td>
+                <td rowspan="5">Yes</td>
+              </tr>
+              <tr>
+                <td><code>(unres_)visual</code></td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td><code>(unres_)cword</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(unres_)put</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(unres_)resume</code></td>
+                <td>N</td>
+              </tr>
+            </tbody>
+          </table>
+          </small>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxBuffers</code></td>
+      <td>Find buffers.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <ol>
+            <li>
+              Use <code>ctrl-q</code> to send selected lines to quickfix window
+              and quit.
+            </li>
+          </ol>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Mode</th>
+                <th>Select Keys</th>
+                <th>Preview Keys</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>args</code></td>
+                <td>N</td>
+                <td rowspan="5">Yes</td>
+                <td rowspan="5">Yes</td>
+              </tr>
+              <tr>
+                <td><code>visual</code></td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td><code>cword</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>put</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>resume</code></td>
+                <td>N</td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxGFiles</code></td>
+      <td>Find git files.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <ol>
+            <li>
+              Use <code>ctrl-q</code> to send selected lines to quickfix window
+              and quit.
+            </li>
+            <li>
+              <bold>Current directory (only)</bold> variant is named with
+              <code>cwd_</code> suffix.
+            </li>
+          </ol>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Mode</th>
+                <th>Select Keys</th>
+                <th>Preview Keys</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>(cwd_)args</code></td>
+                <td>N</td>
+                <td rowspan="5">Yes</td>
+                <td rowspan="5">Yes</td>
+              </tr>
+              <tr>
+                <td><code>(cwd_)visual</code></td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td><code>(cwd_)cword</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(cwd_)put</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(cwd_)resume</code></td>
+                <td>N</td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxLiveGrep</code></td>
+      <td>Live grep.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <ol>
+            <li>
+              Use <code>ctrl-q</code> to send selected lines to quickfix window
+              and quit.
+            </li>
+            <li>
+              Use <code>--</code> flag to pass raw options to search command
+              (<code>rg</code>/<code>grep</code>).
+            </li>
+            <li>
+              <bold>Unrestricted</bold> variant is named with
+              <code>unres_</code> suffix.
+            </li>
+            <li>
+              <bold>Current buffer (only)</bold> variant is named with
+              <code>buf_</code> suffix.
+            </li>
+          </ol>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Mode</th>
+                <th>Select Keys</th>
+                <th>Preview Keys</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>(unres_/buf_)args</code></td>
+                <td>N</td>
+                <td rowspan="5">Yes</td>
+                <td rowspan="5">Yes</td>
+              </tr>
+              <tr>
+                <td><code>(unres_/buf_)visual</code></td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td><code>(unres_/buf_)cword</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(unres_/buf_)put</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(unres_/buf_)resume</code></td>
+                <td>N</td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxBufLiveGrep</code></td>
+      <td>Live grep only on current buffer.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <ol>
+            <li>
+              This command has the same functionality with
+              <code>FzfxLiveGrep</code> currently buffer variant
+              (<code>buf_</code>), while the filename is removed for better user
+              view.
+            </li>
+            <li>
+              Use <code>ctrl-q</code> to send selected lines to quickfix window
+              and quit.
+            </li>
+            <li>
+              Use <code>--</code> flag to pass raw options to search command
+              (<code>rg</code>/<code>grep</code>).
+            </li>
+          </ol>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Mode</th>
+                <th>Select Keys</th>
+                <th>Preview Keys</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>args</code></td>
+                <td>N</td>
+                <td rowspan="5">Yes</td>
+                <td rowspan="5">Yes</td>
+              </tr>
+              <tr>
+                <td><code>visual</code></td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td><code>cword</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>put</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>resume</code></td>
+                <td>N</td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxGLiveGrep</code></td>
+      <td>Git live grep.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <ol>
+            <li>
+              Use <code>ctrl-q</code> to send selected lines to quickfix window
+              and quit.
+            </li>
+            <li>
+              Use <code>--</code> flag to pass raw options to search command
+              (<code>git grep</code>).
+            </li>
+          </ol>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Mode</th>
+                <th>Select Keys</th>
+                <th>Preview Keys</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>args</code></td>
+                <td>N</td>
+                <td rowspan="5">Yes</td>
+                <td rowspan="5">Yes</td>
+              </tr>
+              <tr>
+                <td><code>visual</code></td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td><code>cword</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>put</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>resume</code></td>
+                <td>N</td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxGStatus</code></td>
+      <td>Search git status (changed files).</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <ol>
+            <li>
+              Use <code>ctrl-q</code> to send selected lines to quickfix window
+              and quit.
+            </li>
+            <li>
+              <bold>Current directory (only)</bold> variant is named with
+              <code>cwd_</code> suffix.
+            </li>
+          </ol>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Mode</th>
+                <th>Select Keys</th>
+                <th>Preview Keys</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>(cwd_)args</code></td>
+                <td>N</td>
+                <td rowspan="5">Yes</td>
+                <td rowspan="5">Yes</td>
+              </tr>
+              <tr>
+                <td><code>(cwd_)visual</code></td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td><code>(cwd_)cword</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(cwd_)put</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(cwd_)resume</code></td>
+                <td>N</td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxGBranches</code></td>
+      <td>Search git branches.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <ol>
+            <li>Use <code>enter</code> to checkout branch.</li>
+            <li>
+              <bold>Remote branch</bold> variant is named with
+              <code>remote_</code> suffix.
+            </li>
+          </ol>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Mode</th>
+                <th>Select Keys</th>
+                <th>Preview Keys</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>(remote_)args</code></td>
+                <td>N</td>
+                <td rowspan="5">No</td>
+                <td rowspan="5">Yes</td>
+              </tr>
+              <tr>
+                <td><code>(remote_)visual</code></td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td><code>(remote_)cword</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(remote_)put</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(remote_)resume</code></td>
+                <td>N</td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxGCommits</code></td>
+      <td>Search git commits.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <ol>
+            <li>Use <code>enter</code> to copy git commit SHA.</li>
+            <li>
+              <bold>Current buffer</bold> variant is named with
+              <code>buf_</code> suffix.
+            </li>
+          </ol>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Mode</th>
+                <th>Select Keys</th>
+                <th>Preview Keys</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>(buf_)args</code></td>
+                <td>N</td>
+                <td rowspan="5">No</td>
+                <td rowspan="5">Yes</td>
+              </tr>
+              <tr>
+                <td><code>(buf_)visual</code></td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td><code>(buf_)cword</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(buf_)put</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>(buf_)resume</code></td>
+                <td>N</td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+      </td>
+    </tr>
+    <tr>
+      <td><code>FzfxGBlame</code></td>
+      <td>Search git blame.</td>
+      <td>
+        <details>
+          <summary><i>Click here to expand.</i></summary>
+          <br />
+          <ol>
+            <li>Use <code>enter</code> to copy git commit SHA.</li>
+          </ol>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Mode</th>
+                <th>Select Keys</th>
+                <th>Preview Keys</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>args</code></td>
+                <td>N</td>
+                <td rowspan="5">No</td>
+                <td rowspan="5">Yes</td>
+              </tr>
+              <tr>
+                <td><code>visual</code></td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td><code>cword</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>put</code></td>
+                <td>N</td>
+              </tr>
+              <tr>
+                <td><code>resume</code></td>
+                <td>N</td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+      </td>
+    </tr>
+  </tbody>
 </table>
-
-</details>
-
-#### `FzfxBuffers`
-
-<details>
-<summary><i>Click here to find buffers.</i></summary>
-<br/>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>args</code></td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-#### `FzfxGFiles`
-
-<details>
-<summary><i>Click here to find git files.</i></summary>
-<br/>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Current directory (only)** variant is named with `cwd_` suffix.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(cwd_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-### Grep
-
-#### `FzfxLiveGrep`
-
-<details>
-<summary><i>Click here to live grep.</i></summary>
-<br/>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. Use `--` flag to pass raw options to search command (`rg`/`grep`).
-> 3. **Unrestricted** variant is named with `unres_` suffix.
-> 4. **Current buffer (only)** variant is named with `buf_` suffix.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(unres_/buf_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(unres_/buf_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(unres_/buf_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(unres_/buf_)put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(unres_/buf_)resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-#### `FzfxBufLiveGrep`
-
-<details>
-<summary><i>Click here to live grep only on current buffer.</i></summary>
-<br/>
-
-> 1. This command has the same functionality with `FzfxLiveGrep` currently buffer variant (`buf_`), while the filename is removed for better user view.
-> 2. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 3. Use `--` flag to pass raw options to search command (`rg`/`grep`).
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>args</code></td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-#### `FzfxGLiveGrep`
-
-<details>
-<summary><i>Click here to live git grep.</i></summary>
-<br/>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. Use `--` flag to pass raw options to search command (`git grep`).
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>args</code></td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-### Git
-
-#### `FzfxGStatus`
-
-<details>
-<summary><i>Click here to search git status (changed files).</i></summary>
-<br/>
-
-> 1. Use `ctrl-q` to send selected lines to quickfix window and quit.
-> 2. **Current directory (only)** variant is named with `cwd_` suffix.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(cwd_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">Yes</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(cwd_)resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-#### `FzfxGBranches`
-
-<details>
-<summary><i>Click here to search git branches.</i></summary>
-<br/>
-
-> 1. Use `enter` to checkout branch.
-> 2. **Remote branch** variant is named with `remote_` suffix.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(remote_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">No</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(remote_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(remote_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(remote_)put<code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(remote_)resume<code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-#### `FzfxGCommits`
-
-<details>
-<summary><i>Click here to search git commits.</i></summary>
-<br/>
-
-> 1. Use `enter` to copy git commit SHA.
-> 2. **Current buffer (only)** variant is named with `buf_` suffix.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>(buf_)args</code></td>
-    <td>N</td>
-    <td rowspan="5">No</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>(buf_)visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>(buf_)cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(buf_)put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>(buf_)resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
-
-#### `FzfxGBlame`
-
-<details>
-<summary><i>Click here to search git blame.</i></summary>
-<br/>
-
-> 1. Use `enter` to copy git commit SHA.
-
-<table>
-<thead>
-  <tr>
-    <th>Variant</th>
-    <th>Mode</th>
-    <th>Select Keys</th>
-    <th>Preview Keys</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>args</code></td>
-    <td>N</td>
-    <td rowspan="5">No</td>
-    <td rowspan="5">Yes</td>
-  </tr>
-  <tr>
-    <td><code>visual</code></td>
-    <td>V</td>
-  </tr>
-  <tr>
-    <td><code>cword</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>put</code></td>
-    <td>N</td>
-  </tr>
-  <tr>
-    <td><code>resume</code></td>
-    <td>N</td>
-  </tr>
-</tbody>
-</table>
-
-</details>
 
 ### Lsp & Diagnostics
 
