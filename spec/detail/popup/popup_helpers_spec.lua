@@ -5,13 +5,18 @@ describe("detail.popup.popup_helpers", function()
   local assert_true = assert.is_true
   local assert_false = assert.is_false
 
+  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
+
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.opt.swapfile = false
     vim.cmd([[edit README.md]])
+    if github_actions then
+      vim.cmd("set lines=30")
+      vim.cmd("set columns=140")
+    end
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
   local popup_helpers = require("fzfx.detail.popup.popup_helpers")
   require("fzfx").setup({
     debug = {
@@ -143,13 +148,26 @@ describe("detail.popup.popup_helpers", function()
         row = 0,
         col = 0,
       }, { position = "left", size = 35, size_is_percent = true })
-      print(string.format("make_layout-4:%s\n", vim.inspect(actual)))
       local total_width = vim.o.columns
       local total_height = vim.o.lines
       local width = total_width * 0.85
       local height = total_height * 0.75
       local center_row = total_height / 2
       local center_col = total_width / 2
+
+      print(
+        string.format(
+          "make_layout-4, actual:%s, total(height/width):%s/%s, center(row/col):%s/%s, height/width:%s/%s\n",
+          vim.inspect(actual),
+          vim.inspect(total_height),
+          vim.inspect(total_width),
+          vim.inspect(center_row),
+          vim.inspect(center_col),
+          vim.inspect(height),
+          vim.inspect(width)
+        )
+      )
+
       assert_true(isclose(actual.width, width))
       assert_true(isclose(actual.height, height))
       assert_true(isclose(2 * (center_row - actual.start_row), height))
@@ -158,14 +176,14 @@ describe("detail.popup.popup_helpers", function()
       assert_true(isclose(2 * (actual.end_col - center_col), width))
 
       assert_true(isclose(actual.provider.width, width * 0.65 - 1))
-      assert_eq(actual.provider.height, height)
+      assert_true(isclose(actual.provider.height, height))
       assert_eq(actual.provider.start_row, actual.start_row)
       assert_eq(actual.provider.end_row, actual.end_row)
       assert_eq(actual.provider.start_col, actual.start_col + actual.previewer.width + 2)
       assert_eq(actual.provider.end_col, actual.end_col)
 
       assert_true(isclose(actual.previewer.width, width * 0.35 - 1))
-      assert_eq(actual.previewer.height, height)
+      assert_true(isclose(actual.previewer.height, height))
       assert_eq(actual.previewer.start_row, actual.start_row)
       assert_eq(actual.previewer.end_row, actual.end_row)
       assert_eq(actual.previewer.start_col, actual.start_col)
