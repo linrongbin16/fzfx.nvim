@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.7.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.6.1...v5.7.0) (2024-03-08)
+
+
+### Features
+
+* **marks:** add 'FzfxMarks' ([#627](https://github.com/linrongbin16/fzfx.nvim/issues/627)) ([8cb8fe2](https://github.com/linrongbin16/fzfx.nvim/commit/8cb8fe2feed538856b0826ddc2477bc3b0a9adf0))
+
 ## [5.6.1](https://github.com/linrongbin16/fzfx.nvim/compare/v5.6.0...v5.6.1) (2024-03-04)
 
 
