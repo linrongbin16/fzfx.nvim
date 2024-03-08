@@ -898,7 +898,12 @@ describe("helper.actions", function()
   describe("[edit_vim_mark]", function()
     local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
     it("make", function()
-      local lines = CONTEXT.marks
+      local lines = tbl.List
+        :copy(CONTEXT.marks)
+        :filter(function(_, i)
+          return i > 1
+        end)
+        :data()
       local actual = actions._make_edit_vim_mark(lines, CONTEXT)
       assert_eq(type(actual), "table")
       print(
@@ -928,6 +933,39 @@ describe("helper.actions", function()
     it("run", function()
       local lines = CONTEXT.marks
       actions.edit_vim_mark(lines, CONTEXT)
+    end)
+  end)
+
+  describe("[setqflist_vim_mark]", function()
+    local CONTEXT = require("fzfx.cfg.vim_marks")._vim_marks_context_maker()
+    it("make", function()
+      local lines = tbl.List
+        :copy(CONTEXT.marks)
+        :filter(function(_, i)
+          return i > 1
+        end)
+        :data()
+      local actual = actions._make_setqflist_vim_mark(lines, CONTEXT)
+      assert_eq(type(actual), "table")
+      print(
+        string.format(
+          "setqflist_vim_mark, #actual:%s, #lines:%s\n",
+          vim.inspect(#actual),
+          vim.inspect(#lines)
+        )
+      )
+      assert_eq(#actual, #lines)
+      for i, act in ipairs(actual) do
+        assert_eq(type(act), "table")
+        assert_eq(type(act.filename), "string")
+        assert_eq(type(act.lnum), "number")
+        assert_eq(type(act.col), "number")
+        assert_eq(type(act.text), "string")
+      end
+    end)
+    it("run", function()
+      local lines = CONTEXT.marks
+      actions.setqflist_vim_mark(lines, CONTEXT)
     end)
   end)
 end)

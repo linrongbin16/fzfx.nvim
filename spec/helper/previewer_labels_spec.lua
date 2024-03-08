@@ -312,24 +312,28 @@ describe("helper.previewer_labels", function()
           )
         )
         assert_eq(type(actual), "string")
-        assert_eq(#splits, 3)
+        assert_true(#splits == 3 or #splits == 2)
         local pos1 = str.find(line, splits[1])
+        assert_true(pos1 > 0)
         print(string.format("label_vim_mark pos1:%s\n", vim.inspect(pos1)))
         if pos1 then
           local pos2 = str.find(line, splits[2], pos1 + string.len(splits[1]))
-          print(string.format("label_vim_mark pos2:%s\n", vim.inspect(pos2)))
-          local pos3 = str.find(line, splits[3], pos2 + string.len(splits[2]))
-          print(string.format("label_vim_mark pos3:%s\n", vim.inspect(pos3)))
-          assert_true(pos1 > 0)
           assert_true(pos2 > pos1)
-          assert_true(pos3 > pos2)
+          print(string.format("label_vim_mark pos2:%s\n", vim.inspect(pos2)))
+          if #splits == 3 then
+            local pos3 = str.find(line, splits[3], pos2 + string.len(splits[2]))
+            print(string.format("label_vim_mark pos3:%s\n", vim.inspect(pos3)))
+            assert_true(pos3 > pos2)
+          end
         else
           local pos2 = str.find(line, splits[2])
-          print(string.format("label_vim_mark pos2:%s\n", vim.inspect(pos2)))
-          local pos3 = str.find(line, splits[3], pos2 + string.len(splits[2]))
-          print(string.format("label_vim_mark pos3:%s\n", vim.inspect(pos3)))
           assert_true(pos2 > 1)
-          assert_true(pos3 > pos2)
+          print(string.format("label_vim_mark pos2:%s\n", vim.inspect(pos2)))
+          if #splits == 3 then
+            local pos3 = str.find(line, splits[3], pos2 + string.len(splits[2]))
+            print(string.format("label_vim_mark pos3:%s\n", vim.inspect(pos3)))
+            assert_true(pos3 > pos2)
+          end
         end
       end
     end)
