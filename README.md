@@ -28,6 +28,12 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - [Naming Rules](#naming-rules)
   - [Key Bindings](#key-bindings)
   - [Commands](#commands)
+    - [Files & Buffers](#files--buffers)
+    - [Grep](#grep)
+    - [Git](#git)
+    - [Lsp & Diagnostics](#lsp--diagnostics)
+    - [Vim](#vim)
+    - [Misc](#misc)
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
   - [Create Your Own Command](#create-your-own-command)
@@ -247,6 +253,8 @@ Below keys are binded by default:
 
 ### Commands
 
+#### Files & Buffers
+
 <table>
   <thead>
     <tr>
@@ -419,6 +427,19 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+  </tbody>
+</table>
+
+#### Grep
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>FzfxLiveGrep</code></td>
       <td>
@@ -595,6 +616,19 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+  </tbody>
+</table>
+
+#### Git
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>FzfxGStatus</code></td>
       <td>
@@ -798,6 +832,19 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+  </tbody>
+</table>
+
+#### Lsp & Diagnostics
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>FzfxLspDefinitions</code></td>
       <td>
@@ -1104,6 +1151,19 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+  </tbody>
+</table>
+
+#### Vim
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>FzfxCommands</code></td>
       <td>
@@ -1268,6 +1328,19 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+  </tbody>
+</table>
+
+#### Misc
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>FzfxFileExplorer</code></td>
       <td>
