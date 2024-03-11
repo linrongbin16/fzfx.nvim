@@ -504,7 +504,7 @@ Below keys are binded by default:
               <li>
                 This command has the same functionality with
                 <code>FzfxLiveGrep</code> currently buffer variant
-                (<code>buf_</code>), while the filename is removed for better
+                (<code>buf_</code>), while the file name is removed for better
                 user view.
               </li>
               <li>
