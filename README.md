@@ -24,7 +24,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [Requirements](#-requirements)
   - [For Windows](#for-windows)
 - [Install](#-install)
-- [Commands](#-commands)
+- [Usage](#-usage)
   - [Files & Buffers](#files--buffers)
   - [Grep](#grep)
   - [Git](#git)
@@ -215,9 +215,9 @@ lua require('fzfx').setup()
 
 </details>
 
-## 🚀 Commands
+## 🚀 Usage
 
-All commands are named with prefix `Fzfx`, the sub commands e.g. the variants are usually named with below rules:
+There're multiple commands provided, named with prefix `Fzfx`. The sub commands indicates the user query's input method, (e.g. the variants) named with below rules:
 
 - **Basic** variant is named with `args`, accepts the following arguments as query content.
 - **Visual select** variant is named with `visual`, uses visual selection as query content.
