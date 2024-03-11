@@ -220,7 +220,7 @@ lua require('fzfx').setup()
 
 ## 🚀 Usage
 
-### Naming Rules
+**Naming Rules:**
 
 All commands are named with prefix `Fzfx`, the sub commands e.g. the variants are usually named with below rules:
 
@@ -236,7 +236,7 @@ All commands are named with prefix `Fzfx`, the sub commands e.g. the variants ar
 >
 > To specify query text, for example `asdf`, you will have to type `:FzfxFiles args asdf<CR>`.
 
-### Key Bindings
+**Key Bindings:**
 
 Below keys are binded by default:
 
