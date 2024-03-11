@@ -251,8 +251,6 @@ Below keys are binded by default:
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
 
-### Commands
-
 #### Files & Buffers
 
 <table>
