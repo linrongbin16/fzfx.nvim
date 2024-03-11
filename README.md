@@ -269,7 +269,7 @@ Below keys are binded by default:
                 window and quit.
               </li>
               <li>
-                <bold>Unrestricted</bold> variant is named with
+                <b>Unrestricted</b> variant is named with
                 <code>unres_</code> suffix.
               </li>
             </ol>
@@ -377,7 +377,7 @@ Below keys are binded by default:
                 window and quit.
               </li>
               <li>
-                <bold>Current directory (only)</bold> variant is named with
+                <b>Current directory (only)</b> variant is named with
                 <code>cwd_</code> suffix.
               </li>
             </ol>
@@ -448,11 +448,11 @@ Below keys are binded by default:
                 (<code>rg</code>/<code>grep</code>).
               </li>
               <li>
-                <bold>Unrestricted</bold> variant is named with
+                <b>Unrestricted</b> variant is named with
                 <code>unres_</code> suffix.
               </li>
               <li>
-                <bold>Current buffer (only)</bold> variant is named with
+                <b>Current buffer (only)</b> variant is named with
                 <code>buf_</code> suffix.
               </li>
             </ol>
@@ -633,7 +633,7 @@ Below keys are binded by default:
                 window and quit.
               </li>
               <li>
-                <bold>Current directory (only)</bold> variant is named with
+                <b>Current directory (only)</b> variant is named with
                 <code>cwd_</code> suffix.
               </li>
             </ol>
@@ -684,7 +684,7 @@ Below keys are binded by default:
             <ol>
               <li>Use <code>enter</code> to checkout branch.</li>
               <li>
-                <bold>Remote branch</bold> variant is named with
+                <b>Remote branch</b> variant is named with
                 <code>remote_</code> suffix.
               </li>
             </ol>
@@ -735,7 +735,7 @@ Below keys are binded by default:
             <ol>
               <li>Use <code>enter</code> to copy git commit SHA.</li>
               <li>
-                <bold>Current buffer</bold> variant is named with
+                <b>Current buffer</b> variant is named with
                 <code>buf_</code> suffix.
               </li>
             </ol>
