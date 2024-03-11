@@ -24,7 +24,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 - [Requirements](#-requirements)
   - [For Windows](#for-windows)
 - [Install](#-install)
-- [Usage](#-usage)
+- [Commands](#-commands)
   - [Files & Buffers](#files--buffers)
   - [Grep](#grep)
   - [Git](#git)
@@ -215,9 +215,7 @@ lua require('fzfx').setup()
 
 </details>
 
-## 🚀 Usage
-
-**Naming Rules:**
+## 🚀 Commands
 
 All commands are named with prefix `Fzfx`, the sub commands e.g. the variants are usually named with below rules:
 
@@ -232,8 +230,6 @@ All commands are named with prefix `Fzfx`, the sub commands e.g. the variants ar
 > The `args` sub command can be omitted, for example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
 >
 > To specify query text, for example `asdf`, you will have to type `:FzfxFiles args asdf<CR>`.
-
-**Key Bindings:**
 
 Below keys are binded by default:
 
