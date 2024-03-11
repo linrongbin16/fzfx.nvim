@@ -36,7 +36,7 @@ jobs:
           rm -rf ./lua/fzfx/commons
           cp -rf ~/.commons.nvim/lua/commons ./lua/fzfx/
           cp ~/.commons.nvim/version.txt ./lua/fzfx/commons/version.txt
-          find ./lua/fzfx/commons -type f -name '*.lua' -exec sed -i 's/"commons./"fzfx.commons./g' {} \;
+          find ./lua/fzfx/commons -type f -name '*.lua' -exec sed -i 's/require("commons/require("fzfx.commons/g' {} \;
       - uses: cargo-bins/cargo-binstall@main
       - name: Selene
         run: |
