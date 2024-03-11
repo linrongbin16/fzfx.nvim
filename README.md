@@ -33,6 +33,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - [Misc](#misc)
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
+  - [Feature Flags](#feature-flags)
   - [Create Your Own Command](#create-your-own-command)
   - [API References](#api-references)
 - [Known Issues](#-known-issues)
