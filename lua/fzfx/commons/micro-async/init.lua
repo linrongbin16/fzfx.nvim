@@ -235,11 +235,11 @@ function Async.join(...)
   return wrapped()
 end
 
----@module "fzfx.commons.micro-async.lsp"
+---@module "commons.micro-async.lsp"
 ---@private
 Async.lsp = nil
 
----@module "fzfx.commons.micro-async.uv"
+---@module "commons.micro-async.uv"
 ---@private
 Async.uv = nil
 
@@ -276,7 +276,7 @@ end
 
 setmetatable(Async, {
   __index = function(_, k)
-    local ok, mod = pcall(require, "fzfx.commons.micro-async." .. k)
+    local ok, mod = pcall(require, "commons.micro-async." .. k)
     if ok then
       return mod
     end

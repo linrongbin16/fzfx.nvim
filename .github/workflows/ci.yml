@@ -36,7 +36,7 @@ jobs:
           rm -rf ./lua/fzfx/commons
           cp -rf ~/.commons.nvim/lua/commons ./lua/fzfx/
           cp ~/.commons.nvim/version.txt ./lua/fzfx/commons/version.txt
-          find ./lua/fzfx/commons -type f -name '*.lua' -exec sed -i 's/"commons./"fzfx.commons./g' {} \;
+          find ./lua/fzfx/commons -type f -name '*.lua' -exec sed -i 's/require("commons/require("fzfx.commons/g' {} \;
       - uses: cargo-bins/cargo-binstall@main
       - name: Selene
         run: |
@@ -48,7 +48,7 @@ jobs:
           level: Information
           configpath: ".luarc.json"
           neodev-version: stable
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v5
         if: ${{ github.ref != 'refs/heads/main' }}
         with:
           commit_message: "chore(pr): auto-commit"

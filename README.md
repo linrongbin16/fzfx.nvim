@@ -25,11 +25,15 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - [For Windows](#for-windows)
 - [Install](#-install)
 - [Usage](#-usage)
-  - [Naming Rules](#naming-rules)
-  - [Key Bindings](#key-bindings)
-  - [Commands](#commands)
+  - [Files & Buffers](#files--buffers)
+  - [Grep](#grep)
+  - [Git](#git)
+  - [Lsp & Diagnostics](#lsp--diagnostics)
+  - [Vim](#vim)
+  - [Misc](#misc)
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
+  - [Feature Flags](#feature-flags)
   - [Create Your Own Command](#create-your-own-command)
   - [API References](#api-references)
 - [Known Issues](#-known-issues)
@@ -214,9 +218,7 @@ lua require('fzfx').setup()
 
 ## 🚀 Usage
 
-### Naming Rules
-
-All commands are named with prefix `Fzfx`, the sub commands e.g. the variants are usually named with below rules:
+There're multiple commands provided, named with prefix `Fzfx`. The sub commands indicates the user query's input method, (e.g. the variants) named with below rules:
 
 - **Basic** variant is named with `args`, accepts the following arguments as query content.
 - **Visual select** variant is named with `visual`, uses visual selection as query content.
@@ -229,8 +231,6 @@ All commands are named with prefix `Fzfx`, the sub commands e.g. the variants ar
 > The `args` sub command can be omitted, for example `:FzfxFiles<CR>` is equivalent to `:FzfxFiles args<CR>`.
 >
 > To specify query text, for example `asdf`, you will have to type `:FzfxFiles args asdf<CR>`.
-
-### Key Bindings
 
 Below keys are binded by default:
 
@@ -245,7 +245,7 @@ Below keys are binded by default:
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
 
-### Commands
+### Files & Buffers
 
 <table>
   <thead>
@@ -269,7 +269,7 @@ Below keys are binded by default:
                 window and quit.
               </li>
               <li>
-                <bold>Unrestricted</bold> variant is named with
+                <b>Unrestricted</b> variant is named with
                 <code>unres_</code> suffix.
               </li>
             </ol>
@@ -377,7 +377,7 @@ Below keys are binded by default:
                 window and quit.
               </li>
               <li>
-                <bold>Current directory (only)</bold> variant is named with
+                <b>Current directory (only)</b> variant is named with
                 <code>cwd_</code> suffix.
               </li>
             </ol>
@@ -419,6 +419,19 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+  </tbody>
+</table>
+
+### Grep
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>FzfxLiveGrep</code></td>
       <td>
@@ -435,11 +448,11 @@ Below keys are binded by default:
                 (<code>rg</code>/<code>grep</code>).
               </li>
               <li>
-                <bold>Unrestricted</bold> variant is named with
+                <b>Unrestricted</b> variant is named with
                 <code>unres_</code> suffix.
               </li>
               <li>
-                <bold>Current buffer (only)</bold> variant is named with
+                <b>Current buffer (only)</b> variant is named with
                 <code>buf_</code> suffix.
               </li>
             </ol>
@@ -491,7 +504,7 @@ Below keys are binded by default:
               <li>
                 This command has the same functionality with
                 <code>FzfxLiveGrep</code> currently buffer variant
-                (<code>buf_</code>), while the filename is removed for better
+                (<code>buf_</code>), while the file name is removed for better
                 user view.
               </li>
               <li>
@@ -595,6 +608,19 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+  </tbody>
+</table>
+
+### Git
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>FzfxGStatus</code></td>
       <td>
@@ -607,7 +633,7 @@ Below keys are binded by default:
                 window and quit.
               </li>
               <li>
-                <bold>Current directory (only)</bold> variant is named with
+                <b>Current directory (only)</b> variant is named with
                 <code>cwd_</code> suffix.
               </li>
             </ol>
@@ -658,7 +684,7 @@ Below keys are binded by default:
             <ol>
               <li>Use <code>enter</code> to checkout branch.</li>
               <li>
-                <bold>Remote branch</bold> variant is named with
+                <b>Remote branch</b> variant is named with
                 <code>remote_</code> suffix.
               </li>
             </ol>
@@ -709,7 +735,7 @@ Below keys are binded by default:
             <ol>
               <li>Use <code>enter</code> to copy git commit SHA.</li>
               <li>
-                <bold>Current buffer</bold> variant is named with
+                <b>Current buffer</b> variant is named with
                 <code>buf_</code> suffix.
               </li>
             </ol>
@@ -798,6 +824,19 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+  </tbody>
+</table>
+
+### Lsp & Diagnostics
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>FzfxLspDefinitions</code></td>
       <td>
@@ -1062,7 +1101,7 @@ Below keys are binded by default:
                 window and quit.
               </li>
               <li>
-                <bold>Current buffer (only)</bold> variant is named with
+                <b>Current buffer (only)</b> variant is named with
                 <code>buf_</code> suffix.
               </li>
             </ol>
@@ -1104,6 +1143,19 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+  </tbody>
+</table>
+
+### Vim
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>FzfxCommands</code></td>
       <td>
@@ -1113,11 +1165,11 @@ Below keys are binded by default:
             <ol>
               <li>Use <code>enter</code> to input command.</li>
               <li>
-                <bold>Ex (builtin) commands</bold> variant is named with
+                <b>Ex (builtin) commands</b> variant is named with
                 <code>ex_</code> suffix.
               </li>
               <li>
-                <bold>User commands</bold> variant is named with
+                <b>User commands</b> variant is named with
                 <code>user_</code> suffix.
               </li>
             </ol>
@@ -1168,15 +1220,15 @@ Below keys are binded by default:
             <ol>
               <li>Use <code>enter</code> to execute key mapping.</li>
               <li>
-                <bold>Normal mode</bold> variant is named with
+                <b>Normal mode</b> variant is named with
                 <code>n_mode_</code> suffix.
               </li>
               <li>
-                <bold>Insert mode</bold> variant is named with
+                <b>Insert mode</b> variant is named with
                 <code>i_mode_</code> suffix.
               </li>
               <li>
-                <bold>Visual/select mode</bold> variant is named with
+                <b>Visual/select mode</b> variant is named with
                 <code>v_mode_</code> suffix.
               </li>
             </ol>
@@ -1268,6 +1320,19 @@ Below keys are binded by default:
         </details>
       </td>
     </tr>
+  </tbody>
+</table>
+
+### Misc
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>FzfxFileExplorer</code></td>
       <td>
@@ -1276,7 +1341,7 @@ Below keys are binded by default:
           <small>
             <ol>
               <li>
-                <bold>Include hidden</bold> variant is named with
+                <b>Include hidden</b> variant is named with
                 <code>hidden_</code> suffix.
               </li>
             </ol>
@@ -1726,21 +1791,23 @@ For complete default options, please see [config.lua](https://github.com/linrong
 
 For advanced configurations, please check [Advanced Configuration](https://github.com/linrongbin16/fzfx.nvim/wiki/Advanced-Configuration).
 
+### Feature Flags
+
 To enable/disable some features, please define below global variables before setup this plugin:
 
-- `g:fzfx_disable_buffer_previewer`: Disable nvim buffer for previewing file contents, use fzf builtin preview window via `bat` with best performance.
+- `vim.g.fzfx_disable_buffer_previewer`: Disable nvim buffer for previewing file contents, use fzf builtin preview window via `bat` with best performance.
 
    <details>
    <summary><i>Click here to see how to configure</i></summary>
 
   ```vim
   " vim scripts
-  let g:fzfx_disable_buffer_previewer=1 " or v:true
+  let g:fzfx_disable_buffer_previewer = 1 " or v:true
   ```
 
   ```lua
   -- lua scripts
-  vim.g.fzfx_disable_buffer_previewer=1 -- or true
+  vim.g.fzfx_disable_buffer_previewer = 1 -- or true
   ```
 
    </details>
