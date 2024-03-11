@@ -25,15 +25,12 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
   - [For Windows](#for-windows)
 - [Install](#-install)
 - [Usage](#-usage)
-  - [Naming Rules](#naming-rules)
-  - [Key Bindings](#key-bindings)
-  - [Commands](#commands)
-    - [Files & Buffers](#files--buffers)
-    - [Grep](#grep)
-    - [Git](#git)
-    - [Lsp & Diagnostics](#lsp--diagnostics)
-    - [Vim](#vim)
-    - [Misc](#misc)
+  - [Files & Buffers](#files--buffers)
+  - [Grep](#grep)
+  - [Git](#git)
+  - [Lsp & Diagnostics](#lsp--diagnostics)
+  - [Vim](#vim)
+  - [Misc](#misc)
 - [Recommended Key Mappings](#-recommended-key-mappings)
 - [Configuration](#-configuration)
   - [Create Your Own Command](#create-your-own-command)
@@ -251,7 +248,7 @@ Below keys are binded by default:
   - `ctrl-e`: toggle select.
   - `ctrl-a`: toggle select all.
 
-#### Files & Buffers
+### Files & Buffers
 
 <table>
   <thead>
@@ -428,7 +425,7 @@ Below keys are binded by default:
   </tbody>
 </table>
 
-#### Grep
+### Grep
 
 <table>
   <thead>
@@ -617,7 +614,7 @@ Below keys are binded by default:
   </tbody>
 </table>
 
-#### Git
+### Git
 
 <table>
   <thead>
@@ -833,7 +830,7 @@ Below keys are binded by default:
   </tbody>
 </table>
 
-#### Lsp & Diagnostics
+### Lsp & Diagnostics
 
 <table>
   <thead>
@@ -1152,7 +1149,7 @@ Below keys are binded by default:
   </tbody>
 </table>
 
-#### Vim
+### Vim
 
 <table>
   <thead>
@@ -1329,7 +1326,7 @@ Below keys are binded by default:
   </tbody>
 </table>
 
-#### Misc
+### Misc
 
 <table>
   <thead>
