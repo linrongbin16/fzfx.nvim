@@ -1101,7 +1101,7 @@ Below keys are binded by default:
                 window and quit.
               </li>
               <li>
-                <bold>Current buffer (only)</bold> variant is named with
+                <b>Current buffer (only)</b> variant is named with
                 <code>buf_</code> suffix.
               </li>
             </ol>
@@ -1165,11 +1165,11 @@ Below keys are binded by default:
             <ol>
               <li>Use <code>enter</code> to input command.</li>
               <li>
-                <bold>Ex (builtin) commands</bold> variant is named with
+                <b>Ex (builtin) commands</b> variant is named with
                 <code>ex_</code> suffix.
               </li>
               <li>
-                <bold>User commands</bold> variant is named with
+                <b>User commands</b> variant is named with
                 <code>user_</code> suffix.
               </li>
             </ol>
@@ -1220,15 +1220,15 @@ Below keys are binded by default:
             <ol>
               <li>Use <code>enter</code> to execute key mapping.</li>
               <li>
-                <bold>Normal mode</bold> variant is named with
+                <b>Normal mode</b> variant is named with
                 <code>n_mode_</code> suffix.
               </li>
               <li>
-                <bold>Insert mode</bold> variant is named with
+                <b>Insert mode</b> variant is named with
                 <code>i_mode_</code> suffix.
               </li>
               <li>
-                <bold>Visual/select mode</bold> variant is named with
+                <b>Visual/select mode</b> variant is named with
                 <code>v_mode_</code> suffix.
               </li>
             </ol>
@@ -1341,7 +1341,7 @@ Below keys are binded by default:
           <small>
             <ol>
               <li>
-                <bold>Include hidden</bold> variant is named with
+                <b>Include hidden</b> variant is named with
                 <code>hidden_</code> suffix.
               </li>
             </ol>
