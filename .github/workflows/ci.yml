@@ -42,10 +42,12 @@ jobs:
         run: |
           cargo binstall --no-confirm selene
           selene --config selene.toml ./lua
-      - uses: mrcjkb/lua-typecheck-action@v0
+      - uses: stevearc/nvim-typecheck-action@v1
         with:
-          directories: lua
+          path: lua
+          level: Warning
           configpath: ".luarc.json"
+          neodev-version: stable
       - uses: stefanzweifel/git-auto-commit-action@v5
         if: ${{ github.ref != 'refs/heads/main' }}
         with:
