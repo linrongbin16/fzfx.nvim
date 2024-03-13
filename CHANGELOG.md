@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.7.3](https://github.com/linrongbin16/fzfx.nvim/compare/v5.7.2...v5.7.3) (2024-03-13)
+
+
+### Bug Fixes
+
+* **popup:** fix popup window auto-resize ([#635](https://github.com/linrongbin16/fzfx.nvim/issues/635)) ([1fa1881](https://github.com/linrongbin16/fzfx.nvim/commit/1fa188146727cb7b7849dd15510658cfd8b658f6))
+
 ## [5.7.2](https://github.com/linrongbin16/fzfx.nvim/compare/v5.7.1...v5.7.2) (2024-03-08)
 
 
