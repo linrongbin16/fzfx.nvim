@@ -967,8 +967,8 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   if use_buffer_previewer then
     -- listen fzf actions {
     fileio.writefile(buffer_previewer_actions_file, "")
-    ---@diagnostic disable-next-line: undefined-doc-name, undefined-field
-    buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err = uv.new_fs_event() --[[@as uv_fs_event_t]]
+    ---@diagnostic disable-next-line: undefined-field
+    buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err = uv.new_fs_event()
     log.ensure(
       buffer_previewer_actions_fsevent ~= nil,
       string.format(
