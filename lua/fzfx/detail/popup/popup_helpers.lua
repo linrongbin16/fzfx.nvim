@@ -150,20 +150,20 @@ M.make_layout = function(win_opts, fzf_preview_window_opts)
   else
     center_col = total_width * 0.5 + win_opts.col
   end
-  log.debug(
-    "|get_layout| win_opts:%s, center(row/col):%s/%s, height/width:%s/%s, total(height/width):%s/%s, row(start/end):%s/%s, col(start/end):%s/%s",
-    vim.inspect(win_opts),
-    vim.inspect(center_row),
-    vim.inspect(center_col),
-    vim.inspect(height),
-    vim.inspect(width),
-    vim.inspect(total_height),
-    vim.inspect(total_width),
-    vim.inspect(center_row - (height / 2)),
-    vim.inspect(center_row + (height / 2)),
-    vim.inspect(center_col - (width / 2)),
-    vim.inspect(center_col + (width / 2))
-  )
+  -- log.debug(
+  --   "|get_layout| win_opts:%s, center(row/col):%s/%s, height/width:%s/%s, total(height/width):%s/%s, row(start/end):%s/%s, col(start/end):%s/%s",
+  --   vim.inspect(win_opts),
+  --   vim.inspect(center_row),
+  --   vim.inspect(center_col),
+  --   vim.inspect(height),
+  --   vim.inspect(width),
+  --   vim.inspect(total_height),
+  --   vim.inspect(total_width),
+  --   vim.inspect(center_row - (height / 2)),
+  --   vim.inspect(center_row + (height / 2)),
+  --   vim.inspect(center_col - (width / 2)),
+  --   vim.inspect(center_col + (width / 2))
+  -- )
 
   --- @param v number
   --- @return number

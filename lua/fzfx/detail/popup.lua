@@ -1,5 +1,6 @@
 local fileio = require("fzfx.commons.fileio")
 local path = require("fzfx.commons.path")
+local version = require("fzfx.commons.version")
 
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -32,13 +33,14 @@ function PopupWindow:new(win_opts, window_type, buffer_previewer_opts)
   elseif window_type == "buffer" then
     instance = buffer_popup_window.BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   end
-  PopupWindowInstances[instance:handle()] = self
 
   local o = {
     instance = instance,
   }
   setmetatable(o, self)
   self.__index = self
+
+  PopupWindowInstances[instance:handle()] = o
 
   return o
 end
@@ -321,12 +323,10 @@ end
 
 local function setup()
   vim.api.nvim_create_autocmd({ "VimResized" }, {
-    pattern = { "*" },
     callback = _resize_instances,
   })
-  if vim.fn.has("nvim-0.9") > 0 then
+  if version.ge("0.9") then
     vim.api.nvim_create_autocmd({ "WinResized" }, {
-      pattern = { "*" },
       callback = _resize_instances,
     })
   end

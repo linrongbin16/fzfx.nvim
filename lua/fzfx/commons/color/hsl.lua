@@ -1,4 +1,4 @@
----@diagnostic disable: lowercase-global
+---@diagnostic disable
 -----------------------------------------------------------------------------
 -- Provides support for color manipulation in HSL color space.
 --
