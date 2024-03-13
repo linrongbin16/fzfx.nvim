@@ -1,5 +1,6 @@
 local fileio = require("fzfx.commons.fileio")
 local path = require("fzfx.commons.path")
+local version = require("fzfx.commons.version")
 
 local log = require("fzfx.lib.log")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -311,9 +312,11 @@ end
 
 local function _resize_instances()
   for _, popup_win in pairs(PopupWindowInstances) do
-    if popup_win then
-      popup_win:resize()
-    end
+    vim.schedule(function()
+      if popup_win then
+        popup_win:resize()
+      end
+    end)
   end
 end
 
@@ -321,12 +324,10 @@ end
 
 local function setup()
   vim.api.nvim_create_autocmd({ "VimResized" }, {
-    pattern = { "*" },
     callback = _resize_instances,
   })
-  if vim.fn.has("nvim-0.9") > 0 then
+  if version.ge("0.9") then
     vim.api.nvim_create_autocmd({ "WinResized" }, {
-      pattern = { "*" },
       callback = _resize_instances,
     })
   end
