@@ -1,3 +1,4 @@
+---@diagnostic disable
 ---@mod micro-async.uv
 
 local a = require("fzfx.commons.micro-async")

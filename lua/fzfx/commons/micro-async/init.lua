@@ -1,3 +1,4 @@
+---@diagnostic disable
 ---@mod micro-async
 
 ---@alias micro-async.SelectOpts { prompt: string?, format_item: nil|fun(item: any): string, kind: string? }
