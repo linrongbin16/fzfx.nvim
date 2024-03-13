@@ -967,8 +967,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
   if use_buffer_previewer then
     -- listen fzf actions {
     fileio.writefile(buffer_previewer_actions_file, "")
-    ---@diagnostic disable-next-line: undefined-field
-    buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err = uv.new_fs_event()
+    buffer_previewer_actions_fsevent, buffer_previewer_actions_fsevent_err = uv.new_fs_event() --[[@as uv_fs_event_t]]
     log.ensure(
       buffer_previewer_actions_fsevent ~= nil,
       string.format(
@@ -978,7 +977,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         vim.inspect(buffer_previewer_actions_fsevent_err)
       )
     )
-    ---@diagnostic disable-next-line: undefined-field
     local actions_fsevent_start_result, actions_fsevent_start_err = buffer_previewer_actions_fsevent:start(
       buffer_previewer_actions_file,
       {},
