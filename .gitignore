@@ -41,8 +41,3 @@ luac.out
 
 # MacOS
 .DS_Store
-
-# log
-service.log
-stderr.txt
-stdout.txt
