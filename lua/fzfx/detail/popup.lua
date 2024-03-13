@@ -33,13 +33,14 @@ function PopupWindow:new(win_opts, window_type, buffer_previewer_opts)
   elseif window_type == "buffer" then
     instance = buffer_popup_window.BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   end
-  PopupWindowInstances[instance:handle()] = self
 
   local o = {
     instance = instance,
   }
   setmetatable(o, self)
   self.__index = self
+
+  PopupWindowInstances[instance:handle()] = o
 
   return o
 end
@@ -312,11 +313,9 @@ end
 
 local function _resize_instances()
   for _, popup_win in pairs(PopupWindowInstances) do
-    vim.schedule(function()
-      if popup_win then
-        popup_win:resize()
-      end
-    end)
+    if popup_win then
+      popup_win:resize()
+    end
   end
 end
 
