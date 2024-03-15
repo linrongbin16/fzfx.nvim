@@ -1,5 +1,6 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
+local num = require("fzfx.commons.num")
 local api = require("fzfx.commons.api")
 local fileio = require("fzfx.commons.fileio")
 
@@ -608,7 +609,18 @@ end
 
 --- @param content_view fzfx.BufferPopupWindowPreviewContentView
 function BufferPopupWindow:_do_view(content_view)
-  vim.api.nvim_win_set_cursor(self.previewer_winnr, { math.max(0, content_view.center - 1), 0 })
+  local ok, err = pcall(
+    vim.api.nvim_win_set_cursor,
+    self.previewer_winnr,
+    { math.max(0, content_view.center - 1), 0 }
+  )
+  if not ok then
+    log.debug(
+      "|BufferPopupWindow:_do_view| failed to set cursor, view:%s, err:%s",
+      vim.inspect(content_view),
+      vim.inspect(err)
+    )
+  end
   vim.api.nvim_win_call(self.previewer_winnr, function()
     vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], content_view.top))
   end)
@@ -784,10 +796,12 @@ function BufferPopupWindow:scroll_by(percent, up)
   if up then
     shift_lines = -shift_lines
   end
-  local first_line = math.max(TOP_LINE + shift_lines, 1)
-  local last_line = math.min(BOTTOM_LINE + shift_lines, LINES_COUNT)
-  if last_line >= LINES_COUNT then
-    first_line = math.max(1, last_line - WIN_HEIGHT + 1)
+  local first_line = num.bound(TOP_LINE + shift_lines, 1, LINES_COUNT)
+  local last_line = num.bound(BOTTOM_LINE + shift_lines, 1, LINES_COUNT)
+  if first_line <= 1 then
+    last_line = num.bound(first_line + WIN_HEIGHT - 1, 1, LINES_COUNT)
+  elseif last_line >= LINES_COUNT then
+    first_line = num.bound(last_line - WIN_HEIGHT + 1, 1, LINES_COUNT)
   end
   local mid_line = math.ceil((first_line + last_line) / 2)
 
@@ -806,16 +820,16 @@ function BufferPopupWindow:scroll_by(percent, up)
     vim.inspect(mid_line)
   )
 
-  if up and TOP_LINE <= 1 then
-    -- log.debug("|BufferPopupWindow:scroll_by| hit top")
-    falsy_scrolling()
-    return
-  end
-  if down and BOTTOM_LINE >= LINES_COUNT then
-    -- log.debug("|BufferPopupWindow:scroll_by| hit bottom")
-    falsy_scrolling()
-    return
-  end
+  -- if up and TOP_LINE <= 1 then
+  --   -- log.debug("|BufferPopupWindow:scroll_by| hit top")
+  --   falsy_scrolling()
+  --   return
+  -- end
+  -- if down and BOTTOM_LINE >= LINES_COUNT then
+  --   -- log.debug("|BufferPopupWindow:scroll_by| hit bottom")
+  --   falsy_scrolling()
+  --   return
+  -- end
 
   local view = { top = first_line, bottom = last_line, center = mid_line }
   self:render_file_contents(file_content, view, falsy_scrolling, math.max(LINES_COUNT, 30))
