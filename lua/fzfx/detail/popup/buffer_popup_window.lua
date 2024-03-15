@@ -614,13 +614,12 @@ function BufferPopupWindow:_do_view(content_view)
     self.previewer_winnr,
     { math.max(0, content_view.center - 1), 0 }
   )
-  if not ok then
-    log.debug(
-      "|BufferPopupWindow:_do_view| failed to set cursor, view:%s, err:%s",
-      vim.inspect(content_view),
-      vim.inspect(err)
-    )
-  end
+  log.ensure(
+    ok,
+    "|BufferPopupWindow:_do_view| failed to set cursor, view:%s, err:%s",
+    vim.inspect(content_view),
+    vim.inspect(err)
+  )
   vim.api.nvim_win_call(self.previewer_winnr, function()
     vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], content_view.top))
   end)
