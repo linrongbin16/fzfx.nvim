@@ -510,6 +510,20 @@ function BufferPopupWindow:render_file_contents(
       return
     end
 
+    local extmark_namespace = vim.api.nvim_create_namespace("fzfx")
+    local old_extmarks = vim.api.nvim_buf_get_extmarks(
+      self.previewer_bufnr,
+      extmark_namespace,
+      { 0, 0 },
+      { -1, -1 },
+      {}
+    )
+    if tbl.list_not_empty(old_extmarks) then
+      for i, m in ipairs(old_extmarks) do
+        pcall(vim.api.nvim_buf_del_extmark, self.previewer_bufnr, extmark_namespace, m[1])
+      end
+    end
+
     local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
@@ -532,12 +546,14 @@ function BufferPopupWindow:render_file_contents(
         end
 
         local buf_lines = {}
-        local highlight_line = nil
+        local highlight_line_no = nil
+        local highlight_line_length = nil
         for i = line_index, line_index + line_step do
           if i <= BOTTOM_LINE then
             table.insert(buf_lines, LINES[i])
             if type(center_line) == "number" and center_line == i then
-              highlight_line = center_line
+              highlight_line_no = center_line
+              highlight_line_length = string.len(LINES[i])
             end
           else
             break
@@ -557,14 +573,24 @@ function BufferPopupWindow:render_file_contents(
         vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_start, set_end, false, buf_lines)
 
         -- highlight center line
-        if highlight_line then
-          local ns = vim.api.nvim_create_namespace("fzfx")
-          local highlight_mark = vim.api.nvim_buf_set_extmark(
+        if highlight_line_no then
+          local start_row = highlight_line_no - 1
+          local end_row = highlight_line_no - 1
+          local start_col = 0
+          local end_col = highlight_line_length
+
+          local extmark = vim.api.nvim_buf_set_extmark(
             self.previewer_bufnr,
-            ns,
-            highlight_line - 1,
-            0,
-            { hl_group = "Visual" }
+            extmark_namespace,
+            start_row,
+            start_col,
+            { end_row = end_row, end_col = end_col, hl_group = "Search" }
+          )
+          log.debug(
+            "|BufferPopupWindow:render_file_contents - set_buf_lines| highlight center line:%s, bufnr:%s, extmark id:%s",
+            vim.inspect(highlight_line_no),
+            vim.inspect(self.previewer_bufnr),
+            vim.inspect(extmark)
           )
         end
 
