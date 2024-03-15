@@ -577,7 +577,7 @@ function BufferPopupWindow:render_file_contents(
           local start_row = highlight_line_no - 1
           local end_row = highlight_line_no - 1
           local start_col = 0
-          local end_col = math.max(0, highlight_line_length)
+          local end_col = highlight_line_length > 0 and highlight_line_length or nil
 
           local extmark = vim.api.nvim_buf_set_extmark(
             self.previewer_bufnr,
