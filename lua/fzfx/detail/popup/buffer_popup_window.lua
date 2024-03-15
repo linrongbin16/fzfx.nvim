@@ -587,7 +587,7 @@ function BufferPopupWindow:render_file_contents(
             {
               end_row = end_row,
               end_col = end_col,
-              hl_group = "Visual",
+              hl_group = "Search",
               hl_eol = true,
               sign_hl_group = "CursorLineSign",
             }
