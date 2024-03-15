@@ -583,7 +583,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_start, set_end, false, buf_lines)
 
         line_index = line_index + line_step
-        if line_index >= content_view.top then
+        if line_index >= content_view.center then
           self:_do_view(content_view)
         end
         if line_index <= LAST_LINE then
