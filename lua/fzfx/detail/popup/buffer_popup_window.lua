@@ -583,9 +583,9 @@ function BufferPopupWindow:render_file_contents(
           local opts = {
             end_row = end_row,
             end_col = end_col,
-            hl_group = "Search",
-            hl_eol = true,
-            sign_hl_group = "CursorLineSign",
+            strict = false,
+            number_hl_group = "CursorLineNr",
+            line_hl_group = "Visual",
           }
 
           local extmark_ok, extmark = pcall(
