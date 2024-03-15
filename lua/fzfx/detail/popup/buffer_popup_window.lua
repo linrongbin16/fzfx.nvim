@@ -419,8 +419,12 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         end
 
         self._saved_previewing_file_content_job = last_content
-        local target_top_line = last_content.previewer_result.lineno or 1
-        self:preview_file_contents(last_content, target_top_line)
+        local line_pos = M._make_top_and_highlight_line(
+          last_content.previewer_result.lineno,
+          #last_content.contents,
+          self.previewer_winnr
+        )
+        self:preview_file_contents(last_content, line_pos.top_line, line_pos.highlight_line)
       end, 10)
     end)
   end, 20)
@@ -669,7 +673,12 @@ function BufferPopupWindow:show_preview()
     end
     if tbl.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
-      self:preview_file_contents(last_content, last_content.previewer_result.lineno or 1)
+      local line_pos = M._make_top_and_highlight_line(
+        last_content.previewer_result.lineno,
+        #last_content.contents,
+        self.previewer_winnr
+      )
+      self:preview_file_contents(last_content, line_pos.top_line, line_pos.highlight_line)
     end
   end)
 end
