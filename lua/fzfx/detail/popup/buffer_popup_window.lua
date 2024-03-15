@@ -326,10 +326,6 @@ end
 --- @param previewer_label_result string?
 function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_label_result)
   if str.empty(tbl.tbl_get(previewer_result, "filename")) then
-    -- log.debug(
-    --   "|BufferPopupWindow:preview_file| empty previewer_result:%s",
-    --   vim.inspect(previewer_result)
-    -- )
     return
   end
 
