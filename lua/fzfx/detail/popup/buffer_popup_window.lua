@@ -739,24 +739,24 @@ end
 --- @param up boolean
 function BufferPopupWindow:scroll_by(percent, up)
   if not self:previewer_is_valid() then
-    log.debug("|BufferPopupWindow:scroll_by| invalid")
+    -- log.debug("|BufferPopupWindow:scroll_by| invalid")
     return
   end
   if self._saved_previewing_file_content_job == nil then
-    log.debug("|BufferPopupWindow:scroll_by| no jobs")
+    -- log.debug("|BufferPopupWindow:scroll_by| no jobs")
     return
   end
   local file_content = self._saved_previewing_file_content_job
   if not self:is_last_previewing_file_job_id(file_content.job_id) then
-    log.debug("|BufferPopupWindow:scroll_by| newer jobs")
+    -- log.debug("|BufferPopupWindow:scroll_by| newer jobs")
     return
   end
   if self._scrolling then
-    log.debug("|BufferPopupWindow:scroll_by| scrolling")
+    -- log.debug("|BufferPopupWindow:scroll_by| scrolling")
     return
   end
   if self._rendering then
-    log.debug("|BufferPopupWindow:scroll_by| rendering")
+    -- log.debug("|BufferPopupWindow:scroll_by| rendering")
     return
   end
 
@@ -807,12 +807,12 @@ function BufferPopupWindow:scroll_by(percent, up)
   )
 
   if up and TOP_LINE <= 1 then
-    log.debug("|BufferPopupWindow:scroll_by| hit top")
+    -- log.debug("|BufferPopupWindow:scroll_by| hit top")
     falsy_scrolling()
     return
   end
   if down and BOTTOM_LINE >= LINES_COUNT then
-    log.debug("|BufferPopupWindow:scroll_by| hit bottom")
+    -- log.debug("|BufferPopupWindow:scroll_by| hit bottom")
     falsy_scrolling()
     return
   end
