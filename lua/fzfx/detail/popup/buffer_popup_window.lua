@@ -65,7 +65,7 @@ M.make_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     result.provider.win = relative_winnr
     result.previewer.win = relative_winnr
   end
-  log.debug("|make_opts| result:%s", vim.inspect(result))
+  -- log.debug("|make_opts| result:%s", vim.inspect(result))
   return result
 end
 
@@ -143,12 +143,12 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   -- local previewer_win_confs = M.make_previewer_opts(win_opts, buffer_previewer_opts)
   previewer_win_confs.focusable = false
 
-  log.debug(
-    "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, win_confs:%s",
-    vim.inspect(win_opts),
-    vim.inspect(buffer_previewer_opts),
-    vim.inspect(win_confs)
-  )
+  -- log.debug(
+  --   "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, win_confs:%s",
+  --   vim.inspect(win_opts),
+  --   vim.inspect(buffer_previewer_opts),
+  --   vim.inspect(win_confs)
+  -- )
   local previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
   log.ensure(previewer_winnr > 0, "failed to create previewer win")
   _set_default_previewer_win_options(previewer_winnr)
