@@ -538,7 +538,6 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
       return
     end
 
-    local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
     -- local TOP_LINE = content_view
@@ -586,7 +585,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         if line_index >= content_view.center then
           self:_do_view(content_view)
         end
-        if line_index <= LAST_LINE then
+        if line_index <= content_view.bottom then
           set_buf_lines()
         else
           self._saved_previewing_file_content_context = content_view
@@ -732,19 +731,24 @@ end
 --- @param up boolean
 function BufferPopupWindow:scroll_by(percent, up)
   if not self:previewer_is_valid() then
+    log.debug("|BufferPopupWindow:scroll_by| invalid")
     return
   end
   if self._saved_previewing_file_content_job == nil then
+    log.debug("|BufferPopupWindow:scroll_by| no jobs")
     return
   end
   local file_content = self._saved_previewing_file_content_job
   if not self:is_last_previewing_file_job_id(file_content.job_id) then
+    log.debug("|BufferPopupWindow:scroll_by| newer jobs")
     return
   end
   if self._scrolling then
+    log.debug("|BufferPopupWindow:scroll_by| scrolling")
     return
   end
   if self._rendering then
+    log.debug("|BufferPopupWindow:scroll_by| rendering")
     return
   end
 
@@ -760,44 +764,53 @@ function BufferPopupWindow:scroll_by(percent, up)
   local LINES = file_content.contents
   local LINES_COUNT = #LINES
   local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
-  local TOP_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "top_line")
+
+  local TOP_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "top")
     or vim.fn.line("w0", self.previewer_winnr)
-  local BOTTOM_LINE = math.min(TOP_LINE + WIN_HEIGHT, LINES_COUNT)
-  local SHIFT_LINES = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
+  local BOTTOM_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "bottom")
+    or math.min(TOP_LINE + WIN_HEIGHT, LINES_COUNT)
+  local CENTER_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "center")
+    or math.ceil((TOP_LINE + BOTTOM_LINE) / 2)
+
+  local shift_lines = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
   if up then
-    SHIFT_LINES = -SHIFT_LINES
+    shift_lines = -shift_lines
   end
-  local TARGET_FIRST_LINENO = math.max(TOP_LINE + SHIFT_LINES, 1)
-  local TARGET_LAST_LINENO = math.min(BOTTOM_LINE + SHIFT_LINES, LINES_COUNT)
-  if TARGET_LAST_LINENO >= LINES_COUNT then
-    TARGET_FIRST_LINENO = math.max(1, TARGET_LAST_LINENO - WIN_HEIGHT + 1)
+  local first_line = math.max(TOP_LINE + shift_lines, 1)
+  local last_line = math.min(BOTTOM_LINE + shift_lines, LINES_COUNT)
+  if last_line >= LINES_COUNT then
+    first_line = math.max(1, last_line - WIN_HEIGHT + 1)
   end
+  local mid_line = math.ceil((first_line + last_line) / 2)
 
   log.debug(
-    "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom:%s/%s, target top/bottom:%s/%s",
+    "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, first/last/mid:%s/%s/%s",
     vim.inspect(percent),
     vim.inspect(up),
     vim.inspect(LINES_COUNT),
     vim.inspect(WIN_HEIGHT),
-    vim.inspect(SHIFT_LINES),
+    vim.inspect(shift_lines),
     vim.inspect(TOP_LINE),
     vim.inspect(BOTTOM_LINE),
-    vim.inspect(TARGET_FIRST_LINENO),
-    vim.inspect(TARGET_LAST_LINENO)
+    vim.inspect(CENTER_LINE),
+    vim.inspect(first_line),
+    vim.inspect(last_line),
+    vim.inspect(mid_line)
   )
 
   if up and TOP_LINE <= 1 then
+    log.debug("|BufferPopupWindow:scroll_by| hit top")
     falsy_scrolling()
     return
   end
   if down and BOTTOM_LINE >= LINES_COUNT then
+    log.debug("|BufferPopupWindow:scroll_by| hit bottom")
     falsy_scrolling()
     return
   end
 
-  self:render_file_contents(file_content, TARGET_FIRST_LINENO, function()
-    falsy_scrolling()
-  end, math.max(WIN_HEIGHT, 30))
+  local view = { top = first_line, bottom = last_line, center = mid_line }
+  self:render_file_contents(file_content, view, falsy_scrolling, math.max(LINES_COUNT, 30))
 end
 
 function BufferPopupWindow:preview_page_down()
