@@ -558,19 +558,19 @@ function BufferPopupWindow:render_file_contents(
       return
     end
 
-    local extmark_namespace = vim.api.nvim_create_namespace("fzfx")
-    local old_extmarks = vim.api.nvim_buf_get_extmarks(
-      self.previewer_bufnr,
-      extmark_namespace,
-      { 0, 0 },
-      { -1, -1 },
-      {}
-    )
-    if tbl.list_not_empty(old_extmarks) then
-      for i, m in ipairs(old_extmarks) do
-        pcall(vim.api.nvim_buf_del_extmark, self.previewer_bufnr, extmark_namespace, m[1])
-      end
-    end
+    -- local extmark_namespace = vim.api.nvim_create_namespace("fzfx")
+    -- local old_extmarks = vim.api.nvim_buf_get_extmarks(
+    --   self.previewer_bufnr,
+    --   extmark_namespace,
+    --   { 0, 0 },
+    --   { -1, -1 },
+    --   {}
+    -- )
+    -- if tbl.list_not_empty(old_extmarks) then
+    --   for i, m in ipairs(old_extmarks) do
+    --     pcall(vim.api.nvim_buf_del_extmark, self.previewer_bufnr, extmark_namespace, m[1])
+    --   end
+    -- end
 
     local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
     local LINES = file_content.contents
@@ -579,6 +579,13 @@ function BufferPopupWindow:render_file_contents(
     local BOTTOM_LINE = math.min(WIN_HEIGHT + TOP_LINE, LINES_COUNT)
     local line_index = TOP_LINE
     line_step = line_step or 5
+    log.debug(
+      "|BufferPopupWindow:render_file_contents| WIN_HEIGHT:%s, LINES_COUNT:%s, TOP_LINE:%s, BOTTOM_LINE:%s",
+      vim.inspect(WIN_HEIGHT),
+      vim.inspect(LINES_COUNT),
+      vim.inspect(TOP_LINE),
+      vim.inspect(BOTTOM_LINE)
+    )
 
     local function set_buf_lines()
       vim.defer_fn(function()
@@ -600,11 +607,11 @@ function BufferPopupWindow:render_file_contents(
         for i = line_index, line_index + line_step do
           if i <= BOTTOM_LINE then
             table.insert(buf_lines, LINES[i])
-            if type(center_line) == "number" and center_line == i then
-              highlight_line = LINES[i]
-              highlight_lineno = center_line
-              highlight_line_length = string.len(LINES[i])
-            end
+            -- if type(center_line) == "number" and center_line == i then
+            --   highlight_line = LINES[i]
+            --   highlight_lineno = center_line
+            --   highlight_line_length = string.len(LINES[i])
+            -- end
           else
             break
           end
@@ -621,40 +628,46 @@ function BufferPopupWindow:render_file_contents(
         --   vim.inspect(BOTTOM_LINE)
         -- )
         vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_start, set_end, false, buf_lines)
+        log.debug(
+          "|BufferPopupWindow:render_file_contents| line_index:%s, set_start:%s, set_end:%s",
+          vim.inspect(line_index),
+          vim.inspect(set_start),
+          vim.inspect(set_end)
+        )
 
-        -- highlight center line
-        if highlight_lineno then
-          local start_row = highlight_lineno - 1
-          local end_row = highlight_lineno - 1
-          local start_col = 0
-          local end_col = highlight_line_length > 0 and highlight_line_length or nil
-          local opts = {
-            end_row = end_row,
-            end_col = end_col,
-            strict = false,
-            number_hl_group = "CursorLineNr",
-            line_hl_group = "Visual",
-          }
-
-          local extmark_ok, extmark = pcall(
-            vim.api.nvim_buf_set_extmark,
-            self.previewer_bufnr,
-            extmark_namespace,
-            start_row,
-            start_col,
-            opts
-          )
-          log.debug(
-            "|BufferPopupWindow:render_file_contents - set_buf_lines| highlight line:%s, highlight_line_length:%s, bufnr:%s, extmark ok:%s, extmark:%s, opts:%s, highlight_line:%s",
-            vim.inspect(highlight_lineno),
-            vim.inspect(highlight_line_length),
-            vim.inspect(self.previewer_bufnr),
-            vim.inspect(extmark_ok),
-            vim.inspect(extmark),
-            vim.inspect(opts),
-            vim.inspect(highlight_line)
-          )
-        end
+        -- -- highlight center line
+        -- if highlight_lineno then
+        --   local start_row = highlight_lineno - 1
+        --   local end_row = highlight_lineno - 1
+        --   local start_col = 0
+        --   local end_col = highlight_line_length > 0 and highlight_line_length or nil
+        --   local opts = {
+        --     end_row = end_row,
+        --     end_col = end_col,
+        --     strict = false,
+        --     number_hl_group = "CursorLineNr",
+        --     line_hl_group = "Visual",
+        --   }
+        --
+        --   local extmark_ok, extmark = pcall(
+        --     vim.api.nvim_buf_set_extmark,
+        --     self.previewer_bufnr,
+        --     extmark_namespace,
+        --     start_row,
+        --     start_col,
+        --     opts
+        --   )
+        --   log.debug(
+        --     "|BufferPopupWindow:render_file_contents - set_buf_lines| highlight line:%s, highlight_line_length:%s, bufnr:%s, extmark ok:%s, extmark:%s, opts:%s, highlight_line:%s",
+        --     vim.inspect(highlight_lineno),
+        --     vim.inspect(highlight_line_length),
+        --     vim.inspect(self.previewer_bufnr),
+        --     vim.inspect(extmark_ok),
+        --     vim.inspect(extmark),
+        --     vim.inspect(opts),
+        --     vim.inspect(highlight_line)
+        --   )
+        -- end
 
         line_index = line_index + line_step
         if line_index <= BOTTOM_LINE then
