@@ -404,8 +404,10 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         end
 
         self._saved_previewing_file_content_job = last_content
-        local target_top_line = last_content.previewer_result.lineno or 1
-        self:preview_file_contents(last_content, target_top_line)
+        local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
+        local target_center_line = last_content.previewer_result.lineno or 1
+        local target_top_line = math.max(1, math.ceil(target_center_line - WIN_HEIGHT / 2))
+        self:preview_file_contents(last_content, target_top_line, target_center_line)
       end, 10)
     end)
   end, 20)
@@ -414,16 +416,9 @@ end
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
 --- @param top_line integer
---- @param on_complete (fun(done:boolean):any)|nil
-function BufferPopupWindow:preview_file_contents(file_content, top_line, on_complete)
-  local function do_complete(done)
-    if type(on_complete) == "function" then
-      on_complete(done)
-    end
-  end
-
+--- @param center_line integer?
+function BufferPopupWindow:preview_file_contents(file_content, top_line, center_line)
   if tbl.tbl_empty(file_content) then
-    do_complete(false)
     return
   end
 
@@ -432,11 +427,9 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
-      do_complete(false)
       return
     end
     if not self:is_last_previewing_file_job_id(file_content.job_id) then
-      do_complete(false)
       return
     end
 
@@ -466,7 +459,7 @@ function BufferPopupWindow:preview_file_contents(file_content, top_line, on_comp
       vim.defer_fn(set_win_title, 100)
     end
 
-    self:render_file_contents(file_content, top_line, on_complete)
+    self:render_file_contents(file_content, top_line)
   end, 20)
 end
 
@@ -648,7 +641,10 @@ function BufferPopupWindow:show_preview()
     end
     if tbl.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
-      self:preview_file_contents(last_content, last_content.previewer_result.lineno or 1)
+      local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
+      local target_center_line = last_content.previewer_result.lineno or 1
+      local target_top_line = math.max(1, math.ceil(target_center_line - WIN_HEIGHT / 2))
+      self:preview_file_contents(last_content, target_top_line, target_center_line)
     end
   end)
 end
@@ -759,7 +755,7 @@ function BufferPopupWindow:scroll_by(percent, up)
 
   self:render_file_contents(file_content, TARGET_FIRST_LINENO, function()
     falsy_scrolling()
-  end, math.max(WIN_HEIGHT, 30))
+  end, math.max(WIN_HEIGHT, 10))
 end
 
 function BufferPopupWindow:preview_page_down()
