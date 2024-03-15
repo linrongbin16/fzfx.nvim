@@ -575,8 +575,8 @@ function BufferPopupWindow:render_file_contents(
     local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
-    local TOP_LINE = top_line
-    local BOTTOM_LINE = math.min(WIN_HEIGHT + TOP_LINE, LINES_COUNT)
+    local TOP_LINE = 1 -- top_line
+    local BOTTOM_LINE = LINES_COUNT -- math.min(WIN_HEIGHT + TOP_LINE, LINES_COUNT)
     local line_index = TOP_LINE
     line_step = line_step or 5
     log.debug(
@@ -673,9 +673,9 @@ function BufferPopupWindow:render_file_contents(
         if line_index <= BOTTOM_LINE then
           set_buf_lines()
         else
-          vim.api.nvim_win_call(self.previewer_winnr, function()
-            vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], TOP_LINE))
-          end)
+          -- vim.api.nvim_win_call(self.previewer_winnr, function()
+          --   vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], TOP_LINE))
+          -- end)
           self._saved_previewing_file_content_context =
             { top_line = top_line, center_line = center_line }
           do_complete()
