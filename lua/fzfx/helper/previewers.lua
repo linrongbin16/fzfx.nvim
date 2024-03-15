@@ -134,6 +134,13 @@ M.preview_files_grep_no_filename = function(line, context)
   return M.preview_files_with_line_range(filename, parsed.lineno)
 end
 
+--- @param line string
+--- @return string[]
+M.buffer_preview_files_grep = function(line)
+  local parsed = parsers_helper.parse_grep(line)
+  return { filename = parsed.filename, lineno = parsed.lineno }
+end
+
 -- live grep }
 
 -- previewer window {
