@@ -704,7 +704,8 @@ function BufferPopupWindow:show_preview()
     end
     if tbl.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
-      self:preview_file_contents(last_content, last_content.previewer_result.lineno or 1)
+      local last_view = self._saved_previewing_file_content_context
+      self:preview_file_contents(last_content, last_view)
     end
   end)
 end
