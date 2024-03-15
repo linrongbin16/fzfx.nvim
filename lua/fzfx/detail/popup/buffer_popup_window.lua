@@ -577,14 +577,20 @@ function BufferPopupWindow:render_file_contents(
           local start_row = highlight_line_no - 1
           local end_row = highlight_line_no - 1
           local start_col = 0
-          local end_col = highlight_line_length
+          local end_col = math.max(0, highlight_line_length)
 
           local extmark = vim.api.nvim_buf_set_extmark(
             self.previewer_bufnr,
             extmark_namespace,
             start_row,
             start_col,
-            { end_row = end_row, end_col = end_col, hl_group = "Search" }
+            {
+              end_row = end_row,
+              end_col = end_col,
+              hl_group = "Visual",
+              hl_eol = true,
+              sign_hl_group = "CursorLineSign",
+            }
           )
           log.debug(
             "|BufferPopupWindow:render_file_contents - set_buf_lines| highlight center line:%s, bufnr:%s, extmark id:%s",
