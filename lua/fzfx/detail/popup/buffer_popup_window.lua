@@ -514,7 +514,7 @@ end
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
 --- @param top_line integer
 --- @param center_line integer?
---- @param on_complete (fun(done:boolean):any)|nil
+--- @param on_complete (fun():any)|nil
 --- @param line_step integer?
 function BufferPopupWindow:render_file_contents(
   file_content,
@@ -523,18 +523,18 @@ function BufferPopupWindow:render_file_contents(
   on_complete,
   line_step
 )
-  local function do_complete(done)
+  local function do_complete()
     if type(on_complete) == "function" then
-      on_complete(done)
+      on_complete()
     end
   end
 
   if tbl.tbl_empty(file_content) then
-    do_complete(false)
+    do_complete()
     return
   end
   if self._rendering then
-    do_complete(false)
+    do_complete()
     return
   end
 
@@ -548,12 +548,12 @@ function BufferPopupWindow:render_file_contents(
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
-      do_complete(false)
+      do_complete()
       falsy_rendering()
       return
     end
     if not self:is_last_previewing_file_job_id(file_content.job_id) then
-      do_complete(false)
+      do_complete()
       falsy_rendering()
       return
     end
@@ -590,12 +590,12 @@ function BufferPopupWindow:render_file_contents(
     local function set_buf_lines()
       vim.defer_fn(function()
         if not self:previewer_is_valid() then
-          do_complete(false)
+          do_complete()
           falsy_rendering()
           return
         end
         if not self:is_last_previewing_file_job_id(file_content.job_id) then
-          do_complete(false)
+          do_complete()
           falsy_rendering()
           return
         end
@@ -678,7 +678,7 @@ function BufferPopupWindow:render_file_contents(
           end)
           self._saved_previewing_file_content_context =
             { top_line = top_line, center_line = center_line }
-          do_complete(true)
+          do_complete()
           falsy_rendering()
         end
       end, 10)
@@ -896,7 +896,7 @@ function BufferPopupWindow:scroll_by(percent, up)
 
   self:render_file_contents(file_content, TARGET_FIRST_LINENO, CENTER_LINE, function()
     falsy_scrolling()
-  end, math.max(WIN_HEIGHT, 10))
+  end, math.max(WIN_HEIGHT, 30))
 end
 
 function BufferPopupWindow:preview_page_down()
