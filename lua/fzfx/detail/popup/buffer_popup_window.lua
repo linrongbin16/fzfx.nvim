@@ -329,11 +329,11 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
     return
   end
 
-  log.debug(
-    "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
-    vim.inspect(previewer_result),
-    vim.inspect(previewer_label_result)
-  )
+  -- log.debug(
+  --   "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
+  --   vim.inspect(previewer_result),
+  --   vim.inspect(previewer_label_result)
+  -- )
   table.insert(self.preview_files_queue, {
     job_id = job_id,
     previewer_result = previewer_result,
