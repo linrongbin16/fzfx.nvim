@@ -404,9 +404,13 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         end
 
         self._saved_previewing_file_content_job = last_content
-        local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
-        local center_line = last_content.previewer_result.lineno or 1
-        local top_line = math.max(1, math.ceil(center_line - WIN_HEIGHT / 2))
+        local center_line = nil
+        local top_line = 1
+        if last_content.previewer_result.lineno then
+          local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
+          center_line = last_content.previewer_result.lineno
+          top_line = math.max(1, math.ceil(center_line - win_height / 2))
+        end
         self:preview_file_contents(last_content, top_line, center_line)
       end, 10)
     end)
@@ -705,9 +709,13 @@ function BufferPopupWindow:show_preview()
     end
     if tbl.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
-      local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
-      local center_line = last_content.previewer_result.lineno or 1
-      local top_line = math.max(1, math.ceil(center_line - WIN_HEIGHT / 2))
+      local center_line = nil
+      local top_line = 1
+      if last_content.previewer_result.lineno then
+        local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
+        center_line = last_content.previewer_result.lineno
+        top_line = math.max(1, math.ceil(center_line - win_height / 2))
+      end
       self:preview_file_contents(last_content, top_line, center_line)
     end
   end)
