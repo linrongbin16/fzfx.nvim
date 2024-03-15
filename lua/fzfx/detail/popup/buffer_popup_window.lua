@@ -858,18 +858,18 @@ function BufferPopupWindow:scroll_by(percent, up)
   local LINES = file_content.contents
   local LINES_COUNT = #LINES
   local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
-  local TOP_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "top_line")
+  local top_line = tbl.tbl_get(self._saved_previewing_file_content_context, "top_line")
     or vim.fn.line("w0", self.previewer_winnr)
-  local CENTER_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "center_line")
-  local BOTTOM_LINE = math.min(TOP_LINE + WIN_HEIGHT, LINES_COUNT)
-  local SHIFT_LINES = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
+  local center_line = tbl.tbl_get(self._saved_previewing_file_content_context, "center_line")
+  local bottom_line = math.min(top_line + WIN_HEIGHT, LINES_COUNT)
+  local shift_lines = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
   if up then
-    SHIFT_LINES = -SHIFT_LINES
+    shift_lines = -shift_lines
   end
-  local TARGET_FIRST_LINENO = math.max(TOP_LINE + SHIFT_LINES, 1)
-  local TARGET_LAST_LINENO = math.min(BOTTOM_LINE + SHIFT_LINES, LINES_COUNT)
-  if TARGET_LAST_LINENO >= LINES_COUNT then
-    TARGET_FIRST_LINENO = math.max(1, TARGET_LAST_LINENO - WIN_HEIGHT + 1)
+  local target_first_lineno = math.max(top_line + shift_lines, 1)
+  local target_last_lineno = math.min(bottom_line + shift_lines, LINES_COUNT)
+  if target_last_lineno >= LINES_COUNT then
+    target_first_lineno = math.max(1, target_last_lineno - WIN_HEIGHT + 1)
   end
 
   log.debug(
@@ -878,23 +878,23 @@ function BufferPopupWindow:scroll_by(percent, up)
     vim.inspect(up),
     vim.inspect(LINES_COUNT),
     vim.inspect(WIN_HEIGHT),
-    vim.inspect(SHIFT_LINES),
-    vim.inspect(TOP_LINE),
-    vim.inspect(BOTTOM_LINE),
-    vim.inspect(TARGET_FIRST_LINENO),
-    vim.inspect(TARGET_LAST_LINENO)
+    vim.inspect(shift_lines),
+    vim.inspect(top_line),
+    vim.inspect(bottom_line),
+    vim.inspect(target_first_lineno),
+    vim.inspect(target_last_lineno)
   )
 
-  if up and TOP_LINE <= 1 then
+  if up and top_line <= 1 then
     falsy_scrolling()
     return
   end
-  if down and BOTTOM_LINE >= LINES_COUNT then
+  if down and bottom_line >= LINES_COUNT then
     falsy_scrolling()
     return
   end
 
-  self:render_file_contents(file_content, TARGET_FIRST_LINENO, CENTER_LINE, function()
+  self:render_file_contents(file_content, target_first_lineno, center_line, function()
     falsy_scrolling()
   end, math.max(WIN_HEIGHT, 30))
 end
