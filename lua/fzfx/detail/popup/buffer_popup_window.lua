@@ -320,6 +320,25 @@ function BufferPopupWindow:set_current_previewing_file_job_id(jobid)
   self._current_previewing_file_job_id = jobid
 end
 
+--- @param lineno integer?
+--- @param total_lines integer
+--- @param winnr integer
+--- @return {top_line:integer,highlight_line:integer?}
+M._make_top_and_highlight_line = function(lineno, total_lines, winnr)
+  if lineno == nil then
+    return { top_line = 1, highlight_line = 1 }
+  end
+  local win_height = vim.api.nvim_win_get_height(winnr)
+  local highlight_line = lineno
+  local top_line = math.max(1, math.ceil(highlight_line - win_height / 2))
+  local bottom_line = top_line + win_height
+  if bottom_line > total_lines then
+    local diff = bottom_line - total_lines
+    top_line = math.max(1, top_line - diff)
+  end
+  return { top_line = top_line, highlight_line = highlight_line }
+end
+
 --- @alias fzfx.BufferPopupWindowPreviewFileJob {job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param job_id integer
 --- @param previewer_result fzfx.BufferFilePreviewerResult
@@ -410,8 +429,14 @@ end
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
 --- @param top_line integer
+--- @param highlight_line integer?
 --- @param on_complete (fun(done:boolean):any)|nil
-function BufferPopupWindow:preview_file_contents(file_content, top_line, on_complete)
+function BufferPopupWindow:preview_file_contents(
+  file_content,
+  top_line,
+  highlight_line,
+  on_complete
+)
   local function do_complete(done)
     if type(on_complete) == "function" then
       on_complete(done)
