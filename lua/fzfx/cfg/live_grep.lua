@@ -2,7 +2,8 @@ local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 
-local consts = require("fzfx.lib.constants")
+local constants = require("fzfx.lib.constants")
+local switches = require("fzfx.lib.switches")
 local bufs = require("fzfx.lib.bufs")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
@@ -206,9 +207,9 @@ end
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 M._make_provider = function(opts)
-  if consts.HAS_RG then
+  if constants.HAS_RG then
     return M._make_provider_rg(opts)
-  elseif consts.HAS_GREP then
+  elseif constants.HAS_GREP then
     return M._make_provider_grep(opts)
   else
     --- @return nil
@@ -245,26 +246,31 @@ M.providers = {
   },
 }
 
+local previewer = switches.buffer_previewer_disabled() and previewers_helper.preview_files_grep
+  or previewers_helper.buffer_preview_files_grep
+local previewer_type = switches.buffer_previewer_disabled() and PreviewerTypeEnum.COMMAND_LIST
+  or PreviewerTypeEnum.BUFFER_FILE
+
 M.previewers = {
   restricted_mode = {
-    previewer = previewers_helper.preview_files_grep,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = consts.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
+    previewer = previewer,
+    previewer_type = previewer_type,
+    previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   unrestricted_mode = {
-    previewer = previewers_helper.preview_files_grep,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = consts.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
+    previewer = previewer,
+    previewer_type = previewer_type,
+    previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
   buffer_mode = {
-    previewer = previewers_helper.preview_files_grep,
-    previewer_type = PreviewerTypeEnum.COMMAND_LIST,
-    previewer_label = consts.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
+    previewer = previewer,
+    previewer_type = previewer_type,
+    previewer_label = constants.HAS_RG and labels_helper.label_rg or labels_helper.label_grep,
   },
 }
 
-local edit = consts.HAS_RG and actions_helper.edit_rg or actions_helper.edit_grep
-local setqflist = consts.HAS_RG and actions_helper.setqflist_rg or actions_helper.setqflist_grep
+local edit = constants.HAS_RG and actions_helper.edit_rg or actions_helper.edit_grep
+local setqflist = constants.HAS_RG and actions_helper.setqflist_rg or actions_helper.setqflist_grep
 
 M.actions = {
   ["esc"] = actions_helper.nop,
