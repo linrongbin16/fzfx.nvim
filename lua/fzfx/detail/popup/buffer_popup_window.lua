@@ -320,6 +320,39 @@ function BufferPopupWindow:set_current_previewing_file_job_id(jobid)
   self._current_previewing_file_job_id = jobid
 end
 
+--- @param lineno integer?
+--- @param total_lines integer
+--- @param winnr integer
+--- @return {top_line:integer,center_line:integer?}
+M._make_top_and_center_lines = function(lineno, total_lines, winnr)
+  if lineno == nil then
+    return { top_line = 1 }
+  end
+  local win_height = vim.api.nvim_win_get_height(winnr)
+  local center_line = lineno
+  local top_line = math.max(1, math.ceil(center_line - win_height / 2))
+  local bottom_line = top_line + win_height
+  log.debug(
+    "|_make_top_and_center_lines| 1. win_height:%s, center_line:%s, top_line:%s, bottom_line:%s, total_lines:%s",
+    vim.inspect(win_height),
+    vim.inspect(center_line),
+    vim.inspect(top_line),
+    vim.inspect(bottom_line),
+    vim.inspect(total_lines)
+  )
+  if bottom_line > total_lines then
+    local diff = bottom_line - total_lines
+    top_line = math.max(1, top_line - diff)
+    log.debug(
+      "|_make_top_and_center_lines| 2. diff:%s, top_line:%s, bottom_line:%s",
+      vim.inspect(diff),
+      vim.inspect(top_line),
+      vim.inspect(bottom_line)
+    )
+  end
+  return { top_line = top_line, center_line = center_line }
+end
+
 --- @alias fzfx.BufferPopupWindowPreviewFileJob {job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param job_id integer
 --- @param previewer_result fzfx.BufferFilePreviewerResult
@@ -411,7 +444,18 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
           center_line = last_content.previewer_result.lineno
           top_line = math.max(1, math.ceil(center_line - win_height / 2))
         end
-        self:preview_file_contents(last_content, top_line, center_line)
+        local line_pos = M._make_top_and_center_lines(
+          last_content.previewer_result.lineno,
+          #last_content.contents,
+          self.previewer_winnr
+        )
+        log.debug(
+          "|BufferPopupWindow:preview_file| line_pos:%s, top_line:%s, center_line:%s",
+          vim.inspect(line_pos),
+          vim.inspect(top_line),
+          vim.inspect(center_line)
+        )
+        self:preview_file_contents(last_content, line_pos.top_line, line_pos.center_line)
       end, 10)
     end)
   end, 20)
@@ -716,7 +760,18 @@ function BufferPopupWindow:show_preview()
         center_line = last_content.previewer_result.lineno
         top_line = math.max(1, math.ceil(center_line - win_height / 2))
       end
-      self:preview_file_contents(last_content, top_line, center_line)
+      local line_pos = M._make_top_and_center_lines(
+        last_content.previewer_result.lineno,
+        #last_content.contents,
+        self.previewer_winnr
+      )
+      log.debug(
+        "|BufferPopupWindow:show_preview| line_pos:%s, top_line:%s, center_line:%s",
+        vim.inspect(line_pos),
+        vim.inspect(top_line),
+        vim.inspect(center_line)
+      )
+      self:preview_file_contents(last_content, line_pos.top_line, line_pos.center_line)
     end
   end)
 end
