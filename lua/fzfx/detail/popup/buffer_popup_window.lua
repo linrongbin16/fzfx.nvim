@@ -333,11 +333,11 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
     return
   end
 
-  log.debug(
-    "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
-    vim.inspect(previewer_result),
-    vim.inspect(previewer_label_result)
-  )
+  -- log.debug(
+  --   "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
+  --   vim.inspect(previewer_result),
+  --   vim.inspect(previewer_label_result)
+  -- )
   table.insert(self.preview_files_queue, {
     job_id = job_id,
     previewer_result = previewer_result,
@@ -546,12 +546,14 @@ function BufferPopupWindow:render_file_contents(
         end
 
         local buf_lines = {}
+        local highlight_line = nil
         local highlight_lineno = nil
         local highlight_line_length = nil
         for i = line_index, line_index + line_step do
           if i <= BOTTOM_LINE then
             table.insert(buf_lines, LINES[i])
             if type(center_line) == "number" and center_line == i then
+              highlight_line = LINES[i]
               highlight_lineno = center_line
               highlight_line_length = string.len(LINES[i])
             end
@@ -595,13 +597,14 @@ function BufferPopupWindow:render_file_contents(
             opts
           )
           log.debug(
-            "|BufferPopupWindow:render_file_contents - set_buf_lines| highlight line:%s, highlight_line_length:%s, bufnr:%s, extmark ok:%s, extmark:%s, opts:%s",
+            "|BufferPopupWindow:render_file_contents - set_buf_lines| highlight line:%s, highlight_line_length:%s, bufnr:%s, extmark ok:%s, extmark:%s, opts:%s, highlight_line:%s",
             vim.inspect(highlight_lineno),
             vim.inspect(highlight_line_length),
             vim.inspect(self.previewer_bufnr),
             vim.inspect(extmark_ok),
             vim.inspect(extmark),
-            vim.inspect(opts)
+            vim.inspect(opts),
+            vim.inspect(highlight_line)
           )
         end
 
