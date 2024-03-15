@@ -538,6 +538,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
       return
     end
 
+    local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
     -- local TOP_LINE = content_view
@@ -563,7 +564,14 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         local buf_lines = {}
         for i = line_index, line_index + line_step do
           if i <= LAST_LINE then
-            table.insert(buf_lines, LINES[i])
+            if
+              i < (content_view.top - WIN_HEIGHT - 1)
+              or i > (content_view.bottom + WIN_HEIGHT + 1)
+            then
+              table.insert(buf_lines, "")
+            else
+              table.insert(buf_lines, LINES[i])
+            end
           else
             break
           end
