@@ -44,7 +44,7 @@ While we usually only need nvim buffer to preview files, so it should not be a s
 
 ### 2. Buffer previewer is slow for showing file content on big files?
 
-Yes, this is a limitation for buffer previewer. Since nvim buffer needs to render all the lines before a specific line number, the rendering time increases as the line number becomes very big (in a big file).
+Yes, this is a limitation for buffer previewer. Since nvim buffer needs to render all the lines before a specific line number, the rendering time increases as the line number becomes very big (in a big file). Please set `vim.g.fzfx_disable_buffer_previewer=1`, it will disable the buffer previewer and use fzf's builtin previewer for the best performance.
 
 ## File Explorer
 
