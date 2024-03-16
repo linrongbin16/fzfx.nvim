@@ -1916,6 +1916,7 @@ Please see [Known Issues](https://linrongbin16.github.io/fzfx.nvim/#/KnownIssues
 
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
+- [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim): Find, Filter, Preview, Pick. All lua, all the time.
 
 ## ✏️ Development
 
