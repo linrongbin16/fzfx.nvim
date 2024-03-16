@@ -255,4 +255,26 @@ describe("helper.previewers", function()
       end
     end)
   end)
+
+  describe("[buffer_preview_files_grep]", function()
+    it("test", function()
+      local lines = {
+        "~/github/linrongbin16/fzfx.nvim/README.md:1:3:hello world",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx.lua:3:7: hello",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/config.lua:8:9324",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/goodbye world/goodbye.lua:2:81",
+        "~/github/linrongbin16/fzfx.nvim/lua/fzfx/test/hello world.txt:8: hello",
+      }
+      for i, line in ipairs(lines) do
+        local actual = previewers.buffer_preview_files_grep(line)
+        print(
+          string.format("buffer_preview_files_grep-%s:%s\n", vim.inspect(i), vim.inspect(actual))
+        )
+        assert_eq(type(actual), "table")
+        local splits = str.split(line, ":")
+        assert_true(str.endswith(path.normalize(splits[1], { expand = true }), actual.filename))
+        assert_eq(tonumber(splits[2]), actual.lineno)
+      end
+    end)
+  end)
 end)
