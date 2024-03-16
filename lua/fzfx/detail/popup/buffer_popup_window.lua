@@ -576,7 +576,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
           return
         end
 
-        --- @type {line:string,lineno:integer:integer,length:integer}?
+        --- @type {line:string,lineno:integer,length:integer}?
         local hi_line = nil
         --- @type string[]
         local buf_lines = {}
