@@ -321,39 +321,18 @@ function BufferPopupWindow:set_current_previewing_file_job_id(jobid)
   self._current_previewing_file_job_id = jobid
 end
 
---- @param total_lines integer
---- @param view_height integer
---- @param center_line integer?
---- @return fzfx.BufferPopupWindowPreviewContentView
-M._make_view = function(total_lines, view_height, center_line)
-  local start_from_top = center_line == nil
-  local top
-  local bottom
-  if start_from_top then
-    top = 1
-    bottom = num.bound(top + view_height, 1, total_lines)
-  else
-    top = num.bound(center_line - math.ceil(view_height / 2), 1, total_lines)
-    bottom = num.bound(center_line + math.ceil(view_height / 2), 1, total_lines)
-  end
+--- @param top_line integer
+--- @param lines_count integer
+--- @param win_height integer
+M._make_bottom_by_top = function(top_line, lines_count, win_height)
+  return num.bound(top_line + win_height - 1, 1, lines_count)
+end
 
-  -- adjust top/bottom
-  if top <= 1 then
-    bottom = num.bound(top + view_height - 1, 1, total_lines)
-  elseif bottom >= total_lines then
-    top = num.bound(bottom - view_height + 1, 1, total_lines)
-  end
-
-  if start_from_top then
-    return {
-      top = top,
-      bottom = bottom,
-      center = math.ceil((top + bottom) / 2),
-      highlight = nil,
-    }
-  else
-    return { top = top, bottom = bottom, center = center_line, highlight = center_line }
-  end
+--- @param bottom_line integer
+--- @param lines_count integer
+--- @param win_height integer
+M._make_top_by_bottom = function(bottom_line, lines_count, win_height)
+  return num.bound(bottom_line - win_height + 1, 1, lines_count)
 end
 
 --- @param top integer
@@ -363,19 +342,20 @@ end
 --- @return integer, integer
 M._adjust_view = function(top, bottom, lines_count, win_height)
   if top <= 1 then
-    bottom = num.bound(top + win_height - 1, 1, lines_count)
+    bottom = M._make_bottom_by_top(top, lines_count, win_height)
   elseif bottom >= lines_count then
-    top = num.bound(bottom - win_height + 1, 1, lines_count)
+    top = M._make_top_by_bottom(bottom, lines_count, win_height)
   end
   return top, bottom
 end
 
+--- @alias fzfx.BufferPopupWindowPreviewContentView {top:integer,bottom:integer,center:integer,highlight:integer?}
 --- @param lines_count integer
 --- @param win_height integer
 --- @return fzfx.BufferPopupWindowPreviewContentView
 M._make_view_by_top = function(lines_count, win_height)
   local top = 1
-  local bottom = num.bound(top + win_height, 1, lines_count)
+  local bottom = M._make_bottom_by_top(top, lines_count, win_height)
   top, bottom = M._adjust_view(top, bottom, lines_count, win_height)
   return { top = top, bottom = bottom, center = math.ceil((top + bottom) / 2), highlight = nil }
 end
@@ -385,7 +365,7 @@ end
 --- @param center_line integer
 M._make_view_by_center = function(lines_count, win_height, center_line)
   local top = num.bound(center_line - math.ceil(win_height / 2), 1, lines_count)
-  local bottom = num.bound(center_line + math.ceil(win_height / 2), 1, lines_count)
+  local bottom = M._make_bottom_by_top(top, lines_count, win_height)
   top, bottom = M._adjust_view(top, bottom, lines_count, win_height)
   return { top = top, bottom = bottom, center = center_line, highlight = center_line }
 end
@@ -399,34 +379,6 @@ M._make_view_by_range = function(lines_count, win_height, top_line, bottom_line,
   top_line, bottom_line = M._adjust_view(top_line, bottom_line, lines_count, win_height)
   local center_line = math.ceil((top_line + bottom_line) / 2)
   return { top = top_line, bottom = bottom_line, center = center_line, highlight = highlight_line }
-end
-
---- @alias fzfx.BufferPopupWindowPreviewContentView {top:integer,bottom:integer,center:integer,highlight:integer?}
---- @param lines_count integer
---- @param center_line integer?
---- @return fzfx.BufferPopupWindowPreviewContentView
-function BufferPopupWindow:_make_view(lines_count, center_line)
-  local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
-  local start_from_top = center_line == nil
-  if start_from_top then
-    local top = 1
-    local bottom = math.min(lines_count, top + win_height)
-    return {
-      top = top,
-      bottom = bottom,
-      center = math.ceil((top + bottom) / 2),
-      highlight = nil,
-    }
-  else
-    local top = num.bound(center_line - math.ceil(win_height / 2), 1, lines_count)
-    local bottom = num.bound(center_line + math.ceil(win_height / 2), 1, lines_count)
-    if top <= 1 then
-      bottom = num.bound(top + win_height - 1, 1, lines_count)
-    elseif bottom >= lines_count then
-      top = num.bound(bottom - win_height + 1, 1, lines_count)
-    end
-    return { top = top, bottom = bottom, center = center_line, highlight = center_line }
-  end
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileJob {job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
@@ -945,7 +897,7 @@ function BufferPopupWindow:scroll_by(percent, up)
     shift_lines = -shift_lines
   end
   local first_line = num.bound(TOP_LINE + shift_lines, 1, LINES_COUNT)
-  local last_line = num.bound(BOTTOM_LINE + shift_lines, 1, LINES_COUNT)
+  local last_line = M._make_bottom_by_top(first_line, LINES_COUNT, WIN_HEIGHT)
   local view = M._make_view_by_range(LINES_COUNT, WIN_HEIGHT, first_line, last_line, HIGHLIGHT_LINE)
 
   log.debug(
