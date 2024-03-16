@@ -321,6 +321,86 @@ function BufferPopupWindow:set_current_previewing_file_job_id(jobid)
   self._current_previewing_file_job_id = jobid
 end
 
+--- @param total_lines integer
+--- @param view_height integer
+--- @param center_line integer?
+--- @return fzfx.BufferPopupWindowPreviewContentView
+M._make_view = function(total_lines, view_height, center_line)
+  local start_from_top = center_line == nil
+  local top
+  local bottom
+  if start_from_top then
+    top = 1
+    bottom = num.bound(top + view_height, 1, total_lines)
+  else
+    top = num.bound(center_line - math.ceil(view_height / 2), 1, total_lines)
+    bottom = num.bound(center_line + math.ceil(view_height / 2), 1, total_lines)
+  end
+
+  -- adjust top/bottom
+  if top <= 1 then
+    bottom = num.bound(top + view_height - 1, 1, total_lines)
+  elseif bottom >= total_lines then
+    top = num.bound(bottom - view_height + 1, 1, total_lines)
+  end
+
+  if start_from_top then
+    return {
+      top = top,
+      bottom = bottom,
+      center = math.ceil((top + bottom) / 2),
+      highlight = nil,
+    }
+  else
+    return { top = top, bottom = bottom, center = center_line, highlight = center_line }
+  end
+end
+
+--- @param top integer
+--- @param bottom integer
+--- @param lines_count integer
+--- @param win_height integer
+--- @return integer, integer
+M._adjust_view = function(top, bottom, lines_count, win_height)
+  if top <= 1 then
+    bottom = num.bound(top + win_height - 1, 1, lines_count)
+  elseif bottom >= lines_count then
+    top = num.bound(bottom - win_height + 1, 1, lines_count)
+  end
+  return top, bottom
+end
+
+--- @param lines_count integer
+--- @param win_height integer
+--- @return fzfx.BufferPopupWindowPreviewContentView
+M._make_view_by_top = function(lines_count, win_height)
+  local top = 1
+  local bottom = num.bound(top + win_height, 1, lines_count)
+  top, bottom = M._adjust_view(top, bottom, lines_count, win_height)
+  return { top = top, bottom = bottom, center = math.ceil((top + bottom) / 2), highlight = nil }
+end
+
+--- @param lines_count integer
+--- @param win_height integer
+--- @param center_line integer
+M._make_view_by_center = function(lines_count, win_height, center_line)
+  local top = num.bound(center_line - math.ceil(win_height / 2), 1, lines_count)
+  local bottom = num.bound(center_line + math.ceil(win_height / 2), 1, lines_count)
+  top, bottom = M._adjust_view(top, bottom, lines_count, win_height)
+  return { top = top, bottom = bottom, center = center_line, highlight = center_line }
+end
+
+--- @param lines_count integer
+--- @param win_height integer
+--- @param top_line integer
+--- @param bottom_line integer
+--- @param highlight_line integer?
+M._make_view_by_range = function(lines_count, win_height, top_line, bottom_line, highlight_line)
+  top_line, bottom_line = M._adjust_view(top_line, bottom_line, lines_count, win_height)
+  local center_line = math.ceil((top_line + bottom_line) / 2)
+  return { top = top_line, bottom = bottom_line, center = center_line, highlight = highlight_line }
+end
+
 --- @alias fzfx.BufferPopupWindowPreviewContentView {top:integer,bottom:integer,center:integer,highlight:integer?}
 --- @param lines_count integer
 --- @param center_line integer?
@@ -433,11 +513,17 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         end
 
         self._saved_previewing_file_content_job = last_content
-        local view = self:_make_view(#last_content.contents, last_content.previewer_result.lineno)
+
+        local center_line = last_content.previewer_result.lineno
+        local lines_count = #last_content.contents
+        local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
+        local view = center_line and M._make_view_by_center(lines_count, win_height, center_line)
+          or M._make_view_by_top(lines_count, win_height)
         log.debug(
-          "|BufferPopupWindow:preview_file| lineno:%s, lines_count:%s, view:%s",
-          vim.inspect(last_content.previewer_result.lineno),
-          vim.inspect(#last_content.contents),
+          "|BufferPopupWindow:preview_file| lineno:%s, lines_count:%s, win_height:%s, view:%s",
+          vim.inspect(center_line),
+          vim.inspect(lines_count),
+          vim.inspect(win_height),
           vim.inspect(view)
         )
         self:preview_file_contents(last_content, view)
@@ -860,15 +946,10 @@ function BufferPopupWindow:scroll_by(percent, up)
   end
   local first_line = num.bound(TOP_LINE + shift_lines, 1, LINES_COUNT)
   local last_line = num.bound(BOTTOM_LINE + shift_lines, 1, LINES_COUNT)
-  if first_line <= 1 then
-    last_line = num.bound(first_line + WIN_HEIGHT - 1, 1, LINES_COUNT)
-  elseif last_line >= LINES_COUNT then
-    first_line = num.bound(last_line - WIN_HEIGHT + 1, 1, LINES_COUNT)
-  end
-  local mid_line = math.ceil((first_line + last_line) / 2)
+  local view = M._make_view_by_range(LINES_COUNT, WIN_HEIGHT, first_line, last_line, HIGHLIGHT_LINE)
 
   log.debug(
-    "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, first/last/mid:%s/%s/%s",
+    "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
     vim.inspect(percent),
     vim.inspect(up),
     vim.inspect(LINES_COUNT),
@@ -877,9 +958,7 @@ function BufferPopupWindow:scroll_by(percent, up)
     vim.inspect(TOP_LINE),
     vim.inspect(BOTTOM_LINE),
     vim.inspect(CENTER_LINE),
-    vim.inspect(first_line),
-    vim.inspect(last_line),
-    vim.inspect(mid_line)
+    vim.inspect(view)
   )
 
   -- if up and TOP_LINE <= 1 then
@@ -893,8 +972,6 @@ function BufferPopupWindow:scroll_by(percent, up)
   --   return
   -- end
 
-  local view =
-    { top = first_line, bottom = last_line, center = mid_line, highlight = HIGHLIGHT_LINE }
   self:render_file_contents(file_content, view, falsy_scrolling, math.max(LINES_COUNT, 30))
 end
 
