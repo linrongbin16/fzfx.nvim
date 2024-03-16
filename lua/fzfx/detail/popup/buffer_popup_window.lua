@@ -321,7 +321,7 @@ function BufferPopupWindow:set_current_previewing_file_job_id(jobid)
   self._current_previewing_file_job_id = jobid
 end
 
---- @alias fzfx.BufferPopupWindowPreviewContentView {top:integer,bottom:integer,center:integer}
+--- @alias fzfx.BufferPopupWindowPreviewContentView {top:integer,bottom:integer,center:integer,highlight:integer?}
 --- @param lines_count integer
 --- @param center_line integer?
 --- @return fzfx.BufferPopupWindowPreviewContentView
@@ -335,11 +335,12 @@ function BufferPopupWindow:_make_view(lines_count, center_line)
       top = top,
       bottom = bottom,
       center = math.ceil((top + bottom) / 2),
+      highlight = math.ceil((top + bottom) / 2),
     }
   else
     local top = math.max(1, center_line - math.ceil(win_height / 2))
     local bottom = math.min(lines_count, center_line + math.ceil(win_height / 2))
-    return { top = top, bottom = bottom, center = center_line }
+    return { top = top, bottom = bottom, center = center_line, highlight = center_line }
   end
 end
 
@@ -539,7 +540,6 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
       return
     end
 
-    local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
     -- local TOP_LINE = content_view
