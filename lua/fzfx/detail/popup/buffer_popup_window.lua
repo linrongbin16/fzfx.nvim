@@ -840,6 +840,7 @@ function BufferPopupWindow:scroll_by(percent, up)
     or math.min(TOP_LINE + WIN_HEIGHT, LINES_COUNT)
   local CENTER_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "center")
     or math.ceil((TOP_LINE + BOTTOM_LINE) / 2)
+  local HIGHLIGHT_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "highlight")
 
   local shift_lines = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
   if up then
@@ -880,7 +881,8 @@ function BufferPopupWindow:scroll_by(percent, up)
   --   return
   -- end
 
-  local view = { top = first_line, bottom = last_line, center = mid_line }
+  local view =
+    { top = first_line, bottom = last_line, center = mid_line, highlight = HIGHLIGHT_LINE }
   self:render_file_contents(file_content, view, falsy_scrolling, math.max(LINES_COUNT, 30))
 end
 
