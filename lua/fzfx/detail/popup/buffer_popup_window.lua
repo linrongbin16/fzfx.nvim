@@ -576,6 +576,9 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
           return
         end
 
+        --- @type {line:string,lineno:integer:integer,length:integer}?
+        local hi_line = nil
+        --- @type string[]
         local buf_lines = {}
         for i = line_index, line_index + line_step do
           if i <= LAST_LINE then
@@ -583,6 +586,13 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
               table.insert(buf_lines, "")
             else
               table.insert(buf_lines, LINES[i])
+              if type(content_view.highlight) == "number" and content_view.highlight == i then
+                hi_line = {
+                  line = LINES[i],
+                  lineno = i,
+                  length = string.len(LINES[i]),
+                }
+              end
             end
           else
             break
@@ -600,6 +610,36 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         --   vim.inspect(BOTTOM_LINE)
         -- )
         vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_start, set_end, false, buf_lines)
+        if hi_line then
+          local start_row = hi_line.lineno - 1
+          local end_row = hi_line.lineno - 1
+          local start_col = 0
+          local end_col = hi_line.length > 0 and hi_line.length or nil
+          local opts = {
+            end_row = end_row,
+            end_col = end_col,
+            strict = false,
+            sign_hl_group = "CursorLineSign",
+            number_hl_group = "CursorLineNr",
+            line_hl_group = "CursorLine",
+          }
+
+          local extmark_ok, extmark = pcall(
+            vim.api.nvim_buf_set_extmark,
+            self.previewer_bufnr,
+            extmark_ns,
+            start_row,
+            start_col,
+            opts
+          )
+          log.debug(
+            "|BufferPopupWindow:render_file_contents - set_buf_lines| hi_line:%s, extmark ok:%s, extmark:%s, opts:%s",
+            vim.inspect(hi_line),
+            vim.inspect(extmark_ok),
+            vim.inspect(extmark),
+            vim.inspect(opts)
+          )
+        end
 
         line_index = line_index + line_step
         if line_index >= content_view.center then
