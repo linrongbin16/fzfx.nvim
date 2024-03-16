@@ -604,7 +604,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
     local FIRST_LINE = 1
     local LAST_LINE = LINES_COUNT
     local line_index = FIRST_LINE
-    line_step = line_step or 5
+    line_step = line_step or math.max(math.ceil(math.sqrt(LINES_COUNT)), 5)
     log.debug(
       "|BufferPopupWindow:render_file_contents| LINES_COUNT:%s, FIRST/LAST:%s/%s, view:%s",
       vim.inspect(LINES_COUNT),
