@@ -565,10 +565,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         local buf_lines = {}
         for i = line_index, line_index + line_step do
           if i <= LAST_LINE then
-            if
-              i < (content_view.top - WIN_HEIGHT - 1)
-              or i > (content_view.bottom + WIN_HEIGHT + 1)
-            then
+            if i < (content_view.top - 10) or i > (content_view.bottom + 10) then
               table.insert(buf_lines, "")
             else
               table.insert(buf_lines, LINES[i])
