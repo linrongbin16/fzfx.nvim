@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.8.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.7.3...v5.8.0) (2024-03-16)
+
+
+### Features
+
+* **preview:** add lineno for buffer preview ([#640](https://github.com/linrongbin16/fzfx.nvim/issues/640)) ([24fee5e](https://github.com/linrongbin16/fzfx.nvim/commit/24fee5e3ec82276354ab5aa16d93e574d41b9709))
+
+
+### Performance Improvements
+
+* **previewer:** reduce buffer previewer latency ([#642](https://github.com/linrongbin16/fzfx.nvim/issues/642)) ([5fa88e0](https://github.com/linrongbin16/fzfx.nvim/commit/5fa88e0c3b90740ce942aa606012a21565f92158))
+
 ## [5.7.3](https://github.com/linrongbin16/fzfx.nvim/compare/v5.7.2...v5.7.3) (2024-03-13)
 
 
