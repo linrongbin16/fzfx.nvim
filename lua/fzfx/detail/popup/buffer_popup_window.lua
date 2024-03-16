@@ -338,8 +338,13 @@ function BufferPopupWindow:_make_view(lines_count, center_line)
       highlight = nil,
     }
   else
-    local top = math.max(1, center_line - math.ceil(win_height / 2))
-    local bottom = math.min(lines_count, center_line + math.ceil(win_height / 2))
+    local top = num.bound(center_line - math.ceil(win_height / 2), 1, lines_count)
+    local bottom = num.bound(center_line + math.ceil(win_height / 2), 1, lines_count)
+    if top <= 1 then
+      bottom = num.bound(top + win_height - 1, 1, lines_count)
+    elseif bottom >= lines_count then
+      top = num.bound(bottom - win_height + 1, 1, lines_count)
+    end
     return { top = top, bottom = bottom, center = center_line, highlight = center_line }
   end
 end
@@ -562,6 +567,13 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
     local LAST_LINE = LINES_COUNT
     local line_index = FIRST_LINE
     line_step = line_step or 5
+    log.debug(
+      "|BufferPopupWindow:render_file_contents| LINES_COUNT:%s, FIRST/LAST:%s/%s, view:%s",
+      vim.inspect(LINES_COUNT),
+      vim.inspect(FIRST_LINE),
+      vim.inspect(LAST_LINE),
+      vim.inspect(content_view)
+    )
 
     local function set_buf_lines()
       vim.defer_fn(function()
@@ -632,13 +644,13 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
             start_col,
             opts
           )
-          log.debug(
-            "|BufferPopupWindow:render_file_contents - set_buf_lines| hi_line:%s, extmark ok:%s, extmark:%s, opts:%s",
-            vim.inspect(hi_line),
-            vim.inspect(extmark_ok),
-            vim.inspect(extmark),
-            vim.inspect(opts)
-          )
+          -- log.debug(
+          --   "|BufferPopupWindow:render_file_contents - set_buf_lines| hi_line:%s, extmark ok:%s, extmark:%s, opts:%s",
+          --   vim.inspect(hi_line),
+          --   vim.inspect(extmark_ok),
+          --   vim.inspect(extmark),
+          --   vim.inspect(opts)
+          -- )
         end
 
         line_index = line_index + line_step
