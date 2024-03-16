@@ -658,17 +658,17 @@ end
 
 --- @param content_view fzfx.BufferPopupWindowPreviewContentView
 function BufferPopupWindow:_do_view(content_view)
-  local ok, err = pcall(
-    vim.api.nvim_win_set_cursor,
-    self.previewer_winnr,
-    { math.max(0, content_view.center - 1), 0 }
-  )
-  log.ensure(
-    ok,
-    "|BufferPopupWindow:_do_view| failed to set cursor, view:%s, err:%s",
-    vim.inspect(content_view),
-    vim.inspect(err)
-  )
+  -- local ok, err = pcall(
+  --   vim.api.nvim_win_set_cursor,
+  --   self.previewer_winnr,
+  --   { math.max(0, content_view.center - 1), 0 }
+  -- )
+  -- log.ensure(
+  --   ok,
+  --   "|BufferPopupWindow:_do_view| failed to set cursor, view:%s, err:%s",
+  --   vim.inspect(content_view),
+  --   vim.inspect(err)
+  -- )
   vim.api.nvim_win_call(self.previewer_winnr, function()
     vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], content_view.top))
   end)
