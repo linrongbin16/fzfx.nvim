@@ -671,7 +671,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
             strict = false,
             sign_hl_group = "CursorLineSign",
             number_hl_group = "CursorLineNr",
-            line_hl_group = "CursorLine",
+            line_hl_group = "Visual",
           }
 
           local extmark_ok, extmark = pcall(
