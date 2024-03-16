@@ -335,7 +335,7 @@ function BufferPopupWindow:_make_view(lines_count, center_line)
       top = top,
       bottom = bottom,
       center = math.ceil((top + bottom) / 2),
-      highlight = math.ceil((top + bottom) / 2),
+      highlight = nil,
     }
   else
     local top = math.max(1, center_line - math.ceil(win_height / 2))
@@ -642,12 +642,10 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         end
 
         line_index = line_index + line_step
-        if line_index >= content_view.center then
-          self:_do_view(content_view)
-        end
         if line_index <= content_view.bottom then
           set_buf_lines()
         else
+          self:_do_view(content_view)
           self._saved_previewing_file_content_context = content_view
           do_complete(true)
           falsy_rendering()
