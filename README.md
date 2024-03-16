@@ -61,19 +61,19 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af
 
 ## ✅ Requirements
 
-- neovim &ge; 0.7.
+- Neovim &ge; 0.7.
 - [fzf](https://github.com/junegunn/fzf).
-- [nerd fonts](https://www.nerdfonts.com/) (optional for icons).
-- [rg](https://github.com/BurntSushi/ripgrep) (optional for **live grep**, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
-- [fd](https://github.com/sharkdp/fd) (optional for **files**, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
-- [bat](https://github.com/sharkdp/bat) (optional for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
-- [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (optional for preview window labels).
-- [delta](https://github.com/dandavison/delta) (optional for preview git **diff, show, blame**).
-- [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (optional for **file explorer**, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
+- [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (for query fzf status or update preview label).
+- [nerd-fonts](https://www.nerdfonts.com/) (**optional** for icons).
+- [rg](https://github.com/BurntSushi/ripgrep) (**optional** for live grep, by default use [grep](https://man7.org/linux/man-pages/man1/grep.1.html)).
+- [fd](https://github.com/sharkdp/fd) (**optional** for find files, by default use [find](https://man7.org/linux/man-pages/man1/find.1.html)).
+- [bat](https://github.com/sharkdp/bat) (**optional** for preview files, by default use [cat](https://man7.org/linux/man-pages/man1/cat.1.html)).
+- [delta](https://github.com/dandavison/delta) (**optional** for preview git diff, show, blame).
+- [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (**optional** for file explorer, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
 ### For Windows
 
-Windows users will have to install the linux shell environment, since basic linux commands such as `echo`, `curl`, `mkdir` are internally required.
+Windows users will have to install the linux shell environment, since basic linux commands such as `echo`, `mkdir` are internally required.
 
 <details>
 <summary><i>Click here to see how to install linux commands</i></summary>
