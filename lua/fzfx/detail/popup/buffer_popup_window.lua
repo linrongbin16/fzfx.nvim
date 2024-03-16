@@ -650,7 +650,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         end
 
         local set_start = line_index - 1
-        local set_end = math.min(line_index + line_step, LAST_LINE + 1) - 1
+        local set_end = math.min(line_index + line_step, LAST_LINE) - 1
         -- log.debug(
         --   "|BufferPopupWindow:render_file_contents - set_buf_lines| line_index:%s, set start:%s, end:%s, TOP_LINE/BOTTOM_LINE:%s/%s",
         --   vim.inspect(line_index),
