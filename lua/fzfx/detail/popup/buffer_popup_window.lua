@@ -540,6 +540,20 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
       return
     end
 
+    local extmark_ns = vim.api.nvim_create_namespace("fzfx-buffer-previewer")
+    local old_extmarks = vim.api.nvim_buf_get_extmarks(
+      self.previewer_bufnr,
+      extmark_ns,
+      { 0, 0 },
+      { -1, -1 },
+      {}
+    )
+    if tbl.list_not_empty(old_extmarks) then
+      for i, m in ipairs(old_extmarks) do
+        pcall(vim.api.nvim_buf_del_extmark, self.previewer_bufnr, extmark_ns, m[1])
+      end
+    end
+
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
     -- local TOP_LINE = content_view
