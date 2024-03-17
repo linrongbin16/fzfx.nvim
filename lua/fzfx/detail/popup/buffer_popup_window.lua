@@ -98,14 +98,16 @@ local function _set_default_buf_options(bufnr)
   api.set_buf_option(bufnr, "filetype", "fzf")
 end
 
-local function _set_default_previewer_win_options(winnr)
+--- @param winnr integer
+--- @param wrap boolean
+local function _set_default_previewer_win_options(winnr, wrap)
   api.set_win_option(winnr, "number", true)
   api.set_win_option(winnr, "spell", false)
   api.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
   -- apis.set_win_option(winnr, "scrolloff", 0)
   -- apis.set_win_option(winnr, "sidescrolloff", 0)
   api.set_win_option(winnr, "foldenable", false)
-  api.set_win_option(winnr, "wrap", false)
+  api.set_win_option(winnr, "wrap", wrap)
 end
 
 local function _set_default_provider_win_options(winnr)
@@ -153,7 +155,8 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   -- )
   local previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
   log.ensure(previewer_winnr > 0, "failed to create previewer win")
-  _set_default_previewer_win_options(previewer_winnr)
+  local wrap = buffer_previewer_opts.fzf_preview_window_opts.wrap
+  _set_default_previewer_win_options(previewer_winnr, wrap)
 
   local provider_winnr = vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs)
   log.ensure(provider_winnr > 0, "failed to create provider win")
