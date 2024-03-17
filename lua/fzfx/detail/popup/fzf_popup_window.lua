@@ -124,10 +124,25 @@ function FzfPopupWindow:close()
   self.window_opts_context:restore()
 end
 
+function FzfPopupWindow:is_valid()
+  if vim.in_fast_event() then
+    return type(self.winnr) == "number" and type(self.bufnr) == "number"
+  else
+    return type(self.winnr) == "number"
+      and vim.api.nvim_win_is_valid(self.winnr)
+      and type(self.bufnr) == "number"
+      and vim.api.nvim_buf_is_valid(self.bufnr)
+  end
+end
+
 function FzfPopupWindow:resize()
   if self._resizing then
     return
   end
+  if not self:is_valid() then
+    return
+  end
+
   self._resizing = true
   local nvim_float_win_opts = M.make_opts(self._saved_win_opts)
   vim.api.nvim_win_set_config(self.winnr, nvim_float_win_opts)

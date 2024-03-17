@@ -605,7 +605,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
     local LAST_LINE = LINES_COUNT
     local line_index = FIRST_LINE
     if line_step == nil then
-      line_step = LINES_COUNT > 100 and math.max(math.ceil(math.sqrt(LINES_COUNT)), 5) or 5
+      line_step = LINES_COUNT > 50 and math.max(math.ceil(math.sqrt(LINES_COUNT)), 5) or 5
     end
     log.debug(
       "|BufferPopupWindow:render_file_contents| LINES_COUNT:%s, FIRST/LAST:%s/%s, view:%s",
