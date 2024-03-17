@@ -24,6 +24,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   lint:
     name: Lint
+    if: ${{ !steps.release.outputs.release_created }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -58,6 +59,7 @@ jobs:
           push_options: "--force"
   unit_test:
     name: Unit Test
+    if: ${{ !steps.release.outputs.release_created }}
     needs:
       - lint
     strategy:
@@ -83,6 +85,7 @@ jobs:
           vusted --shuffle ./spec
   code_coverage:
     name: Code Coverage
+    if: ${{ !steps.release.outputs.release_created }}
     needs:
       - lint
     runs-on: ubuntu-latest
