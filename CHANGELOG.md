@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v6.1.0...v6.1.1) (2024-03-17)
+
+
+### Performance Improvements
+
+* **bat:** clean-up inaccurate [@lsp](https://github.com/lsp) & [@treesitter](https://github.com/treesitter) colors from bat theme ([#656](https://github.com/linrongbin16/fzfx.nvim/issues/656)) ([c89ae16](https://github.com/linrongbin16/fzfx.nvim/commit/c89ae16602587652f6d9c0ff59810732ab5d62b8))
+
 ## [6.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.0.0...v6.1.0) (2024-03-17)
 
 
