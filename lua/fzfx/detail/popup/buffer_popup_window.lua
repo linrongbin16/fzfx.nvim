@@ -945,29 +945,24 @@ function BufferPopupWindow:scroll_by(percent, up)
   --   vim.inspect(last_line)
   -- )
   local view = M._make_view_by_range(LINES_COUNT, WIN_HEIGHT, first_line, last_line, HIGHLIGHT_LINE)
-  -- log.debug(
-  --   "|BufferPopupWindow:scroll_by|-2 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
-  --   vim.inspect(percent),
-  --   vim.inspect(up),
-  --   vim.inspect(LINES_COUNT),
-  --   vim.inspect(WIN_HEIGHT),
-  --   vim.inspect(shift_lines),
-  --   vim.inspect(TOP_LINE),
-  --   vim.inspect(BOTTOM_LINE),
-  --   vim.inspect(CENTER_LINE),
-  --   vim.inspect(view)
-  -- )
+  log.debug(
+    "|BufferPopupWindow:scroll_by|-2 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
+    vim.inspect(percent),
+    vim.inspect(up),
+    vim.inspect(LINES_COUNT),
+    vim.inspect(WIN_HEIGHT),
+    vim.inspect(shift_lines),
+    vim.inspect(TOP_LINE),
+    vim.inspect(BOTTOM_LINE),
+    vim.inspect(CENTER_LINE),
+    vim.inspect(view)
+  )
 
-  -- if up and TOP_LINE <= 1 then
-  --   -- log.debug("|BufferPopupWindow:scroll_by| hit top")
-  --   falsy_scrolling()
-  --   return
-  -- end
-  -- if down and BOTTOM_LINE >= LINES_COUNT then
-  --   -- log.debug("|BufferPopupWindow:scroll_by| hit bottom")
-  --   falsy_scrolling()
-  --   return
-  -- end
+  if TOP_LINE == first_line and BOTTOM_LINE == last_line then
+    -- log.debug("|BufferPopupWindow:scroll_by| no change")
+    falsy_scrolling()
+    return
+  end
 
   self:render_file_contents(file_content, view, falsy_scrolling, math.max(LINES_COUNT, 30))
 end
