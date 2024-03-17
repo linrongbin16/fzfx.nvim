@@ -1,6 +1,7 @@
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local api = require("fzfx.commons.api")
+local color_hl = require("fzfx.commons.color.hl")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
@@ -12,37 +13,19 @@ local bat_themes_helper = require("fzfx.helper.bat_themes")
 
 local M = {}
 
--- renderer for tmTheme globals
+-- renderer for TextMate theme globals
 --
 --- @class fzfx._BatTmGlobalRenderer
 --- @field key string
 --- @field value string?
 local _BatTmGlobalRenderer = {}
 
---- @param hl string|string[]
+--- @param highlights string|string[]
 --- @param key string
 --- @param attr "fg"|"bg"
 --- @return fzfx._BatTmGlobalRenderer
-function _BatTmGlobalRenderer:new(hl, key, attr)
-  local hls = type(hl) == "table" and hl or {
-    hl --[[@as string]],
-  }
-
-  local value = nil
-  for i, h in ipairs(hls) do
-    local ok, hl_codes = pcall(api.get_hl, h)
-    if ok and tbl.tbl_not_empty(hl_codes) then
-      if attr == "fg" and hl_codes.fg then
-        value = string.format("#%06x", hl_codes.fg)
-      elseif attr == "bg" and hl_codes.bg then
-        value = string.format("#%06x", hl_codes.bg)
-      end
-      if value then
-        break
-      end
-    end
-  end
-
+function _BatTmGlobalRenderer:new(highlights, key, attr)
+  local value = color_hl.get_color_with_fallback(highlights, attr)
   local o = {
     key = key,
     value = value,
