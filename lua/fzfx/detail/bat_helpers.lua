@@ -37,19 +37,9 @@ end
 
 --- @return string?
 function _BatTmGlobalRenderer:render()
-  if not self.value then
+  if str.empty(self.key) or str.empty(self.value) then
     return nil
   end
-  log.ensure(
-    str.not_empty(self.key),
-    "|_BatTmGlobalRenderer:render| invalid key:%s",
-    vim.inspect(self)
-  )
-  log.ensure(
-    str.not_empty(self.value),
-    "|_BatTmGlobalRenderer:render| invalid value:%s",
-    vim.inspect(self)
-  )
   local builder = {
     string.format("          <key>%s</key>", self.key),
     string.format("          <string>%s</string>", self.value),
