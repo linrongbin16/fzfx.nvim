@@ -713,7 +713,7 @@ function BufferPopupWindow:_do_view(content_view)
   local ok, err = pcall(
     vim.api.nvim_win_set_cursor,
     self.previewer_winnr,
-    { math.max(0, content_view.center - 1), 0 }
+    { math.max(1, content_view.center), 0 }
   )
   log.ensure(
     ok,
