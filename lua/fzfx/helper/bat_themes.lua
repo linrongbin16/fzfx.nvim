@@ -14,8 +14,7 @@ M._theme_dir_cache = function()
   return path.join(env.cache_dir(), "_last_bat_themes_dir_cache")
 end
 
---- @type string?
-local CACHED_THEME_DIR = nil
+--- @type commons.CachedFileReader?
 local theme_dir_cached_reader = nil
 
 --- @return string?

@@ -346,7 +346,7 @@ local _BatTmRenderer = {}
 
 --- @return fzfx._BatTmRenderer
 function _BatTmRenderer:new()
-  -- there're 3 components in below template:
+  -- there're 3 sections in below template:
   -- {NAME}
   -- {GLOBAL}
   -- {SCOPE}
@@ -383,7 +383,7 @@ function _BatTmRenderer:new()
     <string>uuid</string>
   </dict>
 </plist>
-  ]]
+]]
 
   local render_map = M._make_render_map()
 
