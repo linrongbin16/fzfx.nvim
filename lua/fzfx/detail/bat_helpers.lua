@@ -181,18 +181,10 @@ end
 
 --- @return string?
 function _BatTmScopeRenderer:render()
-  if self.lsp_value then
-    return M._render_scope(self.lsp_value)
+  if tbl.tbl_empty(self.value) then
+    return nil
   end
-  if self.value then
-    return M._render_scope(self.value)
-  end
-  return nil
-end
-
---- @return string?
-function _BatTmScopeRenderer:lsp_hl_name()
-  return tbl.tbl_get(self.lsp_value, "hl")
+  return M._render_scope(self.value)
 end
 
 --- @return {globals:fzfx._BatTmGlobalRenderer[],scopes:fzfx._BatTmScopeRenderer[]}
