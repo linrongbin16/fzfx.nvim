@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.1.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.0.0...v6.1.0) (2024-03-17)
+
+
+### Features
+
+* **opts:** respect 'wrap' option in fzf option '--preview-window' ([#653](https://github.com/linrongbin16/fzfx.nvim/issues/653)) ([5d33d46](https://github.com/linrongbin16/fzfx.nvim/commit/5d33d46bf038916b815cf86bc060b5f604a96420))
+
+
+### Performance Improvements
+
+* **preview:** no flashing when scroll to top/bottom ([#653](https://github.com/linrongbin16/fzfx.nvim/issues/653)) ([5d33d46](https://github.com/linrongbin16/fzfx.nvim/commit/5d33d46bf038916b815cf86bc060b5f604a96420))
+
 ## [6.0.0](https://github.com/linrongbin16/fzfx.nvim/compare/v5.8.0...v6.0.0) (2024-03-17)
 
 
