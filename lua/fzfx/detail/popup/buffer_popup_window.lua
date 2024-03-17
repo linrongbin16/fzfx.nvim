@@ -278,7 +278,9 @@ function BufferPopupWindow:resize()
         self.previewer_winnr,
         vim.tbl_deep_extend("force", old_previewer_win_confs, win_confs.previewer or {})
       )
-      _set_default_previewer_win_options(self.previewer_winnr)
+
+      local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
+      _set_default_previewer_win_options(self.previewer_winnr, wrap)
     end
   end
 
