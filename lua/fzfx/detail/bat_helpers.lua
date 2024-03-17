@@ -439,17 +439,15 @@ M._build_theme = function(colorname)
   log.ensure(str.not_empty(colorname), "|_build_theme| colorname is empty string!")
 
   local theme_dir = bat_themes_helper.get_theme_dir()
-  log.ensure(str.not_empty(theme_dir), "|_build_theme| failed to get bat config dir")
-
-  -- log.debug("|_build_theme| theme_dir:%s", vim.inspect(theme_dir))
-  if not path.isdir(theme_dir) then
-    spawn
-      .run({ "mkdir", "-p", theme_dir }, {
-        on_stdout = function() end,
-        on_stderr = function() end,
-      })
-      :wait()
+  if str.empty(theme_dir) then
+    return
   end
+
+  log.ensure(
+    path.isdir(theme_dir --[[@as string]]),
+    "|_build_theme| bat theme dir:%s not exist",
+    vim.inspect(theme_dir)
+  )
 
   local theme_name = bat_themes_helper.get_theme_name(colorname)
   log.ensure(
@@ -480,7 +478,7 @@ M._build_theme = function(colorname)
   end
   building_bat_theme = true
 
-  fileio.asyncwritefile(theme_config_file, rendered_result.payload, function()
+  fileio.asyncwritefile(theme_config_file --[[@as string]], rendered_result.payload, function()
     vim.defer_fn(function()
       -- log.debug(
       --   "|_build_theme| dump theme payload, theme_template:%s",

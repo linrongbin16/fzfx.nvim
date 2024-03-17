@@ -1,29 +1,11 @@
 local path = require("fzfx.commons.path")
-local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
 local str = require("fzfx.commons.str")
 
 local constants = require("fzfx.lib.constants")
-local env = require("fzfx.lib.env")
 local log = require("fzfx.lib.log")
 
 local M = {}
-
---- @return string
-M._theme_dir_cache = function()
-  return path.join(env.cache_dir(), "_last_bat_themes_dir_cache")
-end
-
---- @type commons.CachedFileReader?
-local theme_dir_cached_reader = nil
-
---- @return string?
-M._cached_theme_dir = function()
-  if theme_dir_cached_reader == nil then
-    theme_dir_cached_reader = fileio.CachedFileReader:open(M._theme_dir_cache())
-  end
-  return theme_dir_cached_reader:read({ trim = true })
-end
 
 --- @param theme_dir string
 M._create_theme_dir = function(theme_dir)
@@ -38,33 +20,31 @@ M._create_theme_dir = function(theme_dir)
     :wait()
 end
 
---- @return string
-M.get_theme_dir = function()
-  local cached_result = M._cached_theme_dir() --[[@as string]]
-  -- log.debug("|get_theme_dir| cached_result:%s", vim.inspect(cached_result))
+--- @type string?
+local cached_theme_dir = nil
 
-  if str.empty(cached_result) then
+--- @return string?
+M.get_theme_dir = function()
+  if str.empty(cached_theme_dir) then
     log.ensure(constants.HAS_BAT, "|get_theme_dir| cannot find 'bat' executable")
 
     local config_dir = ""
-    spawn
-      .run({ constants.BAT, "--config-dir" }, {
-        on_stdout = function(line)
-          config_dir = config_dir .. line
-        end,
-        on_stderr = function() end,
-      })
-      :wait()
-    -- log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
-    local theme_dir = path.join(config_dir, "themes")
-    M._create_theme_dir(theme_dir)
-    fileio.writefile(M._theme_dir_cache(), theme_dir)
+    spawn.run({ constants.BAT, "--config-dir" }, {
+      on_stdout = function(line)
+        config_dir = config_dir .. line
+      end,
+      on_stderr = function() end,
+    }, function(completed)
+      -- log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
+      local theme_dir = path.join(config_dir, "themes")
+      M._create_theme_dir(theme_dir)
+    end)
 
-    return theme_dir
+    return nil
   end
 
-  M._create_theme_dir(cached_result)
-  return cached_result
+  M._create_theme_dir(cached_theme_dir --[[@as string]])
+  return cached_theme_dir
 end
 
 -- Vim colorscheme name => bat theme name
@@ -117,10 +97,12 @@ M.get_theme_name = function(name)
 end
 
 --- @param colorname string
---- @return string
+--- @return string?
 M.get_theme_config_file = function(colorname)
   local theme_dir = M.get_theme_dir()
-  log.ensure(str.not_empty(theme_dir), "|get_theme_config_file| failed to get bat config theme dir")
+  if str.empty(theme_dir) then
+    return nil
+  end
   local theme_name = M.get_theme_name(colorname)
   log.ensure(
     str.not_empty(theme_name),
