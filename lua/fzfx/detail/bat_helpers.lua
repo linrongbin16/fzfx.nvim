@@ -58,12 +58,12 @@ function _BatTmGlobalRenderer:render()
     return nil
   end
   log.ensure(
-    type(self.key) == "string" and string.len(self.key) > 0,
+    str.not_empty(self.key),
     "|_BatTmGlobalRenderer:render| invalid key:%s",
     vim.inspect(self)
   )
   log.ensure(
-    type(self.value) == "string" and string.len(self.value) > 0,
+    str.not_empty(self.value),
     "|_BatTmGlobalRenderer:render| invalid value:%s",
     vim.inspect(self)
   )
