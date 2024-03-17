@@ -13,7 +13,7 @@ local bat_themes_helper = require("fzfx.helper.bat_themes")
 
 local M = {}
 
--- renderer for TextMate theme globals
+-- renderer for TextMate tmTheme globals
 --
 --- @class fzfx._BatTmGlobalRenderer
 --- @field key string
