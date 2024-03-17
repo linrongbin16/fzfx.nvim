@@ -523,31 +523,6 @@ function _BatTmRenderer:render(theme_name)
   }
 end
 
---- @param lsp_type string
---- @param lsp_modifiers table<string, any>?
---- @return boolean
-function _BatTmRenderer:patch_lsp_hl(lsp_type, lsp_modifiers)
-  local updated = false
-  local updated_count = 0
-
-  for i, r in ipairs(self.scopes) do
-    if r:lsp_hl_name() == lsp_type then
-      local has_updates = r:update_lsp_hl()
-      if has_updates then
-        updated = true
-        updated_count = updated_count + 1
-      end
-    end
-  end
-
-  -- log.debug(
-  --   "|_BatTmRenderer:patch_lsp_token| updated lsp hl:%s, has updated:%s",
-  --   vim.inspect(updated_count),
-  --   vim.inspect(updated)
-  -- )
-  return updated
-end
-
 M._BatTmRenderer = _BatTmRenderer
 
 M._BatTmRendererInstance = nil
