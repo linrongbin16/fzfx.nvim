@@ -98,14 +98,16 @@ local function _set_default_buf_options(bufnr)
   api.set_buf_option(bufnr, "filetype", "fzf")
 end
 
-local function _set_default_previewer_win_options(winnr)
+--- @param winnr integer
+--- @param wrap boolean
+local function _set_default_previewer_win_options(winnr, wrap)
   api.set_win_option(winnr, "number", true)
   api.set_win_option(winnr, "spell", false)
   api.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
   -- apis.set_win_option(winnr, "scrolloff", 0)
   -- apis.set_win_option(winnr, "sidescrolloff", 0)
   api.set_win_option(winnr, "foldenable", false)
-  api.set_win_option(winnr, "wrap", false)
+  api.set_win_option(winnr, "wrap", wrap)
 end
 
 local function _set_default_provider_win_options(winnr)
@@ -153,7 +155,8 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   -- )
   local previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
   log.ensure(previewer_winnr > 0, "failed to create previewer win")
-  _set_default_previewer_win_options(previewer_winnr)
+  local wrap = buffer_previewer_opts.fzf_preview_window_opts.wrap
+  _set_default_previewer_win_options(previewer_winnr, wrap)
 
   local provider_winnr = vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs)
   log.ensure(provider_winnr > 0, "failed to create provider win")
@@ -275,7 +278,9 @@ function BufferPopupWindow:resize()
         self.previewer_winnr,
         vim.tbl_deep_extend("force", old_previewer_win_confs, win_confs.previewer or {})
       )
-      _set_default_previewer_win_options(self.previewer_winnr)
+
+      local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
+      _set_default_previewer_win_options(self.previewer_winnr, wrap)
     end
   end
 
@@ -942,29 +947,24 @@ function BufferPopupWindow:scroll_by(percent, up)
   --   vim.inspect(last_line)
   -- )
   local view = M._make_view_by_range(LINES_COUNT, WIN_HEIGHT, first_line, last_line, HIGHLIGHT_LINE)
-  -- log.debug(
-  --   "|BufferPopupWindow:scroll_by|-2 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
-  --   vim.inspect(percent),
-  --   vim.inspect(up),
-  --   vim.inspect(LINES_COUNT),
-  --   vim.inspect(WIN_HEIGHT),
-  --   vim.inspect(shift_lines),
-  --   vim.inspect(TOP_LINE),
-  --   vim.inspect(BOTTOM_LINE),
-  --   vim.inspect(CENTER_LINE),
-  --   vim.inspect(view)
-  -- )
+  log.debug(
+    "|BufferPopupWindow:scroll_by|-2 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
+    vim.inspect(percent),
+    vim.inspect(up),
+    vim.inspect(LINES_COUNT),
+    vim.inspect(WIN_HEIGHT),
+    vim.inspect(shift_lines),
+    vim.inspect(TOP_LINE),
+    vim.inspect(BOTTOM_LINE),
+    vim.inspect(CENTER_LINE),
+    vim.inspect(view)
+  )
 
-  -- if up and TOP_LINE <= 1 then
-  --   -- log.debug("|BufferPopupWindow:scroll_by| hit top")
-  --   falsy_scrolling()
-  --   return
-  -- end
-  -- if down and BOTTOM_LINE >= LINES_COUNT then
-  --   -- log.debug("|BufferPopupWindow:scroll_by| hit bottom")
-  --   falsy_scrolling()
-  --   return
-  -- end
+  if TOP_LINE == first_line and BOTTOM_LINE == last_line then
+    -- log.debug("|BufferPopupWindow:scroll_by| no change")
+    falsy_scrolling()
+    return
+  end
 
   self:render_file_contents(file_content, view, falsy_scrolling, math.max(LINES_COUNT, 30))
 end
