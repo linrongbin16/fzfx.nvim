@@ -928,32 +928,32 @@ function BufferPopupWindow:scroll_by(percent, up)
   end
   local first_line = num.bound(TOP_LINE + shift_lines, 1, LINES_COUNT)
   local last_line = M._make_bottom_by_top(first_line, LINES_COUNT, WIN_HEIGHT)
-  log.debug(
-    "|BufferPopupWindow:scroll_by|-1 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, first/last:%s/%s",
-    vim.inspect(percent),
-    vim.inspect(up),
-    vim.inspect(LINES_COUNT),
-    vim.inspect(WIN_HEIGHT),
-    vim.inspect(shift_lines),
-    vim.inspect(TOP_LINE),
-    vim.inspect(BOTTOM_LINE),
-    vim.inspect(CENTER_LINE),
-    vim.inspect(first_line),
-    vim.inspect(last_line)
-  )
+  -- log.debug(
+  --   "|BufferPopupWindow:scroll_by|-1 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, first/last:%s/%s",
+  --   vim.inspect(percent),
+  --   vim.inspect(up),
+  --   vim.inspect(LINES_COUNT),
+  --   vim.inspect(WIN_HEIGHT),
+  --   vim.inspect(shift_lines),
+  --   vim.inspect(TOP_LINE),
+  --   vim.inspect(BOTTOM_LINE),
+  --   vim.inspect(CENTER_LINE),
+  --   vim.inspect(first_line),
+  --   vim.inspect(last_line)
+  -- )
   local view = M._make_view_by_range(LINES_COUNT, WIN_HEIGHT, first_line, last_line, HIGHLIGHT_LINE)
-  log.debug(
-    "|BufferPopupWindow:scroll_by|-2 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
-    vim.inspect(percent),
-    vim.inspect(up),
-    vim.inspect(LINES_COUNT),
-    vim.inspect(WIN_HEIGHT),
-    vim.inspect(shift_lines),
-    vim.inspect(TOP_LINE),
-    vim.inspect(BOTTOM_LINE),
-    vim.inspect(CENTER_LINE),
-    vim.inspect(view)
-  )
+  -- log.debug(
+  --   "|BufferPopupWindow:scroll_by|-2 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
+  --   vim.inspect(percent),
+  --   vim.inspect(up),
+  --   vim.inspect(LINES_COUNT),
+  --   vim.inspect(WIN_HEIGHT),
+  --   vim.inspect(shift_lines),
+  --   vim.inspect(TOP_LINE),
+  --   vim.inspect(BOTTOM_LINE),
+  --   vim.inspect(CENTER_LINE),
+  --   vim.inspect(view)
+  -- )
 
   -- if up and TOP_LINE <= 1 then
   --   -- log.debug("|BufferPopupWindow:scroll_by| hit top")
