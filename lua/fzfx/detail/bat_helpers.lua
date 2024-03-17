@@ -53,7 +53,6 @@ end
 --
 --- @class fzfx._BatTmScopeRenderer
 --- @field value fzfx._BatTmScopeValue?
---- @field lsp_value fzfx._BatTmScopeValue?
 local _BatTmScopeRenderer = {}
 
 --- @param hl string
@@ -64,9 +63,9 @@ M._make_scope_value = function(hl, scope, hl_codes)
   if tbl.tbl_empty(hl_codes) then
     return nil
   end
-  log.ensure(type(hl) == "string" and string.len(hl) > 0, "|_make_scope_value| invalid hl name")
+  log.ensure(str.not_empty(hl), "|_make_scope_value| invalid hl name")
   log.ensure(
-    (type(scope) == "string" and string.len(scope) > 0) or (tbl.tbl_not_empty(scope)),
+    str.not_empty(scope) or (tbl.tbl_not_empty(scope)),
     "|_make_scope_value| invalid tm scope:%s",
     vim.inspect(scope)
   )
@@ -105,17 +104,12 @@ function _BatTmScopeRenderer:new(hl, scope)
   }
 
   local value = nil
-  local lsp_value = nil
   for i, h in ipairs(hls) do
     local ok, hl_codes = pcall(api.get_hl, h)
     if ok and tbl.tbl_not_empty(hl_codes) then
       local item = M._make_scope_value(h, scope, hl_codes)
       if item then
-        if str.startswith(h, "@lsp") then
-          lsp_value = item
-        else
-          value = item
-        end
+        value = item
         break
       end
     end
@@ -124,7 +118,6 @@ function _BatTmScopeRenderer:new(hl, scope)
   local o = {
     scope = scope,
     value = value,
-    lsp_value = lsp_value,
   }
   setmetatable(o, self)
   self.__index = self
@@ -200,59 +193,6 @@ end
 --- @return string?
 function _BatTmScopeRenderer:lsp_hl_name()
   return tbl.tbl_get(self.lsp_value, "hl")
-end
-
---- @return boolean
-function _BatTmScopeRenderer:update_lsp_hl()
-  if str.empty(tbl.tbl_get(self.lsp_value, "hl")) then
-    -- log.debug(
-    --   "|_BatTmScopeRenderer:update_lsp_hl| invalid self.lsp_value.hl:%s",
-    --   vim.inspect(self.lsp_value)
-    -- )
-    return false
-  end
-  log.ensure(
-    str.startswith(self.lsp_value.hl, "@lsp"),
-    "|_BatTmScopeRenderer:update_lsp_highlight| invalid lsp highlight:%s",
-    vim.inspect(self.lsp_value)
-  )
-
-  local ok, hl_codes = pcall(api.get_hl, self.lsp_value.hl)
-  if not ok or tbl.tbl_empty(hl_codes) then
-    -- log.debug(
-    --   "|_BatTmScopeRenderer:update_lsp_hl| invalid hl_codes, hl:%s, error:%s",
-    --   vim.inspect(self.lsp_value.hl),
-    --   vim.inspect(hl_codes)
-    -- )
-    return false
-  end
-
-  local new_value = M._make_scope_value(self.lsp_value.hl, self.lsp_value.scope, hl_codes)
-  if tbl.tbl_empty(new_value) then
-    -- log.debug(
-    --   "|_BatTmScopeRenderer:update_lsp_hl| empty new value, hl:%s, hl_codes:%s",
-    --   vim.inspect(self.lsp_value.hl),
-    --   vim.inspect(hl_codes)
-    -- )
-    return false
-  end
-
-  if vim.deep_equal(self.lsp_value, new_value) then
-    -- log.debug(
-    --   "|_BatTmScopeRenderer:update_lsp_hl| new value is still same, self.lsp_value:%s, new_value:%s",
-    --   vim.inspect(self.lsp_value),
-    --   vim.inspect(new_value)
-    -- )
-    return false
-  end
-
-  self.lsp_value = new_value
-  -- log.debug(
-  --   "|_BatTmScopeRenderer:update_lsp_hl| updated lsp hl:%s",
-  --   vim.inspect(self.lsp_value)
-  -- )
-
-  return true
 end
 
 --- @return {globals:fzfx._BatTmGlobalRenderer[],scopes:fzfx._BatTmScopeRenderer[]}
