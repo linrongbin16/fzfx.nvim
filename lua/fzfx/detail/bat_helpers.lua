@@ -4,7 +4,6 @@ local api = require("fzfx.commons.api")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
-local version = require("fzfx.commons.version")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -301,26 +300,17 @@ M._make_render_map = function()
     _BatTmGlobalRenderer:new("Cursor", "block_caret", "bg"),
     _BatTmGlobalRenderer:new("NonText", "invisibles", "fg"),
     _BatTmGlobalRenderer:new({ "Visual" }, "lineHighlight", "bg"),
-    _BatTmGlobalRenderer:new("LineNr", "gutter", "bg"),
-    _BatTmGlobalRenderer:new("LineNr", "gutterForeground", "fg"),
-    _BatTmGlobalRenderer:new("CursorLineNr", "gutterForegroundHighlight", "fg"),
-    _BatTmGlobalRenderer:new("Visual", "selection", "bg"),
-    _BatTmGlobalRenderer:new("Visual", "selectionForeground", "fg"),
-    _BatTmGlobalRenderer:new("Search", "findHighlight", "bg"),
-    _BatTmGlobalRenderer:new("Search", "findHighlightForeground", "fg"),
     _BatTmGlobalRenderer:new({
       "GitSignsAdd",
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
-      "@diff.plus",
       "Added",
     }, "lineDiffAdded", "fg"),
     _BatTmGlobalRenderer:new({
       "GitSignsChange",
       "GitGutterChange",
       "DiffChange",
-      "@diff.delta",
       "Changed",
     }, "lineDiffModified", "fg"),
     _BatTmGlobalRenderer:new({
@@ -328,7 +318,6 @@ M._make_render_map = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
-      "@diff.minus",
       "Removed",
     }, "lineDiffDeleted", "fg"),
   }
@@ -349,143 +338,38 @@ M._make_render_map = function()
   -- syntax and treesitter map
   local SCOPE_RENDERERS = {
     -- comment {
-    _BatTmScopeRenderer:new({ "@lsp.type.comment", "@comment", "Comment" }, "comment"),
-    _BatTmScopeRenderer:new({
-      "@lsp.typemod.comment.documentation",
-      "@comment.documentation",
-    }, "comment.block.documentation"),
+    _BatTmScopeRenderer:new("Comment", "comment"),
     -- comment }
 
     -- constant {
-    _BatTmScopeRenderer:new({ "@lsp.type.number", "@number", "Number" }, "constant.numeric"),
-    _BatTmScopeRenderer:new(
-      { "@lsp.type.number", "@number.float", "Float" },
-      "constant.numeric.float"
-    ),
-    _BatTmScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
-    _BatTmScopeRenderer:new({ "@character", "Character" }, { "constant.character" }),
-    _BatTmScopeRenderer:new(
-      { "@string.escape" },
-      { "constant.character.escaped", "constant.character.escape" }
-    ),
+    _BatTmScopeRenderer:new("Number", "constant.numeric"),
+    _BatTmScopeRenderer:new("Float", "constant.numeric.float"),
+    _BatTmScopeRenderer:new("Boolean", "constant.language"),
+    _BatTmScopeRenderer:new("Character", { "constant.character" }),
     -- constant }
 
     -- entity {
-    _BatTmScopeRenderer:new({
-      "@lsp.type.function",
-      "@function",
-      "Function",
-    }, "entity.name.function"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.function",
-      "@function.call",
-    }, "entity.name.function.call"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.function",
-      "@constructor",
-    }, "entity.name.function.constructor"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.type",
-      "@type",
-      "Type",
-    }, {
-      "entity.name.type",
-    }),
-    _BatTmScopeRenderer:new({
-      "@tag",
-    }, "entity.name.tag"),
-    _BatTmScopeRenderer:new({
-      "@tag.attribute",
-    }, "entity.other.attribute-name"),
-    _BatTmScopeRenderer:new({
-      "@markup.heading",
-    }, "entity.name.section"),
-    _BatTmScopeRenderer:new({
-      "Structure",
-    }, {
-      "entity.name.union",
-    }),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.enum",
-      "Structure",
-    }, {
-      "entity.name.enum",
-    }),
-    _BatTmScopeRenderer:new({
-      "@label",
-      "Label",
-    }, "entity.name.label"),
-    _BatTmScopeRenderer:new({
-      "@constant",
-      "Constant",
-    }, "entity.name.constant"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.namespace",
-      "@module",
-    }, "entity.name.namespace"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.type",
-      "@type",
-      "Type",
-    }, "entity.other.inherited-class"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.class",
-    }, "entity.name.class"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.interface",
-    }, "entity.name.interface"),
+    _BatTmScopeRenderer:new("Function", "entity.name.function"),
+    _BatTmScopeRenderer:new("Type", { "entity.name.type" }),
+    _BatTmScopeRenderer:new({ "Structure" }, { "entity.name.union" }),
+    _BatTmScopeRenderer:new({ "Structure" }, { "entity.name.enum" }),
+    _BatTmScopeRenderer:new({ "Label" }, "entity.name.label"),
+    _BatTmScopeRenderer:new({ "Constant" }, "entity.name.constant"),
+    _BatTmScopeRenderer:new({ "Type" }, "entity.other.inherited-class"),
     -- entity }
 
-    -- invalid {
-    _BatTmScopeRenderer:new({
-      "Error",
-    }, "invalid.illegal"),
-    -- invalid }
-
     -- keyword {
-    _BatTmScopeRenderer:new({ "@lsp.type.keyword", "@keyword", "Keyword" }, "keyword"),
-    _BatTmScopeRenderer:new({ "@keyword.conditional", "Conditional" }, "keyword.control"),
-    -- _BatTmScopeRenderer:new(
-    --   { "@keyword.conditional", "Conditional" },
-    --   "keyword.control.conditional"
-    -- ),
-    _BatTmScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
-    _BatTmScopeRenderer:new({ "@lsp.type.operator", "@operator", "Operator" }, "keyword.operator"),
-    _BatTmScopeRenderer:new({ "@lsp.type.operator", "@keyword.operator" }, "keyword.operator.word"),
-    _BatTmScopeRenderer:new({ "@keyword.conditional.ternary" }, "keyword.operator.ternary"),
+    _BatTmScopeRenderer:new({ "Keyword" }, "keyword"),
+    _BatTmScopeRenderer:new({ "Conditional" }, "keyword.control"),
+    _BatTmScopeRenderer:new({ "Operator" }, "keyword.operator"),
     -- keyword }
 
     -- markup {
-    _BatTmScopeRenderer:new({
-      "@markup.link.url",
-    }, "markup.underline.link"),
-    _BatTmScopeRenderer:new({
-      "@markup.underline",
-    }, "markup.underline"),
-    _BatTmScopeRenderer:new({
-      "@markup.strong",
-    }, "markup.bold"),
-    _BatTmScopeRenderer:new({
-      "@markup.italic",
-    }, "markup.italic"),
-    _BatTmScopeRenderer:new({
-      "@markup.heading",
-    }, "markup.heading"),
-    _BatTmScopeRenderer:new({
-      "@markup.list",
-    }, "markup.list"),
-    _BatTmScopeRenderer:new({
-      "@markup.raw",
-    }, "markup.raw"),
-    _BatTmScopeRenderer:new({
-      "@markup.quote",
-    }, "markup.quote"),
     _BatTmScopeRenderer:new({
       "GitSignsAdd",
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
-      "@diff.plus",
       "Added",
     }, { "markup.inserted" }),
     _BatTmScopeRenderer:new({
@@ -493,163 +377,52 @@ M._make_render_map = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
-      "@diff.minus",
       "Removed",
     }, { "markup.deleted" }),
     _BatTmScopeRenderer:new({
       "GitGutterChange",
       "GitSignsChange",
       "DiffChange",
-      "@diff.delta",
       "Changed",
     }, { "markup.changed" }),
     -- markup }
 
     -- meta {
-    _BatTmScopeRenderer:new({
-      "@lsp.type.decorator",
-      "@attribute",
-    }, { "meta.annotation" }),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.macro",
-      "@constant.macro",
-      "Macro",
-    }, { "meta.preprocessor" }),
+    _BatTmScopeRenderer:new({ "Macro" }, { "meta.preprocessor" }),
     -- meta }
 
     -- storage {
-    _BatTmScopeRenderer:new({
-      "@lsp.type.function",
-      "@keyword.function",
-      "Keyword",
-    }, { "storage.type.function", "keyword.declaration.function" }),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.enum",
-      "Structure",
-    }, {
+    _BatTmScopeRenderer:new(
+      { "Keyword" },
+      { "storage.type.function", "keyword.declaration.function" }
+    ),
+    _BatTmScopeRenderer:new({ "Structure" }, {
       "storage.type.enum",
       "keyword.declaration.enum",
     }),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.struct",
-      "Structure",
-    }, {
+    _BatTmScopeRenderer:new({ "Structure" }, {
       "storage.type.struct",
       "keyword.declaration.struct",
     }),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.type",
-      "@type",
-      "Type",
-    }, { "storage.type", "keyword.declaration.type" }),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.modifier",
-      "@keyword.storage",
-      "StorageClass",
-    }, "storage.modifier"),
+    _BatTmScopeRenderer:new({ "Type" }, { "storage.type", "keyword.declaration.type" }),
+    _BatTmScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
     -- storage }
 
     -- string {
-    _BatTmScopeRenderer:new({
-      "@lsp.type.string",
-      "@string",
-      "String",
-    }, { "string", "string.quoted" }),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.regexp",
-      "@string.regexp",
-    }, { "string.regexp" }),
+    _BatTmScopeRenderer:new({ "String" }, { "string", "string.quoted" }),
     -- string }
 
     -- support {
-    _BatTmScopeRenderer:new({
-      "@lsp.type.function",
-      "@function.builtin",
-      "Function",
-    }, "support.function"),
-    _BatTmScopeRenderer:new({
-      "@constant.builtin",
-      "Constant",
-    }, "support.constant"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.type",
-      "@type.builtin",
-      "Type",
-    }, "support.type"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.type",
-      "@type.builtin",
-      "Type",
-    }, "support.class"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.namespace",
-      "@module.builtin",
-    }, "support.module"),
+    _BatTmScopeRenderer:new({ "Function" }, "support.function"),
+    _BatTmScopeRenderer:new({ "Constant" }, "support.constant"),
+    _BatTmScopeRenderer:new({ "Type" }, "support.type"),
+    _BatTmScopeRenderer:new({ "Type" }, "support.class"),
     -- support }
 
     -- variable {
-    _BatTmScopeRenderer:new({
-      "@lsp.type.function",
-      "@function",
-      "Function",
-    }, "variable.function"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.parameter",
-      "@variable.parameter",
-      "Identifier",
-    }, { "variable.parameter" }),
-    _BatTmScopeRenderer:new({
-      "@variable.builtin",
-    }, { "variable.language" }),
-    _BatTmScopeRenderer:new({
-      "@constant",
-    }, { "variable.other.constant" }),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.variable",
-      "@variable",
-      "Identifier",
-    }, "variable"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.variable",
-      "@variable",
-      "Identifier",
-    }, "variable.other"),
-    _BatTmScopeRenderer:new({
-      "@lsp.type.property",
-      "@variable.member",
-    }, "variable.other.member"),
+    _BatTmScopeRenderer:new({ "Function" }, "variable.function"),
+    _BatTmScopeRenderer:new({ "Identifier" }, "variable"),
     -- variable }
-
-    -- punctuation {
-    _BatTmScopeRenderer:new({
-      "@punctuation.bracket",
-    }, {
-      "punctuation.section.braces.begin",
-      "punctuation.section.braces.end",
-      "punctuation.section.brackets.begin",
-      "punctuation.section.brackets.end",
-      "punctuation.section.parens.begin",
-      "punctuation.section.parens.end",
-    }),
-    _BatTmScopeRenderer:new({
-      "@punctuation.special",
-    }, {
-      "punctuation.section.interpolation.begin",
-      "punctuation.section.interpolation.end",
-    }),
-    _BatTmScopeRenderer:new({
-      "@punctuation.delimiter",
-    }, {
-      "punctuation.separator",
-      "punctuation.terminator",
-    }),
-    _BatTmScopeRenderer:new({
-      "@tag.delimiter",
-    }, {
-      "punctuation.definition.generic.begin",
-      "punctuation.definition.generic.end",
-    }),
-    -- punctuation }
   }
 
   return {
@@ -750,31 +523,6 @@ function _BatTmRenderer:render(theme_name)
   }
 end
 
---- @param lsp_type string
---- @param lsp_modifiers table<string, any>?
---- @return boolean
-function _BatTmRenderer:patch_lsp_hl(lsp_type, lsp_modifiers)
-  local updated = false
-  local updated_count = 0
-
-  for i, r in ipairs(self.scopes) do
-    if r:lsp_hl_name() == lsp_type then
-      local has_updates = r:update_lsp_hl()
-      if has_updates then
-        updated = true
-        updated_count = updated_count + 1
-      end
-    end
-  end
-
-  -- log.debug(
-  --   "|_BatTmRenderer:patch_lsp_token| updated lsp hl:%s, has updated:%s",
-  --   vim.inspect(updated_count),
-  --   vim.inspect(updated)
-  -- )
-  return updated
-end
-
 M._BatTmRenderer = _BatTmRenderer
 
 M._BatTmRendererInstance = nil
@@ -845,73 +593,6 @@ M._build_theme = function(colorname)
   end)
 end
 
---- @param colorname string
---- @param lsp_type string
---- @param lsp_modifiers table<string, any>?
-M._patch_theme = function(colorname, lsp_type, lsp_modifiers)
-  if not M._BatTmRendererInstance then
-    return
-  end
-  -- log.debug(
-  --   "|_patch_theme| colorname:%s, lsp_token:%s",
-  --   vim.inspect(colorname),
-  --   vim.inspect(lsp_token)
-  -- )
-
-  log.ensure(str.not_empty(colorname), "|_patch_theme| colorname is empty string!")
-  log.ensure(
-    str.not_empty(lsp_type) and str.startswith(lsp_type, "@lsp"),
-    "|_patch_theme| invalid lsp token:%s",
-    vim.inspect(lsp_type)
-  )
-
-  local theme_dir = bat_themes_helper.get_theme_dir()
-  log.ensure(str.not_empty(theme_dir), "|_patch_theme| failed to get bat config dir")
-
-  local theme_name = bat_themes_helper.get_theme_name(colorname)
-  log.ensure(
-    str.not_empty(theme_name),
-    "|_patch_theme| failed to get theme_name from nvim colorscheme name:%s",
-    vim.inspect(colorname)
-  )
-
-  local updated = M._BatTmRendererInstance:patch_lsp_hl(lsp_type, lsp_modifiers)
-  if not updated then
-    return
-  end
-
-  local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
-  -- log.debug("|_patch_theme| theme_config_file:%s", vim.inspect(theme_config_file))
-  log.ensure(
-    str.not_empty(theme_config_file),
-    "|_patch_theme| failed to get bat theme config file from nvim colorscheme name:%s",
-    vim.inspect(colorname)
-  )
-
-  if building_bat_theme then
-    return
-  end
-  building_bat_theme = true
-
-  local rendered_result = M._BatTmRendererInstance:render(theme_name)
-  fileio.asyncwritefile(theme_config_file, rendered_result.payload, function()
-    vim.defer_fn(function()
-      -- log.debug(
-      --   "|_patch_theme| dump theme payload, theme_template:%s",
-      --   vim.inspect(theme_config_file)
-      -- )
-      spawn.run({ constants.BAT, "cache", "--build" }, {
-        on_stdout = function(line) end,
-        on_stderr = function(line) end,
-      }, function()
-        vim.schedule(function()
-          building_bat_theme = false
-        end)
-      end)
-    end, 10)
-  end)
-end
-
 M.setup = function()
   if not constants.HAS_BAT then
     return
@@ -931,23 +612,6 @@ M.setup = function()
       end)
     end,
   })
-
-  if version.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
-    vim.api.nvim_create_autocmd("LspTokenUpdate", {
-      callback = function(event)
-        -- log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
-        vim.schedule(function()
-          if str.not_empty(tbl.tbl_get(event, "data", "token", "type")) then
-            local lsp_type = string.format("@lsp.type.%s", event.data.token.type)
-            local lsp_modifiers = tbl.tbl_get(event, "data", "token", "modifiers") or {}
-            if str.not_empty(vim.g.colors_name) then
-              M._patch_theme(vim.g.colors_name, lsp_type, lsp_modifiers)
-            end
-          end
-        end)
-      end,
-    })
-  end
 end
 
 return M
