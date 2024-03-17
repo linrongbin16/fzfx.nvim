@@ -4,7 +4,6 @@ local api = require("fzfx.commons.api")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
-local version = require("fzfx.commons.version")
 
 local constants = require("fzfx.lib.constants")
 local log = require("fzfx.lib.log")
@@ -619,73 +618,6 @@ M._build_theme = function(colorname)
   end)
 end
 
---- @param colorname string
---- @param lsp_type string
---- @param lsp_modifiers table<string, any>?
-M._patch_theme = function(colorname, lsp_type, lsp_modifiers)
-  if not M._BatTmRendererInstance then
-    return
-  end
-  -- log.debug(
-  --   "|_patch_theme| colorname:%s, lsp_token:%s",
-  --   vim.inspect(colorname),
-  --   vim.inspect(lsp_token)
-  -- )
-
-  log.ensure(str.not_empty(colorname), "|_patch_theme| colorname is empty string!")
-  log.ensure(
-    str.not_empty(lsp_type) and str.startswith(lsp_type, "@lsp"),
-    "|_patch_theme| invalid lsp token:%s",
-    vim.inspect(lsp_type)
-  )
-
-  local theme_dir = bat_themes_helper.get_theme_dir()
-  log.ensure(str.not_empty(theme_dir), "|_patch_theme| failed to get bat config dir")
-
-  local theme_name = bat_themes_helper.get_theme_name(colorname)
-  log.ensure(
-    str.not_empty(theme_name),
-    "|_patch_theme| failed to get theme_name from nvim colorscheme name:%s",
-    vim.inspect(colorname)
-  )
-
-  local updated = M._BatTmRendererInstance:patch_lsp_hl(lsp_type, lsp_modifiers)
-  if not updated then
-    return
-  end
-
-  local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
-  -- log.debug("|_patch_theme| theme_config_file:%s", vim.inspect(theme_config_file))
-  log.ensure(
-    str.not_empty(theme_config_file),
-    "|_patch_theme| failed to get bat theme config file from nvim colorscheme name:%s",
-    vim.inspect(colorname)
-  )
-
-  if building_bat_theme then
-    return
-  end
-  building_bat_theme = true
-
-  local rendered_result = M._BatTmRendererInstance:render(theme_name)
-  fileio.asyncwritefile(theme_config_file, rendered_result.payload, function()
-    vim.defer_fn(function()
-      -- log.debug(
-      --   "|_patch_theme| dump theme payload, theme_template:%s",
-      --   vim.inspect(theme_config_file)
-      -- )
-      spawn.run({ constants.BAT, "cache", "--build" }, {
-        on_stdout = function(line) end,
-        on_stderr = function(line) end,
-      }, function()
-        vim.schedule(function()
-          building_bat_theme = false
-        end)
-      end)
-    end, 10)
-  end)
-end
-
 M.setup = function()
   if not constants.HAS_BAT then
     return
@@ -705,23 +637,6 @@ M.setup = function()
       end)
     end,
   })
-
-  -- if version.ge("0.9") and vim.fn.exists("##LspTokenUpdate") then
-  --   vim.api.nvim_create_autocmd("LspTokenUpdate", {
-  --     callback = function(event)
-  --       -- log.debug("|setup| LspTokenUpdate:%s", vim.inspect(event))
-  --       vim.schedule(function()
-  --         if str.not_empty(tbl.tbl_get(event, "data", "token", "type")) then
-  --           local lsp_type = string.format("@lsp.type.%s", event.data.token.type)
-  --           local lsp_modifiers = tbl.tbl_get(event, "data", "token", "modifiers") or {}
-  --           if str.not_empty(vim.g.colors_name) then
-  --             M._patch_theme(vim.g.colors_name, lsp_type, lsp_modifiers)
-  --           end
-  --         end
-  --       end)
-  --     end,
-  --   })
-  -- end
 end
 
 return M
