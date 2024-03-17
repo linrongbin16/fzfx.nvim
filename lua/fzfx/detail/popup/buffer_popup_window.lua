@@ -105,6 +105,7 @@ local function _set_default_previewer_win_options(winnr)
   -- apis.set_win_option(winnr, "scrolloff", 0)
   -- apis.set_win_option(winnr, "sidescrolloff", 0)
   api.set_win_option(winnr, "foldenable", false)
+  api.set_win_option(winnr, "wrap", false)
 end
 
 local function _set_default_provider_win_options(winnr)
@@ -342,9 +343,37 @@ end
 --- @return integer, integer
 M._adjust_view = function(top, bottom, lines_count, win_height)
   if top <= 1 then
+    -- log.debug(
+    --   "|_adjust_view|-1 top(%s) <= 1, bottom:%s, lines_count:%s, win_height:%s",
+    --   vim.inspect(top),
+    --   vim.inspect(bottom),
+    --   vim.inspect(lines_count),
+    --   vim.inspect(win_height)
+    -- )
     bottom = M._make_bottom_by_top(top, lines_count, win_height)
+    -- log.debug(
+    --   "|_adjust_view|-2 top(%s) <= 1, bottom:%s, lines_count:%s, win_height:%s",
+    --   vim.inspect(top),
+    --   vim.inspect(bottom),
+    --   vim.inspect(lines_count),
+    --   vim.inspect(win_height)
+    -- )
   elseif bottom >= lines_count then
+    -- log.debug(
+    --   "|_adjust_view|-3 bottom(%s) >= lines_count(%s), top:%s, win_height:%s",
+    --   vim.inspect(bottom),
+    --   vim.inspect(lines_count),
+    --   vim.inspect(top),
+    --   vim.inspect(win_height)
+    -- )
     top = M._make_top_by_bottom(bottom, lines_count, win_height)
+    -- log.debug(
+    --   "|_adjust_view|-4 bottom(%s) >= lines_count(%s), top:%s, win_height:%s",
+    --   vim.inspect(bottom),
+    --   vim.inspect(lines_count),
+    --   vim.inspect(top),
+    --   vim.inspect(win_height)
+    -- )
   end
   return top, bottom
 end
@@ -710,17 +739,17 @@ end
 
 --- @param content_view fzfx.BufferPopupWindowPreviewContentView
 function BufferPopupWindow:_do_view(content_view)
-  -- local ok, err = pcall(
-  --   vim.api.nvim_win_set_cursor,
-  --   self.previewer_winnr,
-  --   { math.max(0, content_view.center - 1), 0 }
-  -- )
-  -- log.ensure(
-  --   ok,
-  --   "|BufferPopupWindow:_do_view| failed to set cursor, view:%s, err:%s",
-  --   vim.inspect(content_view),
-  --   vim.inspect(err)
-  -- )
+  local ok, err = pcall(
+    vim.api.nvim_win_set_cursor,
+    self.previewer_winnr,
+    { math.max(1, content_view.center), 0 }
+  )
+  log.ensure(
+    ok,
+    "|BufferPopupWindow:_do_view| failed to set cursor, view:%s, err:%s",
+    vim.inspect(content_view),
+    vim.inspect(err)
+  )
   vim.api.nvim_win_call(self.previewer_winnr, function()
     vim.api.nvim_command(string.format([[call winrestview({'topline':%d})]], content_view.top))
   end)
@@ -873,7 +902,6 @@ function BufferPopupWindow:scroll_by(percent, up)
     return
   end
 
-  local down = not up
   self._scrolling = true
 
   local function falsy_scrolling()
@@ -884,7 +912,7 @@ function BufferPopupWindow:scroll_by(percent, up)
 
   local LINES = file_content.contents
   local LINES_COUNT = #LINES
-  local WIN_HEIGHT = math.max(vim.api.nvim_win_get_height(self.previewer_winnr), 1)
+  local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
 
   local TOP_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "top")
     or vim.fn.line("w0", self.previewer_winnr)
@@ -900,20 +928,32 @@ function BufferPopupWindow:scroll_by(percent, up)
   end
   local first_line = num.bound(TOP_LINE + shift_lines, 1, LINES_COUNT)
   local last_line = M._make_bottom_by_top(first_line, LINES_COUNT, WIN_HEIGHT)
+  -- log.debug(
+  --   "|BufferPopupWindow:scroll_by|-1 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, first/last:%s/%s",
+  --   vim.inspect(percent),
+  --   vim.inspect(up),
+  --   vim.inspect(LINES_COUNT),
+  --   vim.inspect(WIN_HEIGHT),
+  --   vim.inspect(shift_lines),
+  --   vim.inspect(TOP_LINE),
+  --   vim.inspect(BOTTOM_LINE),
+  --   vim.inspect(CENTER_LINE),
+  --   vim.inspect(first_line),
+  --   vim.inspect(last_line)
+  -- )
   local view = M._make_view_by_range(LINES_COUNT, WIN_HEIGHT, first_line, last_line, HIGHLIGHT_LINE)
-
-  log.debug(
-    "|BufferPopupWindow:scroll_by| percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
-    vim.inspect(percent),
-    vim.inspect(up),
-    vim.inspect(LINES_COUNT),
-    vim.inspect(WIN_HEIGHT),
-    vim.inspect(shift_lines),
-    vim.inspect(TOP_LINE),
-    vim.inspect(BOTTOM_LINE),
-    vim.inspect(CENTER_LINE),
-    vim.inspect(view)
-  )
+  -- log.debug(
+  --   "|BufferPopupWindow:scroll_by|-2 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
+  --   vim.inspect(percent),
+  --   vim.inspect(up),
+  --   vim.inspect(LINES_COUNT),
+  --   vim.inspect(WIN_HEIGHT),
+  --   vim.inspect(shift_lines),
+  --   vim.inspect(TOP_LINE),
+  --   vim.inspect(BOTTOM_LINE),
+  --   vim.inspect(CENTER_LINE),
+  --   vim.inspect(view)
+  -- )
 
   -- if up and TOP_LINE <= 1 then
   --   -- log.debug("|BufferPopupWindow:scroll_by| hit top")
