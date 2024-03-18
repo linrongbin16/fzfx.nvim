@@ -177,10 +177,12 @@ function Popup:new(
     -- )
     if exitcode > 1 and (exitcode ~= 130 and exitcode ~= 129) then
       log.err(
-        "command '%s' exit with code: %d, event: %s",
-        vim.inspect(fzf_command),
-        vim.inspect(exitcode),
-        vim.inspect(event)
+        string.format(
+          "command '%s' exit with code: %d, event: %s",
+          vim.inspect(fzf_command),
+          vim.inspect(exitcode),
+          vim.inspect(event)
+        )
       )
       return
     end
@@ -199,8 +201,7 @@ function Popup:new(
 
     log.ensure(
       path.isfile(result),
-      "|Popup:new.on_fzf_exit| result %s must be readable",
-      vim.inspect(result)
+      string.format("|Popup:new.on_fzf_exit| result %s must be readable", vim.inspect(result))
     )
     local lines = fileio.readlines(result --[[@as string]]) --[[@as table]]
     -- log.debug(
@@ -220,22 +221,26 @@ function Popup:new(
     --     vim.inspect(action_lines)
     -- )
     vim.schedule(function()
-      log.ensure(actions[action_key] ~= nil, "unknown action key: %s", vim.inspect(action_key))
+      log.ensure(actions[action_key] ~= nil, "unknown action key: " .. vim.inspect(action_key))
       local action_callback = actions[action_key]
       log.ensure(
         type(action_callback) == "function",
-        "wrong action type on key: %s, must be function(%s): %s",
-        vim.inspect(action_key),
-        type(action_callback),
-        vim.inspect(action_callback)
+        string.format(
+          "wrong action type on key: %s, must be function(%s): %s",
+          vim.inspect(action_key),
+          type(action_callback),
+          vim.inspect(action_callback)
+        )
       )
       local ok, cb_err = pcall(action_callback, action_lines, context)
       log.ensure(
         ok,
-        "failed to run action on callback(%s) with lines(%s)! %s",
-        vim.inspect(action_callback),
-        vim.inspect(action_lines),
-        vim.inspect(cb_err)
+        string.format(
+          "failed to run action on callback(%s) with lines(%s)! %s",
+          vim.inspect(action_callback),
+          vim.inspect(action_lines),
+          vim.inspect(cb_err)
+        )
       )
       if type(on_close) == "function" then
         vim.schedule(function()
@@ -254,7 +259,7 @@ function Popup:new(
 
   -- log.debug("|Popup:new| $FZF_DEFAULT_OPTS:%s", vim.inspect(vim.env.FZF_DEFAULT_OPTS))
   -- log.debug("|Popup:new| $FZF_DEFAULT_COMMAND:%s", vim.inspect(vim.env.FZF_DEFAULT_COMMAND))
-  log.debug("|Popup:new| fzf_command:%s", vim.inspect(fzf_command))
+  log.debug("|Popup:new| fzf_command:" .. vim.inspect(fzf_command))
 
   -- launch
   local jobid = vim.fn.termopen(fzf_command, { on_exit = on_fzf_exit }) --[[@as integer ]]

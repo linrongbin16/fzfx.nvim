@@ -12,15 +12,11 @@ local function setup(opts)
     file_log = configs.debug.file_log,
   })
 
-  -- log.debug(
-  --     "|fzfx - setup| Defaults:\n%s",
-  --     vim.inspect(require("fzfx.config").get_defaults())
-  -- )
-  -- log.debug("|fzfx - setup| Configs:\n%s", vim.inspect(configs))
-
   -- cache
   if vim.fn.filereadable(configs.cache.dir) > 0 then
-    log.throw("the 'cache.dir' (%s) already exist but not a directory!", configs.cache.dir)
+    log.throw(
+      string.format("the 'cache.dir' (%s) already exist but not a directory!", configs.cache.dir)
+    )
   else
     vim.fn.mkdir(configs.cache.dir, "p")
   end
@@ -74,9 +70,11 @@ local function setup(opts)
       local ok, error_msg = pcall(general.setup, user_group, user_configs)
       if not ok then
         log.err(
-          "failed to create user commands for %s! %s",
-          vim.inspect(user_group),
-          vim.inspect(error_msg)
+          string.format(
+            "failed to create user commands for %s! %s",
+            vim.inspect(user_group),
+            vim.inspect(error_msg)
+          )
         )
       end
     end

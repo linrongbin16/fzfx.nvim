@@ -1,6 +1,7 @@
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local api = require("fzfx.commons.api")
+local color_hl = require("fzfx.commons.color.hl")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
 local spawn = require("fzfx.commons.spawn")
@@ -12,37 +13,19 @@ local bat_themes_helper = require("fzfx.helper.bat_themes")
 
 local M = {}
 
--- renderer for tmTheme globals
+-- renderer for TextMate tmTheme globals
 --
 --- @class fzfx._BatTmGlobalRenderer
 --- @field key string
 --- @field value string?
 local _BatTmGlobalRenderer = {}
 
---- @param hl string|string[]
+--- @param highlights string|string[]
 --- @param key string
 --- @param attr "fg"|"bg"
 --- @return fzfx._BatTmGlobalRenderer
-function _BatTmGlobalRenderer:new(hl, key, attr)
-  local hls = type(hl) == "table" and hl or {
-    hl --[[@as string]],
-  }
-
-  local value = nil
-  for i, h in ipairs(hls) do
-    local ok, hl_codes = pcall(api.get_hl, h)
-    if ok and tbl.tbl_not_empty(hl_codes) then
-      if attr == "fg" and hl_codes.fg then
-        value = string.format("#%06x", hl_codes.fg)
-      elseif attr == "bg" and hl_codes.bg then
-        value = string.format("#%06x", hl_codes.bg)
-      end
-      if value then
-        break
-      end
-    end
-  end
-
+function _BatTmGlobalRenderer:new(highlights, key, attr)
+  local value = color_hl.get_color_with_fallback(highlights, attr)
   local o = {
     key = key,
     value = value,
@@ -54,19 +37,9 @@ end
 
 --- @return string?
 function _BatTmGlobalRenderer:render()
-  if not self.value then
+  if str.empty(self.key) or str.empty(self.value) then
     return nil
   end
-  log.ensure(
-    type(self.key) == "string" and string.len(self.key) > 0,
-    "|_BatTmGlobalRenderer:render| invalid key:%s",
-    vim.inspect(self)
-  )
-  log.ensure(
-    type(self.value) == "string" and string.len(self.value) > 0,
-    "|_BatTmGlobalRenderer:render| invalid value:%s",
-    vim.inspect(self)
-  )
   local builder = {
     string.format("          <key>%s</key>", self.key),
     string.format("          <string>%s</string>", self.value),
@@ -80,7 +53,6 @@ end
 --
 --- @class fzfx._BatTmScopeRenderer
 --- @field value fzfx._BatTmScopeValue?
---- @field lsp_value fzfx._BatTmScopeValue?
 local _BatTmScopeRenderer = {}
 
 --- @param hl string
@@ -91,11 +63,10 @@ M._make_scope_value = function(hl, scope, hl_codes)
   if tbl.tbl_empty(hl_codes) then
     return nil
   end
-  log.ensure(type(hl) == "string" and string.len(hl) > 0, "|_make_scope_value| invalid hl name")
+  log.ensure(str.not_empty(hl), "|_make_scope_value| invalid hl name")
   log.ensure(
-    (type(scope) == "string" and string.len(scope) > 0) or (tbl.tbl_not_empty(scope)),
-    "|_make_scope_value| invalid tm scope:%s",
-    vim.inspect(scope)
+    str.not_empty(scope) or (tbl.tbl_not_empty(scope)),
+    string.format("|_make_scope_value| invalid tm scope:%s", vim.inspect(scope))
   )
 
   local font_style = {}
@@ -132,17 +103,12 @@ function _BatTmScopeRenderer:new(hl, scope)
   }
 
   local value = nil
-  local lsp_value = nil
   for i, h in ipairs(hls) do
     local ok, hl_codes = pcall(api.get_hl, h)
     if ok and tbl.tbl_not_empty(hl_codes) then
       local item = M._make_scope_value(h, scope, hl_codes)
       if item then
-        if str.startswith(h, "@lsp") then
-          lsp_value = item
-        else
-          value = item
-        end
+        value = item
         break
       end
     end
@@ -151,7 +117,6 @@ function _BatTmScopeRenderer:new(hl, scope)
   local o = {
     scope = scope,
     value = value,
-    lsp_value = lsp_value,
   }
   setmetatable(o, self)
   self.__index = self
@@ -215,71 +180,10 @@ end
 
 --- @return string?
 function _BatTmScopeRenderer:render()
-  if self.lsp_value then
-    return M._render_scope(self.lsp_value)
+  if tbl.tbl_empty(self.value) then
+    return nil
   end
-  if self.value then
-    return M._render_scope(self.value)
-  end
-  return nil
-end
-
---- @return string?
-function _BatTmScopeRenderer:lsp_hl_name()
-  return tbl.tbl_get(self.lsp_value, "hl")
-end
-
---- @return boolean
-function _BatTmScopeRenderer:update_lsp_hl()
-  if str.empty(tbl.tbl_get(self.lsp_value, "hl")) then
-    -- log.debug(
-    --   "|_BatTmScopeRenderer:update_lsp_hl| invalid self.lsp_value.hl:%s",
-    --   vim.inspect(self.lsp_value)
-    -- )
-    return false
-  end
-  log.ensure(
-    str.startswith(self.lsp_value.hl, "@lsp"),
-    "|_BatTmScopeRenderer:update_lsp_highlight| invalid lsp highlight:%s",
-    vim.inspect(self.lsp_value)
-  )
-
-  local ok, hl_codes = pcall(api.get_hl, self.lsp_value.hl)
-  if not ok or tbl.tbl_empty(hl_codes) then
-    -- log.debug(
-    --   "|_BatTmScopeRenderer:update_lsp_hl| invalid hl_codes, hl:%s, error:%s",
-    --   vim.inspect(self.lsp_value.hl),
-    --   vim.inspect(hl_codes)
-    -- )
-    return false
-  end
-
-  local new_value = M._make_scope_value(self.lsp_value.hl, self.lsp_value.scope, hl_codes)
-  if tbl.tbl_empty(new_value) then
-    -- log.debug(
-    --   "|_BatTmScopeRenderer:update_lsp_hl| empty new value, hl:%s, hl_codes:%s",
-    --   vim.inspect(self.lsp_value.hl),
-    --   vim.inspect(hl_codes)
-    -- )
-    return false
-  end
-
-  if vim.deep_equal(self.lsp_value, new_value) then
-    -- log.debug(
-    --   "|_BatTmScopeRenderer:update_lsp_hl| new value is still same, self.lsp_value:%s, new_value:%s",
-    --   vim.inspect(self.lsp_value),
-    --   vim.inspect(new_value)
-    -- )
-    return false
-  end
-
-  self.lsp_value = new_value
-  -- log.debug(
-  --   "|_BatTmScopeRenderer:update_lsp_hl| updated lsp hl:%s",
-  --   vim.inspect(self.lsp_value)
-  -- )
-
-  return true
+  return M._render_scope(self.value)
 end
 
 --- @return {globals:fzfx._BatTmGlobalRenderer[],scopes:fzfx._BatTmScopeRenderer[]}
@@ -296,8 +200,6 @@ M._make_render_map = function()
   local GLOBAL_RENDERERS = {
     _BatTmGlobalRenderer:new("Normal", "background", "bg"),
     _BatTmGlobalRenderer:new("Normal", "foreground", "fg"),
-    _BatTmGlobalRenderer:new("Cursor", "caret", "bg"),
-    _BatTmGlobalRenderer:new("Cursor", "block_caret", "bg"),
     _BatTmGlobalRenderer:new("NonText", "invisibles", "fg"),
     _BatTmGlobalRenderer:new({ "Visual" }, "lineHighlight", "bg"),
     _BatTmGlobalRenderer:new({
@@ -305,12 +207,14 @@ M._make_render_map = function()
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
+      "@diff.plus",
       "Added",
     }, "lineDiffAdded", "fg"),
     _BatTmGlobalRenderer:new({
       "GitSignsChange",
       "GitGutterChange",
       "DiffChange",
+      "@diff.delta",
       "Changed",
     }, "lineDiffModified", "fg"),
     _BatTmGlobalRenderer:new({
@@ -318,6 +222,7 @@ M._make_render_map = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
+      "@diff.minus",
       "Removed",
     }, "lineDiffDeleted", "fg"),
   }
@@ -338,38 +243,75 @@ M._make_render_map = function()
   -- syntax and treesitter map
   local SCOPE_RENDERERS = {
     -- comment {
-    _BatTmScopeRenderer:new("Comment", "comment"),
+    _BatTmScopeRenderer:new({ "@comment", "Comment" }, "comment"),
     -- comment }
 
     -- constant {
-    _BatTmScopeRenderer:new("Number", "constant.numeric"),
-    _BatTmScopeRenderer:new("Float", "constant.numeric.float"),
-    _BatTmScopeRenderer:new("Boolean", "constant.language"),
-    _BatTmScopeRenderer:new("Character", { "constant.character" }),
+    _BatTmScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
+    _BatTmScopeRenderer:new({ "@number.float", "Float" }, "constant.numeric.float"),
+    _BatTmScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
+    _BatTmScopeRenderer:new({ "@character", "Character" }, { "constant.character" }),
+    _BatTmScopeRenderer:new(
+      { "@string.escape" },
+      { "constant.character.escaped", "constant.character.escape" }
+    ),
     -- constant }
 
     -- entity {
-    _BatTmScopeRenderer:new("Function", "entity.name.function"),
-    _BatTmScopeRenderer:new("Type", { "entity.name.type" }),
+    _BatTmScopeRenderer:new({ "@function", "Function" }, "entity.name.function"),
+    _BatTmScopeRenderer:new({ "@function.call" }, "entity.name.function.call"),
+    _BatTmScopeRenderer:new({ "@constructor" }, "entity.name.function.constructor"),
+    _BatTmScopeRenderer:new({ "@type", "Type" }, { "entity.name.type" }),
+    _BatTmScopeRenderer:new({ "@tag" }, "entity.name.tag"),
+    _BatTmScopeRenderer:new({ "@tag.attribute" }, "entity.other.attribute-name"),
     _BatTmScopeRenderer:new({ "Structure" }, { "entity.name.union" }),
     _BatTmScopeRenderer:new({ "Structure" }, { "entity.name.enum" }),
-    _BatTmScopeRenderer:new({ "Label" }, "entity.name.label"),
-    _BatTmScopeRenderer:new({ "Constant" }, "entity.name.constant"),
-    _BatTmScopeRenderer:new({ "Type" }, "entity.other.inherited-class"),
+    _BatTmScopeRenderer:new({ "@markup.heading" }, "entity.name.section"),
+    _BatTmScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
+    _BatTmScopeRenderer:new({ "@constant", "Constant" }, "entity.name.constant"),
+    _BatTmScopeRenderer:new({ "@type", "Type" }, "entity.other.inherited-class"),
     -- entity }
 
     -- keyword {
-    _BatTmScopeRenderer:new({ "Keyword" }, "keyword"),
-    _BatTmScopeRenderer:new({ "Conditional" }, "keyword.control"),
-    _BatTmScopeRenderer:new({ "Operator" }, "keyword.operator"),
+    _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
+    _BatTmScopeRenderer:new({ "@keyword.conditional", "Conditional" }, "keyword.control"),
+    _BatTmScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
+    _BatTmScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+    _BatTmScopeRenderer:new({ "@keyword.operator" }, "keyword.operator.word"),
+    _BatTmScopeRenderer:new({ "@keyword.conditional.ternary" }, "keyword.operator.ternary"),
     -- keyword }
 
     -- markup {
+    _BatTmScopeRenderer:new({
+      "@markup.link.url",
+    }, "markup.underline.link"),
+    _BatTmScopeRenderer:new({
+      "@markup.underline",
+    }, "markup.underline"),
+    _BatTmScopeRenderer:new({
+      "@markup.strong",
+    }, "markup.bold"),
+    _BatTmScopeRenderer:new({
+      "@markup.italic",
+    }, "markup.italic"),
+    _BatTmScopeRenderer:new({
+      "@markup.heading",
+    }, "markup.heading"),
+    _BatTmScopeRenderer:new({
+      "@markup.list",
+    }, "markup.list"),
+    _BatTmScopeRenderer:new({
+      "@markup.raw",
+    }, "markup.raw"),
+    _BatTmScopeRenderer:new({
+      "@markup.quote",
+    }, "markup.quote"),
     _BatTmScopeRenderer:new({
       "GitSignsAdd",
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
+      "@diff.plus",
       "Added",
     }, { "markup.inserted" }),
     _BatTmScopeRenderer:new({
@@ -377,23 +319,26 @@ M._make_render_map = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
+      "@diff.minus",
       "Removed",
     }, { "markup.deleted" }),
     _BatTmScopeRenderer:new({
       "GitGutterChange",
       "GitSignsChange",
       "DiffChange",
+      "@diff.delta",
       "Changed",
     }, { "markup.changed" }),
     -- markup }
 
     -- meta {
-    _BatTmScopeRenderer:new({ "Macro" }, { "meta.preprocessor" }),
+    _BatTmScopeRenderer:new({ "@attribute" }, { "meta.annotation" }),
+    _BatTmScopeRenderer:new({ "@constant.macro", "Macro" }, { "meta.preprocessor" }),
     -- meta }
 
     -- storage {
     _BatTmScopeRenderer:new(
-      { "Keyword" },
+      { "@keyword.function", "Keyword" },
       { "storage.type.function", "keyword.declaration.function" }
     ),
     _BatTmScopeRenderer:new({ "Structure" }, {
@@ -404,24 +349,28 @@ M._make_render_map = function()
       "storage.type.struct",
       "keyword.declaration.struct",
     }),
-    _BatTmScopeRenderer:new({ "Type" }, { "storage.type", "keyword.declaration.type" }),
-    _BatTmScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
+    _BatTmScopeRenderer:new({ "@type", "Type" }, { "storage.type", "keyword.declaration.type" }),
+    _BatTmScopeRenderer:new({ "@keyword.storage", "StorageClass" }, "storage.modifier"),
     -- storage }
 
     -- string {
-    _BatTmScopeRenderer:new({ "String" }, { "string", "string.quoted" }),
+    _BatTmScopeRenderer:new({ "@string", "String" }, { "string", "string.quoted" }),
+    _BatTmScopeRenderer:new({ "@string.regexp" }, { "string.regexp" }),
     -- string }
 
     -- support {
-    _BatTmScopeRenderer:new({ "Function" }, "support.function"),
-    _BatTmScopeRenderer:new({ "Constant" }, "support.constant"),
-    _BatTmScopeRenderer:new({ "Type" }, "support.type"),
-    _BatTmScopeRenderer:new({ "Type" }, "support.class"),
+    _BatTmScopeRenderer:new({ "@function.builtin", "Function" }, "support.function"),
+    _BatTmScopeRenderer:new({ "@constant.builtin", "Constant" }, "support.constant"),
+    _BatTmScopeRenderer:new({ "@type.builtin", "Type" }, "support.type"),
+    _BatTmScopeRenderer:new({ "@type.builtin", "Type" }, "support.class"),
+    _BatTmScopeRenderer:new({ "@module.builtin" }, "support.module"),
     -- support }
 
     -- variable {
-    _BatTmScopeRenderer:new({ "Function" }, "variable.function"),
-    _BatTmScopeRenderer:new({ "Identifier" }, "variable"),
+    _BatTmScopeRenderer:new({ "@function", "Function" }, "variable.function"),
+    _BatTmScopeRenderer:new({ "@variable", "Identifier" }, "variable"),
+    _BatTmScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
+    _BatTmScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
     -- variable }
   }
 
@@ -441,7 +390,7 @@ local _BatTmRenderer = {}
 
 --- @return fzfx._BatTmRenderer
 function _BatTmRenderer:new()
-  -- there're 3 components in below template:
+  -- there're 3 sections in below template:
   -- {NAME}
   -- {GLOBAL}
   -- {SCOPE}
@@ -478,7 +427,7 @@ function _BatTmRenderer:new()
     <string>uuid</string>
   </dict>
 </plist>
-  ]]
+]]
 
   local render_map = M._make_render_map()
 
@@ -534,40 +483,37 @@ M._build_theme = function(colorname)
   log.ensure(str.not_empty(colorname), "|_build_theme| colorname is empty string!")
 
   local theme_dir = bat_themes_helper.get_theme_dir()
-  log.ensure(str.not_empty(theme_dir), "|_build_theme| failed to get bat config dir")
-
-  -- log.debug("|_build_theme| theme_dir:%s", vim.inspect(theme_dir))
-  if not path.isdir(theme_dir) then
-    spawn
-      .run({ "mkdir", "-p", theme_dir }, {
-        on_stdout = function() end,
-        on_stderr = function() end,
-      })
-      :wait()
+  if str.empty(theme_dir) then
+    return
   end
+
+  log.ensure(
+    path.isdir(theme_dir --[[@as string]]),
+    string.format("|_build_theme| bat theme dir:%s not exist", vim.inspect(theme_dir))
+  )
 
   local theme_name = bat_themes_helper.get_theme_name(colorname)
   log.ensure(
     str.not_empty(theme_name),
-    "|_build_theme| failed to get theme_name from nvim colorscheme name:%s",
-    vim.inspect(colorname)
+    "|_build_theme| failed to get theme_name from nvim colorscheme name: " .. vim.inspect(colorname)
   )
 
   M._BatTmRendererInstance = _BatTmRenderer:new()
   local rendered_result = M._BatTmRendererInstance:render(theme_name)
   log.ensure(
     tbl.tbl_not_empty(rendered_result),
-    "|_build_theme| rendered result is empty, color name:%s, theme name:%s",
-    vim.inspect(colorname),
-    vim.inspect(theme_name)
+    "|_build_theme| rendered result is empty, color name:"
+      .. vim.inspect(colorname)
+      .. ", theme name:"
+      .. vim.inspect(theme_name)
   )
 
   local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
   -- log.debug("|_build_theme| theme_config_file:%s", vim.inspect(theme_config_file))
   log.ensure(
     str.not_empty(theme_config_file),
-    "|_build_theme| failed to get bat theme config file from nvim colorscheme name:%s",
-    vim.inspect(colorname)
+    "|_build_theme| failed to get bat theme config file from nvim colorscheme name:"
+      .. vim.inspect(colorname)
   )
 
   if building_bat_theme then
@@ -575,7 +521,7 @@ M._build_theme = function(colorname)
   end
   building_bat_theme = true
 
-  fileio.asyncwritefile(theme_config_file, rendered_result.payload, function()
+  fileio.asyncwritefile(theme_config_file --[[@as string]], rendered_result.payload, function()
     vim.defer_fn(function()
       -- log.debug(
       --   "|_build_theme| dump theme payload, theme_template:%s",
@@ -598,8 +544,12 @@ M.setup = function()
     return
   end
 
+  bat_themes_helper.get_theme_dir()
+
   if str.not_empty(vim.g.colors_name) then
-    M._build_theme(vim.g.colors_name)
+    vim.defer_fn(function()
+      M._build_theme(vim.g.colors_name)
+    end, 100)
   end
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {

@@ -164,32 +164,30 @@ M._parse_mark_command_output_first_line = function(first_line)
 
   log.ensure(
     string.len(first_line) > 0,
-    "invalid 'marks' first line output:%s",
-    vim.inspect(first_line)
+    string.format("invalid 'marks' first line output:%s", vim.inspect(first_line))
   )
   local mark_pos = str.find(first_line, MARK) --[[@as integer]]
   log.ensure(
     num.ge(mark_pos, 0),
-    "invalid 'marks' first line, failed to find 'mark':%s",
-    vim.inspect(first_line)
+    string.format("invalid 'marks' first line, failed to find 'mark':%s", vim.inspect(first_line))
   )
   local lineno_pos = str.find(first_line, LINE, mark_pos + string.len(MARK)) --[[@as integer]]
   log.ensure(
     num.ge(lineno_pos, 0),
-    "invalid 'marks' first line, failed to find 'line':%s",
-    vim.inspect(first_line)
+    string.format("invalid 'marks' first line, failed to find 'line':%s", vim.inspect(first_line))
   )
   local col_pos = str.find(first_line, COL, lineno_pos + string.len(LINE)) --[[@as integer]]
   log.ensure(
     num.ge(col_pos, 0),
-    "invalid 'marks' first line, failed to find 'col':%s",
-    vim.inspect(first_line)
+    string.format("invalid 'marks' first line, failed to find 'col':%s", vim.inspect(first_line))
   )
   local file_text_pos = str.find(first_line, FILE_TEXT, col_pos + string.len(COL)) --[[@as integer]]
   log.ensure(
     num.ge(file_text_pos, 0),
-    "invalid 'marks' first line, failed to find 'file/text':%s",
-    vim.inspect(first_line)
+    string.format(
+      "invalid 'marks' first line, failed to find 'file/text':%s",
+      vim.inspect(first_line)
+    )
   )
 
   return {
@@ -245,16 +243,20 @@ M._vim_marks_previewer = function(line, context)
   end
   local parsed = parsers_helper.parse_vim_mark(line, context)
   log.debug(
-    "|_vim_marks_previewer| line:%s, context:%s, parsed:%s",
-    vim.inspect(line),
-    vim.inspect(context),
-    vim.inspect(parsed)
+    string.format(
+      "|_vim_marks_previewer| line:%s, context:%s, parsed:%s",
+      vim.inspect(line),
+      vim.inspect(context),
+      vim.inspect(parsed)
+    )
   )
   log.debug(
-    "|_vim_marks_previewer| tbl_not_empty(parsed):%s, isfile:%s, lineno:%s",
-    vim.inspect(tbl.tbl_not_empty(parsed)),
-    vim.inspect(path.isfile(parsed.filename or "")),
-    vim.inspect(num.ge(parsed.lineno, 0))
+    string.format(
+      "|_vim_marks_previewer| tbl_not_empty(parsed):%s, isfile:%s, lineno:%s",
+      vim.inspect(tbl.tbl_not_empty(parsed)),
+      vim.inspect(path.isfile(parsed.filename or "")),
+      vim.inspect(num.ge(parsed.lineno, 0))
+    )
   )
   if
     tbl.tbl_not_empty(parsed)

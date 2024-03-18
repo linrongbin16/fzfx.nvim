@@ -193,10 +193,12 @@ M._parse_map_command_output_line = function(line)
     local filename = rhs_or_location:sub(first_colon_pos + 1, last_colon_pos - 1)
     local lineno = rhs_or_location:sub(last_colon_pos + 1, #rhs_or_location - 1)
     log.debug(
-      "|_parse_map_command_output_line| lhs:%s, filename:%s, lineno:%s",
-      vim.inspect(lhs),
-      vim.inspect(filename),
-      vim.inspect(lineno)
+      string.format(
+        "|_parse_map_command_output_line| lhs:%s, filename:%s, lineno:%s",
+        vim.inspect(lhs),
+        vim.inspect(filename),
+        vim.inspect(lineno)
+      )
     )
     result.filename = path.normalize(filename, { double_backslash = true, expand = true })
     result.lineno = tonumber(lineno)
@@ -307,7 +309,7 @@ M._get_vim_keymaps = function()
       km.desc = get_string(km.desc, "")
     end
   end
-  log.debug("|_get_vim_keymaps| keys_output_map2:%s", vim.inspect(keys_output_map))
+  log.debug(string.format("|_get_vim_keymaps| keys_output_map2:%s", vim.inspect(keys_output_map)))
   local results = {}
   for _, r in pairs(keys_output_map) do
     table.insert(results, r)
@@ -315,7 +317,7 @@ M._get_vim_keymaps = function()
   table.sort(results, function(a, b)
     return a.lhs < b.lhs
   end)
-  log.debug("|_get_vim_keymaps| results:%s", vim.inspect(results))
+  log.debug(string.format("|_get_vim_keymaps| results:%s", vim.inspect(results)))
   return results
 end
 
@@ -363,14 +365,16 @@ M._render_vim_keymaps = function(keymaps, key_width, opts_width)
   local header = string.format(formatter, KEY, OPTS, DEF_OR_LOC)
   table.insert(results, header)
   log.debug(
-    "|_render_vim_keymaps| formatter:%s, header:%s",
-    vim.inspect(formatter),
-    vim.inspect(header)
+    string.format(
+      "|_render_vim_keymaps| formatter:%s, header:%s",
+      vim.inspect(formatter),
+      vim.inspect(header)
+    )
   )
   for i, c in ipairs(keymaps) do
     local rendered =
       string.format(formatter, c.lhs, M._render_vim_keymaps_column_opts(c), rendered_def_or_loc(c))
-    log.debug("|_render_vim_keymaps| rendered[%d]:%s", i, vim.inspect(rendered))
+    log.debug(string.format("|_render_vim_keymaps| rendered[%d]:%s", i, vim.inspect(rendered)))
     table.insert(results, rendered)
   end
   return results
@@ -514,9 +518,11 @@ M._render_vim_keymaps_columns_status = function(keys)
     max_opts = math.max(max_opts, string.len(M._render_vim_keymaps_column_opts(k)))
   end
   log.debug(
-    "|_render_vim_keymaps_columns_status| lhs:%s, opts:%s",
-    vim.inspect(max_key),
-    vim.inspect(max_opts)
+    string.format(
+      "|_render_vim_keymaps_columns_status| lhs:%s, opts:%s",
+      vim.inspect(max_key),
+      vim.inspect(max_opts)
+    )
   )
   return max_key, max_opts
 end

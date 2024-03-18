@@ -33,9 +33,11 @@ M.parse_find = function(line)
     local first_icon_pos = str.find(line, " ")
     log.ensure(
       type(first_icon_pos) == "number",
-      "failed to parse filename, cannot find first icon pos:%s, line:%s",
-      vim.inspect(first_icon_pos),
-      vim.inspect(line)
+      string.format(
+        "failed to parse filename, cannot find first icon pos:%s, line:%s",
+        vim.inspect(first_icon_pos),
+        vim.inspect(line)
+      )
     )
     filename = line:sub(first_icon_pos + 1)
   else
@@ -636,7 +638,9 @@ end
 --- @param context fzfx.VimMarksPipelineContext
 --- @return {mark:string,lineno:integer?,col:integer?,filename:string?,text:string?}
 M.parse_vim_mark = function(line, context)
-  log.debug("|parse_vim_mark| line:%s, context:%s", vim.inspect(line), vim.inspect(context))
+  log.debug(
+    string.format("|parse_vim_mark| line:%s, context:%s", vim.inspect(line), vim.inspect(context))
+  )
   local mark_value = string.sub(line, context.mark_pos, context.lineno_pos - 1)
   local mark = str.trim(mark_value)
   local lineno_value = string.sub(line, context.lineno_pos, context.col_pos - 1)

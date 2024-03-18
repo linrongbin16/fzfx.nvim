@@ -118,7 +118,7 @@ M._get_vim_ex_commands = function()
   local help_docs_list =
     ---@diagnostic disable-next-line: param-type-mismatch
     vim.fn.globpath(vim.env.VIMRUNTIME, "doc/index.txt", 0, 1) --[[@as table]]
-  log.debug("|_get_vim_ex_commands| help docs:%s", vim.inspect(help_docs_list))
+  log.debug(string.format("|_get_vim_ex_commands| help docs:%s", vim.inspect(help_docs_list)))
   if tbl.tbl_empty(help_docs_list) then
     log.echo(LogLevels.INFO, "no 'doc/index.txt' found.")
     return {}
@@ -129,7 +129,7 @@ M._get_vim_ex_commands = function()
     for i = 1, #lines do
       local line = lines[i]
       if str.startswith(line, "|:") then
-        log.debug("|_get_vim_ex_commands| line[%d]:%s", i, vim.inspect(line))
+        log.debug(string.format("|_get_vim_ex_commands| line[%d]:%s", i, vim.inspect(line)))
         local name = M._parse_vim_ex_command_name(line)
         if type(name) == "string" and string.len(name) > 0 then
           results[name] = {
@@ -144,7 +144,7 @@ M._get_vim_ex_commands = function()
       i = i + 1
     end
   end
-  log.debug("|_get_vim_ex_commands| results:%s", vim.inspect(results))
+  log.debug(string.format("|_get_vim_ex_commands| results:%s", vim.inspect(results)))
   return results
 end
 
@@ -172,9 +172,11 @@ end
 --- @return {filename:string,lineno:integer}?
 M._parse_ex_command_output_lua_function_definition = function(line, start_pos)
   log.debug(
-    "|_parse_ex_command_output_lua_function_definition| line:%s, start_pos:%s",
-    vim.inspect(line),
-    vim.inspect(start_pos)
+    string.format(
+      "|_parse_ex_command_output_lua_function_definition| line:%s, start_pos:%s",
+      vim.inspect(line),
+      vim.inspect(start_pos)
+    )
   )
   local lua_flag = "<Lua "
   local lua_function_flag = "<Lua function>"
@@ -192,11 +194,18 @@ M._parse_ex_command_output_lua_function_definition = function(line, start_pos)
   if string.len(content) > 0 and content:sub(#content) == ">" then
     content = content:sub(1, #content - 1)
   end
-  log.debug("|_parse_ex_command_output_lua_function_definition| content-2:%s", vim.inspect(content))
+  log.debug(
+    string.format(
+      "|_parse_ex_command_output_lua_function_definition| content-2:%s",
+      vim.inspect(content)
+    )
+  )
   local content_splits = str.split(content, ":")
   log.debug(
-    "|_parse_ex_command_output_lua_function_definition| split content:%s",
-    vim.inspect(content_splits)
+    string.format(
+      "|_parse_ex_command_output_lua_function_definition| split content:%s",
+      vim.inspect(content_splits)
+    )
   )
   return {
     filename = vim.fn.expand(content_splits[1]),
@@ -280,7 +289,9 @@ M._parse_ex_command_output = function()
     if found_command_output_header then
       -- parse command name, e.g., FzfxCommands, etc.
       local idx = parsed_header.name_pos
-      log.debug("|_parse_ex_command_output| line[%d]:%s(%d)", i, vim.inspect(line), idx)
+      log.debug(
+        string.format("|_parse_ex_command_output| line[%d]:%s(%d)", i, vim.inspect(line), idx)
+      )
       while idx <= #line and not str.isspace(line:sub(idx, idx)) do
         -- log.debug(
         --     "|fzfx.config - _parse_ex_command_output| parse non-spaces, idx:%d, char:%s(%s)",
@@ -312,7 +323,9 @@ M._parse_ex_command_output = function()
     if M._is_ex_command_output_header(line) then
       found_command_output_header = true
       parsed_header = M._parse_ex_command_output_header(line)
-      log.debug("|_parse_ex_command_output| parsed header:%s", vim.inspect(parsed_header))
+      log.debug(
+        string.format("|_parse_ex_command_output| parsed header:%s", vim.inspect(parsed_header))
+      )
     end
   end
 
@@ -323,7 +336,7 @@ end
 M._get_vim_user_commands = function()
   local parsed_ex_commands = M._parse_ex_command_output()
   local user_commands = vim.api.nvim_get_commands({ builtin = false })
-  log.debug("|_get_vim_user_commands| user commands:%s", vim.inspect(user_commands))
+  log.debug(string.format("|_get_vim_user_commands| user commands:%s", vim.inspect(user_commands)))
 
   local results = {}
   for name, opts in pairs(user_commands) do
@@ -402,9 +415,11 @@ M._render_vim_commands = function(commands, name_width, opts_width)
   local header = string.format(formatter, NAME, OPTS, DEF_OR_LOC)
   table.insert(results, header)
   log.debug(
-    "|_render_vim_commands| formatter:%s, header:%s",
-    vim.inspect(formatter),
-    vim.inspect(header)
+    string.format(
+      "|_render_vim_commands| formatter:%s, header:%s",
+      vim.inspect(formatter),
+      vim.inspect(header)
+    )
   )
   for i, c in ipairs(commands) do
     local rendered = string.format(
@@ -413,7 +428,7 @@ M._render_vim_commands = function(commands, name_width, opts_width)
       M._render_vim_commands_column_opts(c),
       rendered_desc_or_loc(c)
     )
-    log.debug("|_render_vim_commands| rendered[%d]:%s", i, vim.inspect(rendered))
+    log.debug(string.format("|_render_vim_commands| rendered[%d]:%s", i, vim.inspect(rendered)))
     table.insert(results, rendered)
   end
   return results

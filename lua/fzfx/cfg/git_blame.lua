@@ -56,7 +56,7 @@ M._git_blame_provider = function(query, context)
     return nil
   end
   if not bufs.buf_is_valid(context.bufnr) then
-    log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(context.bufnr))
+    log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(context.bufnr)))
     return nil
   end
   local bufname = vim.api.nvim_buf_get_name(context.bufnr)

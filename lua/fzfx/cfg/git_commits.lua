@@ -92,7 +92,7 @@ M._make_git_commits_provider = function(opts)
     end
     if tbl.tbl_get(opts, "buffer") then
       if not bufs.buf_is_valid(context.bufnr) then
-        log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(context.bufnr))
+        log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(context.bufnr)))
         return nil
       end
       return {
