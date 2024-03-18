@@ -8,7 +8,7 @@ local M = {}
 local FLOAT_WIN_DEFAULT_BORDER = "none"
 
 --- @param win_opts fzfx.WindowOpts
---- @param relative_winnr integer?
+--- @param relative_winnr integer
 --- @return fzfx.NvimFloatWinOpts
 M._make_cursor_opts = function(win_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
@@ -37,7 +37,7 @@ M._make_cursor_opts = function(win_opts, relative_winnr)
 end
 
 --- @param win_opts fzfx.WindowOpts
---- @param relative_winnr integer?
+--- @param relative_winnr integer
 --- @return fzfx.NvimFloatWinOpts
 M._make_center_opts = function(win_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
@@ -65,7 +65,7 @@ M._make_center_opts = function(win_opts, relative_winnr)
 end
 
 --- @param win_opts fzfx.WindowOpts
---- @param relative_winnr integer?
+--- @param relative_winnr integer
 --- @return fzfx.NvimFloatWinOpts
 M.make_opts = function(win_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)

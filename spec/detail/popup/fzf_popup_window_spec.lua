@@ -87,8 +87,8 @@ describe("detail.popup.fzf_popup_window", function()
   end)
   describe("[make_opts]", function()
     it("test", function()
-      local actual1 = fzf_popup_window.make_opts(WIN_OPTS)
-      local actual2 = fzf_popup_window._make_center_opts(WIN_OPTS)
+      local actual1 = fzf_popup_window.make_opts(WIN_OPTS, 0)
+      local actual2 = fzf_popup_window._make_center_opts(WIN_OPTS, 0)
       print(
         string.format(
           "fzf_popup_window.make_opts:%s, _make_center_opts:%s\n",

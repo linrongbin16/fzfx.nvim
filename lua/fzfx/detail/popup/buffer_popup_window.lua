@@ -13,7 +13,7 @@ local M = {}
 --- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
---- @param relative_winnr integer?
+--- @param relative_winnr integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
@@ -60,18 +60,17 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if type(relative_winnr) == "number" then
+  if relative == "win" then
     result.provider.win = relative_winnr
     result.previewer.win = relative_winnr
   end
-
   log.debug("|_make_cursor_opts| result:" .. vim.inspect(result))
   return result
 end
 
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
---- @param relative_winnr integer?
+--- @param relative_winnr integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
@@ -117,7 +116,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if relative ~= "editor" and type(relative_winnr) == "number" then
+  if relative == "win" then
     result.provider.win = relative_winnr
     result.previewer.win = relative_winnr
   end
@@ -127,7 +126,7 @@ end
 
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
---- @param relative_winnr integer?
+--- @param relative_winnr integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M.make_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
