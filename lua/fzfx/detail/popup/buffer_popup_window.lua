@@ -20,10 +20,9 @@ local FLOAT_WIN_DEFAULT_STYLE = "minimal"
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
-  opts.relative = opts.relative or "cursor"
+  local relative = "win"
   local layout =
     popup_helpers.make_center_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
-  local relative = opts.relative
   local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
 
@@ -61,10 +60,10 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
   }
 
-  -- if relative ~= "editor" and type(relative_winnr) == "number" then
-  --   result.provider.win = relative_winnr
-  --   result.previewer.win = relative_winnr
-  -- end
+  if type(relative_winnr) == "number" then
+    result.provider.win = relative_winnr
+    result.previewer.win = relative_winnr
+  end
   -- log.debug("|make_opts| result:%s", vim.inspect(result))
   return result
 end
@@ -75,10 +74,9 @@ end
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
-  opts.relative = opts.relative or "editor"
+  local relative = opts.relative or "editor"
   local layout =
     popup_helpers.make_center_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
-  local relative = opts.relative
   local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
 

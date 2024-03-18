@@ -212,6 +212,7 @@ end
 M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
   local total_width = vim.api.nvim_win_get_width(0)
   local total_height = vim.api.nvim_win_get_height(0)
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
 
   local width = num.bound(
     win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
@@ -240,16 +241,16 @@ M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
   local start_col
 
   if win_opts.row > -1 and win_opts.row < 1 then
-    start_row = bound_row(total_height * win_opts.row)
+    start_row = bound_row(total_height * win_opts.row) + cursor_pos[1]
   else
-    start_row = bound_row(win_opts.row)
+    start_row = bound_row(win_opts.row) + cursor_pos[1]
   end
   local end_row = bound_row(start_row + height)
 
   if win_opts.col > -1 and win_opts.col < 1 then
-    start_col = bound_col(total_width * win_opts.col)
+    start_col = bound_col(total_width * win_opts.col) + cursor_pos[2] + 1
   else
-    start_col = bound_col(win_opts.col)
+    start_col = bound_col(win_opts.col) + cursor_pos[2] + 1
   end
   local end_col = bound_col(start_col + width)
 
