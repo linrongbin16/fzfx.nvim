@@ -517,7 +517,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         self:preview_file_contents(last_content, view)
       end, 10)
     end)
-  end, 20)
+  end, 10)
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
@@ -576,7 +576,7 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
     end
 
     self:render_file_contents(file_content, content_view, on_complete)
-  end, 20)
+  end, 10)
 end
 
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
@@ -652,6 +652,9 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         vim.inspect(content_view)
       )
     )
+
+    local SUPER_LARGE_FILE = LINES_COUNT > 1000
+    local LARGE_FILE = LINES_COUNT > 100
 
     local function set_buf_lines()
       vim.defer_fn(function()
@@ -740,10 +743,10 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
           do_complete(true)
           falsy_rendering()
         end
-      end, 10)
+      end, LINES_COUNT > 100 and math.max(string.len(tostring(LINES_COUNT)), 1) or 10)
     end
     set_buf_lines()
-  end, 20)
+  end, 10)
 end
 
 --- @param content_view fzfx.BufferPopupWindowPreviewContentView
