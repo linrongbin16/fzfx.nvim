@@ -113,7 +113,7 @@ M.variants = {
 M._get_buf_path = function(bufnr)
   local bufpath = bufs.buf_is_valid(bufnr) and path.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
   if str.empty(bufpath) then
-    log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
+    log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
     return nil
   end
   return bufpath
