@@ -184,6 +184,37 @@ describe("helper.previewers", function()
     end)
   end)
 
+  describe("[buffer_preview_files_grep_no_filename]", function()
+    it("test", function()
+      local lines = {
+        "1",
+        "2:1",
+        "3:hello",
+        "4:  local i = 1",
+      }
+      for _, line in ipairs(lines) do
+        local ctx = make_context()
+        local actual = previewers.buffer_preview_files_grep_no_filename(line, ctx)
+        local expect =
+          path.normalize(str.split(line, ":")[1], { double_backslash = true, expand = true })
+        print(string.format("normalize:%s\n", vim.inspect(expect)))
+        print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
+        if actual[1] == constants.BAT then
+          assert_eq(actual[1], constants.BAT)
+          assert_eq(actual[2], "--style=numbers,changes")
+          assert_true(str.startswith(actual[3], "--theme="))
+          assert_eq(actual[4], "--color=always")
+          assert_eq(actual[5], "--pager=never")
+          assert_true(str.startswith(actual[6], "--highlight-line"))
+          assert_eq(actual[7], "--line-range")
+          assert_eq(actual[9], "--")
+        else
+          assert_eq(actual[1], "cat")
+        end
+      end
+    end)
+  end)
+
   describe("[get_preview_window_width]", function()
     it("test", function()
       local actual = previewers.get_preview_window_width()

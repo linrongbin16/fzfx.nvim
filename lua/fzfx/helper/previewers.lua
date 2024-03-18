@@ -121,7 +121,7 @@ M.preview_files_grep = function(line)
 end
 
 --- @param line string
---- @return table
+--- @return {filename:string,lineno:integer?}?
 M.buffer_preview_files_grep = function(line)
   local parsed = parsers_helper.parse_grep(line)
   return { filename = parsed.filename, lineno = parsed.lineno }
@@ -143,7 +143,7 @@ end
 
 --- @param line string
 --- @param context fzfx.PipelineContext
---- @return string[]|nil
+--- @return {filename:string,lineno:integer?}?
 M.buffer_preview_files_grep_no_filename = function(line, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
   if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
