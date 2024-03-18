@@ -517,7 +517,7 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         self:preview_file_contents(last_content, view)
       end, 10)
     end)
-  end, 10)
+  end, 20)
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
@@ -576,7 +576,7 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
     end
 
     self:render_file_contents(file_content, content_view, on_complete)
-  end, 10)
+  end, 20)
 end
 
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
