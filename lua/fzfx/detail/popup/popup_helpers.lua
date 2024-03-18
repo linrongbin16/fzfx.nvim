@@ -182,18 +182,6 @@ M.make_center_layout = function(win_opts, fzf_preview_window_opts)
     return num.bound(v, 0, total_width - 1)
   end
 
-  --- @param v number
-  --- @return number
-  local function bound_height(v)
-    return num.bound(v, 1, height)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_width(v)
-    return num.bound(v, 1, width)
-  end
-
   local start_row = bound_row(math.floor(center_row - (height / 2)))
   local end_row = bound_row(math.floor(center_row + (height / 2)))
   local start_col = bound_col(math.floor(center_col - (width / 2)))
@@ -222,10 +210,8 @@ end
 --- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
 --- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
 M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
-  local total_width = win_opts.relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(0)
-  local total_height = win_opts.relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(0)
+  local total_width = vim.api.nvim_win_get_width(0)
+  local total_height = vim.api.nvim_win_get_height(0)
 
   local width = num.bound(
     win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
@@ -263,18 +249,6 @@ M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
   --- @return number
   local function bound_col(v)
     return num.bound(v, 0, total_width - 1)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_height(v)
-    return num.bound(v, 1, height)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_width(v)
-    return num.bound(v, 1, width)
   end
 
   local start_row = bound_row(win_opts.row)
