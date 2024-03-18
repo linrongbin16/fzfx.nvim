@@ -968,8 +968,8 @@ function BufferPopupWindow:scroll_by(percent, up)
     )
   )
 
-  if TOP_LINE == first_line and BOTTOM_LINE == last_line then
-    -- log.debug("|BufferPopupWindow:scroll_by| no change")
+  if TOP_LINE == view.top and BOTTOM_LINE == view.bottom then
+    log.debug("|BufferPopupWindow:scroll_by| no change")
     falsy_scrolling()
     return
   end
