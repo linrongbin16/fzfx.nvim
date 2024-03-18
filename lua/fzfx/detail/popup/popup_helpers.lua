@@ -224,21 +224,6 @@ M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
     total_height
   )
 
-  log.ensure(
-    (win_opts.row >= -0.5 and win_opts.row <= 0.5) or win_opts.row <= -1 or win_opts.row >= 1,
-    string.format(
-      "popup window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-      vim.inspect(win_opts.row)
-    )
-  )
-  log.ensure(
-    (win_opts.col >= -0.5 and win_opts.col <= 0.5) or win_opts.col <= -1 or win_opts.col >= 1,
-    string.format(
-      "popup window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-      vim.inspect(win_opts.col)
-    )
-  )
-
   --- @param v number
   --- @return number
   local function bound_row(v)
@@ -251,9 +236,21 @@ M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
     return num.bound(v, 0, total_width - 1)
   end
 
-  local start_row = bound_row(win_opts.row)
+  local start_row
+  local start_col
+
+  if win_opts.row > -1 and win_opts.row < 1 then
+    start_row = bound_row(total_height * win_opts.row)
+  else
+    start_row = bound_row(win_opts.row)
+  end
   local end_row = bound_row(start_row + height)
-  local start_col = bound_col(win_opts.col)
+
+  if win_opts.col > -1 and win_opts.col < 1 then
+    start_col = bound_col(total_width * win_opts.col)
+  else
+    start_col = bound_col(win_opts.col)
+  end
   local end_col = bound_col(start_col + width)
 
   local result = {

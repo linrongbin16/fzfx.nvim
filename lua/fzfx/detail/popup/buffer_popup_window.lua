@@ -32,8 +32,8 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     relative = relative,
     width = layout.width,
     height = layout.height,
-    row = opts.row,
-    col = opts.col,
+    row = layout.start_row,
+    col = layout.start_col,
     style = FLOAT_WIN_DEFAULT_STYLE,
     border = border,
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
@@ -61,10 +61,10 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     zindex = FLOAT_WIN_DEFAULT_ZINDEX,
   }
 
-  if relative ~= "editor" and type(relative_winnr) == "number" then
-    result.provider.win = relative_winnr
-    result.previewer.win = relative_winnr
-  end
+  -- if relative ~= "editor" and type(relative_winnr) == "number" then
+  --   result.provider.win = relative_winnr
+  --   result.previewer.win = relative_winnr
+  -- end
   -- log.debug("|make_opts| result:%s", vim.inspect(result))
   return result
 end
