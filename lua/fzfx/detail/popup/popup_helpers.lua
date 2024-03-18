@@ -129,15 +129,15 @@ M.make_center_layout = function(win_opts, fzf_preview_window_opts)
   log.ensure(
     (win_opts.row >= -0.5 and win_opts.row <= 0.5) or win_opts.row <= -1 or win_opts.row >= 1,
     string.format(
-      "buffer provider window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-      vim.inspect(win_opts)
+      "popup window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+      vim.inspect(win_opts.row)
     )
   )
   log.ensure(
     (win_opts.col >= -0.5 and win_opts.col <= 0.5) or win_opts.col <= -1 or win_opts.col >= 1,
     string.format(
-      "buffer provider window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-      vim.inspect(win_opts)
+      "popup window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+      vim.inspect(win_opts.col)
     )
   )
 
@@ -227,15 +227,15 @@ M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
   log.ensure(
     (win_opts.row >= -0.5 and win_opts.row <= 0.5) or win_opts.row <= -1 or win_opts.row >= 1,
     string.format(
-      "buffer provider window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-      vim.inspect(win_opts)
+      "popup window row (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+      vim.inspect(win_opts.row)
     )
   )
   log.ensure(
     (win_opts.col >= -0.5 and win_opts.col <= 0.5) or win_opts.col <= -1 or win_opts.col >= 1,
     string.format(
-      "buffer provider window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
-      vim.inspect(win_opts)
+      "popup window col (%s) opts must in range [-0.5, 0.5] or (-inf, -1] or [1, +inf]",
+      vim.inspect(win_opts.col)
     )
   )
 
