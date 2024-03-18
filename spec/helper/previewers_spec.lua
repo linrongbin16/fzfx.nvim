@@ -192,24 +192,18 @@ describe("helper.previewers", function()
         "3:hello",
         "4:  local i = 1",
       }
+      local ctx = make_context()
+      local filename = vim.api.nvim_buf_get_name(ctx.bufnr)
+      filename = path.normalize(filename, { double_backslash = true, expand = true })
+
       for _, line in ipairs(lines) do
-        local ctx = make_context()
         local actual = previewers.buffer_preview_files_grep_no_filename(line, ctx)
-        local expect =
-          path.normalize(str.split(line, ":")[1], { double_backslash = true, expand = true })
-        print(string.format("normalize:%s\n", vim.inspect(expect)))
+        print(string.format("filename:%s\n", vim.inspect(filename)))
         print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
-        if actual[1] == constants.BAT then
-          assert_eq(actual[1], constants.BAT)
-          assert_eq(actual[2], "--style=numbers,changes")
-          assert_true(str.startswith(actual[3], "--theme="))
-          assert_eq(actual[4], "--color=always")
-          assert_eq(actual[5], "--pager=never")
-          assert_true(str.startswith(actual[6], "--highlight-line"))
-          assert_eq(actual[7], "--line-range")
-          assert_eq(actual[9], "--")
-        else
-          assert_eq(actual[1], "cat")
+        local splits = str.split(line, ":")
+        if actual then
+          assert_eq(actual.filename, filename)
+          assert_eq(actual.lineno, tonumber(splits[1]))
         end
       end
     end)
