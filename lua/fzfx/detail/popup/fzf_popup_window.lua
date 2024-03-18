@@ -6,7 +6,6 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local M = {}
 
 local FLOAT_WIN_DEFAULT_BORDER = "none"
-local FLOAT_WIN_DEFAULT_ZINDEX = 60
 
 --- @param win_opts fzfx.WindowOpts
 --- @param relative_winnr integer?
@@ -24,9 +23,9 @@ M._make_cursor_opts = function(win_opts, relative_winnr)
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = "minimal",
+    style = popup_helpers.FLOAT_WIN_STYLE,
     border = FLOAT_WIN_DEFAULT_BORDER,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
   if type(relative_winnr) == "number" then
@@ -52,9 +51,9 @@ M._make_center_opts = function(win_opts, relative_winnr)
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = "minimal",
+    style = popup_helpers.FLOAT_WIN_STYLE,
     border = FLOAT_WIN_DEFAULT_BORDER,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
   if relative == "win" and type(relative_winnr) == "number" then

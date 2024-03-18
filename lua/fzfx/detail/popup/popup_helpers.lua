@@ -106,6 +106,8 @@ M.ShellOptsContext = ShellOptsContext
 
 -- ShellOptsContext }
 
+-- layout {
+
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
 --- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
 --- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
@@ -383,5 +385,14 @@ M._make_internal_layout = function(base_layout, fzf_preview_window_opts)
 
   return nil
 end
+
+-- layout }
+
+-- constants {
+
+M.FLOAT_WIN_STYLE = "minimal"
+M.FLOAT_WIN_ZINDEX = 60
+
+-- constants }
 
 return M

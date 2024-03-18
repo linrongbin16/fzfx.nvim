@@ -10,9 +10,6 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 
 local M = {}
 
-local FLOAT_WIN_DEFAULT_ZINDEX = 60
-local FLOAT_WIN_DEFAULT_STYLE = "minimal"
-
 --- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
@@ -33,9 +30,9 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
+    style = popup_helpers.FLOAT_WIN_STYLE,
     border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.provider = {
     anchor = "NW",
@@ -44,9 +41,9 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     height = layout.provider.height,
     row = layout.provider.start_row,
     col = layout.provider.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
+    style = popup_helpers.FLOAT_WIN_STYLE,
     border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.previewer = {
     anchor = "NW",
@@ -55,9 +52,9 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     height = layout.previewer.height,
     row = layout.previewer.start_row,
     col = layout.previewer.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
+    style = popup_helpers.FLOAT_WIN_STYLE,
     border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
   if type(relative_winnr) == "number" then
@@ -87,9 +84,9 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
+    style = popup_helpers.FLOAT_WIN_STYLE,
     border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.provider = {
     anchor = "NW",
@@ -98,9 +95,9 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     height = layout.provider.height,
     row = layout.provider.start_row,
     col = layout.provider.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
+    style = popup_helpers.FLOAT_WIN_STYLE,
     border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.previewer = {
     anchor = "NW",
@@ -109,9 +106,9 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     height = layout.previewer.height,
     row = layout.previewer.start_row,
     col = layout.previewer.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
+    style = popup_helpers.FLOAT_WIN_STYLE,
     border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
   if relative ~= "editor" and type(relative_winnr) == "number" then
