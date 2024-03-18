@@ -327,12 +327,17 @@ M._make_internal_layout = function(base_layout, fzf_preview_window_opts)
       -- |      |       |
 
       if fzf_preview_window_opts.position == "left" then
+        -- |           |          |
+        -- | previewer | provider |
+        -- |           |          |
         previewer_layout.start_col = base_layout.start_col
         previewer_layout.end_col = bound_col(base_layout.start_col + previewer_layout.width)
         provider_layout.start_col = bound_col(base_layout.end_col - provider_layout.width)
         provider_layout.end_col = base_layout.end_col
       else
+        -- |          |           |
         -- | provider | previewer |
+        -- |          |           |
         provider_layout.start_col = base_layout.start_col
         provider_layout.end_col = bound_col(base_layout.start_col + provider_layout.width)
         previewer_layout.start_col = bound_col(base_layout.end_col - previewer_layout.width)
@@ -365,11 +370,21 @@ M._make_internal_layout = function(base_layout, fzf_preview_window_opts)
       -- ---------
 
       if fzf_preview_window_opts.position == "up" then
+        -- -------------
+        --   previewer
+        -- -------------
+        --   provider
+        -- -------------
         previewer_layout.start_row = base_layout.start_row
         previewer_layout.end_row = bound_row(base_layout.start_row + previewer_layout.height)
         provider_layout.start_row = bound_row(base_layout.end_row - provider_layout.height)
         provider_layout.end_row = base_layout.end_row
       else
+        -- -------------
+        --   provider
+        -- -------------
+        --   previewer
+        -- -------------
         provider_layout.start_row = base_layout.start_row
         provider_layout.end_row = bound_row(base_layout.start_row + provider_layout.height)
         previewer_layout.start_row = bound_row(base_layout.end_row - previewer_layout.height)
