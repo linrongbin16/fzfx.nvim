@@ -204,7 +204,6 @@ M.make_center_layout = function(win_opts, fzf_preview_window_opts)
   local internal_layout = M._make_internal_layout(result, fzf_preview_window_opts)
   result.provider = tbl.tbl_get(internal_layout, "provider")
   result.previewer = tbl.tbl_get(internal_layout, "previewer")
-  log.debug(string.format("|make_center_layout| result:%s", vim.inspect(result)))
 
   return result
 end
@@ -272,7 +271,6 @@ M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
   local internal_layout = M._make_internal_layout(result, fzf_preview_window_opts)
   result.provider = tbl.tbl_get(internal_layout, "provider")
   result.previewer = tbl.tbl_get(internal_layout, "previewer")
-  log.debug(string.format("|make_cursor_layout| result:%s", vim.inspect(result)))
 
   return result
 end

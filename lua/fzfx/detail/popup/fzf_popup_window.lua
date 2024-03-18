@@ -32,6 +32,7 @@ M._make_cursor_opts = function(win_opts, relative_winnr)
     result.win = relative_winnr
   end
 
+  log.debug("|_make_cursor_opts| result:" .. vim.inspect(result))
   return result
 end
 
