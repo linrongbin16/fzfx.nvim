@@ -184,6 +184,31 @@ describe("helper.previewers", function()
     end)
   end)
 
+  describe("[buffer_preview_files_grep_no_filename]", function()
+    it("test", function()
+      local lines = {
+        "1",
+        "2:1",
+        "3:hello",
+        "4:  local i = 1",
+      }
+      local ctx = make_context()
+      local filename = vim.api.nvim_buf_get_name(ctx.bufnr)
+      filename = path.normalize(filename, { double_backslash = true, expand = true })
+
+      for _, line in ipairs(lines) do
+        local actual = previewers.buffer_preview_files_grep_no_filename(line, ctx)
+        print(string.format("filename:%s\n", vim.inspect(filename)))
+        print(string.format("file previewer grep:%s\n", vim.inspect(actual)))
+        local splits = str.split(line, ":")
+        if actual then
+          assert_eq(actual.filename, filename)
+          assert_eq(actual.lineno, tonumber(splits[1]))
+        end
+      end
+    end)
+  end)
+
   describe("[get_preview_window_width]", function()
     it("test", function()
       local actual = previewers.get_preview_window_width()
