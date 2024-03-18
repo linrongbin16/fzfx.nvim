@@ -20,7 +20,9 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local relative = "win"
   local layout =
     popup_helpers.make_center_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
-  local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
+  local provider_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
+    or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
+  local previewer_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_preview_window_opts.border]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
 
   local result = {
@@ -31,7 +33,7 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     row = layout.start_row,
     col = layout.start_col,
     style = popup_helpers.FLOAT_WIN_STYLE,
-    border = border,
+    border = provider_border,
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.provider = {
@@ -42,7 +44,7 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     row = layout.provider.start_row,
     col = layout.provider.start_col,
     style = popup_helpers.FLOAT_WIN_STYLE,
-    border = border,
+    border = provider_border,
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.previewer = {
@@ -53,7 +55,7 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     row = layout.previewer.start_row,
     col = layout.previewer.start_col,
     style = popup_helpers.FLOAT_WIN_STYLE,
-    border = border,
+    border = previewer_border,
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
@@ -74,7 +76,9 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local relative = opts.relative or "editor"
   local layout =
     popup_helpers.make_center_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
-  local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
+  local provider_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
+    or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
+  local previewer_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_preview_window_opts.border]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
 
   local result = {
@@ -85,7 +89,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     row = layout.start_row,
     col = layout.start_col,
     style = popup_helpers.FLOAT_WIN_STYLE,
-    border = border,
+    border = provider_border,
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.provider = {
@@ -96,7 +100,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     row = layout.provider.start_row,
     col = layout.provider.start_col,
     style = popup_helpers.FLOAT_WIN_STYLE,
-    border = border,
+    border = provider_border,
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.previewer = {
@@ -107,7 +111,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     row = layout.previewer.start_row,
     col = layout.previewer.start_col,
     style = popup_helpers.FLOAT_WIN_STYLE,
-    border = border,
+    border = previewer_border,
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
