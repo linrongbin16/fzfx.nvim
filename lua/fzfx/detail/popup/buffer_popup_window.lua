@@ -19,7 +19,7 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
   local relative = "win"
   local layout =
-    popup_helpers.make_center_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
+    popup_helpers.make_cursor_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
   local provider_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
   local previewer_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_preview_window_opts.border]
