@@ -16,12 +16,10 @@ local LogHighlights = {
 }
 
 --- @param level integer
---- @param fmt string
---- @param ... any
-M.echo = function(level, fmt, ...)
+--- @param msg string
+M.echo = function(level, msg)
   level = num.bound(level, M.LogLevels.TRACE, M.LogLevels.OFF)
 
-  local msg = string.format(fmt, ...)
   local msg_lines = vim.split(msg, "\n", { plain = true })
 
   local prefix = ""
@@ -34,7 +32,7 @@ M.echo = function(level, fmt, ...)
   for _, line in ipairs(msg_lines) do
     local chunks = {}
     table.insert(chunks, {
-      string.format("[fzfx] %s%s", prefix, line),
+      "[fzfx] " .. prefix .. line,
       LogHighlights[level],
     })
     vim.schedule(function()
@@ -66,9 +64,8 @@ M.setup = function(opts)
   })
 end
 
---- @param fmt string
---- @param ... any
-M.debug = function(fmt, ...)
+--- @param msg string
+M.debug = function(msg)
   local dbglvl = 2
   local dbg = nil
   while true do
@@ -78,12 +75,11 @@ M.debug = function(fmt, ...)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.DEBUG, fmt, ...)
+  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.DEBUG, msg)
 end
 
---- @param fmt string
---- @param ... any
-M.info = function(fmt, ...)
+--- @param msg string
+M.info = function(msg)
   local dbglvl = 2
   local dbg = nil
   while true do
@@ -93,12 +89,11 @@ M.info = function(fmt, ...)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.INFO, fmt, ...)
+  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.INFO, msg)
 end
 
---- @param fmt string
---- @param ... any
-M.warn = function(fmt, ...)
+--- @param msg string
+M.warn = function(msg)
   local dbglvl = 2
   local dbg = nil
   while true do
@@ -108,12 +103,11 @@ M.warn = function(fmt, ...)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.WARN, fmt, ...)
+  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.WARN, msg)
 end
 
---- @param fmt string
---- @param ... any
-M.err = function(fmt, ...)
+--- @param msg string
+M.err = function(msg)
   local dbglvl = 2
   local dbg = nil
   while true do
@@ -123,12 +117,11 @@ M.err = function(fmt, ...)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, fmt, ...)
+  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, msg)
 end
 
---- @param fmt string
---- @param ... any
-M.throw = function(fmt, ...)
+--- @param msg string
+M.throw = function(msg)
   local dbglvl = 2
   local dbg = nil
   while true do
@@ -138,14 +131,13 @@ M.throw = function(fmt, ...)
     end
     dbglvl = dbglvl + 1
   end
-  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, fmt, ...)
-  error(string.format(fmt, ...))
+  require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, msg)
+  error(msg)
 end
 
 --- @param cond boolean
---- @param fmt string
---- @param ... any
-M.ensure = function(cond, fmt, ...)
+--- @param msg string
+M.ensure = function(cond, msg)
   local dbglvl = 2
   local dbg = nil
   while true do
@@ -156,9 +148,9 @@ M.ensure = function(cond, fmt, ...)
     dbglvl = dbglvl + 1
   end
   if not cond then
-    require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, fmt, ...)
+    require("fzfx.commons.logging").get("fzfx"):_log(dbg, M.LogLevels.ERROR, msg)
   end
-  assert(cond, string.format(fmt, ...))
+  assert(cond, msg)
 end
 
 return M
