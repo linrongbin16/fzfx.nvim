@@ -20,6 +20,7 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local relative = "win"
   local layout =
     popup_helpers.make_cursor_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
+  log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
   local provider_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
   local previewer_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_preview_window_opts.border]
@@ -63,7 +64,8 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     result.provider.win = relative_winnr
     result.previewer.win = relative_winnr
   end
-  -- log.debug("|make_opts| result:%s", vim.inspect(result))
+
+  log.debug("|_make_cursor_opts| result:" .. vim.inspect(result))
   return result
 end
 
