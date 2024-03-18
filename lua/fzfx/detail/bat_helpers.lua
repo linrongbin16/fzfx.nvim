@@ -66,8 +66,7 @@ M._make_scope_value = function(hl, scope, hl_codes)
   log.ensure(str.not_empty(hl), "|_make_scope_value| invalid hl name")
   log.ensure(
     str.not_empty(scope) or (tbl.tbl_not_empty(scope)),
-    "|_make_scope_value| invalid tm scope:%s",
-    vim.inspect(scope)
+    string.format("|_make_scope_value| invalid tm scope:%s", vim.inspect(scope))
   )
 
   local font_style = {}
@@ -445,32 +444,31 @@ M._build_theme = function(colorname)
 
   log.ensure(
     path.isdir(theme_dir --[[@as string]]),
-    "|_build_theme| bat theme dir:%s not exist",
-    vim.inspect(theme_dir)
+    string.format("|_build_theme| bat theme dir:%s not exist", vim.inspect(theme_dir))
   )
 
   local theme_name = bat_themes_helper.get_theme_name(colorname)
   log.ensure(
     str.not_empty(theme_name),
-    "|_build_theme| failed to get theme_name from nvim colorscheme name:%s",
-    vim.inspect(colorname)
+    "|_build_theme| failed to get theme_name from nvim colorscheme name: " .. vim.inspect(colorname)
   )
 
   M._BatTmRendererInstance = _BatTmRenderer:new()
   local rendered_result = M._BatTmRendererInstance:render(theme_name)
   log.ensure(
     tbl.tbl_not_empty(rendered_result),
-    "|_build_theme| rendered result is empty, color name:%s, theme name:%s",
-    vim.inspect(colorname),
-    vim.inspect(theme_name)
+    "|_build_theme| rendered result is empty, color name:"
+      .. vim.inspect(colorname)
+      .. ", theme name:"
+      .. vim.inspect(theme_name)
   )
 
   local theme_config_file = bat_themes_helper.get_theme_config_file(colorname)
   -- log.debug("|_build_theme| theme_config_file:%s", vim.inspect(theme_config_file))
   log.ensure(
     str.not_empty(theme_config_file),
-    "|_build_theme| failed to get bat theme config file from nvim colorscheme name:%s",
-    vim.inspect(colorname)
+    "|_build_theme| failed to get bat theme config file from nvim colorscheme name:"
+      .. vim.inspect(colorname)
   )
 
   if building_bat_theme then

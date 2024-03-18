@@ -128,10 +128,12 @@ function ProviderSwitch:new(name, pipeline, provider_configs)
     for provider_name, provider_opts in pairs(provider_configs) do
       log.ensure(
         schema.is_provider_config(provider_opts),
-        "%s (%s) is not a valid provider! %s",
-        vim.inspect(provider_name),
-        vim.inspect(name),
-        vim.inspect(provider_opts)
+        string.format(
+          "%s (%s) is not a valid provider! %s",
+          vim.inspect(provider_name),
+          vim.inspect(name),
+          vim.inspect(provider_opts)
+        )
       )
       provider_opts.provider_type = schema.get_provider_type_or_default(provider_opts)
       provider_configs_map[provider_name] = provider_opts
@@ -167,17 +169,21 @@ function ProviderSwitch:provide(query, context)
   -- )
   log.ensure(
     type(provider_config) == "table",
-    "invalid provider config in %s! provider config: %s",
-    vim.inspect(self.pipeline),
-    vim.inspect(provider_config)
+    string.format(
+      "invalid provider config in %s! provider config: %s",
+      vim.inspect(self.pipeline),
+      vim.inspect(provider_config)
+    )
   )
   log.ensure(
     type(provider_config.provider) == "table"
       or type(provider_config.provider) == "string"
       or type(provider_config.provider) == "function",
-    "invalid provider in %s! provider: %s",
-    vim.inspect(self.pipeline),
-    vim.inspect(provider_config)
+    string.format(
+      "invalid provider in %s! provider: %s",
+      vim.inspect(self.pipeline),
+      vim.inspect(provider_config)
+    )
   )
   log.ensure(
     provider_config.provider_type == ProviderTypeEnum.PLAIN
@@ -185,9 +191,11 @@ function ProviderSwitch:provide(query, context)
       or provider_config.provider_type == ProviderTypeEnum.COMMAND
       or provider_config.provider_type == ProviderTypeEnum.COMMAND_LIST
       or provider_config.provider_type == ProviderTypeEnum.LIST,
-    "invalid provider type in %s! provider type: %s",
-    vim.inspect(self.pipeline),
-    vim.inspect(provider_config)
+    string.format(
+      "invalid provider type in %s! provider type: %s",
+      vim.inspect(self.pipeline),
+      vim.inspect(provider_config)
+    )
   )
 
   local metaopts = make_provider_meta_opts(self.pipeline, provider_config)
@@ -197,9 +205,11 @@ function ProviderSwitch:provide(query, context)
   if provider_config.provider_type == ProviderTypeEnum.PLAIN then
     log.ensure(
       provider_config.provider == nil or type(provider_config.provider) == "string",
-      "|ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
-      vim.inspect(self),
-      vim.inspect(provider_config)
+      string.format(
+        "|ProviderSwitch:provide| plain provider must be string or nil! self:%s, provider:%s",
+        vim.inspect(self),
+        vim.inspect(provider_config)
+      )
     )
     if provider_config.provider == nil then
       fileio.writefile(self.resultfile, "")
@@ -209,9 +219,11 @@ function ProviderSwitch:provide(query, context)
   elseif provider_config.provider_type == ProviderTypeEnum.PLAIN_LIST then
     log.ensure(
       provider_config.provider == nil or type(provider_config.provider) == "table",
-      "|ProviderSwitch:provide| plain_list provider must be string or nil! self:%s, provider:%s",
-      vim.inspect(self),
-      vim.inspect(provider_config)
+      string.format(
+        "|ProviderSwitch:provide| plain_list provider must be string or nil! self:%s, provider:%s",
+        vim.inspect(self),
+        vim.inspect(provider_config)
+      )
     )
     if tbl.tbl_empty(provider_config.provider) then
       fileio.writefile(self.resultfile, "")
@@ -230,19 +242,23 @@ function ProviderSwitch:provide(query, context)
     -- )
     log.ensure(
       result == nil or type(result) == "string",
-      "|ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
-      vim.inspect(self),
-      vim.inspect(result)
+      string.format(
+        "|ProviderSwitch:provide| command provider result must be string! self:%s, result:%s",
+        vim.inspect(self),
+        vim.inspect(result)
+      )
     )
     if not ok then
       fileio.writefile(self.resultfile, "")
       log.err(
-        "failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(provider_config),
-        vim.inspect(query),
-        vim.inspect(context),
-        vim.inspect(result)
+        string.format(
+          "failed to call pipeline %s command provider %s! query:%s, context:%s, error:%s",
+          vim.inspect(self.pipeline),
+          vim.inspect(provider_config),
+          vim.inspect(query),
+          vim.inspect(context),
+          vim.inspect(result)
+        )
       )
     else
       if result == nil then
@@ -260,19 +276,23 @@ function ProviderSwitch:provide(query, context)
     -- )
     log.ensure(
       result == nil or type(result) == "table",
-      "|ProviderSwitch:provide| command_list provider result must be string! self:%s, result:%s",
-      vim.inspect(self),
-      vim.inspect(result)
+      string.format(
+        "|ProviderSwitch:provide| command_list provider result must be string! self:%s, result:%s",
+        vim.inspect(self),
+        vim.inspect(result)
+      )
     )
     if not ok then
       fileio.writefile(self.resultfile, "")
       log.err(
-        "failed to call pipeline %s command_list provider %s! query:%s, context:%s, error:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(provider_config),
-        vim.inspect(query),
-        vim.inspect(context),
-        vim.inspect(result)
+        string.format(
+          "failed to call pipeline %s command_list provider %s! query:%s, context:%s, error:%s",
+          vim.inspect(self.pipeline),
+          vim.inspect(provider_config),
+          vim.inspect(query),
+          vim.inspect(context),
+          vim.inspect(result)
+        )
       )
     else
       if tbl.tbl_empty(result) then
@@ -291,19 +311,23 @@ function ProviderSwitch:provide(query, context)
     if not ok then
       fileio.writefile(self.resultfile, "")
       log.err(
-        "failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(provider_config),
-        vim.inspect(query),
-        vim.inspect(context),
-        vim.inspect(result)
+        string.format(
+          "failed to call pipeline %s list provider %s! query:%s, context:%s, error:%s",
+          vim.inspect(self.pipeline),
+          vim.inspect(provider_config),
+          vim.inspect(query),
+          vim.inspect(context),
+          vim.inspect(result)
+        )
       )
     else
       log.ensure(
         result == nil or type(result) == "table",
-        "|ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
-        vim.inspect(self),
-        vim.inspect(result)
+        string.format(
+          "|ProviderSwitch:provide| list provider result must be array! self:%s, result:%s",
+          vim.inspect(self),
+          vim.inspect(result)
+        )
       )
       if tbl.tbl_empty(result) then
         fileio.writefile(self.resultfile, "")
@@ -312,7 +336,9 @@ function ProviderSwitch:provide(query, context)
       end
     end
   else
-    log.throw("|ProviderSwitch:provide| invalid provider type! %s", vim.inspect(self))
+    log.throw(
+      string.format("|ProviderSwitch:provide| invalid provider type! %s", vim.inspect(self))
+    )
   end
   ---@diagnostic disable-next-line: need-check-nil
   return provider_config.provider_type
@@ -348,10 +374,12 @@ function PreviewerSwitch:new(name, pipeline, previewer_configs, fzf_port_file)
     for previewer_name, previewer_opts in pairs(previewer_configs) do
       log.ensure(
         schema.is_previewer_config(previewer_opts --[[@as fzfx.PreviewerConfig]]),
-        "%s (%s) is not a valid previewer! %s",
-        vim.inspect(previewer_name),
-        vim.inspect(name),
-        vim.inspect(previewer_opts)
+        string.format(
+          "%s (%s) is not a valid previewer! %s",
+          vim.inspect(previewer_name),
+          vim.inspect(name),
+          vim.inspect(previewer_opts)
+        )
       )
       previewer_opts.previewer_type =
         schema.get_previewer_type_or_default(previewer_opts --[[@as fzfx.PreviewerConfig]])
@@ -377,9 +405,11 @@ function PreviewerSwitch:current()
   local previewer_config = self.previewer_configs[self.pipeline]
   log.ensure(
     type(previewer_config) == "table",
-    "invalid previewer config in %s! previewer config: %s",
-    vim.inspect(self.pipeline),
-    vim.inspect(previewer_config)
+    string.format(
+      "invalid previewer config in %s! previewer config: %s",
+      vim.inspect(self.pipeline),
+      vim.inspect(previewer_config)
+    )
   )
   return previewer_config
 end
@@ -403,23 +433,29 @@ function PreviewerSwitch:preview(line, context)
   -- )
   log.ensure(
     type(previewer_config) == "table",
-    "invalid previewer config in %s! previewer config: %s",
-    vim.inspect(self.pipeline),
-    vim.inspect(previewer_config)
+    string.format(
+      "invalid previewer config in %s! previewer config: %s",
+      vim.inspect(self.pipeline),
+      vim.inspect(previewer_config)
+    )
   )
   log.ensure(
     type(previewer_config.previewer) == "function",
-    "invalid previewer in %s! previewer: %s",
-    vim.inspect(self.pipeline),
-    vim.inspect(previewer_config)
+    string.format(
+      "invalid previewer in %s! previewer: %s",
+      vim.inspect(self.pipeline),
+      vim.inspect(previewer_config)
+    )
   )
   log.ensure(
     previewer_config.previewer_type == PreviewerTypeEnum.COMMAND
       or previewer_config.previewer_type == PreviewerTypeEnum.COMMAND_LIST
       or previewer_config.previewer_type == PreviewerTypeEnum.LIST,
-    "invalid previewer type in %s! previewer type: %s",
-    vim.inspect(self.pipeline),
-    vim.inspect(previewer_config)
+    string.format(
+      "invalid previewer type in %s! previewer type: %s",
+      vim.inspect(self.pipeline),
+      vim.inspect(previewer_config)
+    )
   )
 
   local metaopts = make_previewer_meta_opts(self.pipeline, previewer_config)
@@ -436,19 +472,23 @@ function PreviewerSwitch:preview(line, context)
     if not ok then
       fileio.writefile(self.resultfile, "")
       log.err(
-        "failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(previewer_config.previewer),
-        vim.inspect(line),
-        vim.inspect(context),
-        vim.inspect(result)
+        string.format(
+          "failed to call pipeline %s command previewer %s! line:%s, context:%s, error:%s",
+          vim.inspect(self.pipeline),
+          vim.inspect(previewer_config.previewer),
+          vim.inspect(line),
+          vim.inspect(context),
+          vim.inspect(result)
+        )
       )
     else
       log.ensure(
         result == nil or type(result) == "string",
-        "|PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
-        vim.inspect(self),
-        vim.inspect(result)
+        string.format(
+          "|PreviewerSwitch:preview| command previewer result must be string! self:%s, result:%s",
+          vim.inspect(self),
+          vim.inspect(result)
+        )
       )
       if result == nil then
         fileio.writefile(self.resultfile, "")
@@ -466,19 +506,23 @@ function PreviewerSwitch:preview(line, context)
     if not ok then
       fileio.writefile(self.resultfile, "")
       log.err(
-        "failed to call pipeline %s command_list previewer %s! line:%s, context:%s, error:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(previewer_config.previewer),
-        vim.inspect(line),
-        vim.inspect(context),
-        vim.inspect(result)
+        string.format(
+          "failed to call pipeline %s command_list previewer %s! line:%s, context:%s, error:%s",
+          vim.inspect(self.pipeline),
+          vim.inspect(previewer_config.previewer),
+          vim.inspect(line),
+          vim.inspect(context),
+          vim.inspect(result)
+        )
       )
     else
       log.ensure(
         result == nil or type(result) == "table",
-        "|PreviewerSwitch:preview| command_list previewer result must be string! self:%s, result:%s",
-        vim.inspect(self),
-        vim.inspect(result)
+        string.format(
+          "|PreviewerSwitch:preview| command_list previewer result must be string! self:%s, result:%s",
+          vim.inspect(self),
+          vim.inspect(result)
+        )
       )
       if tbl.tbl_empty(result) then
         fileio.writefile(self.resultfile, "")
@@ -496,24 +540,30 @@ function PreviewerSwitch:preview(line, context)
     if not ok then
       fileio.writefile(self.resultfile, "")
       log.err(
-        "failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
-        vim.inspect(self.pipeline),
-        vim.inspect(previewer_config.previewer),
-        vim.inspect(line),
-        vim.inspect(context),
-        vim.inspect(result)
+        string.format(
+          "failed to call pipeline %s list previewer %s! line:%s, context:%s, error:%s",
+          vim.inspect(self.pipeline),
+          vim.inspect(previewer_config.previewer),
+          vim.inspect(line),
+          vim.inspect(context),
+          vim.inspect(result)
+        )
       )
     else
       log.ensure(
         type(result) == "table",
-        "|PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
-        vim.inspect(self),
-        vim.inspect(result)
+        string.format(
+          "|PreviewerSwitch:preview| list previewer result must be array! self:%s, result:%s",
+          vim.inspect(self),
+          vim.inspect(result)
+        )
       )
       fileio.writelines(self.resultfile, result --[[@as table]])
     end
   else
-    log.throw("|PreviewerSwitch:preview| invalid previewer type! %s", vim.inspect(self))
+    log.throw(
+      string.format("|PreviewerSwitch:preview| invalid previewer type! %s", vim.inspect(self))
+    )
   end
 
   self:_preview_label(line, context)
@@ -553,18 +603,22 @@ function PreviewerSwitch:_preview_label(line, context)
   -- )
   log.ensure(
     type(previewer_config) == "table",
-    "invalid previewer config in %s! previewer config: %s",
-    vim.inspect(self.pipeline),
-    vim.inspect(previewer_config)
+    string.format(
+      "invalid previewer config in %s! previewer config: %s",
+      vim.inspect(self.pipeline),
+      vim.inspect(previewer_config)
+    )
   )
   log.ensure(
     type(previewer_config.previewer_label) == "function"
       or previewer_config.previewer_label == nil
       or type(previewer_config.previewer_label) == "boolean"
       or type(previewer_config.previewer_label) == "string",
-    "invalid previewer label in %s! previewer: %s",
-    vim.inspect(self.pipeline),
-    vim.inspect(previewer_config)
+    string.format(
+      "invalid previewer label in %s! previewer: %s",
+      vim.inspect(self.pipeline),
+      vim.inspect(previewer_config)
+    )
   )
 
   if not constants.HAS_CURL then
@@ -697,9 +751,11 @@ end
 function HeaderSwitch:get_header(pipeline)
   log.ensure(
     type(self.headers[pipeline]) == "table",
-    "|HeaderSwitch:get_header| pipeline (%s) must exists in headers! %s",
-    vim.inspect(pipeline),
-    vim.inspect(self)
+    string.format(
+      "|HeaderSwitch:get_header| pipeline (%s) must exists in headers! %s",
+      vim.inspect(pipeline),
+      vim.inspect(self)
+    )
   )
   local switch_help = self.headers[pipeline]
   return string.format(":: Press %s", table.concat(switch_help, ", "))
@@ -990,9 +1046,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         -- )
         if actions_fsevent_start_complete_err then
           log.err(
-            "|general - buffer_previewer_actions_fsevent:start| failed to trigger fsevent on actions_file %s, error:%s",
-            vim.inspect(buffer_previewer_actions_file),
-            vim.inspect(actions_fsevent_start_complete_err)
+            string.format(
+              "|general - buffer_previewer_actions_fsevent:start| failed to trigger fsevent on actions_file %s, error:%s",
+              vim.inspect(buffer_previewer_actions_file),
+              vim.inspect(actions_fsevent_start_complete_err)
+            )
           )
           return
         end
@@ -1032,9 +1090,11 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
     log.ensure(
       actions_fsevent_start_result ~= nil,
-      "failed to start watching fsevent on %s, error: %s",
-      vim.inspect(buffer_previewer_actions_file),
-      vim.inspect(actions_fsevent_start_err)
+      string.format(
+        "failed to start watching fsevent on %s, error: %s",
+        vim.inspect(buffer_previewer_actions_file),
+        vim.inspect(actions_fsevent_start_err)
+      )
     )
     -- listen fzf actions }
 
@@ -1111,18 +1171,22 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
               -- )
               if not previewer_ok then
                 log.err(
-                  "failed to call buffer previewer %s! line:%s, context:%s, error:%s",
-                  vim.inspect(previewer_config.previewer),
-                  vim.inspect(focused_line),
-                  vim.inspect(context),
-                  vim.inspect(previewer_result)
+                  string.format(
+                    "failed to call buffer previewer %s! line:%s, context:%s, error:%s",
+                    vim.inspect(previewer_config.previewer),
+                    vim.inspect(focused_line),
+                    vim.inspect(context),
+                    vim.inspect(previewer_result)
+                  )
                 )
               else
                 log.ensure(
                   previewer_result == nil or type(previewer_result) == "table",
-                  "|general - use_buffer_previewer - asyncreadfile| buffer previewer result must be table! previewer_config:%s, result:%s",
-                  vim.inspect(previewer_config),
-                  vim.inspect(previewer_result)
+                  string.format(
+                    "|general - use_buffer_previewer - asyncreadfile| buffer previewer result must be table! previewer_config:%s, result:%s",
+                    vim.inspect(previewer_config),
+                    vim.inspect(previewer_result)
+                  )
                 )
                 local previewer_label_ok
                 local previewer_label_result
@@ -1137,11 +1201,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                   )
                   if not previewer_label_ok then
                     log.err(
-                      "failed to call previewer label(%s) on buffer previewer! focused_line:%s, context:%s, error:%s",
-                      vim.inspect(previewer_config),
-                      vim.inspect(focused_line),
-                      vim.inspect(context),
-                      vim.inspect(previewer_label_result)
+                      string.format(
+                        "failed to call previewer label(%s) on buffer previewer! focused_line:%s, context:%s, error:%s",
+                        vim.inspect(previewer_config),
+                        vim.inspect(focused_line),
+                        vim.inspect(context),
+                        vim.inspect(previewer_label_result)
+                      )
                     )
                     previewer_label_result = nil
                   end
@@ -1337,9 +1403,11 @@ local function _make_user_command(name, command_config, variant_configs, group_c
     end
     log.ensure(
       str.not_empty(input_args),
-      "missing args in command: %s",
-      vim.inspect(command_name),
-      vim.inspect(input_args)
+      string.format(
+        "missing args in command: %s",
+        vim.inspect(command_name),
+        vim.inspect(input_args)
+      )
     )
 
     --- @type fzfx.VariantConfig
@@ -1355,9 +1423,11 @@ local function _make_user_command(name, command_config, variant_configs, group_c
     end
     log.ensure(
       varcfg ~= nil,
-      "unknown command (%s) variant: %s",
-      vim.inspect(command_name),
-      vim.inspect(input_args)
+      string.format(
+        "unknown command (%s) variant: %s",
+        vim.inspect(command_name),
+        vim.inspect(input_args)
+      )
     )
 
     local other_args = first_space_pos ~= nil and str.trim(string.sub(input_args, first_space_pos))

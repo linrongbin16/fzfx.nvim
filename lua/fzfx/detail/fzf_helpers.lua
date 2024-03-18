@@ -132,10 +132,12 @@ end
 local function save_last_query_cache(name, query, default_provider)
   log.ensure(
     str.not_empty(default_provider),
-    "|save_last_query_cache| %s default_provider must not be empty:%s, query:%s",
-    vim.inspect(name),
-    vim.inspect(default_provider),
-    vim.inspect(query)
+    string.format(
+      "|save_last_query_cache| %s default_provider must not be empty:%s, query:%s",
+      vim.inspect(name),
+      vim.inspect(default_provider),
+      vim.inspect(query)
+    )
   )
   LAST_QUERY_CACHES[name] = {
     default_provider = default_provider,
@@ -165,7 +167,7 @@ local function get_command_feed(feed_type, input_args, pipeline_name)
     local last_cache_obj = get_last_query_cache(pipeline_name) --[[@as fzfx.LastQueryCacheObj]]
     return last_cache_obj or { query = "" }
   else
-    log.throw("invalid command feed type: %s", vim.inspect(feed_type))
+    log.throw("invalid command feed type: " .. vim.inspect(feed_type))
     return { query = "" }
   end
 end
@@ -188,9 +190,11 @@ local function _generate_fzf_color_opts()
       if str.startswith(o, "#") then
         log.ensure(
           string.len(o) == 7,
-          "invalid fzf_color_opts: RGB color codes must have 6 digits after '#': %s = %s",
-          vim.inspect(name),
-          vim.inspect(opts)
+          string.format(
+            "invalid fzf_color_opts: RGB color codes must have 6 digits after '#': %s = %s",
+            vim.inspect(name),
+            vim.inspect(opts)
+          )
         )
         table.insert(builder, string.format("%s:%s", name:gsub("_", "%-"), opts[i]))
         break
@@ -239,7 +243,7 @@ local function append_fzf_opt(opts, o)
     local v = o[2]
     table.insert(opts, string.format("%s %s", k, shells.shellescape(v)))
   else
-    log.throw("|append_fzf_opt| invalid fzf opt: %s", vim.inspect(o))
+    log.throw(string.format("|append_fzf_opt| invalid fzf opt: %s", vim.inspect(o)))
   end
   return opts
 end
@@ -381,8 +385,7 @@ end
 function FzfOptEventBinder:append(opt)
   log.ensure(
     str.not_blank(opt),
-    "|FzfOptEventBinder:append| opt must not blank:%s",
-    vim.inspect(opt)
+    string.format("|FzfOptEventBinder:append| opt must not blank:%s", vim.inspect(opt))
   )
   table.insert(self.opts, opt)
   return self
@@ -537,16 +540,20 @@ local function _spilt_fzf_preview_window_opts(opts_value)
       local next_lbracket_pos = str.find(opts_value, "(", i + 1)
       log.ensure(
         type(next_lbracket_pos) == "number" and next_lbracket_pos > i + 1,
-        "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
-        vim.inspect(i),
-        vim.inspect(opts_value)
+        string.format(
+          "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
+          vim.inspect(i),
+          vim.inspect(opts_value)
+        )
       )
       local next_rbracket_pos = str.find(opts_value, ")", next_lbracket_pos + 1)
       log.ensure(
         type(next_rbracket_pos) == "number" and next_rbracket_pos > next_lbracket_pos,
-        "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
-        vim.inspect(next_lbracket_pos),
-        vim.inspect(opts_value)
+        string.format(
+          "invalid fzf --preview-window(alternative_layout) opts(at %s): %s",
+          vim.inspect(next_lbracket_pos),
+          vim.inspect(opts_value)
+        )
       )
       table.insert(results, string.sub(opts_value, i, next_rbracket_pos))
       i = next_rbracket_pos + 1
@@ -571,13 +578,15 @@ end
 --- @param opts fzfx.FzfOpt[]
 --- @return fzfx.FzfPreviewWindowOpts
 local function parse_fzf_preview_window_opts(opts)
-  log.ensure(type(opts) == "table", "invalid fzf preview window opts list:%s", vim.inspect(opts))
+  log.ensure(
+    type(opts) == "table",
+    string.format("invalid fzf preview window opts list:%s", vim.inspect(opts))
+  )
   local opts_value = ""
   for _, o in ipairs(opts) do
     log.ensure(
       type(o) == "table" or type(o) == "string",
-      "invalid fzf preview window opts:%s",
-      vim.inspect(o)
+      string.format("invalid fzf preview window opts:%s", vim.inspect(o))
     )
     if type(o) == "table" then
       local trimmed_o = str.trim(o[2])
@@ -585,8 +594,7 @@ local function parse_fzf_preview_window_opts(opts)
     else
       log.ensure(
         type(o) == "string" and str.startswith(o, "--preview-window"),
-        "invalid fzf preview window opts:%s",
-        vim.inspect(o)
+        string.format("invalid fzf preview window opts:%s", vim.inspect(o))
       )
       local trimmed_o = str.trim(string.sub(o --[[@as string]], string.len("--preview-window") + 2))
       opts_value = opts_value .. (string.len(opts_value) > 0 and "," or "") .. trimmed_o
@@ -597,8 +605,7 @@ local function parse_fzf_preview_window_opts(opts)
   local split_opts = _spilt_fzf_preview_window_opts(opts_value)
   log.ensure(
     type(split_opts) == "table",
-    "failed to split preview window opts into list: %s",
-    vim.inspect(split_opts)
+    string.format("failed to split preview window opts into list: %s", vim.inspect(split_opts))
   )
   -- log.debug("|parse_fzf_preview_window_opts| split_opts:%s", vim.inspect(split_opts))
 
@@ -619,13 +626,14 @@ local function parse_fzf_preview_window_opts(opts)
     local lbracket_pos = str.find(opts_alternative_layout, "(", 2)
     log.ensure(
       type(lbracket_pos) == "number" and lbracket_pos > 2,
-      "invalid fzf preview window opts(size_threshold): %s",
-      vim.inspect(opts_alternative_layout)
+      string.format(
+        "invalid fzf preview window opts(size_threshold): %s",
+        vim.inspect(opts_alternative_layout)
+      )
     )
     log.ensure(
       str.endswith(opts_alternative_layout, ")"),
-      "invalid fzf preview window opts(size_threshold): %s",
-      vim.inspect(opts)
+      string.format("invalid fzf preview window opts(size_threshold): %s", vim.inspect(opts))
     )
     result.size_threshold = tonumber(string.sub(opts_alternative_layout, 2, lbracket_pos - 1))
     local split_alternatives =
