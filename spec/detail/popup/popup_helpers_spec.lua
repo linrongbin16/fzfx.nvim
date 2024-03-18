@@ -56,11 +56,11 @@ describe("detail.popup.popup_helpers", function()
       ctx:restore()
     end)
   end)
-  for i = min_test_height, max_test_height, 2 do
-    for j = min_test_width, max_test_width, 3 do
-      test_height = i
-      test_width = j
-      describe("[make_center_layout]", function()
+  describe("[make_center_layout]", function()
+    for i = min_test_height, max_test_height, 2 do
+      for j = min_test_width, max_test_width, 3 do
+        test_height = i
+        test_width = j
         local function isclose(a, b)
           if github_actions then
             return math.abs(math.abs(a) - math.abs(b)) <= 3.5
@@ -312,7 +312,7 @@ describe("detail.popup.popup_helpers", function()
           assert_eq(actual.previewer.start_col, actual.start_col)
           assert_eq(actual.previewer.end_col, actual.end_col)
         end)
-      end)
+      end
     end
-  end
+  end)
 end)
