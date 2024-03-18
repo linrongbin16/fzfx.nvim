@@ -13,7 +13,7 @@ local FLOAT_WIN_DEFAULT_ZINDEX = 60
 M._make_cursor_opts = function(win_opts)
   local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "cursor"
-  local layout = popup_helpers.make_layout(opts)
+  local layout = popup_helpers.make_cursor_layout(opts)
   log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
 
   return {
@@ -34,7 +34,7 @@ end
 M._make_center_opts = function(win_opts)
   local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "editor"
-  local layout = popup_helpers.make_layout(opts)
+  local layout = popup_helpers.make_center_layout(opts)
   log.debug("|_make_center_opts| layout:%s" .. vim.inspect(layout))
 
   return {
