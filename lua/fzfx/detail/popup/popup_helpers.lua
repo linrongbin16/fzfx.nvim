@@ -108,6 +108,61 @@ M.ShellOptsContext = ShellOptsContext
 
 -- layout {
 
+--- @param total_height integer
+--- @param total_width integer
+--- @param layout {start_row:integer,end_row:integer,start_col:integer,end_col:integer}
+--- @return {start_row:integer,end_row:integer,start_col:integer,end_col:integer}
+M._adjust_layout_bound = function(total_height, total_width, layout)
+  --- @param v number
+  --- @return number
+  local function bound_row(v)
+    return num.bound(v, 0, total_height - 1)
+  end
+
+  --- @param v number
+  --- @return number
+  local function bound_col(v)
+    return num.bound(v, 0, total_width - 1)
+  end
+
+  local start_row = layout.start_row
+  local end_row = layout.end_row
+  local start_col = layout.start_col
+  local end_col = layout.end_col
+
+  if start_row <= 0 then
+    -- too up
+    local diff_row = math.floor(math.abs(start_row))
+    start_row = 0
+    end_row = end_row + diff_row
+  elseif end_row >= total_height - 1 then
+    -- too down
+    local diff_row = math.floor(math.abs(end_row - total_height + 1))
+    end_row = total_height - 1
+    start_row = start_row - diff_row
+  end
+
+  start_row = bound_row(start_row)
+  end_row = bound_row(end_row)
+
+  if start_col <= 0 then
+    -- too left
+    local diff_col = math.floor(math.abs(start_col))
+    start_col = 0
+    end_col = end_col + diff_col
+  elseif end_col >= total_width - 1 then
+    -- too right
+    local diff_col = math.floor(math.abs(end_col - total_width + 1))
+    end_col = total_width - 1
+    start_col = start_col - diff_col
+  end
+
+  start_col = bound_col(start_col)
+  end_col = bound_col(end_col)
+
+  return { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
+end
+
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
 --- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
 --- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
@@ -172,22 +227,21 @@ M.make_center_layout = function(win_opts, fzf_preview_window_opts)
   --   vim.inspect(center_col + (width / 2))
   -- )
 
-  --- @param v number
-  --- @return number
-  local function bound_row(v)
-    return num.bound(v, 0, total_height - 1)
-  end
+  local start_row = math.floor(center_row - (height / 2))
+  local end_row = math.floor(center_row + (height / 2))
+  local start_col = math.floor(center_col - (width / 2))
+  local end_col = math.floor(center_col + (width / 2))
 
-  --- @param v number
-  --- @return number
-  local function bound_col(v)
-    return num.bound(v, 0, total_width - 1)
-  end
+  local adjust_layout = M._adjust_layout_bound(
+    total_height,
+    total_width,
+    { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
+  )
 
-  local start_row = bound_row(math.floor(center_row - (height / 2)))
-  local end_row = bound_row(math.floor(center_row + (height / 2)))
-  local start_col = bound_col(math.floor(center_col - (width / 2)))
-  local end_col = bound_col(math.floor(center_col + (width / 2)))
+  start_row = adjust_layout.start_row
+  end_row = adjust_layout.end_row
+  start_col = adjust_layout.start_col
+  end_col = adjust_layout.end_col
 
   local result = {
     total_height = total_height,
@@ -243,18 +297,29 @@ M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
   local start_col
 
   if win_opts.row > -1 and win_opts.row < 1 then
-    start_row = bound_row(total_height * win_opts.row) + cursor_pos[1] - 1
+    start_row = math.floor(total_height * win_opts.row) + cursor_pos[1] - 1
   else
-    start_row = bound_row(win_opts.row) + cursor_pos[1] - 1
+    start_row = win_opts.row + cursor_pos[1] - 1
   end
-  local end_row = bound_row(start_row + height)
+  local end_row = start_row + height
 
   if win_opts.col > -1 and win_opts.col < 1 then
-    start_col = bound_col(total_width * win_opts.col) + cursor_pos[2]
+    start_col = math.floor(total_width * win_opts.col) + cursor_pos[2]
   else
-    start_col = bound_col(win_opts.col) + cursor_pos[2]
+    start_col = win_opts.col + cursor_pos[2]
   end
-  local end_col = bound_col(start_col + width)
+  local end_col = start_col + width
+
+  local adjust_layout = M._adjust_layout_bound(
+    total_height,
+    total_width,
+    { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
+  )
+
+  start_row = adjust_layout.start_row
+  end_row = adjust_layout.end_row
+  start_col = adjust_layout.start_col
+  end_col = adjust_layout.end_col
 
   local result = {
     total_height = total_height,
