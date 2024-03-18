@@ -12,12 +12,7 @@ M._create_theme_dir = function(theme_dir)
   if path.isdir(theme_dir) then
     return
   end
-  spawn
-    .run({ "mkdir", "-p", theme_dir }, {
-      on_stdout = function() end,
-      on_stderr = function() end,
-    })
-    :wait()
+  vim.fn.mkdir(theme_dir, "p")
 end
 
 --- @type string?
@@ -36,8 +31,10 @@ M.get_theme_dir = function()
       on_stderr = function() end,
     }, function(completed)
       -- log.debug("|get_theme_dir| config_dir:%s", vim.inspect(config_dir))
-      local theme_dir = path.join(config_dir, "themes")
-      M._create_theme_dir(theme_dir)
+      cached_theme_dir = path.join(config_dir, "themes")
+      vim.schedule(function()
+        M._create_theme_dir(cached_theme_dir)
+      end)
     end)
 
     return nil
