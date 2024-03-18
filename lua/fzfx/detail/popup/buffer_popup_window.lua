@@ -74,7 +74,7 @@ end
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
-  local relative = opts.relative or "editor"
+  opts.relative = opts.relative or "editor"
   local layout =
     popup_helpers.make_center_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
   local provider_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
@@ -84,7 +84,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
 
   local result = {
     anchor = "NW",
-    relative = relative,
+    relative = opts.relative,
     width = layout.width,
     height = layout.height,
     row = layout.start_row,
@@ -95,7 +95,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   }
   result.provider = {
     anchor = "NW",
-    relative = relative,
+    relative = opts.relative,
     width = layout.provider.width,
     height = layout.provider.height,
     row = layout.provider.start_row,
@@ -106,7 +106,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   }
   result.previewer = {
     anchor = "NW",
-    relative = relative,
+    relative = opts.relative,
     width = layout.previewer.width,
     height = layout.previewer.height,
     row = layout.previewer.start_row,
@@ -116,7 +116,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if relative == "win" then
+  if opts.relative == "win" then
     result.provider.win = relative_winnr
     result.previewer.win = relative_winnr
   end

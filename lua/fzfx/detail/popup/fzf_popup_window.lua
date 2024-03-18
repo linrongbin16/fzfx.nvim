@@ -12,13 +12,13 @@ local FLOAT_WIN_DEFAULT_BORDER = "none"
 --- @return fzfx.NvimFloatWinOpts
 M._make_cursor_opts = function(win_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
-  local relative = "win"
+  opts.relative = opts.relative or "win"
   local layout = popup_helpers.make_cursor_layout(opts)
   log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
 
   local result = {
     anchor = "NW",
-    relative = relative,
+    relative = opts.relative,
     width = layout.width,
     height = layout.height,
     row = layout.start_row,
@@ -28,7 +28,7 @@ M._make_cursor_opts = function(win_opts, relative_winnr)
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if relative == "win" then
+  if opts.relative == "win" then
     result.win = relative_winnr
   end
 
@@ -41,13 +41,13 @@ end
 --- @return fzfx.NvimFloatWinOpts
 M._make_center_opts = function(win_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
-  local relative = opts.relative or "editor"
+  opts.relative = opts.relative or "editor"
   local layout = popup_helpers.make_center_layout(opts)
   log.debug("|_make_center_opts| layout:%s" .. vim.inspect(layout))
 
   local result = {
     anchor = "NW",
-    relative = relative,
+    relative = opts.relative,
     width = layout.width,
     height = layout.height,
     row = layout.start_row,
@@ -57,7 +57,7 @@ M._make_center_opts = function(win_opts, relative_winnr)
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if relative == "win" then
+  if opts.relative == "win" then
     result.win = relative_winnr
   end
 
@@ -70,9 +70,10 @@ end
 M.make_opts = function(win_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "editor"
+  print(string.format("|make_opts| win_opts:%s\n", vim.inspect(win_opts)))
   log.ensure(
     opts.relative == "cursor" or opts.relative == "editor" or opts.relative == "win",
-    string.format("window relative (%s) must be editor/win/cursor", vim.inspect(opts))
+    string.format("popup window relative (%s) must be editor/win/cursor", vim.inspect(opts))
   )
   return opts.relative == "cursor" and M._make_cursor_opts(opts, relative_winnr)
     or M._make_center_opts(opts, relative_winnr)
