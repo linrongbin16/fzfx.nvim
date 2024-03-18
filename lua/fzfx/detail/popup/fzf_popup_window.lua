@@ -28,7 +28,7 @@ M._make_cursor_opts = function(win_opts, relative_winnr)
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if type(relative_winnr) == "number" then
+  if relative == "win" then
     result.win = relative_winnr
   end
 
@@ -57,7 +57,7 @@ M._make_center_opts = function(win_opts, relative_winnr)
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if relative == "win" and type(relative_winnr) == "number" then
+  if relative == "win" then
     result.win = relative_winnr
   end
 
