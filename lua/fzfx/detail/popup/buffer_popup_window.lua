@@ -19,10 +19,52 @@ local FLOAT_WIN_DEFAULT_STYLE = "minimal"
 --- @param relative_winnr integer?
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
-  local layout = popup_helpers.make_layout(win_opts, buffer_previewer_opts.fzf_preview_window_opts)
+  local layout =
+    popup_helpers.make_center_layout(win_opts, buffer_previewer_opts.fzf_preview_window_opts)
   local relative = win_opts.relative
   local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
+
+  local result = {
+    anchor = "NW",
+    relative = relative,
+    width = layout.width,
+    height = layout.height,
+    row = layout.start_row,
+    col = layout.start_col,
+    style = FLOAT_WIN_DEFAULT_STYLE,
+    border = border,
+    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+  }
+  result.provider = {
+    anchor = "NW",
+    relative = relative,
+    width = layout.provider.width,
+    height = layout.provider.height,
+    row = layout.provider.start_row,
+    col = layout.provider.start_col,
+    style = FLOAT_WIN_DEFAULT_STYLE,
+    border = border,
+    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+  }
+  result.previewer = {
+    anchor = "NW",
+    relative = relative,
+    width = layout.previewer.width,
+    height = layout.previewer.height,
+    row = layout.previewer.start_row,
+    col = layout.previewer.start_col,
+    style = FLOAT_WIN_DEFAULT_STYLE,
+    border = border,
+    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+  }
+
+  if relative ~= "editor" and type(relative_winnr) == "number" then
+    result.provider.win = relative_winnr
+    result.previewer.win = relative_winnr
+  end
+  -- log.debug("|make_opts| result:%s", vim.inspect(result))
+  return result
 end
 
 --- @param win_opts fzfx.WindowOpts
@@ -30,7 +72,8 @@ end
 --- @param relative_winnr integer?
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
-  local layout = popup_helpers.make_layout(win_opts, buffer_previewer_opts.fzf_preview_window_opts)
+  local layout =
+    popup_helpers.make_center_layout(win_opts, buffer_previewer_opts.fzf_preview_window_opts)
   local relative = win_opts.relative
   local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS

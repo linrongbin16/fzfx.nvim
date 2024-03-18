@@ -108,7 +108,7 @@ M.ShellOptsContext = ShellOptsContext
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
 --- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
 --- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
-M.make_layout = function(win_opts, fzf_preview_window_opts)
+M.make_center_layout = function(win_opts, fzf_preview_window_opts)
   local total_width = win_opts.relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(0)
   local total_height = win_opts.relative == "editor" and vim.o.lines
