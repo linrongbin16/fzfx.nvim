@@ -11,7 +11,7 @@
 </p>
 
 <p align="center"><i>
-A fzf fuzzy finder that updates on every keystroke of user query and selection.
+A fzf fuzzy finder that updates on every keystroke.
 </i></p>
 
 https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403
