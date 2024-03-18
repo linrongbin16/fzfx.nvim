@@ -70,7 +70,6 @@ end
 M.make_opts = function(win_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "editor"
-  print(string.format("|make_opts| win_opts:%s\n", vim.inspect(win_opts)))
   log.ensure(
     opts.relative == "cursor" or opts.relative == "editor" or opts.relative == "win",
     string.format("popup window relative (%s) must be editor/win/cursor", vim.inspect(opts))
