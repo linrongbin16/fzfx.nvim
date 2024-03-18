@@ -233,11 +233,17 @@ end
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 M._upper_file_explorer = function(line, context)
-  log.debug("|_upper_file_explorer| line:%s, context:%s", vim.inspect(line), vim.inspect(context))
+  log.debug(
+    string.format(
+      "|_upper_file_explorer| line:%s, context:%s",
+      vim.inspect(line),
+      vim.inspect(context)
+    )
+  )
   local cwd = fileio.readfile(context.cwd) --[[@as string]]
-  log.debug("|_upper_file_explorer| cwd:%s", vim.inspect(cwd))
+  log.debug("|_upper_file_explorer| cwd:" .. vim.inspect(cwd))
   local target = vim.fn.fnamemodify(cwd, ":h") --[[@as string]]
-  log.debug("|_upper_file_explorer| target:%s", vim.inspect(target))
+  log.debug("|_upper_file_explorer| target:" .. vim.inspect(target))
   -- Windows root folder: `C:\`
   -- Unix/linux root folder: `/`
   local root_len = constants.IS_WINDOWS and 3 or 1
