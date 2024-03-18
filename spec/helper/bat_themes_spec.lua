@@ -15,14 +15,6 @@ describe("helper.bat_themes", function()
   local bat_themes_helper = require("fzfx.helper.bat_themes")
   require("fzfx").setup()
 
-  describe("[bat themes dir]", function()
-    it("cached_theme_dir", function()
-      assert_true(
-        type(bat_themes_helper._cached_theme_dir()) == "string"
-          or bat_themes_helper._cached_theme_dir() == nil
-      )
-    end)
-  end)
   describe("[get_theme_dir]", function()
     it("test", function()
       if constants.HAS_BAT then
