@@ -200,8 +200,6 @@ M._make_render_map = function()
   local GLOBAL_RENDERERS = {
     _BatTmGlobalRenderer:new("Normal", "background", "bg"),
     _BatTmGlobalRenderer:new("Normal", "foreground", "fg"),
-    _BatTmGlobalRenderer:new("Cursor", "caret", "bg"),
-    _BatTmGlobalRenderer:new("Cursor", "block_caret", "bg"),
     _BatTmGlobalRenderer:new("NonText", "invisibles", "fg"),
     _BatTmGlobalRenderer:new({ "Visual" }, "lineHighlight", "bg"),
     _BatTmGlobalRenderer:new({
