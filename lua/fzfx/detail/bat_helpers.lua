@@ -207,12 +207,14 @@ M._make_render_map = function()
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
+      "@diff.plus",
       "Added",
     }, "lineDiffAdded", "fg"),
     _BatTmGlobalRenderer:new({
       "GitSignsChange",
       "GitGutterChange",
       "DiffChange",
+      "@diff.delta",
       "Changed",
     }, "lineDiffModified", "fg"),
     _BatTmGlobalRenderer:new({
@@ -220,6 +222,7 @@ M._make_render_map = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
+      "@diff.minus",
       "Removed",
     }, "lineDiffDeleted", "fg"),
   }
@@ -240,14 +243,18 @@ M._make_render_map = function()
   -- syntax and treesitter map
   local SCOPE_RENDERERS = {
     -- comment {
-    _BatTmScopeRenderer:new("Comment", "comment"),
+    _BatTmScopeRenderer:new({ "@comment", "Comment" }, "comment"),
     -- comment }
 
     -- constant {
-    _BatTmScopeRenderer:new("Number", "constant.numeric"),
-    _BatTmScopeRenderer:new("Float", "constant.numeric.float"),
-    _BatTmScopeRenderer:new("Boolean", "constant.language"),
-    _BatTmScopeRenderer:new("Character", { "constant.character" }),
+    _BatTmScopeRenderer:new({ "@number", "Number" }, "constant.numeric"),
+    _BatTmScopeRenderer:new({ "@number.float", "Float" }, "constant.numeric.float"),
+    _BatTmScopeRenderer:new({ "@boolean", "Boolean" }, "constant.language"),
+    _BatTmScopeRenderer:new({ "@character", "Character" }, { "constant.character" }),
+    _BatTmScopeRenderer:new(
+      { "@string.escape" },
+      { "constant.character.escaped", "constant.character.escape" }
+    ),
     -- constant }
 
     -- entity {
