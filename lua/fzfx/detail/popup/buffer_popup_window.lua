@@ -635,13 +635,14 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
 
     local LINES = file_content.contents
     local LINES_COUNT = #LINES
+    local LARGE_FILE = LINES_COUNT > 50
     -- local TOP_LINE = content_view
     -- local BOTTOM_LINE = math.min(WIN_HEIGHT + TOP_LINE, LINES_COUNT)
     local FIRST_LINE = 1
     local LAST_LINE = LINES_COUNT
     local line_index = FIRST_LINE
     if line_step == nil then
-      line_step = LINES_COUNT > 50 and math.max(math.ceil(math.sqrt(LINES_COUNT)), 5) or 5
+      line_step = LARGE_FILE and math.max(math.ceil(math.sqrt(LINES_COUNT)), 5) or 5
     end
     log.debug(
       string.format(
@@ -740,7 +741,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
           do_complete(true)
           falsy_rendering()
         end
-      end, 10)
+      end, LARGE_FILE and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 1) or 10)
     end
     set_buf_lines()
   end, 20)
