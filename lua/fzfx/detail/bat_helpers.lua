@@ -258,27 +258,60 @@ M._make_render_map = function()
     -- constant }
 
     -- entity {
-    _BatTmScopeRenderer:new("Function", "entity.name.function"),
-    _BatTmScopeRenderer:new("Type", { "entity.name.type" }),
+    _BatTmScopeRenderer:new({ "@function", "Function" }, "entity.name.function"),
+    _BatTmScopeRenderer:new({ "@function.call" }, "entity.name.function.call"),
+    _BatTmScopeRenderer:new({ "@constructor" }, "entity.name.function.constructor"),
+    _BatTmScopeRenderer:new({ "@type", "Type" }, { "entity.name.type" }),
+    _BatTmScopeRenderer:new({ "@tag" }, "entity.name.tag"),
+    _BatTmScopeRenderer:new({ "@tag.attribute" }, "entity.other.attribute-name"),
     _BatTmScopeRenderer:new({ "Structure" }, { "entity.name.union" }),
     _BatTmScopeRenderer:new({ "Structure" }, { "entity.name.enum" }),
-    _BatTmScopeRenderer:new({ "Label" }, "entity.name.label"),
-    _BatTmScopeRenderer:new({ "Constant" }, "entity.name.constant"),
-    _BatTmScopeRenderer:new({ "Type" }, "entity.other.inherited-class"),
+    _BatTmScopeRenderer:new({ "@markup.heading" }, "entity.name.section"),
+    _BatTmScopeRenderer:new({ "@label", "Label" }, "entity.name.label"),
+    _BatTmScopeRenderer:new({ "@constant", "Constant" }, "entity.name.constant"),
+    _BatTmScopeRenderer:new({ "@type", "Type" }, "entity.other.inherited-class"),
     -- entity }
 
     -- keyword {
-    _BatTmScopeRenderer:new({ "Keyword" }, "keyword"),
-    _BatTmScopeRenderer:new({ "Conditional" }, "keyword.control"),
-    _BatTmScopeRenderer:new({ "Operator" }, "keyword.operator"),
+    _BatTmScopeRenderer:new({ "@keyword", "Keyword" }, "keyword"),
+    _BatTmScopeRenderer:new({ "@keyword.conditional", "Conditional" }, "keyword.control"),
+    _BatTmScopeRenderer:new({ "@keyword.import" }, "keyword.control.import"),
+    _BatTmScopeRenderer:new({ "@operator", "Operator" }, "keyword.operator"),
+    _BatTmScopeRenderer:new({ "@keyword.operator" }, "keyword.operator.word"),
+    _BatTmScopeRenderer:new({ "@keyword.conditional.ternary" }, "keyword.operator.ternary"),
     -- keyword }
 
     -- markup {
+    _BatTmScopeRenderer:new({
+      "@markup.link.url",
+    }, "markup.underline.link"),
+    _BatTmScopeRenderer:new({
+      "@markup.underline",
+    }, "markup.underline"),
+    _BatTmScopeRenderer:new({
+      "@markup.strong",
+    }, "markup.bold"),
+    _BatTmScopeRenderer:new({
+      "@markup.italic",
+    }, "markup.italic"),
+    _BatTmScopeRenderer:new({
+      "@markup.heading",
+    }, "markup.heading"),
+    _BatTmScopeRenderer:new({
+      "@markup.list",
+    }, "markup.list"),
+    _BatTmScopeRenderer:new({
+      "@markup.raw",
+    }, "markup.raw"),
+    _BatTmScopeRenderer:new({
+      "@markup.quote",
+    }, "markup.quote"),
     _BatTmScopeRenderer:new({
       "GitSignsAdd",
       "GitGutterAdd",
       "DiffAdd",
       "DiffAdded",
+      "@diff.plus",
       "Added",
     }, { "markup.inserted" }),
     _BatTmScopeRenderer:new({
@@ -286,23 +319,26 @@ M._make_render_map = function()
       "GitGutterDelete",
       "DiffDelete",
       "DiffRemoved",
+      "@diff.minus",
       "Removed",
     }, { "markup.deleted" }),
     _BatTmScopeRenderer:new({
       "GitGutterChange",
       "GitSignsChange",
       "DiffChange",
+      "@diff.delta",
       "Changed",
     }, { "markup.changed" }),
     -- markup }
 
     -- meta {
-    _BatTmScopeRenderer:new({ "Macro" }, { "meta.preprocessor" }),
+    _BatTmScopeRenderer:new({ "@attribute" }, { "meta.annotation" }),
+    _BatTmScopeRenderer:new({ "@constant.macro", "Macro" }, { "meta.preprocessor" }),
     -- meta }
 
     -- storage {
     _BatTmScopeRenderer:new(
-      { "Keyword" },
+      { "@keyword.function", "Keyword" },
       { "storage.type.function", "keyword.declaration.function" }
     ),
     _BatTmScopeRenderer:new({ "Structure" }, {
@@ -313,24 +349,28 @@ M._make_render_map = function()
       "storage.type.struct",
       "keyword.declaration.struct",
     }),
-    _BatTmScopeRenderer:new({ "Type" }, { "storage.type", "keyword.declaration.type" }),
-    _BatTmScopeRenderer:new({ "StorageClass" }, "storage.modifier"),
+    _BatTmScopeRenderer:new({ "@type", "Type" }, { "storage.type", "keyword.declaration.type" }),
+    _BatTmScopeRenderer:new({ "@keyword.storage", "StorageClass" }, "storage.modifier"),
     -- storage }
 
     -- string {
-    _BatTmScopeRenderer:new({ "String" }, { "string", "string.quoted" }),
+    _BatTmScopeRenderer:new({ "@string", "String" }, { "string", "string.quoted" }),
+    _BatTmScopeRenderer:new({ "@string.regexp" }, { "string.regexp" }),
     -- string }
 
     -- support {
-    _BatTmScopeRenderer:new({ "Function" }, "support.function"),
-    _BatTmScopeRenderer:new({ "Constant" }, "support.constant"),
-    _BatTmScopeRenderer:new({ "Type" }, "support.type"),
-    _BatTmScopeRenderer:new({ "Type" }, "support.class"),
+    _BatTmScopeRenderer:new({ "@function.builtin", "Function" }, "support.function"),
+    _BatTmScopeRenderer:new({ "@constant.builtin", "Constant" }, "support.constant"),
+    _BatTmScopeRenderer:new({ "@type.builtin", "Type" }, "support.type"),
+    _BatTmScopeRenderer:new({ "@type.builtin", "Type" }, "support.class"),
+    _BatTmScopeRenderer:new({ "@module.builtin" }, "support.module"),
     -- support }
 
     -- variable {
-    _BatTmScopeRenderer:new({ "Function" }, "variable.function"),
-    _BatTmScopeRenderer:new({ "Identifier" }, "variable"),
+    _BatTmScopeRenderer:new({ "@function", "Function" }, "variable.function"),
+    _BatTmScopeRenderer:new({ "@variable", "Identifier" }, "variable"),
+    _BatTmScopeRenderer:new({ "@variable.parameter" }, { "variable.parameter" }),
+    _BatTmScopeRenderer:new({ "@variable.builtin" }, { "variable.language" }),
     -- variable }
   }
 
