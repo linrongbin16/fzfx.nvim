@@ -1,5 +1,22 @@
 # Changelog
 
+## [6.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.1.1...v6.2.0) (2024-03-18)
+
+
+### Features
+
+* **bat:** lazy build bat themes ([#658](https://github.com/linrongbin16/fzfx.nvim/issues/658)) ([463fd2e](https://github.com/linrongbin16/fzfx.nvim/commit/463fd2e1382359bfdb89a6ec30d73a53eb025529))
+
+
+### Bug Fixes
+
+* **preview:** fix buffer previewer on scrolling small file ([#661](https://github.com/linrongbin16/fzfx.nvim/issues/661)) ([f302def](https://github.com/linrongbin16/fzfx.nvim/commit/f302def304b714c2154c894ff6a33753b7774b90))
+
+
+### Performance Improvements
+
+* **preview:** reduce previewer buffer rendering latency on big file ([#660](https://github.com/linrongbin16/fzfx.nvim/issues/660)) ([d809d15](https://github.com/linrongbin16/fzfx.nvim/commit/d809d153120c0bdeed8a472f32170048625586b6))
+
 ## [6.1.1](https://github.com/linrongbin16/fzfx.nvim/compare/v6.1.0...v6.1.1) (2024-03-17)
 
 
