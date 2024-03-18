@@ -14,7 +14,7 @@ M._make_cursor_opts = function(win_opts)
   local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "cursor"
   local layout = popup_helpers.make_layout(opts)
-  log.debug("|_make_cursor_opts| layout:%s", vim.inspect(layout))
+  log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
 
   return {
     anchor = "NW",
@@ -35,7 +35,7 @@ M._make_center_opts = function(win_opts)
   local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "editor"
   local layout = popup_helpers.make_layout(opts)
-  log.debug("|_make_center_opts| layout:%s", vim.inspect(layout))
+  log.debug("|_make_center_opts| layout:%s" .. vim.inspect(layout))
 
   return {
     anchor = "NW",
@@ -57,8 +57,7 @@ M.make_opts = function(win_opts)
   opts.relative = opts.relative or "editor"
   log.ensure(
     opts.relative == "cursor" or opts.relative == "editor" or opts.relative == "win",
-    "window relative (%s) must be editor/win/cursor",
-    vim.inspect(opts)
+    string.format("window relative (%s) must be editor/win/cursor", vim.inspect(opts))
   )
   return opts.relative == "cursor" and M._make_cursor_opts(opts) or M._make_center_opts(opts)
 end

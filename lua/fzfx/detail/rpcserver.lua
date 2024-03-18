@@ -59,9 +59,11 @@ end
 function RpcServer:register(callback, name)
   log.ensure(
     type(callback) == "function",
-    "|RpcServer:register| callback f(%s) must be function! %s",
-    type(callback),
-    vim.inspect(callback)
+    string.format(
+      "|RpcServer:register| callback f(%s) must be function! %s",
+      type(callback),
+      vim.inspect(callback)
+    )
   )
   local registry_id = tostring(num.auto_incremental_id())
   self.registry[registry_id] = function(params)
@@ -82,11 +84,13 @@ function RpcServer:register(callback, name)
     -- )
     if not ok then
       log.err(
-        "failed to invoke rpc (%s-%s) with param:%s, error:%s",
-        vim.inspect(registry_id),
-        vim.inspect(name),
-        vim.inspect(params),
-        vim.inspect(err)
+        string.format(
+          "failed to invoke rpc (%s-%s) with param:%s, error:%s",
+          vim.inspect(registry_id),
+          vim.inspect(name),
+          vim.inspect(params),
+          vim.inspect(err)
+        )
       )
     end
   end
@@ -98,16 +102,20 @@ end
 function RpcServer:unregister(registry_id)
   log.ensure(
     type(registry_id) == "string",
-    "|RpcServer:unregister| registry_id(%s) must be string! %s",
-    type(registry_id),
-    vim.inspect(registry_id)
+    string.format(
+      "|RpcServer:unregister| registry_id(%s) must be string! %s",
+      type(registry_id),
+      vim.inspect(registry_id)
+    )
   )
   local callback = self.registry[registry_id]
   log.ensure(
     type(callback) == "function",
-    "|RpcServer:unregister| registered callback(%s) must be function! %s",
-    type(callback),
-    vim.inspect(callback)
+    string.format(
+      "|RpcServer:unregister| registered callback(%s) must be function! %s",
+      type(callback),
+      vim.inspect(callback)
+    )
   )
   self.registry[registry_id] = nil
   return callback
@@ -118,16 +126,20 @@ end
 function RpcServer:get(registry_id)
   log.ensure(
     type(registry_id) == "string",
-    "|RpcServer:get| registry_id(%s) must be string ! %s",
-    type(registry_id),
-    vim.inspect(registry_id)
+    string.format(
+      "|RpcServer:get| registry_id(%s) must be string ! %s",
+      type(registry_id),
+      vim.inspect(registry_id)
+    )
   )
   local callback = self.registry[registry_id]
   log.ensure(
     type(callback) == "function",
-    "|RpcServer:get| registered callback(%s) must be function! %s",
-    type(callback),
-    vim.inspect(callback)
+    string.format(
+      "|RpcServer:get| registered callback(%s) must be function! %s",
+      type(callback),
+      vim.inspect(callback)
+    )
   )
   return callback
 end

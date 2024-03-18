@@ -109,7 +109,7 @@ M._make_set_cursor_rg_no_filename = function(lines, context)
   end
   local winnr = tbl.tbl_get(context, "winnr")
   if not num.ge(winnr, 0) or not vim.api.nvim_win_is_valid(winnr) then
-    log.echo(LogLevels.INFO, "invalid window(%s).", vim.inspect(winnr))
+    log.echo(LogLevels.INFO, string.format("invalid window(%s).", vim.inspect(winnr)))
     return nil
   end
 
@@ -181,7 +181,7 @@ end
 M._make_setqflist_rg_no_filename = function(lines, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
   if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
-    log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
+    log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
     return nil
   end
 
@@ -262,7 +262,7 @@ M._make_set_cursor_grep_no_filename = function(lines, context)
   end
   local winnr = tbl.tbl_get(context, "winnr")
   if not num.ge(winnr, 0) or not vim.api.nvim_win_is_valid(winnr) then
-    log.echo(LogLevels.INFO, "invalid window(%s).", vim.inspect(winnr))
+    log.echo(LogLevels.INFO, string.format("invalid window(%s).", vim.inspect(winnr)))
     return nil
   end
 
@@ -334,7 +334,7 @@ end
 M._make_setqflist_grep_no_filename = function(lines, context)
   local bufnr = tbl.tbl_get(context, "bufnr")
   if not num.ge(bufnr, 0) or not vim.api.nvim_buf_is_valid(bufnr) then
-    log.echo(LogLevels.INFO, "invalid buffer(%s).", vim.inspect(bufnr))
+    log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
     return nil
   end
 
@@ -412,7 +412,7 @@ end
 --- @param context fzfx.GitBranchesPipelineContext
 --- @return string?
 M._make_git_checkout = function(lines, context)
-  log.debug("|_make_git_checkout| lines:%s", vim.inspect(lines))
+  log.debug(string.format("|_make_git_checkout| lines:%s", vim.inspect(lines)))
 
   if tbl.list_not_empty(lines) then
     local line = lines[#lines]
@@ -502,9 +502,7 @@ M._make_feed_vim_key = function(lines, context)
     else
       log.echo(
         LogLevels.INFO,
-        "%s mode %s not support.",
-        vim.inspect(parsed.mode),
-        vim.inspect(parsed.lhs)
+        string.format("%s mode %s not support.", vim.inspect(parsed.mode), vim.inspect(parsed.lhs))
       )
       return nil
     end
