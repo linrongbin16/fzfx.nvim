@@ -269,6 +269,20 @@ M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
   local total_width = vim.api.nvim_win_get_width(0)
   local total_height = vim.api.nvim_win_get_height(0)
   local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  local win_first_line = vim.fn.line("w0")
+  local cursor_relative_row = cursor_pos[1] - win_first_line
+  local cursor_relative_col = cursor_pos[2]
+  log.debug(
+    string.format(
+      "|make_cursor_layout| total height/width:%s/%s, cursor:%s, win first line:%s, cursor relative row/col:%s/%s",
+      vim.inspect(total_height),
+      vim.inspect(total_width),
+      vim.inspect(cursor_pos),
+      vim.inspect(win_first_line),
+      vim.inspect(cursor_relative_row),
+      vim.inspect(cursor_relative_col)
+    )
+  )
 
   local width = num.bound(
     win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
@@ -281,32 +295,20 @@ M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
     total_height
   )
 
-  --- @param v number
-  --- @return number
-  local function bound_row(v)
-    return num.bound(v, 0, total_height - 1)
-  end
-
-  --- @param v number
-  --- @return number
-  local function bound_col(v)
-    return num.bound(v, 0, total_width - 1)
-  end
-
   local start_row
   local start_col
 
   if win_opts.row > -1 and win_opts.row < 1 then
-    start_row = math.floor(total_height * win_opts.row) + cursor_pos[1] - 1
+    start_row = math.floor(total_height * win_opts.row) + cursor_relative_row
   else
-    start_row = win_opts.row + cursor_pos[1] - 1
+    start_row = win_opts.row + cursor_relative_row
   end
   local end_row = start_row + height
 
   if win_opts.col > -1 and win_opts.col < 1 then
-    start_col = math.floor(total_width * win_opts.col) + cursor_pos[2]
+    start_col = math.floor(total_width * win_opts.col) + cursor_relative_col
   else
-    start_col = win_opts.col + cursor_pos[2]
+    start_col = win_opts.col + cursor_relative_col
   end
   local end_col = start_col + width
 

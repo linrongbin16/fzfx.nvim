@@ -31,7 +31,8 @@ describe("detail.popup.fzf_popup_window", function()
   describe("[_make_cursor_opts]", function()
     it("test", function()
       local actual = fzf_popup_window._make_cursor_opts(
-        vim.tbl_deep_extend("force", vim.deepcopy(WIN_OPTS), { relative = "cursor" })
+        vim.tbl_deep_extend("force", vim.deepcopy(WIN_OPTS), { relative = "cursor" }),
+        0
       )
       print(string.format("fzf_popup_window._make_cursor_opts:%s\n", vim.inspect(actual)))
       local win_width = vim.api.nvim_win_get_width(0)
@@ -52,7 +53,8 @@ describe("detail.popup.fzf_popup_window", function()
   describe("[_make_center_opts]", function()
     it("test", function()
       local actual = fzf_popup_window._make_center_opts(
-        vim.tbl_deep_extend("force", vim.deepcopy(WIN_OPTS), { relative = "win" })
+        vim.tbl_deep_extend("force", vim.deepcopy(WIN_OPTS), { relative = "win" }),
+        0
       )
       print(string.format("fzf_popup_window._make_center_opts:%s\n", vim.inspect(actual)))
       local total_width = vim.api.nvim_win_get_width(0)
