@@ -1,12 +1,12 @@
 local SELF_PATH = vim.env._FZFX_NVIM_SELF_PATH
 if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
-  io.write(string.format("|rpc.notify| error! SELF_PATH is empty!"))
+  io.write(string.format("|bin.rpcnotify| error! SELF_PATH is empty!"))
 end
 vim.opt.runtimepath:append(SELF_PATH)
 
 local str = require("fzfx.commons.str")
 local shell_helpers = require("fzfx.detail.shell_helpers")
-shell_helpers.setup("rpc_notify")
+shell_helpers.setup("rpcnotify")
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_RPC_SERVER_ADDRESS
 shell_helpers.log_ensure(str.not_empty(SOCKET_ADDRESS), "error! SOCKET_ADDRESS must not be empty!")
