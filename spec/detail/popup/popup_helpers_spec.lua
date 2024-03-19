@@ -82,14 +82,12 @@ describe("detail.popup.popup_helpers", function()
           local total_height = vim.o.lines
           local width = total_width * 0.85
           local height = total_height * 0.75
-          local center_row = total_height / 2
-          local center_col = total_width / 2
+          local center_row = total_height * 0.5 - 1
+          local center_col = total_width * 0.5 - 1
           assert_true(isclose(actual.width, width))
           assert_true(isclose(actual.height, height))
-          assert_true(isclose(2 * (center_row - actual.start_row), height))
-          assert_true(isclose(2 * (actual.end_row - center_row), height))
-          assert_true(isclose(2 * (center_col - actual.start_col), width))
-          assert_true(isclose(2 * (actual.end_col - center_col), width))
+          assert_true(isclose((actual.end_row + actual.start_row) / 2, center_row))
+          assert_true(isclose((actual.end_col + actual.start_col) / 2, center_col))
         end)
         it("test2 without fzf_preview_window_opts", function()
           local actual = popup_helpers.make_center_layout({
@@ -103,11 +101,11 @@ describe("detail.popup.popup_helpers", function()
           local total_width = vim.api.nvim_win_get_width(0)
           local width = total_width * 0.71
           local height = total_height * 0.47
-          local center_row = total_height / 2
-          local center_col = total_width / 2
+          local center_row = total_height * 0.5 - 1
+          local center_col = total_width * 0.5 - 1
           print(
             string.format(
-              "make_center_layout-2:%s, total(height/width):%s/%s,center(row/col):%s/%s\n",
+              "make_center_layout-2:%s, total(height/width):%s/%s, center row/col:%s/%s\n",
               vim.inspect(actual),
               vim.inspect(total_height),
               vim.inspect(total_width),
@@ -117,10 +115,8 @@ describe("detail.popup.popup_helpers", function()
           )
           assert_true(isclose(actual.width, width))
           assert_true(isclose(actual.height, height))
-          assert_true(isclose(2 * (center_row - actual.start_row), height))
-          assert_true(isclose(2 * (actual.end_row - center_row), height))
-          assert_true(isclose(2 * (center_col - actual.start_col), width))
-          assert_true(isclose(2 * (actual.end_col - center_col), width))
+          assert_true(isclose((actual.end_row + actual.start_row) / 2, center_row))
+          assert_true(isclose((actual.end_col + actual.start_col) / 2, center_col))
         end)
         it("test3 without fzf_preview_window_opts", function()
           local actual = popup_helpers.make_center_layout({
@@ -134,11 +130,11 @@ describe("detail.popup.popup_helpers", function()
           local total_height = vim.o.lines
           local width = total_width * 0.81
           local height = total_height * 0.77
-          local center_row = total_height / 2 - 1
-          local center_col = total_width / 2 + 2
+          local center_row = total_height * 0.5 - 1
+          local center_col = total_width * 0.5 - 1
           print(
             string.format(
-              "make_center_layout-3:%s, total(height/width):%s/%s,center(row/col):%s/%s\n",
+              "make_center_layout-3:%s, total(height/width):%s/%s, center row/col:%s/%s\n",
               vim.inspect(actual),
               vim.inspect(total_height),
               vim.inspect(total_width),
@@ -148,10 +144,8 @@ describe("detail.popup.popup_helpers", function()
           )
           assert_true(isclose(actual.width, width))
           assert_true(isclose(actual.height, height))
-          assert_true(isclose(2 * (center_row - actual.start_row), height))
-          assert_true(isclose(2 * (actual.end_row - center_row), height))
-          assert_true(isclose(2 * (center_col - actual.start_col), width))
-          assert_true(isclose(2 * (actual.end_col - center_col), width))
+          assert_true(isclose((actual.end_row + actual.start_row) / 2, center_row))
+          assert_true(isclose((actual.end_col + actual.start_col) / 2, center_col))
         end)
         it("test4 with fzf_preview_window_opts", function()
           local actual = popup_helpers.make_center_layout({
