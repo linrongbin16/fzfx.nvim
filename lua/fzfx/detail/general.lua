@@ -896,6 +896,30 @@ local function mock_buffer_previewer_fzf_opts(fzf_opts, fzf_action_file)
     }
 end
 
+--- @param fzf_opts fzfx.FzfOpt[]
+--- @return fzfx.FzfOpt[], string
+local function mock_non_buffer_previewer_fzf_border_opts(fzf_opts)
+  local new_fzf_opts = {}
+  local border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
+  for _, o in ipairs(fzf_opts) do
+    local mocked = false
+    if type(o) == "table" and str.not_empty(o[1]) and str.startswith(o[1], "--border") then
+      border_opts = o[2]
+      mocked = true
+    elseif
+      str.not_empty(o) and str.startswith(o --[[@as string]], "--border")
+    then
+      border_opts = string.sub(o --[[@as string]], string.len("--border") + 2)
+      mocked = true
+    end
+    if not mocked then
+      table.insert(new_fzf_opts, o)
+    end
+  end
+
+  return new_fzf_opts, border_opts
+end
+
 --- @param name string
 --- @param query string
 --- @param bang boolean
@@ -1356,10 +1380,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
-  local buffer_previewer_opts = {}
+  local previewer_opts = {}
+  local non_buffer_previewer_border_opts = nil
   if use_buffer_previewer then
-    fzf_opts, buffer_previewer_opts =
+    fzf_opts, previewer_opts =
       mock_buffer_previewer_fzf_opts(fzf_opts, buffer_previewer_actions_file)
+  else
+    fzf_opts, non_buffer_previewer_border_opts = mock_non_buffer_previewer_fzf_border_opts(fzf_opts)
+    previewer_opts.fzf_border_opts = non_buffer_previewer_border_opts
   end
 
   popup = Popup:new(win_opts or {}, query_command, fzf_opts, actions, context, function(last_query)
@@ -1380,7 +1408,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       buffer_previewer_actions_fsevent = nil
     end
     buffer_previewer_query_fzf_status_start = false
-  end, use_buffer_previewer, buffer_previewer_opts)
+  end, use_buffer_previewer, previewer_opts)
 end
 
 --- @param name string

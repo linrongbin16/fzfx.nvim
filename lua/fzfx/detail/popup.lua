@@ -29,7 +29,7 @@ function PopupWindow:new(win_opts, window_type, buffer_previewer_opts)
   --- @type fzfx.FzfPopupWindow|fzfx.BufferPopupWindow
   local instance = nil
   if window_type == "fzf" then
-    instance = fzf_popup_window.FzfPopupWindow:new(win_opts)
+    instance = fzf_popup_window.FzfPopupWindow:new(win_opts, buffer_previewer_opts)
   elseif window_type == "buffer" then
     instance = buffer_popup_window.BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   end

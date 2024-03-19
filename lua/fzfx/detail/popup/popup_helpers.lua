@@ -227,10 +227,10 @@ M.make_center_layout = function(win_opts, fzf_preview_window_opts)
   --   vim.inspect(center_col + (width / 2))
   -- )
 
-  local start_row = math.floor(center_row - (height / 2))
-  local end_row = math.floor(center_row + (height / 2))
-  local start_col = math.floor(center_col - (width / 2))
-  local end_col = math.floor(center_col + (width / 2))
+  local start_row = math.floor(center_row - (height / 2)) - 1
+  local end_row = math.floor(center_row + (height / 2)) - 1
+  local start_col = math.floor(center_col - (width / 2)) - 1
+  local end_col = math.floor(center_col + (width / 2)) - 1
 
   local adjust_layout = M._adjust_layout_bound(
     total_height,

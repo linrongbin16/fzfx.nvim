@@ -43,11 +43,11 @@ describe("detail.popup.buffer_popup_window", function()
     row = 0,
     col = 0,
   }
-  for i = min_test_height, max_test_height, 3 do
-    for j = min_test_width, max_test_width, 2 do
-      test_height = i
-      test_width = j
-      describe("[BufferPopupWindow]", function()
+  describe("[BufferPopupWindow]", function()
+    for i = min_test_height, max_test_height, 3 do
+      for j = min_test_width, max_test_width, 2 do
+        test_height = i
+        test_width = j
         it("new right,50%", function()
           local pw_opts = fzf_helpers.parse_fzf_preview_window_opts({
             {
@@ -256,9 +256,9 @@ describe("detail.popup.buffer_popup_window", function()
           actual:preview_action("hide-preview")
           actual:preview_action("show-preview")
         end)
-      end)
+      end
     end
-  end
+  end)
   describe("[scroll_by]", function()
     local PREVIEW_WINDOW_OPTS = fzf_helpers.parse_fzf_preview_window_opts({
       {

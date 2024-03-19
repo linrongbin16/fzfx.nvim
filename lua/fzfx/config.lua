@@ -173,7 +173,7 @@ local Defaults = {
     ["bg+"] = { "bg", "CursorLine", "CursorColumn" },
     ["hl+"] = { "fg", "Statement" },
     info = { "fg", "PreProc" },
-    border = { "fg", "Ignore" },
+    border = { "fg", "FloatBorder", "NormalFloat", "Normal" },
     prompt = { "fg", "Conditional" },
     pointer = { "fg", "Exception" },
     marker = { "fg", "Keyword" },
@@ -239,8 +239,7 @@ local Defaults = {
 
   -- popup window
   popup = {
-    -- nvim float window options
-    -- see: https://neovim.io/doc/user/api.html#nvim_open_win()
+    -- popup window layout options
     win_opts = {
       -- popup window height/width.
       --
