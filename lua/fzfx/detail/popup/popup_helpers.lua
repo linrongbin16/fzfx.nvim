@@ -173,12 +173,12 @@ M.make_center_layout = function(win_opts, fzf_preview_window_opts)
     or vim.api.nvim_win_get_height(0)
 
   local width = num.bound(
-    win_opts.width > 1 and (win_opts.width - 1) or math.floor(win_opts.width * total_width) - 1,
+    win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
     1,
     total_width
   )
   local height = num.bound(
-    win_opts.height > 1 and (win_opts.height - 1) or math.floor(win_opts.height * total_height) - 1,
+    win_opts.height > 1 and win_opts.height or math.floor(win_opts.height * total_height),
     1,
     total_height
   )
@@ -227,10 +227,10 @@ M.make_center_layout = function(win_opts, fzf_preview_window_opts)
   --   vim.inspect(center_col + (width / 2))
   -- )
 
-  local start_row = math.floor(center_row - (height / 2))
-  local end_row = math.floor(center_row + (height / 2))
-  local start_col = math.floor(center_col - (width / 2))
-  local end_col = math.floor(center_col + (width / 2))
+  local start_row = math.floor(center_row - (height / 2)) - 1
+  local end_row = math.floor(center_row + (height / 2)) - 1
+  local start_col = math.floor(center_col - (width / 2)) - 1
+  local end_col = math.floor(center_col + (width / 2)) - 1
 
   local adjust_layout = M._adjust_layout_bound(
     total_height,
@@ -285,12 +285,12 @@ M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
   )
 
   local width = num.bound(
-    win_opts.width > 1 and (win_opts.width - 1) or math.floor(win_opts.width * total_width) - 1,
+    win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
     1,
     total_width
   )
   local height = num.bound(
-    win_opts.height > 1 and (win_opts.height - 1) or math.floor(win_opts.height * total_height) - 1,
+    win_opts.height > 1 and win_opts.height or math.floor(win_opts.height * total_height),
     1,
     total_height
   )
