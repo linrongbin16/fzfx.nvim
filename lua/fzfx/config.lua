@@ -239,8 +239,7 @@ local Defaults = {
 
   -- popup window
   popup = {
-    -- nvim float window options
-    -- see: https://neovim.io/doc/user/api.html#nvim_open_win()
+    -- popup window layout options
     win_opts = {
       -- popup window height/width.
       --
