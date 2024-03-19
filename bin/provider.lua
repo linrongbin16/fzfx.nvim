@@ -1,6 +1,6 @@
 local SELF_PATH = vim.env._FZFX_NVIM_SELF_PATH
 if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
-  io.write(string.format("|provider| error! SELF_PATH is empty!"))
+  io.write(string.format("|bin.provider| error! SELF_PATH is empty!"))
 end
 vim.opt.runtimepath:append(SELF_PATH)
 
@@ -13,10 +13,7 @@ local shell_helpers = require("fzfx.detail.shell_helpers")
 shell_helpers.setup("provider")
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_RPC_SERVER_ADDRESS
-shell_helpers.log_ensure(
-  type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
-  "SOCKET_ADDRESS must not be empty!"
-)
+shell_helpers.log_ensure(str.not_empty(SOCKET_ADDRESS), "SOCKET_ADDRESS must not be empty!")
 local registry_id = _G.arg[1]
 local metafile = _G.arg[2]
 local resultfile = _G.arg[3]
@@ -53,9 +50,8 @@ vim.fn.chanclose(channel_id)
 
 local metajsonstring = fileio.readfile(metafile, { trim = true }) --[[@as string]]
 shell_helpers.log_ensure(
-  type(metajsonstring) == "string" and string.len(metajsonstring) > 0,
-  "metajsonstring is not string! %s",
-  vim.inspect(metajsonstring)
+  str.not_empty(metajsonstring),
+  "metajsonstring is not string:" .. vim.inspect(metajsonstring)
 )
 --- @type fzfx.ProviderMetaOpts
 local metaopts = json.decode(metajsonstring) --[[@as fzfx.ProviderMetaOpts]]
@@ -73,16 +69,17 @@ if metaopts.provider_decorator ~= nil then
   end
   shell_helpers.log_ensure(
     str.not_empty(tbl.tbl_get(metaopts.provider_decorator, "module")),
-    "decorator module cannot be empty: %s",
-    vim.inspect(metaopts.provider_decorator)
+    "decorator module cannot be empty:" .. vim.inspect(metaopts.provider_decorator)
   )
   local module_name = metaopts.provider_decorator.module
   local ok, module_or_err = pcall(require, module_name)
   shell_helpers.log_ensure(
     ok and tbl.tbl_not_empty(module_or_err),
-    "failed to load decorator:%s, error:%s",
-    vim.inspect(metaopts.provider_decorator),
-    vim.inspect(module_or_err)
+    string.format(
+      "failed to load decorator:%s, error:%s",
+      vim.inspect(metaopts.provider_decorator),
+      vim.inspect(module_or_err)
+    )
   )
   decorator_module = module_or_err
 end
@@ -101,9 +98,11 @@ local function println(line)
         io.write(string.format("%s\n", rendered_line_or_err))
       else
         shell_helpers.log_err(
-          "failed to render line with decorator:%s, error:%s",
-          vim.inspect(decorator_module),
-          vim.inspect(rendered_line_or_err)
+          string.format(
+            "failed to render line with decorator:%s, error:%s",
+            vim.inspect(decorator_module),
+            vim.inspect(rendered_line_or_err)
+          )
         )
       end
     end)
@@ -122,7 +121,7 @@ if metaopts.provider_type == "plain" or metaopts.provider_type == "command" then
   end
 
   local p = io.popen(cmd)
-  shell_helpers.log_ensure(p ~= nil, "failed to open pipe on provider cmd! %s", vim.inspect(cmd))
+  shell_helpers.log_ensure(p ~= nil, "failed to open pipe on command:" .. vim.inspect(cmd))
   ---@diagnostic disable-next-line: need-check-nil
   for line in p:lines("*line") do
     println(line)
@@ -144,11 +143,11 @@ elseif metaopts.provider_type == "plain_list" or metaopts.provider_type == "comm
   end
 
   local sp = spawn.run(cmd_splits, { on_stdout = println, on_stderr = function() end })
-  shell_helpers.log_ensure(sp ~= nil, "failed to open async command: %s", vim.inspect(cmd_splits))
+  shell_helpers.log_ensure(sp ~= nil, "failed to run command:" .. vim.inspect(cmd_splits))
   sp:wait()
 elseif metaopts.provider_type == "list" then
   local reader = fileio.FileLineReader:open(resultfile) --[[@as commons.FileLineReader ]]
-  shell_helpers.log_ensure(reader ~= nil, "failed to open resultfile: %s", vim.inspect(resultfile))
+  shell_helpers.log_ensure(reader ~= nil, "failed to open resultfile:" .. vim.inspect(resultfile))
 
   while reader:has_next() do
     local line = reader:next()
@@ -156,5 +155,5 @@ elseif metaopts.provider_type == "list" then
   end
   reader:close()
 else
-  shell_helpers.log_throw("unknown provider type:%s", vim.inspect(metajsonstring))
+  shell_helpers.log_throw("unknown provider meta:" .. vim.inspect(metajsonstring))
 end
