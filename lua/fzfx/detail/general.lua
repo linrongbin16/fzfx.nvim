@@ -898,7 +898,7 @@ end
 
 --- @param fzf_opts fzfx.FzfOpt[]
 --- @return fzfx.FzfOpt[], string
-local function mock_fzf_border_opts(fzf_opts)
+local function mock_non_buffer_previewer_fzf_border_opts(fzf_opts)
   local new_fzf_opts = {}
   local border_opts = fzf_helpers.FZF_DEFAULT_BORDER_OPTS
   for _, o in ipairs(fzf_opts) do
@@ -1386,7 +1386,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     fzf_opts, buffer_previewer_opts =
       mock_buffer_previewer_fzf_opts(fzf_opts, buffer_previewer_actions_file)
   else
-    fzf_opts, non_buffer_previewer_border_opts = mock_fzf_border_opts(fzf_opts)
+    fzf_opts, non_buffer_previewer_border_opts = mock_non_buffer_previewer_fzf_border_opts(fzf_opts)
     buffer_previewer_opts.fzf_border_opts = non_buffer_previewer_border_opts
   end
 
