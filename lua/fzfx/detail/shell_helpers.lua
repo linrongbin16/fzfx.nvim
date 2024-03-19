@@ -63,33 +63,29 @@ local function _log(level, msg)
   end
 end
 
---- @param fmt string
---- @param ... any
-M.log_debug = function(fmt, ...)
+--- @param msg string
+M.log_debug = function(msg)
   local LogLevels = require("fzfx.lib.log").LogLevels
-  _log(LogLevels.DEBUG, string.format(fmt, ...))
+  _log(LogLevels.DEBUG, msg)
 end
 
---- @param fmt string
---- @param ... any
-M.log_err = function(fmt, ...)
+--- @param msg string
+M.log_err = function(msg)
   local LogLevels = require("fzfx.lib.log").LogLevels
-  _log(LogLevels.ERROR, string.format(fmt, ...))
+  _log(LogLevels.ERROR, msg)
 end
 
---- @param fmt string
---- @param ... any
-M.log_throw = function(fmt, ...)
-  M.log_err(fmt, ...)
-  error(string.format(fmt, ...))
+--- @param msg string
+M.log_throw = function(msg)
+  M.log_err(msg)
+  error(msg)
 end
 
 --- @param cond boolean
---- @param fmt string
---- @param ... any
-M.log_ensure = function(cond, fmt, ...)
+--- @param msg string
+M.log_ensure = function(cond, msg)
   if not cond then
-    M.log_throw(fmt, ...)
+    M.log_throw(msg)
   end
 end
 

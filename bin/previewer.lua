@@ -1,6 +1,6 @@
 local SELF_PATH = vim.env._FZFX_NVIM_SELF_PATH
 if type(SELF_PATH) ~= "string" or string.len(SELF_PATH) == 0 then
-  io.write(string.format("|fzfx.bin.general.previewer| error! SELF_PATH is empty!"))
+  io.write(string.format("|bin.previewer| error! SELF_PATH is empty!"))
 end
 vim.opt.runtimepath:append(SELF_PATH)
 
@@ -13,10 +13,7 @@ local shell_helpers = require("fzfx.detail.shell_helpers")
 shell_helpers.setup("previewer")
 
 local SOCKET_ADDRESS = vim.env._FZFX_NVIM_RPC_SERVER_ADDRESS
-shell_helpers.log_ensure(
-  type(SOCKET_ADDRESS) == "string" and string.len(SOCKET_ADDRESS) > 0,
-  "SOCKET_ADDRESS must not be empty!"
-)
+shell_helpers.log_ensure(str.not_empty(SOCKET_ADDRESS), "SOCKET_ADDRESS must not be empty!")
 local registry_id = _G.arg[1]
 local metafile = _G.arg[2]
 local resultfile = _G.arg[3]
