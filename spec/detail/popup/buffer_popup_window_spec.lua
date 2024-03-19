@@ -7,8 +7,8 @@ describe("detail.popup.buffer_popup_window", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  local min_test_height = 20
-  local max_test_height = 30
+  local min_test_height = 25
+  local max_test_height = 35
   local min_test_width = 130
   local max_test_width = 140
   local test_height = min_test_height
