@@ -213,8 +213,6 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   local win_confs = M.make_opts(win_opts, buffer_previewer_opts, current_winnr)
   local provider_win_confs = win_confs.provider
   local previewer_win_confs = win_confs.previewer
-  -- local provider_win_confs = M.make_provider_opts(win_opts, buffer_previewer_opts)
-  -- local previewer_win_confs = M.make_previewer_opts(win_opts, buffer_previewer_opts)
   previewer_win_confs.focusable = false
 
   -- log.debug(
