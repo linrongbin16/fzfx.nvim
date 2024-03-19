@@ -59,9 +59,6 @@ M.setup = function()
     "|setup| failed to find 'fzfx.nvim' plugin!"
   )
   vim.env._FZFX_NVIM_SELF_PATH = self_path
-
-  -- cache dir
-  vim.env._FZFX_NVIM_CACHE_DIR = vim.trim(config.get().cache.dir)
 end
 
 return M

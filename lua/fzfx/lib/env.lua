@@ -11,12 +11,4 @@ M.icon_enabled = function()
     and string.len(vim.env._FZFX_NVIM_DEVICONS_PATH) > 0
 end
 
---- @return string
-M.cache_dir = function()
-  assert(
-    type(vim.env._FZFX_NVIM_CACHE_DIR) == "string" and string.len(vim.env._FZFX_NVIM_CACHE_DIR) > 0
-  )
-  return vim.env._FZFX_NVIM_CACHE_DIR
-end
-
 return M
