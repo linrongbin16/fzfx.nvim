@@ -1,5 +1,23 @@
 # Changelog
 
+## [6.3.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.2.0...v6.3.0) (2024-03-19)
+
+
+### Features
+
+* **buf live grep:** use buffer previewer ([#664](https://github.com/linrongbin16/fzfx.nvim/issues/664)) ([7cc98c2](https://github.com/linrongbin16/fzfx.nvim/commit/7cc98c2c0e5fcffec3bcd4a5c9c3a69f926d8457))
+* **git live grep:** use buffer previewer ([#662](https://github.com/linrongbin16/fzfx.nvim/issues/662)) ([540ca8b](https://github.com/linrongbin16/fzfx.nvim/commit/540ca8b34aebb2875391cb88d82f30d988340650))
+* **lsp diagnostics:** use buffer previewer ([#667](https://github.com/linrongbin16/fzfx.nvim/issues/667)) ([c964aa6](https://github.com/linrongbin16/fzfx.nvim/commit/c964aa60bae901280e13f2585f80d6eee40c901e))
+* **lsp locations:** use buffer previewer ([#666](https://github.com/linrongbin16/fzfx.nvim/issues/666)) ([d08bd3e](https://github.com/linrongbin16/fzfx.nvim/commit/d08bd3e0622354e9e66ea25243e92db6da9d400a))
+* **popup:** keep same border color for both float window and fzf's border ([#668](https://github.com/linrongbin16/fzfx.nvim/issues/668)) ([367fbfa](https://github.com/linrongbin16/fzfx.nvim/commit/367fbfa1ff27e5eab327eacd12df592c56a31c4c))
+
+
+### Bug Fixes
+
+* **popup:** fix popup window layout calculation ([#668](https://github.com/linrongbin16/fzfx.nvim/issues/668)) ([367fbfa](https://github.com/linrongbin16/fzfx.nvim/commit/367fbfa1ff27e5eab327eacd12df592c56a31c4c))
+* **previewer:** fix cursor-relative layout calculation ([#666](https://github.com/linrongbin16/fzfx.nvim/issues/666)) ([d08bd3e](https://github.com/linrongbin16/fzfx.nvim/commit/d08bd3e0622354e9e66ea25243e92db6da9d400a))
+* **previewer:** fix previewer border options ([#666](https://github.com/linrongbin16/fzfx.nvim/issues/666)) ([d08bd3e](https://github.com/linrongbin16/fzfx.nvim/commit/d08bd3e0622354e9e66ea25243e92db6da9d400a))
+
 ## [6.2.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.1.1...v6.2.0) (2024-03-18)
 
 
