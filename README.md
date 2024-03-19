@@ -14,9 +14,9 @@
 A Neovim fuzzy finder that updates on every keystroke.
 </i></p>
 
-https://github.com/linrongbin16/fzfx.nvim/assets/6496887/47b03150-14e3-479a-b1af-1b2995659403
+https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da-f54419efbba3
 
-> Search `fzfx` with rg's `-g *spec.lua` option.
+> Search `require("fzfx` with rg's `-g *spec.lua -F` option.
 
 ## 📖 Table of contents
 
