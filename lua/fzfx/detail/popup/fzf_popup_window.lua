@@ -6,60 +6,76 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 local M = {}
 
 local FLOAT_WIN_DEFAULT_BORDER = "none"
-local FLOAT_WIN_DEFAULT_ZINDEX = 60
 
 --- @param win_opts fzfx.WindowOpts
+--- @param relative_winnr integer
 --- @return fzfx.NvimFloatWinOpts
-M._make_cursor_opts = function(win_opts)
+M._make_cursor_opts = function(win_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
-  opts.relative = opts.relative or "cursor"
+  opts.relative = opts.relative or "win"
   local layout = popup_helpers.make_cursor_layout(opts)
   log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
 
-  return {
-    anchor = "NW",
-    relative = opts.relative,
-    width = layout.width,
-    height = layout.height,
-    row = opts.row,
-    col = opts.col,
-    style = "minimal",
-    border = FLOAT_WIN_DEFAULT_BORDER,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
-  }
-end
-
---- @param win_opts fzfx.WindowOpts
---- @return fzfx.NvimFloatWinOpts
-M._make_center_opts = function(win_opts)
-  local opts = vim.deepcopy(win_opts)
-  opts.relative = opts.relative or "editor"
-  local layout = popup_helpers.make_center_layout(opts)
-  log.debug("|_make_center_opts| layout:%s" .. vim.inspect(layout))
-
-  return {
+  local result = {
     anchor = "NW",
     relative = opts.relative,
     width = layout.width,
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = "minimal",
+    style = popup_helpers.FLOAT_WIN_STYLE,
     border = FLOAT_WIN_DEFAULT_BORDER,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
+
+  if opts.relative == "win" then
+    result.win = relative_winnr
+  end
+
+  log.debug("|_make_cursor_opts| result:" .. vim.inspect(result))
+  return result
 end
 
 --- @param win_opts fzfx.WindowOpts
+--- @param relative_winnr integer
 --- @return fzfx.NvimFloatWinOpts
-M.make_opts = function(win_opts)
+M._make_center_opts = function(win_opts, relative_winnr)
+  local opts = vim.deepcopy(win_opts)
+  opts.relative = opts.relative or "editor"
+  local layout = popup_helpers.make_center_layout(opts)
+  log.debug("|_make_center_opts| layout:%s" .. vim.inspect(layout))
+
+  local result = {
+    anchor = "NW",
+    relative = opts.relative,
+    width = layout.width,
+    height = layout.height,
+    row = layout.start_row,
+    col = layout.start_col,
+    style = popup_helpers.FLOAT_WIN_STYLE,
+    border = FLOAT_WIN_DEFAULT_BORDER,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
+  }
+
+  if opts.relative == "win" then
+    result.win = relative_winnr
+  end
+
+  return result
+end
+
+--- @param win_opts fzfx.WindowOpts
+--- @param relative_winnr integer
+--- @return fzfx.NvimFloatWinOpts
+M.make_opts = function(win_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
   opts.relative = opts.relative or "editor"
   log.ensure(
     opts.relative == "cursor" or opts.relative == "editor" or opts.relative == "win",
-    string.format("window relative (%s) must be editor/win/cursor", vim.inspect(opts))
+    string.format("popup window relative (%s) must be editor/win/cursor", vim.inspect(opts))
   )
-  return opts.relative == "cursor" and M._make_cursor_opts(opts) or M._make_center_opts(opts)
+  return opts.relative == "cursor" and M._make_cursor_opts(opts, relative_winnr)
+    or M._make_center_opts(opts, relative_winnr)
 end
 
 -- FzfPopupWindow {
@@ -68,6 +84,7 @@ end
 --- @field window_opts_context fzfx.WindowOptsContext?
 --- @field bufnr integer?
 --- @field winnr integer?
+--- @field _saved_current_winnr integer
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _resizing boolean
 local FzfPopupWindow = {}
@@ -76,6 +93,8 @@ local FzfPopupWindow = {}
 --- @param win_opts fzfx.WindowOpts
 --- @return fzfx.FzfPopupWindow
 function FzfPopupWindow:new(win_opts)
+  local current_winnr = vim.api.nvim_get_current_win()
+
   -- save current window context
   local window_opts_context = popup_helpers.WindowOptsContext:save()
 
@@ -87,7 +106,7 @@ function FzfPopupWindow:new(win_opts)
   api.set_buf_option(bufnr, "buflisted", false)
   api.set_buf_option(bufnr, "filetype", "fzf")
 
-  local nvim_float_win_opts = M.make_opts(win_opts)
+  local nvim_float_win_opts = M.make_opts(win_opts, current_winnr)
 
   local winnr = vim.api.nvim_open_win(bufnr, true, nvim_float_win_opts)
   --- setlocal nospell nonumber
@@ -103,6 +122,7 @@ function FzfPopupWindow:new(win_opts)
     window_opts_context = window_opts_context,
     bufnr = bufnr,
     winnr = winnr,
+    _saved_current_winnr = current_winnr,
     _saved_win_opts = win_opts,
     _resizing = false,
   }
@@ -143,7 +163,7 @@ function FzfPopupWindow:resize()
   end
 
   self._resizing = true
-  local nvim_float_win_opts = M.make_opts(self._saved_win_opts)
+  local nvim_float_win_opts = M.make_opts(self._saved_win_opts, self._saved_current_winnr)
   vim.api.nvim_win_set_config(self.winnr, nvim_float_win_opts)
   vim.schedule(function()
     self._resizing = false

@@ -10,19 +10,20 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 
 local M = {}
 
-local FLOAT_WIN_DEFAULT_ZINDEX = 60
-local FLOAT_WIN_DEFAULT_STYLE = "minimal"
-
 --- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
---- @param relative_winnr integer?
+--- @param relative_winnr integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
+  local opts = vim.deepcopy(win_opts)
+  local relative = "win"
   local layout =
-    popup_helpers.make_center_layout(win_opts, buffer_previewer_opts.fzf_preview_window_opts)
-  local relative = win_opts.relative
-  local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
+    popup_helpers.make_cursor_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
+  log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
+  local provider_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
+    or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
+  local previewer_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_preview_window_opts.border]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
 
   local result = {
@@ -32,9 +33,9 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
-    border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    style = popup_helpers.FLOAT_WIN_STYLE,
+    border = provider_border,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.provider = {
     anchor = "NW",
@@ -43,9 +44,9 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     height = layout.provider.height,
     row = layout.provider.start_row,
     col = layout.provider.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
-    border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    style = popup_helpers.FLOAT_WIN_STYLE,
+    border = provider_border,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.previewer = {
     anchor = "NW",
@@ -54,65 +55,68 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     height = layout.previewer.height,
     row = layout.previewer.start_row,
     col = layout.previewer.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
-    border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    style = popup_helpers.FLOAT_WIN_STYLE,
+    border = previewer_border,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if relative ~= "editor" and type(relative_winnr) == "number" then
+  if relative == "win" then
     result.provider.win = relative_winnr
     result.previewer.win = relative_winnr
   end
-  -- log.debug("|make_opts| result:%s", vim.inspect(result))
+  log.debug("|_make_cursor_opts| result:" .. vim.inspect(result))
   return result
 end
 
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
---- @param relative_winnr integer?
+--- @param relative_winnr integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
+  local opts = vim.deepcopy(win_opts)
+  opts.relative = opts.relative or "editor"
   local layout =
-    popup_helpers.make_center_layout(win_opts, buffer_previewer_opts.fzf_preview_window_opts)
-  local relative = win_opts.relative
-  local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
+    popup_helpers.make_center_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
+  local provider_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
+    or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
+  local previewer_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_preview_window_opts.border]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
 
   local result = {
     anchor = "NW",
-    relative = relative,
+    relative = opts.relative,
     width = layout.width,
     height = layout.height,
     row = layout.start_row,
     col = layout.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
-    border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    style = popup_helpers.FLOAT_WIN_STYLE,
+    border = provider_border,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.provider = {
     anchor = "NW",
-    relative = relative,
+    relative = opts.relative,
     width = layout.provider.width,
     height = layout.provider.height,
     row = layout.provider.start_row,
     col = layout.provider.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
-    border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    style = popup_helpers.FLOAT_WIN_STYLE,
+    border = provider_border,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
   result.previewer = {
     anchor = "NW",
-    relative = relative,
+    relative = opts.relative,
     width = layout.previewer.width,
     height = layout.previewer.height,
     row = layout.previewer.start_row,
     col = layout.previewer.start_col,
-    style = FLOAT_WIN_DEFAULT_STYLE,
-    border = border,
-    zindex = FLOAT_WIN_DEFAULT_ZINDEX,
+    style = popup_helpers.FLOAT_WIN_STYLE,
+    border = previewer_border,
+    zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if relative ~= "editor" and type(relative_winnr) == "number" then
+  if opts.relative == "win" then
     result.provider.win = relative_winnr
     result.previewer.win = relative_winnr
   end
@@ -122,7 +126,7 @@ end
 
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
---- @param relative_winnr integer?
+--- @param relative_winnr integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
 M.make_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   local opts = vim.deepcopy(win_opts)
@@ -571,15 +575,15 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
         local view = center_line and M._make_view_by_center(lines_count, win_height, center_line)
           or M._make_view_by_top(lines_count, win_height)
-        log.debug(
-          string.format(
-            "|BufferPopupWindow:preview_file| lineno:%s, lines_count:%s, win_height:%s, view:%s",
-            vim.inspect(center_line),
-            vim.inspect(lines_count),
-            vim.inspect(win_height),
-            vim.inspect(view)
-          )
-        )
+        -- log.debug(
+        --   string.format(
+        --     "|BufferPopupWindow:preview_file| lineno:%s, lines_count:%s, win_height:%s, view:%s",
+        --     vim.inspect(center_line),
+        --     vim.inspect(lines_count),
+        --     vim.inspect(win_height),
+        --     vim.inspect(view)
+        --   )
+        -- )
         self:preview_file_contents(last_content, view)
       end, 10)
     end)
@@ -710,15 +714,15 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
     if line_step == nil then
       line_step = LARGE_FILE and math.max(math.ceil(math.sqrt(LINES_COUNT)), 5) or 5
     end
-    log.debug(
-      string.format(
-        "|BufferPopupWindow:render_file_contents| LINES_COUNT:%s, FIRST/LAST:%s/%s, view:%s",
-        vim.inspect(LINES_COUNT),
-        vim.inspect(FIRST_LINE),
-        vim.inspect(LAST_LINE),
-        vim.inspect(content_view)
-      )
-    )
+    -- log.debug(
+    --   string.format(
+    --     "|BufferPopupWindow:render_file_contents| LINES_COUNT:%s, FIRST/LAST:%s/%s, view:%s",
+    --     vim.inspect(LINES_COUNT),
+    --     vim.inspect(FIRST_LINE),
+    --     vim.inspect(LAST_LINE),
+    --     vim.inspect(content_view)
+    --   )
+    -- )
 
     local function set_buf_lines()
       vim.defer_fn(function()
@@ -1020,20 +1024,20 @@ function BufferPopupWindow:scroll_by(percent, up)
   --   vim.inspect(last_line)
   -- )
   local view = M._make_view_by_range(LINES_COUNT, WIN_HEIGHT, first_line, last_line, HIGHLIGHT_LINE)
-  log.debug(
-    string.format(
-      "|BufferPopupWindow:scroll_by|-2 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
-      vim.inspect(percent),
-      vim.inspect(up),
-      vim.inspect(LINES_COUNT),
-      vim.inspect(WIN_HEIGHT),
-      vim.inspect(shift_lines),
-      vim.inspect(TOP_LINE),
-      vim.inspect(BOTTOM_LINE),
-      vim.inspect(CENTER_LINE),
-      vim.inspect(view)
-    )
-  )
+  -- log.debug(
+  --   string.format(
+  --     "|BufferPopupWindow:scroll_by|-2 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
+  --     vim.inspect(percent),
+  --     vim.inspect(up),
+  --     vim.inspect(LINES_COUNT),
+  --     vim.inspect(WIN_HEIGHT),
+  --     vim.inspect(shift_lines),
+  --     vim.inspect(TOP_LINE),
+  --     vim.inspect(BOTTOM_LINE),
+  --     vim.inspect(CENTER_LINE),
+  --     vim.inspect(view)
+  --   )
+  -- )
 
   if TOP_LINE == view.top and BOTTOM_LINE == view.bottom then
     -- log.debug("|BufferPopupWindow:scroll_by| no change")
