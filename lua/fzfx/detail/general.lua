@@ -1380,14 +1380,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     )
   end
 
-  local buffer_previewer_opts = {}
+  local previewer_opts = {}
   local non_buffer_previewer_border_opts = nil
   if use_buffer_previewer then
-    fzf_opts, buffer_previewer_opts =
+    fzf_opts, previewer_opts =
       mock_buffer_previewer_fzf_opts(fzf_opts, buffer_previewer_actions_file)
   else
     fzf_opts, non_buffer_previewer_border_opts = mock_non_buffer_previewer_fzf_border_opts(fzf_opts)
-    buffer_previewer_opts.fzf_border_opts = non_buffer_previewer_border_opts
+    previewer_opts.fzf_border_opts = non_buffer_previewer_border_opts
   end
 
   popup = Popup:new(win_opts or {}, query_command, fzf_opts, actions, context, function(last_query)
@@ -1408,7 +1408,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       buffer_previewer_actions_fsevent = nil
     end
     buffer_previewer_query_fzf_status_start = false
-  end, use_buffer_previewer, buffer_previewer_opts)
+  end, use_buffer_previewer, previewer_opts)
 end
 
 --- @param name string
