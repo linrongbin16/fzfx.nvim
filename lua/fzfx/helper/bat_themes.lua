@@ -18,8 +18,9 @@ end
 --- @type string?
 local cached_theme_dir = nil
 
+--- @param cb (fun(theme_dir:string?):nil)|nil
 --- @return string?
-M.get_theme_dir = function()
+M.get_theme_dir = function(cb)
   if str.empty(cached_theme_dir) then
     log.ensure(constants.HAS_BAT, "|get_theme_dir| cannot find 'bat' executable")
 
@@ -34,6 +35,9 @@ M.get_theme_dir = function()
       cached_theme_dir = path.join(config_dir, "themes")
       vim.schedule(function()
         M._create_theme_dir(cached_theme_dir)
+        if cb ~= nil and vim.is_callable(cb) then
+          cb(cached_theme_dir)
+        end
       end)
     end)
 

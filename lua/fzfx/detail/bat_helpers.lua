@@ -544,13 +544,13 @@ M.setup = function()
     return
   end
 
-  bat_themes_helper.get_theme_dir()
-
-  if str.not_empty(vim.g.colors_name) then
-    vim.defer_fn(function()
-      M._build_theme(vim.g.colors_name)
-    end, 100)
-  end
+  bat_themes_helper.get_theme_dir(function()
+    if str.not_empty(vim.g.colors_name) then
+      vim.schedule(function()
+        M._build_theme(vim.g.colors_name)
+      end)
+    end
+  end)
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function(event)
