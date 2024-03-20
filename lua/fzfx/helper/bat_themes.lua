@@ -35,7 +35,7 @@ M.get_theme_dir = function(cb)
       cached_theme_dir = path.join(config_dir, "themes")
       vim.schedule(function()
         M._create_theme_dir(cached_theme_dir)
-        if vim.is_callable(cb) then
+        if cb ~= nil and vim.is_callable(cb) then
           cb(cached_theme_dir)
         end
       end)
