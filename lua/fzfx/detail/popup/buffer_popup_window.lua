@@ -644,7 +644,7 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
     end
 
     self:render_file_contents(file_content, content_view, on_complete)
-  end, 20)
+  end, 10)
 end
 
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
@@ -812,7 +812,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
       end, LARGE_FILE and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 1) or 10)
     end
     set_buf_lines()
-  end, 20)
+  end, 10)
 end
 
 --- @param content_view fzfx.BufferPopupWindowPreviewContentView
