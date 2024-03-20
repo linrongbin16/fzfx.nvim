@@ -92,11 +92,11 @@ Install with the below 3 options:
 - In **Adjusting your PATH environment**, select **Use Git and optional Unix tools from the Command Prompt**.
 
   <img alt="install-windows-git-step2.jpg" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b4f477ad-4436-4027-baa6-8320806801e2" width="70%" />
-  
+
 - In **Configuring the terminal emulator to use with Git Bash**, select **Use Windows's default console window**.
 
   <img alt="install-windows-git-step3.jpg" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/f9174330-ca58-4117-a58d-9e84826c13d1" width="70%" />
-  
+
 After this step, **git.exe** and builtin linux commands(such as **echo.exe**, **ls.exe**, **curl.exe**) will be available in `%PATH%`.
 
 #### [scoop](https://scoop.sh/)
@@ -1393,7 +1393,7 @@ Below keys are binded by default:
 <br/>
 
 ```vim
-" ======== FzfxFiles (Find Files) ========
+" ======== files ========
 
 " by args
 nnoremap <space>f :\<C-U>FzfxFiles<CR>
@@ -1406,7 +1406,7 @@ nnoremap <space>pf :\<C-U>FzfxFiles put<CR>
 " by resume
 nnoremap <space>rf :\<C-U>FzfxFiles resume<CR>
 
-" ======== FzfxLiveGrep (Live Grep) ========
+" ======== live grep ========
 
 " by args
 nnoremap <space>l :\<C-U>FzfxLiveGrep<CR>
@@ -1419,12 +1419,12 @@ nnoremap <space>pl :\<C-U>FzfxLiveGrep put<CR>
 " by resume
 nnoremap <space>rl :\<C-U>FzfxLiveGrep resume<CR>
 
-" ======== FzfxBuffers (Find Buffers) ========
+" ======== buffers ========
 
 " by args
 nnoremap <space>bf :\<C-U>FzfxBuffers<CR>
 
-" ======== FzfxGFiles (Find Git Files) ========
+" ======== git files ========
 
 " by args
 nnoremap <space>gf :\<C-U>FzfxGFiles<CR>
@@ -1496,6 +1496,11 @@ nnoremap <space>cm :\<C-U>FzfxCommands<CR>
 
 " by args
 nnoremap <space>km :\<C-U>FzfxKeyMaps<CR>
+
+" ======== vim marks ========
+
+" by args
+nnoremap <space>mk :\<C-U>FzfxMarks<CR>
 
 " ======== file explorer ========
 
@@ -1762,6 +1767,16 @@ vim.keymap.set(
   "<space>km",
   "<cmd>FzfxKeyMaps<cr>",
   { silent = true, noremap = true, desc = "Search vim keymaps" }
+)
+
+-- ======== vim marks ========
+
+-- by args
+vim.keymap.set(
+  "n",
+  "<space>mk",
+  "<cmd>FzfxMarks<cr>",
+  { silent = true, noremap = true, desc = "Search vim marks" }
 )
 
 -- ======== file explorer ========
