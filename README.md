@@ -87,22 +87,16 @@ Install with the below 3 options:
 
 - In **Select Components**, select **Associate .sh files to be run with Bash**.
 
-  <img alt="install-windows-git-step1.jpg" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/253c34e1-c6f5-4859-89b7-0a2c27550fc5" width="70%" />
-  
-  ![install-git-for-windows-step1](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/253c34e1-c6f5-4859-89b7-0a2c27550fc5)
+  <img alt="install-windows-git-step1.jpg" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/495d894b-49e4-4c58-b74e-507920a11048" width="70%" />
 
 - In **Adjusting your PATH environment**, select **Use Git and optional Unix tools from the Command Prompt**.
 
   <img alt="install-windows-git-step2.jpg" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b4f477ad-4436-4027-baa6-8320806801e2" width="70%" />
   
-  ![install-git-for-windows-step2](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b4f477ad-4436-4027-baa6-8320806801e2)
-
 - In **Configuring the terminal emulator to use with Git Bash**, select **Use Windows's default console window**.
 
   <img alt="install-windows-git-step3.jpg" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/f9174330-ca58-4117-a58d-9e84826c13d1" width="70%" />
   
-  ![install-git-for-windows-step3](https://github.com/linrongbin16/fzfx.nvim/assets/6496887/f9174330-ca58-4117-a58d-9e84826c13d1)
-
 After this step, **git.exe** and builtin linux commands(such as **echo.exe**, **ls.exe**, **curl.exe**) will be available in `%PATH%`.
 
 #### [scoop](https://scoop.sh/)
