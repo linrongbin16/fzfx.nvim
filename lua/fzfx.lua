@@ -1,10 +1,11 @@
+local log = require("fzfx.lib.log")
+local LogLevels = require("fzfx.lib.log").LogLevels
+
 --- @param opts fzfx.Options?
 local function setup(opts)
   -- configs
   local configs = require("fzfx.config").setup(opts)
 
-  local log = require("fzfx.lib.log")
-  local LogLevels = require("fzfx.lib.log").LogLevels
   -- log
   log.setup({
     level = configs.debug.enable and LogLevels.DEBUG or LogLevels.INFO,
