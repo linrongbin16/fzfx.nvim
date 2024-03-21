@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.3.1](https://github.com/linrongbin16/fzfx.nvim/compare/v6.3.0...v6.3.1) (2024-03-21)
+
+
+### Performance Improvements
+
+* **bat:** immediately build bat themes after initialize ([#674](https://github.com/linrongbin16/fzfx.nvim/issues/674)) ([72109b7](https://github.com/linrongbin16/fzfx.nvim/commit/72109b798686bc69f4fac04bb34730654b760736))
+* **previewer:** reduce buffer previewer latency ([#676](https://github.com/linrongbin16/fzfx.nvim/issues/676)) ([94a57d3](https://github.com/linrongbin16/fzfx.nvim/commit/94a57d3c86e67d11877e0de5340f447ed17538a7))
+
 ## [6.3.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.2.0...v6.3.0) (2024-03-19)
 
 
