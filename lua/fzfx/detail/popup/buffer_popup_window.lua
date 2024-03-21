@@ -152,7 +152,7 @@ end
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @field _saved_previewing_file_content_job fzfx.BufferPopupWindowPreviewFileContentJob
---- @field _saved_previewing_file_content_view fzfx.BufferPopupWindowPreviewContentView
+--- @field _saved_previewing_file_content_view fzfx.BufferPopupWindowPreviewFileContentView
 --- @field _current_previewing_file_job_id integer?
 --- @field _rendering boolean
 --- @field _resizing boolean
@@ -451,10 +451,10 @@ M._adjust_view = function(top, bottom, lines_count, win_height)
   return top, bottom
 end
 
---- @alias fzfx.BufferPopupWindowPreviewContentView {top:integer,bottom:integer,center:integer,highlight:integer?}
+--- @alias fzfx.BufferPopupWindowPreviewFileContentView {top:integer,bottom:integer,center:integer,highlight:integer?}
 --- @param lines_count integer
 --- @param win_height integer
---- @return fzfx.BufferPopupWindowPreviewContentView
+--- @return fzfx.BufferPopupWindowPreviewFileContentView
 M._make_view_by_top = function(lines_count, win_height)
   local top = 1
   local bottom = M._make_bottom_by_top(top, lines_count, win_height)
@@ -590,7 +590,7 @@ end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileContentJob {contents:string[],job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
---- @param content_view fzfx.BufferPopupWindowPreviewContentView
+--- @param content_view fzfx.BufferPopupWindowPreviewFileContentView
 --- @param on_complete (fun(done:boolean):any)|nil
 function BufferPopupWindow:preview_file_contents(file_content, content_view, on_complete)
   local function do_complete(done)
@@ -648,7 +648,7 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
 end
 
 --- @param file_content fzfx.BufferPopupWindowPreviewFileContentJob
---- @param content_view fzfx.BufferPopupWindowPreviewContentView
+--- @param content_view fzfx.BufferPopupWindowPreviewFileContentView
 --- @param on_complete (fun(done:boolean):any)|nil
 --- @param line_step integer?
 function BufferPopupWindow:render_file_contents(file_content, content_view, on_complete, line_step)
@@ -815,7 +815,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
   end, 10)
 end
 
---- @param content_view fzfx.BufferPopupWindowPreviewContentView
+--- @param content_view fzfx.BufferPopupWindowPreviewFileContentView
 function BufferPopupWindow:_do_view(content_view)
   local ok, err = pcall(
     vim.api.nvim_win_set_cursor,
