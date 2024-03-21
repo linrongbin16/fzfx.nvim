@@ -152,7 +152,7 @@ end
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @field _saved_previewing_file_content_job fzfx.BufferPopupWindowPreviewFileContentJob
---- @field _saved_previewing_file_content_context fzfx.BufferPopupWindowPreviewContentView
+--- @field _saved_previewing_file_content_view fzfx.BufferPopupWindowPreviewContentView
 --- @field _current_previewing_file_job_id integer?
 --- @field _rendering boolean
 --- @field _resizing boolean
@@ -252,7 +252,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _saved_win_opts = win_opts,
     _saved_buffer_previewer_opts = buffer_previewer_opts,
     _saved_previewing_file_content_job = nil,
-    _saved_previewing_file_content_context = nil,
+    _saved_previewing_file_content_view = nil,
     _current_previewing_file_job_id = nil,
     _rendering = false,
     _scrolling = false,
@@ -805,7 +805,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
           set_buf_lines()
         else
           self:_do_view(content_view)
-          self._saved_previewing_file_content_context = content_view
+          self._saved_previewing_file_content_view = content_view
           do_complete(true)
           falsy_rendering()
         end
@@ -914,7 +914,7 @@ function BufferPopupWindow:show_preview()
     end
     if tbl.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
-      local last_view = self._saved_previewing_file_content_context
+      local last_view = self._saved_previewing_file_content_view
       self:preview_file_contents(last_content, last_view)
     end
   end)
@@ -994,13 +994,13 @@ function BufferPopupWindow:scroll_by(percent, up)
   local LINES_COUNT = #LINES
   local WIN_HEIGHT = vim.api.nvim_win_get_height(self.previewer_winnr)
 
-  local TOP_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "top")
+  local TOP_LINE = tbl.tbl_get(self._saved_previewing_file_content_view, "top")
     or vim.fn.line("w0", self.previewer_winnr)
-  local BOTTOM_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "bottom")
+  local BOTTOM_LINE = tbl.tbl_get(self._saved_previewing_file_content_view, "bottom")
     or math.min(TOP_LINE + WIN_HEIGHT, LINES_COUNT)
-  local CENTER_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "center")
+  local CENTER_LINE = tbl.tbl_get(self._saved_previewing_file_content_view, "center")
     or math.ceil((TOP_LINE + BOTTOM_LINE) / 2)
-  local HIGHLIGHT_LINE = tbl.tbl_get(self._saved_previewing_file_content_context, "highlight")
+  local HIGHLIGHT_LINE = tbl.tbl_get(self._saved_previewing_file_content_view, "highlight")
 
   local shift_lines = math.max(math.floor(WIN_HEIGHT / 100 * percent), 0)
   if up then
