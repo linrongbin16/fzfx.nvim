@@ -47,6 +47,9 @@ end
 --- @param renderer fun(text:string):string
 --- @return string?
 M._colorize_lsp_range = function(line, range, renderer)
+  if not line then
+    return nil
+  end
   local line_start = range.start.character + 1
   local line_end = range["end"].line ~= range.start.line and #line
     or math.min(range["end"].character, #line)
