@@ -126,11 +126,8 @@ describe("fzfx.cfg.vim_commands", function()
       end
     end)
     it("_get_vim_user_commands", function()
-      local user_commands = vim.api.nvim_get_commands({ builtin = false })
-      -- print(
-      --     string.format("user commands:%s\n", vim.inspect(user_commands))
-      -- )
       local actual = vim_commands_cfg._get_vim_user_commands()
+      print(string.format("_get_vim_user_commands:%s\n", vim.inspect(actual)))
       for k, v in pairs(actual) do
         assert_true(vim.fn.exists(":" .. k) > 0)
         if type(v.loc) == "table" then
