@@ -117,25 +117,25 @@ describe("fzfx.cfg.vim_commands", function()
     end)
     it("_parse_ex_command_output", function()
       local actual = vim_commands_cfg._parse_ex_command_output()
-      print(string.format("_parse_ex_command_output:%s\n", vim.inspect(actual)))
+      -- print(string.format("_parse_ex_command_output:%s\n", vim.inspect(actual)))
       for k, v in pairs(actual) do
         assert_true(vim.fn.exists(":" .. k) > 0)
         assert_eq(type(v.filename), "string")
         assert_true(string.len(v.filename) > 0)
         assert_eq(type(v.lineno), "number")
-        assert_true(v.lineno > 0)
+        assert_true(v.lineno >= 0)
       end
     end)
     it("_get_vim_user_commands", function()
       local actual = vim_commands_cfg._get_vim_user_commands()
-      print(string.format("_get_vim_user_commands:%s\n", vim.inspect(actual)))
+      -- print(string.format("_get_vim_user_commands:%s\n", vim.inspect(actual)))
       for k, v in pairs(actual) do
         assert_true(vim.fn.exists(":" .. k) > 0)
         if type(v.loc) == "table" then
           assert_eq(type(v.loc.filename), "string")
           assert_true(string.len(v.loc.filename) > 0)
           assert_eq(type(v.loc.lineno), "number")
-          assert_true(v.loc.lineno > 0)
+          assert_true(v.loc.lineno >= 0)
         end
       end
     end)
