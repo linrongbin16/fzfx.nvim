@@ -117,6 +117,7 @@ describe("fzfx.cfg.vim_commands", function()
     end)
     it("_parse_ex_command_output", function()
       local actual = vim_commands_cfg._parse_ex_command_output()
+      print(string.format("_parse_ex_command_output:%s\n", vim.inspect(actual)))
       for k, v in pairs(actual) do
         assert_true(vim.fn.exists(":" .. k) > 0)
         assert_eq(type(v.filename), "string")
