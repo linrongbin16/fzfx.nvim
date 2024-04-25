@@ -43,3 +43,4 @@ luac.out
 .DS_Store
 stderr.txt
 stdout.txt
+*.log
