@@ -2,6 +2,7 @@ local tbl = require("fzfx.commons.tbl")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
 local term_color = require("fzfx.commons.color.term")
+local str = require("fzfx.commons.str")
 
 local switches = require("fzfx.lib.switches")
 local log = require("fzfx.lib.log")
@@ -47,7 +48,7 @@ end
 --- @param renderer fun(text:string):string
 --- @return string?
 M._colorize_lsp_range = function(line, range, renderer)
-  if not line then
+  if not str.not_empty(line) then
     return nil
   end
   local line_start = range.start.character + 1
