@@ -48,9 +48,6 @@ end
 --- @param renderer fun(text:string):string
 --- @return string?
 M._colorize_lsp_range = function(line, range, renderer)
-  if str.empty(line) then
-    return nil
-  end
   local line_start = range.start.character + 1
   local line_end = range["end"].line ~= range.start.line and #line
     or math.min(range["end"].character, #line)
@@ -323,32 +320,34 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   end
   local lines = {}
   for i, r in ipairs(ranges) do
-    local item_line = M._colorize_lsp_range(filelines[r.start.line + 1], r, term_color.red)
-    log.debug(
-      string.format(
-        "|_render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
-        vim.inspect(i),
-        vim.inspect(r),
-        vim.inspect(item_line)
+    if type(filelines) == "table" and #filelines >= r.start.line + 1 then
+      local item_line = M._colorize_lsp_range(filelines[r.start.line + 1], r, term_color.red)
+      log.debug(
+        string.format(
+          "|_render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
+          vim.inspect(i),
+          vim.inspect(r),
+          vim.inspect(item_line)
+        )
       )
-    )
-    local line = string.format(
-      "%s:%s:%s:%s",
-      providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
-      term_color.green(tostring(r.start.line + 1)),
-      tostring(r.start.character + 1),
-      item_line
-    )
-    log.debug(
-      string.format(
-        "|_render_lsp_call_hierarchy_line| %s-line:%s",
-        vim.inspect(i),
-        vim.inspect(line)
+      local line = string.format(
+        "%s:%s:%s:%s",
+        providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
+        term_color.green(tostring(r.start.line + 1)),
+        tostring(r.start.character + 1),
+        item_line
       )
-    )
-    table.insert(lines, line)
+      log.debug(
+        string.format(
+          "|_render_lsp_call_hierarchy_line| %s-line:%s",
+          vim.inspect(i),
+          vim.inspect(line)
+        )
+      )
+      table.insert(lines, line)
+    end
+    return lines
   end
-  return lines
 end
 
 --- @param method fzfx.LspMethod
