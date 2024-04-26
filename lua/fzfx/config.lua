@@ -131,6 +131,7 @@ local Defaults = {
     "--bind=ctrl-/:toggle-preview",
     "--bind=ctrl-alt-p:toggle-preview",
     "--bind=ctrl-t:toggle-preview",
+    "--bind=ctrl-p:toggle-preview",
     "--bind=ctrl-f:preview-half-page-down",
     "--bind=ctrl-b:preview-half-page-up",
   },

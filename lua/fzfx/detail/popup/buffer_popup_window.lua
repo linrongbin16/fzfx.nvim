@@ -914,6 +914,8 @@ function BufferPopupWindow:show_preview()
   self.previewer_bufnr = vim.api.nvim_create_buf(false, true)
   _set_default_buf_options(self.previewer_bufnr)
   self.previewer_winnr = vim.api.nvim_open_win(self.previewer_bufnr, true, win_confs.previewer)
+  local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
+  _set_default_previewer_win_options(self.previewer_winnr, wrap)
   vim.api.nvim_set_current_win(self.provider_winnr)
 
   self:resize()
