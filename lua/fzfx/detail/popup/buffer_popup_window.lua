@@ -852,6 +852,7 @@ end
 
 --- @param action_name string
 function BufferPopupWindow:preview_action(action_name)
+  log.debug("|BufferPopupWindow:preview_action| action_name:%s", vim.inspect(action_name))
   local actions_map = {
     ["hide-preview"] = function()
       self:hide_preview()
@@ -906,6 +907,7 @@ function BufferPopupWindow:show_preview()
     return
   end
 
+  log.debug("|BufferPopupWindow:show_preview| start")
   self.previewer_is_hidden = false
   local win_confs =
     M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts, self._saved_current_winnr)
@@ -960,10 +962,10 @@ function BufferPopupWindow:hide_preview()
 end
 
 function BufferPopupWindow:toggle_preview()
-  -- log.debug(
-  --   "|BufferPopupWindow:toggle_preview| previewer_is_hidden:%s",
-  --   vim.inspect(self.previewer_is_hidden)
-  -- )
+  log.debug(
+    "|BufferPopupWindow:toggle_preview| previewer_is_hidden:%s",
+    vim.inspect(self.previewer_is_hidden)
+  )
   -- already hide, show it
   if self.previewer_is_hidden then
     self:show_preview()
