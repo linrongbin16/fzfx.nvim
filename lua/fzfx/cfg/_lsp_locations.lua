@@ -48,7 +48,7 @@ end
 --- @param renderer fun(text:string):string
 --- @return string?
 M._colorize_lsp_range = function(line, range, renderer)
-  if not str.not_empty(line) then
+  if str.empty(line) then
     return nil
   end
   local line_start = range.start.character + 1
