@@ -206,14 +206,25 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   _set_default_buf_options(provider_bufnr)
 
   --- @type integer
-  local previewer_bufnr = vim.api.nvim_create_buf(false, true)
-  log.ensure(previewer_bufnr > 0, "failed to create previewer buf")
-  _set_default_buf_options(previewer_bufnr)
+  local previewer_bufnr
+  if not buffer_previewer_opts.fzf_preview_window_opts.hidden then
+    previewer_bufnr = vim.api.nvim_create_buf(false, true)
+    log.ensure(previewer_bufnr > 0, "failed to create previewer buf")
+    _set_default_buf_options(previewer_bufnr)
+  end
 
   local win_confs = M.make_opts(win_opts, buffer_previewer_opts, current_winnr)
-  local provider_win_confs = win_confs.provider
-  local previewer_win_confs = win_confs.previewer
-  previewer_win_confs.focusable = false
+  local provider_win_confs
+  local previewer_win_confs
+
+  if not buffer_previewer_opts.fzf_preview_window_opts.hidden then
+    provider_win_confs = win_confs.provider
+    previewer_win_confs = win_confs.previewer
+  else
+    provider_win_confs = vim.deepcopy(win_confs)
+    provider_win_confs.provider = nil
+    provider_win_confs.previewer = nil
+  end
 
   -- log.debug(
   --   "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, win_confs:%s",
@@ -221,10 +232,14 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   --   vim.inspect(buffer_previewer_opts),
   --   vim.inspect(win_confs)
   -- )
-  local previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
-  log.ensure(previewer_winnr > 0, "failed to create previewer win")
-  local wrap = buffer_previewer_opts.fzf_preview_window_opts.wrap
-  _set_default_previewer_win_options(previewer_winnr, wrap)
+
+  local previewer_winnr
+  if previewer_bufnr then
+    previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
+    log.ensure(previewer_winnr > 0, "failed to create previewer win")
+    local wrap = buffer_previewer_opts.fzf_preview_window_opts.wrap
+    _set_default_previewer_win_options(previewer_winnr, wrap)
+  end
 
   local provider_winnr = vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs)
   log.ensure(provider_winnr > 0, "failed to create provider win")
@@ -259,7 +274,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _resizing = false,
     preview_files_queue = {},
     preview_file_contents_queue = {},
-    previewer_is_hidden = false,
+    previewer_is_hidden = buffer_previewer_opts.fzf_preview_window_opts.hidden,
   }
   setmetatable(o, self)
   self.__index = self
