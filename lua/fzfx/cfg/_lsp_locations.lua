@@ -346,8 +346,8 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
       )
       table.insert(lines, line)
     end
-    return lines
   end
+  return lines
 end
 
 --- @param method fzfx.LspMethod
