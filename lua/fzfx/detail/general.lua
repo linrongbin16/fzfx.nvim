@@ -1062,23 +1062,23 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       buffer_previewer_actions_file,
       {},
       function(actions_fsevent_start_complete_err, actions_file, events)
-        log.debug(
-          string.format(
-            "|general - buffer_previewer_actions_fsevent:start| complete actions fsevent, actions_file:%s, events:%s, buffer_previewer_actions_file:%s, actions_fsevent_start_complete_err:%s",
-            vim.inspect(actions_file),
-            vim.inspect(events),
-            vim.inspect(buffer_previewer_actions_file),
-            vim.inspect(actions_fsevent_start_complete_err)
-          )
-        )
-        log.debug(
-          string.format(
-            "|general - buffer_previewer_actions_fsevent:start| popup is nil:%s, previewer_is_valid:%s, provider_is_valid:%s",
-            vim.inspect(popup == nil),
-            vim.inspect(popup:previewer_is_valid()),
-            vim.inspect(popup:provider_is_valid())
-          )
-        )
+        -- log.debug(
+        --   string.format(
+        --     "|general - buffer_previewer_actions_fsevent:start| complete actions fsevent, actions_file:%s, events:%s, buffer_previewer_actions_file:%s, actions_fsevent_start_complete_err:%s",
+        --     vim.inspect(actions_file),
+        --     vim.inspect(events),
+        --     vim.inspect(buffer_previewer_actions_file),
+        --     vim.inspect(actions_fsevent_start_complete_err)
+        --   )
+        -- )
+        -- log.debug(
+        --   string.format(
+        --     "|general - buffer_previewer_actions_fsevent:start| popup is nil:%s, previewer_is_valid:%s, provider_is_valid:%s",
+        --     vim.inspect(popup == nil),
+        --     vim.inspect(popup:previewer_is_valid()),
+        --     vim.inspect(popup:provider_is_valid())
+        --   )
+        -- )
         if actions_fsevent_start_complete_err then
           log.err(
             string.format(
@@ -1102,13 +1102,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         -- end
 
         fileio.asyncreadfile(buffer_previewer_actions_file, function(actions_data)
-          log.debug(
-            string.format(
-              "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, actions_data:%s",
-              vim.inspect(actions_file),
-              vim.inspect(actions_data)
-            )
-          )
+          -- log.debug(
+          --   string.format(
+          --     "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, actions_data:%s",
+          --     vim.inspect(actions_file),
+          --     vim.inspect(actions_data)
+          --   )
+          -- )
           if not popup or not popup:provider_is_valid() then
             return
           end
@@ -1170,12 +1170,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       }, {
         text = true,
       }, function(completed)
-        log.debug(
-          string.format(
-            "|general - use_buffer_previewer - query_fzf_status| completed:%s",
-            vim.inspect(completed)
-          )
-        )
+        -- log.debug(
+        --   string.format(
+        --     "|general - use_buffer_previewer - query_fzf_status| completed:%s",
+        --     vim.inspect(completed)
+        --   )
+        -- )
 
         if buffer_previewer_query_fzf_status_start then
           vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
@@ -1206,13 +1206,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
               local previewer_ok, previewer_result =
                 pcall(previewer_config.previewer, focused_line, context)
-              log.debug(
-                string.format(
-                  "|fzfx.general - use_buffer_previewer - asyncreadfile| pcall command previewer, previewer_ok:%s, previewer_result:%s",
-                  vim.inspect(previewer_ok),
-                  vim.inspect(previewer_result)
-                )
-              )
+              -- log.debug(
+              --   string.format(
+              --     "|fzfx.general - use_buffer_previewer - asyncreadfile| pcall command previewer, previewer_ok:%s, previewer_result:%s",
+              --     vim.inspect(previewer_ok),
+              --     vim.inspect(previewer_result)
+              --   )
+              -- )
               if not previewer_ok then
                 log.err(
                   string.format(
@@ -1257,13 +1257,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                   end
                 end
                 if previewer_result then
-                  log.debug(
-                    string.format(
-                      "|fzfx.general - use_buffer_previewer - asyncreadfile| popup.popup_window:preview_file",
-                      vim.inspect(previewer_ok),
-                      vim.inspect(previewer_result)
-                    )
-                  )
+                  -- log.debug(
+                  --   string.format(
+                  --     "|fzfx.general - use_buffer_previewer - asyncreadfile| popup.popup_window:preview_file",
+                  --     vim.inspect(previewer_ok),
+                  --     vim.inspect(previewer_result)
+                  --   )
+                  -- )
                   popup.popup_window:preview_file(
                     buffer_previewer_file_job_id,
                     previewer_result --[[@as fzfx.BufferFilePreviewerResult]],
