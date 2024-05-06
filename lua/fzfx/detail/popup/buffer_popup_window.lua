@@ -667,8 +667,8 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
         title_pos = "center",
       }
       vim.api.nvim_win_set_config(self.previewer_winnr, title_opts)
-      local number_opt = api.get_win_option(self._saved_current_winnr, "number")
-      api.set_win_option(self.previewer_winnr, "number", number_opt)
+      local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
+      _set_default_previewer_win_options(self.previewer_winnr, wrap, self._saved_current_winnr)
     end
 
     if str.not_empty(file_content.previewer_label_result) then
