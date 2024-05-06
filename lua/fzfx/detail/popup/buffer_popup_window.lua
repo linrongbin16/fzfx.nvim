@@ -659,7 +659,6 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
       vim.defer_fn(set_win_title, 100)
     end
 
-    log.debug("|preview_file_contents| call render_file_contents")
     self:render_file_contents(file_content, content_view, on_complete)
   end, 10)
 end
@@ -1071,7 +1070,6 @@ function BufferPopupWindow:scroll_by(percent, up)
     return
   end
 
-  log.debug("|scroll_by| call render_file_contents")
   self:render_file_contents(file_content, view, falsy_scrolling, math.max(LINES_COUNT, 30))
 end
 
