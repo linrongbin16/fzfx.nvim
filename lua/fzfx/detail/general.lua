@@ -1192,14 +1192,18 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
               buffer_previewer_focused_line = focused_line
 
-              if not popup or not popup:previewer_is_valid() then
+              if not popup or not popup.popup_window then
                 return
               end
 
-              -- trigger buffer previewer {
-
               buffer_previewer_file_job_id = num.auto_incremental_id()
               popup.popup_window:set_current_previewing_file_job_id(buffer_previewer_file_job_id)
+
+              -- trigger buffer previewer {
+
+              if not popup:previewer_is_valid() then
+                return
+              end
 
               local previewer_config = previewer_switch:current()
 
