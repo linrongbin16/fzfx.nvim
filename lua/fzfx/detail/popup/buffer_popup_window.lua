@@ -589,15 +589,15 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
         local view = center_line and M._make_center_view(lines_count, win_height, center_line)
           or M._make_top_view(lines_count, win_height)
-        -- log.debug(
-        --   string.format(
-        --     "|BufferPopupWindow:preview_file| lineno:%s, lines_count:%s, win_height:%s, view:%s",
-        --     vim.inspect(center_line),
-        --     vim.inspect(lines_count),
-        --     vim.inspect(win_height),
-        --     vim.inspect(view)
-        --   )
-        -- )
+        log.debug(
+          string.format(
+            "|BufferPopupWindow:preview_file| lineno:%s, lines_count:%s, win_height:%s, view:%s",
+            vim.inspect(center_line),
+            vim.inspect(lines_count),
+            vim.inspect(win_height),
+            vim.inspect(view)
+          )
+        )
         self:preview_file_contents(last_content, view)
       end, 10)
     end)
@@ -659,6 +659,7 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
       vim.defer_fn(set_win_title, 100)
     end
 
+    log.debug("|preview_file_contents| call render_file_contents")
     self:render_file_contents(file_content, content_view, on_complete)
   end, 10)
 end
@@ -928,15 +929,18 @@ function BufferPopupWindow:show_preview()
   -- restore last file preview contents
   vim.schedule(function()
     if not self:previewer_is_valid() then
-      -- log.debug(
-      --   "|BufferPopupWindow:preview_file - asyncreadfile - done content| invalid previewer:%s",
-      --   vim.inspect(self)
-      -- )
       return
     end
     if tbl.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
       local last_view = self._saved_previewing_file_content_view
+      if last_view == nil then
+        local center_line = last_content.previewer_result.lineno
+        local lines_count = #last_content.contents
+        local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
+        last_view = center_line and M._make_center_view(lines_count, win_height, center_line)
+          or M._make_top_view(lines_count, win_height)
+      end
       self:preview_file_contents(last_content, last_view)
     end
   end)
@@ -1067,6 +1071,7 @@ function BufferPopupWindow:scroll_by(percent, up)
     return
   end
 
+  log.debug("|scroll_by| call render_file_contents")
   self:render_file_contents(file_content, view, falsy_scrolling, math.max(LINES_COUNT, 30))
 end
 
