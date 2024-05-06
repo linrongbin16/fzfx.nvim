@@ -37,9 +37,6 @@ M.edit_find = function(lines, context)
     for i, edit in ipairs(edits) do
       -- log.debug(string.format("|edit_find| [%d]:[%s]", i, edit))
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
-      -- log.debug(
-      --   string.format("|edit_find| [%d]:%s, result:%s", i, vim.inspect(ok), vim.inspect(result))
-      -- )
       assert(ok, vim.inspect(result))
     end
   end)
