@@ -516,15 +516,15 @@ function BufferPopupWindow:_make_view(preview_file_content)
   local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
   local view = center_line and M._make_center_view(lines_count, win_height, center_line)
     or M._make_top_view(lines_count, win_height)
-  log.debug(
-    string.format(
-      "|BufferPopupWindow:_make_view| center_line:%s, lines_count:%s, win_height:%s, view:%s",
-      vim.inspect(center_line),
-      vim.inspect(lines_count),
-      vim.inspect(win_height),
-      vim.inspect(view)
-    )
-  )
+  -- log.debug(
+  --   string.format(
+  --     "|BufferPopupWindow:_make_view| center_line:%s, lines_count:%s, win_height:%s, view:%s",
+  --     vim.inspect(center_line),
+  --     vim.inspect(lines_count),
+  --     vim.inspect(win_height),
+  --     vim.inspect(view)
+  --   )
+  -- )
   return view
 end
 
