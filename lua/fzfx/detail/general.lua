@@ -1089,11 +1089,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         end
 
         fileio.asyncreadfile(buffer_previewer_actions_file, function(actions_data)
-          -- log.debug(
-          --   "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, data:%s",
-          --   vim.inspect(actions_file),
-          --   vim.inspect(actions_data)
-          -- )
+          log.debug(
+            string.format(
+              "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, actions_data:%s",
+              vim.inspect(actions_file),
+              vim.inspect(actions_data)
+            )
+          )
           if not popup or not popup:provider_is_valid() then
             return
           end
