@@ -109,13 +109,22 @@ end
 --- @param win_opts_param fzfx.WindowOpts
 --- @param buffer_previewer_opts_param fzfx.BufferFilePreviewerOpts
 --- @param relative_winnr integer
+--- @param relative_win_first_line integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
-M._make_cursor_opts = function(win_opts_param, buffer_previewer_opts_param, relative_winnr)
+M._make_cursor_opts = function(
+  win_opts_param,
+  buffer_previewer_opts_param,
+  relative_winnr,
+  relative_win_first_line
+)
   local win_opts = vim.deepcopy(win_opts_param)
   local buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts_param)
   local relative = "win"
-  local layout =
-    popup_helpers.make_cursor_layout(win_opts, buffer_previewer_opts.fzf_preview_window_opts)
+  local layout = popup_helpers.make_cursor_layout(
+    relative_winnr,
+    win_opts,
+    buffer_previewer_opts.fzf_preview_window_opts
+  )
   log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
   local provider_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
@@ -168,8 +177,14 @@ end
 --- @param win_opts_param fzfx.WindowOpts
 --- @param buffer_previewer_opts_param fzfx.BufferFilePreviewerOpts
 --- @param relative_winnr integer
+--- @param relative_win_first_line integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
-M._make_center_opts = function(win_opts_param, buffer_previewer_opts_param, relative_winnr)
+M._make_center_opts = function(
+  win_opts_param,
+  buffer_previewer_opts_param,
+  relative_winnr,
+  relative_win_first_line
+)
   local win_opts = vim.deepcopy(win_opts_param)
   local buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts_param)
   win_opts.relative = win_opts.relative or "editor"
@@ -225,8 +240,14 @@ end
 --- @param win_opts_param fzfx.WindowOpts
 --- @param buffer_previewer_opts_param fzfx.BufferFilePreviewerOpts
 --- @param relative_winnr integer
+--- @param relative_win_first_line integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
-M.make_opts = function(win_opts_param, buffer_previewer_opts_param, relative_winnr)
+M.make_opts = function(
+  win_opts_param,
+  buffer_previewer_opts_param,
+  relative_winnr,
+  relative_win_first_line
+)
   local win_opts = vim.deepcopy(win_opts_param)
   local buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts_param)
   win_opts.relative = win_opts.relative or "editor"
@@ -235,8 +256,13 @@ M.make_opts = function(win_opts_param, buffer_previewer_opts_param, relative_win
     string.format("window relative (%s) must be editor/win/cursor", vim.inspect(win_opts))
   )
   return win_opts.relative == "cursor"
-      and M._make_cursor_opts(win_opts, buffer_previewer_opts, relative_winnr)
-    or M._make_center_opts(win_opts, buffer_previewer_opts, relative_winnr)
+      and M._make_cursor_opts(
+        win_opts,
+        buffer_previewer_opts,
+        relative_winnr,
+        relative_win_first_line
+      )
+    or M._make_center_opts(win_opts, buffer_previewer_opts, relative_winnr, relative_win_first_line)
 end
 
 -- BufferPopupWindow {
@@ -248,6 +274,7 @@ end
 --- @field previewer_bufnr integer?
 --- @field previewer_winnr integer?
 --- @field _saved_current_winnr integer
+--- @field _saved_current_win_first_line integer
 --- @field _saved_win_opts fzfx.WindowOpts
 --- @field _saved_buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @field _saved_previewing_file_content_job fzfx.BufferPopupWindowPreviewFileContentJob
@@ -300,6 +327,7 @@ end
 --- @return fzfx.BufferPopupWindow
 function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   local current_winnr = vim.api.nvim_get_current_win()
+  local current_win_first_line = vim.fn.line("w0")
 
   -- save current window context
   local window_opts_context = popup_helpers.WindowOptsContext:save()
@@ -371,6 +399,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     previewer_bufnr = previewer_bufnr,
     previewer_winnr = previewer_winnr,
     _saved_current_winnr = current_winnr,
+    _saved_current_win_first_line = current_win_first_line,
     _saved_win_opts = win_opts,
     _saved_buffer_previewer_opts = buffer_previewer_opts,
     _saved_previewing_file_content_job = nil,
