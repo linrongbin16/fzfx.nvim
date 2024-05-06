@@ -942,10 +942,9 @@ function BufferPopupWindow:show_preview()
     end
     if tbl.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
-      local last_view = self._saved_previewing_file_content_view
-      if last_view == nil then
-        last_view = self:_make_view(last_content)
-      end
+      local last_view = self._saved_previewing_file_content_view ~= nil
+          and self._saved_previewing_file_content_view
+        or self:_make_view(last_content)
       self:preview_file_contents(last_content, last_view)
     end
   end)
