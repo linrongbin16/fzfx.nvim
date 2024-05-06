@@ -1063,11 +1063,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       {},
       function(actions_fsevent_start_complete_err, actions_file, events)
         -- log.debug(
-        --   "|general - buffer_previewer_actions_fsevent:start| complete actions fsevent, actions_file:%s, events:%s, actions_file:%s, error:%s",
-        --   vim.inspect(actions_file),
-        --   vim.inspect(events),
-        --   vim.inspect(buffer_previewer_actions_file),
-        --   vim.inspect(actions_fsevent_start_complete_err)
+        --   string.format(
+        --     "|general - buffer_previewer_actions_fsevent:start| complete actions fsevent, actions_file:%s, events:%s, buffer_previewer_actions_file:%s, actions_fsevent_start_complete_err:%s",
+        --     vim.inspect(actions_file),
+        --     vim.inspect(events),
+        --     vim.inspect(buffer_previewer_actions_file),
+        --     vim.inspect(actions_fsevent_start_complete_err)
+        --   )
         -- )
         if actions_fsevent_start_complete_err then
           log.err(
@@ -1082,15 +1084,17 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         if not str.find(buffer_previewer_actions_file, actions_file) then
           return
         end
-        if not popup or not popup:previewer_is_valid() then
+        if not popup or not popup:provider_is_valid() then
           return
         end
 
         fileio.asyncreadfile(buffer_previewer_actions_file, function(actions_data)
           -- log.debug(
-          --   "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, data:%s",
-          --   vim.inspect(actions_file),
-          --   vim.inspect(actions_data)
+          --   string.format(
+          --     "|general - buffer_previewer_actions_fsevent:start| complete read actions_file:%s, actions_data:%s",
+          --     vim.inspect(actions_file),
+          --     vim.inspect(actions_data)
+          --   )
           -- )
           if not popup or not popup:provider_is_valid() then
             return
@@ -1128,7 +1132,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local QUERY_FZF_CURRENT_STATUS_INTERVAL = 150
     buffer_previewer_query_fzf_status_start = true
 
-    local buffer_previewer_fzf_current_text = nil
+    local buffer_previewer_focused_line = nil
     local buffer_previewer_file_job_id = num.auto_incremental_id()
     if popup and popup.popup_window then
       popup.popup_window:set_current_previewing_file_job_id(buffer_previewer_file_job_id)
@@ -1154,9 +1158,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         text = true,
       }, function(completed)
         -- log.debug(
-        --   "|general - use_buffer_previewer - query_fzf_status| completed:%s, payload:%s",
-        --   vim.inspect(completed),
-        --   vim.inspect(current_payload)
+        --   string.format(
+        --     "|general - use_buffer_previewer - query_fzf_status| completed:%s",
+        --     vim.inspect(completed)
+        --   )
         -- )
 
         if buffer_previewer_query_fzf_status_start then
@@ -1167,50 +1172,51 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           if str.not_empty(tbl.tbl_get(completed, "stdout")) then
             local parse_ok, parse_status = pcall(json.decode, completed.stdout) --[[@as boolean, table]]
             if parse_ok and str.not_empty(tbl.tbl_get(parse_status, "current", "text")) then
-              local current_text = parse_status["current"]["text"]
+              local focused_line = parse_status["current"]["text"]
 
-              if current_text == buffer_previewer_fzf_current_text then
+              if focused_line == buffer_previewer_focused_line then
                 return
               end
 
-              buffer_previewer_fzf_current_text = current_text
+              buffer_previewer_focused_line = focused_line
+
+              if not popup or not popup:provider_is_valid() then
+                return
+              end
 
               -- trigger buffer previewer {
-
-              if not popup or not popup:previewer_is_valid() then
-                return
-              end
 
               buffer_previewer_file_job_id = num.auto_incremental_id()
               popup.popup_window:set_current_previewing_file_job_id(buffer_previewer_file_job_id)
 
               local previewer_config = previewer_switch:current()
-              local focused_line = current_text
 
-              local previewer_ok, previewer_result =
+              local preview_ok, preview_result =
                 pcall(previewer_config.previewer, focused_line, context)
               -- log.debug(
-              --     "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
-              --     vim.inspect(ok),
-              --     vim.inspect(result)
+              --   string.format(
+              --     "|fzfx.general - use_buffer_previewer - query_fzf_status| pcall previewer, preview_ok:%s, preview_result:%s",
+              --     vim.inspect(preview_ok),
+              --     vim.inspect(preview_result)
+              --   )
               -- )
-              if not previewer_ok then
+              if not preview_ok then
                 log.err(
                   string.format(
                     "failed to call buffer previewer %s! line:%s, context:%s, error:%s",
                     vim.inspect(previewer_config.previewer),
                     vim.inspect(focused_line),
                     vim.inspect(context),
-                    vim.inspect(previewer_result)
+                    vim.inspect(preview_result)
                   )
                 )
               else
                 log.ensure(
-                  previewer_result == nil or type(previewer_result) == "table",
+                  preview_result == nil or type(preview_result) == "table",
                   string.format(
-                    "|general - use_buffer_previewer - asyncreadfile| buffer previewer result must be table! previewer_config:%s, result:%s",
+                    "|general - use_buffer_previewer - query_fzf_status| buffer previewer result must be table! previewer_config:%s, result:%s",
                     vim.inspect(previewer_config),
-                    vim.inspect(previewer_result)
+                    vim.inspect(preview_result)
                   )
                 )
                 local previewer_label_ok
@@ -1237,10 +1243,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     previewer_label_result = nil
                   end
                 end
-                if previewer_result then
+                if preview_result then
                   popup.popup_window:preview_file(
                     buffer_previewer_file_job_id,
-                    previewer_result --[[@as fzfx.BufferFilePreviewerResult]],
+                    preview_result --[[@as fzfx.BufferFilePreviewerResult]],
                     previewer_label_result --[[@as string?]]
                   )
                 end

@@ -254,7 +254,7 @@ M.make_center_layout = function(win_opts, fzf_preview_window_opts)
     end_col = end_col,
   }
 
-  log.debug(string.format("|make_center_layout| base_layout:%s", vim.inspect(result)))
+  -- log.debug(string.format("|make_center_layout| base_layout:%s", vim.inspect(result)))
   local internal_layout = M._make_internal_layout(result, fzf_preview_window_opts)
   result.provider = tbl.tbl_get(internal_layout, "provider")
   result.previewer = tbl.tbl_get(internal_layout, "previewer")

@@ -10,6 +10,101 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 
 local M = {}
 
+-- calculate bottom line from top line
+--- @param top_line integer top line
+--- @param content_lines integer content lines count
+--- @param view_height integer window/view height
+M._calculate_bottom_by_top = function(top_line, content_lines, view_height)
+  return num.bound(top_line + view_height - 1, 1, content_lines)
+end
+
+-- calculate top line from bottom line
+--- @param bottom_line integer bottom line
+--- @param content_lines integer content lines count
+--- @param view_height integer window/view height
+M._calculate_top_by_bottom = function(bottom_line, content_lines, view_height)
+  return num.bound(bottom_line - view_height + 1, 1, content_lines)
+end
+
+-- adjust top/bottom line based on content lines count and view height
+--- @param top integer top line
+--- @param bottom integer bottom line
+--- @param content_lines integer content lines count
+--- @param view_height integer window/view height
+--- @return integer, integer top line and bottom line
+M._adjust_top_and_bottom = function(top, bottom, content_lines, view_height)
+  if top <= 1 then
+    -- log.debug(
+    --   "|_adjust_view|-1 top(%s) <= 1, bottom:%s, lines_count:%s, win_height:%s",
+    --   vim.inspect(top),
+    --   vim.inspect(bottom),
+    --   vim.inspect(lines_count),
+    --   vim.inspect(win_height)
+    -- )
+    bottom = M._calculate_bottom_by_top(top, content_lines, view_height)
+    -- log.debug(
+    --   "|_adjust_view|-2 top(%s) <= 1, bottom:%s, lines_count:%s, win_height:%s",
+    --   vim.inspect(top),
+    --   vim.inspect(bottom),
+    --   vim.inspect(lines_count),
+    --   vim.inspect(win_height)
+    -- )
+  elseif bottom >= content_lines then
+    -- log.debug(
+    --   "|_adjust_view|-3 bottom(%s) >= lines_count(%s), top:%s, win_height:%s",
+    --   vim.inspect(bottom),
+    --   vim.inspect(lines_count),
+    --   vim.inspect(top),
+    --   vim.inspect(win_height)
+    -- )
+    top = M._calculate_top_by_bottom(bottom, content_lines, view_height)
+    -- log.debug(
+    --   "|_adjust_view|-4 bottom(%s) >= lines_count(%s), top:%s, win_height:%s",
+    --   vim.inspect(bottom),
+    --   vim.inspect(lines_count),
+    --   vim.inspect(top),
+    --   vim.inspect(win_height)
+    -- )
+  end
+  return top, bottom
+end
+
+-- make a view that start from the 1st line of the content
+--- @alias fzfx.BufferPopupWindowPreviewFileContentView {top:integer,bottom:integer,center:integer,highlight:integer?}
+--- @param content_lines integer
+--- @param win_height integer
+--- @return fzfx.BufferPopupWindowPreviewFileContentView
+M._make_top_view = function(content_lines, win_height)
+  local top = 1
+  local bottom = M._calculate_bottom_by_top(top, content_lines, win_height)
+  top, bottom = M._adjust_top_and_bottom(top, bottom, content_lines, win_height)
+  return { top = top, bottom = bottom, center = math.ceil((top + bottom) / 2), highlight = nil }
+end
+
+-- make a view that the focused line is in the middle/center, and it's also the highlighted line.
+--- @param content_lines integer
+--- @param win_height integer
+--- @param center_line integer
+--- @return fzfx.BufferPopupWindowPreviewFileContentView
+M._make_center_view = function(content_lines, win_height, center_line)
+  local top = num.bound(center_line - math.ceil(win_height / 2), 1, content_lines)
+  local bottom = M._calculate_bottom_by_top(top, content_lines, win_height)
+  top, bottom = M._adjust_top_and_bottom(top, bottom, content_lines, win_height)
+  return { top = top, bottom = bottom, center = center_line, highlight = center_line }
+end
+
+-- make a view that already know the top/bottom/highlighted line, but needs to be adjusted.
+--- @param content_lines integer
+--- @param win_height integer
+--- @param top_line integer
+--- @param bottom_line integer
+--- @param highlight_line integer?
+M._make_range_view = function(content_lines, win_height, top_line, bottom_line, highlight_line)
+  top_line, bottom_line = M._adjust_top_and_bottom(top_line, bottom_line, content_lines, win_height)
+  local center_line = math.ceil((top_line + bottom_line) / 2)
+  return { top = top_line, bottom = bottom_line, center = center_line, highlight = highlight_line }
+end
+
 --- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
 --- @param win_opts fzfx.WindowOpts
 --- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
@@ -206,14 +301,25 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   _set_default_buf_options(provider_bufnr)
 
   --- @type integer
-  local previewer_bufnr = vim.api.nvim_create_buf(false, true)
-  log.ensure(previewer_bufnr > 0, "failed to create previewer buf")
-  _set_default_buf_options(previewer_bufnr)
+  local previewer_bufnr
+  if not buffer_previewer_opts.fzf_preview_window_opts.hidden then
+    previewer_bufnr = vim.api.nvim_create_buf(false, true)
+    log.ensure(previewer_bufnr > 0, "failed to create previewer buf")
+    _set_default_buf_options(previewer_bufnr)
+  end
 
   local win_confs = M.make_opts(win_opts, buffer_previewer_opts, current_winnr)
-  local provider_win_confs = win_confs.provider
-  local previewer_win_confs = win_confs.previewer
-  previewer_win_confs.focusable = false
+  local provider_win_confs
+  local previewer_win_confs
+
+  if not buffer_previewer_opts.fzf_preview_window_opts.hidden then
+    provider_win_confs = win_confs.provider
+    previewer_win_confs = win_confs.previewer
+  else
+    provider_win_confs = vim.deepcopy(win_confs)
+    provider_win_confs.provider = nil
+    provider_win_confs.previewer = nil
+  end
 
   -- log.debug(
   --   "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, win_confs:%s",
@@ -221,10 +327,14 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   --   vim.inspect(buffer_previewer_opts),
   --   vim.inspect(win_confs)
   -- )
-  local previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
-  log.ensure(previewer_winnr > 0, "failed to create previewer win")
-  local wrap = buffer_previewer_opts.fzf_preview_window_opts.wrap
-  _set_default_previewer_win_options(previewer_winnr, wrap)
+
+  local previewer_winnr
+  if previewer_bufnr then
+    previewer_winnr = vim.api.nvim_open_win(previewer_bufnr, true, previewer_win_confs)
+    log.ensure(previewer_winnr > 0, "failed to create previewer win")
+    local wrap = buffer_previewer_opts.fzf_preview_window_opts.wrap
+    _set_default_previewer_win_options(previewer_winnr, wrap)
+  end
 
   local provider_winnr = vim.api.nvim_open_win(provider_bufnr, true, provider_win_confs)
   log.ensure(provider_winnr > 0, "failed to create provider win")
@@ -259,7 +369,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _resizing = false,
     preview_files_queue = {},
     preview_file_contents_queue = {},
-    previewer_is_hidden = false,
+    previewer_is_hidden = buffer_previewer_opts.fzf_preview_window_opts.hidden,
   }
   setmetatable(o, self)
   self.__index = self
@@ -268,13 +378,19 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
 end
 
 function BufferPopupWindow:close()
-  -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
+  -- log.debug(
+  --   string.format(
+  --     "|BufferPopupWindow:close| provider_winnr:%s, previewer_winnr:%s",
+  --     vim.inspect(self.provider_winnr),
+  --     vim.inspect(self.previewer_winnr)
+  --   )
+  -- )
 
-  if vim.api.nvim_win_is_valid(self.provider_winnr) then
+  if type(self.provider_winnr) == "number" and vim.api.nvim_win_is_valid(self.provider_winnr) then
     vim.api.nvim_win_close(self.provider_winnr, true)
     self.provider_winnr = nil
   end
-  if vim.api.nvim_win_is_valid(self.previewer_winnr) then
+  if type(self.previewer_winnr) == "number" and vim.api.nvim_win_is_valid(self.previewer_winnr) then
     vim.api.nvim_win_close(self.previewer_winnr, true)
     self.previewer_winnr = nil
   end
@@ -395,92 +511,27 @@ function BufferPopupWindow:set_current_previewing_file_job_id(jobid)
   self._current_previewing_file_job_id = jobid
 end
 
---- @param top_line integer
---- @param lines_count integer
---- @param win_height integer
-M._make_bottom_by_top = function(top_line, lines_count, win_height)
-  return num.bound(top_line + win_height - 1, 1, lines_count)
-end
-
---- @param bottom_line integer
---- @param lines_count integer
---- @param win_height integer
-M._make_top_by_bottom = function(bottom_line, lines_count, win_height)
-  return num.bound(bottom_line - win_height + 1, 1, lines_count)
-end
-
---- @param top integer
---- @param bottom integer
---- @param lines_count integer
---- @param win_height integer
---- @return integer, integer
-M._adjust_view = function(top, bottom, lines_count, win_height)
-  if top <= 1 then
-    -- log.debug(
-    --   "|_adjust_view|-1 top(%s) <= 1, bottom:%s, lines_count:%s, win_height:%s",
-    --   vim.inspect(top),
-    --   vim.inspect(bottom),
-    --   vim.inspect(lines_count),
-    --   vim.inspect(win_height)
-    -- )
-    bottom = M._make_bottom_by_top(top, lines_count, win_height)
-    -- log.debug(
-    --   "|_adjust_view|-2 top(%s) <= 1, bottom:%s, lines_count:%s, win_height:%s",
-    --   vim.inspect(top),
-    --   vim.inspect(bottom),
-    --   vim.inspect(lines_count),
-    --   vim.inspect(win_height)
-    -- )
-  elseif bottom >= lines_count then
-    -- log.debug(
-    --   "|_adjust_view|-3 bottom(%s) >= lines_count(%s), top:%s, win_height:%s",
-    --   vim.inspect(bottom),
-    --   vim.inspect(lines_count),
-    --   vim.inspect(top),
-    --   vim.inspect(win_height)
-    -- )
-    top = M._make_top_by_bottom(bottom, lines_count, win_height)
-    -- log.debug(
-    --   "|_adjust_view|-4 bottom(%s) >= lines_count(%s), top:%s, win_height:%s",
-    --   vim.inspect(bottom),
-    --   vim.inspect(lines_count),
-    --   vim.inspect(top),
-    --   vim.inspect(win_height)
-    -- )
-  end
-  return top, bottom
-end
-
---- @alias fzfx.BufferPopupWindowPreviewFileContentView {top:integer,bottom:integer,center:integer,highlight:integer?}
---- @param lines_count integer
---- @param win_height integer
+-- make a view based on preview file content
+--- @param preview_file_content fzfx.BufferPopupWindowPreviewFileContentJob
 --- @return fzfx.BufferPopupWindowPreviewFileContentView
-M._make_view_by_top = function(lines_count, win_height)
-  local top = 1
-  local bottom = M._make_bottom_by_top(top, lines_count, win_height)
-  top, bottom = M._adjust_view(top, bottom, lines_count, win_height)
-  return { top = top, bottom = bottom, center = math.ceil((top + bottom) / 2), highlight = nil }
-end
-
---- @param lines_count integer
---- @param win_height integer
---- @param center_line integer
-M._make_view_by_center = function(lines_count, win_height, center_line)
-  local top = num.bound(center_line - math.ceil(win_height / 2), 1, lines_count)
-  local bottom = M._make_bottom_by_top(top, lines_count, win_height)
-  top, bottom = M._adjust_view(top, bottom, lines_count, win_height)
-  return { top = top, bottom = bottom, center = center_line, highlight = center_line }
-end
-
---- @param lines_count integer
---- @param win_height integer
---- @param top_line integer
---- @param bottom_line integer
---- @param highlight_line integer?
-M._make_view_by_range = function(lines_count, win_height, top_line, bottom_line, highlight_line)
-  top_line, bottom_line = M._adjust_view(top_line, bottom_line, lines_count, win_height)
-  local center_line = math.ceil((top_line + bottom_line) / 2)
-  return { top = top_line, bottom = bottom_line, center = center_line, highlight = highlight_line }
+function BufferPopupWindow:_make_view(preview_file_content)
+  log.ensure(preview_file_content ~= nil, "|_make_view| preview_file_content must not be nil")
+  log.ensure(self:previewer_is_valid(), "|_make_view| previewer must be valid")
+  local center_line = preview_file_content.previewer_result.lineno
+  local lines_count = #preview_file_content.contents
+  local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
+  local view = center_line and M._make_center_view(lines_count, win_height, center_line)
+    or M._make_top_view(lines_count, win_height)
+  -- log.debug(
+  --   string.format(
+  --     "|BufferPopupWindow:_make_view| center_line:%s, lines_count:%s, win_height:%s, view:%s",
+  --     vim.inspect(center_line),
+  --     vim.inspect(lines_count),
+  --     vim.inspect(win_height),
+  --     vim.inspect(view)
+  --   )
+  -- )
+  return view
 end
 
 --- @alias fzfx.BufferPopupWindowPreviewFileJob {job_id:integer,previewer_result:fzfx.BufferFilePreviewerResult,previewer_label_result:string?}
@@ -497,9 +548,11 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
   end
 
   -- log.debug(
-  --   "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
-  --   vim.inspect(previewer_result),
-  --   vim.inspect(previewer_label_result)
+  --   string.format(
+  --     "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
+  --     vim.inspect(previewer_result),
+  --     vim.inspect(previewer_label_result)
+  --   )
   -- )
   table.insert(self.preview_files_queue, {
     job_id = job_id,
@@ -508,10 +561,6 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
   })
 
   vim.defer_fn(function()
-    if not self:previewer_is_valid() then
-      -- log.debug("|BufferPopupWindow:preview_file| invalid previewer:%s", vim.inspect(self))
-      return
-    end
     if #self.preview_files_queue == 0 then
       -- log.debug(
       --   "|BufferPopupWindow:preview_file| empty preview files queue:%s",
@@ -530,9 +579,6 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
 
     -- read file content
     fileio.asyncreadfile(last_job.previewer_result.filename, function(contents)
-      if not self:previewer_is_valid() then
-        return
-      end
       if not self:is_last_previewing_file_job_id(last_job.job_id) then
         return
       end
@@ -551,37 +597,17 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
 
       -- show file contents by lines
       vim.defer_fn(function()
-        if not self:previewer_is_valid() then
-          -- log.debug(
-          --   "|BufferPopupWindow:preview_file - asyncreadfile - done content| invalid previewer:%s",
-          --   vim.inspect(self)
-          -- )
-          return
-        end
-
         local last_content = self.preview_file_contents_queue[#self.preview_file_contents_queue]
         self.preview_file_contents_queue = {}
+        self._saved_previewing_file_content_job = last_content
 
         if not self:is_last_previewing_file_job_id(last_content.job_id) then
           return
         end
-
-        self._saved_previewing_file_content_job = last_content
-
-        local center_line = last_content.previewer_result.lineno
-        local lines_count = #last_content.contents
-        local win_height = vim.api.nvim_win_get_height(self.previewer_winnr)
-        local view = center_line and M._make_view_by_center(lines_count, win_height, center_line)
-          or M._make_view_by_top(lines_count, win_height)
-        -- log.debug(
-        --   string.format(
-        --     "|BufferPopupWindow:preview_file| lineno:%s, lines_count:%s, win_height:%s, view:%s",
-        --     vim.inspect(center_line),
-        --     vim.inspect(lines_count),
-        --     vim.inspect(win_height),
-        --     vim.inspect(view)
-        --   )
-        -- )
+        if not self:previewer_is_valid() then
+          return
+        end
+        local view = self:_make_view(last_content)
         self:preview_file_contents(last_content, view)
       end, 10)
     end)
@@ -714,7 +740,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
     end
     -- log.debug(
     --   string.format(
-    --     "|BufferPopupWindow:render_file_contents| LINES_COUNT:%s, FIRST/LAST:%s/%s, view:%s",
+    --     "|BufferPopupWindow:render_file_contents| LINES_COUNT:%s, FIRST/LAST:%s/%s, content_view:%s",
     --     vim.inspect(LINES_COUNT),
     --     vim.inspect(FIRST_LINE),
     --     vim.inspect(LAST_LINE),
@@ -899,6 +925,8 @@ function BufferPopupWindow:show_preview()
   self.previewer_bufnr = vim.api.nvim_create_buf(false, true)
   _set_default_buf_options(self.previewer_bufnr)
   self.previewer_winnr = vim.api.nvim_open_win(self.previewer_bufnr, true, win_confs.previewer)
+  local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
+  _set_default_previewer_win_options(self.previewer_winnr, wrap)
   vim.api.nvim_set_current_win(self.provider_winnr)
 
   self:resize()
@@ -906,15 +934,13 @@ function BufferPopupWindow:show_preview()
   -- restore last file preview contents
   vim.schedule(function()
     if not self:previewer_is_valid() then
-      -- log.debug(
-      --   "|BufferPopupWindow:preview_file - asyncreadfile - done content| invalid previewer:%s",
-      --   vim.inspect(self)
-      -- )
       return
     end
     if tbl.tbl_not_empty(self._saved_previewing_file_content_job) then
       local last_content = self._saved_previewing_file_content_job
-      local last_view = self._saved_previewing_file_content_view
+      local last_view = self._saved_previewing_file_content_view ~= nil
+          and self._saved_previewing_file_content_view
+        or self:_make_view(last_content)
       self:preview_file_contents(last_content, last_view)
     end
   end)
@@ -944,8 +970,10 @@ end
 
 function BufferPopupWindow:toggle_preview()
   -- log.debug(
-  --   "|BufferPopupWindow:toggle_preview| previewer_is_hidden:%s",
-  --   vim.inspect(self.previewer_is_hidden)
+  --   string.format(
+  --     "|BufferPopupWindow:toggle_preview| previewer_is_hidden:%s",
+  --     vim.inspect(self.previewer_is_hidden)
+  --   )
   -- )
   -- already hide, show it
   if self.previewer_is_hidden then
@@ -1007,7 +1035,7 @@ function BufferPopupWindow:scroll_by(percent, up)
     shift_lines = -shift_lines
   end
   local first_line = num.bound(TOP_LINE + shift_lines, 1, LINES_COUNT)
-  local last_line = M._make_bottom_by_top(first_line, LINES_COUNT, WIN_HEIGHT)
+  local last_line = M._calculate_bottom_by_top(first_line, LINES_COUNT, WIN_HEIGHT)
   -- log.debug(
   --   "|BufferPopupWindow:scroll_by|-1 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, first/last:%s/%s",
   --   vim.inspect(percent),
@@ -1021,7 +1049,7 @@ function BufferPopupWindow:scroll_by(percent, up)
   --   vim.inspect(first_line),
   --   vim.inspect(last_line)
   -- )
-  local view = M._make_view_by_range(LINES_COUNT, WIN_HEIGHT, first_line, last_line, HIGHLIGHT_LINE)
+  local view = M._make_range_view(LINES_COUNT, WIN_HEIGHT, first_line, last_line, HIGHLIGHT_LINE)
   -- log.debug(
   --   string.format(
   --     "|BufferPopupWindow:scroll_by|-2 percent:%s, up:%s, LINES/HEIGHT/SHIFT:%s/%s/%s, top/bottom/center:%s/%s/%s, view:%s",
