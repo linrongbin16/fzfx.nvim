@@ -154,6 +154,7 @@ M._make_cursor_opts = function(win_opts_param, buffer_previewer_opts_param, rela
     style = popup_helpers.FLOAT_WIN_STYLE,
     border = previewer_border,
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
+    focusable = false,
   }
 
   if relative == "win" then
@@ -211,13 +212,13 @@ M._make_center_opts = function(win_opts_param, buffer_previewer_opts_param, rela
     style = popup_helpers.FLOAT_WIN_STYLE,
     border = previewer_border,
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
+    focusable = false,
   }
 
   if win_opts.relative == "win" then
     result.provider.win = relative_winnr
     result.previewer.win = relative_winnr
   end
-  log.debug("|make_opts| result:%s", vim.inspect(result))
   return result
 end
 
@@ -317,6 +318,16 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
   end
 
   local win_confs = M.make_opts(win_opts, buffer_previewer_opts, current_winnr)
+  log.debug(
+    string.format(
+      "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, current_winnr:%s, win_confs:%s",
+      vim.inspect(win_opts),
+      vim.inspect(buffer_previewer_opts),
+      vim.inspect(current_winnr),
+      vim.inspect(win_confs)
+    )
+  )
+
   local provider_win_confs
   local previewer_win_confs
 
@@ -328,15 +339,6 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     provider_win_confs.provider = nil
     provider_win_confs.previewer = nil
   end
-
-  log.debug(
-    string.format(
-      "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, win_confs:%s",
-      vim.inspect(win_opts),
-      vim.inspect(buffer_previewer_opts),
-      vim.inspect(win_confs)
-    )
-  )
 
   local previewer_winnr
   if previewer_bufnr then
@@ -431,15 +433,18 @@ function BufferPopupWindow:resize()
       self._saved_buffer_previewer_opts,
       self._saved_current_winnr
     )
-    new_win_confs.provider = nil
-    new_win_confs.previewer = nil
     log.debug(
       string.format(
-        "|BufferPopupWindow:resize| previewer is hidden, old_win_confs:%s, new_win_confs:%s",
+        "|BufferPopupWindow:resize| previewer is hidden, old_win_confs:%s, self._saved_win_opts:%s, self._saved_buffer_previewer_opts:%s, self._saved_current_winnr:%s, new_win_confs:%s",
         vim.inspect(old_win_confs),
+        vim.inspect(self._saved_win_opts),
+        vim.inspect(self._saved_buffer_previewer_opts),
+        vim.inspect(self._saved_current_winnr),
         vim.inspect(new_win_confs)
       )
     )
+    new_win_confs.provider = nil
+    new_win_confs.previewer = nil
     vim.api.nvim_win_set_config(
       self.provider_winnr,
       vim.tbl_deep_extend("force", old_win_confs, new_win_confs)
@@ -454,8 +459,11 @@ function BufferPopupWindow:resize()
     )
     log.debug(
       string.format(
-        "|BufferPopupWindow:resize| previewer is not hidden, old_provider_win_confs:%s, (new) win_confs:%s",
+        "|BufferPopupWindow:resize| previewer is not hidden, old_provider_win_confs:%s, self._saved_win_opts:%s, self._saved_buffer_previewer_opts:%s, self._saved_current_winnr:%s, (new) win_confs:%s",
         vim.inspect(old_provider_win_confs),
+        vim.inspect(self._saved_win_opts),
+        vim.inspect(self._saved_buffer_previewer_opts),
+        vim.inspect(self._saved_current_winnr),
         vim.inspect(win_confs)
       )
     )
@@ -936,7 +944,15 @@ function BufferPopupWindow:show_preview()
   self.previewer_is_hidden = false
   local win_confs =
     M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts, self._saved_current_winnr)
-  win_confs.previewer.focusable = false
+  log.debug(
+    string.format(
+      "|BufferPopupWindow:show_preview| self._saved_win_opts:%s, self._saved_buffer_previewer_opts:%s, self._saved_current_winnr:%s, win_confs:%s",
+      vim.inspect(self._saved_win_opts),
+      vim.inspect(self._saved_buffer_previewer_opts),
+      vim.inspect(self._saved_current_winnr),
+      vim.inspect(win_confs)
+    )
+  )
 
   self.previewer_bufnr = vim.api.nvim_create_buf(false, true)
   _set_default_buf_options(self.previewer_bufnr)
