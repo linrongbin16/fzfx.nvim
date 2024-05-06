@@ -573,14 +573,6 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
 
       -- show file contents by lines
       vim.defer_fn(function()
-        if not self:previewer_is_valid() then
-          -- log.debug(
-          --   "|BufferPopupWindow:preview_file - asyncreadfile - done content| invalid previewer:%s",
-          --   vim.inspect(self)
-          -- )
-          return
-        end
-
         local last_content = self.preview_file_contents_queue[#self.preview_file_contents_queue]
         self.preview_file_contents_queue = {}
 
