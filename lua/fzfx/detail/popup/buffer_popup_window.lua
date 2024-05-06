@@ -917,7 +917,6 @@ function BufferPopupWindow:show_preview()
     return
   end
 
-  log.debug("|BufferPopupWindow:show_preview| start")
   self.previewer_is_hidden = false
   local win_confs =
     M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts, self._saved_current_winnr)
