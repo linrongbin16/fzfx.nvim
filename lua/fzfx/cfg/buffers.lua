@@ -159,7 +159,6 @@ M.fzf_opts = {
     local current_bufnr = vim.api.nvim_get_current_buf()
     return bufs.buf_is_valid(current_bufnr) and "--header-lines=1" or nil
   end,
-  "--preview-window=hidden",
 }
 
 return M
