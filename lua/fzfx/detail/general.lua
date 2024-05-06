@@ -1071,6 +1071,14 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
             vim.inspect(actions_fsevent_start_complete_err)
           )
         )
+        log.debug(
+          string.format(
+            "|general - buffer_previewer_actions_fsevent:start| popup is nil:%s, previewer_is_valid:%s, provider_is_valid:%s",
+            vim.inspect(popup == nil),
+            vim.inspect(popup:previewer_is_valid()),
+            vim.inspect(popup:provider_is_valid())
+          )
+        )
         if actions_fsevent_start_complete_err then
           log.err(
             string.format(
@@ -1082,11 +1090,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           return
         end
         if not str.find(buffer_previewer_actions_file, actions_file) then
+          log.debug("|general - buffer_previewer_actions_fsevent:start| is not target actions_file")
           return
         end
-        if not popup or not popup:previewer_is_valid() then
+        if not popup or not popup:provider_is_valid() then
           return
         end
+        -- if not popup or not popup:previewer_is_valid() then
+        --   log.debug("|general - buffer_previewer_actions_fsevent:start| previewer is invalid")
+        --   return
+        -- end
 
         fileio.asyncreadfile(buffer_previewer_actions_file, function(actions_data)
           log.debug(
