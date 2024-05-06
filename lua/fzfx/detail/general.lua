@@ -1195,7 +1195,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 pcall(previewer_config.previewer, focused_line, context)
               log.debug(
                 string.format(
-                  "|fzfx.general - use_buffer_previewer - query_fzf_status| pcall previewer, previewer_ok:%s, previewer_result:%s",
+                  "|fzfx.general - use_buffer_previewer - query_fzf_status| pcall previewer, preview_ok:%s, preview_result:%s",
                   vim.inspect(preview_ok),
                   vim.inspect(preview_result)
                 )
