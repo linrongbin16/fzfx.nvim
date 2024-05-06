@@ -445,10 +445,14 @@ function BufferPopupWindow:resize()
     )
     new_win_confs.provider = nil
     new_win_confs.previewer = nil
-    vim.api.nvim_win_set_config(
-      self.provider_winnr,
-      vim.tbl_deep_extend("force", old_win_confs, new_win_confs)
+    local new_provider_win_confs = vim.tbl_deep_extend("force", old_win_confs, new_win_confs)
+    log.debug(
+      string.format(
+        "|BufferPopupWindow:resize| previewer is hidden, new_provider_win_confs:%s",
+        vim.inspect(new_provider_win_confs)
+      )
     )
+    vim.api.nvim_win_set_config(self.provider_winnr, new_provider_win_confs)
     _set_default_provider_win_options(self.provider_winnr, self._saved_current_winnr)
   else
     local old_provider_win_confs = vim.api.nvim_win_get_config(self.provider_winnr)
@@ -467,10 +471,15 @@ function BufferPopupWindow:resize()
         vim.inspect(win_confs)
       )
     )
-    vim.api.nvim_win_set_config(
-      self.provider_winnr,
+    local new_provider_win_confs =
       vim.tbl_deep_extend("force", old_provider_win_confs, win_confs.provider or {})
+    log.debug(
+      string.format(
+        "|BufferPopupWindow:resize| previewer is not hidden, new_provider_win_confs:%s",
+        vim.inspect(new_provider_win_confs)
+      )
     )
+    vim.api.nvim_win_set_config(self.provider_winnr, new_provider_win_confs)
     _set_default_provider_win_options(self.provider_winnr, self._saved_current_winnr)
 
     if self:previewer_is_valid() then
@@ -481,10 +490,15 @@ function BufferPopupWindow:resize()
           vim.inspect(old_previewer_win_confs)
         )
       )
-      vim.api.nvim_win_set_config(
-        self.previewer_winnr,
+      local new_previewer_win_confs =
         vim.tbl_deep_extend("force", old_previewer_win_confs, win_confs.previewer or {})
+      log.debug(
+        string.format(
+          "|BufferPopupWindow:resize| previewer is not hidden, new_previewer_win_confs:%s",
+          vim.inspect(new_previewer_win_confs)
+        )
       )
+      vim.api.nvim_win_set_config(self.previewer_winnr, new_previewer_win_confs)
 
       local wrap = self._saved_buffer_previewer_opts.fzf_preview_window_opts.wrap
       _set_default_previewer_win_options(self.previewer_winnr, wrap, self._saved_current_winnr)
