@@ -169,12 +169,14 @@ function Popup:new(
     PopupWindow:new(win_opts, use_buffer_previewer and "buffer" or "fzf", buffer_previewer_opts)
 
   local function on_fzf_exit(jobid2, exitcode, event)
-    -- log.debug(
-    --   "|Popup:new| fzf exit, jobid2:%s, exitcode:%s, event:%s",
-    --   vim.inspect(jobid2),
-    --   vim.inspect(exitcode),
-    --   vim.inspect(event)
-    -- )
+    log.debug(
+      string.format(
+        "|Popup:new| fzf exit, jobid2:%s, exitcode:%s, event:%s",
+        vim.inspect(jobid2),
+        vim.inspect(exitcode),
+        vim.inspect(event)
+      )
+    )
     if exitcode > 1 and (exitcode ~= 130 and exitcode ~= 129) then
       log.err(
         string.format(
