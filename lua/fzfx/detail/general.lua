@@ -1196,10 +1196,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 return
               end
 
+              -- trigger buffer previewer {
+
               buffer_previewer_file_job_id = num.auto_incremental_id()
               popup.popup_window:set_current_previewing_file_job_id(buffer_previewer_file_job_id)
-
-              -- trigger buffer previewer {
 
               local previewer_config = previewer_switch:current()
 
