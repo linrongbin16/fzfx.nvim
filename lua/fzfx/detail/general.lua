@@ -1157,12 +1157,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       }, {
         text = true,
       }, function(completed)
-        -- log.debug(
-        --   string.format(
-        --     "|general - use_buffer_previewer - query_fzf_status| completed:%s",
-        --     vim.inspect(completed)
-        --   )
-        -- )
+        log.debug(
+          string.format(
+            "|general - query_fzf_status - spawn.system| completed:%s",
+            vim.inspect(completed)
+          )
+        )
 
         if buffer_previewer_query_fzf_status_start then
           vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
