@@ -106,15 +106,16 @@ M._make_range_view = function(content_lines, win_height, top_line, bottom_line, 
 end
 
 --- @alias fzfx.BufferFilePreviewerOpts {fzf_preview_window_opts:fzfx.FzfPreviewWindowOpts,fzf_border_opts:string}
---- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param win_opts_param fzfx.WindowOpts
+--- @param buffer_previewer_opts_param fzfx.BufferFilePreviewerOpts
 --- @param relative_winnr integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
-M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
-  local opts = vim.deepcopy(win_opts)
+M._make_cursor_opts = function(win_opts_param, buffer_previewer_opts_param, relative_winnr)
+  local win_opts = vim.deepcopy(win_opts_param)
+  local buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts_param)
   local relative = "win"
   local layout =
-    popup_helpers.make_cursor_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
+    popup_helpers.make_cursor_layout(win_opts, buffer_previewer_opts.fzf_preview_window_opts)
   log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
   local provider_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
@@ -163,15 +164,16 @@ M._make_cursor_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   return result
 end
 
---- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param win_opts_param fzfx.WindowOpts
+--- @param buffer_previewer_opts_param fzfx.BufferFilePreviewerOpts
 --- @param relative_winnr integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
-M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
-  local opts = vim.deepcopy(win_opts)
-  opts.relative = opts.relative or "editor"
+M._make_center_opts = function(win_opts_param, buffer_previewer_opts_param, relative_winnr)
+  local win_opts = vim.deepcopy(win_opts_param)
+  local buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts_param)
+  win_opts.relative = win_opts.relative or "editor"
   local layout =
-    popup_helpers.make_center_layout(opts, buffer_previewer_opts.fzf_preview_window_opts)
+    popup_helpers.make_center_layout(win_opts, buffer_previewer_opts.fzf_preview_window_opts)
   local provider_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
     or fzf_helpers.FZF_DEFAULT_BORDER_OPTS
   local previewer_border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_preview_window_opts.border]
@@ -179,7 +181,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
 
   local result = {
     anchor = "NW",
-    relative = opts.relative,
+    relative = win_opts.relative,
     width = layout.width,
     height = layout.height,
     row = layout.start_row,
@@ -190,7 +192,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   }
   result.provider = {
     anchor = "NW",
-    relative = opts.relative,
+    relative = win_opts.relative,
     width = layout.provider.width,
     height = layout.provider.height,
     row = layout.provider.start_row,
@@ -201,7 +203,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   }
   result.previewer = {
     anchor = "NW",
-    relative = opts.relative,
+    relative = win_opts.relative,
     width = layout.previewer.width,
     height = layout.previewer.height,
     row = layout.previewer.start_row,
@@ -211,7 +213,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     zindex = popup_helpers.FLOAT_WIN_ZINDEX,
   }
 
-  if opts.relative == "win" then
+  if win_opts.relative == "win" then
     result.provider.win = relative_winnr
     result.previewer.win = relative_winnr
   end
@@ -219,20 +221,21 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
   return result
 end
 
---- @param win_opts fzfx.WindowOpts
---- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
+--- @param win_opts_param fzfx.WindowOpts
+--- @param buffer_previewer_opts_param fzfx.BufferFilePreviewerOpts
 --- @param relative_winnr integer
 --- @return {provider:fzfx.NvimFloatWinOpts,previewer:fzfx.NvimFloatWinOpts}
-M.make_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
-  local opts = vim.deepcopy(win_opts)
-  opts.relative = opts.relative or "editor"
+M.make_opts = function(win_opts_param, buffer_previewer_opts_param, relative_winnr)
+  local win_opts = vim.deepcopy(win_opts_param)
+  local buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts_param)
+  win_opts.relative = win_opts.relative or "editor"
   log.ensure(
-    opts.relative == "cursor" or opts.relative == "editor" or opts.relative == "win",
-    string.format("window relative (%s) must be editor/win/cursor", vim.inspect(opts))
+    win_opts.relative == "cursor" or win_opts.relative == "editor" or win_opts.relative == "win",
+    string.format("window relative (%s) must be editor/win/cursor", vim.inspect(win_opts))
   )
-  return opts.relative == "cursor"
-      and M._make_cursor_opts(opts, buffer_previewer_opts, relative_winnr)
-    or M._make_center_opts(opts, buffer_previewer_opts, relative_winnr)
+  return win_opts.relative == "cursor"
+      and M._make_cursor_opts(win_opts, buffer_previewer_opts, relative_winnr)
+    or M._make_center_opts(win_opts, buffer_previewer_opts, relative_winnr)
 end
 
 -- BufferPopupWindow {
