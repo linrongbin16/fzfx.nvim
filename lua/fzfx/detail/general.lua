@@ -1170,11 +1170,12 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       }, {
         text = true,
       }, function(completed)
-        -- log.debug(
-        --   "|general - use_buffer_previewer - query_fzf_status| completed:%s, payload:%s",
-        --   vim.inspect(completed),
-        --   vim.inspect(current_payload)
-        -- )
+        log.debug(
+          string.format(
+            "|general - use_buffer_previewer - query_fzf_status| completed:%s",
+            vim.inspect(completed)
+          )
+        )
 
         if buffer_previewer_query_fzf_status_start then
           vim.defer_fn(query_fzf_status, QUERY_FZF_CURRENT_STATUS_INTERVAL)
@@ -1205,11 +1206,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
               local previewer_ok, previewer_result =
                 pcall(previewer_config.previewer, focused_line, context)
-              -- log.debug(
-              --     "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, ok:%s, result:%s",
-              --     vim.inspect(ok),
-              --     vim.inspect(result)
-              -- )
+              log.debug(
+                string.format(
+                  "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, previewer_ok:%s, previewer_result:%s",
+                  vim.inspect(previewer_ok),
+                  vim.inspect(previewer_result)
+                )
+              )
               if not previewer_ok then
                 log.err(
                   string.format(
