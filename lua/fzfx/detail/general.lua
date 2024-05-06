@@ -1145,7 +1145,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     local QUERY_FZF_CURRENT_STATUS_INTERVAL = 150
     buffer_previewer_query_fzf_status_start = true
 
-    local buffer_previewer_fzf_current_text = nil
+    local buffer_previewer_focused_line = nil
     local buffer_previewer_file_job_id = num.auto_incremental_id()
     if popup and popup.popup_window then
       popup.popup_window:set_current_previewing_file_job_id(buffer_previewer_file_job_id)
@@ -1184,25 +1184,28 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           if str.not_empty(tbl.tbl_get(completed, "stdout")) then
             local parse_ok, parse_status = pcall(json.decode, completed.stdout) --[[@as boolean, table]]
             if parse_ok and str.not_empty(tbl.tbl_get(parse_status, "current", "text")) then
-              local current_text = parse_status["current"]["text"]
+              local focused_line = parse_status["current"]["text"]
 
-              if current_text == buffer_previewer_fzf_current_text then
+              if focused_line == buffer_previewer_focused_line then
                 return
               end
 
-              buffer_previewer_fzf_current_text = current_text
+              buffer_previewer_focused_line = focused_line
 
-              -- trigger buffer previewer {
-
-              if not popup or not popup:previewer_is_valid() then
+              if not popup or not popup.popup_window then
                 return
               end
 
               buffer_previewer_file_job_id = num.auto_incremental_id()
               popup.popup_window:set_current_previewing_file_job_id(buffer_previewer_file_job_id)
 
+              -- trigger buffer previewer {
+
+              if not popup:previewer_is_valid() then
+                return
+              end
+
               local previewer_config = previewer_switch:current()
-              local focused_line = current_text
 
               local previewer_ok, previewer_result =
                 pcall(previewer_config.previewer, focused_line, context)
