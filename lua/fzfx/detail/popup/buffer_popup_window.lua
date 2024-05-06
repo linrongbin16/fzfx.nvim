@@ -378,7 +378,7 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
 end
 
 function BufferPopupWindow:close()
-  log.debug(string.format("|BufferPopupWindow:close| self:%s", vim.inspect(self)))
+  -- log.debug(string.format("|BufferPopupWindow:close| self:%s", vim.inspect(self)))
 
   if vim.api.nvim_win_is_valid(self.provider_winnr) then
     local close_provider_ok, close_provider_err =
