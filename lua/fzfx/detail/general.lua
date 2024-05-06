@@ -1208,7 +1208,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 pcall(previewer_config.previewer, focused_line, context)
               log.debug(
                 string.format(
-                  "|fzfx.general - PreviewerSwitch:preview| pcall command previewer, previewer_ok:%s, previewer_result:%s",
+                  "|fzfx.general - use_buffer_previewer - asyncreadfile| pcall command previewer, previewer_ok:%s, previewer_result:%s",
                   vim.inspect(previewer_ok),
                   vim.inspect(previewer_result)
                 )
@@ -1257,6 +1257,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                   end
                 end
                 if previewer_result then
+                  log.debug(
+                    string.format(
+                      "|fzfx.general - use_buffer_previewer - asyncreadfile| popup.popup_window:preview_file",
+                      vim.inspect(previewer_ok),
+                      vim.inspect(previewer_result)
+                    )
+                  )
                   popup.popup_window:preview_file(
                     buffer_previewer_file_job_id,
                     previewer_result --[[@as fzfx.BufferFilePreviewerResult]],
