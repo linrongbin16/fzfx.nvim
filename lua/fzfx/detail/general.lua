@@ -1062,13 +1062,15 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       buffer_previewer_actions_file,
       {},
       function(actions_fsevent_start_complete_err, actions_file, events)
-        -- log.debug(
-        --   "|general - buffer_previewer_actions_fsevent:start| complete actions fsevent, actions_file:%s, events:%s, actions_file:%s, error:%s",
-        --   vim.inspect(actions_file),
-        --   vim.inspect(events),
-        --   vim.inspect(buffer_previewer_actions_file),
-        --   vim.inspect(actions_fsevent_start_complete_err)
-        -- )
+        log.debug(
+          string.format(
+            "|general - buffer_previewer_actions_fsevent:start| complete actions fsevent, actions_file:%s, events:%s, buffer_previewer_actions_file:%s, actions_fsevent_start_complete_err:%s",
+            vim.inspect(actions_file),
+            vim.inspect(events),
+            vim.inspect(buffer_previewer_actions_file),
+            vim.inspect(actions_fsevent_start_complete_err)
+          )
+        )
         if actions_fsevent_start_complete_err then
           log.err(
             string.format(
