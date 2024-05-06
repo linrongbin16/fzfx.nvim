@@ -1082,7 +1082,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
           return
         end
         if not str.find(buffer_previewer_actions_file, actions_file) then
-          log.debug("|general - buffer_previewer_actions_fsevent:start| is not target actions_file")
           return
         end
         if not popup or not popup:provider_is_valid() then
