@@ -164,10 +164,16 @@ M._adjust_layout_bound = function(total_height, total_width, layout)
 end
 
 --- @param relative_winnr integer
+--- @param relative_win_first_line integer the first line number of window (e.g. the view), from `vim.fn.line("w0")`
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
 --- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
 --- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
-M.make_center_layout = function(relative_winnr, win_opts, fzf_preview_window_opts)
+M.make_center_layout = function(
+  relative_winnr,
+  relative_win_first_line,
+  win_opts,
+  fzf_preview_window_opts
+)
   log.ensure(
     type(relative_winnr) == "number" and vim.api.nvim_win_is_valid(relative_winnr),
     string.format(
