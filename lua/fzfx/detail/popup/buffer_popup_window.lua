@@ -191,6 +191,7 @@ M._make_center_opts = function(
   win_opts.relative = win_opts.relative or "editor"
   local layout = popup_helpers.make_center_layout(
     relative_winnr,
+    relative_win_first_line,
     win_opts,
     buffer_previewer_opts.fzf_preview_window_opts
   )
@@ -349,7 +350,8 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     _set_default_buf_options(previewer_bufnr)
   end
 
-  local win_confs = M.make_opts(win_opts, buffer_previewer_opts, current_winnr)
+  local win_confs =
+    M.make_opts(win_opts, buffer_previewer_opts, current_winnr, current_win_first_line)
   log.debug(
     string.format(
       "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, current_winnr:%s, win_confs:%s",
@@ -464,7 +466,8 @@ function BufferPopupWindow:resize()
     local new_win_confs = M.make_opts(
       self._saved_win_opts,
       self._saved_buffer_previewer_opts,
-      self._saved_current_winnr
+      self._saved_current_winnr,
+      self._saved_current_win_first_line
     )
     log.debug(
       string.format(
@@ -492,7 +495,8 @@ function BufferPopupWindow:resize()
     local win_confs = M.make_opts(
       self._saved_win_opts,
       self._saved_buffer_previewer_opts,
-      self._saved_current_winnr
+      self._saved_current_winnr,
+      self._saved_current_win_first_line
     )
     log.debug(
       string.format(
@@ -989,8 +993,12 @@ function BufferPopupWindow:show_preview()
   end
 
   self.previewer_is_hidden = false
-  local win_confs =
-    M.make_opts(self._saved_win_opts, self._saved_buffer_previewer_opts, self._saved_current_winnr)
+  local win_confs = M.make_opts(
+    self._saved_win_opts,
+    self._saved_buffer_previewer_opts,
+    self._saved_current_winnr,
+    self._saved_current_win_first_line
+  )
   log.debug(
     string.format(
       "|BufferPopupWindow:show_preview| self._saved_win_opts:%s, self._saved_buffer_previewer_opts:%s, self._saved_current_winnr:%s, win_confs:%s",
