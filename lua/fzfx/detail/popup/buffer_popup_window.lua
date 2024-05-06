@@ -577,12 +577,6 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         return
       end
 
-      log.debug(
-        string.format(
-          "|BufferPopupWindow:preview_file - asyncreadfile| read complete:%s",
-          vim.inspect(last_job.previewer_result.filename)
-        )
-      )
       local lines = {}
       if str.not_empty(contents) then
         contents = contents:gsub("\r\n", "\n")
