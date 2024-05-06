@@ -863,9 +863,6 @@ end
 
 --- @param action_name string
 function BufferPopupWindow:preview_action(action_name)
-  log.debug(
-    string.format("|BufferPopupWindow:preview_action| action_name:%s", vim.inspect(action_name))
-  )
   local actions_map = {
     ["hide-preview"] = function()
       self:hide_preview()
