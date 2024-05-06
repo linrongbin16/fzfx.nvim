@@ -171,7 +171,7 @@ function Popup:new(
   local function on_fzf_exit(jobid2, exitcode, event)
     log.debug(
       string.format(
-        "|Popup:new| fzf exit, jobid2:%s, exitcode:%s, event:%s",
+        "|Popup:new - on_fzf_exit| jobid2:%s, exitcode:%s, event:%s",
         vim.inspect(jobid2),
         vim.inspect(exitcode),
         vim.inspect(event)
@@ -206,11 +206,13 @@ function Popup:new(
       string.format("|Popup:new.on_fzf_exit| result %s must be readable", vim.inspect(result))
     )
     local lines = fileio.readlines(result --[[@as string]]) --[[@as table]]
-    -- log.debug(
-    --   "|Popup:new| fzf exit, result:%s, lines:%s",
-    --   vim.inspect(result),
-    --   vim.inspect(lines)
-    -- )
+    log.debug(
+      string.format(
+        "|Popup:new - on_fzf_exit| result:%s, lines:%s",
+        vim.inspect(result),
+        vim.inspect(lines)
+      )
+    )
     if (exitcode == 130 or exitcode == 129) and #lines == 0 then
       return
     end
