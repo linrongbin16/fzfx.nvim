@@ -395,11 +395,9 @@ function BufferPopupWindow:close()
     self.previewer_winnr = nil
   end
 
-  log.debug(string.format("|BufferPopupWindow:close| step-1"))
   self.provider_bufnr = nil
   self.previewer_bufnr = nil
   self.window_opts_context:restore()
-  log.debug(string.format("|BufferPopupWindow:close| step-2"))
 end
 
 function BufferPopupWindow:is_resizing()
