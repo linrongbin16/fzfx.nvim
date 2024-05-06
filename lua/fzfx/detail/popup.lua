@@ -169,14 +169,14 @@ function Popup:new(
     PopupWindow:new(win_opts, use_buffer_previewer and "buffer" or "fzf", buffer_previewer_opts)
 
   local function on_fzf_exit(jobid2, exitcode, event)
-    log.debug(
-      string.format(
-        "|Popup:new - on_fzf_exit| jobid2:%s, exitcode:%s, event:%s",
-        vim.inspect(jobid2),
-        vim.inspect(exitcode),
-        vim.inspect(event)
-      )
-    )
+    -- log.debug(
+    --   string.format(
+    --     "|Popup:new - on_fzf_exit| jobid2:%s, exitcode:%s, event:%s",
+    --     vim.inspect(jobid2),
+    --     vim.inspect(exitcode),
+    --     vim.inspect(event)
+    --   )
+    -- )
     if exitcode > 1 and (exitcode ~= 130 and exitcode ~= 129) then
       log.err(
         string.format(
@@ -188,14 +188,12 @@ function Popup:new(
       )
       return
     end
-    log.debug(string.format("|Popup:new - on_fzf_exit| step-1"))
 
     -- press <ESC> if still in fzf terminal
     local esc_key = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
     if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
       vim.api.nvim_feedkeys(esc_key, "x", false)
     end
-    log.debug(string.format("|Popup:new - on_fzf_exit| step-2"))
 
     -- close popup window and restore old window
     popup_window:close()
