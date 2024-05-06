@@ -215,7 +215,7 @@ M._make_center_opts = function(win_opts, buffer_previewer_opts, relative_winnr)
     result.provider.win = relative_winnr
     result.previewer.win = relative_winnr
   end
-  -- log.debug("|make_opts| result:%s", vim.inspect(result))
+  log.debug("|make_opts| result:%s", vim.inspect(result))
   return result
 end
 
