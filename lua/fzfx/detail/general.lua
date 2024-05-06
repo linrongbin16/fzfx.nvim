@@ -1071,14 +1071,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         --     vim.inspect(actions_fsevent_start_complete_err)
         --   )
         -- )
-        -- log.debug(
-        --   string.format(
-        --     "|general - buffer_previewer_actions_fsevent:start| popup is nil:%s, previewer_is_valid:%s, provider_is_valid:%s",
-        --     vim.inspect(popup == nil),
-        --     vim.inspect(popup:previewer_is_valid()),
-        --     vim.inspect(popup:provider_is_valid())
-        --   )
-        -- )
         if actions_fsevent_start_complete_err then
           log.err(
             string.format(
