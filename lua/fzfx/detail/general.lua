@@ -1191,13 +1191,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
               local previewer_config = previewer_switch:current()
 
-              local preview_ok, preview_result_or_error =
+              local preview_ok, preview_result =
                 pcall(previewer_config.previewer, focused_line, context)
               log.debug(
                 string.format(
                   "|fzfx.general - use_buffer_previewer - query_fzf_status| pcall previewer, preview_ok:%s, preview_result:%s",
                   vim.inspect(preview_ok),
-                  vim.inspect(preview_result_or_error)
+                  vim.inspect(preview_result)
                 )
               )
               if not preview_ok then
@@ -1207,16 +1207,16 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     vim.inspect(previewer_config.previewer),
                     vim.inspect(focused_line),
                     vim.inspect(context),
-                    vim.inspect(preview_result_or_error)
+                    vim.inspect(preview_result)
                   )
                 )
               else
                 log.ensure(
-                  preview_result_or_error == nil or type(preview_result_or_error) == "table",
+                  preview_result == nil or type(preview_result) == "table",
                   string.format(
                     "|general - use_buffer_previewer - query_fzf_status| buffer previewer result must be table! previewer_config:%s, result:%s",
                     vim.inspect(previewer_config),
-                    vim.inspect(preview_result_or_error)
+                    vim.inspect(preview_result)
                   )
                 )
                 local previewer_label_ok
@@ -1243,10 +1243,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     previewer_label_result = nil
                   end
                 end
-                if preview_result_or_error then
+                if preview_result then
                   popup.popup_window:preview_file(
                     buffer_previewer_file_job_id,
-                    preview_result_or_error --[[@as fzfx.BufferFilePreviewerResult]],
+                    preview_result --[[@as fzfx.BufferFilePreviewerResult]],
                     previewer_label_result --[[@as string?]]
                   )
                 end
