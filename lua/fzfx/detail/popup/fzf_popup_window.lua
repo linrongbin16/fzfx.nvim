@@ -141,7 +141,8 @@ function FzfPopupWindow:new(win_opts, buffer_previewer_opts)
   api.set_buf_option(bufnr, "buflisted", false)
   api.set_buf_option(bufnr, "filetype", "fzf")
 
-  local nvim_float_win_opts = M.make_opts(win_opts, buffer_previewer_opts, current_winnr)
+  local nvim_float_win_opts =
+    M.make_opts(win_opts, buffer_previewer_opts, current_winnr, current_win_first_line)
 
   local winnr = vim.api.nvim_open_win(bufnr, true, nvim_float_win_opts)
   --- setlocal nospell nonumber
