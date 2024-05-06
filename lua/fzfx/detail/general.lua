@@ -1087,10 +1087,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         if not popup or not popup:provider_is_valid() then
           return
         end
-        -- if not popup or not popup:previewer_is_valid() then
-        --   log.debug("|general - buffer_previewer_actions_fsevent:start| previewer is invalid")
-        --   return
-        -- end
 
         fileio.asyncreadfile(buffer_previewer_actions_file, function(actions_data)
           -- log.debug(
