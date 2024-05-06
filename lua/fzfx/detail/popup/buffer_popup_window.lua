@@ -326,12 +326,14 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
     provider_win_confs.previewer = nil
   end
 
-  -- log.debug(
-  --   "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, win_confs:%s",
-  --   vim.inspect(win_opts),
-  --   vim.inspect(buffer_previewer_opts),
-  --   vim.inspect(win_confs)
-  -- )
+  log.debug(
+    string.format(
+      "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, win_confs:%s",
+      vim.inspect(win_opts),
+      vim.inspect(buffer_previewer_opts),
+      vim.inspect(win_confs)
+    )
+  )
 
   local previewer_winnr
   if previewer_bufnr then
