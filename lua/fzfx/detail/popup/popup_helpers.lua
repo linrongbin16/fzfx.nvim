@@ -170,6 +170,7 @@ end
 --- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
 M.make_center_layout = function(
   relative_winnr,
+  ---@diagnostic disable-next-line: unused-local
   relative_win_first_line,
   win_opts,
   fzf_preview_window_opts
