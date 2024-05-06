@@ -517,11 +517,13 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
     return
   end
 
-  -- log.debug(
-  --   "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
-  --   vim.inspect(previewer_result),
-  --   vim.inspect(previewer_label_result)
-  -- )
+  log.debug(
+    string.format(
+      "|BufferPopupWindow:preview_file| previewer_result:%s, previewer_label_result:%s",
+      vim.inspect(previewer_result),
+      vim.inspect(previewer_label_result)
+    )
+  )
   table.insert(self.preview_files_queue, {
     job_id = job_id,
     previewer_result = previewer_result,
@@ -851,7 +853,9 @@ end
 
 --- @param action_name string
 function BufferPopupWindow:preview_action(action_name)
-  log.debug("|BufferPopupWindow:preview_action| action_name:%s", vim.inspect(action_name))
+  log.debug(
+    string.format("|BufferPopupWindow:preview_action| action_name:%s", vim.inspect(action_name))
+  )
   local actions_map = {
     ["hide-preview"] = function()
       self:hide_preview()
@@ -962,8 +966,10 @@ end
 
 function BufferPopupWindow:toggle_preview()
   log.debug(
-    "|BufferPopupWindow:toggle_preview| previewer_is_hidden:%s",
-    vim.inspect(self.previewer_is_hidden)
+    string.format(
+      "|BufferPopupWindow:toggle_preview| previewer_is_hidden:%s",
+      vim.inspect(self.previewer_is_hidden)
+    )
   )
   -- already hide, show it
   if self.previewer_is_hidden then
