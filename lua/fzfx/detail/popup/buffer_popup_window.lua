@@ -378,37 +378,28 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
 end
 
 function BufferPopupWindow:close()
-  -- log.debug(string.format("|BufferPopupWindow:close| self:%s", vim.inspect(self)))
+  log.debug(
+    string.format(
+      "|BufferPopupWindow:close| provider_winnr:%s, previewer_winnr:%s",
+      vim.inspect(self.provider_winnr),
+      vim.inspect(self.previewer_winnr)
+    )
+  )
 
-  if vim.api.nvim_win_is_valid(self.provider_winnr) then
-    local close_provider_ok, close_provider_err =
-      pcall(vim.api.nvim_win_close, self.provider_winnr, true)
+  if type(self.provider_winnr) == "number" and vim.api.nvim_win_is_valid(self.provider_winnr) then
+    vim.api.nvim_win_close(self.provider_winnr, true)
     self.provider_winnr = nil
-    log.debug(
-      string.format(
-        "|BufferPopupWindow:close| close provider window, ok:%s, err:%s",
-        vim.inspect(close_provider_ok),
-        vim.inspect(close_provider_err)
-      )
-    )
   end
-  if vim.api.nvim_win_is_valid(self.previewer_winnr) then
-    local close_previewer_ok, close_previewer_err =
-      pcall(vim.api.nvim_win_close, self.previewer_winnr, true)
+  if type(self.previewer_winnr) == "number" and vim.api.nvim_win_is_valid(self.previewer_winnr) then
+    vim.api.nvim_win_close(self.previewer_winnr, true)
     self.previewer_winnr = nil
-    log.debug(
-      string.format(
-        "|BufferPopupWindow:close| close previewer window, ok:%s, err:%s",
-        vim.inspect(close_previewer_ok),
-        vim.inspect(close_previewer_err)
-      )
-    )
   end
 
+  log.debug(string.format("|BufferPopupWindow:close| step-1"))
   self.provider_bufnr = nil
   self.previewer_bufnr = nil
   self.window_opts_context:restore()
-  log.debug(string.format("|BufferPopupWindow:close| finish close and restore window"))
+  log.debug(string.format("|BufferPopupWindow:close| step-2"))
 end
 
 function BufferPopupWindow:is_resizing()
