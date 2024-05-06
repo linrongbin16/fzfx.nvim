@@ -1244,13 +1244,6 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                   end
                 end
                 if previewer_result then
-                  -- log.debug(
-                  --   string.format(
-                  --     "|fzfx.general - use_buffer_previewer - asyncreadfile| popup.popup_window:preview_file",
-                  --     vim.inspect(previewer_ok),
-                  --     vim.inspect(previewer_result)
-                  --   )
-                  -- )
                   popup.popup_window:preview_file(
                     buffer_previewer_file_job_id,
                     previewer_result --[[@as fzfx.BufferFilePreviewerResult]],
