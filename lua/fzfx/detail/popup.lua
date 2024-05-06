@@ -201,13 +201,6 @@ function Popup:new(
     -- -- press <ESC> if in insert mode
     -- vim.api.nvim_feedkeys(esc_key, "x", false)
 
-    log.debug(
-      string.format(
-        "|Popup:new - on_fzf_exit| result:%s, is file:%s",
-        vim.inspect(result),
-        vim.inspect(path.isfile(result))
-      )
-    )
     log.ensure(
       path.isfile(result),
       string.format("|Popup:new.on_fzf_exit| result %s must be readable", vim.inspect(result))
