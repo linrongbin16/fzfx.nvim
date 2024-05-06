@@ -182,6 +182,13 @@ M.make_center_layout = function(
       vim.inspect(relative_winnr)
     )
   )
+  log.ensure(
+    type(relative_win_first_line) == "number" and relative_win_first_line >= 0,
+    string.format(
+      "|make_center_layout| relative_win_first_line (%s) must be a positive number",
+      vim.inspect(relative_win_first_line)
+    )
+  )
 
   local total_width = win_opts.relative == "editor" and vim.o.columns
     or vim.api.nvim_win_get_width(relative_winnr)
