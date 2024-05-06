@@ -163,14 +163,23 @@ M._adjust_layout_bound = function(total_height, total_width, layout)
   return { start_row = start_row, end_row = end_row, start_col = start_col, end_col = end_col }
 end
 
+--- @param relative_winnr integer
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
 --- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
 --- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
-M.make_center_layout = function(win_opts, fzf_preview_window_opts)
+M.make_center_layout = function(relative_winnr, win_opts, fzf_preview_window_opts)
+  log.ensure(
+    type(relative_winnr) == "number" and vim.api.nvim_win_is_valid(relative_winnr),
+    string.format(
+      "|make_center_layout| relative_winnr (%s) must be a valid window number",
+      vim.inspect(relative_winnr)
+    )
+  )
+
   local total_width = win_opts.relative == "editor" and vim.o.columns
-    or vim.api.nvim_win_get_width(0)
+    or vim.api.nvim_win_get_width(relative_winnr)
   local total_height = win_opts.relative == "editor" and vim.o.lines
-    or vim.api.nvim_win_get_height(0)
+    or vim.api.nvim_win_get_height(relative_winnr)
 
   local width = num.bound(
     win_opts.width > 1 and win_opts.width or math.floor(win_opts.width * total_width),
@@ -262,13 +271,22 @@ M.make_center_layout = function(win_opts, fzf_preview_window_opts)
   return result
 end
 
+--- @param relative_winnr integer
 --- @param win_opts {relative:"editor"|"win"|"cursor",height:number,width:number,row:number,col:number}
 --- @param fzf_preview_window_opts fzfx.FzfPreviewWindowOpts?
 --- @return {height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer,provider:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?,previewer:{height:integer,width:integer,start_row:integer,end_row:integer,start_col:integer,end_col:integer}?}
-M.make_cursor_layout = function(win_opts, fzf_preview_window_opts)
-  local total_width = vim.api.nvim_win_get_width(0)
-  local total_height = vim.api.nvim_win_get_height(0)
-  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+M.make_cursor_layout = function(relative_winnr, win_opts, fzf_preview_window_opts)
+  log.ensure(
+    type(relative_winnr) == "number" and vim.api.nvim_win_is_valid(relative_winnr),
+    string.format(
+      "|make_cursor_layout| relative_winnr (%s) must be a valid window number",
+      vim.inspect(relative_winnr)
+    )
+  )
+
+  local total_width = vim.api.nvim_win_get_width(relative_winnr)
+  local total_height = vim.api.nvim_win_get_height(relative_winnr)
+  local cursor_pos = vim.api.nvim_win_get_cursor(relative_winnr)
   local win_first_line = vim.fn.line("w0")
   local cursor_relative_row = cursor_pos[1] - win_first_line
   local cursor_relative_col = cursor_pos[2]
