@@ -188,12 +188,14 @@ function Popup:new(
       )
       return
     end
+    log.debug(string.format("|Popup:new - on_fzf_exit| step-1"))
 
     -- press <ESC> if still in fzf terminal
     local esc_key = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
     if vim.o.buftype == "terminal" and vim.o.filetype == "fzf" then
       vim.api.nvim_feedkeys(esc_key, "x", false)
     end
+    log.debug(string.format("|Popup:new - on_fzf_exit| step-2"))
 
     -- close popup window and restore old window
     popup_window:close()
