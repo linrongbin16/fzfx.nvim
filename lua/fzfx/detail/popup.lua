@@ -49,7 +49,6 @@ function PopupWindow:close()
   -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
 
   if self.instance then
-    -- log.debug(string.format("|Popup:close| self:%s", vim.inspect(self)))
     PopupWindowInstances[self.instance:handle()] = nil
     self.instance:close()
     self.instance = nil
