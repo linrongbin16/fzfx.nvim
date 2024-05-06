@@ -378,15 +378,31 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
 end
 
 function BufferPopupWindow:close()
-  -- log.debug("|fzfx.popup - Popup:close| self:%s", vim.inspect(self))
+  log.debug(string.format("|BufferPopupWindow:close| self:%s", vim.inspect(self)))
 
   if vim.api.nvim_win_is_valid(self.provider_winnr) then
-    vim.api.nvim_win_close(self.provider_winnr, true)
+    local close_provider_ok, close_provider_err =
+      pcall(vim.api.nvim_win_close, self.provider_winnr, true)
     self.provider_winnr = nil
+    log.debug(
+      string.format(
+        "|BufferPopupWindow:close| close provider window, ok:%s, err:%s",
+        vim.inspect(close_provider_ok),
+        vim.inspect(close_provider_err)
+      )
+    )
   end
   if vim.api.nvim_win_is_valid(self.previewer_winnr) then
-    vim.api.nvim_win_close(self.previewer_winnr, true)
+    local close_previewer_ok, close_previewer_err =
+      pcall(vim.api.nvim_win_close, self.previewer_winnr, true)
     self.previewer_winnr = nil
+    log.debug(
+      string.format(
+        "|BufferPopupWindow:close| close previewer window, ok:%s, err:%s",
+        vim.inspect(close_previewer_ok),
+        vim.inspect(close_previewer_err)
+      )
+    )
   end
 
   self.provider_bufnr = nil
