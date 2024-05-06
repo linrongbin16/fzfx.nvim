@@ -35,8 +35,11 @@ M.edit_find = function(lines, context)
   local edits = M._make_edit_find(lines)
   prompts.confirm_discard_modified(context.bufnr, function()
     for i, edit in ipairs(edits) do
-      -- log.debug("|fzfx.helper.actions - edit_find| [%d]:[%s]", i, edit)
+      log.debug(string.format("|edit_find| [%d]:[%s]", i, edit))
       local ok, result = pcall(vim.cmd --[[@as function]], edit)
+      log.debug(
+        string.format("|edit_find| [%d]:%s, result:%s", i, vim.inspect(ok), vim.inspect(result))
+      )
       assert(ok, vim.inspect(result))
     end
   end)
