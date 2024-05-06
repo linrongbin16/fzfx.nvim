@@ -529,10 +529,6 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
   })
 
   vim.defer_fn(function()
-    if not self:previewer_is_valid() then
-      -- log.debug("|BufferPopupWindow:preview_file| invalid previewer:%s", vim.inspect(self))
-      return
-    end
     if #self.preview_files_queue == 0 then
       -- log.debug(
       --   "|BufferPopupWindow:preview_file| empty preview files queue:%s",
@@ -551,9 +547,6 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
 
     -- read file content
     fileio.asyncreadfile(last_job.previewer_result.filename, function(contents)
-      if not self:previewer_is_valid() then
-        return
-      end
       if not self:is_last_previewing_file_job_id(last_job.job_id) then
         return
       end
