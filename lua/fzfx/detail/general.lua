@@ -1159,7 +1159,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
       }, function(completed)
         -- log.debug(
         --   string.format(
-        --     "|general - query_fzf_status - spawn.system| completed:%s",
+        --     "|general - use_buffer_previewer - query_fzf_status| completed:%s",
         --     vim.inspect(completed)
         --   )
         -- )
@@ -1193,13 +1193,13 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
               local previewer_ok, previewer_result =
                 pcall(previewer_config.previewer, focused_line, context)
-              -- log.debug(
-              --   string.format(
-              --     "|fzfx.general - use_buffer_previewer - asyncreadfile| pcall command previewer, previewer_ok:%s, previewer_result:%s",
-              --     vim.inspect(previewer_ok),
-              --     vim.inspect(previewer_result)
-              --   )
-              -- )
+              log.debug(
+                string.format(
+                  "|fzfx.general - use_buffer_previewer - asyncreadfile| pcall command previewer, previewer_ok:%s, previewer_result:%s",
+                  vim.inspect(previewer_ok),
+                  vim.inspect(previewer_result)
+                )
+              )
               if not previewer_ok then
                 log.err(
                   string.format(
@@ -1214,7 +1214,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                 log.ensure(
                   previewer_result == nil or type(previewer_result) == "table",
                   string.format(
-                    "|general - use_buffer_previewer - asyncreadfile| buffer previewer result must be table! previewer_config:%s, result:%s",
+                    "|general - use_buffer_previewer - query_fzf_status| buffer previewer result must be table! previewer_config:%s, result:%s",
                     vim.inspect(previewer_config),
                     vim.inspect(previewer_result)
                   )
