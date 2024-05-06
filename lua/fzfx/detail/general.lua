@@ -1191,32 +1191,32 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
               local previewer_config = previewer_switch:current()
 
-              local previewer_ok, previewer_result =
+              local preview_ok, preview_result =
                 pcall(previewer_config.previewer, focused_line, context)
               log.debug(
                 string.format(
-                  "|fzfx.general - use_buffer_previewer - asyncreadfile| pcall command previewer, previewer_ok:%s, previewer_result:%s",
-                  vim.inspect(previewer_ok),
-                  vim.inspect(previewer_result)
+                  "|fzfx.general - use_buffer_previewer - query_fzf_status| pcall previewer, previewer_ok:%s, previewer_result:%s",
+                  vim.inspect(preview_ok),
+                  vim.inspect(preview_result)
                 )
               )
-              if not previewer_ok then
+              if not preview_ok then
                 log.err(
                   string.format(
                     "failed to call buffer previewer %s! line:%s, context:%s, error:%s",
                     vim.inspect(previewer_config.previewer),
                     vim.inspect(focused_line),
                     vim.inspect(context),
-                    vim.inspect(previewer_result)
+                    vim.inspect(preview_result)
                   )
                 )
               else
                 log.ensure(
-                  previewer_result == nil or type(previewer_result) == "table",
+                  preview_result == nil or type(preview_result) == "table",
                   string.format(
                     "|general - use_buffer_previewer - query_fzf_status| buffer previewer result must be table! previewer_config:%s, result:%s",
                     vim.inspect(previewer_config),
-                    vim.inspect(previewer_result)
+                    vim.inspect(preview_result)
                   )
                 )
                 local previewer_label_ok
@@ -1243,10 +1243,10 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
                     previewer_label_result = nil
                   end
                 end
-                if previewer_result then
+                if preview_result then
                   popup.popup_window:preview_file(
                     buffer_previewer_file_job_id,
-                    previewer_result --[[@as fzfx.BufferFilePreviewerResult]],
+                    preview_result --[[@as fzfx.BufferFilePreviewerResult]],
                     previewer_label_result --[[@as string?]]
                   )
                 end
