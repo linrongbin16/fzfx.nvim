@@ -257,6 +257,8 @@ local Defaults = {
       --  - editor
       --  - win
       --  - cursor
+      relative = "editor",
+
       --
       -- when relative is 'editor' or 'win', the anchor is the center position, not default 'NW' (north west).
       -- because 'NW' is a little bit complicated for users to calculate the position, usually we just put the popup window in the center of editor.
