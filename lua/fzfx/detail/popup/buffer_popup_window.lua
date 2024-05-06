@@ -378,13 +378,13 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
 end
 
 function BufferPopupWindow:close()
-  log.debug(
-    string.format(
-      "|BufferPopupWindow:close| provider_winnr:%s, previewer_winnr:%s",
-      vim.inspect(self.provider_winnr),
-      vim.inspect(self.previewer_winnr)
-    )
-  )
+  -- log.debug(
+  --   string.format(
+  --     "|BufferPopupWindow:close| provider_winnr:%s, previewer_winnr:%s",
+  --     vim.inspect(self.provider_winnr),
+  --     vim.inspect(self.previewer_winnr)
+  --   )
+  -- )
 
   if type(self.provider_winnr) == "number" and vim.api.nvim_win_is_valid(self.provider_winnr) then
     vim.api.nvim_win_close(self.provider_winnr, true)
