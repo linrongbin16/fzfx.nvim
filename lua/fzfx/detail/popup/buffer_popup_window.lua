@@ -728,15 +728,15 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
     if line_step == nil then
       line_step = LARGE_FILE and math.max(math.ceil(math.sqrt(LINES_COUNT)), 5) or 5
     end
-    -- log.debug(
-    --   string.format(
-    --     "|BufferPopupWindow:render_file_contents| LINES_COUNT:%s, FIRST/LAST:%s/%s, view:%s",
-    --     vim.inspect(LINES_COUNT),
-    --     vim.inspect(FIRST_LINE),
-    --     vim.inspect(LAST_LINE),
-    --     vim.inspect(content_view)
-    --   )
-    -- )
+    log.debug(
+      string.format(
+        "|BufferPopupWindow:render_file_contents| LINES_COUNT:%s, FIRST/LAST:%s/%s, content_view:%s",
+        vim.inspect(LINES_COUNT),
+        vim.inspect(FIRST_LINE),
+        vim.inspect(LAST_LINE),
+        vim.inspect(content_view)
+      )
+    )
 
     local function set_buf_lines()
       vim.defer_fn(function()
