@@ -574,13 +574,15 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
       -- show file contents by lines
       vim.defer_fn(function()
         local last_content = self.preview_file_contents_queue[#self.preview_file_contents_queue]
+        self._saved_previewing_file_content_job = last_content
         self.preview_file_contents_queue = {}
 
         if not self:is_last_previewing_file_job_id(last_content.job_id) then
           return
         end
-
-        self._saved_previewing_file_content_job = last_content
+        if not self:previewer_is_valid() then
+          return
+        end
 
         local center_line = last_content.previewer_result.lineno
         local lines_count = #last_content.contents
