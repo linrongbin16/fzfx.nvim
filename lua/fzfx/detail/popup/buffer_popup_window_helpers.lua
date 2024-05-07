@@ -26,7 +26,7 @@ end
 --- @param content_lines integer content lines count
 --- @param view_height integer window/view height
 --- @return integer, integer top line and bottom line
-M._adjust_top_and_bottom = function(top, bottom, content_lines, view_height)
+M.adjust_top_and_bottom = function(top, bottom, content_lines, view_height)
   if top <= 1 then
     -- log.debug(
     --   "|_adjust_view|-1 top(%s) <= 1, bottom:%s, lines_count:%s, win_height:%s",
@@ -70,7 +70,7 @@ end
 M.make_top_view = function(content_lines, win_height)
   local top = 1
   local bottom = M.calculate_bottom_by_top(top, content_lines, win_height)
-  top, bottom = M._adjust_top_and_bottom(top, bottom, content_lines, win_height)
+  top, bottom = M.adjust_top_and_bottom(top, bottom, content_lines, win_height)
   return { top = top, bottom = bottom, center = math.ceil((top + bottom) / 2), highlight = nil }
 end
 
@@ -82,7 +82,7 @@ end
 M.make_center_view = function(content_lines, win_height, center_line)
   local top = num.bound(center_line - math.ceil(win_height / 2), 1, content_lines)
   local bottom = M.calculate_bottom_by_top(top, content_lines, win_height)
-  top, bottom = M._adjust_top_and_bottom(top, bottom, content_lines, win_height)
+  top, bottom = M.adjust_top_and_bottom(top, bottom, content_lines, win_height)
   return { top = top, bottom = bottom, center = center_line, highlight = center_line }
 end
 
@@ -93,7 +93,7 @@ end
 --- @param bottom_line integer
 --- @param highlight_line integer?
 M.make_range_view = function(content_lines, win_height, top_line, bottom_line, highlight_line)
-  top_line, bottom_line = M._adjust_top_and_bottom(top_line, bottom_line, content_lines, win_height)
+  top_line, bottom_line = M.adjust_top_and_bottom(top_line, bottom_line, content_lines, win_height)
   local center_line = math.ceil((top_line + bottom_line) / 2)
   return { top = top_line, bottom = bottom_line, center = center_line, highlight = highlight_line }
 end
