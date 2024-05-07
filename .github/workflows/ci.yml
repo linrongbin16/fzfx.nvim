@@ -78,7 +78,7 @@ jobs:
           sudo apt-get -y -qq install bat
           sudo apt-get -y -qq install fzf
           luarocks install luacov
-          # luarocks install luacov-reporter-lcov
+          luarocks install luacov-reporter-lcov
           luarocks install vusted
           vusted --coverage ./spec
       - name: Generate Reports
@@ -86,7 +86,7 @@ jobs:
           echo "ls ."
           ls -l .
           echo "run luacov"
-          # luacov -r lcov
+          luacov -r lcov
           luacov
           echo "ls ."
           ls -l .
