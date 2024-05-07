@@ -258,19 +258,9 @@ function BufferPopupWindow:new(win_opts, buffer_previewer_opts)
 
   local win_confs =
     M.make_opts(win_opts, buffer_previewer_opts, current_winnr, current_win_first_line)
-  log.debug(
-    string.format(
-      "|BufferPopupWindow:new| win_opts:%s, buffer_previewer_opts:%s, current_winnr:%s, win_confs:%s",
-      vim.inspect(win_opts),
-      vim.inspect(buffer_previewer_opts),
-      vim.inspect(current_winnr),
-      vim.inspect(win_confs)
-    )
-  )
 
   local provider_win_confs
   local previewer_win_confs
-
   if not buffer_previewer_opts.fzf_preview_window_opts.hidden then
     provider_win_confs = win_confs.provider
     previewer_win_confs = win_confs.previewer
