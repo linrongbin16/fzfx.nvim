@@ -624,10 +624,6 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
       return
     end
 
-    -- vim.api.nvim_buf_call(self.previewer_bufnr, function()
-    --   vim.api.nvim_command([[filetype detect]])
-    -- end)
-
     vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
 
     local function set_win_title()
