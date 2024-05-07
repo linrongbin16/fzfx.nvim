@@ -128,7 +128,6 @@ local Defaults = {
     "--bind=ctrl-e:toggle",
     "--bind=ctrl-a:toggle-all",
     "--bind=alt-p:toggle-preview",
-    "--bind=ctrl-p:toggle-preview",
     "--bind=ctrl-f:preview-half-page-down",
     "--bind=ctrl-b:preview-half-page-up",
   },
@@ -258,7 +257,7 @@ local Defaults = {
       --  - editor
       --  - win
       --  - cursor
-      relative = "win",
+      relative = "editor",
 
       --
       -- when relative is 'editor' or 'win', the anchor is the center position, not default 'NW' (north west).
