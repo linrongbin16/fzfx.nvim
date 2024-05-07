@@ -82,7 +82,6 @@ jobs:
           luarocks install vusted
           vusted --coverage ./spec
       - name: Generate Reports
-        if: ${{ matrix.nvim_version == 'stable' }}
         run: |
           echo "ls ."
           ls -l .
@@ -95,7 +94,6 @@ jobs:
           tail -n 50 ./luacov.report.out
           cp luacov.report.out luacov.report.txt
       - uses: codecov/codecov-action@v4
-        if: ${{ matrix.nvim_version == 'stable' }}
         with:
           files: luacov.report.txt
         env:
