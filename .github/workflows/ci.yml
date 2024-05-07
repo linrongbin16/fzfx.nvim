@@ -77,44 +77,22 @@ jobs:
         run: |
           sudo apt-get -y -qq install bat
           sudo apt-get -y -qq install fzf
-          luarocks install vusted
-          vusted --shuffle ./spec
-  code_coverage:
-    name: Code Coverage
-    needs:
-      - lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: rhysd/action-setup-vim@v1
-        id: vim
-        with:
-          neovim: true
-          version: stable
-      - uses: leafo/gh-actions-lua@v10
-        with:
-          luaVersion: "luajit-2.1.0-beta3"
-      - uses: leafo/gh-actions-luarocks@v4
-      - name: Run Tests
-        run: |
-          sudo apt-get -y -qq install bat
-          sudo apt-get -y -qq install fzf
           luarocks install luacov
           luarocks install luacov-reporter-lcov
           luarocks install vusted
           vusted --coverage ./spec
-      - name: Generate coverage reports
-        shell: bash
+      - name: Generate Reports
         run: |
           echo "ls ."
           ls -l .
           echo "run luacov"
           luacov -r lcov
+          luacov
           echo "ls ."
           ls -l .
           echo "tail ./luacov.report.out"
           tail -n 50 ./luacov.report.out
-          mv luacov.report.out luacov.report.txt
+          cp luacov.report.out luacov.report.txt
       - uses: codecov/codecov-action@v4
         with:
           files: luacov.report.txt
@@ -125,7 +103,6 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - unit_test
-      - code_coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
