@@ -295,5 +295,4 @@ describe("detail.popup.buffer_popup_window", function()
       bpw:scroll_by(50, false)
     end)
   end)
-
 end)
