@@ -400,16 +400,6 @@ function BufferPopupWindow:resize()
       self._saved_current_winnr,
       self._saved_current_win_first_line
     )
-    log.debug(
-      string.format(
-        "|BufferPopupWindow:resize| previewer is not hidden, old_provider_win_confs:%s, self._saved_win_opts:%s, self._saved_buffer_previewer_opts:%s, self._saved_current_winnr:%s, (new) win_confs:%s",
-        vim.inspect(old_provider_win_confs),
-        vim.inspect(self._saved_win_opts),
-        vim.inspect(self._saved_buffer_previewer_opts),
-        vim.inspect(self._saved_current_winnr),
-        vim.inspect(win_confs)
-      )
-    )
     vim.api.nvim_win_set_config(
       self.provider_winnr,
       vim.tbl_deep_extend("force", old_provider_win_confs, win_confs.provider or {})
