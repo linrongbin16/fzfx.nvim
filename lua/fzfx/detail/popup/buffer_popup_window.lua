@@ -387,14 +387,10 @@ function BufferPopupWindow:resize()
     )
     new_win_confs.provider = nil
     new_win_confs.previewer = nil
-    local new_provider_win_confs = vim.tbl_deep_extend("force", old_win_confs, new_win_confs)
-    log.debug(
-      string.format(
-        "|BufferPopupWindow:resize| previewer is hidden, new_provider_win_confs:%s",
-        vim.inspect(new_provider_win_confs)
-      )
+    vim.api.nvim_win_set_config(
+      self.provider_winnr,
+      vim.tbl_deep_extend("force", old_win_confs, new_win_confs)
     )
-    vim.api.nvim_win_set_config(self.provider_winnr, new_provider_win_confs)
     _set_default_provider_win_options(self.provider_winnr, self._saved_current_winnr)
   else
     local old_provider_win_confs = vim.api.nvim_win_get_config(self.provider_winnr)
