@@ -260,7 +260,7 @@ local Defaults = {
       relative = "editor",
 
       -- when relative is 'editor' or 'win', the anchor is the middle center, not the 'nvim_open_win' API's default 'NW' (north west).
-      -- because 'NW' is a little bit complicated for users to calculate the position, usually we just put the popup window in the center of editor.
+      -- because 'NW' is a little bit complicated for users to calculate the position, usually we just put the popup window in the center of editor/window.
       --
       -- 1. if -0.5 <= r/c <= 0.5, evaluate proportionally according to editor's lines and columns.
       --    e.g. shift rows = r * lines, shift columns = c * columns.
