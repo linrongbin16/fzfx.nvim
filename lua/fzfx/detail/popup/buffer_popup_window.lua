@@ -852,15 +852,6 @@ function BufferPopupWindow:show_preview()
     self._saved_current_winnr,
     self._saved_current_win_first_line
   )
-  log.debug(
-    string.format(
-      "|BufferPopupWindow:show_preview| self._saved_win_opts:%s, self._saved_buffer_previewer_opts:%s, self._saved_current_winnr:%s, win_confs:%s",
-      vim.inspect(self._saved_win_opts),
-      vim.inspect(self._saved_buffer_previewer_opts),
-      vim.inspect(self._saved_current_winnr),
-      vim.inspect(win_confs)
-    )
-  )
 
   self.previewer_bufnr = vim.api.nvim_create_buf(false, true)
   _set_default_buf_options(self.previewer_bufnr)
