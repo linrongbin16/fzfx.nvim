@@ -6,20 +6,22 @@ local popup_helpers = require("fzfx.detail.popup.popup_helpers")
 
 local M = {}
 
---- @param win_opts_param fzfx.WindowOpts
---- @param buffer_previewer_opts_param fzfx.BufferFilePreviewerOpts
+--- @param win_opts fzfx.WindowOpts
+--- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer
 --- @return fzfx.NvimFloatWinOpts
 M._make_cursor_opts = function(
-  win_opts_param,
-  buffer_previewer_opts_param,
+  win_opts,
+  buffer_previewer_opts,
   relative_winnr,
   relative_win_first_line
 )
-  local win_opts = vim.deepcopy(win_opts_param)
-  local buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts_param)
+  win_opts = vim.deepcopy(win_opts)
+  buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts)
+
   win_opts.relative = win_opts.relative or "win"
+
   local layout = popup_helpers.make_cursor_layout(relative_winnr, relative_win_first_line, win_opts)
   log.debug("|_make_cursor_opts| layout:" .. vim.inspect(layout))
   local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
@@ -45,20 +47,22 @@ M._make_cursor_opts = function(
   return result
 end
 
---- @param win_opts_param fzfx.WindowOpts
---- @param buffer_previewer_opts_param fzfx.BufferFilePreviewerOpts
+--- @param win_opts fzfx.WindowOpts
+--- @param buffer_previewer_opts fzfx.BufferFilePreviewerOpts
 --- @param relative_winnr integer
 --- @param relative_win_first_line integer
 --- @return fzfx.NvimFloatWinOpts
 M._make_center_opts = function(
-  win_opts_param,
-  buffer_previewer_opts_param,
+  win_opts,
+  buffer_previewer_opts,
   relative_winnr,
   relative_win_first_line
 )
-  local win_opts = vim.deepcopy(win_opts_param)
-  local buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts_param)
+  win_opts = vim.deepcopy(win_opts)
+  buffer_previewer_opts = vim.deepcopy(buffer_previewer_opts)
+
   win_opts.relative = win_opts.relative or "editor"
+
   local layout = popup_helpers.make_center_layout(relative_winnr, relative_win_first_line, win_opts)
   log.debug("|_make_center_opts| layout:%s" .. vim.inspect(layout))
   local border = fzf_helpers.FZF_BORDER_OPTS_MAP[buffer_previewer_opts.fzf_border_opts]
