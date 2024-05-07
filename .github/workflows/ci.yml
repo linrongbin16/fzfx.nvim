@@ -78,7 +78,6 @@ jobs:
           sudo apt-get -y -qq install bat
           sudo apt-get -y -qq install fzf
           luarocks install luacov
-          luarocks install luacov-reporter-lcov
           luarocks install vusted
           vusted --coverage ./spec
       - name: Generate Reports
