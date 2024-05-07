@@ -85,15 +85,16 @@ jobs:
           echo "ls ."
           ls -l .
           echo "run luacov"
-          luacov -r lcov
+          # luacov -r lcov
+          luacov
           echo "ls ."
           ls -l .
           echo "tail ./luacov.report.out"
           tail -n 50 ./luacov.report.out
-          mv luacov.report.out luacov.report.txt
+          # mv luacov.report.out luacov.report.txt
       - uses: codecov/codecov-action@v4
         with:
-          files: luacov.report.txt
+          files: luacov.report.out
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   release:
