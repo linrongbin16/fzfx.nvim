@@ -514,11 +514,38 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         return
       end
 
+      log.debug(
+        string.format(
+          "|BufferPopupWindow:preview_file - asyncreadfile| contents:%s",
+          vim.inspect(contents)
+        )
+      )
+      log.debug(
+        string.format(
+          "|BufferPopupWindow:preview_file - asyncreadfile| contents length:%s",
+          vim.inspect(string.len(contents))
+        )
+      )
       local lines = {}
       if str.not_empty(contents) then
         contents = contents:gsub("\r\n", "\n")
+        if str.endswith(contents, "\n") then
+          contents = string.sub(contents, 1, string.len(contents) - 1)
+        end
         lines = str.split(contents, "\n")
       end
+      log.debug(
+        string.format(
+          "|BufferPopupWindow:preview_file - asyncreadfile| lines:%s",
+          vim.inspect(lines)
+        )
+      )
+      log.debug(
+        string.format(
+          "|BufferPopupWindow:preview_file - asyncreadfile| lines count:%s",
+          vim.inspect(#lines)
+        )
+      )
       table.insert(self.preview_file_contents_queue, {
         contents = lines,
         job_id = last_job.job_id,
