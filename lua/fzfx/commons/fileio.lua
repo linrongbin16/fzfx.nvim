@@ -1,3 +1,5 @@
+local uv = vim.uv or vim.loop
+
 local M = {}
 
 -- FileLineReader {
@@ -15,7 +17,6 @@ local FileLineReader = {}
 --- @param batchsize integer?
 --- @return commons.FileLineReader?
 function FileLineReader:open(filename, batchsize)
-  local uv = require("fzfx.commons.uv")
   local handler = uv.fs_open(filename, "r", 438) --[[@as integer]]
   if type(handler) ~= "number" then
     error(
@@ -54,7 +55,6 @@ end
 --- @private
 --- @return integer
 function FileLineReader:_read_chunk()
-  local uv = require("fzfx.commons.uv")
   local chunksize = (self.filesize >= self.offset + self.batchsize) and self.batchsize
     or (self.filesize - self.offset)
   if chunksize <= 0 then
@@ -125,7 +125,6 @@ end
 
 -- Close the file reader.
 function FileLineReader:close()
-  local uv = require("fzfx.commons.uv")
   if self.handler then
     uv.fs_close(self.handler)
     self.handler = nil
@@ -201,7 +200,6 @@ end
 --- @param on_complete fun(data:string?):any
 --- @param opts {trim:boolean?}?
 M.asyncreadfile = function(filename, on_complete, opts)
-  local uv = require("fzfx.commons.uv")
   opts = opts or { trim = false }
   opts.trim = type(opts.trim) == "boolean" and opts.trim or false
 
@@ -313,7 +311,6 @@ M.asyncreadlines = function(filename, opts)
     end
   end
 
-  local uv = require("fzfx.commons.uv")
   local open_result, open_err = uv.fs_open(filename, "r", 438, function(open_complete_err, fd)
     if open_complete_err then
       _handle_error(open_complete_err, "fs_open complete")
@@ -442,7 +439,6 @@ end
 --- @param on_complete fun(bytes:integer?):any  callback on write complete.
 ---                                               1. `bytes`: written data bytes.
 M.asyncwritefile = function(filename, content, on_complete)
-  local uv = require("fzfx.commons.uv")
   uv.fs_open(filename, "w", 438, function(open_err, fd)
     if open_err then
       error(
