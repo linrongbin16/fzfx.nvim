@@ -691,7 +691,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
     local LAST_LINE = LINES_COUNT
     local line_index = FIRST_LINE
     if line_step == nil then
-      line_step = LARGE_FILE and math.max(math.ceil(math.sqrt(LINES_COUNT)), 20) or 20
+      line_step = LARGE_FILE and math.max(math.ceil(math.sqrt(LINES_COUNT)), 10) or 10
     end
     -- log.debug(
     --   string.format(
