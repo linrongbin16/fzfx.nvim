@@ -741,19 +741,19 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
 
         local set_start = line_index - 1
         local set_end = math.min(line_index + line_step - 1, LAST_LINE)
-        log.debug(
-          string.format(
-            "|BufferPopupWindow:render_file_contents - set_buf_lines| previewer_label_result:%s line_index:%s, line_step:%s set start:%s, set_end:%s, FIRST_LINE/LAST_LINE:%s/%s, LINES_COUNT:%s",
-            vim.inspect(file_content.previewer_label_result),
-            vim.inspect(line_index),
-            vim.inspect(line_step),
-            vim.inspect(set_start),
-            vim.inspect(set_end),
-            vim.inspect(FIRST_LINE),
-            vim.inspect(LAST_LINE),
-            vim.inspect(LINES_COUNT)
-          )
-        )
+        -- log.debug(
+        --   string.format(
+        --     "|BufferPopupWindow:render_file_contents - set_buf_lines| previewer_label_result:%s line_index:%s, line_step:%s set start:%s, set_end:%s, FIRST_LINE/LAST_LINE:%s/%s, LINES_COUNT:%s",
+        --     vim.inspect(file_content.previewer_label_result),
+        --     vim.inspect(line_index),
+        --     vim.inspect(line_step),
+        --     vim.inspect(set_start),
+        --     vim.inspect(set_end),
+        --     vim.inspect(FIRST_LINE),
+        --     vim.inspect(LAST_LINE),
+        --     vim.inspect(LINES_COUNT)
+        --   )
+        -- )
         vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_start, set_end, false, buf_lines)
         if hi_line then
           local start_row = hi_line.lineno - 1
