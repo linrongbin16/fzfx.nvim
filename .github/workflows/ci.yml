@@ -87,7 +87,6 @@ jobs:
           ls -l .
           echo "run luacov"
           luacov -r lcov
-          luacov
           echo "ls ."
           ls -l .
           echo "tail ./luacov.report.out"
