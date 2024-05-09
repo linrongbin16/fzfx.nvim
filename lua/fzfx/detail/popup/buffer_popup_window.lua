@@ -601,8 +601,6 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
       return
     end
 
-    vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
-
     local function set_win_title()
       if not self:previewer_is_valid() then
         return
@@ -703,6 +701,8 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
     --   )
     -- )
 
+    local lines_been_cleared = false
+
     local function set_buf_lines()
       vim.defer_fn(function()
         if not self:previewer_is_valid() then
@@ -754,6 +754,12 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         --     vim.inspect(LINES_COUNT)
         --   )
         -- )
+
+        if not lines_been_cleared then
+          vim.api.nvim_buf_set_lines(self.previewer_bufnr, 0, -1, false, {})
+          lines_been_cleared = true
+        end
+
         vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_start, set_end, false, buf_lines)
         if hi_line then
           local start_row = hi_line.lineno - 1
@@ -798,6 +804,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         end
       end, LARGE_FILE and math.max(10 - string.len(tostring(LINES_COUNT)) * 2, 1) or 10)
     end
+
     set_buf_lines()
   end, 10)
 end
