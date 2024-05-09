@@ -318,9 +318,9 @@ end
 --- @return string?
 local function nvim_exec()
   local exe_list = {}
+  table.insert(exe_list, "nvim")
   table.insert(exe_list, vim.v.argv[1])
   table.insert(exe_list, vim.env.VIM)
-  table.insert(exe_list, "nvim")
   for _, e in ipairs(exe_list) do
     if e ~= nil and vim.fn.executable(e) > 0 then
       return e
@@ -333,10 +333,10 @@ end
 --- @return string?
 local function fzf_exec()
   local exe_list = {}
+  table.insert(exe_list, "fzf")
   if vim.fn.exists("*fzf#exec") > 0 then
     table.insert(exe_list, vim.fn["fzf#exec"]())
   end
-  table.insert(exe_list, "fzf")
   for _, e in ipairs(exe_list) do
     if e ~= nil and vim.fn.executable(e) > 0 then
       return e
