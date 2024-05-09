@@ -1,5 +1,28 @@
 # Changelog
 
+## [6.4.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.3.0...v6.4.0) (2024-05-09)
+
+
+### Features
+
+* **previewer:** respect 'number' options ([#690](https://github.com/linrongbin16/fzfx.nvim/issues/690)) ([e502269](https://github.com/linrongbin16/fzfx.nvim/commit/e5022698970dda7ecf151f75ff1fa6b36c0a47cc))
+
+
+### Bug Fixes
+
+* **actions:** fix actions with hidden previewer ([#689](https://github.com/linrongbin16/fzfx.nvim/issues/689)) ([1e040eb](https://github.com/linrongbin16/fzfx.nvim/commit/1e040eb86e2e7b3fcda09d722368b79442809188))
+* **exec:** prioritize executables nvim/fzf for windows ([#692](https://github.com/linrongbin16/fzfx.nvim/issues/692)) ([6469fe1](https://github.com/linrongbin16/fzfx.nvim/commit/6469fe1d6d264f89eb308ada81ddd92578e10dc4))
+* **main:** check if line is nil when colorizing lsp range ([#687](https://github.com/linrongbin16/fzfx.nvim/issues/687)) ([ba8d3ef](https://github.com/linrongbin16/fzfx.nvim/commit/ba8d3ef857ce145c49a48a57e36e0c08977743d7))
+* **previewer:** fix '--preview-window=hidden' options ([#689](https://github.com/linrongbin16/fzfx.nvim/issues/689)) ([1e040eb](https://github.com/linrongbin16/fzfx.nvim/commit/1e040eb86e2e7b3fcda09d722368b79442809188))
+* **previewer:** fix extra new line at bottom of buffer previewer ([#692](https://github.com/linrongbin16/fzfx.nvim/issues/692)) ([6469fe1](https://github.com/linrongbin16/fzfx.nvim/commit/6469fe1d6d264f89eb308ada81ddd92578e10dc4))
+* **preview:** fix show/hide preview window when relative is 'win' ([#691](https://github.com/linrongbin16/fzfx.nvim/issues/691)) ([dfb8bc1](https://github.com/linrongbin16/fzfx.nvim/commit/dfb8bc115c6e3bda4c8fef8fbe19d9c74c853b01))
+
+
+### Performance Improvements
+
+* **bat:** immediately build bat themes after initialize ([#674](https://github.com/linrongbin16/fzfx.nvim/issues/674)) ([72109b7](https://github.com/linrongbin16/fzfx.nvim/commit/72109b798686bc69f4fac04bb34730654b760736))
+* **previewer:** reduce buffer previewer latency ([#676](https://github.com/linrongbin16/fzfx.nvim/issues/676)) ([94a57d3](https://github.com/linrongbin16/fzfx.nvim/commit/94a57d3c86e67d11877e0de5340f447ed17538a7))
+
 ## [6.3.0](https://github.com/linrongbin16/fzfx.nvim/compare/v6.2.0...v6.3.0) (2024-03-19)
 
 
