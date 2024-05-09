@@ -514,11 +514,38 @@ function BufferPopupWindow:preview_file(job_id, previewer_result, previewer_labe
         return
       end
 
+      -- log.debug(
+      --   string.format(
+      --     "|BufferPopupWindow:preview_file - asyncreadfile| contents:%s",
+      --     vim.inspect(contents)
+      --   )
+      -- )
+      -- log.debug(
+      --   string.format(
+      --     "|BufferPopupWindow:preview_file - asyncreadfile| contents length:%s",
+      --     vim.inspect(string.len(contents))
+      --   )
+      -- )
       local lines = {}
       if str.not_empty(contents) then
         contents = contents:gsub("\r\n", "\n")
         lines = str.split(contents, "\n")
+        if str.endswith(contents, "\n") and #lines > 0 and lines[#lines] == "" then
+          table.remove(lines, #lines)
+        end
       end
+      -- log.debug(
+      --   string.format(
+      --     "|BufferPopupWindow:preview_file - asyncreadfile| lines:%s",
+      --     vim.inspect(lines)
+      --   )
+      -- )
+      -- log.debug(
+      --   string.format(
+      --     "|BufferPopupWindow:preview_file - asyncreadfile| lines count:%s",
+      --     vim.inspect(#lines)
+      --   )
+      -- )
       table.insert(self.preview_file_contents_queue, {
         contents = lines,
         job_id = last_job.job_id,
@@ -664,7 +691,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
     local LAST_LINE = LINES_COUNT
     local line_index = FIRST_LINE
     if line_step == nil then
-      line_step = LARGE_FILE and math.max(math.ceil(math.sqrt(LINES_COUNT)), 5) or 5
+      line_step = LARGE_FILE and math.max(math.ceil(math.sqrt(LINES_COUNT)), 10) or 10
     end
     -- log.debug(
     --   string.format(
@@ -713,14 +740,19 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
         end
 
         local set_start = line_index - 1
-        local set_end = math.min(line_index + line_step, LAST_LINE) - 1
+        local set_end = math.min(line_index + line_step - 1, LAST_LINE)
         -- log.debug(
-        --   "|BufferPopupWindow:render_file_contents - set_buf_lines| line_index:%s, set start:%s, end:%s, TOP_LINE/BOTTOM_LINE:%s/%s",
-        --   vim.inspect(line_index),
-        --   vim.inspect(set_start),
-        --   vim.inspect(set_end),
-        --   vim.inspect(TOP_LINE),
-        --   vim.inspect(BOTTOM_LINE)
+        --   string.format(
+        --     "|BufferPopupWindow:render_file_contents - set_buf_lines| previewer_label_result:%s line_index:%s, line_step:%s set start:%s, set_end:%s, FIRST_LINE/LAST_LINE:%s/%s, LINES_COUNT:%s",
+        --     vim.inspect(file_content.previewer_label_result),
+        --     vim.inspect(line_index),
+        --     vim.inspect(line_step),
+        --     vim.inspect(set_start),
+        --     vim.inspect(set_end),
+        --     vim.inspect(FIRST_LINE),
+        --     vim.inspect(LAST_LINE),
+        --     vim.inspect(LINES_COUNT)
+        --   )
         -- )
         vim.api.nvim_buf_set_lines(self.previewer_bufnr, set_start, set_end, false, buf_lines)
         if hi_line then
