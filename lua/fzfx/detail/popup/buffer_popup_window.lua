@@ -769,6 +769,7 @@ function BufferPopupWindow:render_file_contents(file_content, content_view, on_c
             line_hl_group = "Visual",
           }
 
+          ---@diagnostic disable-next-line: unused-local
           local extmark_ok, extmark_result = pcall(
             vim.api.nvim_buf_set_extmark,
             self.previewer_bufnr,
