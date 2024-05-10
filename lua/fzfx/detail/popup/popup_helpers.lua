@@ -314,16 +314,15 @@ M.make_cursor_layout = function(
   local total_width = vim.api.nvim_win_get_width(relative_winnr)
   local total_height = vim.api.nvim_win_get_height(relative_winnr)
   local cursor_pos = vim.api.nvim_win_get_cursor(relative_winnr)
-  local win_first_line = relative_win_first_line
-  local cursor_relative_row = cursor_pos[1] - win_first_line
+  local cursor_relative_row = cursor_pos[1] - relative_win_first_line
   local cursor_relative_col = cursor_pos[2]
   log.debug(
     string.format(
-      "|make_cursor_layout| total height/width:%s/%s, cursor:%s, win first line:%s, cursor relative row/col:%s/%s",
+      "|make_cursor_layout| total height/width:%s/%s, cursor:%s, relative_win_first_line:%s, cursor relative row/col:%s/%s",
       vim.inspect(total_height),
       vim.inspect(total_width),
       vim.inspect(cursor_pos),
-      vim.inspect(win_first_line),
+      vim.inspect(relative_win_first_line),
       vim.inspect(cursor_relative_row),
       vim.inspect(cursor_relative_col)
     )
@@ -347,6 +346,27 @@ M.make_cursor_layout = function(
     start_row = math.floor(total_height * win_opts.row) + cursor_relative_row
   else
     start_row = win_opts.row + cursor_relative_row
+  end
+
+  local start_row_plus_height = start_row + height
+  local start_row_minus_3_and_height = start_row - 3 - height
+  -- if cursor based popup window is too beyond bottom, it will cover the cursor
+  -- thus we would place it in upper-side of cursor
+  log.debug(
+    string.format(
+      "|make_cursor_layout| height/width:%s/%s, start_row:%s, start_row + height(%s) > total_height(%s):%s, start_row - 3 - height(%s) >= 1:%s",
+      vim.inspect(height),
+      vim.inspect(width),
+      vim.inspect(start_row),
+      vim.inspect(start_row_plus_height),
+      vim.inspect(total_height),
+      vim.inspect(start_row_plus_height > total_height),
+      vim.inspect(start_row_minus_3_and_height),
+      vim.inspect(start_row_minus_3_and_height >= 1)
+    )
+  )
+  if start_row_plus_height > total_height and start_row_minus_3_and_height >= 1 then
+    start_row = start_row_minus_3_and_height
   end
   local end_row = start_row + height
 

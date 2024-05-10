@@ -86,9 +86,9 @@ M._hash_lsp_location = function(loc)
     tbl.tbl_get(range, "end", "line") or 0,
     tbl.tbl_get(range, "end", "character") or 0
   )
-  log.debug(
-    string.format("|_hash_lsp_location| loc:%s, hash:%s", vim.inspect(loc), vim.inspect(result))
-  )
+  -- log.debug(
+  --   string.format("|_hash_lsp_location| loc:%s, hash:%s", vim.inspect(loc), vim.inspect(result))
+  -- )
   return result
 end
 
@@ -296,17 +296,17 @@ end
 --- @param ranges fzfx.LspRange[]
 --- @return string[]
 M._render_lsp_call_hierarchy_line = function(item, ranges)
-  log.debug(
-    string.format(
-      "|_render_lsp_call_hierarchy_line| item:%s, ranges:%s",
-      vim.inspect(item),
-      vim.inspect(ranges)
-    )
-  )
+  -- log.debug(
+  --   string.format(
+  --     "|_render_lsp_call_hierarchy_line| item:%s, ranges:%s",
+  --     vim.inspect(item),
+  --     vim.inspect(ranges)
+  --   )
+  -- )
   local filename = nil
   if type(item.uri) == "string" and string.len(item.uri) > 0 and M._is_lsp_range(item.range) then
     filename = path.reduce(vim.uri_to_fname(item.uri))
-    log.debug("|_render_lsp_call_hierarchy_line| location filename: " .. vim.inspect(filename))
+    -- log.debug("|_render_lsp_call_hierarchy_line| location filename: " .. vim.inspect(filename))
   end
   if type(ranges) ~= "table" or #ranges == 0 then
     return {}
@@ -322,14 +322,14 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   for i, r in ipairs(ranges) do
     if type(filelines) == "table" and #filelines >= r.start.line + 1 then
       local item_line = M._colorize_lsp_range(filelines[r.start.line + 1], r, term_color.red)
-      log.debug(
-        string.format(
-          "|_render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
-          vim.inspect(i),
-          vim.inspect(r),
-          vim.inspect(item_line)
-        )
-      )
+      -- log.debug(
+      --   string.format(
+      --     "|_render_lsp_call_hierarchy_line| %s-range:%s, item_line:%s",
+      --     vim.inspect(i),
+      --     vim.inspect(r),
+      --     vim.inspect(item_line)
+      --   )
+      -- )
       local line = string.format(
         "%s:%s:%s:%s",
         providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
@@ -337,13 +337,13 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
         tostring(r.start.character + 1),
         item_line
       )
-      log.debug(
-        string.format(
-          "|_render_lsp_call_hierarchy_line| %s-line:%s",
-          vim.inspect(i),
-          vim.inspect(line)
-        )
-      )
+      -- log.debug(
+      --   string.format(
+      --     "|_render_lsp_call_hierarchy_line| %s-line:%s",
+      --     vim.inspect(i),
+      --     vim.inspect(line)
+      --   )
+      -- )
       table.insert(lines, line)
     end
   end
@@ -398,14 +398,14 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       context.position_params,
       opts.timeout or 3000
     )
-    log.debug(
-      string.format(
-        "|_make_lsp_call_hierarchy_provider| prepare, opts:%s, lsp_results:%s, lsp_err:%s",
-        vim.inspect(opts),
-        vim.inspect(lsp_results),
-        vim.inspect(lsp_err)
-      )
-    )
+    -- log.debug(
+    --   string.format(
+    --     "|_make_lsp_call_hierarchy_provider| prepare, opts:%s, lsp_results:%s, lsp_err:%s",
+    --     vim.inspect(opts),
+    --     vim.inspect(lsp_results),
+    --     vim.inspect(lsp_err)
+    --   )
+    -- )
     if lsp_err then
       log.echo(LogLevels.ERROR, lsp_err)
       return nil
@@ -438,15 +438,15 @@ M._make_lsp_call_hierarchy_provider = function(opts)
       { item = lsp_item[1] },
       opts.timeout or 3000
     )
-    log.debug(
-      string.format(
-        "|_make_lsp_call_hierarchy_provider| 2nd call, opts:%s, lsp_item: %s, lsp_results2:%s, lsp_err2:%s",
-        vim.inspect(opts),
-        vim.inspect(lsp_item),
-        vim.inspect(lsp_results2),
-        vim.inspect(lsp_err2)
-      )
-    )
+    -- log.debug(
+    --   string.format(
+    --     "|_make_lsp_call_hierarchy_provider| 2nd call, opts:%s, lsp_item: %s, lsp_results2:%s, lsp_err2:%s",
+    --     vim.inspect(opts),
+    --     vim.inspect(lsp_item),
+    --     vim.inspect(lsp_results2),
+    --     vim.inspect(lsp_err2)
+    --   )
+    -- )
     if lsp_err2 then
       log.echo(LogLevels.ERROR, lsp_err2)
       return nil
@@ -462,25 +462,25 @@ M._make_lsp_call_hierarchy_provider = function(opts)
         and type(lsp_result.result) == "table"
       then
         local lsp_hi_item_list = lsp_result.result
-        log.debug(
-          string.format(
-            "|_make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item_list:%s",
-            vim.inspect(opts.method),
-            vim.inspect(lsp_hi_item_list)
-          )
-        )
+        -- log.debug(
+        --   string.format(
+        --     "|_make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item_list:%s",
+        --     vim.inspect(opts.method),
+        --     vim.inspect(lsp_hi_item_list)
+        --   )
+        -- )
         for _, lsp_hi_item in ipairs(lsp_hi_item_list) do
           local hi_item, from_ranges =
             M._retrieve_lsp_call_hierarchy_item_and_from_ranges(opts.method, lsp_hi_item)
-          log.debug(
-            string.format(
-              "|_make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item:%s, hi_item:%s, from_ranges:%s",
-              vim.inspect(opts.method),
-              vim.inspect(lsp_hi_item_list),
-              vim.inspect(hi_item),
-              vim.inspect(from_ranges)
-            )
-          )
+          -- log.debug(
+          --   string.format(
+          --     "|_make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item:%s, hi_item:%s, from_ranges:%s",
+          --     vim.inspect(opts.method),
+          --     vim.inspect(lsp_hi_item_list),
+          --     vim.inspect(hi_item),
+          --     vim.inspect(from_ranges)
+          --   )
+          -- )
           if M._is_lsp_call_hierarchy_item(hi_item) and type(from_ranges) == "table" then
             local lines = M._render_lsp_call_hierarchy_line(
               hi_item --[[@as fzfx.LspCallHierarchyItem]],
