@@ -354,18 +354,18 @@ M.make_cursor_layout = function(
   -- thus we would place it in upper-side of cursor
   log.debug(
     string.format(
-      "|make_cursor_layout| height/width:%s/%s, start_row:%s, start_row + height(%s) >= total_height(%s):%s, start_row - 3 - height(%s) >= 1:%s",
+      "|make_cursor_layout| height/width:%s/%s, start_row:%s, start_row + height(%s) > total_height(%s):%s, start_row - 3 - height(%s) >= 1:%s",
       vim.inspect(height),
       vim.inspect(width),
       vim.inspect(start_row),
       vim.inspect(start_row_plus_height),
       vim.inspect(total_height),
-      vim.inspect(start_row_plus_height >= total_height),
+      vim.inspect(start_row_plus_height > total_height),
       vim.inspect(start_row_minus_3_and_height),
       vim.inspect(start_row_minus_3_and_height >= 1)
     )
   )
-  if start_row_plus_height >= total_height and start_row_minus_3_and_height >= 1 then
+  if start_row_plus_height > total_height and start_row_minus_3_and_height >= 1 then
     start_row = start_row_minus_3_and_height
   end
   local end_row = start_row + height
