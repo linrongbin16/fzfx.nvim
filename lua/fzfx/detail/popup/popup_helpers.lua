@@ -349,7 +349,7 @@ M.make_cursor_layout = function(
   end
 
   local start_row_plus_height = start_row + height
-  local start_row_minus_3_minus_height = start_row - 3 - height
+  local start_row_minus_3_and_height = start_row - 3 - height
   -- if cursor based popup window is too beyond bottom, it will cover the cursor
   -- thus we would place it in upper-side of cursor
   log.debug(
@@ -361,12 +361,12 @@ M.make_cursor_layout = function(
       vim.inspect(start_row_plus_height),
       vim.inspect(total_height),
       vim.inspect(start_row_plus_height > total_height),
-      vim.inspect(start_row_minus_3_minus_height),
-      vim.inspect(start_row_minus_3_minus_height >= 1)
+      vim.inspect(start_row_minus_3_and_height),
+      vim.inspect(start_row_minus_3_and_height >= 1)
     )
   )
-  if start_row_plus_height > total_height and start_row_minus_3_minus_height >= 1 then
-    start_row = start_row_minus_3_minus_height
+  if start_row_plus_height > total_height and start_row_minus_3_and_height >= 1 then
+    start_row = start_row_minus_3_and_height
   end
   local end_row = start_row_plus_height
 
