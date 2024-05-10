@@ -368,7 +368,7 @@ M.make_cursor_layout = function(
   if start_row_plus_height > total_height and start_row_minus_3_and_height >= 1 then
     start_row = start_row_minus_3_and_height
   end
-  local end_row = start_row_plus_height
+  local end_row = start_row + height
 
   if win_opts.col > -1 and win_opts.col < 1 then
     start_col = math.floor(total_width * win_opts.col) + cursor_relative_col
