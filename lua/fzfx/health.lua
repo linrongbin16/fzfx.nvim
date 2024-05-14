@@ -13,6 +13,16 @@ M._find = function()
   end
 end
 
+M._cat = function()
+  if consts.HAS_BAT then
+    vim.health.ok(string.format("'%s' found", consts.BAT))
+  elseif consts.HAS_CAT then
+    vim.health.ok(string.format("'%s' found", consts.CAT))
+  else
+    vim.health.error("'bat'/'batcat'/'cat' not found")
+  end
+end
+
 M.check = function()
   vim.health.start("fzfx")
 
