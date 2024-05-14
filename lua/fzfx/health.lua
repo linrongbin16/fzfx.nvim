@@ -10,14 +10,14 @@ M._files = function()
   elseif consts.HAS_FIND then
     execs:push(consts.FIND)
   end
+
   execs = execs
     :map(function(value, index)
       return string.format("'%s'", value)
     end)
     :data()
-  ---@diagnostic disable-next-line: cast-local-type
-  execs = table.concat(execs, ",")
-  vim.health.ok(string.format("'FzfxFiles' uses %s", execs))
+
+  vim.health.ok(string.format("'FzfxFiles' uses %s", table.concat(execs, ",")))
 end
 
 M.check = function()
