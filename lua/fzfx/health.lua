@@ -1,5 +1,4 @@
 local consts = require("fzfx.lib.constants")
-local tbl = require("fzfx.commons.tbl")
 
 local M = {}
 
