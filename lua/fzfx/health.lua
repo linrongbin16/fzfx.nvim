@@ -1,4 +1,6 @@
 local consts = require("fzfx.lib.constants")
+local tbl = require("fzfx.commons.tbl")
+local str = require("fzfx.commons.str")
 
 local M = {}
 
@@ -9,8 +11,7 @@ M._common = function()
     vim.health.error("'echo' not found")
   end
   if consts.HAS_CURL then
-    local curl_info = vim.fn.systemlist({ consts.CURL, "--version" })
-    vim.health.ok(string.format("'%s' found: %s", consts.CURL, curl_info[1]))
+    vim.health.ok(string.format("'%s' found", consts.CURL))
   else
     vim.health.error("'curl' not found")
   end
