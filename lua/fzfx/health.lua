@@ -9,6 +9,18 @@ M._files = function()
     execs:push(consts.FD)
   elseif consts.HAS_FIND then
     execs:push(consts.FIND)
+  else
+    vim.health.error(
+      string.format("'FzfxFiles' doesn't have providers, 'fd'/'find'/'gfind' not found")
+    )
+  end
+
+  if consts.HAS_BAT then
+    execs:push(consts.BAT)
+  elseif consts.HAS_CAT then
+    execs:push(consts.CAT)
+  else
+    vim.health.warn(string.format("'bat'/'cat' not found"))
   end
 
   execs = execs
