@@ -9,7 +9,8 @@ M._common = function()
     vim.health.error("'echo' not found")
   end
   if consts.HAS_CURL then
-    vim.health.ok(string.format("'%s' found", consts.CURL))
+    local curl_info = vim.fn.systemlist({ consts.CURL, "--version" })
+    vim.health.ok(string.format("'%s' found: %s", consts.CURL, curl_info[1]))
   else
     vim.health.error("'curl' not found")
   end
