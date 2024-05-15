@@ -11,6 +11,11 @@ M.IS_LINUX = not M.IS_WINDOWS
 
 -- cli
 
+-- fzf
+M.HAS_FZF = vim.fn.executable("fzf") > 0 or vim.fn.exists("*fzf#exec") > 0
+M.FZF = vim.fn.executable("fzf") > 0 and "fzf"
+  or (vim.fn.exists("*fzf#exec") > 0 and vim.fn["fzf#exec"]() or "fzf")
+
 -- bat
 M.HAS_BAT = vim.fn.executable("batcat") > 0 or vim.fn.executable("bat") > 0
 M.BAT = vim.fn.executable("batcat") > 0 and "batcat" or "bat"
