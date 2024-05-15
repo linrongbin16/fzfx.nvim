@@ -7,6 +7,12 @@ local M = {}
 local EXEC_CONFIGS = {
   {
     items = {
+      { cond = consts.HAS_FZF, name = consts.FZF, version = "--version", line = 1 },
+    },
+    fail = { "fzf" },
+  },
+  {
+    items = {
       { cond = consts.HAS_ECHO, name = consts.ECHO },
     },
     fail = { "echo" },
