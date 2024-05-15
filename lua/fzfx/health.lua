@@ -1,6 +1,13 @@
 local consts = require("fzfx.lib.constants")
+local tbl = require("fzfx.commons.tbl")
 
 local M = {}
+
+--- @param name string
+--- @return string
+local function stringize(name)
+  return string.format("'%s'", name)
+end
 
 M._common = function()
   if consts.HAS_ECHO then
@@ -16,12 +23,24 @@ M._common = function()
 end
 
 M._find = function()
+  local exec = tbl.List:of()
+
   if consts.HAS_FD then
-    vim.health.ok(string.format("'%s' found", consts.FD))
-  elseif consts.HAS_FIND then
-    vim.health.ok(string.format("'%s' found", consts.FIND))
+    exec:push(consts.FD)
+  end
+  if consts.HAS_FIND then
+    exec:push(consts.FIND)
+  end
+
+  if exec:empty() then
+    vim.health.error("Missing 'fd'/'find'/'gfind'")
   else
-    vim.health.error("'fd'/'find'/'gfind' not found")
+    exec = exec
+      :map(function(value)
+        return stringize(value)
+      end)
+      :data()
+    vim.health.ok(string.format("Found %s", table.concat(exec, ",")))
   end
 end
 
