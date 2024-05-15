@@ -99,14 +99,14 @@ M.check = function()
           and tbl.list_not_empty(version.output)
           and #version.output >= version.line
         then
-          local merged_lines = ""
-          for i, output_line in ipairs(version.output) do
+          local merged = nil
+          for i, out_line in ipairs(version.output) do
             if i > version.line then
               break
             end
-            merged_lines = merged_lines .. "\t" .. str.trim(output_line)
+            merged = merged and (merged .. "\t" .. str.trim(out_line)) or str.trim(out_line)
           end
-          msg = msg .. string.format("\n  - %s", merged_lines)
+          msg = msg .. string.format("\n  - %s", merged)
         else
           msg = msg
             .. string.format("\n  - **Warning**: failed to get version info for '%s'", version.name)
