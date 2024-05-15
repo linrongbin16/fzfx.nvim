@@ -79,7 +79,7 @@ M.check = function()
     if not exec:empty() then
       local all_exec = exec
         :map(function(item, index)
-          return string.format("'%s'", item.name)
+          return string.format("'%s'", vim.fn.fnamemodify(item.name, ":~:."))
         end)
         :data()
       local msg = string.format("Found %s", table.concat(all_exec, ","))
@@ -92,7 +92,7 @@ M.check = function()
               unversioned = false,
               output = output,
               line = item.line,
-              name = vim.fn.fnamemodify(item.name, ":t"),
+              name = vim.fn.fnamemodify(item.name, ":~:."),
             }
           else
             return {
@@ -100,7 +100,7 @@ M.check = function()
               unversioned = true,
               output = nil,
               line = item.line,
-              name = vim.fn.fnamemodify(item.name, ":t"),
+              name = vim.fn.fnamemodify(item.name, ":~:."),
             }
           end
         end)
