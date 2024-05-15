@@ -92,7 +92,7 @@ M.check = function()
               unversioned = false,
               output = output,
               line = item.line,
-              name = item.name,
+              name = vim.fn.fnamemodify(item.name, ":t"),
             }
           else
             return {
@@ -100,7 +100,7 @@ M.check = function()
               unversioned = true,
               output = nil,
               line = item.line,
-              name = item.name,
+              name = vim.fn.fnamemodify(item.name, ":t"),
             }
           end
         end)
