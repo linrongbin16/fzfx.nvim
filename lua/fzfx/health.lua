@@ -73,26 +73,34 @@ M.check = function()
     if not exec:empty() then
       local all_exec = exec
         :map(function(item, index)
-          local result = string.format("'%s'", item.name)
-          return (index == 1 and exec:length() > 1) and result .. " (preferred)" or result
+          return string.format("'%s'", item.name)
         end)
         :data()
       local msg = string.format("Found %s", table.concat(all_exec, ","))
       local all_version = exec
-        :filter(function(item)
-          return str.not_empty(item.version)
-        end)
-        :map(function(item)
-          local ok, output = pcall(vim.fn.systemlist, { item.name, item.version })
-          return {
-            ok = ok,
-            output = output,
-            line = item.line,
-            name = item.name,
-          }
+        :map(function(item, index)
+          if str.not_empty(item.version) then
+            local ok, output = pcall(vim.fn.systemlist, { item.name, item.version })
+            return {
+              ok = ok,
+              unversioned = false,
+              output = output,
+              line = item.line,
+              name = item.name,
+            }
+          else
+            return {
+              ok = false,
+              unversioned = true,
+              output = nil,
+              line = item.line,
+              name = item.name,
+            }
+          end
         end)
         :data()
-      for _, version in ipairs(all_version) do
+      for i, version in ipairs(all_version) do
+        local preferred = i == 1 and "(Preferred) " or ""
         if
           tbl.tbl_not_empty(version)
           and version.ok
@@ -100,16 +108,20 @@ M.check = function()
           and #version.output >= version.line
         then
           local target_line = nil
-          for i, out_line in ipairs(version.output) do
-            if i == version.line then
+          for j, out_line in ipairs(version.output) do
+            if j == version.line then
               target_line = str.trim(out_line)
               break
             end
           end
-          msg = msg .. string.format("\n  - '%s': %s", version.name, target_line)
-        else
+          msg = msg .. string.format("\n  - %s'%s': %s", preferred, version.name, target_line)
+        elseif tbl.tbl_not_empty(version) and not version.unversioned and not version.ok then
           msg = msg
-            .. string.format("\n  - (**Warning**) '%s': failed to get version info", version.name)
+            .. string.format(
+              "\n  - (**Warning**) %s'%s': failed to get version info",
+              preferred,
+              version.name
+            )
         end
       end
       vim.health.ok(msg)
