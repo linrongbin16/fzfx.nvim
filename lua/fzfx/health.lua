@@ -77,8 +77,9 @@ M.check = function()
     end
     if not exec:empty() then
       local all_exec = exec
-        :map(function(value)
-          return stringize(value)
+        :map(function(value, index)
+          local result = stringize(value)
+          return (index == 1 and exec:length() > 1) and result .. " (preferred)" or result
         end)
         :data()
       vim.health.ok(string.format("Found %s", table.concat(all_exec, ",")))
