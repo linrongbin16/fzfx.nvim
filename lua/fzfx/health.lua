@@ -99,17 +99,17 @@ M.check = function()
           and tbl.list_not_empty(version.output)
           and #version.output >= version.line
         then
-          local merged = nil
+          local target_line = nil
           for i, out_line in ipairs(version.output) do
-            if i > version.line then
+            if i == version.line then
+              target_line = str.trim(out_line)
               break
             end
-            merged = merged and (merged .. "\t" .. str.trim(out_line)) or str.trim(out_line)
           end
-          msg = msg .. string.format("\n  - %s", merged)
+          msg = msg .. string.format("\n  - '%s': %s", version.name, target_line)
         else
           msg = msg
-            .. string.format("\n  - **Warning**: failed to get version info for '%s'", version.name)
+            .. string.format("\n  - (**Warning**) '%s': failed to get version info", version.name)
         end
       end
       vim.health.ok(msg)
