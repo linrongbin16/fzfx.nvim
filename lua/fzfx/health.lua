@@ -59,12 +59,6 @@ local EXEC_CONFIGS = {
   },
 }
 
---- @param name string
---- @return string
-local function stringize(name)
-  return string.format("'%s'", name)
-end
-
 M.check = function()
   vim.health.start("fzfx")
 
@@ -78,7 +72,7 @@ M.check = function()
     if not exec:empty() then
       local all_exec = exec
         :map(function(value, index)
-          local result = stringize(value)
+          local result = string.format("'%s'", value)
           return (index == 1 and exec:length() > 1) and result .. " (preferred)" or result
         end)
         :data()
@@ -87,7 +81,7 @@ M.check = function()
       local all_exec = tbl.List
         :copy(config.fail)
         :map(function(value)
-          return stringize(value)
+          return string.format("'%s'", value)
         end)
         :data()
       vim.health.error(string.format("Missing %s", table.concat(all_exec, ",")))
