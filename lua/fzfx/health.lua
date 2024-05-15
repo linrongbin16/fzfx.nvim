@@ -3,102 +3,95 @@ local tbl = require("fzfx.commons.tbl")
 
 local M = {}
 
+local EXEC_CONFIGS = {
+  {
+    items = {
+      { cond = consts.HAS_ECHO, name = consts.ECHO },
+    },
+    fail = { "echo" },
+  },
+  {
+    items = {
+      { cond = consts.HAS_CURL, name = consts.CURL },
+    },
+    fail = { "curl" },
+  },
+  {
+    items = {
+      { cond = consts.HAS_FD, name = consts.FD },
+      { cond = consts.HAS_FIND, name = consts.FIND },
+    },
+    fail = { "fd", "find", "gfind" },
+  },
+  {
+    items = {
+      { cond = consts.HAS_BAT, name = consts.BAT },
+      { cond = consts.HAS_CAT, name = consts.CAT },
+    },
+    fail = { "bat", "batcat", "cat" },
+  },
+  {
+    items = {
+      { cond = consts.HAS_RG, name = consts.RG },
+      { cond = consts.HAS_GREP, name = consts.GREP },
+    },
+    fail = { "rg", "grep", "ggrep" },
+  },
+  {
+    items = {
+      { cond = consts.HAS_GIT, name = consts.GIT },
+    },
+    fail = { "git" },
+  },
+  {
+    items = {
+      { cond = consts.HAS_DELTA, name = consts.DELTA },
+    },
+    fail = { "delta" },
+  },
+  {
+    items = {
+      { cond = consts.HAS_LSD, name = consts.LSD },
+      { cond = consts.HAS_EZA, name = consts.EZA },
+      { cond = consts.HAS_LS, name = consts.LS },
+    },
+    fail = { "lsd", "eza", "exa", "ls" },
+  },
+}
+
 --- @param name string
 --- @return string
 local function stringize(name)
   return string.format("'%s'", name)
 end
 
-M._common = function()
-  if consts.HAS_ECHO then
-    vim.health.ok(string.format("'%s' found", consts.ECHO))
-  else
-    vim.health.error("'echo' not found")
-  end
-  if consts.HAS_CURL then
-    vim.health.ok(string.format("'%s' found", consts.CURL))
-  else
-    vim.health.error("'curl' not found")
-  end
-end
-
-M._find = function()
-  local exec = tbl.List:of()
-
-  if consts.HAS_FD then
-    exec:push(consts.FD)
-  end
-  if consts.HAS_FIND then
-    exec:push(consts.FIND)
-  end
-
-  if exec:empty() then
-    vim.health.error("Missing 'fd'/'find'/'gfind'")
-  else
-    exec = exec
-      :map(function(value)
-        return stringize(value)
-      end)
-      :data()
-    vim.health.ok(string.format("Found %s", table.concat(exec, ",")))
-  end
-end
-
-M._cat = function()
-  if consts.HAS_BAT then
-    vim.health.ok(string.format("'%s' found", consts.BAT))
-  elseif consts.HAS_CAT then
-    vim.health.ok(string.format("'%s' found", consts.CAT))
-  else
-    vim.health.error("'bat'/'batcat'/'cat' not found")
-  end
-end
-
-M._grep = function()
-  if consts.HAS_RG then
-    vim.health.ok(string.format("'%s' found", consts.RG))
-  elseif consts.HAS_GREP then
-    vim.health.ok(string.format("'%s' found", consts.GREP))
-  else
-    vim.health.error("'rg'/'grep'/'ggrep' not found")
-  end
-end
-
-M._git = function()
-  if consts.HAS_GIT then
-    vim.health.ok(string.format("'%s' found", consts.GIT))
-  else
-    vim.health.error("'git' not found")
-  end
-  if consts.HAS_DELTA then
-    vim.health.ok(string.format("'%s' found", consts.DELTA))
-  end
-end
-
-M._ls = function()
-  if consts.HAS_LSD then
-    vim.health.ok(string.format("'%s' found", consts.LSD))
-  elseif consts.HAS_EZA then
-    vim.health.ok(string.format("'%s' found", consts.EZA))
-  elseif consts.HAS_LS then
-    vim.health.ok(string.format("'%s' found", consts.LS))
-  else
-    vim.health.error("'lsd'/'eza'/'exa'/'ls' not found")
-  end
-  if consts.HAS_DELTA then
-    vim.health.ok(string.format("'%s' found", consts.DELTA))
-  end
-end
-
 M.check = function()
   vim.health.start("fzfx")
 
-  M._common()
-  M._find()
-  M._cat()
-  M._grep()
-  M._git()
-  M._ls()
+  for _, config in ipairs(EXEC_CONFIGS) do
+    local exec = tbl.List:of()
+    for _, item in ipairs(config.items) do
+      if item.cond then
+        exec:push(item.name)
+      end
+    end
+    if not exec:empty() then
+      local all_exec = exec
+        :map(function(value)
+          return stringize(value)
+        end)
+        :data()
+      vim.health.ok(string.format("Found %s", table.concat(all_exec, ",")))
+    else
+      local all_exec = tbl.List
+        :copy(config.fail)
+        :map(function(value)
+          return stringize(value)
+        end)
+        :data()
+      vim.health.error(string.format("Missing %s", table.concat(all_exec, ",")))
+    end
+  end
 end
 
 return M
