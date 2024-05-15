@@ -77,12 +77,17 @@ M.check = function()
       end
     end
     if not exec:empty() then
+      local n = exec:length()
       local all_exec = exec
         :map(function(item, index)
-          return string.format("'%s'", vim.fn.fnamemodify(item.name, ":~:."))
+          return string.format(
+            "'%s'%s",
+            vim.fn.fnamemodify(item.name, ":~:."),
+            (index == 1 and n > 1) and " (preferred)" or ""
+          )
         end)
         :data()
-      local msg = string.format("Found %s", table.concat(all_exec, ","))
+      local msg = string.format("Found %s", table.concat(all_exec, ", "))
       local all_version = exec
         :map(function(item, index)
           if str.not_empty(item.version) then
@@ -106,7 +111,6 @@ M.check = function()
         end)
         :data()
       for i, version in ipairs(all_version) do
-        local preferred = i == 1 and "(Preferred) " or ""
         if
           tbl.tbl_not_empty(version)
           and version.ok
@@ -120,14 +124,10 @@ M.check = function()
               break
             end
           end
-          msg = msg .. string.format("\n  - %s'%s': %s", preferred, version.name, target_line)
+          msg = msg .. string.format("\n  - '%s': %s", version.name, target_line)
         elseif tbl.tbl_not_empty(version) and not version.unversioned and not version.ok then
           msg = msg
-            .. string.format(
-              "\n  - (**Warning**) %s'%s': failed to get version info",
-              preferred,
-              version.name
-            )
+            .. string.format("\n  - (**Warning**) '%s': failed to get version info", version.name)
         end
       end
       vim.health.ok(msg)
@@ -138,7 +138,7 @@ M.check = function()
           return string.format("'%s'", item)
         end)
         :data()
-      vim.health.error(string.format("Missing %s", table.concat(all_exec, ",")))
+      vim.health.error(string.format("Missing %s", table.concat(all_exec, ", ")))
     end
   end
 end
