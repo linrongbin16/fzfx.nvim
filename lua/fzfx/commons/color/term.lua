@@ -55,10 +55,10 @@ local CSS_COLORS = {
 --- @return string
 M.render = function(text, name, hl)
   local str = require("fzfx.commons.str")
+  local api = require("fzfx.commons.api")
 
   local fgfmt = nil
-  local hlcodes = str.not_empty(hl) and require("fzfx.commons.api").get_hl(hl --[[@as string]])
-    or nil
+  local hlcodes = str.not_empty(hl) and api.get_hl(hl --[[@as string]]) or nil
   local fgcode = type(hlcodes) == "table" and hlcodes.fg or nil
   if type(fgcode) == "number" then
     fgfmt = M.escape("fg", string.format("#%06x", fgcode))

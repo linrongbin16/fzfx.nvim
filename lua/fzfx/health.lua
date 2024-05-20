@@ -55,6 +55,7 @@ local EXEC_CONFIGS = {
       { cond = consts.HAS_DELTA, name = consts.DELTA, version = "--version", line = 1 },
     },
     fail = { "delta" },
+    fail_level = "warn",
   },
   {
     items = {
@@ -138,7 +139,9 @@ M.check = function()
           return string.format("'%s'", item)
         end)
         :data()
-      vim.health.error(string.format("Missing %s", table.concat(all_exec, ", ")))
+      local fail_level = config.fail_level or "error"
+      local fail_message = vim.health[fail_level]
+      fail_message(string.format("Missing %s", table.concat(all_exec, ", ")))
     end
   end
 end
