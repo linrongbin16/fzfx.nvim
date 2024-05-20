@@ -121,6 +121,7 @@ M._render_lsp_location_line = function(loc)
   if not M._is_lsp_range(range) then
     return nil
   end
+  filename = vim.fn.expand(filename)
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return nil
   end
