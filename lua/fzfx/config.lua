@@ -257,22 +257,24 @@ local Defaults = {
       --  - editor
       --  - win
       --  - cursor
+      relative = "editor",
+
+      -- when relative is 'editor' or 'win', the anchor is the middle center, not the `nvim_open_win` API's default 'NW' (north west).
+      -- because 'NW' is a little bit complicated for users to calculate the position, usually we just put the popup window in the center of editor/window.
+      -- if you need to adjust the position of popup, you can specify the `row` and `col` of the popup:
       --
-      -- when relative is 'editor' or 'win', the anchor is the center position, not default 'NW' (north west).
-      -- because 'NW' is a little bit complicated for users to calculate the position, usually we just put the popup window in the center of editor.
+      -- 1. if -0.5 <= `row`/`col` <= 0.5, they're evaluated as percentage value based on the editor/window's `height` and `width`.
+      --    i.e. the real row of center = `row * height`, real column of center = `col * width`.
       --
-      -- 1. if -0.5 <= r/c <= 0.5, evaluate proportionally according to editor's lines and columns.
-      --    e.g. shift rows = r * lines, shift columns = c * columns.
+      -- 2. if `row`/`col` <= -1 or `row`/`col` >= 1, they're evaluated as absolute value.
+      --    e.g. you can set 'row = -vim.o.cmdheight' to move popup up for 1~2 rows based on the 'cmdheight' option.
+      --    this is especially useful when popup window is too big and conflicts with the statusline at bottom.
       --
-      -- 2. if r/c <= -1 or r/c >= 1, evaluate as absolute rows/columns to be shift.
-      --    e.g. you can easily set 'row = -vim.o.cmdheight' to move popup window to up 1~2 lines (based on your 'cmdheight' option).
-      --    this is especially useful when popup window is too big and conflicts with command/status line at bottom.
-      --
-      -- 3. r/c cannot be in range (-1, -0.5) or (0.5, 1), it makes no sense.
+      -- 3. `row`/`col` cannot be in range (-1, -0.5) or (0.5, 1), it's invalid.
       --
       -- when relative is 'cursor', the anchor is 'NW' (north west).
       -- because we just want to put the popup window relative to the cursor.
-      -- so 'row' and 'col' will be directly passed to `vim.api.nvim_open_win` API without any pre-processing.
+      -- so 'row' and 'col' will be directly passed to the `nvim_open_win` API without any pre-processing.
       --
       row = 0,
       col = 0,
