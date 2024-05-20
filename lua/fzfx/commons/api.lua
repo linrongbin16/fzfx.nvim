@@ -1,3 +1,5 @@
+---@diagnostic disable: deprecated
+
 local NVIM_VERSION_0_8 = false
 local NVIM_VERSION_0_9 = false
 
