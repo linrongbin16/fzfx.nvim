@@ -122,6 +122,7 @@ M._render_lsp_location_line = function(loc)
   if not M._is_lsp_range(range) then
     return nil
   end
+  filename = path.normalize(filename, { double_backslash = true, expand = true })
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return nil
   end
@@ -306,6 +307,7 @@ M._render_lsp_call_hierarchy_line = function(item, ranges)
   local filename = nil
   if type(item.uri) == "string" and string.len(item.uri) > 0 and M._is_lsp_range(item.range) then
     filename = path.reduce(vim.uri_to_fname(item.uri))
+    filename = path.normalize(filename, { double_backslash = true, expand = true })
     -- log.debug("|_render_lsp_call_hierarchy_line| location filename: " .. vim.inspect(filename))
   end
   if type(ranges) ~= "table" or #ranges == 0 then
