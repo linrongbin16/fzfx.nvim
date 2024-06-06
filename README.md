@@ -1838,77 +1838,75 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/c704e5b2-d82a-45f2-8920
 <summary><i>Click here to see how to configure</i></summary>
 
 ```lua
-require("fzfx").setup({
-  users = {
-    ls = {
-      --- @type CommandConfig
-      command = {
-        name = "FzfxLs",
-        desc = "File Explorer (ls -1)",
-      },
-      variants = {
-        {
-          name = "args",
-          feed = "args",
-          default_provider = "filter_hiddens",
-        },
-        {
-          name = "hidden_args",
-          feed = "args",
-          default_provider = "include_hiddens",
-        },
-      },
-      --- @type table<string, ProviderConfig>
-      providers = {
-        filter_hiddens = {
-          key = "ctrl-h",
-          provider = { "ls", "--color=always", "-1" },
-        },
-        include_hiddens = {
-          key = "ctrl-u",
-          provider = { "ls", "--color=always", "-1a" },
-        },
-      },
-      --- @type table<string, PreviewerConfig>
-      previewers = {
-        filter_hiddens = {
-          previewer = function(line)
-            -- each line is either a folder or a file
-            return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
-              or { "cat", line }
-          end,
-          previewer_type = "command_list",
-        },
-        include_hiddens = {
-          previewer = function(line)
-            return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
-              or { "cat", line }
-          end,
-          previewer_type = "command_list",
-        },
-      },
-      actions = {
-        ["esc"] = function(lines)
-          -- do nothing
-        end,
-        ["enter"] = function(lines)
-          for _, line in ipairs(lines) do
-            vim.cmd(string.format([[edit %s]], line))
-          end
-        end,
-      },
-      fzf_opts = {
-        "--multi",
-        { "--prompt", "Ls > " },
-      },
+require("fzfx").setup()
+
+require("fzfx").register("ls", {
+  --- @type CommandConfig
+  command = {
+    name = "FzfxLs",
+    desc = "File Explorer (ls -1)",
+  },
+  variants = {
+    {
+      name = "args",
+      feed = "args",
+      default_provider = "filter_hiddens",
     },
+    {
+      name = "hidden_args",
+      feed = "args",
+      default_provider = "include_hiddens",
+    },
+  },
+  --- @type table<string, ProviderConfig>
+  providers = {
+    filter_hiddens = {
+      key = "ctrl-h",
+      provider = { "ls", "--color=always", "-1" },
+    },
+    include_hiddens = {
+      key = "ctrl-u",
+      provider = { "ls", "--color=always", "-1a" },
+    },
+  },
+  --- @type table<string, PreviewerConfig>
+  previewers = {
+    filter_hiddens = {
+      previewer = function(line)
+        -- each line is either a folder or a file
+        return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
+          or { "cat", line }
+      end,
+      previewer_type = "command_list",
+    },
+    include_hiddens = {
+      previewer = function(line)
+        return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
+          or { "cat", line }
+      end,
+      previewer_type = "command_list",
+    },
+  },
+  actions = {
+    ["esc"] = function(lines)
+      -- do nothing
+    end,
+    ["enter"] = function(lines)
+      for _, line in ipairs(lines) do
+        vim.cmd(string.format([[edit %s]], line))
+      end
+    end,
+  },
+  fzf_opts = {
+    "--multi",
+    { "--prompt", "Ls > " },
   },
 })
 ```
 
 </details>
 
-You can also use the `require("fzfx").register("ls", {...})` api to do that.
+Use the `require("fzfx").register(name, opts})` api to create your own searching command.
 
 For detailed explanation of each components, please see [A Generic Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
