@@ -1906,7 +1906,7 @@ require("fzfx").register("ls", {
 
 </details>
 
-Use the `require("fzfx").register(name, opts})` api to create your own searching command.
+Use first setup this plugin, then use `require("fzfx").register(name, opts})` api to create your own searching command.
 
 For detailed explanation of each components, please see [A Generic Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
