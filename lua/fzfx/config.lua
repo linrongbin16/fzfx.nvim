@@ -115,9 +115,6 @@ local Defaults = {
     },
   },
 
-  -- the 'Users' commands
-  users = nil,
-
   -- basic fzf opts
   fzf_opts = {
     "--ansi",
