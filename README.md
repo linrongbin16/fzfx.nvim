@@ -3,7 +3,7 @@
 # fzfx.nvim
 
 <p>
-<a href="https://github.com/neovim/neovim/releases/v0.7.0"><img alt="require" src="https://img.shields.io/badge/require-0.7+-blue" /></a>
+<a href="https://github.com/neovim/neovim/releases/v0.9.0"><img alt="require" src="https://img.shields.io/badge/require-0.9+-blue" /></a>
 <a href="https://github.com/linrongbin16/commons.nvim"><img alt="commons.nvim" src="https://img.shields.io/badge/power_by-commons.nvim-pink" /></a>
 <a href="https://luarocks.org/modules/linrongbin16/fzfx.nvim"><img alt="luarocks" src="https://img.shields.io/luarocks/v/linrongbin16/fzfx.nvim" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?label=ci" /></a>
@@ -61,7 +61,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 ## ✅ Requirements
 
-- Neovim &ge; 0.7.
+- Neovim &ge; 0.9.
+  > This plugin always keeps up with the latest stable version, thus only support the last legacy version to reduce maintenance effort.
 - [fzf](https://github.com/junegunn/fzf).
 - [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (for query fzf status or update preview label).
 - [nerd-fonts](https://www.nerdfonts.com/) (**optional** for icons).
