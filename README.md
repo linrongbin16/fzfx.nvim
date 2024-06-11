@@ -131,7 +131,7 @@ Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\W
 
 > [!IMPORTANT]
 >
-> Specify plugin version/tag (e.g. `v5.*`) to avoid break changes between major versions!
+> Specify plugin version/tag (i.e. `v5.*`) to avoid break changes between major versions!
 
 <details>
 <summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
@@ -220,12 +220,12 @@ lua require('fzfx').setup()
 
 ## 🚀 Usage
 
-There're multiple commands provided, named with prefix `Fzfx`. The sub commands indicates the user query's input method, (e.g. the variants) named with below rules:
+There're multiple commands provided, named with prefix `Fzfx`. The sub commands indicates the user query's input method, (i.e. the variants) named with below rules:
 
 - **Basic** variant is named with `args`, accepts the following arguments as query content.
 - **Visual select** variant is named with `visual`, uses visual selection as query content.
 - **Cursor word** variant is named with `cword`, uses the word text under cursor as query content.
-- **Put** (e.g. yank text) variant is named with `put` (just like press the `p` key), uses the yank text as query content.
+- **Put** (i.e. yank text) variant is named with `put` (just like press the `p` key), uses the yank text as query content.
 - **Resume last search** variant is named with `resume`, uses the last search content as query content.
 
 > [!NOTE]
@@ -849,7 +849,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to definitions.
+                navigating symbols, i.e. go to definitions.
               </li>
               <li>
                 Use protocol
@@ -891,7 +891,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to type definitions.
+                navigating symbols, i.e. go to type definitions.
               </li>
               <li>
                 Use protocol
@@ -933,7 +933,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to implementations.
+                navigating symbols, i.e. go to implementations.
               </li>
               <li>
                 Use protocol
@@ -975,7 +975,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to references.
+                navigating symbols, i.e. go to references.
               </li>
               <li>
                 Use protocol
@@ -1017,7 +1017,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to incoming calls.
+                navigating symbols, i.e. go to incoming calls.
               </li>
               <li>
                 Use protocol
@@ -1059,7 +1059,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to outgoing calls.
+                navigating symbols, i.e. go to outgoing calls.
               </li>
               <li>
                 Use protocol
@@ -1915,7 +1915,7 @@ For detailed explanation of each components, please see [A Generic Schema for Cr
 
 To help easier customizing/integrating, fzfx provides below builtin modules and APIs:
 
-- `fzfx.cfg`: Top-level configurations, e.g. directly create the `FzfxFiles`, `FzfxLiveGrep`, etc search commands. Easy to read and learn all the components used in those commands, as well as easy to copy and paste.
+- `fzfx.cfg`: Top-level configurations, i.e. directly create the `FzfxFiles`, `FzfxLiveGrep`, etc search commands. Easy to read and learn all the components used in those commands, as well as easy to copy and paste.
 - `fzfx.helper`: Line-oriented helper utilities for parsing and rendering user queries and lines, since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 - `fzfx.lib`: Low-level fundamental infrastructures, fzfx use the [commons](https://github.com/linrongbin16/commons.nvim) lua library for most of the common utilities, please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/).
 
