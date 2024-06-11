@@ -1,7 +1,7 @@
 local tbl = require("fzfx.commons.tbl")
 local path = require("fzfx.commons.path")
-local term_color = require("fzfx.commons.color.term")
-local hl_color = require("fzfx.commons.color.hl")
+local color_term = require("fzfx.commons.color.term")
+local color_hl = require("fzfx.commons.color.hl")
 
 local switches = require("fzfx.lib.switches")
 local log = require("fzfx.lib.log")
@@ -83,13 +83,13 @@ M.variants = {
 }
 
 local _, _, SIGN_ERROR_HL =
-  hl_color.get_hl_with_fallback("DiagnosticSignError", "LspDiagnosticsSignError", "ErrorMsg")
+  color_hl.get_hl_with_fallback("DiagnosticSignError", "LspDiagnosticsSignError", "ErrorMsg")
 local _, _, SIGN_WARN_HL =
-  hl_color.get_hl_with_fallback("DiagnosticSignWarn", "LspDiagnosticsSignWarn", "WarningMsg")
+  color_hl.get_hl_with_fallback("DiagnosticSignWarn", "LspDiagnosticsSignWarn", "WarningMsg")
 local _, _, SIGN_INFO_HL =
-  hl_color.get_hl_with_fallback("DiagnosticSignInfo", "LspDiagnosticsSignInfo", "None")
+  color_hl.get_hl_with_fallback("DiagnosticSignInfo", "LspDiagnosticsSignInfo", "None")
 local _, _, SIGN_HINT_HL =
-  hl_color.get_hl_with_fallback("DiagnosticSignHint", "LspDiagnosticsSignHint", "Comment")
+  color_hl.get_hl_with_fallback("DiagnosticSignHint", "LspDiagnosticsSignHint", "Comment")
 
 local LSP_DIAGNOSTICS_SIGNS = {
   [1] = {
@@ -199,7 +199,7 @@ M._make_lsp_diagnostics_provider = function(opts)
         if type(diag.text) == "string" and string.len(diag.text) > 0 then
           if type(signs[diag.severity]) == "table" then
             local sign_item = signs[diag.severity]
-            local color_renderer = term_color[sign_item.textcolor]
+            local color_renderer = color_term[sign_item.textcolor]
             builder = " " .. color_renderer(sign_item.text, sign_item.texthl)
           end
           builder = builder .. " " .. diag.text
@@ -214,7 +214,7 @@ M._make_lsp_diagnostics_provider = function(opts)
         local line = string.format(
           "%s:%s:%s:%s",
           providers_helper.LSP_FILENAME_COLOR(diag.filename),
-          term_color.green(tostring(diag.lnum)),
+          color_term.green(tostring(diag.lnum)),
           tostring(diag.col),
           builder
         )
