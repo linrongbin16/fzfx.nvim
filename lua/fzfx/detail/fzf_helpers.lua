@@ -1,9 +1,9 @@
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
-local api = require("fzfx.commons.api")
 local path = require("fzfx.commons.path")
 local json = require("fzfx.commons.json")
 local fileio = require("fzfx.commons.fileio")
+local hl_color = require("fzfx.commons.color.hl")
 
 local constants = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
@@ -199,7 +199,7 @@ local function _generate_fzf_color_opts()
         table.insert(builder, string.format("%s:%s", name:gsub("_", "%-"), opts[i]))
         break
       else
-        local codes = api.get_hl(opts[i])
+        local codes = hl_color.get_hl(opts[i])
         if type(tbl.tbl_get(codes, attr)) == "number" then
           table.insert(builder, string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr]))
           break

@@ -1,5 +1,4 @@
 local str = require("fzfx.commons.str")
-local api = require("fzfx.commons.api")
 local path = require("fzfx.commons.path")
 
 local bufs = require("fzfx.lib.bufs")
@@ -56,7 +55,7 @@ M._buf_valid = function(bufnr)
     ["qf"] = true,
     ["neo-tree"] = true,
   }
-  local ok, ft_or_err = pcall(api.get_buf_option, bufnr, "filetype")
+  local ok, ft_or_err = pcall(vim.api.nvim_get_option_value, "filetype", { buf = bufnr })
   if not ok then
     return false
   end

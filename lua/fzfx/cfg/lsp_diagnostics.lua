@@ -1,7 +1,7 @@
 local tbl = require("fzfx.commons.tbl")
-local api = require("fzfx.commons.api")
 local path = require("fzfx.commons.path")
 local term_color = require("fzfx.commons.color.term")
+local hl_color = require("fzfx.commons.color.hl")
 
 local switches = require("fzfx.lib.switches")
 local log = require("fzfx.lib.log")
@@ -83,13 +83,13 @@ M.variants = {
 }
 
 local _, _, SIGN_ERROR_HL =
-  api.get_hl_with_fallback("DiagnosticSignError", "LspDiagnosticsSignError", "ErrorMsg")
+  hl_color.get_hl_with_fallback("DiagnosticSignError", "LspDiagnosticsSignError", "ErrorMsg")
 local _, _, SIGN_WARN_HL =
-  api.get_hl_with_fallback("DiagnosticSignWarn", "LspDiagnosticsSignWarn", "WarningMsg")
+  hl_color.get_hl_with_fallback("DiagnosticSignWarn", "LspDiagnosticsSignWarn", "WarningMsg")
 local _, _, SIGN_INFO_HL =
-  api.get_hl_with_fallback("DiagnosticSignInfo", "LspDiagnosticsSignInfo", "None")
+  hl_color.get_hl_with_fallback("DiagnosticSignInfo", "LspDiagnosticsSignInfo", "None")
 local _, _, SIGN_HINT_HL =
-  api.get_hl_with_fallback("DiagnosticSignHint", "LspDiagnosticsSignHint", "Comment")
+  hl_color.get_hl_with_fallback("DiagnosticSignHint", "LspDiagnosticsSignHint", "Comment")
 
 local LSP_DIAGNOSTICS_SIGNS = {
   [1] = {
