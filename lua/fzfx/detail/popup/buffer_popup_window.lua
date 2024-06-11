@@ -209,7 +209,7 @@ end
 --- @param wrap boolean
 --- @param current_winnr integer
 local function _set_default_previewer_win_options(winnr, wrap, current_winnr)
-  local number_opt = vim.api.nvim_get_option_value("number", { win = winnr })
+  local number_opt = vim.api.nvim_get_option_value("number", { win = current_winnr })
   vim.api.nvim_set_option_value("number", number_opt, { win = winnr })
   vim.api.nvim_set_option_value("spell", false, { win = winnr })
   vim.api.nvim_set_option_value("winhighlight", "Pmenu:,Normal:Normal", { win = winnr })
