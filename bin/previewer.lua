@@ -7,7 +7,6 @@ vim.opt.runtimepath:append(SELF_PATH)
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
 local fileio = require("fzfx.commons.fileio")
-local json = require("fzfx.commons.json")
 local spawn = require("fzfx.commons.spawn")
 local shell_helpers = require("fzfx.detail.shell_helpers")
 shell_helpers.setup("previewer")
@@ -56,7 +55,7 @@ shell_helpers.log_ensure(
   str.not_empty(metajsonstring),
   "metajsonstring is not string! " .. vim.inspect(metajsonstring)
 )
-local metaopts = json.decode(metajsonstring) --[[@as fzfx.PreviewerMetaOpts]]
+local metaopts = vim.json.decode(metajsonstring) --[[@as fzfx.PreviewerMetaOpts]]
 shell_helpers.log_debug("metaopts:" .. vim.inspect(metaopts))
 
 --- @param l string?
@@ -82,7 +81,7 @@ elseif metaopts.previewer_type == "command_list" then
     os.exit(0)
     return
   end
-  local cmd_splits = json.decode(cmd) --[[ @as string[] ]]
+  local cmd_splits = vim.json.decode(cmd) --[[ @as string[] ]]
   if tbl.tbl_empty(cmd_splits) then
     os.exit(0)
     return
