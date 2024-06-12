@@ -61,8 +61,9 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 ## ✅ Requirements
 
+> [!NOTE] This plugin keeps up with the latest stable version, supports until the last legacy version to reduce maintenance effort. For example at the time of writing, 2024-06-11, stable is v0.10, last legacy is v0.9, thus this plugin supports v0.9+.
+
 - Neovim &ge; 0.9.
-  > This plugin always keeps up with the latest stable version, while supports till the last legacy version to reduce maintenance effort, i.e. at the time of writing this, 2024-06-11, the stable version is v0.10, nightly is v0.11, last legacy is v0.9.
 - [fzf](https://github.com/junegunn/fzf).
 - [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (for query fzf status or update preview label).
 - [nerd-fonts](https://www.nerdfonts.com/) (**optional** for icons).
