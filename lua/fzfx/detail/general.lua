@@ -1,6 +1,5 @@
 local tbl = require("fzfx.commons.tbl")
 local path = require("fzfx.commons.path")
-local json = require("fzfx.commons.json")
 local str = require("fzfx.commons.str")
 local num = require("fzfx.commons.num")
 local term_color = require("fzfx.commons.color.term")
@@ -200,7 +199,7 @@ function ProviderSwitch:provide(query, context)
   )
 
   local metaopts = make_provider_meta_opts(self.pipeline, provider_config)
-  local metajson = json.encode(metaopts) --[[@as string]]
+  local metajson = vim.json.encode(metaopts) --[[@as string]]
   fileio.writefile(self.metafile, metajson)
 
   if provider_config.provider_type == ProviderTypeEnum.PLAIN then
@@ -231,7 +230,7 @@ function ProviderSwitch:provide(query, context)
     else
       fileio.writefile(
         self.resultfile,
-        json.encode(provider_config.provider --[[@as table]]) --[[@as string]]
+        vim.json.encode(provider_config.provider --[[@as table]]) --[[@as string]]
       )
     end
   elseif provider_config.provider_type == ProviderTypeEnum.COMMAND then
@@ -299,7 +298,7 @@ function ProviderSwitch:provide(query, context)
       if tbl.tbl_empty(result) then
         fileio.writefile(self.resultfile, "")
       else
-        fileio.writefile(self.resultfile, json.encode(result) --[[@as string]])
+        fileio.writefile(self.resultfile, vim.json.encode(result) --[[@as string]])
       end
     end
   elseif provider_config.provider_type == ProviderTypeEnum.LIST then
@@ -460,7 +459,7 @@ function PreviewerSwitch:preview(line, context)
   )
 
   local metaopts = make_previewer_meta_opts(self.pipeline, previewer_config)
-  local metajson = json.encode(metaopts) --[[@as string]]
+  local metajson = vim.json.encode(metaopts) --[[@as string]]
   fileio.writefile(self.metafile, metajson)
 
   if previewer_config.previewer_type == PreviewerTypeEnum.COMMAND then
@@ -528,7 +527,7 @@ function PreviewerSwitch:preview(line, context)
       if tbl.tbl_empty(result) then
         fileio.writefile(self.resultfile, "")
       else
-        fileio.writefile(self.resultfile, json.encode(result --[[@as table]]) --[[@as string]])
+        fileio.writefile(self.resultfile, vim.json.encode(result --[[@as table]]) --[[@as string]])
       end
     end
   elseif previewer_config.previewer_type == PreviewerTypeEnum.LIST then
@@ -1170,7 +1169,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
 
         vim.schedule(function()
           if str.not_empty(tbl.tbl_get(completed, "stdout")) then
-            local parse_ok, parse_status = pcall(json.decode, completed.stdout) --[[@as boolean, table]]
+            local parse_ok, parse_status = pcall(vim.json.decode, completed.stdout) --[[@as boolean, table]]
             if parse_ok and str.not_empty(tbl.tbl_get(parse_status, "current", "text")) then
               local focused_line = parse_status["current"]["text"]
 
@@ -1403,7 +1402,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     end
     local last_query_cache = fzf_helpers.last_query_cache_name(name)
     fzf_helpers.save_last_query_cache(name, last_query, provider_switch.pipeline)
-    local content = json.encode({
+    local content = vim.json.encode({
       default_provider = provider_switch.pipeline,
       query = last_query,
     }) --[[@as string]]

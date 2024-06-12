@@ -1,6 +1,5 @@
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
-local api = require("fzfx.commons.api")
 local color_hl = require("fzfx.commons.color.hl")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
@@ -104,7 +103,7 @@ function _BatTmScopeRenderer:new(hl, scope)
 
   local value = nil
   for i, h in ipairs(hls) do
-    local ok, hl_codes = pcall(api.get_hl, h)
+    local ok, hl_codes = pcall(color_hl.get_hl, h)
     if ok and tbl.tbl_not_empty(hl_codes) then
       local item = M._make_scope_value(h, scope, hl_codes)
       if item then

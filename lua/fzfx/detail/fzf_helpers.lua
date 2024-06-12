@@ -1,9 +1,8 @@
 local str = require("fzfx.commons.str")
 local tbl = require("fzfx.commons.tbl")
-local api = require("fzfx.commons.api")
 local path = require("fzfx.commons.path")
-local json = require("fzfx.commons.json")
 local fileio = require("fzfx.commons.fileio")
+local color_hl = require("fzfx.commons.color.hl")
 
 local constants = require("fzfx.lib.constants")
 local shells = require("fzfx.lib.shells")
@@ -108,7 +107,7 @@ local function get_last_query_cache(name)
     local data = fileio.readfile(cache_filename, { trim = true }) --[[@as string]]
     if str.not_empty(data) then
       --- @type boolean, fzfx.LastQueryCacheObj?
-      local ok, data_obj = pcall(json.decode, data)
+      local ok, data_obj = pcall(vim.json.decode, data)
       if
         ok
         and tbl.tbl_not_empty(data_obj)
@@ -199,7 +198,7 @@ local function _generate_fzf_color_opts()
         table.insert(builder, string.format("%s:%s", name:gsub("_", "%-"), opts[i]))
         break
       else
-        local codes = api.get_hl(opts[i])
+        local codes = color_hl.get_hl(opts[i])
         if type(tbl.tbl_get(codes, attr)) == "number" then
           table.insert(builder, string.format("%s:#%06x", name:gsub("_", "%-"), codes[attr]))
           break

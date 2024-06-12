@@ -3,7 +3,7 @@
 # fzfx.nvim
 
 <p>
-<a href="https://github.com/neovim/neovim/releases/v0.7.0"><img alt="require" src="https://img.shields.io/badge/require-0.7+-blue" /></a>
+<a href="https://github.com/neovim/neovim/releases/v0.9.0"><img alt="require" src="https://img.shields.io/badge/require-0.9+-blue" /></a>
 <a href="https://github.com/linrongbin16/commons.nvim"><img alt="commons.nvim" src="https://img.shields.io/badge/power_by-commons.nvim-pink" /></a>
 <a href="https://luarocks.org/modules/linrongbin16/fzfx.nvim"><img alt="luarocks" src="https://img.shields.io/luarocks/v/linrongbin16/fzfx.nvim" /></a>
 <a href="https://github.com/linrongbin16/fzfx.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/fzfx.nvim/ci.yml?label=ci" /></a>
@@ -61,7 +61,8 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 ## ✅ Requirements
 
-- Neovim &ge; 0.7.
+- Neovim &ge; 0.9.
+  > This plugin always keeps up with the latest stable version, while supports till the last legacy version to reduce maintenance effort, i.e. at the time of writing this, 2024-06-11, the stable version is v0.10, nightly is v0.11, last legacy is v0.9.
 - [fzf](https://github.com/junegunn/fzf).
 - [curl](https://man7.org/linux/man-pages/man1/curl.1.html) (for query fzf status or update preview label).
 - [nerd-fonts](https://www.nerdfonts.com/) (**optional** for icons).
@@ -130,7 +131,7 @@ Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\W
 
 > [!IMPORTANT]
 >
-> Specify plugin version/tag (e.g. `v5.*`) to avoid break changes between major versions!
+> Specify plugin version/tag (i.e. `v5.*`) to avoid break changes between major versions!
 
 <details>
 <summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
@@ -219,12 +220,12 @@ lua require('fzfx').setup()
 
 ## 🚀 Usage
 
-There're multiple commands provided, named with prefix `Fzfx`. The sub commands indicates the user query's input method, (e.g. the variants) named with below rules:
+There're multiple commands provided, named with prefix `Fzfx`. The sub commands indicates the user query's input method, (i.e. the variants) named with below rules:
 
 - **Basic** variant is named with `args`, accepts the following arguments as query content.
 - **Visual select** variant is named with `visual`, uses visual selection as query content.
 - **Cursor word** variant is named with `cword`, uses the word text under cursor as query content.
-- **Put** (e.g. yank text) variant is named with `put` (just like press the `p` key), uses the yank text as query content.
+- **Put** (i.e. yank text) variant is named with `put` (just like press the `p` key), uses the yank text as query content.
 - **Resume last search** variant is named with `resume`, uses the last search content as query content.
 
 > [!NOTE]
@@ -848,7 +849,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to definitions.
+                navigating symbols, i.e. go to definitions.
               </li>
               <li>
                 Use protocol
@@ -890,7 +891,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to type definitions.
+                navigating symbols, i.e. go to type definitions.
               </li>
               <li>
                 Use protocol
@@ -932,7 +933,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to implementations.
+                navigating symbols, i.e. go to implementations.
               </li>
               <li>
                 Use protocol
@@ -974,7 +975,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to references.
+                navigating symbols, i.e. go to references.
               </li>
               <li>
                 Use protocol
@@ -1016,7 +1017,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to incoming calls.
+                navigating symbols, i.e. go to incoming calls.
               </li>
               <li>
                 Use protocol
@@ -1058,7 +1059,7 @@ Below keys are binded by default:
               <li>
                 The <code>args</code> variant always use cursor word as query
                 content (not command arguments), because the scenario is
-                navigating symbols, e.g. go to outgoing calls.
+                navigating symbols, i.e. go to outgoing calls.
               </li>
               <li>
                 Use protocol
@@ -1838,77 +1839,75 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/c704e5b2-d82a-45f2-8920
 <summary><i>Click here to see how to configure</i></summary>
 
 ```lua
-require("fzfx").setup({
-  users = {
-    ls = {
-      --- @type CommandConfig
-      command = {
-        name = "FzfxLs",
-        desc = "File Explorer (ls -1)",
-      },
-      variants = {
-        {
-          name = "args",
-          feed = "args",
-          default_provider = "filter_hiddens",
-        },
-        {
-          name = "hidden_args",
-          feed = "args",
-          default_provider = "include_hiddens",
-        },
-      },
-      --- @type table<string, ProviderConfig>
-      providers = {
-        filter_hiddens = {
-          key = "ctrl-h",
-          provider = { "ls", "--color=always", "-1" },
-        },
-        include_hiddens = {
-          key = "ctrl-u",
-          provider = { "ls", "--color=always", "-1a" },
-        },
-      },
-      --- @type table<string, PreviewerConfig>
-      previewers = {
-        filter_hiddens = {
-          previewer = function(line)
-            -- each line is either a folder or a file
-            return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
-              or { "cat", line }
-          end,
-          previewer_type = "command_list",
-        },
-        include_hiddens = {
-          previewer = function(line)
-            return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
-              or { "cat", line }
-          end,
-          previewer_type = "command_list",
-        },
-      },
-      actions = {
-        ["esc"] = function(lines)
-          -- do nothing
-        end,
-        ["enter"] = function(lines)
-          for _, line in ipairs(lines) do
-            vim.cmd(string.format([[edit %s]], line))
-          end
-        end,
-      },
-      fzf_opts = {
-        "--multi",
-        { "--prompt", "Ls > " },
-      },
+require("fzfx").setup()
+
+require("fzfx").register("ls", {
+  --- @type CommandConfig
+  command = {
+    name = "FzfxLs",
+    desc = "File Explorer (ls -1)",
+  },
+  variants = {
+    {
+      name = "args",
+      feed = "args",
+      default_provider = "filter_hiddens",
     },
+    {
+      name = "hidden_args",
+      feed = "args",
+      default_provider = "include_hiddens",
+    },
+  },
+  --- @type table<string, ProviderConfig>
+  providers = {
+    filter_hiddens = {
+      key = "ctrl-h",
+      provider = { "ls", "--color=always", "-1" },
+    },
+    include_hiddens = {
+      key = "ctrl-u",
+      provider = { "ls", "--color=always", "-1a" },
+    },
+  },
+  --- @type table<string, PreviewerConfig>
+  previewers = {
+    filter_hiddens = {
+      previewer = function(line)
+        -- each line is either a folder or a file
+        return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
+          or { "cat", line }
+      end,
+      previewer_type = "command_list",
+    },
+    include_hiddens = {
+      previewer = function(line)
+        return vim.fn.isdirectory(line) > 0 and { "ls", "--color=always", "-lha", line }
+          or { "cat", line }
+      end,
+      previewer_type = "command_list",
+    },
+  },
+  actions = {
+    ["esc"] = function(lines)
+      -- do nothing
+    end,
+    ["enter"] = function(lines)
+      for _, line in ipairs(lines) do
+        vim.cmd(string.format([[edit %s]], line))
+      end
+    end,
+  },
+  fzf_opts = {
+    "--multi",
+    { "--prompt", "Ls > " },
   },
 })
 ```
 
 </details>
 
-You can also use the `require("fzfx").register("ls", {...})` api to do that.
+First setup this plugin, then use `require("fzfx").register(name, opts})` api to create your own searching command.
 
 For detailed explanation of each components, please see [A Generic Schema for Creating FZF Command](https://linrongbin16.github.io/fzfx.nvim/#/GenericSchema) and [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
@@ -1916,7 +1915,7 @@ For detailed explanation of each components, please see [A Generic Schema for Cr
 
 To help easier customizing/integrating, fzfx provides below builtin modules and APIs:
 
-- `fzfx.cfg`: Top-level configurations, e.g. directly create the `FzfxFiles`, `FzfxLiveGrep`, etc search commands. Easy to read and learn all the components used in those commands, as well as easy to copy and paste.
+- `fzfx.cfg`: Top-level configurations, i.e. directly create the `FzfxFiles`, `FzfxLiveGrep`, etc search commands. Easy to read and learn all the components used in those commands, as well as easy to copy and paste.
 - `fzfx.helper`: Line-oriented helper utilities for parsing and rendering user queries and lines, since a search command is actually all about the lines in (both left and right side of) the fzf binary: generate lines, preview lines, invoke callbacks on selected lines, etc.
 - `fzfx.lib`: Low-level fundamental infrastructures, fzfx use the [commons](https://github.com/linrongbin16/commons.nvim) lua library for most of the common utilities, please also refer to [commons.nvim's documentation](https://linrongbin16.github.io/commons.nvim/).
 

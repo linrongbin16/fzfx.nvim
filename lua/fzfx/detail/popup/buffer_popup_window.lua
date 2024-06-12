@@ -1,7 +1,6 @@
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
 local num = require("fzfx.commons.num")
-local api = require("fzfx.commons.api")
 local fileio = require("fzfx.commons.fileio")
 
 local log = require("fzfx.lib.log")
@@ -201,35 +200,35 @@ local BufferPopupWindow = {}
 
 --- @param bufnr integer
 local function _set_default_buf_options(bufnr)
-  api.set_buf_option(bufnr, "bufhidden", "wipe")
-  api.set_buf_option(bufnr, "buflisted", false)
-  api.set_buf_option(bufnr, "filetype", "fzf")
+  vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = bufnr })
+  vim.api.nvim_set_option_value("buflisted", false, { buf = bufnr })
+  vim.api.nvim_set_option_value("filetype", "fzf", { buf = bufnr })
 end
 
 --- @param winnr integer
 --- @param wrap boolean
 --- @param current_winnr integer
 local function _set_default_previewer_win_options(winnr, wrap, current_winnr)
-  local number_opt = api.get_win_option(current_winnr, "number")
-  api.set_win_option(winnr, "number", number_opt)
-  api.set_win_option(winnr, "spell", false)
-  api.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
+  local number_opt = vim.api.nvim_get_option_value("number", { win = current_winnr })
+  vim.api.nvim_set_option_value("number", number_opt, { win = winnr })
+  vim.api.nvim_set_option_value("spell", false, { win = winnr })
+  vim.api.nvim_set_option_value("winhighlight", "Pmenu:,Normal:Normal", { win = winnr })
   -- apis.set_win_option(winnr, "scrolloff", 0)
   -- apis.set_win_option(winnr, "sidescrolloff", 0)
-  api.set_win_option(winnr, "foldenable", false)
-  api.set_win_option(winnr, "wrap", wrap)
+  vim.api.nvim_set_option_value("foldenable", false, { win = winnr })
+  vim.api.nvim_set_option_value("wrap", wrap, { win = winnr })
 end
 
 --- @param winnr integer
 --- @param current_winnr integer
 local function _set_default_provider_win_options(winnr, current_winnr)
-  api.set_win_option(winnr, "number", false)
-  api.set_win_option(winnr, "spell", false)
-  api.set_win_option(winnr, "winhighlight", "Pmenu:,Normal:Normal")
-  api.set_win_option(winnr, "colorcolumn", "")
+  vim.api.nvim_set_option_value("number", false, { win = winnr })
+  vim.api.nvim_set_option_value("spell", false, { win = winnr })
+  vim.api.nvim_set_option_value("winhighlight", "Pmenu:,Normal:Normal", { win = winnr })
+  vim.api.nvim_set_option_value("colorcolumn", "", { win = winnr })
   -- apis.set_win_option(winnr, "scrolloff", 0)
   -- apis.set_win_option(winnr, "sidescrolloff", 0)
-  api.set_win_option(winnr, "foldenable", false)
+  vim.api.nvim_set_option_value("foldenable", false, { win = winnr })
 end
 
 --- @package
@@ -589,7 +588,7 @@ function BufferPopupWindow:preview_file_contents(file_content, content_view, on_
   end
 
   local file_type = vim.filetype.match({ filename = file_content.previewer_result.filename }) or ""
-  api.set_buf_option(self.previewer_bufnr, "filetype", file_type)
+  vim.api.nvim_set_option_value("filetype", file_type, { buf = self.previewer_bufnr })
 
   vim.defer_fn(function()
     if not self:previewer_is_valid() then
