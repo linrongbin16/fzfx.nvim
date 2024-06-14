@@ -4,7 +4,10 @@ local str = require("fzfx.commons.str")
 
 local M = {}
 
-local CHECKS = {
+--- @alias fzfx.HealthCheckItem {cond:boolean,name:string,version:string?,line:integer?}
+--- @alias fzfx.HealthCheck {items:fzfx.HealthCheckItem[],missed:string[]}
+--- @type fzfx.HealthCheck[]
+local HEALTH_CHECKS = {
   {
     items = {
       { cond = consts.HAS_FZF, name = consts.FZF, version = "--version", line = 1 },
@@ -67,30 +70,40 @@ local CHECKS = {
   },
 }
 
+--- @param items commons.List
+--- @return string
+M._summary = function(items)
+  local n = items:length()
+  local founded_items = items
+    :map(function(
+      item --[[@as fzfx.HealthCheckItem]],
+      index
+    )
+      return string.format(
+        "'%s'%s",
+        vim.fn.fnamemodify(item.name, ":~:."),
+        (index == 1 and n > 1) and " (preferred)" or ""
+      )
+    end)
+    :join(", ")
+  return "Found " .. founded_items
+end
+
 M.check = function()
   vim.health.start("fzfx")
 
-  for _, config in ipairs(CHECKS) do
-    local exec = tbl.List:of()
-    for _, item in ipairs(config.items) do
-      if item.cond then
-        exec:push(item)
-      end
-    end
-    if not exec:empty() then
-      local n = exec:length()
-      local all_exec = exec
-        :map(function(item, index)
-          return string.format(
-            "'%s'%s",
-            vim.fn.fnamemodify(item.name, ":~:."),
-            (index == 1 and n > 1) and " (preferred)" or ""
-          )
-        end)
-        :data()
-      local msg = string.format("Found %s", table.concat(all_exec, ", "))
-      local all_version = exec
-        :map(function(item, index)
+  for _, config in ipairs(HEALTH_CHECKS) do
+    local configured_items = tbl.List:copy(config.items)
+    local items = configured_items:filter(function(
+      item --[[@as fzfx.HealthCheckItem]]
+    )
+      return item.cond
+    end)
+
+    if not items:empty() then
+      local msg = M._summary(items)
+      local all_version = items
+        :map(function(item)
           if str.not_empty(item.version) then
             local ok, output = pcall(vim.fn.systemlist, { item.name, item.version })
             return {
@@ -111,7 +124,7 @@ M.check = function()
           end
         end)
         :data()
-      for i, version in ipairs(all_version) do
+      for _, version in ipairs(all_version) do
         if
           tbl.tbl_not_empty(version)
           and version.ok
