@@ -145,7 +145,7 @@ M.label_vim_mark = function(line, context)
   then
     return string.format(
       "%s:%d:%d",
-      vim.fn.fnamemodify(filename, ":t"),
+      vim.fn.fnamemodify(filename --[[@as string]], ":t"),
       parsed.lineno or 1,
       parsed.col or 1
     )
