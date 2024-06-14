@@ -3,112 +3,112 @@ local M = {}
 --- @alias fzfx.Options table<string, any>
 --- @type fzfx.Options
 local Defaults = {
-  -- the 'Files' commands
+  -- Find files, i.e. the 'FzfxFiles' command.
   --
   --- @type fzfx.GroupConfig
   files = require("fzfx.cfg.files"),
 
-  -- the 'Live Grep' commands
+  -- Live grep, i.e. the 'FzfxLiveGrep' command.
   --
   --- @type fzfx.GroupConfig
   live_grep = require("fzfx.cfg.live_grep"),
 
-  -- the 'Buf Live Grep' commands
+  -- Live grep only on current buffer, i.e. the 'FzfxBufLiveGrep' command.
   --
   --- @type fzfx.GroupConfig
   buf_live_grep = require("fzfx.cfg.buf_live_grep"),
 
-  -- the 'Buffers' commands
+  -- Find buffers, i.e. the 'FzfxBuffers' command.
   --
   --- @type fzfx.GroupConfig
   buffers = require("fzfx.cfg.buffers"),
 
-  -- the 'Git Files' commands
+  -- Find git files, i.e. the 'FzfxGFiles' command.
   --
   --- @type fzfx.GroupConfig
   git_files = require("fzfx.cfg.git_files"),
 
-  -- the 'Git Live Grep' commands
+  -- Git live grep, i.e. the 'FzfxGLiveGrep' command.
   --
   --- @type fzfx.GroupConfig
   git_live_grep = require("fzfx.cfg.git_live_grep"),
 
-  -- the 'Git Status' commands
+  -- Search git status (changed files), i.e. the 'FzfxGStatus' command.
   --
   --- @type fzfx.GroupConfig
   git_status = require("fzfx.cfg.git_status"),
 
-  -- the 'Git Branches' commands
+  -- Search git branches, i.e. the 'FzfxGBranches' command.
   --
   --- @type fzfx.GroupConfig
   git_branches = require("fzfx.cfg.git_branches"),
 
-  -- the 'Git Commits' commands
+  -- Search git commits (logs), i.e. the 'FzfxGCommits' command.
   --
   --- @type fzfx.GroupConfig
   git_commits = require("fzfx.cfg.git_commits"),
 
-  -- the 'Git Blame' command
+  -- Search git blame (on current buffer), i.e. the 'FzfxGBlame' command.
   --
   --- @type fzfx.GroupConfig
   git_blame = require("fzfx.cfg.git_blame"),
 
-  -- the 'Vim Commands' commands
+  -- Search vim commands, i.e. the 'FzfxCommands' command.
   --
   --- @type fzfx.GroupConfig
   vim_commands = require("fzfx.cfg.vim_commands"),
 
-  -- the 'Vim KeyMaps' commands
+  -- Search vim key mappings, i.e. the 'FzfxKeyMaps' command.
   --
   --- @type fzfx.GroupConfig
   vim_keymaps = require("fzfx.cfg.vim_keymaps"),
 
-  -- the 'Vim Marks' commands
+  -- Search vim marks, i.e. the 'FzfxMarks' command.
   --
   --- @type fzfx.GroupConfig
   vim_marks = require("fzfx.cfg.vim_marks"),
 
-  -- the 'Lsp Diagnostics' command
+  -- Search (LSP) diagnostics, i.e. the 'FzfxLspDiagnostics' command.
   --
   --- @type fzfx.GroupConfig
   lsp_diagnostics = require("fzfx.cfg.lsp_diagnostics"),
 
-  -- the 'Lsp Definitions' command
+  -- Search LSP definitions under cursor, i.e. the 'FzfxLspDefinitions' command.
   --
   --- @type fzfx.GroupConfig
   lsp_definitions = require("fzfx.cfg.lsp_definitions"),
 
-  -- the 'Lsp Type Definitions' command
+  -- Search LSP type definitions under cursor, i.e. the 'FzfxLspTypeDefinitions' command.
   --
   --- @type fzfx.GroupConfig
   lsp_type_definitions = require("fzfx.cfg.lsp_type_definitions"),
 
-  -- the 'Lsp References' command
+  -- Search LSP references under cursor, i.e. the 'FzfxLspReferences' command.
   --
   --- @type fzfx.GroupConfig
   lsp_references = require("fzfx.cfg.lsp_references"),
 
-  -- the 'Lsp Implementations' command
+  -- Search LSP implementations under cursor, i.e. the 'FzfxLspImplementations' command.
   --
   --- @type fzfx.GroupConfig
   lsp_implementations = require("fzfx.cfg.lsp_implementations"),
 
-  -- the 'Lsp Incoming Calls' command
+  -- Search LSP incoming calls under cursor, i.e. the 'FzfxLspIncomingCalls' command.
   --
   --- @type fzfx.GroupConfig
   lsp_incoming_calls = require("fzfx.cfg.lsp_incoming_calls"),
 
-  -- the 'Lsp Outgoing Calls' command
+  -- Search LSP outgoing calls under cursor, i.e. the 'FzfxLspOutgoingCalls' command.
   --
   --- @type fzfx.GroupConfig
   lsp_outgoing_calls = require("fzfx.cfg.lsp_outgoing_calls"),
 
-  -- the 'File Explorer' commands
+  -- Search files and directories, i.e. the 'FzfxFileExplorer' command.
   --
   --- @type fzfx.GroupConfig
   file_explorer = require("fzfx.cfg.file_explorer"),
 
-  -- the 'Yank History' commands
+  -- Yanked history, save yanked text as the input of 'put' variants.
   yank_history = {
     other_opts = {
       maxsize = 100,
