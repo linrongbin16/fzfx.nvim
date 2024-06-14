@@ -1049,6 +1049,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
         vim.inspect(buffer_previewer_actions_fsevent_err)
       )
     )
+    ---@diagnostic disable-next-line: need-check-nil
     local actions_fsevent_start_result, actions_fsevent_start_err = buffer_previewer_actions_fsevent:start(
       buffer_previewer_actions_file,
       {},
