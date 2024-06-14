@@ -4,7 +4,7 @@ local str = require("fzfx.commons.str")
 
 local M = {}
 
-local EXEC_CONFIGS = {
+local CHECKS = {
   {
     items = {
       { cond = consts.HAS_FZF, name = consts.FZF, version = "--version", line = 1 },
@@ -70,7 +70,7 @@ local EXEC_CONFIGS = {
 M.check = function()
   vim.health.start("fzfx")
 
-  for _, config in ipairs(EXEC_CONFIGS) do
+  for _, config in ipairs(CHECKS) do
     local exec = tbl.List:of()
     for _, item in ipairs(config.items) do
       if item.cond then
@@ -140,7 +140,7 @@ M.check = function()
         end)
         :data()
       local fail_level = config.fail_level or "error"
-      local fail_message = vim.health[fail_level]
+      local fail_message = vim.health[fail_level] --[[@as function]]
       fail_message(string.format("Missing %s", table.concat(all_exec, ", ")))
     end
   end
