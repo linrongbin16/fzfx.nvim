@@ -115,7 +115,7 @@ local Defaults = {
     },
   },
 
-  -- basic fzf opts
+  -- Basic fzf options.
   fzf_opts = {
     "--ansi",
     "--info=inline",
@@ -129,12 +129,13 @@ local Defaults = {
     "--bind=ctrl-b:preview-half-page-up",
   },
 
-  -- global fzf opts with highest priority.
+  -- Override fzf options, with highest priority, which could override 'fzf_opts' above.
+  -- This option is to help configure fzf options easier. Since there're two 'fzf_opts' options: root level and command level.
   --
-  -- there're two 'fzf_opts' configs: root level, commands level, for example if the configs is:
+  -- For example now we have below config:
   --
   -- ```lua
-  -- {
+  -- require("fzfx").setup({
   --   live_grep = {
   --     fzf_opts = {
   --       '--disabled',
@@ -146,22 +147,24 @@ local Defaults = {
   --     '--no-multi',
   --     { '--preview-window', 'top,70%' },
   --   },
-  -- }
+  -- })
   -- ```
   --
-  -- finally the engine will emit below options to the 'fzf' binary:
-  -- ```
+  -- The '--preview-window' inside 'live_grep.fzf_opts' will override the one inside the root 'fzf_opts'.
+  -- Because command level 'fzf_opts' will have higher priority then root level.
+  --
+  -- So finally the options emit to the 'fzf' binary will be:
+  --
+  -- ```bash
   -- fzf --no-multi --disabled --prompt 'Live Grep > ' --preview-window '+{2}-/2'
   -- ```
   --
-  -- note: the '--preview-window' option in root level will be override by command level (live_grep).
-  --
-  -- now 'override_fzf_opts' provide the highest priority global options that can override command level 'fzf_opts',
-  -- so help users to easier config the fzf opts such as '--preview-window'.
+  -- Now with this option ('override_fzf_opts'), it has the highest priority that can override command level 'fzf_opts'.
+  -- Thus help configure some fzf options such as '--preview-window' globally.
   override_fzf_opts = {},
 
-  -- fzf colors
-  -- see: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors
+  -- Fzf colors.
+  -- Please see: https://github.com/junegunn/fzf/blob/master/README-VIM.md#explanation-of-gfzf_colors.
   fzf_color_opts = {
     fg = { "fg", "Normal" },
     bg = { "bg", "Normal" },
