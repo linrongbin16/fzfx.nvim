@@ -296,6 +296,8 @@ local Defaults = {
 --- @type fzfx.Options
 local Configs = {}
 
+-- Setup configs, merge optional user configs with defaults.
+--
 --- @param opts fzfx.Options?
 --- @return fzfx.Options
 M.setup = function(opts)
@@ -303,16 +305,22 @@ M.setup = function(opts)
   return Configs
 end
 
+-- Get configs.
+--
 --- @return fzfx.Options
 M.get = function()
   return Configs
 end
 
+-- Set configs.
+--
 --- @param opts fzfx.Options
 M.set = function(opts)
   Configs = opts
 end
 
+-- Get defaults.
+--
 --- @return fzfx.Options
 M.defaults = function()
   return Defaults
