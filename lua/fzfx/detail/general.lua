@@ -20,6 +20,7 @@ local schema = require("fzfx.schema")
 local Popup = require("fzfx.detail.popup").Popup
 local rpcserver = require("fzfx.detail.rpcserver")
 local fzf_helpers = require("fzfx.detail.fzf_helpers")
+local context_helpers = require("fzfx.helper.contexts")
 
 local DEFAULT_PIPELINE = "default"
 
@@ -777,15 +778,6 @@ local function get_pipeline_size(pipeline_configs)
   return n
 end
 
---- @return fzfx.PipelineContext
-local function default_context_maker()
-  return {
-    bufnr = vim.api.nvim_get_current_buf(),
-    winnr = vim.api.nvim_get_current_win(),
-    tabnr = vim.api.nvim_get_current_tabpage(),
-  }
-end
-
 --- @param action_name string
 --- @param action_file string
 --- @return string
@@ -976,7 +968,7 @@ local function general(name, query, bang, pipeline_configs, default_pipeline)
     and type(pipeline_configs.other_opts.context_maker) == "function"
   )
       and pipeline_configs.other_opts.context_maker
-    or default_context_maker
+    or context_helpers.make_pipeline_context
 
   local context = context_maker()
   local rpc_registries = {}
