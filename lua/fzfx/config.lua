@@ -182,28 +182,28 @@ local Defaults = {
     preview_label = { "fg", "Label" },
   },
 
-  -- icons
-  -- nerd fonts: https://www.nerdfonts.com/cheat-sheet
-  -- unicode: https://symbl.cc/en/
+  -- Icons.
+  -- Please see nerd fonts: https://www.nerdfonts.com/cheat-sheet.
+  -- Please see unicode: https://symbl.cc/en/.
   icons = {
-    -- nerd fonts:
+    -- Nerd fonts:
     --     nf-fa-file_text_o               \uf0f6
     --     nf-fa-file_o                    \uf016 (default)
     unknown_file = "",
 
-    -- nerd fonts:
+    -- Nerd fonts:
     --     nf-custom-folder                \ue5ff (default)
     --     nf-fa-folder                    \uf07b
     -- 󰉋    nf-md-folder                    \udb80\ude4b
     folder = "",
 
-    -- nerd fonts:
+    -- Nerd fonts:
     --     nf-custom-folder_open           \ue5fe (default)
     --     nf-fa-folder_open               \uf07c
     -- 󰝰    nf-md-folder_open               \udb81\udf70
     folder_open = "",
 
-    -- nerd fonts:
+    -- Nerd fonts:
     --     nf-oct-arrow_right              \uf432
     --     nf-cod-arrow_right              \uea9c
     --     nf-fa-caret_right               \uf0da
@@ -212,13 +212,13 @@ local Defaults = {
     --     nf-oct-chevron_right            \uf460
     --     nf-fa-chevron_right             \uf054 (default)
     --
-    -- unicode:
+    -- Unicode:
     -- https://symbl.cc/en/collections/arrow-symbols/
     -- ➜    U+279C                          &#10140;
     -- ➤    U+27A4                          &#10148;
     fzf_pointer = "",
 
-    -- nerd fonts:
+    -- Nerd fonts:
     --     nf-fa-star                      \uf005
     -- 󰓎    nf-md-star                      \udb81\udcce
     --     nf-cod-star_full                \ueb59
@@ -228,7 +228,7 @@ local Defaults = {
     --     nf-fa-check                     \uf00c
     -- 󰄬    nf-md-check                     \udb80\udd2c
     --
-    -- unicode:
+    -- Unicode:
     -- https://symbl.cc/en/collections/star-symbols/
     -- https://symbl.cc/en/collections/list-bullets/
     -- https://symbl.cc/en/collections/special-symbols/
@@ -237,45 +237,45 @@ local Defaults = {
     fzf_marker = "✓",
   },
 
-  -- popup window
+  -- Popup window.
   popup = {
-    -- popup window layout options
+    -- Window layout.
     win_opts = {
-      -- popup window height/width.
+      -- Height and width.
       --
-      -- 1. if 0 <= h/w <= 1, evaluate proportionally according to editor's lines and columns,
-      --    e.g. popup height = h * lines, width = w * columns.
+      -- 1. If 0 <= `height`/`width` <= 1, they're evaluated as percentage value based on the editor/window's rows and columns,
+      --    i.e. the final popup window's rows = `height` * rows, columns = `width` * columns.
       --
-      -- 2. if h/w > 1, evaluate as absolute height and width, directly pass to vim.api.nvim_open_win.
-      --
+      -- 2. If `height`/`width` > 1, they're evaluated as absolute rows and columns count.
       height = 0.85,
       width = 0.85,
 
-      -- popup window position, by default popup window is in the center of editor.
-      -- e.g. the option `relative="editor"`.
-      -- for now the `relative` options supports:
-      --  - editor
-      --  - win
-      --  - cursor
+      -- Float window's relative, by default is based on the editor.
+      --
+      -- It has below options:
+      --  1. "editor"
+      --  2. "win"
+      --  3. "cursor"
       relative = "editor",
 
-      -- when relative is 'editor' or 'win', the anchor is the middle center, not the `nvim_open_win` API's default 'NW' (north west).
-      -- because 'NW' is a little bit complicated for users to calculate the position, usually we just put the popup window in the center of editor/window.
-      -- if you need to adjust the position of popup, you can specify the `row` and `col` of the popup:
+      -- When relative is "editor" or "win", the anchor is the middle center, not the `nvim_open_win()` API's default 'NW' (north west).
+      -- Because 'NW' is a little bit complicated for users to calculate the position.
+      -- Intuitively we just put the popup window in the middle center of the editor or current window.
       --
-      -- 1. if -0.5 <= `row`/`col` <= 0.5, they're evaluated as percentage value based on the editor/window's `height` and `width`.
-      --    i.e. the real row of center = `row * height`, real column of center = `col * width`.
+      -- If you need to adjust the position of the popup window, you can specify the `row` and `col` options:
       --
-      -- 2. if `row`/`col` <= -1 or `row`/`col` >= 1, they're evaluated as absolute value.
-      --    e.g. you can set 'row = -vim.o.cmdheight' to move popup up for 1~2 rows based on the 'cmdheight' option.
-      --    this is especially useful when popup window is too big and conflicts with the statusline at bottom.
+      -- 1. If -0.5 <= `row`/`col` <= 0.5, they're evaluated as percentage value based on the editor/window's height and width.
+      --    i.e. the final popup window's rows = `row` * height, columns = `col` * width.
+      --
+      -- 2. If `row`/`col` <= -1 or `row`/`col` >= 1, they're evaluated as absolute rows and columns count.
+      --    For example, you can set 'row = -vim.o.cmdheight' to move the popup window up for 1~2 rows based on your 'cmdheight' option.
+      --    This is especially useful when the popup window is too big and conflicts with the statusline at bottom.
       --
       -- 3. `row`/`col` cannot be in range (-1, -0.5) or (0.5, 1), it's invalid.
       --
-      -- when relative is 'cursor', the anchor is 'NW' (north west).
-      -- because we just want to put the popup window relative to the cursor.
-      -- so 'row' and 'col' will be directly passed to the `nvim_open_win` API without any pre-processing.
-      --
+      -- When relative is "cursor", the anchor is north west (NW).
+      -- Because we just want to put the popup window relative to the cursor.
+      -- So `row` and `col` will be directly passed to the `nvim_open_win()` API without any pre-processing.
       row = 0,
       col = 0,
     },
