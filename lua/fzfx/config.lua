@@ -311,7 +311,7 @@ M.set = function(opts)
 end
 
 --- @return fzfx.Options
-M.get_defaults = function()
+M.defaults = function()
   return Defaults
 end
 
