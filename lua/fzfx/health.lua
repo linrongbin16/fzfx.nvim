@@ -89,6 +89,10 @@ M._summary = function(items)
   return "Found " .. founded_items
 end
 
+--- @param items commons.List
+--- @return string
+M._versions = function(items) end
+
 M.check = function()
   vim.health.start("fzfx")
 
