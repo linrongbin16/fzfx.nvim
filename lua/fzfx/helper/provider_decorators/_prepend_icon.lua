@@ -31,7 +31,7 @@ M._decorate = function(line, delimiter, index)
   if str.not_empty(filename) then
     filename = term_color.erase(filename)
   end
-  local ext = vim.fn.fnamemodify(filename, ":e")
+  local ext = vim.fn.fnamemodify(filename --[[@as string]], ":e")
   local icon_text, icon_color = DEVICONS.get_icon_color(filename, ext)
   -- log_debug(
   --     "|fzfx.shell_helpers - render_line_with_icon| ext:%s, icon:%s, icon_color:%s",
