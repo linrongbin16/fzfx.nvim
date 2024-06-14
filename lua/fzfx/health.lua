@@ -9,53 +9,53 @@ local CHECKS = {
     items = {
       { cond = consts.HAS_FZF, name = consts.FZF, version = "--version", line = 1 },
     },
-    fail = { "fzf" },
+    missed = { "fzf" },
   },
   {
     items = {
       { cond = consts.HAS_ECHO, name = consts.ECHO },
     },
-    fail = { "echo" },
+    missed = { "echo" },
   },
   {
     items = {
       { cond = consts.HAS_CURL, name = consts.CURL, version = "--version", line = 1 },
     },
-    fail = { "curl" },
+    missed = { "curl" },
   },
   {
     items = {
       { cond = consts.HAS_FD, name = consts.FD, version = "--version", line = 1 },
       { cond = consts.HAS_FIND, name = consts.FIND },
     },
-    fail = { "fd", "find", "gfind" },
+    missed = { "fd", "find", "gfind" },
   },
   {
     items = {
       { cond = consts.HAS_BAT, name = consts.BAT, version = "--version", line = 1 },
       { cond = consts.HAS_CAT, name = consts.CAT },
     },
-    fail = { "bat", "batcat", "cat" },
+    missed = { "bat", "batcat", "cat" },
   },
   {
     items = {
       { cond = consts.HAS_RG, name = consts.RG, version = "--version", line = 1 },
       { cond = consts.HAS_GREP, name = consts.GREP },
     },
-    fail = { "rg", "grep", "ggrep" },
+    missed = { "rg", "grep", "ggrep" },
   },
   {
     items = {
       { cond = consts.HAS_GIT, name = consts.GIT, version = "--version", line = 1 },
     },
-    fail = { "git" },
+    missed = { "git" },
   },
   {
     items = {
       { cond = consts.HAS_DELTA, name = consts.DELTA, version = "--version", line = 1 },
     },
-    fail = { "delta" },
-    fail_level = "warn",
+    missed = { "delta" },
+    missed_level = "warn",
   },
   {
     items = {
@@ -63,7 +63,7 @@ local CHECKS = {
       { cond = consts.HAS_EZA, name = consts.EZA, version = "--version", line = 2 },
       { cond = consts.HAS_LS, name = consts.LS },
     },
-    fail = { "lsd", "eza", "exa", "ls" },
+    missed = { "lsd", "eza", "exa", "ls" },
   },
 }
 
@@ -133,15 +133,13 @@ M.check = function()
       end
       vim.health.ok(msg)
     else
-      local all_exec = tbl.List
-        :copy(config.fail)
+      local missed_items = tbl.List
+        :copy(config.missed)
         :map(function(item)
           return string.format("'%s'", item)
         end)
         :data()
-      local fail_level = config.fail_level or "error"
-      local fail_message = vim.health[fail_level] --[[@as function]]
-      fail_message(string.format("Missing %s", table.concat(all_exec, ", ")))
+      vim.health.error(string.format("Missing %s", table.concat(missed_items, ", ")))
     end
   end
 end
