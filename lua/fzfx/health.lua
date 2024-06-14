@@ -1,3 +1,5 @@
+---@diagnostic disable: redundant-parameter
+
 local consts = require("fzfx.lib.constants")
 local tbl = require("fzfx.commons.tbl")
 local str = require("fzfx.commons.str")
