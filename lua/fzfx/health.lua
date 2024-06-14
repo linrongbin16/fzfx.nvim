@@ -95,7 +95,7 @@ end
 --- @return string
 M._versions = function(items)
   local result = ""
-  local all_version = items
+  items
     :map(function(
       item --[[@as fzfx.HealthCheckItem]]
     )
@@ -128,8 +128,8 @@ M._versions = function(items)
         and #ver.output >= ver.line
       then
         local target_line = nil
-        for j, out_line in ipairs(ver.output) do
-          if j == ver.line then
+        for i, out_line in ipairs(ver.output) do
+          if i == ver.line then
             target_line = str.trim(out_line)
             break
           end
@@ -159,13 +159,13 @@ M.check = function()
       msg = msg .. M._versions(items)
       vim.health.ok(msg)
     else
-      local missed_items = tbl.List
+      local misses = tbl.List
         :copy(config.missed)
         :map(function(item)
           return string.format("'%s'", item)
         end)
-        :data()
-      vim.health.error(string.format("Missing %s", table.concat(missed_items, ", ")))
+        :join(", ")
+      vim.health.error(string.format("Missing %s", misses))
     end
   end
 end
