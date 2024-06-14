@@ -14,14 +14,6 @@ describe("config", function()
 
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
-  local function make_default_context()
-    return {
-      bufnr = vim.api.nvim_get_current_buf(),
-      winnr = vim.api.nvim_get_current_win(),
-      tabnr = vim.api.nvim_get_current_tabpage(),
-    }
-  end
-
   local tbl = require("fzfx.commons.tbl")
   local consts = require("fzfx.lib.constants")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -61,16 +53,16 @@ describe("config", function()
   describe("[get_defaults]", function()
     it("test", function()
       config.setup()
-      assert_eq(type(config.get_defaults()), "table")
-      assert_false(tbl.tbl_empty(config.get_defaults()))
-      assert_eq(type(config.get_defaults().live_grep), "table")
-      assert_eq(type(config.get_defaults().debug), "table")
-      assert_eq(type(config.get_defaults().debug.enable), "boolean")
-      assert_false(config.get_defaults().debug.enable)
-      assert_eq(type(config.get_defaults().popup), "table")
-      assert_eq(type(config.get_defaults().icons), "table")
-      assert_eq(type(config.get_defaults().fzf_opts), "table")
-      local actual = fzf_helpers.make_fzf_opts(config.get_defaults().fzf_opts)
+      assert_eq(type(config.defaults()), "table")
+      assert_false(tbl.tbl_empty(config.defaults()))
+      assert_eq(type(config.defaults().live_grep), "table")
+      assert_eq(type(config.defaults().debug), "table")
+      assert_eq(type(config.defaults().debug.enable), "boolean")
+      assert_false(config.defaults().debug.enable)
+      assert_eq(type(config.defaults().popup), "table")
+      assert_eq(type(config.defaults().icons), "table")
+      assert_eq(type(config.defaults().fzf_opts), "table")
+      local actual = fzf_helpers.make_fzf_opts(config.defaults().fzf_opts)
       -- print(
       --     string.format(
       --         "make fzf opts with default configs:%s\n",

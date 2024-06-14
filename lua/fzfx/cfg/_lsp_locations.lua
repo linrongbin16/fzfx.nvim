@@ -164,6 +164,7 @@ M._make_lsp_locations_provider = function(opts)
   --- @param context fzfx.LspLocationPipelineContext
   --- @return string[]|nil
   local function impl(query, context)
+    ---@diagnostic disable-next-line: deprecated
     local lsp_clients = vim.lsp.get_active_clients({ bufnr = context.bufnr })
     if tbl.tbl_empty(lsp_clients) then
       log.echo(LogLevels.INFO, "no active lsp clients.")

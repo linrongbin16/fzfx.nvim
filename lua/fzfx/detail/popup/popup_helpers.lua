@@ -9,7 +9,6 @@ local M = {}
 -- WindowOptsContext {
 
 --- @class fzfx.WindowOptsContext
---- @field bufnr integer
 --- @field tabnr integer
 --- @field winnr integer
 local WindowOptsContext = {}
@@ -17,7 +16,6 @@ local WindowOptsContext = {}
 --- @return fzfx.WindowOptsContext
 function WindowOptsContext:save()
   local o = {
-    bufnr = vim.api.nvim_get_current_buf(),
     winnr = vim.api.nvim_get_current_win(),
     tabnr = vim.api.nvim_get_current_tabpage(),
   }

@@ -252,14 +252,14 @@ M._get_vim_keymaps = function()
   --     "|fzfx.config - _get_vim_keymaps| keys_output_map1:%s",
   --     vim.inspect(keys_output_map)
   -- )
-  local api_keys_list = vim.api.nvim_get_keymap("")
+  local api_keys_list = vim.api.nvim_get_keymap("") --[[@as table]]
   -- log.debug(
   --     "|fzfx.config - _get_vim_keymaps| api_keys_list:%s",
   --     vim.inspect(api_keys_list)
   -- )
   local api_keys_map = {}
   for _, km in ipairs(api_keys_list) do
-    if not api_keys_map[km.lhs] then
+    if type(km) == "table" and km.lhs and not api_keys_map[km.lhs] then
       api_keys_map[km.lhs] = km
     end
   end

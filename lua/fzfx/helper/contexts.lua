@@ -1,5 +1,6 @@
 local M = {}
 
+--- @return {bufnr:integer, winnr:integer, tabnr: integer}
 M.make_pipeline_context = function()
   return {
     bufnr = vim.api.nvim_get_current_buf(),
