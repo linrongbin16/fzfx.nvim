@@ -143,6 +143,18 @@ M._versions = function(items)
   return result
 end
 
+--- @param misses string[]
+--- @return string
+M._misses = function(misses)
+  local result = tbl.List
+    :copy(misses)
+    :map(function(item)
+      return string.format("'%s'", item)
+    end)
+    :join(", ")
+  return "Missing " .. result
+end
+
 M.check = function()
   vim.health.start("fzfx")
 
@@ -159,13 +171,8 @@ M.check = function()
       msg = msg .. M._versions(items)
       vim.health.ok(msg)
     else
-      local misses = tbl.List
-        :copy(config.missed)
-        :map(function(item)
-          return string.format("'%s'", item)
-        end)
-        :join(", ")
-      vim.health.error(string.format("Missing %s", misses))
+      local msg = M._misses(config.missed)
+      vim.health.error(msg)
     end
   end
 end
