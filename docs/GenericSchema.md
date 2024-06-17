@@ -64,9 +64,9 @@ When fzf works inside Neovim editor, this plugin will use `nvim` as a lua interp
 
 We have below types of providers:
 
-- Plain provider: a simple shell command (a string or a strings list), that executes and generates the lines for fzf. For example `fd`/`find` or `fd . -cnever -tf -tl -L -i`.
-- Command provider: a lua function that runs and returns a shell command, then executes and generates the lines for fzf. Thus enables the dynamical ability on each query, and generates different querying results. When working with fzf's [`change` event](https://man.archlinux.org/man/fzf.1.en#AVAILABLE_EVENTS:) and [`reload` action](https://man.archlinux.org/man/fzf.1.en#RELOAD_INPUT), it achieves the **_live reloading_** while user entering the query content.
-- List provider: a lua function that runs and directly returns the lines for fzf.
+- Plain provider: A simple shell command (a string or a strings list), that executes and generates the lines for fzf. For example `fd`/`find` or `fd . -cnever -tf -tl -L -i`.
+- Command provider: A lua function that runs and returns a shell command, then executes and generates the lines for fzf. Thus enables the dynamical ability on each query, and generates different querying results. When working with fzf's [`change` event](https://man.archlinux.org/man/fzf.1.en#AVAILABLE_EVENTS:) and [`reload` action](https://man.archlinux.org/man/fzf.1.en#RELOAD_INPUT), it achieves the **_live reloading_** while user entering the query content.
+- List provider: A lua function that runs and directly returns the lines for fzf.
 
 ```lua
 --- @alias fzfx.PlainProvider string|string[]
@@ -92,7 +92,7 @@ local ProviderTypeEnum = {
 
 ### Provider Decorator
 
-Sometimes we want to decorate the generated lines, for example we want to prepend a file type icon at the beginning of each file names in `FzfxFiles` command. And here we need the **provider decorator**, it's a lua function that runs with a line as parameter, and returns the decorated line.
+Sometimes we want to decorate the generated lines, for example we want to prepend a file type icon at the beginning of each file names in `FzfxFiles` command. Here comes the **provider decorator**, it's a lua function that runs with the current line as parameter, and returns the decorated line.
 
 ```lua
 --- @alias fzfx._FunctionProviderDecorator fun(line:string?):string?
@@ -130,13 +130,15 @@ You may notice that, there's no 2nd parameter `context` in the `fzfx._FunctionPr
 
 ## Previewer
 
-A **previewer** is a shell command that read current line and generate the preview contents for (the right side of) the fzf binary.
+A **previewer** is a shell command that uses current line as input, and generates contents for the fzf binary preview window (in the right side).
+
+Similar to provider, previewer also runs the `nvim --headless -l` shell command to generate preview contents.
 
 We have below types of previewers:
 
-- Command previewer: a lua function to run and returns a shell command (as a string or a string list), then execute and generate the preview contents for fzf.
-- List previewer: a lua function to run and directly returns the preview contents for fzf.
-- Buffer file previewer: a nvim buffer to show the file contents.
+- Command previewer: A lua function that runs and returns a shell command (as a string or a string list), then executes and generates the contents for fzf's preview window.
+- List previewer: A lua function that runs and directly returns the preview contents (in lines) for fzf.
+- Buffer file previewer: A nvim buffer to show the file contents, which enables support for nvim current colorscheme.
 
 ```lua
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
@@ -147,12 +149,12 @@ We have below types of previewers:
 ---
 --- @alias fzfx.PreviewerType "command"|"command_list"|"list"|"buffer_file"
 --
--- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
+-- Note: the 1st parameter 'line' is the current line in (the left side of) the fzf binary.
 ```
 
 ### Previewer Label
 
-A **previewer label** is the label (title) for the preview window.
+Sometimes we want to add summary/hint for the preview window, for example we want to add a file name when previewing the file content. Here comes the **previewer label**, it's a lua function that runs with the current line as parameter, and returns the label string.
 
 We have 2 types of previewers:
 
@@ -176,7 +178,7 @@ local PreviewerLabelTypeEnum = {
 
 ## Command Feed
 
-A **command feed** defines what to feed to the search commands, e.g. the multiple variants.
+A **command feed** defines how to feed the query content to the search commands, i.e. the multiple variants (arguments, visual selected, yanked text, last searching contents) of a searching command.
 
 ```lua
 --- @alias fzfx.CommandFeed "args"|"visual"|"cword"|"put"|"resume"
@@ -184,13 +186,13 @@ A **command feed** defines what to feed to the search commands, e.g. the multipl
 
 ## Fzf Option
 
-A fzf option is directly passing to the fzf binary, e.g. `--multi`, `--bind=ctrl-e:toggle`.
+A **fzf option** is a simple string or a pair of two strings, that directly passes to the fzf binary. For example `--multi`, `--bind=ctrl-e:toggle`, `--layout=reverse`.
 
 We have 3 types of fzf options:
 
-- Plain option: plain fzf option as a string, e.g. `--multi`.
-- Pair option: plain fzf option as a pair of two strings, e.g. `{ '--bind', 'ctrl-e:toggle' }`.
-- Function option: a lua function to run and returns above two types of fzf options.
+- Plain option: A plain option as a simple string. For example `--multi`.
+- Pair option: A plain option as a pair of two strings. For example `{ '--bind', 'ctrl-e:toggle' }`.
+- Function option: A lua function that runs and returns above two types of fzf options.
 
 ```lua
 --- @alias fzfx.PlainFzfOpt string
@@ -202,12 +204,12 @@ We have 3 types of fzf options:
 
 ## Interaction/Action
 
-An (inter)action is the lua callback function binding on a key that user press and then been invoked.
+An **(inter)action** is a lua function that binds with a key, thus when user press it and been invoked.
 
-We have 2 types of actions:
+We have 2 types of (inter)actions:
 
-- Interaction: user press the key and invoke the lua function, do something on current line without quit fzf.
-- Action: user press the key to quit fzf, then invoke lua function to do something on the selected lines.
+- Interaction: When user presses, it invokes the binded lua function with current line as parameter, without quitting popup window.
+- Action: When user presses, it quits the popup window, then invokes the binded lua function with selected lines.
 
 ```lua
 --- @alias fzfx.ActionKey string
@@ -220,27 +222,15 @@ We have 2 types of actions:
 
 ## Pipeline
 
-A **pipeline** binds a provider with a previewer, with an interaction to switch the data sources, and the help message.
-
-> Note: when you only have 1 provider, the interaction key and help message can be omitted.
-
-The **provider-interaction-previewer** is a (dataflow) pipeline.
+A **pipeline** puts a provider, a previewer, some interactions and actions together, bring us the dataflow.
 
 ## Command Group
 
-The real-world command we're using, say `FzfxLiveGrep`, actually contains multiple variants:
+When facing the real-world searching command we're using, say `FzfxLiveGrep`, it actually contains:
 
-- Basic variant: `args`, feed with command arguments.
-- Visual select variant: `visual`, feed with visual selection.
-- Cursor word variant: `cword`, feed with cursor word.
-- Put (yank text) variant: `put`, feed with yank text.
-- Resume previous search variant: `resume`, feed with previous search query content.
-- And combine with other multiple data sources, e.g. restricted/unrestricted for live grep.
-
-They're the powerful **command group**:
-
-- It has multiple data sources from different providers, switch by different interactive keys.
-- It has multiple previewers, each bind to a specific provider.
-- It has multiple action keys to exit fzf and invoke lua callbacks with selected lines.
-- (Optionally) It has multiple interactive keys to do something without quit fzf.
-- (Optionally) It has some extra fzf options and other options for some specific abilities.
+- Multiple variants: Basic variant (`args`) that feeds with user arguments, visual select variant (`visual`) that feeds with visual selections, cursor word variant (`cword`) that feeds with cursor word, etc.
+- Multiple data sources: Each data source has a unique provider/previewer and interaction (to let user switch to it). Note: If a searching command only contains 1 provider and previewer, it's not necessary to contain the interaction (because user has nothing to switch to).
+- Multiple previewers: Each binds to a provider.
+- Multiple actions: Allow user to do anything with selected lines when quitting popup window.
+- (Optionally) Multiple interactions: Allow user to do anything without quitting popup window.
+- (Optionally) Extra fzf options and other options: Some other configurations.
