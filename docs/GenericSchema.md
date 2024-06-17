@@ -2,6 +2,20 @@
 
 # A Generic Schema for Creating FZF Command
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Context](#context)
+- [Provider](#provider)
+- [Provider Decorator](#provider-decorator)
+- [Previewer](#previewer)
+- [Previewer Label](#previewer-label)
+- [Command Feed](#command-feed)
+- [Fzf Option](#fzf-option)
+- [Interaction/Action](#interactionaction)
+- [Pipeline](#pipeline)
+- [Command Group](#command-group)
+
 ## Introduction
 
 A fzf-based search command usually consists of below components:
