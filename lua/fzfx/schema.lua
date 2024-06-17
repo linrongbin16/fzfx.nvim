@@ -14,16 +14,13 @@
 --- @alias fzfx.ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
 --- @enum fzfx.ProviderTypeEnum
 local ProviderTypeEnum = {
-  -- A lua string/list.
-  -- It presents a shell command, run it and generate the lines for fzf.
+  -- A lua string or strings list.
   PLAIN = "plain",
   PLAIN_LIST = "plain_list",
-  -- A lua function.
-  -- It can be run and generate a lua string/list, which then is a shell command, run and generate the lines for fzf.
+  -- A lua function, that returns a string or strings list.
   COMMAND = "command",
   COMMAND_LIST = "command_list",
-  -- A lua function.
-  -- It can be run and directly generate the lines for fzf.
+  -- A lua function, that directly returns lines.
   LIST = "list",
 }
 --

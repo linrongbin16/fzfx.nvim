@@ -39,35 +39,34 @@ With this pattern, all the details of launching the fzf shell command and intera
 
 Let's define it more specifically.
 
-> Also see: https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua
+> Also see: [schema.lua](https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua).
 
 ## Context
 
 A **context** is some data that passing to pipeline.
 
-After launching the fzf binary command, there's no way to get the current buffer's `bufnr` and current window's `winnr` by nvim API, since the current buffer/window is actually the terminal that running the fzf binary, not the buffer/file you're editing.
+Starting a searching command is actually creating a popup window and a terminal, running a fzf shell command inside it. Thus there's no way to get the current buffer number (`bufnr`) or current window number (`winnr`) you're editing (actually it's the _previous_ buffer/window).
 
-So we need to create a context before actually launching fzf binary in terminal.
+So we need a way to store the **_current_** buffer/window info in somewhere, so we need to create a context before creating the popup window and launching the shell command.
 
 ```lua
---- @class fzfx.PipelineContext
---- @field bufnr integer
---- @field winnr integer
---- @field tabnr integer
---- ...
---
+--- @alias fzfx.PipelineContext {bufnr:integer,winnr:integer,tabnr:integer}
 --- @alias fzfx.PipelineContextMaker fun():fzfx.PipelineContext
 ```
 
 ## Provider
 
-A **provider** is a shell command that run and generate the lines list for (the left side of) the fzf binary.
+A **provider** is a shell command that runs in terminal and generates the lines for (the left side of) the fzf binary.
+
+When fzf works inside Neovim editor, this plugin will use `nvim` as a lua interpreter and a Neovim-editor-as-a-VM runtime environment. Thus this plugin runs a `nvim --headless -l` shell command inside the terminal of the popup window, and the `nvim` command interprets a lua script to do the query for the fzf command. This design would allow us to do complicated and dynamic logic, i.e. invoking a lua function.
+
+> Also see: [fzfx's architecture](https://github.com/linrongbin16/fzfx.nvim/wiki/How%3F).
 
 We have below types of providers:
 
-- Plain provider: a simple shell command (as a string or a string list), execute and generate the lines for fzf.
-- Command provider: a lua function to run and returns the shell command (as a string or a string list), then execute and generate the lines for fzf.
-- List provider: a lua function to run and directly returns the lines for fzf.
+- Plain provider: a simple shell command (a string or a strings list), that executes and generates the lines for fzf. For example `fd`/`find` or `fd . -cnever -tf -tl -L -i`.
+- Command provider: a lua function that runs and returns a shell command, then executes and generates the lines for fzf. Thus enables the dynamical ability on each query, and generates different querying results. When working with fzf's [`change` event](https://man.archlinux.org/man/fzf.1.en#AVAILABLE_EVENTS:) and [`reload` action](https://man.archlinux.org/man/fzf.1.en#RELOAD_INPUT), it achieves the **_live reloading_** while user entering the query content.
+- List provider: a lua function that runs and directly returns the lines for fzf.
 
 ```lua
 --- @alias fzfx.PlainProvider string|string[]
@@ -75,21 +74,18 @@ We have below types of providers:
 --- @alias fzfx.ListProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
 --- @alias fzfx.Provider fzfx.PlainProvider|fzfx.CommandProvider|fzfx.ListProvider
 ---
---- Note: the 1st parameter 'query' is the user input query in fzf prompt.
+--- Note: the 1st parameter 'query' is the current input query in prompt.
 ---
 --- @alias fzfx.ProviderType "plain"|"command"|"list"|"plain_list"|"command_list"
 --- @enum fzfx.ProviderTypeEnum
 local ProviderTypeEnum = {
-  -- A lua string/list.
-  -- It presents a shell command, run it and generate the lines for fzf.
+  -- A lua string or strings list.
   PLAIN = "plain",
   PLAIN_LIST = "plain_list",
-  -- A lua function.
-  -- It can be run and generate a lua string/list, which then is a shell command, run and generate the lines for fzf.
+  -- A lua function, that returns a string or strings list.
   COMMAND = "command",
   COMMAND_LIST = "command_list",
-  -- A lua function.
-  -- It can be run and directly generate the lines for fzf.
+  -- A lua function, that directly returns lines.
   LIST = "list",
 }
 ```
