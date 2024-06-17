@@ -123,9 +123,9 @@ You may notice that, there's no 2nd parameter `context` in the `fzfx._FunctionPr
 >
 > We use a hack that expose the runtime path of the provider decorator's (the lua function) module path to the child `nvim` process, then allows it invokes the decorator.
 >
-> **Note:** For the `fzfx.ProviderDecorator`, please always keep in mind:
+> **Please always keep in mind**:
 >
-> 1. It's running in a child process outside of the Neovim editor.
+> 1. Decorator runs in a child process outside of the Neovim editor.
 > 2. No plugins are loaded, only standard LuaJIT and Neovim APIs are available.
 
 ## Previewer
