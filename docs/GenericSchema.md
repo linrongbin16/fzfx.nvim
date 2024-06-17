@@ -21,7 +21,7 @@ A fzf-based search command usually consists of below components:
 
 This is a [producer-consumer pattern](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem), i.e. **Provider** is the data producer, **Previewer** and **Action**/**Interaction** are the data consumers. We also say it's a dataflow, when putting all these components together, it's named a **Pipeline** in this plugin.
 
-With this pattern, all the details of constructing fzf command and interacting across different child processes with nvim editor are hidden, only a friendly config layer is provide to user and allow creating any commands on their own needs.
+With this pattern, all the details of launching the fzf shell command and interacting across different child processes within nvim editor are hidden, only a friendly config layer is provided to user and allows third-party plugin developers to create almost any searching commands on their own needs.
 
 Let's defines this pattern more specifically.
 
