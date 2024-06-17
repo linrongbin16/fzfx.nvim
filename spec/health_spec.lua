@@ -46,5 +46,21 @@ describe("health", function()
         end
       end
     end)
+    it("_summary", function()
+      for _, config in ipairs(health.HEALTH_CHECKS) do
+        local configured_items = tbl.List:copy(config.items)
+        local items = configured_items:filter(function(
+          item --[[@as fzfx.HealthCheckItem]]
+        )
+          return item.cond
+        end)
+
+        if not items:empty() then
+          local actual = health._summary(items)
+          print(string.format("actual:%s\n", vim.inspect(actual)))
+          assert_true(str.startswith(actual, "Found "))
+        end
+      end
+    end)
   end)
 end)
