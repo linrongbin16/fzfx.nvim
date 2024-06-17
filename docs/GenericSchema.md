@@ -17,15 +17,15 @@ A fzf-based search command usually consists of below components:
 - **Action**: A key that first quits fzf's interactive window, then invokes a registered lua function with selected lines. For example, press `ENTER` key in `FzfxFiles` will quit popup window and open all the selected files.
 - (Optional) **Interaction**: A key that invokes a registered lua function but doesn't quit the fzf binary. For example, press `CTRL-U`/`CTRL-R` key in `FzfxFiles` will switch between **unrestricted mode** and **restricted mode**.
 - (Optional) **Fzf Option**: Other fzf options that control the fzf binary's layout/border/etc.
-- (Optional) **Other Option**: Other special options that control some specific searching behavior, for example live reloading, reloading after press some keys, etc.
+- (Optional) **Other Option**: Other special options that control some specific searching behavior, for example live reloading, popup window layout, etc.
 
 This is a [producer-consumer pattern](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem), i.e. **Provider** is the data producer, **Previewer** and **Action**/**Interaction** are the data consumers. We also say it's a dataflow, when putting all these components together, it's named a **Pipeline** in this plugin.
 
 With this pattern, all the details of launching the fzf shell command and interacting across different child processes within nvim editor are hidden, only a friendly config layer is provided to user and allows third-party plugin developers to create almost any searching commands on their own needs.
 
-Let's defines this pattern more specifically.
+Let's define it more specifically.
 
-> Please also see: https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua
+> Also see: https://github.com/linrongbin16/fzfx.nvim/blob/main/lua/fzfx/schema.lua
 
 ## Context
 
