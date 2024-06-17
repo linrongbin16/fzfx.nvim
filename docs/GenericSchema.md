@@ -19,9 +19,7 @@ A fzf-based search command usually consists of below components:
 - (Optional) **Fzf Option**: Other fzf options that control the fzf binary's layout/border/etc.
 - (Optional) **Other Option**: Other special options that control some specific searching behavior, for example live reloading, reloading after press some keys, etc.
 
-Put all above components together, it's named **Pipeline**.
-
-> In producer/consumer design pattern, **Provider** is the data producer, **Previewer** and **Action**/**Interaction** are the data consumers.
+This is a [producer-consumer pattern](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem), i.e. **Provider** is the data producer, **Previewer** and **Action**/**Interaction** are the data consumers. We also say it's a dataflow, when putting all these components together, it's named a **Pipeline** in this plugin.
 
 With this pattern, all the details of constructing fzf command and interacting across different child processes with nvim editor are hidden, only a friendly config layer is provide to user and allow creating any commands on their own needs.
 
