@@ -6,11 +6,11 @@
 
 A fzf-based search command usually consists of below components:
 
-- **Provider**: a shell command that can generate the lines list for (the left side of) the fzf binary.
+- **Provider**: a shell command that can generate the lines for (the left side of) the fzf binary.
 
   - (Optional) **Provider Decorator**: a lua function that modify the generated lines. For example `FzfxFiles` will prepend filetype icons for each line generated from the plain provider `fd`/`find`.
 
-- **Previewer**: a shell command that generate the content to preview the current line (on the left side) for (the right side of) the fzf binary.
+- **Previewer**: a shell command that generate the content to preview the current line in the fzf's (right side of) preview window.
 
   - (Optional) **Previewer Label**: a label (string value on the top) for the preview window, which gives extra hint and summary info.
 
