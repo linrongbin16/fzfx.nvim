@@ -9,7 +9,7 @@ local M = {}
 --- @alias fzfx.HealthCheckItem {cond:boolean,name:string,version:string?,line:integer?}
 --- @alias fzfx.HealthCheck {items:fzfx.HealthCheckItem[],missed:string[]}
 --- @type fzfx.HealthCheck[]
-local HEALTH_CHECKS = {
+M.HEALTH_CHECKS = {
   {
     items = {
       { cond = consts.HAS_FZF, name = consts.FZF, version = "--version", line = 1 },
@@ -158,7 +158,7 @@ end
 M.check = function()
   vim.health.start("fzfx")
 
-  for _, config in ipairs(HEALTH_CHECKS) do
+  for _, config in ipairs(M.HEALTH_CHECKS) do
     local configured_items = tbl.List:copy(config.items)
     local items = configured_items:filter(function(
       item --[[@as fzfx.HealthCheckItem]]
