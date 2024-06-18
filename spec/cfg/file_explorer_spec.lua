@@ -68,7 +68,7 @@ describe("fzfx.cfg.file_explorer", function()
       local actual4 = file_explorer_cfg._parse_opts({ include_hidden = true })
       assert_true(actual4 == "-lha")
     end)
-    it("_make_provider_lsd", function()
+    it("_make_provider_lsd case-1", function()
       local ctx = file_explorer_cfg._context_maker()
       local f = file_explorer_cfg._make_provider_lsd()
       assert_eq(type(f), "function")
@@ -77,6 +77,8 @@ describe("fzfx.cfg.file_explorer", function()
       assert_eq(type(actual), "string")
       assert_true(str.find(actual, "echo") > 0)
       assert_true(str.find(actual, consts.LSD) > 0)
+      assert_true(str.find(actual, "-lh") > 0)
+      assert_true(str.find(actual, "-lha") == nil)
       assert_true(
         str.find(
           actual,
@@ -84,7 +86,24 @@ describe("fzfx.cfg.file_explorer", function()
         ) > 0
       )
     end)
-    it("_make_provider_eza", function()
+    it("_make_provider_lsd case-2", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_lsd({ include_hidden = true })
+      assert_eq(type(f), "function")
+      local actual2 = f("", ctx)
+      print(string.format("_make_provider_lsd-2:%s\n", vim.inspect(actual2)))
+      assert_eq(type(actual2), "string")
+      assert_true(str.find(actual2, "echo") > 0)
+      assert_true(str.find(actual2, consts.LSD) > 0)
+      assert_true(str.find(actual2, "-lha") > 0)
+      assert_true(
+        str.find(
+          actual2,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_provider_eza case-1", function()
       local ctx = file_explorer_cfg._context_maker()
       local f = file_explorer_cfg._make_provider_eza()
       assert_eq(type(f), "function")
@@ -93,6 +112,8 @@ describe("fzfx.cfg.file_explorer", function()
       assert_eq(type(actual), "string")
       assert_true(str.find(actual, "echo") > 0)
       assert_true(str.find(actual, consts.EZA) > 0)
+      assert_true(str.find(actual, "-lh") > 0)
+      assert_true(str.find(actual, "-lha") == nil)
       assert_true(
         str.find(
           actual,
@@ -100,7 +121,24 @@ describe("fzfx.cfg.file_explorer", function()
         ) > 0
       )
     end)
-    it("_make_provider_ls", function()
+    it("_make_provider_eza case-2", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_eza({ include_hidden = true })
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_eza-2:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "echo") > 0)
+      assert_true(str.find(actual, consts.EZA) > 0)
+      assert_true(str.find(actual, "-lhaa") > 0)
+      assert_true(
+        str.find(
+          actual,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_provider_ls case-1", function()
       local ctx = file_explorer_cfg._context_maker()
       local f = file_explorer_cfg._make_provider_ls()
       assert_eq(type(f), "function")
@@ -109,6 +147,25 @@ describe("fzfx.cfg.file_explorer", function()
       assert_eq(type(actual), "string")
       assert_true(str.find(actual, "echo") > 0)
       assert_true(str.find(actual, consts.LS) > 0)
+      assert_true(str.find(actual, "-lh") > 0)
+      assert_true(str.find(actual, "-lha") == nil)
+      assert_true(
+        str.find(
+          actual,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_provider_ls case-2", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_ls({ include_hidden = true })
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_ls-2:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "echo") > 0)
+      assert_true(str.find(actual, consts.LS) > 0)
+      assert_true(str.find(actual, "-lha") > 0)
       assert_true(
         str.find(
           actual,
