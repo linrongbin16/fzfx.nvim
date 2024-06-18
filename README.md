@@ -22,7 +22,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 - [Features](#-features)
 - [Requirements](#-requirements)
-  - [For Windows](#for-windows)
+  - [Windows](#windows)
 - [Install](#-install)
 - [Usage](#-usage)
   - [Files & Buffers](#files--buffers)
@@ -63,9 +63,9 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 > [!NOTE]
 >
-> This plugin keeps up with the latest stable version, supports until the last legacy version to reduce maintenance effort.
+> This plugin keeps up with the latest Neovim stable version, supports until the last legacy version to reduce maintenance effort.
 >
-> For example at the time of writing, 2024-06-11, stable is v0.10, last legacy is v0.9, thus this plugin supports v0.9+.
+> For example at the time of writing, 2024-06-11, stable is 0.10, last legacy is 0.9, and this plugin supports v0.9+.
 
 - Neovim &ge; 0.9.
 - [fzf](https://github.com/junegunn/fzf).
@@ -78,15 +78,15 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 - [delta](https://github.com/dandavison/delta) (**optional** for preview git diff, show, blame).
 - [lsd](https://github.com/lsd-rs/lsd)/[eza](https://github.com/eza-community/eza) (**optional** for file explorer, by default use [ls](https://man7.org/linux/man-pages/man1/ls.1.html)).
 
-### For Windows
+### Windows
 
-Windows users will have to install the linux shell environment, since basic linux commands such as `echo`, `mkdir` are internally required.
+Besides those rust-written commands mentioned above (`rg`/`fd`/`bat`), Windows users will have to install the linux shell environment and core utils, since basic shell commands such as `echo`, `mkdir` are internally required.
 
 <details>
 <summary><i>Click here to see how to install linux commands</i></summary>
 <br/>
 
-There're many ways to install portable linux shell and builtin commands on Windows, but personally I would recommend below two methods:
+There're many ways to install portable linux shell and core utils on Windows, personally I would recommend below two methods:
 
 #### [Git for Windows](https://git-scm.com/download/win)
 
@@ -117,16 +117,13 @@ irm get.scoop.sh | iex
 
 scoop bucket add extras
 scoop install git           # git, bash, sh
-scoop install uutils-coreutils     # echo, ls, cat
-scoop install curl          # curl
-scoop install grep          # grep
+scoop install mingw         # echo, grep, find, curl, ls, cat
+scoop install coreutils     # echo, grep, find, curl, ls, cat
 ```
 
-> Note: Install the rust rewritten [uutils-coreutils](https://github.com/uutils/coreutils) instead of GNU [coreutils](https://www.gnu.org/software/coreutils/), some GNU commands (for example `ls`) is actually broken on Windows 10 x86_64 PC.
+#### Fix conflicts between embedded commands from `C:\Windows\System32` and linux commands
 
-#### Fix conflicts between embedded commands in `C:\Windows\System32` and portable linux commands
-
-Windows actually already provide some commands (`find.exe`, `bash.exe`) in `C:\Windows\System32` (or `%SystemRoot%\system32`), while they are not the linux commands they are named after, but could override our installations. To fix this issue, we could prioritize the git or scoop environment variables in `%PATH%`.
+Windows actually already provide some builtin commands (`find.exe`, `bash.exe`) in `C:\Windows\System32` (or `%SystemRoot%\system32`), but they are not the linux commands they are named after, while could override above installations. To fix it, we need to prioritize (move up) the git or scoop environment variables in `%PATH%`.
 
 <img alt="windows-path" src="https://github.com/linrongbin16/fzfx.nvim/assets/6496887/5296429b-daae-40f6-be16-6c065ef7bf05" width="70%" />
 

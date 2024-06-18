@@ -11,12 +11,13 @@ local LogLevels = require("fzfx.lib.log").LogLevels
 local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
+
+local _grep = require("fzfx.cfg._grep")
 
 local M = {}
 
@@ -108,34 +109,6 @@ M.variants = {
   },
 }
 
---- @param bufnr integer
---- @return string?
-M._get_buf_path = function(bufnr)
-  local bufpath = bufs.buf_is_valid(bufnr) and path.reduce(vim.api.nvim_buf_get_name(bufnr)) or nil
-  if str.empty(bufpath) then
-    log.echo(LogLevels.INFO, string.format("invalid buffer(%s).", vim.inspect(bufnr)))
-    return nil
-  end
-  return bufpath
-end
-
---- @param args_list string[]
---- @param option string?
---- @return string[]
-M._append_options = function(args_list, option)
-  assert(type(args_list) == "table")
-  if str.not_empty(option) then
-    local option_splits = str.split(option --[[@as string]], " ")
-    for _, o in ipairs(option_splits) do
-      if str.not_empty(o) then
-        table.insert(args_list, o)
-      end
-    end
-  end
-
-  return args_list
-end
-
 --- @param opts {unrestricted:boolean?,buffer:boolean?}?
 --- @return fun(query:string,context:fzfx.PipelineContext):string[]|nil
 M._make_provider_rg = function(opts)
@@ -149,14 +122,14 @@ M._make_provider_rg = function(opts)
 
     local args = nil
     if tbl.tbl_get(opts, "unrestricted") or tbl.tbl_get(opts, "buffer") then
-      args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
+      args = vim.deepcopy(_grep.UNRESTRICTED_RG)
     else
-      args = vim.deepcopy(providers_helper.RESTRICTED_RG)
+      args = vim.deepcopy(_grep.RESTRICTED_RG)
     end
-    args = M._append_options(args, option)
+    args = _grep.append_options(args, option)
 
     if tbl.tbl_get(opts, "buffer") then
-      local bufpath = M._get_buf_path(context.bufnr)
+      local bufpath = _grep.buf_path(context.bufnr)
       if not bufpath then
         return nil
       end
@@ -183,14 +156,14 @@ M._make_provider_grep = function(opts)
 
     local args = nil
     if tbl.tbl_get(opts, "unrestricted") or tbl.tbl_get(opts, "buffer") then
-      args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
+      args = vim.deepcopy(_grep.UNRESTRICTED_GREP)
     else
-      args = vim.deepcopy(providers_helper.RESTRICTED_GREP)
+      args = vim.deepcopy(_grep.RESTRICTED_GREP)
     end
-    args = M._append_options(args, option)
+    args = _grep.append_options(args, option)
 
     if tbl.tbl_get(opts, "buffer") then
-      local bufpath = M._get_buf_path(context.bufnr)
+      local bufpath = _grep.buf_path(context.bufnr)
       if not bufpath then
         return nil
       end
@@ -246,15 +219,19 @@ M.providers = {
   },
 }
 
--- if you want to use fzf-builtin previewer with bat, please use below configs:
+-- If you want to use fzf-builtin previewer with bat, please use below configs:
 --
+-- ```
 -- previewer = previewers_helper.preview_files_grep
 -- previewer_type = PreviewerTypeEnum.COMMAND_LIST
-
--- if you want to use nvim buffer previewer, please use below configs:
+-- ```
 --
+-- If you want to use nvim buffer previewer, please use below configs:
+--
+-- ```
 -- previewer = previewers_helper.buffer_preview_files_grep
 -- previewer_type = PreviewerTypeEnum.BUFFER_FILE
+-- ```
 
 local previewer = switches.buffer_previewer_disabled() and previewers_helper.preview_files_grep
   or previewers_helper.buffer_preview_files_grep
