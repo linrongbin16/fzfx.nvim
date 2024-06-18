@@ -117,9 +117,8 @@ irm get.scoop.sh | iex
 
 scoop bucket add extras
 scoop install git           # git, bash, sh
-scoop install mingw         # echo, ls, cat
-scoop install coreutils     # echo, ls, cat
-scoop install grep          # grep
+scoop install mingw         # echo, grep, find, curl, ls, cat
+scoop install coreutils     # echo, grep, find, curl, ls, cat
 ```
 
 #### Fix conflicts between embedded commands from `C:\Windows\System32` and linux commands
