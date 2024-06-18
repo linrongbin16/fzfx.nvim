@@ -16,9 +16,11 @@ describe("fzfx.cfg._lsp_locations", function()
   local str = require("fzfx.commons.str")
   local color_term = require("fzfx.commons.color.term")
   local _lsp_locations = require("fzfx.cfg._lsp_locations")
+  local uv = require("fzfx.commons.uv")
   require("fzfx").setup()
 
   describe("_lsp_locations", function()
+    local HOME_DIR = uv.os_homedir()
     local RANGE = {
       start = { line = 1, character = 10 },
       ["end"] = { line = 10, character = 31 },
@@ -98,13 +100,11 @@ describe("fzfx.cfg._lsp_locations", function()
         ["end"] = { line = 10, character = 31 },
       }
       local loc = {
-        uri = "file:///usr/home/github/linrongbin16/fzfx.nvim",
+        uri = string.format("file://%s/github/linrongbin16/fzfx.nvim", HOME_DIR),
         range = range,
       }
       local actual = _lsp_locations._render_lsp_location_to_line(loc)
-      -- print(
-      --     string.format("render lsp location:%s\n", vim.inspect(actual))
-      -- )
+      print(string.format("_render_lsp_location_to_line-1:%s\n", vim.inspect(actual)))
       assert_true(actual == nil)
     end)
     it("_render_lsp_location_to_line case 2", function()
@@ -113,17 +113,12 @@ describe("fzfx.cfg._lsp_locations", function()
         ["end"] = { line = 10, character = 31 },
       }
       local loc = {
-        targetUri = "file:///usr/home/github/linrongbin16/fzfx.nvim/README.md",
+        targetUri = string.format("file://%s/github/linrongbin16/fzfx.nvim/README.md", HOME_DIR),
         targetRange = range,
       }
       local actual = _lsp_locations._render_lsp_location_to_line(loc)
-      -- print(
-      --     string.format(
-      --         "render lsp locationlink:%s\n",
-      --         vim.inspect(actual)
-      --     )
-      -- )
-      assert_true(actual == nil or type(actual) == "string")
+      print(string.format("_render_lsp_location_to_line-2:%s\n", vim.inspect(actual)))
+      assert_true(type(actual) == "string")
     end)
     it("_render_lsp_location_to_line case 3", function()
       local range = {
@@ -131,16 +126,11 @@ describe("fzfx.cfg._lsp_locations", function()
         ["end"] = { line = 3000, character = 31 },
       }
       local loc = {
-        uri = "file:///usr/home/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+        uri = string.format("file://%s/github/linrongbin16/fzfx.nvim/lua/fzfx.lua", HOME_DIR),
         range = range,
       }
       local actual = _lsp_locations._render_lsp_location_to_line(loc)
-      -- print(
-      --     string.format(
-      --         "render lsp locationlink:%s\n",
-      --         vim.inspect(actual)
-      --     )
-      -- )
+      print(string.format("_render_lsp_location_to_line-3:%s\n", vim.inspect(actual)))
       assert_true(actual == nil)
     end)
     it("_lsp_position_context_maker", function()
