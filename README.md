@@ -80,7 +80,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 ### Windows
 
-Windows users will have to install the linux shell environment and core utils, since basic shell commands such as `echo`, `mkdir` are internally required.
+Besides those rust-written commands mentioned above (`rg`/`fd`/`bat`), Windows users will have to install the linux shell environment and core utils, since basic shell commands such as `echo`, `mkdir` are internally required.
 
 <details>
 <summary><i>Click here to see how to install linux commands</i></summary>
@@ -119,7 +119,6 @@ scoop bucket add extras
 scoop install git           # git, bash, sh
 scoop install mingw         # echo, ls, cat
 scoop install coreutils     # echo, ls, cat
-scoop install curl          # curl
 scoop install grep          # grep
 ```
 
