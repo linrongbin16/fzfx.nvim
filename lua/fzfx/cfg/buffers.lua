@@ -48,20 +48,6 @@ M.variants = {
   },
 }
 
---- @param bufnr integer
---- @return boolean
-M._buf_valid = function(bufnr)
-  local exclude_filetypes = {
-    ["qf"] = true,
-    ["neo-tree"] = true,
-  }
-  local ok, ft_or_err = pcall(vim.api.nvim_get_option_value, "filetype", { buf = bufnr })
-  if not ok then
-    return false
-  end
-  return bufs.buf_is_valid(bufnr) and not exclude_filetypes[ft_or_err]
-end
-
 --- @param query string
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
@@ -69,7 +55,7 @@ M._buffers_provider = function(query, context)
   local bufnrs = vim.api.nvim_list_bufs()
   local bufpaths = {}
 
-  local current_path = M._buf_valid(context.bufnr)
+  local current_path = bufs.buf_is_valid(context.bufnr)
       and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
     or nil
   if str.not_empty(current_path) then
@@ -78,7 +64,7 @@ M._buffers_provider = function(query, context)
 
   for _, bufnr in ipairs(bufnrs) do
     local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
-    if M._buf_valid(bufnr) and bufpath ~= current_path then
+    if bufs.buf_is_valid(bufnr) and bufpath ~= current_path then
       table.insert(bufpaths, bufpath)
     end
   end
