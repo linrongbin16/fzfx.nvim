@@ -389,7 +389,7 @@ M._retrieve_lsp_call_hierarchy_item_and_from_ranges = function(method, call)
   end
 end
 
--- incoming calls test: https://github.com/neovide/neovide/blob/59e4ed47e72076bc8cec09f11d73c389624b19fc/src/main.rs#L266
+-- Test case: https://github.com/neovide/neovide/blob/59e4ed47e72076bc8cec09f11d73c389624b19fc/src/main.rs#L266
 --- @param opts {method:fzfx.LspMethod,capability:fzfx.LspServerCapability,timeout:integer?}
 --- @return fun(query:string,context:fzfx.LspLocationPipelineContext):string[]|nil
 M._make_lsp_call_hierarchy_provider = function(opts)
@@ -406,18 +406,18 @@ M._make_lsp_call_hierarchy_provider = function(opts)
     --   "|fzfx.config - _make_lsp_locations_provider| lsp_clients:%s",
     --   vim.inspect(lsp_clients)
     -- )
-    local method_supported = false
+    local supported = false
     for _, lsp_client in ipairs(lsp_clients) do
       if lsp_client.server_capabilities[opts.capability] then
-        method_supported = true
+        supported = true
         break
       end
     end
-    if not method_supported then
+    if not supported then
       log.echo(LogLevels.INFO, vim.inspect(opts.method) .. " not supported.")
       return nil
     end
-    local lsp_results, lsp_err = vim.lsp.buf_request_sync(
+    local response1, err1 = vim.lsp.buf_request_sync(
       context.bufnr,
       "textDocument/prepareCallHierarchy",
       context.position_params,
@@ -431,36 +431,36 @@ M._make_lsp_call_hierarchy_provider = function(opts)
     --     vim.inspect(lsp_err)
     --   )
     -- )
-    if lsp_err then
-      log.echo(LogLevels.ERROR, lsp_err)
+    if err1 then
+      log.echo(LogLevels.ERROR, err1)
       return nil
     end
-    if type(lsp_results) ~= "table" then
+    if type(response1) ~= "table" then
       log.echo(LogLevels.INFO, "no lsp call hierarchy found.")
       return nil
     end
 
-    local lsp_item = nil
-    for client_id, lsp_result in pairs(lsp_results) do
+    local prepared_items = nil
+    for client_id, client_response1 in pairs(response1) do
       if
         client_id ~= nil
-        and type(lsp_result) == "table"
-        and type(lsp_result.result) == "table"
+        and type(client_response1) == "table"
+        and type(client_response1.result) == "table"
       then
-        lsp_item = lsp_result.result
+        prepared_items = client_response1.result
         break
       end
     end
-    if lsp_item == nil or #lsp_item == 0 then
+    if prepared_items == nil or #prepared_items == 0 then
       log.echo(LogLevels.INFO, "no lsp call hierarchy found.")
       return nil
     end
 
     local results = {}
-    local lsp_results2, lsp_err2 = vim.lsp.buf_request_sync(
+    local response2, err2 = vim.lsp.buf_request_sync(
       context.bufnr,
       opts.method,
-      { item = lsp_item[1] },
+      { item = prepared_items[1] },
       opts.timeout or 3000
     )
     -- log.debug(
@@ -472,21 +472,21 @@ M._make_lsp_call_hierarchy_provider = function(opts)
     --     vim.inspect(lsp_err2)
     --   )
     -- )
-    if lsp_err2 then
-      log.echo(LogLevels.ERROR, lsp_err2)
+    if err2 then
+      log.echo(LogLevels.ERROR, err2)
       return nil
     end
-    if type(lsp_results2) ~= "table" then
+    if type(response2) ~= "table" then
       log.echo(LogLevels.INFO, "no lsp locations found.")
       return nil
     end
-    for client_id, lsp_result in pairs(lsp_results2) do
+    for client_id, client_response2 in pairs(response2) do
       if
         client_id ~= nil
-        and type(lsp_result) == "table"
-        and type(lsp_result.result) == "table"
+        and type(client_response2) == "table"
+        and type(client_response2.result) == "table"
       then
-        local lsp_hi_item_list = lsp_result.result
+        local response_calls = client_response2.result
         -- log.debug(
         --   string.format(
         --     "|_make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item_list:%s",
@@ -494,9 +494,9 @@ M._make_lsp_call_hierarchy_provider = function(opts)
         --     vim.inspect(lsp_hi_item_list)
         --   )
         -- )
-        for _, lsp_hi_item in ipairs(lsp_hi_item_list) do
-          local hi_item, from_ranges =
-            M._retrieve_lsp_call_hierarchy_item_and_from_ranges(opts.method, lsp_hi_item)
+        for _, call in ipairs(response_calls) do
+          local item, from_ranges =
+            M._retrieve_lsp_call_hierarchy_item_and_from_ranges(opts.method, call)
           -- log.debug(
           --   string.format(
           --     "|_make_lsp_call_hierarchy_provider| method:%s, lsp_hi_item:%s, hi_item:%s, from_ranges:%s",
@@ -506,14 +506,14 @@ M._make_lsp_call_hierarchy_provider = function(opts)
           --     vim.inspect(from_ranges)
           --   )
           -- )
-          if M._is_lsp_call_hierarchy_item(hi_item) and type(from_ranges) == "table" then
+          if M._is_lsp_call_hierarchy_item(item) and type(from_ranges) == "table" then
             local lines = M._render_lsp_call_hierarchy_to_lines(
-              hi_item --[[@as fzfx.LspCallHierarchyItem]],
+              item --[[@as fzfx.LspCallHierarchyItem]],
               from_ranges
             )
             if type(lines) == "table" then
               for _, line in ipairs(lines) do
-                if type(line) == "string" and string.len(line) > 0 then
+                if str.not_empty(line) then
                   table.insert(results, line)
                 end
               end

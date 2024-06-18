@@ -434,32 +434,28 @@ describe("fzfx.cfg._lsp_locations", function()
     end)
     it("_make_lsp_call_hierarchy_provider", function()
       local ctx = _lsp_locations._lsp_position_context_maker()
-      local f1 = _lsp_locations._make_lsp_call_hierarchy_provider({
-        method = "callHierarchy/incomingCalls",
-        capability = "callHierarchyProvider",
-      })
-      assert_eq(type(f1), "function")
-      local actual1 = f1("", ctx)
-      if actual1 ~= nil then
-        assert_eq(type(actual1), "table")
-        assert_true(#actual1 >= 0)
-        for _, act in ipairs(actual1) do
-          assert_eq(type(act), "string")
-          assert_true(string.len(act) > 0)
-        end
-      end
-      local f2 = _lsp_locations._make_lsp_call_hierarchy_provider({
-        method = "callHierarchy/outgoingCalls",
-        capability = "callHierarchyProvider",
-      })
-      assert_eq(type(f2), "function")
-      local actual2 = f2("", ctx)
-      if actual2 ~= nil then
-        assert_eq(type(actual2), "table")
-        assert_true(#actual2 >= 0)
-        for _, act in ipairs(actual2) do
-          assert_eq(type(act), "string")
-          assert_true(string.len(act) > 0)
+      local opts = {
+        {
+          method = "callHierarchy/incomingCalls",
+          capability = "callHierarchyProvider",
+        },
+        {
+          method = "callHierarchy/outgoingCalls",
+          capability = "callHierarchyProvider",
+        },
+      }
+
+      for _, opt in ipairs(opts) do
+        local f = _lsp_locations._make_lsp_call_hierarchy_provider(opt)
+        assert_eq(type(f), "function")
+        local actual = f("", ctx)
+        if actual ~= nil then
+          assert_eq(type(actual), "table")
+          assert_true(#actual >= 0)
+          for _, a in ipairs(actual) do
+            assert_eq(type(a), "string")
+            assert_true(string.len(a) > 0)
+          end
         end
       end
     end)
