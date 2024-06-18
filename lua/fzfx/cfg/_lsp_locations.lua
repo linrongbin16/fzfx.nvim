@@ -14,6 +14,10 @@ local previewers_helper = require("fzfx.helper.previewers")
 
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 
+-- Please see:
+-- Microsoft LSP specification: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/
+-- Neovim LSP manual: https://neovim.io/doc/user/lsp.html
+
 local M = {}
 
 --- @alias fzfx.LspRangeStart {line:integer,character:integer}
