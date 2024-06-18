@@ -101,12 +101,18 @@ describe("fzfx.cfg._lsp_locations", function()
         ["end"] = { line = 10, character = 31 },
       }
       local loc = {
-        uri = string.format("file://%s/github/linrongbin16/fzfx.nvim", HOME_DIR),
+        uri = string.format("file://%s", PWD),
         range = range,
       }
       local actual = _lsp_locations._render_lsp_location_to_line(loc)
       print(string.format("_render_lsp_location_to_line-1 PWD:%s", vim.inspect(PWD)))
-      print(string.format("_render_lsp_location_to_line-1:%s\n", vim.inspect(actual)))
+      print(
+        string.format(
+          "_render_lsp_location_to_line-1:%s, loc:%s\n",
+          vim.inspect(actual),
+          vim.inspect(loc)
+        )
+      )
       assert_true(actual == nil)
     end)
     it("_render_lsp_location_to_line case 2", function()
@@ -116,17 +122,23 @@ describe("fzfx.cfg._lsp_locations", function()
         ["end"] = { line = 10, character = 31 },
       }
       local loc = {
-        targetUri = string.format("file://%s/github/linrongbin16/fzfx.nvim/README.md", HOME_DIR),
+        targetUri = string.format("file://%s/README.md", PWD),
         targetRange = range,
       }
       local actual = _lsp_locations._render_lsp_location_to_line(loc)
       print(string.format("_render_lsp_location_to_line-2 PWD:%s", vim.inspect(PWD)))
-      print(string.format("_render_lsp_location_to_line-2:%s\n", vim.inspect(actual)))
-      if not GITHUB_ACTIONS then
-        assert_true(type(actual) == "string")
-      else
-        assert_true(type(actual) == "string" or actual == nil)
-      end
+      print(
+        string.format(
+          "_render_lsp_location_to_line-2:%s, loc:%s\n",
+          vim.inspect(actual),
+          vim.inspect(loc)
+        )
+      )
+      -- if not GITHUB_ACTIONS then
+      assert_true(type(actual) == "string")
+      -- else
+      --   assert_true(type(actual) == "string" or actual == nil)
+      -- end
     end)
     it("_render_lsp_location_to_line case 3", function()
       local PWD = vim.env.PWD
@@ -135,12 +147,18 @@ describe("fzfx.cfg._lsp_locations", function()
         ["end"] = { line = 3000, character = 31 },
       }
       local loc = {
-        uri = string.format("file://%s/github/linrongbin16/fzfx.nvim/lua/fzfx.lua", HOME_DIR),
+        uri = string.format("file://%s/lua/fzfx.lua", PWD),
         range = range,
       }
       local actual = _lsp_locations._render_lsp_location_to_line(loc)
       print(string.format("_render_lsp_location_to_line-3 PWD:%s", vim.inspect(PWD)))
-      print(string.format("_render_lsp_location_to_line-3:%s\n", vim.inspect(actual)))
+      print(
+        string.format(
+          "_render_lsp_location_to_line-3:%s, loc:%s\n",
+          vim.inspect(actual),
+          vim.inspect(loc)
+        )
+      )
       assert_true(actual == nil)
     end)
     it("_hash_lsp_location", function()
