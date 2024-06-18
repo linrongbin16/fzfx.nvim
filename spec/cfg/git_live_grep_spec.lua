@@ -22,23 +22,53 @@ describe("fzfx.cfg.git_live_grep", function()
   local git_live_grep_cfg = require("fzfx.cfg.git_live_grep")
   require("fzfx").setup()
 
-  describe("git_live_grep", function()
-    it("_git_live_grep_provider", function()
-      local actual = git_live_grep_cfg._git_live_grep_provider("", {})
-      print(string.format("git live grep:%s\n", vim.inspect(actual)))
+  describe("_provider", function()
+    it("case-1: without extra options", function()
+      local actual = git_live_grep_cfg._provider("", {})
+      print(string.format("_provider-1:%s\n", vim.inspect(actual)))
       if actual ~= nil then
         assert_eq(type(actual), "table")
-        assert_eq(actual[1], "git")
-        assert_eq(actual[2], "grep")
+        local n = #git_live_grep_cfg._GIT_GREP
+        for i = 1, n do
+          assert_eq(actual[i], git_live_grep_cfg._GIT_GREP[i])
+        end
       end
     end)
-    it("_git_live_grep_provider with -- flag", function()
-      local actual = git_live_grep_cfg._git_live_grep_provider("fzfx -- -v", {})
-      print(string.format("git live grep:%s\n", vim.inspect(actual)))
+    it("case-2: with 'fzfx -- -v'", function()
+      local actual = git_live_grep_cfg._provider("fzfx -- -v", {})
+      print(string.format("_provider-2:%s\n", vim.inspect(actual)))
       if actual ~= nil then
         assert_eq(type(actual), "table")
-        assert_eq(actual[1], "git")
-        assert_eq(actual[2], "grep")
+        local n = #git_live_grep_cfg._GIT_GREP
+        for i = 1, n do
+          assert_eq(actual[i], git_live_grep_cfg._GIT_GREP[i])
+        end
+        assert_true(tbl.List:move(actual):some(function(a)
+          return a == "fzfx"
+        end))
+        assert_true(tbl.List:move(actual):some(function(a)
+          return a == "-v"
+        end))
+      end
+    end)
+    it("case-3: with 'fzfx -- -v -E  ' options", function()
+      local actual = git_live_grep_cfg._provider("fzfx -- -v  -E  ", {})
+      print(string.format("_provider-3:%s\n", vim.inspect(actual)))
+      if actual ~= nil then
+        assert_eq(type(actual), "table")
+        local n = #git_live_grep_cfg._GIT_GREP
+        for i = 1, n do
+          assert_eq(actual[i], git_live_grep_cfg._GIT_GREP[i])
+        end
+        assert_true(tbl.List:move(actual):some(function(a)
+          return a == "fzfx"
+        end))
+        assert_true(tbl.List:move(actual):some(function(a)
+          return a == "-v"
+        end))
+        assert_true(tbl.List:move(actual):some(function(a)
+          return a == "-E"
+        end))
       end
     end)
   end)

@@ -14,6 +14,8 @@ local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
 
+local _grep = require("fzfx.cfg._grep")
+
 local M = {}
 
 M.command = {
@@ -49,10 +51,12 @@ M.variants = {
   },
 }
 
+M._GIT_GREP = { "git", "grep", "--color=always", "-n" }
+
 --- @param query string?
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
-M._git_live_grep_provider = function(query, context)
+M._provider = function(query, context)
   local git_root_cmd = cmds.GitRootCommand:run()
   if git_root_cmd:failed() then
     log.echo(LogLevels.INFO, "not in git repo.")
@@ -63,22 +67,15 @@ M._git_live_grep_provider = function(query, context)
   local payload = parsed.payload
   local option = parsed.option
 
-  local args = { "git", "grep", "--color=always", "-n" }
-  if type(option) == "string" and string.len(option) > 0 then
-    local option_splits = str.split(option, " ")
-    for _, o in ipairs(option_splits) do
-      if type(o) == "string" and string.len(o) > 0 then
-        table.insert(args, o)
-      end
-    end
-  end
+  local args = vim.deepcopy(M._GIT_GREP)
+  args = _grep.append_options(args, option)
   table.insert(args, payload)
   return args
 end
 
 M.providers = {
   key = "default",
-  provider = M._git_live_grep_provider,
+  provider = M._provider,
   provider_type = ProviderTypeEnum.COMMAND_LIST,
   provider_decorator = { module = "prepend_icon_grep", builtin = true },
 }
