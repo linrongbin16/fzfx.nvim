@@ -223,7 +223,7 @@ M._directory_previewer = function(filename)
       "--",
       filename,
     }
-  elseif vim.fn.executable("ls") > 0 then
+  elseif consts.HAS_LS then
     return { "ls", "--color=always", "-lha", "--", filename }
   else
     log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
