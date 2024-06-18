@@ -92,15 +92,31 @@ describe("fzfx.cfg._lsp_locations", function()
       assert_true(str.startswith(loc3, "\27[0;31mdescribe"))
       assert_true(str.endswith(loc3, "function()"))
     end)
-    it("renders location", function()
-      local actual = _lsp_locations._render_lsp_location_line(LOCATION)
+    it("_render_lsp_location_to_line case 1", function()
+      local range = {
+        start = { line = 1, character = 10 },
+        ["end"] = { line = 10, character = 31 },
+      }
+      local loc = {
+        uri = "file:///usr/home/github/linrongbin16/fzfx.nvim",
+        range = range,
+      }
+      local actual = _lsp_locations._render_lsp_location_to_line(loc)
       -- print(
       --     string.format("render lsp location:%s\n", vim.inspect(actual))
       -- )
-      assert_true(actual == nil or type(actual) == "string")
+      assert_true(actual == nil)
     end)
-    it("renders locationlink", function()
-      local actual = _lsp_locations._render_lsp_location_line(LOCATIONLINK)
+    it("_render_lsp_location_to_line case 2", function()
+      local range = {
+        start = { line = 1, character = 10 },
+        ["end"] = { line = 10, character = 31 },
+      }
+      local loc = {
+        targetUri = "file:///usr/home/github/linrongbin16/fzfx.nvim/README.md",
+        targetRange = range,
+      }
+      local actual = _lsp_locations._render_lsp_location_to_line(loc)
       -- print(
       --     string.format(
       --         "render lsp locationlink:%s\n",
@@ -108,6 +124,24 @@ describe("fzfx.cfg._lsp_locations", function()
       --     )
       -- )
       assert_true(actual == nil or type(actual) == "string")
+    end)
+    it("_render_lsp_location_to_line case 3", function()
+      local range = {
+        start = { line = 3000, character = 10 },
+        ["end"] = { line = 3000, character = 31 },
+      }
+      local loc = {
+        uri = "file:///usr/home/github/linrongbin16/fzfx.nvim/lua/fzfx.lua",
+        range = range,
+      }
+      local actual = _lsp_locations._render_lsp_location_to_line(loc)
+      -- print(
+      --     string.format(
+      --         "render lsp locationlink:%s\n",
+      --         vim.inspect(actual)
+      --     )
+      -- )
+      assert_true(actual == nil)
     end)
     it("_lsp_position_context_maker", function()
       local ctx = _lsp_locations._lsp_position_context_maker()

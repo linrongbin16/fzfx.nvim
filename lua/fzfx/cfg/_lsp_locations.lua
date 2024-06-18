@@ -113,7 +113,7 @@ end
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink
 --- @return string?
 M._render_lsp_location_to_line = function(loc)
-  -- log.debug("|_render_lsp_location_line| loc:%s", vim.inspect(loc))
+  -- log.debug("|_render_lsp_location_to_line| loc:%s", vim.inspect(loc))
 
   --- @type string
   local filename
@@ -124,7 +124,7 @@ M._render_lsp_location_to_line = function(loc)
     filename = path.reduce(vim.uri_to_fname(loc.uri))
     range = loc.range
     -- log.debug(
-    --   "|_render_lsp_location_line| location filename:%s, range:%s",
+    --   "|_render_lsp_location_to_line| location filename:%s, range:%s",
     --   vim.inspect(filename),
     --   vim.inspect(range)
     -- )
@@ -132,7 +132,7 @@ M._render_lsp_location_to_line = function(loc)
     filename = path.reduce(vim.uri_to_fname(loc.targetUri))
     range = loc.targetRange
     -- log.debug(
-    --   "|_render_lsp_location_line| locationlink filename:%s, range:%s",
+    --   "|_render_lsp_location_to_line| locationlink filename:%s, range:%s",
     --   vim.inspect(filename),
     --   vim.inspect(range)
     -- )
@@ -153,7 +153,7 @@ M._render_lsp_location_to_line = function(loc)
 
   local line = M._colorize_lsp_range(filelines[range.start.line + 1], range, term_color.red)
   -- log.debug(
-  --   "|_render_lsp_location_line| range:%s, loc_line:%s",
+  --   "|_render_lsp_location_to_line| range:%s, loc_line:%s",
   --   vim.inspect(range),
   --   vim.inspect(loc_line)
   -- )
@@ -165,7 +165,7 @@ M._render_lsp_location_to_line = function(loc)
     line
   )
   -- log.debug(
-  --   "|fzfx.config - _render_lsp_location_line| line:%s",
+  --   "|fzfx.config - _render_lsp_location_to_line| line:%s",
   --   vim.inspect(line)
   -- )
   return rendered_line
