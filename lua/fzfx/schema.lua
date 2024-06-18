@@ -7,6 +7,7 @@
 -- ========== Provider ==========
 --
 --- @alias fzfx.PlainProvider string|string[]
+-- Note: The 1st parameter 'query' is the user input query in fzf prompt.
 --- @alias fzfx.CommandProvider fun(query:string?,context:fzfx.PipelineContext?):string?|string[]?
 --- @alias fzfx.ListProvider fun(query:string?,context:fzfx.PipelineContext?):string[]?
 --- @alias fzfx.Provider fzfx.PlainProvider|fzfx.CommandProvider|fzfx.ListProvider
@@ -24,19 +25,15 @@ local ProviderTypeEnum = {
   LIST = "list",
 }
 --
--- Note: the 1st parameter 'query' is the user input query in fzf prompt.
---
---
 -- ========== Provider Decorator ==========
 --
+-- Note: In `fzfx._FunctionProviderDecorator`, the 1st parameter `line` is the raw generated line from providers.
 --- @alias fzfx._FunctionProviderDecorator fun(line:string?):string?
 --- @alias fzfx.ProviderDecorator {module:string,rtp:string?,builtin:boolean?}
 --
--- Note: in `fzfx._FunctionProviderDecorator`, the 1st parameter `line` is the raw generated line from providers.
---
---
 -- ========== Previewer ==========
 --
+-- Note: The 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
 --- @alias fzfx.CommandPreviewer fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.ListPreviewer fun(line:string?,context:fzfx.PipelineContext?):string[]?
 --- @alias fzfx.BufferFilePreviewerResult {filename:string,lineno:integer?,column:integer?}
@@ -52,12 +49,10 @@ local PreviewerTypeEnum = {
   BUFFER_FILE = "buffer_file",
 }
 --
--- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
---
---
 -- ========== Previewer Label ==========
 --
 --- @alias fzfx.PlainPreviewerLabel string
+-- Note: The 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
 --- @alias fzfx.FunctionPreviewerLabel fun(line:string?,context:fzfx.PipelineContext?):string?
 --- @alias fzfx.PreviewerLabel fzfx.PlainPreviewerLabel|fzfx.FunctionPreviewerLabel
 ---
@@ -67,9 +62,6 @@ local PreviewerLabelTypeEnum = {
   PLAIN = "plain",
   FUNCTION = "function",
 }
---
--- Note: the 1st parameter 'line' is the current selected line in (the left side of) the fzf binary.
---
 --
 -- ========== Command Feed ==========
 --
@@ -83,7 +75,6 @@ local CommandFeedEnum = {
   RESUME = "resume",
 }
 --
---
 -- ========== Fzf Option ==========
 --
 --- @alias fzfx.PlainFzfOpt string
@@ -92,37 +83,52 @@ local CommandFeedEnum = {
 ---
 --- @alias fzfx.FzfOpt fzfx.PlainFzfOpt|fzfx.PairFzfOpt|fzfx.FunctionFzfOpt
 --
---
 -- ========== Interaction/Action ==========
 --
 --- @alias fzfx.ActionKey string
+-- Note: The 1st parameter in `Interaction` is the current line.
 --- @alias fzfx.Interaction fun(line:string?,context:fzfx.PipelineContext):any
+-- Note: The 1st parameter in `Action` is the selected line(s).
 --- @alias fzfx.Action fun(line:string[]|nil,context:fzfx.PipelineContext):any
---
--- Note: the 1st parameter in `Interaction` is the current line.
--- Note: the 1st parameter in `Action` is the selected line(s).
---
 --
 -- ========== Config ==========
 --
+-- Note:
+-- 1. The "key" option is to press and switch to this provider. For example in "FzfxFiles" command, user press "CTRL-U" to switch to **unrestricted mode**, press "CTRL-R" to switch to **restricted mode** (here a **mode** is actually a provider).
+-- 2. The "provider" option is the **provider** we mentioned above, that provides the data source, i.e. the lines (in the left side) of fzf binary.
+-- 3. The "provider_type" option by default is "plain" or "plain_list". Also see "get_provider_type_or_default" function in below.
+-- 4. The "provider_decorator" option is optional.
 --- @alias fzfx.ProviderConfig {key:fzfx.ActionKey,provider:fzfx.Provider,provider_type:fzfx.ProviderType?,provider_decorator:fzfx.ProviderDecorator?}
---- The 'provider_type' by default is "plain"
-
+--
+-- Note:
+-- 1. The "previewer" option is the **previewer** we mentioned above, that previews the content of the current line, i.e. generates lines (in the right side) of fzf binary.
+-- 2. The "previewer_type" option by default "command". Also see "get_previewer_type_or_default" function in below.
+-- 3. The "previewer_label" option is optional.
+-- 4. The "previewer_label_type" option by default is "plain" or "function". Also see "get_previewer_label_type_or_default" function in below.
 --- @alias fzfx.PreviewerConfig {previewer:fzfx.Previewer,previewer_type:fzfx.PreviewerType?,previewer_label:fzfx.PreviewerLabel?,previewer_label_type:fzfx.PreviewerLabelType?}
-
+---
+--
+-- Note: A pipeline name is the same with the provider name.
 --- @alias fzfx.PipelineName string
--- a pipeline name is a provider name, a previewer name
 --
 --- @alias fzfx.InteractionName string
 --
+-- Note:
+-- 1. The "key" option is to press and invokes the binded lua function.
+-- 2. The "interaction" option is the **interaction** we mentioned above.
+-- 3. The "reload_after_execute" option is to tell fzf binary, that reloads the query after execute this interaction.
 --- @alias fzfx.InteractionConfig {key:fzfx.ActionKey,interaction:fzfx.Interaction,reload_after_execute:boolean?}
---
+---
+-- Note: Please refer to the command configurations in "fzfx.cfg" packages for the usage.
 --- @alias fzfx.VariantConfig {name:string,feed:fzfx.CommandFeed,default_provider:fzfx.PipelineName?}
 --
+-- Note: Please refer to the command configurations in "fzfx.cfg" packages for the usage.
 --- @alias fzfx.CommandConfig {name:string,desc:string?}
 --
+-- Note: Please refer to the command configurations in "fzfx.cfg" packages for the usage.
 --- @alias fzfx.GroupConfig {command:fzfx.CommandConfig,variants:fzfx.VariantConfig[],providers:fzfx.ProviderConfig|table<fzfx.PipelineName,fzfx.ProviderConfig>,previewers:fzfx.PreviewerConfig|table<fzfx.PipelineName,fzfx.PreviewerConfig>,actions:table<fzfx.ActionKey,fzfx.Action>,interactions:table<fzfx.InteractionName,fzfx.InteractionConfig>?,fzf_opts:fzfx.FzfOpt[]?}
 
+-- Whether `cfg` is a `fzfx.VariantConfig` instance.
 --- @param cfg fzfx.VariantConfig?
 --- @return boolean
 local function is_variant_config(cfg)
@@ -133,6 +139,7 @@ local function is_variant_config(cfg)
     and string.len(cfg.feed) > 0
 end
 
+-- Whether `cfg` is a `fzfx.ProviderConfig` instance.
 --- @param cfg fzfx.ProviderConfig?
 --- @return boolean
 local function is_provider_config(cfg)
@@ -148,6 +155,7 @@ local function is_provider_config(cfg)
     )
 end
 
+-- Whether `cfg` is a `fzfx.PreviewerConfig` instance.
 --- @param cfg fzfx.PreviewerConfig?
 --- @return boolean
 local function is_previewer_config(cfg)
@@ -159,6 +167,7 @@ local function is_previewer_config(cfg)
     )
 end
 
+-- Get provider type or default.
 --- @param provider_config fzfx.ProviderConfig
 --- @return fzfx.ProviderType
 local function get_provider_type_or_default(provider_config)
@@ -169,12 +178,14 @@ local function get_provider_type_or_default(provider_config)
     )
 end
 
+-- Get previewer type or default.
 --- @param previewer_config fzfx.PreviewerConfig
 --- @return fzfx.PreviewerType
 local function get_previewer_type_or_default(previewer_config)
   return previewer_config.previewer_type or PreviewerTypeEnum.COMMAND
 end
 
+-- Get previewer label type or default.
 --- @param previewer_config fzfx.PreviewerConfig
 --- @return fzfx.PreviewerLabelType
 local function get_previewer_label_type_or_default(previewer_config)

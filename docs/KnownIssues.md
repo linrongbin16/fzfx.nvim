@@ -1,6 +1,6 @@
 # Known Issues
 
-## Common
+## Common Issues
 
 ### 1. Whitespace Escaping Issue
 
