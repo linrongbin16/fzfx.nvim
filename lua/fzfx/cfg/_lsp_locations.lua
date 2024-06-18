@@ -3,6 +3,7 @@
 -- Neovim LSP manual: https://neovim.io/doc/user/lsp.html
 
 local tbl = require("fzfx.commons.tbl")
+local str = require("fzfx.commons.str")
 local path = require("fzfx.commons.path")
 local fileio = require("fzfx.commons.fileio")
 local term_color = require("fzfx.commons.color.term")
@@ -234,23 +235,23 @@ M._make_lsp_locations_provider = function(opts)
       pairs(response --[[@as table]])
     do
       if client_id ~= nil and tbl.tbl_not_empty(tbl.tbl_get(client_response, "result")) then
-        local lsp_loc = client_response.result
-        if M._is_lsp_location(lsp_loc) then
-          local loc_hash = M._hash_lsp_location(lsp_loc)
+        local locations = client_response.result
+        if M._is_lsp_location(locations) then
+          local loc_hash = M._hash_lsp_location(locations)
           if visited_locations[loc_hash] == nil then
             visited_locations[loc_hash] = true
-            local line = M._render_lsp_location_to_line(lsp_loc)
-            if type(line) == "string" and string.len(line) > 0 then
+            local line = M._render_lsp_location_to_line(locations)
+            if str.not_empty(line) then
               table.insert(results, line)
             end
           end
         else
-          for _, loc in ipairs(lsp_loc) do
+          for _, loc in ipairs(locations) do
             local loc_hash = M._hash_lsp_location(loc)
             if visited_locations[loc_hash] == nil then
               visited_locations[loc_hash] = true
               local line = M._render_lsp_location_to_line(loc)
-              if type(line) == "string" and string.len(line) > 0 then
+              if str.not_empty(line) then
                 table.insert(results, line)
               end
             end
