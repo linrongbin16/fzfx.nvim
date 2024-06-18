@@ -20,7 +20,6 @@ describe("fzfx.cfg.file_explorer", function()
   local constants = require("fzfx.lib.constants")
 
   local contexts = require("fzfx.helper.contexts")
-  local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
   local file_explorer_cfg = require("fzfx.cfg.file_explorer")

@@ -1,7 +1,6 @@
----@diagnostic disable: undefined-field, unused-local, missing-fields, need-check-nil, param-type-mismatch, assign-type-mismatch
 local cwd = vim.fn.getcwd()
 
-describe("fzfx.cfg.files", function()
+describe("lib.bufs", function()
   local assert_eq = assert.is_equal
   local assert_true = assert.is_true
   local assert_false = assert.is_false
@@ -12,11 +11,13 @@ describe("fzfx.cfg.files", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local files_cfg = require("fzfx.cfg.files")
-
-  describe("[files]", function()
+  local bufs = require("fzfx.lib.bufs")
+  describe("[buf_is_valid]", function()
     it("test", function()
-      assert_true(true)
+      local bufnrs = vim.api.nvim_list_bufs()
+      for _, bn in ipairs(bufnrs) do
+        bufs.buf_is_valid(bn)
+      end
     end)
   end)
 end)
