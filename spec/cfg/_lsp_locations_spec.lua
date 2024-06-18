@@ -210,18 +210,40 @@ describe("fzfx.cfg._lsp_locations", function()
     end)
     it("_make_lsp_locations_provider", function()
       local ctx = _lsp_locations._lsp_position_context_maker()
-      local f = _lsp_locations._make_lsp_locations_provider({
-        method = "textDocument/definition",
-        capability = "definitionProvider",
-      })
-      assert_eq(type(f), "function")
-      local actual = f("", ctx)
-      if actual ~= nil then
-        assert_eq(type(actual), "table")
-        assert_true(#actual >= 0)
-        for _, act in ipairs(actual) do
-          assert_eq(type(act), "string")
-          assert_true(string.len(act) > 0)
+      local opts = {
+        -- definition
+        {
+          method = "textDocument/definition",
+          capability = "definitionProvider",
+        },
+        -- type definition
+        {
+          method = "textDocument/type_definition",
+          capability = "typeDefinitionProvider",
+        },
+        -- reference
+        {
+          method = "textDocument/references",
+          capability = "referencesProvider",
+        },
+        -- implementation
+        {
+          method = "textDocument/implementation",
+          capability = "implementationProvider",
+        },
+      }
+
+      for _, opt in ipairs(opts) do
+        local f = _lsp_locations._make_lsp_locations_provider(opt)
+        assert_eq(type(f), "function")
+        local actual = f("", ctx)
+        if actual ~= nil then
+          assert_eq(type(actual), "table")
+          assert_true(#actual >= 0)
+          for _, a in ipairs(actual) do
+            assert_eq(type(a), "string")
+            assert_true(string.len(a) > 0)
+          end
         end
       end
     end)
