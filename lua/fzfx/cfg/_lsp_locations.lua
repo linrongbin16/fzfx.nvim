@@ -274,26 +274,27 @@ end
 
 -- call hierarchy {
 
+-- LSP Call Hierarchy: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_prepareCallHierarchy
 --- @alias fzfx.LspCallHierarchyItem {name:string,kind:integer,detail:string?,uri:string,range:fzfx.LspRange,selectionRange:fzfx.LspRange}
+--- LSP Call Hierarchy Incoming Calls: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_incomingCalls
 --- @alias fzfx.LspCallHierarchyIncomingCall {from:fzfx.LspCallHierarchyItem,fromRanges:fzfx.LspRange[]}
+--- LSP Call Hierarchy Outgoing Calls: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#callHierarchy_outgoingCalls
 --- @alias fzfx.LspCallHierarchyOutgoingCall {to:fzfx.LspCallHierarchyItem,fromRanges:fzfx.LspRange[]}
 
---- @param item fzfx.LspCallHierarchyItem?
+--- @param item fzfx.LspCallHierarchyItem|any
 --- @return boolean
 M._is_lsp_call_hierarchy_item = function(item)
   -- log.debug(
   --   "|fzfx.config - _is_lsp_call_hierarchy_item| item:%s",
   --   vim.inspect(item)
   -- )
-  return type(item) == "table"
-    and type(item.name) == "string"
-    and string.len(item.name) > 0
-    and (item.kind ~= nil)
-    and (item.detail == nil or type(item.detail) == "string")
-    and type(item.uri) == "string"
-    and string.len(item.uri) > 0
-    and M._is_lsp_range(item.range)
-    and M._is_lsp_range(item.selectionRange)
+  local item_detail = tbl.tbl_get(item, "detail")
+  return type(tbl.tbl_get(item, "name")) == "string" -- name
+    and tbl.tbl_get(item, "kind") ~= nil -- kind
+    and (item_detail == nil or type(item_detail) == "string") -- detail
+    and type(tbl.tbl_get(item, "uri")) == "string" -- uri
+    and M._is_lsp_range(item.range) -- range
+    and M._is_lsp_range(item.selectionRange) -- selectionRange
 end
 
 --- @param method string
