@@ -17,7 +17,7 @@ describe("fzfx.cfg.file_explorer", function()
   local str = require("fzfx.commons.str")
   local path = require("fzfx.commons.path")
 
-  local constants = require("fzfx.lib.constants")
+  local consts = require("fzfx.lib.constants")
 
   local contexts = require("fzfx.helper.contexts")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -60,40 +60,39 @@ describe("fzfx.cfg.file_explorer", function()
     end)
     it("_make_provider", function()
       local ctx = file_explorer_cfg._context_maker()
-      local f1 = file_explorer_cfg._make_provider("-lh")
+      local f1 = file_explorer_cfg._make_provider()
       assert_eq(type(f1), "function")
       local actual1 = f1("", ctx)
-      -- print(
-      --     string.format(
-      --         "file explorer provider1:%s\n",
-      --         vim.inspect(actual1)
-      --     )
-      -- )
+      print(string.format("_make_provider-1:%s\n", vim.inspect(actual1)))
       assert_eq(type(actual1), "string")
       assert_true(str.find(actual1, "echo") > 0)
-      assert_true(
-        type(str.find(actual1, "eza")) == "number" or type(str.find(actual1, "ls")) == "number"
-      )
+      if consts.HAS_LSD then
+        assert_true(str.find(actual1, consts.LSD) > 0)
+      elseif consts.HAS_EZA then
+        assert_true(str.find(actual1, consts.EZA) > 0)
+      else
+        assert_true(str.find(actual1, consts.LS) > 0)
+      end
       assert_true(
         str.find(
           actual1,
           path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
         ) > 0
       )
-      local f2 = file_explorer_cfg._make_provider("-lha")
+
+      local f2 = file_explorer_cfg._make_provider({ include_hidden = true })
       assert_eq(type(f2), "function")
       local actual2 = f2("", ctx)
-      -- print(
-      --     string.format(
-      --         "file explorer provider2:%s\n",
-      --         vim.inspect(actual2)
-      --     )
-      -- )
+      print(string.format("_make_provider-2:%s\n", vim.inspect(actual1)))
       assert_eq(type(actual2), "string")
       assert_true(str.find(actual2, "echo") > 0)
-      assert_true(
-        type(str.find(actual2, "eza")) == "number" or type(str.find(actual2, "ls")) == "number"
-      )
+      if consts.HAS_LSD then
+        assert_true(str.find(actual2, consts.LSD) > 0)
+      elseif consts.HAS_EZA then
+        assert_true(str.find(actual2, consts.EZA) > 0)
+      else
+        assert_true(str.find(actual2, consts.LS) > 0)
+      end
       assert_true(
         str.find(
           actual2,
@@ -121,22 +120,20 @@ describe("fzfx.cfg.file_explorer", function()
     end)
     it("_previewer", function()
       local ctx = file_explorer_cfg._context_maker()
-      if constants.HAS_LSD then
+      if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = file_explorer_cfg._previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
-            assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "lsd")
+            assert_true(actual[1] == consts.BAT or actual[1] == "cat" or actual[1] == "lsd")
           end
         end
-      elseif constants.HAS_EZA then
+      elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = file_explorer_cfg._previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
-            assert_true(
-              actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == constants.EZA
-            )
+            assert_true(actual[1] == consts.BAT or actual[1] == "cat" or actual[1] == consts.EZA)
           end
         end
       else
@@ -144,19 +141,19 @@ describe("fzfx.cfg.file_explorer", function()
           local actual = file_explorer_cfg._previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
-            assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "ls")
+            assert_true(actual[1] == consts.BAT or actual[1] == "cat" or actual[1] == "ls")
           end
         end
       end
     end)
     it("_cd_file_explorer", function()
       local ctx = file_explorer_cfg._context_maker()
-      if constants.HAS_LSD then
+      if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
           assert_true(actual == nil)
         end
-      elseif constants.HAS_EZA then
+      elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
           assert_true(actual == nil)
@@ -170,12 +167,12 @@ describe("fzfx.cfg.file_explorer", function()
     end)
     it("_upper_file_explorer", function()
       local ctx = file_explorer_cfg._context_maker()
-      if constants.HAS_LSD then
+      if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
           local actual = file_explorer_cfg._upper_file_explorer(line, ctx)
           assert_true(actual == nil)
         end
-      elseif constants.HAS_EZA then
+      elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
           local actual = file_explorer_cfg._upper_file_explorer(line, ctx)
           assert_true(actual == nil)

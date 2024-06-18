@@ -101,12 +101,18 @@ M._make_provider_lsd = function(opts)
     local cwd = fileio.readfile(context.cwd) --[[@as string]]
     return consts.HAS_ECHO
         and string.format(
-          "echo %s && lsd %s --color=always --header -- %s",
+          "echo %s && %s %s --color=always --header -- %s",
           shells.shellescape(cwd),
+          consts.LSD,
           args,
           shells.shellescape(cwd)
         )
-      or string.format("lsd %s --color=always --header -- %s", args, shells.shellescape(cwd))
+      or string.format(
+        "%s %s --color=always --header -- %s",
+        consts.LSD,
+        args,
+        shells.shellescape(cwd)
+      )
   end
 
   return impl
@@ -152,12 +158,13 @@ M._make_provider_ls = function(opts)
     local cwd = fileio.readfile(context.cwd) --[[@as string]]
     return consts.HAS_ECHO
         and string.format(
-          "echo %s && ls --color=always %s %s",
+          "echo %s && %s --color=always %s %s",
           shells.shellescape(cwd),
+          consts.LS,
           args,
           shells.shellescape(cwd)
         )
-      or string.format("ls --color=always %s %s", args, shells.shellescape(cwd))
+      or string.format("%s --color=always %s %s", consts.LS, args, shells.shellescape(cwd))
   end
 
   return impl
