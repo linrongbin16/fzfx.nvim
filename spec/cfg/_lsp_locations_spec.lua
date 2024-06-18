@@ -356,6 +356,40 @@ describe("fzfx.cfg._lsp_locations", function()
       local actual3 = _lsp_locations._render_lsp_call_hierarchy_to_lines(item3, { range3 })
       print(string.format("_render_lsp_call_hierarchy_to_lines-3:%s\n", vim.inspect(actual3)))
       assert_true(#actual3 >= 0)
+
+      local item4 = {
+        name = "name",
+        kind = 2,
+        detail = "detail",
+        uri = string.format("file://%s/lua/fzfx.lua", PWD),
+        range = range3,
+        selectionRange = range3,
+      }
+      local actual4 = _lsp_locations._render_lsp_call_hierarchy_to_lines(item4, {})
+      print(string.format("_render_lsp_call_hierarchy_to_lines-4:%s\n", vim.inspect(actual3)))
+      assert_true(actual4 == nil)
+
+      local range5 = {
+        start = {
+          line = 29,
+          character = 1,
+        },
+        ["end"] = {
+          line = 29,
+          character = 30,
+        },
+      }
+      local item5 = {
+        name = "name",
+        kind = 2,
+        detail = "detail",
+        uri = nil,
+        range = range3,
+        selectionRange = range3,
+      }
+      local actual5 = _lsp_locations._render_lsp_call_hierarchy_to_lines(item5, { range5 })
+      print(string.format("_render_lsp_call_hierarchy_to_lines-5:%s\n", vim.inspect(actual5)))
+      assert_true(actual5 == nil)
     end)
     it("_retrieve_lsp_call_hierarchy_item_and_from_ranges", function()
       local actual11, actual12 = _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
