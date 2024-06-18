@@ -24,14 +24,16 @@ local M = {}
 -- LSP specification - Location: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#location
 -- LSP specification - LocationLink: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#locationLink
 -- LSP specification - Range: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#range
+-- LSP specification - DocumentUri: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#documentUri
 --
 --- @alias fzfx.LspRangeStart {line:integer,character:integer}
 --- @alias fzfx.LspRangeEnd {line:integer,character:integer}
 --- @alias fzfx.LspRange {start:fzfx.LspRangeStart,end:fzfx.LspRangeEnd}
---- @alias fzfx.LspLocation {uri:string,range:fzfx.LspRange}
---- @alias fzfx.LspLocationLink {originSelectionRange:fzfx.LspRange,targetUri:string,targetRange:fzfx.LspRange,targetSelectionRange:fzfx.LspRange}
+--- @alias fzfx.LspDocumentUri string
+--- @alias fzfx.LspLocation {uri:fzfx.LspDocumentUri,range:fzfx.LspRange}
+--- @alias fzfx.LspLocationLink {originSelectionRange:fzfx.LspRange,targetUri:fzfx.LspDocumentUri,targetRange:fzfx.LspRange,targetSelectionRange:fzfx.LspRange}
 
---- @param r fzfx.LspRange?
+--- @param r fzfx.LspRange|any
 --- @return boolean
 M._is_lsp_range = function(r)
   return type(tbl.tbl_get(r, "start", "line")) == "number"
@@ -40,14 +42,21 @@ M._is_lsp_range = function(r)
     and type(tbl.tbl_get(r, "end", "character")) == "number"
 end
 
---- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
+--- @param u fzfx.LspDocumentUri|any
+--- @return boolean
+M._is_lsp_document_uri = function(u)
+  return type(u) == "string"
+end
+
+--- @param loc fzfx.LspLocation|fzfx.LspLocationLink|any
 M._is_lsp_location = function(loc)
-  return type(tbl.tbl_get(loc, "uri")) == "string" and M._is_lsp_range(tbl.tbl_get(loc, "range"))
+  return M._is_lsp_document_uri(tbl.tbl_get(loc, "uri"))
+    and M._is_lsp_range(tbl.tbl_get(loc, "range"))
 end
 
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink|nil
 M._is_lsp_locationlink = function(loc)
-  return type(tbl.tbl_get(loc, "targetUri")) == "string"
+  return M._is_lsp_document_uri(tbl.tbl_get(loc, "targetUri"))
     and M._is_lsp_range(tbl.tbl_get(loc, "targetRange"))
 end
 
