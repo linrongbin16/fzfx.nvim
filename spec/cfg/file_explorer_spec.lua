@@ -68,6 +68,62 @@ describe("fzfx.cfg.file_explorer", function()
       local actual4 = file_explorer_cfg._parse_opts({ include_hidden = true })
       assert_true(actual4 == "-lha")
     end)
+    it("_make_provider_lsd", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_lsd()
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_lsd-1:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "echo") > 0)
+      assert_true(str.find(actual, consts.LSD) > 0)
+      assert_true(
+        str.find(
+          actual,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_provider_eza", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_eza()
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_eza-1:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "echo") > 0)
+      assert_true(str.find(actual, consts.EZA) > 0)
+      assert_true(
+        str.find(
+          actual,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_provider_ls", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_ls()
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_ls-1:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "echo") > 0)
+      assert_true(str.find(actual, consts.LS) > 0)
+      assert_true(
+        str.find(
+          actual,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_provider_dummy", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_dummy()
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_dummy-1:%s\n", vim.inspect(actual)))
+      assert_true(actual == nil)
+    end)
     it("_make_provider", function()
       local ctx = file_explorer_cfg._context_maker()
       local f1 = file_explorer_cfg._make_provider()
