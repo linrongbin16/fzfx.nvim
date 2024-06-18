@@ -298,21 +298,21 @@ M._is_lsp_call_hierarchy_item = function(item)
 end
 
 --- @param method string
---- @param call_item fzfx.LspCallHierarchyIncomingCall|any
+--- @param call fzfx.LspCallHierarchyIncomingCall|any
 --- @return boolean
-M._is_lsp_call_hierarchy_incoming_call = function(method, call_item)
+M._is_lsp_call_hierarchy_incoming_call = function(method, call)
   return method == "callHierarchy/incomingCalls"
-    and M._is_lsp_call_hierarchy_item(tbl.tbl_get(call_item, "from"))
-    and type(tbl.tbl_get(call_item, "fromRanges")) == "table"
+    and M._is_lsp_call_hierarchy_item(tbl.tbl_get(call, "from"))
+    and type(tbl.tbl_get(call, "fromRanges")) == "table"
 end
 
 --- @param method string
---- @param call_item fzfx.LspCallHierarchyOutgoingCall|any
+--- @param call fzfx.LspCallHierarchyOutgoingCall|any
 --- @return boolean
-M._is_lsp_call_hierarchy_outgoing_call = function(method, call_item)
+M._is_lsp_call_hierarchy_outgoing_call = function(method, call)
   return method == "callHierarchy/outgoingCalls"
-    and M._is_lsp_call_hierarchy_item(tbl.tbl_get(call_item, "to"))
-    and type(tbl.tbl_get(call_item, "fromRanges")) == "table"
+    and M._is_lsp_call_hierarchy_item(tbl.tbl_get(call, "to"))
+    and type(tbl.tbl_get(call, "fromRanges")) == "table"
 end
 
 --- @param item fzfx.LspCallHierarchyItem
@@ -377,13 +377,13 @@ M._render_lsp_call_hierarchy_to_lines = function(item, ranges)
 end
 
 --- @param method fzfx.LspMethod
---- @param hi_item fzfx.LspCallHierarchyIncomingCall|fzfx.LspCallHierarchyOutgoingCall
+--- @param call fzfx.LspCallHierarchyIncomingCall|fzfx.LspCallHierarchyOutgoingCall
 --- @return fzfx.LspCallHierarchyItem?, fzfx.LspRange[]|nil
-M._retrieve_lsp_call_hierarchy_item_and_from_ranges = function(method, hi_item)
-  if M._is_lsp_call_hierarchy_incoming_call(method, hi_item) then
-    return hi_item.from, hi_item.fromRanges
-  elseif M._is_lsp_call_hierarchy_outgoing_call(method, hi_item) then
-    return hi_item.to, hi_item.fromRanges
+M._retrieve_lsp_call_hierarchy_item_and_from_ranges = function(method, call)
+  if M._is_lsp_call_hierarchy_incoming_call(method, call) then
+    return call.from, call.fromRanges
+  elseif M._is_lsp_call_hierarchy_outgoing_call(method, call) then
+    return call.to, call.fromRanges
   else
     return nil, nil
   end

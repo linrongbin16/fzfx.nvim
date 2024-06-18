@@ -398,24 +398,39 @@ describe("fzfx.cfg._lsp_locations", function()
       )
       assert_true(vim.deep_equal(actual11, INCOMING_CALLS.from))
       assert_true(vim.deep_equal(actual12, INCOMING_CALLS.fromRanges))
+
       local actual21, actual22 = _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
         "callHierarchy/incomingCalls",
         OUTGOING_CALLS
       )
       assert_eq(actual21, nil)
       assert_eq(actual22, nil)
+
       local actual31, actual32 = _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
         "callHierarchy/outgoingCalls",
         INCOMING_CALLS
       )
       assert_eq(actual31, nil)
       assert_eq(actual32, nil)
+
       local actual41, actual42 = _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
         "callHierarchy/outgoingCalls",
         OUTGOING_CALLS
       )
       assert_true(vim.deep_equal(actual41, OUTGOING_CALLS.to))
       assert_true(vim.deep_equal(actual42, OUTGOING_CALLS.fromRanges))
+
+      local actual51, actual52 =
+        _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(nil, nil)
+      assert_true(actual51 == nil)
+      assert_true(actual52 == nil)
+
+      local actual61, actual62 = _lsp_locations._retrieve_lsp_call_hierarchy_item_and_from_ranges(
+        "textDocument/definition",
+        OUTGOING_CALLS
+      )
+      assert_true(actual61 == nil)
+      assert_true(actual62 == nil)
     end)
     it("_make_lsp_call_hierarchy_provider", function()
       local ctx = _lsp_locations._lsp_position_context_maker()
