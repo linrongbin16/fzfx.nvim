@@ -23,6 +23,7 @@ local M = {}
 -- Please see:
 -- LSP specification - Location: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#location
 -- LSP specification - LocationLink: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#locationLink
+-- LSP specification - Range: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#range
 --
 --- @alias fzfx.LspRangeStart {line:integer,character:integer}
 --- @alias fzfx.LspRangeEnd {line:integer,character:integer}
