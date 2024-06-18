@@ -58,6 +58,7 @@ M._is_lsp_locationlink = function(loc)
     and M._is_lsp_range(tbl.tbl_get(loc, "targetRange"))
 end
 
+-- Colorize the range in the line (to make it more noteworthy).
 --- @param line string
 --- @param range fzfx.LspRange
 --- @param renderer fun(text:string):string
@@ -82,6 +83,7 @@ M._colorize_lsp_range = function(line, range, renderer)
   return result
 end
 
+-- Make hash ID for LSP location/locationlink
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink
 --- @return string
 M._hash_lsp_location = function(loc)
@@ -107,15 +109,16 @@ M._hash_lsp_location = function(loc)
   return result
 end
 
+-- Render a LSP location/locationlink to a line for (the left side of) fzf binary.
 --- @param loc fzfx.LspLocation|fzfx.LspLocationLink
 --- @return string?
-M._render_lsp_location_line = function(loc)
+M._render_lsp_location_to_line = function(loc)
   -- log.debug("|_render_lsp_location_line| loc:%s", vim.inspect(loc))
 
   --- @type string
-  local filename = nil
+  local filename
   --- @type fzfx.LspRange
-  local range = nil
+  local range
 
   if M._is_lsp_location(loc) then
     filename = path.reduce(vim.uri_to_fname(loc.uri))
@@ -134,9 +137,11 @@ M._render_lsp_location_line = function(loc)
     --   vim.inspect(range)
     -- )
   end
+
   if not M._is_lsp_range(range) then
     return nil
   end
+
   filename = path.normalize(filename, { double_backslash = true, expand = true })
   if type(filename) ~= "string" or vim.fn.filereadable(filename) <= 0 then
     return nil
@@ -145,24 +150,25 @@ M._render_lsp_location_line = function(loc)
   if type(filelines) ~= "table" or #filelines < range.start.line + 1 then
     return nil
   end
-  local loc_line = M._colorize_lsp_range(filelines[range.start.line + 1], range, term_color.red)
+
+  local line = M._colorize_lsp_range(filelines[range.start.line + 1], range, term_color.red)
   -- log.debug(
   --   "|_render_lsp_location_line| range:%s, loc_line:%s",
   --   vim.inspect(range),
   --   vim.inspect(loc_line)
   -- )
-  local line = string.format(
+  local rendered_line = string.format(
     "%s:%s:%s:%s",
     providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
     term_color.green(tostring(range.start.line + 1)),
     tostring(range.start.character + 1),
-    loc_line
+    line
   )
   -- log.debug(
   --   "|fzfx.config - _render_lsp_location_line| line:%s",
   --   vim.inspect(line)
   -- )
-  return line
+  return rendered_line
 end
 
 -- locations {
@@ -234,7 +240,7 @@ M._make_lsp_locations_provider = function(opts)
           local loc_hash = M._hash_lsp_location(lsp_loc)
           if visited_locations[loc_hash] == nil then
             visited_locations[loc_hash] = true
-            local line = M._render_lsp_location_line(lsp_loc)
+            local line = M._render_lsp_location_to_line(lsp_loc)
             if type(line) == "string" and string.len(line) > 0 then
               table.insert(results, line)
             end
@@ -244,7 +250,7 @@ M._make_lsp_locations_provider = function(opts)
             local loc_hash = M._hash_lsp_location(loc)
             if visited_locations[loc_hash] == nil then
               visited_locations[loc_hash] = true
-              local line = M._render_lsp_location_line(loc)
+              local line = M._render_lsp_location_to_line(loc)
               if type(line) == "string" and string.len(line) > 0 then
                 table.insert(results, line)
               end
