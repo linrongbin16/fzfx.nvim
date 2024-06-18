@@ -137,6 +137,38 @@ describe("fzfx.cfg._lsp_locations", function()
       print(string.format("_render_lsp_location_to_line-3:%s\n", vim.inspect(actual)))
       assert_true(actual == nil)
     end)
+    it("_hash_lsp_location", function()
+      local range1 = {
+        start = { line = 1, character = 10 },
+        ["end"] = { line = 10, character = 31 },
+      }
+      local loc1 = {
+        uri = string.format("file://%s/github/linrongbin16/fzfx.nvim", HOME_DIR),
+        range = range1,
+      }
+      local range2 = {
+        start = { line = 3000, character = 10 },
+        ["end"] = { line = 3000, character = 31 },
+      }
+      local loc2 = {
+        uri = string.format("file://%s/github/linrongbin16/fzfx.nvim/lua/fzfx.lua", HOME_DIR),
+        range = range2,
+      }
+      local range3 = {
+        start = { line = 3000, character = 10 },
+        ["end"] = { line = 3000, character = 31 },
+      }
+      local loc3 = {
+        uri = string.format("file://%s/github/linrongbin16/fzfx.nvim/lua/fzfx.lua", HOME_DIR),
+        range = range3,
+      }
+      local h1 = _lsp_locations._hash_lsp_location(loc1)
+      local h2 = _lsp_locations._hash_lsp_location(loc2)
+      local h3 = _lsp_locations._hash_lsp_location(loc3)
+      assert_false(h1 == h2)
+      assert_false(h1 == h3)
+      assert_true(h2 == h3)
+    end)
     it("_lsp_position_context_maker", function()
       local ctx = _lsp_locations._lsp_position_context_maker()
       -- print(string.format("lsp position context:%s\n", vim.inspect(ctx)))
