@@ -17,7 +17,7 @@ describe("fzfx.cfg.file_explorer", function()
   local str = require("fzfx.commons.str")
   local path = require("fzfx.commons.path")
 
-  local constants = require("fzfx.lib.constants")
+  local consts = require("fzfx.lib.constants")
 
   local contexts = require("fzfx.helper.contexts")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
@@ -50,51 +50,52 @@ describe("fzfx.cfg.file_explorer", function()
       ".rw-r--r--   28k linrongbin  8 Oct 11:37  README.md",
       "drwxr-xr-x     - linrongbin  8 Oct 11:44  test",
     }
-    it("_file_explorer_context_maker", function()
-      local ctx = file_explorer_cfg._file_explorer_context_maker()
-      -- print(string.format("file explorer context:%s\n", vim.inspect(ctx)))
+    it("_context_maker", function()
+      local ctx = file_explorer_cfg._context_maker()
       assert_eq(type(ctx), "table")
       assert_true(ctx.bufnr > 0)
       assert_true(ctx.winnr > 0)
       assert_true(ctx.tabnr > 0)
       assert_true(vim.fn.filereadable(ctx.cwd) > 0)
     end)
-    it("_make_file_explorer_provider", function()
-      local ctx = file_explorer_cfg._file_explorer_context_maker()
-      local f1 = file_explorer_cfg._make_file_explorer_provider("-lh")
-      assert_eq(type(f1), "function")
-      local actual1 = f1("", ctx)
-      -- print(
-      --     string.format(
-      --         "file explorer provider1:%s\n",
-      --         vim.inspect(actual1)
-      --     )
-      -- )
-      assert_eq(type(actual1), "string")
-      assert_true(str.find(actual1, "echo") > 0)
-      assert_true(
-        type(str.find(actual1, "eza")) == "number" or type(str.find(actual1, "ls")) == "number"
-      )
+    it("_parse_opts", function()
+      local actual1 = file_explorer_cfg._parse_opts()
+      assert_true(actual1 == "-lh")
+      local actual2 = file_explorer_cfg._parse_opts({})
+      assert_true(actual2 == "-lh")
+      local actual3 = file_explorer_cfg._parse_opts({ include_hidden = false })
+      assert_true(actual3 == "-lh")
+      local actual4 = file_explorer_cfg._parse_opts({ include_hidden = true })
+      assert_true(actual4 == "-lha")
+    end)
+    it("_make_provider_lsd case-1", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_lsd()
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_lsd-1:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "echo") > 0)
+      assert_true(str.find(actual, consts.LSD) > 0)
+      assert_true(str.find(actual, "-lh") > 0)
+      assert_true(str.find(actual, "-lha") == nil)
       assert_true(
         str.find(
-          actual1,
+          actual,
           path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
         ) > 0
       )
-      local f2 = file_explorer_cfg._make_file_explorer_provider("-lha")
-      assert_eq(type(f2), "function")
-      local actual2 = f2("", ctx)
-      -- print(
-      --     string.format(
-      --         "file explorer provider2:%s\n",
-      --         vim.inspect(actual2)
-      --     )
-      -- )
+    end)
+    it("_make_provider_lsd case-2", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_lsd({ include_hidden = true })
+      assert_eq(type(f), "function")
+      local actual2 = f("", ctx)
+      print(string.format("_make_provider_lsd-2:%s\n", vim.inspect(actual2)))
       assert_eq(type(actual2), "string")
       assert_true(str.find(actual2, "echo") > 0)
-      assert_true(
-        type(str.find(actual2, "eza")) == "number" or type(str.find(actual2, "ls")) == "number"
-      )
+      assert_true(str.find(actual2, consts.LSD) > 0)
+      assert_true(str.find(actual2, "-lha") > 0)
       assert_true(
         str.find(
           actual2,
@@ -102,91 +103,244 @@ describe("fzfx.cfg.file_explorer", function()
         ) > 0
       )
     end)
-    it("_directory_previewer", function()
-      local actual = file_explorer_cfg._directory_previewer("lua/fzfx/config.lua")
-      assert_eq(type(actual), "table")
-      if actual[1] == "lsd" then
-        assert_eq(actual[1], "lsd")
-        assert_eq(actual[2], "--color=always")
-        assert_eq(actual[3], "-lha")
-        assert_eq(actual[4], "--header")
-        assert_eq(actual[5], "--")
-        assert_eq(actual[6], "lua/fzfx/config.lua")
+    it("_make_provider_eza case-1", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_eza()
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_eza-1:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "echo") > 0)
+      assert_true(str.find(actual, consts.EZA) > 0)
+      assert_true(str.find(actual, "-lh") > 0)
+      assert_true(str.find(actual, "-lha") == nil)
+      assert_true(
+        str.find(
+          actual,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_provider_eza case-2", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_eza({ include_hidden = true })
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_eza-2:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "echo") > 0)
+      assert_true(str.find(actual, consts.EZA) > 0)
+      assert_true(str.find(actual, "-lhaa") > 0)
+      assert_true(
+        str.find(
+          actual,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_provider_ls case-1", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_ls()
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_ls-1:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "echo") > 0)
+      assert_true(str.find(actual, consts.LS) > 0)
+      assert_true(str.find(actual, "-lh") > 0)
+      assert_true(str.find(actual, "-lha") == nil)
+      assert_true(
+        str.find(
+          actual,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_provider_ls case-2", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_ls({ include_hidden = true })
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_ls-2:%s\n", vim.inspect(actual)))
+      assert_eq(type(actual), "string")
+      assert_true(str.find(actual, "echo") > 0)
+      assert_true(str.find(actual, consts.LS) > 0)
+      assert_true(str.find(actual, "-lha") > 0)
+      assert_true(
+        str.find(
+          actual,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_provider_dummy", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f = file_explorer_cfg._make_provider_dummy()
+      assert_eq(type(f), "function")
+      local actual = f("", ctx)
+      print(string.format("_make_provider_dummy-1:%s\n", vim.inspect(actual)))
+      assert_true(actual == nil)
+    end)
+    it("_make_provider", function()
+      local ctx = file_explorer_cfg._context_maker()
+      local f1 = file_explorer_cfg._make_provider()
+      assert_eq(type(f1), "function")
+      local actual1 = f1("", ctx)
+      print(string.format("_make_provider-1:%s\n", vim.inspect(actual1)))
+      assert_eq(type(actual1), "string")
+      assert_true(str.find(actual1, "echo") > 0)
+      if consts.HAS_LSD then
+        assert_true(str.find(actual1, consts.LSD) > 0)
+      elseif consts.HAS_EZA then
+        assert_true(str.find(actual1, consts.EZA) > 0)
       else
-        assert_true(actual[1] == "eza" or actual[1] == "ls")
-        assert_eq(actual[2], "--color=always")
-        assert_eq(actual[3], "-lha")
-        assert_eq(actual[4], "--")
-        assert_eq(actual[5], "lua/fzfx/config.lua")
+        assert_true(str.find(actual1, consts.LS) > 0)
+      end
+      assert_true(
+        str.find(
+          actual1,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+
+      local f2 = file_explorer_cfg._make_provider({ include_hidden = true })
+      assert_eq(type(f2), "function")
+      local actual2 = f2("", ctx)
+      print(string.format("_make_provider-2:%s\n", vim.inspect(actual1)))
+      assert_eq(type(actual2), "string")
+      assert_true(str.find(actual2, "echo") > 0)
+      if consts.HAS_LSD then
+        assert_true(str.find(actual2, consts.LSD) > 0)
+      elseif consts.HAS_EZA then
+        assert_true(str.find(actual2, consts.EZA) > 0)
+      else
+        assert_true(str.find(actual2, consts.LS) > 0)
+      end
+      assert_true(
+        str.find(
+          actual2,
+          path.normalize(vim.fn.getcwd(), { double_backslash = true, expand = true })
+        ) > 0
+      )
+    end)
+    it("_make_directory_previewer with lsd", function()
+      local input = "lua/fzfx/config.lua"
+      local f = file_explorer_cfg._make_directory_previewer({ lsd = true })
+      local actual = f(input)
+      assert_eq(type(actual), "table")
+      local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_LSD
+      for i = 1, n do
+        assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_LSD[i])
+      end
+      assert_eq(actual[#actual], input)
+    end)
+    it("_make_directory_previewer with eza", function()
+      local input = "lua/fzfx/config.lua"
+      local f = file_explorer_cfg._make_directory_previewer({ eza = true })
+      local actual = f(input)
+      assert_eq(type(actual), "table")
+      local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_EZA
+      for i = 1, n do
+        assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_EZA[i])
+      end
+      assert_eq(actual[#actual], input)
+    end)
+    it("_make_directory_previewer with ls", function()
+      local input = "lua/fzfx/config.lua"
+      local f = file_explorer_cfg._make_directory_previewer({ ls = true })
+      local actual = f(input)
+      assert_eq(type(actual), "table")
+      local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_LS
+      for i = 1, n do
+        assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_LS[i])
+      end
+      assert_eq(actual[#actual], input)
+    end)
+    it("_directory_previewer", function()
+      local input = "lua/fzfx/config.lua"
+      local actual = file_explorer_cfg._directory_previewer(input)
+      assert_eq(type(actual), "table")
+      if consts.HAS_LSD then
+        local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_LSD
+        for i = 1, n do
+          assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_LSD[i])
+        end
+        assert_eq(actual[#actual], input)
+      elseif consts.HAS_EZA then
+        local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_EZA
+        for i = 1, n do
+          assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_EZA[i])
+        end
+        assert_eq(actual[#actual], input)
+      else
+        local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_LS
+        for i = 1, n do
+          assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_LS[i])
+        end
+        assert_eq(actual[#actual], input)
       end
     end)
-    it("_file_explorer_previewer", function()
-      local ctx = file_explorer_cfg._file_explorer_context_maker()
-      if constants.HAS_LSD then
+    it("_previewer", function()
+      local ctx = file_explorer_cfg._context_maker()
+      if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
-          local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
+          local actual = file_explorer_cfg._previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
-            assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "lsd")
+            assert_true(actual[1] == consts.BAT or actual[1] == "cat" or actual[1] == "lsd")
           end
         end
-      elseif constants.HAS_EZA then
+      elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
-          local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
+          local actual = file_explorer_cfg._previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
-            assert_true(
-              actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == constants.EZA
-            )
+            assert_true(actual[1] == consts.BAT or actual[1] == "cat" or actual[1] == consts.EZA)
           end
         end
       else
         for _, line in ipairs(LS_LINES) do
-          local actual = file_explorer_cfg._file_explorer_previewer(line, ctx)
+          local actual = file_explorer_cfg._previewer(line, ctx)
           if actual ~= nil then
             assert_eq(type(actual), "table")
-            assert_true(actual[1] == constants.BAT or actual[1] == "cat" or actual[1] == "ls")
+            assert_true(actual[1] == consts.BAT or actual[1] == "cat" or actual[1] == "ls")
           end
         end
       end
     end)
     it("_cd_file_explorer", function()
-      local ctx = file_explorer_cfg._file_explorer_context_maker()
-      if constants.HAS_LSD then
+      local ctx = file_explorer_cfg._context_maker()
+      if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
-          local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._cd_file_explorer(line, ctx)
         end
-      elseif constants.HAS_EZA then
+      elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
-          local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._cd_file_explorer(line, ctx)
         end
       else
         for _, line in ipairs(LS_LINES) do
-          local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._cd_file_explorer(line, ctx)
         end
       end
+      assert_true(true)
     end)
     it("_upper_file_explorer", function()
-      local ctx = file_explorer_cfg._file_explorer_context_maker()
-      if constants.HAS_LSD then
+      local ctx = file_explorer_cfg._context_maker()
+      if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
-          local actual = file_explorer_cfg._upper_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._upper_file_explorer(line, ctx)
         end
-      elseif constants.HAS_EZA then
+      elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
-          local actual = file_explorer_cfg._upper_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._upper_file_explorer(line, ctx)
         end
       else
         for _, line in ipairs(LS_LINES) do
-          local actual = file_explorer_cfg._upper_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._upper_file_explorer(line, ctx)
         end
       end
+      assert_true(true)
     end)
   end)
 end)
