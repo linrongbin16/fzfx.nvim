@@ -9,6 +9,7 @@ describe("fzfx.cfg.buffers", function()
   before_each(function()
     vim.api.nvim_command("cd " .. cwd)
     vim.o.swapfile = false
+    vim.env._FZFX_NVIM_DEVICONS_PATH = nil
     vim.cmd([[noautocmd edit README.md]])
   end)
 
@@ -29,7 +30,8 @@ describe("fzfx.cfg.buffers", function()
     end)
     it("_delete_buffer", function()
       local ok, err = pcall(buffers_cfg._delete_buffer, "README.md")
-      assert_eq(type(ok), "boolean")
+      assert_true(ok)
+      -- assert_eq(type(ok), "boolean")
     end)
   end)
 end)
