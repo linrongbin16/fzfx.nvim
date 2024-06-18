@@ -51,42 +51,46 @@ M.variants = {
 --- @param query string
 --- @param context fzfx.PipelineContext
 --- @return string[]|nil
-M._buffers_provider = function(query, context)
+M._provider = function(query, context)
   local bufnrs = vim.api.nvim_list_bufs()
-  local bufpaths = {}
+  local results = {}
 
   local current_path = bufs.buf_is_valid(context.bufnr)
       and path.reduce(vim.api.nvim_buf_get_name(context.bufnr))
     or nil
   if str.not_empty(current_path) then
-    table.insert(bufpaths, current_path)
+    table.insert(results, current_path)
   end
 
   for _, bufnr in ipairs(bufnrs) do
     local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
     if bufs.buf_is_valid(bufnr) and bufpath ~= current_path then
-      table.insert(bufpaths, bufpath)
+      table.insert(results, bufpath)
     end
   end
-  return bufpaths
+  return results
 end
 
 M.providers = {
   key = "default",
-  provider = M._buffers_provider,
+  provider = M._provider,
   provider_type = ProviderTypeEnum.LIST,
   provider_decorator = { module = "prepend_icon_find", builtin = true },
 }
 
--- if you want to use fzf-builtin previewer with bat, please use below configs:
+-- If you want to use fzf-builtin previewer with bat, please use below configs:
 --
+-- ```
 -- previewer = previewers_helper.preview_files_find
 -- previewer_type = PreviewerTypeEnum.COMMAND_LIST
-
--- if you want to use nvim buffer previewer, please use below configs:
+-- ```
 --
+-- If you want to use nvim buffer previewer, please use below configs:
+--
+-- ```
 -- previewer = previewers_helper.buffer_preview_files_find
 -- previewer_type = PreviewerTypeEnum.BUFFER_FILE
+-- ```
 
 local previewer = switches.buffer_previewer_disabled() and previewers_helper.preview_files_find
   or previewers_helper.buffer_preview_files_find
@@ -101,16 +105,17 @@ M.previewers = {
 
 --- @param line string
 M._delete_buffer = function(line)
+  local filename_to_bufnr_map = {}
+
   local bufnrs = vim.api.nvim_list_bufs()
-  local filenames = {}
   for _, bufnr in ipairs(bufnrs) do
     local bufpath = path.reduce(vim.api.nvim_buf_get_name(bufnr))
     bufpath = path.normalize(bufpath, { double_backslash = true, expand = true })
-    filenames[bufpath] = bufnr
+    filename_to_bufnr_map[bufpath] = bufnr
   end
   if str.not_empty(line) then
     local parsed = parsers_helper.parse_find(line)
-    local bufnr = filenames[parsed.filename]
+    local bufnr = filename_to_bufnr_map[parsed.filename]
     -- log.debug(
     --   "|_delete_buffer| parsed:%s, filenames:%s",
     --   vim.inspect(parsed.filename),
