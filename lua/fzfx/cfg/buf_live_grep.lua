@@ -7,11 +7,10 @@ local bufs = require("fzfx.lib.bufs")
 local log = require("fzfx.lib.log")
 local LogLevels = require("fzfx.lib.log").LogLevels
 
-local parsers_helper = require("fzfx.helper.parsers")
 local queries_helper = require("fzfx.helper.queries")
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
+local _grep = require("fzfx.cfg._grep")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
@@ -95,7 +94,7 @@ M._provider_rg = function(query, context)
     return nil
   end
 
-  local args = vim.deepcopy(providers_helper.UNRESTRICTED_RG)
+  local args = vim.deepcopy(_grep.UNRESTRICTED_RG)
   args = M._append_options(args, option)
 
   table.insert(args, "-I")
@@ -117,7 +116,7 @@ M._provider_grep = function(query, context)
     return nil
   end
 
-  local args = vim.deepcopy(providers_helper.UNRESTRICTED_GREP)
+  local args = vim.deepcopy(_grep.UNRESTRICTED_GREP)
   args = M._append_options(args, option)
 
   table.insert(args, "-h")
