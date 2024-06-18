@@ -14,11 +14,7 @@ describe("fzfx.cfg._lsp_locations", function()
   local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
 
   local str = require("fzfx.commons.str")
-  local term_color = require("fzfx.commons.color.term")
-  local constants = require("fzfx.lib.constants")
-  local contexts = require("fzfx.helper.contexts")
-  local providers = require("fzfx.helper.providers")
-  local fzf_helpers = require("fzfx.detail.fzf_helpers")
+  local color_term = require("fzfx.commons.color.term")
   local _lsp_locations = require("fzfx.cfg._lsp_locations")
   require("fzfx").setup()
 
@@ -51,19 +47,50 @@ describe("fzfx.cfg._lsp_locations", function()
       assert_true(_lsp_locations._is_lsp_locationlink(LOCATIONLINK))
     end)
     it("_colorize_lsp_range", function()
-      local r = {
+      -- case-1
+      local r1 = {
         start = { line = 1, character = 20 },
         ["end"] = { line = 1, character = 26 },
       }
-      local loc = _lsp_locations._colorize_lsp_range(
+      local loc1 = _lsp_locations._colorize_lsp_range(
         'describe("_lsp_location_render_line", function()',
-        r,
-        term_color.red
+        r1,
+        color_term.red
       )
-      -- print(string.format("lsp render line:%s\n", vim.inspect(loc)))
-      assert_eq(type(loc), "string")
-      assert_true(str.startswith(loc, "describe"))
-      assert_true(str.endswith(loc, "function()"))
+      print(string.format("_colorize_lsp_range-1:%s\n", vim.inspect(loc1)))
+      assert_eq(type(loc1), "string")
+      assert_true(str.startswith(loc1, "describe"))
+      assert_true(str.endswith(loc1, "function()"))
+
+      -- case-2
+      local r2 = {
+        start = { line = 1, character = 38 },
+        ["end"] = { line = 1, character = 50 },
+      }
+      local loc2 = _lsp_locations._colorize_lsp_range(
+        'describe("_lsp_location_render_line", function()',
+        r2,
+        color_term.red
+      )
+      print(string.format("_colorize_lsp_range-2:%s\n", vim.inspect(loc2)))
+      assert_eq(type(loc2), "string")
+      assert_true(str.startswith(loc2, "describe"))
+      assert_true(str.endswith(loc2, "function()\27[0m"))
+
+      -- case-3
+      local r3 = {
+        start = { line = 1, character = 0 },
+        ["end"] = { line = 1, character = 30 },
+      }
+      local loc3 = _lsp_locations._colorize_lsp_range(
+        'describe("_lsp_location_render_line", function()',
+        r3,
+        color_term.red
+      )
+      print(string.format("_colorize_lsp_range-3:%s\n", vim.inspect(loc3)))
+      assert_eq(type(loc3), "string")
+      assert_true(str.startswith(loc3, "\27[0;31mdescribe"))
+      assert_true(str.endswith(loc3, "function()"))
     end)
     it("renders location", function()
       local actual = _lsp_locations._render_lsp_location_line(LOCATION)
