@@ -10,12 +10,13 @@ local env = require("fzfx.lib.env")
 
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local ProviderTypeEnum = require("fzfx.schema").ProviderTypeEnum
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
 local CommandFeedEnum = require("fzfx.schema").CommandFeedEnum
+
+local _lsp = require("fzfx.cfg._lsp")
 
 local M = {}
 
@@ -213,7 +214,7 @@ M._make_lsp_diagnostics_provider = function(opts)
         )
         local line = string.format(
           "%s:%s:%s:%s",
-          providers_helper.LSP_FILENAME_COLOR(diag.filename),
+          _lsp.LSP_FILENAME_COLOR(diag.filename),
           color_term.green(tostring(diag.lnum)),
           tostring(diag.col),
           builder

@@ -15,10 +15,11 @@ local lsp = require("fzfx.lib.lsp")
 
 local actions_helper = require("fzfx.helper.actions")
 local labels_helper = require("fzfx.helper.previewer_labels")
-local providers_helper = require("fzfx.helper.providers")
 local previewers_helper = require("fzfx.helper.previewers")
 
 local PreviewerTypeEnum = require("fzfx.schema").PreviewerTypeEnum
+
+local _lsp = require("fzfx.cfg._lsp")
 
 local M = {}
 
@@ -161,7 +162,7 @@ M._render_lsp_location_to_line = function(loc)
   -- )
   local rendered_line = string.format(
     "%s:%s:%s:%s",
-    providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
+    _lsp.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
     color_term.green(tostring(range.start.line + 1)),
     tostring(range.start.character + 1),
     line
@@ -358,7 +359,7 @@ M._render_lsp_call_hierarchy_to_lines = function(item, ranges)
       -- )
       local rendered_line = string.format(
         "%s:%s:%s:%s",
-        providers_helper.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
+        _lsp.LSP_FILENAME_COLOR(vim.fn.fnamemodify(filename, ":~:.")),
         color_term.green(tostring(r.start.line + 1)),
         tostring(r.start.character + 1),
         line
