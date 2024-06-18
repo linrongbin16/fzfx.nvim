@@ -210,7 +210,7 @@ M.providers = {
   },
 }
 
-M._PREVIEW_DIRECTORY_LSD = {
+M._DIRECTORY_PREVIEWER_LSD = {
   consts.LSD,
   "--color=always",
   "-lha",
@@ -218,57 +218,61 @@ M._PREVIEW_DIRECTORY_LSD = {
   "--",
 }
 
-M._PREVIEW_DIRECTORY_EZA = {
+M._DIRECTORY_PREVIEWER_EZA = {
   consts.EZA,
   "--color=always",
   "-lha",
   "--",
 }
 
-M._PREVIEW_DIRECTORY_LS = {
+M._DIRECTORY_PREVIEWER_LS = {
   consts.LS,
   "--color=always",
   "-lha",
   "--",
 }
 
---- @param filename string
---- @return string[]
-M._directory_previewer_lsd = function(filename)
-  local args = vim.deepcopy(M._PREVIEW_DIRECTORY_LSD)
-  table.insert(args, filename)
-  return args
-end
+--- @param opts {lsd:boolean?,eza:boolean?,ls:boolean?}?
+--- @return fun(filename:string):string[]
+M._make_directory_previewer = function(opts)
+  opts = opts or {}
 
---- @param filename string
---- @return string[]
-M._directory_previewer_eza = function(filename)
-  local args = vim.deepcopy(M._PREVIEW_DIRECTORY_EZA)
-  table.insert(args, filename)
-  return args
-end
+  local args
+  if opts.lsd then
+    args = vim.deepcopy(M._DIRECTORY_PREVIEWER_LSD)
+  elseif opts.eza then
+    args = vim.deepcopy(M._DIRECTORY_PREVIEWER_EZA)
+  elseif opts.ls then
+    args = vim.deepcopy(M._DIRECTORY_PREVIEWER_LS)
+  end
 
---- @param filename string
---- @return string[]
-M._directory_previewer_ls = function(filename)
-  local args = vim.deepcopy(M._PREVIEW_DIRECTORY_LS)
-  table.insert(args, filename)
-  return args
+  --- @param filename string
+  --- @return string[]
+  local function impl(filename)
+    table.insert(args, filename)
+    return args
+  end
+
+  return impl
 end
 
 --- @param filename string
 --- @return string[]|nil
 M._directory_previewer = function(filename)
+  local f
+
   if consts.HAS_LSD then
-    return M._directory_previewer_lsd(filename)
+    f = M._make_directory_previewer({ lsd = true })
   elseif consts.HAS_EZA then
-    return M._directory_previewer_eza(filename)
+    f = M._make_directory_previewer({ eza = true })
   elseif consts.HAS_LS then
-    return M._directory_previewer_ls(filename)
+    f = M._make_directory_previewer({ ls = true })
   else
     log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
     return nil
   end
+
+  return f(filename)
 end
 
 --- @param line string

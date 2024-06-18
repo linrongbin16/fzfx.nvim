@@ -223,22 +223,61 @@ describe("fzfx.cfg.file_explorer", function()
         ) > 0
       )
     end)
-    it("_directory_previewer", function()
-      local actual = file_explorer_cfg._directory_previewer("lua/fzfx/config.lua")
+    it("_make_directory_previewer with lsd", function()
+      local input = "lua/fzfx/config.lua"
+      local f = file_explorer_cfg._make_directory_previewer({ lsd = true })
+      local actual = f(input)
       assert_eq(type(actual), "table")
-      if actual[1] == "lsd" then
-        assert_eq(actual[1], "lsd")
-        assert_eq(actual[2], "--color=always")
-        assert_eq(actual[3], "-lha")
-        assert_eq(actual[4], "--header")
-        assert_eq(actual[5], "--")
-        assert_eq(actual[6], "lua/fzfx/config.lua")
+      local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_LSD
+      for i = 1, n do
+        assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_LSD[i])
+      end
+      assert_eq(actual[#actual], input)
+    end)
+    it("_make_directory_previewer with eza", function()
+      local input = "lua/fzfx/config.lua"
+      local f = file_explorer_cfg._make_directory_previewer({ eza = true })
+      local actual = f(input)
+      assert_eq(type(actual), "table")
+      local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_EZA
+      for i = 1, n do
+        assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_EZA[i])
+      end
+      assert_eq(actual[#actual], input)
+    end)
+    it("_make_directory_previewer with ls", function()
+      local input = "lua/fzfx/config.lua"
+      local f = file_explorer_cfg._make_directory_previewer({ ls = true })
+      local actual = f(input)
+      assert_eq(type(actual), "table")
+      local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_LS
+      for i = 1, n do
+        assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_LS[i])
+      end
+      assert_eq(actual[#actual], input)
+    end)
+    it("_directory_previewer", function()
+      local input = "lua/fzfx/config.lua"
+      local actual = file_explorer_cfg._directory_previewer(input)
+      assert_eq(type(actual), "table")
+      if consts.HAS_LSD then
+        local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_LSD
+        for i = 1, n do
+          assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_LSD[i])
+        end
+        assert_eq(actual[#actual], input)
+      elseif consts.HAS_EZA then
+        local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_EZA
+        for i = 1, n do
+          assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_EZA[i])
+        end
+        assert_eq(actual[#actual], input)
       else
-        assert_true(actual[1] == "eza" or actual[1] == "ls")
-        assert_eq(actual[2], "--color=always")
-        assert_eq(actual[3], "-lha")
-        assert_eq(actual[4], "--")
-        assert_eq(actual[5], "lua/fzfx/config.lua")
+        local n = #file_explorer_cfg._DIRECTORY_PREVIEWER_LS
+        for i = 1, n do
+          assert_eq(actual[i], file_explorer_cfg._DIRECTORY_PREVIEWER_LS[i])
+        end
+        assert_eq(actual[#actual], input)
       end
     end)
     it("_previewer", function()
