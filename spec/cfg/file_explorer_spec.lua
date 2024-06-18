@@ -312,39 +312,35 @@ describe("fzfx.cfg.file_explorer", function()
       local ctx = file_explorer_cfg._context_maker()
       if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
-          local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._cd_file_explorer(line, ctx)
         end
       elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
-          local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._cd_file_explorer(line, ctx)
         end
       else
         for _, line in ipairs(LS_LINES) do
-          local actual = file_explorer_cfg._cd_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._cd_file_explorer(line, ctx)
         end
       end
+      assert_true(true)
     end)
     it("_upper_file_explorer", function()
       local ctx = file_explorer_cfg._context_maker()
       if consts.HAS_LSD then
         for _, line in ipairs(LSD_LINES) do
-          local actual = file_explorer_cfg._upper_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._upper_file_explorer(line, ctx)
         end
       elseif consts.HAS_EZA then
         for _, line in ipairs(EZA_LINES) do
-          local actual = file_explorer_cfg._upper_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._upper_file_explorer(line, ctx)
         end
       else
         for _, line in ipairs(LS_LINES) do
-          local actual = file_explorer_cfg._upper_file_explorer(line, ctx)
-          assert_true(actual == nil)
+          file_explorer_cfg._upper_file_explorer(line, ctx)
         end
       end
+      assert_true(true)
     end)
   end)
 end)

@@ -275,18 +275,19 @@ M._directory_previewer = function(filename)
   return f(filename)
 end
 
+local parser
+if consts.HAS_LSD then
+  parser = parsers_helper.parse_lsd
+elseif consts.HAS_EZA then
+  parser = parsers_helper.parse_eza
+else
+  parser = parsers_helper.parse_ls
+end
+
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 --- @return string[]|nil
 M._previewer = function(line, context)
-  local parser
-  if consts.HAS_LSD then
-    parser = parsers_helper.parse_lsd
-  elseif consts.HAS_EZA then
-    parser = parsers_helper.parse_eza
-  else
-    parser = parsers_helper.parse_ls
-  end
   local parsed = parser(line, context)
 
   if path.isfile(parsed.filename) then
@@ -323,12 +324,9 @@ M.previewers = {
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 M._cd_file_explorer = function(line, context)
-  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line, context)
-    or (
-      consts.HAS_EZA and parsers_helper.parse_eza(line, context)
-      or parsers_helper.parse_ls(line, context)
-    )
-  if vim.fn.isdirectory(parsed.filename) > 0 then
+  local parsed = parser(line, context)
+
+  if path.isdir(parsed.filename) then
     fileio.writefile(context.cwd, parsed.filename)
   end
 end
@@ -336,21 +334,21 @@ end
 --- @param line string
 --- @param context fzfx.FileExplorerPipelineContext
 M._upper_file_explorer = function(line, context)
-  log.debug(
-    string.format(
-      "|_upper_file_explorer| line:%s, context:%s",
-      vim.inspect(line),
-      vim.inspect(context)
-    )
-  )
+  -- log.debug(
+  --   string.format(
+  --     "|_upper_file_explorer| line:%s, context:%s",
+  --     vim.inspect(line),
+  --     vim.inspect(context)
+  --   )
+  -- )
   local cwd = fileio.readfile(context.cwd) --[[@as string]]
-  log.debug("|_upper_file_explorer| cwd:" .. vim.inspect(cwd))
+  -- log.debug("|_upper_file_explorer| cwd:" .. vim.inspect(cwd))
   local target = vim.fn.fnamemodify(cwd, ":h") --[[@as string]]
-  log.debug("|_upper_file_explorer| target:" .. vim.inspect(target))
+  -- log.debug("|_upper_file_explorer| target:" .. vim.inspect(target))
   -- Windows root folder: `C:\`
   -- Unix/linux root folder: `/`
-  local root_len = consts.IS_WINDOWS and 3 or 1
-  if vim.fn.isdirectory(target) > 0 and string.len(target) > root_len then
+  local root_dir_len = consts.IS_WINDOWS and 3 or 1
+  if path.isdir(target) and string.len(target) > root_dir_len then
     fileio.writefile(context.cwd, target)
   end
 end
