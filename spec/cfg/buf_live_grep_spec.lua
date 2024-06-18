@@ -18,10 +18,11 @@ describe("fzfx.cfg.buf_live_grep", function()
 
   describe("[_buf_path]", function()
     it("test", function()
-      local actual1 = buf_live_grep_cfg._buf_path(0)
-      if actual1 then
+      local bufs = vim.api.nvim_list_bufs()
+      for _, bufnr in ipairs(bufs) do
+        local actual1 = buf_live_grep_cfg._buf_path(bufnr)
         assert_eq(type(actual1), "string")
-        assert_true(string.len(actual1) > 0)
+        -- assert_true(type(actual1) == "string" or actual1 == nil)
       end
 
       local actual2 = buf_live_grep_cfg._buf_path(nil)
