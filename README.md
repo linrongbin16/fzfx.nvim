@@ -63,7 +63,7 @@ https://github.com/linrongbin16/fzfx.nvim/assets/6496887/b5e2b0dc-4dd6-4c18-b1da
 
 > [!NOTE]
 >
-> This plugin keeps up with the latest stable version, supports until the last legacy version to reduce maintenance effort.
+> This plugin keeps up with the latest Neovim stable version, supports until the last legacy version to reduce maintenance effort.
 >
 > For example at the time of writing, 2024-06-11, stable is v0.10, last legacy is v0.9, thus this plugin supports v0.9+.
 
