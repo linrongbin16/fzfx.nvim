@@ -43,19 +43,40 @@ describe("fzfx.cfg.buf_live_grep", function()
   describe("[_provider_rg]", function()
     it("test", function()
       local ctx = contexts_help.make_pipeline_context()
+      local n = #_grep.UNRESTRICTED_RG
 
       local actual1 = buf_live_grep_cfg._provider_rg("", ctx)
       print(string.format("_provider_rg-1:%s, ctx:%s\n", vim.inspect(actual1), vim.inspect(ctx)))
       assert_eq(type(actual1), "table")
-      assert_eq(actual1[1], _grep.UNRESTRICTED_RG[1])
-      assert_eq(actual1[2], _grep.UNRESTRICTED_RG[2])
-      assert_eq(actual1[3], _grep.UNRESTRICTED_RG[3])
+      for i = 1, n do
+        assert_eq(actual1[i], _grep.UNRESTRICTED_RG[i])
+      end
 
       local actual2 = buf_live_grep_cfg._provider_rg("fzfx", ctx)
       print(string.format("_provider_rg-2:%s, ctx:%s\n", vim.inspect(actual2), vim.inspect(ctx)))
-      assert_eq(actual2[1], _grep.UNRESTRICTED_RG[1])
-      assert_eq(actual2[2], _grep.UNRESTRICTED_RG[2])
-      assert_eq(actual2[3], _grep.UNRESTRICTED_RG[3])
+      for i = 1, n do
+        assert_eq(actual1[i], _grep.UNRESTRICTED_RG[i])
+      end
+      assert_eq(actual2[#actual2 - 1], "fzfx")
+    end)
+  end)
+  describe("[_provider_grep]", function()
+    it("test", function()
+      local ctx = contexts_help.make_pipeline_context()
+      local n = #_grep.UNRESTRICTED_GREP
+
+      local actual1 = buf_live_grep_cfg._provider_grep("", ctx)
+      print(string.format("_provider_grep-1:%s, ctx:%s\n", vim.inspect(actual1), vim.inspect(ctx)))
+      assert_eq(type(actual1), "table")
+      for i = 1, n do
+        assert_eq(actual1[i], _grep.UNRESTRICTED_GREP[i])
+      end
+
+      local actual2 = buf_live_grep_cfg._provider_grep("fzfx", ctx)
+      print(string.format("_provider_grep-2:%s, ctx:%s\n", vim.inspect(actual2), vim.inspect(ctx)))
+      for i = 1, n do
+        assert_eq(actual2[i], _grep.UNRESTRICTED_GREP[i])
+      end
       assert_eq(actual2[#actual2 - 1], "fzfx")
     end)
   end)
