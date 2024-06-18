@@ -222,7 +222,7 @@ lua require('fzfx').setup()
 
 ## 🚀 Usage
 
-There're multiple commands provided, named with prefix `Fzfx`. The sub commands indicates the user query's input method, (i.e. the variants) named with below rules:
+There're multiple commands provided, named with prefix `Fzfx`. The sub commands indicates the user query's input method, (i.e. the variants) named with below conventions:
 
 - **Basic** variant is named with `args`, accepts the following arguments as query content.
 - **Visual select** variant is named with `visual`, uses visual selection as query content.
