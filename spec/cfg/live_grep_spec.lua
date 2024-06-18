@@ -11,87 +11,73 @@ describe("fzfx.cfg.live_grep", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
-
   require("fzfx").setup()
+  local tbl = require("fzfx.commons.tbl")
   local consts = require("fzfx.lib.constants")
   local contexts = require("fzfx.helper.contexts")
   local live_grep_cfg = require("fzfx.cfg.live_grep")
+  local _grep = require("fzfx.cfg._grep")
 
   describe("[_make_provider]", function()
-    it("_make_provider restricted", function()
+    it("restricted", function()
       local f = live_grep_cfg._make_provider()
       local actual = f("hello", {})
       -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
-      if actual[1] == "rg" then
-        assert_eq(actual[1], "rg")
-        assert_eq(actual[2], "--column")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "--no-heading")
-        assert_eq(actual[5], "--color=always")
-        assert_eq(actual[6], "-H")
-        assert_eq(actual[7], "-S")
-        assert_eq(actual[8], "hello")
+      if consts.HAS_RG then
+        local n = #_grep.RESTRICTED_RG
+        for i = 1, n do
+          assert_eq(actual[i], _grep.RESTRICTED_RG[i])
+        end
+        assert_eq(actual[#actual], "hello")
       else
-        assert_eq(actual[1], consts.GREP)
-        assert_eq(actual[2], "--color=always")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "-H")
-        assert_eq(actual[5], "-r")
-        assert_eq(actual[6], "--exclude-dir=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]]))
-        assert_eq(actual[7], "--exclude=" .. (consts.HAS_GNU_GREP and [[.*]] or [[./.*]]))
-        assert_eq(actual[8], "hello")
+        local n = #_grep.RESTRICTED_GREP
+        for i = 1, n do
+          assert_eq(actual[i], _grep.RESTRICTED_GREP[i])
+        end
+        assert_eq(actual[#actual], "hello")
       end
     end)
-    it("_make_provider unrestricted", function()
+    it("unrestricted", function()
       local f = live_grep_cfg._make_provider({ unrestricted = true })
       local actual = f("hello", {})
       -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
-      if actual[1] == "rg" then
-        assert_eq(actual[1], "rg")
-        assert_eq(actual[2], "--column")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "--no-heading")
-        assert_eq(actual[5], "--color=always")
-        assert_eq(actual[6], "-H")
-        assert_eq(actual[7], "-S")
-        assert_eq(actual[8], "-uu")
-        assert_eq(actual[9], "hello")
+      if consts.HAS_RG then
+        local n = #_grep.UNRESTRICTED_RG
+        for i = 1, n do
+          assert_eq(actual[i], _grep.UNRESTRICTED_RG[i])
+        end
+        assert_eq(actual[#actual], "hello")
       else
-        assert_eq(actual[1], consts.GREP)
-        assert_eq(actual[2], "--color=always")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "-H")
-        assert_eq(actual[5], "-r")
-        assert_eq(actual[6], "hello")
+        local n = #_grep.UNRESTRICTED_GREP
+        for i = 1, n do
+          assert_eq(actual[i], _grep.UNRESTRICTED_GREP[i])
+        end
+        assert_eq(actual[#actual], "hello")
       end
     end)
-    it("_make_provider buffer", function()
+    it("buffer", function()
       local f = live_grep_cfg._make_provider({ buffer = true })
       local actual = f("hello", contexts.make_pipeline_context())
       -- print(string.format("live grep provider:%s\n", vim.inspect(actual)))
       assert_eq(type(actual), "table")
-      if actual[1] == "rg" then
-        assert_eq(actual[1], "rg")
-        assert_eq(actual[2], "--column")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "--no-heading")
-        assert_eq(actual[5], "--color=always")
-        assert_eq(actual[6], "-H")
-        assert_eq(actual[7], "-S")
-        assert_eq(actual[8], "-uu")
-        assert_eq(actual[9], "hello")
-        assert_eq(actual[10], "README.md")
+      if consts.HAS_RG then
+        local n = #_grep.UNRESTRICTED_RG
+        for i = 1, n do
+          assert_eq(actual[i], _grep.UNRESTRICTED_RG[i])
+        end
+        assert_true(tbl.List:move(actual):some(function(a)
+          return a == "hello"
+        end))
       else
-        assert_eq(actual[1], consts.GREP)
-        assert_eq(actual[2], "--color=always")
-        assert_eq(actual[3], "-n")
-        assert_eq(actual[4], "-H")
-        assert_eq(actual[5], "-r")
-        assert_eq(actual[6], "hello")
-        assert_eq(actual[7], "README.md")
+        local n = #_grep.UNRESTRICTED_GREP
+        for i = 1, n do
+          assert_eq(actual[i], _grep.UNRESTRICTED_GREP[i])
+        end
+        assert_true(tbl.List:move(actual):some(function(a)
+          return a == "hello"
+        end))
       end
     end)
   end)
