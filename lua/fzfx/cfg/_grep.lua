@@ -71,10 +71,11 @@ end
 M.append_options = function(args, opts)
   assert(type(args) == "table")
   if str.not_empty(opts) then
-    local option_splits = str.split(opts --[[@as string]], " ")
+    local option_splits = str.split(opts --[[@as string]], " ", { plain = true, trimempty = true })
     for _, o in ipairs(option_splits) do
-      if str.not_empty(o) then
-        table.insert(args, o)
+      local trimmed_o = str.trim(o)
+      if str.not_empty(trimmed_o) then
+        table.insert(args, trimmed_o)
       end
     end
   end
