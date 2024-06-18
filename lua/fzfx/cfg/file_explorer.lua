@@ -279,14 +279,19 @@ end
 --- @param context fzfx.FileExplorerPipelineContext
 --- @return string[]|nil
 M._previewer = function(line, context)
-  local parsed = consts.HAS_LSD and parsers_helper.parse_lsd(line, context)
-    or (
-      consts.HAS_EZA and parsers_helper.parse_eza(line, context)
-      or parsers_helper.parse_ls(line, context)
-    )
-  if vim.fn.filereadable(parsed.filename) > 0 then
+  local parser
+  if consts.HAS_LSD then
+    parser = parsers_helper.parse_lsd
+  elseif consts.HAS_EZA then
+    parser = parsers_helper.parse_eza
+  else
+    parser = parsers_helper.parse_ls
+  end
+  local parsed = parser(line, context)
+
+  if path.isfile(parsed.filename) then
     return previewers_helper.preview_files(parsed.filename)
-  elseif vim.fn.isdirectory(parsed.filename) > 0 then
+  elseif path.isdir(parsed.filename) then
     return M._directory_previewer(parsed.filename)
   else
     return nil
