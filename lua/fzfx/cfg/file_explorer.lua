@@ -298,8 +298,14 @@ M._previewer = function(line, context)
   end
 end
 
-local previewer_label = consts.HAS_LSD and labels_helper.label_lsd
-  or (consts.HAS_EZA and labels_helper.label_eza or labels_helper.label_ls)
+local previewer_label
+if consts.HAS_LSD then
+  previewer_label = labels_helper.label_lsd
+elseif consts.HAS_EZA then
+  previewer_label = labels_helper.label_eza
+else
+  previewer_label = labels_helper.label_ls
+end
 
 M.previewers = {
   filter_hidden = {
