@@ -210,28 +210,61 @@ M.providers = {
   },
 }
 
+M._PREVIEW_DIRECTORY_LSD = {
+  consts.LSD,
+  "--color=always",
+  "-lha",
+  "--header",
+  "--",
+}
+
+M._PREVIEW_DIRECTORY_EZA = {
+  consts.EZA,
+  "--color=always",
+  "-lha",
+  "--",
+}
+
+M._PREVIEW_DIRECTORY_LS = {
+  consts.LS,
+  "--color=always",
+  "-lha",
+  "--",
+}
+
+--- @param filename string
+--- @return string[]
+M._directory_previewer_lsd = function(filename)
+  local args = vim.deepcopy(M._PREVIEW_DIRECTORY_LSD)
+  table.insert(args, filename)
+  return args
+end
+
+--- @param filename string
+--- @return string[]
+M._directory_previewer_eza = function(filename)
+  local args = vim.deepcopy(M._PREVIEW_DIRECTORY_EZA)
+  table.insert(args, filename)
+  return args
+end
+
+--- @param filename string
+--- @return string[]
+M._directory_previewer_ls = function(filename)
+  local args = vim.deepcopy(M._PREVIEW_DIRECTORY_LS)
+  table.insert(args, filename)
+  return args
+end
+
 --- @param filename string
 --- @return string[]|nil
 M._directory_previewer = function(filename)
   if consts.HAS_LSD then
-    return {
-      "lsd",
-      "--color=always",
-      "-lha",
-      "--header",
-      "--",
-      filename,
-    }
+    return M._directory_previewer_lsd(filename)
   elseif consts.HAS_EZA then
-    return {
-      consts.EZA,
-      "--color=always",
-      "-lha",
-      "--",
-      filename,
-    }
+    return M._directory_previewer_eza(filename)
   elseif consts.HAS_LS then
-    return { "ls", "--color=always", "-lha", "--", filename }
+    return M._directory_previewer_ls(filename)
   else
     log.echo(LogLevels.INFO, "no ls/eza/exa command found.")
     return nil
