@@ -12,11 +12,7 @@ describe("fzfx.cfg.files", function()
     vim.cmd([[noautocmd edit README.md]])
   end)
 
-  local github_actions = os.getenv("GITHUB_ACTIONS") == "true"
-
-  local contexts = require("fzfx.helper.contexts")
-  local providers = require("fzfx.helper.providers")
-  local fzf_helpers = require("fzfx.detail.fzf_helpers")
+  local files_cfg = require("fzfx.cfg.files")
 
   describe("[files]", function()
     it("test", function()

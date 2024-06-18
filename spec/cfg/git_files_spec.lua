@@ -16,7 +16,6 @@ describe("fzfx.cfg.git_files", function()
 
   require("fzfx").setup()
   local contexts = require("fzfx.helper.contexts")
-  local providers = require("fzfx.helper.providers")
   local fzf_helpers = require("fzfx.detail.fzf_helpers")
 
   local git_files_cfg = require("fzfx.cfg.git_files")
